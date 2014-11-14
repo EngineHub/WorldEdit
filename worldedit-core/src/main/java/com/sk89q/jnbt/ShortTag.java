@@ -36,17 +36,6 @@ public final class ShortTag extends Tag {
         this.value = value;
     }
 
-    /**
-     * Creates the tag.
-     *
-     * @param name the name of the tag
-     * @param value the value of the tag
-     */
-    public ShortTag(String name, short value) {
-        super(name);
-        this.value = value;
-    }
-
     @Override
     public Short getValue() {
         return value;
@@ -54,12 +43,7 @@ public final class ShortTag extends Tag {
 
     @Override
     public String toString() {
-        String name = getName();
-        String append = "";
-        if (name != null && !name.equals("")) {
-            append = "(\"" + this.getName() + "\")";
-        }
-        return "TAG_Short" + append + ": " + value;
+        return "TAG_Short(" + value + ")";
     }
 
 }

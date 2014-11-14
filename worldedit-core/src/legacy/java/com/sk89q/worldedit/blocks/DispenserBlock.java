@@ -71,9 +71,8 @@ public class DispenserBlock extends ContainerBlock {
     @Override
     public CompoundTag getNbtData() {
         Map<String, Tag> values = new HashMap<String, Tag>();
-        values.put("Items", new ListTag("Items", CompoundTag.class,
-                serializeInventory(getItems())));
-        return new CompoundTag(getNbtId(), values);
+        values.put("Items", new ListTag(CompoundTag.class, serializeInventory(getItems())));
+        return new CompoundTag(values);
     }
 
     @Override

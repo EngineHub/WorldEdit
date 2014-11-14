@@ -36,17 +36,6 @@ public final class ByteArrayTag extends Tag {
         this.value = value;
     }
 
-    /**
-     * Creates the tag.
-     *
-     * @param name the name of the tag
-     * @param value the value of the tag
-     */
-    public ByteArrayTag(String name, byte[] value) {
-        super(name);
-        this.value = value;
-    }
-
     @Override
     public byte[] getValue() {
         return value;
@@ -62,12 +51,7 @@ public final class ByteArrayTag extends Tag {
             }
             hex.append(hexDigits).append(" ");
         }
-        String name = getName();
-        String append = "";
-        if (name != null && !name.equals("")) {
-            append = "(\"" + this.getName() + "\")";
-        }
-        return "TAG_Byte_Array" + append + ": " + hex;
+        return "TAG_Byte_Array(" + hex + ")";
     }
 
 }

@@ -42,17 +42,6 @@ public final class CompoundTag extends Tag {
     }
 
     /**
-     * Creates the tag.
-     *
-     * @param name the name of the tag
-     * @param value the value of the tag
-     */
-    public CompoundTag(String name, Map<String, Tag> value) {
-        super(name);
-        this.value = Collections.unmodifiableMap(value);
-    }
-
-    /**
      * Returns whether this compound tag contains the given key.
      *
      * @param key the given key
@@ -74,7 +63,7 @@ public final class CompoundTag extends Tag {
      * @return the new compound tag
      */
     public CompoundTag setValue(Map<String, Tag> value) {
-        return new CompoundTag(getName(), value);
+        return new CompoundTag(value);
     }
 
     /**
@@ -296,7 +285,7 @@ public final class CompoundTag extends Tag {
         if (tag instanceof ListTag) {
             return (ListTag) tag;
         } else {
-            return new ListTag(key, StringTag.class, Collections.<Tag>emptyList());
+            return new ListTag(StringTag.class, Collections.<Tag>emptyList());
         }
     }
 
@@ -419,13 +408,8 @@ public final class CompoundTag extends Tag {
 
     @Override
     public String toString() {
-        String name = getName();
-        String append = "";
-        if (name != null && !name.equals("")) {
-            append = "(\"" + this.getName() + "\")";
-        }
         StringBuilder bldr = new StringBuilder();
-        bldr.append("TAG_Compound").append(append).append(": ").append(value.size()).append(" entries\r\n{\r\n");
+        bldr.append("TAG_Compound").append(": ").append(value.size()).append(" entries\r\n{\r\n");
         for (Map.Entry<String, Tag> entry : value.entrySet()) {
             bldr.append("   ").append(entry.getValue().toString().replaceAll("\r\n", "\r\n   ")).append("\r\n");
         }

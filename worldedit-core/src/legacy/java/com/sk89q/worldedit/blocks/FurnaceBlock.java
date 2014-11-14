@@ -115,11 +115,10 @@ public class FurnaceBlock extends ContainerBlock {
     @Override
     public CompoundTag getNbtData() {
         Map<String, Tag> values = new HashMap<String, Tag>();
-        values.put("Items", new ListTag("Items", CompoundTag.class,
-                serializeInventory(getItems())));
-        values.put("BurnTime", new ShortTag("BurnTime", burnTime));
-        values.put("CookTime", new ShortTag("CookTime", cookTime));
-        return new CompoundTag(getNbtId(), values);
+        values.put("Items", new ListTag(CompoundTag.class, serializeInventory(getItems())));
+        values.put("BurnTime", new ShortTag(burnTime));
+        values.put("CookTime", new ShortTag(cookTime));
+        return new CompoundTag(values);
     }
 
     @Override

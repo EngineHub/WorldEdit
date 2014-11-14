@@ -22,39 +22,42 @@ package com.sk89q.jnbt;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * The {@code TAG_Int_Array} tag.
+ * A tag that has a name.
  */
-public final class IntArrayTag extends Tag {
+public class NamedTag {
 
-    private final int[] value;
+    private final String name;
+    private final Tag tag;
 
     /**
-     * Creates the tag with an empty name.
+     * Create a new named tag.
      *
-     * @param value the value of the tag
+     * @param name the name
+     * @param tag the tag
      */
-    public IntArrayTag(int[] value) {
-        super();
-        checkNotNull(value);
-        this.value = value;
+    public NamedTag(String name, Tag tag) {
+        checkNotNull(name);
+        checkNotNull(tag);
+        this.name = name;
+        this.tag = tag;
     }
 
-    @Override
-    public int[] getValue() {
-        return value;
+    /**
+     * Get the name of the tag.
+     *
+     * @return the name
+     */
+    public String getName() {
+        return name;
     }
 
-    @Override
-    public String toString() {
-        StringBuilder hex = new StringBuilder();
-        for (int b : value) {
-            String hexDigits = Integer.toHexString(b).toUpperCase();
-            if (hexDigits.length() == 1) {
-                hex.append("0");
-            }
-            hex.append(hexDigits).append(" ");
-        }
-        return "TAG_Int_Array(" + hex + ")";
+    /**
+     * Get the tag.
+     *
+     * @return the tag
+     */
+    public Tag getTag() {
+        return tag;
     }
 
 }

@@ -24,6 +24,7 @@ import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.jnbt.IntTag;
 import com.sk89q.jnbt.ListTag;
 import com.sk89q.jnbt.NBTInputStream;
+import com.sk89q.jnbt.NamedTag;
 import com.sk89q.jnbt.ShortTag;
 import com.sk89q.jnbt.StringTag;
 import com.sk89q.jnbt.Tag;
@@ -71,10 +72,11 @@ public class SchematicReader implements ClipboardReader {
     @Override
     public Clipboard read(WorldData data) throws IOException {
         // Schematic tag
-        CompoundTag schematicTag = (CompoundTag) inputStream.readTag();
-        if (!schematicTag.getName().equals("Schematic")) {
+        NamedTag rootTag = inputStream.readNamedTag();
+        if (!rootTag.getName().equals("Schematic")) {
             throw new IOException("Tag 'Schematic' does not exist or is not first");
         }
+        CompoundTag schematicTag = (CompoundTag) rootTag.getTag();
 
         // Check
         Map<String, Tag> schematic = schematicTag.getValue();
@@ -197,7 +199,7 @@ public class SchematicReader implements ClipboardReader {
                     BaseBlock block = new BaseBlock(blocks[index], blockData[index]);
 
                     if (tileEntitiesMap.containsKey(pt)) {
-                        block.setNbtData(new CompoundTag("", tileEntitiesMap.get(pt)));
+                        block.setNbtData(new CompoundTag(tileEntitiesMap.get(pt)));
                     }
 
                     try {

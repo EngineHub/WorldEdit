@@ -94,8 +94,8 @@ public class NoteBlock extends BaseBlock implements TileEntityBlock {
     @Override
     public CompoundTag getNbtData() {
         Map<String, Tag> values = new HashMap<String, Tag>();
-        values.put("note", new ByteTag("note", note));
-        return new CompoundTag(getNbtId(), values);
+        values.put("note", new ByteTag(note));
+        return new CompoundTag(values);
     }
 
     @Override

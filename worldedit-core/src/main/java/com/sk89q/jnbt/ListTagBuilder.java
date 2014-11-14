@@ -84,16 +84,6 @@ public class ListTagBuilder {
     }
 
     /**
-     * Build a new list tag with this builder's entries.
-     *
-     * @param name the name of the tag
-     * @return the created list tag
-     */
-    public ListTag build(String name) {
-        return new ListTag(name, type, new ArrayList<Tag>(entries));
-    }
-
-    /**
      * Create a new builder instance.
      *
      * @return a new builder

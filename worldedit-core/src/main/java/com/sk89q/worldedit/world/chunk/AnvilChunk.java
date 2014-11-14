@@ -255,7 +255,7 @@ public class AnvilChunk implements Chunk {
             return null;
         }
 
-        return new CompoundTag("", values);
+        return new CompoundTag(values);
     }
 
     @Override

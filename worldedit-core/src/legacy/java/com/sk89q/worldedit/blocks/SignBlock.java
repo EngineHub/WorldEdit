@@ -93,11 +93,11 @@ public class SignBlock extends BaseBlock implements TileEntityBlock {
     @Override
     public CompoundTag getNbtData() {
         Map<String, Tag> values = new HashMap<String, Tag>();
-        values.put("Text1", new StringTag("Text1", text[0]));
-        values.put("Text2", new StringTag("Text2", text[1]));
-        values.put("Text3", new StringTag("Text3", text[2]));
-        values.put("Text4", new StringTag("Text4", text[3]));
-        return new CompoundTag(getNbtId(), values);
+        values.put("Text1", new StringTag(text[0]));
+        values.put("Text2", new StringTag(text[1]));
+        values.put("Text3", new StringTag(text[2]));
+        values.put("Text4", new StringTag(text[3]));
+        return new CompoundTag(values);
     }
 
     @Override

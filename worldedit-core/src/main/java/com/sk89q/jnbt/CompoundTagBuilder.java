@@ -71,7 +71,7 @@ public class CompoundTagBuilder {
      * @return this object
      */
     public CompoundTagBuilder putByteArray(String key, byte[] value) {
-        return put(key, new ByteArrayTag(key, value));
+        return put(key, new ByteArrayTag(value));
     }
 
     /**
@@ -83,7 +83,7 @@ public class CompoundTagBuilder {
      * @return this object
      */
     public CompoundTagBuilder putByte(String key, byte value) {
-        return put(key, new ByteTag(key, value));
+        return put(key, new ByteTag(value));
     }
 
     /**
@@ -95,7 +95,7 @@ public class CompoundTagBuilder {
      * @return this object
      */
     public CompoundTagBuilder putDouble(String key, double value) {
-        return put(key, new DoubleTag(key, value));
+        return put(key, new DoubleTag(value));
     }
 
     /**
@@ -107,7 +107,7 @@ public class CompoundTagBuilder {
      * @return this object
      */
     public CompoundTagBuilder putFloat(String key, float value) {
-        return put(key, new FloatTag(key, value));
+        return put(key, new FloatTag(value));
     }
 
     /**
@@ -119,7 +119,7 @@ public class CompoundTagBuilder {
      * @return this object
      */
     public CompoundTagBuilder putIntArray(String key, int[] value) {
-        return put(key, new IntArrayTag(key, value));
+        return put(key, new IntArrayTag(value));
     }
 
     /**
@@ -130,7 +130,7 @@ public class CompoundTagBuilder {
      * @return this object
      */
     public CompoundTagBuilder putInt(String key, int value) {
-        return put(key, new IntTag(key, value));
+        return put(key, new IntTag(value));
     }
 
     /**
@@ -142,7 +142,7 @@ public class CompoundTagBuilder {
      * @return this object
      */
     public CompoundTagBuilder putLong(String key, long value) {
-        return put(key, new LongTag(key, value));
+        return put(key, new LongTag(value));
     }
 
     /**
@@ -154,7 +154,7 @@ public class CompoundTagBuilder {
      * @return this object
      */
     public CompoundTagBuilder putShort(String key, short value) {
-        return put(key, new ShortTag(key, value));
+        return put(key, new ShortTag(value));
     }
 
     /**
@@ -166,7 +166,7 @@ public class CompoundTagBuilder {
      * @return this object
      */
     public CompoundTagBuilder putString(String key, String value) {
-        return put(key, new StringTag(key, value));
+        return put(key, new StringTag(value));
     }
 
     /**
@@ -190,16 +190,6 @@ public class CompoundTagBuilder {
      */
     public CompoundTag build() {
         return new CompoundTag(new HashMap<String, Tag>(entries));
-    }
-
-    /**
-     * Build a new compound tag with this builder's entries.
-     *
-     * @param name the name of the tag
-     * @return the created compound tag
-     */
-    public CompoundTag build(String name) {
-        return new CompoundTag(name, new HashMap<String, Tag>(entries));
     }
 
     /**

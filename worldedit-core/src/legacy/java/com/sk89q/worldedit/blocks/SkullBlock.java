@@ -156,11 +156,11 @@ public class SkullBlock extends BaseBlock implements TileEntityBlock {
     @Override
     public CompoundTag getNbtData() {
         Map<String, Tag> values = new HashMap<String, Tag>();
-        values.put("SkullType", new ByteTag("SkullType", skullType));
+        values.put("SkullType", new ByteTag(skullType));
         if (owner == null) owner = "";
-        values.put("ExtraType", new StringTag("ExtraType", owner));
-        values.put("Rot", new ByteTag("Rot", rot));
-        return new CompoundTag(getNbtId(), values);
+        values.put("ExtraType", new StringTag( owner));
+        values.put("Rot", new ByteTag(rot));
+        return new CompoundTag(values);
     }
 
     @Override

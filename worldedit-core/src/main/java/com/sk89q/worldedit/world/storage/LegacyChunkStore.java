@@ -85,7 +85,7 @@ public abstract class LegacyChunkStore extends ChunkStore {
         Tag tag;
 
         try {
-            tag = nbt.readTag();
+            tag = nbt.readNamedTag().getTag();
             if (!(tag instanceof CompoundTag)) {
                 throw new ChunkStoreException("CompoundTag expected for chunk; got "
                         + tag.getClass().getName());

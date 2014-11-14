@@ -37,17 +37,6 @@ public final class LongTag extends Tag {
         this.value = value;
     }
 
-    /**
-     * Creates the tag.
-     *
-     * @param name the name of the tag
-     * @param value the value of the tag
-     */
-    public LongTag(String name, long value) {
-        super(name);
-        this.value = value;
-    }
-
     @Override
     public Long getValue() {
         return value;
@@ -55,12 +44,7 @@ public final class LongTag extends Tag {
 
     @Override
     public String toString() {
-        String name = getName();
-        String append = "";
-        if (name != null && !name.equals("")) {
-            append = "(\"" + this.getName() + "\")";
-        }
-        return "TAG_Long" + append + ": " + value;
+        return "TAG_Long(" + value + ")";
     }
 
 }

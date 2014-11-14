@@ -24,13 +24,6 @@ package com.sk89q.jnbt;
  */
 public final class EndTag extends Tag {
 
-    /**
-     * Creates the tag.
-     */
-    public EndTag() {
-        super();
-    }
-
     @Override
     public Object getValue() {
         return null;

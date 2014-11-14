@@ -179,7 +179,7 @@ public class OldChunk implements Chunk {
         if (values == null) {
             return null;
         }
-        return new CompoundTag("", values);
+        return new CompoundTag(values);
     }
 
     @Override

@@ -19,15 +19,29 @@
 
 package com.sk89q.worldedit.schematic;
 
-import com.sk89q.jnbt.*;
+import com.sk89q.jnbt.ByteArrayTag;
+import com.sk89q.jnbt.CompoundTag;
+import com.sk89q.jnbt.IntTag;
+import com.sk89q.jnbt.ListTag;
+import com.sk89q.jnbt.NBTConstants;
+import com.sk89q.jnbt.NBTInputStream;
+import com.sk89q.jnbt.NBTOutputStream;
+import com.sk89q.jnbt.NamedTag;
+import com.sk89q.jnbt.ShortTag;
+import com.sk89q.jnbt.StringTag;
+import com.sk89q.jnbt.Tag;
 import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.CuboidClipboard;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.blocks.TileEntityBlock;
 import com.sk89q.worldedit.data.DataException;
 
-import java.io.*;
+import java.io.DataInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -52,11 +66,13 @@ public class MCEditSchematicFormat extends SchematicFormat {
         Vector offset = new Vector();
 
         // Schematic tag
-        CompoundTag schematicTag = (CompoundTag) nbtStream.readTag();
+        NamedTag rootTag = nbtStream.readNamedTag();
         nbtStream.close();
-        if (!schematicTag.getName().equals("Schematic")) {
+        if (!rootTag.getName().equals("Schematic")) {
             throw new DataException("Tag \"Schematic\" does not exist or is not first");
         }
+
+        CompoundTag schematicTag = (CompoundTag) rootTag.getTag();
 
         // Check
         Map<String, Tag> schematic = schematicTag.getValue();
@@ -169,7 +185,7 @@ public class MCEditSchematicFormat extends SchematicFormat {
                     BaseBlock block = getBlockForId(blocks[index], blockData[index]);
 
                     if (tileEntitiesMap.containsKey(pt)) {
-                        block.setNbtData(new CompoundTag("", tileEntitiesMap.get(pt)));
+                        block.setNbtData(new CompoundTag(tileEntitiesMap.get(pt)));
                     }
                     clipboard.setBlock(pt, block);
                 }
@@ -201,16 +217,16 @@ public class MCEditSchematicFormat extends SchematicFormat {
         }
 
         HashMap<String, Tag> schematic = new HashMap<String, Tag>();
-        schematic.put("Width", new ShortTag("Width", (short) width));
-        schematic.put("Length", new ShortTag("Length", (short) length));
-        schematic.put("Height", new ShortTag("Height", (short) height));
-        schematic.put("Materials", new StringTag("Materials", "Alpha"));
-        schematic.put("WEOriginX", new IntTag("WEOriginX", clipboard.getOrigin().getBlockX()));
-        schematic.put("WEOriginY", new IntTag("WEOriginY", clipboard.getOrigin().getBlockY()));
-        schematic.put("WEOriginZ", new IntTag("WEOriginZ", clipboard.getOrigin().getBlockZ()));
-        schematic.put("WEOffsetX", new IntTag("WEOffsetX", clipboard.getOffset().getBlockX()));
-        schematic.put("WEOffsetY", new IntTag("WEOffsetY", clipboard.getOffset().getBlockY()));
-        schematic.put("WEOffsetZ", new IntTag("WEOffsetZ", clipboard.getOffset().getBlockZ()));
+        schematic.put("Width", new ShortTag((short) width));
+        schematic.put("Length", new ShortTag((short) length));
+        schematic.put("Height", new ShortTag((short) height));
+        schematic.put("Materials", new StringTag("Alpha"));
+        schematic.put("WEOriginX", new IntTag(clipboard.getOrigin().getBlockX()));
+        schematic.put("WEOriginY", new IntTag(clipboard.getOrigin().getBlockY()));
+        schematic.put("WEOriginZ", new IntTag(clipboard.getOrigin().getBlockZ()));
+        schematic.put("WEOffsetX", new IntTag(clipboard.getOffset().getBlockX()));
+        schematic.put("WEOffsetY", new IntTag(clipboard.getOffset().getBlockY()));
+        schematic.put("WEOffsetZ", new IntTag(clipboard.getOffset().getBlockZ()));
 
         // Copy
         byte[] blocks = new byte[width * height * length];
@@ -246,30 +262,30 @@ public class MCEditSchematicFormat extends SchematicFormat {
                             values.put(entry.getKey(), entry.getValue());
                         }
 
-                        values.put("id", new StringTag("id", block.getNbtId()));
-                        values.put("x", new IntTag("x", x));
-                        values.put("y", new IntTag("y", y));
-                        values.put("z", new IntTag("z", z));
+                        values.put("id", new StringTag(block.getNbtId()));
+                        values.put("x", new IntTag(x));
+                        values.put("y", new IntTag(y));
+                        values.put("z", new IntTag(z));
 
-                        CompoundTag tileEntityTag = new CompoundTag("TileEntity", values);
+                        CompoundTag tileEntityTag = new CompoundTag(values);
                         tileEntities.add(tileEntityTag);
                     }
                 }
             }
         }
 
-        schematic.put("Blocks", new ByteArrayTag("Blocks", blocks));
-        schematic.put("Data", new ByteArrayTag("Data", blockData));
-        schematic.put("Entities", new ListTag("Entities", CompoundTag.class, new ArrayList<Tag>()));
-        schematic.put("TileEntities", new ListTag("TileEntities", CompoundTag.class, tileEntities));
+        schematic.put("Blocks", new ByteArrayTag(blocks));
+        schematic.put("Data", new ByteArrayTag(blockData));
+        schematic.put("Entities", new ListTag(CompoundTag.class, new ArrayList<Tag>()));
+        schematic.put("TileEntities", new ListTag(CompoundTag.class, tileEntities));
         if (addBlocks != null) {
-            schematic.put("AddBlocks", new ByteArrayTag("AddBlocks", addBlocks));
+            schematic.put("AddBlocks", new ByteArrayTag(addBlocks));
         }
 
         // Build and output
-        CompoundTag schematicTag = new CompoundTag("Schematic", schematic);
+        CompoundTag schematicTag = new CompoundTag(schematic);
         NBTOutputStream stream = new NBTOutputStream(new GZIPOutputStream(new FileOutputStream(file)));
-        stream.writeTag(schematicTag);
+        stream.writeNamedTag("Schematic", schematicTag);
         stream.close();
     }
 

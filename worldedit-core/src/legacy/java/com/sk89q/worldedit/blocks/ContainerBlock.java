@@ -74,21 +74,21 @@ public abstract class ContainerBlock extends BaseBlock implements TileEntityBloc
 
     public Map<String, Tag> serializeItem(BaseItemStack item) {
         Map<String, Tag> data = new HashMap<String, Tag>();
-        data.put("id", new ShortTag("id", (short) item.getType()));
-        data.put("Damage", new ShortTag("Damage", item.getData()));
-        data.put("Count", new ByteTag("Count", (byte) item.getAmount()));
+        data.put("id", new ShortTag((short) item.getType()));
+        data.put("Damage", new ShortTag(item.getData()));
+        data.put("Count", new ByteTag((byte) item.getAmount()));
         if (!item.getEnchantments().isEmpty()) {
             List<CompoundTag> enchantmentList = new ArrayList<CompoundTag>();
             for(Map.Entry<Integer, Integer> entry : item.getEnchantments().entrySet()) {
                 Map<String, Tag> enchantment = new HashMap<String, Tag>();
-                enchantment.put("id", new ShortTag("id", entry.getKey().shortValue()));
-                enchantment.put("lvl", new ShortTag("lvl", entry.getValue().shortValue()));
-                enchantmentList.add(new CompoundTag(null, enchantment));
+                enchantment.put("id", new ShortTag(entry.getKey().shortValue()));
+                enchantment.put("lvl", new ShortTag(entry.getValue().shortValue()));
+                enchantmentList.add(new CompoundTag(enchantment));
             }
 
             Map<String, Tag> auxData = new HashMap<String, Tag>();
-            auxData.put("ench", new ListTag("ench", CompoundTag.class, enchantmentList));
-            data.put("tag", new CompoundTag("tag", auxData));
+            auxData.put("ench", new ListTag(CompoundTag.class, enchantmentList));
+            data.put("tag", new CompoundTag(auxData));
         }
         return data;
     }
@@ -131,8 +131,8 @@ public abstract class ContainerBlock extends BaseBlock implements TileEntityBloc
         for (int i = 0; i < items.length; ++i) {
             if (items[i] != null) {
                 Map<String, Tag> tagData = serializeItem(items[i]);
-                tagData.put("Slot", new ByteTag("Slot", (byte) i));
-                tags.add(new CompoundTag("", tagData));
+                tagData.put("Slot", new ByteTag((byte) i));
+                tags.add(new CompoundTag(tagData));
             }
         }
         return tags;

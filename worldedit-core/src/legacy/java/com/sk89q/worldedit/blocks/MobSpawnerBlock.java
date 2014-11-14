@@ -136,22 +136,22 @@ public class MobSpawnerBlock extends BaseBlock implements TileEntityBlock {
     @Override
     public CompoundTag getNbtData() {
         Map<String, Tag> values = new HashMap<String, Tag>();
-        values.put("EntityId", new StringTag("EntityId", mobType));
-        values.put("Delay", new ShortTag("Delay", delay));
-        values.put("SpawnCount", new ShortTag("SpawnCount", spawnCount));
-        values.put("SpawnRange", new ShortTag("SpawnRange", spawnRange));
-        values.put("MinSpawnDelay", new ShortTag("MinSpawnDelay", minSpawnDelay));
-        values.put("MaxSpawnDelay", new ShortTag("MaxSpawnDelay", maxSpawnDelay));
-        values.put("MaxNearbyEntities", new ShortTag("MaxNearbyEntities", maxNearbyEntities));
-        values.put("RequiredPlayerRange", new ShortTag("RequiredPlayerRange", requiredPlayerRange));
+        values.put("EntityId", new StringTag(mobType));
+        values.put("Delay", new ShortTag(delay));
+        values.put("SpawnCount", new ShortTag(spawnCount));
+        values.put("SpawnRange", new ShortTag(spawnRange));
+        values.put("MinSpawnDelay", new ShortTag(minSpawnDelay));
+        values.put("MaxSpawnDelay", new ShortTag(maxSpawnDelay));
+        values.put("MaxNearbyEntities", new ShortTag(maxNearbyEntities));
+        values.put("RequiredPlayerRange", new ShortTag(requiredPlayerRange));
         if (spawnData != null) {
-            values.put("SpawnData", new CompoundTag("SpawnData", spawnData.getValue()));
+            values.put("SpawnData", new CompoundTag(spawnData.getValue()));
         }
         if (spawnPotentials != null) {
-            values.put("SpawnPotentials", new ListTag("SpawnPotentials", CompoundTag.class, spawnPotentials.getValue()));
+            values.put("SpawnPotentials", new ListTag(CompoundTag.class, spawnPotentials.getValue()));
         }
 
-        return new CompoundTag(getNbtId(), values);
+        return new CompoundTag(values);
     }
 
     @Override
@@ -240,10 +240,10 @@ public class MobSpawnerBlock extends BaseBlock implements TileEntityBlock {
             this.requiredPlayerRange = requiredPlayerRangeTag.getValue();
         }
         if (spawnPotentialsTag != null) {
-            this.spawnPotentials = new ListTag("SpawnPotentials", CompoundTag.class, spawnPotentialsTag.getValue());
+            this.spawnPotentials = new ListTag(CompoundTag.class, spawnPotentialsTag.getValue());
         }
         if (spawnDataTag != null) {
-            this.spawnData = new CompoundTag("SpawnData", spawnDataTag.getValue());
+            this.spawnData = new CompoundTag(spawnDataTag.getValue());
         }
     }
 

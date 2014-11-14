@@ -48,20 +48,6 @@ public final class ListTag extends Tag {
     }
 
     /**
-     * Creates the tag.
-     *
-     * @param name the name of the tag
-     * @param type the type of tag
-     * @param value the value of the tag
-     */
-    public ListTag(String name, Class<? extends Tag> type, List<? extends Tag> value) {
-        super(name);
-        checkNotNull(value);
-        this.type = type;
-        this.value = Collections.unmodifiableList(value);
-    }
-
-    /**
      * Gets the type of item in this list.
      *
      * @return The type of item in this list.
@@ -82,7 +68,7 @@ public final class ListTag extends Tag {
      * @return a new list tag
      */
     public ListTag setValue(List<Tag> list) {
-        return new ListTag(getName(), getType(), list);
+        return new ListTag(getType(), list);
     }
 
     /**
@@ -433,13 +419,8 @@ public final class ListTag extends Tag {
 
     @Override
     public String toString() {
-        String name = getName();
-        String append = "";
-        if (name != null && !name.equals("")) {
-            append = "(\"" + this.getName() + "\")";
-        }
         StringBuilder bldr = new StringBuilder();
-        bldr.append("TAG_List").append(append).append(": ").append(value.size()).append(" entries of type ").append(NBTUtils.getTypeName(type)).append("\r\n{\r\n");
+        bldr.append("TAG_List").append(": ").append(value.size()).append(" entries of type ").append(NBTUtils.getTypeName(type)).append("\r\n{\r\n");
         for (Tag t : value) {
             bldr.append("   ").append(t.toString().replaceAll("\r\n", "\r\n   ")).append("\r\n");
         }

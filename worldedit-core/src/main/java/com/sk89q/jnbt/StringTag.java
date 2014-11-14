@@ -39,18 +39,6 @@ public final class StringTag extends Tag {
         this.value = value;
     }
 
-    /**
-     * Creates the tag.
-     *
-     * @param name the name of the tag
-     * @param value the value of the tag
-     */
-    public StringTag(String name, String value) {
-        super(name);
-        checkNotNull(value);
-        this.value = value;
-    }
-
     @Override
     public String getValue() {
         return value;
@@ -58,12 +46,7 @@ public final class StringTag extends Tag {
 
     @Override
     public String toString() {
-        String name = getName();
-        String append = "";
-        if (name != null && !name.equals("")) {
-            append = "(\"" + this.getName() + "\")";
-        }
-        return "TAG_String" + append + ": " + value;
+        return "TAG_String(" + value + ")";
     }
 
 }
