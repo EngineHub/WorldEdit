@@ -1,121 +1,126 @@
-/*
- * Build script for the Forge version of WorldEdit
- */
+println """
+*******************************************
+ You are building WorldEdit! 
 
-// Add ForgeGradle as a dependency for the build script
+ If you encounter trouble:
+ 1) Read COMPILING.md if you haven't yet
+ 2) Try running 'build' in a separate Gradle run
+ 3) Use gradlew and not gradle
+ 4) If you still need help, ask on IRC! irc.esper.net #sk89q
+
+ Output files will be in [subproject]/build/libs
+*******************************************
+"""
+
 buildscript {
     repositories {
         mavenCentral()
-        maven {
-            name = "forge"
-            url = "http://files.minecraftforge.net/maven"
-        }
-        maven {
-            name = "sonatype"
-            url = "https://oss.sonatype.org/content/repositories/snapshots/"
-        }
+        maven { url = "https://oss.sonatype.org/content/repositories/snapshots/" }
         jcenter()
     }
 
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:1.2-SNAPSHOT'
         classpath 'com.github.jengelman.gradle.plugins:shadow:1.1.1'
+        classpath 'org.jfrog.buildinfo:build-info-extractor-gradle:3.0.1'
+        classpath 'org.ajoberstar:gradle-git:0.12.0'
     }
 }
 
-apply plugin: 'java'
-apply plugin: 'maven'
-apply plugin: 'forge'
-apply plugin: 'com.github.johnrengelman.shadow'
+if (!project.hasProperty("artifactory_contextUrl")) ext.artifactory_contextUrl = "http://localhost"
+if (!project.hasProperty("artifactory_user")) ext.artifactory_user = "guest"
+if (!project.hasProperty("artifactory_password")) ext.artifactory_password = ""
 
-group = 'com.sk89q'
-version = '6.0.0-SNAPSHOT' + System.getProperty("worldedit.build.suffix", "")
-archivesBaseName = "worldedit-forge"
-
-description = "An in-game voxel map editor for Minecraft."
-
-sourceCompatibility = 1.6
-targetCompatibility = 1.6
-
-repositories {
-    mavenCentral()
-    maven { url "http://repo.bukkit.org/content/groups/public" }
-    maven { url "http://maven.sk89q.com/repo/" }
-    maven { url "http://repo.maven.apache.org/maven2" }
+if (!project.hasProperty("gitCommitHash")) {
+    try {
+        def repo = Grgit.open(project.file('.'))
+        ext.gitCommitHash = repo.head().abbreviatedId
+    } catch (Exception e) {
+        ext.gitCommitHash = "no_git_id"
+    }
 }
 
-dependencies {
-    compile group: 'de.schlichtherle', name: 'truezip', version:'6.8.3'
-    compile group: 'rhino', name: 'js', version:'1.7R2'
-    compile group: 'org.yaml', name: 'snakeyaml', version:'1.9'
-    compile group: 'com.google.guava', name: 'guava', version:'10.0.1'
-    compile group: 'com.sk89q', name: 'jchronic', version:'0.2.4a'
-    compile group: 'com.google.code.findbugs', name: 'jsr305', version: '1.3.9'
-    compile group: 'com.thoughtworks.paranamer', name: 'paranamer', version: '2.6'
-    compile group: 'com.google.code.gson', name: 'gson', version: '2.2.4'
-    compile group: 'com.sk89q.lib', name: 'jlibnoise', version: '1.0.0'
-    //compile group: 'net.sf.trove4j', name: 'trove4j', version: '3.0.3'
-    testCompile group: 'org.mockito', name: 'mockito-core', version:'1.9.0-rc1'
-}
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'maven'
+    apply plugin: 'checkstyle'
+    apply plugin: 'com.github.johnrengelman.shadow'
+    apply plugin: 'com.jfrog.artifactory-upload'
 
-sourceSets {
-    main {
-        java {
-            srcDir 'src/main/java'
-            srcDir 'src/legacy/java'
-            srcDir 'src/forge/java'
-        }
-        resources {
-            srcDir 'src/main/resources'
-            srcDir 'src/forge/resources'
+    group = 'com.sk89q.worldedit'
+    version = '6.0.0-SNAPSHOT'
+    ext.internalVersion = version + ";" + gitCommitHash
+
+    sourceCompatibility = 1.6
+    targetCompatibility = 1.6
+
+    checkstyle.configFile = new File(rootProject.projectDir, "config/checkstyle/checkstyle.xml")
+
+    repositories {
+        mavenCentral()
+        maven { url "http://repo.bukkit.org/content/groups/public" }
+        maven { url "http://maven.sk89q.com/repo/" }
+        maven { url "http://repo.maven.apache.org/maven2" }
+    }
+
+    if (JavaVersion.current().isJava8Compatible()) {
+        // Java 8 turns on doclint which we fail
+        tasks.withType(Javadoc) {
+            options.addStringOption('Xdoclint:none', '-quiet')
         }
     }
-}
 
-minecraft {
-    ext.forgeVersion = "10.13.1.1225"
-    version = "1.7.10-$forgeVersion"
-
-    replaceIn "com/sk89q/worldedit/forge/ForgeWorldEdit.java"
-    replace "%VERSION%", project.version
-}
-
-processResources {
-    from (sourceSets.main.resources.srcDirs) {
-        expand 'version': project.version, 'mcVersion': project.minecraft.version,
-                'forgeVersion': project.minecraft.forgeVersion
-        include 'mcmod.info'
+    task sourcesJar(type: Jar, dependsOn: classes) {
+        classifier = 'sources'
+        from sourceSets.main.allSource
     }
 
-    from (sourceSets.main.resources.srcDirs) {
-        exclude 'mcmod.info'
+    task javadocJar(type: Jar, dependsOn: javadoc) {
+        classifier = 'javadoc'
+        from javadoc.destinationDir
+    }
+
+    artifacts {
+        archives jar
+        archives sourcesJar
+        archives javadocJar
+    }
+
+    build.dependsOn(checkstyleMain)
+    build.dependsOn(checkstyleTest)
+    build.dependsOn(sourcesJar)
+    build.dependsOn(javadocJar)
+
+    shadowJar {
+        classifier 'dist'
+        dependencies {
+            include(dependency('com.sk89q:jchronic:0.2.4a'))
+            include(dependency('com.thoughtworks.paranamer:paranamer:2.6'))
+            include(dependency('com.sk89q.lib:jlibnoise:1.0.0'))
+        }
+        exclude 'GradleStart**'
+        exclude '.cache'
+        exclude 'LICENSE*'
+    }
+
+    artifactory {
+        contextUrl = "${artifactory_contextUrl}"
+        publish {
+            repository {
+                repoKey = project.version.contains("SNAPSHOT") ? 'libs-snapshot-local' : 'libs-release-local'
+                username = "${artifactory_user}"
+                password = "${artifactory_password}"
+                maven = true
+                
+            }
+        }
+
+        resolve {
+            repository {
+                repoKey = 'repo'
+                username = "${artifactory_user}"
+                password = "${artifactory_password}"
+                maven = true
+            }
+        }
     }
 }
-
-// shade needed runtime dependencies
-shadowJar {
-    classifier 'shadow'
-    dependencies {
-        include(dependency('com.sk89q:jchronic:0.2.4a'))
-        include(dependency('com.thoughtworks.paranamer:paranamer:2.6'))
-        include(dependency('com.sk89q.lib:jlibnoise:1.0.0'))
-    }
-    exclude 'GradleStart**'
-    exclude '.cache'
-}
-
-// ensure reobf happens
-reobf.reobf(shadowJar) { spec ->
-    spec.classpath = sourceSets.main.compileClasspath;
-}
-
-task deleteOrig(type: Delete) {
-    delete project.tasks.jar.archivePath.getPath()
-}
-
-task deleteShaded(type: Delete) {
-    delete project.tasks.shadowJar.archivePath.getPath()
-}
-
-shadowJar.dependsOn(deleteShaded)
-build.dependsOn(shadowJar)

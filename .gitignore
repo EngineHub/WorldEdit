@@ -3,17 +3,20 @@
 /.settings
 /eclipse
 /.idea
-/*.iml
-/*.ipr
-/*.iws
+*.iml
+*.ipr
+*.iws
 
 /bin
 /build
 /target
 /gradle
-/.gradle
+.gradle
 /forge-download
 /out
+/*/build
+/run
+/worldedit-forge/run
 
 /dependency-reduced-pom.xml
 *-private.sh

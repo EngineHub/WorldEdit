@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE module PUBLIC
+    "-//Puppy Crawl//DTD Check Configuration 1.3//EN"
+    "http://www.puppycrawl.com/dtds/configuration_1_3.dtd">
+<module name="Checker">
+  <!-- Tabs are strictly banned -->
+  <module name="FileTabCharacter"/>
+
+  <module name="TreeWalker">
+    <!-- Important basics -->
+    <!-- <module name="PackageDeclaration"/> Unlikely that we would miss this in a PR -->
+    <module name="OuterTypeFilename"/> <!-- TypeName -> TypeName.java -->
+
+    <!--
+    Control package usage, so people don't insert Bukkit into WE where it shouldn't belong, etc.
+    It is a bit draconian, so update as necessary!
+    -->
+    <module name="ImportControl">
+      <property name="file" value="${basedir}/config/checkstyle/import-control.xml"/>
+    </module>
+
+    <!-- Code -->
+    <module name="HideUtilityClassConstructor"/> <!-- Utility classes should not have a constructor -->
+    <module name="CovariantEquals"/>
+    <module name="EqualsHashCode"/> <!-- equals() and hashCode() go together -->
+    <module name="NestedTryDepth"> <!-- SHOULD not need to adjust this -->
+      <property name="max" value="2"/>
+    </module>
+    <module name="SuperFinalize"/> <!-- We don't actually use this -->
+    <module name="JUnitTestCase"/> <!-- Checks tearDown(), setUp() etc. -->
+
+    <!-- Style -->
+    <module name="LeftCurly"> <!-- Left brace never goes on another line -->
+      <property name="option" value="eol"/>
+    </module> <!-- We don't check right brance -->
+    <module name="DefaultComesLast"/> <!-- default case in switch should be last -->
+    <module name="GenericWhitespace"/>
+
+    <!-- Naming -->
+    <module name="ClassTypeParameterName">
+      <property name="format" value="^[A-Z][a-zA-Z0-9]*$"/>
+    </module>
+    <module name="LocalFinalVariableName"/>
+    <module name="LocalVariableName">
+      <property name="format" value="^[a-z_][a-zA-Z0-9]*$"/>
+    </module>
+    <module name="MemberName">
+      <property name="format" value="^[a-z_][a-zA-Z0-9]*$"/>
+    </module>
+    <module name="MethodName">
+      <property name="format" value="^[a-z][a-zA-Z0-9]*$"/>
+    </module>
+    <!-- <module name="PackageName"/> Unlikely that we would miss this in a PR -->
+    <module name="ParameterName"/>
+    <!-- <module name="TypeName"/> Unlikely that we would miss this in a PR -->
+  </module>
+
+  <!-- Require the header, something that many people forget and we hate to fix -->
+  <!-- You should configure the header in your IDE -->
+  <module name="Header">
+    <property name="headerFile" value="${basedir}/config/checkstyle/header.txt"/>
+    <property name="fileExtensions" value="java"/>
+  </module>
+</module>
