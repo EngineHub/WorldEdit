@@ -52,6 +52,7 @@
       <allow pkg="net.minecraft"/>
       <allow pkg="net.minecraftforge"/>
       <allow pkg="org.apache.logging.log4j"/>
+      <allow pkg="org.lwjgl"/>
     </subpackage>
   </subpackage>
 </import-control>
