@@ -42,9 +42,11 @@ import java.util.UUID;
 
 public class ForgePlayer extends AbstractPlayerActor {
 
-    private EntityPlayerMP player;
+    private final ForgePlatform platform;
+    private final EntityPlayerMP player;
 
-    protected ForgePlayer(EntityPlayerMP player) {
+    protected ForgePlayer(ForgePlatform platform, EntityPlayerMP player) {
+        this.platform = platform;
         this.player = player;
         ThreadSafeCache.getInstance().getOnlineIds().add(getUniqueId());
     }
@@ -161,7 +163,7 @@ public class ForgePlayer extends AbstractPlayerActor {
 
     @Override
     public boolean hasPermission(String perm) {
-        return ForgeUtil.hasPermission(this.player, perm);
+        return ForgeUtil.hasPermission(platform, this.player, perm);
     }
 
     @Nullable

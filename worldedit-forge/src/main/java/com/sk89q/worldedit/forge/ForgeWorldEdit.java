@@ -28,7 +28,6 @@ import com.sk89q.worldedit.WorldVector;
 import com.sk89q.worldedit.event.platform.PlatformReadyEvent;
 import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.internal.LocalWorldAdapter;
-
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
@@ -46,14 +45,14 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.CommandEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.Logger;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static net.minecraftforge.event.entity.player.PlayerInteractEvent.Action;
@@ -80,9 +79,6 @@ public class ForgeWorldEdit {
         // Setup working directory
         workingDir = new File(event.getModConfigurationDirectory() + File.separator + "worldedit");
         workingDir.mkdir();
-
-        // Create default configuration
-        createDefaultConfiguration(event.getSourceFile(), "worldedit.properties");
 
         config = new ForgeConfiguration(this);
         config.load();
@@ -206,7 +202,7 @@ public class ForgeWorldEdit {
      */
     public ForgePlayer wrap(EntityPlayerMP player) {
         checkNotNull(player);
-        return new ForgePlayer(player);
+        return new ForgePlayer(platform, player);
     }
 
     /**
@@ -247,39 +243,6 @@ public class ForgeWorldEdit {
      */
     public File getWorkingDir() {
         return this.workingDir;
-    }
-
-    /**
-     * Create the default configuration.
-     *
-     * @param jar the jar
-     * @param name the name
-     */
-    private void createDefaultConfiguration(File jar, String name) {
-        checkNotNull(jar);
-        checkNotNull(name);
-
-        String path = "/defaults/" + name;
-        File targetFile = new File(getWorkingDir(), name);
-        Closer closer = Closer.create();
-
-        try {
-            @Nullable InputStream inputStream = getClass().getResourceAsStream(path);
-            if (inputStream == null) {
-                throw new IOException("Failed to get resource '" + path + "' from .class");
-            }
-            closer.register(inputStream);
-            FileOutputStream outputStream = new FileOutputStream(targetFile);
-            ByteStreams.copy(inputStream, outputStream);
-            logger.info("Default configuration file written: " + name);
-        } catch (IOException e) {
-            logger.log(Level.WARN, "Failed to extract defaults", e);
-        } finally {
-            try {
-                closer.close();
-            } catch (IOException ignored) {
-            }
-        }
     }
 
     /**

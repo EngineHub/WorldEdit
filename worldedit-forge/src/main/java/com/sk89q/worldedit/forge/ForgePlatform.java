@@ -19,7 +19,6 @@
 
 package com.sk89q.worldedit.forge;
 
-import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.AbstractPlatform;
 import com.sk89q.worldedit.extension.platform.Actor;
@@ -126,7 +125,7 @@ class ForgePlatform extends AbstractPlatform implements MultiUserPlatform {
             return player;
         } else {
             EntityPlayerMP entity = server.getConfigurationManager().func_152612_a(player.getName());
-            return entity != null ? new ForgePlayer(entity) : null;
+            return entity != null ? new ForgePlayer(this, entity) : null;
         }
     }
 
@@ -173,6 +172,16 @@ class ForgePlatform extends AbstractPlatform implements MultiUserPlatform {
                 }
 
                 @Override
+                public int getRequiredPermissionLevel() {
+                    return 0;
+                }
+
+                @Override
+                public boolean canCommandSenderUseCommand(ICommandSender sender) {
+                    return true;
+                }
+
+                @Override
                 public int compareTo(@Nullable Object o) {
                     if (o == null) {
                         return 0;
@@ -193,7 +202,7 @@ class ForgePlatform extends AbstractPlatform implements MultiUserPlatform {
     }
 
     @Override
-    public LocalConfiguration getConfiguration() {
+    public ForgeConfiguration getConfiguration() {
         return mod.getConfig();
     }
 
@@ -231,7 +240,7 @@ class ForgePlatform extends AbstractPlatform implements MultiUserPlatform {
         for (String name : scm.getAllUsernames()) {
             EntityPlayerMP entity = scm.func_152612_a(name);
             if (entity != null) {
-                users.add(new ForgePlayer(entity));
+                users.add(new ForgePlayer(this, entity));
             }
         }
         return users;

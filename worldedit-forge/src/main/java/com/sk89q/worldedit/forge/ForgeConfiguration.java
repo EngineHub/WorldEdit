@@ -25,8 +25,17 @@ import java.io.File;
 
 public class ForgeConfiguration extends PropertiesConfiguration {
 
+    public boolean creativeEnable = false;
+    public boolean cheatMode = false;
+
     public ForgeConfiguration(ForgeWorldEdit mod) {
         super(new File(mod.getWorkingDir() + File.separator + "worldedit.properties"));
+    }
+
+    @Override
+    protected void loadExtra() {
+        creativeEnable = getBool("use-in-creative", false);
+        cheatMode = getBool("cheat-mode", false);
     }
 
     @Override

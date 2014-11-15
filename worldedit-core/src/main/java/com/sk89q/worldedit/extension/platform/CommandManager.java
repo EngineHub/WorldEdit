@@ -224,7 +224,7 @@ public final class CommandManager {
         try {
             dispatcher.call(Joiner.on(" ").join(split), locals, new String[0]);
         } catch (CommandPermissionsException e) {
-            actor.printError("You don't have permission to do this.");
+            actor.printError("You are not permitted to do that. Are you in the right mode?");
         } catch (InvalidUsageException e) {
             if (e.isFullHelpSuggested()) {
                 actor.printRaw(ColorCodeBuilder.asColorCodes(new CommandUsageBox(e.getCommand(), e.getCommandUsed("/", ""), locals)));

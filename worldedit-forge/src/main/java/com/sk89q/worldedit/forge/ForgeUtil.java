@@ -24,6 +24,7 @@ import cpw.mods.fml.common.FMLCommonHandler;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.world.WorldSettings.GameType;
 
 import java.util.Map;
 
@@ -32,9 +33,12 @@ public final class ForgeUtil {
     private ForgeUtil() {
     }
 
-    public static boolean hasPermission(EntityPlayerMP player, String perm) {
+    public static boolean hasPermission(ForgePlatform platform, EntityPlayerMP player, String perm) {
         // TODO fix WEPIF
-        return FMLCommonHandler.instance().getMinecraftServerInstance().getConfigurationManager().func_152596_g(player.getGameProfile());
+        ForgeConfiguration configuration = platform.getConfiguration();
+        return configuration.cheatMode ||
+                FMLCommonHandler.instance().getMinecraftServerInstance().getConfigurationManager().func_152596_g(player.getGameProfile()) ||
+                (configuration.creativeEnable && player.theItemInWorldManager.getGameType() == GameType.CREATIVE);
     }
 
     public static ItemStack toForgeItemStack(BaseItemStack item) {

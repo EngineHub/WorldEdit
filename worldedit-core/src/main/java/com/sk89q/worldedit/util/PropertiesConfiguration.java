@@ -79,6 +79,8 @@ public class PropertiesConfiguration extends LocalConfiguration {
             }
         }
 
+        loadExtra();
+
         profile = getBool("profile", profile);
         disallowedBlocks = getIntSet("disallowed-blocks", defaultDisallowedBlocks);
         defaultChangeLimit = getInt("default-max-changed-blocks", defaultChangeLimit);
@@ -135,6 +137,12 @@ public class PropertiesConfiguration extends LocalConfiguration {
                 }
             }
         }
+    }
+
+    /**
+     * Called to load extra configuration.
+     */
+    protected void loadExtra() {
     }
 
     /**
