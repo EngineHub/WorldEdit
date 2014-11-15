@@ -20,8 +20,6 @@
 package com.sk89q.worldedit.forge;
 
 import com.google.common.base.Joiner;
-import com.google.common.io.ByteStreams;
-import com.google.common.io.Closer;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldVector;
@@ -32,6 +30,7 @@ import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.Mod.Instance;
+import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
@@ -45,14 +44,9 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.CommandEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
 
-import javax.annotation.Nullable;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static net.minecraftforge.event.entity.player.PlayerInteractEvent.Action;
@@ -60,14 +54,18 @@ import static net.minecraftforge.event.entity.player.PlayerInteractEvent.Action;
 /**
  * The Forge implementation of WorldEdit.
  */
-@Mod(modid = "WorldEdit", name = "WorldEdit", version = "%VERSION%", acceptableRemoteVersions = "*")
+@Mod(modid = ForgeWorldEdit.MOD_ID, name = "WorldEdit", version = "%VERSION%", acceptableRemoteVersions = "*")
 public class ForgeWorldEdit {
 
     public static Logger logger;
+    public static final String MOD_ID = "worldedit";
     public static final String CUI_PLUGIN_CHANNEL = "WECUI";
 
-    @Instance("WorldEdit")
+    @Instance(MOD_ID)
     public static ForgeWorldEdit inst;
+
+    @SidedProxy(serverSide = "com.sk89q.worldedit.forge.CommonProxy", clientSide = "com.sk89q.worldedit.forge.ClientProxy")
+    public static CommonProxy proxy;
 
     private ForgePlatform platform;
     private ForgeConfiguration config;
@@ -89,6 +87,7 @@ public class ForgeWorldEdit {
     @EventHandler
     public void init(FMLInitializationEvent event) {
         MinecraftForge.EVENT_BUS.register(this);
+        proxy.registerHandlers();
     }
 
     @EventHandler
