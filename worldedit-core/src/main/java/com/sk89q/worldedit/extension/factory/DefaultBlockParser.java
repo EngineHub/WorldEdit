@@ -56,12 +56,24 @@ class DefaultBlockParser extends InputParser<BaseBlock> {
 
     @Override
     public BaseBlock parseFromInput(String input, ParserContext context) throws InputParseException {
+        // TODO: Rewrite this entire method to use BaseBlocks and ignore BlockType, as well as to properly handle mod:name IDs
+
         BlockType blockType;
         input = input.replace("_", " ");
         input = input.replace(";", "|");
         String[] blockAndExtraData = input.split("\\|");
-        String[] typeAndData = blockAndExtraData[0].split(":", 2);
-        String testID = typeAndData[0];
+        String[] blockLocator = blockAndExtraData[0].split(":", 3);
+        String[] typeAndData;
+        switch (blockLocator.length) {
+            case 3:
+                typeAndData = new String[] {
+                        blockLocator[0] + ":" + blockLocator[1],
+                        blockLocator[2] };
+                break;
+            default:
+                typeAndData = blockLocator;
+        }
+        String testId = typeAndData[0];
 
         int blockId = -1;
 
@@ -69,7 +81,7 @@ class DefaultBlockParser extends InputParser<BaseBlock> {
 
         boolean parseDataValue = true;
 
-        if ("hand".equalsIgnoreCase(testID)) {
+        if ("hand".equalsIgnoreCase(testId)) {
             // Get the block type from the item in the user's hand.
             final BaseBlock blockInHand = getBlockInHand(context.requireActor());
             if (blockInHand.getClass() != BaseBlock.class) {
@@ -79,7 +91,7 @@ class DefaultBlockParser extends InputParser<BaseBlock> {
             blockId = blockInHand.getId();
             blockType = BlockType.fromID(blockId);
             data = blockInHand.getData();
-        } else if ("pos1".equalsIgnoreCase(testID)) {
+        } else if ("pos1".equalsIgnoreCase(testId)) {
             // Get the block type from the "primary position"
             final World world = context.requireWorld();
             final BlockVector primaryPosition;
@@ -100,24 +112,32 @@ class DefaultBlockParser extends InputParser<BaseBlock> {
             // Attempt to parse the item ID or otherwise resolve an item/block
             // name to its numeric ID
             try {
-                blockId = Integer.parseInt(testID);
+                blockId = Integer.parseInt(testId);
                 blockType = BlockType.fromID(blockId);
             } catch (NumberFormatException e) {
-                blockType = BlockType.lookup(testID);
+                blockType = BlockType.lookup(testId);
                 if (blockType == null) {
-                    int t = worldEdit.getServer().resolveItem(testID);
+                    int t = worldEdit.getServer().resolveItem(testId);
                     if (t > 0) {
                         blockType = BlockType.fromID(t); // Could be null
                         blockId = t;
+                    } else if (blockLocator.length == 2) { // Block IDs in MC 1.7 and above use mod:name
+                        t = worldEdit.getServer().resolveItem(blockAndExtraData[0]);
+                        if (t > 0) {
+                            blockType = BlockType.fromID(t); // Could be null
+                            blockId = t;
+                            typeAndData = new String[] { blockAndExtraData[0] };
+                            testId = blockAndExtraData[0];
+                        }
                     }
                 }
             }
 
             if (blockId == -1 && blockType == null) {
                 // Maybe it's a cloth
-                ClothColor col = ClothColor.lookup(testID);
+                ClothColor col = ClothColor.lookup(testId);
                 if (col == null) {
-                    throw new NoMatchException("Unknown wool color '" + input + "'");
+                    throw new NoMatchException("Can't figure out what block '" + input + "' refers to");
                 }
 
                 blockType = BlockType.CLOTH;

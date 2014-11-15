@@ -31,6 +31,7 @@ import com.sk89q.worldedit.util.command.Description;
 import com.sk89q.worldedit.util.command.Dispatcher;
 import com.sk89q.worldedit.world.World;
 import cpw.mods.fml.common.FMLCommonHandler;
+import net.minecraft.block.Block;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
@@ -69,6 +70,16 @@ class ForgePlatform extends AbstractPlatform implements MultiUserPlatform {
     @Override
     public int resolveItem(String name) {
         if (name == null) return 0;
+
+        int index = name.indexOf(':');
+
+        if (index != -1 && index != 0 && index != name.length() - 1) {
+            Block block = Block.getBlockFromName(name);
+            if (block != null) {
+                return Block.getIdFromBlock(block);
+            }
+        }
+
         for (Object itemObj : Item.itemRegistry) {
             Item item = (Item) itemObj;
             if (item == null) continue;
