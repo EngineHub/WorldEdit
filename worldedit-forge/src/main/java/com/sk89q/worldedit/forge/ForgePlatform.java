@@ -151,47 +151,14 @@ class ForgePlatform extends AbstractPlatform implements MultiUserPlatform {
         ServerCommandManager mcMan = (ServerCommandManager) server.getCommandManager();
 
         for (final CommandMapping command : dispatcher.getCommands()) {
-            final Description description = command.getDescription();
-            mcMan.registerCommand(new CommandBase() {
-                @Override
-                public String getCommandName() {
-                    return command.getPrimaryAlias();
+            CommandWrapper wrapper = new CommandWrapper(command);
+            mcMan.registerCommand(wrapper);
+            ForgeWorldEdit.inst.getPermissionsProvider().registerPermission(wrapper, command.getDescription().getPermissions().get(0));
+            if (command.getDescription().getPermissions().size() > 1) {
+                for (int i = 1; i < command.getDescription().getPermissions().size(); i++) {
+                    ForgeWorldEdit.inst.getPermissionsProvider().registerPermission(null, command.getDescription().getPermissions().get(i));
                 }
-
-                @Override
-                public List<String> getCommandAliases() {
-                    return Arrays.asList(command.getAllAliases());
-                }
-
-                @Override
-                public void processCommand(ICommandSender var1, String[] var2) {}
-
-                @Override
-                public String getCommandUsage(ICommandSender icommandsender) {
-                    return "/" + command.getPrimaryAlias() + " " + description.getUsage();
-                }
-
-                @Override
-                public int getRequiredPermissionLevel() {
-                    return 0;
-                }
-
-                @Override
-                public boolean canCommandSenderUseCommand(ICommandSender sender) {
-                    return true;
-                }
-
-                @Override
-                public int compareTo(@Nullable Object o) {
-                    if (o == null) {
-                        return 0;
-                    } else if (o instanceof ICommand) {
-                        return super.compareTo((ICommand) o);
-                    } else {
-                        return 0;
-                    }
-                }
-            });
+            }
         }
     }
 

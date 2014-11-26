@@ -163,7 +163,7 @@ public class ForgePlayer extends AbstractPlayerActor {
 
     @Override
     public boolean hasPermission(String perm) {
-        return ForgeUtil.hasPermission(platform, this.player, perm);
+        return ForgeWorldEdit.inst.getPermissionsProvider().hasPermission(player, perm);
     }
 
     @Nullable
