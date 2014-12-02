@@ -1,3 +1,6 @@
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+
 dependencies {
     compile project(':worldedit-core')
     compile 'com.sk89q:dummypermscompat:1.7'
