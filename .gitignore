@@ -1,22 +1,20 @@
-/.classpath
-/.project
-/.settings
-/eclipse
-/.idea
+.classpath
+.project
+.settings
+eclipse
+.idea
 *.iml
 *.ipr
 *.iws
 
-/bin
-/build
-/target
-/gradle
+bin
+build
+target
+gradle
 .gradle
-/forge-download
-/out
-/*/build
-/run
-/worldedit-forge/run
+forge-download
+out
+run
 
 /dependency-reduced-pom.xml
 *-private.sh

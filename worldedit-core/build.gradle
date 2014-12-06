@@ -1,3 +1,6 @@
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+
 dependencies {
     compile 'de.schlichtherle:truezip:6.8.3'
     compile 'rhino:js:1.7R2'
