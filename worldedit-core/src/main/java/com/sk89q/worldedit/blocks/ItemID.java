@@ -183,6 +183,15 @@ public final class ItemID {
     public static final int LEAD = 420;
     public static final int NAME_TAG = 421;
     public static final int COMMAND_BLOCK_MINECART = 422;
+    public static final int MUTTON = 423;
+    public static final int COOKED_MUTTON = 424;
+    public static final int BANNER = 425;
+    // Nothing at 456
+    public static final int SPRUCE_DOOR = 427;
+    public static final int BIRCH_DOOR = 428;
+    public static final int JUNGLE_DOOR = 429;
+    public static final int ACACIA_DOOR = 430;
+    public static final int DARK_OAK_DOOR = 431;
 
     @Deprecated public static final int GOLD_RECORD = 2256; // deprecated, but leave it there
     @Deprecated public static final int GREEN_RECORD = 2257; // deprecated, but leave it there

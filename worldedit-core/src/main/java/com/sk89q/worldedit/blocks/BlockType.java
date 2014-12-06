@@ -203,12 +203,39 @@ public enum BlockType {
     LOG2(BlockID.LOG2, "Log", "log2", "acacia", "darkoak"),
     ACACIA_STAIRS(BlockID.ACACIA_STAIRS, "Acacia Wood Stairs", "acaciawoodstairs", "acaciastairs"),
     DARK_OAK_STAIRS(BlockID.DARK_OAK_STAIRS, "Dark Oak Wood Stairs", "darkoakwoodstairs", "darkoakstairs"),
+    SLIME(BlockID.SLIME, "SLime", "slimeblock"),
+    BARRIER(BlockID.BARRIER, "Barrier", "barrier", "wall", "worldborder", "edge"),
+    IRON_TRAP_DOOR(BlockID.IRON_TRAP_DOOR, "Iron Trap Door", "irontrapdoor"),
+    PRISMARINE(BlockID.PRISMARINE, "Prismarine", "prismarine"),
+    SEA_LANTERN(BlockID.SEA_LANTERN, "Sea Lantern", "sealantern"),
     HAY_BLOCK(BlockID.HAY_BLOCK, "Hay Block", "hayblock", "haybale", "wheatbale"),
     CARPET(BlockID.CARPET, "Carpet", "carpet"),
     HARDENED_CLAY(BlockID.HARDENED_CLAY, "Hardened Clay", "hardenedclay", "hardclay"),
     COAL_BLOCK(BlockID.COAL_BLOCK, "Block of Coal", "coalblock", "blockofcoal"),
     PACKED_ICE(BlockID.PACKED_ICE, "Packed Ice", "packedice", "hardice"),
-    DOUBLE_PLANT(BlockID.DOUBLE_PLANT, "Large Flowers", "largeflowers", "doubleflowers");
+    DOUBLE_PLANT(BlockID.DOUBLE_PLANT, "Large Flowers", "largeflowers", "doubleflowers"),
+    STANDING_BANNER(BlockID.STANDING_BANNER, "Standing Banner", "standingbannear", "banner"),
+    WALL_BANNER(BlockID.WALL_BANNER, "Wall Banner", "wallbanner"),
+    DAYLIGHT_SENSOR_INVERTED(BlockID.DAYLIGHT_SENSOR_INVERTED, "Inverted Daylight Sensor", "inverteddaylight", "inverteddaylightsensor"),
+    RED_SANDSTONE(BlockID.RED_SANDSTONE, "Red Sandstone", "redsandstone"),
+    RED_SANDSTONE_STAIRS(BlockID.RED_SANDSTONE_STAIRS, "Red Sandstone Stairs", "redsandstonestairs"),
+    DOUBLE_STEP2(BlockID.DOUBLE_STEP2, "Double Step 2", "doublestep2", "doubleslab2", "doublestoneslab2", "doublestonestep2"),
+    STEP2(BlockID.STEP2, "Step 2", "step2", "slab2", "stonestep2", "stoneslab2"),
+    SPRUCE_FENCE_GATE(BlockID.SPRUCE_FENCE_GATE, "Spruce Fence Gate", "spurcefencegate"),
+    BIRCH_FENCE_GATE(BlockID.BIRCH_FENCE_GATE, "Birch Fence Gate", "birchfencegate"),
+    JUNGLE_FENCE_GATE(BlockID.JUNGLE_FENCE_GATE, "Jungle Fence Gate", "junglefencegate"),
+    DARK_OAK_FENCE_GATE(BlockID.DARK_OAK_FENCE_GATE, "Dark Oak Fence Gate", "darkoakfencegate"),
+    ACACIA_FENCE_GATE(BlockID.ACACIA_FENCE_GATE, "Acacia Fence Gate", "acaciafencegate"),
+    SPRUCE_FENCE(BlockID.SPRUCE_FENCE, "Spruce Fence", "sprucefence"),
+    BIRCH_FENCE(BlockID.BIRCH_FENCE, "Birch Fence", "birchfence"),
+    JUNGLE_FENCE(BlockID.JUNGLE_FENCE, "Jungle Fence", "junglefence"),
+    DARK_OAK_FENCE(BlockID.DARK_OAK_FENCE, "Dark Oak Fence", "darkoakfence"),
+    ACACIA_FENCE(BlockID.ACACIA_FENCE, "Acacia Fence", "acaciafence"),
+    SPRUCE_DOOR(BlockID.SPRUCE_DOOR, "Spruce Door", "sprucedoor"),
+    BIRCH_DOOR(BlockID.BIRCH_DOOR, "Birch Door", "birchdoor"),
+    JUNGLE_DOOR(BlockID.JUNGLE_DOOR, "Jungle Door", "jungledoor"),
+    ACACIA_DOOR(BlockID.ACACIA_DOOR, "Acacia Door", "acaciadoor"),
+    DARK_OAK_DOOR(BlockID.DARK_OAK_DOOR, "Dark Oak Door", "darkoakdoor");
 
     /**
      * Stores a map of the IDs for fast access.
@@ -338,6 +365,12 @@ public enum BlockType {
         itemBlockMapping.put(ItemID.CARROT, new BaseBlock(BlockID.CARROTS, -1));
         itemBlockMapping.put(ItemID.POTATO, new BaseBlock(BlockID.POTATOES, -1));
         itemBlockMapping.put(ItemID.COMPARATOR, new BaseBlock(BlockID.COMPARATOR_OFF, -1));
+        itemBlockMapping.put(ItemID.BANNER, new BaseBlock(BlockID.STANDING_BANNER, -1));
+        itemBlockMapping.put(ItemID.SPRUCE_DOOR, new BaseBlock(BlockID.SPRUCE_DOOR, -1));
+        itemBlockMapping.put(ItemID.BIRCH_DOOR, new BaseBlock(BlockID.BIRCH_DOOR, -1));
+        itemBlockMapping.put(ItemID.JUNGLE_DOOR, new BaseBlock(BlockID.JUNGLE_DOOR, -1));
+        itemBlockMapping.put(ItemID.ACACIA_DOOR, new BaseBlock(BlockID.ACACIA_DOOR, -1));
+        itemBlockMapping.put(ItemID.DARK_OAK_DOOR, new BaseBlock(BlockID.DARK_OAK_DOOR, -1));
     }
 
     /**
@@ -430,8 +463,10 @@ public enum BlockType {
         shouldPlaceLast.add(BlockID.COMPARATOR_OFF);
         shouldPlaceLast.add(BlockID.COMPARATOR_ON);
         shouldPlaceLast.add(BlockID.ACTIVATOR_RAIL);
+        shouldPlaceLast.add(BlockID.IRON_TRAP_DOOR);
         shouldPlaceLast.add(BlockID.CARPET);
         shouldPlaceLast.add(BlockID.DOUBLE_PLANT);
+        shouldPlaceLast.add(BlockID.DAYLIGHT_SENSOR_INVERTED);
     }
 
     /**
@@ -469,6 +504,8 @@ public enum BlockType {
         shouldPlaceFinal.add(BlockID.CAKE_BLOCK);
         shouldPlaceFinal.add(BlockID.PISTON_EXTENSION);
         shouldPlaceFinal.add(BlockID.PISTON_MOVING_PIECE);
+        shouldPlaceFinal.add(BlockID.STANDING_BANNER);
+        shouldPlaceFinal.add(BlockID.WALL_BANNER);
     }
 
     /**
@@ -536,8 +573,11 @@ public enum BlockType {
         canPassThrough.add(BlockID.COMPARATOR_OFF);
         canPassThrough.add(BlockID.COMPARATOR_ON);
         canPassThrough.add(BlockID.ACTIVATOR_RAIL);
+        canPassThrough.add(BlockID.IRON_TRAP_DOOR);
         canPassThrough.add(BlockID.CARPET);
         canPassThrough.add(BlockID.DOUBLE_PLANT);
+        canPassThrough.add(BlockID.STANDING_BANNER);
+        canPassThrough.add(BlockID.WALL_BANNER);
     }
 
 
@@ -611,6 +651,7 @@ public enum BlockType {
         for (int data = 0; data < 8; ++data) {
             centralTopLimit.put(-16*BlockID.STEP-data, 0.5);
             centralTopLimit.put(-16*BlockID.WOODEN_STEP-data, 0.5);
+            centralTopLimit.put(-16*BlockID.STEP2-data, 0.5);
             centralTopLimit.put(-16*BlockID.SNOW-data, 0.125*data);
             centralTopLimit.put(-16*BlockID.SNOW-(data+8), 0.125*data);
         }
@@ -699,6 +740,7 @@ public enum BlockType {
         usesData.add(BlockID.LOG2);
         usesData.add(BlockID.LEAVES);
         usesData.add(BlockID.LEAVES2);
+        usesData.add(BlockID.SPONGE);
         usesData.add(BlockID.DISPENSER);
         usesData.add(BlockID.SANDSTONE);
         usesData.add(BlockID.BED);
@@ -788,9 +830,22 @@ public enum BlockType {
         usesData.add(BlockID.STAINED_CLAY);
         usesData.add(BlockID.STAINED_GLASS);
         usesData.add(BlockID.STAINED_GLASS_PANE);
+        usesData.add(BlockID.IRON_TRAP_DOOR);
+        usesData.add(BlockID.PRISMARINE);
         usesData.add(BlockID.HAY_BLOCK);
         usesData.add(BlockID.CARPET);
         usesData.add(BlockID.DOUBLE_PLANT);
+        usesData.add(BlockID.STANDING_BANNER);
+        usesData.add(BlockID.WALL_BANNER);
+        usesData.add(BlockID.RED_SANDSTONE);
+        usesData.add(BlockID.RED_SANDSTONE_STAIRS);
+        usesData.add(BlockID.DOUBLE_STEP2);
+        usesData.add(BlockID.STEP2);
+        usesData.add(BlockID.SPRUCE_DOOR);
+        usesData.add(BlockID.BIRCH_DOOR);
+        usesData.add(BlockID.JUNGLE_DOOR);
+        usesData.add(BlockID.ACACIA_DOOR);
+        usesData.add(BlockID.DARK_OAK_DOOR);
     }
 
     /**
@@ -883,6 +938,7 @@ public enum BlockType {
         isRedstoneBlock.add(BlockID.HOPPER);
         isRedstoneBlock.add(BlockID.ACTIVATOR_RAIL);
         isRedstoneBlock.add(BlockID.DROPPER);
+        isRedstoneBlock.add(BlockID.DAYLIGHT_SENSOR_INVERTED);
     }
 
     /**
@@ -959,6 +1015,7 @@ public enum BlockType {
         isRedstoneSource.add(BlockID.PRESSURE_PLATE_HEAVY);
         isRedstoneSource.add(BlockID.DAYLIGHT_SENSOR);
         isRedstoneSource.add(BlockID.REDSTONE_BLOCK);
+        isRedstoneSource.add(BlockID.DAYLIGHT_SENSOR_INVERTED);
     }
 
     /**
@@ -1111,6 +1168,7 @@ public enum BlockType {
         emitsLight.add(BlockID.ENDER_CHEST);
         emitsLight.add(BlockID.BEACON);
         emitsLight.add(BlockID.REDSTONE_BLOCK);
+        emitsLight.add(BlockID.SEA_LANTERN);
     }
 
     /**
@@ -1218,9 +1276,31 @@ public enum BlockType {
         isTranslucent.add(BlockID.HOPPER);
         isTranslucent.add(BlockID.QUARTZ_STAIRS);
         isTranslucent.add(BlockID.ACTIVATOR_RAIL);
+        isTranslucent.add(BlockID.BARRIER);
+        isTranslucent.add(BlockID.IRON_TRAP_DOOR);
         isTranslucent.add(BlockID.CARPET);
         isTranslucent.add(BlockID.STAINED_GLASS_PANE);
         isTranslucent.add(BlockID.DOUBLE_PLANT);
+        isTranslucent.add(BlockID.STANDING_BANNER);
+        isTranslucent.add(BlockID.WALL_BANNER);
+        isTranslucent.add(BlockID.DAYLIGHT_SENSOR_INVERTED);
+        isTranslucent.add(BlockID.RED_SANDSTONE_STAIRS);
+        isTranslucent.add(BlockID.STEP2);
+        isTranslucent.add(BlockID.SPRUCE_FENCE_GATE);
+        isTranslucent.add(BlockID.BIRCH_FENCE_GATE);
+        isTranslucent.add(BlockID.JUNGLE_FENCE_GATE);
+        isTranslucent.add(BlockID.DARK_OAK_FENCE_GATE);
+        isTranslucent.add(BlockID.ACACIA_FENCE_GATE);
+        isTranslucent.add(BlockID.SPRUCE_FENCE);
+        isTranslucent.add(BlockID.BIRCH_FENCE);
+        isTranslucent.add(BlockID.JUNGLE_FENCE);
+        isTranslucent.add(BlockID.DARK_OAK_FENCE);
+        isTranslucent.add(BlockID.ACACIA_FENCE);
+        isTranslucent.add(BlockID.SPRUCE_DOOR);
+        isTranslucent.add(BlockID.BIRCH_DOOR);
+        isTranslucent.add(BlockID.JUNGLE_DOOR);
+        isTranslucent.add(BlockID.ACACIA_DOOR);
+        isTranslucent.add(BlockID.DARK_OAK_DOOR);
     }
 
     /**
@@ -1769,6 +1849,7 @@ public enum BlockType {
         nonDataAttachments.put(BlockID.REDSTONE_REPEATER_ON, PlayerDirection.DOWN);
         for (int offset = 0; offset < 16; offset += 4) {
             addCardinals(BlockID.TRAP_DOOR, offset + 0, offset + 3, offset + 1, offset + 2);
+            addCardinals(BlockID.IRON_TRAP_DOOR, offset + 0, offset + 3, offset + 1, offset + 2);
         }
         nonDataAttachments.put(BlockID.PUMPKIN_STEM, PlayerDirection.DOWN);
         nonDataAttachments.put(BlockID.MELON_STEM, PlayerDirection.DOWN);
@@ -1793,6 +1874,13 @@ public enum BlockType {
         nonDataAttachments.put(BlockID.COMPARATOR_ON, PlayerDirection.DOWN);
         nonDataAttachments.put(BlockID.CARPET, PlayerDirection.DOWN);
         nonDataAttachments.put(BlockID.DOUBLE_PLANT, PlayerDirection.DOWN);
+        nonDataAttachments.put(BlockID.STANDING_BANNER, PlayerDirection.DOWN);
+        addCardinals(BlockID.WALL_BANNER, 4, 2, 5, 3);
+        nonDataAttachments.put(BlockID.SPRUCE_DOOR, PlayerDirection.DOWN);
+        nonDataAttachments.put(BlockID.BIRCH_DOOR, PlayerDirection.DOWN);
+        nonDataAttachments.put(BlockID.JUNGLE_DOOR, PlayerDirection.DOWN);
+        nonDataAttachments.put(BlockID.ACACIA_DOOR, PlayerDirection.DOWN);
+        nonDataAttachments.put(BlockID.DARK_OAK_DOOR, PlayerDirection.DOWN);
 
         // Rails are hardcoded to be attached to the block below them.
         // In addition to that, let's attach ascending rails to the block they're ascending towards.
