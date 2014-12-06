@@ -1,5 +1,11 @@
-5.6.3
+6.0-beta-2
+- Added support for users of Spigot 1.8.
+- Fixed the missing configuration file.
 
+6.0-beta-1
+- Many major changes!
+
+5.6.3
 Note: We are working on WorldEdit 6.x so 5.x are maintenance releases and will
 mostly contain bug fixes and minor changes.
 
