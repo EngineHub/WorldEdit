@@ -1,7 +1,10 @@
-6.0-beta-2
+6.0.1
+- (Forge only) Add a permissions API (temporary) for interoperability.
+
+6.0.0
 - Update internal block lists for MC 1.8.
-- Added support for users of Spigot 1.8.
-- Fixed the missing configuration file.
+- (Bukkit only) Added support for users of Spigot 1.8.
+- (Bukkit only) Fixed the missing configuration file.
 
 6.0-beta-1
 - Many major changes!
