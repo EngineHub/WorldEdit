@@ -208,7 +208,7 @@ public class ForgeWorld extends AbstractWorld {
             return;
         }
 
-        EntityItem entity = new EntityItem(getWorld(), position.getX(), position.getY(), position.getZ(), ForgeUtil.toForgeItemStack(item));
+        EntityItem entity = new EntityItem(getWorld(), position.getX(), position.getY(), position.getZ(), ForgeWorldEdit.toForgeItemStack(item));
         entity.delayBeforeCanPickup = 10;
         getWorld().spawnEntityInWorld(entity);
     }

@@ -23,6 +23,7 @@ import com.google.common.base.Joiner;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldVector;
+import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.event.platform.PlatformReadyEvent;
 import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.internal.LocalWorldAdapter;
@@ -40,6 +41,8 @@ import cpw.mods.fml.common.event.FMLServerStoppingEvent;
 import cpw.mods.fml.common.eventhandler.Event.Result;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.CommandEvent;
@@ -47,6 +50,7 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
+import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static net.minecraftforge.event.entity.player.PlayerInteractEvent.Action;
@@ -60,6 +64,8 @@ public class ForgeWorldEdit {
     public static Logger logger;
     public static final String MOD_ID = "worldedit";
     public static final String CUI_PLUGIN_CHANNEL = "WECUI";
+
+    private ForgePermissionsProvider provider;
 
     @Instance(MOD_ID)
     public static ForgeWorldEdit inst;
@@ -107,6 +113,7 @@ public class ForgeWorldEdit {
         this.platform = new ForgePlatform(this);
 
         WorldEdit.getInstance().getPlatformManager().register(platform);
+        this.provider = new ForgePermissionsProvider.VanillaPermissionsProvider(platform);
     }
 
     @EventHandler
@@ -184,6 +191,15 @@ public class ForgeWorldEdit {
         }
     }
 
+    public static ItemStack toForgeItemStack(BaseItemStack item) {
+        ItemStack ret = new ItemStack(Item.getItemById(item.getType()), item.getAmount(), item.getData());
+        for (Map.Entry<Integer, Integer> entry : item.getEnchantments().entrySet()) {
+            ret.addEnchantment(net.minecraft.enchantment.Enchantment.enchantmentsList[((Integer) entry.getKey())], (Integer) entry.getValue());
+        }
+
+        return ret;
+    }
+
     /**
      * Get the configuration.
      *
@@ -251,6 +267,14 @@ public class ForgeWorldEdit {
      */
     String getInternalVersion() {
         return ForgeWorldEdit.class.getAnnotation(Mod.class).version();
+    }
+
+    public void setPermissionsProvider(ForgePermissionsProvider provider) {
+        this.provider = provider;
+    }
+
+    public ForgePermissionsProvider getPermissionsProvider() {
+        return provider;
     }
 
 }
