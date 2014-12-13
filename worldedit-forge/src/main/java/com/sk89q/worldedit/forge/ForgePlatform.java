@@ -153,8 +153,8 @@ class ForgePlatform extends AbstractPlatform implements MultiUserPlatform {
         for (final CommandMapping command : dispatcher.getCommands()) {
             CommandWrapper wrapper = new CommandWrapper(command);
             mcMan.registerCommand(wrapper);
-            ForgeWorldEdit.inst.getPermissionsProvider().registerPermission(wrapper, command.getDescription().getPermissions().get(0));
-            if (command.getDescription().getPermissions().size() > 1) {
+            if (command.getDescription().getPermissions().size() > 0) {
+                ForgeWorldEdit.inst.getPermissionsProvider().registerPermission(wrapper, command.getDescription().getPermissions().get(0));
                 for (int i = 1; i < command.getDescription().getPermissions().size(); i++) {
                     ForgeWorldEdit.inst.getPermissionsProvider().registerPermission(null, command.getDescription().getPermissions().get(i));
                 }
@@ -194,7 +194,7 @@ class ForgePlatform extends AbstractPlatform implements MultiUserPlatform {
         capabilities.put(Capability.CONFIGURATION, Preference.PREFER_OTHERS);
         capabilities.put(Capability.WORLDEDIT_CUI, Preference.NORMAL);
         capabilities.put(Capability.GAME_HOOKS, Preference.NORMAL);
-        capabilities.put(Capability.PERMISSIONS, Preference.PREFER_OTHERS);
+        capabilities.put(Capability.PERMISSIONS, Preference.NORMAL);
         capabilities.put(Capability.USER_COMMANDS, Preference.NORMAL);
         capabilities.put(Capability.WORLD_EDITING, Preference.PREFERRED);
         return capabilities;
