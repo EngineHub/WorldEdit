@@ -57,7 +57,7 @@ public class PermissionsExResolver extends DinnerPermsResolver {
     public boolean hasPermission(OfflinePlayer player, String permission) {
         Permissible permissible = getPermissible(player);
         if (permissible == null) {
-            return manager.has(player.getName(), permission, null);
+            return manager.has(player.getUniqueId(), permission, null);
         } else {
             return permissible.hasPermission(permission);
         }
@@ -65,18 +65,18 @@ public class PermissionsExResolver extends DinnerPermsResolver {
 
     @Override
     public boolean hasPermission(String worldName, OfflinePlayer player, String permission) {
-        return hasPermission(worldName, player.getName(), permission);
+        return manager.has(player.getUniqueId(), permission, worldName);
     }
 
     @Override
     public boolean inGroup(OfflinePlayer player, String group) {
-        return super.inGroup(player, group) || manager.getUser(player.getName()).inGroup(group);
+        return super.inGroup(player, group) || manager.getUser(player.getUniqueId()).inGroup(group);
     }
 
     @Override
     public String[] getGroups(OfflinePlayer player) {
         if (getPermissible(player) == null) {
-            PermissionUser user = manager.getUser(player.getName());
+            PermissionUser user = manager.getUser(player.getUniqueId());
             if (user == null) {
                 return new String[0];
             }
