@@ -178,7 +178,7 @@ public class EditSession implements Extent {
         if (world != null) {
             Extent extent;
 
-            // This extents are ALWAYS used
+            // These extents are ALWAYS used
             extent = fastModeExtent = new FastModeExtent(world, false);
             extent = survivalExtent = new SurvivalModeExtent(extent, world);
             extent = quirkExtent = new BlockQuirkExtent(extent, world);
