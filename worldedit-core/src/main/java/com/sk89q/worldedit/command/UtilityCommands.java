@@ -366,7 +366,7 @@ public class UtilityCommands {
     @Command(
         aliases = { "butcher" },
         usage = "[radius]",
-        flags = "plangbtf",
+        flags = "plangbtfw",
         desc = "Kill all or nearby mobs",
         help =
             "Kills nearby mobs, based on radius, if none is given uses default in configuration.\n" +
@@ -378,6 +378,7 @@ public class UtilityCommands {
             "  -b also kills ambient mobs.\n" +
             "  -t also kills mobs with name tags.\n" +
             "  -f compounds all previous flags.\n" +
+            "  -w will apply this command to all entities in the world.\n" +
             "  -l currently does nothing.",
         min = 0,
         max = 1
@@ -401,6 +402,11 @@ public class UtilityCommands {
                     radius = Math.min(radius, config.butcherMaxRadius);
                 }
             }
+        }
+        
+        // override radius from flag
+        if (args.hasFlag('w')) {
+            radius = -1;
         }
 
         CreatureButcher flags = new CreatureButcher(actor);
