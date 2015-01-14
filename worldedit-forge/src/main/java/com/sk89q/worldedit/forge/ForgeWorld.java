@@ -373,18 +373,10 @@ public class ForgeWorld extends AbstractWorld {
     public List<? extends Entity> getEntities(Region region) {
         List<Entity> entities = new ArrayList<Entity>();
         World world = getWorld();
-        for (Vector2D pt : region.getChunks()) {
-            if (!world.getChunkProvider().chunkExists(pt.getBlockX(), pt.getBlockZ())) {
-                continue;
-            }
-
-            Chunk chunk = world.getChunkProvider().provideChunk(pt.getBlockX(), pt.getBlockZ());
-            for (List<net.minecraft.entity.Entity> entitySubList : chunk.entityLists) {
-                for (net.minecraft.entity.Entity entity : entitySubList) {
-                    if (region.contains(new Vector(entity.posX, entity.posY, entity.posZ))) {
-                        entities.add(new ForgeEntity(entity));
-                    }
-                }
+        List<net.minecraft.entity.Entity> ents = world.loadedEntityList;
+        for (net.minecraft.entity.Entity entity : ents) {
+            if (region.contains(new Vector(entity.posX, entity.posY, entity.posZ))) {
+                entities.add(new ForgeEntity(entity));
             }
         }
         return entities;
