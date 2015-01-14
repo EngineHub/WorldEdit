@@ -87,17 +87,11 @@ public class BukkitWorld extends LocalWorld {
     public List<com.sk89q.worldedit.entity.Entity> getEntities(Region region) {
         World world = getWorld();
 
+        List<Entity> ents = world.getEntities();
         List<com.sk89q.worldedit.entity.Entity> entities = new ArrayList<com.sk89q.worldedit.entity.Entity>();
-        for (Vector2D pt : region.getChunks()) {
-            if (!world.isChunkLoaded(pt.getBlockX(), pt.getBlockZ())) {
-                continue;
-            }
-
-            final Entity[] ents = world.getChunkAt(pt.getBlockX(), pt.getBlockZ()).getEntities();
-            for (Entity ent : ents) {
-                if (region.contains(BukkitUtil.toVector(ent.getLocation()))) {
-                    entities.add(BukkitAdapter.adapt(ent));
-                }
+        for (Entity ent : ents) {
+            if (region.contains(BukkitUtil.toVector(ent.getLocation()))) {
+                entities.add(BukkitAdapter.adapt(ent));
             }
         }
         return entities;
