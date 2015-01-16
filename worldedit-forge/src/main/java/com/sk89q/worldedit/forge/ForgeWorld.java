@@ -39,7 +39,9 @@ import com.sk89q.worldedit.util.TreeGenerator.TreeType;
 import com.sk89q.worldedit.world.AbstractWorld;
 import com.sk89q.worldedit.world.biome.BaseBiome;
 import com.sk89q.worldedit.world.registry.WorldData;
+
 import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.inventory.IInventory;
@@ -47,6 +49,8 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.BlockPos;
+import net.minecraft.util.ClassInheritanceMultiMap;
 import net.minecraft.util.LongHashMap;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
@@ -69,6 +73,7 @@ import net.minecraft.world.gen.feature.WorldGenTrees;
 import net.minecraft.world.gen.feature.WorldGenerator;
 
 import javax.annotation.Nullable;
+
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -85,6 +90,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class ForgeWorld extends AbstractWorld {
 
+    private static final int UPDATE = 1, NOTIFY = 2, NOTIFY_CLIENT = 4;
     private static final Logger logger = Logger.getLogger(ForgeWorld.class.getCanonicalName());
     private static final Random random = new Random();
     private final WeakReference<World> worldRef;
@@ -154,33 +160,29 @@ public class ForgeWorld extends AbstractWorld {
 
         // First set the block
         Chunk chunk = world.getChunkFromChunkCoords(x >> 4, z >> 4);
-        int previousId = 0;
-
-        if (notifyAndLight) {
-            previousId = Block.getIdFromBlock(chunk.getBlock(x & 15, y, z & 15));
-        }
-
-        boolean successful = chunk.func_150807_a(x & 15, y, z & 15, Block.getBlockById(block.getId()), block.getData());
+        BlockPos pos = new BlockPos(x, y, z);
+        IBlockState old = chunk.getBlockState(pos);
+        IBlockState newState = Block.getBlockById(block.getId()).getStateFromMeta(block.getData());
+        IBlockState successState = chunk.setBlockState(pos, newState);
+        boolean successful = successState != null;
 
         // Create the TileEntity
         if (successful) {
-            CompoundTag tag = block.getNbtData();
-            if (tag != null) {
-                NBTTagCompound nativeTag = NBTConverter.toNative(tag);
+            if (block.hasNbtData()) {
+                // Kill the old TileEntity
+                world.removeTileEntity(pos);
+                NBTTagCompound nativeTag = NBTConverter.toNative(block.getNbtData());
                 nativeTag.setString("id", block.getNbtId());
-                TileEntityUtils.setTileEntity(getWorld(), position, nativeTag);
+                TileEntityUtils.setTileEntity(world, position, nativeTag);
             }
         }
 
         if (notifyAndLight) {
-            world.func_147451_t(x, y, z);
-            world.markBlockForUpdate(x, y, z);
-            world.notifyBlockChange(x, y, z, Block.getBlockById(previousId));
-
-            Block mcBlock = Block.getBlockById(previousId);
-            if (mcBlock != null && mcBlock.hasComparatorInputOverride()) {
-                world.func_147453_f(x, y, z, Block.getBlockById(block.getId()));
+            if (!successful) {
+                newState = old;
             }
+            world.checkLight(pos);
+            world.markAndNotifyBlock(pos, chunk, old, newState, UPDATE | NOTIFY);
         }
 
         return successful;
@@ -189,13 +191,13 @@ public class ForgeWorld extends AbstractWorld {
     @Override
     public int getBlockLightLevel(Vector position) {
         checkNotNull(position);
-        return getWorld().getBlockLightValue(position.getBlockX(), position.getBlockY(), position.getBlockZ());
+        return getWorld().getLight(new BlockPos(position.getBlockX(), position.getBlockY(), position.getBlockZ()));
     }
 
     @Override
     public boolean clearContainerBlockContents(Vector position) {
         checkNotNull(position);
-        TileEntity tile = getWorld().getTileEntity(position.getBlockX(), position.getBlockY(), position.getBlockZ());
+        TileEntity tile = getWorld().getTileEntity(new BlockPos(position.getBlockX(), position.getBlockY(), position.getBlockZ()));
         if ((tile instanceof IInventory)) {
             IInventory inv = (IInventory) tile;
             int size = inv.getSizeInventory();
@@ -210,7 +212,7 @@ public class ForgeWorld extends AbstractWorld {
     @Override
     public BaseBiome getBiome(Vector2D position) {
         checkNotNull(position);
-        return new BaseBiome(getWorld().getBiomeGenForCoords(position.getBlockX(), position.getBlockZ()).biomeID);
+        return new BaseBiome(getWorld().getBiomeGenForCoords(new BlockPos(position.getBlockX(), 0, position.getBlockZ())).biomeID);
     }
 
     @Override
@@ -218,8 +220,8 @@ public class ForgeWorld extends AbstractWorld {
         checkNotNull(position);
         checkNotNull(biome);
 
-        Chunk chunk = getWorld().getChunkFromBlockCoords(position.getBlockX(), position.getBlockZ());
-        if ((chunk != null) && (chunk.isChunkLoaded)) {
+        Chunk chunk = getWorld().getChunkFromBlockCoords(new BlockPos(position.getBlockX(), 0, position.getBlockZ()));
+        if ((chunk != null) && (chunk.isLoaded())) {
             chunk.getBiomeArray()[((position.getBlockZ() & 0xF) << 4 | position.getBlockX() & 0xF)] = (byte) biome.getId();
             return true;
         }
@@ -237,7 +239,7 @@ public class ForgeWorld extends AbstractWorld {
         }
 
         EntityItem entity = new EntityItem(getWorld(), position.getX(), position.getY(), position.getZ(), ForgeWorldEdit.toForgeItemStack(item));
-        entity.delayBeforeCanPickup = 10;
+        entity.setPickupDelay(10);
         getWorld().spawnEntityInWorld(entity);
     }
 
@@ -384,23 +386,23 @@ public class ForgeWorld extends AbstractWorld {
     @Override
     public BaseBlock getBlock(Vector position) {
         World world = getWorld();
-        int id = Block.getIdFromBlock(world.getBlock(position.getBlockX(), position.getBlockY(), position.getBlockZ()));
-        int data = world.getBlockMetadata(position.getBlockX(), position.getBlockY(), position.getBlockZ());
-        TileEntity tile = getWorld().getTileEntity(position.getBlockX(), position.getBlockY(), position.getBlockZ());
+        BlockPos pos = new BlockPos(position.getBlockX(), position.getBlockY(), position.getBlockZ());
+        IBlockState state = world.getBlockState(pos);
+        TileEntity tile = getWorld().getTileEntity(pos);
 
         if (tile != null) {
-            return new TileEntityBaseBlock(id, data, tile);
+            return new TileEntityBaseBlock(Block.getIdFromBlock(state.getBlock()), state.getBlock().getMetaFromState(state), tile);
         } else {
-            return new BaseBlock(id, data);
+            return new BaseBlock(Block.getIdFromBlock(state.getBlock()), state.getBlock().getMetaFromState(state));
         }
     }
 
     @Override
     public BaseBlock getLazyBlock(Vector position) {
         World world = getWorld();
-        int id = Block.getIdFromBlock(world.getBlock(position.getBlockX(), position.getBlockY(), position.getBlockZ()));
-        int data = world.getBlockMetadata(position.getBlockX(), position.getBlockY(), position.getBlockZ());
-        return new LazyBlock(id, data, this, position);
+        BlockPos pos = new BlockPos(position.getBlockX(), position.getBlockY(), position.getBlockZ());
+        IBlockState state = world.getBlockState(pos);
+        return new LazyBlock(Block.getIdFromBlock(state.getBlock()), state.getBlock().getMetaFromState(state), this, position);
     }
 
     @Override

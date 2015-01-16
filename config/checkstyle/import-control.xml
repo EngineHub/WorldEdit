@@ -54,6 +54,7 @@
       <allow pkg="com.mojang.authlib"/>
       <allow pkg="org.apache.logging.log4j"/>
       <allow pkg="org.lwjgl"/>
+      <allow pkg="io.netty.buffer"/>
     </subpackage>
   </subpackage>
 </import-control>

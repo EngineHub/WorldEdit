@@ -133,7 +133,7 @@ public class ForgeEntityType implements EntityType {
 
     @Override
     public boolean isTagged() {
-        return entity instanceof EntityLiving && ((EntityLiving) entity).hasCustomNameTag();
+        return entity instanceof EntityLiving && ((EntityLiving) entity).hasCustomName();
     }
 
     @Override

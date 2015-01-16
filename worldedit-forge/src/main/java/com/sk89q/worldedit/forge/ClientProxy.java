@@ -19,7 +19,7 @@
 
 package com.sk89q.worldedit.forge;
 
-import cpw.mods.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 
 public class ClientProxy extends CommonProxy {
 
