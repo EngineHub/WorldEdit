@@ -53,6 +53,7 @@
       <allow pkg="net.minecraftforge"/>
       <allow pkg="org.apache.logging.log4j"/>
       <allow pkg="org.lwjgl"/>
+      <allow pkg="io.netty.buffer"/>
     </subpackage>
   </subpackage>
 </import-control>
