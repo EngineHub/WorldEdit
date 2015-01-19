@@ -436,11 +436,7 @@ public class UtilityCommands {
             killed += visitor.getAffected();
         }
 
-        if (radius < 0) {
-            actor.print("Killed " + killed + " mobs.");
-        } else {
-            actor.print("Killed " + killed + " mobs in a radius of " + radius + ".");
-        }
+        actor.print("Killed " + killed + (killed != 1 ? " mobs" : "mob") + (radius < 0 ? "" : "in a radius of " + radius) + ".");
 
         if (editSession != null) {
             session.remember(editSession);
@@ -500,7 +496,7 @@ public class UtilityCommands {
             removed += visitor.getAffected();
         }
 
-        actor.print("Marked " + (removed != 1 ? "entities" : "entity") + " for removal.");
+        actor.print("Marked " + removed + (removed != 1 ? " entities" : " entity") + " for removal.");
 
         if (editSession != null) {
             session.remember(editSession);
