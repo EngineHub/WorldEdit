@@ -436,7 +436,7 @@ public class UtilityCommands {
             killed += visitor.getAffected();
         }
 
-        actor.print("Killed " + killed + (killed != 1 ? " mobs" : "mob") + (radius < 0 ? "" : "in a radius of " + radius) + ".");
+        actor.print("Killed " + killed + (killed != 1 ? " mobs" : " mob") + (radius < 0 ? "" : " in a radius of " + radius) + ".");
 
         if (editSession != null) {
             session.remember(editSession);
