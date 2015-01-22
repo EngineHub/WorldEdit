@@ -135,4 +135,9 @@ public class ForgeEntityType implements EntityType {
     public boolean isTagged() {
         return entity instanceof EntityLiving && ((EntityLiving) entity).hasCustomNameTag();
     }
+
+    @Override
+    public boolean isArmorStand() {
+        return false; // TODO re-add when forge version is updated to 1.8: entity instanceof EntityArmorStand;
+    }
 }

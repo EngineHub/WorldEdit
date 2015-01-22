@@ -22,12 +22,7 @@ package com.sk89q.worldedit.command;
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
-import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.LocalConfiguration;
-import com.sk89q.worldedit.LocalSession;
-import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.command.tool.BrushTool;
@@ -229,10 +224,10 @@ public class BrushCommands {
     @Command(
             aliases = { "butcher", "kill" },
             usage = "[radius]",
-            flags = "plangbtf",
+            flags = "plangbtfr",
             desc = "Butcher brush",
             help = "Kills nearby mobs within the specified radius.\n" +
-                    "Flags:" +
+                    "Flags:\n" +
                     "  -p also kills pets.\n" +
                     "  -n also kills NPCs.\n" +
                     "  -g also kills Golems.\n" +
@@ -240,6 +235,7 @@ public class BrushCommands {
                     "  -b also kills ambient mobs.\n" +
                     "  -t also kills mobs with name tags.\n" +
                     "  -f compounds all previous flags.\n" +
+                    "  -r also destroys armor stands.\n" +
                     "  -l currently does nothing.",
             min = 0,
             max = 1

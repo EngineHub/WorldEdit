@@ -41,6 +41,7 @@ public class CreatureButcher {
         public static final int AMBIENT = 1 << 4;
         public static final int TAGGED = 1 << 5;
         public static final int FRIENDLY = PETS | NPCS | ANIMALS | GOLEMS | AMBIENT | TAGGED;
+        public static final int ARMOR_STAND = 1 << 6;
         public static final int WITH_LIGHTNING = 1 << 20;
 
         private Flags() {
@@ -74,6 +75,8 @@ public class CreatureButcher {
         or(Flags.ANIMALS       , args.hasFlag('a'), "worldedit.butcher.animals");
         or(Flags.AMBIENT       , args.hasFlag('b'), "worldedit.butcher.ambient");
         or(Flags.TAGGED        , args.hasFlag('t'), "worldedit.butcher.tagged");
+        or(Flags.ARMOR_STAND   , args.hasFlag('r'), "worldedit.butcher.armorstands");
+
         or(Flags.WITH_LIGHTNING, args.hasFlag('l'), "worldedit.butcher.lightning");
     }
 
@@ -87,6 +90,7 @@ public class CreatureButcher {
                 boolean killGolems = (flags & Flags.GOLEMS) != 0;
                 boolean killAmbient = (flags & Flags.AMBIENT) != 0;
                 boolean killTagged = (flags & Flags.TAGGED) != 0;
+                boolean killArmorStands = (flags & Flags.ARMOR_STAND) != 0;
 
                 EntityType type = entity.getFacet(EntityType.class);
 
@@ -123,6 +127,10 @@ public class CreatureButcher {
                 }
 
                 if (!killTagged && type.isTagged()) {
+                    return false;
+                }
+
+                if (!killArmorStands && type.isArmorStand()) {
                     return false;
                 }
 

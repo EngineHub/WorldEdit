@@ -148,4 +148,10 @@ public interface EntityType {
      */
     boolean isTagged();
 
+    /**
+     * Test whether the entity is an armor stand.
+     *
+     * @return true if an armor stand
+     */
+    boolean isArmorStand();
 }

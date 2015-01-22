@@ -38,13 +38,14 @@ import org.bukkit.entity.Projectile;
 import org.bukkit.entity.TNTPrimed;
 import org.bukkit.entity.Tameable;
 import org.bukkit.entity.Villager;
+import org.bukkit.entity.minecart.ExplosiveMinecart;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 class BukkitEntityType implements EntityType {
 
-    private static final org.bukkit.entity.EntityType tntMinecartType =
-            Enums.findByValue(org.bukkit.entity.EntityType.class, "MINECART_TNT");
+    private static final org.bukkit.entity.EntityType armorStandType =
+            Enums.findByValue(org.bukkit.entity.EntityType.class, "ARMOR_STAND");
 
     private final Entity entity;
 
@@ -95,7 +96,7 @@ class BukkitEntityType implements EntityType {
 
     @Override
     public boolean isTNT() {
-        return entity instanceof TNTPrimed || entity.getType() == tntMinecartType;
+        return entity instanceof TNTPrimed || entity instanceof ExplosiveMinecart;
     }
 
     @Override
@@ -136,5 +137,10 @@ class BukkitEntityType implements EntityType {
     @Override
     public boolean isTagged() {
         return entity instanceof LivingEntity && ((LivingEntity) entity).getCustomName() != null;
+    }
+
+    @Override
+    public boolean isArmorStand() {
+        return entity.getType() == armorStandType;
     }
 }

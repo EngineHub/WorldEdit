@@ -366,11 +366,11 @@ public class UtilityCommands {
     @Command(
         aliases = { "butcher" },
         usage = "[radius]",
-        flags = "plangbtf",
+        flags = "plangbtfr",
         desc = "Kill all or nearby mobs",
         help =
             "Kills nearby mobs, based on radius, if none is given uses default in configuration.\n" +
-            "Flags:" +
+            "Flags:\n" +
             "  -p also kills pets.\n" +
             "  -n also kills NPCs.\n" +
             "  -g also kills Golems.\n" +
@@ -378,6 +378,7 @@ public class UtilityCommands {
             "  -b also kills ambient mobs.\n" +
             "  -t also kills mobs with name tags.\n" +
             "  -f compounds all previous flags.\n" +
+            "  -r also destroys armor stands.\n" +
             "  -l currently does nothing.",
         min = 0,
         max = 1
