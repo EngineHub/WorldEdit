@@ -2755,8 +2755,8 @@
         "values": {
           "down": { "data": 0, "direction": [0, -1, 0] },
           "east": { "data": 1, "direction": [1, 0, 0] },
-          "south": { "data": 2, "direction": [0, 0, 1] },
-          "west": { "data": 3, "direction": [-1, 0, 0] },
+          "west": { "data": 2, "direction": [-1, 0, 0] },
+          "south": { "data": 3, "direction": [0, 0, 1] },
           "north": { "data": 4, "direction": [0, 0, -1] },
           "up": { "data": 5, "direction": [0, 1, 0] }
         }
@@ -4943,8 +4943,8 @@
         "values": {
           "down": { "data": 0, "direction": [0, -1, 0] },
           "east": { "data": 1, "direction": [1, 0, 0] },
-          "south": { "data": 2, "direction": [0, 0, 1] },
-          "west": { "data": 3, "direction": [-1, 0, 0] },
+          "west": { "data": 2, "direction": [-1, 0, 0] },
+          "south": { "data": 3, "direction": [0, 0, 1] },
           "north": { "data": 4, "direction": [0, 0, -1] },
           "up": { "data": 5, "direction": [0, 1, 0] }
         }

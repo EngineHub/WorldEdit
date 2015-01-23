@@ -46,8 +46,6 @@ public class BlockTransformExtentTest {
         ignored.add(BlockType.BED); // Broken in existing rotation code?
         ignored.add(BlockType.WOODEN_DOOR); // Complicated
         ignored.add(BlockType.IRON_DOOR); // Complicated
-        ignored.add(BlockType.STONE_BUTTON); // Existing rotation code doesn't handle down/up directions
-        ignored.add(BlockType.WOODEN_BUTTON); // Existing rotation code doesn't handle down/up directions
         ignored.add(BlockType.END_PORTAL); // Not supported in existing rotation code
     }
 

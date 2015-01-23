@@ -1842,6 +1842,10 @@ public enum BlockType {
             addCardinals(BlockID.STONE_BUTTON, offset + 4, offset + 1, offset + 3, offset + 2);
             addCardinals(BlockID.WOODEN_BUTTON, offset + 4, offset + 1, offset + 3, offset + 2);
         }
+        dataAttachments.put(typeDataKey(BlockID.STONE_BUTTON, 0), PlayerDirection.UP);
+        dataAttachments.put(typeDataKey(BlockID.STONE_BUTTON, 5), PlayerDirection.DOWN);
+        dataAttachments.put(typeDataKey(BlockID.WOODEN_BUTTON, 0), PlayerDirection.UP);
+        dataAttachments.put(typeDataKey(BlockID.WOODEN_BUTTON, 5), PlayerDirection.DOWN);
         nonDataAttachments.put(BlockID.CACTUS, PlayerDirection.DOWN);
         nonDataAttachments.put(BlockID.REED, PlayerDirection.DOWN);
         nonDataAttachments.put(BlockID.CAKE_BLOCK, PlayerDirection.DOWN);

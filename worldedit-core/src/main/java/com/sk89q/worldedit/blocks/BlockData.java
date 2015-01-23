@@ -95,12 +95,22 @@ public final class BlockData {
             }
             break;
 
-        case BlockID.LEVER:
         case BlockID.STONE_BUTTON:
-        case BlockID.WOODEN_BUTTON:
+        case BlockID.WOODEN_BUTTON: {
             int thrown = data & 0x8;
-            int withoutThrown = data & ~0x8;
-            switch (withoutThrown) {
+            switch (data & ~0x8) {
+            case 1: return 3 | thrown;
+            case 2: return 4 | thrown;
+            case 3: return 2 | thrown;
+            case 4: return 1 | thrown;
+            // 0 and 5 are vertical
+            }
+            break;
+        }
+
+        case BlockID.LEVER: {
+            int thrown = data & 0x8;
+            switch (data & ~0x8) {
             case 1: return 3 | thrown;
             case 2: return 4 | thrown;
             case 3: return 2 | thrown;
@@ -111,6 +121,7 @@ public final class BlockData {
             case 0: return 7 | thrown;
             }
             break;
+        }
 
         case BlockID.WOODEN_DOOR:
         case BlockID.IRON_DOOR:
@@ -316,12 +327,22 @@ public final class BlockData {
             }
             break;
 
-        case BlockID.LEVER:
         case BlockID.STONE_BUTTON:
-        case BlockID.WOODEN_BUTTON:
+        case BlockID.WOODEN_BUTTON: {
             int thrown = data & 0x8;
-            int withoutThrown = data & ~0x8;
-            switch (withoutThrown) {
+            switch (data & ~0x8) {
+            case 3: return 1 | thrown;
+            case 4: return 2 | thrown;
+            case 2: return 3 | thrown;
+            case 1: return 4 | thrown;
+            // 0 and 5 are vertical
+            }
+            break;
+        }
+
+        case BlockID.LEVER: {
+            int thrown = data & 0x8;
+            switch (data & ~0x8) {
             case 3: return 1 | thrown;
             case 4: return 2 | thrown;
             case 2: return 3 | thrown;
@@ -332,6 +353,7 @@ public final class BlockData {
             case 7: return 0 | thrown;
             }
             break;
+        }
 
         case BlockID.WOODEN_DOOR:
         case BlockID.IRON_DOOR:
@@ -509,11 +531,29 @@ public final class BlockData {
         case BlockID.REDSTONE_TORCH_OFF:
         case BlockID.REDSTONE_TORCH_ON:
             if (data < 1 || data > 4) break;
-            /* FALL-THROUGH */
+            switch (data) {
+            case 1: return data + flipX;
+            case 2: return data - flipX;
+            case 3: return data + flipZ;
+            case 4: return data - flipZ;
+            }
+            break;
+
+        case BlockID.STONE_BUTTON:
+        case BlockID.WOODEN_BUTTON: {
+            switch (data & ~0x8) {
+            case 1: return data + flipX;
+            case 2: return data - flipX;
+            case 3: return data + flipZ;
+            case 4: return data - flipZ;
+            case 0:
+            case 5:
+                return data ^ (flipY * 5);
+            }
+            break;
+        }
 
         case BlockID.LEVER:
-        case BlockID.STONE_BUTTON:
-        case BlockID.WOODEN_BUTTON:
             switch (data & ~0x8) {
             case 1: return data + flipX;
             case 2: return data - flipX;
