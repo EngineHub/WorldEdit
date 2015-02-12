@@ -20,12 +20,15 @@
 package com.sk89q.worldedit.forge;
 
 import com.sk89q.worldedit.Vector;
+
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagInt;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
+
 import java.lang.reflect.Constructor;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -81,7 +84,7 @@ final class TileEntityUtils {
             tileEntity.readFromNBT(tag);
         }
 
-        world.setTileEntity(position.getBlockX(), position.getBlockY(), position.getBlockZ(), tileEntity);
+        world.setTileEntity(new BlockPos(position.getBlockX(), position.getBlockY(), position.getBlockZ()), tileEntity);
     }
 
     /**
@@ -97,7 +100,7 @@ final class TileEntityUtils {
             updateForSet(tag, position);
             TileEntity tileEntity = TileEntity.createAndLoadEntity(tag);
             if (tileEntity != null) {
-                world.setTileEntity(position.getBlockX(), position.getBlockY(), position.getBlockZ(), tileEntity);
+                world.setTileEntity(new BlockPos(position.getBlockX(), position.getBlockY(), position.getBlockZ()), tileEntity);
             }
         }
     }

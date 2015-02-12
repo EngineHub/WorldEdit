@@ -27,19 +27,7 @@ import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.event.platform.PlatformReadyEvent;
 import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.internal.LocalWorldAdapter;
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.Mod;
-import cpw.mods.fml.common.Mod.EventHandler;
-import cpw.mods.fml.common.Mod.Instance;
-import cpw.mods.fml.common.SidedProxy;
-import cpw.mods.fml.common.event.FMLInitializationEvent;
-import cpw.mods.fml.common.event.FMLPostInitializationEvent;
-import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import cpw.mods.fml.common.event.FMLServerAboutToStartEvent;
-import cpw.mods.fml.common.event.FMLServerStartedEvent;
-import cpw.mods.fml.common.event.FMLServerStoppingEvent;
-import cpw.mods.fml.common.eventhandler.Event.Result;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -47,6 +35,20 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.CommandEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.Mod.EventHandler;
+import net.minecraftforge.fml.common.Mod.Instance;
+import net.minecraftforge.fml.common.SidedProxy;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLServerAboutToStartEvent;
+import net.minecraftforge.fml.common.event.FMLServerStartedEvent;
+import net.minecraftforge.fml.common.event.FMLServerStoppingEvent;
+import net.minecraftforge.fml.common.eventhandler.Event.Result;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
@@ -156,7 +158,7 @@ public class ForgeWorldEdit {
         Action action = event.action;
         switch (action) {
             case LEFT_CLICK_BLOCK: {
-                WorldVector pos = new WorldVector(LocalWorldAdapter.adapt(world), event.x, event.y, event.z);
+                WorldVector pos = new WorldVector(LocalWorldAdapter.adapt(world), event.pos.getX(), event.pos.getY(), event.pos.getZ());
 
                 if (we.handleBlockLeftClick(player, pos)) {
                     event.setCanceled(true);
@@ -169,7 +171,7 @@ public class ForgeWorldEdit {
                 break;
             }
             case RIGHT_CLICK_BLOCK: {
-                WorldVector pos = new WorldVector(LocalWorldAdapter.adapt(world), event.x, event.y, event.z);
+                WorldVector pos = new WorldVector(LocalWorldAdapter.adapt(world), event.pos.getX(), event.pos.getY(), event.pos.getZ());
 
                 if (we.handleBlockRightClick(player, pos)) {
                     event.setCanceled(true);

@@ -33,8 +33,10 @@ import com.sk89q.worldedit.util.Location;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.server.S3FPacketCustomPayload;
 import net.minecraft.util.ChatComponentText;
+import io.netty.buffer.Unpooled;
 
 import javax.annotation.Nullable;
 
@@ -64,7 +66,7 @@ public class ForgePlayer extends AbstractPlayerActor {
 
     @Override
     public String getName() {
-        return this.player.getCommandSenderName();
+        return this.player.getName();
     }
 
     @Override
@@ -114,7 +116,8 @@ public class ForgePlayer extends AbstractPlayerActor {
         if (params.length > 0) {
             send = send + "|" + StringUtil.joinString(params, "|");
         }
-        S3FPacketCustomPayload packet = new S3FPacketCustomPayload(ForgeWorldEdit.CUI_PLUGIN_CHANNEL, send.getBytes(WECUIPacketHandler.UTF_8_CHARSET));
+        PacketBuffer buffer = new PacketBuffer(Unpooled.copiedBuffer(send.getBytes(WECUIPacketHandler.UTF_8_CHARSET)));
+        S3FPacketCustomPayload packet = new S3FPacketCustomPayload(ForgeWorldEdit.CUI_PLUGIN_CHANNEL, buffer);
         this.player.playerNetServerHandler.sendPacket(packet);
     }
 
@@ -174,7 +177,7 @@ public class ForgePlayer extends AbstractPlayerActor {
 
     @Override
     public SessionKey getSessionKey() {
-        return new SessionKeyImpl(player.getUniqueID(), player.getCommandSenderName());
+        return new SessionKeyImpl(player.getUniqueID(), player.getName());
     }
 
     private static class SessionKeyImpl implements SessionKey {

@@ -29,7 +29,7 @@ import com.sk89q.worldedit.util.command.CommandMapping;
 import com.sk89q.worldedit.util.command.Description;
 import com.sk89q.worldedit.util.command.Dispatcher;
 import com.sk89q.worldedit.world.World;
-import cpw.mods.fml.common.FMLCommonHandler;
+
 import net.minecraft.block.Block;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommand;
@@ -42,8 +42,10 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.management.ServerConfigurationManager;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.DimensionManager;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 
 import javax.annotation.Nullable;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -124,7 +126,7 @@ class ForgePlatform extends AbstractPlatform implements MultiUserPlatform {
         if (player instanceof ForgePlayer) {
             return player;
         } else {
-            EntityPlayerMP entity = server.getConfigurationManager().func_152612_a(player.getName());
+            EntityPlayerMP entity = server.getConfigurationManager().getPlayerByUsername(player.getName());
             return entity != null ? new ForgePlayer(this, entity) : null;
         }
     }
@@ -205,7 +207,7 @@ class ForgePlatform extends AbstractPlatform implements MultiUserPlatform {
         List<Actor> users = new ArrayList<Actor>();
         ServerConfigurationManager scm = server.getConfigurationManager();
         for (String name : scm.getAllUsernames()) {
-            EntityPlayerMP entity = scm.func_152612_a(name);
+            EntityPlayerMP entity = scm.getPlayerByUsername(name);
             if (entity != null) {
                 users.add(new ForgePlayer(this, entity));
             }
