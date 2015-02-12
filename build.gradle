@@ -19,6 +19,12 @@ buildscript {
         jcenter()
     }
 
+    configurations.all {
+        resolutionStrategy {
+            force 'com.google.guava:guava:18.0'
+        }
+    }
+
     dependencies {
         classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.0'
         classpath 'org.jfrog.buildinfo:build-info-extractor-gradle:3.0.1'
