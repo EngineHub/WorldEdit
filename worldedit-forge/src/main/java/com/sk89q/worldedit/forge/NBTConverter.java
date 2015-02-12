@@ -170,7 +170,7 @@ final class NBTConverter {
     }
 
     public static IntArrayTag fromNative(NBTTagIntArray other) {
-        int[] value = other.func_150302_c();
+        int[] value = other.getIntArray();
         return new IntArrayTag(Arrays.copyOf(value, value.length));
     }
 
@@ -192,28 +192,28 @@ final class NBTConverter {
     }
 
     public static LongTag fromNative(NBTTagLong other) {
-        return new LongTag(other.func_150291_c());
+        return new LongTag(other.getLong());
     }
 
     public static StringTag fromNative(NBTTagString other) {
-        return new StringTag(other.func_150285_a_());
+        return new StringTag(other.getString());
     }
 
     public static IntTag fromNative(NBTTagInt other) {
-        return new IntTag(other.func_150287_d());
+        return new IntTag(other.getInt());
     }
 
     public static ByteTag fromNative(NBTTagByte other) {
-        return new ByteTag(other.func_150290_f());
+        return new ByteTag(other.getByte());
     }
 
     public static ByteArrayTag fromNative(NBTTagByteArray other) {
-        byte[] value = other.func_150292_c();
+        byte[] value = other.getByteArray();
         return new ByteArrayTag(Arrays.copyOf(value, value.length));
     }
 
     public static CompoundTag fromNative(NBTTagCompound other) {
-        @SuppressWarnings("unchecked") Collection<String> tags = other.func_150296_c();
+        @SuppressWarnings("unchecked") Set<String> tags = other.getKeySet();
         Map<String, Tag> map = new HashMap<String, Tag>();
         for (String tagName : tags) {
             map.put(tagName, fromNative(other.getTag(tagName)));
@@ -222,15 +222,15 @@ final class NBTConverter {
     }
 
     public static FloatTag fromNative(NBTTagFloat other) {
-        return new FloatTag(other.func_150288_h());
+        return new FloatTag(other.getFloat());
     }
 
     public static ShortTag fromNative(NBTTagShort other) {
-        return new ShortTag(other.func_150289_e());
+        return new ShortTag(other.getShort());
     }
 
     public static DoubleTag fromNative(NBTTagDouble other) {
-        return new DoubleTag(other.func_150286_g());
+        return new DoubleTag(other.getDouble());
     }
 
 }

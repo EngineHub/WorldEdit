@@ -19,8 +19,8 @@ dependencies {
 }
 
 minecraft {
-    ext.forgeVersion = "10.13.1.1225"
-    version = "1.7.10-$forgeVersion"
+    ext.forgeVersion = "11.14.0.1281"
+    version = "1.8-$forgeVersion-1.8"
 
     replaceIn "com/sk89q/worldedit/forge/ForgeWorldEdit.java"
     replace "%VERSION%", project.version
