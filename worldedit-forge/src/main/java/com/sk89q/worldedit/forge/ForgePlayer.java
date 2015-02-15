@@ -34,8 +34,8 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.network.play.server.S3FPacketCustomPayload;
 import net.minecraft.util.ChatComponentText;
+import net.minecraftforge.fml.common.network.internal.FMLProxyPacket;
 import io.netty.buffer.Unpooled;
 
 import javax.annotation.Nullable;
@@ -117,8 +117,7 @@ public class ForgePlayer extends AbstractPlayerActor {
             send = send + "|" + StringUtil.joinString(params, "|");
         }
         PacketBuffer buffer = new PacketBuffer(Unpooled.copiedBuffer(send.getBytes(WECUIPacketHandler.UTF_8_CHARSET)));
-        S3FPacketCustomPayload packet = new S3FPacketCustomPayload(ForgeWorldEdit.CUI_PLUGIN_CHANNEL, buffer);
-        this.player.playerNetServerHandler.sendPacket(packet);
+        WECUIPacketHandler.WECUI_CHANNEL.sendTo(new FMLProxyPacket(buffer, ForgeWorldEdit.CUI_PLUGIN_CHANNEL), player);
     }
 
     @Override
