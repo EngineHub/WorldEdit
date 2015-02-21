@@ -92,9 +92,10 @@ public class ExtentEntityCopy implements EntityFunction {
 
             if (!transform.isIdentity()) {
                 Location location = entity.getLocation();
-                Vector newPosition = transform.apply(location.toVector().subtract(from));
+                Vector pivot = from.round().add(0.5, 0.5, 0.5);
+                Vector newPosition = transform.apply(location.toVector().subtract(pivot));
                 Vector newDirection = transform.apply(location.getDirection()).subtract(transform.apply(Vector.ZERO)).normalize();
-                newLocation = new Location(destination, newPosition.add(to), newDirection);
+                newLocation = new Location(destination, newPosition.add(to.round().add(0.5, 0.5, 0.5)), newDirection);
 
                 // Some entities store their position data in NBT
                 state = transformNbtData(state);
