@@ -88,13 +88,19 @@ public class ExtentEntityCopy implements EntityFunction {
     public boolean apply(Entity entity) throws WorldEditException {
         BaseEntity state = entity.getState();
         if (state != null) {
-            Location location = entity.getLocation();
-            Vector newPosition = transform.apply(location.toVector().subtract(from));
-            Vector newDirection = transform.apply(location.getDirection()).subtract(transform.apply(Vector.ZERO)).normalize();
-            Location newLocation = new Location(destination, newPosition.add(to), newDirection);
+            Location newLocation;
 
-            // Some entities store their position data in NBT
-            state = transformNbtData(state);
+            if (!transform.isIdentity()) {
+                Location location = entity.getLocation();
+                Vector newPosition = transform.apply(location.toVector().subtract(from));
+                Vector newDirection = transform.apply(location.getDirection()).subtract(transform.apply(Vector.ZERO)).normalize();
+                newLocation = new Location(destination, newPosition.add(to), newDirection);
+
+                // Some entities store their position data in NBT
+                state = transformNbtData(state);
+            } else {
+                newLocation = entity.getLocation();
+            }
 
             boolean success = destination.createEntity(newLocation, state) != null;
 
