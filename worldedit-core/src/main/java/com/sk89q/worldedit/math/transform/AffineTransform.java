@@ -20,6 +20,7 @@
 package com.sk89q.worldedit.math.transform;
 
 import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.math.MathUtils;
 
 /**
  * An affine transform.
@@ -244,9 +245,8 @@ public class AffineTransform implements Transform {
     }
 
     public AffineTransform rotateX(double theta) {
-        theta = Math.toRadians(theta);
-        double cot = Math.cos(theta);
-        double sit = Math.sin(theta);
+        double cot = MathUtils.dCos(theta);
+        double sit = MathUtils.dSin(theta);
         return concatenate(
                 new AffineTransform(
                         1, 0, 0, 0,
@@ -255,9 +255,8 @@ public class AffineTransform implements Transform {
     }
 
     public AffineTransform rotateY(double theta) {
-        theta = Math.toRadians(theta);
-        double cot = Math.cos(theta);
-        double sit = Math.sin(theta);
+        double cot = MathUtils.dCos(theta);
+        double sit = MathUtils.dSin(theta);
         return concatenate(
                 new AffineTransform(
                         cot, 0, sit, 0,
@@ -266,9 +265,8 @@ public class AffineTransform implements Transform {
     }
 
     public AffineTransform rotateZ(double theta) {
-        theta = Math.toRadians(theta);
-        double cot = Math.cos(theta);
-        double sit = Math.sin(theta);
+        double cot = MathUtils.dCos(theta);
+        double sit = MathUtils.dSin(theta);
         return concatenate(
                 new AffineTransform(
                         cot, -sit, 0, 0,
