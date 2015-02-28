@@ -728,6 +728,7 @@ public enum BlockType {
      */
     private static final Set<Integer> usesData = new HashSet<Integer>();
     static {
+        usesData.add(BlockID.STONE);
         usesData.add(BlockID.DIRT);
         usesData.add(BlockID.WOOD);
         usesData.add(BlockID.SAPLING);
