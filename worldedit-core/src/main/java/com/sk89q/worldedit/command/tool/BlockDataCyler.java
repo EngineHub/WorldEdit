@@ -19,9 +19,12 @@
 
 package com.sk89q.worldedit.command.tool;
 
+import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
+import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.blocks.BlockData;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Platform;
@@ -54,12 +57,19 @@ public class BlockDataCyler implements DoubleActionBlockTool {
         }
 
         int increment = forward ? 1 : -1;
-        data = (new BaseBlock(type, data)).cycleData(increment);
+        BaseBlock block = new BaseBlock(type, BlockData.cycle(type, data, increment));
+        EditSession editSession = session.createEditSession(player);
 
         if (data < 0) {
             player.printError("That block's data cannot be cycled!");
         } else {
-            world.setBlockData(clicked.toVector(), data);
+            try {
+                editSession.setBlock(clicked.toVector(), block);
+            } catch (MaxChangedBlocksException e) {
+                player.printError("Max blocks change limit reached.");
+            } finally {
+                session.remember(editSession);
+            }
         }
 
         return true;
