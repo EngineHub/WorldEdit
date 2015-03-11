@@ -680,6 +680,7 @@ public enum ItemType {
         usesDamageValue.add(ItemID.GOLD_APPLE);
         usesDamageValue.add(ItemID.RAW_FISH);
         usesDamageValue.add(ItemID.COOKED_FISH);
+        usesDamageValue.add(ItemID.BANNER);
     }
 
     /**
