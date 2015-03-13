@@ -100,8 +100,10 @@ public abstract class ExceptionConverterHelper implements ExceptionConverter {
                 return 0;
             } else if (cls.isAssignableFrom(o.cls)) {
                 return 1;
-            } else {
+            } else if (o.cls.isAssignableFrom(cls)) {
                 return -1;
+            } else {
+                return cls.getCanonicalName().compareTo(o.cls.getCanonicalName());
             }
         }
     }
