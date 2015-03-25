@@ -69,7 +69,7 @@ public class CommonProxy {
      * @param idMap - The id map that is being checked.
      * @return Return true if the mapping exists in the id map.
      */
-    public boolean mappingExists(String alias, Map<String, Tag> idMap) {
+    public static boolean mappingExists(String alias, Map<String, Tag> idMap) {
         return alias != null && idMap != null && idMap.containsKey(alias);
     }
 }
