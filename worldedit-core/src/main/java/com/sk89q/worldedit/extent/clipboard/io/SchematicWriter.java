@@ -19,33 +19,23 @@
 
 package com.sk89q.worldedit.extent.clipboard.io;
 
-import com.sk89q.jnbt.ByteArrayTag;
-import com.sk89q.jnbt.CompoundTag;
-import com.sk89q.jnbt.DoubleTag;
-import com.sk89q.jnbt.FloatTag;
-import com.sk89q.jnbt.IntTag;
-import com.sk89q.jnbt.ListTag;
-import com.sk89q.jnbt.NBTOutputStream;
-import com.sk89q.jnbt.ShortTag;
-import com.sk89q.jnbt.StringTag;
-import com.sk89q.jnbt.Tag;
+import static com.google.common.base.Preconditions.checkNotNull;
+
+import java.io.IOException;
+import java.util.*;
+import java.util.Map.Entry;
+
+import com.sk89q.jnbt.*;
 import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
+import com.sk89q.worldedit.event.platform.SchematicEvent;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.registry.WorldData;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Writes schematic files based that are compatible with MCEdit and other editors.
@@ -67,6 +57,10 @@ public class SchematicWriter implements ClipboardWriter {
 
     @Override
     public void write(Clipboard clipboard, WorldData data) throws IOException {
+        SchematicEvent.WritePre eventPre = new SchematicEvent.WritePre(this, clipboard, data, outputStream);
+        WorldEdit.getInstance().getEventBus().post(eventPre);
+        if (eventPre.isCancelled()) return;
+
         Region region = clipboard.getRegion();
         Vector origin = clipboard.getOrigin();
         Vector min = region.getMinimumPoint();
@@ -193,7 +187,15 @@ public class SchematicWriter implements ClipboardWriter {
         // ====================================================================
 
         CompoundTag schematicTag = new CompoundTag(schematic);
+
+        SchematicEvent.Write eventWrite = new SchematicEvent.Write(this, clipboard, data, schematicTag, schematic, outputStream);
+        WorldEdit.getInstance().getEventBus().post(eventWrite);
+        if (eventWrite.isCancelled()) return;
+
         outputStream.writeNamedTag("Schematic", schematicTag);
+
+        SchematicEvent.WritePost eventPost = new SchematicEvent.WritePost(this, clipboard, data, schematicTag);
+        WorldEdit.getInstance().getEventBus().post(eventPost);
     }
 
     private Tag writeVector(Vector vector, String name) {
