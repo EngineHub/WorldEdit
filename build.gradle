@@ -22,7 +22,7 @@ apply plugin: 'forge'
 apply plugin: 'shadow'
 
 group = 'com.sk89q'
-version = '6.0.0-SNAPSHOT' + System.getProperty("worldedit.build.suffix", "")
+version = '6.0-alpha-01' + System.getProperty("worldedit.build.suffix", "")
 archivesBaseName = "worldedit-forge"
 
 description = "An in-game voxel map editor for Minecraft."
