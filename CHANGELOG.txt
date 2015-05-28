@@ -1,3 +1,19 @@
+6.1
+- Added support for Spigot for MC 1.8.3 to 1.8.6.
+- Added rotation values to lit redstone torches.
+- Added banners to usesDamageValue properties list.
+- Added stone to usesData properties list.
+- Changed cycler tool to use undo sessions rather than changing the world directly.
+- Changed PEX support to use UUIDs wherever possible.
+- Fixed imprecise rotations.
+- Fixed incorrect support BlockBag and EditSession support in two of the tools.
+- Fixed entity rotation floating point issues.
+- Fixed button rotation and added support for up/down flipping.
+- Fixed armor stands being included //butcher by default.
+- Fixed /butcher text in the case of only one mob being killed.
+- Fixed entity counter for //remove and //butcher.
+- Fixed performance issues with some commands that use lists of entities.
+
 6.0.1
 - (Forge only) Add a permissions API (temporary) for interoperability.
 
