@@ -2720,6 +2720,17 @@
     "legacyId": 76,
     "id": "minecraft:redstone_torch",
     "unlocalizedName": "tile.notGate",
+    "states": {
+      "facing": {
+        "values": {
+          "east": { "data": 1, "direction": [1, 0, 0] },
+          "west": { "data": 2, "direction": [-1, 0, 0] },
+          "north": { "data": 3, "direction": [0, 0, -1] },
+          "south": { "data": 4, "direction": [0, 0, 1] },
+          "up": { "data": 5, "direction": [0, 1, 0] }
+        }
+      }
+    },
     "material": {
       "renderedAsNormalBlock": false,
       "fullCube": false,
