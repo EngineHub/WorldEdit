@@ -19,7 +19,6 @@
 
 package com.sk89q.worldedit.forge;
 
-import com.google.common.base.Throwables;
 import com.google.common.collect.HashBiMap;
 import com.sk89q.worldedit.world.biome.BaseBiome;
 import com.sk89q.worldedit.world.biome.BiomeData;
@@ -29,12 +28,6 @@ import net.minecraft.world.biome.BiomeGenBase;
 
 import javax.annotation.Nullable;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.lang.reflect.Type;
-import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
