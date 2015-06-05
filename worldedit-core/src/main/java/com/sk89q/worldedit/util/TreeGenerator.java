@@ -37,10 +37,10 @@ import java.util.Random;
 public class TreeGenerator {
 
     public enum TreeType {
-        TREE("Regular tree", "tree", "regular"),
-        BIG_TREE("Big tree", "big", "bigtree"),
-        REDWOOD("Redwood", "redwood", "sequoia", "sequoioideae"),
-        TALL_REDWOOD("Tall redwood", "tallredwood", "tallsequoia", "tallsequoioideae"),
+        TREE("Oak tree", "oak", "tree", "regular"),
+        BIG_TREE("Large oak tree", "largeoak", "bigoak", "big", "bigtree"),
+        REDWOOD("Spruce", "spruce", "redwood", "sequoia", "sequoioideae"),
+        TALL_REDWOOD("Tall spruce", "tallspruce", "bigspruce", "tallredwood", "tallsequoia", "tallsequoioideae"),
         BIRCH("Birch", "birch", "white", "whitebark"),
         PINE("Pine", "pine") {
             @Override
@@ -49,7 +49,7 @@ public class TreeGenerator {
                 return true;
             }
         },
-        RANDOM_REDWOOD("Random redwood",  "randredwood", "randomredwood", "anyredwood") {
+        RANDOM_REDWOOD("Random spruce", "randspruce", "randredwood", "randomredwood", "anyredwood") {
             @Override
             public boolean generate(EditSession editSession, Vector pos) throws MaxChangedBlocksException {
                 TreeType[] choices = new TreeType[] {
