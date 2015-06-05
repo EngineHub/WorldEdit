@@ -41,20 +41,20 @@ public class TreeGenerator {
         BIG_TREE("Large oak tree", "largeoak", "bigoak", "big", "bigtree"),
         REDWOOD("Spruce tree", "spruce", "redwood", "sequoia", "sequoioideae"),
         TALL_REDWOOD("Tall spruce tree", "tallspruce", "bigspruce", "tallredwood", "tallsequoia", "tallsequoioideae"),
-        BIRCH("Birch tree", "birch", "white", "whitebark"),
-        PINE("Pine tree", "pine") {
-            @Override
-            public boolean generate(EditSession editSession, Vector pos) throws MaxChangedBlocksException {
-                makePineTree(editSession, pos);
-                return true;
-            }
-        },
+        MEGA_REDWOOD("Large spruce tree", "largespruce", "megaredwood"),
         RANDOM_REDWOOD("Random spruce tree", "randspruce", "randredwood", "randomredwood", "anyredwood") {
             @Override
             public boolean generate(EditSession editSession, Vector pos) throws MaxChangedBlocksException {
-                TreeType[] choices = new TreeType[] {
-                        TreeType.REDWOOD, TreeType.TALL_REDWOOD
-                };
+                TreeType[] choices = { REDWOOD, TALL_REDWOOD, MEGA_REDWOOD };
+                return choices[TreeGenerator.RANDOM.nextInt(choices.length)].generate(editSession, pos);
+            }
+        },
+        BIRCH("Birch tree", "birch", "white", "whitebark"),
+        TALL_BIRCH("Tall birch tree", "tallbirch"),
+        RANDOM_BIRCH("Random birch tree", "randbirch", "randombirch") {
+            @Override
+            public boolean generate(EditSession editSession, Vector pos) throws MaxChangedBlocksException {
+                TreeType[] choices = { BIRCH, TALL_BIRCH };
                 return choices[TreeGenerator.RANDOM.nextInt(choices.length)].generate(editSession, pos);
             }
         },
@@ -66,21 +66,37 @@ public class TreeGenerator {
                 return SMALL_JUNGLE.generate(editSession, pos);
             }
         },
+        RANDOM_JUNGLE("Random jungle tree", "randjungle", "randomjungle") {
+            @Override
+            public boolean generate(EditSession editSession, Vector pos) throws MaxChangedBlocksException {
+                TreeType[] choices = { JUNGLE, SMALL_JUNGLE };
+                return choices[TreeGenerator.RANDOM.nextInt(choices.length)].generate(editSession, pos);
+            }
+        },
         JUNGLE_BUSH("Jungle bush", "junglebush", "jungleshrub"),
         RED_MUSHROOM("Red mushroom", "redmushroom", "redgiantmushroom"),
         BROWN_MUSHROOM("Brown mushroom", "brownmushroom", "browngiantmushroom"),
+        RANDOM_MUSHROOM("Random mushroom", "randmushroom", "randommushroom") {
+            @Override
+            public boolean generate(EditSession editSession, Vector pos) throws MaxChangedBlocksException {
+                TreeType[] choices = { RED_MUSHROOM, BROWN_MUSHROOM };
+                return choices[TreeGenerator.RANDOM.nextInt(choices.length)].generate(editSession, pos);
+            }
+        },
         SWAMP("Swamp tree", "swamp", "swamptree"),
         ACACIA("Acacia tree", "acacia"),
         DARK_OAK("Dark oak tree", "darkoak"),
-        MEGA_REDWOOD("Large spruce tree", "largespruce", "megaredwood"),
-        TALL_BIRCH("Tall birch tree", "tallbirch"),
+        PINE("Pine tree", "pine") {
+            @Override
+            public boolean generate(EditSession editSession, Vector pos) throws MaxChangedBlocksException {
+                makePineTree(editSession, pos);
+                return true;
+            }
+        },
         RANDOM("Random tree", "rand", "random") {
             @Override
             public boolean generate(EditSession editSession, Vector pos) throws MaxChangedBlocksException {
-                TreeType[] choices = new TreeType[] {
-                        TreeType.TREE, TreeType.BIG_TREE, TreeType.BIRCH,
-                        TreeType.REDWOOD, TreeType.TALL_REDWOOD, TreeType.PINE
-                };
+                TreeType[] choices = TreeType.values();
                 return choices[TreeGenerator.RANDOM.nextInt(choices.length)].generate(editSession, pos);
             }
         };
