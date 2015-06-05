@@ -39,17 +39,17 @@ public class TreeGenerator {
     public enum TreeType {
         TREE("Oak tree", "oak", "tree", "regular"),
         BIG_TREE("Large oak tree", "largeoak", "bigoak", "big", "bigtree"),
-        REDWOOD("Spruce", "spruce", "redwood", "sequoia", "sequoioideae"),
-        TALL_REDWOOD("Tall spruce", "tallspruce", "bigspruce", "tallredwood", "tallsequoia", "tallsequoioideae"),
-        BIRCH("Birch", "birch", "white", "whitebark"),
-        PINE("Pine", "pine") {
+        REDWOOD("Spruce tree", "spruce", "redwood", "sequoia", "sequoioideae"),
+        TALL_REDWOOD("Tall spruce tree", "tallspruce", "bigspruce", "tallredwood", "tallsequoia", "tallsequoioideae"),
+        BIRCH("Birch tree", "birch", "white", "whitebark"),
+        PINE("Pine tree", "pine") {
             @Override
             public boolean generate(EditSession editSession, Vector pos) throws MaxChangedBlocksException {
                 makePineTree(editSession, pos);
                 return true;
             }
         },
-        RANDOM_REDWOOD("Random spruce", "randspruce", "randredwood", "randomredwood", "anyredwood") {
+        RANDOM_REDWOOD("Random spruce tree", "randspruce", "randredwood", "randomredwood", "anyredwood") {
             @Override
             public boolean generate(EditSession editSession, Vector pos) throws MaxChangedBlocksException {
                 TreeType[] choices = new TreeType[] {
@@ -58,23 +58,23 @@ public class TreeGenerator {
                 return choices[TreeGenerator.RANDOM.nextInt(choices.length)].generate(editSession, pos);
             }
         },
-        JUNGLE("Jungle", "jungle"),
-        SMALL_JUNGLE("Small jungle", "shortjungle", "smalljungle"),
-        SHORT_JUNGLE("Short jungle") {
+        JUNGLE("Jungle tree", "jungle"),
+        SMALL_JUNGLE("Small jungle tree", "shortjungle", "smalljungle"),
+        SHORT_JUNGLE("Short jungle tree") {
             @Override
             public boolean generate(EditSession editSession, Vector pos) throws MaxChangedBlocksException {
                 return SMALL_JUNGLE.generate(editSession, pos);
             }
         },
         JUNGLE_BUSH("Jungle bush", "junglebush", "jungleshrub"),
-        RED_MUSHROOM("Red Mushroom", "redmushroom", "redgiantmushroom"),
-        BROWN_MUSHROOM("Brown Mushroom", "brownmushroom", "browngiantmushroom"),
-        SWAMP("Swamp", "swamp", "swamptree"),
-        ACACIA("Acacia", "acacia"),
-        DARK_OAK("Dark Oak", "darkoak"),
-        MEGA_REDWOOD("Mega Redwood", "megaredwood"),
-        TALL_BIRCH("Tall Birch", "tallbirch"),
-        RANDOM("Random", "rand", "random") {
+        RED_MUSHROOM("Red mushroom", "redmushroom", "redgiantmushroom"),
+        BROWN_MUSHROOM("Brown mushroom", "brownmushroom", "browngiantmushroom"),
+        SWAMP("Swamp tree", "swamp", "swamptree"),
+        ACACIA("Acacia tree", "acacia"),
+        DARK_OAK("Dark oak tree", "darkoak"),
+        MEGA_REDWOOD("Large spruce tree", "largespruce", "megaredwood"),
+        TALL_BIRCH("Tall birch tree", "tallbirch"),
+        RANDOM("Random tree", "rand", "random") {
             @Override
             public boolean generate(EditSession editSession, Vector pos) throws MaxChangedBlocksException {
                 TreeType[] choices = new TreeType[] {
