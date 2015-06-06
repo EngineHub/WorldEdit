@@ -2,10 +2,8 @@ language: java
 notifications:
   email: false
 before_install: chmod +x gradlew
-install: true
+install: ./gradlew setupCIWorkspace -S
 matrix:
   include:
   - jdk: oraclejdk7
-    script: mvn clean package
-  - jdk: oraclejdk7
-    script: gradle build
+    script: ./gradlew build -S
