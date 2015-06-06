@@ -63,23 +63,6 @@ public interface OutputExtent {
     boolean setBiome(Vector2D position, BaseBiome biome);
 
     /**
-     * Return an {@link Operation} whose execution can be interleaved with
-     * other concurrently active operations. The returned operation should
-     * be run first in the interleave, even if it may take up the entire
-     * time for a cycle (which means the operation cannot continue on its
-     * task for forever).
-     *
-     * <p>The returned operation should return {@code true} for
-     * {@link Operation#isOpportunistic()} and return {@code null} for
-     * {@link Operation#resume(RunContext)}, otherwise the operation
-     * may be resumed repeatedly forever even if there is nothing to
-     * be done.</p>
-     *
-     * @return an operation or null if there is none to execute
-     */
-    @Nullable Operation getInterleaveOperation();
-
-    /**
      * Return an {@link Operation} that should be called to tie up loose ends
      * (such as to commit changes in a buffer).
      *

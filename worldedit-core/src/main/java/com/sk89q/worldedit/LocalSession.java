@@ -38,7 +38,6 @@ import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.OperationQueue;
 import com.sk89q.worldedit.function.operation.Operations;
 import com.sk89q.worldedit.function.operation.RunContext;
-import com.sk89q.worldedit.function.operation.UnfairOperationInterleave;
 import com.sk89q.worldedit.internal.cui.CUIEvent;
 import com.sk89q.worldedit.internal.cui.CUIRegion;
 import com.sk89q.worldedit.internal.cui.SelectionShapeEvent;
@@ -899,17 +898,8 @@ public class LocalSession {
      * @return a new operation to execute
      */
     public Operation wrapOperation(Operation operation, final EditSession editSession) {
-        Operation interleaved = editSession.getInterleaveOperation();
-        Operation result;
-
-        if (interleaved != null) {
-            result = new UnfairOperationInterleave(interleaved, operation);
-        } else {
-            result = operation;
-        }
-
         List<Operation> operations = new ArrayList<Operation>();
-        operations.add(result);
+        operations.add(operation);
 
         // These operations should not be cancelled even if the overall
         // operation is cancelled

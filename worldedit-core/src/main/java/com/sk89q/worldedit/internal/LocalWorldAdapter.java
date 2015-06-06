@@ -125,12 +125,6 @@ public class LocalWorldAdapter extends LocalWorld {
         return world.setBiome(position, biome);
     }
 
-    @Nullable
-    @Override
-    public Operation getInterleaveOperation() {
-        return world.getInterleaveOperation();
-    }
-
     @Override
     public void dropItem(Vector position, BaseItemStack item, int count) {
         world.dropItem(position, item, count);

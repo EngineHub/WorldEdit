@@ -27,11 +27,6 @@ import com.sk89q.worldedit.util.task.progress.Progress;
 public abstract class AbstractOperation implements Operation {
 
     @Override
-    public boolean isOpportunistic() {
-        return false;
-    }
-
-    @Override
     public Progress getProgress() {
         return Progress.indeterminate();
     }

@@ -39,20 +39,6 @@ import com.sk89q.worldedit.util.task.progress.ProgressObservable;
 public interface Operation extends ProgressObservable {
 
     /**
-     * Returns whether this operation is opportunistic.
-     *
-     * <p>An opportunistic operation may have tasks to perform frequently
-     * through the lifetime of another operation, but can be abandoned
-     * at any time without causing problems. Opportunistic tasks should
-     * always return {@code false} for {@link #resume(RunContext)} so
-     * that unaware implementations do not inevitably execute an opportunistic
-     * task for an infinite duration.</p>
-     *
-     * @return true if opportunistic
-     */
-    boolean isOpportunistic();
-
-    /**
      * Execute the next pass of the operation.
      *
      * <p>Implementations should inspect the provided {@link RunContext}
@@ -75,7 +61,7 @@ public interface Operation extends ProgressObservable {
     public static enum Result {
 
         /**
-         * Resume the operation again. There is no actual gaurantee that
+         * Resume the operation again. There is no actual guarantee that
          * the scheduler will resume the operation.
          */
         CONTINUE,

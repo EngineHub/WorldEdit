@@ -98,11 +98,6 @@ public final class Operations {
     public static Operation ignoreCancellation(final Operation op) {
         return new Operation() {
             @Override
-            public boolean isOpportunistic() {
-                return op.isOpportunistic();
-            }
-
-            @Override
             public Result resume(RunContext run) throws Exception {
                 return op.resume(preventCancel(run));
             }

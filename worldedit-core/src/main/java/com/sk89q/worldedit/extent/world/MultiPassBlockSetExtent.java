@@ -83,12 +83,6 @@ public class MultiPassBlockSetExtent extends AbstractDelegateExtent<SimulatedExt
             return false;
         }
     }
-
-    @Override
-    protected Operation thisInterleaveOperation() {
-        return createOperation(true);
-    }
-
     @Override
     protected Operation thisFinalizeOperation() {
         return createOperation(false);
@@ -96,11 +90,6 @@ public class MultiPassBlockSetExtent extends AbstractDelegateExtent<SimulatedExt
 
     private Operation createOperation(final boolean opportunistic) {
         return new AbstractOperation() {
-            @Override
-            public boolean isOpportunistic() {
-                return opportunistic;
-            }
-
             @Override
             public Result resume(RunContext run) throws WorldEditException {
                 if (run.isCancelled()) {

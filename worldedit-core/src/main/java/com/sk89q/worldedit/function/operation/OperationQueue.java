@@ -63,21 +63,6 @@ public class OperationQueue extends AbstractOperation {
         this(Arrays.asList(checkNotNull(operation)));
     }
 
-    @Override
-    public boolean isOpportunistic() {
-        if (!queue.isEmpty()) {
-            for (Operation operation : queue) {
-                if (!operation.isOpportunistic()) {
-                    return false;
-                }
-            }
-
-            return true;
-        } else {
-            return false;
-        }
-    }
-
     /**
      * Add a new operation to the queue.
      *

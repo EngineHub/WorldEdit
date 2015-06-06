@@ -96,12 +96,6 @@ public class NullExtent implements Extent {
 
     @Nullable
     @Override
-    public Operation getInterleaveOperation() {
-        return null;
-    }
-
-    @Nullable
-    @Override
     public Operation getFinalizeOperation() {
         return null;
     }

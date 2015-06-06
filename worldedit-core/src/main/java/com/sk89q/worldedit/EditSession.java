@@ -692,12 +692,6 @@ public class EditSession implements Extent {
         Operations.completeBlindly(getFinalizeOperation());
     }
 
-    @Nullable
-    @Override
-    public Operation getInterleaveOperation() {
-        return bypassNone.getInterleaveOperation();
-    }
-
     @Override
     @Nullable
     public Operation getFinalizeOperation() {
