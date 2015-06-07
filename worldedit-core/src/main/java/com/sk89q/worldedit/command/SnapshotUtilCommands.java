@@ -19,9 +19,9 @@
 
 package com.sk89q.worldedit.command;
 
-import com.sk89q.minecraft.util.commands.Command;
-import com.sk89q.minecraft.util.commands.CommandContext;
-import com.sk89q.minecraft.util.commands.CommandPermissions;
+import com.sk89q.intake.Command;
+import com.sk89q.intake.Require;
+import com.sk89q.intake.context.CommandContext;
 import com.sk89q.minecraft.util.commands.Logging;
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.entity.Player;
@@ -57,7 +57,7 @@ public class SnapshotUtilCommands {
             max = 1
     )
     @Logging(REGION)
-    @CommandPermissions("worldedit.snapshots.restore")
+    @Require("worldedit.snapshots.restore")
     public void restore(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
 
         LocalConfiguration config = we.getConfiguration();

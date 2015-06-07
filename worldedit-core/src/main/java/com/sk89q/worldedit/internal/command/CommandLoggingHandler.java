@@ -19,16 +19,20 @@
 
 package com.sk89q.worldedit.internal.command;
 
-import com.sk89q.minecraft.util.commands.CommandContext;
-import com.sk89q.minecraft.util.commands.CommandException;
+import com.sk89q.intake.CommandException;
+import com.sk89q.intake.context.CommandContext;
+import com.sk89q.intake.context.CommandLocals;
+import com.sk89q.intake.parametric.ParameterData;
+import com.sk89q.intake.parametric.ParameterException;
+import com.sk89q.intake.parametric.handler.AbstractInvokeListener;
+import com.sk89q.intake.parametric.handler.InvokeHandler;
 import com.sk89q.minecraft.util.commands.Logging;
-import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.IncompleteRegionException;
+import com.sk89q.worldedit.LocalSession;
+import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
-import com.sk89q.worldedit.util.command.parametric.AbstractInvokeListener;
-import com.sk89q.worldedit.util.command.parametric.InvokeHandler;
-import com.sk89q.worldedit.util.command.parametric.ParameterData;
-import com.sk89q.worldedit.util.command.parametric.ParameterException;
 
 import java.io.Closeable;
 import java.lang.reflect.Method;
@@ -59,11 +63,12 @@ public class CommandLoggingHandler extends AbstractInvokeListener implements Inv
     }
 
     @Override
-    public void preProcess(Object object, Method method, ParameterData[] parameters, CommandContext context) throws CommandException, ParameterException {
+    public boolean preProcess(Object object, Method method, ParameterData[] parameters, CommandContext context, CommandLocals locals) throws CommandException, ParameterException {
+        return true;
     }
 
     @Override
-    public void preInvoke(Object object, Method method, ParameterData[] parameters, Object[] args, CommandContext context) throws CommandException {
+    public boolean preInvoke(Object object, Method method, ParameterData[] parameters, Object[] args, CommandContext context, CommandLocals locals) throws CommandException {
         Logging loggingAnnotation = method.getAnnotation(Logging.class);
         Logging.LogMode logMode;
         StringBuilder builder = new StringBuilder();
@@ -78,13 +83,13 @@ public class CommandLoggingHandler extends AbstractInvokeListener implements Inv
         Player player;
 
         if (sender == null) {
-            return;
+            return false;
         }
 
         if (sender instanceof Player) {
             player = (Player) sender;
         } else {
-            return;
+            return false;
         }
 
         builder.append("WorldEdit: ").append(sender.getName());
@@ -135,10 +140,11 @@ public class CommandLoggingHandler extends AbstractInvokeListener implements Inv
         }
 
         logger.info(builder.toString());
+        return true;
     }
 
     @Override
-    public void postInvoke(Object object, Method method, ParameterData[] parameters, Object[] args, CommandContext context) throws CommandException {
+    public void postInvoke(Object object, Method method, ParameterData[] parameters, Object[] args, CommandContext context, CommandLocals locals) throws CommandException {
     }
 
     @Override

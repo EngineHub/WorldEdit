@@ -20,11 +20,11 @@
 package com.sk89q.worldedit.bukkit;
 
 import com.sk89q.bukkit.util.CommandInspector;
-import com.sk89q.minecraft.util.commands.CommandLocals;
+import com.sk89q.intake.CommandMapping;
+import com.sk89q.intake.Description;
+import com.sk89q.intake.context.CommandLocals;
+import com.sk89q.intake.dispatcher.Dispatcher;
 import com.sk89q.worldedit.extension.platform.Actor;
-import com.sk89q.worldedit.util.command.CommandMapping;
-import com.sk89q.worldedit.util.command.Description;
-import com.sk89q.worldedit.util.command.Dispatcher;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 

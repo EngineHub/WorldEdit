@@ -20,14 +20,14 @@
 package com.sk89q.worldedit.command;
 
 import com.google.common.util.concurrent.ListenableFuture;
-import com.sk89q.minecraft.util.commands.Command;
-import com.sk89q.minecraft.util.commands.CommandPermissions;
+import com.sk89q.intake.Command;
+import com.sk89q.intake.Require;
+import com.sk89q.intake.parametric.annotation.Optional;
+import com.sk89q.intake.parametric.annotation.Range;
+import com.sk89q.intake.parametric.annotation.Switch;
+import com.sk89q.intake.parametric.annotation.Text;
 import com.sk89q.minecraft.util.commands.Logging;
-import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.LocalSession;
-import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.function.GroundFunction;
@@ -56,10 +56,6 @@ import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.RegionOperationException;
 import com.sk89q.worldedit.util.TreeGenerator;
 import com.sk89q.worldedit.util.TreeGenerator.TreeType;
-import com.sk89q.worldedit.util.command.binding.Range;
-import com.sk89q.worldedit.util.command.binding.Switch;
-import com.sk89q.worldedit.util.command.binding.Text;
-import com.sk89q.worldedit.util.command.parametric.Optional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -90,7 +86,7 @@ public class RegionCommands {
         min = 1,
         max = 1
     )
-    @CommandPermissions("worldedit.region.set")
+    @Require("worldedit.region.set")
     @Logging(REGION)
     public void set(final Player player, LocalSession session, Pattern pattern) throws WorldEditException {
         EditSession editSession = session.createEditSession(player);
@@ -115,7 +111,7 @@ public class RegionCommands {
             min = 1,
             max = 2
     )
-    @CommandPermissions("worldedit.region.line")
+    @Require("worldedit.region.line")
     @Logging(REGION)
     public void line(Player player, EditSession editSession,
                      @Selection Region region,
@@ -149,7 +145,7 @@ public class RegionCommands {
             min = 1,
             max = 2
     )
-    @CommandPermissions("worldedit.region.curve")
+    @Require("worldedit.region.curve")
     @Logging(REGION)
     public void curve(Player player, EditSession editSession,
                       @Selection Region region,
@@ -177,7 +173,7 @@ public class RegionCommands {
         min = 1,
         max = 2
     )
-    @CommandPermissions("worldedit.region.replace")
+    @Require("worldedit.region.replace")
     @Logging(REGION)
     public void replace(Player player, EditSession editSession, @Selection Region region, @Optional Mask from, Pattern to) throws WorldEditException {
         if (from == null) {
@@ -194,7 +190,7 @@ public class RegionCommands {
         min = 1,
         max = 1
     )
-    @CommandPermissions("worldedit.region.overlay")
+    @Require("worldedit.region.overlay")
     @Logging(REGION)
     public void overlay(Player player, EditSession editSession, @Selection Region region, Pattern pattern) throws WorldEditException {
         int affected = editSession.overlayCuboidBlocks(region, Patterns.wrap(pattern));
@@ -209,7 +205,7 @@ public class RegionCommands {
         max = 1
     )
     @Logging(REGION)
-    @CommandPermissions("worldedit.region.center")
+    @Require("worldedit.region.center")
     public void center(Player player, EditSession editSession, @Selection Region region, Pattern pattern) throws WorldEditException {
         int affected = editSession.center(region, Patterns.wrap(pattern));
         player.print("Center set ("+ affected + " blocks changed)");
@@ -222,7 +218,7 @@ public class RegionCommands {
         min = 0,
         max = 0
     )
-    @CommandPermissions("worldedit.region.naturalize")
+    @Require("worldedit.region.naturalize")
     @Logging(REGION)
     public void naturalize(Player player, EditSession editSession, @Selection Region region) throws WorldEditException {
         int affected = editSession.naturalizeCuboidBlocks(region);
@@ -236,7 +232,7 @@ public class RegionCommands {
         min = 1,
         max = 1
     )
-    @CommandPermissions("worldedit.region.walls")
+    @Require("worldedit.region.walls")
     @Logging(REGION)
     public void walls(Player player, EditSession editSession, @Selection Region region, Pattern pattern) throws WorldEditException {
         int affected = editSession.makeCuboidWalls(region, Patterns.wrap(pattern));
@@ -250,7 +246,7 @@ public class RegionCommands {
         min = 1,
         max = 1
     )
-    @CommandPermissions("worldedit.region.faces")
+    @Require("worldedit.region.faces")
     @Logging(REGION)
     public void faces(Player player, EditSession editSession, @Selection Region region, Pattern pattern) throws WorldEditException {
         int affected = editSession.makeCuboidFaces(region, Patterns.wrap(pattern));
@@ -268,7 +264,7 @@ public class RegionCommands {
         min = 0,
         max = 1
     )
-    @CommandPermissions("worldedit.region.smooth")
+    @Require("worldedit.region.smooth")
     @Logging(REGION)
     public void smooth(Player player, EditSession editSession, @Selection Region region, @Optional("1") int iterations, @Switch('n') boolean affectNatural) throws WorldEditException {
         HeightMap heightMap = new HeightMap(editSession, region, affectNatural);
@@ -290,7 +286,7 @@ public class RegionCommands {
         min = 0,
         max = 3
     )
-    @CommandPermissions("worldedit.region.move")
+    @Require("worldedit.region.move")
     @Logging(ORIENTATION_REGION)
     public void move(Player player, EditSession editSession, LocalSession session,
                      @Selection Region region,
@@ -328,7 +324,7 @@ public class RegionCommands {
         min = 0,
         max = 2
     )
-    @CommandPermissions("worldedit.region.stack")
+    @Require("worldedit.region.stack")
     @Logging(ORIENTATION_REGION)
     public void stack(Player player, EditSession editSession, LocalSession session,
                       @Selection Region region,
@@ -366,7 +362,7 @@ public class RegionCommands {
         min = 0,
         max = 0
     )
-    @CommandPermissions("worldedit.regen")
+    @Require("worldedit.regen")
     @Logging(REGION)
     public void regenerateChunk(Player player, LocalSession session, EditSession editSession, @Selection Region region) throws WorldEditException {
         Mask mask = session.getMask();
@@ -392,7 +388,7 @@ public class RegionCommands {
             min = 1,
             max = -1
     )
-    @CommandPermissions("worldedit.region.deform")
+    @Require("worldedit.region.deform")
     @Logging(ALL)
     public void deform(Player player, LocalSession session, EditSession editSession,
                        @Selection Region region,
@@ -440,7 +436,7 @@ public class RegionCommands {
         min = 0,
         max = 2
     )
-    @CommandPermissions("worldedit.region.hollow")
+    @Require("worldedit.region.hollow")
     @Logging(REGION)
     public void hollow(Player player, EditSession editSession,
                        @Selection Region region,
@@ -458,7 +454,7 @@ public class RegionCommands {
             min = 0,
             max = 2
     )
-    @CommandPermissions("worldedit.region.forest")
+    @Require("worldedit.region.forest")
     @Logging(REGION)
     public void forest(Player player, EditSession editSession, @Selection Region region, @Optional("tree") TreeType type,
                        @Optional("5") @Range(min = 0, max = 100) double density) throws WorldEditException {
@@ -479,7 +475,7 @@ public class RegionCommands {
             min = 0,
             max = 1
     )
-    @CommandPermissions("worldedit.region.flora")
+    @Require("worldedit.region.flora")
     @Logging(REGION)
     public void flora(Player player, EditSession editSession, @Selection Region region, @Optional("10") @Range(min = 0, max = 100) double density) throws WorldEditException {
         density = density / 100;

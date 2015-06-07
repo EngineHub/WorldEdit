@@ -19,15 +19,15 @@
 
 package com.sk89q.worldedit.command;
 
-import com.sk89q.minecraft.util.commands.Command;
-import com.sk89q.minecraft.util.commands.CommandContext;
-import com.sk89q.minecraft.util.commands.CommandPermissions;
+import com.sk89q.intake.Command;
+import com.sk89q.intake.Require;
+import com.sk89q.intake.context.CommandContext;
+import com.sk89q.intake.parametric.annotation.Optional;
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.blocks.ItemType;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.function.mask.Mask;
-import com.sk89q.worldedit.util.command.parametric.Optional;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -55,7 +55,7 @@ public class GeneralCommands {
         min = 1,
         max = 1
     )
-    @CommandPermissions("worldedit.limit")
+    @Require("worldedit.limit")
     public void limit(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
         
         LocalConfiguration config = worldEdit.getConfiguration();
@@ -85,7 +85,7 @@ public class GeneralCommands {
         min = 0,
         max = 1
     )
-    @CommandPermissions("worldedit.fast")
+    @Require("worldedit.fast")
     public void fast(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
 
         String newState = args.getString(0, null);
@@ -115,7 +115,7 @@ public class GeneralCommands {
         min = 0,
         max = -1
     )
-    @CommandPermissions("worldedit.global-mask")
+    @Require("worldedit.global-mask")
     public void gmask(Player player, LocalSession session, EditSession editSession, @Optional Mask mask) throws WorldEditException {
         if (mask == null) {
             session.setMask((Mask) null);

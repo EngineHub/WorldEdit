@@ -19,15 +19,15 @@
 
 package com.sk89q.worldedit.command;
 
-import com.sk89q.minecraft.util.commands.Command;
-import com.sk89q.minecraft.util.commands.CommandContext;
-import com.sk89q.minecraft.util.commands.CommandPermissions;
+import com.sk89q.intake.Command;
+import com.sk89q.intake.Require;
+import com.sk89q.intake.context.CommandContext;
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.ItemType;
+import com.sk89q.worldedit.command.tool.*;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.patterns.Pattern;
-import com.sk89q.worldedit.command.tool.*;
 import com.sk89q.worldedit.util.TreeGenerator;
 
 public class ToolCommands {
@@ -57,7 +57,7 @@ public class ToolCommands {
         min = 0,
         max = 0
     )
-    @CommandPermissions("worldedit.tool.info")
+    @Require("worldedit.tool.info")
     public void info(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
 
         session.setTool(player.getItemInHand(), new QueryTool());
@@ -72,7 +72,7 @@ public class ToolCommands {
         min = 0,
         max = 1
     )
-    @CommandPermissions("worldedit.tool.tree")
+    @Require("worldedit.tool.tree")
     @SuppressWarnings("deprecation")
     public void tree(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
 
@@ -97,7 +97,7 @@ public class ToolCommands {
         min = 1,
         max = 1
     )
-    @CommandPermissions("worldedit.tool.replacer")
+    @Require("worldedit.tool.replacer")
     public void repl(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
 
         BaseBlock targetBlock = we.getBlock(player, args.getString(0));
@@ -113,7 +113,7 @@ public class ToolCommands {
         min = 0,
         max = 0
     )
-    @CommandPermissions("worldedit.tool.data-cycler")
+    @Require("worldedit.tool.data-cycler")
     public void cycler(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
 
         session.setTool(player.getItemInHand(), new BlockDataCyler());
@@ -128,7 +128,7 @@ public class ToolCommands {
         min = 2,
         max = 2
     )
-    @CommandPermissions("worldedit.tool.flood-fill")
+    @Require("worldedit.tool.flood-fill")
     public void floodFill(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
 
         LocalConfiguration config = we.getConfiguration();
@@ -152,7 +152,7 @@ public class ToolCommands {
             min = 0,
             max = 0
     )
-    @CommandPermissions("worldedit.tool.deltree")
+    @Require("worldedit.tool.deltree")
     public void deltree(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
 
     session.setTool(player.getItemInHand(), new FloatingTreeRemover());
@@ -167,7 +167,7 @@ public class ToolCommands {
             min = 0,
             max = 0
     )
-    @CommandPermissions("worldedit.tool.farwand")
+    @Require("worldedit.tool.farwand")
     public void farwand(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
 
         session.setTool(player.getItemInHand(), new DistanceWand());
@@ -181,7 +181,7 @@ public class ToolCommands {
             min = 2,
             max = 2
     )
-    @CommandPermissions("worldedit.tool.lrbuild")
+    @Require("worldedit.tool.lrbuild")
     public void longrangebuildtool(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
 
         BaseBlock secondary = we.getBlock(player, args.getString(0));

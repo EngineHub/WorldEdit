@@ -19,14 +19,10 @@
 
 package com.sk89q.worldedit.internal.command;
 
-import com.sk89q.minecraft.util.commands.CommandException;
-import com.sk89q.minecraft.util.commands.CommandLocals;
-import com.sk89q.worldedit.extension.platform.Actor;
-import com.sk89q.worldedit.extension.platform.Capability;
-import com.sk89q.worldedit.extension.platform.MultiUserPlatform;
-import com.sk89q.worldedit.extension.platform.Platform;
-import com.sk89q.worldedit.extension.platform.PlatformManager;
-import com.sk89q.worldedit.util.command.CommandCompleter;
+import com.sk89q.intake.CommandException;
+import com.sk89q.intake.completion.CommandCompleter;
+import com.sk89q.intake.context.CommandLocals;
+import com.sk89q.worldedit.extension.platform.*;
 
 import java.util.ArrayList;
 import java.util.Collection;

@@ -19,15 +19,15 @@
 
 package com.sk89q.worldedit.internal.command;
 
-import com.sk89q.minecraft.util.commands.CommandException;
+import com.sk89q.intake.CommandException;
+import com.sk89q.intake.parametric.handler.ExceptionConverterHelper;
+import com.sk89q.intake.parametric.handler.ExceptionMatch;
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.blocks.ItemType;
 import com.sk89q.worldedit.command.InsufficientArgumentsException;
 import com.sk89q.worldedit.command.tool.InvalidToolBindException;
 import com.sk89q.worldedit.internal.expression.ExpressionException;
 import com.sk89q.worldedit.regions.RegionOperationException;
-import com.sk89q.worldedit.util.command.parametric.ExceptionConverterHelper;
-import com.sk89q.worldedit.util.command.parametric.ExceptionMatch;
 import com.sk89q.worldedit.util.io.file.FileSelectionAbortedException;
 import com.sk89q.worldedit.util.io.file.FilenameResolutionException;
 import com.sk89q.worldedit.util.io.file.InvalidFilenameException;

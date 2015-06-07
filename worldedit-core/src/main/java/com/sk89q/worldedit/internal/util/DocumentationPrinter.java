@@ -19,9 +19,8 @@
 
 package com.sk89q.worldedit.internal.util;
 
-import com.sk89q.minecraft.util.commands.Command;
-import com.sk89q.minecraft.util.commands.CommandPermissions;
-import com.sk89q.minecraft.util.commands.NestedCommand;
+import com.sk89q.intake.Command;
+import com.sk89q.intake.Require;
 import com.sk89q.worldedit.command.*;
 
 import java.io.File;
@@ -30,7 +29,6 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @SuppressWarnings("UseOfSystemOutOrSystemErr")
@@ -127,9 +125,9 @@ public final class DocumentationPrinter {
                 stream.print("| " + prefix + cmd.aliases()[0]);
                 stream.print(" || ");
 
-                if (method.isAnnotationPresent(CommandPermissions.class)) {
-                    CommandPermissions perms =
-                            method.getAnnotation(CommandPermissions.class);
+                if (method.isAnnotationPresent(Require.class)) {
+                    Require perms =
+                            method.getAnnotation(Require.class);
 
                     String[] permKeys = perms.value();
                     for (int i = 0; i < permKeys.length; ++i) {
@@ -164,16 +162,6 @@ public final class DocumentationPrinter {
                 }
 
                 stream.println();
-
-                if (method.isAnnotationPresent(NestedCommand.class)) {
-                    NestedCommand nested =
-                            method.getAnnotation(NestedCommand.class);
-
-                    Class<?>[] nestedClasses = nested.value();
-                    writePermissionsWikiTable(stream,
-                            Arrays.asList(nestedClasses),
-                            prefix + cmd.aliases()[0] + " ");
-                }
             }
         }
     }

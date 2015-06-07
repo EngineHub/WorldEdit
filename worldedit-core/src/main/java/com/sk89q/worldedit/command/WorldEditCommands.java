@@ -19,10 +19,13 @@
 
 package com.sk89q.worldedit.command;
 
-import com.sk89q.minecraft.util.commands.Command;
-import com.sk89q.minecraft.util.commands.CommandContext;
-import com.sk89q.minecraft.util.commands.CommandPermissions;
-import com.sk89q.worldedit.*;
+import com.sk89q.intake.Command;
+import com.sk89q.intake.Require;
+import com.sk89q.intake.context.CommandContext;
+import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.LocalSession;
+import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.event.platform.ConfigurationLoadEvent;
 import com.sk89q.worldedit.extension.platform.Actor;
@@ -76,7 +79,7 @@ public class WorldEditCommands {
         min = 0,
         max = 0
     )
-    @CommandPermissions("worldedit.reload")
+    @Require("worldedit.reload")
     public void reload(Actor actor) throws WorldEditException {
         we.getServer().reload();
         we.getEventBus().post(new ConfigurationLoadEvent(we.getPlatformManager().queryCapability(Capability.CONFIGURATION).getConfiguration()));
@@ -117,7 +120,7 @@ public class WorldEditCommands {
         min = 0,
         max = -1
     )
-    @CommandPermissions("worldedit.help")
+    @Require("worldedit.help")
     public void help(Actor actor, CommandContext args) throws WorldEditException {
         UtilityCommands.help(args, we, actor);
     }

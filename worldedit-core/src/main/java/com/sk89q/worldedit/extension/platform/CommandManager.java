@@ -20,10 +20,15 @@
 package com.sk89q.worldedit.extension.platform;
 
 import com.google.common.base.Joiner;
-import com.sk89q.minecraft.util.commands.CommandException;
-import com.sk89q.minecraft.util.commands.CommandLocals;
-import com.sk89q.minecraft.util.commands.CommandPermissionsException;
-import com.sk89q.minecraft.util.commands.WrappedCommandException;
+import com.sk89q.intake.CommandException;
+import com.sk89q.intake.InvalidUsageException;
+import com.sk89q.intake.InvocationCommandException;
+import com.sk89q.intake.context.CommandLocals;
+import com.sk89q.intake.dispatcher.Dispatcher;
+import com.sk89q.intake.fluent.CommandGraph;
+import com.sk89q.intake.parametric.ParametricBuilder;
+import com.sk89q.intake.parametric.handler.LegacyCommandsHandler;
+import com.sk89q.intake.util.auth.AuthorizationException;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
@@ -31,17 +36,8 @@ import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.command.*;
 import com.sk89q.worldedit.event.platform.CommandEvent;
 import com.sk89q.worldedit.event.platform.CommandSuggestionEvent;
-import com.sk89q.worldedit.internal.command.ActorAuthorizer;
-import com.sk89q.worldedit.internal.command.CommandLoggingHandler;
-import com.sk89q.worldedit.internal.command.UserCommandCompleter;
-import com.sk89q.worldedit.internal.command.WorldEditBinding;
-import com.sk89q.worldedit.internal.command.WorldEditExceptionConverter;
+import com.sk89q.worldedit.internal.command.*;
 import com.sk89q.worldedit.session.request.Request;
-import com.sk89q.worldedit.util.command.Dispatcher;
-import com.sk89q.worldedit.util.command.InvalidUsageException;
-import com.sk89q.worldedit.util.command.fluent.CommandGraph;
-import com.sk89q.worldedit.util.command.parametric.LegacyCommandsHandler;
-import com.sk89q.worldedit.util.command.parametric.ParametricBuilder;
 import com.sk89q.worldedit.util.eventbus.Subscribe;
 import com.sk89q.worldedit.util.formatting.ColorCodeBuilder;
 import com.sk89q.worldedit.util.formatting.component.CommandUsageBox;
@@ -224,7 +220,7 @@ public final class CommandManager {
 
         try {
             dispatcher.call(Joiner.on(" ").join(split), locals, new String[0]);
-        } catch (CommandPermissionsException e) {
+        } catch (AuthorizationException e) {
             actor.printError("You are not permitted to do that. Are you in the right mode?");
         } catch (InvalidUsageException e) {
             if (e.isFullHelpSuggested()) {
@@ -238,7 +234,7 @@ public final class CommandManager {
                 actor.printError(message != null ? message : "The command was not used properly (no more help available).");
                 actor.printError("Usage: " + e.getSimpleUsageString("/"));
             }
-        } catch (WrappedCommandException e) {
+        } catch (InvocationCommandException e) {
             Throwable t = e.getCause();
             actor.printError("Please report this error: [See console]");
             actor.printRaw(t.getClass().getName() + ": " + t.getMessage());

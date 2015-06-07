@@ -19,8 +19,8 @@
 
 package com.sk89q.bukkit.util;
 
-import com.sk89q.minecraft.util.commands.Command;
-import com.sk89q.minecraft.util.commands.CommandPermissions;
+import com.sk89q.intake.Command;
+import com.sk89q.intake.Require;
 import com.sk89q.minecraft.util.commands.CommandsManager;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.plugin.Plugin;
@@ -45,10 +45,6 @@ public class CommandsManagerRegistration extends CommandRegistration {
         this.commands = commands;
     }
 
-    public boolean register(Class<?> clazz) {
-        return registerAll(commands.registerAndReturn(clazz));
-    }
-
     public boolean registerAll(List<Command> registered) {
         List<CommandInfo> toRegister = new ArrayList<CommandInfo>();
         for (Command command : registered) {
@@ -56,13 +52,13 @@ public class CommandsManagerRegistration extends CommandRegistration {
             Method cmdMethod = commands.getMethods().get(null).get(command.aliases()[0]);
             Map<String, Method> childMethods = commands.getMethods().get(cmdMethod);
 
-            if (cmdMethod != null && cmdMethod.isAnnotationPresent(CommandPermissions.class)) {
-                permissions = Arrays.asList(cmdMethod.getAnnotation(CommandPermissions.class).value());
+            if (cmdMethod != null && cmdMethod.isAnnotationPresent(Require.class)) {
+                permissions = Arrays.asList(cmdMethod.getAnnotation(Require.class).value());
             } else if (cmdMethod != null && childMethods != null && !childMethods.isEmpty()) {
                 permissions = new ArrayList<String>();
                 for (Method m : childMethods.values()) {
-                    if (m.isAnnotationPresent(CommandPermissions.class)) {
-                        permissions.addAll(Arrays.asList(m.getAnnotation(CommandPermissions.class).value()));
+                    if (m.isAnnotationPresent(Require.class)) {
+                        permissions.addAll(Arrays.asList(m.getAnnotation(Require.class).value()));
                     }
                 }
             }

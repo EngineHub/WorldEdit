@@ -19,14 +19,14 @@
 
 package com.sk89q.worldedit.command;
 
-import com.sk89q.minecraft.util.commands.Command;
-import com.sk89q.minecraft.util.commands.CommandPermissions;
+import com.sk89q.intake.Command;
+import com.sk89q.intake.Require;
+import com.sk89q.intake.parametric.annotation.Optional;
+import com.sk89q.intake.parametric.annotation.Range;
+import com.sk89q.intake.parametric.annotation.Switch;
+import com.sk89q.intake.parametric.annotation.Text;
 import com.sk89q.minecraft.util.commands.Logging;
-import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.LocalSession;
-import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.function.pattern.Patterns;
@@ -35,10 +35,6 @@ import com.sk89q.worldedit.internal.expression.ExpressionException;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.TreeGenerator;
 import com.sk89q.worldedit.util.TreeGenerator.TreeType;
-import com.sk89q.worldedit.util.command.binding.Range;
-import com.sk89q.worldedit.util.command.binding.Switch;
-import com.sk89q.worldedit.util.command.binding.Text;
-import com.sk89q.worldedit.util.command.parametric.Optional;
 import com.sk89q.worldedit.world.biome.BaseBiome;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -73,7 +69,7 @@ public class GenerationCommands {
         min = 2,
         max = 3
     )
-    @CommandPermissions("worldedit.generation.cylinder")
+    @Require("worldedit.generation.cylinder")
     @Logging(PLACEMENT)
     public void hcyl(Player player, LocalSession session, EditSession editSession, Pattern pattern, String radiusString, @Optional("1") int height) throws WorldEditException {
         cyl(player, session, editSession, pattern, radiusString, height, true);
@@ -92,7 +88,7 @@ public class GenerationCommands {
         min = 2,
         max = 3
     )
-    @CommandPermissions("worldedit.generation.cylinder")
+    @Require("worldedit.generation.cylinder")
     @Logging(PLACEMENT)
     public void cyl(Player player, LocalSession session, EditSession editSession, Pattern pattern, String radiusString, @Optional("1") int height, @Switch('h') boolean hollow) throws WorldEditException {
         String[] radii = radiusString.split(",");
@@ -133,7 +129,7 @@ public class GenerationCommands {
         min = 2,
         max = 3
     )
-    @CommandPermissions("worldedit.generation.sphere")
+    @Require("worldedit.generation.sphere")
     @Logging(PLACEMENT)
     public void hsphere(Player player, LocalSession session, EditSession editSession, Pattern pattern, String radiusString, @Optional("false") boolean raised) throws WorldEditException {
         sphere(player, session, editSession, pattern, radiusString, raised, true);
@@ -152,7 +148,7 @@ public class GenerationCommands {
         min = 2,
         max = 3
     )
-    @CommandPermissions("worldedit.generation.sphere")
+    @Require("worldedit.generation.sphere")
     @Logging(PLACEMENT)
     public void sphere(Player player, LocalSession session, EditSession editSession, Pattern pattern, String radiusString, @Optional("false") boolean raised, @Switch('h') boolean hollow) throws WorldEditException {
         String[] radii = radiusString.split(",");
@@ -194,7 +190,7 @@ public class GenerationCommands {
         min = 0,
         max = 3
     )
-    @CommandPermissions("worldedit.generation.forest")
+    @Require("worldedit.generation.forest")
     @Logging(POSITION)
     @SuppressWarnings("deprecation")
     public void forestGen(Player player, LocalSession session, EditSession editSession, @Optional("10") int size, @Optional("tree") TreeType type, @Optional("5") double density) throws WorldEditException {
@@ -210,7 +206,7 @@ public class GenerationCommands {
         min = 0,
         max = 1
     )
-    @CommandPermissions("worldedit.generation.pumpkins")
+    @Require("worldedit.generation.pumpkins")
     @Logging(POSITION)
     public void pumpkins(Player player, LocalSession session, EditSession editSession, @Optional("10") int apothem) throws WorldEditException {
         int affected = editSession.makePumpkinPatches(session.getPlacementPosition(player), apothem);
@@ -224,7 +220,7 @@ public class GenerationCommands {
             min = 2,
             max = 2
     )
-    @CommandPermissions("worldedit.generation.pyramid")
+    @Require("worldedit.generation.pyramid")
     @Logging(PLACEMENT)
     public void hollowPyramid(Player player, LocalSession session, EditSession editSession, Pattern pattern, @Range(min = 1) int size) throws WorldEditException {
         pyramid(player, session, editSession, pattern, size, true);
@@ -238,7 +234,7 @@ public class GenerationCommands {
         min = 2,
         max = 2
     )
-    @CommandPermissions("worldedit.generation.pyramid")
+    @Require("worldedit.generation.pyramid")
     @Logging(PLACEMENT)
     public void pyramid(Player player, LocalSession session, EditSession editSession, Pattern pattern, @Range(min = 1) int size, @Switch('h') boolean hollow) throws WorldEditException {
         Vector pos = session.getPlacementPosition(player);
@@ -267,7 +263,7 @@ public class GenerationCommands {
         min = 2,
         max = -1
     )
-    @CommandPermissions("worldedit.generation.shape")
+    @Require("worldedit.generation.shape")
     @Logging(ALL)
     public void generate(Player player, LocalSession session, EditSession editSession,
                          @Selection Region region,
@@ -333,7 +329,7 @@ public class GenerationCommands {
         min = 2,
         max = -1
     )
-    @CommandPermissions({"worldedit.generation.shape", "worldedit.biome.set"})
+    @Require({"worldedit.generation.shape", "worldedit.biome.set"})
     @Logging(ALL)
     public void generateBiome(Player player, LocalSession session, EditSession editSession,
                               @Selection Region region,

@@ -19,9 +19,9 @@
 
 package com.sk89q.worldedit.internal.command;
 
-import com.sk89q.minecraft.util.commands.CommandLocals;
+import com.sk89q.intake.context.CommandLocals;
+import com.sk89q.intake.util.auth.Authorizer;
 import com.sk89q.worldedit.extension.platform.Actor;
-import com.sk89q.worldedit.util.auth.Authorizer;
 
 /**
  * Implementation of an authorizer that uses {@link Actor#hasPermission(String)}.

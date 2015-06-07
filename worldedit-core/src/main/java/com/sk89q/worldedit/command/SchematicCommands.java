@@ -19,17 +19,12 @@
 
 package com.sk89q.worldedit.command;
 
-import com.sk89q.minecraft.util.commands.Command;
-import com.sk89q.minecraft.util.commands.CommandContext;
-import com.sk89q.minecraft.util.commands.CommandException;
-import com.sk89q.minecraft.util.commands.CommandPermissions;
-import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.util.io.file.FilenameException;
-import com.sk89q.worldedit.util.io.file.FilenameResolutionException;
-import com.sk89q.worldedit.LocalConfiguration;
-import com.sk89q.worldedit.LocalSession;
-import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.intake.Command;
+import com.sk89q.intake.CommandException;
+import com.sk89q.intake.Require;
+import com.sk89q.intake.context.CommandContext;
+import com.sk89q.intake.parametric.annotation.Optional;
+import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extent.clipboard.BlockArrayClipboard;
@@ -41,16 +36,11 @@ import com.sk89q.worldedit.function.operation.Operations;
 import com.sk89q.worldedit.math.transform.Transform;
 import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.util.io.Closer;
-import com.sk89q.worldedit.util.command.parametric.Optional;
+import com.sk89q.worldedit.util.io.file.FilenameException;
+import com.sk89q.worldedit.util.io.file.FilenameResolutionException;
 import com.sk89q.worldedit.world.registry.WorldData;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileFilter;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.logging.Level;
@@ -82,7 +72,7 @@ public class SchematicCommands {
             desc = "Load a schematic into your clipboard"
     )
     @Deprecated
-    @CommandPermissions({ "worldedit.clipboard.load", "worldedit.schematic.load" })
+    @Require({ "worldedit.clipboard.load", "worldedit.schematic.load" })
     public void load(Player player, LocalSession session, @Optional("schematic") String formatName, String filename) throws FilenameException {
         LocalConfiguration config = worldEdit.getConfiguration();
 
@@ -136,7 +126,7 @@ public class SchematicCommands {
             desc = "Save a schematic into your clipboard"
     )
     @Deprecated
-    @CommandPermissions({ "worldedit.clipboard.save", "worldedit.schematic.save" })
+    @Require({ "worldedit.clipboard.save", "worldedit.schematic.save" })
     public void save(Player player, LocalSession session, @Optional("schematic") String formatName, String filename) throws CommandException, WorldEditException {
         LocalConfiguration config = worldEdit.getConfiguration();
 
@@ -199,7 +189,7 @@ public class SchematicCommands {
             min = 1,
             max = 1
     )
-    @CommandPermissions("worldedit.schematic.delete")
+    @Require("worldedit.schematic.delete")
     public void delete(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
 
         LocalConfiguration config = worldEdit.getConfiguration();
@@ -226,7 +216,7 @@ public class SchematicCommands {
             desc = "List available formats",
             max = 0
     )
-    @CommandPermissions("worldedit.schematic.formats")
+    @Require("worldedit.schematic.formats")
     public void formats(Actor actor) throws WorldEditException {
         actor.print("Available clipboard formats (Name: Lookup names)");
         StringBuilder builder;
@@ -255,7 +245,7 @@ public class SchematicCommands {
                     " -d sorts by date, oldest first\n" +
                     " -n sorts by date, newest first\n"
     )
-    @CommandPermissions("worldedit.schematic.list")
+    @Require("worldedit.schematic.list")
     public void list(Actor actor, CommandContext args) throws WorldEditException {
         File dir = worldEdit.getWorkingDirectoryFile(worldEdit.getConfiguration().saveDir);
         File[] files = dir.listFiles(new FileFilter(){

@@ -19,10 +19,13 @@
 
 package com.sk89q.worldedit.command;
 
-import com.sk89q.minecraft.util.commands.Command;
-import com.sk89q.minecraft.util.commands.CommandContext;
-import com.sk89q.minecraft.util.commands.CommandPermissions;
-import com.sk89q.worldedit.*;
+import com.sk89q.intake.Command;
+import com.sk89q.intake.Require;
+import com.sk89q.intake.context.CommandContext;
+import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.LocalSession;
+import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.entity.Player;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -51,7 +54,7 @@ public class HistoryCommands {
         min = 0,
         max = 2
     )
-    @CommandPermissions("worldedit.history.undo")
+    @Require("worldedit.history.undo")
     public void undo(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
         int times = Math.max(1, args.getInteger(0, 1));
         for (int i = 0; i < times; ++i) {
@@ -84,7 +87,7 @@ public class HistoryCommands {
         min = 0,
         max = 2
     )
-    @CommandPermissions("worldedit.history.redo")
+    @Require("worldedit.history.redo")
     public void redo(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
         
         int times = Math.max(1, args.getInteger(0, 1));
@@ -118,7 +121,7 @@ public class HistoryCommands {
         min = 0,
         max = 0
     )
-    @CommandPermissions("worldedit.history.clear")
+    @Require("worldedit.history.clear")
     public void clearHistory(Player player, LocalSession session, EditSession editSession) throws WorldEditException {
         session.clearHistory();
         player.print("History cleared.");

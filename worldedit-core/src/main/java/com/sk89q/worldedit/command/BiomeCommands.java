@@ -19,16 +19,12 @@
 
 package com.sk89q.worldedit.command;
 
-import com.sk89q.minecraft.util.commands.Command;
-import com.sk89q.minecraft.util.commands.CommandContext;
-import com.sk89q.minecraft.util.commands.CommandPermissions;
+import com.sk89q.intake.Command;
+import com.sk89q.intake.Require;
+import com.sk89q.intake.context.CommandContext;
+import com.sk89q.intake.parametric.annotation.Switch;
 import com.sk89q.minecraft.util.commands.Logging;
-import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.LocalSession;
-import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.Vector2D;
-import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.function.FlatRegionFunction;
 import com.sk89q.worldedit.function.FlatRegionMaskingFilter;
@@ -41,7 +37,6 @@ import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.FlatRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.Regions;
-import com.sk89q.worldedit.util.command.binding.Switch;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.biome.BaseBiome;
 import com.sk89q.worldedit.world.biome.BiomeData;
@@ -77,7 +72,7 @@ public class BiomeCommands {
         desc = "Gets all biomes available.",
         max = 1
     )
-    @CommandPermissions("worldedit.biome.list")
+    @Require("worldedit.biome.list")
     public void biomeList(Player player, CommandContext args) throws WorldEditException {
         int page;
         int offset;
@@ -122,7 +117,7 @@ public class BiomeCommands {
             "-p use the block you are currently in",
         max = 0
     )
-    @CommandPermissions("worldedit.biome.info")
+    @Require("worldedit.biome.info")
     public void biomeInfo(Player player, LocalSession session, CommandContext args) throws WorldEditException {
         BiomeRegistry biomeRegistry = player.getWorld().getWorldData().getBiomeRegistry();
         Set<BaseBiome> biomes = new HashSet<BaseBiome>();
@@ -183,7 +178,7 @@ public class BiomeCommands {
                     "-p use the block you are currently in"
     )
     @Logging(REGION)
-    @CommandPermissions("worldedit.biome.set")
+    @Require("worldedit.biome.set")
     public void setBiome(Player player, LocalSession session, EditSession editSession, BaseBiome target, @Switch('p') boolean atPosition) throws WorldEditException {
         World world = player.getWorld();
         Region region;

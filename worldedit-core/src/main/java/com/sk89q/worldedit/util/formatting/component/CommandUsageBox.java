@@ -19,13 +19,13 @@
 
 package com.sk89q.worldedit.util.formatting.component;
 
-import com.sk89q.minecraft.util.commands.CommandLocals;
+import com.sk89q.intake.CommandCallable;
+import com.sk89q.intake.CommandMapping;
+import com.sk89q.intake.Description;
+import com.sk89q.intake.context.CommandLocals;
+import com.sk89q.intake.dispatcher.Dispatcher;
+import com.sk89q.intake.util.PrimaryAliasComparator;
 import com.sk89q.worldedit.extension.platform.CommandManager;
-import com.sk89q.worldedit.util.command.CommandCallable;
-import com.sk89q.worldedit.util.command.CommandMapping;
-import com.sk89q.worldedit.util.command.Description;
-import com.sk89q.worldedit.util.command.Dispatcher;
-import com.sk89q.worldedit.util.command.PrimaryAliasComparator;
 import com.sk89q.worldedit.util.formatting.StyledFragment;
 
 import javax.annotation.Nullable;

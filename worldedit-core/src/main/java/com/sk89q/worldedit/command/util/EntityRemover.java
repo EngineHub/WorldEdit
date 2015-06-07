@@ -19,7 +19,7 @@
 
 package com.sk89q.worldedit.command.util;
 
-import com.sk89q.minecraft.util.commands.CommandException;
+import com.sk89q.intake.CommandException;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.entity.metadata.EntityType;

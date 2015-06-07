@@ -21,9 +21,9 @@
 
 package com.sk89q.worldedit.command;
 
-import com.sk89q.minecraft.util.commands.Command;
-import com.sk89q.minecraft.util.commands.CommandContext;
-import com.sk89q.minecraft.util.commands.CommandPermissions;
+import com.sk89q.intake.Command;
+import com.sk89q.intake.Require;
+import com.sk89q.intake.context.CommandContext;
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.world.snapshot.InvalidSnapshotException;
@@ -59,7 +59,7 @@ public class SnapshotCommands {
             min = 0,
             max = 1
     )
-    @CommandPermissions("worldedit.snapshots.list")
+    @Require("worldedit.snapshots.list")
     public void list(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
 
         LocalConfiguration config = we.getConfiguration();
@@ -109,7 +109,7 @@ public class SnapshotCommands {
             min = 1,
             max = 1
     )
-    @CommandPermissions("worldedit.snapshots.restore")
+    @Require("worldedit.snapshots.restore")
     public void use(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
 
         LocalConfiguration config = we.getConfiguration();
@@ -152,7 +152,7 @@ public class SnapshotCommands {
             min = 1,
             max = 1
     )
-    @CommandPermissions("worldedit.snapshots.restore")
+    @Require("worldedit.snapshots.restore")
     public void sel(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
         LocalConfiguration config = we.getConfiguration();
 
@@ -199,7 +199,7 @@ public class SnapshotCommands {
             min = 1,
             max = -1
     )
-    @CommandPermissions("worldedit.snapshots.restore")
+    @Require("worldedit.snapshots.restore")
     public void before(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
 
         LocalConfiguration config = we.getConfiguration();
@@ -238,7 +238,7 @@ public class SnapshotCommands {
             min = 1,
             max = -1
     )
-    @CommandPermissions("worldedit.snapshots.restore")
+    @Require("worldedit.snapshots.restore")
     public void after(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
 
         LocalConfiguration config = we.getConfiguration();

@@ -19,8 +19,8 @@
 
 package com.sk89q.worldedit.command;
 
-import com.sk89q.minecraft.util.commands.Command;
-import com.sk89q.minecraft.util.commands.CommandPermissions;
+import com.sk89q.intake.Command;
+import com.sk89q.intake.Require;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.util.formatting.ColorCodeBuilder;
@@ -63,7 +63,7 @@ public class OperationCommands {
     }
 
     @Command(aliases = {"/cancelall"}, desc = "Cancel a task")
-    @CommandPermissions("worldedit.operation.cancelall")
+    @Require("worldedit.operation.cancelall")
     public void cancelAllTasks(Actor actor) {
         Supervisor supervisor = worldEdit.getSupervisor();
         List<Task<?>> tasks = supervisor.getTasks();

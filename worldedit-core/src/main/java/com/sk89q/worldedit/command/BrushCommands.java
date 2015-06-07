@@ -19,21 +19,16 @@
 
 package com.sk89q.worldedit.command;
 
-import com.sk89q.minecraft.util.commands.Command;
-import com.sk89q.minecraft.util.commands.CommandContext;
-import com.sk89q.minecraft.util.commands.CommandPermissions;
+import com.sk89q.intake.Command;
+import com.sk89q.intake.Require;
+import com.sk89q.intake.context.CommandContext;
+import com.sk89q.intake.parametric.annotation.Optional;
+import com.sk89q.intake.parametric.annotation.Switch;
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.command.tool.BrushTool;
-import com.sk89q.worldedit.command.tool.brush.ButcherBrush;
-import com.sk89q.worldedit.command.tool.brush.ClipboardBrush;
-import com.sk89q.worldedit.command.tool.brush.CylinderBrush;
-import com.sk89q.worldedit.command.tool.brush.GravityBrush;
-import com.sk89q.worldedit.command.tool.brush.HollowCylinderBrush;
-import com.sk89q.worldedit.command.tool.brush.HollowSphereBrush;
-import com.sk89q.worldedit.command.tool.brush.SmoothBrush;
-import com.sk89q.worldedit.command.tool.brush.SphereBrush;
+import com.sk89q.worldedit.command.tool.brush.*;
 import com.sk89q.worldedit.command.util.CreatureButcher;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
@@ -41,8 +36,6 @@ import com.sk89q.worldedit.function.mask.BlockMask;
 import com.sk89q.worldedit.function.pattern.BlockPattern;
 import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.session.ClipboardHolder;
-import com.sk89q.worldedit.util.command.binding.Switch;
-import com.sk89q.worldedit.util.command.parametric.Optional;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -74,7 +67,7 @@ public class BrushCommands {
         min = 1,
         max = 2
     )
-    @CommandPermissions("worldedit.brush.sphere")
+    @Require("worldedit.brush.sphere")
     public void sphereBrush(Player player, LocalSession session, EditSession editSession, Pattern fill,
                             @Optional("2") double radius, @Switch('h') boolean hollow) throws WorldEditException {
         worldEdit.checkMaxBrushRadius(radius);
@@ -103,7 +96,7 @@ public class BrushCommands {
         min = 1,
         max = 3
     )
-    @CommandPermissions("worldedit.brush.cylinder")
+    @Require("worldedit.brush.cylinder")
     public void cylinderBrush(Player player, LocalSession session, EditSession editSession, Pattern fill,
                               @Optional("2") double radius, @Optional("1") int height, @Switch('h') boolean hollow) throws WorldEditException {
         worldEdit.checkMaxBrushRadius(radius);
@@ -133,7 +126,7 @@ public class BrushCommands {
             "With the flag, then the paste will appear relative to where you had " +
             "stood relative to the copied area when you copied it."
     )
-    @CommandPermissions("worldedit.brush.clipboard")
+    @Require("worldedit.brush.clipboard")
     public void clipboardBrush(Player player, LocalSession session, EditSession editSession, @Switch('a') boolean ignoreAir, @Switch('p') boolean usingOrigin) throws WorldEditException {
         ClipboardHolder holder = session.getClipboard();
         Clipboard clipboard = holder.getClipboard();
@@ -161,7 +154,7 @@ public class BrushCommands {
         min = 0,
         max = 2
     )
-    @CommandPermissions("worldedit.brush.smooth")
+    @Require("worldedit.brush.smooth")
     public void smoothBrush(Player player, LocalSession session, EditSession editSession,
                             @Optional("2") double radius, @Optional("4") int iterations, @Switch('n')
                             boolean naturalBlocksOnly) throws WorldEditException {
@@ -183,7 +176,7 @@ public class BrushCommands {
         min = 0,
         max = 1
     )
-    @CommandPermissions("worldedit.brush.ex")
+    @Require("worldedit.brush.ex")
     public void extinguishBrush(Player player, LocalSession session, EditSession editSession, @Optional("5") double radius) throws WorldEditException {
         worldEdit.checkMaxBrushRadius(radius);
 
@@ -209,7 +202,7 @@ public class BrushCommands {
             min = 0,
             max = 1
     )
-    @CommandPermissions("worldedit.brush.gravity")
+    @Require("worldedit.brush.gravity")
     public void gravityBrush(Player player, LocalSession session, EditSession editSession, @Optional("5") double radius, @Switch('h') boolean fromMaxY) throws WorldEditException {
         worldEdit.checkMaxBrushRadius(radius);
 
@@ -240,7 +233,7 @@ public class BrushCommands {
             min = 0,
             max = 1
     )
-    @CommandPermissions("worldedit.brush.butcher")
+    @Require("worldedit.brush.butcher")
     public void butcherBrush(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
         LocalConfiguration config = worldEdit.getConfiguration();
 

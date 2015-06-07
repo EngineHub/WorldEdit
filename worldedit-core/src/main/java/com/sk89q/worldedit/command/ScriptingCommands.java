@@ -19,9 +19,9 @@
 
 package com.sk89q.worldedit.command;
 
-import com.sk89q.minecraft.util.commands.Command;
-import com.sk89q.minecraft.util.commands.CommandContext;
-import com.sk89q.minecraft.util.commands.CommandPermissions;
+import com.sk89q.intake.Command;
+import com.sk89q.intake.Require;
+import com.sk89q.intake.context.CommandContext;
 import com.sk89q.minecraft.util.commands.Logging;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalSession;
@@ -58,7 +58,7 @@ public class ScriptingCommands {
         min = 1,
         max = -1
     )
-    @CommandPermissions("worldedit.scripting.execute")
+    @Require("worldedit.scripting.execute")
     @Logging(ALL)
     public void execute(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
 
@@ -85,7 +85,7 @@ public class ScriptingCommands {
         min = 0,
         max = -1
     )
-    @CommandPermissions("worldedit.scripting.execute")
+    @Require("worldedit.scripting.execute")
     @Logging(ALL)
     public void executeLast(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
         

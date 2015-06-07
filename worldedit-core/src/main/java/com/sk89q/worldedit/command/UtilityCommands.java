@@ -20,17 +20,13 @@
 package com.sk89q.worldedit.command;
 
 import com.google.common.base.Joiner;
-import com.sk89q.minecraft.util.commands.Command;
-import com.sk89q.minecraft.util.commands.CommandContext;
-import com.sk89q.minecraft.util.commands.CommandException;
-import com.sk89q.minecraft.util.commands.CommandPermissions;
+import com.sk89q.intake.*;
+import com.sk89q.intake.context.CommandContext;
+import com.sk89q.intake.dispatcher.Dispatcher;
+import com.sk89q.intake.parametric.annotation.Text;
+import com.sk89q.intake.util.PrimaryAliasComparator;
 import com.sk89q.minecraft.util.commands.Logging;
-import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.LocalConfiguration;
-import com.sk89q.worldedit.LocalSession;
-import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.command.util.CreatureButcher;
 import com.sk89q.worldedit.command.util.EntityRemover;
@@ -50,11 +46,6 @@ import com.sk89q.worldedit.patterns.SingleBlockPattern;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.CylinderRegion;
 import com.sk89q.worldedit.regions.Region;
-import com.sk89q.worldedit.util.command.CommandCallable;
-import com.sk89q.worldedit.util.command.CommandMapping;
-import com.sk89q.worldedit.util.command.Dispatcher;
-import com.sk89q.worldedit.util.command.PrimaryAliasComparator;
-import com.sk89q.worldedit.util.command.binding.Text;
 import com.sk89q.worldedit.util.formatting.ColorCodeBuilder;
 import com.sk89q.worldedit.util.formatting.Style;
 import com.sk89q.worldedit.util.formatting.StyledFragment;
@@ -88,7 +79,7 @@ public class UtilityCommands {
         min = 2,
         max = 3
     )
-    @CommandPermissions("worldedit.fill")
+    @Require("worldedit.fill")
     @Logging(PLACEMENT)
     public void fill(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
 
@@ -116,7 +107,7 @@ public class UtilityCommands {
         min = 2,
         max = 3
     )
-    @CommandPermissions("worldedit.fill.recursive")
+    @Require("worldedit.fill.recursive")
     @Logging(PLACEMENT)
     public void fillr(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
 
@@ -144,7 +135,7 @@ public class UtilityCommands {
         min = 1,
         max = 1
     )
-    @CommandPermissions("worldedit.drain")
+    @Require("worldedit.drain")
     @Logging(PLACEMENT)
     public void drain(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
 
@@ -162,7 +153,7 @@ public class UtilityCommands {
         min = 1,
         max = 1
     )
-    @CommandPermissions("worldedit.fixlava")
+    @Require("worldedit.fixlava")
     @Logging(PLACEMENT)
     public void fixLava(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
 
@@ -180,7 +171,7 @@ public class UtilityCommands {
         min = 1,
         max = 1
     )
-    @CommandPermissions("worldedit.fixwater")
+    @Require("worldedit.fixwater")
     @Logging(PLACEMENT)
     public void fixWater(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
 
@@ -198,7 +189,7 @@ public class UtilityCommands {
         min = 0,
         max = 2
     )
-    @CommandPermissions("worldedit.removeabove")
+    @Require("worldedit.removeabove")
     @Logging(PLACEMENT)
     public void removeAbove(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
         
@@ -219,7 +210,7 @@ public class UtilityCommands {
         min = 0,
         max = 2
     )
-    @CommandPermissions("worldedit.removebelow")
+    @Require("worldedit.removebelow")
     @Logging(PLACEMENT)
     public void removeBelow(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
 
@@ -239,7 +230,7 @@ public class UtilityCommands {
         min = 1,
         max = 2
     )
-    @CommandPermissions("worldedit.removenear")
+    @Require("worldedit.removenear")
     @Logging(PLACEMENT)
     public void removeNear(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
 
@@ -259,7 +250,7 @@ public class UtilityCommands {
         min = 3,
         max = 3
     )
-    @CommandPermissions("worldedit.replacenear")
+    @Require("worldedit.replacenear")
     @Logging(PLACEMENT)
     public void replaceNear(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
         
@@ -295,7 +286,7 @@ public class UtilityCommands {
         min = 0,
         max = 1
     )
-    @CommandPermissions("worldedit.snow")
+    @Require("worldedit.snow")
     @Logging(PLACEMENT)
     public void snow(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
 
@@ -312,7 +303,7 @@ public class UtilityCommands {
         min = 0,
         max = 1
     )
-    @CommandPermissions("worldedit.thaw")
+    @Require("worldedit.thaw")
     @Logging(PLACEMENT)
     public void thaw(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
 
@@ -330,7 +321,7 @@ public class UtilityCommands {
         min = 0,
         max = 1
     )
-    @CommandPermissions("worldedit.green")
+    @Require("worldedit.green")
     @Logging(PLACEMENT)
     public void green(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
 
@@ -348,7 +339,7 @@ public class UtilityCommands {
             min = 0,
             max = 1
         )
-    @CommandPermissions("worldedit.extinguish")
+    @Require("worldedit.extinguish")
     @Logging(PLACEMENT)
     public void extinguish(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
 
@@ -383,7 +374,7 @@ public class UtilityCommands {
         min = 0,
         max = 1
     )
-    @CommandPermissions("worldedit.butcher")
+    @Require("worldedit.butcher")
     @Logging(PLACEMENT)
     public void butcher(Actor actor, CommandContext args) throws WorldEditException {
         LocalConfiguration config = we.getConfiguration();
@@ -452,7 +443,7 @@ public class UtilityCommands {
         min = 2,
         max = 2
     )
-    @CommandPermissions("worldedit.remove")
+    @Require("worldedit.remove")
     @Logging(PLACEMENT)
     public void remove(Actor actor, CommandContext args) throws WorldEditException, CommandException {
         String typeStr = args.getString(0);
@@ -530,7 +521,7 @@ public class UtilityCommands {
         min = 0,
         max = -1
     )
-    @CommandPermissions("worldedit.help")
+    @Require("worldedit.help")
     public void help(Actor actor, CommandContext args) throws WorldEditException {
         help(args, we, actor);
     }

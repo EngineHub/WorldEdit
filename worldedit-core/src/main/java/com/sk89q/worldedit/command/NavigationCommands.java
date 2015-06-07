@@ -19,18 +19,13 @@
 
 package com.sk89q.worldedit.command;
 
-import com.sk89q.minecraft.util.commands.Command;
-import com.sk89q.minecraft.util.commands.CommandContext;
-import com.sk89q.minecraft.util.commands.CommandPermissions;
+import com.sk89q.intake.Command;
+import com.sk89q.intake.Require;
+import com.sk89q.intake.context.CommandContext;
+import com.sk89q.intake.parametric.annotation.Optional;
 import com.sk89q.minecraft.util.commands.Logging;
-import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.LocalConfiguration;
-import com.sk89q.worldedit.LocalSession;
-import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.WorldVector;
+import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.entity.Player;
-import com.sk89q.worldedit.util.command.parametric.Optional;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.sk89q.minecraft.util.commands.Logging.LogMode.POSITION;
@@ -60,7 +55,7 @@ public class NavigationCommands {
         min = 0,
         max = 0
     )
-    @CommandPermissions("worldedit.navigation.unstuck")
+    @Require("worldedit.navigation.unstuck")
     public void unstuck(Player player) throws WorldEditException {
         player.print("There you go!");
         player.findFreePosition();
@@ -73,7 +68,7 @@ public class NavigationCommands {
         min = 0,
         max = 1
     )
-    @CommandPermissions("worldedit.navigation.ascend")
+    @Require("worldedit.navigation.ascend")
     public void ascend(Player player, @Optional("1") int levelsToAscend) throws WorldEditException {
         int ascentLevels = 1;
         while (player.ascendLevel() && levelsToAscend != ascentLevels) {
@@ -93,7 +88,7 @@ public class NavigationCommands {
         min = 0,
         max = 1
     )
-    @CommandPermissions("worldedit.navigation.descend")
+    @Require("worldedit.navigation.descend")
     public void descend(Player player, @Optional("1") int levelsToDescend) throws WorldEditException {
         int descentLevels = 1;
         while (player.descendLevel() && levelsToDescend != descentLevels) {
@@ -114,7 +109,7 @@ public class NavigationCommands {
         min = 0,
         max = 1
     )
-    @CommandPermissions("worldedit.navigation.ceiling")
+    @Require("worldedit.navigation.ceiling")
     @Logging(POSITION)
     public void ceiling(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
 
@@ -136,7 +131,7 @@ public class NavigationCommands {
         min = 0,
         max = 0
     )
-    @CommandPermissions("worldedit.navigation.thru.command")
+    @Require("worldedit.navigation.thru.command")
     public void thru(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
         if (player.passThroughForwardWall(6)) {
             player.print("Whoosh!");
@@ -152,7 +147,7 @@ public class NavigationCommands {
         min = 0,
         max = 0
     )
-    @CommandPermissions("worldedit.navigation.jumpto.command")
+    @Require("worldedit.navigation.jumpto.command")
     public void jumpTo(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
 
         WorldVector pos = player.getSolidBlockTrace(300);
@@ -172,7 +167,7 @@ public class NavigationCommands {
         min = 1,
         max = 1
     )
-    @CommandPermissions("worldedit.navigation.up")
+    @Require("worldedit.navigation.up")
     @Logging(POSITION)
     public void up(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
         final int distance = args.getInteger(0);
