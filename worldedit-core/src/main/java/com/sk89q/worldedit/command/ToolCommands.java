@@ -191,4 +191,18 @@ public class ToolCommands {
         player.print("Left-click set to " + ItemType.toName(secondary.getType()) + "; right-click set to "
                 + ItemType.toName(primary.getType()) + ".");
     }
+
+    @Command(
+            aliases = { "command" },
+            usage = "<script> <args>",
+            desc = "Command tool",
+            min = 1,
+            max = 10
+    )
+    @CommandPermissions("worldedit.tool.command")
+    public void command(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
+
+        session.setTool(player.getItemInHand(), new CommandTool(args));
+        player.print(args.getString(0) + " tool bound to " + ItemType.toHeldName(player.getItemInHand()) + ".");
+    }
 }
