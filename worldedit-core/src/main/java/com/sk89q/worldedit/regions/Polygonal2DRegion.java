@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.regions;
 
+import com.google.common.collect.ImmutableList;
 import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.BlockVector2D;
 import com.sk89q.worldedit.LocalWorld;
@@ -105,7 +106,7 @@ public class Polygonal2DRegion extends AbstractRegion implements FlatRegion {
      * @return a list of points
      */
     public List<BlockVector2D> getPoints() {
-        return Collections.unmodifiableList(points);
+        return ImmutableList.copyOf(points);
     }
 
     /**

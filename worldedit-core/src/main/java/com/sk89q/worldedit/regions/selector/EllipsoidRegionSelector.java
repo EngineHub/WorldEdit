@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.regions.selector;
 
+import com.google.common.collect.ImmutableList;
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.internal.cui.CUIRegion;
@@ -31,7 +32,6 @@ import com.sk89q.worldedit.regions.selector.limit.SelectorLimits;
 import com.sk89q.worldedit.world.World;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
 import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -201,7 +201,7 @@ public class EllipsoidRegionSelector extends com.sk89q.worldedit.regions.Ellipso
 
     @Override
     public List<String> getInformationLines() {
-        final List<String> lines = new ArrayList<String>();
+        ImmutableList.Builder<String> lines = ImmutableList.builder();
 
         final Vector center = region.getCenter();
         if (center.lengthSq() > 0) {
@@ -213,7 +213,7 @@ public class EllipsoidRegionSelector extends com.sk89q.worldedit.regions.Ellipso
             lines.add("X/Y/Z radius: " + radius);
         }
 
-        return lines;
+        return lines.build();
     }
 
     @Override

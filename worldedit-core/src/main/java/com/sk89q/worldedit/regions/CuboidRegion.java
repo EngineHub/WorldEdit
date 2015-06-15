@@ -19,14 +19,13 @@
 
 package com.sk89q.worldedit.regions;
 
+import com.google.common.collect.ImmutableSet;
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.storage.ChunkStore;
 
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
-
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -295,7 +294,7 @@ public class CuboidRegion extends AbstractRegion implements FlatRegion {
 
     @Override
     public Set<Vector2D> getChunks() {
-        Set<Vector2D> chunks = new HashSet<Vector2D>();
+        ImmutableSet.Builder<Vector2D> chunks = ImmutableSet.builder();
 
         Vector min = getMinimumPoint();
         Vector max = getMaximumPoint();
@@ -307,12 +306,12 @@ public class CuboidRegion extends AbstractRegion implements FlatRegion {
             }
         }
 
-        return chunks;
+        return chunks.build();
     }
 
     @Override
     public Set<Vector> getChunkCubes() {
-        Set<Vector> chunks = new HashSet<Vector>();
+        ImmutableSet.Builder<Vector> chunks = ImmutableSet.builder();
 
         Vector min = getMinimumPoint();
         Vector max = getMaximumPoint();
@@ -326,7 +325,7 @@ public class CuboidRegion extends AbstractRegion implements FlatRegion {
             }
         }
 
-        return chunks;
+        return chunks.build();
     }
 
     @Override
