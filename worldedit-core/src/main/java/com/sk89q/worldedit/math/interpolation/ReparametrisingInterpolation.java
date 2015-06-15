@@ -28,6 +28,7 @@ import java.util.Map.Entry;
 import java.util.TreeMap;
 import java.util.logging.Logger;
 
+import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
@@ -86,8 +87,7 @@ public class ReparametrisingInterpolation implements Interpolation {
     }
 
     private double arcToParameter(double arc) {
-        if (cache.isEmpty())
-            throw new IllegalStateException("Must call setNodes first.");
+        checkState(!cache.isEmpty(), "Must call setNodes first.");
 
         if (arc > 1) arc = 1;
         arc *= totalArcLength;

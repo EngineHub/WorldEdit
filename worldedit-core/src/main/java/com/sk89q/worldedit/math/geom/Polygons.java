@@ -19,10 +19,10 @@
 
 package com.sk89q.worldedit.math.geom;
 
+import com.google.common.collect.ImmutableList;
 import com.sk89q.worldedit.BlockVector2D;
 import com.sk89q.worldedit.Vector2D;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -50,7 +50,7 @@ public final class Polygons {
             nPoints = maxPoints - 1;
         }
 
-        final List<BlockVector2D> points = new ArrayList<BlockVector2D>(nPoints);
+        final ImmutableList.Builder<BlockVector2D> points = ImmutableList.builder();
         for (int i = 0; i < nPoints; ++i) {
             double angle = i * (2.0 * Math.PI) / nPoints;
             final Vector2D pos = new Vector2D(Math.cos(angle), Math.sin(angle));
@@ -58,7 +58,7 @@ public final class Polygons {
             points.add(blockVector2D);
         }
 
-        return points;
+        return points.build();
     }
     
 }
