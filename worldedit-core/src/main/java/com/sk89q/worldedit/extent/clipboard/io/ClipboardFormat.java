@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.extent.clipboard.io;
 
+import com.google.common.collect.ImmutableSet;
 import com.sk89q.jnbt.NBTConstants;
 import com.sk89q.jnbt.NBTInputStream;
 import com.sk89q.jnbt.NBTOutputStream;
@@ -30,11 +31,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.EnumSet;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.zip.GZIPInputStream;
@@ -107,7 +104,7 @@ public enum ClipboardFormat {
      * @return a set of aliases
      */
     public Set<String> getAliases() {
-        return Collections.unmodifiableSet(new HashSet<String>(Arrays.asList(aliases)));
+        return ImmutableSet.copyOf(aliases);
     }
 
     /**
@@ -137,7 +134,7 @@ public enum ClipboardFormat {
     public abstract boolean isFormat(File file);
 
     static {
-        for (ClipboardFormat format : EnumSet.allOf(ClipboardFormat.class)) {
+        for (ClipboardFormat format : ClipboardFormat.values()) {
             for (String key : format.aliases) {
                 aliasMap.put(key, format);
             }
@@ -166,7 +163,7 @@ public enum ClipboardFormat {
     public static ClipboardFormat findByFile(File file) {
         checkNotNull(file);
 
-        for (ClipboardFormat format : EnumSet.allOf(ClipboardFormat.class)) {
+        for (ClipboardFormat format : ClipboardFormat.values()) {
             if (format.isFormat(file)) {
                 return format;
             }
