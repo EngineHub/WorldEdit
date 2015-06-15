@@ -19,7 +19,6 @@
 
 package com.sk89q.worldedit.blocks;
 
-import static com.google.common.base.Preconditions.checkArgument;
 
 import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.jnbt.StringTag;
@@ -30,8 +29,9 @@ import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.world.registry.WorldData;
 
 import javax.annotation.Nullable;
-
 import java.util.Collection;
+
+import static com.google.common.base.Preconditions.checkArgument;
 
 /**
  * Represents a mutable "snapshot" of a block.

@@ -19,10 +19,9 @@
 
 package com.sk89q.worldedit.blocks;
 
-import javax.annotation.Nullable;
-
 import com.google.common.collect.ImmutableMap;
 
+import javax.annotation.Nullable;
 import java.util.Map;
 
 /**

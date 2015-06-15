@@ -25,7 +25,6 @@ import com.sk89q.util.StringUtil;
 import com.sk89q.worldedit.PlayerDirection;
 
 import javax.annotation.Nullable;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
