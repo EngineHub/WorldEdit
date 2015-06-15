@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.internal.expression.parser;
 
+import com.google.common.collect.ImmutableMap;
 import com.sk89q.worldedit.internal.expression.Identifiable;
 import com.sk89q.worldedit.internal.expression.lexer.tokens.OperatorToken;
 import com.sk89q.worldedit.internal.expression.lexer.tokens.Token;
@@ -33,20 +34,22 @@ import java.util.*;
  */
 public final class ParserProcessors {
 
-    private static final Map<String, String> unaryOpMap = new HashMap<String, String>();
+    private static final Map<String, String> unaryOpMap;
 
     private static final Map<String, String>[] binaryOpMapsLA;
     private static final Map<String, String>[] binaryOpMapsRA;
 
     static {
-        unaryOpMap.put("-", "neg");
-        unaryOpMap.put("!", "not");
-        unaryOpMap.put("~", "inv");
-        unaryOpMap.put("++", "inc");
-        unaryOpMap.put("--", "dec");
-        unaryOpMap.put("x++", "postinc");
-        unaryOpMap.put("x--", "postdec");
-        unaryOpMap.put("x!", "fac");
+        ImmutableMap.Builder<String, String> builder = ImmutableMap.builder();
+        builder.put("-", "neg");
+        builder.put("!", "not");
+        builder.put("~", "inv");
+        builder.put("++", "inc");
+        builder.put("--", "dec");
+        builder.put("x++", "postinc");
+        builder.put("x--", "postdec");
+        builder.put("x!", "fac");
+        unaryOpMap = builder.build();
 
         final Object[][][] binaryOpsLA = {
                 {
@@ -100,44 +103,22 @@ public final class ParserProcessors {
         final Map<String, String>[] lBinaryOpMapsLA = binaryOpMapsLA = new Map[binaryOpsLA.length];
         for (int i = 0; i < binaryOpsLA.length; ++i) {
             final Object[][] a = binaryOpsLA[i];
-            switch (a.length) {
-            case 0:
-                lBinaryOpMapsLA[i] = Collections.emptyMap();
-                break;
-
-            case 1:
-                final Object[] first = a[0];
-                lBinaryOpMapsLA[i] = Collections.singletonMap((String) first[0], (String) first[1]);
-                break;
-
-            default:
-                Map<String, String> m = lBinaryOpMapsLA[i] = new HashMap<String, String>();
-                for (final Object[] element : a) {
-                    m.put((String) element[0], (String) element[1]);
-                }
+            ImmutableMap.Builder<String, String> m = ImmutableMap.builder();
+            for (final Object[] element : a) {
+                m.put((String) element[0], (String) element[1]);
             }
+            lBinaryOpMapsLA[i] = m.build();
         }
 
         @SuppressWarnings("unchecked")
         final Map<String, String>[] lBinaryOpMapsRA = binaryOpMapsRA = new Map[binaryOpsRA.length];
         for (int i = 0; i < binaryOpsRA.length; ++i) {
             final Object[][] a = binaryOpsRA[i];
-            switch (a.length) {
-            case 0:
-                lBinaryOpMapsRA[i] = Collections.emptyMap();
-                break;
-
-            case 1:
-                final Object[] first = a[0];
-                lBinaryOpMapsRA[i] = Collections.singletonMap((String) first[0], (String) first[1]);
-                break;
-
-            default:
-                Map<String, String> m = lBinaryOpMapsRA[i] = new HashMap<String, String>();
-                for (final Object[] element : a) {
-                    m.put((String) element[0], (String) element[1]);
-                }
+            ImmutableMap.Builder<String, String> m = ImmutableMap.builder();
+            for (final Object[] element : a) {
+                m.put((String) element[0], (String) element[1]);
             }
+            lBinaryOpMapsRA[i] = m.build();
         }
     }
 
