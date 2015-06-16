@@ -19,6 +19,8 @@
 
 package com.sk89q.worldedit.bukkit;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Maps;
 import com.sk89q.worldedit.BlockVector2D;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalWorld;
@@ -50,8 +52,6 @@ import org.bukkit.inventory.ItemStack;
 
 import javax.annotation.Nullable;
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -88,22 +88,22 @@ public class BukkitWorld extends LocalWorld {
         World world = getWorld();
 
         List<Entity> ents = world.getEntities();
-        List<com.sk89q.worldedit.entity.Entity> entities = new ArrayList<com.sk89q.worldedit.entity.Entity>();
+        ImmutableList.Builder<com.sk89q.worldedit.entity.Entity> entities = ImmutableList.builder();
         for (Entity ent : ents) {
             if (region.contains(BukkitUtil.toVector(ent.getLocation()))) {
                 entities.add(BukkitAdapter.adapt(ent));
             }
         }
-        return entities;
+        return entities.build();
     }
 
     @Override
     public List<com.sk89q.worldedit.entity.Entity> getEntities() {
-        List<com.sk89q.worldedit.entity.Entity> list = new ArrayList<com.sk89q.worldedit.entity.Entity>();
+        ImmutableList.Builder<com.sk89q.worldedit.entity.Entity> list = ImmutableList.builder();
         for (Entity entity : getWorld().getEntities()) {
             list.add(BukkitAdapter.adapt(entity));
         }
-        return list;
+        return list.build();
     }
 
     @Nullable
@@ -281,31 +281,32 @@ public class BukkitWorld extends LocalWorld {
     /**
      * An EnumMap that stores which WorldEdit TreeTypes apply to which Bukkit TreeTypes
      */
-    private static final EnumMap<TreeGenerator.TreeType, TreeType> treeTypeMapping =
-            new EnumMap<TreeGenerator.TreeType, TreeType>(TreeGenerator.TreeType.class);
+    private static final Map<TreeGenerator.TreeType, TreeType> treeTypeMapping;
 
     static {
+        Map<TreeGenerator.TreeType, TreeType> tempMap = Maps.newEnumMap(TreeGenerator.TreeType.class);
         for (TreeGenerator.TreeType type : TreeGenerator.TreeType.values()) {
             try {
                 TreeType bukkitType = TreeType.valueOf(type.name());
-                treeTypeMapping.put(type, bukkitType);
+                tempMap.put(type, bukkitType);
             } catch (IllegalArgumentException e) {
                 // Unhandled TreeType
             }
         }
         // Other mappings for WE-specific values
-        treeTypeMapping.put(TreeGenerator.TreeType.SHORT_JUNGLE, TreeType.SMALL_JUNGLE);
-        treeTypeMapping.put(TreeGenerator.TreeType.RANDOM, TreeType.BROWN_MUSHROOM);
-        treeTypeMapping.put(TreeGenerator.TreeType.RANDOM_REDWOOD, TreeType.REDWOOD);
-        treeTypeMapping.put(TreeGenerator.TreeType.PINE, TreeType.REDWOOD);
-        treeTypeMapping.put(TreeGenerator.TreeType.RANDOM_BIRCH, TreeType.BIRCH);
-        treeTypeMapping.put(TreeGenerator.TreeType.RANDOM_JUNGLE, TreeType.JUNGLE);
-        treeTypeMapping.put(TreeGenerator.TreeType.RANDOM_MUSHROOM, TreeType.BROWN_MUSHROOM);
+        tempMap.put(TreeGenerator.TreeType.SHORT_JUNGLE, TreeType.SMALL_JUNGLE);
+        tempMap.put(TreeGenerator.TreeType.RANDOM, TreeType.BROWN_MUSHROOM);
+        tempMap.put(TreeGenerator.TreeType.RANDOM_REDWOOD, TreeType.REDWOOD);
+        tempMap.put(TreeGenerator.TreeType.PINE, TreeType.REDWOOD);
+        tempMap.put(TreeGenerator.TreeType.RANDOM_BIRCH, TreeType.BIRCH);
+        tempMap.put(TreeGenerator.TreeType.RANDOM_JUNGLE, TreeType.JUNGLE);
+        tempMap.put(TreeGenerator.TreeType.RANDOM_MUSHROOM, TreeType.BROWN_MUSHROOM);
         for (TreeGenerator.TreeType type : TreeGenerator.TreeType.values()) {
-            if (treeTypeMapping.get(type) == null) {
+            if (tempMap.get(type) == null) {
                 WorldEdit.logger.severe("No TreeType mapping for TreeGenerator.TreeType." + type);
             }
         }
+        treeTypeMapping = Maps.immutableEnumMap(tempMap);
     }
 
     public static TreeType toBukkitTreeType(TreeGenerator.TreeType type) {

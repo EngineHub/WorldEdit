@@ -67,6 +67,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
@@ -398,12 +399,8 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
      * @return the selection or null if there was none
      */
     public Selection getSelection(Player player) {
-        if (player == null) {
-            throw new IllegalArgumentException("Null player not allowed");
-        }
-        if (!player.isOnline()) {
-            throw new IllegalArgumentException("Offline player not allowed");
-        }
+        checkArgument(player != null, "Null player not allowed");
+        checkArgument(player.isOnline(), "Offline player not allowed");
 
         LocalSession session = WorldEdit.getInstance().getSession(wrapPlayer(player));
         RegionSelector selector = session.getRegionSelector(BukkitUtil.getLocalWorld(player.getWorld()));
@@ -433,15 +430,9 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
      * @param selection a selection
      */
     public void setSelection(Player player, Selection selection) {
-        if (player == null) {
-            throw new IllegalArgumentException("Null player not allowed");
-        }
-        if (!player.isOnline()) {
-            throw new IllegalArgumentException("Offline player not allowed");
-        }
-        if (selection == null) {
-            throw new IllegalArgumentException("Null selection not allowed");
-        }
+        checkArgument(player != null, "Null player not allowed");
+        checkArgument(player.isOnline(), "Offline player not allowed");
+        checkArgument(selection != null, "Null selection not allowed");
 
         LocalSession session = WorldEdit.getInstance().getSession(wrapPlayer(player));
         RegionSelector sel = selection.getRegionSelector();
