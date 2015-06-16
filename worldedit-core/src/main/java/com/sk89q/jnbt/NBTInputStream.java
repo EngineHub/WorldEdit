@@ -28,6 +28,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
  * This class reads <strong>NBT</strong>, or <strong>Named Binary Tag</strong>
  * streams, and produces an object graph of subclasses of the {@code Tag}
@@ -49,6 +51,7 @@ public final class NBTInputStream implements Closeable {
      * @throws IOException if an I/O error occurs
      */
     public NBTInputStream(InputStream is) throws IOException {
+        checkNotNull(is);
         this.is = new DataInputStream(is);
     }
 

@@ -19,6 +19,8 @@
 
 package com.sk89q.jnbt;
 
+import com.google.common.collect.ImmutableMap;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -189,7 +191,7 @@ public class CompoundTagBuilder {
      * @return the new compound tag
      */
     public CompoundTag build() {
-        return new CompoundTag(new HashMap<String, Tag>(entries));
+        return new CompoundTag(ImmutableMap.copyOf(entries));
     }
 
     /**

@@ -19,6 +19,8 @@
 
 package com.sk89q.jnbt;
 
+import com.google.common.collect.ImmutableList;
+
 import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
@@ -42,9 +44,10 @@ public final class ListTag extends Tag {
      */
     public ListTag(Class<? extends Tag> type, List<? extends Tag> value) {
         super();
+        checkNotNull(type);
         checkNotNull(value);
         this.type = type;
-        this.value = Collections.unmodifiableList(value);
+        this.value = ImmutableList.copyOf(value);
     }
 
     /**

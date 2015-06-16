@@ -19,6 +19,8 @@
 
 package com.sk89q.jnbt;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
  * The {@code TAG_Byte_Array} tag.
  */
@@ -33,6 +35,7 @@ public final class ByteArrayTag extends Tag {
      */
     public ByteArrayTag(byte[] value) {
         super();
+        checkNotNull(value);
         this.value = value;
     }
 
