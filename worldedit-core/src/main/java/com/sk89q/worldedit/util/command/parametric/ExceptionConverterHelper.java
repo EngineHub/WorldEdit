@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.util.command.parametric;
 
+import com.google.common.collect.ImmutableList;
 import com.sk89q.minecraft.util.commands.CommandException;
 import com.sk89q.minecraft.util.commands.WrappedCommandException;
 
@@ -61,7 +62,7 @@ public abstract class ExceptionConverterHelper implements ExceptionConverter {
         
         Collections.sort(handlers);
         
-        this.handlers = handlers;
+        this.handlers = ImmutableList.copyOf(handlers);
     }
 
     @Override

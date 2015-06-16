@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.util.command.parametric;
 
+import com.google.common.collect.ImmutableList;
 import com.sk89q.minecraft.util.commands.CommandException;
 
 import java.lang.annotation.Annotation;
@@ -93,7 +94,7 @@ public class BindingHelper implements Binding {
         
         Collections.sort(bindings);
         
-        this.bindings = bindings;
+        this.bindings = ImmutableList.copyOf(bindings);
         
         Type[] typesArray = new Type[types.size()];
         types.toArray(typesArray);
@@ -184,7 +185,7 @@ public class BindingHelper implements Binding {
 
     @Override
     public List<String> getSuggestions(ParameterData parameter, String prefix) {
-        return new ArrayList<String>();
+        return ImmutableList.of();
     }
     
     private static class BoundMethod implements Comparable<BoundMethod> {
@@ -192,7 +193,7 @@ public class BindingHelper implements Binding {
         private final Type type;
         private final Class<? extends Annotation> classifier;
         private final Method method;
-        
+
         BoundMethod(BindingMatch annotation, Type type, 
                 Class<? extends Annotation> classifier, Method method) {
             this.annotation = annotation;
