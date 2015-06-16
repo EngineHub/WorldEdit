@@ -28,6 +28,8 @@ import com.sk89q.worldedit.regions.selector.limit.PermissiveSelectorLimits;
 import org.bukkit.Location;
 import org.bukkit.World;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
 public class CuboidSelection extends RegionSelection {
 
     protected CuboidRegion cuboid;
@@ -40,13 +42,8 @@ public class CuboidSelection extends RegionSelection {
         super(world);
 
         // Validate input
-        if (pt1 == null) {
-            throw new IllegalArgumentException("Null point 1 not permitted");
-        }
-
-        if (pt2 == null) {
-            throw new IllegalArgumentException("Null point 2 not permitted");
-        }
+        checkArgument(pt1 != null, "Null point 1 not permitted");
+        checkArgument(pt2 != null, "Null point 2 not permitted");
 
         // Create new selector
         CuboidRegionSelector sel = new CuboidRegionSelector(BukkitUtil.getLocalWorld(world));
