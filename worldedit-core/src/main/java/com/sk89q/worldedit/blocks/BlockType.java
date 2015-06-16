@@ -661,11 +661,11 @@ public enum BlockType {
             }
             if (data != 1 && data != 9) {
                 builder.put(-16*BlockID.HEAD-data, 0.75);
+            } else {
+                // Heads on the floor are lower
+                builder.put(-16*BlockID.HEAD-data, 0.5);
             }
         }
-        // Heads on the floor are lower
-        builder.put(-16*BlockID.HEAD-1, 0.5);
-        builder.put(-16*BlockID.HEAD-9, 0.5);
         builder.put(BlockID.FENCE, 1.5);
         for (int data = 0; data < 8; ++data) {
             builder.put(-16*BlockID.STEP-data, 0.5);
