@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit;
 
+import com.google.common.collect.ImmutableMap;
 import com.sk89q.worldedit.CuboidClipboard.FlipDirection;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockType;
@@ -752,10 +753,9 @@ public class WorldEdit {
 
         engine.setTimeLimit(getConfiguration().scriptTimeout);
 
-        Map<String, Object> vars = new HashMap<String, Object>();
-        vars.put("argv", args);
-        vars.put("context", scriptContext);
-        vars.put("player", player);
+        Map<String, Object> vars = ImmutableMap.of("argv", args,
+                                        "context", scriptContext,
+                                        "player", player);
 
         try {
             engine.evaluate(script, filename, vars);
