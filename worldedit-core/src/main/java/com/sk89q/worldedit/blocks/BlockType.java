@@ -659,7 +659,9 @@ public enum BlockType {
             } else {
                 builder.put(-16*BlockID.END_PORTAL_FRAME-data, 0.8125);
             }
-            builder.put(-16*BlockID.HEAD-data, 0.75);
+            if (data != 1 && data != 9) {
+                builder.put(-16*BlockID.HEAD-data, 0.75);
+            }
         }
         // Heads on the floor are lower
         builder.put(-16*BlockID.HEAD-1, 0.5);
