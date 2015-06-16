@@ -19,7 +19,7 @@
 
 package com.sk89q.worldedit.util.eventbus;
 
-import com.google.common.collect.HashMultimap;
+import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 
 import java.lang.reflect.Method;
@@ -40,7 +40,7 @@ class AnnotatedSubscriberFinder implements SubscriberFindingStrategy {
      */
     @Override
     public Multimap<Class<?>, EventHandler> findAllSubscribers(Object listener) {
-        Multimap<Class<?>, EventHandler> methodsInListener = HashMultimap.create();
+        ImmutableMultimap.Builder<Class<?>, EventHandler> methodsInListener = ImmutableMultimap.builder();
         Class<?> clazz = listener.getClass();
         while (clazz != null) {
             for (Method method : clazz.getMethods()) {
@@ -63,7 +63,7 @@ class AnnotatedSubscriberFinder implements SubscriberFindingStrategy {
             clazz = clazz.getSuperclass();
         }
 
-        return methodsInListener;
+        return methodsInListener.build();
     }
 
 }
