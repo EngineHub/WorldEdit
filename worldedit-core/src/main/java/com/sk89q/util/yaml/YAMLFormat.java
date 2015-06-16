@@ -21,8 +21,6 @@ package com.sk89q.util.yaml;
 
 import org.yaml.snakeyaml.DumperOptions.FlowStyle;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 public enum YAMLFormat {
     EXTENDED(FlowStyle.BLOCK),
     COMPACT(FlowStyle.AUTO);
@@ -30,7 +28,6 @@ public enum YAMLFormat {
     private final FlowStyle style;
 
     YAMLFormat(FlowStyle style) {
-        checkNotNull(style);
         this.style = style;
     }
 
