@@ -29,6 +29,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
  * Represents a configuration node.
  */
@@ -38,6 +40,7 @@ public class YAMLNode {
     private boolean writeDefaults;
 
     public YAMLNode(Map<String, Object> root, boolean writeDefaults) {
+        checkNotNull(root);
         this.root = root;
         this.writeDefaults = writeDefaults;
     }
