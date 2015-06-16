@@ -19,13 +19,13 @@
 
 package com.sk89q.worldedit.forge;
 
+import com.google.common.collect.ImmutableList;
 import com.sk89q.worldedit.util.command.CommandMapping;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
 
 import javax.annotation.Nullable;
-import java.util.Arrays;
 import java.util.List;
 
 public class CommandWrapper extends CommandBase {
@@ -42,7 +42,7 @@ public class CommandWrapper extends CommandBase {
 
     @Override
     public List<String> getCommandAliases() {
-        return Arrays.asList(command.getAllAliases());
+        return ImmutableList.copyOf(command.getAllAliases());
     }
 
     @Override
