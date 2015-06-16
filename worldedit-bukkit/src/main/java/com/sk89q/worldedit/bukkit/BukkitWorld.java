@@ -20,6 +20,7 @@
 package com.sk89q.worldedit.bukkit;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.sk89q.worldedit.BlockVector2D;
 import com.sk89q.worldedit.EditSession;
@@ -306,7 +307,7 @@ public class BukkitWorld extends LocalWorld {
                 WorldEdit.logger.severe("No TreeType mapping for TreeGenerator.TreeType." + type);
             }
         }
-        treeTypeMapping = Maps.immutableEnumMap(tempMap);
+        treeTypeMapping = ImmutableMap.copyOf(tempMap);
     }
 
     public static TreeType toBukkitTreeType(TreeGenerator.TreeType type) {

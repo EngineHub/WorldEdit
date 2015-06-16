@@ -20,6 +20,7 @@
 package com.sk89q.worldedit.bukkit;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.sk89q.bukkit.util.CommandInfo;
 import com.sk89q.bukkit.util.CommandRegistration;
@@ -43,7 +44,6 @@ import org.bukkit.entity.EntityType;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
@@ -165,14 +165,14 @@ public class BukkitServerInterface extends ServerInterface implements MultiUserP
 
     @Override
     public Map<Capability, Preference> getCapabilities() {
-        Map<Capability, Preference> capabilities = new EnumMap<Capability, Preference>(Capability.class);
+        Map<Capability, Preference> capabilities = Maps.newEnumMap(Capability.class);
         capabilities.put(Capability.CONFIGURATION, Preference.NORMAL);
         capabilities.put(Capability.WORLDEDIT_CUI, Preference.NORMAL);
         capabilities.put(Capability.GAME_HOOKS, Preference.PREFERRED);
         capabilities.put(Capability.PERMISSIONS, Preference.PREFERRED);
         capabilities.put(Capability.USER_COMMANDS, Preference.PREFERRED);
         capabilities.put(Capability.WORLD_EDITING, Preference.PREFER_OTHERS);
-        return Maps.immutableEnumMap(capabilities);
+        return ImmutableMap.copyOf(capabilities);
     }
 
     public void unregisterCommands() {
