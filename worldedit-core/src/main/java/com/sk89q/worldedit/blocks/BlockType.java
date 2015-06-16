@@ -21,6 +21,7 @@ package com.sk89q.worldedit.blocks;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Maps;
 import com.sk89q.util.StringUtil;
 import com.sk89q.worldedit.PlayerDirection;
 
@@ -251,16 +252,16 @@ public enum BlockType {
     private final String[] lookupKeys;
 
     static {
-        ImmutableMap.Builder<Integer, BlockType> iBuilder = ImmutableMap.builder();
-        ImmutableMap.Builder<String, BlockType> lBuilder = ImmutableMap.builder();
+        Map<Integer, BlockType> idMap = Maps.newHashMap();
+        Map<String, BlockType> lookupMap = Maps.newHashMap();
         for (BlockType type : values()) {
-            iBuilder.put(type.id, type);
+            idMap.put(type.id, type);
             for (String key : type.lookupKeys) {
-                lBuilder.put(key, type);
+                lookupMap.put(key, type);
             }
         }
-        ids = iBuilder.build();
-        lookup = lBuilder.build();
+        ids = ImmutableMap.copyOf(idMap);
+        lookup = ImmutableMap.copyOf(lookupMap);
     }
 
 
