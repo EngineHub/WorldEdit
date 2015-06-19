@@ -79,7 +79,8 @@ public class SchematicCommands {
     @Command(
             aliases = { "load" },
             usage = "[<format>] <filename>",
-            desc = "Load a schematic into your clipboard"
+            desc = "Load a schematic into your clipboard",
+            min = 1, max = 2
     )
     @Deprecated
     @CommandPermissions({ "worldedit.clipboard.load", "worldedit.schematic.load" })
@@ -102,23 +103,16 @@ public class SchematicCommands {
 
         Closer closer = Closer.create();
         try {
-            String filePath = f.getCanonicalPath();
-            String dirPath = dir.getCanonicalPath();
+            FileInputStream fis = closer.register(new FileInputStream(f));
+            BufferedInputStream bis = closer.register(new BufferedInputStream(fis));
+            ClipboardReader reader = format.getReader(bis);
 
-            if (!filePath.substring(0, dirPath.length()).equals(dirPath)) {
-                player.printError("Clipboard file could not read or it does not exist.");
-            } else {
-                FileInputStream fis = closer.register(new FileInputStream(f));
-                BufferedInputStream bis = closer.register(new BufferedInputStream(fis));
-                ClipboardReader reader = format.getReader(bis);
+            WorldData worldData = player.getWorld().getWorldData();
+            Clipboard clipboard = reader.read(player.getWorld().getWorldData());
+            session.setClipboard(new ClipboardHolder(clipboard, worldData));
 
-                WorldData worldData = player.getWorld().getWorldData();
-                Clipboard clipboard = reader.read(player.getWorld().getWorldData());
-                session.setClipboard(new ClipboardHolder(clipboard, worldData));
-
-                log.info(player.getName() + " loaded " + filePath);
-                player.print(filename + " loaded. Paste it with //paste");
-            }
+            log.info(player.getName() + " loaded " + f.getCanonicalPath());
+            player.print(filename + " loaded. Paste it with //paste");
         } catch (IOException e) {
             player.printError("Schematic could not read or it does not exist: " + e.getMessage());
             log.log(Level.WARNING, "Failed to load a saved clipboard", e);
@@ -133,7 +127,8 @@ public class SchematicCommands {
     @Command(
             aliases = { "save" },
             usage = "[<format>] <filename>",
-            desc = "Save a schematic into your clipboard"
+            desc = "Save a schematic into your clipboard",
+            min = 1, max = 2
     )
     @Deprecated
     @CommandPermissions({ "worldedit.clipboard.save", "worldedit.schematic.save" })
