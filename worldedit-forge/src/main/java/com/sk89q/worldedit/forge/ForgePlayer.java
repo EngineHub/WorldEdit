@@ -44,7 +44,6 @@ public class ForgePlayer extends AbstractPlayerActor {
 
     private final ForgePlatform platform;
     private final EntityPlayerMP player;
-    private Location clicked;
 
     protected ForgePlayer(ForgePlatform platform, EntityPlayerMP player) {
         this.platform = platform;
@@ -213,11 +212,5 @@ public class ForgePlayer extends AbstractPlayerActor {
         }
 
     }
-
-    @Override
-    public void setClicked(Location loc) { this.clicked = loc; }
-
-    @Override
-    public Location getClicked() { return this.clicked; }
 
 }

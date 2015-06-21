@@ -41,7 +41,6 @@ class PlayerProxy extends AbstractPlayerActor {
     private final Actor permActor;
     private final Actor cuiActor;
     private final World world;
-    private Location clicked;
 
     PlayerProxy(Player basePlayer, Actor permActor, Actor cuiActor, World world) {
         checkNotNull(basePlayer);
@@ -159,10 +158,4 @@ class PlayerProxy extends AbstractPlayerActor {
     public SessionKey getSessionKey() {
         return basePlayer.getSessionKey();
     }
-
-    @Override
-    public void setClicked(Location loc) { this.clicked = loc; }
-
-    @Override
-    public Location getClicked() { return this.clicked; }
 }

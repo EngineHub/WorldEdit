@@ -45,9 +45,6 @@ public class CommandTool implements BlockTool {
     @Override
     public boolean actPrimary(Platform server, LocalConfiguration config, Player player, LocalSession session, com.sk89q.worldedit.util.Location clicked) {
 
-        // Sets the last clicked block so that it's accessible through scripting.
-        player.setClicked(clicked);
-
         EditSession editSession = session.createEditSession(player);
         try {
             commands.execute(player, session, editSession, args);

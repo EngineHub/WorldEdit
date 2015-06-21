@@ -19,7 +19,6 @@
 
 package com.sk89q.worldedit.extension.platform;
 
-import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.auth.AuthorizationException;
 import com.sk89q.worldedit.BlockWorldVector;
 import com.sk89q.worldedit.LocalPlayer;
