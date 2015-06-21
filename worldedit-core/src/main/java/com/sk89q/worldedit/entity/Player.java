@@ -27,6 +27,7 @@ import com.sk89q.worldedit.WorldVectorFace;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
+import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.World;
 
 /**
@@ -282,5 +283,19 @@ public interface Player extends Entity, Actor {
      * @param pos where to move them
      */
     void setPosition(Vector pos);
+
+    /**
+     * Set last clicked block
+     *
+     * @param loc the position of the last click
+     */
+    void setClicked(Location loc);
+
+    /**
+     * Get last clicked block
+     *
+     * @return last click location
+     */
+    Location getClicked();
 
 }
