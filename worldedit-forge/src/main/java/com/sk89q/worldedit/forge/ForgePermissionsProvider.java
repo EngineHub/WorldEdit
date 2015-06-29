@@ -23,6 +23,7 @@ import net.minecraft.command.ICommand;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.world.WorldSettings.GameType;
 import net.minecraftforge.fml.common.FMLCommonHandler;
+import org.spongepowered.api.entity.player.Player;
 
 public interface ForgePermissionsProvider {
 
@@ -48,5 +49,18 @@ public interface ForgePermissionsProvider {
 
         @Override
         public void registerPermission(ICommand command, String permission) {}
+    }
+
+    public static class SpongePermissionsProvider implements ForgePermissionsProvider {
+
+        @Override
+        public boolean hasPermission(EntityPlayerMP player, String permission) {
+            return ((Player) player).hasPermission(permission);
+        }
+
+        @Override
+        public void registerPermission(ICommand command, String permission) {
+
+        }
     }
 }
