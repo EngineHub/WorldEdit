@@ -1769,8 +1769,8 @@
         "values": {
           "east": { "data": 1, "direction": [1, 0, 0] },
           "west": { "data": 2, "direction": [-1, 0, 0] },
-          "north": { "data": 3, "direction": [0, 0, -1] },
-          "south": { "data": 4, "direction": [0, 0, 1] },
+          "south": { "data": 3, "direction": [0, 0, 1] },
+          "north": { "data": 4, "direction": [0, 0, -1] },
           "up": { "data": 5, "direction": [0, 1, 0] }
         }
       }
@@ -2201,7 +2201,7 @@
           "northwest":        { "data": 6,  "direction": [-0.7071,  0,  -0.7071] },
           "north_northwest":  { "data": 7,  "direction": [-0.3826,  0,  -0.9238] },
           "north":            { "data": 8,  "direction": [0,        0,  -1] },
-          "north_northeast":  { "data": 9,  "direction": [0.3826,    0,  -0.9238] },
+          "north_northeast":  { "data": 9,  "direction": [0.3826,   0,  -0.9238] },
           "northeast":        { "data": 10, "direction": [0.7071,   0,  -0.7071] },
           "east_northeast":   { "data": 11, "direction": [0.9238,   0,  -0.3826] },
           "east":             { "data": 12, "direction": [1,        0,  0] },
@@ -2685,8 +2685,8 @@
         "values": {
           "east": { "data": 1, "direction": [1, 0, 0] },
           "west": { "data": 2, "direction": [-1, 0, 0] },
-          "north": { "data": 3, "direction": [0, 0, -1] },
-          "south": { "data": 4, "direction": [0, 0, 1] },
+          "south": { "data": 3, "direction": [0, 0, 1] },
+          "north": { "data": 4, "direction": [0, 0, -1] },
           "up": { "data": 5, "direction": [0, 1, 0] }
         }
       }
@@ -2725,8 +2725,8 @@
         "values": {
           "east": { "data": 1, "direction": [1, 0, 0] },
           "west": { "data": 2, "direction": [-1, 0, 0] },
-          "north": { "data": 3, "direction": [0, 0, -1] },
-          "south": { "data": 4, "direction": [0, 0, 1] },
+          "south": { "data": 3, "direction": [0, 0, 1] },
+          "north": { "data": 4, "direction": [0, 0, -1] },
           "up": { "data": 5, "direction": [0, 1, 0] }
         }
       }
@@ -4999,14 +4999,23 @@
     "unlocalizedName": "tile.skull",
     "states": {
       "facing": {
-        "dataMask": 7,
         "values": {
-          "down": { "data": 1, "direction": [0, -1, 0] },
-          "up": { "data": 1, "direction": [0, 1, 0] },
-          "north": { "data": 2, "direction": [0, 0, -1] },
-          "south": { "data": 3, "direction": [0, 0, 1] },
-          "east": { "data": 4, "direction": [1, 0, 0] },
-          "west": { "data": 5, "direction": [-1, 0, 0] }
+          "south":            { "data": 0,  "direction": [0,        0,  1] },
+          "south_southwest":  { "data": 1,  "direction": [-0.3826,  0,  0.9238] },
+          "southwest":        { "data": 2,  "direction": [-0.7071,  0,  0.7071] },
+          "west_southwest":   { "data": 3,  "direction": [-0.9238,  0,  0.3826] },
+          "west":             { "data": 4,  "direction": [-1,       0,  0] },
+          "west_northwest":   { "data": 5,  "direction": [-0.9238,  0,  -0.3826] },
+          "northwest":        { "data": 6,  "direction": [-0.7071,  0,  -0.7071] },
+          "north_northwest":  { "data": 7,  "direction": [-0.3826,  0,  -0.9238] },
+          "north":            { "data": 8,  "direction": [0,        0,  -1] },
+          "north_northeast":  { "data": 9,  "direction": [0.3826,   0,  -0.9238] },
+          "northeast":        { "data": 10, "direction": [0.7071,   0,  -0.7071] },
+          "east_northeast":   { "data": 11, "direction": [0.9238,   0,  -0.3826] },
+          "east":             { "data": 12, "direction": [1,        0,  0] },
+          "east_southeast":   { "data": 13, "direction": [0.9238,   0,  0.3826] },
+          "southeast":        { "data": 14, "direction": [0.7071,   0,  0.7071] },
+          "south_southeast":  { "data": 15, "direction": [0.3826,   0,  0.9238] }
         }
       }
     },
@@ -5043,10 +5052,10 @@
       "facing": {
         "dataMask": 3,
         "values": {
-          "south": { "data": 0, "direction": [0, 0, 1] },
+          "south": { "data": 2, "direction": [0, 0, 1] },
           "north": { "data": 0, "direction": [0, 0, -1] },
           "west": { "data": 1, "direction": [-1, 0, 0] },
-          "east": { "data": 1, "direction": [1, 0, 0] }
+          "east": { "data": 3, "direction": [1, 0, 0] }
         }
       }
     },
@@ -5824,6 +5833,50 @@
       "movementBlocker": true,
       "burnable": true,
       "toolRequired": false,
+      "replacedDuringPlacement": false
+    }
+  },
+  {
+    "legacyId": 167,
+    "id": "minecraft:iron_trapdoor",
+    "unlocalizedName": "tile.ironTrapdoor",
+    "states": {
+      "facing": {
+        "dataMask": 11,
+        "values": {
+          "south": { "data": 0, "direction": [0, 1, 1] },
+          "north": { "data": 1, "direction": [0, 1, -1] },
+          "east": { "data": 2, "direction": [1, 1, 0] },
+          "west": { "data": 3, "direction": [-1, 1, 0] },
+          "south_upper": { "data": 8, "direction": [0, -1, 1] },
+          "north_upper": { "data": 9, "direction": [0, -1, -1] },
+          "east_upper": { "data": 10, "direction": [1, -1, 0] },
+          "west_upper": { "data": 11, "direction": [-1, -1, 0] }
+        }
+      }
+    },
+    "material": {
+      "renderedAsNormalBlock": false,
+      "fullCube": false,
+      "opaque": true,
+      "powerSource": false,
+      "liquid": false,
+      "solid": true,
+      "hardness": 5.0,
+      "resistance": 25.0,
+      "slipperiness": 0.6,
+      "grassBlocking": false,
+      "ambientOcclusionLightValue": 1.0,
+      "lightOpacity": 0,
+      "lightValue": 0,
+      "fragileWhenPushed": false,
+      "unpushable": false,
+      "adventureModeExempt": false,
+      "ticksRandomly": false,
+      "usingNeighborLight": true,
+      "movementBlocker": true,
+      "burnable": false,
+      "toolRequired": true,
       "replacedDuringPlacement": false
     }
   },
