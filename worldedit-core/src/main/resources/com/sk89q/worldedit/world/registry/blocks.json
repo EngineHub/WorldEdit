@@ -5000,22 +5000,12 @@
     "states": {
       "facing": {
         "values": {
-          "south":            { "data": 0,  "direction": [0,        0,  1] },
-          "south_southwest":  { "data": 1,  "direction": [-0.3826,  0,  0.9238] },
-          "southwest":        { "data": 2,  "direction": [-0.7071,  0,  0.7071] },
-          "west_southwest":   { "data": 3,  "direction": [-0.9238,  0,  0.3826] },
-          "west":             { "data": 4,  "direction": [-1,       0,  0] },
-          "west_northwest":   { "data": 5,  "direction": [-0.9238,  0,  -0.3826] },
-          "northwest":        { "data": 6,  "direction": [-0.7071,  0,  -0.7071] },
-          "north_northwest":  { "data": 7,  "direction": [-0.3826,  0,  -0.9238] },
-          "north":            { "data": 8,  "direction": [0,        0,  -1] },
-          "north_northeast":  { "data": 9,  "direction": [0.3826,   0,  -0.9238] },
-          "northeast":        { "data": 10, "direction": [0.7071,   0,  -0.7071] },
-          "east_northeast":   { "data": 11, "direction": [0.9238,   0,  -0.3826] },
-          "east":             { "data": 12, "direction": [1,        0,  0] },
-          "east_southeast":   { "data": 13, "direction": [0.9238,   0,  0.3826] },
-          "southeast":        { "data": 14, "direction": [0.7071,   0,  0.7071] },
-          "south_southeast":  { "data": 15, "direction": [0.3826,   0,  0.9238] }
+          "down": { "data": 1, "direction": [0, -1, 0] },
+          "up": { "data": 1, "direction": [0, 1, 0] },
+          "north": { "data": 2, "direction": [0, 0, -1] },
+          "south": { "data": 3, "direction": [0, 0, 1] },
+          "east": { "data": 4, "direction": [1, 0, 0] },
+          "west": { "data": 5, "direction": [-1, 0, 0] }
         }
       }
     },
