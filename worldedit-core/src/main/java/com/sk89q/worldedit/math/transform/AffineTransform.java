@@ -116,7 +116,7 @@ public class AffineTransform implements Transform {
             return false;
         if (m11 != 1)
             return false;
-        if (m22 != 0)
+        if (m22 != 1)
             return false;
         if (m01 != 0)
             return false;
