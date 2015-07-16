@@ -30,6 +30,7 @@ import java.io.File;
 public class BukkitConfiguration extends YAMLConfiguration {
 
     public boolean noOpPermissions = false;
+    public boolean registerPermissions = false;
     private final WorldEditPlugin plugin;
 
     public BukkitConfiguration(YAMLProcessor config, WorldEditPlugin plugin) {
@@ -41,6 +42,7 @@ public class BukkitConfiguration extends YAMLConfiguration {
     public void load() {
         super.load();
         noOpPermissions = config.getBoolean("no-op-permissions", false);
+        registerPermissions = config.getBoolean("register-permissions", false);
         migrateLegacyFolders();
     }
 

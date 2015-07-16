@@ -48,11 +48,15 @@ import com.sk89q.worldedit.regions.CylinderRegion;
 import com.sk89q.worldedit.regions.Polygonal2DRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.RegionSelector;
+import com.sk89q.worldedit.util.command.CommandMapping;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
+import org.bukkit.permissions.Permission;
+import org.bukkit.permissions.PermissionDefault;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import javax.annotation.Nullable;
@@ -104,6 +108,9 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
         server = new BukkitServerInterface(this, getServer());
         worldEdit.getPlatformManager().register(server);
 
+        // Register permissions with Bukkit
+        registerPermissions();
+
         // Register CUI
         getServer().getMessenger().registerIncomingPluginChannel(this, CUI_PLUGIN_CHANNEL, new CUIChannelListener(this));
         getServer().getMessenger().registerOutgoingPluginChannel(this, CUI_PLUGIN_CHANNEL);
@@ -154,6 +161,21 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
                 log.log(Level.INFO, "WorldEdit could not find a Bukkit adapter for this MC version, " +
                         "but it seems that you have another implementation of WorldEdit installed (" + platform.getPlatformName() + ") " +
                         "that handles the world editing.");
+            }
+        }
+    }
+
+    private void registerPermissions() {
+        if (getLocalConfiguration().registerPermissions) {
+            PermissionDefault def = getLocalConfiguration().noOpPermissions ? PermissionDefault.FALSE : PermissionDefault.OP;
+            PluginManager pluginManager = getServer().getPluginManager();
+
+            for (CommandMapping command : WorldEdit.getInstance().getPlatformManager().getCommandManager().getDispatcher().getCommands()) {
+                for (String name : command.getDescription().getPermissions()) {
+                    if (pluginManager.getPermission(name) == null) {
+                        pluginManager.addPermission(new Permission(name, "Required by the '" + command.getPrimaryAlias() + "' command", def));
+                    }
+                }
             }
         }
     }
