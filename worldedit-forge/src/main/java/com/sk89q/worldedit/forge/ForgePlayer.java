@@ -81,8 +81,8 @@ public class ForgePlayer extends AbstractPlayerActor {
         return new Location(
                 ForgeWorldEdit.inst.getWorld(this.player.worldObj),
                 position,
-                this.player.cameraYaw,
-                this.player.cameraPitch);
+                this.player.rotationYaw,
+                this.player.rotationPitch);
     }
 
     @Override
@@ -150,12 +150,11 @@ public class ForgePlayer extends AbstractPlayerActor {
             component.getChatStyle().setColor(formatting);
             this.player.addChatMessage(component);
         }
-
     }
 
     @Override
     public void setPosition(Vector pos, float pitch, float yaw) {
-        this.player.playerNetServerHandler.setPlayerLocation(pos.getX(), pos.getY(), pos.getZ(), pitch, yaw);
+        this.player.playerNetServerHandler.setPlayerLocation(pos.getX(), pos.getY(), pos.getZ(), yaw, pitch);
     }
 
     @Override
