@@ -37,6 +37,7 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.server.S3FPacketCustomPayload;
 import net.minecraft.util.ChatComponentText;
 import io.netty.buffer.Unpooled;
+import net.minecraft.util.EnumChatFormatting;
 
 import javax.annotation.Nullable;
 
@@ -130,23 +131,26 @@ public class ForgePlayer extends AbstractPlayerActor {
 
     @Override
     public void printDebug(String msg) {
-        for (String part : msg.split("\n")) {
-            this.player.addChatMessage(new ChatComponentText("\u00a77" + part));
-        }
+        sendColorized(msg, EnumChatFormatting.GRAY);
     }
 
     @Override
     public void print(String msg) {
-        for (String part : msg.split("\n")) {
-            this.player.addChatMessage(new ChatComponentText("\u00a7d" + part));
-        }
+        sendColorized(msg, EnumChatFormatting.LIGHT_PURPLE);
     }
 
     @Override
     public void printError(String msg) {
+        sendColorized(msg, EnumChatFormatting.RED);
+    }
+
+    private void sendColorized(String msg, EnumChatFormatting formatting) {
         for (String part : msg.split("\n")) {
-            this.player.addChatMessage(new ChatComponentText("\u00a7c" + part));
+            ChatComponentText component = new ChatComponentText(part);
+            component.getChatStyle().setColor(formatting);
+            this.player.addChatMessage(component);
         }
+
     }
 
     @Override
