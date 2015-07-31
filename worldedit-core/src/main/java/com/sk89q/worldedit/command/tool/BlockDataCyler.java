@@ -60,7 +60,7 @@ public class BlockDataCyler implements DoubleActionBlockTool {
         BaseBlock block = new BaseBlock(type, BlockData.cycle(type, data, increment));
         EditSession editSession = session.createEditSession(player);
 
-        if (data < 0) {
+        if (block.getData() < 0) {
             player.printError("That block's data cannot be cycled!");
         } else {
             try {
