@@ -23,7 +23,7 @@ import net.minecraft.command.ICommand;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.world.WorldSettings.GameType;
 import net.minecraftforge.fml.common.FMLCommonHandler;
-import org.spongepowered.api.entity.player.Player;
+import org.spongepowered.api.entity.living.player.Player;
 
 public interface ForgePermissionsProvider {
 
