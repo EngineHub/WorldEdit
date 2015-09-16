@@ -14,7 +14,7 @@ The build process uses Gradle, which you do *not* need to download. WorldEdit is
 ### On Windows
 
 1. Shift + right click the folder with WorldEdit's files and click "Open command prompt".
-2. `gradlew clean setupDevWorkspace`
+2. `gradlew clean setupDecompWorkspace`
 3. `gradlew build`
 
 ### On Linux, BSD, or Mac OS X
@@ -40,5 +40,3 @@ If you want to use WorldEdit, use the `-shadow` version.
 * `gradlew idea` will generate an [IntelliJ IDEA](http://www.jetbrains.com/idea/) module for the Forge module.
 * `gradlew eclipse` will generate an [Eclipse](https://www.eclipse.org/downloads/) project for the Forge version.
 * Use `setupCIWorkspace` instead of `setupDevWorkspace` if you are doing this on a CI server.
-
-Note: Rather than `setupDevWorkspace`, `setupDecompWorkspace` would you give better decompiled code for developing the Forge mod, but it is currently incompatible with multi-module projects like WorldEdit.
