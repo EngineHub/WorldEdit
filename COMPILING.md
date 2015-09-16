@@ -20,7 +20,7 @@ The build process uses Gradle, which you do *not* need to download. WorldEdit is
 ### On Linux, BSD, or Mac OS X
 
 1. In your terminal, navigate to the folder with WorldEdit's files (`cd /folder/of/worldedit/files`)
-2. `./gradlew clean setupDevWorkspace`
+2. `./gradlew clean setupDecompWorkspace`
 3. `./gradlew build`
 
 ## Then you will find...
@@ -39,4 +39,4 @@ If you want to use WorldEdit, use the `-shadow` version.
 
 * `gradlew idea` will generate an [IntelliJ IDEA](http://www.jetbrains.com/idea/) module for the Forge module.
 * `gradlew eclipse` will generate an [Eclipse](https://www.eclipse.org/downloads/) project for the Forge version.
-* Use `setupCIWorkspace` instead of `setupDevWorkspace` if you are doing this on a CI server.
+* Use `setupCIWorkspace` instead of `setupDecompWorkspace` if you are doing this on a CI server.
