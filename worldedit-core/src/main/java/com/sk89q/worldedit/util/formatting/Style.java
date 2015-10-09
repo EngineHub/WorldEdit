@@ -19,11 +19,10 @@
 
 package com.sk89q.worldedit.util.formatting;
 
-import com.google.common.collect.Maps;
+import com.google.common.collect.ImmutableMap;
 
 import java.util.Map;
 import java.util.regex.Pattern;
-
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -133,8 +132,8 @@ public enum Style {
     private final char code;
     private final boolean isFormat;
     private final String toString;
-    private final static Map<Integer, Style> BY_ID = Maps.newHashMap();
-    private final static Map<Character, Style> BY_CHAR = Maps.newHashMap();
+    private final static Map<Integer, Style> BY_ID;
+    private final static Map<Character, Style> BY_CHAR;
 
     private Style(char code, int intCode) {
         this(code, intCode, false);
@@ -268,9 +267,13 @@ public enum Style {
     }
 
     static {
+        ImmutableMap.Builder<Integer, Style> iBuilder = ImmutableMap.builder();
+        ImmutableMap.Builder<Character, Style> cBuilder = ImmutableMap.builder();
         for (Style color : values()) {
-            BY_ID.put(color.intCode, color);
-            BY_CHAR.put(color.code, color);
+            iBuilder.put(color.intCode, color);
+            cBuilder.put(color.code, color);
         }
+        BY_ID = iBuilder.build();
+        BY_CHAR = cBuilder.build();
     }
 }

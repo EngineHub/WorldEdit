@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.util.command.parametric;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.common.primitives.Chars;
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
@@ -54,9 +55,9 @@ class ParametricCallable implements CommandCallable {
     private final Object object;
     private final Method method;
     private final ParameterData[] parameters;
-    private final Set<Character> valueFlags = new HashSet<Character>();
+    private final Set<Character> valueFlags;
     private final boolean anyFlags;
-    private final Set<Character> legacyFlags = new HashSet<Character>();
+    private final Set<Character> legacyFlags;
     private final SimpleDescription description = new SimpleDescription();
     private final CommandPermissions commandPermissions;
 
@@ -90,6 +91,8 @@ class ParametricCallable implements CommandCallable {
             description.setPermissions(Arrays.asList(permHint.value()));
         }
 
+        ImmutableSet.Builder<Character> valueFlagsBuilder = ImmutableSet.builder();
+
         // Go through each parameter
         for (int i = 0; i < types.length; i++) {
             Type type = types[i];
@@ -119,7 +122,7 @@ class ParametricCallable implements CommandCallable {
 
             // Track all value flags
             if (parameter.isValueFlag()) {
-                valueFlags.add(parameter.getFlag());
+                valueFlagsBuilder.add(parameter.getFlag());
             }
 
             // No special @annotation binding... let's check for the type
@@ -159,9 +162,11 @@ class ParametricCallable implements CommandCallable {
             }
         }
 
+        valueFlags = valueFlagsBuilder.build();
+
         // Gather legacy flags
         anyFlags = definition.anyFlags();
-        legacyFlags.addAll(Chars.asList(definition.flags().toCharArray()));
+        legacyFlags = ImmutableSet.copyOf(Chars.asList(definition.flags().toCharArray()));
 
         // Finish description
         description.setDescription(!definition.desc().isEmpty() ? definition.desc() : null);

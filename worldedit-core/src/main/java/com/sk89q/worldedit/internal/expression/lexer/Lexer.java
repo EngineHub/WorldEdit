@@ -19,6 +19,8 @@
 
 package com.sk89q.worldedit.internal.expression.lexer;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import com.sk89q.worldedit.internal.expression.lexer.tokens.CharacterToken;
 import com.sk89q.worldedit.internal.expression.lexer.tokens.IdentifierToken;
 import com.sk89q.worldedit.internal.expression.lexer.tokens.KeywordToken;
@@ -26,10 +28,7 @@ import com.sk89q.worldedit.internal.expression.lexer.tokens.NumberToken;
 import com.sk89q.worldedit.internal.expression.lexer.tokens.OperatorToken;
 import com.sk89q.worldedit.internal.expression.lexer.tokens.Token;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -102,25 +101,27 @@ public class Lexer {
         )
     );
 
-    private static final Set<Character> characterTokens = new HashSet<Character>();
+    private static final Set<Character> characterTokens;
     static {
-        characterTokens.add(',');
-        characterTokens.add('(');
-        characterTokens.add(')');
-        characterTokens.add('{');
-        characterTokens.add('}');
-        characterTokens.add(';');
-        characterTokens.add('?');
-        characterTokens.add(':');
+        ImmutableSet.Builder<Character> builder = ImmutableSet.builder();
+        builder.add(',');
+        builder.add('(');
+        builder.add(')');
+        builder.add('{');
+        builder.add('}');
+        builder.add(';');
+        builder.add('?');
+        builder.add(':');
+        characterTokens = builder.build();
     }
 
-    private static final Set<String> keywords = new HashSet<String>(Arrays.asList("if", "else", "while", "do", "for", "break", "continue", "return", "switch", "case", "default"));
+    private static final Set<String> keywords = ImmutableSet.of("if", "else", "while", "do", "for", "break", "continue", "return", "switch", "case", "default");
 
     private static final Pattern numberPattern = Pattern.compile("^([0-9]*(?:\\.[0-9]+)?(?:[eE][+-]?[0-9]+)?)");
     private static final Pattern identifierPattern = Pattern.compile("^([A-Za-z][0-9A-Za-z_]*)");
 
     private List<Token> tokenize() throws LexerException {
-        List<Token> tokens = new ArrayList<Token>();
+        ImmutableList.Builder<Token> tokens = ImmutableList.builder();
 
         do {
             skipWhitespace();
@@ -174,7 +175,7 @@ public class Lexer {
             throw new LexerException(position, "Unknown character '" + ch + "'");
         } while (position < expression.length());
 
-        return tokens;
+        return tokens.build();
     }
 
     private char peek() {

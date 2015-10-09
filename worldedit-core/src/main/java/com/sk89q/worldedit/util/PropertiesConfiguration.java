@@ -21,6 +21,7 @@
 
 package com.sk89q.worldedit.util;
 
+import com.google.common.collect.ImmutableSet;
 import com.sk89q.util.StringUtil;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
@@ -33,7 +34,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
 import java.util.logging.Level;
@@ -236,15 +236,13 @@ public class PropertiesConfiguration extends LocalConfiguration {
      */
     protected Set<Integer> getIntSet(String key, int[] def) {
         String val = properties.getProperty(key);
+        ImmutableSet.Builder<Integer> set = ImmutableSet.builder();
         if (val == null) {
             properties.setProperty(key, StringUtil.joinString(def, ",", 0));
-            Set<Integer> set = new HashSet<Integer>();
             for (int i : def) {
                 set.add(i);
             }
-            return set;
         } else {
-            Set<Integer> set = new HashSet<Integer>();
             String[] parts = val.split(",");
             for (String part : parts) {
                 try {
@@ -253,8 +251,8 @@ public class PropertiesConfiguration extends LocalConfiguration {
                 } catch (NumberFormatException ignored) {
                 }
             }
-            return set;
         }
+        return set.build();
     }
 
 }

@@ -19,13 +19,14 @@
 
 package com.sk89q.worldedit.blocks;
 
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Maps;
 import com.sk89q.util.StringUtil;
 import com.sk89q.worldedit.PlayerDirection;
 
 import javax.annotation.Nullable;
-import java.util.EnumSet;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
@@ -240,23 +241,27 @@ public enum BlockType {
     /**
      * Stores a map of the IDs for fast access.
      */
-    private static final Map<Integer, BlockType> ids = new HashMap<Integer, BlockType>();
+    private static final Map<Integer, BlockType> ids;
     /**
      * Stores a map of the names for fast access.
      */
-    private static final Map<String, BlockType> lookup = new HashMap<String, BlockType>();
+    private static final Map<String, BlockType> lookup;
 
     private final int id;
     private final String name;
     private final String[] lookupKeys;
 
     static {
-        for (BlockType type : EnumSet.allOf(BlockType.class)) {
-            ids.put(type.id, type);
+        Map<Integer, BlockType> idMap = Maps.newHashMap();
+        Map<String, BlockType> lookupMap = Maps.newHashMap();
+        for (BlockType type : values()) {
+            idMap.put(type.id, type);
             for (String key : type.lookupKeys) {
-                lookup.put(key, type);
+                lookupMap.put(key, type);
             }
         }
+        ids = ImmutableMap.copyOf(idMap);
+        lookup = ImmutableMap.copyOf(lookupMap);
     }
 
 
@@ -324,53 +329,58 @@ public enum BlockType {
         }
     }
 
-    private static final Map<Integer, BaseBlock> itemBlockMapping = new HashMap<Integer, BaseBlock>();
-    private static final Map<Integer, BaseBlock> dataItemBlockMapping = new HashMap<Integer, BaseBlock>();
+    private static final Map<Integer, BaseBlock> itemBlockMapping;
+    private static final Map<Integer, BaseBlock> dataItemBlockMapping;
     static {
+        ImmutableMap.Builder<Integer, BaseBlock> iBuilder = ImmutableMap.builder();
+        ImmutableMap.Builder<Integer, BaseBlock> dBuilder = ImmutableMap.builder();
         for (int data = 0; data < 16; ++data) {
-            dataItemBlockMapping.put(typeDataKey(BlockID.DIRT, data), new BaseBlock(BlockID.DIRT, data));
-            dataItemBlockMapping.put(typeDataKey(BlockID.WOOD, data), new BaseBlock(BlockID.WOOD, data));
-            dataItemBlockMapping.put(typeDataKey(BlockID.SAND, data), new BaseBlock(BlockID.SAND, data));
-            dataItemBlockMapping.put(typeDataKey(BlockID.SANDSTONE, data), new BaseBlock(BlockID.SANDSTONE, data));
-            dataItemBlockMapping.put(typeDataKey(BlockID.LONG_GRASS, data), new BaseBlock(BlockID.LONG_GRASS, data));
-            dataItemBlockMapping.put(typeDataKey(BlockID.CLOTH, data), new BaseBlock(BlockID.CLOTH, data));
-            dataItemBlockMapping.put(typeDataKey(BlockID.SILVERFISH_BLOCK, data), new BaseBlock(BlockID.SILVERFISH_BLOCK, data));
-            dataItemBlockMapping.put(typeDataKey(BlockID.STONE_BRICK, data), new BaseBlock(BlockID.STONE_BRICK, data));
-            dataItemBlockMapping.put(typeDataKey(BlockID.COBBLESTONE_WALL, data), new BaseBlock(BlockID.COBBLESTONE_WALL, data));
-            dataItemBlockMapping.put(typeDataKey(BlockID.STAINED_CLAY, data), new BaseBlock(BlockID.STAINED_CLAY, data));
-            dataItemBlockMapping.put(typeDataKey(BlockID.CARPET, data), new BaseBlock(BlockID.CARPET, data));
-            dataItemBlockMapping.put(typeDataKey(BlockID.RED_FLOWER, data), new BaseBlock(BlockID.RED_FLOWER, data));
-            dataItemBlockMapping.put(typeDataKey(BlockID.DOUBLE_PLANT, data), new BaseBlock(BlockID.DOUBLE_PLANT, data));
-            dataItemBlockMapping.put(typeDataKey(BlockID.STAINED_GLASS, data), new BaseBlock(BlockID.STAINED_GLASS, data));
+            dBuilder.put(typeDataKey(BlockID.DIRT, data), new BaseBlock(BlockID.DIRT, data));
+            dBuilder.put(typeDataKey(BlockID.WOOD, data), new BaseBlock(BlockID.WOOD, data));
+            dBuilder.put(typeDataKey(BlockID.SAND, data), new BaseBlock(BlockID.SAND, data));
+            dBuilder.put(typeDataKey(BlockID.SANDSTONE, data), new BaseBlock(BlockID.SANDSTONE, data));
+            dBuilder.put(typeDataKey(BlockID.LONG_GRASS, data), new BaseBlock(BlockID.LONG_GRASS, data));
+            dBuilder.put(typeDataKey(BlockID.CLOTH, data), new BaseBlock(BlockID.CLOTH, data));
+            dBuilder.put(typeDataKey(BlockID.SILVERFISH_BLOCK, data), new BaseBlock(BlockID.SILVERFISH_BLOCK, data));
+            dBuilder.put(typeDataKey(BlockID.STONE_BRICK, data), new BaseBlock(BlockID.STONE_BRICK, data));
+            dBuilder.put(typeDataKey(BlockID.COBBLESTONE_WALL, data), new BaseBlock(BlockID.COBBLESTONE_WALL, data));
+            dBuilder.put(typeDataKey(BlockID.STAINED_CLAY, data), new BaseBlock(BlockID.STAINED_CLAY, data));
+            dBuilder.put(typeDataKey(BlockID.CARPET, data), new BaseBlock(BlockID.CARPET, data));
+            dBuilder.put(typeDataKey(BlockID.RED_FLOWER, data), new BaseBlock(BlockID.RED_FLOWER, data));
+            dBuilder.put(typeDataKey(BlockID.DOUBLE_PLANT, data), new BaseBlock(BlockID.DOUBLE_PLANT, data));
+            dBuilder.put(typeDataKey(BlockID.STAINED_GLASS, data), new BaseBlock(BlockID.STAINED_GLASS, data));
         }
 
-        itemBlockMapping.put(ItemID.FLINT_AND_TINDER, new BaseBlock(BlockID.FIRE, -1));
-        itemBlockMapping.put(ItemID.STRING, new BaseBlock(BlockID.TRIPWIRE, -1));
-        itemBlockMapping.put(ItemID.SEEDS, new BaseBlock(BlockID.CROPS, -1));
-        itemBlockMapping.put(ItemID.SIGN, new BaseBlock(BlockID.SIGN_POST, -1));
-        itemBlockMapping.put(ItemID.WOODEN_DOOR_ITEM, new BaseBlock(BlockID.WOODEN_DOOR, -1));
-        itemBlockMapping.put(ItemID.WATER_BUCKET, new BaseBlock(BlockID.STATIONARY_WATER, -1));
-        itemBlockMapping.put(ItemID.LAVA_BUCKET, new BaseBlock(BlockID.STATIONARY_LAVA, -1));
-        itemBlockMapping.put(ItemID.IRON_DOOR_ITEM, new BaseBlock(BlockID.IRON_DOOR, -1));
-        itemBlockMapping.put(ItemID.REDSTONE_DUST, new BaseBlock(BlockID.REDSTONE_WIRE, -1));
-        itemBlockMapping.put(ItemID.SUGAR_CANE_ITEM, new BaseBlock(BlockID.REED, -1));
-        itemBlockMapping.put(ItemID.BED_ITEM, new BaseBlock(BlockID.BED, -1));
-        itemBlockMapping.put(ItemID.REDSTONE_REPEATER, new BaseBlock(BlockID.REDSTONE_REPEATER_OFF, -1));
-        itemBlockMapping.put(ItemID.PUMPKIN_SEEDS, new BaseBlock(BlockID.PUMPKIN_STEM, -1));
-        itemBlockMapping.put(ItemID.MELON_SEEDS, new BaseBlock(BlockID.MELON_STEM, -1));
-        itemBlockMapping.put(ItemID.NETHER_WART_SEED, new BaseBlock(BlockID.NETHER_WART, -1));
-        itemBlockMapping.put(ItemID.BREWING_STAND, new BaseBlock(BlockID.BREWING_STAND, -1));
-        itemBlockMapping.put(ItemID.CAULDRON, new BaseBlock(BlockID.CAULDRON, -1));
-        itemBlockMapping.put(ItemID.FLOWER_POT, new BaseBlock(BlockID.FLOWER_POT, -1));
-        itemBlockMapping.put(ItemID.CARROT, new BaseBlock(BlockID.CARROTS, -1));
-        itemBlockMapping.put(ItemID.POTATO, new BaseBlock(BlockID.POTATOES, -1));
-        itemBlockMapping.put(ItemID.COMPARATOR, new BaseBlock(BlockID.COMPARATOR_OFF, -1));
-        itemBlockMapping.put(ItemID.BANNER, new BaseBlock(BlockID.STANDING_BANNER, -1));
-        itemBlockMapping.put(ItemID.SPRUCE_DOOR, new BaseBlock(BlockID.SPRUCE_DOOR, -1));
-        itemBlockMapping.put(ItemID.BIRCH_DOOR, new BaseBlock(BlockID.BIRCH_DOOR, -1));
-        itemBlockMapping.put(ItemID.JUNGLE_DOOR, new BaseBlock(BlockID.JUNGLE_DOOR, -1));
-        itemBlockMapping.put(ItemID.ACACIA_DOOR, new BaseBlock(BlockID.ACACIA_DOOR, -1));
-        itemBlockMapping.put(ItemID.DARK_OAK_DOOR, new BaseBlock(BlockID.DARK_OAK_DOOR, -1));
+        iBuilder.put(ItemID.FLINT_AND_TINDER, new BaseBlock(BlockID.FIRE, -1));
+        iBuilder.put(ItemID.STRING, new BaseBlock(BlockID.TRIPWIRE, -1));
+        iBuilder.put(ItemID.SEEDS, new BaseBlock(BlockID.CROPS, -1));
+        iBuilder.put(ItemID.SIGN, new BaseBlock(BlockID.SIGN_POST, -1));
+        iBuilder.put(ItemID.WOODEN_DOOR_ITEM, new BaseBlock(BlockID.WOODEN_DOOR, -1));
+        iBuilder.put(ItemID.WATER_BUCKET, new BaseBlock(BlockID.STATIONARY_WATER, -1));
+        iBuilder.put(ItemID.LAVA_BUCKET, new BaseBlock(BlockID.STATIONARY_LAVA, -1));
+        iBuilder.put(ItemID.IRON_DOOR_ITEM, new BaseBlock(BlockID.IRON_DOOR, -1));
+        iBuilder.put(ItemID.REDSTONE_DUST, new BaseBlock(BlockID.REDSTONE_WIRE, -1));
+        iBuilder.put(ItemID.SUGAR_CANE_ITEM, new BaseBlock(BlockID.REED, -1));
+        iBuilder.put(ItemID.BED_ITEM, new BaseBlock(BlockID.BED, -1));
+        iBuilder.put(ItemID.REDSTONE_REPEATER, new BaseBlock(BlockID.REDSTONE_REPEATER_OFF, -1));
+        iBuilder.put(ItemID.PUMPKIN_SEEDS, new BaseBlock(BlockID.PUMPKIN_STEM, -1));
+        iBuilder.put(ItemID.MELON_SEEDS, new BaseBlock(BlockID.MELON_STEM, -1));
+        iBuilder.put(ItemID.NETHER_WART_SEED, new BaseBlock(BlockID.NETHER_WART, -1));
+        iBuilder.put(ItemID.BREWING_STAND, new BaseBlock(BlockID.BREWING_STAND, -1));
+        iBuilder.put(ItemID.CAULDRON, new BaseBlock(BlockID.CAULDRON, -1));
+        iBuilder.put(ItemID.FLOWER_POT, new BaseBlock(BlockID.FLOWER_POT, -1));
+        iBuilder.put(ItemID.CARROT, new BaseBlock(BlockID.CARROTS, -1));
+        iBuilder.put(ItemID.POTATO, new BaseBlock(BlockID.POTATOES, -1));
+        iBuilder.put(ItemID.COMPARATOR, new BaseBlock(BlockID.COMPARATOR_OFF, -1));
+        iBuilder.put(ItemID.BANNER, new BaseBlock(BlockID.STANDING_BANNER, -1));
+        iBuilder.put(ItemID.SPRUCE_DOOR, new BaseBlock(BlockID.SPRUCE_DOOR, -1));
+        iBuilder.put(ItemID.BIRCH_DOOR, new BaseBlock(BlockID.BIRCH_DOOR, -1));
+        iBuilder.put(ItemID.JUNGLE_DOOR, new BaseBlock(BlockID.JUNGLE_DOOR, -1));
+        iBuilder.put(ItemID.ACACIA_DOOR, new BaseBlock(BlockID.ACACIA_DOOR, -1));
+        iBuilder.put(ItemID.DARK_OAK_DOOR, new BaseBlock(BlockID.DARK_OAK_DOOR, -1));
+
+        itemBlockMapping = iBuilder.build();
+        dataItemBlockMapping = dBuilder.build();
     }
 
     /**
@@ -413,60 +423,62 @@ public enum BlockType {
     /**
      * HashSet for shouldPlaceLast.
      */
-    private static final Set<Integer> shouldPlaceLast = new HashSet<Integer>();
+    private static final Set<Integer> shouldPlaceLast;
     static {
-        shouldPlaceLast.add(BlockID.SAPLING);
-        shouldPlaceLast.add(BlockID.BED);
-        shouldPlaceLast.add(BlockID.POWERED_RAIL);
-        shouldPlaceLast.add(BlockID.DETECTOR_RAIL);
-        shouldPlaceLast.add(BlockID.LONG_GRASS);
-        shouldPlaceLast.add(BlockID.DEAD_BUSH);
-        shouldPlaceLast.add(BlockID.PISTON_EXTENSION);
-        shouldPlaceLast.add(BlockID.YELLOW_FLOWER);
-        shouldPlaceLast.add(BlockID.RED_FLOWER);
-        shouldPlaceLast.add(BlockID.BROWN_MUSHROOM);
-        shouldPlaceLast.add(BlockID.RED_MUSHROOM);
-        shouldPlaceLast.add(BlockID.TORCH);
-        shouldPlaceLast.add(BlockID.FIRE);
-        shouldPlaceLast.add(BlockID.REDSTONE_WIRE);
-        shouldPlaceLast.add(BlockID.CROPS);
-        shouldPlaceLast.add(BlockID.LADDER);
-        shouldPlaceLast.add(BlockID.MINECART_TRACKS);
-        shouldPlaceLast.add(BlockID.LEVER);
-        shouldPlaceLast.add(BlockID.STONE_PRESSURE_PLATE);
-        shouldPlaceLast.add(BlockID.WOODEN_PRESSURE_PLATE);
-        shouldPlaceLast.add(BlockID.REDSTONE_TORCH_OFF);
-        shouldPlaceLast.add(BlockID.REDSTONE_TORCH_ON);
-        shouldPlaceLast.add(BlockID.STONE_BUTTON);
-        shouldPlaceLast.add(BlockID.SNOW);
-        shouldPlaceLast.add(BlockID.PORTAL);
-        shouldPlaceLast.add(BlockID.REDSTONE_REPEATER_OFF);
-        shouldPlaceLast.add(BlockID.REDSTONE_REPEATER_ON);
-        shouldPlaceLast.add(BlockID.TRAP_DOOR);
-        shouldPlaceLast.add(BlockID.VINE);
-        shouldPlaceLast.add(BlockID.LILY_PAD);
-        shouldPlaceLast.add(BlockID.NETHER_WART);
-        shouldPlaceLast.add(BlockID.PISTON_BASE);
-        shouldPlaceLast.add(BlockID.PISTON_STICKY_BASE);
-        shouldPlaceLast.add(BlockID.PISTON_EXTENSION);
-        shouldPlaceLast.add(BlockID.PISTON_MOVING_PIECE);
-        shouldPlaceLast.add(BlockID.COCOA_PLANT);
-        shouldPlaceLast.add(BlockID.TRIPWIRE_HOOK);
-        shouldPlaceLast.add(BlockID.TRIPWIRE);
-        shouldPlaceLast.add(BlockID.FLOWER_POT);
-        shouldPlaceLast.add(BlockID.CARROTS);
-        shouldPlaceLast.add(BlockID.POTATOES);
-        shouldPlaceLast.add(BlockID.WOODEN_BUTTON);
-        shouldPlaceLast.add(BlockID.ANVIL); // becomes relevant with asynchronous placement
-        shouldPlaceLast.add(BlockID.PRESSURE_PLATE_LIGHT);
-        shouldPlaceLast.add(BlockID.PRESSURE_PLATE_HEAVY);
-        shouldPlaceLast.add(BlockID.COMPARATOR_OFF);
-        shouldPlaceLast.add(BlockID.COMPARATOR_ON);
-        shouldPlaceLast.add(BlockID.ACTIVATOR_RAIL);
-        shouldPlaceLast.add(BlockID.IRON_TRAP_DOOR);
-        shouldPlaceLast.add(BlockID.CARPET);
-        shouldPlaceLast.add(BlockID.DOUBLE_PLANT);
-        shouldPlaceLast.add(BlockID.DAYLIGHT_SENSOR_INVERTED);
+        ImmutableSet.Builder<Integer> builder = ImmutableSet.builder();
+        builder.add(BlockID.SAPLING);
+        builder.add(BlockID.BED);
+        builder.add(BlockID.POWERED_RAIL);
+        builder.add(BlockID.DETECTOR_RAIL);
+        builder.add(BlockID.LONG_GRASS);
+        builder.add(BlockID.DEAD_BUSH);
+        builder.add(BlockID.PISTON_EXTENSION);
+        builder.add(BlockID.YELLOW_FLOWER);
+        builder.add(BlockID.RED_FLOWER);
+        builder.add(BlockID.BROWN_MUSHROOM);
+        builder.add(BlockID.RED_MUSHROOM);
+        builder.add(BlockID.TORCH);
+        builder.add(BlockID.FIRE);
+        builder.add(BlockID.REDSTONE_WIRE);
+        builder.add(BlockID.CROPS);
+        builder.add(BlockID.LADDER);
+        builder.add(BlockID.MINECART_TRACKS);
+        builder.add(BlockID.LEVER);
+        builder.add(BlockID.STONE_PRESSURE_PLATE);
+        builder.add(BlockID.WOODEN_PRESSURE_PLATE);
+        builder.add(BlockID.REDSTONE_TORCH_OFF);
+        builder.add(BlockID.REDSTONE_TORCH_ON);
+        builder.add(BlockID.STONE_BUTTON);
+        builder.add(BlockID.SNOW);
+        builder.add(BlockID.PORTAL);
+        builder.add(BlockID.REDSTONE_REPEATER_OFF);
+        builder.add(BlockID.REDSTONE_REPEATER_ON);
+        builder.add(BlockID.TRAP_DOOR);
+        builder.add(BlockID.VINE);
+        builder.add(BlockID.LILY_PAD);
+        builder.add(BlockID.NETHER_WART);
+        builder.add(BlockID.PISTON_BASE);
+        builder.add(BlockID.PISTON_STICKY_BASE);
+        builder.add(BlockID.PISTON_EXTENSION);
+        builder.add(BlockID.PISTON_MOVING_PIECE);
+        builder.add(BlockID.COCOA_PLANT);
+        builder.add(BlockID.TRIPWIRE_HOOK);
+        builder.add(BlockID.TRIPWIRE);
+        builder.add(BlockID.FLOWER_POT);
+        builder.add(BlockID.CARROTS);
+        builder.add(BlockID.POTATOES);
+        builder.add(BlockID.WOODEN_BUTTON);
+        builder.add(BlockID.ANVIL); // becomes relevant with asynchronous placement
+        builder.add(BlockID.PRESSURE_PLATE_LIGHT);
+        builder.add(BlockID.PRESSURE_PLATE_HEAVY);
+        builder.add(BlockID.COMPARATOR_OFF);
+        builder.add(BlockID.COMPARATOR_ON);
+        builder.add(BlockID.ACTIVATOR_RAIL);
+        builder.add(BlockID.IRON_TRAP_DOOR);
+        builder.add(BlockID.CARPET);
+        builder.add(BlockID.DOUBLE_PLANT);
+        builder.add(BlockID.DAYLIGHT_SENSOR_INVERTED);
+        shouldPlaceLast = builder.build();
     }
 
     /**
@@ -493,19 +505,21 @@ public enum BlockType {
     /**
      * HashSet for shouldPlaceLast.
      */
-    private static final Set<Integer> shouldPlaceFinal = new HashSet<Integer>();
+    private static final Set<Integer> shouldPlaceFinal;
     static {
-        shouldPlaceFinal.add(BlockID.SIGN_POST);
-        shouldPlaceFinal.add(BlockID.WOODEN_DOOR);
-        shouldPlaceFinal.add(BlockID.WALL_SIGN);
-        shouldPlaceFinal.add(BlockID.IRON_DOOR);
-        shouldPlaceFinal.add(BlockID.CACTUS);
-        shouldPlaceFinal.add(BlockID.REED);
-        shouldPlaceFinal.add(BlockID.CAKE_BLOCK);
-        shouldPlaceFinal.add(BlockID.PISTON_EXTENSION);
-        shouldPlaceFinal.add(BlockID.PISTON_MOVING_PIECE);
-        shouldPlaceFinal.add(BlockID.STANDING_BANNER);
-        shouldPlaceFinal.add(BlockID.WALL_BANNER);
+        ImmutableSet.Builder<Integer> builder = ImmutableSet.builder();
+        builder.add(BlockID.SIGN_POST);
+        builder.add(BlockID.WOODEN_DOOR);
+        builder.add(BlockID.WALL_SIGN);
+        builder.add(BlockID.IRON_DOOR);
+        builder.add(BlockID.CACTUS);
+        builder.add(BlockID.REED);
+        builder.add(BlockID.CAKE_BLOCK);
+        builder.add(BlockID.PISTON_EXTENSION);
+        builder.add(BlockID.PISTON_MOVING_PIECE);
+        builder.add(BlockID.STANDING_BANNER);
+        builder.add(BlockID.WALL_BANNER);
+        shouldPlaceFinal = builder.build();
     }
 
     /**
@@ -523,61 +537,63 @@ public enum BlockType {
     /**
      * HashSet for canPassThrough.
      */
-    private static final Set<Integer> canPassThrough = new HashSet<Integer>();
+    private static final Set<Integer> canPassThrough;
     static {
-        canPassThrough.add(BlockID.AIR);
-        canPassThrough.add(BlockID.WATER);
-        canPassThrough.add(BlockID.STATIONARY_WATER);
-        canPassThrough.add(BlockID.SAPLING);
-        canPassThrough.add(BlockID.POWERED_RAIL);
-        canPassThrough.add(BlockID.DETECTOR_RAIL);
-        canPassThrough.add(BlockID.WEB);
-        canPassThrough.add(BlockID.LONG_GRASS);
-        canPassThrough.add(BlockID.DEAD_BUSH);
-        canPassThrough.add(BlockID.YELLOW_FLOWER);
-        canPassThrough.add(BlockID.RED_FLOWER);
-        canPassThrough.add(BlockID.BROWN_MUSHROOM);
-        canPassThrough.add(BlockID.RED_MUSHROOM);
-        canPassThrough.add(BlockID.TORCH);
-        canPassThrough.add(BlockID.FIRE);
-        canPassThrough.add(BlockID.REDSTONE_WIRE);
-        canPassThrough.add(BlockID.CROPS);
-        canPassThrough.add(BlockID.SIGN_POST);
-        canPassThrough.add(BlockID.LADDER);
-        canPassThrough.add(BlockID.MINECART_TRACKS);
-        canPassThrough.add(BlockID.WALL_SIGN);
-        canPassThrough.add(BlockID.LEVER);
-        canPassThrough.add(BlockID.STONE_PRESSURE_PLATE);
-        canPassThrough.add(BlockID.WOODEN_PRESSURE_PLATE);
-        canPassThrough.add(BlockID.REDSTONE_TORCH_OFF);
-        canPassThrough.add(BlockID.REDSTONE_TORCH_ON);
-        canPassThrough.add(BlockID.STONE_BUTTON);
-        canPassThrough.add(-16*BlockID.SNOW-0);
-        canPassThrough.add(-16*BlockID.SNOW-8);
-        canPassThrough.add(BlockID.REED);
-        canPassThrough.add(BlockID.PORTAL);
-        canPassThrough.add(BlockID.REDSTONE_REPEATER_OFF);
-        canPassThrough.add(BlockID.REDSTONE_REPEATER_ON);
-        canPassThrough.add(BlockID.PUMPKIN_STEM);
-        canPassThrough.add(BlockID.MELON_STEM);
-        canPassThrough.add(BlockID.VINE);
-        canPassThrough.add(BlockID.NETHER_WART);
-        canPassThrough.add(BlockID.END_PORTAL);
-        canPassThrough.add(BlockID.TRIPWIRE_HOOK);
-        canPassThrough.add(BlockID.TRIPWIRE);
-        canPassThrough.add(BlockID.CARROTS);
-        canPassThrough.add(BlockID.POTATOES);
-        canPassThrough.add(BlockID.WOODEN_BUTTON);
-        canPassThrough.add(BlockID.PRESSURE_PLATE_LIGHT);
-        canPassThrough.add(BlockID.PRESSURE_PLATE_HEAVY);
-        canPassThrough.add(BlockID.COMPARATOR_OFF);
-        canPassThrough.add(BlockID.COMPARATOR_ON);
-        canPassThrough.add(BlockID.ACTIVATOR_RAIL);
-        canPassThrough.add(BlockID.IRON_TRAP_DOOR);
-        canPassThrough.add(BlockID.CARPET);
-        canPassThrough.add(BlockID.DOUBLE_PLANT);
-        canPassThrough.add(BlockID.STANDING_BANNER);
-        canPassThrough.add(BlockID.WALL_BANNER);
+        ImmutableSet.Builder<Integer> builder = ImmutableSet.builder();
+        builder.add(BlockID.AIR);
+        builder.add(BlockID.WATER);
+        builder.add(BlockID.STATIONARY_WATER);
+        builder.add(BlockID.SAPLING);
+        builder.add(BlockID.POWERED_RAIL);
+        builder.add(BlockID.DETECTOR_RAIL);
+        builder.add(BlockID.WEB);
+        builder.add(BlockID.LONG_GRASS);
+        builder.add(BlockID.DEAD_BUSH);
+        builder.add(BlockID.YELLOW_FLOWER);
+        builder.add(BlockID.RED_FLOWER);
+        builder.add(BlockID.BROWN_MUSHROOM);
+        builder.add(BlockID.RED_MUSHROOM);
+        builder.add(BlockID.TORCH);
+        builder.add(BlockID.FIRE);
+        builder.add(BlockID.REDSTONE_WIRE);
+        builder.add(BlockID.CROPS);
+        builder.add(BlockID.SIGN_POST);
+        builder.add(BlockID.LADDER);
+        builder.add(BlockID.MINECART_TRACKS);
+        builder.add(BlockID.WALL_SIGN);
+        builder.add(BlockID.LEVER);
+        builder.add(BlockID.STONE_PRESSURE_PLATE);
+        builder.add(BlockID.WOODEN_PRESSURE_PLATE);
+        builder.add(BlockID.REDSTONE_TORCH_OFF);
+        builder.add(BlockID.REDSTONE_TORCH_ON);
+        builder.add(BlockID.STONE_BUTTON);
+        builder.add(-16*BlockID.SNOW-0);
+        builder.add(-16*BlockID.SNOW-8);
+        builder.add(BlockID.REED);
+        builder.add(BlockID.PORTAL);
+        builder.add(BlockID.REDSTONE_REPEATER_OFF);
+        builder.add(BlockID.REDSTONE_REPEATER_ON);
+        builder.add(BlockID.PUMPKIN_STEM);
+        builder.add(BlockID.MELON_STEM);
+        builder.add(BlockID.VINE);
+        builder.add(BlockID.NETHER_WART);
+        builder.add(BlockID.END_PORTAL);
+        builder.add(BlockID.TRIPWIRE_HOOK);
+        builder.add(BlockID.TRIPWIRE);
+        builder.add(BlockID.CARROTS);
+        builder.add(BlockID.POTATOES);
+        builder.add(BlockID.WOODEN_BUTTON);
+        builder.add(BlockID.PRESSURE_PLATE_LIGHT);
+        builder.add(BlockID.PRESSURE_PLATE_HEAVY);
+        builder.add(BlockID.COMPARATOR_OFF);
+        builder.add(BlockID.COMPARATOR_ON);
+        builder.add(BlockID.ACTIVATOR_RAIL);
+        builder.add(BlockID.IRON_TRAP_DOOR);
+        builder.add(BlockID.CARPET);
+        builder.add(BlockID.DOUBLE_PLANT);
+        builder.add(BlockID.STANDING_BANNER);
+        builder.add(BlockID.WALL_BANNER);
+        canPassThrough = builder.build();
     }
 
 
@@ -625,62 +641,66 @@ public enum BlockType {
     /**
      * HashSet for centralTopLimit.
      */
-    private static final Map<Integer, Double> centralTopLimit = new HashMap<Integer, Double>();
+    private static final Map<Integer, Double> centralTopLimit;
     static {
-        centralTopLimit.put(BlockID.BED, 0.5625);
-        centralTopLimit.put(BlockID.BREWING_STAND, 0.875);
-        centralTopLimit.put(BlockID.CAKE_BLOCK, 0.4375);
+        ImmutableMap.Builder<Integer, Double> builder = ImmutableMap.builder();
+        builder.put(BlockID.BED, 0.5625);
+        builder.put(BlockID.BREWING_STAND, 0.875);
+        builder.put(BlockID.CAKE_BLOCK, 0.4375);
         for (int data = 6; data < 16; ++data) {
-            centralTopLimit.put(-16*BlockID.CAKE_BLOCK-data, 0.0);
+            builder.put(-16*BlockID.CAKE_BLOCK-data, 0.0);
         }
-        centralTopLimit.put(BlockID.CAULDRON, 0.3125);
-        centralTopLimit.put(BlockID.COCOA_PLANT, 0.750);
-        centralTopLimit.put(BlockID.ENCHANTMENT_TABLE, 0.75);
+        builder.put(BlockID.CAULDRON, 0.3125);
+        builder.put(BlockID.COCOA_PLANT, 0.750);
+        builder.put(BlockID.ENCHANTMENT_TABLE, 0.75);
         for (int data = 0; data < 16; ++data) {
             if ((data & 4) != 0) {
-                centralTopLimit.put(-16*BlockID.END_PORTAL_FRAME-data, 1.0);
+                builder.put(-16*BlockID.END_PORTAL_FRAME-data, 1.0);
             } else {
-                centralTopLimit.put(-16*BlockID.END_PORTAL_FRAME-data, 0.8125);
+                builder.put(-16*BlockID.END_PORTAL_FRAME-data, 0.8125);
             }
-            centralTopLimit.put(-16*BlockID.HEAD-data, 0.75);
+            if (data != 1 && data != 9) {
+                builder.put(-16*BlockID.HEAD-data, 0.75);
+            } else {
+                // Heads on the floor are lower
+                builder.put(-16*BlockID.HEAD-data, 0.5);
+            }
         }
-        // Heads on the floor are lower
-        centralTopLimit.put(-16*BlockID.HEAD-1, 0.5);
-        centralTopLimit.put(-16*BlockID.HEAD-9, 0.5);
-        centralTopLimit.put(BlockID.FENCE, 1.5);
+        builder.put(BlockID.FENCE, 1.5);
         for (int data = 0; data < 8; ++data) {
-            centralTopLimit.put(-16*BlockID.STEP-data, 0.5);
-            centralTopLimit.put(-16*BlockID.WOODEN_STEP-data, 0.5);
-            centralTopLimit.put(-16*BlockID.STEP2-data, 0.5);
-            centralTopLimit.put(-16*BlockID.SNOW-data, 0.125*data);
-            centralTopLimit.put(-16*BlockID.SNOW-(data+8), 0.125*data);
+            builder.put(-16*BlockID.STEP-data, 0.5);
+            builder.put(-16*BlockID.WOODEN_STEP-data, 0.5);
+            builder.put(-16*BlockID.STEP2-data, 0.5);
+            builder.put(-16*BlockID.SNOW-data, 0.125*data);
+            builder.put(-16*BlockID.SNOW-(data+8), 0.125*data);
         }
-        centralTopLimit.put(BlockID.LILY_PAD, 0.015625);
-        centralTopLimit.put(BlockID.REDSTONE_REPEATER_ON, .125);
-        centralTopLimit.put(BlockID.REDSTONE_REPEATER_OFF, .125);
+        builder.put(BlockID.LILY_PAD, 0.015625);
+        builder.put(BlockID.REDSTONE_REPEATER_ON, .125);
+        builder.put(BlockID.REDSTONE_REPEATER_OFF, .125);
         for (int data = 0; data < 4; ++data) {
-            centralTopLimit.put(-16*BlockID.TRAP_DOOR-(data+ 0), 0.1875); // closed lower trap doors
-            centralTopLimit.put(-16*BlockID.TRAP_DOOR-(data+ 4), 0.0); // opened lower trap doors
-            centralTopLimit.put(-16*BlockID.TRAP_DOOR-(data+ 8), 1.0); // closed upper trap doors
-            centralTopLimit.put(-16*BlockID.TRAP_DOOR-(data+12), 0.0); // opened upper trap doors
+            builder.put(-16*BlockID.TRAP_DOOR-(data+ 0), 0.1875); // closed lower trap doors
+            builder.put(-16*BlockID.TRAP_DOOR-(data+ 4), 0.0); // opened lower trap doors
+            builder.put(-16*BlockID.TRAP_DOOR-(data+ 8), 1.0); // closed upper trap doors
+            builder.put(-16*BlockID.TRAP_DOOR-(data+12), 0.0); // opened upper trap doors
 
-            centralTopLimit.put(-16*BlockID.FENCE_GATE-(data+ 0), 1.5);
-            centralTopLimit.put(-16*BlockID.FENCE_GATE-(data+ 4), 0.0);
-            centralTopLimit.put(-16*BlockID.FENCE_GATE-(data+ 8), 1.5);
-            centralTopLimit.put(-16*BlockID.FENCE_GATE-(data+12), 0.0);
+            builder.put(-16*BlockID.FENCE_GATE-(data+ 0), 1.5);
+            builder.put(-16*BlockID.FENCE_GATE-(data+ 4), 0.0);
+            builder.put(-16*BlockID.FENCE_GATE-(data+ 8), 1.5);
+            builder.put(-16*BlockID.FENCE_GATE-(data+12), 0.0);
         }
-        centralTopLimit.put(BlockID.SLOW_SAND, 0.875);
-        centralTopLimit.put(BlockID.COBBLESTONE_WALL, 1.5);
-        centralTopLimit.put(BlockID.FLOWER_POT, 0.375);
-        centralTopLimit.put(BlockID.COMPARATOR_OFF, .125);
-        centralTopLimit.put(BlockID.COMPARATOR_ON, .125);
-        centralTopLimit.put(BlockID.DAYLIGHT_SENSOR, 0.375);
-        centralTopLimit.put(BlockID.HOPPER, 0.625);
+        builder.put(BlockID.SLOW_SAND, 0.875);
+        builder.put(BlockID.COBBLESTONE_WALL, 1.5);
+        builder.put(BlockID.FLOWER_POT, 0.375);
+        builder.put(BlockID.COMPARATOR_OFF, .125);
+        builder.put(BlockID.COMPARATOR_ON, .125);
+        builder.put(BlockID.DAYLIGHT_SENSOR, 0.375);
+        builder.put(BlockID.HOPPER, 0.625);
 
         // Some default values to be used if no data value is given
-        centralTopLimit.put(BlockID.HEAD, 0.75);
-        centralTopLimit.put(BlockID.TRAP_DOOR, 1.0);
-        centralTopLimit.put(BlockID.FENCE_GATE, 1.5);
+        builder.put(BlockID.HEAD, 0.75);
+        builder.put(BlockID.TRAP_DOOR, 1.0);
+        builder.put(BlockID.FENCE_GATE, 1.5);
+        centralTopLimit = builder.build();
     }
 
     /**
@@ -726,127 +746,129 @@ public enum BlockType {
     /**
      * HashSet for usesData.
      */
-    private static final Set<Integer> usesData = new HashSet<Integer>();
+    private static final Set<Integer> usesData;
     static {
-        usesData.add(BlockID.STONE);
-        usesData.add(BlockID.DIRT);
-        usesData.add(BlockID.WOOD);
-        usesData.add(BlockID.SAPLING);
-        usesData.add(BlockID.WATER);
-        usesData.add(BlockID.STATIONARY_WATER);
-        usesData.add(BlockID.LAVA);
-        usesData.add(BlockID.STATIONARY_LAVA);
-        usesData.add(BlockID.SAND);
-        usesData.add(BlockID.LOG);
-        usesData.add(BlockID.LOG2);
-        usesData.add(BlockID.LEAVES);
-        usesData.add(BlockID.LEAVES2);
-        usesData.add(BlockID.SPONGE);
-        usesData.add(BlockID.DISPENSER);
-        usesData.add(BlockID.SANDSTONE);
-        usesData.add(BlockID.BED);
-        usesData.add(BlockID.POWERED_RAIL);
-        usesData.add(BlockID.DETECTOR_RAIL);
-        usesData.add(BlockID.PISTON_STICKY_BASE);
-        usesData.add(BlockID.LONG_GRASS);
-        usesData.add(BlockID.PISTON_BASE);
-        usesData.add(BlockID.PISTON_EXTENSION);
-        usesData.add(BlockID.CLOTH);
-        usesData.add(BlockID.RED_FLOWER);
-        usesData.add(BlockID.DOUBLE_STEP);
-        usesData.add(BlockID.STEP);
-        usesData.add(BlockID.TORCH);
-        usesData.add(BlockID.FIRE);
-        usesData.add(BlockID.OAK_WOOD_STAIRS);
-        usesData.add(BlockID.CHEST);
-        usesData.add(BlockID.REDSTONE_WIRE);
-        usesData.add(BlockID.CROPS);
-        usesData.add(BlockID.SOIL);
-        usesData.add(BlockID.FURNACE);
-        usesData.add(BlockID.BURNING_FURNACE);
-        usesData.add(BlockID.SIGN_POST);
-        usesData.add(BlockID.WOODEN_DOOR);
-        usesData.add(BlockID.LADDER);
-        usesData.add(BlockID.MINECART_TRACKS);
-        usesData.add(BlockID.COBBLESTONE_STAIRS);
-        usesData.add(BlockID.WALL_SIGN);
-        usesData.add(BlockID.LEVER);
-        usesData.add(BlockID.STONE_PRESSURE_PLATE);
-        usesData.add(BlockID.IRON_DOOR);
-        usesData.add(BlockID.WOODEN_PRESSURE_PLATE);
-        usesData.add(BlockID.REDSTONE_TORCH_OFF);
-        usesData.add(BlockID.REDSTONE_TORCH_ON);
-        usesData.add(BlockID.STONE_BUTTON);
-        usesData.add(BlockID.SNOW);
-        usesData.add(BlockID.CACTUS);
-        usesData.add(BlockID.REED);
-        usesData.add(BlockID.JUKEBOX);
-        usesData.add(BlockID.PUMPKIN);
-        usesData.add(BlockID.JACKOLANTERN);
-        usesData.add(BlockID.CAKE_BLOCK);
-        usesData.add(BlockID.REDSTONE_REPEATER_OFF);
-        usesData.add(BlockID.REDSTONE_REPEATER_ON);
-        usesData.add(BlockID.TRAP_DOOR);
-        usesData.add(BlockID.SILVERFISH_BLOCK);
-        usesData.add(BlockID.STONE_BRICK);
-        usesData.add(BlockID.RED_MUSHROOM_CAP);
-        usesData.add(BlockID.BROWN_MUSHROOM_CAP);
-        usesData.add(BlockID.PUMPKIN_STEM);
-        usesData.add(BlockID.MELON_STEM);
-        usesData.add(BlockID.VINE);
-        usesData.add(BlockID.FENCE_GATE);
-        usesData.add(BlockID.BRICK_STAIRS);
-        usesData.add(BlockID.STONE_BRICK_STAIRS);
-        usesData.add(BlockID.NETHER_BRICK_STAIRS);
-        usesData.add(BlockID.NETHER_WART);
-        usesData.add(BlockID.BREWING_STAND);
-        usesData.add(BlockID.CAULDRON);
-        usesData.add(BlockID.END_PORTAL_FRAME);
-        usesData.add(BlockID.DOUBLE_WOODEN_STEP);
-        usesData.add(BlockID.WOODEN_STEP);
-        usesData.add(BlockID.COCOA_PLANT);
-        usesData.add(BlockID.SANDSTONE_STAIRS);
-        usesData.add(BlockID.ENDER_CHEST);
-        usesData.add(BlockID.TRIPWIRE_HOOK);
-        usesData.add(BlockID.TRIPWIRE);
-        usesData.add(BlockID.SPRUCE_WOOD_STAIRS);
-        usesData.add(BlockID.BIRCH_WOOD_STAIRS);
-        usesData.add(BlockID.JUNGLE_WOOD_STAIRS);
-        usesData.add(BlockID.COBBLESTONE_WALL);
-        usesData.add(BlockID.FLOWER_POT);
-        usesData.add(BlockID.CARROTS);
-        usesData.add(BlockID.POTATOES);
-        usesData.add(BlockID.WOODEN_BUTTON);
-        usesData.add(BlockID.HEAD);
-        usesData.add(BlockID.ANVIL);
-        usesData.add(BlockID.PRESSURE_PLATE_LIGHT);
-        usesData.add(BlockID.PRESSURE_PLATE_HEAVY);
-        usesData.add(BlockID.COMPARATOR_OFF);
-        usesData.add(BlockID.COMPARATOR_ON);
-        usesData.add(BlockID.QUARTZ_BLOCK);
-        usesData.add(BlockID.QUARTZ_STAIRS);
-        usesData.add(BlockID.ACTIVATOR_RAIL);
-        usesData.add(BlockID.DROPPER);
-        usesData.add(BlockID.HOPPER);
-        usesData.add(BlockID.STAINED_CLAY);
-        usesData.add(BlockID.STAINED_GLASS);
-        usesData.add(BlockID.STAINED_GLASS_PANE);
-        usesData.add(BlockID.IRON_TRAP_DOOR);
-        usesData.add(BlockID.PRISMARINE);
-        usesData.add(BlockID.HAY_BLOCK);
-        usesData.add(BlockID.CARPET);
-        usesData.add(BlockID.DOUBLE_PLANT);
-        usesData.add(BlockID.STANDING_BANNER);
-        usesData.add(BlockID.WALL_BANNER);
-        usesData.add(BlockID.RED_SANDSTONE);
-        usesData.add(BlockID.RED_SANDSTONE_STAIRS);
-        usesData.add(BlockID.DOUBLE_STEP2);
-        usesData.add(BlockID.STEP2);
-        usesData.add(BlockID.SPRUCE_DOOR);
-        usesData.add(BlockID.BIRCH_DOOR);
-        usesData.add(BlockID.JUNGLE_DOOR);
-        usesData.add(BlockID.ACACIA_DOOR);
-        usesData.add(BlockID.DARK_OAK_DOOR);
+        ImmutableSet.Builder<Integer> builder = ImmutableSet.builder();
+        builder.add(BlockID.STONE);
+        builder.add(BlockID.DIRT);
+        builder.add(BlockID.WOOD);
+        builder.add(BlockID.SAPLING);
+        builder.add(BlockID.WATER);
+        builder.add(BlockID.STATIONARY_WATER);
+        builder.add(BlockID.LAVA);
+        builder.add(BlockID.STATIONARY_LAVA);
+        builder.add(BlockID.SAND);
+        builder.add(BlockID.LOG);
+        builder.add(BlockID.LOG2);
+        builder.add(BlockID.LEAVES);
+        builder.add(BlockID.LEAVES2);
+        builder.add(BlockID.SPONGE);
+        builder.add(BlockID.DISPENSER);
+        builder.add(BlockID.SANDSTONE);
+        builder.add(BlockID.BED);
+        builder.add(BlockID.POWERED_RAIL);
+        builder.add(BlockID.DETECTOR_RAIL);
+        builder.add(BlockID.PISTON_STICKY_BASE);
+        builder.add(BlockID.LONG_GRASS);
+        builder.add(BlockID.PISTON_BASE);
+        builder.add(BlockID.PISTON_EXTENSION);
+        builder.add(BlockID.CLOTH);
+        builder.add(BlockID.RED_FLOWER);
+        builder.add(BlockID.DOUBLE_STEP);
+        builder.add(BlockID.STEP);
+        builder.add(BlockID.TORCH);
+        builder.add(BlockID.FIRE);
+        builder.add(BlockID.OAK_WOOD_STAIRS);
+        builder.add(BlockID.CHEST);
+        builder.add(BlockID.REDSTONE_WIRE);
+        builder.add(BlockID.CROPS);
+        builder.add(BlockID.SOIL);
+        builder.add(BlockID.FURNACE);
+        builder.add(BlockID.BURNING_FURNACE);
+        builder.add(BlockID.SIGN_POST);
+        builder.add(BlockID.WOODEN_DOOR);
+        builder.add(BlockID.LADDER);
+        builder.add(BlockID.MINECART_TRACKS);
+        builder.add(BlockID.COBBLESTONE_STAIRS);
+        builder.add(BlockID.WALL_SIGN);
+        builder.add(BlockID.LEVER);
+        builder.add(BlockID.STONE_PRESSURE_PLATE);
+        builder.add(BlockID.IRON_DOOR);
+        builder.add(BlockID.WOODEN_PRESSURE_PLATE);
+        builder.add(BlockID.REDSTONE_TORCH_OFF);
+        builder.add(BlockID.REDSTONE_TORCH_ON);
+        builder.add(BlockID.STONE_BUTTON);
+        builder.add(BlockID.SNOW);
+        builder.add(BlockID.CACTUS);
+        builder.add(BlockID.REED);
+        builder.add(BlockID.JUKEBOX);
+        builder.add(BlockID.PUMPKIN);
+        builder.add(BlockID.JACKOLANTERN);
+        builder.add(BlockID.CAKE_BLOCK);
+        builder.add(BlockID.REDSTONE_REPEATER_OFF);
+        builder.add(BlockID.REDSTONE_REPEATER_ON);
+        builder.add(BlockID.TRAP_DOOR);
+        builder.add(BlockID.SILVERFISH_BLOCK);
+        builder.add(BlockID.STONE_BRICK);
+        builder.add(BlockID.RED_MUSHROOM_CAP);
+        builder.add(BlockID.BROWN_MUSHROOM_CAP);
+        builder.add(BlockID.PUMPKIN_STEM);
+        builder.add(BlockID.MELON_STEM);
+        builder.add(BlockID.VINE);
+        builder.add(BlockID.FENCE_GATE);
+        builder.add(BlockID.BRICK_STAIRS);
+        builder.add(BlockID.STONE_BRICK_STAIRS);
+        builder.add(BlockID.NETHER_BRICK_STAIRS);
+        builder.add(BlockID.NETHER_WART);
+        builder.add(BlockID.BREWING_STAND);
+        builder.add(BlockID.CAULDRON);
+        builder.add(BlockID.END_PORTAL_FRAME);
+        builder.add(BlockID.DOUBLE_WOODEN_STEP);
+        builder.add(BlockID.WOODEN_STEP);
+        builder.add(BlockID.COCOA_PLANT);
+        builder.add(BlockID.SANDSTONE_STAIRS);
+        builder.add(BlockID.ENDER_CHEST);
+        builder.add(BlockID.TRIPWIRE_HOOK);
+        builder.add(BlockID.TRIPWIRE);
+        builder.add(BlockID.SPRUCE_WOOD_STAIRS);
+        builder.add(BlockID.BIRCH_WOOD_STAIRS);
+        builder.add(BlockID.JUNGLE_WOOD_STAIRS);
+        builder.add(BlockID.COBBLESTONE_WALL);
+        builder.add(BlockID.FLOWER_POT);
+        builder.add(BlockID.CARROTS);
+        builder.add(BlockID.POTATOES);
+        builder.add(BlockID.WOODEN_BUTTON);
+        builder.add(BlockID.HEAD);
+        builder.add(BlockID.ANVIL);
+        builder.add(BlockID.PRESSURE_PLATE_LIGHT);
+        builder.add(BlockID.PRESSURE_PLATE_HEAVY);
+        builder.add(BlockID.COMPARATOR_OFF);
+        builder.add(BlockID.COMPARATOR_ON);
+        builder.add(BlockID.QUARTZ_BLOCK);
+        builder.add(BlockID.QUARTZ_STAIRS);
+        builder.add(BlockID.ACTIVATOR_RAIL);
+        builder.add(BlockID.DROPPER);
+        builder.add(BlockID.HOPPER);
+        builder.add(BlockID.STAINED_CLAY);
+        builder.add(BlockID.STAINED_GLASS);
+        builder.add(BlockID.STAINED_GLASS_PANE);
+        builder.add(BlockID.IRON_TRAP_DOOR);
+        builder.add(BlockID.PRISMARINE);
+        builder.add(BlockID.HAY_BLOCK);
+        builder.add(BlockID.CARPET);
+        builder.add(BlockID.DOUBLE_PLANT);
+        builder.add(BlockID.STANDING_BANNER);
+        builder.add(BlockID.WALL_BANNER);
+        builder.add(BlockID.RED_SANDSTONE);
+        builder.add(BlockID.RED_SANDSTONE_STAIRS);
+        builder.add(BlockID.DOUBLE_STEP2);
+        builder.add(BlockID.STEP2);
+        builder.add(BlockID.SPRUCE_DOOR);
+        builder.add(BlockID.BIRCH_DOOR);
+        builder.add(BlockID.JUNGLE_DOOR);
+        builder.add(BlockID.ACACIA_DOOR);
+        builder.add(BlockID.DARK_OAK_DOOR);
+        usesData = builder.build();
     }
 
     /**
@@ -871,17 +893,19 @@ public enum BlockType {
     /**
      * HashSet for isContainerBlock.
      */
-    private static final Set<Integer> isContainerBlock = new HashSet<Integer>();
+    private static final Set<Integer> isContainerBlock;
     static {
-        isContainerBlock.add(BlockID.DISPENSER);
-        isContainerBlock.add(BlockID.FURNACE);
-        isContainerBlock.add(BlockID.BURNING_FURNACE);
-        isContainerBlock.add(BlockID.CHEST);
-        isContainerBlock.add(BlockID.BREWING_STAND);
-        isContainerBlock.add(BlockID.TRAPPED_CHEST);
-        isContainerBlock.add(BlockID.HOPPER);
-        isContainerBlock.add(BlockID.DROPPER);
+        ImmutableSet.Builder<Integer> builder = ImmutableSet.builder();
+        builder.add(BlockID.DISPENSER);
+        builder.add(BlockID.FURNACE);
+        builder.add(BlockID.BURNING_FURNACE);
+        builder.add(BlockID.CHEST);
+        builder.add(BlockID.BREWING_STAND);
+        builder.add(BlockID.TRAPPED_CHEST);
+        builder.add(BlockID.HOPPER);
+        builder.add(BlockID.DROPPER);
         //isContainerBlock.add(BlockID.ENDER_CHEST); // ender chest has no own inventory, don't add this here
+        isContainerBlock = builder.build();
     }
 
     /**
@@ -906,40 +930,42 @@ public enum BlockType {
     /**
      * HashSet for isRedstoneBlock.
      */
-    private static final Set<Integer> isRedstoneBlock = new HashSet<Integer>();
+    private static final Set<Integer> isRedstoneBlock;
     static {
-        isRedstoneBlock.add(BlockID.POWERED_RAIL);
-        isRedstoneBlock.add(BlockID.DETECTOR_RAIL);
-        isRedstoneBlock.add(BlockID.PISTON_STICKY_BASE);
-        isRedstoneBlock.add(BlockID.PISTON_BASE);
-        isRedstoneBlock.add(BlockID.LEVER);
-        isRedstoneBlock.add(BlockID.STONE_PRESSURE_PLATE);
-        isRedstoneBlock.add(BlockID.WOODEN_PRESSURE_PLATE);
-        isRedstoneBlock.add(BlockID.REDSTONE_TORCH_OFF);
-        isRedstoneBlock.add(BlockID.REDSTONE_TORCH_ON);
-        isRedstoneBlock.add(BlockID.STONE_BUTTON);
-        isRedstoneBlock.add(BlockID.REDSTONE_WIRE);
-        isRedstoneBlock.add(BlockID.WOODEN_DOOR);
-        isRedstoneBlock.add(BlockID.IRON_DOOR);
-        isRedstoneBlock.add(BlockID.TNT);
-        isRedstoneBlock.add(BlockID.DISPENSER);
-        isRedstoneBlock.add(BlockID.NOTE_BLOCK);
-        isRedstoneBlock.add(BlockID.REDSTONE_REPEATER_OFF);
-        isRedstoneBlock.add(BlockID.REDSTONE_REPEATER_ON);
-        isRedstoneBlock.add(BlockID.TRIPWIRE_HOOK);
-        isRedstoneBlock.add(BlockID.COMMAND_BLOCK);
-        isRedstoneBlock.add(BlockID.WOODEN_BUTTON);
-        isRedstoneBlock.add(BlockID.TRAPPED_CHEST);
-        isRedstoneBlock.add(BlockID.PRESSURE_PLATE_LIGHT);
-        isRedstoneBlock.add(BlockID.PRESSURE_PLATE_HEAVY);
-        isRedstoneBlock.add(BlockID.COMPARATOR_OFF);
-        isRedstoneBlock.add(BlockID.COMPARATOR_ON);
-        isRedstoneBlock.add(BlockID.DAYLIGHT_SENSOR);
-        isRedstoneBlock.add(BlockID.REDSTONE_BLOCK);
-        isRedstoneBlock.add(BlockID.HOPPER);
-        isRedstoneBlock.add(BlockID.ACTIVATOR_RAIL);
-        isRedstoneBlock.add(BlockID.DROPPER);
-        isRedstoneBlock.add(BlockID.DAYLIGHT_SENSOR_INVERTED);
+        ImmutableSet.Builder<Integer> builder = ImmutableSet.builder();
+        builder.add(BlockID.POWERED_RAIL);
+        builder.add(BlockID.DETECTOR_RAIL);
+        builder.add(BlockID.PISTON_STICKY_BASE);
+        builder.add(BlockID.PISTON_BASE);
+        builder.add(BlockID.LEVER);
+        builder.add(BlockID.STONE_PRESSURE_PLATE);
+        builder.add(BlockID.WOODEN_PRESSURE_PLATE);
+        builder.add(BlockID.REDSTONE_TORCH_OFF);
+        builder.add(BlockID.REDSTONE_TORCH_ON);
+        builder.add(BlockID.STONE_BUTTON);
+        builder.add(BlockID.REDSTONE_WIRE);
+        builder.add(BlockID.WOODEN_DOOR);
+        builder.add(BlockID.IRON_DOOR);
+        builder.add(BlockID.TNT);
+        builder.add(BlockID.DISPENSER);
+        builder.add(BlockID.NOTE_BLOCK);
+        builder.add(BlockID.REDSTONE_REPEATER_OFF);
+        builder.add(BlockID.REDSTONE_REPEATER_ON);
+        builder.add(BlockID.TRIPWIRE_HOOK);
+        builder.add(BlockID.COMMAND_BLOCK);
+        builder.add(BlockID.WOODEN_BUTTON);
+        builder.add(BlockID.TRAPPED_CHEST);
+        builder.add(BlockID.PRESSURE_PLATE_LIGHT);
+        builder.add(BlockID.PRESSURE_PLATE_HEAVY);
+        builder.add(BlockID.COMPARATOR_OFF);
+        builder.add(BlockID.COMPARATOR_ON);
+        builder.add(BlockID.DAYLIGHT_SENSOR);
+        builder.add(BlockID.REDSTONE_BLOCK);
+        builder.add(BlockID.HOPPER);
+        builder.add(BlockID.ACTIVATOR_RAIL);
+        builder.add(BlockID.DROPPER);
+        builder.add(BlockID.DAYLIGHT_SENSOR_INVERTED);
+        isRedstoneBlock = builder.build();
     }
 
     /**
@@ -964,15 +990,17 @@ public enum BlockType {
     /**
      * HashSet for canTransferRedstone.
      */
-    private static final Set<Integer> canTransferRedstone = new HashSet<Integer>();
+    private static final Set<Integer> canTransferRedstone;
     static {
-        canTransferRedstone.add(BlockID.REDSTONE_TORCH_OFF);
-        canTransferRedstone.add(BlockID.REDSTONE_TORCH_ON);
-        canTransferRedstone.add(BlockID.REDSTONE_WIRE);
-        canTransferRedstone.add(BlockID.REDSTONE_REPEATER_OFF);
-        canTransferRedstone.add(BlockID.REDSTONE_REPEATER_ON);
-        canTransferRedstone.add(BlockID.COMPARATOR_OFF);
-        canTransferRedstone.add(BlockID.COMPARATOR_ON);
+        ImmutableSet.Builder<Integer> builder = ImmutableSet.builder();
+        builder.add(BlockID.REDSTONE_TORCH_OFF);
+        builder.add(BlockID.REDSTONE_TORCH_ON);
+        builder.add(BlockID.REDSTONE_WIRE);
+        builder.add(BlockID.REDSTONE_REPEATER_OFF);
+        builder.add(BlockID.REDSTONE_REPEATER_ON);
+        builder.add(BlockID.COMPARATOR_OFF);
+        builder.add(BlockID.COMPARATOR_ON);
+        canTransferRedstone = builder.build();
     }
 
     /**
@@ -1001,22 +1029,24 @@ public enum BlockType {
     /**
      * HashSet for isRedstoneSource.
      */
-    private static final Set<Integer> isRedstoneSource = new HashSet<Integer>();
+    private static final Set<Integer> isRedstoneSource;
     static {
-        isRedstoneSource.add(BlockID.DETECTOR_RAIL);
-        isRedstoneSource.add(BlockID.REDSTONE_TORCH_OFF);
-        isRedstoneSource.add(BlockID.REDSTONE_TORCH_ON);
-        isRedstoneSource.add(BlockID.LEVER);
-        isRedstoneSource.add(BlockID.STONE_PRESSURE_PLATE);
-        isRedstoneSource.add(BlockID.WOODEN_PRESSURE_PLATE);
-        isRedstoneSource.add(BlockID.STONE_BUTTON);
-        isRedstoneSource.add(BlockID.TRIPWIRE_HOOK);
-        isRedstoneSource.add(BlockID.WOODEN_BUTTON);
-        isRedstoneSource.add(BlockID.PRESSURE_PLATE_LIGHT);
-        isRedstoneSource.add(BlockID.PRESSURE_PLATE_HEAVY);
-        isRedstoneSource.add(BlockID.DAYLIGHT_SENSOR);
-        isRedstoneSource.add(BlockID.REDSTONE_BLOCK);
-        isRedstoneSource.add(BlockID.DAYLIGHT_SENSOR_INVERTED);
+        ImmutableSet.Builder<Integer> builder = ImmutableSet.builder();
+        builder.add(BlockID.DETECTOR_RAIL);
+        builder.add(BlockID.REDSTONE_TORCH_OFF);
+        builder.add(BlockID.REDSTONE_TORCH_ON);
+        builder.add(BlockID.LEVER);
+        builder.add(BlockID.STONE_PRESSURE_PLATE);
+        builder.add(BlockID.WOODEN_PRESSURE_PLATE);
+        builder.add(BlockID.STONE_BUTTON);
+        builder.add(BlockID.TRIPWIRE_HOOK);
+        builder.add(BlockID.WOODEN_BUTTON);
+        builder.add(BlockID.PRESSURE_PLATE_LIGHT);
+        builder.add(BlockID.PRESSURE_PLATE_HEAVY);
+        builder.add(BlockID.DAYLIGHT_SENSOR);
+        builder.add(BlockID.REDSTONE_BLOCK);
+        builder.add(BlockID.DAYLIGHT_SENSOR_INVERTED);
+        isRedstoneSource = builder.build();
     }
 
     /**
@@ -1041,12 +1071,14 @@ public enum BlockType {
     /**
      * HashSet for isRailBlock.
      */
-    private static final Set<Integer> isRailBlock = new HashSet<Integer>();
+    private static final Set<Integer> isRailBlock;
     static {
-        isRailBlock.add(BlockID.POWERED_RAIL);
-        isRailBlock.add(BlockID.DETECTOR_RAIL);
-        isRailBlock.add(BlockID.MINECART_TRACKS);
-        isRailBlock.add(BlockID.ACTIVATOR_RAIL);
+        ImmutableSet.Builder<Integer> builder = ImmutableSet.builder();
+        builder.add(BlockID.POWERED_RAIL);
+        builder.add(BlockID.DETECTOR_RAIL);
+        builder.add(BlockID.MINECART_TRACKS);
+        builder.add(BlockID.ACTIVATOR_RAIL);
+        isRailBlock = builder.build();
     }
 
     /**
@@ -1071,35 +1103,37 @@ public enum BlockType {
     /**
      * HashSet for isNaturalBlock.
      */
-    private static final Set<Integer> isNaturalTerrainBlock = new HashSet<Integer>();
+    private static final Set<Integer> isNaturalTerrainBlock;
     static {
-        isNaturalTerrainBlock.add(BlockID.STONE);
-        isNaturalTerrainBlock.add(BlockID.GRASS);
-        isNaturalTerrainBlock.add(BlockID.DIRT);
+        ImmutableSet.Builder<Integer> builder = ImmutableSet.builder();
+        builder.add(BlockID.STONE);
+        builder.add(BlockID.GRASS);
+        builder.add(BlockID.DIRT);
         // isNaturalBlock.add(BlockID.COBBLESTONE); // technically can occur next to water and lava
-        isNaturalTerrainBlock.add(BlockID.BEDROCK);
-        isNaturalTerrainBlock.add(BlockID.SAND);
-        isNaturalTerrainBlock.add(BlockID.GRAVEL);
-        isNaturalTerrainBlock.add(BlockID.CLAY);
-        isNaturalTerrainBlock.add(BlockID.MYCELIUM);
-        isNaturalTerrainBlock.add(BlockID.PACKED_ICE);
-        isNaturalTerrainBlock.add(BlockID.STAINED_CLAY);
+        builder.add(BlockID.BEDROCK);
+        builder.add(BlockID.SAND);
+        builder.add(BlockID.GRAVEL);
+        builder.add(BlockID.CLAY);
+        builder.add(BlockID.MYCELIUM);
+        builder.add(BlockID.PACKED_ICE);
+        builder.add(BlockID.STAINED_CLAY);
 
         // hell
-        isNaturalTerrainBlock.add(BlockID.NETHERRACK);
-        isNaturalTerrainBlock.add(BlockID.SLOW_SAND);
-        isNaturalTerrainBlock.add(BlockID.LIGHTSTONE);
-        isNaturalTerrainBlock.add(BlockID.QUARTZ_ORE);
+        builder.add(BlockID.NETHERRACK);
+        builder.add(BlockID.SLOW_SAND);
+        builder.add(BlockID.LIGHTSTONE);
+        builder.add(BlockID.QUARTZ_ORE);
 
         // ores
-        isNaturalTerrainBlock.add(BlockID.COAL_ORE);
-        isNaturalTerrainBlock.add(BlockID.IRON_ORE);
-        isNaturalTerrainBlock.add(BlockID.GOLD_ORE);
-        isNaturalTerrainBlock.add(BlockID.LAPIS_LAZULI_ORE);
-        isNaturalTerrainBlock.add(BlockID.DIAMOND_ORE);
-        isNaturalTerrainBlock.add(BlockID.REDSTONE_ORE);
-        isNaturalTerrainBlock.add(BlockID.GLOWING_REDSTONE_ORE);
-        isNaturalTerrainBlock.add(BlockID.EMERALD_ORE);
+        builder.add(BlockID.COAL_ORE);
+        builder.add(BlockID.IRON_ORE);
+        builder.add(BlockID.GOLD_ORE);
+        builder.add(BlockID.LAPIS_LAZULI_ORE);
+        builder.add(BlockID.DIAMOND_ORE);
+        builder.add(BlockID.REDSTONE_ORE);
+        builder.add(BlockID.GLOWING_REDSTONE_ORE);
+        builder.add(BlockID.EMERALD_ORE);
+        isNaturalTerrainBlock = builder.build();
     }
 
     /**
@@ -1147,29 +1181,31 @@ public enum BlockType {
     /**
      * HashSet for emitsLight.
      */
-    private static final Set<Integer> emitsLight = new HashSet<Integer>();
+    private static final Set<Integer> emitsLight;
     static {
-        emitsLight.add(BlockID.LAVA);
-        emitsLight.add(BlockID.STATIONARY_LAVA);
-        emitsLight.add(BlockID.BROWN_MUSHROOM);
-        emitsLight.add(BlockID.RED_MUSHROOM);
-        emitsLight.add(BlockID.TORCH);
-        emitsLight.add(BlockID.FIRE);
-        emitsLight.add(BlockID.BURNING_FURNACE);
-        emitsLight.add(BlockID.GLOWING_REDSTONE_ORE);
-        emitsLight.add(BlockID.REDSTONE_TORCH_ON);
-        emitsLight.add(BlockID.LIGHTSTONE);
-        emitsLight.add(BlockID.PORTAL);
-        emitsLight.add(BlockID.JACKOLANTERN);
-        emitsLight.add(BlockID.REDSTONE_REPEATER_ON);
-        emitsLight.add(BlockID.BROWN_MUSHROOM_CAP);
-        emitsLight.add(BlockID.RED_MUSHROOM_CAP);
-        emitsLight.add(BlockID.END_PORTAL);
-        emitsLight.add(BlockID.REDSTONE_LAMP_ON);
-        emitsLight.add(BlockID.ENDER_CHEST);
-        emitsLight.add(BlockID.BEACON);
-        emitsLight.add(BlockID.REDSTONE_BLOCK);
-        emitsLight.add(BlockID.SEA_LANTERN);
+        ImmutableSet.Builder<Integer> builder = ImmutableSet.builder();
+        builder.add(BlockID.LAVA);
+        builder.add(BlockID.STATIONARY_LAVA);
+        builder.add(BlockID.BROWN_MUSHROOM);
+        builder.add(BlockID.RED_MUSHROOM);
+        builder.add(BlockID.TORCH);
+        builder.add(BlockID.FIRE);
+        builder.add(BlockID.BURNING_FURNACE);
+        builder.add(BlockID.GLOWING_REDSTONE_ORE);
+        builder.add(BlockID.REDSTONE_TORCH_ON);
+        builder.add(BlockID.LIGHTSTONE);
+        builder.add(BlockID.PORTAL);
+        builder.add(BlockID.JACKOLANTERN);
+        builder.add(BlockID.REDSTONE_REPEATER_ON);
+        builder.add(BlockID.BROWN_MUSHROOM_CAP);
+        builder.add(BlockID.RED_MUSHROOM_CAP);
+        builder.add(BlockID.END_PORTAL);
+        builder.add(BlockID.REDSTONE_LAMP_ON);
+        builder.add(BlockID.ENDER_CHEST);
+        builder.add(BlockID.BEACON);
+        builder.add(BlockID.REDSTONE_BLOCK);
+        builder.add(BlockID.SEA_LANTERN);
+        emitsLight = builder.build();
     }
 
     /**
@@ -1185,123 +1221,125 @@ public enum BlockType {
     /**
      * HashSet for isTranslucent.
      */
-    private static final Set<Integer> isTranslucent = new HashSet<Integer>();
+    private static final Set<Integer> isTranslucent;
     static {
-        isTranslucent.add(BlockID.AIR);
-        isTranslucent.add(BlockID.SAPLING);
-        isTranslucent.add(BlockID.WATER);
-        isTranslucent.add(BlockID.STATIONARY_WATER);
-        isTranslucent.add(BlockID.LEAVES);
-        isTranslucent.add(BlockID.GLASS);
-        isTranslucent.add(BlockID.BED);
-        isTranslucent.add(BlockID.POWERED_RAIL);
-        isTranslucent.add(BlockID.DETECTOR_RAIL);
-        //isTranslucent.add(BlockID.PISTON_STICKY_BASE);
-        isTranslucent.add(BlockID.WEB);
-        isTranslucent.add(BlockID.LONG_GRASS);
-        isTranslucent.add(BlockID.DEAD_BUSH);
-        //isTranslucent.add(BlockID.PISTON_BASE);
-        isTranslucent.add(BlockID.PISTON_EXTENSION);
-        //isTranslucent.add(BlockID.PISTON_MOVING_PIECE);
-        isTranslucent.add(BlockID.YELLOW_FLOWER);
-        isTranslucent.add(BlockID.RED_FLOWER);
-        isTranslucent.add(BlockID.BROWN_MUSHROOM);
-        isTranslucent.add(BlockID.RED_MUSHROOM);
-        isTranslucent.add(BlockID.TORCH);
-        isTranslucent.add(BlockID.FIRE);
-        isTranslucent.add(BlockID.MOB_SPAWNER);
-        isTranslucent.add(BlockID.OAK_WOOD_STAIRS);
-        isTranslucent.add(BlockID.CHEST);
-        isTranslucent.add(BlockID.REDSTONE_WIRE);
-        isTranslucent.add(BlockID.CROPS);
-        isTranslucent.add(BlockID.SIGN_POST);
-        isTranslucent.add(BlockID.WOODEN_DOOR);
-        isTranslucent.add(BlockID.LADDER);
-        isTranslucent.add(BlockID.MINECART_TRACKS);
-        isTranslucent.add(BlockID.COBBLESTONE_STAIRS);
-        isTranslucent.add(BlockID.WALL_SIGN);
-        isTranslucent.add(BlockID.LEVER);
-        isTranslucent.add(BlockID.STONE_PRESSURE_PLATE);
-        isTranslucent.add(BlockID.IRON_DOOR);
-        isTranslucent.add(BlockID.WOODEN_PRESSURE_PLATE);
-        isTranslucent.add(BlockID.REDSTONE_TORCH_OFF);
-        isTranslucent.add(BlockID.REDSTONE_TORCH_ON);
-        isTranslucent.add(BlockID.STONE_BUTTON);
-        isTranslucent.add(BlockID.SNOW);
-        isTranslucent.add(BlockID.ICE);
-        isTranslucent.add(BlockID.CACTUS);
-        isTranslucent.add(BlockID.REED);
-        isTranslucent.add(BlockID.FENCE);
-        isTranslucent.add(BlockID.PORTAL);
-        isTranslucent.add(BlockID.CAKE_BLOCK);
-        isTranslucent.add(BlockID.REDSTONE_REPEATER_OFF);
-        isTranslucent.add(BlockID.REDSTONE_REPEATER_ON);
-        isTranslucent.add(BlockID.TRAP_DOOR);
-        isTranslucent.add(BlockID.IRON_BARS);
-        isTranslucent.add(BlockID.GLASS_PANE);
-        isTranslucent.add(BlockID.PUMPKIN_STEM);
-        isTranslucent.add(BlockID.MELON_STEM);
-        isTranslucent.add(BlockID.VINE);
-        isTranslucent.add(BlockID.FENCE_GATE);
-        isTranslucent.add(BlockID.BRICK_STAIRS);
-        isTranslucent.add(BlockID.STONE_BRICK_STAIRS);
-        isTranslucent.add(BlockID.LILY_PAD);
-        isTranslucent.add(BlockID.NETHER_BRICK_FENCE);
-        isTranslucent.add(BlockID.NETHER_BRICK_STAIRS);
-        isTranslucent.add(BlockID.NETHER_WART);
-        isTranslucent.add(BlockID.ENCHANTMENT_TABLE);
-        isTranslucent.add(BlockID.BREWING_STAND);
-        isTranslucent.add(BlockID.CAULDRON);
-        isTranslucent.add(BlockID.WOODEN_STEP);
-        isTranslucent.add(BlockID.COCOA_PLANT);
-        isTranslucent.add(BlockID.SANDSTONE_STAIRS);
-        isTranslucent.add(BlockID.ENDER_CHEST);
-        isTranslucent.add(BlockID.TRIPWIRE_HOOK);
-        isTranslucent.add(BlockID.TRIPWIRE);
-        isTranslucent.add(BlockID.SPRUCE_WOOD_STAIRS);
-        isTranslucent.add(BlockID.BIRCH_WOOD_STAIRS);
-        isTranslucent.add(BlockID.JUNGLE_WOOD_STAIRS);
-        isTranslucent.add(BlockID.COBBLESTONE_WALL);
-        isTranslucent.add(BlockID.FLOWER_POT);
-        isTranslucent.add(BlockID.CARROTS);
-        isTranslucent.add(BlockID.POTATOES);
-        isTranslucent.add(BlockID.WOODEN_BUTTON);
-        isTranslucent.add(BlockID.HEAD);
-        isTranslucent.add(BlockID.ANVIL);
-        isTranslucent.add(BlockID.TRAPPED_CHEST);
-        isTranslucent.add(BlockID.PRESSURE_PLATE_LIGHT);
-        isTranslucent.add(BlockID.PRESSURE_PLATE_HEAVY);
-        isTranslucent.add(BlockID.COMPARATOR_OFF);
-        isTranslucent.add(BlockID.COMPARATOR_ON);
-        isTranslucent.add(BlockID.DAYLIGHT_SENSOR);
-        isTranslucent.add(BlockID.HOPPER);
-        isTranslucent.add(BlockID.QUARTZ_STAIRS);
-        isTranslucent.add(BlockID.ACTIVATOR_RAIL);
-        isTranslucent.add(BlockID.BARRIER);
-        isTranslucent.add(BlockID.IRON_TRAP_DOOR);
-        isTranslucent.add(BlockID.CARPET);
-        isTranslucent.add(BlockID.STAINED_GLASS_PANE);
-        isTranslucent.add(BlockID.DOUBLE_PLANT);
-        isTranslucent.add(BlockID.STANDING_BANNER);
-        isTranslucent.add(BlockID.WALL_BANNER);
-        isTranslucent.add(BlockID.DAYLIGHT_SENSOR_INVERTED);
-        isTranslucent.add(BlockID.RED_SANDSTONE_STAIRS);
-        isTranslucent.add(BlockID.STEP2);
-        isTranslucent.add(BlockID.SPRUCE_FENCE_GATE);
-        isTranslucent.add(BlockID.BIRCH_FENCE_GATE);
-        isTranslucent.add(BlockID.JUNGLE_FENCE_GATE);
-        isTranslucent.add(BlockID.DARK_OAK_FENCE_GATE);
-        isTranslucent.add(BlockID.ACACIA_FENCE_GATE);
-        isTranslucent.add(BlockID.SPRUCE_FENCE);
-        isTranslucent.add(BlockID.BIRCH_FENCE);
-        isTranslucent.add(BlockID.JUNGLE_FENCE);
-        isTranslucent.add(BlockID.DARK_OAK_FENCE);
-        isTranslucent.add(BlockID.ACACIA_FENCE);
-        isTranslucent.add(BlockID.SPRUCE_DOOR);
-        isTranslucent.add(BlockID.BIRCH_DOOR);
-        isTranslucent.add(BlockID.JUNGLE_DOOR);
-        isTranslucent.add(BlockID.ACACIA_DOOR);
-        isTranslucent.add(BlockID.DARK_OAK_DOOR);
+        ImmutableSet.Builder<Integer> builder = ImmutableSet.builder();
+        builder.add(BlockID.AIR);
+        builder.add(BlockID.SAPLING);
+        builder.add(BlockID.WATER);
+        builder.add(BlockID.STATIONARY_WATER);
+        builder.add(BlockID.LEAVES);
+        builder.add(BlockID.GLASS);
+        builder.add(BlockID.BED);
+        builder.add(BlockID.POWERED_RAIL);
+        builder.add(BlockID.DETECTOR_RAIL);
+        //builder.add(BlockID.PISTON_STICKY_BASE);
+        builder.add(BlockID.WEB);
+        builder.add(BlockID.LONG_GRASS);
+        builder.add(BlockID.DEAD_BUSH);
+        //builder.add(BlockID.PISTON_BASE);
+        builder.add(BlockID.PISTON_EXTENSION);
+        //builder.add(BlockID.PISTON_MOVING_PIECE);
+        builder.add(BlockID.YELLOW_FLOWER);
+        builder.add(BlockID.RED_FLOWER);
+        builder.add(BlockID.BROWN_MUSHROOM);
+        builder.add(BlockID.RED_MUSHROOM);
+        builder.add(BlockID.TORCH);
+        builder.add(BlockID.FIRE);
+        builder.add(BlockID.MOB_SPAWNER);
+        builder.add(BlockID.OAK_WOOD_STAIRS);
+        builder.add(BlockID.CHEST);
+        builder.add(BlockID.REDSTONE_WIRE);
+        builder.add(BlockID.CROPS);
+        builder.add(BlockID.SIGN_POST);
+        builder.add(BlockID.WOODEN_DOOR);
+        builder.add(BlockID.LADDER);
+        builder.add(BlockID.MINECART_TRACKS);
+        builder.add(BlockID.COBBLESTONE_STAIRS);
+        builder.add(BlockID.WALL_SIGN);
+        builder.add(BlockID.LEVER);
+        builder.add(BlockID.STONE_PRESSURE_PLATE);
+        builder.add(BlockID.IRON_DOOR);
+        builder.add(BlockID.WOODEN_PRESSURE_PLATE);
+        builder.add(BlockID.REDSTONE_TORCH_OFF);
+        builder.add(BlockID.REDSTONE_TORCH_ON);
+        builder.add(BlockID.STONE_BUTTON);
+        builder.add(BlockID.SNOW);
+        builder.add(BlockID.ICE);
+        builder.add(BlockID.CACTUS);
+        builder.add(BlockID.REED);
+        builder.add(BlockID.FENCE);
+        builder.add(BlockID.PORTAL);
+        builder.add(BlockID.CAKE_BLOCK);
+        builder.add(BlockID.REDSTONE_REPEATER_OFF);
+        builder.add(BlockID.REDSTONE_REPEATER_ON);
+        builder.add(BlockID.TRAP_DOOR);
+        builder.add(BlockID.IRON_BARS);
+        builder.add(BlockID.GLASS_PANE);
+        builder.add(BlockID.PUMPKIN_STEM);
+        builder.add(BlockID.MELON_STEM);
+        builder.add(BlockID.VINE);
+        builder.add(BlockID.FENCE_GATE);
+        builder.add(BlockID.BRICK_STAIRS);
+        builder.add(BlockID.STONE_BRICK_STAIRS);
+        builder.add(BlockID.LILY_PAD);
+        builder.add(BlockID.NETHER_BRICK_FENCE);
+        builder.add(BlockID.NETHER_BRICK_STAIRS);
+        builder.add(BlockID.NETHER_WART);
+        builder.add(BlockID.ENCHANTMENT_TABLE);
+        builder.add(BlockID.BREWING_STAND);
+        builder.add(BlockID.CAULDRON);
+        builder.add(BlockID.WOODEN_STEP);
+        builder.add(BlockID.COCOA_PLANT);
+        builder.add(BlockID.SANDSTONE_STAIRS);
+        builder.add(BlockID.ENDER_CHEST);
+        builder.add(BlockID.TRIPWIRE_HOOK);
+        builder.add(BlockID.TRIPWIRE);
+        builder.add(BlockID.SPRUCE_WOOD_STAIRS);
+        builder.add(BlockID.BIRCH_WOOD_STAIRS);
+        builder.add(BlockID.JUNGLE_WOOD_STAIRS);
+        builder.add(BlockID.COBBLESTONE_WALL);
+        builder.add(BlockID.FLOWER_POT);
+        builder.add(BlockID.CARROTS);
+        builder.add(BlockID.POTATOES);
+        builder.add(BlockID.WOODEN_BUTTON);
+        builder.add(BlockID.HEAD);
+        builder.add(BlockID.ANVIL);
+        builder.add(BlockID.TRAPPED_CHEST);
+        builder.add(BlockID.PRESSURE_PLATE_LIGHT);
+        builder.add(BlockID.PRESSURE_PLATE_HEAVY);
+        builder.add(BlockID.COMPARATOR_OFF);
+        builder.add(BlockID.COMPARATOR_ON);
+        builder.add(BlockID.DAYLIGHT_SENSOR);
+        builder.add(BlockID.HOPPER);
+        builder.add(BlockID.QUARTZ_STAIRS);
+        builder.add(BlockID.ACTIVATOR_RAIL);
+        builder.add(BlockID.BARRIER);
+        builder.add(BlockID.IRON_TRAP_DOOR);
+        builder.add(BlockID.CARPET);
+        builder.add(BlockID.STAINED_GLASS_PANE);
+        builder.add(BlockID.DOUBLE_PLANT);
+        builder.add(BlockID.STANDING_BANNER);
+        builder.add(BlockID.WALL_BANNER);
+        builder.add(BlockID.DAYLIGHT_SENSOR_INVERTED);
+        builder.add(BlockID.RED_SANDSTONE_STAIRS);
+        builder.add(BlockID.STEP2);
+        builder.add(BlockID.SPRUCE_FENCE_GATE);
+        builder.add(BlockID.BIRCH_FENCE_GATE);
+        builder.add(BlockID.JUNGLE_FENCE_GATE);
+        builder.add(BlockID.DARK_OAK_FENCE_GATE);
+        builder.add(BlockID.ACACIA_FENCE_GATE);
+        builder.add(BlockID.SPRUCE_FENCE);
+        builder.add(BlockID.BIRCH_FENCE);
+        builder.add(BlockID.JUNGLE_FENCE);
+        builder.add(BlockID.DARK_OAK_FENCE);
+        builder.add(BlockID.ACACIA_FENCE);
+        builder.add(BlockID.SPRUCE_DOOR);
+        builder.add(BlockID.BIRCH_DOOR);
+        builder.add(BlockID.JUNGLE_DOOR);
+        builder.add(BlockID.ACACIA_DOOR);
+        builder.add(BlockID.DARK_OAK_DOOR);
+        isTranslucent = builder.build();
     }
 
     /**

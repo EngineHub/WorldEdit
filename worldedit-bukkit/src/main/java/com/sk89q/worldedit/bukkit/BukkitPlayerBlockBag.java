@@ -28,6 +28,8 @@ import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.blocks.ItemType;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
 public class BukkitPlayerBlockBag extends BlockBag {
 
     private Player player;
@@ -68,9 +70,7 @@ public class BukkitPlayerBlockBag extends BlockBag {
         assert(amount == 1);
         boolean usesDamageValue = ItemType.usesDamageValue(id);
 
-        if (id == BlockID.AIR) {
-            throw new IllegalArgumentException("Can't fetch air block");
-        }
+        checkArgument(id != BlockID.AIR, "Can't fetch air block");
 
         loadInventory();
 
@@ -123,9 +123,7 @@ public class BukkitPlayerBlockBag extends BlockBag {
         assert(amount <= 64);
         boolean usesDamageValue = ItemType.usesDamageValue(id);
 
-        if (id == BlockID.AIR) {
-            throw new IllegalArgumentException("Can't store air block");
-        }
+        checkArgument(id != BlockID.AIR, "Can't store air block");
 
         loadInventory();
 

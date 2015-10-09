@@ -20,6 +20,7 @@
 package com.sk89q.worldedit.regions.selector;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.ImmutableList;
 import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.BlockVector2D;
 import com.sk89q.worldedit.IncompleteRegionException;
@@ -183,12 +184,8 @@ public class ConvexPolyhedralRegionSelector extends com.sk89q.worldedit.regions.
 
     @Override
     public List<String> getInformationLines() {
-        List<String> ret = new ArrayList<String>();
-
-        ret.add("Vertices: "+region.getVertices().size());
-        ret.add("Triangles: "+region.getTriangles().size());
-
-        return ret;
+        return ImmutableList.of("Vertices: " + region.getVertices().size(),
+                "Triangles: " + region.getTriangles().size());
     }
 
 
@@ -200,7 +197,7 @@ public class ConvexPolyhedralRegionSelector extends com.sk89q.worldedit.regions.
 
         session.describeCUI(player);
 
-        player.print("Started new selection with vertex "+pos+".");
+        player.print("Started new selection with vertex " + pos + ".");
     }
 
     @Override

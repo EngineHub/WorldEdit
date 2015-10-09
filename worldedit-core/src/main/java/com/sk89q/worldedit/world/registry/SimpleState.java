@@ -19,10 +19,10 @@
 
 package com.sk89q.worldedit.world.registry;
 
+import com.google.common.collect.ImmutableMap;
 import com.sk89q.worldedit.blocks.BaseBlock;
 
 import javax.annotation.Nullable;
-import java.util.Collections;
 import java.util.Map;
 
 class SimpleState implements State {
@@ -32,7 +32,7 @@ class SimpleState implements State {
 
     @Override
     public Map<String, SimpleStateValue> valueMap() {
-        return Collections.unmodifiableMap(values);
+        return ImmutableMap.copyOf(values);
     }
 
     @Nullable

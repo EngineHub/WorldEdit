@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.schematic;
 
+import com.google.common.collect.ImmutableSet;
 import com.sk89q.worldedit.CuboidClipboard;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.data.DataException;
@@ -35,7 +36,7 @@ public abstract class SchematicFormat {
     public static final SchematicFormat MCEDIT = new MCEditSchematicFormat();
 
     public static Set<SchematicFormat> getFormats() {
-        return Collections.unmodifiableSet(new HashSet<SchematicFormat>(SCHEMATIC_FORMATS.values()));
+        return ImmutableSet.copyOf(SCHEMATIC_FORMATS.values());
     }
 
     public static SchematicFormat getFormat(String lookupName) {

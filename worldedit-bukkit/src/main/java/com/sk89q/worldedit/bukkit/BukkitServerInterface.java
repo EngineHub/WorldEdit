@@ -19,6 +19,9 @@
 
 package com.sk89q.worldedit.bukkit;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
 import com.sk89q.bukkit.util.CommandInfo;
 import com.sk89q.bukkit.util.CommandRegistration;
 import com.sk89q.worldedit.LocalConfiguration;
@@ -41,7 +44,6 @@ import org.bukkit.entity.EntityType;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
@@ -88,13 +90,13 @@ public class BukkitServerInterface extends ServerInterface implements MultiUserP
     @Override
     public List<LocalWorld> getWorlds() {
         List<World> worlds = server.getWorlds();
-        List<LocalWorld> ret = new ArrayList<LocalWorld>(worlds.size());
+        ImmutableList.Builder<LocalWorld> ret = ImmutableList.builder();
 
         for (World world : worlds) {
             ret.add(BukkitUtil.getLocalWorld(world));
         }
 
-        return ret;
+        return ret.build();
     }
 
     @Nullable
@@ -163,14 +165,14 @@ public class BukkitServerInterface extends ServerInterface implements MultiUserP
 
     @Override
     public Map<Capability, Preference> getCapabilities() {
-        Map<Capability, Preference> capabilities = new EnumMap<Capability, Preference>(Capability.class);
+        Map<Capability, Preference> capabilities = Maps.newEnumMap(Capability.class);
         capabilities.put(Capability.CONFIGURATION, Preference.NORMAL);
         capabilities.put(Capability.WORLDEDIT_CUI, Preference.NORMAL);
         capabilities.put(Capability.GAME_HOOKS, Preference.PREFERRED);
         capabilities.put(Capability.PERMISSIONS, Preference.PREFERRED);
         capabilities.put(Capability.USER_COMMANDS, Preference.PREFERRED);
         capabilities.put(Capability.WORLD_EDITING, Preference.PREFER_OTHERS);
-        return capabilities;
+        return ImmutableMap.copyOf(capabilities);
     }
 
     public void unregisterCommands() {
@@ -179,10 +181,10 @@ public class BukkitServerInterface extends ServerInterface implements MultiUserP
 
     @Override
     public Collection<Actor> getConnectedUsers() {
-        List<Actor> users = new ArrayList<Actor>();
+        ImmutableList.Builder<Actor> users = ImmutableList.builder();
         for (org.bukkit.entity.Player player : Bukkit.getServer().getOnlinePlayers()) {
             users.add(new BukkitPlayer(plugin, this, player));
         }
-        return users;
+        return users.build();
     }
 }

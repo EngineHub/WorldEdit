@@ -176,6 +176,9 @@ public final class NBTUtils {
      * @throws InvalidFormatException
      */
     public static <T extends Tag> T getChildTag(Map<String, Tag> items, String key, Class<T> expected) throws InvalidFormatException {
+        checkNotNull(items);
+        checkNotNull(key);
+        checkNotNull(expected);
         if (!items.containsKey(key)) {
             throw new InvalidFormatException("Missing a \"" + key + "\" tag");
         }

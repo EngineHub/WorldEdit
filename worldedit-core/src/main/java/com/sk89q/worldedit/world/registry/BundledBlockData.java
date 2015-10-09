@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.world.registry;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.io.Resources;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -53,18 +54,27 @@ public class BundledBlockData {
     private static final Logger log = Logger.getLogger(BundledBlockData.class.getCanonicalName());
     private static final BundledBlockData INSTANCE = new BundledBlockData();
 
-    private final Map<String, BlockEntry> idMap = new HashMap<String, BlockEntry>();
-    private final Map<Integer, BlockEntry> legacyMap = new HashMap<Integer, BlockEntry>(); // Trove usage removed temporarily
+    private final Map<String, BlockEntry> idMap;
+    private final Map<Integer, BlockEntry> legacyMap; // Trove usage removed temporarily
 
     /**
      * Create a new instance.
      */
     private BundledBlockData() {
+        ImmutableMap.Builder<String, BlockEntry> iBuilder = ImmutableMap.builder();
+        ImmutableMap.Builder<Integer, BlockEntry> lBuilder = ImmutableMap.builder();
         try {
-            loadFromResource();
+            List<BlockEntry> entries = loadFromResource();
+            for (BlockEntry entry : entries) {
+                entry.postDeserialization();
+                iBuilder.put(entry.id, entry);
+                lBuilder.put(entry.legacyId, entry);
+            }
         } catch (IOException e) {
             log.log(Level.WARNING, "Failed to load the built-in block registry", e);
         }
+        idMap = iBuilder.build();
+        legacyMap = lBuilder.build();
     }
 
     /**
@@ -72,7 +82,7 @@ public class BundledBlockData {
      *
      * @throws IOException thrown on I/O error
      */
-    private void loadFromResource() throws IOException {
+    private List<BlockEntry> loadFromResource() throws IOException {
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.registerTypeAdapter(Vector.class, new VectorAdapter());
         Gson gson = gsonBuilder.create();
@@ -81,13 +91,7 @@ public class BundledBlockData {
             throw new IOException("Could not find blocks.json");
         }
         String data = Resources.toString(url, Charset.defaultCharset());
-        List<BlockEntry> entries = gson.fromJson(data, new TypeToken<List<BlockEntry>>() {}.getType());
-
-        for (BlockEntry entry : entries) {
-            entry.postDeserialization();
-            idMap.put(entry.id, entry);
-            legacyMap.put(entry.legacyId, entry);
-        }
+        return gson.fromJson(data, new TypeToken<List<BlockEntry>>() {}.getType());
     }
 
     /**

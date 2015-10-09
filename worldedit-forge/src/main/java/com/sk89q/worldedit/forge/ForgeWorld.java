@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.forge;
 
+import com.google.common.collect.ImmutableList;
 import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
@@ -66,7 +67,6 @@ import net.minecraft.world.gen.feature.WorldGenerator;
 import javax.annotation.Nullable;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
@@ -414,7 +414,7 @@ public class ForgeWorld extends AbstractWorld {
     @Override
     @SuppressWarnings("unchecked")
     public List<? extends Entity> getEntities(Region region) {
-        List<Entity> entities = new ArrayList<Entity>();
+        ImmutableList.Builder<Entity> entities = ImmutableList.builder();
         World world = getWorld();
         List<net.minecraft.entity.Entity> ents = world.loadedEntityList;
         for (net.minecraft.entity.Entity entity : ents) {
@@ -422,16 +422,16 @@ public class ForgeWorld extends AbstractWorld {
                 entities.add(new ForgeEntity(entity));
             }
         }
-        return entities;
+        return entities.build();
     }
 
     @Override
     public List<? extends Entity> getEntities() {
-        List<Entity> entities = new ArrayList<Entity>();
+        ImmutableList.Builder<Entity> entities = ImmutableList.builder();
         for (Object entity : getWorld().loadedEntityList) {
             entities.add(new ForgeEntity((net.minecraft.entity.Entity) entity));
         }
-        return entities;
+        return entities.build();
     }
 
     @Nullable

@@ -19,6 +19,8 @@
 
 package com.sk89q.worldedit.forge;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Maps;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.AbstractPlatform;
 import com.sk89q.worldedit.extension.platform.Actor;
@@ -40,7 +42,6 @@ import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.DimensionManager;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumMap;
@@ -107,11 +108,11 @@ class ForgePlatform extends AbstractPlatform implements MultiUserPlatform {
     @Override
     public List<? extends com.sk89q.worldedit.world.World> getWorlds() {
         List<WorldServer> worlds = Arrays.asList(DimensionManager.getWorlds());
-        List<com.sk89q.worldedit.world.World> ret = new ArrayList<com.sk89q.worldedit.world.World>(worlds.size());
+        ImmutableList.Builder<com.sk89q.worldedit.world.World> ret = ImmutableList.builder();
         for (WorldServer world : worlds) {
             ret.add(new ForgeWorld(world));
         }
-        return ret;
+        return ret.build();
     }
 
     @Nullable
@@ -193,12 +194,12 @@ class ForgePlatform extends AbstractPlatform implements MultiUserPlatform {
         capabilities.put(Capability.PERMISSIONS, Preference.NORMAL);
         capabilities.put(Capability.USER_COMMANDS, Preference.NORMAL);
         capabilities.put(Capability.WORLD_EDITING, Preference.PREFERRED);
-        return capabilities;
+        return Maps.immutableEnumMap(capabilities);
     }
 
     @Override
     public Collection<Actor> getConnectedUsers() {
-        List<Actor> users = new ArrayList<Actor>();
+        ImmutableList.Builder<Actor> users = ImmutableList.builder();
         ServerConfigurationManager scm = server.getConfigurationManager();
         for (String name : scm.getAllUsernames()) {
             EntityPlayerMP entity = scm.func_152612_a(name);
@@ -206,6 +207,6 @@ class ForgePlatform extends AbstractPlatform implements MultiUserPlatform {
                 users.add(new ForgePlayer(this, entity));
             }
         }
-        return users;
+        return users.build();
     }
 }

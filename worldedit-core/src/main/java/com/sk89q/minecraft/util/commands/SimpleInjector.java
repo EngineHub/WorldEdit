@@ -19,6 +19,8 @@
 
 package com.sk89q.minecraft.util.commands;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.logging.Level;
@@ -31,6 +33,7 @@ public class SimpleInjector implements Injector {
     private Class<?>[] argClasses;
 
     public SimpleInjector(Object... args) {
+        checkNotNull(args);
         this.args = args;
         argClasses = new Class[args.length];
         for (int i = 0; i < args.length; ++i) {

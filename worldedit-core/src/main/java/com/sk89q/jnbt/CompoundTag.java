@@ -19,10 +19,14 @@
 
 package com.sk89q.jnbt;
 
+import com.google.common.collect.ImmutableMap;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * The {@code TAG_Compound} tag.
@@ -38,7 +42,8 @@ public final class CompoundTag extends Tag {
      */
     public CompoundTag(Map<String, Tag> value) {
         super();
-        this.value = Collections.unmodifiableMap(value);
+        checkNotNull(value);
+        this.value = ImmutableMap.copyOf(value);
     }
 
     /**

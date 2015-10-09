@@ -19,13 +19,12 @@
 
 package com.sk89q.worldedit.regions;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterators;
 import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.Vector;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -43,7 +42,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class RegionIntersection extends AbstractRegion {
 
-    private final List<Region> regions = new ArrayList<Region>();
+    private final List<Region> regions;
 
     /**
      * Create a new instance with the included list of regions.
@@ -73,9 +72,7 @@ public class RegionIntersection extends AbstractRegion {
         super(world);
         checkNotNull(regions);
         checkArgument(!regions.isEmpty(), "empty region list is not supported");
-        for (Region region : regions) {
-            this.regions.add(region);
-        }
+        this.regions = ImmutableList.copyOf(regions);
     }
 
     /**
@@ -88,7 +85,7 @@ public class RegionIntersection extends AbstractRegion {
         super(world);
         checkNotNull(regions);
         checkArgument(regions.length > 0, "empty region list is not supported");
-        Collections.addAll(this.regions, regions);
+        this.regions = ImmutableList.copyOf(regions);
     }
 
     @Override

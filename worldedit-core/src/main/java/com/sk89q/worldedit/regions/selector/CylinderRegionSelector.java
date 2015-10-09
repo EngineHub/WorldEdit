@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.regions.selector;
 
+import com.google.common.collect.ImmutableList;
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.internal.cui.*;
@@ -30,7 +31,6 @@ import com.sk89q.worldedit.world.World;
 
 import javax.annotation.Nullable;
 import java.text.NumberFormat;
-import java.util.ArrayList;
 import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -225,7 +225,7 @@ public class CylinderRegionSelector extends com.sk89q.worldedit.regions.Cylinder
 
     @Override
     public List<String> getInformationLines() {
-        final List<String> lines = new ArrayList<String>();
+        ImmutableList.Builder<String> lines = ImmutableList.builder();
 
         if (!region.getCenter().equals(Vector.ZERO)) {
             lines.add("Center: " + region.getCenter());
@@ -234,7 +234,7 @@ public class CylinderRegionSelector extends com.sk89q.worldedit.regions.Cylinder
             lines.add("Radius: " + region.getRadius());
         }
 
-        return lines;
+        return lines.build();
     }
 
     @Override

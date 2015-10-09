@@ -53,6 +53,7 @@ public final class NBTOutputStream implements Closeable {
      *             if an I/O error occurs.
      */
     public NBTOutputStream(OutputStream os) throws IOException {
+        checkNotNull(os);
         this.os = new DataOutputStream(os);
     }
 

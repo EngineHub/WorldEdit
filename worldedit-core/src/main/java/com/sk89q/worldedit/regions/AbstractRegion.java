@@ -19,6 +19,8 @@
 
 package com.sk89q.worldedit.regions;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.regions.iterator.RegionIterator;
@@ -26,6 +28,8 @@ import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.storage.ChunkStore;
 
 import java.util.*;
+
+import static com.google.common.base.Preconditions.checkArgument;
 
 public abstract class AbstractRegion implements Region {
 
@@ -82,21 +86,19 @@ public abstract class AbstractRegion implements Region {
 
     @Override
     public List<BlockVector2D> polygonize(int maxPoints) {
-        if (maxPoints >= 0 && maxPoints < 4) {
-            throw new IllegalArgumentException("Cannot polygonize an AbstractRegion with no overridden polygonize method into less than 4 points.");
-        }
+        checkArgument(maxPoints >= 0 && maxPoints < 4, "Cannot polygonize an AbstractRegion with no overridden polygonize method into less than 4 points.");
 
         final BlockVector min = getMinimumPoint().toBlockVector();
         final BlockVector max = getMaximumPoint().toBlockVector();
 
-        final List<BlockVector2D> points = new ArrayList<BlockVector2D>(4);
+        ImmutableList.Builder<BlockVector2D> points = ImmutableList.builder();
 
         points.add(new BlockVector2D(min.getX(), min.getZ()));
         points.add(new BlockVector2D(min.getX(), max.getZ()));
         points.add(new BlockVector2D(max.getX(), max.getZ()));
         points.add(new BlockVector2D(max.getX(), min.getZ()));
 
-        return points;
+        return points.build();
     }
 
     /**
@@ -160,7 +162,7 @@ public abstract class AbstractRegion implements Region {
      */
     @Override
     public Set<Vector2D> getChunks() {
-        final Set<Vector2D> chunks = new HashSet<Vector2D>();
+        ImmutableSet.Builder<Vector2D> chunks = ImmutableSet.builder();
 
         final Vector min = getMinimumPoint();
         final Vector max = getMaximumPoint();
@@ -180,12 +182,12 @@ public abstract class AbstractRegion implements Region {
             }
         }
 
-        return chunks;
+        return chunks.build();
     }
 
     @Override
     public Set<Vector> getChunkCubes() {
-        final Set<Vector> chunks = new HashSet<Vector>();
+        ImmutableSet.Builder<Vector> chunks = ImmutableSet.builder();
 
         final Vector min = getMinimumPoint();
         final Vector max = getMaximumPoint();
@@ -206,7 +208,7 @@ public abstract class AbstractRegion implements Region {
             }
         }
 
-        return chunks;
+        return chunks.build();
     }
 
 }

@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.extent.clipboard;
 
+import com.google.common.collect.ImmutableList;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.Vector2D;
 import com.sk89q.worldedit.WorldEditException;
@@ -97,13 +98,13 @@ public class BlockArrayClipboard implements Clipboard {
 
     @Override
     public List<? extends Entity> getEntities(Region region) {
-        List<Entity> filtered = new ArrayList<Entity>();
+        ImmutableList.Builder<Entity> filtered = ImmutableList.builder();
         for (Entity entity : entities) {
             if (region.contains(entity.getLocation().toVector())) {
                 filtered.add(entity);
             }
         }
-        return Collections.unmodifiableList(filtered);
+        return filtered.build();
     }
 
     @Override

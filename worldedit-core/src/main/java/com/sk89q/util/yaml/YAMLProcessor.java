@@ -19,6 +19,7 @@
 
 package com.sk89q.util.yaml;
 
+import com.google.common.collect.ImmutableMap;
 import com.sk89q.util.StringUtil;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
@@ -33,6 +34,8 @@ import org.yaml.snakeyaml.representer.Representer;
 import java.io.*;
 import java.util.*;
 import java.util.Map.Entry;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * YAML configuration loader. To use this class, construct it with path to
@@ -80,6 +83,10 @@ public class YAMLProcessor extends YAMLNode {
 
     public YAMLProcessor(File file, boolean writeDefaults, YAMLFormat format) {
         super(new LinkedHashMap<String, Object>(), writeDefaults);
+
+        checkNotNull(format);
+        checkNotNull(file);
+
         this.format = format;
 
         DumperOptions options = new FancyDumperOptions();
@@ -279,7 +286,7 @@ public class YAMLProcessor extends YAMLNode {
      * @return map of root-level comments
      */
     public Map<String, String> getComments() {
-        return Collections.unmodifiableMap(comments);
+        return ImmutableMap.copyOf(comments);
     }
 
     /**

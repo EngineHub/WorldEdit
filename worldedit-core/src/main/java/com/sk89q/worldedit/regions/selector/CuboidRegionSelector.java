@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.regions.selector;
 
+import com.google.common.collect.ImmutableList;
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.internal.cui.CUIRegion;
@@ -30,7 +31,6 @@ import com.sk89q.worldedit.regions.selector.limit.SelectorLimits;
 import com.sk89q.worldedit.world.World;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
 import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -234,7 +234,7 @@ public class CuboidRegionSelector extends com.sk89q.worldedit.regions.CuboidRegi
 
     @Override
     public List<String> getInformationLines() {
-        final List<String> lines = new ArrayList<String>();
+        ImmutableList.Builder<String> lines = ImmutableList.builder();
 
         if (position1 != null) {
             lines.add("Position 1: " + position1);
@@ -244,7 +244,7 @@ public class CuboidRegionSelector extends com.sk89q.worldedit.regions.CuboidRegi
             lines.add("Position 2: " + position2);
         }
 
-        return lines;
+        return lines.build();
     }
 
     @Override

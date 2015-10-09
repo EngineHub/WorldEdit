@@ -27,6 +27,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 public class CommandContext {
     
     protected final String command;
@@ -80,6 +82,8 @@ public class CommandContext {
         if (valueFlags == null) {
             valueFlags = Collections.emptySet();
         }
+
+        checkNotNull(args);
 
         originalArgs = args;
         command = args[0];

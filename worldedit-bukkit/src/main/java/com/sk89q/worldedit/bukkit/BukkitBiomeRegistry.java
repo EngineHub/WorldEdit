@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.bukkit;
 
+import com.google.common.collect.ImmutableList;
 import com.sk89q.worldedit.bukkit.adapter.BukkitImplAdapter;
 import com.sk89q.worldedit.world.biome.BaseBiome;
 import com.sk89q.worldedit.world.biome.BiomeData;
@@ -26,8 +27,6 @@ import com.sk89q.worldedit.world.registry.BiomeRegistry;
 import org.bukkit.block.Biome;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -47,16 +46,14 @@ class BukkitBiomeRegistry implements BiomeRegistry {
     @Override
     public List<BaseBiome> getBiomes() {
         BukkitImplAdapter adapter = WorldEditPlugin.getInstance().getBukkitImplAdapter();
+        ImmutableList.Builder<BaseBiome> biomes = ImmutableList.builder();
         if (adapter != null) {
-            List<BaseBiome> biomes = new ArrayList<BaseBiome>();
             for (Biome biome : Biome.values()) {
                 int biomeId = adapter.getBiomeId(biome);
                 biomes.add(new BaseBiome(biomeId));
             }
-            return biomes;
-        } else {
-            return Collections.emptyList();
         }
+        return biomes.build();
     }
 
     @Nullable

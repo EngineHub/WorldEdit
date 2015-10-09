@@ -19,13 +19,11 @@
 
 package com.sk89q.worldedit.blocks;
 
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import com.sk89q.util.StringUtil;
 
 import javax.annotation.Nullable;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -398,23 +396,27 @@ public enum ItemType {
     /**
      * Stores a map of the IDs for fast access.
      */
-    private static final Map<Integer, ItemType> ids = new HashMap<Integer, ItemType>();
+    private static final Map<Integer, ItemType> ids;
     /**
      * Stores a map of the names for fast access.
      */
-    private static final Map<String, ItemType> lookup = new LinkedHashMap<String, ItemType>();
+    private static final Map<String, ItemType> lookup;
 
     private final int id;
     private final String name;
     private final String[] lookupKeys;
 
     static {
-        for (ItemType type : EnumSet.allOf(ItemType.class)) {
-            ids.put(type.id, type);
+        ImmutableMap.Builder<Integer, ItemType> iBuilder = ImmutableMap.builder();
+        ImmutableMap.Builder<String, ItemType> lBuilder = ImmutableMap.builder();
+        for (ItemType type : values()) {
+            iBuilder.put(type.id, type);
             for (String key : type.lookupKeys) {
-                lookup.put(key, type);
+                lBuilder.put(key, type);
             }
         }
+        ids = iBuilder.build();
+        lookup = lBuilder.build();
     }
 
 
@@ -546,93 +548,95 @@ public enum ItemType {
         return lookupKeys;
     }
 
-    private static final Set<Integer> shouldNotStack = new HashSet<Integer>();
+    private static final Set<Integer> shouldNotStack;
     static {
-        shouldNotStack.add(ItemID.IRON_SHOVEL);
-        shouldNotStack.add(ItemID.IRON_PICK);
-        shouldNotStack.add(ItemID.IRON_AXE);
-        shouldNotStack.add(ItemID.FLINT_AND_TINDER);
-        shouldNotStack.add(ItemID.BOW);
-        shouldNotStack.add(ItemID.IRON_SWORD);
-        shouldNotStack.add(ItemID.WOOD_SWORD);
-        shouldNotStack.add(ItemID.WOOD_SHOVEL);
-        shouldNotStack.add(ItemID.WOOD_PICKAXE);
-        shouldNotStack.add(ItemID.WOOD_AXE);
-        shouldNotStack.add(ItemID.STONE_SWORD);
-        shouldNotStack.add(ItemID.STONE_SHOVEL);
-        shouldNotStack.add(ItemID.STONE_PICKAXE);
-        shouldNotStack.add(ItemID.STONE_AXE);
-        shouldNotStack.add(ItemID.DIAMOND_SWORD);
-        shouldNotStack.add(ItemID.DIAMOND_SHOVEL);
-        shouldNotStack.add(ItemID.DIAMOND_PICKAXE);
-        shouldNotStack.add(ItemID.DIAMOND_AXE);
-        shouldNotStack.add(ItemID.BOWL);
-        shouldNotStack.add(ItemID.GOLD_SWORD);
-        shouldNotStack.add(ItemID.GOLD_SHOVEL);
-        shouldNotStack.add(ItemID.GOLD_PICKAXE);
-        shouldNotStack.add(ItemID.GOLD_AXE);
-        shouldNotStack.add(ItemID.WOOD_HOE);
-        shouldNotStack.add(ItemID.STONE_HOE);
-        shouldNotStack.add(ItemID.IRON_HOE);
-        shouldNotStack.add(ItemID.DIAMOND_HOE);
-        shouldNotStack.add(ItemID.GOLD_HOE);
-        shouldNotStack.add(ItemID.LEATHER_HELMET);
-        shouldNotStack.add(ItemID.LEATHER_CHEST);
-        shouldNotStack.add(ItemID.LEATHER_PANTS);
-        shouldNotStack.add(ItemID.LEATHER_BOOTS);
-        shouldNotStack.add(ItemID.CHAINMAIL_CHEST);
-        shouldNotStack.add(ItemID.CHAINMAIL_HELMET);
-        shouldNotStack.add(ItemID.CHAINMAIL_BOOTS);
-        shouldNotStack.add(ItemID.CHAINMAIL_PANTS);
-        shouldNotStack.add(ItemID.IRON_HELMET);
-        shouldNotStack.add(ItemID.IRON_CHEST);
-        shouldNotStack.add(ItemID.IRON_PANTS);
-        shouldNotStack.add(ItemID.IRON_BOOTS);
-        shouldNotStack.add(ItemID.DIAMOND_HELMET);
-        shouldNotStack.add(ItemID.DIAMOND_PANTS);
-        shouldNotStack.add(ItemID.DIAMOND_CHEST);
-        shouldNotStack.add(ItemID.DIAMOND_BOOTS);
-        shouldNotStack.add(ItemID.GOLD_HELMET);
-        shouldNotStack.add(ItemID.GOLD_CHEST);
-        shouldNotStack.add(ItemID.GOLD_PANTS);
-        shouldNotStack.add(ItemID.GOLD_BOOTS);
-        shouldNotStack.add(ItemID.WOODEN_DOOR_ITEM);
-        shouldNotStack.add(ItemID.WATER_BUCKET);
-        shouldNotStack.add(ItemID.LAVA_BUCKET);
-        shouldNotStack.add(ItemID.MINECART);
-        shouldNotStack.add(ItemID.SADDLE);
-        shouldNotStack.add(ItemID.IRON_DOOR_ITEM);
-        shouldNotStack.add(ItemID.WOOD_BOAT);
-        shouldNotStack.add(ItemID.MILK_BUCKET);
-        shouldNotStack.add(ItemID.STORAGE_MINECART);
-        shouldNotStack.add(ItemID.POWERED_MINECART);
-        shouldNotStack.add(ItemID.WATCH);
-        shouldNotStack.add(ItemID.CAKE_ITEM);
-        shouldNotStack.add(ItemID.BED_ITEM);
-        shouldNotStack.add(ItemID.MAP);
-        shouldNotStack.add(ItemID.SHEARS);
-        shouldNotStack.add(ItemID.HEAD);
-        shouldNotStack.add(ItemID.FIREWORK_ROCKET);
-        shouldNotStack.add(ItemID.FIREWORK_STAR);
-        shouldNotStack.add(ItemID.ENCHANTED_BOOK);
-        shouldNotStack.add(ItemID.TNT_MINECART);
-        shouldNotStack.add(ItemID.HOPPER_MINECART);
-        shouldNotStack.add(ItemID.HORSE_ARMOR_IRON);
-        shouldNotStack.add(ItemID.HORSE_ARMOR_GOLD);
-        shouldNotStack.add(ItemID.HORSE_ARMOR_DIAMOND);
-        shouldNotStack.add(ItemID.COMMAND_BLOCK_MINECART);
-        shouldNotStack.add(ItemID.DISC_13);
-        shouldNotStack.add(ItemID.DISC_CAT);
-        shouldNotStack.add(ItemID.DISC_BLOCKS);
-        shouldNotStack.add(ItemID.DISC_CHIRP);
-        shouldNotStack.add(ItemID.DISC_FAR);
-        shouldNotStack.add(ItemID.DISC_MALL);
-        shouldNotStack.add(ItemID.DISC_MELLOHI);
-        shouldNotStack.add(ItemID.DISC_STAL);
-        shouldNotStack.add(ItemID.DISC_STRAD);
-        shouldNotStack.add(ItemID.DISC_WARD);
-        shouldNotStack.add(ItemID.DISC_11);
-        shouldNotStack.add(ItemID.DISC_WAIT);
+        ImmutableSet.Builder<Integer> builder = ImmutableSet.builder();
+        builder.add(ItemID.IRON_SHOVEL);
+        builder.add(ItemID.IRON_PICK);
+        builder.add(ItemID.IRON_AXE);
+        builder.add(ItemID.FLINT_AND_TINDER);
+        builder.add(ItemID.BOW);
+        builder.add(ItemID.IRON_SWORD);
+        builder.add(ItemID.WOOD_SWORD);
+        builder.add(ItemID.WOOD_SHOVEL);
+        builder.add(ItemID.WOOD_PICKAXE);
+        builder.add(ItemID.WOOD_AXE);
+        builder.add(ItemID.STONE_SWORD);
+        builder.add(ItemID.STONE_SHOVEL);
+        builder.add(ItemID.STONE_PICKAXE);
+        builder.add(ItemID.STONE_AXE);
+        builder.add(ItemID.DIAMOND_SWORD);
+        builder.add(ItemID.DIAMOND_SHOVEL);
+        builder.add(ItemID.DIAMOND_PICKAXE);
+        builder.add(ItemID.DIAMOND_AXE);
+        builder.add(ItemID.BOWL);
+        builder.add(ItemID.GOLD_SWORD);
+        builder.add(ItemID.GOLD_SHOVEL);
+        builder.add(ItemID.GOLD_PICKAXE);
+        builder.add(ItemID.GOLD_AXE);
+        builder.add(ItemID.WOOD_HOE);
+        builder.add(ItemID.STONE_HOE);
+        builder.add(ItemID.IRON_HOE);
+        builder.add(ItemID.DIAMOND_HOE);
+        builder.add(ItemID.GOLD_HOE);
+        builder.add(ItemID.LEATHER_HELMET);
+        builder.add(ItemID.LEATHER_CHEST);
+        builder.add(ItemID.LEATHER_PANTS);
+        builder.add(ItemID.LEATHER_BOOTS);
+        builder.add(ItemID.CHAINMAIL_CHEST);
+        builder.add(ItemID.CHAINMAIL_HELMET);
+        builder.add(ItemID.CHAINMAIL_BOOTS);
+        builder.add(ItemID.CHAINMAIL_PANTS);
+        builder.add(ItemID.IRON_HELMET);
+        builder.add(ItemID.IRON_CHEST);
+        builder.add(ItemID.IRON_PANTS);
+        builder.add(ItemID.IRON_BOOTS);
+        builder.add(ItemID.DIAMOND_HELMET);
+        builder.add(ItemID.DIAMOND_PANTS);
+        builder.add(ItemID.DIAMOND_CHEST);
+        builder.add(ItemID.DIAMOND_BOOTS);
+        builder.add(ItemID.GOLD_HELMET);
+        builder.add(ItemID.GOLD_CHEST);
+        builder.add(ItemID.GOLD_PANTS);
+        builder.add(ItemID.GOLD_BOOTS);
+        builder.add(ItemID.WOODEN_DOOR_ITEM);
+        builder.add(ItemID.WATER_BUCKET);
+        builder.add(ItemID.LAVA_BUCKET);
+        builder.add(ItemID.MINECART);
+        builder.add(ItemID.SADDLE);
+        builder.add(ItemID.IRON_DOOR_ITEM);
+        builder.add(ItemID.WOOD_BOAT);
+        builder.add(ItemID.MILK_BUCKET);
+        builder.add(ItemID.STORAGE_MINECART);
+        builder.add(ItemID.POWERED_MINECART);
+        builder.add(ItemID.WATCH);
+        builder.add(ItemID.CAKE_ITEM);
+        builder.add(ItemID.BED_ITEM);
+        builder.add(ItemID.MAP);
+        builder.add(ItemID.SHEARS);
+        builder.add(ItemID.HEAD);
+        builder.add(ItemID.FIREWORK_ROCKET);
+        builder.add(ItemID.FIREWORK_STAR);
+        builder.add(ItemID.ENCHANTED_BOOK);
+        builder.add(ItemID.TNT_MINECART);
+        builder.add(ItemID.HOPPER_MINECART);
+        builder.add(ItemID.HORSE_ARMOR_IRON);
+        builder.add(ItemID.HORSE_ARMOR_GOLD);
+        builder.add(ItemID.HORSE_ARMOR_DIAMOND);
+        builder.add(ItemID.COMMAND_BLOCK_MINECART);
+        builder.add(ItemID.DISC_13);
+        builder.add(ItemID.DISC_CAT);
+        builder.add(ItemID.DISC_BLOCKS);
+        builder.add(ItemID.DISC_CHIRP);
+        builder.add(ItemID.DISC_FAR);
+        builder.add(ItemID.DISC_MALL);
+        builder.add(ItemID.DISC_MELLOHI);
+        builder.add(ItemID.DISC_STAL);
+        builder.add(ItemID.DISC_STRAD);
+        builder.add(ItemID.DISC_WARD);
+        builder.add(ItemID.DISC_11);
+        builder.add(ItemID.DISC_WAIT);
+        shouldNotStack = builder.build();
     }
 
     /**
@@ -645,42 +649,44 @@ public enum ItemType {
         return shouldNotStack.contains(id);
     }
 
-    private static final Set<Integer> usesDamageValue = new HashSet<Integer>();
+    private static final Set<Integer> usesDamageValue;
     static {
-        usesDamageValue.add(BlockID.DIRT);
-        usesDamageValue.add(BlockID.WOOD);
-        usesDamageValue.add(BlockID.SAPLING);
-        usesDamageValue.add(BlockID.SAND);
-        usesDamageValue.add(BlockID.LOG);
-        usesDamageValue.add(BlockID.LEAVES);
-        usesDamageValue.add(BlockID.SANDSTONE);
-        usesDamageValue.add(BlockID.LONG_GRASS);
-        usesDamageValue.add(BlockID.CLOTH);
-        usesDamageValue.add(BlockID.RED_FLOWER);
-        usesDamageValue.add(BlockID.DOUBLE_STEP);
-        usesDamageValue.add(BlockID.STEP);
-        usesDamageValue.add(BlockID.SILVERFISH_BLOCK);
-        usesDamageValue.add(BlockID.STONE_BRICK);
-        usesDamageValue.add(BlockID.BROWN_MUSHROOM_CAP);
-        usesDamageValue.add(BlockID.RED_MUSHROOM_CAP);
-        usesDamageValue.add(BlockID.DOUBLE_WOODEN_STEP);
-        usesDamageValue.add(BlockID.WOODEN_STEP);
-        usesDamageValue.add(BlockID.COBBLESTONE_WALL);
-        usesDamageValue.add(BlockID.ANVIL);
-        usesDamageValue.add(BlockID.QUARTZ_BLOCK);
-        usesDamageValue.add(BlockID.STAINED_CLAY);
-        usesDamageValue.add(BlockID.CARPET);
+        ImmutableSet.Builder<Integer> builder = ImmutableSet.builder();
+        builder.add(BlockID.DIRT);
+        builder.add(BlockID.WOOD);
+        builder.add(BlockID.SAPLING);
+        builder.add(BlockID.SAND);
+        builder.add(BlockID.LOG);
+        builder.add(BlockID.LEAVES);
+        builder.add(BlockID.SANDSTONE);
+        builder.add(BlockID.LONG_GRASS);
+        builder.add(BlockID.CLOTH);
+        builder.add(BlockID.RED_FLOWER);
+        builder.add(BlockID.DOUBLE_STEP);
+        builder.add(BlockID.STEP);
+        builder.add(BlockID.SILVERFISH_BLOCK);
+        builder.add(BlockID.STONE_BRICK);
+        builder.add(BlockID.BROWN_MUSHROOM_CAP);
+        builder.add(BlockID.RED_MUSHROOM_CAP);
+        builder.add(BlockID.DOUBLE_WOODEN_STEP);
+        builder.add(BlockID.WOODEN_STEP);
+        builder.add(BlockID.COBBLESTONE_WALL);
+        builder.add(BlockID.ANVIL);
+        builder.add(BlockID.QUARTZ_BLOCK);
+        builder.add(BlockID.STAINED_CLAY);
+        builder.add(BlockID.CARPET);
 
-        usesDamageValue.add(ItemID.COAL);
-        usesDamageValue.add(ItemID.INK_SACK);
-        usesDamageValue.add(ItemID.POTION);
-        usesDamageValue.add(ItemID.SPAWN_EGG);
-        usesDamageValue.add(ItemID.MAP);
-        usesDamageValue.add(ItemID.HEAD);
-        usesDamageValue.add(ItemID.GOLD_APPLE);
-        usesDamageValue.add(ItemID.RAW_FISH);
-        usesDamageValue.add(ItemID.COOKED_FISH);
-        usesDamageValue.add(ItemID.BANNER);
+        builder.add(ItemID.COAL);
+        builder.add(ItemID.INK_SACK);
+        builder.add(ItemID.POTION);
+        builder.add(ItemID.SPAWN_EGG);
+        builder.add(ItemID.MAP);
+        builder.add(ItemID.HEAD);
+        builder.add(ItemID.GOLD_APPLE);
+        builder.add(ItemID.RAW_FISH);
+        builder.add(ItemID.COOKED_FISH);
+        builder.add(ItemID.BANNER);
+        usesDamageValue = builder.build();
     }
 
     /**

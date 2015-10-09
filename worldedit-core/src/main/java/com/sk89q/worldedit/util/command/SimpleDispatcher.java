@@ -20,6 +20,7 @@
 package com.sk89q.worldedit.util.command;
 
 import com.google.common.base.Joiner;
+import com.google.common.collect.ImmutableSet;
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandException;
 import com.sk89q.minecraft.util.commands.CommandLocals;
@@ -30,7 +31,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -74,21 +74,21 @@ public class SimpleDispatcher implements Dispatcher {
 
     @Override
     public Set<CommandMapping> getCommands() {
-        return Collections.unmodifiableSet(new HashSet<CommandMapping>(commands.values()));
+        return ImmutableSet.copyOf(commands.values());
     }
     
     @Override
     public Set<String> getAliases() {
-        return Collections.unmodifiableSet(commands.keySet());
+        return ImmutableSet.copyOf(commands.keySet());
     }
     
     @Override
     public Set<String> getPrimaryAliases() {
-        Set<String> aliases = new HashSet<String>();
+        ImmutableSet.Builder<String> aliases = ImmutableSet.builder();
         for (CommandMapping mapping : getCommands()) {
             aliases.add(mapping.getPrimaryAlias());
         }
-        return Collections.unmodifiableSet(aliases);
+        return aliases.build();
     }
 
     @Override

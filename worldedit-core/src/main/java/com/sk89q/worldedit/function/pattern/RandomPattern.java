@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
@@ -48,6 +49,7 @@ public class RandomPattern extends AbstractPattern {
      */
     public void add(Pattern pattern, double chance) {
         checkNotNull(pattern);
+        checkArgument(Double.compare(chance, 0) >= 0, "change must be positive");
         patterns.add(new Chance(pattern, chance));
         max += chance;
     }

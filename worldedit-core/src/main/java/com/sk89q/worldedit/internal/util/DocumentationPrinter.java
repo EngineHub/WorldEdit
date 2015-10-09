@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.internal.util;
 
+import com.google.common.collect.ImmutableList;
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.minecraft.util.commands.NestedCommand;
@@ -29,7 +30,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -59,7 +59,7 @@ public final class DocumentationPrinter {
     }
 
     private static List<Class<?>> getCommandClasses(File dir) {
-        List<Class<?>> classes = new ArrayList<Class<?>>();
+        ImmutableList.Builder<Class<?>> classes = ImmutableList.builder();
 
         classes.add(BiomeCommands.class);
         classes.add(ChunkCommands.class);
@@ -95,7 +95,7 @@ public final class DocumentationPrinter {
             classes.add(cls);
         }*/
 
-        return classes;
+        return classes.build();
     }
 
     private static void writePermissionsWikiTable(List<Class<?>> commandClasses)

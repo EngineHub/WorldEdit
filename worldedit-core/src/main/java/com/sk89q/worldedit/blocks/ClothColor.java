@@ -19,10 +19,10 @@
 
 package com.sk89q.worldedit.blocks;
 
+import com.google.common.collect.ImmutableMap;
+
 import javax.annotation.Nullable;
 import java.util.Map;
-import java.util.HashMap;
-import java.util.EnumSet;
 
 /**
  * The colors for wool.
@@ -73,23 +73,27 @@ public enum ClothColor {
     /**
      * Stores a map of the IDs for fast access.
      */
-    private static final Map<Integer, ClothColor> ids = new HashMap<Integer, ClothColor>();
+    private static final Map<Integer, ClothColor> ids;
     /**
      * Stores a map of the names for fast access.
      */
-    private static final Map<String, ClothColor> lookup = new HashMap<String, ClothColor>();
+    private static final Map<String, ClothColor> lookup;
 
     private final int id;
     private final String name;
     private final String[] lookupKeys;
 
     static {
-        for (ClothColor type : EnumSet.allOf(ClothColor.class)) {
-            ids.put(type.id, type);
+        ImmutableMap.Builder<Integer, ClothColor> iBuilder = ImmutableMap.builder();
+        ImmutableMap.Builder<String, ClothColor> lBuilder = ImmutableMap.builder();
+        for (ClothColor type : values()) {
+            iBuilder.put(type.id, type);
             for (String key : type.lookupKeys) {
-                lookup.put(key, type);
+                lBuilder.put(key, type);
             }
         }
+        ids = iBuilder.build();
+        lookup = lBuilder.build();
     }
 
 

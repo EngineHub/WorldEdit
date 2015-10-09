@@ -19,6 +19,8 @@
 
 package com.sk89q.worldedit.regions;
 
+import com.google.common.collect.FluentIterable;
+import com.google.common.collect.ImmutableList;
 import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.regions.polyhedron.Edge;
@@ -319,18 +321,11 @@ public class ConvexPolyhedralRegion extends AbstractRegion {
     }
 
     public Collection<Vector> getVertices() {
-        if (vertexBacklog.isEmpty()) {
-            return vertices;
-        }
-
-        final List<Vector> ret = new ArrayList<Vector>(vertices);
-        ret.addAll(vertexBacklog);
-
-        return ret;
+        return FluentIterable.from(vertices).append(vertexBacklog).toList();
     }
 
     public Collection<Triangle> getTriangles() {
-        return triangles;
+        return ImmutableList.copyOf(triangles);
     }
 
     @Override

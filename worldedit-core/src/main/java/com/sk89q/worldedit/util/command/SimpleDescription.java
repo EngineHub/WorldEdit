@@ -19,8 +19,9 @@
 
 package com.sk89q.worldedit.util.command;
 
+import com.google.common.collect.ImmutableList;
+
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -46,7 +47,7 @@ public class SimpleDescription implements Description {
      * @see #getParameters()
      */
     public void setParameters(List<Parameter> parameters) {
-        this.parameters = Collections.unmodifiableList(parameters);
+        this.parameters = ImmutableList.copyOf(parameters);
     }
 
     @Override
@@ -90,7 +91,7 @@ public class SimpleDescription implements Description {
      * @param permissions the permissions
      */
     public void setPermissions(List<String> permissions) {
-        this.permissions = Collections.unmodifiableList(permissions);
+        this.permissions = ImmutableList.copyOf(permissions);
     }
     
     /**

@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.regions;
 
+import com.google.common.collect.ImmutableList;
 import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.BlockVector2D;
 import com.sk89q.worldedit.Vector;
@@ -27,7 +28,6 @@ import com.sk89q.worldedit.math.transform.Transform;
 import com.sk89q.worldedit.world.World;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -154,11 +154,11 @@ public class TransformRegion extends AbstractRegion {
     @Override
     public List<BlockVector2D> polygonize(int maxPoints) {
         List<BlockVector2D> origPoints = region.polygonize(maxPoints);
-        List<BlockVector2D> transformedPoints = new ArrayList<BlockVector2D>();
+        ImmutableList.Builder<BlockVector2D> transformedPoints = ImmutableList.builder();
         for (BlockVector2D vector : origPoints) {
             transformedPoints.add(transform.apply(vector.toVector(0)).toVector2D().toBlockVector2D());
         }
-        return transformedPoints;
+        return transformedPoints.build();
     }
 
     @Override

@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.blocks;
 
+
 import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.jnbt.StringTag;
 import com.sk89q.jnbt.Tag;
@@ -29,6 +30,8 @@ import com.sk89q.worldedit.world.registry.WorldData;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
+
+import static com.google.common.base.Preconditions.checkArgument;
 
 /**
  * Represents a mutable "snapshot" of a block.
@@ -141,15 +144,8 @@ public class BaseBlock extends Block implements TileEntityBlock {
      * @param id block id (between 0 and {@link #MAX_ID}).
      */
     protected final void internalSetId(int id) {
-        if (id > MAX_ID) {
-            throw new IllegalArgumentException("Can't have a block ID above "
-                    + MAX_ID + " (" + id + " given)");
-        }
-
-        if (id < 0) {
-            throw new IllegalArgumentException("Can't have a block ID below 0");
-        }
-
+        checkArgument(id <= MAX_ID, "Can't have a block ID above %s (%s given)", MAX_ID, id);
+        checkArgument(id >= 0, "Can't have a block ID below 0");
         this.id = (short) id;
     }
 
@@ -179,16 +175,9 @@ public class BaseBlock extends Block implements TileEntityBlock {
      * @param data block data value (between 0 and {@link #MAX_DATA}).
      */
     protected final void internalSetData(int data) {
-        if (data > MAX_DATA) {
-            throw new IllegalArgumentException(
-                    "Can't have a block data value above " + MAX_DATA + " ("
-                            + data + " given)");
-        }
-
-        if (data < -1) {
-            throw new IllegalArgumentException("Can't have a block data value below -1");
-        }
-
+        checkArgument(data <= MAX_DATA, "Can't have a block data value above %s (%s given)",
+                MAX_DATA, data);
+        checkArgument(data >= -1, "Can't have a block data value below -1");
         this.data = (short) data;
     }
 

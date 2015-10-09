@@ -19,11 +19,14 @@
 
 package com.sk89q.jnbt;
 
+import com.google.common.collect.ImmutableList;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
@@ -80,7 +83,7 @@ public class ListTagBuilder {
      * @return the new list tag
      */
     public ListTag build() {
-        return new ListTag(type, new ArrayList<Tag>(entries));
+        return new ListTag(type, ImmutableList.copyOf(entries));
     }
 
     /**
@@ -99,16 +102,11 @@ public class ListTagBuilder {
      */
     public static <T extends Tag> ListTagBuilder createWith(T ... entries) {
         checkNotNull(entries);
-
-        if (entries.length == 0) {
-            throw new IllegalArgumentException("This method needs an array of at least one entry");
-        }
+        checkArgument(entries.length > 0, "This method needs an array of at least one entry");
 
         Class<? extends Tag> type = entries[0].getClass();
         for (int i = 1; i < entries.length; i++) {
-            if (!type.isInstance(entries[i])) {
-                throw new IllegalArgumentException("An array of different tag types was provided");
-            }
+            checkArgument(type.isInstance(entries[i]), "An array of different tag types was provided");
         }
 
         ListTagBuilder builder = new ListTagBuilder(type);
