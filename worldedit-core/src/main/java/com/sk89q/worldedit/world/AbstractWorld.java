@@ -25,6 +25,7 @@ import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.blocks.BlockType;
@@ -32,6 +33,7 @@ import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.function.mask.BlockMask;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.function.operation.Operation;
+import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.util.TreeGenerator.TreeType;
 
 import javax.annotation.Nullable;
@@ -44,6 +46,11 @@ public abstract class AbstractWorld implements World {
 
     private final PriorityQueue<QueuedEffect> effectQueue = new PriorityQueue<QueuedEffect>();
     private int taskId = -1;
+
+    @Override
+    public boolean useItem(Vector position, BaseItem item, Direction face) {
+        return false;
+    }
 
     @Override
     public final boolean setBlockType(Vector position, int type) {

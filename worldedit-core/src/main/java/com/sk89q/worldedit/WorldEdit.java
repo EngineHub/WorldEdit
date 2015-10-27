@@ -21,6 +21,7 @@ package com.sk89q.worldedit;
 
 import com.sk89q.worldedit.CuboidClipboard.FlipDirection;
 import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.blocks.BlockType;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.event.extent.EditSessionEvent;
@@ -28,6 +29,7 @@ import com.sk89q.worldedit.event.platform.BlockInteractEvent;
 import com.sk89q.worldedit.event.platform.InputType;
 import com.sk89q.worldedit.event.platform.PlayerInputEvent;
 import com.sk89q.worldedit.extension.factory.BlockFactory;
+import com.sk89q.worldedit.extension.factory.ItemFactory;
 import com.sk89q.worldedit.extension.factory.MaskFactory;
 import com.sk89q.worldedit.extension.factory.PatternFactory;
 import com.sk89q.worldedit.extension.input.ParserContext;
@@ -95,6 +97,7 @@ public class WorldEdit {
     private final SessionManager sessions = new SessionManager(this);
 
     private final BlockFactory blockFactory = new BlockFactory(this);
+    private final ItemFactory itemFactory = new ItemFactory(this);
     private final MaskFactory maskFactory = new MaskFactory(this);
     private final PatternFactory patternFactory = new PatternFactory(this);
 
@@ -150,6 +153,16 @@ public class WorldEdit {
      */
     public BlockFactory getBlockFactory() {
         return blockFactory;
+    }
+
+    /**
+     * Get the item factory from which new {@link BaseItem}s can be
+     * constructed.
+     *
+     * @return the item factory
+     */
+    public ItemFactory getItemFactory() {
+        return itemFactory;
     }
 
     /**

@@ -19,36 +19,35 @@
 
 package com.sk89q.worldedit.forge;
 
-import com.sk89q.worldedit.world.registry.BiomeRegistry;
+import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.world.registry.ItemRegistry;
-import com.sk89q.worldedit.world.registry.LegacyWorldData;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 
-/**
- * World data for the Forge platform.
- */
-class ForgeWorldData extends LegacyWorldData {
+import javax.annotation.Nullable;
 
-    private static final ForgeWorldData INSTANCE = new ForgeWorldData();
-    private final ItemRegistry itemRegistry = new ForgeItemRegistry();
-    private final BiomeRegistry biomeRegistry = new ForgeBiomeRegistry();
+public class ForgeItemRegistry implements ItemRegistry {
 
+    @Nullable
     @Override
-    public ItemRegistry getItemRegistry() {
-        return itemRegistry;
+    public BaseItem createFromId(String id) {
+        Item item = (Item) Item.itemRegistry.getObject(id);
+        if (item != null) {
+            return new BaseItem(Item.getIdFromItem(item), (short) item.getDamage(new ItemStack(item, 1)));
+        } else {
+            return null;
+        }
     }
 
+    @Nullable
     @Override
-    public BiomeRegistry getBiomeRegistry() {
-        return biomeRegistry;
-    }
-
-    /**
-     * Get a static instance.
-     *
-     * @return an instance
-     */
-    public static ForgeWorldData getInstance() {
-        return INSTANCE;
+    public BaseItem createFromId(int id) {
+        Item item = (Item) Item.itemRegistry.getObjectById(id);
+        if (item != null) {
+            return new BaseItem(Item.getIdFromItem(item), (short) item.getDamage(new ItemStack(item, 1)));
+        } else {
+            return null;
+        }
     }
 
 }

@@ -66,17 +66,32 @@ public class CommandContext {
 
     /**
      * Parse the given array of arguments.
-     * 
+     *
      * <p>Empty arguments are removed from the list of arguments.</p>
-     * 
+     *
      * @param args an array with arguments
      * @param valueFlags a set containing all value flags (pass null to disable value flag parsing)
      * @param allowHangingFlag true if hanging flags are allowed
      * @param locals the locals, null to create empty one
      * @throws CommandException thrown on a parsing error
      */
-    public CommandContext(String[] args, Set<Character> valueFlags, 
-            boolean allowHangingFlag, CommandLocals locals) throws CommandException {
+    public CommandContext(String[] args, Set<Character> valueFlags, boolean allowHangingFlag, CommandLocals locals) throws CommandException {
+        this(args, valueFlags, allowHangingFlag, locals, true);
+    }
+
+    /**
+     * Parse the given array of arguments.
+     *
+     * <p>Empty arguments are removed from the list of arguments.</p>
+     *
+     * @param args an array with arguments
+     * @param valueFlags a set containing all value flags (pass null to disable value flag parsing)
+     * @param allowHangingFlag true if hanging flags are allowed
+     * @param locals the locals, null to create empty one
+     * @param parseFlags where to parse flags
+     * @throws CommandException thrown on a parsing error
+     */
+    public CommandContext(String[] args, Set<Character> valueFlags, boolean allowHangingFlag, CommandLocals locals, boolean parseFlags) throws CommandException {
         if (valueFlags == null) {
             valueFlags = Collections.emptySet();
         }
@@ -140,57 +155,65 @@ public class CommandContext {
         this.originalArgIndices = new ArrayList<Integer>(argIndexList.size());
         this.parsedArgs = new ArrayList<String>(argList.size());
 
-        for (int nextArg = 0; nextArg < argList.size(); ) {
-            // Fetch argument
-            String arg = argList.get(nextArg++);
-            suggestionContext = SuggestionContext.hangingValue();
+        if (parseFlags) {
+            for (int nextArg = 0; nextArg < argList.size(); ) {
+                // Fetch argument
+                String arg = argList.get(nextArg++);
+                suggestionContext = SuggestionContext.hangingValue();
 
-            // Not a flag?
-            if (arg.charAt(0) != '-' || arg.length() == 1 || !arg.matches("^-[a-zA-Z\\?]+$")) {
-                if (!isHanging) {
-                    suggestionContext = SuggestionContext.lastValue();
-                }
-                
-                originalArgIndices.add(argIndexList.get(nextArg - 1));
-                parsedArgs.add(arg);
-                continue;
-            }
-
-            // Handle flag parsing terminator --
-            if (arg.equals("--")) {
-                while (nextArg < argList.size()) {
-                    originalArgIndices.add(argIndexList.get(nextArg));
-                    parsedArgs.add(argList.get(nextArg++));
-                }
-                break;
-            }
-
-            // Go through the flag characters
-            for (int i = 1; i < arg.length(); ++i) {
-                char flagName = arg.charAt(i);
-
-                if (valueFlags.contains(flagName)) {
-                    if (this.valueFlags.containsKey(flagName)) {
-                        throw new CommandException("Value flag '" + flagName + "' already given");
-                    }
-
-                    if (nextArg >= argList.size()) {
-                        if (allowHangingFlag) {
-                            suggestionContext = SuggestionContext.flag(flagName);
-                            break;
-                        } else {
-                            throw new CommandException("No value specified for the '-" + flagName + "' flag.");
-                        }
-                    }
-
-                    // If it is a value flag, read another argument and add it
-                    this.valueFlags.put(flagName, argList.get(nextArg++));
+                // Not a flag?
+                if (arg.charAt(0) != '-' || arg.length() == 1 || !arg.matches("^-[a-zA-Z\\?]+$")) {
                     if (!isHanging) {
-                        suggestionContext = SuggestionContext.flag(flagName);
+                        suggestionContext = SuggestionContext.lastValue();
                     }
-                } else {
-                    booleanFlags.add(flagName);
+
+                    originalArgIndices.add(argIndexList.get(nextArg - 1));
+                    parsedArgs.add(arg);
+                    continue;
                 }
+
+                // Handle flag parsing terminator --
+                if (arg.equals("--")) {
+                    while (nextArg < argList.size()) {
+                        originalArgIndices.add(argIndexList.get(nextArg));
+                        parsedArgs.add(argList.get(nextArg++));
+                    }
+                    break;
+                }
+
+                // Go through the flag characters
+                for (int i = 1; i < arg.length(); ++i) {
+                    char flagName = arg.charAt(i);
+
+                    if (valueFlags.contains(flagName)) {
+                        if (this.valueFlags.containsKey(flagName)) {
+                            throw new CommandException("Value flag '" + flagName + "' already given");
+                        }
+
+                        if (nextArg >= argList.size()) {
+                            if (allowHangingFlag) {
+                                suggestionContext = SuggestionContext.flag(flagName);
+                                break;
+                            } else {
+                                throw new CommandException("No value specified for the '-" + flagName + "' flag.");
+                            }
+                        }
+
+                        // If it is a value flag, read another argument and add it
+                        this.valueFlags.put(flagName, argList.get(nextArg++));
+                        if (!isHanging) {
+                            suggestionContext = SuggestionContext.flag(flagName);
+                        }
+                    } else {
+                        booleanFlags.add(flagName);
+                    }
+                }
+            }
+        } else {
+            for (int i = 0; i < argList.size(); i++) {
+                String arg = argList.get(i);
+                originalArgIndices.add(argIndexList.get(i));
+                parsedArgs.add(arg);
             }
         }
         

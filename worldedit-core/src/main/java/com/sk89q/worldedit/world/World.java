@@ -25,11 +25,13 @@ import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.regions.Region;
+import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.util.TreeGenerator;
 import com.sk89q.worldedit.util.TreeGenerator.TreeType;
 import com.sk89q.worldedit.world.registry.WorldData;
@@ -79,6 +81,15 @@ public interface World extends Extent {
      * @return a mask
      */
     Mask createLiquidMask();
+
+    /**
+     * Use the given item on the block at the given location on the given side.
+     *
+     * @param item The item
+     * @param face The face
+     * @return Whether it succeeded
+     */
+    boolean useItem(Vector position, BaseItem item, Direction face);
 
     /**
      * @deprecated Use {@link #getLazyBlock(Vector)}

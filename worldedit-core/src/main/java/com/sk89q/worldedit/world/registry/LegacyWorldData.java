@@ -27,6 +27,7 @@ public class LegacyWorldData implements WorldData {
 
     private static final LegacyWorldData INSTANCE = new LegacyWorldData();
     private final LegacyBlockRegistry blockRegistry = new LegacyBlockRegistry();
+    private final NullItemRegistry itemRegistry = new NullItemRegistry();
     private final NullEntityRegistry entityRegistry = new NullEntityRegistry();
     private final NullBiomeRegistry biomeRegistry = new NullBiomeRegistry();
 
@@ -39,6 +40,11 @@ public class LegacyWorldData implements WorldData {
     @Override
     public BlockRegistry getBlockRegistry() {
         return blockRegistry;
+    }
+
+    @Override
+    public ItemRegistry getItemRegistry() {
+        return itemRegistry;
     }
 
     @Override

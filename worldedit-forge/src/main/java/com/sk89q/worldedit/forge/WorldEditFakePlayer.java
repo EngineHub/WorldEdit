@@ -19,36 +19,18 @@
 
 package com.sk89q.worldedit.forge;
 
-import com.sk89q.worldedit.world.registry.BiomeRegistry;
-import com.sk89q.worldedit.world.registry.ItemRegistry;
-import com.sk89q.worldedit.world.registry.LegacyWorldData;
+import com.mojang.authlib.GameProfile;
+import net.minecraft.world.WorldServer;
+import net.minecraftforge.common.util.FakePlayer;
 
-/**
- * World data for the Forge platform.
- */
-class ForgeWorldData extends LegacyWorldData {
+import java.util.UUID;
 
-    private static final ForgeWorldData INSTANCE = new ForgeWorldData();
-    private final ItemRegistry itemRegistry = new ForgeItemRegistry();
-    private final BiomeRegistry biomeRegistry = new ForgeBiomeRegistry();
+public class WorldEditFakePlayer extends FakePlayer {
 
-    @Override
-    public ItemRegistry getItemRegistry() {
-        return itemRegistry;
-    }
+    private static final GameProfile FAKE_GAME_PROFILE = new GameProfile(UUID.nameUUIDFromBytes("worldedit".getBytes()), "[WorldEdit]");
 
-    @Override
-    public BiomeRegistry getBiomeRegistry() {
-        return biomeRegistry;
-    }
-
-    /**
-     * Get a static instance.
-     *
-     * @return an instance
-     */
-    public static ForgeWorldData getInstance() {
-        return INSTANCE;
+    public WorldEditFakePlayer(WorldServer world) {
+        super(world, FAKE_GAME_PROFILE);
     }
 
 }

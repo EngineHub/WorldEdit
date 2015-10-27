@@ -17,38 +17,30 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.forge;
+package com.sk89q.worldedit.world.registry;
 
-import com.sk89q.worldedit.world.registry.BiomeRegistry;
-import com.sk89q.worldedit.world.registry.ItemRegistry;
-import com.sk89q.worldedit.world.registry.LegacyWorldData;
+import com.sk89q.worldedit.blocks.BaseItem;
 
-/**
- * World data for the Forge platform.
- */
-class ForgeWorldData extends LegacyWorldData {
+import javax.annotation.Nullable;
 
-    private static final ForgeWorldData INSTANCE = new ForgeWorldData();
-    private final ItemRegistry itemRegistry = new ForgeItemRegistry();
-    private final BiomeRegistry biomeRegistry = new ForgeBiomeRegistry();
-
-    @Override
-    public ItemRegistry getItemRegistry() {
-        return itemRegistry;
-    }
-
-    @Override
-    public BiomeRegistry getBiomeRegistry() {
-        return biomeRegistry;
-    }
+public interface ItemRegistry {
 
     /**
-     * Get a static instance.
+     * Create a new item using its ID.
      *
-     * @return an instance
+     * @param id the id
+     * @return the item, which may be null if no item exists
      */
-    public static ForgeWorldData getInstance() {
-        return INSTANCE;
-    }
+    @Nullable
+    BaseItem createFromId(String id);
+
+    /**
+     * Create a new item using its legacy numeric ID.
+     *
+     * @param id the id
+     * @return the item, which may be null if no item exists
+     */
+    @Nullable
+    BaseItem createFromId(int id);
 
 }

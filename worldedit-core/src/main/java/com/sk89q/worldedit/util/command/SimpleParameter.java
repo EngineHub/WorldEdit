@@ -52,11 +52,12 @@ public class SimpleParameter implements Parameter {
 
     /**
      * Set the name of the parameter.
-     * 
+     *
      * @param name the parameter name
      */
-    public void setName(String name) {
+    public SimpleParameter setName(String name) {
         this.name = name;
+        return this;
     }
 
     @Override
@@ -71,13 +72,13 @@ public class SimpleParameter implements Parameter {
 
     /**
      * Set the flag used by this parameter.
-     * 
-     * @param flag the flag, or null if there is no flag
+     *  @param flag the flag, or null if there is no flag
      * @param isValue true if the flag is a value flag
      */
-    public void setFlag(Character flag, boolean isValue) {
+    public SimpleParameter setFlag(Character flag, boolean isValue) {
         this.flag = flag;
         this.isValue = isValue;
+        return this;
     }
     
     @Override
@@ -87,11 +88,12 @@ public class SimpleParameter implements Parameter {
 
     /**
      * Set whether this parameter is optional.
-     * 
+     *
      * @param isOptional true if this parameter is optional
      */
-    public void setOptional(boolean isOptional) {
+    public SimpleParameter setOptional(boolean isOptional) {
         this.isOptional = isOptional;
+        return this;
     }
     
     @Override
@@ -101,11 +103,12 @@ public class SimpleParameter implements Parameter {
 
     /**
      * Set the default value.
-     * 
+     *
      * @param defaultValue a default value, or null if none
      */
-    public void setDefaultValue(String[] defaultValue) {
+    public SimpleParameter setDefaultValue(String[] defaultValue) {
         this.defaultValue = defaultValue;
+        return this;
     }
 
     @Override

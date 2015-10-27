@@ -49,7 +49,7 @@ class BukkitCommandInspector implements CommandInspector {
     public String getShortText(Command command) {
         CommandMapping mapping = dispatcher.get(command.getName());
         if (mapping != null) {
-            return mapping.getDescription().getShortDescription();
+            return mapping.getDescription().getDescription();
         } else {
             logger.warning("BukkitCommandInspector doesn't know how about the command '" + command + "'");
             return "Help text not available";

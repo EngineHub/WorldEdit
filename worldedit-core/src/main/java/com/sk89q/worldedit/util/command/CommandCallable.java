@@ -39,7 +39,7 @@ public interface CommandCallable extends CommandCompleter {
      * @return the called command, or null if there was no command found
      * @throws CommandException thrown on a command error
      */
-    boolean call(String arguments, CommandLocals locals, String[] parentCommands) throws CommandException;
+    Object call(String arguments, CommandLocals locals, String[] parentCommands) throws CommandException;
     
     /**
      * Get an object describing this command.

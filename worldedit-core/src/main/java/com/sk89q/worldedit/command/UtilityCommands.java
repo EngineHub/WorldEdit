@@ -658,7 +658,7 @@ public class UtilityCommands {
                         builder.append(" ");
                     }
                     builder.append(mapping.getPrimaryAlias());
-                    box.appendCommand(builder.toString(), mapping.getDescription().getShortDescription());
+                    box.appendCommand(builder.toString(), mapping.getDescription().getDescription());
                 }
             }
 

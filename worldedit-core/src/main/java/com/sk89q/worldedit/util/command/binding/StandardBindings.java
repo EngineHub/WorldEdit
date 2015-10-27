@@ -20,10 +20,10 @@
 package com.sk89q.worldedit.util.command.binding;
 
 import com.sk89q.minecraft.util.commands.CommandContext;
+import com.sk89q.worldedit.util.command.parametric.ArgumentStack;
 import com.sk89q.worldedit.util.command.parametric.BindingBehavior;
 import com.sk89q.worldedit.util.command.parametric.BindingHelper;
 import com.sk89q.worldedit.util.command.parametric.BindingMatch;
-import com.sk89q.worldedit.util.command.parametric.ArgumentStack;
 
 /**
  * Standard bindings that should be available to most configurations.
@@ -32,12 +32,12 @@ public final class StandardBindings extends BindingHelper {
 
     /**
      * Gets a {@link CommandContext} from a {@link ArgumentStack}.
-     * 
+     *
      * @param context the context
      * @return a selection
      */
     @BindingMatch(type = CommandContext.class,
-                  behavior = BindingBehavior.PROVIDES)
+            behavior = BindingBehavior.PROVIDES)
     public CommandContext getCommandContext(ArgumentStack context) {
         context.markConsumed(); // Consume entire stack
         return context.getContext();

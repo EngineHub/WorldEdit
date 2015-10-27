@@ -102,7 +102,7 @@ public class SimpleDispatcher implements Dispatcher {
     }
 
     @Override
-    public boolean call(String arguments, CommandLocals locals, String[] parentCommands) throws CommandException {
+    public Object call(String arguments, CommandLocals locals, String[] parentCommands) throws CommandException {
         // We have permission for this command if we have permissions for subcommands
         if (!testPermission(locals)) {
             throw new CommandPermissionsException();
@@ -122,15 +122,13 @@ public class SimpleDispatcher implements Dispatcher {
 
             if (mapping != null) {
                 try {
-                    mapping.getCallable().call(subArguments, locals, subParents);
+                    return mapping.getCallable().call(subArguments, locals, subParents);
                 } catch (CommandException e) {
                     e.prependStack(subCommand);
                     throw e;
                 } catch (Throwable t) {
                     throw new WrappedCommandException(t);
                 }
-
-                return true;
             }
 
         }

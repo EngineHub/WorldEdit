@@ -1,0 +1,114 @@
+/*
+ * WorldEdit, a Minecraft world manipulation toolkit
+ * Copyright (C) sk89q <http://www.sk89q.com>
+ * Copyright (C) WorldEdit team and contributors
+ *
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as published by the
+ * Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+
+package com.sk89q.worldedit.command.composition;
+
+import com.google.common.collect.Lists;
+import com.sk89q.minecraft.util.commands.CommandException;
+import com.sk89q.minecraft.util.commands.CommandLocals;
+import com.sk89q.minecraft.util.commands.CommandPermissionsException;
+import com.sk89q.worldedit.LocalSession;
+import com.sk89q.worldedit.MaxBrushRadiusException;
+import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.command.tool.BrushTool;
+import com.sk89q.worldedit.command.tool.InvalidToolBindException;
+import com.sk89q.worldedit.command.tool.brush.OperationFactoryBrush;
+import com.sk89q.worldedit.entity.Player;
+import com.sk89q.worldedit.extension.platform.Actor;
+import com.sk89q.worldedit.function.factory.OperationFactory;
+import com.sk89q.worldedit.regions.factory.RegionFactory;
+import com.sk89q.worldedit.util.command.CommandExecutor;
+import com.sk89q.worldedit.util.command.Description;
+import com.sk89q.worldedit.util.command.Parameter;
+import com.sk89q.worldedit.util.command.SimpleDescription;
+import com.sk89q.worldedit.util.command.SimpleParameter;
+import com.sk89q.worldedit.util.command.argument.CommandArgs;
+
+import java.util.List;
+
+import static com.google.common.base.Preconditions.checkNotNull;
+
+public class ShapedBrushCommand extends CommandExecutor<Object> {
+
+    private final CommandExecutor<? extends OperationFactory> delegate;
+    private final String permission;
+
+    public ShapedBrushCommand(CommandExecutor<? extends OperationFactory> delegate, String permission) {
+        checkNotNull(delegate, "delegate");
+        this.permission = permission;
+        this.delegate = delegate;
+    }
+
+    @Override
+    public Object call(CommandArgs args, CommandLocals locals, String[] parentCommands) throws CommandException {
+        if (!testPermission(locals)) {
+            throw new CommandPermissionsException();
+        }
+
+        RegionFactory regionFactory = new RegionFactoryCommand().call(args, locals, parentCommands);
+        int radius = args.nextInt();
+        OperationFactory factory = delegate.call(args, locals, parentCommands);
+
+        args.requireAllConsumed();
+
+        Player player = (Player) locals.get(Actor.class);
+        LocalSession session = WorldEdit.getInstance().getSessionManager().get(player);
+
+        try {
+            WorldEdit.getInstance().checkMaxBrushRadius(radius);
+            BrushTool tool = session.getBrushTool(player.getItemInHand());
+            tool.setSize(radius);
+            tool.setBrush(new OperationFactoryBrush(factory, regionFactory), permission);
+        } catch (MaxBrushRadiusException e) {
+            WorldEdit.getInstance().getPlatformManager().getCommandManager().getExceptionConverter().convert(e);
+        } catch (InvalidToolBindException e) {
+            WorldEdit.getInstance().getPlatformManager().getCommandManager().getExceptionConverter().convert(e);
+        }
+
+        player.print("Set brush to " + factory);
+
+        return true;
+    }
+
+    @Override
+    public Description getDescription() {
+        List<Parameter> parameters = Lists.newArrayList();
+        parameters.add(new SimpleParameter("radius"));
+        parameters.add(new SimpleParameter("shape"));
+        parameters.add(new SimpleParameter("...shapeArgs...").setOptional(true));
+        parameters.add(new SimpleParameter("...brushArgs...").setOptional(true));
+
+        SimpleDescription desc = new SimpleDescription();
+        desc.setDescription(delegate.getDescription().getDescription());
+        desc.setHelp(delegate.getDescription().getHelp());
+        desc.setPermissions(Lists.newArrayList(permission));
+        return desc;
+    }
+
+    @Override
+    public boolean testPermission(CommandLocals locals) {
+        Actor sender = locals.get(Actor.class);
+        if (sender == null) {
+            throw new RuntimeException("Uh oh! No 'Actor' specified so that we can check permissions");
+        } else {
+            return sender.hasPermission(permission);
+        }
+    }
+
+}

@@ -17,38 +17,19 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.forge;
+package com.sk89q.worldedit.command.composition;
 
-import com.sk89q.worldedit.world.registry.BiomeRegistry;
-import com.sk89q.worldedit.world.registry.ItemRegistry;
-import com.sk89q.worldedit.world.registry.LegacyWorldData;
+import com.sk89q.minecraft.util.commands.CommandException;
+import com.sk89q.minecraft.util.commands.CommandLocals;
+import com.sk89q.worldedit.function.factory.RegionReplace;
+import com.sk89q.worldedit.util.command.CommandExecutor;
+import com.sk89q.worldedit.util.command.argument.CommandArgs;
 
-/**
- * World data for the Forge platform.
- */
-class ForgeWorldData extends LegacyWorldData {
-
-    private static final ForgeWorldData INSTANCE = new ForgeWorldData();
-    private final ItemRegistry itemRegistry = new ForgeItemRegistry();
-    private final BiomeRegistry biomeRegistry = new ForgeBiomeRegistry();
+public class RegionReplaceCommand extends CommandExecutor<RegionReplace> {
 
     @Override
-    public ItemRegistry getItemRegistry() {
-        return itemRegistry;
-    }
-
-    @Override
-    public BiomeRegistry getBiomeRegistry() {
-        return biomeRegistry;
-    }
-
-    /**
-     * Get a static instance.
-     *
-     * @return an instance
-     */
-    public static ForgeWorldData getInstance() {
-        return INSTANCE;
+    public RegionReplace call(CommandArgs args, CommandLocals locals, String[] parentCommands) throws CommandException {
+        return new RegionReplace();
     }
 
 }

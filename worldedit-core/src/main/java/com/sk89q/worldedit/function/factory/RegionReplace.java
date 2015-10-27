@@ -17,38 +17,24 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.forge;
+package com.sk89q.worldedit.function.factory;
 
-import com.sk89q.worldedit.world.registry.BiomeRegistry;
-import com.sk89q.worldedit.world.registry.ItemRegistry;
-import com.sk89q.worldedit.world.registry.LegacyWorldData;
+import com.sk89q.worldedit.function.EditContext;
+import com.sk89q.worldedit.function.block.BlockReplace;
+import com.sk89q.worldedit.function.operation.Operation;
+import com.sk89q.worldedit.function.visitor.RegionVisitor;
 
-/**
- * World data for the Forge platform.
- */
-class ForgeWorldData extends LegacyWorldData {
-
-    private static final ForgeWorldData INSTANCE = new ForgeWorldData();
-    private final ItemRegistry itemRegistry = new ForgeItemRegistry();
-    private final BiomeRegistry biomeRegistry = new ForgeBiomeRegistry();
+public class RegionReplace implements OperationFactory {
 
     @Override
-    public ItemRegistry getItemRegistry() {
-        return itemRegistry;
+    public Operation createOperation(EditContext context) {
+        BlockReplace replace = new BlockReplace(context.getDestination(), context.getFill());
+        return new RegionVisitor(context.getRegion(), replace);
     }
 
     @Override
-    public BiomeRegistry getBiomeRegistry() {
-        return biomeRegistry;
-    }
-
-    /**
-     * Get a static instance.
-     *
-     * @return an instance
-     */
-    public static ForgeWorldData getInstance() {
-        return INSTANCE;
+    public String toString() {
+        return "set blocks";
     }
 
 }

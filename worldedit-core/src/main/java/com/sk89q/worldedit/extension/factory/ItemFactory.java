@@ -17,38 +17,23 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.forge;
+package com.sk89q.worldedit.extension.factory;
 
-import com.sk89q.worldedit.world.registry.BiomeRegistry;
-import com.sk89q.worldedit.world.registry.ItemRegistry;
-import com.sk89q.worldedit.world.registry.LegacyWorldData;
+import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.blocks.BaseItem;
+import com.sk89q.worldedit.internal.registry.AbstractFactory;
 
-/**
- * World data for the Forge platform.
- */
-class ForgeWorldData extends LegacyWorldData {
-
-    private static final ForgeWorldData INSTANCE = new ForgeWorldData();
-    private final ItemRegistry itemRegistry = new ForgeItemRegistry();
-    private final BiomeRegistry biomeRegistry = new ForgeBiomeRegistry();
-
-    @Override
-    public ItemRegistry getItemRegistry() {
-        return itemRegistry;
-    }
-
-    @Override
-    public BiomeRegistry getBiomeRegistry() {
-        return biomeRegistry;
-    }
+public class ItemFactory extends AbstractFactory<BaseItem> {
 
     /**
-     * Get a static instance.
+     * Create a new instance.
      *
-     * @return an instance
+     * @param worldEdit the WorldEdit instance.
      */
-    public static ForgeWorldData getInstance() {
-        return INSTANCE;
+    public ItemFactory(WorldEdit worldEdit) {
+        super(worldEdit);
+
+        parsers.add(new DefaultItemParser(worldEdit));
     }
 
 }

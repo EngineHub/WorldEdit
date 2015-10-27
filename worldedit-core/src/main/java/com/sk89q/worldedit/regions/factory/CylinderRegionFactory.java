@@ -17,38 +17,24 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.forge;
+package com.sk89q.worldedit.regions.factory;
 
-import com.sk89q.worldedit.world.registry.BiomeRegistry;
-import com.sk89q.worldedit.world.registry.ItemRegistry;
-import com.sk89q.worldedit.world.registry.LegacyWorldData;
+import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.Vector2D;
+import com.sk89q.worldedit.regions.CylinderRegion;
+import com.sk89q.worldedit.regions.Region;
 
-/**
- * World data for the Forge platform.
- */
-class ForgeWorldData extends LegacyWorldData {
+public class CylinderRegionFactory implements RegionFactory {
 
-    private static final ForgeWorldData INSTANCE = new ForgeWorldData();
-    private final ItemRegistry itemRegistry = new ForgeItemRegistry();
-    private final BiomeRegistry biomeRegistry = new ForgeBiomeRegistry();
+    private final double height;
 
-    @Override
-    public ItemRegistry getItemRegistry() {
-        return itemRegistry;
+    public CylinderRegionFactory(double height) {
+        this.height = height;
     }
 
     @Override
-    public BiomeRegistry getBiomeRegistry() {
-        return biomeRegistry;
-    }
-
-    /**
-     * Get a static instance.
-     *
-     * @return an instance
-     */
-    public static ForgeWorldData getInstance() {
-        return INSTANCE;
+    public Region createCenteredAt(Vector position, double size) {
+        return new CylinderRegion(position, new Vector2D(size, size), position.getBlockY() - (int) (height / 2), position.getBlockY() + (int) (height / 2));
     }
 
 }

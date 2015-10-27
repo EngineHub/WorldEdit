@@ -76,7 +76,7 @@ public class CommandUsageBox extends StyledFragment {
 
         for (CommandMapping mapping : list) {
             if (locals == null || mapping.getCallable().testPermission(locals)) {
-                box.appendCommand(prefix + mapping.getPrimaryAlias(), mapping.getDescription().getShortDescription());
+                box.appendCommand(prefix + mapping.getPrimaryAlias(), mapping.getDescription().getDescription());
             }
         }
 
@@ -98,8 +98,8 @@ public class CommandUsageBox extends StyledFragment {
 
         if (description.getHelp() != null) {
             contents.append(description.getHelp());
-        } else if (description.getShortDescription() != null) {
-            contents.append(description.getShortDescription());
+        } else if (description.getDescription() != null) {
+            contents.append(description.getDescription());
         } else {
             contents.append(new Subtle().append("No further help is available."));
         }

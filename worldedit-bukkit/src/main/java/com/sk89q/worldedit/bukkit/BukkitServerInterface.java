@@ -130,7 +130,7 @@ public class BukkitServerInterface extends ServerInterface implements MultiUserP
             String[] permissionsArray = new String[permissions.size()];
             permissions.toArray(permissionsArray);
 
-            toRegister.add(new CommandInfo(description.getUsage(), description.getShortDescription(), command.getAllAliases(), inspector, permissionsArray));
+            toRegister.add(new CommandInfo(description.getUsage(), description.getDescription(), command.getAllAliases(), inspector, permissionsArray));
         }
 
         dynamicCommands.register(toRegister);

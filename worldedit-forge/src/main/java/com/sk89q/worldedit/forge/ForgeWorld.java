@@ -26,12 +26,14 @@ import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.Vector2D;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.blocks.LazyBlock;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.internal.Constants;
 import com.sk89q.worldedit.regions.Region;
+import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.TreeGenerator.TreeType;
 import com.sk89q.worldedit.world.AbstractWorld;
@@ -41,11 +43,14 @@ import net.minecraft.block.Block;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.LongHashMap;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.gen.ChunkProviderServer;
@@ -127,6 +132,14 @@ public class ForgeWorld extends AbstractWorld {
     @Override
     public String getName() {
         return getWorld().getWorldInfo().getWorldName();
+    }
+
+    @Override
+    public boolean useItem(Vector position, BaseItem item, Direction face) {
+        Item nativeItem = Item.getItemById(item.getType());
+        ItemStack stack = new ItemStack(nativeItem, 1, item.getData());
+        World world = getWorld();
+        return stack.tryPlaceItemIntoWorld(new WorldEditFakePlayer((WorldServer) world), world, position.getBlockX(), position.getBlockY(), position.getBlockZ(), ForgeAdapter.adapt(face), 0, 0, 0);
     }
 
     @Override

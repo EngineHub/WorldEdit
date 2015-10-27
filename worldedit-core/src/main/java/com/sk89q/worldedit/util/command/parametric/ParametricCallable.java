@@ -180,7 +180,7 @@ class ParametricCallable implements CommandCallable {
     }
 
     @Override
-    public boolean call(String stringArguments, CommandLocals locals, String[] parentCommands) throws CommandException {
+    public Object call(String stringArguments, CommandLocals locals, String[] parentCommands) throws CommandException {
         // Test permission
         if (!testPermission(locals)) {
             throw new CommandPermissionsException();

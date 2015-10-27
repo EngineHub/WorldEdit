@@ -55,6 +55,10 @@ public class ForestGenerator implements RegionFunction {
         if (t == BlockID.GRASS || t == BlockID.DIRT) {
             treeGenerator.generate(editSession, position.add(0, 1, 0));
             return true;
+        } else if (t == BlockID.LONG_GRASS || t == BlockID.DEAD_BUSH || t == BlockID.RED_FLOWER || t == BlockID.YELLOW_FLOWER) { // TODO: This list needs to be moved
+            editSession.setBlock(position, new BaseBlock(0));
+            treeGenerator.generate(editSession, position);
+            return true;
         } else if (t == BlockID.SNOW) {
             editSession.setBlock(position, new BaseBlock(BlockID.AIR));
             return false;

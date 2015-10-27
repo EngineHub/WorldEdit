@@ -613,7 +613,6 @@ public class LocalSession {
      * @return the tool, or {@code null}
      * @throws InvalidToolBindException if the item can't be bound to that item
      */
-    @Nullable
     public BrushTool getBrushTool(int item) throws InvalidToolBindException {
         Tool tool = getTool(item);
 

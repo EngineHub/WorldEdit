@@ -38,7 +38,7 @@ public interface Description {
      * 
      * @return a description, or null if no description is available
      */
-    String getShortDescription();
+    String getDescription();
 
     /**
      * Get a longer help text about this command.

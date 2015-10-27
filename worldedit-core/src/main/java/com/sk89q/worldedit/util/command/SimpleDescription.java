@@ -45,12 +45,13 @@ public class SimpleDescription implements Description {
      * @param parameters the list of parameters
      * @see #getParameters()
      */
-    public void setParameters(List<Parameter> parameters) {
+    public SimpleDescription setParameters(List<Parameter> parameters) {
         this.parameters = Collections.unmodifiableList(parameters);
+        return this;
     }
 
     @Override
-    public String getShortDescription() {
+    public String getDescription() {
         return description;
     }
     
@@ -58,10 +59,11 @@ public class SimpleDescription implements Description {
      * Set the description of the command.
      * 
      * @param description the description
-     * @see #getShortDescription()
+     * @see #getDescription()
      */
-    public void setDescription(String description) {
+    public SimpleDescription setDescription(String description) {
         this.description = description;
+        return this;
     }
     
     @Override
@@ -75,8 +77,9 @@ public class SimpleDescription implements Description {
      * @param help the help text
      * @see #getHelp()
      */
-    public void setHelp(String help) {
+    public SimpleDescription setHelp(String help) {
         this.help = help;
+        return this;
     }
 
     @Override
@@ -86,11 +89,12 @@ public class SimpleDescription implements Description {
 
     /**
      * Set the permissions of this command.
-     * 
+     *
      * @param permissions the permissions
      */
-    public void setPermissions(List<String> permissions) {
+    public SimpleDescription setPermissions(List<String> permissions) {
         this.permissions = Collections.unmodifiableList(permissions);
+        return this;
     }
     
     /**

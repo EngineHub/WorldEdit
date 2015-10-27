@@ -17,40 +17,13 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.world.registry;
+package com.sk89q.worldedit.function.factory;
 
-/**
- * Describes the necessary data for blocks, entities, and other objects
- * on a world.
- */
-public interface WorldData {
+import com.sk89q.worldedit.function.EditContext;
+import com.sk89q.worldedit.function.operation.Operation;
 
-    /**
-     * Get the block registry.
-     *
-     * @return the block registry
-     */
-    BlockRegistry getBlockRegistry();
+public interface OperationFactory {
 
-    /**
-     * Get the item registry.
-     *
-     * @return the item registry
-     */
-    ItemRegistry getItemRegistry();
-
-    /**
-     * Get the entity registry.
-     *
-     * @return the entity registry
-     */
-    EntityRegistry getEntityRegistry();
-
-    /**
-     * Get the biome registry.
-     *
-     * @return the biome registry
-     */
-    BiomeRegistry getBiomeRegistry();
+    Operation createOperation(EditContext context);
 
 }
