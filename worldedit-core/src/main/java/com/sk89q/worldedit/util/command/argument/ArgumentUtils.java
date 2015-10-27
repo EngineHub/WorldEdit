@@ -17,7 +17,29 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.command.composition;
+package com.sk89q.worldedit.util.command.argument;
 
-public class ForestCommand {
+import com.google.common.collect.Lists;
+
+import java.util.Collection;
+import java.util.List;
+
+public final class ArgumentUtils {
+
+    private ArgumentUtils() {
+    }
+
+    public static List<String> getMatchingSuggestions(Collection<String> items, String s) {
+        if (s.isEmpty()) {
+            return Lists.newArrayList(items);
+        }
+        List<String> suggestions = Lists.newArrayList();
+        for (String item : items) {
+            if (item.toLowerCase().startsWith(s)) {
+                suggestions.add(item);
+            }
+        }
+        return suggestions;
+    }
+
 }

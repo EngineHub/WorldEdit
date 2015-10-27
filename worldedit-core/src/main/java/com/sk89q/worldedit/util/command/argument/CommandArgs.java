@@ -46,23 +46,23 @@ public class CommandArgs {
         return position < arguments.size();
     }
 
-    public String next() throws CommandException {
+    public String next() throws MissingArgumentException {
         try {
             return arguments.get(position++);
         } catch (IndexOutOfBoundsException ignored) {
-            throw new CommandException("Too few arguments specified.");
+            throw new MissingArgumentException("Too few arguments specified.");
         }
     }
 
-    public String peek() throws CommandException {
+    public String peek() throws MissingArgumentException {
         try {
             return arguments.get(position);
         } catch (IndexOutOfBoundsException ignored) {
-            throw new CommandException("Too few arguments specified.");
+            throw new MissingArgumentException("Too few arguments specified.");
         }
     }
 
-    public String remaining() throws CommandException {
+    public String remaining() throws MissingArgumentException {
         if (hasNext()) {
             StringBuilder builder = new StringBuilder();
             boolean first = true;
@@ -75,11 +75,11 @@ public class CommandArgs {
             }
             return builder.toString();
         } else {
-            throw new CommandException("Too few arguments specified.");
+            throw new MissingArgumentException("Too few arguments specified.");
         }
     }
 
-    public String peekRemaining() throws CommandException {
+    public String peekRemaining() throws MissingArgumentException {
         if (hasNext()) {
             StringBuilder builder = new StringBuilder();
             boolean first = true;
@@ -92,7 +92,7 @@ public class CommandArgs {
             }
             return builder.toString();
         } else {
-            throw new CommandException("Too few arguments specified.");
+            throw new MissingArgumentException();
         }
     }
 
@@ -131,7 +131,7 @@ public class CommandArgs {
         return flags;
     }
 
-    public void requireAllConsumed() throws CommandException {
+    public void requireAllConsumed() throws UnusedArgumentsException {
         StringBuilder builder = new StringBuilder();
         boolean hasUnconsumed = false;
 
@@ -149,67 +149,71 @@ public class CommandArgs {
 
         if (hasNext()) {
             hasUnconsumed = true;
-            builder.append(peekRemaining());
+            try {
+                builder.append(peekRemaining());
+            } catch (MissingArgumentException e) {
+                throw new RuntimeException("This should not have happened", e);
+            }
         }
 
         if (hasUnconsumed) {
-            throw new CommandException("There were unused arguments: " + builder);
+            throw new UnusedArgumentsException("There were unused arguments: " + builder);
         }
     }
 
-    public int nextInt() throws CommandException {
+    public int nextInt() throws ArgumentParseException, MissingArgumentException {
         String next = next();
         try {
             return Integer.parseInt(next);
         } catch (NumberFormatException ignored) {
-            throw new CommandException("Expected a number, got '" + next + "'");
+            throw new ArgumentParseException("Expected a number, got '" + next + "'");
         }
     }
 
-    public short nextShort() throws CommandException {
+    public short nextShort() throws ArgumentParseException, MissingArgumentException {
         String next = next();
         try {
             return Short.parseShort(next);
         } catch (NumberFormatException ignored) {
-            throw new CommandException("Expected a number, got '" + next + "'");
+            throw new ArgumentParseException("Expected a number, got '" + next + "'");
         }
     }
 
-    public byte nextByte() throws CommandException {
+    public byte nextByte() throws ArgumentParseException, MissingArgumentException {
         String next = next();
         try {
             return Byte.parseByte(next);
         } catch (NumberFormatException ignored) {
-            throw new CommandException("Expected a number, got '" + next + "'");
+            throw new ArgumentParseException("Expected a number, got '" + next + "'");
         }
     }
 
-    public double nextDouble() throws CommandException {
+    public double nextDouble() throws ArgumentParseException, MissingArgumentException {
         String next = next();
         try {
             return Double.parseDouble(next);
         } catch (NumberFormatException ignored) {
-            throw new CommandException("Expected a number, got '" + next + "'");
+            throw new ArgumentParseException("Expected a number, got '" + next + "'");
         }
     }
 
-    public float nextFloat() throws CommandException {
+    public float nextFloat() throws ArgumentParseException, MissingArgumentException {
         String next = next();
         try {
             return Float.parseFloat(next);
         } catch (NumberFormatException ignored) {
-            throw new CommandException("Expected a number, got '" + next + "'");
+            throw new ArgumentParseException("Expected a number, got '" + next + "'");
         }
     }
 
-    public boolean nextBoolean() throws CommandException {
+    public boolean nextBoolean() throws ArgumentParseException, MissingArgumentException {
         String next = next();
         if (next.equalsIgnoreCase("yes") || next.equalsIgnoreCase("true") || next.equalsIgnoreCase("y") || next.equalsIgnoreCase("1")) {
             return true;
         } else if (next.equalsIgnoreCase("no") || next.equalsIgnoreCase("false") || next.equalsIgnoreCase("n") || next.equalsIgnoreCase("0")) {
             return false;
         } else {
-            throw new CommandException("Expected a boolean (yes/no), got '" + next + "'");
+            throw new ArgumentParseException("Expected a boolean (yes/no), got '" + next + "'");
         }
     }
 
@@ -235,64 +239,65 @@ public class CommandArgs {
         return fallback;
     }
 
-    public int getIntFlag(char c, int fallback) throws CommandException {
+    public int getIntFlag(char c, int fallback) throws ArgumentParseException {
         String next = getFlag(c, String.valueOf(fallback));
         try {
             return Integer.parseInt(next);
         } catch (NumberFormatException ignored) {
-            throw new CommandException("Expected a number for flag '-" + c + "', got '" + next + "'");
+            throw new ArgumentParseException("Expected a number for flag '-" + c + "', got '" + next + "'");
         }
     }
 
-    public short getShortFlag(char c, short fallback) throws CommandException {
+    public short getShortFlag(char c, short fallback) throws ArgumentParseException {
         String next = getFlag(c, String.valueOf(fallback));
         try {
             return Short.parseShort(next);
         } catch (NumberFormatException ignored) {
-            throw new CommandException("Expected a number for flag '-" + c + "', got '" + next + "'");
+            throw new ArgumentParseException("Expected a number for flag '-" + c + "', got '" + next + "'");
         }
     }
 
-    public byte getByteFlag(char c, byte fallback) throws CommandException {
+    public byte getByteFlag(char c, byte fallback) throws ArgumentParseException {
         String next = getFlag(c, String.valueOf(fallback));
         try {
             return Byte.parseByte(next);
         } catch (NumberFormatException ignored) {
-            throw new CommandException("Expected a number for flag '-" + c + "', got '" + next + "'");
+            throw new ArgumentParseException("Expected a number for flag '-" + c + "', got '" + next + "'");
         }
     }
 
-    public double getDoubleFlag(char c, double fallback) throws CommandException {
+    public double getDoubleFlag(char c, double fallback) throws ArgumentParseException {
         String next = getFlag(c, String.valueOf(fallback));
         try {
             return Double.parseDouble(next);
         } catch (NumberFormatException ignored) {
-            throw new CommandException("Expected a number for flag '-" + c + "', got '" + next + "'");
+            throw new ArgumentParseException("Expected a number for flag '-" + c + "', got '" + next + "'");
         }
     }
 
-    public float getFloatFlag(char c, float fallback) throws CommandException {
+    public float getFloatFlag(char c, float fallback) throws ArgumentParseException {
         String next = getFlag(c, String.valueOf(fallback));
         try {
             return Float.parseFloat(next);
         } catch (NumberFormatException ignored) {
-            throw new CommandException("Expected a number for flag '-" + c + "', got '" + next + "'");
+            throw new ArgumentParseException("Expected a number for flag '-" + c + "', got '" + next + "'");
         }
     }
 
-    public boolean getBooleanFlag(char c, boolean fallback) throws CommandException {
+    public boolean getBooleanFlag(char c, boolean fallback) throws ArgumentParseException {
         String next = getFlag(c, String.valueOf(fallback));
         if (next.equalsIgnoreCase("yes") || next.equalsIgnoreCase("true") || next.equalsIgnoreCase("y") || next.equalsIgnoreCase("1")) {
             return true;
         } else if (next.equalsIgnoreCase("no") || next.equalsIgnoreCase("false") || next.equalsIgnoreCase("n") || next.equalsIgnoreCase("0")) {
             return false;
         } else {
-            throw new CommandException("Expected a boolean (yes/no), got '" + next + "'");
+            throw new ArgumentParseException("Expected a boolean (yes/no), got '" + next + "'");
         }
     }
 
     public static class Parser {
         private boolean parseFlags = true;
+        private boolean usingHangingArguments = false;
         private Set<Character> valueFlags = Sets.newHashSet();
 
         public boolean isParseFlags() {
@@ -301,6 +306,15 @@ public class CommandArgs {
 
         public Parser setParseFlags(boolean parseFlags) {
             this.parseFlags = parseFlags;
+            return this;
+        }
+
+        public boolean isUsingHangingArguments() {
+            return usingHangingArguments;
+        }
+
+        public Parser setUsingHangingArguments(boolean usingHangingArguments) {
+            this.usingHangingArguments = usingHangingArguments;
             return this;
         }
 
@@ -318,6 +332,11 @@ public class CommandArgs {
             List<String> args = Lists.newArrayList();
             for (int i = 0; i < context.argsLength(); i++) {
                 args.add(context.getString(i));
+            }
+            if (isUsingHangingArguments()) {
+                if (arguments.isEmpty() || arguments.endsWith(" ")) {
+                    args.add("");
+                }
             }
             Map<Character, String> flags = Maps.newHashMap(context.getValueFlags());
             for (Character c : context.getFlags()) {

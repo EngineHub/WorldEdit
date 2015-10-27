@@ -17,40 +17,25 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.util.command;
+package com.sk89q.worldedit.util.command.composition;
 
-import com.google.common.collect.Lists;
 import com.sk89q.minecraft.util.commands.CommandException;
 import com.sk89q.minecraft.util.commands.CommandLocals;
 import com.sk89q.worldedit.util.command.argument.CommandArgs;
+import com.sk89q.worldedit.util.command.argument.MissingArgumentException;
 
 import java.util.List;
 
-public abstract class CommandExecutor<T> implements CommandCallable {
+public interface CommandExecutor<T> {
 
-    @Override
-    public final T call(String arguments, CommandLocals locals, String[] parentCommands) throws CommandException {
-        CommandArgs args = new CommandArgs.Parser().parse(arguments);
-        T ret = call(args, locals, parentCommands);
-        args.requireAllConsumed();
-        return ret;
-    }
+    T call(CommandArgs args, CommandLocals locals) throws CommandException;
 
-    public abstract T call(CommandArgs args, CommandLocals locals, String[] parentCommands) throws CommandException;
+    List<String> getSuggestions(CommandArgs args, CommandLocals locals) throws MissingArgumentException;
 
-    @Override
-    public Description getDescription() {
-        return new SimpleDescription();
-    }
+    String getUsage();
 
-    @Override
-    public boolean testPermission(CommandLocals locals) {
-        return false;
-    }
+    String getDescription();
 
-    @Override
-    public List<String> getSuggestions(String arguments, CommandLocals locals) throws CommandException {
-        return Lists.newArrayList();
-    }
+    boolean testPermission(CommandLocals locals);
 
 }

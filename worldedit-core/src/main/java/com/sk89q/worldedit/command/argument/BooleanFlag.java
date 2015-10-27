@@ -17,38 +17,48 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.command.composition;
+package com.sk89q.worldedit.command.argument;
 
-import com.google.common.base.Function;
+import com.google.common.collect.Lists;
 import com.sk89q.minecraft.util.commands.CommandException;
 import com.sk89q.minecraft.util.commands.CommandLocals;
-import com.sk89q.worldedit.command.argument.NumberArg;
-import com.sk89q.worldedit.command.argument.PointGeneratorArg;
-import com.sk89q.worldedit.function.EditContext;
-import com.sk89q.worldedit.function.RegionFunction;
-import com.sk89q.worldedit.function.factory.Scatter;
 import com.sk89q.worldedit.util.command.argument.CommandArgs;
-import com.sk89q.worldedit.util.command.composition.SimpleCommand;
+import com.sk89q.worldedit.util.command.composition.CommandExecutor;
 
-public class ScatterCommand extends SimpleCommand<Scatter> {
+import java.util.List;
 
-    private final NumberArg densityCommand = addParameter(new NumberArg("density", "0-100", "20"));
-    private final PointGeneratorArg pointGeneratorArg = addParameter(new PointGeneratorArg());
+public class BooleanFlag implements CommandExecutor<Boolean> {
+
+    private final char flag;
+    private final String description;
+
+    public BooleanFlag(char flag, String description) {
+        this.flag = flag;
+        this.description = description;
+    }
 
     @Override
-    public Scatter call(CommandArgs args, CommandLocals locals) throws CommandException {
-        double density = densityCommand.call(args, locals).doubleValue() / 100.0;
-        Function<EditContext, ? extends RegionFunction> function = pointGeneratorArg.call(args, locals);
-        return new Scatter(function, density);
+    public Boolean call(CommandArgs args, CommandLocals locals) throws CommandException {
+        return args.containsFlag(flag);
+    }
+
+    @Override
+    public List<String> getSuggestions(CommandArgs args, CommandLocals locals) {
+        return Lists.newArrayList("-" + flag);
+    }
+
+    @Override
+    public String getUsage() {
+        return "[-" + flag + "]";
     }
 
     @Override
     public String getDescription() {
-        return "Scatters a function over an area";
+        return description;
     }
 
     @Override
-    protected boolean testPermission0(CommandLocals locals) {
+    public boolean testPermission(CommandLocals locals) {
         return true;
     }
 

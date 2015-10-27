@@ -17,7 +17,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.command.composition;
+package com.sk89q.worldedit.command.argument;
 
 import com.google.common.base.Function;
 import com.sk89q.minecraft.util.commands.CommandException;
@@ -29,18 +29,30 @@ import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.function.EditContext;
 import com.sk89q.worldedit.function.RegionFunction;
 import com.sk89q.worldedit.util.Direction;
-import com.sk89q.worldedit.util.command.CommandExecutor;
 import com.sk89q.worldedit.util.command.argument.CommandArgs;
+import com.sk89q.worldedit.util.command.composition.SimpleCommand;
 import com.sk89q.worldedit.world.World;
 
 import javax.annotation.Nullable;
 
-public class ItemUseCommand extends CommandExecutor<Function<EditContext, RegionFunction>> {
+public class ItemUserArg extends SimpleCommand<Function<EditContext, RegionFunction>> {
+
+    private final ItemArg itemArg = addParameter(new ItemArg("item", "minecraft:dye:15"));
 
     @Override
-    public Function<EditContext, RegionFunction> call(CommandArgs args, CommandLocals locals, String[] parentCommands) throws CommandException {
-        BaseItem item = new ItemCommand().call(args, locals, parentCommands);
+    public Function<EditContext, RegionFunction> call(CommandArgs args, CommandLocals locals) throws CommandException {
+        BaseItem item = itemArg.call(args, locals);
         return new ItemUseFactory(item);
+    }
+
+    @Override
+    public String getDescription() {
+        return "Applies an item";
+    }
+
+    @Override
+    protected boolean testPermission0(CommandLocals locals) {
+        return true;
     }
 
     private static final class ItemUseFactory implements Function<EditContext, RegionFunction> {

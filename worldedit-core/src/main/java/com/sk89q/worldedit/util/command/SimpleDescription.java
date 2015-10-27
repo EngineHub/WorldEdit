@@ -102,8 +102,9 @@ public class SimpleDescription implements Description {
      * 
      * @param usage usage string, or null
      */
-    public void overrideUsage(String usage) {
+    public SimpleDescription overrideUsage(String usage) {
         this.overrideUsage = usage;
+        return this;
     }
 
     @Override

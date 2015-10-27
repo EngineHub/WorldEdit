@@ -17,24 +17,33 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.command.tool.brush;
+package com.sk89q.worldedit.util.command.composition;
 
-import com.google.common.base.Function;
-import com.sk89q.minecraft.util.commands.CommandException;
+import com.google.common.collect.Lists;
 import com.sk89q.minecraft.util.commands.CommandLocals;
-import com.sk89q.worldedit.command.composition.PointGeneratorCommand;
-import com.sk89q.worldedit.function.EditContext;
-import com.sk89q.worldedit.function.RegionFunction;
-import com.sk89q.worldedit.function.factory.RegionApply;
-import com.sk89q.worldedit.util.command.CommandExecutor;
 import com.sk89q.worldedit.util.command.argument.CommandArgs;
+import com.sk89q.worldedit.util.command.argument.MissingArgumentException;
 
-public class ApplyCommand extends CommandExecutor<RegionApply> {
+import java.util.List;
+
+public abstract class SimpleCommand<T> extends ParameterCommand<T> {
 
     @Override
-    public RegionApply call(CommandArgs args, CommandLocals locals, String[] parentCommands) throws CommandException {
-        Function<EditContext, ? extends RegionFunction> function = new PointGeneratorCommand().call(args, locals, parentCommands);
-        return new RegionApply(function);
+    public final List<String> getSuggestions(CommandArgs args, CommandLocals locals) throws MissingArgumentException {
+        List<String> suggestions = Lists.newArrayList();
+        boolean seenParameter = false;
+        for (CommandExecutor<?> parameter : getParameters()) {
+            try {
+                suggestions = parameter.getSuggestions(args, locals);
+                seenParameter = true;
+            } catch (MissingArgumentException e) {
+                if (seenParameter) {
+                    return suggestions;
+                } else {
+                    throw e;
+                }
+            }
+        }
+        return suggestions;
     }
-
 }

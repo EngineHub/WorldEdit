@@ -17,32 +17,43 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.command.composition;
+package com.sk89q.worldedit.command.argument;
 
 import com.sk89q.minecraft.util.commands.CommandException;
 import com.sk89q.minecraft.util.commands.CommandLocals;
-import com.sk89q.worldedit.regions.factory.CuboidRegionFactory;
-import com.sk89q.worldedit.regions.factory.CylinderRegionFactory;
-import com.sk89q.worldedit.regions.factory.RegionFactory;
-import com.sk89q.worldedit.regions.factory.SphereRegionFactory;
-import com.sk89q.worldedit.util.command.CommandExecutor;
+import com.sk89q.worldedit.function.factory.RegionReplace;
+import com.sk89q.worldedit.util.command.argument.MissingArgumentException;
+import com.sk89q.worldedit.util.command.composition.CommandExecutor;
 import com.sk89q.worldedit.util.command.argument.CommandArgs;
 
-public class RegionFactoryCommand extends CommandExecutor<RegionFactory> {
+import java.util.Collections;
+import java.util.List;
+
+public class RegionReplaceArg implements CommandExecutor<RegionReplace> {
 
     @Override
-    public RegionFactory call(CommandArgs args, CommandLocals locals, String[] parentCommands) throws CommandException {
-        String type = args.next();
+    public RegionReplace call(CommandArgs args, CommandLocals locals) throws CommandException {
+        return new RegionReplace();
+    }
 
-        if (type.equals("cuboid")) {
-            return new CuboidRegionFactory();
-        } else if (type.equals("sphere")) {
-            return new SphereRegionFactory();
-        } else if (type.equals("cyl") || type.equals("cylinder")) {
-            return new CylinderRegionFactory(1); // TODO: Adjustable height
-        } else {
-            throw new CommandException("Unknown shape type: " + type);
-        }
+    @Override
+    public List<String> getSuggestions(CommandArgs args, CommandLocals locals) throws MissingArgumentException {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public String getUsage() {
+        return "";
+    }
+
+    @Override
+    public String getDescription() {
+        return "Replaces a region";
+    }
+
+    @Override
+    public boolean testPermission(CommandLocals locals) {
+        return true;
     }
 
 }

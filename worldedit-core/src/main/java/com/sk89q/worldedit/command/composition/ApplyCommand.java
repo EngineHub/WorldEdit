@@ -22,24 +22,39 @@ package com.sk89q.worldedit.command.composition;
 import com.google.common.base.Function;
 import com.sk89q.minecraft.util.commands.CommandException;
 import com.sk89q.minecraft.util.commands.CommandLocals;
+import com.sk89q.worldedit.command.argument.PointGeneratorArg;
 import com.sk89q.worldedit.function.EditContext;
 import com.sk89q.worldedit.function.RegionFunction;
-import com.sk89q.worldedit.util.command.CommandExecutor;
+import com.sk89q.worldedit.function.factory.RegionApply;
 import com.sk89q.worldedit.util.command.argument.CommandArgs;
+import com.sk89q.worldedit.util.command.composition.ParameterCommand;
 
-public class PointGeneratorCommand extends CommandExecutor<Function<EditContext, ? extends RegionFunction>> {
+import java.util.Collections;
+import java.util.List;
+
+public class ApplyCommand extends ParameterCommand<RegionApply> {
+
+    private final PointGeneratorArg pointGeneratorArg = addParameter(new PointGeneratorArg());
 
     @Override
-    public Function<EditContext, ? extends RegionFunction> call(CommandArgs args, CommandLocals locals, String[] parentCommands) throws CommandException {
-        String type = args.next();
+    public RegionApply call(CommandArgs args, CommandLocals locals) throws CommandException {
+        Function<EditContext, ? extends RegionFunction> function = pointGeneratorArg.call(args, locals);
+        return new RegionApply(function);
+    }
 
-        if (type.equalsIgnoreCase("forest") || type.equalsIgnoreCase("tree")) {
-            return new TreeGeneratorCommand().call(args, locals, parentCommands);
-        } else if (type.equalsIgnoreCase("item") || type.equalsIgnoreCase("itemstack")) {
-            return new ItemUseCommand().call(args, locals, parentCommands);
-        } else {
-            throw new CommandException("Unknown type of generator: " + type);
-        }
+    @Override
+    public List<String> getSuggestions(CommandArgs args, CommandLocals locals) {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public String getDescription() {
+        return "Applies a point generator to an area";
+    }
+
+    @Override
+    protected boolean testPermission0(CommandLocals locals) {
+        return true;
     }
 
 }

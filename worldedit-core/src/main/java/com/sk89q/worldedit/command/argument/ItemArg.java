@@ -17,27 +17,39 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.command.composition;
+package com.sk89q.worldedit.command.argument;
 
 import com.sk89q.minecraft.util.commands.CommandException;
 import com.sk89q.minecraft.util.commands.CommandLocals;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.blocks.BaseItem;
+import com.sk89q.worldedit.util.command.composition.SimpleCommand;
 import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.extension.input.InputParseException;
 import com.sk89q.worldedit.extension.input.NoMatchException;
 import com.sk89q.worldedit.extension.input.ParserContext;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extent.Extent;
-import com.sk89q.worldedit.util.command.CommandExecutor;
 import com.sk89q.worldedit.util.command.argument.CommandArgs;
 import com.sk89q.worldedit.world.World;
 
-public class ItemCommand extends CommandExecutor<BaseItem> {
+public class ItemArg extends SimpleCommand<BaseItem> {
+
+    private final StringArg stringArg;
+
+    public ItemArg(String name) {
+        stringArg = addParameter(new StringArg(name, "The item name", null));
+    }
+
+    public ItemArg(String name, String defaultSuggestion) {
+        stringArg = addParameter(new StringArg(name, "The item name", defaultSuggestion));
+    }
 
     @Override
-    public BaseItem call(CommandArgs args, CommandLocals locals, String[] parentCommands) throws CommandException {
+    public BaseItem call(CommandArgs args, CommandLocals locals) throws CommandException {
+        String itemString = stringArg.call(args, locals);
+
         Actor actor = locals.get(Actor.class);
         LocalSession session = WorldEdit.getInstance().getSessionManager().get(actor);
 
@@ -52,12 +64,22 @@ public class ItemCommand extends CommandExecutor<BaseItem> {
         parserContext.setSession(session);
 
         try {
-            return WorldEdit.getInstance().getItemFactory().parseFromInput(args.next(), parserContext);
+            return WorldEdit.getInstance().getItemFactory().parseFromInput(itemString, parserContext);
         } catch (NoMatchException e) {
             throw new CommandException(e.getMessage(), e);
         } catch (InputParseException e) {
             throw new CommandException(e.getMessage(), e);
         }
+    }
+
+    @Override
+    public String getDescription() {
+        return "Match an item";
+    }
+
+    @Override
+    protected boolean testPermission0(CommandLocals locals) {
+        return true;
     }
 
 }

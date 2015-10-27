@@ -17,9 +17,11 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.command.composition;
+package com.sk89q.worldedit.command.argument;
 
 import com.google.common.base.Function;
+import com.google.common.base.Joiner;
+import com.google.common.collect.Lists;
 import com.sk89q.minecraft.util.commands.CommandException;
 import com.sk89q.minecraft.util.commands.CommandLocals;
 import com.sk89q.worldedit.EditSession;
@@ -27,23 +29,61 @@ import com.sk89q.worldedit.function.EditContext;
 import com.sk89q.worldedit.function.generator.ForestGenerator;
 import com.sk89q.worldedit.util.TreeGenerator;
 import com.sk89q.worldedit.util.TreeGenerator.TreeType;
-import com.sk89q.worldedit.util.command.CommandExecutor;
+import com.sk89q.worldedit.util.command.argument.ArgumentUtils;
 import com.sk89q.worldedit.util.command.argument.CommandArgs;
+import com.sk89q.worldedit.util.command.argument.MissingArgumentException;
+import com.sk89q.worldedit.util.command.composition.CommandExecutor;
 
 import javax.annotation.Nullable;
 import java.util.Arrays;
+import java.util.List;
 
-public class TreeGeneratorCommand extends CommandExecutor<Function<EditContext, ForestGenerator>> {
+public class TreeGeneratorArg implements CommandExecutor<Function<EditContext, ForestGenerator>> {
+
+    private final String name;
+
+    public TreeGeneratorArg(String name) {
+        this.name = name;
+    }
+
+    private String getOptionsList() {
+        return Joiner.on(" | ").join(Arrays.asList(TreeType.values()));
+    }
 
     @Override
-    public Function<EditContext, ForestGenerator> call(CommandArgs args, CommandLocals locals, String[] parentCommands) throws CommandException {
-        String input = args.next();
-        TreeType type = TreeGenerator.lookup(input);
-        if (type != null) {
-            return new GeneratorFactory(type);
-        } else {
-            throw new CommandException(String.format("Can't recognize tree type '%s' -- choose from: %s", input, Arrays.toString(TreeType.values())));
+    public Function<EditContext, ForestGenerator> call(CommandArgs args, CommandLocals locals) throws CommandException {
+        try {
+            String input = args.next();
+            TreeType type = TreeGenerator.lookup(input);
+            if (type != null) {
+                return new GeneratorFactory(type);
+            } else {
+                throw new CommandException("Unknown value for <" + name + "> (try one of " + getOptionsList() + ").");
+            }
+        } catch (MissingArgumentException e) {
+            throw new CommandException("Missing value for <" + name + "> (try one of " + getOptionsList() + ").");
         }
+    }
+
+    @Override
+    public List<String> getSuggestions(CommandArgs args, CommandLocals locals) throws MissingArgumentException {
+        String s = args.next();
+        return s.isEmpty() ? Lists.newArrayList(TreeType.getPrimaryAliases()) : ArgumentUtils.getMatchingSuggestions(TreeType.getAliases(), s);
+    }
+
+    @Override
+    public String getUsage() {
+        return "<" + name + ">";
+    }
+
+    @Override
+    public String getDescription() {
+        return "Choose a tree generator";
+    }
+
+    @Override
+    public boolean testPermission(CommandLocals locals) {
+        return true;
     }
 
     private static class GeneratorFactory implements Function<EditContext, ForestGenerator> {
@@ -64,4 +104,5 @@ public class TreeGeneratorCommand extends CommandExecutor<Function<EditContext, 
             return "tree of type " + type;
         }
     }
+
 }

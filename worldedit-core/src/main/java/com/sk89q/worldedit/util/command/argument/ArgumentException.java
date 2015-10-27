@@ -17,19 +17,23 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.command.composition;
+package com.sk89q.worldedit.util.command.argument;
 
-import com.sk89q.minecraft.util.commands.CommandException;
-import com.sk89q.minecraft.util.commands.CommandLocals;
-import com.sk89q.worldedit.function.factory.RegionReplace;
-import com.sk89q.worldedit.util.command.CommandExecutor;
-import com.sk89q.worldedit.util.command.argument.CommandArgs;
+public class ArgumentException extends Exception {
 
-public class RegionReplaceCommand extends CommandExecutor<RegionReplace> {
+    public ArgumentException() {
+    }
 
-    @Override
-    public RegionReplace call(CommandArgs args, CommandLocals locals, String[] parentCommands) throws CommandException {
-        return new RegionReplace();
+    public ArgumentException(String message) {
+        super(message);
+    }
+
+    public ArgumentException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public ArgumentException(Throwable cause) {
+        super(cause);
     }
 
 }

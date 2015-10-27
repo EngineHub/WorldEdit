@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.util;
 
+import com.google.common.collect.Sets;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.Vector;
@@ -26,10 +27,12 @@ import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
 
 import javax.annotation.Nullable;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 
 /**
  * Tree generator.
@@ -105,6 +108,7 @@ public class TreeGenerator {
          * Stores a map of the names for fast access.
          */
         private static final Map<String, TreeType> lookup = new HashMap<String, TreeType>();
+        private static final Set<String> primaryAliases = Sets.newHashSet();
 
         private final String name;
         private final String[] lookupKeys;
@@ -114,12 +118,23 @@ public class TreeGenerator {
                 for (String key : type.lookupKeys) {
                     lookup.put(key, type);
                 }
+                if (type.lookupKeys.length > 0) {
+                    primaryAliases.add(type.lookupKeys[0]);
+                }
             }
         }
 
         TreeType(String name, String... lookupKeys) {
             this.name = name;
             this.lookupKeys = lookupKeys;
+        }
+
+        public static Set<String> getAliases() {
+            return Collections.unmodifiableSet(lookup.keySet());
+        }
+
+        public static Set<String> getPrimaryAliases() {
+            return Collections.unmodifiableSet(primaryAliases);
         }
 
         public boolean generate(EditSession editSession, Vector pos) throws MaxChangedBlocksException {

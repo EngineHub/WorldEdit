@@ -47,12 +47,12 @@ import com.sk89q.worldedit.command.ToolCommands;
 import com.sk89q.worldedit.command.ToolUtilCommands;
 import com.sk89q.worldedit.command.UtilityCommands;
 import com.sk89q.worldedit.command.WorldEditCommands;
-import com.sk89q.worldedit.command.composition.DeformCommand;
-import com.sk89q.worldedit.command.composition.FillBrushCommand;
-import com.sk89q.worldedit.command.composition.RegionReplaceCommand;
+import com.sk89q.worldedit.command.argument.DeformArg;
+import com.sk89q.worldedit.command.composition.ReplaceBrushCommand;
+import com.sk89q.worldedit.command.argument.RegionReplaceArg;
 import com.sk89q.worldedit.command.composition.ScatterCommand;
 import com.sk89q.worldedit.command.composition.ShapedBrushCommand;
-import com.sk89q.worldedit.command.tool.brush.ApplyCommand;
+import com.sk89q.worldedit.command.composition.ApplyCommand;
 import com.sk89q.worldedit.event.platform.CommandEvent;
 import com.sk89q.worldedit.event.platform.CommandSuggestionEvent;
 import com.sk89q.worldedit.function.factory.OperationFactory;
@@ -64,6 +64,7 @@ import com.sk89q.worldedit.internal.command.WorldEditExceptionConverter;
 import com.sk89q.worldedit.session.request.Request;
 import com.sk89q.worldedit.util.command.Dispatcher;
 import com.sk89q.worldedit.util.command.InvalidUsageException;
+import com.sk89q.worldedit.util.command.composition.LegacyCommandAdapter;
 import com.sk89q.worldedit.util.command.fluent.CommandGraph;
 import com.sk89q.worldedit.util.command.parametric.ExceptionConverter;
 import com.sk89q.worldedit.util.command.parametric.LegacyCommandsHandler;
@@ -161,10 +162,10 @@ public final class CommandManager {
                         .group("brush", "br")
                             .describeAs("Brushing commands")
                             .registerMethods(new BrushCommands(worldEdit))
-                            .register(new ShapedBrushCommand(new DeformCommand(), "worldedit.brush.deform"), "deform")
-                            .register(new ShapedBrushCommand(new FillBrushCommand<OperationFactory>(new RegionReplaceCommand()), "worldedit.brush.set"), "set")
-                            .register(new ShapedBrushCommand(new ScatterCommand(), "worldedit.brush.scatter"), "scatter")
-                            .register(new ShapedBrushCommand(new ApplyCommand(), "worldedit.brush.apply"), "apply")
+                            .register(new LegacyCommandAdapter(new ShapedBrushCommand(new DeformArg(), "worldedit.brush.deform")), "deform")
+                            .register(new LegacyCommandAdapter(new ShapedBrushCommand(new ReplaceBrushCommand<OperationFactory>(new RegionReplaceArg()), "worldedit.brush.set")), "set")
+                            .register(new LegacyCommandAdapter(new ShapedBrushCommand(new ScatterCommand(), "worldedit.brush.scatter")), "scatter")
+                            .register(new LegacyCommandAdapter(new ShapedBrushCommand(new ApplyCommand(), "worldedit.brush.apply")), "apply")
                         .parent()
                         .group("superpickaxe", "pickaxe", "sp")
                             .describeAs("Super-pickaxe commands")

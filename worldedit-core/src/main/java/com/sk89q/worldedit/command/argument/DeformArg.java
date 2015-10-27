@@ -17,7 +17,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.command.composition;
+package com.sk89q.worldedit.command.argument;
 
 import com.sk89q.minecraft.util.commands.CommandException;
 import com.sk89q.minecraft.util.commands.CommandLocals;
@@ -29,16 +29,20 @@ import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.function.factory.Deform;
 import com.sk89q.worldedit.function.factory.Deform.Mode;
-import com.sk89q.worldedit.util.command.CommandExecutor;
 import com.sk89q.worldedit.util.command.argument.CommandArgs;
+import com.sk89q.worldedit.util.command.composition.SimpleCommand;
 
-public class DeformCommand extends CommandExecutor<Deform> {
+public class DeformArg extends SimpleCommand<Deform> {
+
+    private final BooleanFlag rawCoordsFlag = addParameter(new BooleanFlag('r', "Raw coords mode"));
+    private final BooleanFlag offsetFlag = addParameter(new BooleanFlag('o', "Offset mode"));
+    private final StringArg expressionParser = addParameter(new StringArg("expression", "Expression to apply"));
 
     @Override
-    public Deform call(CommandArgs args, CommandLocals locals, String[] parentCommands) throws CommandException {
-        String expression = args.next();
-        boolean rawCoords = args.containsFlag('r');
-        boolean offset = args.containsFlag('o');
+    public Deform call(CommandArgs args, CommandLocals locals) throws CommandException {
+        String expression = expressionParser.call(args, locals);
+        boolean rawCoords = rawCoordsFlag.call(args, locals);
+        boolean offset = offsetFlag.call(args, locals);
 
         Deform deform = new Deform(expression);
 
@@ -58,6 +62,16 @@ public class DeformCommand extends CommandExecutor<Deform> {
         }
 
         return deform;
+    }
+
+    @Override
+    public String getDescription() {
+        return "Deforms an area by applying a math expression";
+    }
+
+    @Override
+    protected boolean testPermission0(CommandLocals locals) {
+        return true;
     }
 
 }

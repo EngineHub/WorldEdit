@@ -19,13 +19,14 @@
 
 package com.sk89q.worldedit.command.composition;
 
-import com.google.common.collect.Lists;
 import com.sk89q.minecraft.util.commands.CommandException;
 import com.sk89q.minecraft.util.commands.CommandLocals;
 import com.sk89q.minecraft.util.commands.CommandPermissionsException;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.MaxBrushRadiusException;
 import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.command.argument.NumberArg;
+import com.sk89q.worldedit.command.argument.RegionFactoryArg;
 import com.sk89q.worldedit.command.tool.BrushTool;
 import com.sk89q.worldedit.command.tool.InvalidToolBindException;
 import com.sk89q.worldedit.command.tool.brush.OperationFactoryBrush;
@@ -33,39 +34,36 @@ import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.function.factory.OperationFactory;
 import com.sk89q.worldedit.regions.factory.RegionFactory;
-import com.sk89q.worldedit.util.command.CommandExecutor;
-import com.sk89q.worldedit.util.command.Description;
-import com.sk89q.worldedit.util.command.Parameter;
-import com.sk89q.worldedit.util.command.SimpleDescription;
-import com.sk89q.worldedit.util.command.SimpleParameter;
+import com.sk89q.worldedit.util.command.composition.CommandExecutor;
 import com.sk89q.worldedit.util.command.argument.CommandArgs;
-
-import java.util.List;
+import com.sk89q.worldedit.util.command.composition.SimpleCommand;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class ShapedBrushCommand extends CommandExecutor<Object> {
+public class ShapedBrushCommand extends SimpleCommand<Object> {
 
     private final CommandExecutor<? extends OperationFactory> delegate;
     private final String permission;
+
+    private final RegionFactoryArg regionFactoryArg = addParameter(new RegionFactoryArg());
+    private final NumberArg radiusCommand = addParameter(new NumberArg("size", "The size of the brush", "5"));
 
     public ShapedBrushCommand(CommandExecutor<? extends OperationFactory> delegate, String permission) {
         checkNotNull(delegate, "delegate");
         this.permission = permission;
         this.delegate = delegate;
+        addParameter(delegate);
     }
 
     @Override
-    public Object call(CommandArgs args, CommandLocals locals, String[] parentCommands) throws CommandException {
+    public Object call(CommandArgs args, CommandLocals locals) throws CommandException {
         if (!testPermission(locals)) {
             throw new CommandPermissionsException();
         }
 
-        RegionFactory regionFactory = new RegionFactoryCommand().call(args, locals, parentCommands);
-        int radius = args.nextInt();
-        OperationFactory factory = delegate.call(args, locals, parentCommands);
-
-        args.requireAllConsumed();
+        RegionFactory regionFactory = regionFactoryArg.call(args, locals);
+        int radius = radiusCommand.call(args, locals).intValue();
+        OperationFactory factory = delegate.call(args, locals);
 
         Player player = (Player) locals.get(Actor.class);
         LocalSession session = WorldEdit.getInstance().getSessionManager().get(player);
@@ -87,22 +85,12 @@ public class ShapedBrushCommand extends CommandExecutor<Object> {
     }
 
     @Override
-    public Description getDescription() {
-        List<Parameter> parameters = Lists.newArrayList();
-        parameters.add(new SimpleParameter("radius"));
-        parameters.add(new SimpleParameter("shape"));
-        parameters.add(new SimpleParameter("...shapeArgs...").setOptional(true));
-        parameters.add(new SimpleParameter("...brushArgs...").setOptional(true));
-
-        SimpleDescription desc = new SimpleDescription();
-        desc.setDescription(delegate.getDescription().getDescription());
-        desc.setHelp(delegate.getDescription().getHelp());
-        desc.setPermissions(Lists.newArrayList(permission));
-        return desc;
+    public String getDescription() {
+        return delegate.getDescription();
     }
 
     @Override
-    public boolean testPermission(CommandLocals locals) {
+    public boolean testPermission0(CommandLocals locals) {
         Actor sender = locals.get(Actor.class);
         if (sender == null) {
             throw new RuntimeException("Uh oh! No 'Actor' specified so that we can check permissions");
