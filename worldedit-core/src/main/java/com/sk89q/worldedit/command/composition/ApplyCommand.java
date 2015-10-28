@@ -27,12 +27,9 @@ import com.sk89q.worldedit.function.EditContext;
 import com.sk89q.worldedit.function.RegionFunction;
 import com.sk89q.worldedit.function.factory.RegionApply;
 import com.sk89q.worldedit.util.command.argument.CommandArgs;
-import com.sk89q.worldedit.util.command.composition.ParameterCommand;
+import com.sk89q.worldedit.util.command.composition.SimpleCommand;
 
-import java.util.Collections;
-import java.util.List;
-
-public class ApplyCommand extends ParameterCommand<RegionApply> {
+public class ApplyCommand extends SimpleCommand<RegionApply> {
 
     private final PointGeneratorArg pointGeneratorArg = addParameter(new PointGeneratorArg());
 
@@ -40,11 +37,6 @@ public class ApplyCommand extends ParameterCommand<RegionApply> {
     public RegionApply call(CommandArgs args, CommandLocals locals) throws CommandException {
         Function<EditContext, ? extends RegionFunction> function = pointGeneratorArg.call(args, locals);
         return new RegionApply(function);
-    }
-
-    @Override
-    public List<String> getSuggestions(CommandArgs args, CommandLocals locals) {
-        return Collections.emptyList();
     }
 
     @Override
