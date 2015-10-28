@@ -42,17 +42,20 @@ public class LegacyCommandAdapter implements CommandCallable {
     @Override
     public final Object call(String arguments, CommandLocals locals, String[] parentCommands) throws CommandException {
         CommandArgs args = new CommandArgs.Parser().parse(arguments);
-        if (args.containsFlag('?')) {
-            throw new CommandException(executor.getUsage());
-        } else {
-            Object ret = executor.call(args, locals);
-            try {
-                args.requireAllConsumed();
-            } catch (UnusedArgumentsException e) {
-                throw new CommandException(e.getMessage());
+
+        if (args.hasNext()) {
+            if (args.uncheckedPeek().equals("-?")) {
+                throw new CommandException(executor.getUsage());
             }
-            return ret;
         }
+
+        Object ret = executor.call(args, locals);
+        try {
+            args.requireAllConsumed();
+        } catch (UnusedArgumentsException e) {
+            throw new CommandException(e.getMessage());
+        }
+        return ret;
     }
 
     @Override

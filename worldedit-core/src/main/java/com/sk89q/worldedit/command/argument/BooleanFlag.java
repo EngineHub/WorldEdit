@@ -19,37 +19,35 @@
 
 package com.sk89q.worldedit.command.argument;
 
-import com.google.common.collect.Lists;
 import com.sk89q.minecraft.util.commands.CommandException;
 import com.sk89q.minecraft.util.commands.CommandLocals;
 import com.sk89q.worldedit.util.command.argument.CommandArgs;
 import com.sk89q.worldedit.util.command.composition.CommandExecutor;
 
+import java.util.Collections;
 import java.util.List;
 
 public class BooleanFlag implements CommandExecutor<Boolean> {
 
-    private final char flag;
     private final String description;
 
-    public BooleanFlag(char flag, String description) {
-        this.flag = flag;
+    public BooleanFlag(String description) {
         this.description = description;
     }
 
     @Override
     public Boolean call(CommandArgs args, CommandLocals locals) throws CommandException {
-        return args.containsFlag(flag);
+        return true;
     }
 
     @Override
     public List<String> getSuggestions(CommandArgs args, CommandLocals locals) {
-        return Lists.newArrayList("-" + flag);
+        return Collections.emptyList();
     }
 
     @Override
     public String getUsage() {
-        return "[-" + flag + "]";
+        return "";
     }
 
     @Override

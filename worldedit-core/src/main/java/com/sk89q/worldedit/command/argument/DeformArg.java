@@ -30,19 +30,22 @@ import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.function.factory.Deform;
 import com.sk89q.worldedit.function.factory.Deform.Mode;
 import com.sk89q.worldedit.util.command.argument.CommandArgs;
+import com.sk89q.worldedit.util.command.composition.FlagParser.Flag;
+import com.sk89q.worldedit.util.command.composition.FlagParser.FlagData;
 import com.sk89q.worldedit.util.command.composition.SimpleCommand;
 
 public class DeformArg extends SimpleCommand<Deform> {
 
-    private final BooleanFlag rawCoordsFlag = addParameter(new BooleanFlag('r', "Raw coords mode"));
-    private final BooleanFlag offsetFlag = addParameter(new BooleanFlag('o', "Offset mode"));
+    private final Flag<Boolean> rawCoordsFlag = addFlag('r', new BooleanFlag("Raw coords mode"));
+    private final Flag<Boolean> offsetFlag = addFlag('o', new BooleanFlag("Offset mode"));
     private final StringArg expressionParser = addParameter(new StringArg("expression", "Expression to apply"));
 
     @Override
     public Deform call(CommandArgs args, CommandLocals locals) throws CommandException {
+        FlagData flagData = getFlagParser().call(args, locals);
         String expression = expressionParser.call(args, locals);
-        boolean rawCoords = rawCoordsFlag.call(args, locals);
-        boolean offset = offsetFlag.call(args, locals);
+        boolean rawCoords = rawCoordsFlag.get(flagData, false);
+        boolean offset = offsetFlag.get(flagData, false);
 
         Deform deform = new Deform(expression);
 

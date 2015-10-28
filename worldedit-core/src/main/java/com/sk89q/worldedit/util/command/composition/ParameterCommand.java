@@ -22,28 +22,44 @@ package com.sk89q.worldedit.util.command.composition;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.sk89q.minecraft.util.commands.CommandLocals;
-import com.sk89q.worldedit.util.command.composition.CommandExecutor;
+import com.sk89q.worldedit.util.command.composition.FlagParser.Flag;
 
 import java.util.List;
 
 public abstract class ParameterCommand<T> implements CommandExecutor<T> {
 
     private final List<CommandExecutor<?>> parameters = Lists.newArrayList();
+    private final FlagParser flagParser = new FlagParser();
+
+    public ParameterCommand() {
+        addParameter(flagParser);
+    }
 
     protected List<CommandExecutor<?>> getParameters() {
         return parameters;
     }
 
-    public <T extends CommandExecutor<?>> T addParameter(T executor) {
+    public <E extends CommandExecutor<?>> E addParameter(E executor) {
         parameters.add(executor);
         return executor;
+    }
+
+    public <E> Flag<E> addFlag(char flag, CommandExecutor<E> executor) {
+        return flagParser.registerFlag(flag, executor);
+    }
+
+    protected FlagParser getFlagParser() {
+        return flagParser;
     }
 
     @Override
     public final String getUsage() {
         List<String> parts = Lists.newArrayList();
         for (CommandExecutor<?> executor : parameters) {
-            parts.add(executor.getUsage());
+            String usage = executor.getUsage();
+            if (!usage.isEmpty()) {
+                parts.add(executor.getUsage());
+            }
         }
         return Joiner.on(" ").join(parts);
     }
