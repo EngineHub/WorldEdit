@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.function.factory;
 
+import com.google.common.base.Preconditions;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
@@ -40,6 +41,13 @@ public class Deform implements OperationFactory {
     public Deform(String expression) {
         checkNotNull(expression, "expression");
         this.expression = expression;
+    }
+
+    public Deform(String expression, Mode mode) {
+        checkNotNull(expression, "expression");
+        checkNotNull(mode, "mode");
+        this.expression = expression;
+        this.mode = mode;
     }
 
     public String getExpression() {

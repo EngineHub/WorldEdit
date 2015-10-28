@@ -35,7 +35,7 @@ public class LegacyCommandAdapter implements CommandCallable {
 
     private final CommandExecutor<?> executor;
 
-    public LegacyCommandAdapter(CommandExecutor<?> executor) {
+    private LegacyCommandAdapter(CommandExecutor<?> executor) {
         this.executor = executor;
     }
 
@@ -79,4 +79,9 @@ public class LegacyCommandAdapter implements CommandCallable {
             return Lists.newArrayList();
         }
     }
+
+    public static LegacyCommandAdapter adapt(CommandExecutor<?> executor) {
+        return new LegacyCommandAdapter(executor);
+    }
+
 }
