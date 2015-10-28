@@ -38,7 +38,7 @@ public class DeformArg extends SimpleCommand<Deform> {
 
     private final Flag<Boolean> rawCoordsFlag = addFlag('r', new BooleanFlag("Raw coords mode"));
     private final Flag<Boolean> offsetFlag = addFlag('o', new BooleanFlag("Offset mode"));
-    private final StringArg expressionParser = addParameter(new StringArg("expression", "Expression to apply"));
+    private final StringArg expressionParser = addParameter(new StringArg("expression", "Expression to apply", "y-=0.2"));
 
     @Override
     public Deform call(CommandArgs args, CommandLocals locals) throws CommandException {
