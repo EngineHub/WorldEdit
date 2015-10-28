@@ -43,6 +43,11 @@ public abstract class SimpleCommand<T> extends ParameterCommand<T> {
                     throw e;
                 }
             }
+
+            // There's nothing more anyway
+            if (args.position() == args.size()) {
+                return suggestions;
+            }
         }
         return suggestions;
     }
