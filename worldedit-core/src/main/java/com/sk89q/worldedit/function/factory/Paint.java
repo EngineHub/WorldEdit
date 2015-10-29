@@ -19,7 +19,10 @@
 
 package com.sk89q.worldedit.function.factory;
 
-import com.google.common.base.Function;
+import com.google.common.base.MoreObjects;
+import com.sk89q.worldedit.extent.Extent;
+import com.sk89q.worldedit.extent.NullExtent;
+import com.sk89q.worldedit.function.Contextual;
 import com.sk89q.worldedit.function.EditContext;
 import com.sk89q.worldedit.function.GroundFunction;
 import com.sk89q.worldedit.function.RegionFunction;
@@ -28,25 +31,41 @@ import com.sk89q.worldedit.function.mask.NoiseFilter2D;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.visitor.LayerVisitor;
 import com.sk89q.worldedit.math.noise.RandomNoise;
+import com.sk89q.worldedit.regions.NullRegion;
 import com.sk89q.worldedit.regions.Region;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static com.sk89q.worldedit.regions.Regions.*;
 
-public class Scatter implements OperationFactory {
+public class Paint implements Contextual<Operation> {
 
-    private final Function<EditContext, ? extends RegionFunction> regionFunctionFactory;
+    private final Extent destination;
+    private final Region region;
+    private final Contextual<? extends RegionFunction> function;
     private final double density;
 
-    public Scatter(Function<EditContext, ? extends RegionFunction> regionFunctionFactory, double density) {
-        this.regionFunctionFactory = regionFunctionFactory;
+    public Paint(Contextual<? extends RegionFunction> function, double density) {
+        this(new NullExtent(), new NullRegion(), function, density);
+    }
+
+    public Paint(Extent destination, Region region, Contextual<? extends RegionFunction> function,
+                 double density) {
+        checkNotNull(destination, "destination");
+        checkNotNull(region, "region");
+        checkNotNull(function, "function");
+        checkNotNull(density, "density");
+        this.destination = destination;
+        this.region = region;
+        this.function = function;
         this.density = density;
-        new NoiseFilter2D(new RandomNoise(), density); // Check validity density argument
+        new NoiseFilter2D(new RandomNoise(), density); // Check validity of the density argument
     }
 
     @Override
-    public Operation createOperation(EditContext context) {
-        Region region = context.getRegion();
-        GroundFunction ground = new GroundFunction(new ExistingBlockMask(context.getDestination()), regionFunctionFactory.apply(context));
+    public Operation createFromContext(EditContext context) {
+        Extent destination = MoreObjects.firstNonNull(context.getDestination(), this.destination);
+        Region region = MoreObjects.firstNonNull(context.getRegion(), this.region);
+        GroundFunction ground = new GroundFunction(new ExistingBlockMask(destination), function.createFromContext(context));
         LayerVisitor visitor = new LayerVisitor(asFlatRegion(region), minimumBlockY(region), maximumBlockY(region), ground);
         visitor.setMask(new NoiseFilter2D(new RandomNoise(), density));
         return visitor;
@@ -54,7 +73,7 @@ public class Scatter implements OperationFactory {
 
     @Override
     public String toString() {
-        return "scatter " + regionFunctionFactory;
+        return "scatter " + function;
     }
 
 }

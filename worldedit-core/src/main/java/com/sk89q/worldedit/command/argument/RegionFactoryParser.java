@@ -33,7 +33,7 @@ import com.sk89q.worldedit.util.command.composition.CommandExecutor;
 
 import java.util.List;
 
-public class RegionFactoryArg implements CommandExecutor<RegionFactory> {
+public class RegionFactoryParser implements CommandExecutor<RegionFactory> {
 
     @Override
     public RegionFactory call(CommandArgs args, CommandLocals locals) throws CommandException {

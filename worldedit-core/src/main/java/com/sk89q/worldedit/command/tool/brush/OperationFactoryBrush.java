@@ -22,19 +22,19 @@ package com.sk89q.worldedit.command.tool.brush;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.function.Contextual;
 import com.sk89q.worldedit.function.EditContext;
 import com.sk89q.worldedit.function.operation.Operation;
-import com.sk89q.worldedit.function.factory.OperationFactory;
 import com.sk89q.worldedit.function.operation.Operations;
 import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.regions.factory.RegionFactory;
 
 public class OperationFactoryBrush implements Brush {
 
-    private final OperationFactory operationFactory;
+    private final Contextual<? extends Operation> operationFactory;
     private final RegionFactory regionFactory;
 
-    public OperationFactoryBrush(OperationFactory operationFactory, RegionFactory regionFactory) {
+    public OperationFactoryBrush(Contextual<? extends Operation> operationFactory, RegionFactory regionFactory) {
         this.operationFactory = operationFactory;
         this.regionFactory = regionFactory;
     }
@@ -45,7 +45,7 @@ public class OperationFactoryBrush implements Brush {
         context.setDestination(editSession);
         context.setRegion(regionFactory.createCenteredAt(position, size));
         context.setFill(pattern);
-        Operation operation = operationFactory.createOperation(context);
+        Operation operation = operationFactory.createFromContext(context);
         Operations.completeLegacy(operation);
     }
 

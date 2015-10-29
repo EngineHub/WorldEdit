@@ -19,32 +19,41 @@
 
 package com.sk89q.worldedit.command.composition;
 
-import com.google.common.base.Function;
 import com.sk89q.minecraft.util.commands.CommandException;
 import com.sk89q.minecraft.util.commands.CommandLocals;
-import com.sk89q.worldedit.command.argument.NumberArg;
-import com.sk89q.worldedit.command.argument.PointGeneratorArg;
-import com.sk89q.worldedit.function.EditContext;
+import com.sk89q.worldedit.command.argument.NumberParser;
+import com.sk89q.worldedit.command.argument.RegionFunctionParser;
+import com.sk89q.worldedit.function.Contextual;
 import com.sk89q.worldedit.function.RegionFunction;
-import com.sk89q.worldedit.function.factory.Scatter;
+import com.sk89q.worldedit.function.factory.Paint;
 import com.sk89q.worldedit.util.command.argument.CommandArgs;
+import com.sk89q.worldedit.util.command.composition.CommandExecutor;
 import com.sk89q.worldedit.util.command.composition.SimpleCommand;
 
-public class ScatterCommand extends SimpleCommand<Scatter> {
+public class PaintCommand extends SimpleCommand<Paint> {
 
-    private final NumberArg densityCommand = addParameter(new NumberArg("density", "0-100", "20"));
-    private final PointGeneratorArg pointGeneratorArg = addParameter(new PointGeneratorArg());
+    private final NumberParser densityCommand = addParameter(new NumberParser("density", "0-100", "20"));
+    private final CommandExecutor<? extends Contextual<? extends RegionFunction>> functionParser;
+
+    public PaintCommand() {
+        this(new RegionFunctionParser());
+    }
+
+    public PaintCommand(CommandExecutor<? extends Contextual<? extends RegionFunction>> functionParser) {
+        this.functionParser = functionParser;
+        addParameter(functionParser);
+    }
 
     @Override
-    public Scatter call(CommandArgs args, CommandLocals locals) throws CommandException {
+    public Paint call(CommandArgs args, CommandLocals locals) throws CommandException {
         double density = densityCommand.call(args, locals).doubleValue() / 100.0;
-        Function<EditContext, ? extends RegionFunction> function = pointGeneratorArg.call(args, locals);
-        return new Scatter(function, density);
+        Contextual<? extends RegionFunction> function = functionParser.call(args, locals);
+        return new Paint(function, density);
     }
 
     @Override
     public String getDescription() {
-        return "Scatters a function over an area";
+        return "Applies a function to surfaces";
     }
 
     @Override

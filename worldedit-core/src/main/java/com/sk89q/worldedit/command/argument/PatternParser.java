@@ -23,7 +23,6 @@ import com.sk89q.minecraft.util.commands.CommandException;
 import com.sk89q.minecraft.util.commands.CommandLocals;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.util.command.composition.SimpleCommand;
 import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.extension.input.InputParseException;
@@ -31,24 +30,21 @@ import com.sk89q.worldedit.extension.input.NoMatchException;
 import com.sk89q.worldedit.extension.input.ParserContext;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extent.Extent;
+import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.util.command.argument.CommandArgs;
 import com.sk89q.worldedit.world.World;
 
-public class ItemArg extends SimpleCommand<BaseItem> {
+public class PatternParser extends SimpleCommand<Pattern> {
 
-    private final StringArg stringArg;
+    private final StringParser stringParser;
 
-    public ItemArg(String name) {
-        stringArg = addParameter(new StringArg(name, "The item name", null));
-    }
-
-    public ItemArg(String name, String defaultSuggestion) {
-        stringArg = addParameter(new StringArg(name, "The item name", defaultSuggestion));
+    public PatternParser(String name) {
+        stringParser = addParameter(new StringParser(name, "The pattern"));
     }
 
     @Override
-    public BaseItem call(CommandArgs args, CommandLocals locals) throws CommandException {
-        String itemString = stringArg.call(args, locals);
+    public Pattern call(CommandArgs args, CommandLocals locals) throws CommandException {
+        String patternString = stringParser.call(args, locals);
 
         Actor actor = locals.get(Actor.class);
         LocalSession session = WorldEdit.getInstance().getSessionManager().get(actor);
@@ -64,7 +60,7 @@ public class ItemArg extends SimpleCommand<BaseItem> {
         parserContext.setSession(session);
 
         try {
-            return WorldEdit.getInstance().getItemFactory().parseFromInput(itemString, parserContext);
+            return WorldEdit.getInstance().getPatternFactory().parseFromInput(patternString, parserContext);
         } catch (NoMatchException e) {
             throw new CommandException(e.getMessage(), e);
         } catch (InputParseException e) {
@@ -74,11 +70,11 @@ public class ItemArg extends SimpleCommand<BaseItem> {
 
     @Override
     public String getDescription() {
-        return "Match an item";
+        return "Choose a pattern";
     }
 
     @Override
-    protected boolean testPermission0(CommandLocals locals) {
+    public boolean testPermission0(CommandLocals locals) {
         return true;
     }
 

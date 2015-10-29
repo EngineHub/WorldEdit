@@ -47,17 +47,15 @@ import com.sk89q.worldedit.command.ToolCommands;
 import com.sk89q.worldedit.command.ToolUtilCommands;
 import com.sk89q.worldedit.command.UtilityCommands;
 import com.sk89q.worldedit.command.WorldEditCommands;
-import com.sk89q.worldedit.command.argument.DeformArg;
-import com.sk89q.worldedit.command.argument.RegionReplaceArg;
+import com.sk89q.worldedit.command.argument.ReplaceParser;
 import com.sk89q.worldedit.command.composition.ApplyCommand;
-import com.sk89q.worldedit.command.composition.ReplaceBrushCommand;
-import com.sk89q.worldedit.command.composition.ScatterCommand;
+import com.sk89q.worldedit.command.composition.DeformCommand;
+import com.sk89q.worldedit.command.composition.PaintCommand;
 import com.sk89q.worldedit.command.composition.ShapedBrushCommand;
 import com.sk89q.worldedit.event.platform.CommandEvent;
 import com.sk89q.worldedit.event.platform.CommandSuggestionEvent;
 import com.sk89q.worldedit.function.factory.Deform;
 import com.sk89q.worldedit.function.factory.Deform.Mode;
-import com.sk89q.worldedit.function.factory.OperationFactory;
 import com.sk89q.worldedit.internal.command.ActorAuthorizer;
 import com.sk89q.worldedit.internal.command.CommandLoggingHandler;
 import com.sk89q.worldedit.internal.command.UserCommandCompleter;
@@ -165,12 +163,12 @@ public final class CommandManager {
                         .group("brush", "br")
                             .describeAs("Brushing commands")
                             .registerMethods(new BrushCommands(worldEdit))
-                            .register(adapt(new ShapedBrushCommand(new DeformArg(), "worldedit.brush.deform")), "deform")
+                            .register(adapt(new ShapedBrushCommand(new DeformCommand(), "worldedit.brush.deform")), "deform")
+                            .register(adapt(new ShapedBrushCommand(new ApplyCommand(new ReplaceParser(), "Set all blocks within region"), "worldedit.brush.set")), "set")
+                            .register(adapt(new ShapedBrushCommand(new PaintCommand(), "worldedit.brush.paint")), "paint")
+                            .register(adapt(new ShapedBrushCommand(new ApplyCommand(), "worldedit.brush.apply")), "apply")
                             .register(adapt(new ShapedBrushCommand(ProvidedValue.create(new Deform("y-=1", Mode.RAW_COORD), "Raise one block"), "worldedit.brush.raise")), "raise")
                             .register(adapt(new ShapedBrushCommand(ProvidedValue.create(new Deform("y+=1", Mode.RAW_COORD), "Lower one block"), "worldedit.brush.lower")), "lower")
-                            .register(adapt(new ShapedBrushCommand(new ReplaceBrushCommand<OperationFactory>(new RegionReplaceArg()), "worldedit.brush.set")), "set")
-                            .register(adapt(new ShapedBrushCommand(new ScatterCommand(), "worldedit.brush.scatter")), "scatter")
-                            .register(adapt(new ShapedBrushCommand(new ApplyCommand(), "worldedit.brush.apply")), "apply")
                         .parent()
                         .group("superpickaxe", "pickaxe", "sp")
                             .describeAs("Super-pickaxe commands")

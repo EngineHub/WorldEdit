@@ -29,6 +29,7 @@ import com.sk89q.worldedit.function.operation.RunContext;
 import com.sk89q.worldedit.world.World;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -105,6 +106,10 @@ public class FastModeExtent extends AbstractDelegateExtent {
 
             @Override
             public void cancel() {
+            }
+
+            @Override
+            public void addStatusMessages(List<String> messages) {
             }
         };
     }

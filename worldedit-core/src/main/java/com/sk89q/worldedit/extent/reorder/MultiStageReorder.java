@@ -213,6 +213,10 @@ public class MultiStageReorder extends AbstractDelegateExtent implements Reorder
         public void cancel() {
         }
 
+        @Override
+        public void addStatusMessages(List<String> messages) {
+        }
+
     }
 
 }

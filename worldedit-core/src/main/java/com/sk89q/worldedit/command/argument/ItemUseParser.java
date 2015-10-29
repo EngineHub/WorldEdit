@@ -19,13 +19,13 @@
 
 package com.sk89q.worldedit.command.argument;
 
-import com.google.common.base.Function;
 import com.sk89q.minecraft.util.commands.CommandException;
 import com.sk89q.minecraft.util.commands.CommandLocals;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseItem;
+import com.sk89q.worldedit.function.Contextual;
 import com.sk89q.worldedit.function.EditContext;
 import com.sk89q.worldedit.function.RegionFunction;
 import com.sk89q.worldedit.util.Direction;
@@ -33,15 +33,13 @@ import com.sk89q.worldedit.util.command.argument.CommandArgs;
 import com.sk89q.worldedit.util.command.composition.SimpleCommand;
 import com.sk89q.worldedit.world.World;
 
-import javax.annotation.Nullable;
+public class ItemUseParser extends SimpleCommand<Contextual<RegionFunction>> {
 
-public class ItemUserArg extends SimpleCommand<Function<EditContext, RegionFunction>> {
-
-    private final ItemArg itemArg = addParameter(new ItemArg("item", "minecraft:dye:15"));
+    private final ItemParser itemParser = addParameter(new ItemParser("item", "minecraft:dye:15"));
 
     @Override
-    public Function<EditContext, RegionFunction> call(CommandArgs args, CommandLocals locals) throws CommandException {
-        BaseItem item = itemArg.call(args, locals);
+    public Contextual<RegionFunction> call(CommandArgs args, CommandLocals locals) throws CommandException {
+        BaseItem item = itemParser.call(args, locals);
         return new ItemUseFactory(item);
     }
 
@@ -55,16 +53,15 @@ public class ItemUserArg extends SimpleCommand<Function<EditContext, RegionFunct
         return true;
     }
 
-    private static final class ItemUseFactory implements Function<EditContext, RegionFunction> {
+    private static final class ItemUseFactory implements Contextual<RegionFunction> {
         private final BaseItem item;
 
         private ItemUseFactory(BaseItem item) {
             this.item = item;
         }
 
-        @Nullable
         @Override
-        public RegionFunction apply(EditContext input) {
+        public RegionFunction createFromContext(EditContext input) {
             World world = ((EditSession) input.getDestination()).getWorld();
             return new ItemUseFunction(world, item);
         }

@@ -17,13 +17,10 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.function.factory;
+package com.sk89q.worldedit.function;
 
-import com.sk89q.worldedit.function.EditContext;
-import com.sk89q.worldedit.function.operation.Operation;
+public interface Contextual<T> {
 
-public interface OperationFactory {
-
-    Operation createOperation(EditContext context);
+    T createFromContext(EditContext context);
 
 }

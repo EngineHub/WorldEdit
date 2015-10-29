@@ -17,7 +17,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.command.argument;
+package com.sk89q.worldedit.command.composition;
 
 import com.sk89q.minecraft.util.commands.CommandException;
 import com.sk89q.minecraft.util.commands.CommandLocals;
@@ -25,20 +25,24 @@ import com.sk89q.minecraft.util.commands.WrappedCommandException;
 import com.sk89q.worldedit.IncompleteRegionException;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.command.argument.BooleanFlag;
+import com.sk89q.worldedit.command.argument.StringParser;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
+import com.sk89q.worldedit.function.Contextual;
 import com.sk89q.worldedit.function.factory.Deform;
 import com.sk89q.worldedit.function.factory.Deform.Mode;
+import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.util.command.argument.CommandArgs;
 import com.sk89q.worldedit.util.command.composition.FlagParser.Flag;
 import com.sk89q.worldedit.util.command.composition.FlagParser.FlagData;
 import com.sk89q.worldedit.util.command.composition.SimpleCommand;
 
-public class DeformArg extends SimpleCommand<Deform> {
+public class DeformCommand extends SimpleCommand<Contextual<? extends Operation>> {
 
     private final Flag<Boolean> rawCoordsFlag = addFlag('r', new BooleanFlag("Raw coords mode"));
     private final Flag<Boolean> offsetFlag = addFlag('o', new BooleanFlag("Offset mode"));
-    private final StringArg expressionParser = addParameter(new StringArg("expression", "Expression to apply", "y-=0.2"));
+    private final StringParser expressionParser = addParameter(new StringParser("expression", "Expression to apply", "y-=0.2"));
 
     @Override
     public Deform call(CommandArgs args, CommandLocals locals) throws CommandException {
@@ -69,7 +73,7 @@ public class DeformArg extends SimpleCommand<Deform> {
 
     @Override
     public String getDescription() {
-        return "Deforms an area by applying a math expression";
+        return "Apply math expression to area";
     }
 
     @Override

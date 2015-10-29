@@ -21,6 +21,8 @@ package com.sk89q.worldedit.function.operation;
 
 import com.sk89q.worldedit.WorldEditException;
 
+import java.util.List;
+
 /**
  * An task that may be split into multiple steps to be run sequentially
  * immediately or at a varying or fixed interval. Operations should attempt
@@ -48,5 +50,13 @@ public interface Operation {
      * interrupted before completion.
      */
     void cancel();
+
+    /**
+     * Add messages to the provided list that describe the current status
+     * of the operation.
+     *
+     * @param messages The list to add messages to
+     */
+    void addStatusMessages(List<String> messages);
 
 }

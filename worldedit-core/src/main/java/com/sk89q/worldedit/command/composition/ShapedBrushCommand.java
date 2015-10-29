@@ -25,30 +25,31 @@ import com.sk89q.minecraft.util.commands.CommandPermissionsException;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.MaxBrushRadiusException;
 import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.command.argument.NumberArg;
-import com.sk89q.worldedit.command.argument.RegionFactoryArg;
+import com.sk89q.worldedit.command.argument.NumberParser;
+import com.sk89q.worldedit.command.argument.RegionFactoryParser;
 import com.sk89q.worldedit.command.tool.BrushTool;
 import com.sk89q.worldedit.command.tool.InvalidToolBindException;
 import com.sk89q.worldedit.command.tool.brush.OperationFactoryBrush;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
-import com.sk89q.worldedit.function.factory.OperationFactory;
+import com.sk89q.worldedit.function.Contextual;
+import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.regions.factory.RegionFactory;
-import com.sk89q.worldedit.util.command.composition.CommandExecutor;
 import com.sk89q.worldedit.util.command.argument.CommandArgs;
+import com.sk89q.worldedit.util.command.composition.CommandExecutor;
 import com.sk89q.worldedit.util.command.composition.SimpleCommand;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public class ShapedBrushCommand extends SimpleCommand<Object> {
 
-    private final CommandExecutor<? extends OperationFactory> delegate;
+    private final CommandExecutor<? extends Contextual<? extends Operation>> delegate;
     private final String permission;
 
-    private final RegionFactoryArg regionFactoryArg = addParameter(new RegionFactoryArg());
-    private final NumberArg radiusCommand = addParameter(new NumberArg("size", "The size of the brush", "5"));
+    private final RegionFactoryParser regionFactoryParser = addParameter(new RegionFactoryParser());
+    private final NumberParser radiusCommand = addParameter(new NumberParser("size", "The size of the brush", "5"));
 
-    public ShapedBrushCommand(CommandExecutor<? extends OperationFactory> delegate, String permission) {
+    public ShapedBrushCommand(CommandExecutor<? extends Contextual<? extends Operation>> delegate, String permission) {
         checkNotNull(delegate, "delegate");
         this.permission = permission;
         this.delegate = delegate;
@@ -61,9 +62,9 @@ public class ShapedBrushCommand extends SimpleCommand<Object> {
             throw new CommandPermissionsException();
         }
 
-        RegionFactory regionFactory = regionFactoryArg.call(args, locals);
+        RegionFactory regionFactory = regionFactoryParser.call(args, locals);
         int radius = radiusCommand.call(args, locals).intValue();
-        OperationFactory factory = delegate.call(args, locals);
+        Contextual<? extends Operation> factory = delegate.call(args, locals);
 
         Player player = (Player) locals.get(Actor.class);
         LocalSession session = WorldEdit.getInstance().getSessionManager().get(player);

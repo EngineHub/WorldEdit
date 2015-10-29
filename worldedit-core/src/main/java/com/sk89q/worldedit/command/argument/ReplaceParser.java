@@ -17,52 +17,59 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.command.composition;
+package com.sk89q.worldedit.command.argument;
 
 import com.sk89q.minecraft.util.commands.CommandException;
 import com.sk89q.minecraft.util.commands.CommandLocals;
-import com.sk89q.worldedit.command.argument.RegionFunctionParser;
+import com.sk89q.worldedit.extent.NullExtent;
 import com.sk89q.worldedit.function.Contextual;
+import com.sk89q.worldedit.function.EditContext;
 import com.sk89q.worldedit.function.RegionFunction;
-import com.sk89q.worldedit.function.factory.Apply;
-import com.sk89q.worldedit.function.operation.Operation;
+import com.sk89q.worldedit.function.block.BlockReplace;
+import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.util.command.argument.CommandArgs;
-import com.sk89q.worldedit.util.command.composition.CommandExecutor;
 import com.sk89q.worldedit.util.command.composition.SimpleCommand;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.MoreObjects.firstNonNull;
 
-public class ApplyCommand extends SimpleCommand<Contextual<? extends Operation>> {
+public class ReplaceParser extends SimpleCommand<Contextual<? extends RegionFunction>> {
 
-    private final CommandExecutor<Contextual<? extends RegionFunction>> functionParser;
-    private final String description;
-
-    public ApplyCommand() {
-        this(new RegionFunctionParser(), "Applies a function to every block");
-    }
-
-    public ApplyCommand(CommandExecutor<Contextual<? extends RegionFunction>> functionParser, String description) {
-        checkNotNull(functionParser, "functionParser");
-        checkNotNull(description, "description");
-        this.functionParser = functionParser;
-        this.description = description;
-        addParameter(functionParser);
-    }
+    private final PatternParser fillArg = addParameter(new PatternParser("fillPattern"));
 
     @Override
-    public Apply call(CommandArgs args, CommandLocals locals) throws CommandException {
-        Contextual<? extends RegionFunction> function = functionParser.call(args, locals);
-        return new Apply(function);
+    public Contextual<RegionFunction> call(CommandArgs args, CommandLocals locals) throws CommandException {
+        Pattern fill = fillArg.call(args, locals);
+        return new ReplaceFactory(fill);
     }
 
     @Override
     public String getDescription() {
-        return description;
+        return "Replaces blocks";
     }
 
     @Override
     protected boolean testPermission0(CommandLocals locals) {
         return true;
+    }
+
+    private static class ReplaceFactory implements Contextual<RegionFunction> {
+        private final Pattern fill;
+
+        private ReplaceFactory(Pattern fill) {
+            this.fill = fill;
+        }
+
+        @Override
+        public RegionFunction createFromContext(EditContext context) {
+            return new BlockReplace(
+                    firstNonNull(context.getDestination(), new NullExtent()),
+                    firstNonNull(context.getFill(), fill));
+        }
+
+        @Override
+        public String toString() {
+            return "replace blocks";
+        }
     }
 
 }

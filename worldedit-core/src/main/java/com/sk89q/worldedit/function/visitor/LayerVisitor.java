@@ -29,6 +29,8 @@ import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.RunContext;
 import com.sk89q.worldedit.regions.FlatRegion;
 
+import java.util.List;
+
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -125,4 +127,9 @@ public class LayerVisitor implements Operation {
     @Override
     public void cancel() {
     }
+
+    @Override
+    public void addStatusMessages(List<String> messages) {
+    }
+
 }

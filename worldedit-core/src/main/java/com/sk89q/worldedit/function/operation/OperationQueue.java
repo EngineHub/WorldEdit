@@ -19,11 +19,13 @@
 
 package com.sk89q.worldedit.function.operation;
 
+import com.google.common.collect.Lists;
 import com.sk89q.worldedit.WorldEditException;
 
 import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.Deque;
+import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -32,6 +34,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class OperationQueue implements Operation {
 
+    private final List<Operation> operations = Lists.newArrayList();
     private final Deque<Operation> queue = new ArrayDeque<Operation>();
     private Operation current;
 
@@ -51,6 +54,7 @@ public class OperationQueue implements Operation {
         for (Operation operation : operations) {
             offer(operation);
         }
+        this.operations.addAll(operations);
     }
 
     /**
@@ -98,6 +102,13 @@ public class OperationQueue implements Operation {
             operation.cancel();
         }
         queue.clear();
+    }
+
+    @Override
+    public void addStatusMessages(List<String> messages) {
+        for (Operation operation : operations) {
+            operation.addStatusMessages(messages);
+        }
     }
 
 }

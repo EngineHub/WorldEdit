@@ -19,22 +19,22 @@
 
 package com.sk89q.worldedit.command.argument;
 
-import com.google.common.base.Function;
-import com.sk89q.worldedit.function.EditContext;
+import com.sk89q.worldedit.function.Contextual;
 import com.sk89q.worldedit.function.RegionFunction;
 import com.sk89q.worldedit.util.command.composition.BranchingCommand;
 
-public class PointGeneratorArg extends BranchingCommand<Function<EditContext, ? extends RegionFunction>> {
+public class RegionFunctionParser extends BranchingCommand<Contextual<? extends RegionFunction>> {
 
-    public PointGeneratorArg() {
-        super("generatorType");
-        putOption(new TreeGeneratorArg("treeType"), "tree", "forest");
-        putOption(new ItemUserArg(), "item", "itemstack", "use");
+    public RegionFunctionParser() {
+        super("functionTpe");
+        putOption(new TreeGeneratorParser("treeType"), "forest");
+        putOption(new ItemUseParser(), "item");
+        putOption(new ReplaceParser(), "set");
     }
 
     @Override
     public String getDescription() {
-        return "Choose a point generator function";
+        return "Choose a block function";
     }
 
 }

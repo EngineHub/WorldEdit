@@ -25,6 +25,7 @@ import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.extent.Extent;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -64,4 +65,9 @@ public class BlockMapEntryPlacer implements Operation {
     @Override
     public void cancel() {
     }
+
+    @Override
+    public void addStatusMessages(List<String> messages) {
+    }
+
 }

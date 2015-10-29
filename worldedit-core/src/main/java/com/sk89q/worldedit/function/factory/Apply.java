@@ -19,22 +19,41 @@
 
 package com.sk89q.worldedit.function.factory;
 
+import com.google.common.base.MoreObjects;
+import com.sk89q.worldedit.function.Contextual;
 import com.sk89q.worldedit.function.EditContext;
-import com.sk89q.worldedit.function.block.BlockReplace;
+import com.sk89q.worldedit.function.RegionFunction;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.visitor.RegionVisitor;
+import com.sk89q.worldedit.regions.NullRegion;
+import com.sk89q.worldedit.regions.Region;
 
-public class RegionReplace implements OperationFactory {
+import static com.google.common.base.Preconditions.checkNotNull;
+
+public class Apply implements Contextual<Operation> {
+
+    private final Region region;
+    private final Contextual<? extends RegionFunction> function;
+
+    public Apply(Contextual<? extends RegionFunction> function) {
+        this(new NullRegion(), function);
+    }
+
+    public Apply(Region region, Contextual<? extends RegionFunction> function) {
+        checkNotNull(region, "region");
+        checkNotNull(function, "function");
+        this.region = region;
+        this.function = function;
+    }
 
     @Override
-    public Operation createOperation(EditContext context) {
-        BlockReplace replace = new BlockReplace(context.getDestination(), context.getFill());
-        return new RegionVisitor(context.getRegion(), replace);
+    public Operation createFromContext(EditContext context) {
+        return new RegionVisitor(MoreObjects.firstNonNull(context.getRegion(), region), function.createFromContext(context));
     }
 
     @Override
     public String toString() {
-        return "set blocks";
+        return "set " + function;
     }
 
 }

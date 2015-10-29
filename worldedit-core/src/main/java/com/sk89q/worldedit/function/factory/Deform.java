@@ -19,35 +19,71 @@
 
 package com.sk89q.worldedit.function.factory;
 
-import com.google.common.base.Preconditions;
+import com.google.common.base.MoreObjects;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.extent.Extent;
+import com.sk89q.worldedit.extent.NullExtent;
+import com.sk89q.worldedit.function.Contextual;
 import com.sk89q.worldedit.function.EditContext;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.RunContext;
 import com.sk89q.worldedit.internal.expression.ExpressionException;
+import com.sk89q.worldedit.regions.NullRegion;
 import com.sk89q.worldedit.regions.Region;
+
+import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class Deform implements OperationFactory {
+public class Deform implements Contextual<Operation> {
 
+    private Extent destination;
+    private Region region;
     private String expression;
     private Mode mode = Mode.UNIT_CUBE;
     private Vector offset = new Vector();
 
     public Deform(String expression) {
-        checkNotNull(expression, "expression");
-        this.expression = expression;
+        this(new NullExtent(), new NullRegion(), expression);
     }
 
     public Deform(String expression, Mode mode) {
+        this(new NullExtent(), new NullRegion(), expression, mode);
+    }
+
+    public Deform(Extent destination, Region region, String expression) {
+        this(destination, region, expression, Mode.UNIT_CUBE);
+    }
+
+    public Deform(Extent destination, Region region, String expression, Mode mode) {
+        checkNotNull(destination, "destination");
+        checkNotNull(region, "region");
         checkNotNull(expression, "expression");
         checkNotNull(mode, "mode");
+        this.destination = destination;
+        this.region = region;
         this.expression = expression;
         this.mode = mode;
+    }
+
+    public Extent getDestination() {
+        return destination;
+    }
+
+    public void setDestination(Extent destination) {
+        checkNotNull(destination, "destination");
+        this.destination = destination;
+    }
+
+    public Region getRegion() {
+        return region;
+    }
+
+    public void setRegion(Region region) {
+        checkNotNull(region, "region");
+        this.region = region;
     }
 
     public String getExpression() {
@@ -83,14 +119,16 @@ public class Deform implements OperationFactory {
     }
 
     @Override
-    public Operation createOperation(final EditContext context) {
+    public Operation createFromContext(final EditContext context) {
         final Vector zero;
         Vector unit;
 
+        Region region = MoreObjects.firstNonNull(context.getRegion(), this.region);
+
         switch (mode) {
             case UNIT_CUBE:
-                final Vector min = context.getRegion().getMinimumPoint();
-                final Vector max = context.getRegion().getMaximumPoint();
+                final Vector min = region.getMinimumPoint();
+                final Vector max = region.getMaximumPoint();
 
                 zero = max.add(min).multiply(0.5);
                 unit = max.subtract(zero);
@@ -109,7 +147,7 @@ public class Deform implements OperationFactory {
                 unit = Vector.ONE;
         }
 
-        return new DeformOperation(context.getDestination(), context.getRegion(), zero, unit, expression);
+        return new DeformOperation(context.getDestination(), region, zero, unit, expression);
     }
 
     private static final class DeformOperation implements Operation {
@@ -141,6 +179,12 @@ public class Deform implements OperationFactory {
         @Override
         public void cancel() {
         }
+
+        @Override
+        public void addStatusMessages(List<String> messages) {
+            messages.add("deformed using " + expression);
+        }
+
     }
 
     public enum Mode {

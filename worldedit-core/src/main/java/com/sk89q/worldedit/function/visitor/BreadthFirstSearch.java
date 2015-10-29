@@ -176,4 +176,9 @@ public abstract class BreadthFirstSearch implements Operation {
     public void cancel() {
     }
 
+    @Override
+    public void addStatusMessages(List<String> messages) {
+        messages.add(getAffected() + " blocks affected");
+    }
+
 }

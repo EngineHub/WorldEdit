@@ -25,6 +25,7 @@ import com.sk89q.worldedit.history.changeset.ChangeSet;
 import com.sk89q.worldedit.history.UndoContext;
 
 import java.util.Iterator;
+import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -77,6 +78,10 @@ public class ChangeSetExecutor implements Operation {
 
     @Override
     public void cancel() {
+    }
+
+    @Override
+    public void addStatusMessages(List<String> messages) {
     }
 
     /**

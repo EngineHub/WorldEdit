@@ -19,12 +19,12 @@
 
 package com.sk89q.worldedit.command.argument;
 
-import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.sk89q.minecraft.util.commands.CommandException;
 import com.sk89q.minecraft.util.commands.CommandLocals;
 import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.function.Contextual;
 import com.sk89q.worldedit.function.EditContext;
 import com.sk89q.worldedit.function.generator.ForestGenerator;
 import com.sk89q.worldedit.util.TreeGenerator;
@@ -34,15 +34,14 @@ import com.sk89q.worldedit.util.command.argument.CommandArgs;
 import com.sk89q.worldedit.util.command.argument.MissingArgumentException;
 import com.sk89q.worldedit.util.command.composition.CommandExecutor;
 
-import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.List;
 
-public class TreeGeneratorArg implements CommandExecutor<Function<EditContext, ForestGenerator>> {
+public class TreeGeneratorParser implements CommandExecutor<Contextual<ForestGenerator>> {
 
     private final String name;
 
-    public TreeGeneratorArg(String name) {
+    public TreeGeneratorParser(String name) {
         this.name = name;
     }
 
@@ -51,7 +50,7 @@ public class TreeGeneratorArg implements CommandExecutor<Function<EditContext, F
     }
 
     @Override
-    public Function<EditContext, ForestGenerator> call(CommandArgs args, CommandLocals locals) throws CommandException {
+    public Contextual<ForestGenerator> call(CommandArgs args, CommandLocals locals) throws CommandException {
         try {
             String input = args.next();
             TreeType type = TreeGenerator.lookup(input);
@@ -86,16 +85,15 @@ public class TreeGeneratorArg implements CommandExecutor<Function<EditContext, F
         return true;
     }
 
-    private static class GeneratorFactory implements Function<EditContext, ForestGenerator> {
+    private static final class GeneratorFactory implements Contextual<ForestGenerator> {
         private final TreeType type;
 
         private GeneratorFactory(TreeType type) {
             this.type = type;
         }
 
-        @Nullable
         @Override
-        public ForestGenerator apply(EditContext input) {
+        public ForestGenerator createFromContext(EditContext input) {
             return new ForestGenerator((EditSession) input.getDestination(), new TreeGenerator(type));
         }
 

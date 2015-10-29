@@ -19,9 +19,11 @@
 
 package com.sk89q.worldedit.command.tool;
 
-import com.sk89q.worldedit.*;
-import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.blocks.BlockID;
+import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.LocalConfiguration;
+import com.sk89q.worldedit.LocalSession;
+import com.sk89q.worldedit.MaxChangedBlocksException;
+import com.sk89q.worldedit.WorldVector;
 import com.sk89q.worldedit.command.tool.brush.Brush;
 import com.sk89q.worldedit.command.tool.brush.SphereBrush;
 import com.sk89q.worldedit.entity.Player;
@@ -30,9 +32,10 @@ import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.function.mask.MaskIntersection;
-import com.sk89q.worldedit.function.pattern.BlockPattern;
 import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.session.request.Request;
+
+import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -45,7 +48,8 @@ public class BrushTool implements TraceTool {
     protected int range = -1;
     private Mask mask = null;
     private Brush brush = new SphereBrush();
-    private Pattern material = new BlockPattern(new BaseBlock(BlockID.COBBLESTONE));
+    @Nullable
+    private Pattern material;
     private double size = 1;
     private String permission;
 
@@ -107,16 +111,16 @@ public class BrushTool implements TraceTool {
      * 
      * @param material the material
      */
-    public void setFill(Pattern material) {
+    public void setFill(@Nullable Pattern material) {
         this.material = material;
     }
 
     /**
      * Get the material.
-     * 
+     *
      * @return the material
      */
-    public Pattern getMaterial() {
+    @Nullable public Pattern getMaterial() {
         return material;
     }
 

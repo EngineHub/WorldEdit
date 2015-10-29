@@ -19,43 +19,44 @@
 
 package com.sk89q.worldedit.function;
 
-import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.extent.Extent;
-import com.sk89q.worldedit.extent.NullExtent;
-import com.sk89q.worldedit.function.pattern.BlockPattern;
 import com.sk89q.worldedit.function.pattern.Pattern;
-import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
+
+import javax.annotation.Nullable;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public class EditContext {
 
-    private Extent destination = new NullExtent();
-    private Region region = new CuboidRegion(Vector.ZERO, Vector.ZERO);
-    private Pattern fill = new BlockPattern(new BaseBlock(BlockID.AIR));
+    private Extent destination;
+    @Nullable private Region region;
+    @Nullable private Pattern fill;
 
     public Extent getDestination() {
         return destination;
     }
 
     public void setDestination(Extent destination) {
+        checkNotNull(destination, "destination");
         this.destination = destination;
     }
 
+    @Nullable
     public Region getRegion() {
         return region;
     }
 
-    public void setRegion(Region region) {
+    public void setRegion(@Nullable Region region) {
         this.region = region;
     }
 
+    @Nullable
     public Pattern getFill() {
         return fill;
     }
 
-    public void setFill(Pattern fill) {
+    public void setFill(@Nullable Pattern fill) {
         this.fill = fill;
     }
 

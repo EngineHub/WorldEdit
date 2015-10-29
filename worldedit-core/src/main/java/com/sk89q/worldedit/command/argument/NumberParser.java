@@ -29,28 +29,33 @@ import com.sk89q.worldedit.util.command.composition.CommandExecutor;
 import java.util.Collections;
 import java.util.List;
 
-public class StringArg implements CommandExecutor<String> {
+public class NumberParser implements CommandExecutor<Number> {
 
     private final String name;
     private final String description;
     private final String defaultSuggestion;
 
-    public StringArg(String name, String description) {
+    public NumberParser(String name, String description) {
         this(name, description, null);
     }
 
-    public StringArg(String name, String description, String defaultSuggestion) {
+    public NumberParser(String name, String description, String defaultSuggestion) {
         this.name = name;
         this.description = description;
         this.defaultSuggestion = defaultSuggestion;
     }
 
     @Override
-    public String call(CommandArgs args, CommandLocals locals) throws CommandException {
+    public Number call(CommandArgs args, CommandLocals locals) throws CommandException {
         try {
-            return args.next();
+            String next = args.next();
+            try {
+                return Double.parseDouble(next);
+            } catch (NumberFormatException ignored) {
+                throw new CommandException("The value for <" + name + "> should be a number. '" + next + "' is not a number.");
+            }
         } catch (MissingArgumentException e) {
-            throw new CommandException("Missing value for <" + name + ">.");
+            throw new CommandException("Missing value for <" + name + "> (try a number).");
         }
     }
 

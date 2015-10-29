@@ -26,6 +26,8 @@ import com.sk89q.worldedit.function.RegionFunction;
 import com.sk89q.worldedit.function.operation.RunContext;
 import com.sk89q.worldedit.regions.Region;
 
+import java.util.List;
+
 /**
  * Utility class to apply region functions to {@link com.sk89q.worldedit.regions.Region}.
  */
@@ -62,6 +64,11 @@ public class RegionVisitor implements Operation {
 
     @Override
     public void cancel() {
+    }
+
+    @Override
+    public void addStatusMessages(List<String> messages) {
+        messages.add(getAffected() + " blocks affected");
     }
 
 }

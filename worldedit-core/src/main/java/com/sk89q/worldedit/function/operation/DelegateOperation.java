@@ -21,6 +21,8 @@ package com.sk89q.worldedit.function.operation;
 
 import com.sk89q.worldedit.WorldEditException;
 
+import java.util.List;
+
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
@@ -55,6 +57,12 @@ public class DelegateOperation implements Operation {
     public void cancel() {
         delegate.cancel();
         original.cancel();
+    }
+
+    @Override
+    public void addStatusMessages(List<String> messages) {
+        original.addStatusMessages(messages);
+        delegate.addStatusMessages(messages);
     }
 
 }
