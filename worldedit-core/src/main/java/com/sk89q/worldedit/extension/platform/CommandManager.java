@@ -52,6 +52,7 @@ import com.sk89q.worldedit.command.argument.TreeGeneratorParser;
 import com.sk89q.worldedit.command.composition.ApplyCommand;
 import com.sk89q.worldedit.command.composition.DeformCommand;
 import com.sk89q.worldedit.command.composition.PaintCommand;
+import com.sk89q.worldedit.command.composition.SelectionCommand;
 import com.sk89q.worldedit.command.composition.ShapedBrushCommand;
 import com.sk89q.worldedit.event.platform.CommandEvent;
 import com.sk89q.worldedit.event.platform.CommandSuggestionEvent;
@@ -149,6 +150,7 @@ public final class CommandManager {
                         .registerMethods(new ToolUtilCommands(worldEdit))
                         .registerMethods(new ToolCommands(worldEdit))
                         .registerMethods(new UtilityCommands(worldEdit))
+                        .register(adapt(new SelectionCommand(new ApplyCommand(new ReplaceParser(), "Set all blocks within selection"), "worldedit.region.set")), "/set")
                         .group("worldedit", "we")
                             .describeAs("WorldEdit commands")
                             .registerMethods(new WorldEditCommands(worldEdit))

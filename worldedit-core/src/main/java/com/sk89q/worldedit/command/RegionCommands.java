@@ -78,20 +78,6 @@ public class RegionCommands {
     }
 
     @Command(
-        aliases = { "/set" },
-        usage = "<block>",
-        desc = "Set all the blocks inside the selection to a block",
-        min = 1,
-        max = 1
-    )
-    @CommandPermissions("worldedit.region.set")
-    @Logging(REGION)
-    public void set(Player player, LocalSession session, EditSession editSession, Pattern pattern) throws WorldEditException {
-        int affected = editSession.setBlocks(session.getSelection(player.getWorld()), Patterns.wrap(pattern));
-        player.print(affected + " block(s) have been changed.");
-    }
-
-    @Command(
             aliases = { "/line" },
             usage = "<block> [thickness]",
             desc = "Draws a line segment between cuboid selection corners",
