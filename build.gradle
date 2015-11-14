@@ -21,7 +21,7 @@ buildscript {
 
     configurations.all {
         resolutionStrategy {
-            force 'com.google.guava:guava:18.0'
+            force 'com.google.guava:guava:17.0'
         }
     }
 

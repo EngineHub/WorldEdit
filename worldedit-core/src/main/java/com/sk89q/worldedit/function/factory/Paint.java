@@ -19,7 +19,6 @@
 
 package com.sk89q.worldedit.function.factory;
 
-import com.google.common.base.MoreObjects;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.extent.NullExtent;
 import com.sk89q.worldedit.function.Contextual;
@@ -34,6 +33,7 @@ import com.sk89q.worldedit.math.noise.RandomNoise;
 import com.sk89q.worldedit.regions.NullRegion;
 import com.sk89q.worldedit.regions.Region;
 
+import static com.google.common.base.Objects.firstNonNull;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.sk89q.worldedit.regions.Regions.*;
 
@@ -63,8 +63,8 @@ public class Paint implements Contextual<Operation> {
 
     @Override
     public Operation createFromContext(EditContext context) {
-        Extent destination = MoreObjects.firstNonNull(context.getDestination(), this.destination);
-        Region region = MoreObjects.firstNonNull(context.getRegion(), this.region);
+        Extent destination = firstNonNull(context.getDestination(), this.destination);
+        Region region = firstNonNull(context.getRegion(), this.region);
         GroundFunction ground = new GroundFunction(new ExistingBlockMask(destination), function.createFromContext(context));
         LayerVisitor visitor = new LayerVisitor(asFlatRegion(region), minimumBlockY(region), maximumBlockY(region), ground);
         visitor.setMask(new NoiseFilter2D(new RandomNoise(), density));

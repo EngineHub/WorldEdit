@@ -19,7 +19,6 @@
 
 package com.sk89q.worldedit.function.factory;
 
-import com.google.common.base.MoreObjects;
 import com.sk89q.worldedit.function.Contextual;
 import com.sk89q.worldedit.function.EditContext;
 import com.sk89q.worldedit.function.RegionFunction;
@@ -28,6 +27,7 @@ import com.sk89q.worldedit.function.visitor.RegionVisitor;
 import com.sk89q.worldedit.regions.NullRegion;
 import com.sk89q.worldedit.regions.Region;
 
+import static com.google.common.base.Objects.firstNonNull;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public class Apply implements Contextual<Operation> {
@@ -48,7 +48,7 @@ public class Apply implements Contextual<Operation> {
 
     @Override
     public Operation createFromContext(EditContext context) {
-        return new RegionVisitor(MoreObjects.firstNonNull(context.getRegion(), region), function.createFromContext(context));
+        return new RegionVisitor(firstNonNull(context.getRegion(), region), function.createFromContext(context));
     }
 
     @Override

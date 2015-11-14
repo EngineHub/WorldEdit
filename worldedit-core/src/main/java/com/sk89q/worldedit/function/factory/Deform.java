@@ -19,7 +19,7 @@
 
 package com.sk89q.worldedit.function.factory;
 
-import com.google.common.base.MoreObjects;
+import com.google.common.base.Objects;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
@@ -123,7 +123,7 @@ public class Deform implements Contextual<Operation> {
         final Vector zero;
         Vector unit;
 
-        Region region = MoreObjects.firstNonNull(context.getRegion(), this.region);
+        Region region = Objects.firstNonNull(context.getRegion(), this.region);
 
         switch (mode) {
             case UNIT_CUBE:
