@@ -510,6 +510,7 @@ public class UtilityCommands {
         usage = "<expression>",
         desc = "Evaluate a mathematical expression"
     )
+    @CommandPermissions("worldedit.calc")
     public void calc(Actor actor, @Text String input) throws CommandException {
         try {
             Expression expression = Expression.compile(input);
