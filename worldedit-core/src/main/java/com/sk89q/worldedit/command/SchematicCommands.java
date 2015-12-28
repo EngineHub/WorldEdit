@@ -24,8 +24,6 @@ import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandException;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.util.io.file.FilenameException;
-import com.sk89q.worldedit.util.io.file.FilenameResolutionException;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
@@ -40,8 +38,11 @@ import com.sk89q.worldedit.extent.clipboard.io.ClipboardWriter;
 import com.sk89q.worldedit.function.operation.Operations;
 import com.sk89q.worldedit.math.transform.Transform;
 import com.sk89q.worldedit.session.ClipboardHolder;
-import com.sk89q.worldedit.util.io.Closer;
+import com.sk89q.worldedit.util.command.binding.Switch;
 import com.sk89q.worldedit.util.command.parametric.Optional;
+import com.sk89q.worldedit.util.io.Closer;
+import com.sk89q.worldedit.util.io.file.FilenameException;
+import com.sk89q.worldedit.util.io.file.FilenameResolutionException;
 import com.sk89q.worldedit.world.registry.WorldData;
 
 import java.io.BufferedInputStream;
@@ -51,8 +52,10 @@ import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -63,6 +66,10 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class SchematicCommands {
 
+    /**
+     * 9 schematics per page fits in the MC chat window.
+     */
+    private static final int SCHEMATICS_PER_PAGE = 9;
     private static final Logger log = Logger.getLogger(SchematicCommands.class.getCanonicalName());
     private final WorldEdit worldEdit;
 
@@ -244,14 +251,16 @@ public class SchematicCommands {
     @Command(
             aliases = {"list", "all", "ls"},
             desc = "List saved schematics",
-            max = 0,
-            flags = "dn",
+            min = 0,
+            max = 1,
+            flags = "dnp",
             help = "List all schematics in the schematics directory\n" +
                     " -d sorts by date, oldest first\n" +
-                    " -n sorts by date, newest first\n"
+                    " -n sorts by date, newest first\n" +
+                    " -p <page> prints the requested page\n"
     )
     @CommandPermissions("worldedit.schematic.list")
-    public void list(Actor actor, CommandContext args) throws WorldEditException {
+    public void list(Actor actor, CommandContext args, @Switch('p') @Optional("1") int page) throws WorldEditException {
         File dir = worldEdit.getWorkingDirectoryFile(worldEdit.getConfiguration().saveDir);
         File[] files = dir.listFiles(new FileFilter(){
             @Override
@@ -264,6 +273,21 @@ public class SchematicCommands {
         });
         if (files == null) {
             throw new FilenameResolutionException(dir.getPath(), "Schematics directory invalid or not found.");
+        }
+        
+        if (files.length == 0) {
+            actor.printError("No schematics found.");
+            return;
+        }
+
+        int pageCount = files.length / SCHEMATICS_PER_PAGE + 1;
+        if (page < 1) {
+            actor.printError("Page must be at least 1");
+            return;
+        }
+        if (page > pageCount) {
+            actor.printError("Page must be less than " + (pageCount + 1));
+            return;
         }
 
         final int sortType = args.hasFlag('d') ? -1 : args.hasFlag('n') ? 1 : 0;
@@ -283,13 +307,23 @@ public class SchematicCommands {
             }
         });
 
-        actor.print("Available schematics (Filename (Format)):");
-        actor.print(listFiles("", files));
+        List<String> schematics = listFiles("", files);
+        int offset = (page - 1) * SCHEMATICS_PER_PAGE;
+
+        actor.print("Available schematics (Filename: Format) [" + page + "/" + pageCount + "]:");
+        StringBuilder build = new StringBuilder();
+        int limit = Math.min(offset + SCHEMATICS_PER_PAGE, schematics.size());
+        for (int i = offset; i < limit; i++) {
+            build.append(schematics.get(i));
+        }
+
+        actor.print(build.toString());
     }
 
-    private String listFiles(String prefix, File[] files) {
-        StringBuilder build = new StringBuilder();
+    private List<String> listFiles(String prefix, File[] files) {
+        List<String> result = new ArrayList<String>();
         for (File file : files) {
+            StringBuilder build = new StringBuilder();
             if (file.isDirectory()) {
                 build.append(listFiles(prefix + file.getName() + "/", file.listFiles()));
                 continue;
@@ -299,10 +333,16 @@ public class SchematicCommands {
                 continue;
             }
 
-            build.append("\n\u00a79");
+            if (!result.isEmpty()) { // prevent an empty line
+                build.append('\n');
+            }
+            build.append("\u00a79");
             ClipboardFormat format = ClipboardFormat.findByFile(file);
-            build.append(prefix).append(file.getName()).append(": ").append(format == null ? "Unknown" : format.name());
+            build.append(prefix).append(file.getName())
+               .append(": ").append(format == null ? "Unknown" : format.name());
+
+            result.add(build.toString());
         }
-        return build.toString();
+        return result;
     }
 }
