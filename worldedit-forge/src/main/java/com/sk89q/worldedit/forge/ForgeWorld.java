@@ -238,7 +238,7 @@ public class ForgeWorld extends AbstractWorld {
                 try {
                     u = ChunkProviderServer.class.getDeclaredField("field_73248_b"); // chunksToUnload
                 } catch(NoSuchFieldException e) {
-                    u = ChunkProviderServer.class.getDeclaredField("chunksToUnload");
+                    u = ChunkProviderServer.class.getDeclaredField("droppedChunksSet");
                 }
                 u.setAccessible(true);
                 Set<?> unloadQueue = (Set<?>) u.get(chunkServer);
@@ -246,7 +246,7 @@ public class ForgeWorld extends AbstractWorld {
                 try {
                     m = ChunkProviderServer.class.getDeclaredField("field_73244_f"); // loadedChunkHashMap
                 } catch(NoSuchFieldException e) {
-                    m = ChunkProviderServer.class.getDeclaredField("loadedChunkHashMap");
+                    m = ChunkProviderServer.class.getDeclaredField("id2ChunkMap");
                 }
                 m.setAccessible(true);
                 LongHashMap loadedMap = (LongHashMap) m.get(chunkServer);
@@ -262,7 +262,7 @@ public class ForgeWorld extends AbstractWorld {
                 try {
                     p = ChunkProviderServer.class.getDeclaredField("field_73246_d"); // currentChunkProvider
                 } catch(NoSuchFieldException e) {
-                    p = ChunkProviderServer.class.getDeclaredField("currentChunkProvider");
+                    p = ChunkProviderServer.class.getDeclaredField("serverChunkGenerator");
                 }
                 p.setAccessible(true);
                 IChunkProvider chunkProvider = (IChunkProvider) p.get(chunkServer);
