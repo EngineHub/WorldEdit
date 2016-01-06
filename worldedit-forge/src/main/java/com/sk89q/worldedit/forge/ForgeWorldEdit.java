@@ -61,7 +61,7 @@ import static net.minecraftforge.event.entity.player.PlayerInteractEvent.Action;
 /**
  * The Forge implementation of WorldEdit.
  */
-@Mod(modid = ForgeWorldEdit.MOD_ID, name = "WorldEdit", version = "%VERSION%", acceptableRemoteVersions = "*", dependencies = "after:Sponge")
+@Mod(modid = ForgeWorldEdit.MOD_ID, name = "WorldEdit", version = "%VERSION%", acceptableRemoteVersions = "*", dependencies = "after:sponge")
 public class ForgeWorldEdit {
 
     public static Logger logger;
@@ -118,7 +118,7 @@ public class ForgeWorldEdit {
 
         WorldEdit.getInstance().getPlatformManager().register(platform);
 
-        if (Loader.isModLoaded("Sponge")) {
+        if (Loader.isModLoaded("sponge")) {
             this.provider = new ForgePermissionsProvider.SpongePermissionsProvider();
         } else {
             this.provider = new ForgePermissionsProvider.VanillaPermissionsProvider(platform);
