@@ -75,11 +75,6 @@ subprojects {
         }
     }
 
-    task sourcesJar(type: Jar, dependsOn: classes) {
-        classifier = 'sources'
-        from sourceSets.main.allSource
-    }
-
     task javadocJar(type: Jar, dependsOn: javadoc) {
         classifier = 'javadoc'
         from javadoc.destinationDir
@@ -87,13 +82,23 @@ subprojects {
 
     artifacts {
         archives jar
-        archives sourcesJar
         archives javadocJar
+    }
+
+    if (!name.equals('worldedit-forge')) {
+        task sourcesJar(type: Jar, dependsOn: classes) {
+            classifier = 'sources'
+            from sourceSets.main.allSource
+        }
+
+        artifacts {
+            archives sourcesJar
+        }
+        build.dependsOn(sourcesJar)
     }
 
     build.dependsOn(checkstyleMain)
     build.dependsOn(checkstyleTest)
-    build.dependsOn(sourcesJar)
     build.dependsOn(javadocJar)
 
     shadowJar {

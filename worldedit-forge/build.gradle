@@ -67,7 +67,9 @@ shadowJar {
 }
 
 reobf {
-    shadowJar
+    shadowJar {
+        mappingType = 'SEARGE'
+    }
 }
 
 task deobfJar(type: Jar) {
@@ -79,4 +81,4 @@ artifacts {
     archives deobfJar
 }
 
-build.dependsOn(shadowJar)
+build.dependsOn(reobfShadowJar)
