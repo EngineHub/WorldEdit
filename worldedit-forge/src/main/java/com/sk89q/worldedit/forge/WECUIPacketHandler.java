@@ -19,21 +19,19 @@
 
 package com.sk89q.worldedit.forge;
 
-import java.nio.charset.Charset;
+import com.sk89q.worldedit.LocalSession;
 
+import java.nio.charset.Charset;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.ThreadQuickExitException;
-import net.minecraft.network.play.server.S20PacketEntityProperties;
 import net.minecraft.network.play.server.S3FPacketCustomPayload;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.FMLEventChannel;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent.ClientCustomPacketEvent;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent.ServerCustomPacketEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
-
-import com.sk89q.worldedit.LocalSession;
 
 public class WECUIPacketHandler {
     public static final Charset UTF_8_CHARSET = Charset.forName("UTF-8");

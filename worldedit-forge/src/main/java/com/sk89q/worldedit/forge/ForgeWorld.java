@@ -41,9 +41,14 @@ import com.sk89q.worldedit.world.biome.BaseBiome;
 import com.sk89q.worldedit.world.registry.WorldData;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockLeaves;
+import net.minecraft.block.BlockOldLeaf;
+import net.minecraft.block.BlockOldLog;
+import net.minecraft.block.BlockPlanks;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.init.Blocks;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -90,9 +95,14 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class ForgeWorld extends AbstractWorld {
 
+    private static final Random random = new Random();
     private static final int UPDATE = 1, NOTIFY = 2, NOTIFY_CLIENT = 4;
     private static final Logger logger = Logger.getLogger(ForgeWorld.class.getCanonicalName());
-    private static final Random random = new Random();
+
+    private static final IBlockState JUNGLE_LOG = Blocks.log.getDefaultState().withProperty(BlockOldLog.VARIANT, BlockPlanks.EnumType.JUNGLE);
+    private static final IBlockState JUNGLE_LEAF = Blocks.leaves.getDefaultState().withProperty(BlockOldLeaf.VARIANT, BlockPlanks.EnumType.JUNGLE).withProperty(BlockLeaves.CHECK_DECAY, Boolean.valueOf(false));
+    private static final IBlockState JUNGLE_SHRUB = Blocks.leaves.getDefaultState().withProperty(BlockOldLeaf.VARIANT, BlockPlanks.EnumType.OAK).withProperty(BlockLeaves.CHECK_DECAY, Boolean.valueOf(false));
+    
     private final WeakReference<World> worldRef;
 
     /**
@@ -348,12 +358,12 @@ public class ForgeWorld extends AbstractWorld {
             case REDWOOD: return new WorldGenTaiga2(true);
             case TALL_REDWOOD: return new WorldGenTaiga1();
             case BIRCH: return new WorldGenForest(true, false);
-            case JUNGLE: return new WorldGenMegaJungle(true, 10, 20, 3, 3);
-            case SMALL_JUNGLE: return new WorldGenTrees(true, 4 + random.nextInt(7), 3, 3, false);
-            case SHORT_JUNGLE: return new WorldGenTrees(true, 4 + random.nextInt(7), 3, 3, true);
-            case JUNGLE_BUSH: return new WorldGenShrub(3, 0);
-            case RED_MUSHROOM: return new WorldGenBigMushroom(1);
-            case BROWN_MUSHROOM: return new WorldGenBigMushroom(0);
+            case JUNGLE: return new WorldGenMegaJungle(true, 10, 20, JUNGLE_LOG, JUNGLE_LEAF);
+            case SMALL_JUNGLE: return new WorldGenTrees(true, 4 + random.nextInt(7), JUNGLE_LOG, JUNGLE_LEAF, false);
+            case SHORT_JUNGLE: return new WorldGenTrees(true, 4 + random.nextInt(7), JUNGLE_LOG, JUNGLE_LEAF, true);
+            case JUNGLE_BUSH: return new WorldGenShrub(JUNGLE_LOG, JUNGLE_SHRUB);
+            case RED_MUSHROOM: return new WorldGenBigMushroom(Blocks.brown_mushroom_block);
+            case BROWN_MUSHROOM: return new WorldGenBigMushroom(Blocks.red_mushroom_block);
             case SWAMP: return new WorldGenSwamp();
             case ACACIA: return new WorldGenSavannaTree(true);
             case DARK_OAK: return new WorldGenCanopyTree(true);
@@ -427,7 +437,6 @@ public class ForgeWorld extends AbstractWorld {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public List<? extends Entity> getEntities(Region region) {
         List<Entity> entities = new ArrayList<Entity>();
         World world = getWorld();
@@ -443,8 +452,8 @@ public class ForgeWorld extends AbstractWorld {
     @Override
     public List<? extends Entity> getEntities() {
         List<Entity> entities = new ArrayList<Entity>();
-        for (Object entity : getWorld().loadedEntityList) {
-            entities.add(new ForgeEntity((net.minecraft.entity.Entity) entity));
+        for (net.minecraft.entity.Entity entity : getWorld().loadedEntityList) {
+            entities.add(new ForgeEntity(entity));
         }
         return entities;
     }

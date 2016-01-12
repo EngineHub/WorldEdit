@@ -19,6 +19,8 @@
 
 package com.sk89q.worldedit.forge;
 
+import org.apache.logging.log4j.Logger;
+
 import com.google.common.base.Joiner;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
@@ -28,6 +30,8 @@ import com.sk89q.worldedit.event.platform.PlatformReadyEvent;
 import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.internal.LocalWorldAdapter;
 
+import java.io.File;
+import java.util.Map;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -35,7 +39,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.CommandEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent.Action;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
@@ -50,13 +54,7 @@ import net.minecraftforge.fml.common.event.FMLServerStoppingEvent;
 import net.minecraftforge.fml.common.eventhandler.Event.Result;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-import org.apache.logging.log4j.Logger;
-
-import java.io.File;
-import java.util.Map;
-
 import static com.google.common.base.Preconditions.checkNotNull;
-import static net.minecraftforge.event.entity.player.PlayerInteractEvent.Action;
 
 /**
  * The Forge implementation of WorldEdit.
@@ -90,7 +88,7 @@ public class ForgeWorldEdit {
         config = new ForgeConfiguration(this);
         config.load();
 
-        FMLCommonHandler.instance().bus().register(ThreadSafeCache.getInstance());
+        MinecraftForge.EVENT_BUS.register(ThreadSafeCache.getInstance());
     }
 
     @EventHandler
@@ -203,7 +201,7 @@ public class ForgeWorldEdit {
     public static ItemStack toForgeItemStack(BaseItemStack item) {
         ItemStack ret = new ItemStack(Item.getItemById(item.getType()), item.getAmount(), item.getData());
         for (Map.Entry<Integer, Integer> entry : item.getEnchantments().entrySet()) {
-            ret.addEnchantment(net.minecraft.enchantment.Enchantment.enchantmentsList[((Integer) entry.getKey())], (Integer) entry.getValue());
+            ret.addEnchantment(net.minecraft.enchantment.Enchantment.getEnchantmentById(entry.getKey()), entry.getValue());
         }
 
         return ret;

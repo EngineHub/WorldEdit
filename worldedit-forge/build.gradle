@@ -7,25 +7,30 @@ buildscript {
     }
 
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:1.2-SNAPSHOT'
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.1-SNAPSHOT'
     }
 }
 
-apply plugin: 'forge'
+apply plugin: 'net.minecraftforge.gradle.forge'
 
 dependencies {
     compile project(':worldedit-core')
-    compile 'org.spongepowered:spongeapi:2.1-SNAPSHOT'
+    compile 'org.spongepowered:spongeapi:3.1.0-SNAPSHOT'
     testCompile group: 'org.mockito', name: 'mockito-core', version:'1.9.0-rc1'
 }
 
 repositories {
-    maven { url ="https://repo.spongepowered.org/maven" }
+    maven {
+        name = "Sponge"
+        url = "https://repo.spongepowered.org/maven"
+    }
 }
 
+ext.forgeVersion = "11.15.0.1695"
 minecraft {
-    ext.forgeVersion = "11.14.0.1281"
-    version = "1.8-$forgeVersion-1.8"
+    version = "1.8.9-${project.forgeVersion}"
+    mappings = "snapshot_20160111"
+    runDir = 'run'
 
     replaceIn "com/sk89q/worldedit/forge/ForgeWorldEdit.java"
     replace "%VERSION%", project.version
@@ -37,7 +42,7 @@ processResources {
     from (sourceSets.main.resources.srcDirs) {
         expand 'version': project.version,
                 'mcVersion': project.minecraft.version,
-                'forgeVersion': project.minecraft.forgeVersion,
+                'forgeVersion': project.forgeVersion,
                 'internalVersion': project.internalVersion
         include 'mcmod.info'
     }
@@ -60,8 +65,8 @@ shadowJar {
     }
 }
 
-reobf.reobf(shadowJar) { spec ->
-    spec.classpath = sourceSets.main.compileClasspath;
+reobf {
+    shadowJar
 }
 
 task deobfJar(type: Jar) {

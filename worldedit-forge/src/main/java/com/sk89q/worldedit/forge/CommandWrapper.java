@@ -79,7 +79,7 @@ public class CommandWrapper extends CommandBase {
     }
 
     @Override
-    public int compareTo(@Nullable Object o) {
+    public int compareTo(@Nullable ICommand o) {
         if (o == null) {
             return 0;
         } else if (o instanceof ICommand) {
