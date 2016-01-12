@@ -40,6 +40,14 @@ import com.sk89q.worldedit.world.AbstractWorld;
 import com.sk89q.worldedit.world.biome.BaseBiome;
 import com.sk89q.worldedit.world.registry.WorldData;
 
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLeaves;
 import net.minecraft.block.BlockOldLeaf;
@@ -56,7 +64,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.ClassInheritanceMultiMap;
-import net.minecraft.util.LongHashMap;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
@@ -77,16 +84,6 @@ import net.minecraft.world.gen.feature.WorldGenTaiga2;
 import net.minecraft.world.gen.feature.WorldGenTrees;
 import net.minecraft.world.gen.feature.WorldGenerator;
 
-import javax.annotation.Nullable;
-
-import java.lang.ref.WeakReference;
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -276,38 +273,7 @@ public class ForgeWorld extends AbstractWorld {
                     return false;
                 }
                 ChunkProviderServer chunkServer = (ChunkProviderServer) provider;
-                Field u;
-                try {
-                    u = ChunkProviderServer.class.getDeclaredField("field_73248_b"); // chunksToUnload
-                } catch(NoSuchFieldException e) {
-                    u = ChunkProviderServer.class.getDeclaredField("chunksToUnload");
-                }
-                u.setAccessible(true);
-                Set<?> unloadQueue = (Set<?>) u.get(chunkServer);
-                Field m;
-                try {
-                    m = ChunkProviderServer.class.getDeclaredField("field_73244_f"); // loadedChunkHashMap
-                } catch(NoSuchFieldException e) {
-                    m = ChunkProviderServer.class.getDeclaredField("loadedChunkHashMap");
-                }
-                m.setAccessible(true);
-                LongHashMap loadedMap = (LongHashMap) m.get(chunkServer);
-                Field lc;
-                try {
-                    lc = ChunkProviderServer.class.getDeclaredField("field_73245_g"); // loadedChunkHashMap
-                } catch(NoSuchFieldException e) {
-                    lc = ChunkProviderServer.class.getDeclaredField("loadedChunks");
-                }
-                lc.setAccessible(true);
-                @SuppressWarnings("unchecked") List<Chunk> loaded = (List<Chunk>) lc.get(chunkServer);
-                Field p;
-                try {
-                    p = ChunkProviderServer.class.getDeclaredField("field_73246_d"); // currentChunkProvider
-                } catch(NoSuchFieldException e) {
-                    p = ChunkProviderServer.class.getDeclaredField("currentChunkProvider");
-                }
-                p.setAccessible(true);
-                IChunkProvider chunkProvider = (IChunkProvider) p.get(chunkServer);
+                IChunkProvider chunkProvider = chunkServer.serverChunkGenerator;
 
                 for (Vector2D coord : chunks) {
                     long pos = ChunkCoordIntPair.chunkXZ2Int(coord.getBlockX(), coord.getBlockZ());
@@ -316,11 +282,11 @@ public class ForgeWorld extends AbstractWorld {
                         mcChunk = chunkServer.loadChunk(coord.getBlockX(), coord.getBlockZ());
                         mcChunk.onChunkUnload();
                     }
-                    unloadQueue.remove(pos);
-                    loadedMap.remove(pos);
+                    chunkServer.droppedChunksSet.remove(pos);
+                    chunkServer.id2ChunkMap.remove(pos);
                     mcChunk = chunkProvider.provideChunk(coord.getBlockX(), coord.getBlockZ());
-                    loadedMap.add(pos, mcChunk);
-                    loaded.add(mcChunk);
+                    chunkServer.id2ChunkMap.add(pos, mcChunk);
+                    chunkServer.loadedChunks.add(mcChunk);
                     if (mcChunk != null) {
                         mcChunk.onChunkLoad();
                         mcChunk.populateChunk(chunkProvider, chunkProvider, coord.getBlockX(), coord.getBlockZ());

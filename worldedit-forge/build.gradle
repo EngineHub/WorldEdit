@@ -55,7 +55,8 @@ processResources {
 jar {
     manifest {
         attributes("Class-Path": "truezip.jar WorldEdit/truezip.jar js.jar WorldEdit/js.jar",
-                   "WorldEdit-Version": version)
+                   "WorldEdit-Version": version,
+                   "FMLAT": "worldedit_at.cfg")
     }
 }
 
