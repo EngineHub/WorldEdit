@@ -42,13 +42,11 @@ import com.sk89q.worldedit.util.command.binding.Switch;
 import com.sk89q.worldedit.util.command.parametric.Optional;
 import com.sk89q.worldedit.util.io.Closer;
 import com.sk89q.worldedit.util.io.file.FilenameException;
-import com.sk89q.worldedit.util.io.file.FilenameResolutionException;
 import com.sk89q.worldedit.world.registry.WorldData;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -58,6 +56,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -262,19 +261,10 @@ public class SchematicCommands {
     @CommandPermissions("worldedit.schematic.list")
     public void list(Actor actor, CommandContext args, @Switch('p') @Optional("1") int page) throws WorldEditException {
         File dir = worldEdit.getWorkingDirectoryFile(worldEdit.getConfiguration().saveDir);
-        File[] files = dir.listFiles(new FileFilter(){
-            @Override
-            public boolean accept(File file) {
-                // sort out directories from the schematic list
-                // if WE supports sub-directories in the future,
-                // this will have to be changed
-                return file.isFile();
-            }
-        });
-        if (files == null) {
-            throw new FilenameResolutionException(dir.getPath(), "Schematics directory invalid or not found.");
-        }
-        
+        List<File> fileList = allFiles(dir);
+        File[] files = new File[fileList.size()];
+        fileList.toArray(files);
+
         if (files.length == 0) {
             actor.printError("No schematics found.");
             return;
@@ -295,52 +285,66 @@ public class SchematicCommands {
         Arrays.sort(files, new Comparator<File>(){
             @Override
             public int compare(File f1, File f2) {
-                // this should no longer happen, as directory-ness is checked before
-                // however, if a directory slips through, this will break the contract
-                // of comparator transitivity
-                if (!f1.isFile() || !f2.isFile()) return -1;
                 // http://stackoverflow.com/questions/203030/best-way-to-list-files-in-java-sorted-by-date-modified
-                int result = sortType == 0 ? f1.getName().compareToIgnoreCase(f2.getName()) : // use name by default
-                    Long.valueOf(f1.lastModified()).compareTo(f2.lastModified()); // use date if there is a flag
-                if (sortType == 1) result = -result; // flip date for newest first instead of oldest first
-                return result;
+                int res;
+                if (sortType == 0) { // use name by default
+                    int p = f1.getParent().compareTo(f2.getParent());
+                    if (p == 0) { // same parent, compare names
+                        res = f1.getName().compareTo(f2.getName());
+                    } else { // different parent, sort by that
+                        res = p;
+                    }
+                } else {
+                    res = Long.valueOf(f1.lastModified()).compareTo(f2.lastModified()); // use date if there is a flag
+                    if (sortType == 1) res = -res; // flip date for newest first instead of oldest first
+                }
+                return res;
             }
         });
 
-        List<String> schematics = listFiles("", files);
+        List<String> schematics = listFiles(worldEdit.getConfiguration().saveDir, files);
         int offset = (page - 1) * SCHEMATICS_PER_PAGE;
 
         actor.print("Available schematics (Filename: Format) [" + page + "/" + pageCount + "]:");
         StringBuilder build = new StringBuilder();
         int limit = Math.min(offset + SCHEMATICS_PER_PAGE, schematics.size());
-        for (int i = offset; i < limit; i++) {
+        for (int i = offset; i < limit;) {
             build.append(schematics.get(i));
+            if (++i != limit) {
+                build.append("\n");
+            }
         }
 
         actor.print(build.toString());
     }
 
+    private List<File> allFiles(File root) {
+        File[] files = root.listFiles();
+        if (files == null) return null;
+        List<File> fileList = new ArrayList<File>();
+        for (File f : files) {
+            if (f.isDirectory()) {
+                List<File> subFiles = allFiles(f);
+                if (subFiles == null) continue; // empty subdir
+                fileList.addAll(subFiles);
+            } else {
+                fileList.add(f);
+            }
+        }
+        return fileList;
+    }
+
     private List<String> listFiles(String prefix, File[] files) {
+        if (prefix == null) prefix = "";
         List<String> result = new ArrayList<String>();
         for (File file : files) {
             StringBuilder build = new StringBuilder();
-            if (file.isDirectory()) {
-                build.append(listFiles(prefix + file.getName() + "/", file.listFiles()));
-                continue;
-            }
 
-            if (!file.isFile()) {
-                continue;
-            }
-
-            if (!result.isEmpty()) { // prevent an empty line
-                build.append('\n');
-            }
-            build.append("\u00a79");
+            build.append("\u00a72");
             ClipboardFormat format = ClipboardFormat.findByFile(file);
-            build.append(prefix).append(file.getName())
-               .append(": ").append(format == null ? "Unknown" : format.name());
-
+            boolean inRoot = file.getParentFile().getName().equals(prefix);
+            build.append(inRoot ? file.getName() : file.getPath().split(Pattern.quote(prefix + File.separator))[1])
+                    .append(": ").append(format == null ? "Unknown" : format.name());
             result.add(build.toString());
         }
         return result;
