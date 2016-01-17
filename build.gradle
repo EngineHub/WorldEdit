@@ -38,7 +38,7 @@ if (!project.hasProperty("artifactory_password")) ext.artifactory_password = ""
 
 if (!project.hasProperty("gitCommitHash")) {
     try {
-        def repo = Grgit.open(project.file('.'))
+        def repo = org.ajoberstar.grgit.Grgit.open(project.file('.'))
         ext.gitCommitHash = repo.head().abbreviatedId
     } catch (Exception e) {
         ext.gitCommitHash = "no_git_id"

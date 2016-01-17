@@ -6,7 +6,7 @@
     "mcversion": "${mcVersion}",
     "url": "http://wiki.sk89q.com/wiki/WorldEdit",
     "updateUrl": "",
-    "authors": [ "sk89q", "wizjany", "TomyLobo" ],
+    "authors": [ "sk89q", "wizjany", "TomyLobo", "kenzierocks" ],
     "credits": "",
     "logoFile": "",
     "screenshots": [],

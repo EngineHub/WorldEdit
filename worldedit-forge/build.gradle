@@ -26,7 +26,10 @@ repositories {
     }
 }
 
+version = "6.1.1"
 ext.forgeVersion = "11.15.0.1695"
+ext.internalVersion = version + ";" + gitCommitHash
+
 minecraft {
     version = "1.8.9-${project.forgeVersion}"
     mappings = "snapshot_20160111"
