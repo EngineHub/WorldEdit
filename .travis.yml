@@ -3,7 +3,8 @@ notifications:
   email: false
 before_install: chmod +x gradlew
 install: ./gradlew setupCIWorkspace -S
-matrix:
-  include:
-  - jdk: oraclejdk7
-    script: ./gradlew build -S
+script: ./gradlew build -S
+jdk:
+  - oraclejdk8
+  - oraclejdk7
+  - openjdk6
