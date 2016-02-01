@@ -15,3 +15,6 @@ cache:
   directories:
     - $HOME/.gradle/caches/
     - $HOME/.gradle/wrapper/
+
+# Faster builds without sudo.
+sudo: false
