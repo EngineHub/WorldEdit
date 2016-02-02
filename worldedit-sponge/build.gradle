@@ -49,7 +49,7 @@ minecraft {
     mappings = "snapshot_20160111"
     runDir = 'run'
 
-    replaceIn "com/sk89q/worldedit/forge/ForgeWorldEdit.java"
+    replaceIn "com/sk89q/worldedit/sponge/SpongeWorldEdit.java"
     replace "%VERSION%", project.version
 }
 
@@ -61,11 +61,6 @@ processResources {
                 'mcVersion': project.minecraft.version,
                 'forgeVersion': project.forgeVersion,
                 'internalVersion': project.internalVersion
-        include 'mcmod.info'
-    }
-
-    from (sourceSets.main.resources.srcDirs) {
-        exclude 'mcmod.info'
     }
 }
 
