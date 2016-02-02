@@ -19,9 +19,10 @@
 
 package com.sk89q.worldedit.sponge;
 
-import com.sk89q.worldedit.entity.BaseEntity;
+import net.minecraft.block.Block;
+import net.minecraft.item.Item;
+import net.minecraft.world.biome.BiomeGenBase;
 import org.spongepowered.api.block.BlockType;
-import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.world.biome.BiomeType;
 
@@ -30,29 +31,26 @@ final class IDHelper {
     private IDHelper() { }
 
     public static int resolve(ItemType type) {
-        return 0;
+        return Item.getIdFromItem((Item) type);
     }
 
     public static int resolve(BlockType type) {
-        return 0;
+        return Block.getIdFromBlock((Block) type);
     }
 
     public static int resolve(BiomeType type) {
-        return 0;
+        return ((BiomeGenBase) type).biomeID;
     }
 
-
     public static ItemType resolveItem(int ID) {
-        return null;
+        return (ItemType) Item.getItemById(ID);
     }
 
     public static BlockType resolveBlock(int ID) {
-        return null;
+        return (BlockType) Block.getBlockById(ID);
     }
 
     public static BiomeType resolveBiome(int ID) {
-        return null;
+        return (BiomeType) BiomeGenBase.getBiome(ID);
     }
-
-
 }
