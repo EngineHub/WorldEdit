@@ -25,9 +25,9 @@ import com.sk89q.worldedit.world.registry.LegacyWorldData;
 /**
  * World data for the Forge platform.
  */
-class ForgeWorldData extends LegacyWorldData {
+class SpongeWorldData extends LegacyWorldData {
 
-    private static final ForgeWorldData INSTANCE = new ForgeWorldData();
+    private static final SpongeWorldData INSTANCE = new SpongeWorldData();
     private final BiomeRegistry biomeRegistry = new SpongeBiomeRegistry();
 
     @Override
@@ -40,7 +40,7 @@ class ForgeWorldData extends LegacyWorldData {
      *
      * @return an instance
      */
-    public static ForgeWorldData getInstance() {
+    public static SpongeWorldData getInstance() {
         return INSTANCE;
     }
 

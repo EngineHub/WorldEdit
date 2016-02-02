@@ -46,6 +46,8 @@ import org.spongepowered.api.data.property.block.SkyLuminanceProperty;
 import org.spongepowered.api.entity.EntitySnapshot;
 import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.event.cause.Cause;
+import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.channel.MessageChannel;
 import org.spongepowered.api.world.World;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -170,16 +172,14 @@ public abstract class SpongeWorld extends AbstractWorld {
         }
     }
 
-
-
     @Override
     public WorldData getWorldData() {
-        return ForgeWorldData.getInstance();
+        return SpongeWorldData.getInstance();
     }
 
     @Override
     public boolean isValidBlockType(int id) {
-        return (id == 0) || (IDHelper.resolveItem(id) != null);
+        return (id == 0) || (IDHelper.resolveBlock(id) != null);
     }
 
     @Override
