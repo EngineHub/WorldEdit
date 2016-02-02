@@ -19,23 +19,33 @@
 
 package com.sk89q.worldedit.sponge;
 
+import com.google.common.base.Joiner;
+import com.google.common.collect.Lists;
+import com.sk89q.minecraft.util.commands.CommandException;
+import com.sk89q.minecraft.util.commands.CommandLocals;
+import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.LocalConfiguration;
+import com.sk89q.worldedit.LocalSession;
+import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.entity.Player;
-import com.sk89q.worldedit.extension.platform.AbstractPlatform;
-import com.sk89q.worldedit.extension.platform.Actor;
-import com.sk89q.worldedit.extension.platform.Capability;
-import com.sk89q.worldedit.extension.platform.MultiUserPlatform;
-import com.sk89q.worldedit.extension.platform.Preference;
+import com.sk89q.worldedit.event.platform.CommandEvent;
+import com.sk89q.worldedit.event.platform.CommandSuggestionEvent;
+import com.sk89q.worldedit.extension.platform.*;
 import com.sk89q.worldedit.util.command.CommandMapping;
 import com.sk89q.worldedit.util.command.Dispatcher;
+import com.sk89q.worldedit.util.command.InvalidUsageException;
 import com.sk89q.worldedit.world.World;
-
+import net.minecraft.entity.player.EntityPlayerMP;
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.command.CommandResult;
+import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.EntityType;
 import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.scheduler.Task;
+import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.format.TextColors;
 
 import javax.annotation.Nullable;
-
 import java.util.*;
 
 class SpongePlatform extends AbstractPlatform implements MultiUserPlatform {
@@ -119,8 +129,23 @@ class SpongePlatform extends AbstractPlatform implements MultiUserPlatform {
 
     @Override
     public void registerCommands(Dispatcher dispatcher) {
-        for (final CommandMapping command : dispatcher.getCommands()) {
-            Sponge.getCommandManager().register(SpongeWorldEdit.inst, new CommandWrapper(command), command.getAllAliases());
+        for (CommandMapping command : dispatcher.getCommands()) {
+            CommandAdapter adapter = new CommandAdapter(command) {
+                @Override
+                public CommandResult process(CommandSource source, String arguments) throws org.spongepowered.api.command.CommandException {
+                    CommandEvent weEvent = new CommandEvent(SpongeWorldEdit.inst.wrapCommandSource(source), command.getPrimaryAlias() + " " + arguments);
+                    WorldEdit.getInstance().getEventBus().post(weEvent);
+                    return weEvent.isCancelled() ? CommandResult.success() : CommandResult.empty();
+                }
+
+                @Override
+                public List<String> getSuggestions(CommandSource source, String arguments) throws org.spongepowered.api.command.CommandException {
+                    CommandSuggestionEvent weEvent = new CommandSuggestionEvent(SpongeWorldEdit.inst.wrapCommandSource(source), command.getPrimaryAlias() + " " + arguments);
+                    WorldEdit.getInstance().getEventBus().post(weEvent);
+                    return weEvent.getSuggestions();
+                }
+            };
+            Sponge.getCommandManager().register(SpongeWorldEdit.inst, adapter, command.getAllAliases());
         }
     }
 
@@ -154,8 +179,7 @@ class SpongePlatform extends AbstractPlatform implements MultiUserPlatform {
     public Map<Capability, Preference> getCapabilities() {
         Map<Capability, Preference> capabilities = new EnumMap<>(Capability.class);
         capabilities.put(Capability.CONFIGURATION, Preference.PREFER_OTHERS);
-        // TODO WorldEditCUI Support
-        // capabilities.put(Capability.WORLDEDIT_CUI, Preference.NORMAL);
+        capabilities.put(Capability.WORLDEDIT_CUI, Preference.NORMAL);
         capabilities.put(Capability.GAME_HOOKS, Preference.NORMAL);
         capabilities.put(Capability.PERMISSIONS, Preference.NORMAL);
         capabilities.put(Capability.USER_COMMANDS, Preference.NORMAL);

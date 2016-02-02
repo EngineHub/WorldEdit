@@ -20,9 +20,8 @@
 package com.sk89q.worldedit.sponge;
 
 import com.google.inject.Inject;
-import org.apache.logging.log4j.Logger;
+import com.sk89q.worldedit.extension.platform.Actor;
 
-import com.google.common.base.Joiner;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldVector;
@@ -33,13 +32,14 @@ import com.sk89q.worldedit.internal.LocalWorldAdapter;
 
 import java.io.File;
 import java.nio.file.Path;
-import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockSnapshot;
 import org.spongepowered.api.block.BlockType;
 import org.spongepowered.api.block.BlockTypes;
+import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.config.ConfigManager;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
@@ -48,16 +48,16 @@ import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.event.game.state.*;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.plugin.Plugin;
+import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
-import org.spongepowered.mod.mixin.core.event.state.MixinEventServerAboutToStart;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * The Sponge implementation of WorldEdit.
  */
-@Plugin(id = "SpongeWorldEdit.MOD_ID", name = "WorldEdit", version = "%VERSION%")
+@Plugin(id = SpongeWorldEdit.MOD_ID, name = "WorldEdit", version = "%VERSION%")
 public class SpongeWorldEdit {
 
     @Inject
@@ -74,6 +74,10 @@ public class SpongeWorldEdit {
     private SpongeConfiguration config;
     private File workingDir;
 
+    public SpongeWorldEdit() {
+        inst = this;
+    }
+
     @Listener
     public void preInit(GamePreInitializationEvent event) {
         // Setup working directory
@@ -86,7 +90,7 @@ public class SpongeWorldEdit {
         config = new SpongeConfiguration(this);
         config.load();
 
-        Sponge.getEventManager().registerListeners(this, ThreadSafeCache.getInstance());
+        Task.builder().interval(30, TimeUnit.SECONDS).execute(ThreadSafeCache.getInstance()).submit(this);
     }
 
     @Listener
@@ -96,7 +100,7 @@ public class SpongeWorldEdit {
 
     @Listener
     public void postInit(GamePostInitializationEvent event) {
-        logger.info("WorldEdit for Forge (version " + getInternalVersion() + ") is loaded");
+        logger.info("WorldEdit for Sponge (version " + getInternalVersion() + ") is loaded");
     }
 
     @Listener
@@ -122,19 +126,6 @@ public class SpongeWorldEdit {
         WorldEdit.getInstance().getEventBus().post(new PlatformReadyEvent());
     }
 
-    /*@Listener
-    public void onCommandEvent(CommandEvent event) {
-        if ((event.sender instanceof EntityPlayerMP)) {
-            if (((EntityPlayerMP) event.sender).worldObj.isRemote) return;
-            String[] split = new String[event.parameters.length + 1];
-            System.arraycopy(event.parameters, 0, split, 1, event.parameters.length);
-            split[0] = event.command.getCommandName();
-            com.sk89q.worldedit.event.platform.CommandEvent weEvent =
-                    new com.sk89q.worldedit.event.platform.CommandEvent(wrap((EntityPlayerMP) event.sender), Joiner.on(" ").join(split));
-            WorldEdit.getInstance().getEventBus().post(weEvent);
-        }
-    }*/
-
     @Listener
     public void onPlayerInteract(InteractBlockEvent event) {
         if (platform == null) {
@@ -145,7 +136,7 @@ public class SpongeWorldEdit {
 
         WorldEdit we = WorldEdit.getInstance();
         Optional<Player> optPlayer = event.getCause().get(NamedCause.SOURCE, Player.class);
-        SpongePlayer player = wrap(optPlayer.get());
+        SpongePlayer player = wrapPlayer(optPlayer.get());
         com.sk89q.worldedit.world.World world = player.getWorld();
 
         BlockSnapshot targetBlock = event.getTargetBlock();
@@ -202,9 +193,17 @@ public class SpongeWorldEdit {
      * @param player the player
      * @return the WorldEdit player
      */
-    public SpongePlayer wrap(Player player) {
+    public SpongePlayer wrapPlayer(Player player) {
         checkNotNull(player);
         return new SpongePlayer(platform, player);
+    }
+
+    public Actor wrapCommandSource(CommandSource sender) {
+        if (sender instanceof Player) {
+            return wrapPlayer((Player) sender);
+        }
+
+        return new SpongeCommandSender(this, sender);
     }
 
     /**
@@ -215,7 +214,7 @@ public class SpongeWorldEdit {
      */
     public LocalSession getSession(Player player) {
         checkNotNull(player);
-        return WorldEdit.getInstance().getSessionManager().get(wrap(player));
+        return WorldEdit.getInstance().getSessionManager().get(wrapPlayer(player));
     }
 
     /**

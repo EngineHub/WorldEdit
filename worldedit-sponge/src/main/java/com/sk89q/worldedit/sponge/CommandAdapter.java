@@ -25,43 +25,43 @@ import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.Texts;
 
-import javax.annotation.Nullable;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-public class CommandWrapper implements CommandCallable {
+public abstract class CommandAdapter implements CommandCallable {
     private CommandMapping command;
 
-    protected CommandWrapper(CommandMapping command) {
+    protected CommandAdapter(CommandMapping command) {
         this.command = command;
     }
 
     @Override
-    public CommandResult process(CommandSource source, String arguments) throws CommandException {
-        return null;
-    }
-
-    @Override
-    public List<String> getSuggestions(CommandSource source, String arguments) throws CommandException {
-        return null;
-    }
-
-    @Override
     public boolean testPermission(CommandSource source) {
+        for (String perm : command.getDescription().getPermissions()) {
+            if (!source.hasPermission(perm)) {
+                return false;
+            }
+        }
         return true;
     }
 
     @Override
     public Optional<? extends Text> getShortDescription(CommandSource source) {
-        return null;
+        String description = command.getDescription().getDescription();
+        if (description != null && !description.isEmpty()) {
+            return Optional.of(Text.of(description));
+        }
+        return Optional.empty();
     }
 
     @Override
     public Optional<? extends Text> getHelp(CommandSource source) {
-        return null;
+        String help = command.getDescription().getHelp();
+        if (help != null && !help.isEmpty()) {
+            return Optional.of(Text.of(help));
+        }
+        return Optional.empty();
     }
 
     @Override
