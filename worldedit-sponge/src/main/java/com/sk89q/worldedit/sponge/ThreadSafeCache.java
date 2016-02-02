@@ -24,6 +24,9 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
+import org.spongepowered.api.Sponge;
+import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.event.Listener;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -34,12 +37,10 @@ import java.util.concurrent.CopyOnWriteArraySet;
 /**
  * Caches data that cannot be accessed from another thread safely.
  */
-public class ThreadSafeCache {
+public class ThreadSafeCache implements Runnable {
 
-    private static final long REFRESH_DELAY = 1000 * 30;
     private static final ThreadSafeCache INSTANCE = new ThreadSafeCache();
     private Set<UUID> onlineIds = Collections.emptySet();
-    private long lastRefresh = 0;
 
     /**
      * Get an concurrent-safe set of UUIDs of online players.
@@ -50,28 +51,15 @@ public class ThreadSafeCache {
         return onlineIds;
     }
 
-    @SubscribeEvent
-    public void tickStart(TickEvent event) {
-        long now = System.currentTimeMillis();
+    @Override
+    public void run() {
+        Set<UUID> onlineIds = new HashSet<>();
 
-        if (now - lastRefresh > REFRESH_DELAY) {
-            Set<UUID> onlineIds = new HashSet<UUID>();
-            
-            MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
-            if (server == null || server.getConfigurationManager() == null) {
-                return;
-            }
-            for (Object object : FMLCommonHandler.instance().getMinecraftServerInstance().getConfigurationManager().playerEntityList) {
-                if (object != null) {
-                    EntityPlayerMP player = (EntityPlayerMP) object;
-                    onlineIds.add(player.getUniqueID());
-                }
-            }
-
-            this.onlineIds = new CopyOnWriteArraySet<UUID>(onlineIds);
-
-            lastRefresh = now;
+        for (Player player : Sponge.getServer().getOnlinePlayers()) {
+            onlineIds.add(player.getUniqueId());
         }
+
+        this.onlineIds = new CopyOnWriteArraySet<>(onlineIds);
     }
 
     public static ThreadSafeCache getInstance() {
