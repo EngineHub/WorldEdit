@@ -1,0 +1,99 @@
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+
+buildscript {
+    repositories {
+        mavenCentral()
+        maven { url = "http://files.minecraftforge.net/maven" }
+        maven { url = "https://oss.sonatype.org/content/repositories/snapshots/" }
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.1-SNAPSHOT'
+    }
+}
+
+apply plugin: 'net.minecraftforge.gradle.forge'
+
+dependencies {
+    compile project(':worldedit-core')
+    compile 'org.spongepowered:spongeapi:3.1.0-SNAPSHOT'
+    compile('org.spongepowered:spongeforge:1.8-1577-2.1-DEV-957') {
+        exclude module: 'spongeapi'
+        exclude module: 'spongecommon'
+    }
+    testCompile group: 'org.mockito', name: 'mockito-core', version:'1.9.0-rc1'
+}
+
+repositories {
+    maven {
+        name = 'forge'
+        url = 'http://files.minecraftforge.net/maven'
+    }
+    maven {
+        name = "Sponge"
+        url = "https://repo.spongepowered.org/maven"
+    }
+}
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+version = "6.1.1"
+ext.forgeVersion = "11.15.0.1695"
+ext.internalVersion = version + ";" + gitCommitHash
+
+minecraft {
+    version = "1.8.9-${project.forgeVersion}"
+    mappings = "snapshot_20160111"
+    runDir = 'run'
+
+    replaceIn "com/sk89q/worldedit/forge/ForgeWorldEdit.java"
+    replace "%VERSION%", project.version
+}
+
+project.archivesBaseName = "${project.archivesBaseName}-mc${minecraft.version}"
+
+processResources {
+    from (sourceSets.main.resources.srcDirs) {
+        expand 'version': project.version,
+                'mcVersion': project.minecraft.version,
+                'forgeVersion': project.forgeVersion,
+                'internalVersion': project.internalVersion
+        include 'mcmod.info'
+    }
+
+    from (sourceSets.main.resources.srcDirs) {
+        exclude 'mcmod.info'
+    }
+}
+
+jar {
+    manifest {
+        attributes("Class-Path": "truezip.jar WorldEdit/truezip.jar js.jar WorldEdit/js.jar",
+                "WorldEdit-Version": version,
+                "FMLAT": "worldedit_at.cfg")
+    }
+}
+
+shadowJar {
+    dependencies {
+        include(dependency(':worldedit-core'))
+    }
+}
+
+reobf {
+    shadowJar {
+        mappingType = 'SEARGE'
+    }
+}
+
+task deobfJar(type: Jar) {
+    from sourceSets.main.output
+    classifier = 'dev'
+}
+
+artifacts {
+    archives deobfJar
+}

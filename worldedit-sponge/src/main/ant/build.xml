@@ -1,0 +1,150 @@
+<project name="WorldEdit-Forge" default="main">
+    <property environment="env"/>
+
+    <!-- Properties -->
+    <property name="build.dir"            value="${maven.build.directory}/forge"/>
+    <property name="resource.dir"         value="src/forge/resources"/>
+    <property name="src.forge.dir"        value="src/forge/java"/>
+    <property name="src.we.dir"           value="src/main/java"/>
+    <property name="bukkit.src.1"         value="com/sk89q/bukkit"/>
+    <property name="bukkit.src.2"         value="com/sk89q/worldedit/bukkit"/>
+    <property name="wepif.src"            value="com/sk89q/wepif"/>
+    <property name="util.yaml.src"        value="com/sk89q/util/yaml"/>
+    <property name="we.yaml.src"          value="com/sk89q/worldedit/util/YAMLConfiguration.java"/>
+
+    <property name="download.dir"         value="forge-download"/>
+
+    <property name="forge.dir"            value="${build.dir}/forge"/>
+    <property name="mcp.dir"              value="${forge.dir}/mcp"/>
+
+    <property name="minecraftsrc.dir"     value="${mcp.dir}/src/minecraft"/>
+
+    <property file="${minecraftsrc.dir}/fmlversion.properties" />
+
+    <property name="mc.version"           value="1.6.2"/>
+    <property name="forge.version"        value="9.10.1.850"/>
+
+    <!-- Targets -->
+    <target name="init-msg">
+        <echo message="Starting build for ${we.version} for MC ${mc.version}"/>
+    </target>
+
+    <target name="download">
+        <mkdir dir="${download.dir}"/>
+        
+        <get src="http://files.minecraftforge.net/minecraftforge/minecraftforge-src-${mc.version}-${forge.version}.zip" dest="${download.dir}" usetimestamp="True"/>
+        <echo message="Download finished"/>
+    </target>
+
+    <target name="check-setup-forge" depends="download">
+        <available file="${download.dir}/minecraftforge-setup-${mc.version}-${forge.version}.zip" property="setup.forge.present"/>
+    </target>
+
+    <target name="setup-forge" depends="check-setup-forge" unless="setup.forge.present">
+        <unzip dest="${build.dir}" failOnEmptyArchive="true">
+            <fileset dir="${download.dir}">
+                <include name="minecraftforge-src-${mc.version}-${forge.version}.zip"/>
+            </fileset>
+        </unzip>
+
+        <!-- Set executable permission on forge's *.sh -->
+        <chmod dir="${forge.dir}" perm="a+rx" includes="**.sh"/>
+
+        <!-- Install forge -->
+        <echo message="Starting forge install process"/>
+
+        <exec dir="${forge.dir}" executable="cmd" osfamily="windows" failonerror="true">
+            <arg value="/c"/>
+            <arg value="install.cmd"/>
+        </exec>
+
+        <exec dir="${forge.dir}" executable="sh" osfamily="unix" failonerror="true">
+            <arg value="install.sh"/>
+        </exec>
+
+        <echo message="Forge installation finished"/>
+
+        <zip destfile="${download.dir}/minecraftforge-setup-${mc.version}-${forge.version}.zip" basedir="${build.dir}"/>
+    </target>
+
+    <target name="unzip-forge" depends="check-setup-forge" if="setup.forge.present">
+        <unzip dest="${build.dir}" failOnEmptyArchive="true">
+            <fileset dir="${download.dir}">
+                <include name="minecraftforge-setup-${mc.version}-${forge.version}.zip"/>
+            </fileset>
+        </unzip>
+    </target>
+
+    <target name="copySRC" >
+        <!-- Copy WE dependencies source -->
+        <copy todir="${mcp.dir}/lib" file="${jchronic.path}"/>
+        <copy todir="${mcp.dir}/lib" file="${truezip.path}"/>
+        <copy todir="${mcp.dir}/lib" file="${rhino.path}"/>
+        <!--<copy todir="${mcp.dir}/lib" file="${snakeyaml.path}"/>-->
+        
+        <!-- Copy WE forge source -->
+        <copy todir="${minecraftsrc.dir}">
+            <fileset dir="${src.forge.dir}"/>
+        </copy>
+        <!-- Copy WE source -->
+        <copy todir="${minecraftsrc.dir}">
+            <fileset dir="${src.we.dir}"/>
+        </copy>
+        <!-- Delete bukkit related sources -->
+		<delete dir="${minecraftsrc.dir}/${bukkit.src.1}"/>
+		<delete dir="${minecraftsrc.dir}/${bukkit.src.2}"/>
+		<delete dir="${minecraftsrc.dir}/${wepif.src}"/>
+		<delete dir="${minecraftsrc.dir}/${util.yaml.src}"/>
+		<delete file="${minecraftsrc.dir}/${we.yaml.src}"/>
+
+        <!-- Set Version -->
+        <replace file="${minecraftsrc.dir}/com/sk89q/worldedit/forge/WorldEditMod.java" token="%VERSION%" value="${we.version}"/>
+    </target>
+
+    <target name="compile" depends="copySRC">
+
+        <echo message="Compiling version ${we.version}"/>
+
+        <!-- Recompile -->
+        <exec dir="${mcp.dir}" executable="cmd" osfamily="windows" failonerror="true">
+            <arg line="/c recompile.bat --client"/>
+        </exec>
+
+        <exec dir="${mcp.dir}" executable="sh" osfamily="unix" failonerror="true">
+            <arg line="recompile.sh --client"/>
+        </exec>
+
+        <!-- Reobf -->
+        <exec dir="${mcp.dir}" executable="cmd" osfamily="windows" failonerror="true">
+            <arg line="/c reobfuscate_srg.bat --client"/>
+        </exec>
+
+        <exec dir="${mcp.dir}" executable="sh" osfamily="unix" failonerror="true">
+            <arg line="reobfuscate_srg.sh --client"/>
+        </exec>
+
+        <echo message="Compiling finished"/>
+    </target>
+
+    <target name="copyclasses" depends="compile">
+        <echo message="Adding version ${we.version} to maven result"/>
+
+        <!-- Copy WE classes -->
+        <copy todir="${maven.build.directory}/classes/com/sk89q/worldedit/forge">
+            <fileset dir="${mcp.dir}/reobf/minecraft/com/sk89q/worldedit/forge"/>
+        </copy>
+
+        <!-- Copy resources -->
+        <copy todir="${maven.build.directory}/classes">
+            <fileset dir="${resource.dir}"></fileset>
+        </copy>
+
+        <replace file="${maven.build.directory}/classes/mcmod.info" token="%VERSION%" value="${we.version}"/>
+        <replace file="${maven.build.directory}/classes/mcmod.info" token="%MCVERSION%" value="${mc.version}"/>
+
+        <echo message="Adding finished"/>
+    </target>
+
+    <target name="main" depends="init-msg, unzip-forge, setup-forge, copyclasses"/>
+
+</project>
