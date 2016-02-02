@@ -38,6 +38,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockPos;
 import net.minecraft.world.ChunkCoordIntPair;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.gen.ChunkProviderServer;
@@ -47,12 +48,15 @@ import org.spongepowered.api.block.BlockSnapshot;
 import org.spongepowered.api.block.BlockState;
 import org.spongepowered.api.entity.EntitySnapshot;
 import org.spongepowered.api.entity.EntityType;
+import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.channel.MessageChannel;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 import org.spongepowered.common.block.SpongeBlockSnapshot;
 import org.spongepowered.common.block.SpongeBlockSnapshotBuilder;
 import org.spongepowered.common.entity.SpongeEntitySnapshot;
 import org.spongepowered.common.entity.SpongeEntitySnapshotBuilder;
+import scala.xml.Null;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -81,29 +85,40 @@ public class SpongeForgeWorld extends SpongeWorld {
     @Override
     protected BlockSnapshot createBlockSnapshot(Vector position, BaseBlock block) {
         this.blockBuilder.reset();
-        Location<World> location = new Location<>(getWorld(), new Vector3i(position.getX(), position.getY(), position.getZ()));
 
-        this.blockBuilder.blockState((BlockState) Block.getBlockById(block.getId()).getStateFromMeta(block.getData()));
-        this.blockBuilder.worldId(location.getExtent().getUniqueId());
+        Location<World> location = new Location<>(getWorld(), new Vector3i(position.getX(), position.getY(), position.getZ()));
+        IBlockState baseState = Block.getBlockById(block.getId()).getStateFromMeta(block.getData());
+
+        this.blockBuilder.blockState((BlockState) baseState);
+        this.blockBuilder.worldId(getWorld().getUniqueId());
         this.blockBuilder.position(location.getBlockPosition());
 
         if (block.hasNbtData()) {
-            this.blockBuilder.unsafeNbt(NBTConverter.toNative(block.getNbtData()));
+            NBTTagCompound tag = NBTConverter.toNative(block.getNbtData());
+            tag.setString("id", block.getNbtId());
+
+            this.blockBuilder.unsafeNbt(tag);
         }
 
-        return new SpongeBlockSnapshot(this.blockBuilder, 0);
+        return this.blockBuilder.build();
     }
 
     @Override
     protected EntitySnapshot createEntitySnapshot(com.sk89q.worldedit.util.Location location, BaseEntity entity) {
         this.entityBuilder.reset();
 
+        this.entityBuilder.worldId(getWorld().getUniqueId());
         this.entityBuilder.position(new Vector3d(location.getX(), location.getY(), location.getZ()));
         // TODO Rotation code
         // this.entityBuilder.rotation()
         this.entityBuilder.type(Sponge.getRegistry().getType(EntityType.class, entity.getTypeId()).get());
         if (entity.hasNbtData()) {
-            this.entityBuilder.unsafeCompound(NBTConverter.toNative(entity.getNbtData()));
+            NBTTagCompound tag = NBTConverter.toNative(entity.getNbtData());
+            for (String name : Constants.NO_COPY_ENTITY_NBT_FIELDS) {
+                tag.removeTag(name);
+            }
+
+            this.entityBuilder.unsafeCompound(tag);
         }
         return this.entityBuilder.build();
     }
