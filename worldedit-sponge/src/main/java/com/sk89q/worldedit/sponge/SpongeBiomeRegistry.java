@@ -22,12 +22,10 @@ package com.sk89q.worldedit.sponge;
 import com.sk89q.worldedit.world.biome.BaseBiome;
 import com.sk89q.worldedit.world.biome.BiomeData;
 import com.sk89q.worldedit.world.registry.BiomeRegistry;
-
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.world.biome.BiomeType;
 
 import javax.annotation.Nullable;
-
 import java.util.ArrayList;
 import java.util.List;
 

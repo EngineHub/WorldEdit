@@ -20,21 +20,14 @@
 package com.sk89q.worldedit.sponge;
 
 import com.google.inject.Inject;
-import com.sk89q.worldedit.extension.platform.Actor;
-
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldVector;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.event.platform.PlatformReadyEvent;
+import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.internal.LocalWorldAdapter;
-
-import java.io.File;
-import java.nio.file.Path;
-import java.util.Optional;
-import java.util.concurrent.TimeUnit;
-
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockSnapshot;
 import org.spongepowered.api.block.BlockType;
@@ -51,6 +44,11 @@ import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
+
+import java.io.File;
+import java.nio.file.Path;
+import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 

@@ -21,12 +21,9 @@ package com.sk89q.worldedit.sponge;
 
 import com.sk89q.worldedit.util.command.CommandMapping;
 import org.spongepowered.api.command.CommandCallable;
-import org.spongepowered.api.command.CommandException;
-import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.text.Text;
 
-import java.util.List;
 import java.util.Optional;
 
 public abstract class CommandAdapter implements CommandCallable {

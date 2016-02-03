@@ -30,8 +30,6 @@ import com.sk89q.worldedit.internal.LocalWorldAdapter;
 import com.sk89q.worldedit.internal.cui.CUIEvent;
 import com.sk89q.worldedit.session.SessionKey;
 import com.sk89q.worldedit.util.Location;
-
-import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.text.Text;
@@ -40,7 +38,6 @@ import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.world.World;
 
 import javax.annotation.Nullable;
-
 import java.util.Optional;
 import java.util.UUID;
 

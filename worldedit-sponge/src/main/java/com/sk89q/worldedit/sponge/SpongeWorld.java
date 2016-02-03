@@ -33,11 +33,6 @@ import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.AbstractWorld;
 import com.sk89q.worldedit.world.biome.BaseBiome;
 import com.sk89q.worldedit.world.registry.WorldData;
-
-import java.lang.ref.WeakReference;
-import java.util.*;
-import java.util.logging.Logger;
-import javax.annotation.Nullable;
 import org.spongepowered.api.block.BlockSnapshot;
 import org.spongepowered.api.block.BlockState;
 import org.spongepowered.api.data.key.Keys;
@@ -46,9 +41,15 @@ import org.spongepowered.api.data.property.block.SkyLuminanceProperty;
 import org.spongepowered.api.entity.EntitySnapshot;
 import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.event.cause.Cause;
-import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.channel.MessageChannel;
 import org.spongepowered.api.world.World;
+
+import javax.annotation.Nullable;
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.Random;
+import java.util.logging.Logger;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 

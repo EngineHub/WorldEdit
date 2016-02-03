@@ -21,15 +21,16 @@ package com.sk89q.worldedit.sponge;
 
 import com.flowpowered.math.vector.Vector3d;
 import com.flowpowered.math.vector.Vector3i;
-import com.sk89q.jnbt.CompoundTag;
-import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.Vector2D;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.LazyBlock;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.internal.Constants;
 import com.sk89q.worldedit.regions.Region;
-import com.sk89q.worldedit.util.*;
+import com.sk89q.worldedit.util.TreeGenerator;
 import net.minecraft.block.*;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
@@ -38,7 +39,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockPos;
 import net.minecraft.world.ChunkCoordIntPair;
-import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.gen.ChunkProviderServer;
@@ -48,21 +48,14 @@ import org.spongepowered.api.block.BlockSnapshot;
 import org.spongepowered.api.block.BlockState;
 import org.spongepowered.api.entity.EntitySnapshot;
 import org.spongepowered.api.entity.EntityType;
-import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.channel.MessageChannel;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
-import org.spongepowered.common.block.SpongeBlockSnapshot;
 import org.spongepowered.common.block.SpongeBlockSnapshotBuilder;
-import org.spongepowered.common.entity.SpongeEntitySnapshot;
 import org.spongepowered.common.entity.SpongeEntitySnapshotBuilder;
-import scala.xml.Null;
 
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.Set;
 import java.util.logging.Level;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 public class SpongeForgeWorld extends SpongeWorld {
 

@@ -19,14 +19,8 @@
 
 package com.sk89q.worldedit.sponge;
 
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.server.MinecraftServer;
-import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.event.Listener;
 
 import java.util.Collections;
 import java.util.HashSet;

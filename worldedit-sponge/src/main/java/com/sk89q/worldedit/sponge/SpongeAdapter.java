@@ -20,11 +20,8 @@
 package com.sk89q.worldedit.sponge;
 
 import com.flowpowered.math.vector.Vector3d;
-import com.flowpowered.math.vector.Vector3i;
 import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.util.Location;
-import com.sk89q.worldedit.world.NullWorld;
 import com.sk89q.worldedit.world.World;
 
 final class SpongeAdapter {

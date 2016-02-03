@@ -19,13 +19,6 @@
 
 package com.sk89q.worldedit.sponge;
 
-import com.google.common.base.Joiner;
-import com.google.common.collect.Lists;
-import com.sk89q.minecraft.util.commands.CommandException;
-import com.sk89q.minecraft.util.commands.CommandLocals;
-import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.LocalConfiguration;
-import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.event.platform.CommandEvent;
@@ -33,17 +26,13 @@ import com.sk89q.worldedit.event.platform.CommandSuggestionEvent;
 import com.sk89q.worldedit.extension.platform.*;
 import com.sk89q.worldedit.util.command.CommandMapping;
 import com.sk89q.worldedit.util.command.Dispatcher;
-import com.sk89q.worldedit.util.command.InvalidUsageException;
 import com.sk89q.worldedit.world.World;
-import net.minecraft.entity.player.EntityPlayerMP;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.EntityType;
 import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.scheduler.Task;
-import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.format.TextColors;
 
 import javax.annotation.Nullable;
 import java.util.*;

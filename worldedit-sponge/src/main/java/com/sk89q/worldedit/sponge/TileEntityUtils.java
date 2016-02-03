@@ -20,7 +20,6 @@
 package com.sk89q.worldedit.sponge;
 
 import com.sk89q.worldedit.Vector;
-
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagInt;
 import net.minecraft.tileentity.TileEntity;
@@ -28,7 +27,6 @@ import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
-
 import java.lang.reflect.Constructor;
 
 import static com.google.common.base.Preconditions.checkNotNull;
