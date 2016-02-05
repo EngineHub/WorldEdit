@@ -2,8 +2,19 @@ language: java
 notifications:
   email: false
 before_install: chmod +x gradlew
-install: ./gradlew setupCIWorkspace -S
-matrix:
-  include:
-  - jdk: oraclejdk7
-    script: ./gradlew build -S
+install: ./gradlew setupCIWorkspace -s
+script: ./gradlew build -s
+jdk:
+  - oraclejdk8
+  - oraclejdk7
+  - openjdk6
+# Caching for Gradle files, prevents hitting Maven too much.
+before_cache:
+  - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
+cache:
+  directories:
+    - $HOME/.gradle/caches/
+    - $HOME/.gradle/wrapper/
+
+# Faster builds without sudo.
+sudo: false
