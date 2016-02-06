@@ -40,6 +40,6 @@ public class SpongeConfiguration extends PropertiesConfiguration {
 
     @Override
     public File getWorkingDirectory() {
-        return SpongeWorldEdit.inst.getWorkingDir();
+        return SpongeWorldEdit.inst().getWorkingDir();
     }
 }

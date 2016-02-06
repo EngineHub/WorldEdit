@@ -19,8 +19,6 @@
 
 package com.sk89q.worldedit.sponge;
 
-import com.flowpowered.math.vector.Vector3d;
-import com.flowpowered.math.vector.Vector3i;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.Vector;
@@ -36,6 +34,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagInt;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockPos;
 import net.minecraft.world.ChunkCoordIntPair;
@@ -43,24 +42,18 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.gen.ChunkProviderServer;
 import net.minecraft.world.gen.feature.*;
-import org.spongepowered.api.Sponge;
-import org.spongepowered.api.block.BlockSnapshot;
 import org.spongepowered.api.block.BlockState;
-import org.spongepowered.api.entity.EntitySnapshot;
-import org.spongepowered.api.entity.EntityType;
+import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
-import org.spongepowered.common.block.SpongeBlockSnapshotBuilder;
-import org.spongepowered.common.entity.SpongeEntitySnapshotBuilder;
 
 import javax.annotation.Nullable;
 import java.util.Set;
 import java.util.logging.Level;
 
-public class SpongeForgeWorld extends SpongeWorld {
+import static com.google.common.base.Preconditions.checkNotNull;
 
-    private final SpongeBlockSnapshotBuilder blockBuilder = new SpongeBlockSnapshotBuilder();
-    private final SpongeEntitySnapshotBuilder entityBuilder = new SpongeEntitySnapshotBuilder();
+public class SpongeForgeWorld extends SpongeWorld {
 
     private static final IBlockState JUNGLE_LOG = Blocks.log.getDefaultState().withProperty(BlockOldLog.VARIANT, BlockPlanks.EnumType.JUNGLE);
     private static final IBlockState JUNGLE_LEAF = Blocks.leaves.getDefaultState().withProperty(BlockOldLeaf.VARIANT, BlockPlanks.EnumType.JUNGLE).withProperty(BlockLeaves.CHECK_DECAY, Boolean.valueOf(false));
@@ -76,44 +69,38 @@ public class SpongeForgeWorld extends SpongeWorld {
     }
 
     @Override
-    protected BlockSnapshot createBlockSnapshot(Vector position, BaseBlock block) {
-        this.blockBuilder.reset();
+    protected BlockState getBlockState(BaseBlock block) {
+        return (BlockState) Block.getBlockById(block.getId()).getStateFromMeta(block.getData());
+    }
 
-        Location<World> location = new Location<>(getWorld(), new Vector3i(position.getX(), position.getY(), position.getZ()));
-        IBlockState baseState = Block.getBlockById(block.getId()).getStateFromMeta(block.getData());
+    private NBTTagCompound updateForSet(NBTTagCompound tag, Vector position) {
+        checkNotNull(tag);
+        checkNotNull(position);
 
-        this.blockBuilder.blockState((BlockState) baseState);
-        this.blockBuilder.worldId(getWorld().getUniqueId());
-        this.blockBuilder.position(location.getBlockPosition());
+        tag.setTag("x", new NBTTagInt(position.getBlockX()));
+        tag.setTag("y", new NBTTagInt(position.getBlockY()));
+        tag.setTag("z", new NBTTagInt(position.getBlockZ()));
 
-        if (block.hasNbtData()) {
-            NBTTagCompound tag = NBTConverter.toNative(block.getNbtData());
-            tag.setString("id", block.getNbtId());
-
-            this.blockBuilder.unsafeNbt(tag);
-        }
-
-        return this.blockBuilder.build();
+        return tag;
     }
 
     @Override
-    protected EntitySnapshot createEntitySnapshot(com.sk89q.worldedit.util.Location location, BaseEntity entity) {
-        this.entityBuilder.reset();
+    protected void applyTileEntityData(org.spongepowered.api.block.tileentity.TileEntity entity, BaseBlock block) {
+        NBTTagCompound tag = NBTConverter.toNative(block.getNbtData());
 
-        this.entityBuilder.worldId(getWorld().getUniqueId());
-        this.entityBuilder.position(new Vector3d(location.getX(), location.getY(), location.getZ()));
-        // TODO Rotation code
-        // this.entityBuilder.rotation()
-        this.entityBuilder.type(Sponge.getRegistry().getType(EntityType.class, entity.getTypeId()).get());
-        if (entity.hasNbtData()) {
-            NBTTagCompound tag = NBTConverter.toNative(entity.getNbtData());
-            for (String name : Constants.NO_COPY_ENTITY_NBT_FIELDS) {
-                tag.removeTag(name);
-            }
+        Location<World> loc = entity.getLocation();
 
-            this.entityBuilder.unsafeCompound(tag);
+        updateForSet(tag, new Vector(loc.getX(), loc.getY(), loc.getZ()));
+        ((TileEntity) entity).readFromNBT(tag);
+    }
+
+    @Override
+    protected void applyEntityData(Entity entity, BaseEntity data) {
+        NBTTagCompound tag = NBTConverter.toNative(data.getNbtData());
+        for (String name : Constants.NO_COPY_ENTITY_NBT_FIELDS) {
+            tag.removeTag(name);
         }
-        return this.entityBuilder.build();
+        ((net.minecraft.entity.Entity) entity).readFromNBT(tag);
     }
 
     @Override

@@ -41,6 +41,7 @@ import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.event.game.state.*;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.plugin.Plugin;
+import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
@@ -66,7 +67,18 @@ public class SpongeWorldEdit {
 
     private SponePermissionsProvider provider;
 
-    public static SpongeWorldEdit inst;
+    @Inject
+    private PluginContainer container;
+
+    private static SpongeWorldEdit inst;
+
+    public static PluginContainer container() {
+        return inst.container;
+    }
+
+    public static SpongeWorldEdit inst() {
+        return inst;
+    }
 
     private SpongePlatform platform;
     private SpongeConfiguration config;

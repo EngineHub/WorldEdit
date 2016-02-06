@@ -144,12 +144,22 @@ public class SpongePlayer extends AbstractPlayerActor {
 
     @Override
     public void setPosition(Vector pos, float pitch, float yaw) {
-        org.spongepowered.api.world.Location<World> loc = new org.spongepowered.api.world.Location<World>(
+        org.spongepowered.api.world.Location<World> loc = new org.spongepowered.api.world.Location<>(
                 this.player.getWorld(), pos.getX(), pos.getY(), pos.getZ()
         );
 
-        // TODO Rotation code
-        this.player.setLocation(loc);
+        double yawR = Math.toRadians(yaw);
+        double pitchR = Math.toRadians(pitch);
+        double xz = Math.cos(pitch);
+
+        this.player.setLocationAndRotation(
+                loc,
+                new Vector3d(
+                        -xz * Math.sin(yawR),
+                        -Math.sin(pitchR),
+                        xz * Math.cos(yawR)
+                )
+        );
     }
 
     @Override
@@ -164,7 +174,7 @@ public class SpongePlayer extends AbstractPlayerActor {
 
     @Override
     public boolean hasPermission(String perm) {
-        return SpongeWorldEdit.inst.getPermissionsProvider().hasPermission(player, perm);
+        return SpongeWorldEdit.inst().getPermissionsProvider().hasPermission(player, perm);
     }
 
     @Nullable

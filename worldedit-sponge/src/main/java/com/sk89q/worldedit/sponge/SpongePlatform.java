@@ -75,7 +75,7 @@ class SpongePlatform extends AbstractPlatform implements MultiUserPlatform {
 
     @Override
     public int schedule(long delay, long period, Runnable task) {
-        Task.builder().delayTicks(delay).intervalTicks(period).execute(task).submit(SpongeWorldEdit.inst);
+        Task.builder().delayTicks(delay).intervalTicks(period).execute(task).submit(SpongeWorldEdit.inst());
         return 0; // TODO This isn't right, but we only check for -1 values
     }
 
@@ -122,19 +122,19 @@ class SpongePlatform extends AbstractPlatform implements MultiUserPlatform {
             CommandAdapter adapter = new CommandAdapter(command) {
                 @Override
                 public CommandResult process(CommandSource source, String arguments) throws org.spongepowered.api.command.CommandException {
-                    CommandEvent weEvent = new CommandEvent(SpongeWorldEdit.inst.wrapCommandSource(source), command.getPrimaryAlias() + " " + arguments);
+                    CommandEvent weEvent = new CommandEvent(SpongeWorldEdit.inst().wrapCommandSource(source), command.getPrimaryAlias() + " " + arguments);
                     WorldEdit.getInstance().getEventBus().post(weEvent);
                     return weEvent.isCancelled() ? CommandResult.success() : CommandResult.empty();
                 }
 
                 @Override
                 public List<String> getSuggestions(CommandSource source, String arguments) throws org.spongepowered.api.command.CommandException {
-                    CommandSuggestionEvent weEvent = new CommandSuggestionEvent(SpongeWorldEdit.inst.wrapCommandSource(source), command.getPrimaryAlias() + " " + arguments);
+                    CommandSuggestionEvent weEvent = new CommandSuggestionEvent(SpongeWorldEdit.inst().wrapCommandSource(source), command.getPrimaryAlias() + " " + arguments);
                     WorldEdit.getInstance().getEventBus().post(weEvent);
                     return weEvent.getSuggestions();
                 }
             };
-            Sponge.getCommandManager().register(SpongeWorldEdit.inst, adapter, command.getAllAliases());
+            Sponge.getCommandManager().register(SpongeWorldEdit.inst(), adapter, command.getAllAliases());
         }
     }
 
