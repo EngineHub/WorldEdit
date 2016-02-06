@@ -19,10 +19,6 @@ apply plugin: 'net.minecraftforge.gradle.forge'
 dependencies {
     compile project(':worldedit-core')
     compile 'org.spongepowered:spongeapi:3.1.0-SNAPSHOT'
-    compile('org.spongepowered:spongeforge:1.8-1577-2.1-DEV-957') {
-        exclude module: 'spongeapi'
-        exclude module: 'spongecommon'
-    }
     testCompile group: 'org.mockito', name: 'mockito-core', version:'1.9.0-rc1'
 }
 
