@@ -54,12 +54,12 @@ public class BlockMapEntryPlacer implements Operation {
 
     @Override
     public Operation resume(RunContext run) throws WorldEditException {
-        while (iterator.hasNext()) {
+        while (iterator.hasNext() && run.shouldContinue()) {
             Map.Entry<BlockVector, BaseBlock> entry = iterator.next();
             extent.setBlock(entry.getKey(), entry.getValue());
         }
 
-        return null;
+        return iterator.hasNext() ? this : null;
     }
 
     @Override

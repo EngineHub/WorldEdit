@@ -19,7 +19,6 @@
 
 package com.sk89q.worldedit.extent.reorder;
 
-import com.google.common.collect.Iterators;
 import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.PlayerDirection;
 import com.sk89q.worldedit.Vector;
@@ -89,9 +88,9 @@ public class MultiStageReorder extends AbstractDelegateExtent implements Reorder
     public boolean setBlock(Vector location, BaseBlock block) throws WorldEditException {
         BaseBlock lazyBlock = getLazyBlock(location);
 
-        if (!enabled) {
-            return super.setBlock(location, block);
-        }
+//        if (!enabled) {
+//            return super.setBlock(location, block);
+//        }
 
         if (BlockType.shouldPlaceLast(block.getType())) {
             // Place torches, etc. last
@@ -114,27 +113,29 @@ public class MultiStageReorder extends AbstractDelegateExtent implements Reorder
     @Override
     public Operation commitBefore() {
         return new OperationQueue(
-                new BlockMapEntryPlacer(
-                        getExtent(),
-                        Iterators.concat(stage1.iterator(), stage2.iterator())),
-                new Stage3Committer());
+                new BlockMapEntryPlacer(getExtent(), stage1.iterator()),
+                new BlockMapEntryPlacer(getExtent(), stage2.iterator()),
+                new Stage3Committer()
+        );
     }
 
     private class Stage3Committer implements Operation {
+        Extent extent = getExtent();
 
-        @Override
-        public Operation resume(RunContext run) throws WorldEditException {
-            Extent extent = getExtent();
+        final Set<BlockVector> blocks = new HashSet<BlockVector>();
+        final Map<BlockVector, BaseBlock> blockTypes = new HashMap<BlockVector, BaseBlock>();
 
-            final Set<BlockVector> blocks = new HashSet<BlockVector>();
-            final Map<BlockVector, BaseBlock> blockTypes = new HashMap<BlockVector, BaseBlock>();
+        public Stage3Committer() {
             for (Map.Entry<BlockVector, BaseBlock> entry : stage3) {
                 final BlockVector pt = entry.getKey();
                 blocks.add(pt);
                 blockTypes.put(pt, entry.getValue());
             }
+        }
 
-            while (!blocks.isEmpty()) {
+        @Override
+        public Operation resume(RunContext run) throws WorldEditException {
+            while (run.shouldContinue() && !blocks.isEmpty()) {
                 BlockVector current = blocks.iterator().next();
                 if (!blocks.contains(current)) {
                     continue;
@@ -202,11 +203,15 @@ public class MultiStageReorder extends AbstractDelegateExtent implements Reorder
                 }
             }
 
-            stage1.clear();
-            stage2.clear();
-            stage3.clear();
+            if (blocks.isEmpty()) {
+                stage1.clear();
+                stage2.clear();
+                stage3.clear();
 
-            return null;
+                return null;
+            }
+
+            return this;
         }
 
         @Override
