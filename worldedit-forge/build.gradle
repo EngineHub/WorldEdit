@@ -15,7 +15,8 @@ apply plugin: 'forge'
 
 dependencies {
     compile project(':worldedit-core')
-    testCompile group: 'org.mockito', name: 'mockito-core', version:'1.9.0-rc1'
+    compile group: 'codechicken', name: 'ForgeMultipart', version: '1.2.0.345', classifier: 'dev'
+    testCompile group: 'org.mockito', name: 'mockito-core', version: '1.9.0-rc1'
 }
 
 minecraft {
