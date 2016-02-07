@@ -81,9 +81,10 @@ final class TileEntityUtils {
             tileEntity.readFromNBT(tag);
         }
 
-        world.setTileEntity(position.getBlockX(), position.getBlockY(), position.getBlockZ(), tileEntity);
-    }
+        tileEntity = ForgeWorldEdit.inst.getFMPCompat().overrideTileEntity(world, tag, tileEntity);
 
+        setTileEntity(world, position, tileEntity);
+    }
     /**
      * Set a tile entity at the given location using the tile entity ID from
      * the tag.
@@ -95,11 +96,25 @@ final class TileEntityUtils {
     static void setTileEntity(World world, Vector position, @Nullable NBTTagCompound tag) {
         if (tag != null) {
             updateForSet(tag, position);
-            TileEntity tileEntity = TileEntity.createAndLoadEntity(tag);
+            TileEntity tileEntity = makeTileEntity(world, position, tag);
             if (tileEntity != null) {
-                world.setTileEntity(position.getBlockX(), position.getBlockY(), position.getBlockZ(), tileEntity);
+                setTileEntity(world, position, tileEntity);
             }
         }
+    }
+    
+    private static TileEntity makeTileEntity(World world, Vector position,
+            NBTTagCompound tag) {
+        TileEntity normal = TileEntity.createAndLoadEntity(tag);
+        return ForgeWorldEdit.inst.getFMPCompat().overrideTileEntity(world, tag,
+                normal);
+    }
+
+    private static void setTileEntity(World world, Vector position,
+            TileEntity tileEntity) {
+        world.setTileEntity(position.getBlockX(), position.getBlockY(),
+                position.getBlockZ(), tileEntity);
+        ForgeWorldEdit.inst.getFMPCompat().sendDescPacket(world, tileEntity);
     }
 
     /**
@@ -138,6 +153,5 @@ final class TileEntityUtils {
 
         return genericTE;
     }
-
 
 }
