@@ -79,14 +79,18 @@ public class OperationQueue implements Operation {
         queue.offer(operation);
     }
 
+    protected Operation runOperation(Operation operation, RunContext context) throws WorldEditException {
+        return operation.resume(context);
+    }
+
     @Override
     public Operation resume(RunContext run) throws WorldEditException {
         if (current == null && !queue.isEmpty()) {
             current = queue.poll();
         }
 
-        if (current != null) {
-            current = current.resume(run);
+        if (current != null && run.shouldContinue()) {
+            current = runOperation(current, run);
 
             if (current == null) {
                 current = queue.poll();
