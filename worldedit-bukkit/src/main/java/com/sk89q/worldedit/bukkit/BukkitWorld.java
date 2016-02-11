@@ -420,6 +420,11 @@ public class BukkitWorld extends LocalWorld {
         }
     }
 
+    @Override
+    public boolean notifyAndLightBlock(Vector position, int previousId) throws WorldEditException {
+        return false;
+    }
+
     @SuppressWarnings("deprecation")
     @Override
     public BaseBlock getLazyBlock(Vector position) {

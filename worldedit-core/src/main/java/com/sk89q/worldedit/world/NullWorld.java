@@ -62,6 +62,11 @@ public class NullWorld extends AbstractWorld {
     }
 
     @Override
+    public boolean notifyAndLightBlock(Vector position, int previousId) throws WorldEditException {
+        return false;
+    }
+
+    @Override
     public int getBlockLightLevel(Vector position) {
         return 0;
     }

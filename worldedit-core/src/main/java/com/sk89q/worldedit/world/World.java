@@ -123,6 +123,17 @@ public interface World extends Extent {
      */
     boolean setBlock(Vector position, BaseBlock block, boolean notifyAndLight) throws WorldEditException;
 
+
+    /**
+     * Notifies the simulation that the block at the given location has
+     * been changed and it must be re-lighted (and issue other events).
+     *
+     * @param position position of the block
+     * @param previousId the type ID of the previous block that was there
+     * @return true if the block was successfully notified
+     */
+    boolean notifyAndLightBlock(Vector position, int previousId) throws WorldEditException;
+
     /**
      * @deprecated Use {@link #setBlock(Vector, BaseBlock)}
      */

@@ -28,9 +28,7 @@ import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.RunContext;
 import com.sk89q.worldedit.world.World;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -40,8 +38,10 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class FastModeExtent extends AbstractDelegateExtent {
 
     private final World world;
+    private final Queue<Vector> positions = new ArrayDeque<Vector>();
     private final Set<BlockVector2D> dirtyChunks = new HashSet<BlockVector2D>();
     private boolean enabled = true;
+    private boolean postEditSimulation;
 
     /**
      * Create a new instance with fast mode enabled.
@@ -83,11 +83,27 @@ public class FastModeExtent extends AbstractDelegateExtent {
         this.enabled = enabled;
     }
 
+    public boolean isPostEditSimulationEnabled() {
+        return postEditSimulation;
+    }
+
+    public void setPostEditSimulationEnabled(boolean enabled) {
+        this.postEditSimulation = enabled;
+    }
+
     @Override
     public boolean setBlock(Vector location, BaseBlock block) throws WorldEditException {
         if (enabled) {
             dirtyChunks.add(new BlockVector2D(location.getBlockX() >> 4, location.getBlockZ() >> 4));
-            return world.setBlock(location, block, false);
+
+            if (world.setBlock(location, block, false)) {
+                if (postEditSimulation) {
+                    positions.offer(location);
+                }
+                return true;
+            }
+
+            return false;
         } else {
             return world.setBlock(location, block, true);
         }
@@ -101,7 +117,14 @@ public class FastModeExtent extends AbstractDelegateExtent {
                 if (!dirtyChunks.isEmpty()) {
                     world.fixAfterFastMode(dirtyChunks);
                 }
-                return null;
+                if (postEditSimulation) {
+                    while (run.shouldContinue() && !positions.isEmpty()) {
+                        Vector position = positions.poll(); // Remove from queue
+
+                        world.notifyAndLightBlock(position, 0);
+                    }
+                }
+                return !positions.isEmpty() ? this : null;
             }
 
             @Override

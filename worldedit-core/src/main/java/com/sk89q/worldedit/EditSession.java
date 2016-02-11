@@ -130,6 +130,8 @@ public class EditSession implements Extent {
     private final Extent bypassHistory;
     private final Extent bypassNone;
 
+    private final boolean useFastModeCorrections;
+
     @SuppressWarnings("deprecation")
     private Mask oldMask;
 
@@ -174,6 +176,7 @@ public class EditSession implements Extent {
         checkNotNull(event);
 
         this.world = world;
+        this.useFastModeCorrections = false;
 
         if (world != null) {
             Extent extent;
@@ -341,7 +344,14 @@ public class EditSession implements Extent {
      */
     public void setFastMode(boolean enabled) {
         if (fastModeExtent != null) {
-            fastModeExtent.setEnabled(enabled);
+            // If fast mode corrections are enabled, we're using fast mode for
+            // multipass support. Thus, we do not actually ever turn the fast mode
+            // extent off, we instead toggle post edit simulation
+            if (useFastModeCorrections) {
+                fastModeExtent.setPostEditSimulationEnabled(!enabled);
+            } else {
+                fastModeExtent.setEnabled(enabled);
+            }
         }
     }
 

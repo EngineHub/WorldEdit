@@ -411,6 +411,30 @@ public enum BlockType {
 
 
     /**
+     * HashSet for shouldPlaceLate.
+     */
+    private static final Set<Integer> shouldPlaceLate = new HashSet<Integer>();
+    static {
+        shouldPlaceLate.add(BlockID.WATER);
+        shouldPlaceLate.add(BlockID.STATIONARY_WATER);
+        shouldPlaceLate.add(BlockID.LAVA);
+        shouldPlaceLate.add(BlockID.STATIONARY_LAVA);
+        shouldPlaceLate.add(BlockID.GRAVEL);
+        shouldPlaceLate.add(BlockID.SAND);
+    }
+
+    /**
+     * Checks to see whether a block should be placed last (when reordering
+     * blocks that are placed).
+     *
+     * @param id the block ID
+     * @return true if the block should be placed last
+     */
+    public static boolean shouldPlaceLate(int id) {
+        return shouldPlaceLate.contains(id);
+    }
+
+    /**
      * HashSet for shouldPlaceLast.
      */
     private static final Set<Integer> shouldPlaceLast = new HashSet<Integer>();

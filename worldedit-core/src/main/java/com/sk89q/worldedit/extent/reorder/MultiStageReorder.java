@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.extent.reorder;
 
+import com.google.common.collect.Lists;
 import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.PlayerDirection;
 import com.sk89q.worldedit.Vector;
@@ -28,10 +29,7 @@ import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.blocks.BlockType;
 import com.sk89q.worldedit.extent.AbstractDelegateExtent;
 import com.sk89q.worldedit.extent.Extent;
-import com.sk89q.worldedit.function.operation.BlockMapEntryPlacer;
-import com.sk89q.worldedit.function.operation.Operation;
-import com.sk89q.worldedit.function.operation.OperationQueue;
-import com.sk89q.worldedit.function.operation.RunContext;
+import com.sk89q.worldedit.function.operation.*;
 import com.sk89q.worldedit.util.collection.TupleArrayList;
 
 import java.util.*;
@@ -41,10 +39,20 @@ import java.util.*;
  */
 public class MultiStageReorder extends AbstractDelegateExtent implements ReorderingExtent {
 
-    private TupleArrayList<BlockVector, BaseBlock> stage1 = new TupleArrayList<BlockVector, BaseBlock>();
-    private TupleArrayList<BlockVector, BaseBlock> stage2 = new TupleArrayList<BlockVector, BaseBlock>();
-    private TupleArrayList<BlockVector, BaseBlock> stage3 = new TupleArrayList<BlockVector, BaseBlock>();
+    private static final int STAGE_COUNT = 4;
+
+    private final List<TupleArrayList<BlockVector, BaseBlock>> stages = new ArrayList<TupleArrayList<BlockVector, BaseBlock>>();
     private boolean enabled;
+    private boolean safeMultiPass;
+
+    /**
+     * Create a new instance when the re-ordering is enabled.
+     *
+     * @param extent the extent
+     */
+    public MultiStageReorder(Extent extent) {
+        this(extent, true, true);
+    }
 
     /**
      * Create a new instance.
@@ -53,17 +61,24 @@ public class MultiStageReorder extends AbstractDelegateExtent implements Reorder
      * @param enabled true to enable
      */
     public MultiStageReorder(Extent extent, boolean enabled) {
-        super(extent);
-        this.enabled = enabled;
+        this(extent, enabled, true);
     }
 
     /**
-     * Create a new instance when the re-ordering is enabled.
+     * Create a new instance.
      *
      * @param extent the extent
+     * @param enabled true to enable
+     * @param safeMultiPass true to enable safe multipass mode
      */
-    public MultiStageReorder(Extent extent) {
-        this(extent, true);
+    public MultiStageReorder(Extent extent, boolean enabled, boolean safeMultiPass) {
+        super(extent);
+        this.enabled = enabled;
+        this.safeMultiPass = safeMultiPass;
+
+        for (int i = 0; i < STAGE_COUNT; ++i) {
+            stages.add(new TupleArrayList<BlockVector, BaseBlock>());
+        }
     }
 
     /**
@@ -84,49 +99,97 @@ public class MultiStageReorder extends AbstractDelegateExtent implements Reorder
         this.enabled = enabled;
     }
 
-    @Override
-    public boolean setBlock(Vector location, BaseBlock block) throws WorldEditException {
-        BaseBlock lazyBlock = getLazyBlock(location);
+    /**
+     * Return whether safe multi-pass mode is enabled.
+     *
+     * @return true if safe multi-pass mode is enabled
+     */
+    public boolean isSafeMultiPass() {
+        return safeMultiPass;
+    }
 
-//        if (!enabled) {
-//            return super.setBlock(location, block);
-//        }
+    /**
+     * Set whether safe multi-pass mode is enabled.
+     *
+     * @param enabled true if safe multi-pass mode is enabled
+     */
+    public void setSafeMultiPass(boolean enabled) {
+        this.safeMultiPass = enabled;
+    }
 
-        if (BlockType.shouldPlaceLast(block.getType())) {
+    public int getPlacementPriority(BaseBlock block) {
+        if (BlockType.shouldPlaceLate(block.getType())) {
+            return 1;
+        } else if (BlockType.shouldPlaceLast(block.getType())) {
             // Place torches, etc. last
-            stage2.put(location.toBlockVector(), block);
-            return !(lazyBlock.getType() == block.getType() && lazyBlock.getData() == block.getData());
+            return 2;
         } else if (BlockType.shouldPlaceFinal(block.getType())) {
             // Place signs, reed, etc even later
-            stage3.put(location.toBlockVector(), block);
-            return !(lazyBlock.getType() == block.getType() && lazyBlock.getData() == block.getData());
-        } else if (BlockType.shouldPlaceLast(lazyBlock.getType())) {
-            // Destroy torches, etc. first
-            super.setBlock(location, new BaseBlock(BlockID.AIR));
-            return super.setBlock(location, block);
+            return 3;
         } else {
-            stage1.put(location.toBlockVector(), block);
-            return !(lazyBlock.getType() == block.getType() && lazyBlock.getData() == block.getData());
+            return 0;
         }
     }
 
     @Override
-    public Operation commitBefore() {
-        return new OperationQueue(
-                new BlockMapEntryPlacer(getExtent(), stage1.iterator()),
-                new BlockMapEntryPlacer(getExtent(), stage2.iterator()),
-                new Stage3Committer()
-        );
+    public boolean setBlock(Vector location, BaseBlock block) throws WorldEditException {
+        BaseBlock lazyBlock = getLazyBlock(location);
+
+        if (!enabled) {
+            return super.setBlock(location, block);
+        }
+
+        int priority = getPlacementPriority(block);
+        int srcPriority = getPlacementPriority(lazyBlock);
+
+        // Destroy torches, water, stand, etc. first
+        if (srcPriority == 1 || srcPriority == 2) {
+            // Destroy torches, etc. first
+            super.setBlock(location, new BaseBlock(BlockID.AIR));
+            return super.setBlock(location, block);
+        }
+
+        stages.get(priority).put(location.toBlockPoint(), block);
+        return !(lazyBlock.getType() == block.getType() && lazyBlock.getData() == block.getData());
     }
 
-    private class Stage3Committer implements Operation {
-        Extent extent = getExtent();
+    @Override
+    public Operation commitBefore() {
+        if (safeMultiPass) {
+            // Create operations for all but the first stage
+            List<Operation> operations = new ArrayList<Operation>();
+            for (int i = 1; i < stages.size() - 1; ++i) {
+                operations.add(new BlockMapEntryPlacer(getExtent(), stages.get(i).iterator()));
+            }
+            operations.add(new FinalStageCommitter());
 
-        final Set<BlockVector> blocks = new HashSet<BlockVector>();
-        final Map<BlockVector, BaseBlock> blockTypes = new HashMap<BlockVector, BaseBlock>();
+            // Create a new operation queue, with the first stage distributed,
+            // and all remaining operations executed in a single tick
+            return new OperationQueue(
+                    new BlockMapEntryPlacer(getExtent(), stages.get(0).iterator()),
+                    new SinglePassOperationQueue(
+                            operations
+                    )
+            );
+        }
 
-        public Stage3Committer() {
-            for (Map.Entry<BlockVector, BaseBlock> entry : stage3) {
+        List<Operation> operations = new ArrayList<Operation>();
+        for (int i = 0; i < stages.size() - 1; ++i) {
+            operations.add(new BlockMapEntryPlacer(getExtent(), stages.get(i).iterator()));
+        }
+        operations.add(new FinalStageCommitter());
+
+        return new OperationQueue(operations);
+    }
+
+    private class FinalStageCommitter implements Operation {
+        private Extent extent = getExtent();
+
+        private final Set<BlockVector> blocks = new HashSet<BlockVector>();
+        private final Map<BlockVector, BaseBlock> blockTypes = new HashMap<BlockVector, BaseBlock>();
+
+        public FinalStageCommitter() {
+            for (Map.Entry<BlockVector, BaseBlock> entry : stages.get(stages.size() - 1)) {
                 final BlockVector pt = entry.getKey();
                 blocks.add(pt);
                 blockTypes.put(pt, entry.getValue());
@@ -204,9 +267,9 @@ public class MultiStageReorder extends AbstractDelegateExtent implements Reorder
             }
 
             if (blocks.isEmpty()) {
-                stage1.clear();
-                stage2.clear();
-                stage3.clear();
+                for (TupleArrayList<BlockVector, BaseBlock> stage : stages) {
+                    stage.clear();
+                }
 
                 return null;
             }
