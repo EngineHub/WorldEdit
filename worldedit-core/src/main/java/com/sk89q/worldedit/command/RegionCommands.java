@@ -46,14 +46,17 @@ import com.sk89q.worldedit.regions.ConvexPolyhedralRegion;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.RegionOperationException;
+import com.sk89q.worldedit.util.GenericRandomList;
 import com.sk89q.worldedit.util.TreeGenerator;
 import com.sk89q.worldedit.util.TreeGenerator.TreeType;
+import com.sk89q.worldedit.util.TreeTypes;
 import com.sk89q.worldedit.util.command.binding.Range;
 import com.sk89q.worldedit.util.command.binding.Switch;
 import com.sk89q.worldedit.util.command.binding.Text;
 import com.sk89q.worldedit.util.command.parametric.Optional;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -428,19 +431,26 @@ public class RegionCommands {
 
     @Command(
             aliases = { "/forest" },
-            usage = "[type] [density]",
+            usage = "[pattern] [density]",
             desc = "Make a forest within the region",
             min = 0,
             max = 2
     )
     @CommandPermissions("worldedit.region.forest")
     @Logging(REGION)
-    public void forest(Player player, EditSession editSession, @Selection Region region, @Optional("tree") TreeType type,
-                       @Optional("5") @Range(min = 0, max = 100) double density) throws WorldEditException {
+    public void forest(Player player, EditSession editSession, @Selection Region region,
+            @Optional("tree") TreeTypes types, @Optional("5") @Range(min = 0, max = 100) double density)
+            throws WorldEditException {
         density = density / 100;
-        ForestGenerator generator = new ForestGenerator(editSession, new TreeGenerator(type));
+        // Make a list of world generators based on the list of world types
+        GenericRandomList<TreeGenerator> treeGenerators = new GenericRandomList<TreeGenerator>();
+        Iterator<Double> chancesIterator = types.chancesIterator();
+        for (TreeType type : types)
+            treeGenerators.add(new TreeGenerator(type), chancesIterator.next().doubleValue());
+        ForestGenerator generator = new ForestGenerator(editSession, treeGenerators);
         GroundFunction ground = new GroundFunction(new ExistingBlockMask(editSession), generator);
-        LayerVisitor visitor = new LayerVisitor(asFlatRegion(region), minimumBlockY(region), maximumBlockY(region), ground);
+        LayerVisitor visitor = new LayerVisitor(asFlatRegion(region), minimumBlockY(region), maximumBlockY(region),
+                ground);
         visitor.setMask(new NoiseFilter2D(new RandomNoise(), density));
         Operations.completeLegacy(visitor);
 

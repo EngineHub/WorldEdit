@@ -40,6 +40,7 @@ import com.sk89q.worldedit.internal.annotation.Selection;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.TreeGenerator;
 import com.sk89q.worldedit.util.TreeGenerator.TreeType;
+import com.sk89q.worldedit.util.TreeTypes;
 import com.sk89q.worldedit.util.command.parametric.ArgumentStack;
 import com.sk89q.worldedit.util.command.parametric.BindingBehavior;
 import com.sk89q.worldedit.util.command.parametric.BindingHelper;
@@ -54,16 +55,18 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Binds standard WorldEdit classes such as {@link Player} and {@link LocalSession}.
+ * Binds standard WorldEdit classes such as {@link Player} and
+ * {@link LocalSession}.
  */
 public class WorldEditBinding extends BindingHelper {
-    
+
     private final WorldEdit worldEdit;
 
     /**
      * Create a new instance.
      * 
-     * @param worldEdit the WorldEdit instance to bind to
+     * @param worldEdit
+     *            the WorldEdit instance to bind to
      */
     public WorldEditBinding(WorldEdit worldEdit) {
         this.worldEdit = worldEdit;
@@ -72,16 +75,19 @@ public class WorldEditBinding extends BindingHelper {
     /**
      * Gets a selection from a {@link ArgumentStack}.
      * 
-     * @param context the context
-     * @param selection the annotation
+     * @param context
+     *            the context
+     * @param selection
+     *            the annotation
      * @return a selection
-     * @throws IncompleteRegionException if no selection is available
-     * @throws ParameterException on other error
+     * @throws IncompleteRegionException
+     *             if no selection is available
+     * @throws ParameterException
+     *             on other error
      */
-    @BindingMatch(classifier = Selection.class,
-                  type = Region.class,
-                  behavior = BindingBehavior.PROVIDES)
-    public Object getSelection(ArgumentStack context, Selection selection) throws IncompleteRegionException, ParameterException {
+    @BindingMatch(classifier = Selection.class, type = Region.class, behavior = BindingBehavior.PROVIDES)
+    public Object getSelection(ArgumentStack context, Selection selection) throws IncompleteRegionException,
+            ParameterException {
         Player sender = getPlayer(context);
         LocalSession session = worldEdit.getSessionManager().get(sender);
         return session.getSelection(sender.getWorld());
@@ -90,31 +96,33 @@ public class WorldEditBinding extends BindingHelper {
     /**
      * Gets an {@link EditSession} from a {@link ArgumentStack}.
      * 
-     * @param context the context
+     * @param context
+     *            the context
      * @return an edit session
-     * @throws ParameterException on other error
+     * @throws ParameterException
+     *             on other error
      */
-    @BindingMatch(type = EditSession.class,
-                  behavior = BindingBehavior.PROVIDES)
+    @BindingMatch(type = EditSession.class, behavior = BindingBehavior.PROVIDES)
     public EditSession getEditSession(ArgumentStack context) throws ParameterException {
         Player sender = getPlayer(context);
         LocalSession session = worldEdit.getSessionManager().get(sender);
         EditSession editSession = session.createEditSession(sender);
         editSession.enableQueue();
         context.getContext().getLocals().put(EditSession.class, editSession);
-        session.tellVersion(sender); 
+        session.tellVersion(sender);
         return editSession;
     }
 
     /**
      * Gets an {@link LocalSession} from a {@link ArgumentStack}.
      * 
-     * @param context the context
+     * @param context
+     *            the context
      * @return a local session
-     * @throws ParameterException on error
+     * @throws ParameterException
+     *             on error
      */
-    @BindingMatch(type = LocalSession.class,
-                  behavior = BindingBehavior.PROVIDES)
+    @BindingMatch(type = LocalSession.class, behavior = BindingBehavior.PROVIDES)
     public LocalSession getLocalSession(ArgumentStack context) throws ParameterException {
         Player sender = getPlayer(context);
         return worldEdit.getSessionManager().get(sender);
@@ -123,12 +131,13 @@ public class WorldEditBinding extends BindingHelper {
     /**
      * Gets an {@link Actor} from a {@link ArgumentStack}.
      *
-     * @param context the context
+     * @param context
+     *            the context
      * @return a local player
-     * @throws ParameterException on error
+     * @throws ParameterException
+     *             on error
      */
-    @BindingMatch(type = Actor.class,
-            behavior = BindingBehavior.PROVIDES)
+    @BindingMatch(type = Actor.class, behavior = BindingBehavior.PROVIDES)
     public Actor getActor(ArgumentStack context) throws ParameterException {
         Actor sender = context.getContext().getLocals().get(Actor.class);
         if (sender == null) {
@@ -141,12 +150,13 @@ public class WorldEditBinding extends BindingHelper {
     /**
      * Gets an {@link Player} from a {@link ArgumentStack}.
      *
-     * @param context the context
+     * @param context
+     *            the context
      * @return a local player
-     * @throws ParameterException on error
+     * @throws ParameterException
+     *             on error
      */
-    @BindingMatch(type = Player.class,
-                  behavior = BindingBehavior.PROVIDES)
+    @BindingMatch(type = Player.class, behavior = BindingBehavior.PROVIDES)
     public Player getPlayer(ArgumentStack context) throws ParameterException {
         Actor sender = context.getContext().getLocals().get(Actor.class);
         if (sender == null) {
@@ -161,14 +171,15 @@ public class WorldEditBinding extends BindingHelper {
     /**
      * Gets an {@link BaseBlock} from a {@link ArgumentStack}.
      *
-     * @param context the context
+     * @param context
+     *            the context
      * @return a pattern
-     * @throws ParameterException on error
-     * @throws WorldEditException on error
+     * @throws ParameterException
+     *             on error
+     * @throws WorldEditException
+     *             on error
      */
-    @BindingMatch(type = BaseBlock.class,
-                  behavior = BindingBehavior.CONSUMES,
-                  consumedCount = 1)
+    @BindingMatch(type = BaseBlock.class, behavior = BindingBehavior.CONSUMES, consumedCount = 1)
     public BaseBlock getBaseBlock(ArgumentStack context) throws ParameterException, WorldEditException {
         Actor actor = context.getContext().getLocals().get(Actor.class);
         ParserContext parserContext = new ParserContext();
@@ -190,14 +201,15 @@ public class WorldEditBinding extends BindingHelper {
     /**
      * Gets an {@link Pattern} from a {@link ArgumentStack}.
      * 
-     * @param context the context
+     * @param context
+     *            the context
      * @return a pattern
-     * @throws ParameterException on error
-     * @throws WorldEditException on error
+     * @throws ParameterException
+     *             on error
+     * @throws WorldEditException
+     *             on error
      */
-    @BindingMatch(type = Pattern.class,
-                  behavior = BindingBehavior.CONSUMES,
-                  consumedCount = 1)
+    @BindingMatch(type = Pattern.class, behavior = BindingBehavior.CONSUMES, consumedCount = 1)
     public Pattern getPattern(ArgumentStack context) throws ParameterException, WorldEditException {
         Actor actor = context.getContext().getLocals().get(Actor.class);
         ParserContext parserContext = new ParserContext();
@@ -219,14 +231,15 @@ public class WorldEditBinding extends BindingHelper {
     /**
      * Gets an {@link Mask} from a {@link ArgumentStack}.
      * 
-     * @param context the context
+     * @param context
+     *            the context
      * @return a pattern
-     * @throws ParameterException on error
-     * @throws WorldEditException on error
+     * @throws ParameterException
+     *             on error
+     * @throws WorldEditException
+     *             on error
      */
-    @BindingMatch(type = Mask.class,
-                  behavior = BindingBehavior.CONSUMES,
-                  consumedCount = 1)
+    @BindingMatch(type = Mask.class, behavior = BindingBehavior.CONSUMES, consumedCount = 1)
     public Mask getMask(ArgumentStack context) throws ParameterException, WorldEditException {
         Actor actor = context.getContext().getLocals().get(Actor.class);
         ParserContext parserContext = new ParserContext();
@@ -248,18 +261,19 @@ public class WorldEditBinding extends BindingHelper {
     /**
      * Get a direction from the player.
      * 
-     * @param context the context
-     * @param direction the direction annotation
+     * @param context
+     *            the context
+     * @param direction
+     *            the direction annotation
      * @return a pattern
-     * @throws ParameterException on error
-     * @throws UnknownDirectionException on an unknown direction
+     * @throws ParameterException
+     *             on error
+     * @throws UnknownDirectionException
+     *             on an unknown direction
      */
-    @BindingMatch(classifier = Direction.class,
-                  type = Vector.class,
-                  behavior = BindingBehavior.CONSUMES,
-                  consumedCount = 1)
-    public Vector getDirection(ArgumentStack context, Direction direction) 
-            throws ParameterException, UnknownDirectionException {
+    @BindingMatch(classifier = Direction.class, type = Vector.class, behavior = BindingBehavior.CONSUMES, consumedCount = 1)
+    public Vector getDirection(ArgumentStack context, Direction direction) throws ParameterException,
+            UnknownDirectionException {
         Player sender = getPlayer(context);
         return worldEdit.getDirection(sender, context.next());
     }
@@ -267,14 +281,15 @@ public class WorldEditBinding extends BindingHelper {
     /**
      * Gets an {@link TreeType} from a {@link ArgumentStack}.
      *
-     * @param context the context
+     * @param context
+     *            the context
      * @return a pattern
-     * @throws ParameterException on error
-     * @throws WorldEditException on error
+     * @throws ParameterException
+     *             on error
+     * @throws WorldEditException
+     *             on error
      */
-    @BindingMatch(type = TreeType.class,
-            behavior = BindingBehavior.CONSUMES,
-            consumedCount = 1)
+    @BindingMatch(type = TreeType.class, behavior = BindingBehavior.CONSUMES, consumedCount = 1)
     public TreeType getTreeType(ArgumentStack context) throws ParameterException, WorldEditException {
         String input = context.next();
         if (input != null) {
@@ -282,8 +297,8 @@ public class WorldEditBinding extends BindingHelper {
             if (type != null) {
                 return type;
             } else {
-                throw new ParameterException(
-                        String.format("Can't recognize tree type '%s' -- choose from: %s", input, Arrays.toString(TreeType.values())));
+                throw new ParameterException(String.format("Can't recognize tree type '%s' -- choose from: %s", input,
+                        Arrays.toString(TreeType.values())));
             }
         } else {
             return TreeType.TREE;
@@ -291,16 +306,49 @@ public class WorldEditBinding extends BindingHelper {
     }
 
     /**
+     * Gets an {@link TreeType} from a {@link ArgumentStack}.
+     *
+     * @param context
+     *            the context
+     * @return a TreeTypes list
+     * @throws ParameterException
+     *             on error
+     * @throws ParameterException
+     *             on error
+     * @throws WorldEditException
+     *             on error
+     */
+    @BindingMatch(type = TreeTypes.class, behavior = BindingBehavior.CONSUMES, consumedCount = 1)
+    public TreeTypes getTreeTypes(ArgumentStack context) throws ParameterException, WorldEditException {
+        Actor actor = context.getContext().getLocals().get(Actor.class);
+        ParserContext parserContext = new ParserContext();
+        parserContext.setActor(context.getContext().getLocals().get(Actor.class));
+        if (actor instanceof Entity) {
+            Extent extent = ((Entity) actor).getExtent();
+            if (extent instanceof World) {
+                parserContext.setWorld((World) extent);
+            }
+        }
+        parserContext.setSession(worldEdit.getSessionManager().get(actor));
+        try {
+            return worldEdit.getTreeTypesFactory().parseFromInput(context.next(), parserContext);
+        } catch (NoMatchException e) {
+            throw new ParameterException(e.getMessage(), e);
+        }
+    }
+
+    /**
      * Gets an {@link BaseBiome} from a {@link ArgumentStack}.
      *
-     * @param context the context
+     * @param context
+     *            the context
      * @return a pattern
-     * @throws ParameterException on error
-     * @throws WorldEditException on error
+     * @throws ParameterException
+     *             on error
+     * @throws WorldEditException
+     *             on error
      */
-    @BindingMatch(type = BaseBiome.class,
-                  behavior = BindingBehavior.CONSUMES,
-                  consumedCount = 1)
+    @BindingMatch(type = BaseBiome.class, behavior = BindingBehavior.CONSUMES, consumedCount = 1)
     public BaseBiome getBiomeType(ArgumentStack context) throws ParameterException, WorldEditException {
         String input = context.next();
         if (input != null) {
@@ -323,13 +371,13 @@ public class WorldEditBinding extends BindingHelper {
             if (biome != null) {
                 return biome;
             } else {
-                throw new ParameterException(
-                        String.format("Can't recognize biome type '%s' -- use /biomelist to list available types", input));
+                throw new ParameterException(String.format(
+                        "Can't recognize biome type '%s' -- use /biomelist to list available types", input));
             }
         } else {
             throw new ParameterException(
-                    "This command takes a 'default' biome if one is not set, except there is no particular " +
-                            "biome that should be 'default', so the command should not be taking a default biome");
+                    "This command takes a 'default' biome if one is not set, except there is no particular "
+                            + "biome that should be 'default', so the command should not be taking a default biome");
         }
     }
 
