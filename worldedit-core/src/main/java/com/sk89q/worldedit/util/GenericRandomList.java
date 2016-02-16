@@ -20,7 +20,6 @@
 package com.sk89q.worldedit.util;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
@@ -29,7 +28,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * Provides a simple generic way to get objects based on weighted probabilities
  */
-public class GenericRandomList<T> implements Iterable<T> {
+public class GenericRandomList<T>{
 
     private final Random random = new Random();
     protected List<Chance> objects = new ArrayList<Chance>();
@@ -84,23 +83,5 @@ public class GenericRandomList<T> implements Iterable<T> {
         public double getChance() {
             return chance;
         }
-    }
-
-    @Override
-    public Iterator<T> iterator() {
-        return new Iterator<T>() {
-            Iterator<Chance> objectsIterator = objects.iterator();
-
-            @Override
-            public boolean hasNext() {
-                return objectsIterator.hasNext();
-            }
-
-            @Override
-            public T next() {
-                return objectsIterator.next().getObject();
-            }
-
-        };
     }
 }
