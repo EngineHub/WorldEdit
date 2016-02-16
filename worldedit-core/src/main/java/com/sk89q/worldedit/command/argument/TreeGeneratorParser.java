@@ -29,8 +29,6 @@ import com.sk89q.worldedit.extension.input.InputParseException;
 import com.sk89q.worldedit.function.Contextual;
 import com.sk89q.worldedit.function.EditContext;
 import com.sk89q.worldedit.function.generator.ForestGenerator;
-import com.sk89q.worldedit.util.GenericRandomList;
-import com.sk89q.worldedit.util.TreeGenerator;
 import com.sk89q.worldedit.util.TreeGenerator.TreeType;
 import com.sk89q.worldedit.util.TreeTypes;
 import com.sk89q.worldedit.util.command.argument.ArgumentUtils;
@@ -39,7 +37,6 @@ import com.sk89q.worldedit.util.command.argument.MissingArgumentException;
 import com.sk89q.worldedit.util.command.composition.CommandExecutor;
 
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 
 public class TreeGeneratorParser implements CommandExecutor<Contextual<ForestGenerator>> {
@@ -102,12 +99,7 @@ public class TreeGeneratorParser implements CommandExecutor<Contextual<ForestGen
 
         @Override
         public ForestGenerator createFromContext(EditContext input) {
-            // Build the list of tree types
-            GenericRandomList<TreeGenerator> treeGenerators = new GenericRandomList<TreeGenerator>();
-            Iterator<Double> chancesIterator = types.chancesIterator();
-            for (TreeType type : types)
-                treeGenerators.add(new TreeGenerator(type), chancesIterator.next().doubleValue());
-            return new ForestGenerator((EditSession) input.getDestination(), treeGenerators);
+            return new ForestGenerator((EditSession) input.getDestination(), types.getGenerators());
         }
 
         @Override

@@ -25,8 +25,7 @@ import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.function.RegionFunction;
-import com.sk89q.worldedit.util.GenericRandomList;
-import com.sk89q.worldedit.util.TreeGenerator;
+import com.sk89q.worldedit.util.TreeGenerators;
 
 /**
  * Generates forests by searching for the ground starting from the given upper Y
@@ -34,7 +33,7 @@ import com.sk89q.worldedit.util.TreeGenerator;
  */
 public class ForestGenerator implements RegionFunction {
 
-    private final GenericRandomList<TreeGenerator> treeGenerators;
+    private final TreeGenerators treeGenerators;
     private final EditSession editSession;
 
     /**
@@ -43,7 +42,7 @@ public class ForestGenerator implements RegionFunction {
      * @param editSession the edit session
      * @param treeGenerators a tree generator
      */
-    public ForestGenerator(EditSession editSession, GenericRandomList<TreeGenerator> treeGenerators) {
+    public ForestGenerator(EditSession editSession, TreeGenerators treeGenerators) {
         this.editSession = editSession;
         this.treeGenerators = treeGenerators;
     }

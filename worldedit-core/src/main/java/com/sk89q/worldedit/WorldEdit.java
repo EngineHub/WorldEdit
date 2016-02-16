@@ -56,7 +56,6 @@ import com.sk89q.worldedit.util.logging.WorldEditPrefixHandler;
 import com.sk89q.worldedit.world.registry.BundledBlockData;
 
 import javax.script.ScriptException;
-
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;

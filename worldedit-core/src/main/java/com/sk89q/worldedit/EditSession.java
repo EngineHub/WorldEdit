@@ -1788,7 +1788,7 @@ public class EditSession implements Extent {
      * @return number of trees created
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
-    public int makeForest(Vector basePosition, int size, double density, GenericRandomList<TreeGenerator> treeGenerators) throws MaxChangedBlocksException {
+    public int makeForest(Vector basePosition, int size, double density, TreeGenerators treeGenerators) throws MaxChangedBlocksException {
         int affected = 0;
 
         for (int x = basePosition.getBlockX() - size; x <= basePosition.getBlockX()

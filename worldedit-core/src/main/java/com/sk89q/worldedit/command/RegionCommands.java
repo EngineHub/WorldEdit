@@ -46,9 +46,6 @@ import com.sk89q.worldedit.regions.ConvexPolyhedralRegion;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.RegionOperationException;
-import com.sk89q.worldedit.util.GenericRandomList;
-import com.sk89q.worldedit.util.TreeGenerator;
-import com.sk89q.worldedit.util.TreeGenerator.TreeType;
 import com.sk89q.worldedit.util.TreeTypes;
 import com.sk89q.worldedit.util.command.binding.Range;
 import com.sk89q.worldedit.util.command.binding.Switch;
@@ -56,7 +53,6 @@ import com.sk89q.worldedit.util.command.binding.Text;
 import com.sk89q.worldedit.util.command.parametric.Optional;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -442,15 +438,9 @@ public class RegionCommands {
             @Optional("tree") TreeTypes types, @Optional("5") @Range(min = 0, max = 100) double density)
             throws WorldEditException {
         density = density / 100;
-        // Make a list of world generators based on the list of world types
-        GenericRandomList<TreeGenerator> treeGenerators = new GenericRandomList<TreeGenerator>();
-        Iterator<Double> chancesIterator = types.chancesIterator();
-        for (TreeType type : types)
-            treeGenerators.add(new TreeGenerator(type), chancesIterator.next().doubleValue());
-        ForestGenerator generator = new ForestGenerator(editSession, treeGenerators);
+        ForestGenerator generator = new ForestGenerator(editSession, types.getGenerators());
         GroundFunction ground = new GroundFunction(new ExistingBlockMask(editSession), generator);
-        LayerVisitor visitor = new LayerVisitor(asFlatRegion(region), minimumBlockY(region), maximumBlockY(region),
-                ground);
+        LayerVisitor visitor = new LayerVisitor(asFlatRegion(region), minimumBlockY(region), maximumBlockY(region), ground);
         visitor.setMask(new NoiseFilter2D(new RandomNoise(), density));
         Operations.completeLegacy(visitor);
 
