@@ -32,7 +32,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class GenericRandomList<T> implements Iterable<T> {
 
     private final Random random = new Random();
-    private List<Chance> objects = new ArrayList<Chance>();
+    protected List<Chance> objects = new ArrayList<Chance>();
     private double max = 0;
 
     /**
@@ -68,7 +68,7 @@ public class GenericRandomList<T> implements Iterable<T> {
         throw new NullPointerException();
     }
 
-    private class Chance {
+    class Chance {
         private T object;
         private double chance;
 
@@ -103,22 +103,4 @@ public class GenericRandomList<T> implements Iterable<T> {
 
         };
     }
-    
-    public Iterator<Double> chancesIterator() {
-        return new Iterator<Double>() {
-            Iterator<Chance> objectsIterator = objects.iterator();
-
-            @Override
-            public boolean hasNext() {
-                return objectsIterator.hasNext();
-            }
-
-            @Override
-            public Double next() {
-                return objectsIterator.next().getChance();
-            }
-
-        };
-    }
-    
 }

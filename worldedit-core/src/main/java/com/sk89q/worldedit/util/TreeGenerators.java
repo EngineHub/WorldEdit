@@ -19,16 +19,6 @@
 
 package com.sk89q.worldedit.util;
 
-import com.sk89q.worldedit.util.TreeGenerator.TreeType;
-
-public class TreeTypes extends GenericRandomList<TreeType> {
-
-    public TreeGenerators getGenerators() {
-        // Make a list of tree generators based on the list of tree types
-        TreeGenerators treeGenerators = new TreeGenerators();
-        for (Chance c : this.objects)
-            treeGenerators.add(new TreeGenerator(c.getObject()), c.getChance());
-        return treeGenerators;
-    }
+public class TreeGenerators extends GenericRandomList<TreeGenerator> {
 
 }
