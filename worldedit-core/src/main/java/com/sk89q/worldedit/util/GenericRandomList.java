@@ -28,7 +28,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * Provides a simple generic way to get objects based on weighted probabilities
  */
-public class GenericRandomList<T>{
+public class GenericRandomList<T> {
 
     private final Random random = new Random();
     protected List<Chance> objects = new ArrayList<Chance>();
