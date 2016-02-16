@@ -24,17 +24,22 @@ import com.google.common.collect.Lists;
 import com.sk89q.minecraft.util.commands.CommandException;
 import com.sk89q.minecraft.util.commands.CommandLocals;
 import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.extension.input.InputParseException;
 import com.sk89q.worldedit.function.Contextual;
 import com.sk89q.worldedit.function.EditContext;
 import com.sk89q.worldedit.function.generator.ForestGenerator;
+import com.sk89q.worldedit.util.GenericRandomList;
 import com.sk89q.worldedit.util.TreeGenerator;
 import com.sk89q.worldedit.util.TreeGenerator.TreeType;
+import com.sk89q.worldedit.util.TreeTypes;
 import com.sk89q.worldedit.util.command.argument.ArgumentUtils;
 import com.sk89q.worldedit.util.command.argument.CommandArgs;
 import com.sk89q.worldedit.util.command.argument.MissingArgumentException;
 import com.sk89q.worldedit.util.command.composition.CommandExecutor;
 
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 public class TreeGeneratorParser implements CommandExecutor<Contextual<ForestGenerator>> {
@@ -53,13 +58,15 @@ public class TreeGeneratorParser implements CommandExecutor<Contextual<ForestGen
     public Contextual<ForestGenerator> call(CommandArgs args, CommandLocals locals) throws CommandException {
         try {
             String input = args.next();
-            TreeType type = TreeGenerator.lookup(input);
-            if (type != null) {
-                return new GeneratorFactory(type);
+            TreeTypes types = WorldEdit.getInstance().getTreeTypesFactory().parseFromInput(input, null);
+            if (types != null) {
+                return new GeneratorFactory(types);
             } else {
                 throw new CommandException("Unknown value for <" + name + "> (try one of " + getOptionsList() + ").");
             }
         } catch (MissingArgumentException e) {
+            throw new CommandException("Missing value for <" + name + "> (try one of " + getOptionsList() + ").");
+        } catch (InputParseException e) {
             throw new CommandException("Missing value for <" + name + "> (try one of " + getOptionsList() + ").");
         }
     }
@@ -67,7 +74,8 @@ public class TreeGeneratorParser implements CommandExecutor<Contextual<ForestGen
     @Override
     public List<String> getSuggestions(CommandArgs args, CommandLocals locals) throws MissingArgumentException {
         String s = args.next();
-        return s.isEmpty() ? Lists.newArrayList(TreeType.getPrimaryAliases()) : ArgumentUtils.getMatchingSuggestions(TreeType.getAliases(), s);
+        return s.isEmpty() ? Lists.newArrayList(TreeType.getPrimaryAliases()) : ArgumentUtils.getMatchingSuggestions(
+                TreeType.getAliases(), s);
     }
 
     @Override
@@ -86,20 +94,25 @@ public class TreeGeneratorParser implements CommandExecutor<Contextual<ForestGen
     }
 
     private static final class GeneratorFactory implements Contextual<ForestGenerator> {
-        private final TreeType type;
+        private final TreeTypes types;
 
-        private GeneratorFactory(TreeType type) {
-            this.type = type;
+        private GeneratorFactory(TreeTypes types) {
+            this.types = types;
         }
 
         @Override
         public ForestGenerator createFromContext(EditContext input) {
-            return new ForestGenerator((EditSession) input.getDestination(), new TreeGenerator(type));
+            // Build the list of tree types
+            GenericRandomList<TreeGenerator> treeGenerators = new GenericRandomList<TreeGenerator>();
+            Iterator<Double> chancesIterator = types.chancesIterator();
+            for (TreeType type : types)
+                treeGenerators.add(new TreeGenerator(type), chancesIterator.next().doubleValue());
+            return new ForestGenerator((EditSession) input.getDestination(), treeGenerators);
         }
 
         @Override
         public String toString() {
-            return "tree of type " + type;
+            return "tree of types " + types;
         }
     }
 

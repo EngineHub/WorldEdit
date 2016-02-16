@@ -32,6 +32,7 @@ import com.sk89q.worldedit.extension.factory.BlockFactory;
 import com.sk89q.worldedit.extension.factory.ItemFactory;
 import com.sk89q.worldedit.extension.factory.MaskFactory;
 import com.sk89q.worldedit.extension.factory.PatternFactory;
+import com.sk89q.worldedit.extension.factory.TreeTypesFactory;
 import com.sk89q.worldedit.extension.input.ParserContext;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Platform;
@@ -55,6 +56,7 @@ import com.sk89q.worldedit.util.logging.WorldEditPrefixHandler;
 import com.sk89q.worldedit.world.registry.BundledBlockData;
 
 import javax.script.ScriptException;
+
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -100,7 +102,8 @@ public class WorldEdit {
     private final ItemFactory itemFactory = new ItemFactory(this);
     private final MaskFactory maskFactory = new MaskFactory(this);
     private final PatternFactory patternFactory = new PatternFactory(this);
-
+    private final TreeTypesFactory treeTypesFactory = new TreeTypesFactory(this);
+    
     static {
         WorldEditPrefixHandler.register("com.sk89q.worldedit");
         getVersion();
@@ -183,6 +186,16 @@ public class WorldEdit {
      */
     public PatternFactory getPatternFactory() {
         return patternFactory;
+    }
+    
+    /**
+     * Get the treetypes factory from which new {@link com.sk89q.worldedit.util.TreeTypes}
+     * can be constructed.
+     *
+     * @return the pattern factory
+     */
+    public TreeTypesFactory getTreeTypesFactory() {
+        return treeTypesFactory;
     }
 
     /**
