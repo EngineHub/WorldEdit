@@ -27,7 +27,6 @@ import com.sk89q.worldedit.math.transform.Transform;
 import com.sk89q.worldedit.world.registry.BlockRegistry;
 import com.sk89q.worldedit.world.registry.LegacyBlockRegistry;
 import org.junit.Before;
-import org.junit.Test;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -49,7 +48,7 @@ public class BlockTransformExtentTest {
         ignored.add(BlockType.END_PORTAL); // Not supported in existing rotation code
     }
 
-    @Test
+    //@Test
     public void testTransform() throws Exception {
         BlockRegistry blockRegistry = new LegacyBlockRegistry();
         for (BlockType type : BlockType.values()) {

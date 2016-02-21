@@ -19,9 +19,12 @@
 
 package com.sk89q.worldedit.extent.transform;
 
+import com.google.common.collect.Sets;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.blocks.BlockData;
+import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.extent.AbstractDelegateExtent;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.math.transform.Transform;
@@ -31,6 +34,7 @@ import com.sk89q.worldedit.world.registry.StateValue;
 
 import javax.annotation.Nullable;
 import java.util.Map;
+import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -110,6 +114,9 @@ public class BlockTransformExtent extends AbstractDelegateExtent {
         return transform(block, transform, registry, block);
     }
 
+
+    private static Set<Integer> LEGACY_ROTATION = Sets.newHashSet(BlockID.WOODEN_DOOR,BlockID.IRON_DOOR);
+
     /**
      * Transform the given block using the given transform.
      *
@@ -125,6 +132,19 @@ public class BlockTransformExtent extends AbstractDelegateExtent {
         checkNotNull(registry);
 
         Map<String, ? extends State> states = registry.getStates(block);
+
+        // --- dirty hack, special case iron and wooden doors (the newer wood doors dont seem to work :/ )
+        if(LEGACY_ROTATION.contains(changedBlock.getId())){
+            Vector nx = transform.apply(Vector.UNIT_X).subtract(transform.apply(Vector.ZERO)).normalize();
+            double angle = Math.toDegrees(Math.acos(nx.dot(Vector.UNIT_X)));
+            int ndata = changedBlock.getData();
+            int n = (int) Math.round(angle/90);
+            for(int i=0;i<n;i++){
+                ndata = BlockData.rotate90(changedBlock.getType(),ndata);
+            }
+            changedBlock.setData(ndata);
+            return changedBlock;
+        }
 
         if (states == null) {
             return changedBlock;
