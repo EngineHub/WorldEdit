@@ -442,7 +442,9 @@ public final class Functions {
 
     private static double queryInternal(RValue type, RValue data, double typeId, double dataValue) throws EvaluationException {
         // Compare to input values and determine return value
-        final double ret = (typeId == type.getValue() && dataValue == data.getValue()) ? 1.0 : 0.0;
+        // -1 is a wildcard, always true
+        final double ret = ((type.getValue() == -1 || typeId == type.getValue())
+                && (data.getValue() == -1 || dataValue == data.getValue())) ? 1.0 : 0.0;
 
         if (type instanceof LValue) {
             ((LValue) type).assign(typeId);

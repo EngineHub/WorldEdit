@@ -37,9 +37,11 @@ import com.sk89q.worldedit.function.mask.NoiseFilter;
 import com.sk89q.worldedit.function.mask.OffsetMask;
 import com.sk89q.worldedit.function.mask.RegionMask;
 import com.sk89q.worldedit.function.mask.SolidBlockMask;
+import com.sk89q.worldedit.internal.expression.Expression;
 import com.sk89q.worldedit.internal.expression.ExpressionException;
 import com.sk89q.worldedit.internal.registry.InputParser;
 import com.sk89q.worldedit.math.noise.RandomNoise;
+import com.sk89q.worldedit.regions.shape.WorldEditExpressionEnvironment;
 import com.sk89q.worldedit.session.request.Request;
 import com.sk89q.worldedit.session.request.RequestSelection;
 import com.sk89q.worldedit.world.biome.BaseBiome;
@@ -144,7 +146,11 @@ class DefaultMaskParser extends InputParser<Mask> {
 
             case '=':
                 try {
-                    return new ExpressionMask(component.substring(1));
+                    Expression exp = Expression.compile(component.substring(1), "x", "y", "z");
+                    WorldEditExpressionEnvironment env = new WorldEditExpressionEnvironment(
+                            Request.request().getEditSession(), Vector.ONE, Vector.ZERO);
+                    exp.setEnvironment(env);
+                    return new ExpressionMask(exp);
                 } catch (ExpressionException e) {
                     throw new InputParseException("Invalid expression: " + e.getMessage());
                 }
