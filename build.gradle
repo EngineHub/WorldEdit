@@ -38,9 +38,12 @@ if (!project.hasProperty("artifactory_password")) ext.artifactory_password = ""
 
 if (!project.hasProperty("gitCommitHash") && !JavaVersion.current().isJava6()) {
     try {
-        def repo = org.ajoberstar.grgit.Grgit.open(project.file('.'))
+        def Grgit = Class.forName("org.ajoberstar.grgit.Grgit");
+        def Grgit_open = Grgit.getDeclaredMethod("open", File.class)
+        def repo = Grgit_open.invoke(null, project.file('.'))
         ext.gitCommitHash = repo.head().abbreviatedId
     } catch (Exception e) {
+        println "Error getting commit hash: " + e.getMessage()
         ext.gitCommitHash = "no_git_id"
     }
 }
