@@ -27,7 +27,7 @@ repositories {
 }
 
 version = "6.1.1"
-ext.forgeVersion = "11.15.0.1695"
+ext.forgeVersion = "11.15.1.1760"
 ext.internalVersion = version + ";" + gitCommitHash
 
 minecraft {
