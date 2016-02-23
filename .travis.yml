@@ -10,7 +10,7 @@ jdk:
   - openjdk6
 # Caching for Gradle files, prevents hitting Maven too much.
 before_cache:
-  - find $HOME/.gradle/ -name '*.lock' -print -exec 'rm -f {} \;'
+  - find $HOME/.gradle/ -name '*.lock' -print -exec rm -f {} \;
 cache:
   directories:
     - $HOME/.gradle/caches/
