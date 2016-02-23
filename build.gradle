@@ -44,8 +44,10 @@ if (!project.hasProperty("gitCommitHash") && !JavaVersion.current().isJava6()) {
         ext.gitCommitHash = repo.head().abbreviatedId
     } catch (Exception e) {
         println "Error getting commit hash: " + e.getMessage()
-        ext.gitCommitHash = "no_git_id"
     }
+}
+if (!project.hasProperty("gitCommitHash")) {
+    ext.gitCommitHash = "no_git_id"
 }
 
 subprojects {
