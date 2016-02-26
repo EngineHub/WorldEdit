@@ -20,8 +20,11 @@
 package com.sk89q.worldedit.blocks;
 
 import com.sk89q.worldedit.CuboidClipboard.FlipDirection;
+import org.junit.Before;
 import org.junit.Test;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.TreeSet;
 
 import static org.junit.Assert.assertEquals;
@@ -29,9 +32,27 @@ import static org.junit.Assert.assertTrue;
 
 public class BlockDataTest {
 
-    //@Test
+    private final Set<BlockType> ignored = new HashSet<BlockType>();
+
+    @Before
+    public void setUp() throws Exception {
+        ignored.add(BlockType.BED); // Broken in existing rotation code?
+        ignored.add(BlockType.WOODEN_DOOR); // Complicated
+        ignored.add(BlockType.IRON_DOOR); // Complicated
+        ignored.add(BlockType.ACACIA_DOOR); // Complicated
+        ignored.add(BlockType.BIRCH_DOOR); // Complicated
+        ignored.add(BlockType.DARK_OAK_DOOR); // Complicated
+        ignored.add(BlockType.JUNGLE_DOOR); // Complicated
+        ignored.add(BlockType.SPRUCE_DOOR); // Complicated
+        ignored.add(BlockType.END_PORTAL); // Not supported in existing rotation code
+    }
+
+    @Test
     public void testRotateFlip() {
         for (int type = 0; type < 256; ++type) {
+            if(ignored.contains(BlockType.fromID(type))){
+                continue;
+            }
             for (int data = 0; data < 16; ++data) {
                 final String message = type + "/" + data;
 

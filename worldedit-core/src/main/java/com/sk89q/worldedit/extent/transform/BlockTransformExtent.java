@@ -19,12 +19,12 @@
 
 package com.sk89q.worldedit.extent.transform;
 
-import com.google.common.collect.Sets;
+import com.google.common.collect.Maps;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockData;
-import com.sk89q.worldedit.blocks.BlockID;
+import com.sk89q.worldedit.blocks.BlockType;
 import com.sk89q.worldedit.extent.AbstractDelegateExtent;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.math.transform.Transform;
@@ -33,8 +33,9 @@ import com.sk89q.worldedit.world.registry.State;
 import com.sk89q.worldedit.world.registry.StateValue;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -114,8 +115,41 @@ public class BlockTransformExtent extends AbstractDelegateExtent {
         return transform(block, transform, registry, block);
     }
 
+    private static Map<BlockType,BlockRotator> LEGACY_ROTATION = Maps.newHashMap();
 
-    private static Set<Integer> LEGACY_ROTATION = Sets.newHashSet(BlockID.WOODEN_DOOR,BlockID.IRON_DOOR);
+    static {
+        List<BlockRotator> rotators = new ArrayList<BlockRotator>();
+        rotators.add(new BlockRotator() {
+            @Override
+            public BaseBlock rotate90CW(BaseBlock block) {
+                int newData = BlockData.rotate90(block.getType(),block.getData());
+                block.setData(newData);
+                return block;
+            }
+
+            @Override
+            public BlockType getBlockID() {
+                return BlockType.WOODEN_DOOR;
+            }
+        });
+        rotators.add(new BlockRotator() {
+            @Override
+            public BaseBlock rotate90CW(BaseBlock block) {
+                int newData = BlockData.rotate90(block.getType(),block.getData());
+                block.setData(newData);
+                return block;
+            }
+
+            @Override
+            public BlockType getBlockID() {
+                return BlockType.IRON_DOOR;
+            }
+        });
+
+        for(BlockRotator r : rotators){
+            LEGACY_ROTATION.put(r.getBlockID(),r);
+        }
+    }
 
     /**
      * Transform the given block using the given transform.
@@ -134,15 +168,15 @@ public class BlockTransformExtent extends AbstractDelegateExtent {
         Map<String, ? extends State> states = registry.getStates(block);
 
         // --- dirty hack, special case iron and wooden doors (the newer wood doors dont seem to work :/ )
-        if(LEGACY_ROTATION.contains(changedBlock.getId())){
+        BlockRotator rotator = LEGACY_ROTATION.get(BlockType.fromID(changedBlock.getId()));
+        if(rotator != null){
             Vector nx = transform.apply(Vector.UNIT_X).subtract(transform.apply(Vector.ZERO)).normalize();
             double angle = Math.toDegrees(Math.acos(nx.dot(Vector.UNIT_X)));
-            int ndata = changedBlock.getData();
+
             int n = (int) Math.round(angle/90);
             for(int i=0;i<n;i++){
-                ndata = BlockData.rotate90(changedBlock.getType(),ndata);
+                changedBlock = rotator.rotate90CW(changedBlock);
             }
-            changedBlock.setData(ndata);
             return changedBlock;
         }
 
@@ -198,4 +232,8 @@ public class BlockTransformExtent extends AbstractDelegateExtent {
         }
     }
 
+    private interface BlockRotator {
+        BaseBlock rotate90CW(BaseBlock block);
+        BlockType getBlockID();
+    }
 }

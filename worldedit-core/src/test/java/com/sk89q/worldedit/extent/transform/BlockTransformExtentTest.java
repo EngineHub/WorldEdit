@@ -27,6 +27,7 @@ import com.sk89q.worldedit.math.transform.Transform;
 import com.sk89q.worldedit.world.registry.BlockRegistry;
 import com.sk89q.worldedit.world.registry.LegacyBlockRegistry;
 import org.junit.Before;
+import org.junit.Test;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -43,12 +44,29 @@ public class BlockTransformExtentTest {
     @Before
     public void setUp() throws Exception {
         ignored.add(BlockType.BED); // Broken in existing rotation code?
+        ignored.add(BlockType.END_PORTAL_FRAME); // Broken in existing rotation code?
+
+        ignored.add(BlockType.RED_SANDSTONE_STAIRS); // Broken in existing rotation code?
+
+        ignored.add(BlockType.ACACIA_FENCE_GATE); // Broken in existing rotation code?
+        ignored.add(BlockType.BIRCH_FENCE_GATE); // Broken in existing rotation code?
+        ignored.add(BlockType.DARK_OAK_FENCE_GATE); // Broken in existing rotation code?
+        ignored.add(BlockType.JUNGLE_FENCE_GATE); // Broken in existing rotation code?
+        ignored.add(BlockType.SPRUCE_FENCE_GATE); // Broken in existing rotation code?
+
+        ignored.add(BlockType.ACACIA_DOOR); // Complicated
+        ignored.add(BlockType.BIRCH_DOOR); // Complicated
+        ignored.add(BlockType.DARK_OAK_DOOR); // Complicated
+        ignored.add(BlockType.JUNGLE_DOOR); // Complicated
+        ignored.add(BlockType.SPRUCE_DOOR); // Complicated
+
         ignored.add(BlockType.WOODEN_DOOR); // Complicated
         ignored.add(BlockType.IRON_DOOR); // Complicated
+
         ignored.add(BlockType.END_PORTAL); // Not supported in existing rotation code
     }
 
-    //@Test
+    @Test
     public void testTransform() throws Exception {
         BlockRegistry blockRegistry = new LegacyBlockRegistry();
         for (BlockType type : BlockType.values()) {

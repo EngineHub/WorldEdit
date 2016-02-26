@@ -904,18 +904,21 @@
       "variant": {
         "dataMask": 3,
         "values": {
-          "oak": {
-            "data": 0
-          },
-          "spruce": {
-            "data": 1
-          },
-          "birch": {
-            "data": 2
-          },
-          "jungle": {
-            "data": 3
-          }
+          "oak": { "data": 0 },
+          "spruce": { "data": 1 },
+          "birch": { "data": 2 },
+          "jungle": { "data": 3 }
+        }
+      },
+      "facing": {
+        "dataMask": 12,
+        "values": {
+          "up": { "data": 0, "direction": [0, 1, 0] },
+          "down": { "data": 0, "direction": [0, -1, 0] },
+          "east": { "data": 4, "direction": [1, 0, 0] },
+          "west": { "data": 4, "direction": [-1, 0, 0] },
+          "north": { "data": 8, "direction": [0, 0, -1] },
+          "south": { "data": 8, "direction": [0, 0, 1] }
         }
       }
     },
@@ -1419,132 +1422,102 @@
     "legacyId": 27,
     "id": "minecraft:golden_rail",
     "unlocalizedName": "tile.goldenRail",
-    "localizedName": "Powered Rail",
     "states": {
-      "powered": {
-        "dataMask": 7,
+      "facing": {
         "values": {
-          "true": {
-            "data": 8
-          },
-          "false": {
-            "data": 0
-          }
-        }
-      },
-      "shape": {
-        "dataMask": 7,
-        "values": {
-          "north_south": {
-            "data": 0
-          },
-          "east_west": {
-            "data": 1
-          },
-          "ascending_east": {
-            "data": 2
-          },
-          "ascending_west": {
-            "data": 3
-          },
-          "ascending_north": {
-            "data": 4
-          },
-          "ascending_south": {
-            "data": 5
-          }
+          "north": { "data": 0, "direction": [0, 0, -1] },
+          "south": { "data": 0, "direction": [0, 0, 1] },
+          "east": { "data": 1, "direction": [1, 0, 0] },
+          "west": { "data": 1, "direction": [-1, 0, 0] },
+          "east_ascending": { "data": 2, "direction": [1, 1, 0] },
+          "east_descending": { "data": 2, "direction": [-1, -1, 0] },
+          "west_ascending": { "data": 3, "direction": [-1, 1, 0] },
+          "west_descending": { "data": 3, "direction": [1, -1, 0] },
+          "north_ascending": { "data": 4, "direction": [0, 1, -1] },
+          "north_descending": { "data": 4, "direction": [0, -1, 1] },
+          "south_ascending": { "data": 5, "direction": [0, 1, 1] },
+          "south_descending": { "data": 5, "direction": [0, -1, -1] },
+          "southeast": { "data": 6, "direction": [1, 0, 1] },
+          "southwest": { "data": 7, "direction": [-1, 0, 1] },
+          "northwest": { "data": 8, "direction": [-1, 0, -1] },
+          "northeast": { "data": 9, "direction": [1, 0, -1] }
         }
       }
     },
     "material": {
-      "powerSource": false,
-      "lightOpacity": 0,
-      "lightValue": 0,
-      "usingNeighborLight": true,
-      "hardness": 0.7,
-      "resistance": 3.5,
-      "ticksRandomly": false,
-      "fullCube": false,
-      "slipperiness": 0.6,
       "renderedAsNormalBlock": false,
+      "fullCube": false,
+      "opaque": false,
+      "powerSource": false,
       "liquid": false,
       "solid": false,
-      "movementBlocker": false,
-      "burnable": false,
-      "opaque": false,
-      "replacedDuringPlacement": false,
-      "toolRequired": false,
+      "hardness": 0.7,
+      "resistance": 3.5,
+      "slipperiness": 0.6,
+      "grassBlocking": true,
+      "ambientOcclusionLightValue": 1.0,
+      "lightOpacity": 0,
+      "lightValue": 0,
       "fragileWhenPushed": true,
       "unpushable": false,
       "adventureModeExempt": true,
-      "ambientOcclusionLightValue": 1.0,
-      "grassBlocking": false
+      "ticksRandomly": false,
+      "usingNeighborLight": true,
+      "movementBlocker": false,
+      "burnable": false,
+      "toolRequired": false,
+      "replacedDuringPlacement": false
     }
   },
   {
     "legacyId": 28,
     "id": "minecraft:detector_rail",
     "unlocalizedName": "tile.detectorRail",
-    "localizedName": "Detector Rail",
     "states": {
-      "powered": {
-        "dataMask": 7,
+      "facing": {
         "values": {
-          "true": {
-            "data": 8
-          },
-          "false": {
-            "data": 0
-          }
-        }
-      },
-      "shape": {
-        "dataMask": 7,
-        "values": {
-          "north_south": {
-            "data": 0
-          },
-          "east_west": {
-            "data": 1
-          },
-          "ascending_east": {
-            "data": 2
-          },
-          "ascending_west": {
-            "data": 3
-          },
-          "ascending_north": {
-            "data": 4
-          },
-          "ascending_south": {
-            "data": 5
-          }
+          "north": { "data": 0, "direction": [0, 0, -1] },
+          "south": { "data": 0, "direction": [0, 0, 1] },
+          "east": { "data": 1, "direction": [1, 0, 0] },
+          "west": { "data": 1, "direction": [-1, 0, 0] },
+          "east_ascending": { "data": 2, "direction": [1, 1, 0] },
+          "east_descending": { "data": 2, "direction": [-1, -1, 0] },
+          "west_ascending": { "data": 3, "direction": [-1, 1, 0] },
+          "west_descending": { "data": 3, "direction": [1, -1, 0] },
+          "north_ascending": { "data": 4, "direction": [0, 1, -1] },
+          "north_descending": { "data": 4, "direction": [0, -1, 1] },
+          "south_ascending": { "data": 5, "direction": [0, 1, 1] },
+          "south_descending": { "data": 5, "direction": [0, -1, -1] },
+          "southeast": { "data": 6, "direction": [1, 0, 1] },
+          "southwest": { "data": 7, "direction": [-1, 0, 1] },
+          "northwest": { "data": 8, "direction": [-1, 0, -1] },
+          "northeast": { "data": 9, "direction": [1, 0, -1] }
         }
       }
     },
     "material": {
-      "powerSource": true,
-      "lightOpacity": 0,
-      "lightValue": 0,
-      "usingNeighborLight": true,
-      "hardness": 0.7,
-      "resistance": 3.5,
-      "ticksRandomly": true,
-      "fullCube": false,
-      "slipperiness": 0.6,
       "renderedAsNormalBlock": false,
+      "fullCube": false,
+      "opaque": false,
+      "powerSource": true,
       "liquid": false,
       "solid": false,
-      "movementBlocker": false,
-      "burnable": false,
-      "opaque": false,
-      "replacedDuringPlacement": false,
-      "toolRequired": false,
+      "hardness": 0.7,
+      "resistance": 3.5,
+      "slipperiness": 0.6,
+      "grassBlocking": true,
+      "ambientOcclusionLightValue": 1.0,
+      "lightOpacity": 0,
+      "lightValue": 0,
       "fragileWhenPushed": true,
       "unpushable": false,
       "adventureModeExempt": true,
-      "ambientOcclusionLightValue": 1.0,
-      "grassBlocking": false
+      "ticksRandomly": true,
+      "usingNeighborLight": true,
+      "movementBlocker": false,
+      "burnable": false,
+      "toolRequired": false,
+      "replacedDuringPlacement": false
     }
   },
   {
@@ -3614,59 +3587,25 @@
     "legacyId": 63,
     "id": "minecraft:standing_sign",
     "unlocalizedName": "tile.sign",
-    "localizedName": "Sign",
     "states": {
-      "rotation": {
-        "dataMask": 15,
+      "facing": {
         "values": {
-          "0": {
-            "data": 0
-          },
-          "1": {
-            "data": 1
-          },
-          "2": {
-            "data": 2
-          },
-          "3": {
-            "data": 3
-          },
-          "4": {
-            "data": 4
-          },
-          "5": {
-            "data": 5
-          },
-          "6": {
-            "data": 6
-          },
-          "7": {
-            "data": 7
-          },
-          "8": {
-            "data": 8
-          },
-          "9": {
-            "data": 9
-          },
-          "10": {
-            "data": 10
-          },
-          "11": {
-            "data": 11
-          },
-          "12": {
-            "data": 12
-          },
-          "13": {
-            "data": 13
-          },
-          "14": {
-            "data": 14
-          },
-          "15": {
-            "data": 15
-          }
+          "south":            { "data": 0,  "direction": [0,        0,  1] },
+          "south_southwest":  { "data": 1,  "direction": [-0.3826,  0,  0.9238] },
+          "southwest":        { "data": 2,  "direction": [-0.7071,  0,  0.7071] },
+          "west_southwest":   { "data": 3,  "direction": [-0.9238,  0,  0.3826] },
+          "west":             { "data": 4,  "direction": [-1,       0,  0] },
+          "west_northwest":   { "data": 5,  "direction": [-0.9238,  0,  -0.3826] },
+          "northwest":        { "data": 6,  "direction": [-0.7071,  0,  -0.7071] },
+          "north_northwest":  { "data": 7,  "direction": [-0.3826,  0,  -0.9238] },
+          "north":            { "data": 8,  "direction": [0,        0,  -1] },
+          "north_northeast":  { "data": 9,  "direction": [0.3826,   0,  -0.9238] },
+          "northeast":        { "data": 10, "direction": [0.7071,   0,  -0.7071] },
+          "east_northeast":   { "data": 11, "direction": [0.9238,   0,  -0.3826] },
+          "east":             { "data": 12, "direction": [1,        0,  0] },
+          "east_southeast":   { "data": 13, "direction": [0.9238,   0,  0.3826] },
+          "southeast":        { "data": 14, "direction": [0.7071,   0,  0.7071] },
+          "south_southeast":  { "data": 15, "direction": [0.3826,   0,  0.9238] }
         }
       }
     },
@@ -3881,67 +3820,51 @@
     "legacyId": 66,
     "id": "minecraft:rail",
     "unlocalizedName": "tile.rail",
-    "localizedName": "Rail",
     "states": {
-      "shape": {
-        "dataMask": 12,
+      "facing": {
         "values": {
-          "north_south": {
-            "data": 0
-          },
-          "east_west": {
-            "data": 1
-          },
-          "ascending_east": {
-            "data": 2
-          },
-          "ascending_west": {
-            "data": 3
-          },
-          "ascending_north": {
-            "data": 4
-          },
-          "ascending_south": {
-            "data": 5
-          },
-          "south_east": {
-            "data": 6
-          },
-          "south_west": {
-            "data": 7
-          },
-          "north_west": {
-            "data": 8
-          },
-          "north_east": {
-            "data": 9
-          }
+          "north": { "data": 0, "direction": [0, 0, -1] },
+          "south": { "data": 0, "direction": [0, 0, 1] },
+          "east": { "data": 1, "direction": [1, 0, 0] },
+          "west": { "data": 1, "direction": [-1, 0, 0] },
+          "east_ascending": { "data": 2, "direction": [1, 1, 0] },
+          "east_descending": { "data": 2, "direction": [-1, -1, 0] },
+          "west_ascending": { "data": 3, "direction": [-1, 1, 0] },
+          "west_descending": { "data": 3, "direction": [1, -1, 0] },
+          "north_ascending": { "data": 4, "direction": [0, 1, -1] },
+          "north_descending": { "data": 4, "direction": [0, -1, 1] },
+          "south_ascending": { "data": 5, "direction": [0, 1, 1] },
+          "south_descending": { "data": 5, "direction": [0, -1, -1] },
+          "southeast": { "data": 6, "direction": [1, 0, 1] },
+          "southwest": { "data": 7, "direction": [-1, 0, 1] },
+          "northwest": { "data": 8, "direction": [-1, 0, -1] },
+          "northeast": { "data": 9, "direction": [1, 0, -1] }
         }
       }
     },
     "material": {
-      "powerSource": false,
-      "lightOpacity": 0,
-      "lightValue": 0,
-      "usingNeighborLight": true,
-      "hardness": 0.7,
-      "resistance": 3.5,
-      "ticksRandomly": false,
-      "fullCube": false,
-      "slipperiness": 0.6,
       "renderedAsNormalBlock": false,
+      "fullCube": false,
+      "opaque": false,
+      "powerSource": false,
       "liquid": false,
       "solid": false,
-      "movementBlocker": false,
-      "burnable": false,
-      "opaque": false,
-      "replacedDuringPlacement": false,
-      "toolRequired": false,
+      "hardness": 0.7,
+      "resistance": 3.5,
+      "slipperiness": 0.6,
+      "grassBlocking": true,
+      "ambientOcclusionLightValue": 1.0,
+      "lightOpacity": 0,
+      "lightValue": 0,
       "fragileWhenPushed": true,
       "unpushable": false,
       "adventureModeExempt": true,
-      "ambientOcclusionLightValue": 1.0,
-      "grassBlocking": false
+      "ticksRandomly": false,
+      "usingNeighborLight": true,
+      "movementBlocker": false,
+      "burnable": false,
+      "toolRequired": false,
+      "replacedDuringPlacement": false
     }
   },
   {
@@ -4117,72 +4040,119 @@
     "legacyId": 69,
     "id": "minecraft:lever",
     "unlocalizedName": "tile.lever",
-    "localizedName": "Lever",
     "states": {
       "facing": {
         "dataMask": 7,
         "values": {
-          "down_x": {
-            "data": 0
-          },
           "east": {
-            "data": 1
-          },
-          "west": {
-            "data": 2
+            "data": 1,
+            "direction": [
+              1,
+              0,
+              0
+            ]
           },
           "south": {
-            "data": 3
+            "data": 3,
+            "direction": [
+              0,
+              0,
+              1
+            ]
+          },
+          "west": {
+            "data": 2,
+            "direction": [
+              -1,
+              0,
+              0
+            ]
           },
           "north": {
-            "data": 4
+            "data": 4,
+            "direction": [
+              0,
+              0,
+              -1
+            ]
           },
-          "up_z": {
-            "data": 5
+          "ground_south": {
+            "data": 5,
+            "direction": [
+              0,
+              1,
+              1
+            ]
           },
-          "up_x": {
-            "data": 6
+          "ground_north": {
+            "data": 5,
+            "direction": [
+              0,
+              1,
+              -1
+            ]
           },
-          "down_z": {
-            "data": 7
+          "ground_east": {
+            "data": 6,
+            "direction": [
+              1,
+              1,
+              0
+            ]
+          },
+          "ground_west": {
+            "data": 6,
+            "direction": [
+              -1,
+              1,
+              0
+            ]
+          },
+          "ceiling_south": {
+            "data": 7,
+            "direction": [
+              0,
+              -1,
+              -1
+            ]
+          },
+          "ceiling_north": {
+            "data": 7,
+            "direction": [
+              0,
+              -1,
+              1
+            ]
+          },
+          "ceiling_east": {
+            "data": 0,
+            "direction": [
+              1,
+              -1,
+              0
+            ]
+          },
+          "ceiling_west": {
+            "data": 0,
+            "direction": [
+              -1,
+              -1,
+              0
+            ]
           }
         }
       },
       "powered": {
-        "dataMask": 7,
+        "dataMask": 8,
         "values": {
-          "true": {
-            "data": 8
-          },
-          "false": {
+          "unpowered": {
             "data": 0
+          },
+          "powered": {
+            "data": 8
           }
         }
       }
-    },
-    "material": {
-      "powerSource": true,
-      "lightOpacity": 0,
-      "lightValue": 0,
-      "usingNeighborLight": true,
-      "hardness": 0.5,
-      "resistance": 2.5,
-      "ticksRandomly": false,
-      "fullCube": false,
-      "slipperiness": 0.6,
-      "renderedAsNormalBlock": false,
-      "liquid": false,
-      "solid": false,
-      "movementBlocker": false,
-      "burnable": false,
-      "opaque": false,
-      "replacedDuringPlacement": false,
-      "toolRequired": false,
-      "fragileWhenPushed": true,
-      "unpushable": false,
-      "adventureModeExempt": true,
-      "ambientOcclusionLightValue": 1.0,
-      "grassBlocking": false
     }
   },
   {
@@ -9194,83 +9164,40 @@
     "legacyId": 145,
     "id": "minecraft:anvil",
     "unlocalizedName": "tile.anvil",
-    "localizedName": "Anvil",
     "states": {
-      "damage": {
-        "dataMask": 7,
-        "values": {
-          "0": {
-            "data": 0
-          },
-          "1": {
-            "data": 4
-          },
-          "2": {
-            "data": 8
-          }
-        }
-      },
       "facing": {
         "dataMask": 3,
         "values": {
-          "north": {
-            "data": 2,
-            "direction": [
-              0,
-              0,
-              -1
-            ]
-          },
-          "south": {
-            "data": 0,
-            "direction": [
-              0,
-              0,
-              1
-            ]
-          },
-          "west": {
-            "data": 1,
-            "direction": [
-              -1,
-              0,
-              0
-            ]
-          },
-          "east": {
-            "data": 3,
-            "direction": [
-              1,
-              0,
-              0
-            ]
-          }
+          "south": { "data": 2, "direction": [0, 0, 1] },
+          "north": { "data": 0, "direction": [0, 0, -1] },
+          "west": { "data": 1, "direction": [-1, 0, 0] },
+          "east": { "data": 3, "direction": [1, 0, 0] }
         }
       }
     },
     "material": {
-      "powerSource": false,
-      "lightOpacity": 0,
-      "lightValue": 0,
-      "usingNeighborLight": true,
-      "hardness": 5.0,
-      "resistance": 6000.0,
-      "ticksRandomly": false,
-      "fullCube": false,
-      "slipperiness": 0.6,
       "renderedAsNormalBlock": false,
+      "fullCube": false,
+      "opaque": true,
+      "powerSource": false,
       "liquid": false,
       "solid": true,
-      "movementBlocker": true,
-      "burnable": false,
-      "opaque": true,
-      "replacedDuringPlacement": false,
-      "toolRequired": true,
+      "hardness": 5.0,
+      "resistance": 6000.0,
+      "slipperiness": 0.6,
+      "grassBlocking": false,
+      "ambientOcclusionLightValue": 1.0,
+      "lightOpacity": 0,
+      "lightValue": 0,
       "fragileWhenPushed": false,
       "unpushable": true,
       "adventureModeExempt": false,
-      "ambientOcclusionLightValue": 1.0,
-      "grassBlocking": false
+      "ticksRandomly": false,
+      "usingNeighborLight": true,
+      "movementBlocker": true,
+      "burnable": false,
+      "toolRequired": true,
+      "replacedDuringPlacement": false
     }
   },
   {
@@ -10085,66 +10012,51 @@
     "legacyId": 157,
     "id": "minecraft:activator_rail",
     "unlocalizedName": "tile.activatorRail",
-    "localizedName": "Activator Rail",
     "states": {
-      "powered": {
-        "dataMask": 7,
+      "facing": {
         "values": {
-          "true": {
-            "data": 8
-          },
-          "false": {
-            "data": 0
-          }
-        }
-      },
-      "shape": {
-        "dataMask": 7,
-        "values": {
-          "north_south": {
-            "data": 0
-          },
-          "east_west": {
-            "data": 1
-          },
-          "ascending_east": {
-            "data": 2
-          },
-          "ascending_west": {
-            "data": 3
-          },
-          "ascending_north": {
-            "data": 4
-          },
-          "ascending_south": {
-            "data": 5
-          }
+          "north": { "data": 0, "direction": [0, 0, -1] },
+          "south": { "data": 0, "direction": [0, 0, 1] },
+          "east": { "data": 1, "direction": [1, 0, 0] },
+          "west": { "data": 1, "direction": [-1, 0, 0] },
+          "east_ascending": { "data": 2, "direction": [1, 1, 0] },
+          "east_descending": { "data": 2, "direction": [-1, -1, 0] },
+          "west_ascending": { "data": 3, "direction": [-1, 1, 0] },
+          "west_descending": { "data": 3, "direction": [1, -1, 0] },
+          "north_ascending": { "data": 4, "direction": [0, 1, -1] },
+          "north_descending": { "data": 4, "direction": [0, -1, 1] },
+          "south_ascending": { "data": 5, "direction": [0, 1, 1] },
+          "south_descending": { "data": 5, "direction": [0, -1, -1] },
+          "southeast": { "data": 6, "direction": [1, 0, 1] },
+          "southwest": { "data": 7, "direction": [-1, 0, 1] },
+          "northwest": { "data": 8, "direction": [-1, 0, -1] },
+          "northeast": { "data": 9, "direction": [1, 0, -1] }
         }
       }
     },
     "material": {
-      "powerSource": false,
-      "lightOpacity": 0,
-      "lightValue": 0,
-      "usingNeighborLight": true,
-      "hardness": 0.7,
-      "resistance": 3.5,
-      "ticksRandomly": false,
-      "fullCube": false,
-      "slipperiness": 0.6,
       "renderedAsNormalBlock": false,
+      "fullCube": false,
+      "opaque": false,
+      "powerSource": false,
       "liquid": false,
       "solid": false,
-      "movementBlocker": false,
-      "burnable": false,
-      "opaque": false,
-      "replacedDuringPlacement": false,
-      "toolRequired": false,
+      "hardness": 0.7,
+      "resistance": 3.5,
+      "slipperiness": 0.6,
+      "grassBlocking": true,
+      "ambientOcclusionLightValue": 1.0,
+      "lightOpacity": 0,
+      "lightValue": 0,
       "fragileWhenPushed": true,
       "unpushable": false,
       "adventureModeExempt": true,
-      "ambientOcclusionLightValue": 1.0,
-      "grassBlocking": false
+      "ticksRandomly": false,
+      "usingNeighborLight": true,
+      "movementBlocker": false,
+      "burnable": false,
+      "toolRequired": false,
+      "replacedDuringPlacement": false
     }
   },
   {
