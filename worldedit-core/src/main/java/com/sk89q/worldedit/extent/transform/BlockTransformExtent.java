@@ -122,20 +122,12 @@ public class BlockTransformExtent extends AbstractDelegateExtent {
         List<BlockRotator> rotators = new ArrayList<BlockRotator>();
         rotators.add(new LegacyBlockRotator(BlockType.WOODEN_DOOR));
         rotators.add(new LegacyBlockRotator(BlockType.IRON_DOOR));
-        rotators.add(new LegacyBlockRotator(BlockType.BIRCH_DOOR));
+
         rotators.add(new LegacyBlockRotator(BlockType.ACACIA_DOOR));
-
-        rotators.add(new BlockRotator() {
-            @Override
-            public BaseBlock rotate90CW(BaseBlock block) {
-                return block;
-            }
-
-            @Override
-            public BlockType getBlockID() {
-                return BlockType.DARK_OAK_DOOR;
-            }
-        });
+        rotators.add(new LegacyBlockRotator(BlockType.BIRCH_DOOR));
+        rotators.add(new LegacyBlockRotator(BlockType.DARK_OAK_DOOR));
+        rotators.add(new LegacyBlockRotator(BlockType.JUNGLE_DOOR));
+        rotators.add(new LegacyBlockRotator(BlockType.SPRUCE_DOOR));
 
         for(BlockRotator r : rotators){
             LEGACY_ROTATION.put(r.getBlockID(),r);
