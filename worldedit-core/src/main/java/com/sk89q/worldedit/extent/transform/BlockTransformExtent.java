@@ -154,9 +154,12 @@ public class BlockTransformExtent extends AbstractDelegateExtent {
         BlockRotator rotator = LEGACY_ROTATION.get(BlockType.fromID(changedBlock.getId()));
         if(rotator != null){
             Vector nx = transform.apply(Vector.UNIT_X).subtract(transform.apply(Vector.ZERO)).normalize();
+            WorldEdit.logger.info("Dot:  " + (nx.dot(Vector.UNIT_X)));
+            WorldEdit.logger.info("Arccos:  " + Math.acos(nx.dot(Vector.UNIT_X)));
             double angle = Math.toDegrees(Math.acos(nx.dot(Vector.UNIT_X)));
-
+            WorldEdit.logger.info("Angle:  " + angle);
             int n = (int) Math.round(angle/90);
+            WorldEdit.logger.info("Rotating 90x " + n);
             for(int i=0;i<n;i++){
                 changedBlock = rotator.rotate90CW(changedBlock);
             }
