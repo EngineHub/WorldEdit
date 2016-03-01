@@ -21,7 +21,6 @@ package com.sk89q.worldedit.extent.transform;
 
 import com.google.common.collect.Maps;
 import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockData;
@@ -150,16 +149,10 @@ public class BlockTransformExtent extends AbstractDelegateExtent {
 
         Map<String, ? extends State> states = registry.getStates(block);
 
-        // --- dirty hack, special case iron and wooden doors (the newer wood doors dont seem to work :/ )
+        // --- hack, special case for doors
         BlockRotator rotator = LEGACY_ROTATION.get(BlockType.fromID(changedBlock.getId()));
         if(rotator != null){
-            Vector nx = transform.apply(Vector.UNIT_X).subtract(transform.apply(Vector.ZERO)).normalize();
-            WorldEdit.logger.info("Dot:  " + (nx.dot(Vector.UNIT_X)));
-            WorldEdit.logger.info("Arccos:  " + Math.acos(nx.dot(Vector.UNIT_X)));
-            double angle = Math.toDegrees(Math.acos(nx.dot(Vector.UNIT_X)));
-            WorldEdit.logger.info("Angle:  " + angle);
-            int n = (int) Math.round(angle/90);
-            WorldEdit.logger.info("Rotating 90x " + n);
+            int n = (int) Math.round(angleFromTransform(transform)/90);
             for(int i=0;i<n;i++){
                 changedBlock = rotator.rotate90CW(changedBlock);
             }
@@ -183,6 +176,22 @@ public class BlockTransformExtent extends AbstractDelegateExtent {
         }
 
         return changedBlock;
+    }
+
+    /**
+     * Calculates how much a transformation rotates a vector
+     * Note: This is only accurate for transforms in x-z plane
+     * @param transform
+     * @return rotation of the transformation in x-z plane, always positive [0,270]
+     */
+    private static double angleFromTransform(Transform transform){
+        Vector nx = transform.apply(Vector.UNIT_X).subtract(transform.apply(Vector.ZERO)).normalize();
+        Vector crossed = nx.cross(Vector.UNIT_X);
+        int offset = 0;
+        if(crossed.getY()<0){
+            offset = 180;
+        }
+        return Math.toDegrees(Math.acos(nx.dot(Vector.UNIT_X))) + offset;
     }
 
     /**
@@ -218,6 +227,9 @@ public class BlockTransformExtent extends AbstractDelegateExtent {
         }
     }
 
+    /**
+     * Handles rotation of BlockData via the legacy BlockType.rotate90(...)
+     */
     private static final class LegacyBlockRotator implements BlockRotator {
         private BlockType type;
 
@@ -228,7 +240,6 @@ public class BlockTransformExtent extends AbstractDelegateExtent {
         @Override
         public BaseBlock rotate90CW(BaseBlock block) {
             int newData = BlockData.rotate90(block.getType(),block.getData());
-            WorldEdit.logger.info(String.format("[Legacy Rotation] Type: %d Data: %d -> %d",block.getType(),block.getData(),newData));
             block.setData(newData);
             return block;
         }
@@ -239,6 +250,9 @@ public class BlockTransformExtent extends AbstractDelegateExtent {
         }
     }
 
+    /**
+     * Handles rotation of BlockData for a specified BlockType
+     */
     private interface BlockRotator {
         BaseBlock rotate90CW(BaseBlock block);
         BlockType getBlockID();

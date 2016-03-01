@@ -132,8 +132,7 @@ public final class BlockData {
         case BlockID.IRON_DOOR:
             if ((data & 0x8) != 0) {
                 // door top halves contain no orientation information
-                // reset hinge if upper half
-                data &= ~0x1;
+                //TODO: reset hinge if upper half, might fix placement issues: data &= ~0x1;
                 break;
             }
 
