@@ -21,6 +21,7 @@ package com.sk89q.worldedit.extent.transform;
 
 import com.google.common.collect.Maps;
 import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockData;
@@ -36,6 +37,7 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -119,30 +121,21 @@ public class BlockTransformExtent extends AbstractDelegateExtent {
 
     static {
         List<BlockRotator> rotators = new ArrayList<BlockRotator>();
+        rotators.add(new LegacyBlockRotator(BlockType.WOODEN_DOOR));
+        rotators.add(new LegacyBlockRotator(BlockType.IRON_DOOR));
+        rotators.add(new LegacyBlockRotator(BlockType.BIRCH_DOOR));
+
+        final Logger log = WorldEdit.logger;
+        log.info("======= LOADED =======");
         rotators.add(new BlockRotator() {
             @Override
             public BaseBlock rotate90CW(BaseBlock block) {
-                int newData = BlockData.rotate90(block.getType(),block.getData());
-                block.setData(newData);
                 return block;
             }
 
             @Override
             public BlockType getBlockID() {
-                return BlockType.WOODEN_DOOR;
-            }
-        });
-        rotators.add(new BlockRotator() {
-            @Override
-            public BaseBlock rotate90CW(BaseBlock block) {
-                int newData = BlockData.rotate90(block.getType(),block.getData());
-                block.setData(newData);
-                return block;
-            }
-
-            @Override
-            public BlockType getBlockID() {
-                return BlockType.IRON_DOOR;
+                return BlockType.DARK_OAK_DOOR;
             }
         });
 
@@ -229,6 +222,26 @@ public class BlockTransformExtent extends AbstractDelegateExtent {
             return newValue;
         } else {
             return null;
+        }
+    }
+
+    private static final class LegacyBlockRotator implements BlockRotator {
+        private BlockType type;
+
+        public LegacyBlockRotator(BlockType type) {
+            this.type = type;
+        }
+
+        @Override
+        public BaseBlock rotate90CW(BaseBlock block) {
+            int newData = BlockData.rotate90(block.getType(),block.getData());
+            block.setData(newData);
+            return block;
+        }
+
+        @Override
+        public BlockType getBlockID() {
+            return type;
         }
     }
 

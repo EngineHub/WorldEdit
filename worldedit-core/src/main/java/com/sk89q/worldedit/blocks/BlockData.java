@@ -123,6 +123,11 @@ public final class BlockData {
             break;
         }
 
+        case BlockID.ACACIA_DOOR:
+        case BlockID.BIRCH_DOOR:
+        case BlockID.DARK_OAK_DOOR:
+        case BlockID.SPRUCE_DOOR:
+        case BlockID.JUNGLE_DOOR:
         case BlockID.WOODEN_DOOR:
         case BlockID.IRON_DOOR:
             if ((data & 0x8) != 0) {
