@@ -37,7 +37,6 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -124,9 +123,8 @@ public class BlockTransformExtent extends AbstractDelegateExtent {
         rotators.add(new LegacyBlockRotator(BlockType.WOODEN_DOOR));
         rotators.add(new LegacyBlockRotator(BlockType.IRON_DOOR));
         rotators.add(new LegacyBlockRotator(BlockType.BIRCH_DOOR));
+        rotators.add(new LegacyBlockRotator(BlockType.ACACIA_DOOR));
 
-        final Logger log = WorldEdit.logger;
-        log.info("======= LOADED =======");
         rotators.add(new BlockRotator() {
             @Override
             public BaseBlock rotate90CW(BaseBlock block) {
@@ -235,6 +233,7 @@ public class BlockTransformExtent extends AbstractDelegateExtent {
         @Override
         public BaseBlock rotate90CW(BaseBlock block) {
             int newData = BlockData.rotate90(block.getType(),block.getData());
+            WorldEdit.logger.info(String.format("[Legacy Rotation] Type: %d Data: %d -> %d",block.getType(),block.getData(),newData));
             block.setData(newData);
             return block;
         }
