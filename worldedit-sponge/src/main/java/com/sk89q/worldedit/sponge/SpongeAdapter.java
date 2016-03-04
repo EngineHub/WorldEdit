@@ -35,8 +35,7 @@ final class SpongeAdapter {
 
     public static Location adapt(org.spongepowered.api.world.Location<org.spongepowered.api.world.World> loc, Vector3d rot) {
         Vector position = new Vector(loc.getX(), loc.getY(), loc.getZ());
-        Vector dir = new Vector(rot.getX(), rot.getY(), rot.getZ());
 
-        return new Location(SpongeAdapter.adapt(loc.getExtent()), position, dir);
+        return new Location(SpongeAdapter.adapt(loc.getExtent()), position, (float) rot.getY(), (float) rot.getX());
     }
 }

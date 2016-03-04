@@ -148,16 +148,12 @@ public class SpongePlayer extends AbstractPlayerActor {
                 this.player.getWorld(), pos.getX(), pos.getY(), pos.getZ()
         );
 
-        double yawR = Math.toRadians(yaw);
-        double pitchR = Math.toRadians(pitch);
-        double xz = Math.cos(pitch);
-
         this.player.setLocationAndRotation(
                 loc,
                 new Vector3d(
-                        -xz * Math.sin(yawR),
-                        -Math.sin(pitchR),
-                        xz * Math.cos(yawR)
+                        pitch,
+                        yaw,
+                        0
                 )
         );
     }
