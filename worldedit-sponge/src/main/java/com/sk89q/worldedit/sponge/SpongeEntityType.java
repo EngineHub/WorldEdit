@@ -132,7 +132,7 @@ public class SpongeEntityType implements EntityType {
 
     @Override
     public boolean isTagged() {
-        return entity.get(Keys.DISPLAY_NAME).orElse(Text.EMPTY).isEmpty();
+        return !entity.get(Keys.DISPLAY_NAME).orElse(Text.EMPTY).isEmpty();
    }
 
     @Override
