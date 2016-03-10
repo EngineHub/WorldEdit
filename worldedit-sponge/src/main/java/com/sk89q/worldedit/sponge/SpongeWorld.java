@@ -137,7 +137,7 @@ public abstract class SpongeWorld extends AbstractWorld {
         BlockState newState = getBlockState(block);
 
         try {
-            world.setBlock(pos, newState, notifyAndLight, Cause.of(SpongeWorldEdit.container()));
+            world.setBlock(pos, newState, notifyAndLight, Cause.source(SpongeWorldEdit.container()).build());
         } catch (PositionOutOfBoundsException ex) {
             return false;
         }
@@ -204,7 +204,7 @@ public abstract class SpongeWorld extends AbstractWorld {
         if (optItem.isPresent()) {
             org.spongepowered.api.entity.Entity entity = optItem.get();
             entity.offer(Keys.REPRESENTED_ITEM, SpongeWorldEdit.toSpongeItemStack(item).createSnapshot());
-            getWorld().spawnEntity(entity, Cause.of(SpongeWorldEdit.container()));
+            getWorld().spawnEntity(entity, Cause.source(SpongeWorldEdit.container()).build());
         }
     }
 
@@ -285,7 +285,7 @@ public abstract class SpongeWorld extends AbstractWorld {
                     new Vector3d(dir.getX(), dir.getY(), dir.getZ())
             );
 
-            if (world.spawnEntity(newEnt, Cause.of(SpongeWorldEdit.container()))) {
+            if (world.spawnEntity(newEnt, Cause.source(SpongeWorldEdit.container()).build())) {
                 return new SpongeEntity(newEnt);
             }
         }
