@@ -72,12 +72,13 @@ class ForgeBiomeRegistry implements BiomeRegistry {
         Map<Integer, BiomeGenBase> biomes = HashBiMap.create();
         Map<Integer, BiomeData> biomeData = new HashMap<Integer, BiomeData>();
 
-        for (BiomeGenBase biome : BiomeGenBase.getBiomeGenArray()) {
+        for (BiomeGenBase biome : BiomeGenBase.biomeRegistry) {
             if ((biome == null) || (biomes.containsValue(biome))) {
                 continue;
             }
-            biomes.put(biome.biomeID, biome);
-            biomeData.put(biome.biomeID, new ForgeBiomeData(biome));
+            int biomeId = BiomeGenBase.getIdForBiome(biome);
+            biomes.put(biomeId, biome);
+            biomeData.put(biomeId, new ForgeBiomeData(biome));
         }
 
         ForgeBiomeRegistry.biomes = biomes;
@@ -101,7 +102,7 @@ class ForgeBiomeRegistry implements BiomeRegistry {
 
         @Override
         public String getName() {
-            return biome.biomeName;
+            return biome.getBiomeName();
         }
     }
 

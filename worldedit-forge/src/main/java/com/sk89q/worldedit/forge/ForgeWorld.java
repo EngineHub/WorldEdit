@@ -58,16 +58,17 @@ import net.minecraft.init.Blocks;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockPos;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
+import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.gen.ChunkProviderServer;
 import net.minecraft.world.gen.feature.WorldGenBigMushroom;
 import net.minecraft.world.gen.feature.WorldGenBigTree;
+import net.minecraft.world.gen.feature.WorldGenBirchTree;
 import net.minecraft.world.gen.feature.WorldGenCanopyTree;
-import net.minecraft.world.gen.feature.WorldGenForest;
 import net.minecraft.world.gen.feature.WorldGenMegaJungle;
 import net.minecraft.world.gen.feature.WorldGenMegaPineTree;
 import net.minecraft.world.gen.feature.WorldGenSavannaTree;
@@ -204,7 +205,7 @@ public class ForgeWorld extends AbstractWorld {
     @Override
     public BaseBiome getBiome(Vector2D position) {
         checkNotNull(position);
-        return new BaseBiome(getWorld().getBiomeGenForCoords(new BlockPos(position.getBlockX(), 0, position.getBlockZ())).biomeID);
+        return new BaseBiome(BiomeGenBase.getIdForBiome(getWorld().getBiomeGenForCoords(new BlockPos(position.getBlockX(), 0, position.getBlockZ()))));
     }
 
     @Override
@@ -258,8 +259,6 @@ public class ForgeWorld extends AbstractWorld {
                     return false;
                 }
                 ChunkProviderServer chunkServer = (ChunkProviderServer) provider;
-                IChunkProvider chunkProvider = chunkServer.serverChunkGenerator;
-
                 for (Vector2D coord : chunks) {
                     long pos = ChunkCoordIntPair.chunkXZ2Int(coord.getBlockX(), coord.getBlockZ());
                     Chunk mcChunk;
@@ -269,12 +268,12 @@ public class ForgeWorld extends AbstractWorld {
                     }
                     chunkServer.droppedChunksSet.remove(pos);
                     chunkServer.id2ChunkMap.remove(pos);
-                    mcChunk = chunkProvider.provideChunk(coord.getBlockX(), coord.getBlockZ());
+                    mcChunk = chunkServer.provideChunk(coord.getBlockX(), coord.getBlockZ());
                     chunkServer.id2ChunkMap.add(pos, mcChunk);
                     chunkServer.loadedChunks.add(mcChunk);
                     if (mcChunk != null) {
                         mcChunk.onChunkLoad();
-                        mcChunk.populateChunk(chunkProvider, chunkProvider, coord.getBlockX(), coord.getBlockZ());
+                        mcChunk.populateChunk(chunkServer, chunkServer.chunkGenerator);
                     }
                 }
             } catch (Throwable t) {
@@ -308,7 +307,7 @@ public class ForgeWorld extends AbstractWorld {
             case BIG_TREE: return new WorldGenBigTree(true);
             case REDWOOD: return new WorldGenTaiga2(true);
             case TALL_REDWOOD: return new WorldGenTaiga1();
-            case BIRCH: return new WorldGenForest(true, false);
+            case BIRCH: return new WorldGenBirchTree(true, false);
             case JUNGLE: return new WorldGenMegaJungle(true, 10, 20, JUNGLE_LOG, JUNGLE_LEAF);
             case SMALL_JUNGLE: return new WorldGenTrees(true, 4 + random.nextInt(7), JUNGLE_LOG, JUNGLE_LEAF, false);
             case SHORT_JUNGLE: return new WorldGenTrees(true, 4 + random.nextInt(7), JUNGLE_LOG, JUNGLE_LEAF, true);
@@ -319,7 +318,7 @@ public class ForgeWorld extends AbstractWorld {
             case ACACIA: return new WorldGenSavannaTree(true);
             case DARK_OAK: return new WorldGenCanopyTree(true);
             case MEGA_REDWOOD: return new WorldGenMegaPineTree(false, random.nextBoolean());
-            case TALL_BIRCH: return new WorldGenForest(true, true);
+            case TALL_BIRCH: return new WorldGenBirchTree(true, true);
             case RANDOM:
             case PINE:
             case RANDOM_REDWOOD:

@@ -58,12 +58,11 @@ public class ThreadSafeCache {
             Set<UUID> onlineIds = new HashSet<UUID>();
             
             MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
-            if (server == null || server.getConfigurationManager() == null) {
+            if (server == null || server.getPlayerList() == null) {
                 return;
             }
-            for (Object object : FMLCommonHandler.instance().getMinecraftServerInstance().getConfigurationManager().playerEntityList) {
-                if (object != null) {
-                    EntityPlayerMP player = (EntityPlayerMP) object;
+            for (EntityPlayerMP player : server.getPlayerList().getPlayerList()) {
+                if (player != null) {
                     onlineIds.add(player.getUniqueID());
                 }
             }

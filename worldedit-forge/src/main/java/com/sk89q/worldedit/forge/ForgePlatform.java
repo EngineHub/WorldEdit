@@ -35,7 +35,7 @@ import net.minecraft.entity.EntityList;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.management.ServerConfigurationManager;
+import net.minecraft.server.management.PlayerList;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.fml.common.FMLCommonHandler;
@@ -123,7 +123,7 @@ class ForgePlatform extends AbstractPlatform implements MultiUserPlatform {
         if (player instanceof ForgePlayer) {
             return player;
         } else {
-            EntityPlayerMP entity = server.getConfigurationManager().getPlayerByUsername(player.getName());
+            EntityPlayerMP entity = server.getPlayerList().getPlayerByUsername(player.getName());
             return entity != null ? new ForgePlayer(this, entity) : null;
         }
     }
@@ -202,7 +202,7 @@ class ForgePlatform extends AbstractPlatform implements MultiUserPlatform {
     @Override
     public Collection<Actor> getConnectedUsers() {
         List<Actor> users = new ArrayList<Actor>();
-        ServerConfigurationManager scm = server.getConfigurationManager();
+        PlayerList scm = server.getPlayerList();
         for (String name : scm.getAllUsernames()) {
             EntityPlayerMP entity = scm.getPlayerByUsername(name);
             if (entity != null) {
