@@ -43,7 +43,6 @@ import net.minecraftforge.fml.common.FMLCommonHandler;
 import javax.annotation.Nullable;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumMap;
 import java.util.List;
@@ -77,8 +76,7 @@ class ForgePlatform extends AbstractPlatform implements MultiUserPlatform {
             }
         }
 
-        for (Object itemObj : Item.itemRegistry) {
-            Item item = (Item) itemObj;
+        for (Item item : Item.itemRegistry) {
             if (item == null) continue;
             if (item.getUnlocalizedName() == null) continue;
             if (item.getUnlocalizedName().startsWith("item.")) {
@@ -109,8 +107,8 @@ class ForgePlatform extends AbstractPlatform implements MultiUserPlatform {
 
     @Override
     public List<? extends com.sk89q.worldedit.world.World> getWorlds() {
-        List<WorldServer> worlds = Arrays.asList(DimensionManager.getWorlds());
-        List<com.sk89q.worldedit.world.World> ret = new ArrayList<com.sk89q.worldedit.world.World>(worlds.size());
+        WorldServer[] worlds = DimensionManager.getWorlds();
+        List<com.sk89q.worldedit.world.World> ret = new ArrayList<com.sk89q.worldedit.world.World>(worlds.length);
         for (WorldServer world : worlds) {
             ret.add(new ForgeWorld(world));
         }
@@ -203,8 +201,7 @@ class ForgePlatform extends AbstractPlatform implements MultiUserPlatform {
     public Collection<Actor> getConnectedUsers() {
         List<Actor> users = new ArrayList<Actor>();
         PlayerList scm = server.getPlayerList();
-        for (String name : scm.getAllUsernames()) {
-            EntityPlayerMP entity = scm.getPlayerByUsername(name);
+        for (EntityPlayerMP entity : scm.getPlayerList()) {
             if (entity != null) {
                 users.add(new ForgePlayer(this, entity));
             }
