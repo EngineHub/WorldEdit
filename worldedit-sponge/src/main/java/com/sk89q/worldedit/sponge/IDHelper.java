@@ -42,15 +42,15 @@ final class IDHelper {
         return ((BiomeGenBase) type).biomeID;
     }
 
-    public static ItemType resolveItem(int ID) {
-        return (ItemType) Item.getItemById(ID);
+    public static ItemType resolveItem(int intID) {
+        return (ItemType) Item.getItemById(intID);
     }
 
-    public static BlockType resolveBlock(int ID) {
-        return (BlockType) Block.getBlockById(ID);
+    public static BlockType resolveBlock(int intID) {
+        return (BlockType) Block.getBlockById(intID);
     }
 
-    public static BiomeType resolveBiome(int ID) {
-        return (BiomeType) BiomeGenBase.getBiome(ID);
+    public static BiomeType resolveBiome(int intID) {
+        return (BiomeType) BiomeGenBase.getBiome(intID);
     }
 }
