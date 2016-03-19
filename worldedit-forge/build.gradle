@@ -32,7 +32,7 @@ ext.internalVersion = version + ";" + gitCommitHash
 
 minecraft {
     version = "1.9-${project.forgeVersion}"
-    mappings = "snapshot_20160111"
+    mappings = "snapshot_20160319"
     runDir = 'run'
 
     replaceIn "com/sk89q/worldedit/forge/ForgeWorldEdit.java"
