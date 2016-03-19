@@ -300,10 +300,9 @@ public class CuboidRegion extends AbstractRegion implements FlatRegion {
         Vector min = getMinimumPoint();
         Vector max = getMaximumPoint();
 
-        for (int x = min.getBlockX(); x <= max.getBlockX(); ++x) {
-            for (int z = min.getBlockZ(); z <= max.getBlockZ(); ++z) {
-                chunks.add(new BlockVector2D(x >> ChunkStore.CHUNK_SHIFTS,
-                        z >> ChunkStore.CHUNK_SHIFTS));
+        for (int x = min.getBlockX() >> ChunkStore.CHUNK_SHIFTS; x <= max.getBlockX() >> ChunkStore.CHUNK_SHIFTS; ++x) {
+            for (int z = min.getBlockZ() >> ChunkStore.CHUNK_SHIFTS; z <= max.getBlockZ() >> ChunkStore.CHUNK_SHIFTS; ++z) {
+                chunks.add(new BlockVector2D(x, z));
             }
         }
 
@@ -317,11 +316,10 @@ public class CuboidRegion extends AbstractRegion implements FlatRegion {
         Vector min = getMinimumPoint();
         Vector max = getMaximumPoint();
 
-        for (int x = min.getBlockX(); x <= max.getBlockX(); ++x) {
-            for (int y = min.getBlockY(); y <= max.getBlockY(); ++y) {
-                for (int z = min.getBlockZ(); z <= max.getBlockZ(); ++z) {
-                    chunks.add(new BlockVector(x >> ChunkStore.CHUNK_SHIFTS,
-                            y >> ChunkStore.CHUNK_SHIFTS, z >> ChunkStore.CHUNK_SHIFTS));
+        for (int x = min.getBlockX() >> ChunkStore.CHUNK_SHIFTS; x <= max.getBlockX() >> ChunkStore.CHUNK_SHIFTS; ++x) {
+            for (int z = min.getBlockZ() >> ChunkStore.CHUNK_SHIFTS; z <= max.getBlockZ() >> ChunkStore.CHUNK_SHIFTS; ++z) {
+                for (int y = min.getBlockY() >> ChunkStore.CHUNK_SHIFTS; y <= max.getBlockY() >> ChunkStore.CHUNK_SHIFTS; ++y) {
+                    chunks.add(new BlockVector(x, y, z));
                 }
             }
         }

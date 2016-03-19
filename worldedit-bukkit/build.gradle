@@ -1,11 +1,14 @@
 apply plugin: 'eclipse'
 apply plugin: 'idea'
 
+repositories {
+    maven { url "https://hub.spigotmc.org/nexus/content/groups/public" }
+}
+
 dependencies {
     compile project(':worldedit-core')
     compile 'com.sk89q:dummypermscompat:1.8'
-    compile 'org.sk89q.bukkit:bukkit-classloader-check:1.7.9-R0.2'
-    compile 'org.bukkit:bukkit:1.7.9-R0.2'
+    compile 'org.bukkit:bukkit:1.8.8-R0.1-SNAPSHOT' // zzz
     testCompile 'org.mockito:mockito-core:1.9.0-rc1'
 }
 

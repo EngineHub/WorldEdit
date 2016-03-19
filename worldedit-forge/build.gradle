@@ -16,7 +16,7 @@ apply plugin: 'net.minecraftforge.gradle.forge'
 dependencies {
     compile project(':worldedit-core')
     compile 'org.spongepowered:spongeapi:3.1.0-SNAPSHOT'
-    testCompile group: 'org.mockito', name: 'mockito-core', version:'1.9.0-rc1'
+    testCompile group: 'org.mockito', name: 'mockito-core', version: '1.9.0-rc1'
 }
 
 repositories {
@@ -27,7 +27,7 @@ repositories {
 }
 
 version = "6.1.1"
-ext.forgeVersion = "11.15.0.1695"
+ext.forgeVersion = "11.15.1.1760"
 ext.internalVersion = version + ";" + gitCommitHash
 
 minecraft {
