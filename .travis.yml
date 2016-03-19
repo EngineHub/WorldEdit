@@ -7,7 +7,6 @@ script: ./gradlew build -s
 jdk:
   - oraclejdk8
   - oraclejdk7
-  - openjdk6
 # Caching for Gradle files, prevents hitting Maven too much.
 before_cache:
   - find $HOME/.gradle/ -name '*.lock' -print -exec rm -f {} \;
