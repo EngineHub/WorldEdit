@@ -27,11 +27,11 @@ repositories {
 }
 
 version = "6.1.1"
-ext.forgeVersion = "11.15.1.1760"
+ext.forgeVersion = "12.16.0.1770-1.9"
 ext.internalVersion = version + ";" + gitCommitHash
 
 minecraft {
-    version = "1.8.9-${project.forgeVersion}"
+    version = "1.9-${project.forgeVersion}"
     mappings = "snapshot_20160111"
     runDir = 'run'
 
