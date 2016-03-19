@@ -20,12 +20,15 @@
 package com.sk89q.worldedit.forge;
 
 import com.sk89q.worldedit.Vector;
+
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagInt;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
+
 import java.lang.reflect.Constructor;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -81,10 +84,9 @@ final class TileEntityUtils {
             tileEntity.readFromNBT(tag);
         }
 
-        tileEntity = ForgeWorldEdit.inst.getFMPCompat().overrideTileEntity(world, tag, tileEntity);
-
-        setTileEntity(world, position, tileEntity);
+        world.setTileEntity(new BlockPos(position.getBlockX(), position.getBlockY(), position.getBlockZ()), tileEntity);
     }
+
     /**
      * Set a tile entity at the given location using the tile entity ID from
      * the tag.
@@ -96,25 +98,11 @@ final class TileEntityUtils {
     static void setTileEntity(World world, Vector position, @Nullable NBTTagCompound tag) {
         if (tag != null) {
             updateForSet(tag, position);
-            TileEntity tileEntity = makeTileEntity(world, position, tag);
+            TileEntity tileEntity = TileEntity.createAndLoadEntity(tag);
             if (tileEntity != null) {
-                setTileEntity(world, position, tileEntity);
+                world.setTileEntity(new BlockPos(position.getBlockX(), position.getBlockY(), position.getBlockZ()), tileEntity);
             }
         }
-    }
-    
-    private static TileEntity makeTileEntity(World world, Vector position,
-            NBTTagCompound tag) {
-        TileEntity normal = TileEntity.createAndLoadEntity(tag);
-        return ForgeWorldEdit.inst.getFMPCompat().overrideTileEntity(world, tag,
-                normal);
-    }
-
-    private static void setTileEntity(World world, Vector position,
-            TileEntity tileEntity) {
-        world.setTileEntity(position.getBlockX(), position.getBlockY(),
-                position.getBlockZ(), tileEntity);
-        ForgeWorldEdit.inst.getFMPCompat().sendDescPacket(world, tileEntity);
     }
 
     /**

@@ -19,10 +19,11 @@
 
 package com.sk89q.worldedit.forge;
 
-import cpw.mods.fml.common.FMLCommonHandler;
 import net.minecraft.command.ICommand;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.world.WorldSettings.GameType;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import org.spongepowered.api.entity.living.player.Player;
 
 public interface ForgePermissionsProvider {
 
@@ -42,11 +43,24 @@ public interface ForgePermissionsProvider {
         public boolean hasPermission(EntityPlayerMP player, String permission) {
             ForgeConfiguration configuration = platform.getConfiguration();
             return configuration.cheatMode ||
-                    FMLCommonHandler.instance().getMinecraftServerInstance().getConfigurationManager().func_152596_g(player.getGameProfile()) ||
+                    FMLCommonHandler.instance().getMinecraftServerInstance().getConfigurationManager().canSendCommands(player.getGameProfile()) ||
                     (configuration.creativeEnable && player.theItemInWorldManager.getGameType() == GameType.CREATIVE);
         }
 
         @Override
         public void registerPermission(ICommand command, String permission) {}
+    }
+
+    public static class SpongePermissionsProvider implements ForgePermissionsProvider {
+
+        @Override
+        public boolean hasPermission(EntityPlayerMP player, String permission) {
+            return ((Player) player).hasPermission(permission);
+        }
+
+        @Override
+        public void registerPermission(ICommand command, String permission) {
+
+        }
     }
 }

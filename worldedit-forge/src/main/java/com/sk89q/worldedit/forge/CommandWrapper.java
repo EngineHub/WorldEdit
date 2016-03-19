@@ -19,18 +19,14 @@
 
 package com.sk89q.worldedit.forge;
 
-import com.google.common.base.Joiner;
-import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.event.platform.CommandSuggestionEvent;
 import com.sk89q.worldedit.util.command.CommandMapping;
+
+import java.util.Arrays;
+import java.util.List;
+import javax.annotation.Nullable;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
-import net.minecraft.entity.player.EntityPlayerMP;
-
-import javax.annotation.Nullable;
-import java.util.Arrays;
-import java.util.List;
 
 public class CommandWrapper extends CommandBase {
     private CommandMapping command;
@@ -53,17 +49,6 @@ public class CommandWrapper extends CommandBase {
     public void processCommand(ICommandSender var1, String[] var2) {}
 
     @Override
-    public List addTabCompletionOptions(ICommandSender sender, String[] arguments) {
-        if (sender instanceof EntityPlayerMP) {
-            CommandSuggestionEvent event = new CommandSuggestionEvent(ForgeWorldEdit.inst.wrap((EntityPlayerMP) sender), command.getPrimaryAlias() + " " + Joiner.on(" ").join(arguments));
-            WorldEdit.getInstance().getEventBus().post(event);
-            return event.getSuggestions();
-        } else {
-            return super.addTabCompletionOptions(sender, arguments);
-        }
-    }
-
-    @Override
     public String getCommandUsage(ICommandSender icommandsender) {
         return "/" + command.getPrimaryAlias() + " " + command.getDescription().getUsage();
     }
@@ -79,7 +64,7 @@ public class CommandWrapper extends CommandBase {
     }
 
     @Override
-    public int compareTo(@Nullable Object o) {
+    public int compareTo(@Nullable ICommand o) {
         if (o == null) {
             return 0;
         } else if (o instanceof ICommand) {

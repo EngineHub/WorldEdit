@@ -19,8 +19,9 @@
 
 package com.sk89q.worldedit.forge;
 
+import net.minecraftforge.fml.common.network.NetworkRegistry;
+
 import com.sk89q.worldedit.forge.gui.GuiHandler;
-import cpw.mods.fml.common.network.NetworkRegistry;
 
 public class CommonProxy {
 

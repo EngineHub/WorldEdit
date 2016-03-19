@@ -36,6 +36,7 @@ import net.minecraft.entity.item.EntityTNTPrimed;
 import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.entity.monster.EntityGolem;
 import net.minecraft.entity.passive.EntityAmbientCreature;
+import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.passive.IAnimals;
 import net.minecraft.entity.player.EntityPlayer;
@@ -108,7 +109,7 @@ public class ForgeEntityType implements EntityType {
 
     @Override
     public boolean isAnimal() {
-        return entity instanceof IAnimals;
+        return entity instanceof EntityAnimal;
     }
 
     @Override
@@ -133,7 +134,7 @@ public class ForgeEntityType implements EntityType {
 
     @Override
     public boolean isTagged() {
-        return entity instanceof EntityLiving && ((EntityLiving) entity).hasCustomNameTag();
+        return entity instanceof EntityLiving && ((EntityLiving) entity).hasCustomName();
     }
 
     @Override

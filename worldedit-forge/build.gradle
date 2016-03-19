@@ -7,28 +7,33 @@ buildscript {
     }
 
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:1.2-SNAPSHOT'
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.1-SNAPSHOT'
     }
 }
 
-apply plugin: 'forge'
-
-repositories {
-    maven {
-        name 'forge'
-        url 'http://files.minecraftforge.net/maven/'
-    }
-}
+apply plugin: 'net.minecraftforge.gradle.forge'
 
 dependencies {
     compile project(':worldedit-core')
-    compile group: 'codechicken', name: 'ForgeMultipart', version: '1.7.10-1.2.0.345', classifier: 'dev'
+    compile 'org.spongepowered:spongeapi:3.1.0-SNAPSHOT'
     testCompile group: 'org.mockito', name: 'mockito-core', version: '1.9.0-rc1'
 }
 
+repositories {
+    maven {
+        name = "Sponge"
+        url = "https://repo.spongepowered.org/maven"
+    }
+}
+
+version = "6.1.1"
+ext.forgeVersion = "11.15.1.1760"
+ext.internalVersion = version + ";" + gitCommitHash
+
 minecraft {
-    ext.forgeVersion = "10.13.4.1614-1.7.10"
-    version = "1.7.10-$forgeVersion"
+    version = "1.8.9-${project.forgeVersion}"
+    mappings = "snapshot_20160111"
+    runDir = 'run'
 
     replaceIn "com/sk89q/worldedit/forge/ForgeWorldEdit.java"
     replace "%VERSION%", project.version
@@ -39,8 +44,8 @@ project.archivesBaseName = "${project.archivesBaseName}-mc${minecraft.version}"
 processResources {
     from (sourceSets.main.resources.srcDirs) {
         expand 'version': project.version,
-                'mcVersion': project.minecraft.version, 
-                'forgeVersion': project.minecraft.forgeVersion,
+                'mcVersion': project.minecraft.version,
+                'forgeVersion': project.forgeVersion,
                 'internalVersion': project.internalVersion
         include 'mcmod.info'
     }
@@ -53,7 +58,8 @@ processResources {
 jar {
     manifest {
         attributes("Class-Path": "truezip.jar WorldEdit/truezip.jar js.jar WorldEdit/js.jar",
-                   "WorldEdit-Version": version)
+                   "WorldEdit-Version": version,
+                   "FMLAT": "worldedit_at.cfg")
     }
 }
 
@@ -63,8 +69,10 @@ shadowJar {
     }
 }
 
-reobf.reobf(shadowJar) { spec ->
-    spec.classpath = sourceSets.main.compileClasspath;
+reobf {
+    shadowJar {
+        mappingType = 'SEARGE'
+    }
 }
 
 task deobfJar(type: Jar) {
@@ -75,5 +83,3 @@ task deobfJar(type: Jar) {
 artifacts {
     archives deobfJar
 }
-
-build.dependsOn(shadowJar)

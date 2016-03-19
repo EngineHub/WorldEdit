@@ -19,22 +19,23 @@
 
 package com.sk89q.worldedit.forge;
 
-import java.nio.charset.Charset;
-
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.network.NetHandlerPlayServer;
-import net.minecraft.network.play.client.C17PacketCustomPayload;
-
 import com.sk89q.worldedit.LocalSession;
 
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.network.FMLEventChannel;
-import cpw.mods.fml.common.network.FMLNetworkEvent.ServerCustomPacketEvent;
-import cpw.mods.fml.common.network.NetworkRegistry;
+import java.nio.charset.Charset;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.network.NetHandlerPlayServer;
+import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.ThreadQuickExitException;
+import net.minecraft.network.play.server.S3FPacketCustomPayload;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.network.FMLEventChannel;
+import net.minecraftforge.fml.common.network.FMLNetworkEvent.ClientCustomPacketEvent;
+import net.minecraftforge.fml.common.network.FMLNetworkEvent.ServerCustomPacketEvent;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
 
 public class WECUIPacketHandler {
     public static final Charset UTF_8_CHARSET = Charset.forName("UTF-8");
-    private static FMLEventChannel WECUI_CHANNEL;
+    public static FMLEventChannel WECUI_CHANNEL;
     
     public static void init() {
          WECUI_CHANNEL = NetworkRegistry.INSTANCE.newEventDrivenChannel(ForgeWorldEdit.CUI_PLUGIN_CHANNEL);
@@ -43,7 +44,6 @@ public class WECUIPacketHandler {
 
     @SubscribeEvent
     public void onPacketData(ServerCustomPacketEvent event) {
-        C17PacketCustomPayload rawPacket = (C17PacketCustomPayload) event.packet.toC17Packet();
         if (event.packet.channel().equals(ForgeWorldEdit.CUI_PLUGIN_CHANNEL)) {
             EntityPlayerMP player = getPlayerFromEvent(event);
             LocalSession session = ForgeWorldEdit.inst.getSession((EntityPlayerMP) player);
@@ -51,9 +51,18 @@ public class WECUIPacketHandler {
             if (session.hasCUISupport()) {
                 return;
             }
-        
-            String text = new String(rawPacket.func_149558_e(), UTF_8_CHARSET);
+
+            String text = event.packet.payload().toString(UTF_8_CHARSET);
             session.handleCUIInitializationMessage(text);
+            session.describeCUI(ForgeWorldEdit.inst.wrap(player));
+        }
+    }
+    
+    @SubscribeEvent
+    public void callProcessPacket(ClientCustomPacketEvent event) {
+        try {
+            new S3FPacketCustomPayload(event.packet.channel(), new PacketBuffer(event.packet.payload())).processPacket(event.handler);
+        } catch (ThreadQuickExitException suppress) {
         }
     }
 

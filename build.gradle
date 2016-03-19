@@ -26,9 +26,9 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.0'
+        classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.3'
         classpath 'org.jfrog.buildinfo:build-info-extractor-gradle:3.0.1'
-        classpath 'org.ajoberstar:gradle-git:0.12.0'
+        classpath 'org.ajoberstar:gradle-git:1.4.2'
     }
 }
 
@@ -36,13 +36,18 @@ if (!project.hasProperty("artifactory_contextUrl")) ext.artifactory_contextUrl =
 if (!project.hasProperty("artifactory_user")) ext.artifactory_user = "guest"
 if (!project.hasProperty("artifactory_password")) ext.artifactory_password = ""
 
-if (!project.hasProperty("gitCommitHash")) {
+if (!project.hasProperty("gitCommitHash") && !JavaVersion.current().isJava6()) {
     try {
-        def repo = Grgit.open(project.file('.'))
+        def Grgit = Class.forName("org.ajoberstar.grgit.Grgit");
+        def Grgit_open = Grgit.getDeclaredMethod("open", File.class)
+        def repo = Grgit_open.invoke(null, project.file('.'))
         ext.gitCommitHash = repo.head().abbreviatedId
     } catch (Exception e) {
-        ext.gitCommitHash = "no_git_id"
+        println "Error getting commit hash: " + e.getMessage()
     }
+}
+if (!project.hasProperty("gitCommitHash")) {
+    ext.gitCommitHash = "no_git_id"
 }
 
 subprojects {
@@ -75,11 +80,6 @@ subprojects {
         }
     }
 
-    task sourcesJar(type: Jar, dependsOn: classes) {
-        classifier = 'sources'
-        from sourceSets.main.allSource
-    }
-
     task javadocJar(type: Jar, dependsOn: javadoc) {
         classifier = 'javadoc'
         from javadoc.destinationDir
@@ -87,13 +87,23 @@ subprojects {
 
     artifacts {
         archives jar
-        archives sourcesJar
         archives javadocJar
+    }
+
+    if (!name.equals('worldedit-forge')) {
+        task sourcesJar(type: Jar, dependsOn: classes) {
+            classifier = 'sources'
+            from sourceSets.main.allSource
+        }
+
+        artifacts {
+            archives sourcesJar
+        }
+        build.dependsOn(sourcesJar)
     }
 
     build.dependsOn(checkstyleMain)
     build.dependsOn(checkstyleTest)
-    build.dependsOn(sourcesJar)
     build.dependsOn(javadocJar)
 
     shadowJar {
