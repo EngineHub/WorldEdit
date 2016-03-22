@@ -235,7 +235,7 @@ public class SpongeWorldEdit {
      */
     public SpongeWorld getWorld(World world) {
         checkNotNull(world);
-        return new SpongeForgeWorld(world);
+        return new SpongeNMSWorld(world);
     }
 
     /**
