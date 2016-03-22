@@ -5,16 +5,18 @@ buildscript {
     repositories {
         mavenCentral()
         maven { url = "http://files.minecraftforge.net/maven" }
+        maven { url = "http://repo.minecrell.net/snapshots" }
         maven { url = "https://oss.sonatype.org/content/repositories/snapshots/" }
         jcenter()
     }
 
     dependencies {
+        classpath 'net.minecrell:VanillaGradle:2.0.3-SNAPSHOT'
         classpath 'net.minecraftforge.gradle:ForgeGradle:2.1-SNAPSHOT'
     }
 }
 
-apply plugin: 'net.minecraftforge.gradle.forge'
+apply plugin: 'net.minecrell.vanilla.server.library'
 
 dependencies {
     compile project(':worldedit-core')
@@ -37,12 +39,11 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 version = "6.1.1"
-ext.forgeVersion = "11.15.0.1695"
 ext.internalVersion = version + ";" + gitCommitHash
 
 minecraft {
-    version = "1.8.9-${project.forgeVersion}"
-    mappings = "snapshot_20160111"
+    version = "1.8.9"
+    mappings = "stable_22"
     runDir = 'run'
 
     replaceIn "com/sk89q/worldedit/sponge/SpongeWorldEdit.java"
@@ -55,7 +56,6 @@ processResources {
     from (sourceSets.main.resources.srcDirs) {
         expand 'version': project.version,
                 'mcVersion': project.minecraft.version,
-                'forgeVersion': project.forgeVersion,
                 'internalVersion': project.internalVersion
     }
 }

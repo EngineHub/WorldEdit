@@ -30,7 +30,7 @@ final class SpongeAdapter {
     }
 
     public static World adapt(org.spongepowered.api.world.World world) {
-        return new SpongeForgeWorld(world);
+        return new SpongeNMSWorld(world);
     }
 
     public static Location adapt(org.spongepowered.api.world.Location<org.spongepowered.api.world.World> loc, Vector3d rot) {

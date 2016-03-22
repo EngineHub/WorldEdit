@@ -84,7 +84,7 @@ class SpongePlatform extends AbstractPlatform implements MultiUserPlatform {
         Collection<org.spongepowered.api.world.World> worlds = Sponge.getServer().getWorlds();
         List<com.sk89q.worldedit.world.World> ret = new ArrayList<>(worlds.size());
         for (org.spongepowered.api.world.World world : worlds) {
-            ret.add(new SpongeForgeWorld(world));
+            ret.add(new SpongeNMSWorld(world));
         }
         return ret;
     }
@@ -108,7 +108,7 @@ class SpongePlatform extends AbstractPlatform implements MultiUserPlatform {
         } else {
             for (org.spongepowered.api.world.World ws : Sponge.getServer().getWorlds()) {
                 if (ws.getName().equals(world.getName())) {
-                    return new SpongeForgeWorld(ws);
+                    return new SpongeNMSWorld(ws);
                 }
             }
 

@@ -37,6 +37,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagInt;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockPos;
+import net.minecraft.util.LongHashMap;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.IChunkProvider;
@@ -48,12 +49,14 @@ import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
 import javax.annotation.Nullable;
+import java.lang.reflect.Field;
+import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class SpongeForgeWorld extends SpongeWorld {
+public class SpongeNMSWorld extends SpongeWorld {
 
     private static final IBlockState JUNGLE_LOG = Blocks.log.getDefaultState().withProperty(BlockOldLog.VARIANT, BlockPlanks.EnumType.JUNGLE);
     private static final IBlockState JUNGLE_LEAF = Blocks.leaves.getDefaultState().withProperty(BlockOldLeaf.VARIANT, BlockPlanks.EnumType.JUNGLE).withProperty(BlockLeaves.CHECK_DECAY, Boolean.valueOf(false));
@@ -64,7 +67,7 @@ public class SpongeForgeWorld extends SpongeWorld {
      *
      * @param world the world
      */
-    public SpongeForgeWorld(World world) {
+    public SpongeNMSWorld(World world) {
         super(world);
     }
 
@@ -118,9 +121,56 @@ public class SpongeForgeWorld extends SpongeWorld {
         return false;
     }
 
+    private static <T, K> K getFieldValue(Class<T> clazz, T object, String feildName, Class<K> valueClazz) {
+        try {
+            Field field = clazz.getDeclaredField(feildName); // Found in the MCP Mappings
+            field.setAccessible(true);
+
+            return valueClazz.cast(field.get(object));
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            System.out.println("Exception while modifying inaccessible variable: " + e.getMessage());
+        }
+        throw new IllegalStateException("Invalid variable state");
+    }
+
+    @SuppressWarnings("unchecked")
     @Override
     public boolean regenerate(Region region, EditSession editSession) {
         BaseBlock[] history = new BaseBlock[256 * (getMaxY() + 1)];
+
+        IChunkProvider provider = ((net.minecraft.world.World) getWorld()).getChunkProvider();
+        if (!(provider instanceof ChunkProviderServer)) {
+            return false;
+        }
+        ChunkProviderServer chunkServer = (ChunkProviderServer) provider;
+
+        IChunkProvider chunkProvider = getFieldValue(
+                ChunkProviderServer.class,
+                chunkServer,
+                "field_73246_d",  // serverChunkGenerator
+                IChunkProvider.class
+        );
+
+        Set droppedChunksSet = getFieldValue(
+                ChunkProviderServer.class,
+                chunkServer,
+                "field_73248_b", // droppedChunksSet,
+                Set.class
+        );
+
+        LongHashMap id2ChunkMap = getFieldValue(
+                ChunkProviderServer.class,
+                chunkServer,
+                "field_73244_f", // id2ChunkMap
+                LongHashMap.class
+        );
+
+        List loadedChunks = getFieldValue(
+                ChunkProviderServer.class,
+                chunkServer,
+                "field_73245_g", // loadedChunks
+                List.class
+        );
 
         for (Vector2D chunk : region.getChunks()) {
             Vector min = new Vector(chunk.getBlockX() * 16, 0, chunk.getBlockZ() * 16);
@@ -136,13 +186,6 @@ public class SpongeForgeWorld extends SpongeWorld {
             }
             try {
                 Set<Vector2D> chunks = region.getChunks();
-                IChunkProvider provider = ((net.minecraft.world.World) getWorld()).getChunkProvider();
-                if (!(provider instanceof ChunkProviderServer)) {
-                    return false;
-                }
-                ChunkProviderServer chunkServer = (ChunkProviderServer) provider;
-                IChunkProvider chunkProvider = chunkServer.serverChunkGenerator;
-
                 for (Vector2D coord : chunks) {
                     long pos = ChunkCoordIntPair.chunkXZ2Int(coord.getBlockX(), coord.getBlockZ());
                     Chunk mcChunk;
@@ -150,11 +193,11 @@ public class SpongeForgeWorld extends SpongeWorld {
                         mcChunk = chunkServer.loadChunk(coord.getBlockX(), coord.getBlockZ());
                         mcChunk.onChunkUnload();
                     }
-                    chunkServer.droppedChunksSet.remove(pos);
-                    chunkServer.id2ChunkMap.remove(pos);
+                    droppedChunksSet.remove(pos);
+                    id2ChunkMap.remove(pos);
                     mcChunk = chunkProvider.provideChunk(coord.getBlockX(), coord.getBlockZ());
-                    chunkServer.id2ChunkMap.add(pos, mcChunk);
-                    chunkServer.loadedChunks.add(mcChunk);
+                    id2ChunkMap.add(pos, mcChunk);
+                    loadedChunks.add(mcChunk);
                     if (mcChunk != null) {
                         mcChunk.onChunkLoad();
                         mcChunk.populateChunk(chunkProvider, chunkProvider, coord.getBlockX(), coord.getBlockZ());
