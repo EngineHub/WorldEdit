@@ -22,6 +22,7 @@ package com.sk89q.worldedit.sponge;
 import com.flowpowered.math.vector.Vector3d;
 import com.flowpowered.math.vector.Vector3i;
 import com.sk89q.jnbt.CompoundTag;
+import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.Vector2D;
 import com.sk89q.worldedit.WorldEditException;
@@ -152,6 +153,11 @@ public abstract class SpongeWorld extends AbstractWorld {
         }
 
         return true;
+    }
+
+    @Override
+    public boolean regenerate(Region region, EditSession editSession) {
+        return false;
     }
 
     @Override
