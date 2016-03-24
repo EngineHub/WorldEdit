@@ -142,7 +142,7 @@ public class SpongePlayer extends AbstractPlayerActor {
 
     private void sendColorized(String msg, TextColor formatting) {
         for (String part : msg.split("\n")) {
-            this.player.sendMessage(Text.of(formatting, part));
+            this.player.sendMessage(Text.of(formatting, TextSerializers.LEGACY_FORMATTING_CODE.deserialize(part)));
         }
     }
 
