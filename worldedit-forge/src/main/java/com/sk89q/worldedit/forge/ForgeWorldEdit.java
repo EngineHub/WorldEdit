@@ -19,6 +19,8 @@
 
 package com.sk89q.worldedit.forge;
 
+import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import org.apache.logging.log4j.Logger;
 
 import com.google.common.base.Joiner;
@@ -135,13 +137,13 @@ public class ForgeWorldEdit {
 
     @SubscribeEvent
     public void onCommandEvent(CommandEvent event) {
-        if ((event.sender instanceof EntityPlayerMP)) {
-            if (((EntityPlayerMP) event.sender).worldObj.isRemote) return;
-            String[] split = new String[event.parameters.length + 1];
-            System.arraycopy(event.parameters, 0, split, 1, event.parameters.length);
-            split[0] = event.command.getCommandName();
+        if ((event.getSender() instanceof EntityPlayerMP)) {
+            if (((EntityPlayerMP) event.getSender()).worldObj.isRemote) return;
+            String[] split = new String[event.getParameters().length + 1];
+            System.arraycopy(event.getParameters(), 0, split, 1, event.getParameters().length);
+            split[0] = event.getCommand().getCommandName();
             com.sk89q.worldedit.event.platform.CommandEvent weEvent =
-                    new com.sk89q.worldedit.event.platform.CommandEvent(wrap((EntityPlayerMP) event.sender), Joiner.on(" ").join(split));
+                    new com.sk89q.worldedit.event.platform.CommandEvent(wrap((EntityPlayerMP) event.getSender()), Joiner.on(" ").join(split));
             WorldEdit.getInstance().getEventBus().post(weEvent);
         }
     }
@@ -154,16 +156,17 @@ public class ForgeWorldEdit {
 
         if (!platform.isHookingEvents()) return; // We have to be told to catch these events
 
-        if (event.useItem == Result.DENY || event.entity.worldObj.isRemote) return;
+        if (event.getUseItem() == Result.DENY || event.getEntity().worldObj.isRemote) return;
 
         WorldEdit we = WorldEdit.getInstance();
-        ForgePlayer player = wrap((EntityPlayerMP) event.entityPlayer);
-        ForgeWorld world = getWorld(event.entityPlayer.worldObj);
+        ForgePlayer player = wrap((EntityPlayerMP) event.getEntityPlayer());
+        ForgeWorld world = getWorld(event.getEntityPlayer().worldObj);
 
-        Action action = event.action;
+        Action action = event.getAction();
+        BlockPos blockPos = event.getPos();
         switch (action) {
             case LEFT_CLICK_BLOCK: {
-                WorldVector pos = new WorldVector(LocalWorldAdapter.adapt(world), event.pos.getX(), event.pos.getY(), event.pos.getZ());
+                WorldVector pos = new WorldVector(LocalWorldAdapter.adapt(world), blockPos.getX(), blockPos.getY(), blockPos.getZ());
 
                 if (we.handleBlockLeftClick(player, pos)) {
                     event.setCanceled(true);
@@ -176,7 +179,7 @@ public class ForgeWorldEdit {
                 break;
             }
             case RIGHT_CLICK_BLOCK: {
-                WorldVector pos = new WorldVector(LocalWorldAdapter.adapt(world), event.pos.getX(), event.pos.getY(), event.pos.getZ());
+                WorldVector pos = new WorldVector(LocalWorldAdapter.adapt(world), blockPos.getX(), blockPos.getY(), blockPos.getZ());
 
                 if (we.handleBlockRightClick(player, pos)) {
                     event.setCanceled(true);
