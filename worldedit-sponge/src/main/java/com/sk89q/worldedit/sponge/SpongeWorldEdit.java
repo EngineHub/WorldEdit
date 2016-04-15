@@ -146,6 +146,10 @@ public class SpongeWorldEdit {
 
         WorldEdit we = WorldEdit.getInstance();
         Optional<Player> optPlayer = event.getCause().get(NamedCause.SOURCE, Player.class);
+        if (!optPlayer.isPresent()) {
+            return;
+        }
+
         SpongePlayer player = wrapPlayer(optPlayer.get());
         com.sk89q.worldedit.world.World world = player.getWorld();
 
