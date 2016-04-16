@@ -154,7 +154,13 @@ public class SpongeWorldEdit {
         com.sk89q.worldedit.world.World world = player.getWorld();
 
         BlockSnapshot targetBlock = event.getTargetBlock();
-        Location<World> loc = targetBlock.getLocation().get();
+        Optional<Location<World>> optLoc = targetBlock.getLocation();
+
+        if (!optLoc.isPresent()) {
+            return;
+        }
+
+        Location<World> loc = optLoc.get();
         BlockType interactedType = targetBlock.getState().getType();
 
         if (event instanceof InteractBlockEvent.Primary) {
