@@ -149,12 +149,12 @@ public class SpongeWorldEdit {
         if (!platform.isHookingEvents()) return; // We have to be told to catch these events
 
         WorldEdit we = WorldEdit.getInstance();
-        Optional<Player> optPlayer = event.getCause().get(NamedCause.SOURCE, Player.class);
-        if (!optPlayer.isPresent()) {
+        Object rootObj = event.getCause().root();
+        if (!(rootObj instanceof Player)) {
             return;
         }
 
-        SpongePlayer player = wrapPlayer(optPlayer.get());
+        SpongePlayer player = wrapPlayer((Player) rootObj);
         com.sk89q.worldedit.world.World world = player.getWorld();
 
         BlockSnapshot targetBlock = event.getTargetBlock();
