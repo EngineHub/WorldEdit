@@ -43,6 +43,8 @@ import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.scheduler.Task;
+import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.channel.MessageChannel;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
@@ -136,6 +138,8 @@ public class SpongeWorldEdit {
         WorldEdit.getInstance().getEventBus().post(new PlatformReadyEvent());
     }
 
+    private boolean ignoreLeftClickAir = false;
+
     @Listener
     public void onPlayerInteract(InteractBlockEvent event) {
         if (platform == null) {
@@ -156,15 +160,14 @@ public class SpongeWorldEdit {
         BlockSnapshot targetBlock = event.getTargetBlock();
         Optional<Location<World>> optLoc = targetBlock.getLocation();
 
-        if (!optLoc.isPresent()) {
-            return;
-        }
-
-        Location<World> loc = optLoc.get();
         BlockType interactedType = targetBlock.getState().getType();
-
         if (event instanceof InteractBlockEvent.Primary) {
             if (interactedType != BlockTypes.AIR) {
+                if (!optLoc.isPresent()) {
+                    return;
+                }
+
+                Location<World> loc = optLoc.get();
                 WorldVector pos = new WorldVector(LocalWorldAdapter.adapt(world), loc.getX(), loc.getY(), loc.getZ());
 
                 if (we.handleBlockLeftClick(player, pos)) {
@@ -174,9 +177,31 @@ public class SpongeWorldEdit {
                 if (we.handleArmSwing(player)) {
                     event.setCancelled(true);
                 }
+
+                if (!ignoreLeftClickAir) {
+                    Task.builder().delayTicks(2).execute(() -> {
+                        ignoreLeftClickAir = false;
+
+                    }).submit(this);
+
+                    ignoreLeftClickAir = true;
+                }
+            } else {
+                if (ignoreLeftClickAir) {
+                    return;
+                }
+
+                if (we.handleArmSwing(player)) {
+                    event.setCancelled(true);
+                }
             }
         } else if (event instanceof InteractBlockEvent.Secondary) {
             if (interactedType != BlockTypes.AIR) {
+                if (!optLoc.isPresent()) {
+                    return;
+                }
+
+                Location<World> loc = optLoc.get();
                 WorldVector pos = new WorldVector(LocalWorldAdapter.adapt(world), loc.getX(), loc.getY(), loc.getZ());
 
                 if (we.handleBlockRightClick(player, pos)) {
