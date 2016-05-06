@@ -48,6 +48,8 @@ import com.sk89q.worldedit.regions.CylinderRegion;
 import com.sk89q.worldedit.regions.Polygonal2DRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.RegionSelector;
+import com.sk89q.worldedit.util.Java8Detector;
+
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -117,6 +119,9 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
         WorldEdit.getInstance().getEventBus().post(new PlatformReadyEvent());
 
         loadAdapter(); // Need an adapter to work with special blocks with NBT data
+
+        // Check Java version
+        Java8Detector.notifyIfNot8();
     }
 
     private void loadConfig() {

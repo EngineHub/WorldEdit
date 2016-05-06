@@ -19,8 +19,6 @@
 
 package com.sk89q.worldedit.forge;
 
-import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 import org.apache.logging.log4j.Logger;
 
 import com.google.common.base.Joiner;
@@ -31,6 +29,7 @@ import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.event.platform.PlatformReadyEvent;
 import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.internal.LocalWorldAdapter;
+import com.sk89q.worldedit.util.Java8Detector;
 
 import java.io.File;
 import java.util.Map;
@@ -62,6 +61,10 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 @Mod(modid = ForgeWorldEdit.MOD_ID, name = "WorldEdit", version = "%VERSION%", acceptableRemoteVersions = "*")
 public class ForgeWorldEdit {
+    
+    static {
+        Java8Detector.notifyIfNot8();
+    }
 
     public static Logger logger;
     public static final String MOD_ID = "worldedit";
