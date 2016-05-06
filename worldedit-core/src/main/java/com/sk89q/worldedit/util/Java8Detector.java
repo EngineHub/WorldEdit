@@ -29,8 +29,8 @@ public final class Java8Detector {
         if (major <= 7) {
             // Implicitly java 7 because we compile against 7, so this won't
             // even launch on 6.
-            WorldEdit.logger
-                    .warning("WorldEdit has detected you are using Java 7"
+            WorldEdit.logger.warning(
+                    "WorldEdit has detected you are using Java 7"
                             + " (based on detected version "
                             + Joiner.on('.').join(ver) + ").");
             WorldEdit.logger.warning(

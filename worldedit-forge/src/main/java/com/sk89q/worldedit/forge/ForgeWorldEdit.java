@@ -157,14 +157,16 @@ public class ForgeWorldEdit {
         if (!platform.isHookingEvents())
             return; // We have to be told to catch these events
 
-        if ((event instanceof PlayerInteractEvent.LeftClickBlock
+        boolean isLeftDeny = event instanceof PlayerInteractEvent.LeftClickBlock
                 && ((PlayerInteractEvent.LeftClickBlock) event)
-                        .getUseItem() == Result.DENY)
-                || (event instanceof PlayerInteractEvent.RightClickBlock
+                        .getUseItem() == Result.DENY;
+        boolean isRightDeny =
+                event instanceof PlayerInteractEvent.RightClickBlock
                         && ((PlayerInteractEvent.RightClickBlock) event)
-                                .getUseItem() == Result.DENY)
-                || event.getEntity().worldObj.isRemote)
+                                .getUseItem() == Result.DENY;
+        if (isLeftDeny || isRightDeny || event.getEntity().worldObj.isRemote) {
             return;
+        }
 
         WorldEdit we = WorldEdit.getInstance();
         ForgePlayer player = wrap((EntityPlayerMP) event.getEntityPlayer());
