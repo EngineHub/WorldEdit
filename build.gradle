@@ -61,8 +61,8 @@ subprojects {
     version = '6.1.1-SNAPSHOT'
     ext.internalVersion = version + ";" + gitCommitHash
 
-    sourceCompatibility = 1.6
-    targetCompatibility = 1.6
+    sourceCompatibility = 1.7
+    targetCompatibility = 1.7
 
     checkstyle.configFile = new File(rootProject.projectDir, "config/checkstyle/checkstyle.xml")
 

@@ -19,29 +19,20 @@
 
 package com.sk89q.worldedit.forge;
 
-import com.google.common.collect.HashBiMap;
 import com.sk89q.worldedit.world.biome.BaseBiome;
 import com.sk89q.worldedit.world.biome.BiomeData;
 import com.sk89q.worldedit.world.registry.BiomeRegistry;
 
 import net.minecraft.world.biome.BiomeGenBase;
 
-import javax.annotation.Nullable;
-
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Provides access to biome data in Forge.
  */
 class ForgeBiomeRegistry implements BiomeRegistry {
-    private static Map<Integer, BiomeGenBase> biomes = Collections.emptyMap();
-    private static Map<Integer, BiomeData> biomeData = Collections.emptyMap();
 
-    @Nullable
     @Override
     public BaseBiome createFromId(int id) {
         return new BaseBiome(id);
@@ -50,38 +41,15 @@ class ForgeBiomeRegistry implements BiomeRegistry {
     @Override
     public List<BaseBiome> getBiomes() {
         List<BaseBiome> list = new ArrayList<BaseBiome>();
-        for (int biome : biomes.keySet()) {
-            list.add(new BaseBiome(biome));
+        for (BiomeGenBase biome : BiomeGenBase.REGISTRY) {
+            list.add(new BaseBiome(BiomeGenBase.getIdForBiome(biome)));
         }
         return list;
     }
 
-    @Nullable
     @Override
     public BiomeData getData(BaseBiome biome) {
-        return biomeData.get(biome.getId());
-    }
-
-    /**
-     * Populate the internal static list of biomes.
-     *
-     * <p>If called repeatedly, the last call will overwrite all previous
-     * calls.</p>
-     */
-    static void populate() {
-        Map<Integer, BiomeGenBase> biomes = HashBiMap.create();
-        Map<Integer, BiomeData> biomeData = new HashMap<Integer, BiomeData>();
-
-        for (BiomeGenBase biome : BiomeGenBase.getBiomeGenArray()) {
-            if ((biome == null) || (biomes.containsValue(biome))) {
-                continue;
-            }
-            biomes.put(biome.biomeID, biome);
-            biomeData.put(biome.biomeID, new ForgeBiomeData(biome));
-        }
-
-        ForgeBiomeRegistry.biomes = biomes;
-        ForgeBiomeRegistry.biomeData = biomeData;
+        return new ForgeBiomeData(BiomeGenBase.getBiome(biome.getId()));
     }
 
     /**
@@ -101,7 +69,7 @@ class ForgeBiomeRegistry implements BiomeRegistry {
 
         @Override
         public String getName() {
-            return biome.biomeName;
+            return biome.getBiomeName();
         }
     }
 
