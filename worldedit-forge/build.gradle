@@ -26,7 +26,7 @@ repositories {
     }
 }
 
-version = "6.1.1"
+version = "6.1.2"
 ext.forgeVersion = "12.16.1.1891"
 ext.internalVersion = version + ";" + gitCommitHash
 
