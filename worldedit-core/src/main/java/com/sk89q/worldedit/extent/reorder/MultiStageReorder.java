@@ -19,7 +19,6 @@
 
 package com.sk89q.worldedit.extent.reorder;
 
-import com.google.common.collect.Lists;
 import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.PlayerDirection;
 import com.sk89q.worldedit.Vector;
@@ -30,7 +29,7 @@ import com.sk89q.worldedit.blocks.BlockType;
 import com.sk89q.worldedit.extent.AbstractDelegateExtent;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.function.operation.*;
-import com.sk89q.worldedit.util.collection.TupleArrayList;
+import com.sk89q.worldedit.util.collection.LowMemoryTupleArrayList;
 
 import java.util.*;
 
@@ -41,7 +40,7 @@ public class MultiStageReorder extends AbstractDelegateExtent implements Reorder
 
     private static final int STAGE_COUNT = 4;
 
-    private final List<TupleArrayList<BlockVector, BaseBlock>> stages = new ArrayList<TupleArrayList<BlockVector, BaseBlock>>();
+    private final List<LowMemoryTupleArrayList<BlockVector, BaseBlock>> stages = new ArrayList<LowMemoryTupleArrayList<BlockVector, BaseBlock>>();
     private boolean enabled;
     private boolean safeMultiPass;
 
@@ -77,7 +76,7 @@ public class MultiStageReorder extends AbstractDelegateExtent implements Reorder
         this.safeMultiPass = safeMultiPass;
 
         for (int i = 0; i < STAGE_COUNT; ++i) {
-            stages.add(new TupleArrayList<BlockVector, BaseBlock>());
+            stages.add(new LowMemoryTupleArrayList<BlockVector, BaseBlock>());
         }
     }
 
@@ -267,7 +266,7 @@ public class MultiStageReorder extends AbstractDelegateExtent implements Reorder
             }
 
             if (blocks.isEmpty()) {
-                for (TupleArrayList<BlockVector, BaseBlock> stage : stages) {
+                for (LowMemoryTupleArrayList<BlockVector, BaseBlock> stage : stages) {
                     stage.clear();
                 }
 
