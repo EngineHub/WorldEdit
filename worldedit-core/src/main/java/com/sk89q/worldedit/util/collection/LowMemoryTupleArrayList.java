@@ -19,19 +19,20 @@
 
 package com.sk89q.worldedit.util.collection;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 
 /**
- * An {@link ArrayList} that takes {@link Map.Entry}-like tuples. This class
+ * An list like class that takes {@link Map.Entry}-like tuples. This class
  * exists for legacy reasons.
  *
  * @param <A> the first type in the tuple
  * @param <B> the second type in the tuple
  */
 @Deprecated
-public class TupleArrayList<A, B> extends ArrayList<Map.Entry<A, B>> {
+public class LowMemoryTupleArrayList<A, B> implements Iterable<Map.Entry<A, B>> {
+
+    private ArrayList<A> key = new ArrayList<A>();
+    private ArrayList<B> value = new ArrayList<B>();
 
     /**
      * Add an item to the list.
@@ -40,7 +41,17 @@ public class TupleArrayList<A, B> extends ArrayList<Map.Entry<A, B>> {
      * @param b the 'value'
      */
     public void put(A a, B b) {
-        add(new Tuple<A, B>(a, b));
+        key.add(a);
+        value.add(b);
+    }
+
+    public void clear() {
+        key.clear();
+        value.clear();
+    }
+
+    public int size() {
+        return key.size();
     }
 
     /**
@@ -53,18 +64,53 @@ public class TupleArrayList<A, B> extends ArrayList<Map.Entry<A, B>> {
         return reverse ? reverseIterator() : iterator();
     }
 
-    @Override
-    public Iterator<Map.Entry<A, B>> iterator() {
-        return FastListIterator.forwardIterator(this);
-    }
-
     /**
      * Return an entry iterator that traverses in the reverse direction.
      *
      * @return an entry iterator
      */
     public Iterator<Map.Entry<A, B>> reverseIterator() {
-        return FastListIterator.reverseIterator(this);
+        return new Iterator<Map.Entry<A, B>>() {
+            private int index = key.size();
+
+            @Override
+            public boolean hasNext() {
+                return index != 0;
+            }
+
+            @Override
+            public Map.Entry<A, B> next() {
+                --index;
+                return new Tuple<A, B>(key.get(index), value.get(index));
+            }
+
+            public void remove() {
+                key.remove(index);
+                value.remove(index);
+            }
+        };
+    }
+
+    public Iterator<Map.Entry<A, B>> iterator() {
+        return new Iterator<Map.Entry<A, B>>() {
+            private int index = 0;
+
+            @Override
+            public boolean hasNext() {
+                return index != key.size();
+            }
+
+            @Override
+            public Map.Entry<A, B> next() {
+                ++index;
+                return new Tuple<A, B>(key.get(index), value.get(index));
+            }
+
+            public void remove() {
+                key.remove(index);
+                value.remove(index);
+            }
+        };
     }
 
     private static class Tuple<A, B> implements Map.Entry<A, B> {
