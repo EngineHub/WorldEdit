@@ -32,7 +32,7 @@ import com.sk89q.worldedit.world.World;
  */
 public class AreaPickaxe implements BlockTool {
 
-    private static final BaseBlock air = new BaseBlock(0);
+    private static final BaseBlock AIR = WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(0);
     private int range;
 
     public AreaPickaxe(int range) {
@@ -73,7 +73,7 @@ public class AreaPickaxe implements BlockTool {
 
                         ((World) clicked.getExtent()).queueBlockBreakEffect(server, pos, initialType, clicked.toVector().distanceSq(pos));
 
-                        editSession.setBlock(pos, air);
+                        editSession.setBlock(pos, AIR);
                     }
                 }
             }

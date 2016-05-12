@@ -17,26 +17,10 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.foundation;
+package com.sk89q.worldedit.extension.factory;
 
-import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.extension.input.InputParseException;
 
-/**
- * @deprecated Use {@link BaseBlock}
- */
-@Deprecated
-public abstract class Block {
-
-    public abstract int getId();
-
-    public abstract void setId(int id);
-
-    public abstract int getData();
-
-    public abstract void setData(int data);
-
-    public abstract void setIdAndData(int id, int data);
-
-    public abstract boolean hasWildcardData();
-
+public interface DelegateParser<T> {
+    public T createFromArguments(String[] arguments) throws InputParseException;
 }

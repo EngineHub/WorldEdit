@@ -21,6 +21,7 @@ package com.sk89q.worldedit.masks;
 
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.Blocks;
 
@@ -58,7 +59,10 @@ public class FuzzyBlockMask extends AbstractMask {
 
     @Override
     public boolean matches(EditSession editSession, Vector position) {
-        BaseBlock compare = new BaseBlock(editSession.getBlockType(position), editSession.getBlockData(position));
+        BaseBlock compare = WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(
+                editSession.getBlockType(position),
+                editSession.getBlockData(position)
+        );
         return Blocks.containsFuzzy(filter, compare);
     }
 }

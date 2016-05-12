@@ -19,11 +19,11 @@
 
 package com.sk89q.worldedit;
 
-import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.blocks.BaseBlockFactory;
 import com.sk89q.worldedit.blocks.BlockID;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class CuboidClipboardTest {
     @Test
@@ -35,7 +35,8 @@ public class CuboidClipboardTest {
 
     private void testFlip(int data, int expectedDataAfterFlip, CuboidClipboard.FlipDirection flipDirection) {
         final CuboidClipboard clipboard = new CuboidClipboard(new Vector(1, 1, 1));
-        clipboard.setBlock(Vector.ZERO, new BaseBlock(BlockID.PISTON_BASE, data));
+        BaseBlockFactory factory = new BaseBlockFactory();
+        clipboard.setBlock(Vector.ZERO, factory.getBaseBlock(BlockID.PISTON_BASE, data));
         clipboard.flip(flipDirection);
         assertEquals(expectedDataAfterFlip, clipboard.getBlock(Vector.ZERO).getData());
     }

@@ -36,7 +36,7 @@ import java.util.Set;
  */
 public class RecursivePickaxe implements BlockTool {
 
-    private static final BaseBlock air = new BaseBlock(0);
+    private static final BaseBlock AIR = WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(BlockID.AIR);
     private double range;
 
     public RecursivePickaxe(double range) {
@@ -94,7 +94,7 @@ public class RecursivePickaxe implements BlockTool {
 
         world.queueBlockBreakEffect(server, pos, initialType, distanceSq);
 
-        editSession.setBlock(pos, air);
+        editSession.setBlock(pos, AIR);
 
         recurse(server, editSession, world, pos.add(1, 0, 0).toBlockVector(),
                 origin, size, initialType, visited);

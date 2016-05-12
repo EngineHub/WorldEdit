@@ -19,10 +19,7 @@
 
 package com.sk89q.worldedit.regions.shape;
 
-import com.sk89q.worldedit.BlockVector;
-import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.MaxChangedBlocksException;
-import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.patterns.Pattern;
 import com.sk89q.worldedit.regions.Region;
@@ -113,10 +110,10 @@ public abstract class ArbitraryShape {
 
         case -2:
             // type and data 0
-            return new BaseBlock(0, 0);
+            return WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(0, 0);
         }
 
-        return new BaseBlock(cacheEntry & 255, ((cacheEntry >> 8) - 1) & 15);
+        return WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(cacheEntry & 255, ((cacheEntry >> 8) - 1) & 15);
     }
 
     private boolean isInsideCached(int x, int y, int z, Pattern pattern) {

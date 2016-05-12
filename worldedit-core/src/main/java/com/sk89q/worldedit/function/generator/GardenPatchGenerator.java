@@ -19,10 +19,7 @@
 
 package com.sk89q.worldedit.function.generator;
 
-import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.MaxChangedBlocksException;
-import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.function.RegionFunction;
@@ -97,14 +94,14 @@ public class GardenPatchGenerator implements RegionFunction {
             }
         }
 
-        editSession.setBlockIfAir(pos, new BaseBlock(BlockID.LEAVES));
+        editSession.setBlockIfAir(pos, WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(BlockID.LEAVES));
         affected++;
 
         int t = random.nextInt(4);
         int h = random.nextInt(3) - 1;
         Vector p;
 
-        BaseBlock log = new BaseBlock(BlockID.LOG);
+        BaseBlock log = WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(BlockID.LOG);
 
         switch (t) {
             case 0:
@@ -167,7 +164,7 @@ public class GardenPatchGenerator implements RegionFunction {
             return false;
         }
 
-        BaseBlock leavesBlock = new BaseBlock(BlockID.LEAVES);
+        BaseBlock leavesBlock = WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(BlockID.LEAVES);
 
         editSession.setBlockIfAir(position, leavesBlock);
 
@@ -187,7 +184,7 @@ public class GardenPatchGenerator implements RegionFunction {
     public static Pattern getPumpkinPattern() {
         RandomPattern pattern = new RandomPattern();
         for (int i = 0; i < 4; i++) {
-            pattern.add(new BlockPattern(new BaseBlock(BlockID.PUMPKIN, i)), 100);
+            pattern.add(new BlockPattern(WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(BlockID.PUMPKIN, i)), 100);
         }
         return pattern;
     }
@@ -198,6 +195,6 @@ public class GardenPatchGenerator implements RegionFunction {
      * @return a melon pattern
      */
     public static Pattern getMelonPattern() {
-        return new BlockPattern(new BaseBlock(BlockID.MELON_BLOCK));
+        return new BlockPattern(WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(BlockID.MELON_BLOCK));
     }
 }

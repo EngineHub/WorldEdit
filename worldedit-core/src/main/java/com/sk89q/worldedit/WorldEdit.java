@@ -21,6 +21,7 @@ package com.sk89q.worldedit;
 
 import com.sk89q.worldedit.CuboidClipboard.FlipDirection;
 import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.blocks.BaseBlockFactory;
 import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.blocks.BlockType;
 import com.sk89q.worldedit.entity.Player;
@@ -55,11 +56,7 @@ import com.sk89q.worldedit.util.logging.WorldEditPrefixHandler;
 import com.sk89q.worldedit.world.registry.BundledBlockData;
 
 import javax.script.ScriptException;
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -96,6 +93,7 @@ public class WorldEdit {
     private final EditSessionFactory editSessionFactory = new EditSessionFactory.EditSessionFactoryImpl(eventBus);
     private final SessionManager sessions = new SessionManager(this);
 
+    private final BaseBlockFactory baseBlockFactory = new BaseBlockFactory();
     private final BlockFactory blockFactory = new BlockFactory(this);
     private final ItemFactory itemFactory = new ItemFactory(this);
     private final MaskFactory maskFactory = new MaskFactory(this);
@@ -148,6 +146,16 @@ public class WorldEdit {
     /**
      * Get the block factory from which new {@link BaseBlock}s can be
      * constructed.
+     *
+     * @return the base block factory
+     */
+    public BaseBlockFactory getBaseBlockFactory() {
+        return baseBlockFactory;
+    }
+
+    /**
+     * Get the block factory from which new {@link BaseBlock}s can be
+     * constructed via a parser.
      *
      * @return the block factory
      */

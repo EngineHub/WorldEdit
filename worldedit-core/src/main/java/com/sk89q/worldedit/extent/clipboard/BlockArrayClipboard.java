@@ -21,6 +21,7 @@ package com.sk89q.worldedit.extent.clipboard;
 
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.Vector2D;
+import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
@@ -125,11 +126,11 @@ public class BlockArrayClipboard implements Clipboard {
             Vector v = position.subtract(region.getMinimumPoint());
             BaseBlock block = blocks[v.getBlockX()][v.getBlockY()][v.getBlockZ()];
             if (block != null) {
-                return new BaseBlock(block);
+                return block;
             }
         }
 
-        return new BaseBlock(BlockID.AIR);
+        return WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(BlockID.AIR);
     }
 
     @Override
@@ -141,7 +142,7 @@ public class BlockArrayClipboard implements Clipboard {
     public boolean setBlock(Vector position, BaseBlock block) throws WorldEditException {
         if (region.contains(position)) {
             Vector v = position.subtract(region.getMinimumPoint());
-            blocks[v.getBlockX()][v.getBlockY()][v.getBlockZ()] = new BaseBlock(block);
+            blocks[v.getBlockX()][v.getBlockY()][v.getBlockZ()] = block;
             return true;
         } else {
             return false;

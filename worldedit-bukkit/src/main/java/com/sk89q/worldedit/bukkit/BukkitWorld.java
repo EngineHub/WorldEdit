@@ -19,16 +19,10 @@
 
 package com.sk89q.worldedit.bukkit;
 
-import com.sk89q.worldedit.BlockVector2D;
-import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.LocalWorld;
+import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.Vector2D;
-import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BaseItemStack;
-import com.sk89q.worldedit.blocks.LazyBlock;
 import com.sk89q.worldedit.bukkit.adapter.BukkitImplAdapter;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.regions.Region;
@@ -50,11 +44,7 @@ import org.bukkit.inventory.ItemStack;
 
 import javax.annotation.Nullable;
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.EnumMap;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -405,7 +395,7 @@ public class BukkitWorld extends LocalWorld {
             return adapter.getBlock(BukkitAdapter.adapt(getWorld(), position));
         } else {
             Block bukkitBlock = getWorld().getBlockAt(position.getBlockX(), position.getBlockY(), position.getBlockZ());
-            return new BaseBlock(bukkitBlock.getTypeId(), bukkitBlock.getData());
+            return WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(bukkitBlock.getTypeId(), bukkitBlock.getData());
         }
     }
 
@@ -430,7 +420,7 @@ public class BukkitWorld extends LocalWorld {
     public BaseBlock getLazyBlock(Vector position) {
         World world = getWorld();
         Block bukkitBlock = world.getBlockAt(position.getBlockX(), position.getBlockY(), position.getBlockZ());
-        return new LazyBlock(bukkitBlock.getTypeId(), bukkitBlock.getData(), this, position);
+        return WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(bukkitBlock.getTypeId(), bukkitBlock.getData());
     }
 
     @Override
@@ -454,13 +444,5 @@ public class BukkitWorld extends LocalWorld {
         } else {
             return false;
         }
-    }
-
-    /**
-     * @deprecated Use {@link #setBlock(Vector, BaseBlock, boolean)}
-     */
-    @Deprecated
-    public boolean setBlock(Vector pt, com.sk89q.worldedit.foundation.Block block, boolean notifyAdjacent) throws WorldEditException {
-        return setBlock(pt, (BaseBlock) block, notifyAdjacent);
     }
 }

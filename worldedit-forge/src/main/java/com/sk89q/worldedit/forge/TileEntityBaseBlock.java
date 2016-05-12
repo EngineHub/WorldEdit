@@ -27,8 +27,7 @@ import net.minecraft.tileentity.TileEntity;
 public class TileEntityBaseBlock extends BaseBlock implements TileEntityBlock {
 
     public TileEntityBaseBlock(int type, int data, TileEntity tile) {
-        super(type, data);
-        setNbtData(NBTConverter.fromNative(copyNbtData(tile)));
+        super(type, data, NBTConverter.fromNative(copyNbtData(tile)));
     }
 
     private static NBTTagCompound copyNbtData(TileEntity tile) {

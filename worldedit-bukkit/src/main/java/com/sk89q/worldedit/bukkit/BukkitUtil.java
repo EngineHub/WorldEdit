@@ -19,38 +19,25 @@
 
 package com.sk89q.worldedit.bukkit;
 
-import java.util.List;
-
-import com.sk89q.worldedit.NotABlockException;
-import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.blocks.BlockType;
 import com.sk89q.worldedit.blocks.ItemID;
-import com.sk89q.worldedit.blocks.SkullBlock;
+import com.sk89q.worldedit.bukkit.entity.BukkitEntity;
+import com.sk89q.worldedit.bukkit.entity.BukkitExpOrb;
+import com.sk89q.worldedit.bukkit.entity.BukkitItem;
+import com.sk89q.worldedit.bukkit.entity.BukkitPainting;
 import org.bukkit.DyeColor;
 import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.ExperienceOrb;
-import org.bukkit.entity.Item;
-import org.bukkit.entity.Painting;
-import org.bukkit.entity.Player;
-
-import com.sk89q.worldedit.BlockVector;
-import com.sk89q.worldedit.BlockWorldVector;
-import com.sk89q.worldedit.LocalWorld;
-import com.sk89q.worldedit.Location;
-import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.WorldVector;
-import com.sk89q.worldedit.bukkit.entity.BukkitEntity;
-import com.sk89q.worldedit.bukkit.entity.BukkitExpOrb;
-import com.sk89q.worldedit.bukkit.entity.BukkitItem;
-import com.sk89q.worldedit.bukkit.entity.BukkitPainting;
+import org.bukkit.entity.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.Dye;
+
+import java.util.List;
 
 public final class BukkitUtil {
 
@@ -172,12 +159,12 @@ public final class BukkitUtil {
             case ItemID.INK_SACK:
                 final Dye materialData = (Dye) itemStack.getData();
                 if (materialData.getColor() == DyeColor.BROWN) {
-                    return new BaseBlock(BlockID.COCOA_PLANT, -1);
+                    return WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(BlockID.COCOA_PLANT, -1);
                 }
                 break;
 
             case ItemID.HEAD:
-                return new SkullBlock(0, (byte) itemStack.getDurability());
+                return WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(BlockID.HEAD, (byte) itemStack.getDurability());
 
             default:
                 final BaseBlock baseBlock = BlockType.getBlockForItem(typeId, itemStack.getDurability());
@@ -188,7 +175,7 @@ public final class BukkitUtil {
         }
 
         if (world.isValidBlockType(typeId)) {
-            return new BaseBlock(typeId, -1);
+            return WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(typeId, -1);
         }
 
         throw new NotABlockException(typeId);

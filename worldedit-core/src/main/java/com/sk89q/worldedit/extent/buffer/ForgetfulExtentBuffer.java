@@ -21,6 +21,7 @@ package com.sk89q.worldedit.extent.buffer;
 
 import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
@@ -48,7 +49,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class ForgetfulExtentBuffer extends AbstractDelegateExtent implements Pattern {
 
-    private static final BaseBlock AIR = new BaseBlock(BlockID.AIR);
+    private static final BaseBlock AIR = WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(BlockID.AIR);
 
     private final Map<BlockVector, BaseBlock> buffer = new LinkedHashMap<BlockVector, BaseBlock>();
     private final Mask mask;

@@ -21,14 +21,10 @@ package com.sk89q.worldedit.blocks;
 
 import com.sk89q.util.StringUtil;
 import com.sk89q.worldedit.PlayerDirection;
+import com.sk89q.worldedit.WorldEdit;
 
 import javax.annotation.Nullable;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -328,49 +324,172 @@ public enum BlockType {
     private static final Map<Integer, BaseBlock> dataItemBlockMapping = new HashMap<Integer, BaseBlock>();
     static {
         for (int data = 0; data < 16; ++data) {
-            dataItemBlockMapping.put(typeDataKey(BlockID.DIRT, data), new BaseBlock(BlockID.DIRT, data));
-            dataItemBlockMapping.put(typeDataKey(BlockID.WOOD, data), new BaseBlock(BlockID.WOOD, data));
-            dataItemBlockMapping.put(typeDataKey(BlockID.SAND, data), new BaseBlock(BlockID.SAND, data));
-            dataItemBlockMapping.put(typeDataKey(BlockID.SANDSTONE, data), new BaseBlock(BlockID.SANDSTONE, data));
-            dataItemBlockMapping.put(typeDataKey(BlockID.LONG_GRASS, data), new BaseBlock(BlockID.LONG_GRASS, data));
-            dataItemBlockMapping.put(typeDataKey(BlockID.CLOTH, data), new BaseBlock(BlockID.CLOTH, data));
-            dataItemBlockMapping.put(typeDataKey(BlockID.SILVERFISH_BLOCK, data), new BaseBlock(BlockID.SILVERFISH_BLOCK, data));
-            dataItemBlockMapping.put(typeDataKey(BlockID.STONE_BRICK, data), new BaseBlock(BlockID.STONE_BRICK, data));
-            dataItemBlockMapping.put(typeDataKey(BlockID.COBBLESTONE_WALL, data), new BaseBlock(BlockID.COBBLESTONE_WALL, data));
-            dataItemBlockMapping.put(typeDataKey(BlockID.STAINED_CLAY, data), new BaseBlock(BlockID.STAINED_CLAY, data));
-            dataItemBlockMapping.put(typeDataKey(BlockID.CARPET, data), new BaseBlock(BlockID.CARPET, data));
-            dataItemBlockMapping.put(typeDataKey(BlockID.RED_FLOWER, data), new BaseBlock(BlockID.RED_FLOWER, data));
-            dataItemBlockMapping.put(typeDataKey(BlockID.DOUBLE_PLANT, data), new BaseBlock(BlockID.DOUBLE_PLANT, data));
-            dataItemBlockMapping.put(typeDataKey(BlockID.STAINED_GLASS, data), new BaseBlock(BlockID.STAINED_GLASS, data));
+            dataItemBlockMapping.put(
+                    typeDataKey(BlockID.DIRT, data),
+                    WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(BlockID.DIRT, data)
+            );
+            dataItemBlockMapping.put(
+                    typeDataKey(BlockID.WOOD, data),
+                    WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(BlockID.WOOD, data)
+            );
+            dataItemBlockMapping.put(
+                    typeDataKey(BlockID.SAND, data),
+                    WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(BlockID.SAND, data)
+            );
+            dataItemBlockMapping.put(
+                    typeDataKey(BlockID.SANDSTONE, data),
+                    WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(BlockID.SANDSTONE, data)
+            );
+            dataItemBlockMapping.put(
+                    typeDataKey(BlockID.LONG_GRASS, data),
+                    WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(BlockID.LONG_GRASS, data)
+            );
+            dataItemBlockMapping.put(
+                    typeDataKey(BlockID.CLOTH, data),
+                    WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(BlockID.CLOTH, data)
+            );
+            dataItemBlockMapping.put(
+                    typeDataKey(BlockID.SILVERFISH_BLOCK, data),
+                    WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(BlockID.SILVERFISH_BLOCK, data)
+            );
+            dataItemBlockMapping.put(
+                    typeDataKey(BlockID.STONE_BRICK, data),
+                    WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(BlockID.STONE_BRICK, data)
+            );
+            dataItemBlockMapping.put(
+                    typeDataKey(BlockID.COBBLESTONE_WALL, data),
+                    WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(BlockID.COBBLESTONE_WALL, data)
+            );
+            dataItemBlockMapping.put(
+                    typeDataKey(BlockID.STAINED_CLAY, data),
+                    WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(BlockID.STAINED_CLAY, data)
+            );
+            dataItemBlockMapping.put(
+                    typeDataKey(BlockID.CARPET, data),
+                    WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(BlockID.CARPET, data)
+            );
+            dataItemBlockMapping.put(
+                    typeDataKey(BlockID.RED_FLOWER, data),
+                    WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(BlockID.RED_FLOWER, data)
+            );
+            dataItemBlockMapping.put(
+                    typeDataKey(BlockID.DOUBLE_PLANT, data),
+                    WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(BlockID.DOUBLE_PLANT, data)
+            );
+            dataItemBlockMapping.put(
+                    typeDataKey(BlockID.STAINED_GLASS, data),
+                    WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(BlockID.STAINED_GLASS, data)
+            );
         }
 
-        itemBlockMapping.put(ItemID.FLINT_AND_TINDER, new BaseBlock(BlockID.FIRE, -1));
-        itemBlockMapping.put(ItemID.STRING, new BaseBlock(BlockID.TRIPWIRE, -1));
-        itemBlockMapping.put(ItemID.SEEDS, new BaseBlock(BlockID.CROPS, -1));
-        itemBlockMapping.put(ItemID.SIGN, new BaseBlock(BlockID.SIGN_POST, -1));
-        itemBlockMapping.put(ItemID.WOODEN_DOOR_ITEM, new BaseBlock(BlockID.WOODEN_DOOR, -1));
-        itemBlockMapping.put(ItemID.WATER_BUCKET, new BaseBlock(BlockID.STATIONARY_WATER, -1));
-        itemBlockMapping.put(ItemID.LAVA_BUCKET, new BaseBlock(BlockID.STATIONARY_LAVA, -1));
-        itemBlockMapping.put(ItemID.IRON_DOOR_ITEM, new BaseBlock(BlockID.IRON_DOOR, -1));
-        itemBlockMapping.put(ItemID.REDSTONE_DUST, new BaseBlock(BlockID.REDSTONE_WIRE, -1));
-        itemBlockMapping.put(ItemID.SUGAR_CANE_ITEM, new BaseBlock(BlockID.REED, -1));
-        itemBlockMapping.put(ItemID.BED_ITEM, new BaseBlock(BlockID.BED, -1));
-        itemBlockMapping.put(ItemID.REDSTONE_REPEATER, new BaseBlock(BlockID.REDSTONE_REPEATER_OFF, -1));
-        itemBlockMapping.put(ItemID.PUMPKIN_SEEDS, new BaseBlock(BlockID.PUMPKIN_STEM, -1));
-        itemBlockMapping.put(ItemID.MELON_SEEDS, new BaseBlock(BlockID.MELON_STEM, -1));
-        itemBlockMapping.put(ItemID.NETHER_WART_SEED, new BaseBlock(BlockID.NETHER_WART, -1));
-        itemBlockMapping.put(ItemID.BREWING_STAND, new BaseBlock(BlockID.BREWING_STAND, -1));
-        itemBlockMapping.put(ItemID.CAULDRON, new BaseBlock(BlockID.CAULDRON, -1));
-        itemBlockMapping.put(ItemID.FLOWER_POT, new BaseBlock(BlockID.FLOWER_POT, -1));
-        itemBlockMapping.put(ItemID.CARROT, new BaseBlock(BlockID.CARROTS, -1));
-        itemBlockMapping.put(ItemID.POTATO, new BaseBlock(BlockID.POTATOES, -1));
-        itemBlockMapping.put(ItemID.COMPARATOR, new BaseBlock(BlockID.COMPARATOR_OFF, -1));
-        itemBlockMapping.put(ItemID.BANNER, new BaseBlock(BlockID.STANDING_BANNER, -1));
-        itemBlockMapping.put(ItemID.SPRUCE_DOOR, new BaseBlock(BlockID.SPRUCE_DOOR, -1));
-        itemBlockMapping.put(ItemID.BIRCH_DOOR, new BaseBlock(BlockID.BIRCH_DOOR, -1));
-        itemBlockMapping.put(ItemID.JUNGLE_DOOR, new BaseBlock(BlockID.JUNGLE_DOOR, -1));
-        itemBlockMapping.put(ItemID.ACACIA_DOOR, new BaseBlock(BlockID.ACACIA_DOOR, -1));
-        itemBlockMapping.put(ItemID.DARK_OAK_DOOR, new BaseBlock(BlockID.DARK_OAK_DOOR, -1));
+        itemBlockMapping.put(
+                ItemID.FLINT_AND_TINDER,
+                WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(BlockID.FIRE, -1)
+        );
+        itemBlockMapping.put(
+                ItemID.STRING,
+                WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(BlockID.TRIPWIRE, -1)
+        );
+        itemBlockMapping.put(
+                ItemID.SEEDS,
+                WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(BlockID.CROPS, -1)
+        );
+        itemBlockMapping.put(
+                ItemID.SIGN,
+                WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(BlockID.SIGN_POST, -1)
+        );
+        itemBlockMapping.put(
+                ItemID.WOODEN_DOOR_ITEM,
+                WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(BlockID.WOODEN_DOOR, -1)
+        );
+        itemBlockMapping.put(
+                ItemID.WATER_BUCKET,
+                WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(BlockID.STATIONARY_WATER, -1)
+        );
+        itemBlockMapping.put(
+                ItemID.LAVA_BUCKET,
+                WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(BlockID.STATIONARY_LAVA, -1)
+        );
+        itemBlockMapping.put(
+                ItemID.IRON_DOOR_ITEM,
+                WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(BlockID.IRON_DOOR, -1)
+        );
+        itemBlockMapping.put(
+                ItemID.REDSTONE_DUST,
+                WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(BlockID.REDSTONE_WIRE, -1)
+        );
+        itemBlockMapping.put(
+                ItemID.SUGAR_CANE_ITEM,
+                WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(BlockID.REED, -1)
+        );
+        itemBlockMapping.put(
+                ItemID.BED_ITEM,
+                WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(BlockID.BED, -1)
+        );
+        itemBlockMapping.put(
+                ItemID.REDSTONE_REPEATER,
+                WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(BlockID.REDSTONE_REPEATER_OFF, -1)
+        );
+        itemBlockMapping.put(
+                ItemID.PUMPKIN_SEEDS,
+                WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(BlockID.PUMPKIN_STEM, -1)
+        );
+        itemBlockMapping.put(
+                ItemID.MELON_SEEDS,
+                WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(BlockID.MELON_STEM, -1)
+        );
+        itemBlockMapping.put(
+                ItemID.NETHER_WART_SEED,
+                WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(BlockID.NETHER_WART, -1)
+        );
+        itemBlockMapping.put(
+                ItemID.BREWING_STAND,
+                WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(BlockID.BREWING_STAND, -1)
+        );
+        itemBlockMapping.put(
+                ItemID.CAULDRON,
+                WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(BlockID.CAULDRON, -1)
+        );
+        itemBlockMapping.put(
+                ItemID.FLOWER_POT,
+                WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(BlockID.FLOWER_POT, -1)
+        );
+        itemBlockMapping.put(
+                ItemID.CARROT,
+                WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(BlockID.CARROTS, -1)
+        );
+        itemBlockMapping.put(
+                ItemID.POTATO,
+                WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(BlockID.POTATOES, -1)
+        );
+        itemBlockMapping.put(
+                ItemID.COMPARATOR,
+                WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(BlockID.COMPARATOR_OFF, -1)
+        );
+        itemBlockMapping.put(
+                ItemID.BANNER,
+                WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(BlockID.STANDING_BANNER, -1)
+        );
+        itemBlockMapping.put(
+                ItemID.SPRUCE_DOOR,
+                WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(BlockID.SPRUCE_DOOR, -1)
+        );
+        itemBlockMapping.put(
+                ItemID.BIRCH_DOOR,
+                WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(BlockID.BIRCH_DOOR, -1)
+        );
+        itemBlockMapping.put(
+                ItemID.JUNGLE_DOOR,
+                WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(BlockID.JUNGLE_DOOR, -1)
+        );
+        itemBlockMapping.put(
+                ItemID.ACACIA_DOOR,
+                WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(BlockID.ACACIA_DOOR, -1)
+        );
+        itemBlockMapping.put(
+                ItemID.DARK_OAK_DOOR,
+                WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(BlockID.DARK_OAK_DOOR, -1)
+        );
     }
 
     /**

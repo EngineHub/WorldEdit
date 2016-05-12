@@ -20,6 +20,7 @@
 package com.sk89q.worldedit.schematic;
 
 import com.sk89q.worldedit.CuboidClipboard;
+import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.data.DataException;
 
@@ -113,7 +114,7 @@ public abstract class SchematicFormat {
                 break;*/
 
             default:
-                block = new BaseBlock(id, data);
+                block = WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(id, data);
                 break;
         }
         return block;

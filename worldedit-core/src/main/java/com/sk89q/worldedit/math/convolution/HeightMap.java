@@ -22,6 +22,7 @@ package com.sk89q.worldedit.math.convolution;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.regions.Region;
@@ -122,7 +123,7 @@ public class HeightMap {
         int originZ = minY.getBlockZ();
 
         int maxY = region.getMaximumPoint().getBlockY();
-        BaseBlock fillerAir = new BaseBlock(BlockID.AIR);
+        BaseBlock fillerAir = WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(BlockID.AIR);
 
         int blocksChanged = 0;
 

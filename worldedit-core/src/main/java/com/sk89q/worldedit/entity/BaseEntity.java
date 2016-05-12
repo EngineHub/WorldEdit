@@ -39,7 +39,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * this is not very efficient as the types are currently not interned. This
  * may be changed in the future.</p>
  */
-public class BaseEntity implements NbtValued {
+public class BaseEntity implements NbtValued<BaseEntity> {
 
     private String id;
     private CompoundTag nbtData;
@@ -87,8 +87,9 @@ public class BaseEntity implements NbtValued {
     }
 
     @Override
-    public void setNbtData(@Nullable CompoundTag nbtData) {
+    public BaseEntity setNbtData(@Nullable CompoundTag nbtData) {
         this.nbtData = nbtData;
+        return this;
     }
 
     /**

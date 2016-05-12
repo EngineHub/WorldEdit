@@ -76,7 +76,7 @@ public class BlockTransformExtent extends AbstractDelegateExtent {
      * @return the same block
      */
     private BaseBlock transformBlock(BaseBlock block, boolean reverse) {
-        transform(block, reverse ? transform.inverse() : transform, blockRegistry);
+        block = transform(block, reverse ? transform.inverse() : transform, blockRegistry);
         return block;
     }
 
@@ -92,7 +92,7 @@ public class BlockTransformExtent extends AbstractDelegateExtent {
 
     @Override
     public boolean setBlock(Vector location, BaseBlock block) throws WorldEditException {
-        return super.setBlock(location, transformBlock(new BaseBlock(block), true));
+        return super.setBlock(location, transformBlock(block, true));
     }
 
 
@@ -136,7 +136,7 @@ public class BlockTransformExtent extends AbstractDelegateExtent {
                 if (value != null && value.getDirection() != null) {
                     StateValue newValue = getNewStateValue(state, transform, value.getDirection());
                     if (newValue != null) {
-                        newValue.set(changedBlock);
+                        changedBlock = newValue.set(changedBlock);
                     }
                 }
             }

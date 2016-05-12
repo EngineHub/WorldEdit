@@ -19,9 +19,10 @@
 
 package com.sk89q.worldedit.function.mask;
 
-import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.extent.Extent;
 
 import javax.annotation.Nullable;
 import java.util.Arrays;
@@ -95,7 +96,7 @@ public class BlockMask extends AbstractExtentMask {
     @Override
     public boolean test(Vector vector) {
         BaseBlock block = getExtent().getBlock(vector);
-        return blocks.contains(block) || blocks.contains(new BaseBlock(block.getType(), -1));
+        return blocks.contains(block) || blocks.contains(WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(block.getType(), -1));
     }
 
     @Nullable

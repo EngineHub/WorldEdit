@@ -22,7 +22,8 @@ package com.sk89q.worldedit.command.tool;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
-import com.sk89q.worldedit.blocks.*;
+import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.blocks.BlockType;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Platform;
@@ -52,17 +53,7 @@ public class QueryTool implements BlockTool {
                 + "\u00A7f"
                 + "[" + block.getData() + "]" + " (" + world.getBlockLightLevel(clicked.toVector()) + "/" + world.getBlockLightLevel(clicked.toVector().add(0, 1, 0)) + ")");
 
-        if (block instanceof MobSpawnerBlock) {
-            player.printRaw("\u00A7e" + "Mob Type: "
-                    + ((MobSpawnerBlock) block).getMobType());
-        } else if (block instanceof NoteBlock) {
-            player.printRaw("\u00A7e" + "Note block: "
-                    + ((NoteBlock) block).getNote());
-        } else if (block.getType() == BlockID.CLOTH) {
-            // Should never be null
-            player.printRaw("\u00A7e" + "Color: "
-                    + ClothColor.fromID(block.getData()).getName());
-        }
+        // TODO Re-add NBT-Based queries
 
         return true;
     }

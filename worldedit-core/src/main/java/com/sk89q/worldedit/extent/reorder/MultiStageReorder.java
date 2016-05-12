@@ -19,10 +19,8 @@
 
 package com.sk89q.worldedit.extent.reorder;
 
-import com.sk89q.worldedit.BlockVector;
-import com.sk89q.worldedit.PlayerDirection;
+import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.blocks.BlockType;
@@ -144,7 +142,7 @@ public class MultiStageReorder extends AbstractDelegateExtent implements Reorder
         // Destroy torches, water, stand, etc. first
         if (srcPriority == 1 || srcPriority == 2) {
             // Destroy torches, etc. first
-            super.setBlock(location, new BaseBlock(BlockID.AIR));
+            super.setBlock(location, WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(BlockID.AIR));
             return super.setBlock(location, block);
         }
 

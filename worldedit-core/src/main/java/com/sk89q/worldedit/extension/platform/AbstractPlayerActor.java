@@ -19,15 +19,7 @@
 
 package com.sk89q.worldedit.extension.platform;
 
-import com.sk89q.worldedit.util.auth.AuthorizationException;
-import com.sk89q.worldedit.BlockWorldVector;
-import com.sk89q.worldedit.LocalPlayer;
-import com.sk89q.worldedit.NotABlockException;
-import com.sk89q.worldedit.PlayerDirection;
-import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.WorldVector;
-import com.sk89q.worldedit.WorldVectorFace;
+import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.blocks.BlockType;
@@ -36,6 +28,7 @@ import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.internal.cui.CUIEvent;
 import com.sk89q.worldedit.util.TargetBlock;
+import com.sk89q.worldedit.util.auth.AuthorizationException;
 import com.sk89q.worldedit.world.World;
 
 import java.io.File;
@@ -370,7 +363,7 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
         if (!getWorld().isValidBlockType(typeId)) {
             throw new NotABlockException(typeId);
         }
-        return new BaseBlock(typeId);
+        return WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(typeId);
     }
 
     /**

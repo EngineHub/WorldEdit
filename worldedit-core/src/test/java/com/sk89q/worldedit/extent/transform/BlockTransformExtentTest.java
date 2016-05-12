@@ -20,6 +20,7 @@
 package com.sk89q.worldedit.extent.transform;
 
 import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.blocks.BaseBlockFactory;
 import com.sk89q.worldedit.blocks.BlockData;
 import com.sk89q.worldedit.blocks.BlockType;
 import com.sk89q.worldedit.math.transform.AffineTransform;
@@ -52,23 +53,24 @@ public class BlockTransformExtentTest {
     @Test
     public void testTransform() throws Exception {
         BlockRegistry blockRegistry = new LegacyBlockRegistry();
+        BaseBlockFactory factory = new BaseBlockFactory();
         for (BlockType type : BlockType.values()) {
             if (ignored.contains(type)) {
                 continue;
             }
 
-            BaseBlock orig = new BaseBlock(type.getID());
+            BaseBlock orig = factory.getBaseBlock(type.getID());
             for (int i = 1; i < 4; i++) {
-                BaseBlock rotated = BlockTransformExtent.transform(new BaseBlock(orig), ROTATE_90, blockRegistry);
-                BaseBlock reference = new BaseBlock(orig.getType(), BlockData.rotate90(orig.getType(), orig.getData()));
+                BaseBlock rotated = BlockTransformExtent.transform(orig, ROTATE_90, blockRegistry);
+                BaseBlock reference = factory.getBaseBlock(orig.getType(), BlockData.rotate90(orig.getType(), orig.getData()));
                 assertThat(type + "#" + type.getID() + " rotated " + (90 * i) + " degrees did not match BlockData.rotate90()'s expected result", rotated, equalTo(reference));
                 orig = rotated;
             }
 
-            orig = new BaseBlock(type.getID());
+            orig = factory.getBaseBlock(type.getID());
             for (int i = 0; i < 4; i++) {
-                BaseBlock rotated = BlockTransformExtent.transform(new BaseBlock(orig), ROTATE_NEG_90, blockRegistry);
-                BaseBlock reference = new BaseBlock(orig.getType(), BlockData.rotate90Reverse(orig.getType(), orig.getData()));
+                BaseBlock rotated = BlockTransformExtent.transform(orig, ROTATE_NEG_90, blockRegistry);
+                BaseBlock reference = factory.getBaseBlock(orig.getType(), BlockData.rotate90Reverse(orig.getType(), orig.getData()));
                 assertThat(type + "#" + type.getID() + " rotated " + (-90 * i) + " degrees did not match BlockData.rotate90Reverse()'s expected result", rotated, equalTo(reference));
                 orig = rotated;
             }

@@ -19,11 +19,7 @@
 
 package com.sk89q.worldedit.masks;
 
-import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.LocalPlayer;
-import com.sk89q.worldedit.LocalSession;
-import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.function.mask.MaskIntersection;
 import com.sk89q.worldedit.function.mask.Masks;
 import com.sk89q.worldedit.function.mask.OffsetMask;
@@ -53,12 +49,12 @@ public class UnderOverlayMask extends AbstractMask {
         if (mask instanceof BlockMask) {
             final BlockMask blockTypeMask = (BlockMask) mask;
             for (Integer id : ids) {
-                blockTypeMask.add(new BaseBlock(id));
+                blockTypeMask.add(WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(id));
             }
         } else if (mask instanceof ExistingBlockMask) {
             final BlockMask blockMask = new BlockMask();
             for (int type : ids) {
-                blockMask.add(new BaseBlock(type));
+                blockMask.add(WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(type));
             }
             mask = blockMask;
         }

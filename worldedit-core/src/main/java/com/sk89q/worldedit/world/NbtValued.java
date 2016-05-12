@@ -28,7 +28,7 @@ import javax.annotation.Nullable;
  * This interface is used when saving and loading objects to a serialized
  * format, but may be used in other cases.
  */
-public interface NbtValued {
+public interface NbtValued<T> {
     
     /**
      * Returns whether the block contains NBT data. {@link #getNbtData()}
@@ -55,9 +55,9 @@ public interface NbtValued {
 
     /**
      * Set the object's NBT data (tile entity data).
-     * 
+     *
      * @param nbtData NBT data, or null if no data
      */
-    void setNbtData(@Nullable CompoundTag nbtData);
+    T setNbtData(@Nullable CompoundTag nbtData);
 
 }

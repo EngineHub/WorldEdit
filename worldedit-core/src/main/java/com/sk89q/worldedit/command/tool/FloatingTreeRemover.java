@@ -37,7 +37,7 @@ import java.util.Set;
  * to anything else)
  */
 public class FloatingTreeRemover implements BlockTool {
-    private static final BaseBlock AIR = new BaseBlock(BlockID.AIR);
+    private static final BaseBlock AIR = WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(BlockID.AIR);
     private int rangeSq;
 
     public FloatingTreeRemover() {

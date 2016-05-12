@@ -21,6 +21,7 @@ package com.sk89q.worldedit.masks;
 
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.blocks.BaseBlock;
 
 import java.util.Collection;
@@ -67,7 +68,7 @@ public class BlockMask extends AbstractMask {
     public boolean matches(EditSession editSession, Vector position) {
         BaseBlock block = editSession.getBlock(position);
         return blocks.contains(block)
-                || blocks.contains(new BaseBlock(block.getType(), -1));
+                || blocks.contains(WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(block.getType(), -1));
     }
 
 }

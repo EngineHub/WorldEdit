@@ -22,12 +22,10 @@ package com.sk89q.worldedit.sponge;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.Vector2D;
+import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.blocks.LazyBlock;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.internal.Constants;
-import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.TreeGenerator;
 import net.minecraft.block.*;
 import net.minecraft.block.state.IBlockState;
@@ -37,11 +35,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagInt;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockPos;
-import net.minecraft.util.LongHashMap;
-import net.minecraft.world.ChunkCoordIntPair;
-import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.chunk.IChunkProvider;
-import net.minecraft.world.gen.ChunkProviderServer;
 import net.minecraft.world.gen.feature.*;
 import org.spongepowered.api.block.BlockState;
 import org.spongepowered.api.entity.Entity;
@@ -49,10 +42,6 @@ import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
 import javax.annotation.Nullable;
-import java.lang.reflect.Field;
-import java.util.List;
-import java.util.Set;
-import java.util.logging.Level;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -164,7 +153,10 @@ public class SpongeNMSWorld extends SpongeWorld {
         if (tile != null) {
             return new TileEntityBaseBlock(Block.getIdFromBlock(state.getBlock()), state.getBlock().getMetaFromState(state), tile);
         } else {
-            return new BaseBlock(Block.getIdFromBlock(state.getBlock()), state.getBlock().getMetaFromState(state));
+            return WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(
+                    Block.getIdFromBlock(state.getBlock()),
+                    state.getBlock().getMetaFromState(state)
+            );
         }
     }
 
@@ -173,6 +165,9 @@ public class SpongeNMSWorld extends SpongeWorld {
         World world = getWorld();
         BlockPos pos = new BlockPos(position.getBlockX(), position.getBlockY(), position.getBlockZ());
         IBlockState state = ((net.minecraft.world.World) world).getBlockState(pos);
-        return new LazyBlock(Block.getIdFromBlock(state.getBlock()), state.getBlock().getMetaFromState(state), this, position);
+        return WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(
+                Block.getIdFromBlock(state.getBlock()),
+                state.getBlock().getMetaFromState(state)
+        );
     }
 }

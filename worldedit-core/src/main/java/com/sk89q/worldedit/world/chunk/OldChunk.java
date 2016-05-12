@@ -19,14 +19,10 @@
 
 package com.sk89q.worldedit.world.chunk;
 
-import com.sk89q.jnbt.ByteArrayTag;
-import com.sk89q.jnbt.CompoundTag;
-import com.sk89q.jnbt.IntTag;
-import com.sk89q.jnbt.ListTag;
-import com.sk89q.jnbt.NBTUtils;
-import com.sk89q.jnbt.Tag;
+import com.sk89q.jnbt.*;
 import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.world.DataException;
 import com.sk89q.worldedit.world.World;
@@ -201,12 +197,12 @@ public class OldChunk implements Chunk {
         } else if (id == BlockID.NOTE_BLOCK) {
             block = new NoteBlock(data);
         } else {*/
-            block = new BaseBlock(id, data);
+            block = WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(id, data);
         //}
 
         CompoundTag tileEntity = getBlockTileEntity(position);
         if (tileEntity != null) {
-            block.setNbtData(tileEntity);
+            block = block.setNbtData(tileEntity);
         }
 
         return block;

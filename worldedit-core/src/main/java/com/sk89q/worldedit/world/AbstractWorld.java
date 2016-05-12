@@ -19,16 +19,8 @@
 
 package com.sk89q.worldedit.world;
 
-import com.sk89q.worldedit.BlockVector2D;
-import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.MaxChangedBlocksException;
-import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.blocks.BaseItem;
-import com.sk89q.worldedit.blocks.BaseItemStack;
-import com.sk89q.worldedit.blocks.BlockID;
-import com.sk89q.worldedit.blocks.BlockType;
+import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.blocks.*;
 import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.function.mask.BlockMask;
 import com.sk89q.worldedit.function.mask.Mask;
@@ -55,7 +47,7 @@ public abstract class AbstractWorld implements World {
     @Override
     public final boolean setBlockType(Vector position, int type) {
         try {
-            return setBlock(position, new BaseBlock(type));
+            return setBlock(position, WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(type));
         } catch (WorldEditException ignored) {
             return false;
         }
@@ -64,7 +56,10 @@ public abstract class AbstractWorld implements World {
     @Override
     public final void setBlockData(Vector position, int data) {
         try {
-            setBlock(position, new BaseBlock(getLazyBlock(position).getType(), data));
+            setBlock(
+                    position,
+                    WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(getLazyBlock(position).getType(), data)
+            );
         } catch (WorldEditException ignored) {
         }
     }
@@ -72,7 +67,7 @@ public abstract class AbstractWorld implements World {
     @Override
     public final boolean setTypeIdAndData(Vector position, int type, int data) {
         try {
-            return setBlock(position, new BaseBlock(type, data));
+            return setBlock(position, WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(type, data));
         } catch (WorldEditException ignored) {
             return false;
         }
@@ -102,10 +97,11 @@ public abstract class AbstractWorld implements World {
     @Override
     public Mask createLiquidMask() {
         return new BlockMask(this,
-                new BaseBlock(BlockID.STATIONARY_LAVA, -1),
-                new BaseBlock(BlockID.LAVA, -1),
-                new BaseBlock(BlockID.STATIONARY_WATER, -1),
-                new BaseBlock(BlockID.WATER, -1));
+                WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(BlockID.STATIONARY_LAVA, -1),
+                WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(BlockID.LAVA, -1),
+                WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(BlockID.STATIONARY_WATER, -1),
+                WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(BlockID.WATER, -1)
+        );
     }
 
     @Override
@@ -140,7 +136,7 @@ public abstract class AbstractWorld implements World {
         }
 
         try {
-            setBlock(pt, new BaseBlock(BlockID.AIR));
+            setBlock(pt, WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(BlockID.AIR));
         } catch (WorldEditException e) {
             throw new RuntimeException(e);
         }

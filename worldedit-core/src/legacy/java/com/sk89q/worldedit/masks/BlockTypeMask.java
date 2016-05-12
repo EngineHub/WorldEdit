@@ -19,7 +19,7 @@
 
 package com.sk89q.worldedit.masks;
 
-import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.WorldEdit;
 
 import java.util.Set;
 
@@ -48,7 +48,7 @@ public class BlockTypeMask extends BlockMask {
     }
 
     public void add(int type) {
-        add(new BaseBlock(type));
+        add(WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(type));
     }
 
 }

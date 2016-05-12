@@ -21,13 +21,14 @@ package com.sk89q.worldedit.extent;
 
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.Vector2D;
+import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.function.operation.Operation;
-import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.regions.Region;
+import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.biome.BaseBiome;
 
 import javax.annotation.Nullable;
@@ -70,12 +71,12 @@ public class NullExtent implements Extent {
 
     @Override
     public BaseBlock getBlock(Vector position) {
-        return new BaseBlock(0);
+        return WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(0);
     }
 
     @Override
     public BaseBlock getLazyBlock(Vector position) {
-        return new BaseBlock(0);
+        return WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(0);
     }
 
     @Nullable

@@ -19,10 +19,17 @@
 
 package com.sk89q.worldedit.extension.factory;
 
+import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.worldedit.*;
-import com.sk89q.worldedit.blocks.*;
-import com.sk89q.worldedit.blocks.metadata.MobType;
+import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.blocks.BlockID;
+import com.sk89q.worldedit.blocks.BlockType;
+import com.sk89q.worldedit.blocks.ClothColor;
 import com.sk89q.worldedit.entity.Player;
+import com.sk89q.worldedit.extension.factory.delegate.block.MobSpawnerParser;
+import com.sk89q.worldedit.extension.factory.delegate.block.NoteBlockParser;
+import com.sk89q.worldedit.extension.factory.delegate.block.SkullParser;
+import com.sk89q.worldedit.extension.factory.delegate.block.WallSignParser;
 import com.sk89q.worldedit.extension.input.DisallowedUsageException;
 import com.sk89q.worldedit.extension.input.InputParseException;
 import com.sk89q.worldedit.extension.input.NoMatchException;
@@ -30,6 +37,8 @@ import com.sk89q.worldedit.extension.input.ParserContext;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.internal.registry.InputParser;
 import com.sk89q.worldedit.world.World;
+
+import java.util.HashMap;
 
 /**
  * Parses block input strings.
@@ -246,90 +255,25 @@ class DefaultBlockParser extends InputParser<BaseBlock> {
         }
 
         if (blockType == null) {
-            return new BaseBlock(blockId, data);
+            return WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(blockId, data);
         }
 
-        switch (blockType) {
-            case SIGN_POST:
-            case WALL_SIGN:
-                // Allow special sign text syntax
-                String[] text = new String[4];
-                text[0] = blockAndExtraData.length > 1 ? blockAndExtraData[1] : "";
-                text[1] = blockAndExtraData.length > 2 ? blockAndExtraData[2] : "";
-                text[2] = blockAndExtraData.length > 3 ? blockAndExtraData[3] : "";
-                text[3] = blockAndExtraData.length > 4 ? blockAndExtraData[4] : "";
-                return new SignBlock(blockType.getID(), data, text);
+        HashMap<Integer, DelegateParser<CompoundTag>> delegateParsers = new HashMap<Integer, DelegateParser<CompoundTag>>();
+        WallSignParser wallSignParser = new WallSignParser();
+        delegateParsers.put(BlockID.SIGN_POST, wallSignParser);
+        delegateParsers.put(BlockID.WALL_SIGN, wallSignParser);
+        delegateParsers.put(BlockID.MOB_SPAWNER, new MobSpawnerParser());
+        delegateParsers.put(BlockID.NOTE_BLOCK, new NoteBlockParser());
+        delegateParsers.put(BlockID.HEAD, new SkullParser());
 
-            case MOB_SPAWNER:
-                // Allow setting mob spawn type
-                if (blockAndExtraData.length > 1) {
-                    String mobName = blockAndExtraData[1];
-                    for (MobType mobType : MobType.values()) {
-                        if (mobType.getName().toLowerCase().equals(mobName.toLowerCase())) {
-                            mobName = mobType.getName();
-                            break;
-                        }
-                    }
-                    if (!worldEdit.getServer().isValidMobType(mobName)) {
-                        throw new NoMatchException("Unknown mob type '" + mobName + "'");
-                    }
-                    return new MobSpawnerBlock(data, mobName);
-                } else {
-                    return new MobSpawnerBlock(data, MobType.PIG.getName());
-                }
+        CompoundTag nbtData = null;
 
-            case NOTE_BLOCK:
-                // Allow setting note
-                if (blockAndExtraData.length <= 1) {
-                    return new NoteBlock(data, (byte) 0);
-                }
-
-                byte note = Byte.parseByte(blockAndExtraData[1]);
-                if (note < 0 || note > 24) {
-                    throw new InputParseException("Out of range note value: '" + blockAndExtraData[1] + "'");
-                }
-
-                return new NoteBlock(data, note);
-
-            case HEAD:
-                // allow setting type/player/rotation
-                if (blockAndExtraData.length <= 1) {
-                    return new SkullBlock(data);
-                }
-
-                byte rot = 0;
-                String type = "";
-                try {
-                    rot = Byte.parseByte(blockAndExtraData[1]);
-                } catch (NumberFormatException e) {
-                    type = blockAndExtraData[1];
-                    if (blockAndExtraData.length > 2) {
-                        try {
-                            rot = Byte.parseByte(blockAndExtraData[2]);
-                        } catch (NumberFormatException e2) {
-                            throw new InputParseException("Second part of skull metadata should be a number.");
-                        }
-                    }
-                }
-                byte skullType = 0;
-                // type is either the mob type or the player name
-                // sorry for the four minecraft accounts named "skeleton", "wither", "zombie", or "creeper"
-                if (!type.isEmpty()) {
-                    if (type.equalsIgnoreCase("skeleton")) skullType = 0;
-                    else if (type.equalsIgnoreCase("wither")) skullType = 1;
-                    else if (type.equalsIgnoreCase("zombie")) skullType = 2;
-                    else if (type.equalsIgnoreCase("creeper")) skullType = 4;
-                    else skullType = 3;
-                }
-                if (skullType == 3) {
-                    return new SkullBlock(data, rot, type.replace(" ", "_")); // valid MC usernames
-                } else {
-                    return new SkullBlock(data, skullType, rot);
-                }
-
-            default:
-                return new BaseBlock(blockId, data);
+        DelegateParser<CompoundTag> tagParser = delegateParsers.get(blockId);
+        if (tagParser != null) {
+            nbtData = tagParser.createFromArguments(blockAndExtraData);
         }
+
+        return WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(blockId, data, nbtData);
     }
 
 }

@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.world.registry;
 
+import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockMaterial;
 
@@ -45,7 +46,7 @@ public class LegacyBlockRegistry implements BlockRegistry {
     @Nullable
     @Override
     public BaseBlock createFromId(int id) {
-        return new BaseBlock(id);
+        return WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(id);
     }
 
     @Nullable

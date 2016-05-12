@@ -21,6 +21,7 @@ package com.sk89q.worldedit.function.generator;
 
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
@@ -56,11 +57,11 @@ public class ForestGenerator implements RegionFunction {
             treeGenerator.generate(editSession, position.add(0, 1, 0));
             return true;
         } else if (t == BlockID.LONG_GRASS || t == BlockID.DEAD_BUSH || t == BlockID.RED_FLOWER || t == BlockID.YELLOW_FLOWER) { // TODO: This list needs to be moved
-            editSession.setBlock(position, new BaseBlock(0));
+            editSession.setBlock(position, WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(BlockID.AIR));
             treeGenerator.generate(editSession, position);
             return true;
         } else if (t == BlockID.SNOW) {
-            editSession.setBlock(position, new BaseBlock(BlockID.AIR));
+            editSession.setBlock(position, WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(BlockID.AIR));
             return false;
         } else { // Trees won't grow on this!
             return false;

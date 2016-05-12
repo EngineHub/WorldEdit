@@ -71,7 +71,8 @@ import com.sk89q.worldedit.regions.shape.ArbitraryBiomeShape;
 import com.sk89q.worldedit.regions.shape.ArbitraryShape;
 import com.sk89q.worldedit.regions.shape.RegionShape;
 import com.sk89q.worldedit.regions.shape.WorldEditExpressionEnvironment;
-import com.sk89q.worldedit.util.*;
+import com.sk89q.worldedit.util.Countable;
+import com.sk89q.worldedit.util.TreeGenerator;
 import com.sk89q.worldedit.util.collection.DoubleArrayList;
 import com.sk89q.worldedit.util.eventbus.EventBus;
 import com.sk89q.worldedit.world.NullWorld;
@@ -716,7 +717,7 @@ public class EditSession implements Extent {
     public int countBlock(Region region, Set<Integer> searchIDs) {
         Set<BaseBlock> passOn = new HashSet<BaseBlock>();
         for (Integer i : searchIDs) {
-            passOn.add(new BaseBlock(i, -1));
+            passOn.add(WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(i, -1));
         }
         return countBlocks(region, passOn);
     }
@@ -818,7 +819,7 @@ public class EditSession implements Extent {
                 getWorld(), // Causes clamping of Y range
                 position.add(-apothem + 1, 0, -apothem + 1),
                 position.add(apothem - 1, height - 1, apothem - 1));
-        Pattern pattern = new SingleBlockPattern(new BaseBlock(BlockID.AIR));
+        Pattern pattern = new SingleBlockPattern(WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(BlockID.AIR));
         return setBlocks(region, pattern);
     }
 
@@ -841,7 +842,7 @@ public class EditSession implements Extent {
                 getWorld(), // Causes clamping of Y range
                 position.add(-apothem + 1, 0, -apothem + 1),
                 position.add(apothem - 1, -height + 1, apothem - 1));
-        Pattern pattern = new SingleBlockPattern(new BaseBlock(BlockID.AIR));
+        Pattern pattern = new SingleBlockPattern(WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(BlockID.AIR));
         return setBlocks(region, pattern);
     }
 
@@ -859,13 +860,13 @@ public class EditSession implements Extent {
         checkNotNull(position);
         checkArgument(apothem >= 1, "apothem >= 1");
 
-        Mask mask = new FuzzyBlockMask(this, new BaseBlock(blockType, -1));
+        Mask mask = new FuzzyBlockMask(this, WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(blockType, -1));
         Vector adjustment = new Vector(1, 1, 1).multiply(apothem - 1);
         Region region = new CuboidRegion(
                 getWorld(), // Causes clamping of Y range
                 position.add(adjustment.multiply(-1)),
                 position.add(adjustment));
-        Pattern pattern = new SingleBlockPattern(new BaseBlock(BlockID.AIR));
+        Pattern pattern = new SingleBlockPattern(WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(BlockID.AIR));
         return replaceBlocks(region, mask, pattern);
     }
 
@@ -1204,7 +1205,7 @@ public class EditSession implements Extent {
         // Remove the original blocks
         com.sk89q.worldedit.function.pattern.Pattern pattern = replacement != null ?
                 new BlockPattern(replacement) :
-                new BlockPattern(new BaseBlock(BlockID.AIR));
+                new BlockPattern(WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(BlockID.AIR));
         BlockReplace remove = new BlockReplace(this, pattern);
 
         // Copy to a buffer so we don't destroy our original before we can copy all the blocks from it
@@ -1259,7 +1260,12 @@ public class EditSession implements Extent {
                 new RegionMask(new EllipsoidRegion(null, origin, new Vector(radius, radius, radius))),
                 getWorld().createLiquidMask());
 
-        BlockReplace replace = new BlockReplace(this, new BlockPattern(new BaseBlock(BlockID.AIR)));
+        BlockReplace replace = new BlockReplace(
+                this,
+                new BlockPattern(
+                        WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(BlockID.AIR)
+                )
+        );
         RecursiveVisitor visitor = new RecursiveVisitor(mask, replace);
 
         // Around the origin in a 3x3 block
@@ -1291,15 +1297,17 @@ public class EditSession implements Extent {
         // Our origins can only be liquids
         BlockMask liquidMask = new BlockMask(
                 this,
-                new BaseBlock(moving, -1),
-                new BaseBlock(stationary, -1));
+                WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(moving, -1),
+                WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(stationary, -1));
 
         // But we will also visit air blocks
         MaskIntersection blockMask =
                 new MaskUnion(liquidMask,
                         new BlockMask(
                                 this,
-                                new BaseBlock(BlockID.AIR)));
+                                WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(BlockID.AIR)
+                        )
+                );
 
         // There are boundaries that the routine needs to stay in
         MaskIntersection mask = new MaskIntersection(
@@ -1307,7 +1315,11 @@ public class EditSession implements Extent {
                 new RegionMask(new EllipsoidRegion(null, origin, new Vector(radius, radius, radius))),
                 blockMask);
 
-        BlockReplace replace = new BlockReplace(this, new BlockPattern(new BaseBlock(stationary)));
+        BlockReplace replace = new BlockReplace(this,
+                new BlockPattern(
+                        WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(stationary)
+                )
+        );
         NonRisingVisitor visitor = new NonRisingVisitor(mask, replace);
 
         // Around the origin in a 3x3 block
@@ -1578,8 +1590,8 @@ public class EditSession implements Extent {
         int oy = position.getBlockY();
         int oz = position.getBlockZ();
 
-        BaseBlock air = new BaseBlock(0);
-        BaseBlock water = new BaseBlock(BlockID.STATIONARY_WATER);
+        BaseBlock air = WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(BlockID.AIR);
+        BaseBlock water = WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(BlockID.STATIONARY_WATER);
 
         int ceilRadius = (int) Math.ceil(radius);
         for (int x = ox - ceilRadius; x <= ox + ceilRadius; ++x) {
@@ -1636,8 +1648,8 @@ public class EditSession implements Extent {
         int oy = position.getBlockY();
         int oz = position.getBlockZ();
 
-        BaseBlock ice = new BaseBlock(BlockID.ICE);
-        BaseBlock snow = new BaseBlock(BlockID.SNOW);
+        BaseBlock ice = WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(BlockID.ICE);
+        BaseBlock snow = WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(BlockID.SNOW);
 
         int ceilRadius = (int) Math.ceil(radius);
         for (int x = ox - ceilRadius; x <= ox + ceilRadius; ++x) {
@@ -1716,7 +1728,7 @@ public class EditSession implements Extent {
         final int oy = position.getBlockY();
         final int oz = position.getBlockZ();
 
-        final BaseBlock grass = new BaseBlock(BlockID.GRASS);
+        final BaseBlock grass = WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(BlockID.GRASS);
 
         final int ceilRadius = (int) Math.ceil(radius);
         for (int x = ox - ceilRadius; x <= ox + ceilRadius; ++x) {
@@ -1822,7 +1834,12 @@ public class EditSession implements Extent {
                         ++affected;
                         break;
                     } else if (t == BlockID.SNOW) {
-                        setBlock(new Vector(x, y, z), new BaseBlock(BlockID.AIR));
+                        setBlock(
+                                new Vector(x, y, z),
+                                WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(
+                                        BlockID.AIR
+                                )
+                        );
                     } else if (t != BlockID.AIR) { // Trees won't grow on this!
                         break;
                     }
@@ -1919,7 +1936,10 @@ public class EditSession implements Extent {
                     for (int z = minZ; z <= maxZ; ++z) {
                         Vector pt = new Vector(x, y, z);
 
-                        BaseBlock blk = new BaseBlock(getBlockType(pt), getBlockData(pt));
+                        BaseBlock blk = WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(
+                                getBlockType(pt),
+                                getBlockData(pt)
+                        );
 
                         if (map.containsKey(blk)) {
                             map.get(blk).increment();
@@ -1933,7 +1953,10 @@ public class EditSession implements Extent {
             }
         } else {
             for (Vector pt : region) {
-                BaseBlock blk = new BaseBlock(getBlockType(pt), getBlockData(pt));
+                BaseBlock blk = WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(
+                        getBlockType(pt),
+                        getBlockData(pt)
+                );
 
                 if (map.containsKey(blk)) {
                     map.get(blk).increment();
@@ -1972,7 +1995,10 @@ public class EditSession implements Extent {
                         return null;
                     }
 
-                    return new BaseBlock((int) typeVariable.getValue(), (int) dataVariable.getValue());
+                    return WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(
+                            (int) typeVariable.getValue(),
+                            (int) dataVariable.getValue()
+                    );
                 } catch (Exception e) {
                     log.log(Level.WARNING, "Failed to create shape", e);
                     return null;
@@ -2007,7 +2033,10 @@ public class EditSession implements Extent {
 
             // read block from world
             // TODO: use getBlock here once the reflection is out of the way
-            final BaseBlock material = new BaseBlock(world.getBlockType(sourcePosition), world.getBlockData(sourcePosition));
+            final BaseBlock material = WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(
+                    world.getBlockType(sourcePosition),
+                    world.getBlockData(sourcePosition)
+            );
 
             // queue operation
             queue.put(position, material);

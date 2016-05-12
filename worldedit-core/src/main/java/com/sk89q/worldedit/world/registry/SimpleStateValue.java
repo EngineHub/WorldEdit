@@ -38,13 +38,11 @@ class SimpleStateValue implements StateValue {
     }
 
     @Override
-    public boolean set(BaseBlock block) {
+    public BaseBlock set(BaseBlock block) {
         if (data != null) {
-            block.setData((block.getData() & ~state.getDataMask()) | data);
-            return true;
-        } else {
-            return false;
+            block = block.setData((block.getData() & ~state.getDataMask()) | data);
         }
+        return block;
     }
 
     @Override

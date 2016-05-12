@@ -23,16 +23,12 @@ import com.google.common.collect.Sets;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
 
 import javax.annotation.Nullable;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Tree generator.
@@ -198,8 +194,8 @@ public class TreeGenerator {
         int trunkHeight = (int) Math.floor(Math.random() * 2) + 3;
         int height = (int) Math.floor(Math.random() * 5) + 8;
 
-        BaseBlock logBlock = new BaseBlock(BlockID.LOG);
-        BaseBlock leavesBlock = new BaseBlock(BlockID.LEAVES);
+        BaseBlock logBlock = WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(BlockID.LOG);
+        BaseBlock leavesBlock = WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(BlockID.LEAVES);
 
         // Create trunk
         for (int i = 0; i < trunkHeight; ++i) {

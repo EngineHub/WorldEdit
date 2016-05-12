@@ -20,6 +20,7 @@
 package com.sk89q.worldedit;
 
 import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.blocks.BlockData;
 import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.command.ClipboardCommands;
 import com.sk89q.worldedit.command.SchematicCommands;
@@ -34,11 +35,7 @@ import com.sk89q.worldedit.world.DataException;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -185,8 +182,7 @@ public class CuboidClipboard {
                 final int newX = v.getBlockX();
                 final int newZ = v.getBlockZ();
                 for (int y = 0; y < height; ++y) {
-                    final BaseBlock block = data[x][y][z];
-                    newData[newX][y][newZ] = block;
+                    BaseBlock block = data[x][y][z];
 
                     if (block == null) {
                         continue;
@@ -194,13 +190,14 @@ public class CuboidClipboard {
 
                     if (reverse) {
                         for (int i = 0; i < numRotations; ++i) {
-                            block.rotate90Reverse();
+                            block = block.setData(BlockData.rotate90Reverse(block.getType(), block.getData()));
                         }
                     } else {
                         for (int i = 0; i < numRotations; ++i) {
-                            block.rotate90();
+                            block = block.setData(BlockData.rotate90(block.getType(), block.getData()));
                         }
                     }
+                    newData[newX][y][newZ] = data[x][y][z] = block;
                 }
             }
         }
@@ -242,9 +239,10 @@ public class CuboidClipboard {
             for (int xs = 0; xs < wid; ++xs) {
                 for (int z = 0; z < length; ++z) {
                     for (int y = 0; y < height; ++y) {
-                        final BaseBlock block1 = data[xs][y][z];
+                        BaseBlock block1 = data[xs][y][z];
                         if (block1 != null) {
-                            block1.flip(dir);
+                            block1 = block1.setData(BlockData.flip(block1.getType(), block1.getData(), dir));
+                            data[xs][y][z] = block1;
                         }
 
                         // Skip the center plane
@@ -252,9 +250,9 @@ public class CuboidClipboard {
                             continue;
                         }
 
-                        final BaseBlock block2 = data[width - xs - 1][y][z];
+                        BaseBlock block2 = data[width - xs - 1][y][z];
                         if (block2 != null) {
-                            block2.flip(dir);
+                            block2 = block2.setData(BlockData.flip(block2.getType(), block2.getData(), dir));
                         }
 
                         data[xs][y][z] = block2;
@@ -274,9 +272,10 @@ public class CuboidClipboard {
             for (int zs = 0; zs < len; ++zs) {
                 for (int x = 0; x < width; ++x) {
                     for (int y = 0; y < height; ++y) {
-                        final BaseBlock block1 = data[x][y][zs];
+                        BaseBlock block1 = data[x][y][zs];
                         if (block1 != null) {
-                            block1.flip(dir);
+                            block1 = block1.setData(BlockData.flip(block1.getType(), block1.getData(), dir));
+                            data[x][y][zs] = block1;
                         }
 
                         // Skip the center plane
@@ -284,9 +283,9 @@ public class CuboidClipboard {
                             continue;
                         }
 
-                        final BaseBlock block2 = data[x][y][length - zs - 1];
+                        BaseBlock block2 = data[x][y][length - zs - 1];
                         if (block2 != null) {
-                            block2.flip(dir);
+                            block2 = block2.setData(BlockData.flip(block2.getType(), block2.getData(), dir));
                         }
 
                         data[x][y][zs] = block2;
@@ -306,9 +305,10 @@ public class CuboidClipboard {
             for (int ys = 0; ys < hei; ++ys) {
                 for (int x = 0; x < width; ++x) {
                     for (int z = 0; z < length; ++z) {
-                        final BaseBlock block1 = data[x][ys][z];
+                        BaseBlock block1 = data[x][ys][z];
                         if (block1 != null) {
-                            block1.flip(dir);
+                            block1 = block1.setData(BlockData.flip(block1.getType(), block1.getData(), dir));
+                            data[x][ys][z] = block1;
                         }
 
                         // Skip the center plane
@@ -316,9 +316,9 @@ public class CuboidClipboard {
                             continue;
                         }
 
-                        final BaseBlock block2 = data[x][height - ys - 1][z];
+                        BaseBlock block2 = data[x][height - ys - 1][z];
                         if (block2 != null) {
-                            block2.flip(dir);
+                            block2 = block2.setData(BlockData.flip(block2.getType(), block2.getData(), dir));
                         }
 
                         data[x][ys][z] = block2;
@@ -482,7 +482,7 @@ public class CuboidClipboard {
     public BaseBlock getPoint(Vector position) throws ArrayIndexOutOfBoundsException {
         final BaseBlock block = getBlock(position);
         if (block == null) {
-            return new BaseBlock(BlockID.AIR);
+            return WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(BlockID.AIR);
         }
 
         return block;
@@ -660,7 +660,7 @@ public class CuboidClipboard {
                     }
 
                     // Strip the block from metadata that is not part of our key
-                    final BaseBlock bareBlock = new BaseBlock(block.getId(), block.getData());
+                    final BaseBlock bareBlock = WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(block.getId(), block.getData());
 
                     if (map.containsKey(bareBlock)) {
                         map.get(bareBlock).increment();

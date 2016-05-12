@@ -21,6 +21,7 @@ package com.sk89q.worldedit.function.block;
 
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
@@ -37,11 +38,12 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class Naturalizer implements LayerFunction {
 
+    private static final BaseBlock GRASS = WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(BlockID.GRASS);
+    private static final BaseBlock DIRT = WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(BlockID.DIRT);
+    private static final BaseBlock STONE = WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(BlockID.STONE);
+    private static final Mask mask = new BlockMask(GRASS, DIRT, STONE);
+
     private final EditSession editSession;
-    private final BaseBlock grass = new BaseBlock(BlockID.GRASS);
-    private final BaseBlock dirt = new BaseBlock(BlockID.DIRT);
-    private final BaseBlock stone = new BaseBlock(BlockID.STONE);
-    private final Mask mask = new BlockMask(grass, dirt, stone);
     private int affected = 0;
 
     /**
@@ -74,15 +76,15 @@ public class Naturalizer implements LayerFunction {
             affected++;
             switch (depth) {
                 case 0:
-                    editSession.setBlock(position, grass);
+                    editSession.setBlock(position, GRASS);
                     break;
                 case 1:
                 case 2:
                 case 3:
-                    editSession.setBlock(position, dirt);
+                    editSession.setBlock(position, DIRT);
                     break;
                 default:
-                    editSession.setBlock(position, stone);
+                    editSession.setBlock(position, STONE);
             }
         }
 

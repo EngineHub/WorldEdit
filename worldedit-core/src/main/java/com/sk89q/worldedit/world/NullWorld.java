@@ -19,11 +19,7 @@
 
 package com.sk89q.worldedit.world;
 
-import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.MaxChangedBlocksException;
-import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.Vector2D;
-import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.blocks.BlockID;
@@ -107,12 +103,12 @@ public class NullWorld extends AbstractWorld {
 
     @Override
     public BaseBlock getBlock(Vector position) {
-        return new BaseBlock(BlockID.AIR);
+        return WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(BlockID.AIR);
     }
 
     @Override
     public BaseBlock getLazyBlock(Vector position) {
-        return new BaseBlock(BlockID.AIR);
+        return WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(BlockID.AIR);
     }
 
     @Override

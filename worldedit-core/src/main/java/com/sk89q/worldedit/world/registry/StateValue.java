@@ -41,9 +41,9 @@ public interface StateValue {
      * Set the state to this value on the given block.
      *
      * @param block the block to change
-     * @return true if the value was set successfully
+     * @return the updated {@link BaseBlock}
      */
-    boolean set(BaseBlock block);
+    BaseBlock set(BaseBlock block);
 
     /**
      * Return the direction associated with this value.
