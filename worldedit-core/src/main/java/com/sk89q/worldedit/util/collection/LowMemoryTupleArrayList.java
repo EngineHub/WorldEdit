@@ -82,7 +82,7 @@ public class LowMemoryTupleArrayList<A, B> implements Iterable<Map.Entry<A, B>> 
 
             @Override
             public Map.Entry<A, B> next() {
-                Tuple<A, B> result = new Tuple<A, B>(key.get(index), value.get(index));
+                Tuple<A, B> result = new Tuple<A, B>(key.get(index - 1), value.get(index - 1));
                 --index;
                 return result;
             }
