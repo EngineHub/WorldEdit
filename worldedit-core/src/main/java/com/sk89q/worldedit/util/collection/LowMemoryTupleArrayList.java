@@ -19,7 +19,9 @@
 
 package com.sk89q.worldedit.util.collection;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * An list like class that takes {@link Map.Entry}-like tuples. This class
@@ -80,8 +82,9 @@ public class LowMemoryTupleArrayList<A, B> implements Iterable<Map.Entry<A, B>> 
 
             @Override
             public Map.Entry<A, B> next() {
+                Tuple<A, B> result = new Tuple<A, B>(key.get(index), value.get(index));
                 --index;
-                return new Tuple<A, B>(key.get(index), value.get(index));
+                return result;
             }
 
             public void remove() {
@@ -102,8 +105,9 @@ public class LowMemoryTupleArrayList<A, B> implements Iterable<Map.Entry<A, B>> 
 
             @Override
             public Map.Entry<A, B> next() {
+                Tuple<A, B> result = new Tuple<A, B>(key.get(index), value.get(index));
                 ++index;
-                return new Tuple<A, B>(key.get(index), value.get(index));
+                return result;
             }
 
             public void remove() {
