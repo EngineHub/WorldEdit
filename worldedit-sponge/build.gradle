@@ -38,7 +38,6 @@ repositories {
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
-version = "6.1.1"
 ext.internalVersion = version + ";" + gitCommitHash
 
 minecraft {
