@@ -8,7 +8,7 @@ repositories {
 dependencies {
     compile project(':worldedit-core')
     compile 'com.sk89q:dummypermscompat:1.8'
-    compile 'org.bukkit:bukkit:1.8.8-R0.1-SNAPSHOT' // zzz
+    compile 'org.bukkit:bukkit:1.9.4-R0.1-SNAPSHOT' // zzz
     testCompile 'org.mockito:mockito-core:1.9.0-rc1'
 }
 
