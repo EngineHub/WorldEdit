@@ -116,6 +116,8 @@ public abstract class SpongeWorld extends AbstractWorld {
 
     protected abstract void applyTileEntityData(TileEntity entity, BaseBlock block);
 
+    private static final BlockSnapshot.Builder builder = BlockSnapshot.builder();
+
     @Override
     public boolean setBlock(Vector position, BaseBlock block, boolean notifyAndLight) throws WorldEditException {
         checkNotNull(position);
@@ -127,7 +129,7 @@ public abstract class SpongeWorld extends AbstractWorld {
         Vector3i pos = new Vector3i(position.getX(), position.getY(), position.getZ());
         BlockState newState = getBlockState(block);
 
-        BlockSnapshot snapshot = BlockSnapshot.builder()
+        BlockSnapshot snapshot = builder.reset()
                 .blockState(newState)
                 .position(pos)
                 .world(world.getProperties())
