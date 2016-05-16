@@ -21,7 +21,6 @@ package com.sk89q.worldedit.sponge;
 
 import com.flowpowered.math.vector.Vector3d;
 import com.flowpowered.math.vector.Vector3i;
-import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.Vector2D;
@@ -30,18 +29,11 @@ import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
-import com.sk89q.worldedit.internal.Constants;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.AbstractWorld;
 import com.sk89q.worldedit.world.biome.BaseBiome;
 import com.sk89q.worldedit.world.registry.WorldData;
-import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.EntityList;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.BlockPos;
-import net.minecraft.world.chunk.Chunk;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockSnapshot;
 import org.spongepowered.api.block.BlockState;
@@ -49,11 +41,9 @@ import org.spongepowered.api.block.tileentity.TileEntity;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.property.block.GroundLuminanceProperty;
 import org.spongepowered.api.data.property.block.SkyLuminanceProperty;
-import org.spongepowered.api.entity.EntitySnapshot;
 import org.spongepowered.api.entity.EntityType;
 import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.event.cause.Cause;
-import org.spongepowered.api.util.PositionOutOfBoundsException;
 import org.spongepowered.api.world.World;
 
 import javax.annotation.Nullable;
@@ -137,11 +127,13 @@ public abstract class SpongeWorld extends AbstractWorld {
         Vector3i pos = new Vector3i(position.getX(), position.getY(), position.getZ());
         BlockState newState = getBlockState(block);
 
-        try {
-            world.setBlock(pos, newState, notifyAndLight, Cause.source(SpongeWorldEdit.container()).build());
-        } catch (PositionOutOfBoundsException ex) {
-            return false;
-        }
+        BlockSnapshot snapshot = BlockSnapshot.builder()
+                .blockState(newState)
+                .position(pos)
+                .world(world.getProperties())
+                .build();
+
+        snapshot.restore(true, notifyAndLight);
 
         // Create the TileEntity
         if (block.hasNbtData()) {
