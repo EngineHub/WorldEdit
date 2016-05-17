@@ -497,6 +497,11 @@ public enum BlockType {
     static {
         shouldPlaceFinal.add(BlockID.SIGN_POST);
         shouldPlaceFinal.add(BlockID.WOODEN_DOOR);
+        shouldPlaceFinal.add(BlockID.ACACIA_DOOR);
+        shouldPlaceFinal.add(BlockID.BIRCH_DOOR);
+        shouldPlaceFinal.add(BlockID.JUNGLE_DOOR);
+        shouldPlaceFinal.add(BlockID.DARK_OAK_DOOR);
+        shouldPlaceFinal.add(BlockID.SPRUCE_DOOR);
         shouldPlaceFinal.add(BlockID.WALL_SIGN);
         shouldPlaceFinal.add(BlockID.IRON_DOOR);
         shouldPlaceFinal.add(BlockID.CACTUS);
@@ -920,6 +925,11 @@ public enum BlockType {
         isRedstoneBlock.add(BlockID.STONE_BUTTON);
         isRedstoneBlock.add(BlockID.REDSTONE_WIRE);
         isRedstoneBlock.add(BlockID.WOODEN_DOOR);
+        isRedstoneBlock.add(BlockID.ACACIA_DOOR);
+        isRedstoneBlock.add(BlockID.BIRCH_DOOR);
+        isRedstoneBlock.add(BlockID.JUNGLE_DOOR);
+        isRedstoneBlock.add(BlockID.DARK_OAK_DOOR);
+        isRedstoneBlock.add(BlockID.SPRUCE_DOOR);
         isRedstoneBlock.add(BlockID.IRON_DOOR);
         isRedstoneBlock.add(BlockID.TNT);
         isRedstoneBlock.add(BlockID.DISPENSER);
