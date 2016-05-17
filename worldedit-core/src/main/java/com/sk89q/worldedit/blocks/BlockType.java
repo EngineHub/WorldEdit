@@ -23,6 +23,7 @@ import com.sk89q.util.StringUtil;
 import com.sk89q.worldedit.PlayerDirection;
 
 import javax.annotation.Nullable;
+
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -1520,6 +1521,12 @@ public enum BlockType {
         addIdentity(BlockID.PACKED_ICE);
         addIdentities(BlockID.STAINED_GLASS_PANE, 16);
         addIdentities(BlockID.DOUBLE_PLANT, 6);
+
+        addIdentities(BlockID.ACACIA_DOOR, 8); // rule 2
+        addIdentities(BlockID.BIRCH_DOOR, 8); // rule 2
+        addIdentities(BlockID.JUNGLE_DOOR, 8); // rule 2
+        addIdentities(BlockID.DARK_OAK_DOOR, 8); // rule 2
+        addIdentities(BlockID.SPRUCE_DOOR, 8); // rule 2
     }
 
     /**
