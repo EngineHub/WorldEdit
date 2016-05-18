@@ -26,7 +26,7 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.ThreadQuickExitException;
-import net.minecraft.network.play.server.S3FPacketCustomPayload;
+import net.minecraft.network.play.server.SPacketCustomPayload;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.FMLEventChannel;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent.ClientCustomPacketEvent;
@@ -44,7 +44,7 @@ public class WECUIPacketHandler {
 
     @SubscribeEvent
     public void onPacketData(ServerCustomPacketEvent event) {
-        if (event.packet.channel().equals(ForgeWorldEdit.CUI_PLUGIN_CHANNEL)) {
+        if (event.getPacket().channel().equals(ForgeWorldEdit.CUI_PLUGIN_CHANNEL)) {
             EntityPlayerMP player = getPlayerFromEvent(event);
             LocalSession session = ForgeWorldEdit.inst.getSession((EntityPlayerMP) player);
 
@@ -52,7 +52,7 @@ public class WECUIPacketHandler {
                 return;
             }
 
-            String text = event.packet.payload().toString(UTF_8_CHARSET);
+            String text = event.getPacket().payload().toString(UTF_8_CHARSET);
             session.handleCUIInitializationMessage(text);
             session.describeCUI(ForgeWorldEdit.inst.wrap(player));
         }
@@ -61,12 +61,12 @@ public class WECUIPacketHandler {
     @SubscribeEvent
     public void callProcessPacket(ClientCustomPacketEvent event) {
         try {
-            new S3FPacketCustomPayload(event.packet.channel(), new PacketBuffer(event.packet.payload())).processPacket(event.handler);
+            new SPacketCustomPayload(event.getPacket().channel(), new PacketBuffer(event.getPacket().payload())).processPacket(event.getHandler());
         } catch (ThreadQuickExitException suppress) {
         }
     }
 
     private static EntityPlayerMP getPlayerFromEvent(ServerCustomPacketEvent event) {
-        return ((NetHandlerPlayServer) event.handler).playerEntity;
+        return ((NetHandlerPlayServer) event.getHandler()).playerEntity;
     }
 }

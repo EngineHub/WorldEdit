@@ -154,6 +154,11 @@ public class MultiStageReorder extends AbstractDelegateExtent implements Reorder
 
                     switch (type) {
                         case BlockID.WOODEN_DOOR:
+                        case BlockID.ACACIA_DOOR:
+                        case BlockID.BIRCH_DOOR:
+                        case BlockID.JUNGLE_DOOR:
+                        case BlockID.DARK_OAK_DOOR:
+                        case BlockID.SPRUCE_DOOR:
                         case BlockID.IRON_DOOR:
                             if ((data & 0x8) == 0) {
                                 // Deal with lower door halves being attached to the floor AND the upper half

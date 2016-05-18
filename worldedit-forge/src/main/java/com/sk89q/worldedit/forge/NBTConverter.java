@@ -213,7 +213,7 @@ final class NBTConverter {
     }
 
     public static CompoundTag fromNative(NBTTagCompound other) {
-        @SuppressWarnings("unchecked") Set<String> tags = other.getKeySet();
+        Set<String> tags = other.getKeySet();
         Map<String, Tag> map = new HashMap<String, Tag>();
         for (String tagName : tags) {
             map.put(tagName, fromNative(other.getTag(tagName)));

@@ -21,8 +21,9 @@ package com.sk89q.worldedit.forge;
 
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.world.World;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.Vec3;
+
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 
 final class ForgeAdapter {
 
@@ -33,7 +34,7 @@ final class ForgeAdapter {
         return new ForgeWorld(world);
     }
 
-    public static Vector adapt(Vec3 vector) {
+    public static Vector adapt(Vec3d vector) {
         return new Vector(vector.xCoord, vector.yCoord, vector.zCoord);
     }
 
@@ -41,8 +42,8 @@ final class ForgeAdapter {
         return new Vector(pos.getX(), pos.getY(), pos.getZ());
     }
 
-    public static Vec3 toVec3(Vector vector) {
-        return new Vec3(vector.getBlockX(), vector.getBlockY(), vector.getBlockZ());
+    public static Vec3d toVec3(Vector vector) {
+        return new Vec3d(vector.getBlockX(), vector.getBlockY(), vector.getBlockZ());
     }
 
     public static BlockPos toBlockPos(Vector vector) {

@@ -58,11 +58,11 @@ subprojects {
     apply plugin: 'com.jfrog.artifactory-upload'
 
     group = 'com.sk89q.worldedit'
-    version = '6.1.1-SNAPSHOT'
+    version = '6.1.3-SNAPSHOT'
     ext.internalVersion = version + ";" + gitCommitHash
 
-    sourceCompatibility = 1.6
-    targetCompatibility = 1.6
+    sourceCompatibility = 1.7
+    targetCompatibility = 1.7
 
     checkstyle.configFile = new File(rootProject.projectDir, "config/checkstyle/checkstyle.xml")
 

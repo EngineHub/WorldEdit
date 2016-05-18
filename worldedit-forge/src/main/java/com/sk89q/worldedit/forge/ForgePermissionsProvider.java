@@ -43,8 +43,8 @@ public interface ForgePermissionsProvider {
         public boolean hasPermission(EntityPlayerMP player, String permission) {
             ForgeConfiguration configuration = platform.getConfiguration();
             return configuration.cheatMode ||
-                    FMLCommonHandler.instance().getMinecraftServerInstance().getConfigurationManager().canSendCommands(player.getGameProfile()) ||
-                    (configuration.creativeEnable && player.theItemInWorldManager.getGameType() == GameType.CREATIVE);
+                    FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().canSendCommands(player.getGameProfile()) ||
+                    (configuration.creativeEnable && player.interactionManager.getGameType() == GameType.CREATIVE);
         }
 
         @Override
