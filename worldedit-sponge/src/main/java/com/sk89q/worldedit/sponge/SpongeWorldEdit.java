@@ -94,12 +94,12 @@ public class SpongeWorldEdit {
     public void preInit(GamePreInitializationEvent event) {
         // Setup working directory
         ConfigManager service = Sponge.getGame().getConfigManager();
-        Path path = service.getPluginConfig(this).getDirectory();
 
+        Path path = service.getPluginConfig(this).getDirectory();
         workingDir = path.toFile();
         workingDir.mkdir();
 
-        config = new SpongeConfiguration(this);
+        config = new SpongeConfiguration(service.getPluginConfig(this).getConfig(), logger);
         config.load();
 
         Task.builder().interval(30, TimeUnit.SECONDS).execute(ThreadSafeCache.getInstance()).submit(this);
