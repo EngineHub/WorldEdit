@@ -36,7 +36,7 @@ import java.util.logging.Logger;
 
 public class ConfigurateConfiguration extends LocalConfiguration {
 
-    private final ConfigurationLoader<CommentedConfigurationNode> config;
+    protected final ConfigurationLoader<CommentedConfigurationNode> config;
     protected final Logger logger;
 
     protected CommentedConfigurationNode node;
@@ -50,7 +50,7 @@ public class ConfigurateConfiguration extends LocalConfiguration {
     public void load() {
         try {
             ConfigurationOptions options = ConfigurationOptions.defaults();
-            options.setShouldCopyDefaults(true);
+            options = options.setShouldCopyDefaults(true);
 
             node = config.load(options);
         } catch (IOException e) {

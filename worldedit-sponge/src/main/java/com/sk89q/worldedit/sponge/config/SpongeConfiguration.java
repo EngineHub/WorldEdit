@@ -24,6 +24,8 @@ import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class SpongeConfiguration extends ConfigurateConfiguration {
@@ -41,6 +43,12 @@ public class SpongeConfiguration extends ConfigurateConfiguration {
 
         creativeEnable = node.getNode("use-in-creative").getBoolean(false);
         cheatMode = node.getNode("cheat-mode").getBoolean(false);
+
+        try {
+            config.save(node);
+        } catch (IOException e) {
+            logger.log(Level.WARNING, "Error loading WorldEdit configuration", e);
+        }
     }
 
     @Override
