@@ -263,7 +263,7 @@ public class SchematicCommands {
         File dir = worldEdit.getWorkingDirectoryFile(worldEdit.getConfiguration().saveDir);
         List<File> fileList = allFiles(dir);
 
-        if (fileList.isEmpty()) {
+        if (fileList == null || fileList.isEmpty()) {
             actor.printError("No schematics found.");
             return;
         }
