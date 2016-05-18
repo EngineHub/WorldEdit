@@ -17,7 +17,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.sponge;
+package com.sk89q.worldedit.sponge.nms;
 
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
@@ -26,7 +26,8 @@ import org.spongepowered.api.block.BlockType;
 import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.world.biome.BiomeType;
 
-final class IDHelper {
+@Deprecated
+public final class IDHelper {
 
     private IDHelper() { }
 

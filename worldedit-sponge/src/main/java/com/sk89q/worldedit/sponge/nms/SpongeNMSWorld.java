@@ -17,17 +17,16 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.sponge;
+package com.sk89q.worldedit.sponge.nms;
 
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.Vector2D;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.LazyBlock;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.internal.Constants;
-import com.sk89q.worldedit.regions.Region;
+import com.sk89q.worldedit.sponge.SpongeWorld;
 import com.sk89q.worldedit.util.TreeGenerator;
 import net.minecraft.block.*;
 import net.minecraft.block.state.IBlockState;
@@ -37,11 +36,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagInt;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockPos;
-import net.minecraft.util.LongHashMap;
-import net.minecraft.world.ChunkCoordIntPair;
-import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.chunk.IChunkProvider;
-import net.minecraft.world.gen.ChunkProviderServer;
 import net.minecraft.world.gen.feature.*;
 import org.spongepowered.api.block.BlockState;
 import org.spongepowered.api.entity.Entity;
@@ -49,13 +43,10 @@ import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
 import javax.annotation.Nullable;
-import java.lang.reflect.Field;
-import java.util.List;
-import java.util.Set;
-import java.util.logging.Level;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+@Deprecated
 public class SpongeNMSWorld extends SpongeWorld {
 
     private static final IBlockState JUNGLE_LOG = Blocks.log.getDefaultState().withProperty(BlockOldLog.VARIANT, BlockPlanks.EnumType.JUNGLE);

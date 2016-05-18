@@ -17,7 +17,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.sponge;
+package com.sk89q.worldedit.sponge.nms;
 
 import com.sk89q.worldedit.Vector;
 import net.minecraft.nbt.NBTTagCompound;
@@ -34,6 +34,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * Utility methods for setting tile entities in the world.
  */
+@Deprecated
 final class TileEntityUtils {
 
     private TileEntityUtils() {

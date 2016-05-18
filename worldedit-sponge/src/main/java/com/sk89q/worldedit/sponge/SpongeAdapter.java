@@ -21,6 +21,7 @@ package com.sk89q.worldedit.sponge;
 
 import com.flowpowered.math.vector.Vector3d;
 import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.sponge.nms.SpongeNMSWorld;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.World;
 

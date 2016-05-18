@@ -17,8 +17,9 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.sponge;
+package com.sk89q.worldedit.sponge.config;
 
+import com.sk89q.worldedit.sponge.SpongeWorldEdit;
 import com.sk89q.worldedit.util.PropertiesConfiguration;
 
 import java.io.File;

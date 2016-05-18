@@ -17,13 +17,14 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.sponge;
+package com.sk89q.worldedit.sponge.nms;
 
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.TileEntityBlock;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 
+@Deprecated
 public class TileEntityBaseBlock extends BaseBlock implements TileEntityBlock {
 
     public TileEntityBaseBlock(int type, int data, TileEntity tile) {

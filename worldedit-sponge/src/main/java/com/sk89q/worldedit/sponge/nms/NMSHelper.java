@@ -17,7 +17,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.sponge;
+package com.sk89q.worldedit.sponge.nms;
 
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.entity.BaseEntity;
@@ -28,7 +28,8 @@ import org.spongepowered.api.item.inventory.ItemStack;
 
 import java.util.Map;
 
-final class NMSHelper {
+@Deprecated
+public final class NMSHelper {
 
     private NMSHelper() { }
 
