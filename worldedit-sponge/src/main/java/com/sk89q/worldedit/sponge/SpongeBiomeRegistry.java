@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.sponge;
 
+import com.sk89q.worldedit.sponge.nms.IDHelper;
 import com.sk89q.worldedit.world.biome.BaseBiome;
 import com.sk89q.worldedit.world.biome.BiomeData;
 import com.sk89q.worldedit.world.registry.BiomeRegistry;

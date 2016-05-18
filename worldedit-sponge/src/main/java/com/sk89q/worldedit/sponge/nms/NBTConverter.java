@@ -17,7 +17,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.sponge;
+package com.sk89q.worldedit.sponge.nms;
 
 import com.sk89q.jnbt.*;
 import net.minecraft.nbt.*;
@@ -28,6 +28,7 @@ import java.util.Map.Entry;
 /**
  * Converts between JNBT and Minecraft NBT classes.
  */
+@Deprecated
 final class NBTConverter {
 
     private NBTConverter() {

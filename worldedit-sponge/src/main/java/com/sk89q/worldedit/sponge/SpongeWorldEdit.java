@@ -28,6 +28,9 @@ import com.sk89q.worldedit.event.platform.PlatformReadyEvent;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.internal.LocalWorldAdapter;
+import com.sk89q.worldedit.sponge.config.SpongeConfiguration;
+import com.sk89q.worldedit.sponge.nms.NMSHelper;
+import com.sk89q.worldedit.sponge.nms.SpongeNMSWorld;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockSnapshot;
 import org.spongepowered.api.block.BlockType;
@@ -64,7 +67,7 @@ public class SpongeWorldEdit {
     public static final String MOD_ID = "worldedit";
     public static final String CUI_PLUGIN_CHANNEL = "WECUI";
 
-    private SponePermissionsProvider provider;
+    private SpongePermissionsProvider provider;
 
     @Inject
     private PluginContainer container;
@@ -91,12 +94,12 @@ public class SpongeWorldEdit {
     public void preInit(GamePreInitializationEvent event) {
         // Setup working directory
         ConfigManager service = Sponge.getGame().getConfigManager();
-        Path path = service.getPluginConfig(this).getDirectory();
 
+        Path path = service.getPluginConfig(this).getDirectory();
         workingDir = path.toFile();
         workingDir.mkdir();
 
-        config = new SpongeConfiguration(this);
+        config = new SpongeConfiguration(service.getPluginConfig(this).getConfig(), logger);
         config.load();
 
         Task.builder().interval(30, TimeUnit.SECONDS).execute(ThreadSafeCache.getInstance()).submit(this);
@@ -120,7 +123,7 @@ public class SpongeWorldEdit {
         }
 
         this.platform = new SpongePlatform(this);
-        this.provider = new SponePermissionsProvider();
+        this.provider = new SpongePermissionsProvider();
 
         WorldEdit.getInstance().getPlatformManager().register(platform);
     }
@@ -297,11 +300,11 @@ public class SpongeWorldEdit {
         return SpongeWorldEdit.class.getAnnotation(Plugin.class).version();
     }
 
-    public void setPermissionsProvider(SponePermissionsProvider provider) {
+    public void setPermissionsProvider(SpongePermissionsProvider provider) {
         this.provider = provider;
     }
 
-    public SponePermissionsProvider getPermissionsProvider() {
+    public SpongePermissionsProvider getPermissionsProvider() {
         return provider;
     }
 

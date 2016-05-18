@@ -30,6 +30,7 @@ import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.regions.Region;
+import com.sk89q.worldedit.sponge.nms.IDHelper;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.AbstractWorld;
 import com.sk89q.worldedit.world.biome.BaseBiome;
@@ -54,7 +55,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
-import java.util.logging.Logger;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -64,8 +64,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public abstract class SpongeWorld extends AbstractWorld {
 
     protected static final Random random = new Random();
-    protected static final int UPDATE = 1, NOTIFY = 2, NOTIFY_CLIENT = 4;
-    protected static final Logger logger = Logger.getLogger(SpongeWorld.class.getCanonicalName());
 
     private final WeakReference<World> worldRef;
 
@@ -74,9 +72,9 @@ public abstract class SpongeWorld extends AbstractWorld {
      *
      * @param world the world
      */
-    SpongeWorld(World world) {
+    protected SpongeWorld(World world) {
         checkNotNull(world);
-        this.worldRef = new WeakReference<World>(world);
+        this.worldRef = new WeakReference<>(world);
     }
 
     /**

@@ -17,25 +17,30 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.sponge;
+package com.sk89q.worldedit.sponge.config;
 
-import com.sk89q.worldedit.util.PropertiesConfiguration;
+import com.sk89q.worldedit.sponge.SpongeWorldEdit;
+import ninja.leaping.configurate.commented.CommentedConfigurationNode;
+import ninja.leaping.configurate.loader.ConfigurationLoader;
 
 import java.io.File;
+import java.util.logging.Logger;
 
-public class SpongeConfiguration extends PropertiesConfiguration {
+public class SpongeConfiguration extends ConfigurateConfiguration {
 
     public boolean creativeEnable = false;
     public boolean cheatMode = false;
 
-    public SpongeConfiguration(SpongeWorldEdit mod) {
-        super(new File(mod.getWorkingDir() + File.separator + "worldedit.properties"));
+    public SpongeConfiguration(ConfigurationLoader<CommentedConfigurationNode> config, Logger logger) {
+        super(config, logger);
     }
 
     @Override
-    protected void loadExtra() {
-        creativeEnable = getBool("use-in-creative", false);
-        cheatMode = getBool("cheat-mode", false);
+    public void load() {
+        super.load();
+
+        creativeEnable = node.getNode("use-in-creative").getBoolean(false);
+        cheatMode = node.getNode("cheat-mode").getBoolean(false);
     }
 
     @Override

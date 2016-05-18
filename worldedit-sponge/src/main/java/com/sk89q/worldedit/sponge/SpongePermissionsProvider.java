@@ -22,7 +22,7 @@ package com.sk89q.worldedit.sponge;
 import org.spongepowered.api.command.CommandCallable;
 import org.spongepowered.api.entity.living.player.Player;
 
-public class SponePermissionsProvider {
+public class SpongePermissionsProvider {
 
     public boolean hasPermission(Player player, String permission) {
         return player.hasPermission(permission);
