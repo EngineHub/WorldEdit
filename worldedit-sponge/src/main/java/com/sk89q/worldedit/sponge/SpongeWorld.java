@@ -21,10 +21,7 @@ package com.sk89q.worldedit.sponge;
 
 import com.flowpowered.math.vector.Vector3d;
 import com.flowpowered.math.vector.Vector3i;
-import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.Vector2D;
-import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.entity.BaseEntity;
@@ -32,6 +29,7 @@ import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.sponge.nms.IDHelper;
 import com.sk89q.worldedit.util.Location;
+import com.sk89q.worldedit.util.TreeGenerator;
 import com.sk89q.worldedit.world.AbstractWorld;
 import com.sk89q.worldedit.world.biome.BaseBiome;
 import com.sk89q.worldedit.world.registry.WorldData;
@@ -48,6 +46,9 @@ import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.cause.entity.spawn.SpawnCause;
 import org.spongepowered.api.event.cause.entity.spawn.SpawnTypes;
 import org.spongepowered.api.world.World;
+import org.spongepowered.api.world.gen.PopulatorObject;
+import org.spongepowered.api.world.gen.type.BiomeTreeTypes;
+import org.spongepowered.api.world.gen.type.MushroomTypes;
 
 import javax.annotation.Nullable;
 import java.lang.ref.WeakReference;
@@ -152,6 +153,58 @@ public abstract class SpongeWorld extends AbstractWorld {
     @Override
     public boolean regenerate(Region region, EditSession editSession) {
         return false;
+    }
+
+    @Nullable
+    private static PopulatorObject createWorldGenerator(TreeGenerator.TreeType type) {
+        switch (type) {
+            case TREE:
+                return BiomeTreeTypes.OAK.getPopulatorObject();
+            case BIG_TREE:
+                return BiomeTreeTypes.OAK.getLargePopulatorObject().get();
+            case REDWOOD:
+                return BiomeTreeTypes.POINTY_TAIGA.getPopulatorObject();
+            case TALL_REDWOOD:
+                return BiomeTreeTypes.TALL_TAIGA.getPopulatorObject();
+            case BIRCH:
+                return BiomeTreeTypes.BIRCH.getPopulatorObject();
+            case JUNGLE:
+                return BiomeTreeTypes.JUNGLE.getLargePopulatorObject().get();
+            case SMALL_JUNGLE:
+            case SHORT_JUNGLE:
+                return BiomeTreeTypes.JUNGLE.getPopulatorObject();
+            case JUNGLE_BUSH:
+                return BiomeTreeTypes.JUNGLE_BUSH.getPopulatorObject();
+            case RED_MUSHROOM:
+                return MushroomTypes.RED.getPopulatorObject();
+            case BROWN_MUSHROOM:
+                return MushroomTypes.BROWN.getPopulatorObject();
+            case SWAMP:
+                return BiomeTreeTypes.SWAMP.getPopulatorObject();
+            case ACACIA:
+                return BiomeTreeTypes.SAVANNA.getPopulatorObject();
+            case DARK_OAK:
+                return BiomeTreeTypes.OAK.getLargePopulatorObject().get();
+            case MEGA_REDWOOD:
+                return BiomeTreeTypes.TALL_TAIGA.getLargePopulatorObject().get();
+            case TALL_BIRCH:
+                return BiomeTreeTypes.BIRCH.getLargePopulatorObject().get();
+            case RANDOM:
+            case PINE:
+            case RANDOM_REDWOOD:
+            default:
+                return null;
+        }
+    }
+
+    @Override
+    public boolean generateTree(TreeGenerator.TreeType type, EditSession editSession, Vector pos) throws MaxChangedBlocksException {
+        PopulatorObject populator = createWorldGenerator(type);
+        boolean canPlace = populator != null && populator.canPlaceAt(getWorld(), pos.getBlockX(), pos.getBlockY(), pos.getBlockZ());
+        if (canPlace) {
+            populator.placeObject(getWorld(), random, pos.getBlockX(), pos.getBlockY(), pos.getBlockZ());
+        }
+        return canPlace;
     }
 
     @Override

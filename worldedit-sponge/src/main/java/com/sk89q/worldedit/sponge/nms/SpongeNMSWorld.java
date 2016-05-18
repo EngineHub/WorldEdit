@@ -41,6 +41,7 @@ import org.spongepowered.api.block.BlockState;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
+import org.spongepowered.api.world.gen.type.MushroomTypes;
 
 import javax.annotation.Nullable;
 
@@ -132,6 +133,7 @@ public class SpongeNMSWorld extends SpongeWorld {
             case MEGA_REDWOOD: return new WorldGenMegaPineTree(false, random.nextBoolean());
             case TALL_BIRCH: return new WorldGenForest(true, true);
             case RANDOM:
+                MushroomTypes.BROWN.getPopulatorObject();
             case PINE:
             case RANDOM_REDWOOD:
             default:
