@@ -37,14 +37,11 @@ import org.spongepowered.api.config.ConfigManager;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.block.InteractBlockEvent;
-import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.event.game.state.*;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.scheduler.Task;
-import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.channel.MessageChannel;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
@@ -107,7 +104,7 @@ public class SpongeWorldEdit {
 
     @Listener
     public void init(GameInitializationEvent event) {
-        // WECUIPacketHandler.init();
+        CUIChannelHandler.init();
     }
 
     @Listener
