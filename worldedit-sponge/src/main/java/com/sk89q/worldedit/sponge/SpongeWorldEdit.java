@@ -64,7 +64,7 @@ public class SpongeWorldEdit {
     public static final String MOD_ID = "worldedit";
     public static final String CUI_PLUGIN_CHANNEL = "WECUI";
 
-    private SponePermissionsProvider provider;
+    private SpongePermissionsProvider provider;
 
     @Inject
     private PluginContainer container;
@@ -120,7 +120,7 @@ public class SpongeWorldEdit {
         }
 
         this.platform = new SpongePlatform(this);
-        this.provider = new SponePermissionsProvider();
+        this.provider = new SpongePermissionsProvider();
 
         WorldEdit.getInstance().getPlatformManager().register(platform);
     }
@@ -297,11 +297,11 @@ public class SpongeWorldEdit {
         return SpongeWorldEdit.class.getAnnotation(Plugin.class).version();
     }
 
-    public void setPermissionsProvider(SponePermissionsProvider provider) {
+    public void setPermissionsProvider(SpongePermissionsProvider provider) {
         this.provider = provider;
     }
 
-    public SponePermissionsProvider getPermissionsProvider() {
+    public SpongePermissionsProvider getPermissionsProvider() {
         return provider;
     }
 
