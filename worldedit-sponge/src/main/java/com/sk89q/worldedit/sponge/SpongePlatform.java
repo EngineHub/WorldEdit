@@ -170,7 +170,7 @@ class SpongePlatform extends AbstractPlatform implements MultiUserPlatform {
     @Override
     public Map<Capability, Preference> getCapabilities() {
         Map<Capability, Preference> capabilities = new EnumMap<>(Capability.class);
-        capabilities.put(Capability.CONFIGURATION, Preference.PREFER_OTHERS);
+        capabilities.put(Capability.CONFIGURATION, Preference.NORMAL);
         capabilities.put(Capability.WORLDEDIT_CUI, Preference.NORMAL);
         capabilities.put(Capability.GAME_HOOKS, Preference.NORMAL);
         capabilities.put(Capability.PERMISSIONS, Preference.NORMAL);

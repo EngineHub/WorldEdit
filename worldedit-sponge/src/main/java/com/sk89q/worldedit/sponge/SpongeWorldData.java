@@ -23,7 +23,7 @@ import com.sk89q.worldedit.world.registry.BiomeRegistry;
 import com.sk89q.worldedit.world.registry.LegacyWorldData;
 
 /**
- * World data for the Forge platform.
+ * World data for the Sponge platform.
  */
 class SpongeWorldData extends LegacyWorldData {
 

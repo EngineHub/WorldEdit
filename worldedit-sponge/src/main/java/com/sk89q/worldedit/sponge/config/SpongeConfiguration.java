@@ -22,11 +22,10 @@ package com.sk89q.worldedit.sponge.config;
 import com.sk89q.worldedit.sponge.SpongeWorldEdit;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
+import org.slf4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class SpongeConfiguration extends ConfigurateConfiguration {
 
@@ -47,7 +46,7 @@ public class SpongeConfiguration extends ConfigurateConfiguration {
         try {
             config.save(node);
         } catch (IOException e) {
-            logger.log(Level.WARNING, "Error loading WorldEdit configuration", e);
+            logger.warn("Error loading WorldEdit configuration", e);
         }
     }
 

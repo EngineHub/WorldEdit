@@ -22,8 +22,8 @@ package com.sk89q.worldedit.sponge;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 
-import java.util.Collections;
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -34,7 +34,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
 public class ThreadSafeCache implements Runnable {
 
     private static final ThreadSafeCache INSTANCE = new ThreadSafeCache();
-    private Set<UUID> onlineIds = Collections.emptySet();
+    private Set<UUID> onlineIds = new CopyOnWriteArraySet<>();
 
     /**
      * Get an concurrent-safe set of UUIDs of online players.
@@ -47,7 +47,7 @@ public class ThreadSafeCache implements Runnable {
 
     @Override
     public void run() {
-        Set<UUID> onlineIds = new HashSet<>();
+        List<UUID> onlineIds = new ArrayList<>();
 
         for (Player player : Sponge.getServer().getOnlinePlayers()) {
             onlineIds.add(player.getUniqueId());

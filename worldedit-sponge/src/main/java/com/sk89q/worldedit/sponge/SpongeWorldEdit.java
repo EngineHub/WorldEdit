@@ -31,6 +31,7 @@ import com.sk89q.worldedit.internal.LocalWorldAdapter;
 import com.sk89q.worldedit.sponge.config.SpongeConfiguration;
 import com.sk89q.worldedit.sponge.nms.NMSHelper;
 import com.sk89q.worldedit.sponge.nms.SpongeNMSWorld;
+import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockSnapshot;
 import org.spongepowered.api.block.BlockType;
@@ -62,10 +63,9 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class SpongeWorldEdit {
 
     @Inject
-    private java.util.logging.Logger logger;
+    private Logger logger;
 
     public static final String MOD_ID = "worldedit";
-    public static final String CUI_PLUGIN_CHANNEL = "WECUI";
 
     private SpongePermissionsProvider provider;
 
@@ -118,7 +118,7 @@ public class SpongeWorldEdit {
     @Listener
     public void serverAboutToStart(GameAboutToStartServerEvent event) {
         if (this.platform != null) {
-            logger.warning("FMLServerStartingEvent occurred when FMLServerStoppingEvent hasn't");
+            logger.warn("GameAboutToStartServerEvent occurred when GameStoppingServerEvent hasn't");
             WorldEdit.getInstance().getPlatformManager().unregister(platform);
         }
 
@@ -226,7 +226,7 @@ public class SpongeWorldEdit {
     /**
      * Get the configuration.
      *
-     * @return the Forge configuration
+     * @return the Sponge configuration
      */
     SpongeConfiguration getConfig() {
         return this.config;
@@ -292,7 +292,7 @@ public class SpongeWorldEdit {
     }
 
     /**
-     * Get the version of the WorldEdit-for-Forge implementation.
+     * Get the version of the WorldEdit Sponge implementation.
      *
      * @return a version string
      */

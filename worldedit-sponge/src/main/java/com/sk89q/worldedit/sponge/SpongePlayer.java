@@ -154,14 +154,7 @@ public class SpongePlayer extends AbstractPlayerActor {
                 this.player.getWorld(), pos.getX(), pos.getY(), pos.getZ()
         );
 
-        this.player.setLocationAndRotation(
-                loc,
-                new Vector3d(
-                        pitch,
-                        yaw,
-                        0
-                )
-        );
+        this.player.setLocationAndRotation(loc, new Vector3d(pitch, yaw, 0));
     }
 
     @Override

@@ -31,7 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Provides access to biome data in Forge.
+ * Provides access to biome data in Sponge.
  */
 class SpongeBiomeRegistry implements BiomeRegistry {
 
@@ -56,9 +56,6 @@ class SpongeBiomeRegistry implements BiomeRegistry {
         return new SpongeBiomeData(IDHelper.resolveBiome(biome.getId()));
     }
 
-    /**
-     * Cached biome data information.
-     */
     private static class SpongeBiomeData implements BiomeData {
         private final BiomeType biome;
 
