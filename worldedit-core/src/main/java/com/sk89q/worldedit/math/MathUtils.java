@@ -78,7 +78,7 @@ public final class MathUtils {
 
     /**
      * Returns the sine of an angle given in degrees. This is better than just
-     * {@code Math.cos(Math.toRadians(degrees))} because it provides a more
+     * {@code Math.sin(Math.toRadians(degrees))} because it provides a more
      * accurate result for angles divisible by 90 degrees.
      *
      * @param degrees the angle
@@ -102,7 +102,7 @@ public final class MathUtils {
                 return -1.0;
             }
         }
-        return Math.cos(Math.toRadians(degrees));
+        return Math.sin(Math.toRadians(degrees));
     }
 
 }
