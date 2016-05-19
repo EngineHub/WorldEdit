@@ -45,6 +45,7 @@ import org.spongepowered.api.data.property.block.SkyLuminanceProperty;
 import org.spongepowered.api.entity.EntityType;
 import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.event.cause.Cause;
+import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.event.cause.entity.spawn.SpawnCause;
 import org.spongepowered.api.event.cause.entity.spawn.SpawnTypes;
 import org.spongepowered.api.world.World;
@@ -262,7 +263,10 @@ public abstract class SpongeWorld extends AbstractWorld {
 
     protected abstract void applyEntityData(org.spongepowered.api.entity.Entity entity, BaseEntity data);
 
-    private static final Cause ENTITY_SPAWN_CAUSE = Cause.source(SpawnCause.builder().type(SpawnTypes.PLUGIN).build()).build();
+    private static final Cause ENTITY_SPAWN_CAUSE = Cause
+            .source(SpawnCause.builder().type(SpawnTypes.PLUGIN).build())
+            .suggestNamed(NamedCause.SOURCE, SpongeWorldEdit.inst())
+            .build();
 
     @Nullable
     @Override

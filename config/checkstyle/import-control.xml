@@ -57,6 +57,7 @@
       <allow pkg="com.google.inject" />
       <allow pkg="com.flowpowered.math" />
       <allow pkg="org.spongepowered.api" />
+      <allow pkg="org.slf4j" />
       <allow pkg="ninja.leaping.configurate" />
     </subpackage>
   </subpackage>

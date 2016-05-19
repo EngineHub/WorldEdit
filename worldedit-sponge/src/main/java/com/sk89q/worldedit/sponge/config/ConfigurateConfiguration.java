@@ -28,11 +28,10 @@ import ninja.leaping.configurate.ConfigurationOptions;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
+import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.util.HashSet;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class ConfigurateConfiguration extends LocalConfiguration {
 
@@ -54,7 +53,7 @@ public class ConfigurateConfiguration extends LocalConfiguration {
 
             node = config.load(options);
         } catch (IOException e) {
-            logger.log(Level.WARNING, "Error loading WorldEdit configuration", e);
+            logger.warn("Error loading WorldEdit configuration", e);
         }
 
         profile = node.getNode("debug").getBoolean(profile);
@@ -76,12 +75,12 @@ public class ConfigurateConfiguration extends LocalConfiguration {
         try {
             disallowedBlocks = new HashSet<>(node.getNode("limits", "disallowed-blocks").getList(TypeToken.of(Integer.class)));
         } catch (ObjectMappingException e) {
-            logger.log(Level.WARNING, "Error loading WorldEdit configuration", e);
+            logger.warn("Error loading WorldEdit configuration", e);
         }
         try {
             allowedDataCycleBlocks = new HashSet<>(node.getNode("limits", "allowed-data-cycle-blocks").getList(TypeToken.of(Integer.class)));
         } catch (ObjectMappingException e) {
-            logger.log(Level.WARNING, "Error loading WorldEdit configuration", e);
+            logger.warn("Error loading WorldEdit configuration", e);
         }
 
         registerHelp = node.getNode("register-help").getBoolean(true);
