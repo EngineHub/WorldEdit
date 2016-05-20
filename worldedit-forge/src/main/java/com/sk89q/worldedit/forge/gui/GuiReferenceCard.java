@@ -32,7 +32,6 @@ public class GuiReferenceCard extends GuiScreen {
     private int backgroundHeight = 256;
 
     @Override
-    @SuppressWarnings("unchecked")
     public void initGui() {
         this.buttonList.add(this.closeButton = new GuiButton(0, (this.width - this.backgroundWidth + 100) / 2, (this.height + this.backgroundHeight - 60) / 2, this.backgroundWidth - 100, 20, "Close"));
     }

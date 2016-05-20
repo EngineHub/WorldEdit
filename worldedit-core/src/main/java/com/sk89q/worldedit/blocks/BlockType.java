@@ -24,6 +24,13 @@ import com.sk89q.worldedit.PlayerDirection;
 import com.sk89q.worldedit.WorldEdit;
 
 import javax.annotation.Nullable;
+
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
 import java.util.*;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -640,6 +647,11 @@ public enum BlockType {
     static {
         shouldPlaceFinal.add(BlockID.SIGN_POST);
         shouldPlaceFinal.add(BlockID.WOODEN_DOOR);
+        shouldPlaceFinal.add(BlockID.ACACIA_DOOR);
+        shouldPlaceFinal.add(BlockID.BIRCH_DOOR);
+        shouldPlaceFinal.add(BlockID.JUNGLE_DOOR);
+        shouldPlaceFinal.add(BlockID.DARK_OAK_DOOR);
+        shouldPlaceFinal.add(BlockID.SPRUCE_DOOR);
         shouldPlaceFinal.add(BlockID.WALL_SIGN);
         shouldPlaceFinal.add(BlockID.IRON_DOOR);
         shouldPlaceFinal.add(BlockID.CACTUS);
@@ -1063,6 +1075,11 @@ public enum BlockType {
         isRedstoneBlock.add(BlockID.STONE_BUTTON);
         isRedstoneBlock.add(BlockID.REDSTONE_WIRE);
         isRedstoneBlock.add(BlockID.WOODEN_DOOR);
+        isRedstoneBlock.add(BlockID.ACACIA_DOOR);
+        isRedstoneBlock.add(BlockID.BIRCH_DOOR);
+        isRedstoneBlock.add(BlockID.JUNGLE_DOOR);
+        isRedstoneBlock.add(BlockID.DARK_OAK_DOOR);
+        isRedstoneBlock.add(BlockID.SPRUCE_DOOR);
         isRedstoneBlock.add(BlockID.IRON_DOOR);
         isRedstoneBlock.add(BlockID.TNT);
         isRedstoneBlock.add(BlockID.DISPENSER);
@@ -1653,6 +1670,12 @@ public enum BlockType {
         addIdentity(BlockID.PACKED_ICE);
         addIdentities(BlockID.STAINED_GLASS_PANE, 16);
         addIdentities(BlockID.DOUBLE_PLANT, 6);
+
+        addIdentities(BlockID.ACACIA_DOOR, 8); // rule 2
+        addIdentities(BlockID.BIRCH_DOOR, 8); // rule 2
+        addIdentities(BlockID.JUNGLE_DOOR, 8); // rule 2
+        addIdentities(BlockID.DARK_OAK_DOOR, 8); // rule 2
+        addIdentities(BlockID.SPRUCE_DOOR, 8); // rule 2
     }
 
     /**

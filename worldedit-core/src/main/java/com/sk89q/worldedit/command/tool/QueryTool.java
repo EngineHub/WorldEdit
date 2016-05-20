@@ -23,11 +23,23 @@ import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.blocks.BlockID;
+import com.sk89q.worldedit.blocks.BlockType;
+import com.sk89q.worldedit.blocks.ClothColor;
+import com.sk89q.worldedit.blocks.MobSpawnerBlock;
+import com.sk89q.worldedit.blocks.NoteBlock;
+import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockType;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.world.World;
+import com.sk89q.worldedit.world.registry.BundledBlockData;
+import com.sk89q.worldedit.world.registry.State;
+import com.sk89q.worldedit.world.registry.StateValue;
+
+import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Looks up information about a block.
@@ -54,6 +66,28 @@ public class QueryTool implements BlockTool {
                 + "[" + block.getData() + "]" + " (" + world.getBlockLightLevel(clicked.toVector()) + "/" + world.getBlockLightLevel(clicked.toVector().add(0, 1, 0)) + ")");
 
         // TODO Re-add NBT-Based queries
+
+        Map<String, ? extends State> states = BundledBlockData.getInstance().getStatesById(block.getId());
+        if (states == null || states.isEmpty()) return true;
+        StringBuilder builder = new StringBuilder();
+        builder.append("States: ");
+        boolean first = true;
+        for (Entry<String, ? extends State> e : states.entrySet()) {
+            String name = e.getKey();
+            State state = e.getValue();
+            if (!first) {
+                builder.append(", ");
+            }
+            first = false;
+            String valName = "";
+            for (Entry<String, ? extends StateValue> entry : state.valueMap().entrySet()) {
+                if (entry.getValue().isSet(block)) {
+                    valName = entry.getKey();
+                }
+            }
+            builder.append("\u00A79").append(name).append(": \u00A7f").append(valName != null ? valName : "set");
+        }
+        player.printRaw(builder.toString());
 
         return true;
     }
