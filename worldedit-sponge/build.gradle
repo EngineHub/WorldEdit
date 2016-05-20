@@ -20,7 +20,7 @@ apply plugin: 'net.minecrell.vanilla.server.library'
 
 dependencies {
     compile project(':worldedit-core')
-    compile 'org.spongepowered:spongeapi:4.+'
+    compile 'org.spongepowered:spongeapi:4.1.0-SNAPSHOT'
     compile 'ninja.leaping.configurate:configurate-hocon:3.1'
     testCompile group: 'org.mockito', name: 'mockito-core', version:'1.9.0-rc1'
 }
