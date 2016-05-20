@@ -41,12 +41,6 @@
       <allow pkg="net.minecraft.server"/>
     </subpackage>
 
-    <subpackage name="spout">
-      <allow pkg="org.spout"/>
-      <allow pkg="org.jboss.netty"/>
-      <allow pkg="org.apache"/>
-    </subpackage>
-
     <subpackage name="forge">
       <allow pkg="cpw"/>
       <allow pkg="net.minecraft"/>
@@ -56,6 +50,15 @@
       <allow pkg="org.lwjgl"/>
       <allow pkg="io.netty.buffer"/>
       <allow pkg="org.spongepowered.api" />
+    </subpackage>
+
+    <subpackage name="sponge">
+      <allow pkg="net.minecraft"/>
+      <allow pkg="com.google.inject" />
+      <allow pkg="com.flowpowered.math" />
+      <allow pkg="org.spongepowered.api" />
+      <allow pkg="org.slf4j" />
+      <allow pkg="ninja.leaping.configurate" />
     </subpackage>
   </subpackage>
 </import-control>
