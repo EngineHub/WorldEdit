@@ -158,10 +158,12 @@ public class ExtentEntityCopy implements EntityFunction {
                         Vector vector = transform.apply(direction.toVector()).subtract(transform.apply(Vector.ZERO)).normalize();
                         Direction newDirection = Direction.findClosest(vector, Flag.CARDINAL);
 
-                        byte hangingByte = (byte) MCDirections.toHanging(newDirection);
-                        builder.putByte("Direction", hangingByte);
-                        builder.putByte("Facing", hangingByte);
-                        builder.putByte("Dir", MCDirections.toLegacyHanging(MCDirections.toHanging(newDirection)));
+                        if (newDirection != null) {
+                            byte hangingByte = (byte) MCDirections.toHanging(newDirection);
+                            builder.putByte("Direction", hangingByte);
+                            builder.putByte("Facing", hangingByte);
+                            builder.putByte("Dir", MCDirections.toLegacyHanging(MCDirections.toHanging(newDirection)));
+                        }
                     }
                 }
 
