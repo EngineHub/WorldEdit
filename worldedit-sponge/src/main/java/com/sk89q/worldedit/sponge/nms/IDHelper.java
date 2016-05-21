@@ -21,7 +21,7 @@ package com.sk89q.worldedit.sponge.nms;
 
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
-import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraft.world.biome.Biome;
 import org.spongepowered.api.block.BlockType;
 import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.world.biome.BiomeType;
@@ -40,7 +40,7 @@ public final class IDHelper {
     }
 
     public static int resolve(BiomeType type) {
-        return ((BiomeGenBase) type).biomeID;
+        return Biome.getIdForBiome((Biome) type);
     }
 
     public static ItemType resolveItem(int intID) {
@@ -52,6 +52,6 @@ public final class IDHelper {
     }
 
     public static BiomeType resolveBiome(int intID) {
-        return (BiomeType) BiomeGenBase.getBiome(intID);
+        return (BiomeType) Biome.getBiome(intID);
     }
 }

@@ -44,7 +44,7 @@ public abstract class CommandAdapter implements CommandCallable {
     }
 
     @Override
-    public Optional<? extends Text> getShortDescription(CommandSource source) {
+    public Optional<Text> getShortDescription(CommandSource source) {
         String description = command.getDescription().getDescription();
         if (description != null && !description.isEmpty()) {
             return Optional.of(Text.of(description));
@@ -53,7 +53,7 @@ public abstract class CommandAdapter implements CommandCallable {
     }
 
     @Override
-    public Optional<? extends Text> getHelp(CommandSource source) {
+    public Optional<Text> getHelp(CommandSource source) {
         String help = command.getDescription().getHelp();
         if (help != null && !help.isEmpty()) {
             return Optional.of(Text.of(help));
