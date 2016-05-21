@@ -32,15 +32,15 @@ import com.sk89q.worldedit.sponge.config.SpongeConfiguration;
 import com.sk89q.worldedit.sponge.nms.NMSHelper;
 import com.sk89q.worldedit.sponge.nms.SpongeNMSWorld;
 import org.slf4j.Logger;
-import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockSnapshot;
 import org.spongepowered.api.block.BlockType;
 import org.spongepowered.api.block.BlockTypes;
 import org.spongepowered.api.command.CommandSource;
-import org.spongepowered.api.config.ConfigManager;
+import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.block.InteractBlockEvent;
+import org.spongepowered.api.event.filter.cause.Root;
 import org.spongepowered.api.event.game.state.*;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.plugin.Plugin;
@@ -50,7 +50,6 @@ import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
 import java.io.File;
-import java.nio.file.Path;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
@@ -59,7 +58,9 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * The Sponge implementation of WorldEdit.
  */
-@Plugin(id = SpongeWorldEdit.MOD_ID, name = "WorldEdit", version = "%VERSION%")
+@Plugin(id = SpongeWorldEdit.MOD_ID, name = "WorldEdit",
+        description = "WorldEdit is an easy-to-use in-game world editor for Minecraft",
+        url = "http://wiki.sk89q.com/wiki/WorldEdit")
 public class SpongeWorldEdit {
 
     @Inject
@@ -83,7 +84,11 @@ public class SpongeWorldEdit {
     }
 
     private SpongePlatform platform;
+
+    @Inject
     private SpongeConfiguration config;
+
+    @Inject @ConfigDir(sharedRoot = false)
     private File workingDir;
 
     public SpongeWorldEdit() {
@@ -92,14 +97,7 @@ public class SpongeWorldEdit {
 
     @Listener
     public void preInit(GamePreInitializationEvent event) {
-        // Setup working directory
-        ConfigManager service = Sponge.getGame().getConfigManager();
-
-        Path path = service.getPluginConfig(this).getDirectory();
-        workingDir = path.toFile();
-        workingDir.mkdir();
-
-        config = new SpongeConfiguration(service.getPluginConfig(this).getConfig(), logger);
+        // Load configuration
         config.load();
 
         Task.builder().interval(30, TimeUnit.SECONDS).execute(ThreadSafeCache.getInstance()).submit(this);
@@ -141,7 +139,7 @@ public class SpongeWorldEdit {
     private boolean ignoreLeftClickAir = false;
 
     @Listener
-    public void onPlayerInteract(InteractBlockEvent event) {
+    public void onPlayerInteract(InteractBlockEvent event, @Root Player spongePlayer) {
         if (platform == null) {
             return;
         }
@@ -149,12 +147,8 @@ public class SpongeWorldEdit {
         if (!platform.isHookingEvents()) return; // We have to be told to catch these events
 
         WorldEdit we = WorldEdit.getInstance();
-        Object rootObj = event.getCause().root();
-        if (!(rootObj instanceof Player)) {
-            return;
-        }
 
-        SpongePlayer player = wrapPlayer((Player) rootObj);
+        SpongePlayer player = wrapPlayer(spongePlayer);
         com.sk89q.worldedit.world.World world = player.getWorld();
 
         BlockSnapshot targetBlock = event.getTargetBlock();
@@ -297,7 +291,7 @@ public class SpongeWorldEdit {
      * @return a version string
      */
     String getInternalVersion() {
-        return SpongeWorldEdit.class.getAnnotation(Plugin.class).version();
+        return container.getVersion().orElse("Unknown");
     }
 
     public void setPermissionsProvider(SpongePermissionsProvider provider) {
