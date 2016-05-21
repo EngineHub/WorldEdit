@@ -19,10 +19,12 @@
 
 package com.sk89q.worldedit.sponge.config;
 
+import com.google.inject.Inject;
 import com.sk89q.worldedit.sponge.SpongeWorldEdit;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
 import org.slf4j.Logger;
+import org.spongepowered.api.config.DefaultConfig;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,7 +34,8 @@ public class SpongeConfiguration extends ConfigurateConfiguration {
     public boolean creativeEnable = false;
     public boolean cheatMode = false;
 
-    public SpongeConfiguration(ConfigurationLoader<CommentedConfigurationNode> config, Logger logger) {
+    @Inject
+    public SpongeConfiguration(@DefaultConfig(sharedRoot = false) ConfigurationLoader<CommentedConfigurationNode> config, Logger logger) {
         super(config, logger);
     }
 

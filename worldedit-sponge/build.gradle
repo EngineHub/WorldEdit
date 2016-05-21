@@ -1,19 +1,20 @@
-apply plugin: 'eclipse'
-apply plugin: 'idea'
-
 buildscript {
     repositories {
         mavenCentral()
         maven { url = "http://files.minecraftforge.net/maven" }
-        maven { url = "http://repo.minecrell.net/snapshots" }
+        maven { url = "http://repo.minecrell.net/releases" }
         maven { url = "https://oss.sonatype.org/content/repositories/snapshots/" }
         jcenter()
     }
 
     dependencies {
-        classpath 'net.minecrell:VanillaGradle:2.0.3-SNAPSHOT'
+        classpath 'net.minecrell:VanillaGradle:2.0.3_1'
         classpath 'net.minecraftforge.gradle:ForgeGradle:2.1-SNAPSHOT'
     }
+}
+
+plugins {
+    id 'org.spongepowered.plugin' version '0.5.2'
 }
 
 apply plugin: 'net.minecrell.vanilla.server.library'
@@ -21,48 +22,30 @@ apply plugin: 'net.minecrell.vanilla.server.library'
 dependencies {
     compile project(':worldedit-core')
     compile 'org.spongepowered:spongeapi:4.1.0-SNAPSHOT'
-    compile 'ninja.leaping.configurate:configurate-hocon:3.1'
     testCompile group: 'org.mockito', name: 'mockito-core', version:'1.9.0-rc1'
-}
-
-repositories {
-    maven {
-        name = 'forge'
-        url = 'http://files.minecraftforge.net/maven'
-    }
-    maven {
-        name = "Sponge"
-        url = "https://repo.spongepowered.org/maven"
-    }
 }
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
+sponge {
+    plugin {
+        id = 'worldedit'
+    }
+}
+
 minecraft {
     version = "1.8.9"
     mappings = "stable_22"
     runDir = 'run'
-
-    replaceIn "com/sk89q/worldedit/sponge/SpongeWorldEdit.java"
-    replace "%VERSION%", project.version
 }
 
 project.archivesBaseName = "${project.archivesBaseName}-mc${minecraft.version}"
 
-processResources {
-    from (sourceSets.main.resources.srcDirs) {
-        expand 'version': project.version,
-                'mcVersion': project.minecraft.version,
-                'internalVersion': project.internalVersion
-    }
-}
-
 jar {
     manifest {
         attributes("Class-Path": "truezip.jar WorldEdit/truezip.jar js.jar WorldEdit/js.jar",
-                "WorldEdit-Version": version,
-                "FMLAT": "worldedit_at.cfg")
+                "WorldEdit-Version": version)
     }
 }
 
