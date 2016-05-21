@@ -19,12 +19,17 @@
 
 package com.sk89q.worldedit.function.block;
 
-import com.sk89q.worldedit.extent.Extent;
+import com.sk89q.jnbt.CompoundTag;
+import com.sk89q.jnbt.CompoundTagBuilder;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.function.RegionFunction;
+import com.sk89q.worldedit.internal.helper.MCDirections;
 import com.sk89q.worldedit.math.transform.Transform;
+import com.sk89q.worldedit.util.Direction;
+import com.sk89q.worldedit.util.Direction.Flag;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -66,7 +71,46 @@ public class ExtentBlockCopy implements RegionFunction {
         BaseBlock block = source.getBlock(position);
         Vector orig = position.subtract(from);
         Vector transformed = transform.apply(orig);
+
+        // Apply transformations to NBT data if necessary
+        block = transformNbtData(block);
+
         return destination.setBlock(transformed.add(to), block);
+    }
+
+    /**
+     * Transform NBT data in the given block state and return a new instance
+     * if the NBT data needs to be transformed.
+     *
+     * @param state the existing state
+     * @return a new state or the existing one
+     */
+    private BaseBlock transformNbtData(BaseBlock state) {
+        CompoundTag tag = state.getNbtData();
+
+        if (tag != null) {
+            // Handle blocks which store their rotation in NBT
+            if (tag.containsKey("Rot")) {
+                int rot = tag.asInt("Rot");
+
+                Direction direction = MCDirections.fromRotation(rot);
+
+                if (direction != null) {
+                    Vector vector = transform.apply(direction.toVector()).subtract(transform.apply(Vector.ZERO)).normalize();
+                    Direction newDirection = Direction.findClosest(vector, Flag.CARDINAL | Flag.ORDINAL | Flag.SECONDARY_ORDINAL);
+
+                    if (newDirection != null) {
+                        CompoundTagBuilder builder = tag.createBuilder();
+
+                        builder.putByte("Rot", (byte) MCDirections.toRotation(newDirection));
+
+                        return new BaseBlock(state.getId(), state.getData(), builder.build());
+                    }
+                }
+            }
+        }
+
+        return state;
     }
 
 }

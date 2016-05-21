@@ -196,7 +196,7 @@ public class ForgeWorldEdit {
             if (we.handleRightClick(player)) {
                 event.setCanceled(true);
             }
-        } else if (event instanceof PlayerInteractEvent.RightClickEmpty) {
+        } else if (event instanceof PlayerInteractEvent.RightClickItem) {
             if (we.handleRightClick(player)) {
                 event.setCanceled(true);
             }
