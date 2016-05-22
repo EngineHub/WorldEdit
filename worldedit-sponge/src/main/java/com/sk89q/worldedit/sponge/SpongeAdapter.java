@@ -17,18 +17,26 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.forge.compat;
+package com.sk89q.worldedit.sponge;
 
-import javax.annotation.Nullable;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.World;
+import com.flowpowered.math.vector.Vector3d;
+import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.sponge.nms.SpongeNMSWorld;
+import com.sk89q.worldedit.util.Location;
+import com.sk89q.worldedit.world.World;
 
-public interface ForgeMultipartCompat {
+final class SpongeAdapter {
 
-    TileEntity overrideTileEntity(World world, @Nullable NBTTagCompound tag,
-            TileEntity normal);
+    private SpongeAdapter() {
+    }
 
-    void sendDescPacket(World world, TileEntity entity);
+    public static World adapt(org.spongepowered.api.world.World world) {
+        return new SpongeNMSWorld(world);
+    }
 
+    public static Location adapt(org.spongepowered.api.world.Location<org.spongepowered.api.world.World> loc, Vector3d rot) {
+        Vector position = new Vector(loc.getX(), loc.getY(), loc.getZ());
+
+        return new Location(SpongeAdapter.adapt(loc.getExtent()), position, (float) rot.getY(), (float) rot.getX());
+    }
 }

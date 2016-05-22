@@ -20,7 +20,6 @@
 package com.sk89q.worldedit.forge;
 
 import com.sk89q.worldedit.world.registry.BiomeRegistry;
-import com.sk89q.worldedit.world.registry.ItemRegistry;
 import com.sk89q.worldedit.world.registry.LegacyWorldData;
 
 /**
@@ -29,13 +28,7 @@ import com.sk89q.worldedit.world.registry.LegacyWorldData;
 class ForgeWorldData extends LegacyWorldData {
 
     private static final ForgeWorldData INSTANCE = new ForgeWorldData();
-    private final ItemRegistry itemRegistry = new ForgeItemRegistry();
     private final BiomeRegistry biomeRegistry = new ForgeBiomeRegistry();
-
-    @Override
-    public ItemRegistry getItemRegistry() {
-        return itemRegistry;
-    }
 
     @Override
     public BiomeRegistry getBiomeRegistry() {

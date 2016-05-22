@@ -1,12 +1,12 @@
 [{
-    "modid": "WorldEdit",
+    "modid": "worldedit",
     "name": "WorldEdit",
     "description": "WorldEdit is an easy-to-use in-game world editor for Minecraft, supporting both single player and multiplayer.",
     "version": "${internalVersion}",
     "mcversion": "${mcVersion}",
     "url": "http://wiki.sk89q.com/wiki/WorldEdit",
     "updateUrl": "",
-    "authors": [ "sk89q", "wizjany", "TomyLobo" ],
+    "authors": [ "sk89q", "wizjany", "TomyLobo", "kenzierocks" ],
     "credits": "",
     "logoFile": "",
     "screenshots": [],
@@ -15,7 +15,7 @@
     ],
     "dependencies": [
         "Forge@[${forgeVersion},)",
-        "ForgeMultipart"
+        "sponge"
     ],
     "dependants": []
 }]

@@ -20,10 +20,10 @@
 package com.sk89q.worldedit.forge;
 
 import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.world.World;
-import net.minecraft.util.Vec3;
-import net.minecraftforge.common.util.ForgeDirection;
+
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 
 final class ForgeAdapter {
 
@@ -34,19 +34,20 @@ final class ForgeAdapter {
         return new ForgeWorld(world);
     }
 
-    public static Vector adapt(Vec3 vector) {
+    public static Vector adapt(Vec3d vector) {
         return new Vector(vector.xCoord, vector.yCoord, vector.zCoord);
     }
 
-    public static int adapt(Direction face) {
-        switch (face) {
-            case NORTH: return ForgeDirection.NORTH.ordinal();
-            case SOUTH: return ForgeDirection.SOUTH.ordinal();
-            case WEST: return ForgeDirection.WEST.ordinal();
-            case EAST: return ForgeDirection.EAST.ordinal();
-            case UP: return ForgeDirection.UP.ordinal();
-            case DOWN: return ForgeDirection.DOWN.ordinal();
-            default: return ForgeDirection.UNKNOWN.ordinal();
-        }
+    public static Vector adapt(BlockPos pos) {
+        return new Vector(pos.getX(), pos.getY(), pos.getZ());
     }
+
+    public static Vec3d toVec3(Vector vector) {
+        return new Vec3d(vector.getBlockX(), vector.getBlockY(), vector.getBlockZ());
+    }
+
+    public static BlockPos toBlockPos(Vector vector) {
+        return new BlockPos(vector.getBlockX(), vector.getBlockY(), vector.getBlockZ());
+    }
+
 }

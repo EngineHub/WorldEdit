@@ -19,14 +19,14 @@
 
 package com.sk89q.worldedit.forge;
 
-import cpw.mods.fml.common.FMLCommonHandler;
+import net.minecraftforge.common.MinecraftForge;
 
 public class ClientProxy extends CommonProxy {
 
     @Override
     public void registerHandlers() {
         super.registerHandlers();
-        FMLCommonHandler.instance().bus().register(new KeyHandler());
+        MinecraftForge.EVENT_BUS.register(new KeyHandler());
     }
 
 }

@@ -19,6 +19,8 @@
 
 package com.sk89q.worldedit.forge;
 
+import org.apache.logging.log4j.Logger;
+
 import com.google.common.base.Joiner;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
@@ -26,24 +28,11 @@ import com.sk89q.worldedit.WorldVector;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.event.platform.PlatformReadyEvent;
 import com.sk89q.worldedit.extension.platform.Platform;
-import com.sk89q.worldedit.forge.compat.ForgeMultipartCompat;
-import com.sk89q.worldedit.forge.compat.ForgeMultipartExistsCompat;
-import com.sk89q.worldedit.forge.compat.NoForgeMultipartCompat;
 import com.sk89q.worldedit.internal.LocalWorldAdapter;
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.Loader;
-import cpw.mods.fml.common.Mod;
-import cpw.mods.fml.common.Mod.EventHandler;
-import cpw.mods.fml.common.Mod.Instance;
-import cpw.mods.fml.common.SidedProxy;
-import cpw.mods.fml.common.event.FMLInitializationEvent;
-import cpw.mods.fml.common.event.FMLPostInitializationEvent;
-import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import cpw.mods.fml.common.event.FMLServerAboutToStartEvent;
-import cpw.mods.fml.common.event.FMLServerStartedEvent;
-import cpw.mods.fml.common.event.FMLServerStoppingEvent;
-import cpw.mods.fml.common.eventhandler.Event.Result;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import com.sk89q.worldedit.util.Java8Detector;
+
+import java.io.File;
+import java.util.Map;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -51,19 +40,31 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.CommandEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import org.apache.logging.log4j.Logger;
-
-import java.io.File;
-import java.util.Map;
+import net.minecraftforge.fml.common.Loader;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.Mod.EventHandler;
+import net.minecraftforge.fml.common.Mod.Instance;
+import net.minecraftforge.fml.common.SidedProxy;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLServerAboutToStartEvent;
+import net.minecraftforge.fml.common.event.FMLServerStartedEvent;
+import net.minecraftforge.fml.common.event.FMLServerStoppingEvent;
+import net.minecraftforge.fml.common.eventhandler.Event.Result;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static net.minecraftforge.event.entity.player.PlayerInteractEvent.Action;
 
 /**
  * The Forge implementation of WorldEdit.
  */
 @Mod(modid = ForgeWorldEdit.MOD_ID, name = "WorldEdit", version = "%VERSION%", acceptableRemoteVersions = "*")
 public class ForgeWorldEdit {
+    
+    static {
+        Java8Detector.notifyIfNot8();
+    }
 
     public static Logger logger;
     public static final String MOD_ID = "worldedit";
@@ -80,7 +81,6 @@ public class ForgeWorldEdit {
     private ForgePlatform platform;
     private ForgeConfiguration config;
     private File workingDir;
-    private ForgeMultipartCompat compat = new NoForgeMultipartCompat();
 
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
@@ -92,16 +92,13 @@ public class ForgeWorldEdit {
         config = new ForgeConfiguration(this);
         config.load();
 
-        if (Loader.isModLoaded("ForgeMultipart")) {
-            compat = new ForgeMultipartExistsCompat();
-        }
-
-        FMLCommonHandler.instance().bus().register(ThreadSafeCache.getInstance());
+        MinecraftForge.EVENT_BUS.register(ThreadSafeCache.getInstance());
     }
 
     @EventHandler
     public void init(FMLInitializationEvent event) {
         MinecraftForge.EVENT_BUS.register(this);
+        WECUIPacketHandler.init();
         proxy.registerHandlers();
     }
 
@@ -117,12 +114,15 @@ public class ForgeWorldEdit {
             WorldEdit.getInstance().getPlatformManager().unregister(platform);
         }
 
-        ForgeBiomeRegistry.populate();
-
         this.platform = new ForgePlatform(this);
 
         WorldEdit.getInstance().getPlatformManager().register(platform);
-        this.provider = new ForgePermissionsProvider.VanillaPermissionsProvider(platform);
+
+        if (Loader.isModLoaded("sponge")) {
+            this.provider = new ForgePermissionsProvider.SpongePermissionsProvider();
+        } else {
+            this.provider = new ForgePermissionsProvider.VanillaPermissionsProvider(platform);
+        }
     }
 
     @EventHandler
@@ -137,13 +137,13 @@ public class ForgeWorldEdit {
 
     @SubscribeEvent
     public void onCommandEvent(CommandEvent event) {
-        if ((event.sender instanceof EntityPlayerMP)) {
-            if (((EntityPlayerMP) event.sender).worldObj.isRemote) return;
-            String[] split = new String[event.parameters.length + 1];
-            System.arraycopy(event.parameters, 0, split, 1, event.parameters.length);
-            split[0] = event.command.getCommandName();
+        if ((event.getSender() instanceof EntityPlayerMP)) {
+            if (((EntityPlayerMP) event.getSender()).worldObj.isRemote) return;
+            String[] split = new String[event.getParameters().length + 1];
+            System.arraycopy(event.getParameters(), 0, split, 1, event.getParameters().length);
+            split[0] = event.getCommand().getCommandName();
             com.sk89q.worldedit.event.platform.CommandEvent weEvent =
-                    new com.sk89q.worldedit.event.platform.CommandEvent(wrap((EntityPlayerMP) event.sender), Joiner.on(" ").join(split));
+                    new com.sk89q.worldedit.event.platform.CommandEvent(wrap((EntityPlayerMP) event.getSender()), Joiner.on(" ").join(split));
             WorldEdit.getInstance().getEventBus().post(weEvent);
         }
     }
@@ -154,48 +154,51 @@ public class ForgeWorldEdit {
             return;
         }
 
-        if (!platform.isHookingEvents()) return; // We have to be told to catch these events
+        if (!platform.isHookingEvents())
+            return; // We have to be told to catch these events
 
-        if (event.useItem == Result.DENY || event.entity.worldObj.isRemote) return;
+        boolean isLeftDeny = event instanceof PlayerInteractEvent.LeftClickBlock
+                && ((PlayerInteractEvent.LeftClickBlock) event)
+                        .getUseItem() == Result.DENY;
+        boolean isRightDeny =
+                event instanceof PlayerInteractEvent.RightClickBlock
+                        && ((PlayerInteractEvent.RightClickBlock) event)
+                                .getUseItem() == Result.DENY;
+        if (isLeftDeny || isRightDeny || event.getEntity().worldObj.isRemote) {
+            return;
+        }
 
         WorldEdit we = WorldEdit.getInstance();
-        ForgePlayer player = wrap((EntityPlayerMP) event.entityPlayer);
-        ForgeWorld world = getWorld(event.entityPlayer.worldObj);
+        ForgePlayer player = wrap((EntityPlayerMP) event.getEntityPlayer());
+        ForgeWorld world = getWorld(event.getEntityPlayer().worldObj);
 
-        Action action = event.action;
-        switch (action) {
-            case LEFT_CLICK_BLOCK: {
-                WorldVector pos = new WorldVector(LocalWorldAdapter.adapt(world), event.x, event.y, event.z);
+        if (event instanceof PlayerInteractEvent.LeftClickBlock) {
+            @SuppressWarnings("deprecation")
+            WorldVector pos = new WorldVector(LocalWorldAdapter.adapt(world),
+                    event.getPos().getX(), event.getPos().getY(), event.getPos().getZ());
 
-                if (we.handleBlockLeftClick(player, pos)) {
-                    event.setCanceled(true);
-                }
-
-                if (we.handleArmSwing(player)) {
-                    event.setCanceled(true);
-                }
-
-                break;
+            if (we.handleBlockLeftClick(player, pos)) {
+                event.setCanceled(true);
             }
-            case RIGHT_CLICK_BLOCK: {
-                WorldVector pos = new WorldVector(LocalWorldAdapter.adapt(world), event.x, event.y, event.z);
 
-                if (we.handleBlockRightClick(player, pos)) {
-                    event.setCanceled(true);
-                }
-
-                if (we.handleRightClick(player)) {
-                    event.setCanceled(true);
-                }
-
-                break;
+            if (we.handleArmSwing(player)) {
+                event.setCanceled(true);
             }
-            case RIGHT_CLICK_AIR: {
-                if (we.handleRightClick(player)) {
-                    event.setCanceled(true);
-                }
+        } else if (event instanceof PlayerInteractEvent.RightClickBlock) {
+            @SuppressWarnings("deprecation")
+            WorldVector pos = new WorldVector(LocalWorldAdapter.adapt(world),
+                    event.getPos().getX(), event.getPos().getY(), event.getPos().getZ());
 
-                break;
+            if (we.handleBlockRightClick(player, pos)) {
+                event.setCanceled(true);
+            }
+
+            if (we.handleRightClick(player)) {
+                event.setCanceled(true);
+            }
+        } else if (event instanceof PlayerInteractEvent.RightClickItem) {
+            if (we.handleRightClick(player)) {
+                event.setCanceled(true);
             }
         }
     }
@@ -203,7 +206,7 @@ public class ForgeWorldEdit {
     public static ItemStack toForgeItemStack(BaseItemStack item) {
         ItemStack ret = new ItemStack(Item.getItemById(item.getType()), item.getAmount(), item.getData());
         for (Map.Entry<Integer, Integer> entry : item.getEnchantments().entrySet()) {
-            ret.addEnchantment(net.minecraft.enchantment.Enchantment.enchantmentsList[((Integer) entry.getKey())], (Integer) entry.getValue());
+            ret.addEnchantment(net.minecraft.enchantment.Enchantment.getEnchantmentByID(entry.getKey()), entry.getValue());
         }
 
         return ret;
@@ -267,10 +270,6 @@ public class ForgeWorldEdit {
      */
     public File getWorkingDir() {
         return this.workingDir;
-    }
-
-    public ForgeMultipartCompat getFMPCompat() {
-        return compat;
     }
 
     /**

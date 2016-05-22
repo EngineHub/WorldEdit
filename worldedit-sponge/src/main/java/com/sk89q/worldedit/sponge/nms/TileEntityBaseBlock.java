@@ -17,22 +17,25 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.forge.compat;
+package com.sk89q.worldedit.sponge.nms;
 
+import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.blocks.TileEntityBlock;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.World;
 
-public class NoForgeMultipartCompat implements ForgeMultipartCompat {
+@Deprecated
+public class TileEntityBaseBlock extends BaseBlock implements TileEntityBlock {
 
-    @Override
-    public TileEntity overrideTileEntity(World world, NBTTagCompound tag,
-            TileEntity normal) {
-        return normal;
+    public TileEntityBaseBlock(int type, int data, TileEntity tile) {
+        super(type, data);
+        setNbtData(NBTConverter.fromNative(copyNbtData(tile)));
     }
 
-    @Override
-    public void sendDescPacket(World world, TileEntity entity) {
+    private static NBTTagCompound copyNbtData(TileEntity tile) {
+        NBTTagCompound tag = new NBTTagCompound();
+        tile.writeToNBT(tag);
+        return tag;
     }
 
 }

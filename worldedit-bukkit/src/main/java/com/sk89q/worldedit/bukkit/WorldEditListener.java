@@ -37,6 +37,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.EquipmentSlot;
 
 /**
  * Handles all events thrown in relation to a Player
@@ -114,6 +115,15 @@ public class WorldEditListener implements Listener {
 
         if (event.useItemInHand() == Result.DENY) {
             return;
+        }
+
+        try {
+            if (event.getHand() == EquipmentSlot.OFF_HAND) {
+                return; // TODO api needs to be able to get either hand depending on event
+                // for now just ignore all off hand interacts
+            }
+        } catch (NoSuchMethodError ignored) {
+        } catch (NoSuchFieldError ignored) {
         }
 
         final LocalPlayer player = plugin.wrapPlayer(event.getPlayer());

@@ -262,13 +262,14 @@ public class SchematicCommands {
     public void list(Actor actor, CommandContext args, @Switch('p') @Optional("1") int page) throws WorldEditException {
         File dir = worldEdit.getWorkingDirectoryFile(worldEdit.getConfiguration().saveDir);
         List<File> fileList = allFiles(dir);
-        File[] files = new File[fileList.size()];
-        fileList.toArray(files);
 
-        if (files.length == 0) {
+        if (fileList == null || fileList.isEmpty()) {
             actor.printError("No schematics found.");
             return;
         }
+
+        File[] files = new File[fileList.size()];
+        fileList.toArray(files);
 
         int pageCount = files.length / SCHEMATICS_PER_PAGE + 1;
         if (page < 1) {

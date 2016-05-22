@@ -68,7 +68,7 @@ public class ChangeSetExtent extends AbstractDelegateExtent {
     @Override
     public Entity createEntity(Location location, BaseEntity state) {
         Entity entity = super.createEntity(location, state);
-        if (state != null) {
+        if (entity != null) {
             changeSet.add(new EntityCreate(location, state, entity));
         }
         return entity;

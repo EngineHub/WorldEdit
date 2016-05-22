@@ -6,11 +6,9 @@ install: ./gradlew setupCIWorkspace -s
 script: ./gradlew build -s
 jdk:
   - oraclejdk8
-  - oraclejdk7
-  - openjdk6
 # Caching for Gradle files, prevents hitting Maven too much.
 before_cache:
-  - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
+  - find $HOME/.gradle/ -name '*.lock' -print -exec rm -f {} \;
 cache:
   directories:
     - $HOME/.gradle/caches/

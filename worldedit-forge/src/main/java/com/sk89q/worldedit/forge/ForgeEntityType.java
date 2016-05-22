@@ -25,6 +25,7 @@ import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.IMerchant;
 import net.minecraft.entity.INpc;
 import net.minecraft.entity.IProjectile;
+import net.minecraft.entity.item.EntityArmorStand;
 import net.minecraft.entity.item.EntityBoat;
 import net.minecraft.entity.item.EntityEnderEye;
 import net.minecraft.entity.item.EntityFallingBlock;
@@ -36,8 +37,8 @@ import net.minecraft.entity.item.EntityTNTPrimed;
 import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.entity.monster.EntityGolem;
 import net.minecraft.entity.passive.EntityAmbientCreature;
+import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.passive.EntityTameable;
-import net.minecraft.entity.passive.IAnimals;
 import net.minecraft.entity.player.EntityPlayer;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -108,7 +109,7 @@ public class ForgeEntityType implements EntityType {
 
     @Override
     public boolean isAnimal() {
-        return entity instanceof IAnimals;
+        return entity instanceof EntityAnimal;
     }
 
     @Override
@@ -133,11 +134,11 @@ public class ForgeEntityType implements EntityType {
 
     @Override
     public boolean isTagged() {
-        return entity instanceof EntityLiving && ((EntityLiving) entity).hasCustomNameTag();
+        return entity instanceof EntityLiving && ((EntityLiving) entity).hasCustomName();
     }
 
     @Override
     public boolean isArmorStand() {
-        return false; // TODO re-add when forge version is updated to 1.8: entity instanceof EntityArmorStand;
+        return entity instanceof EntityArmorStand;
     }
 }

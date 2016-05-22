@@ -22,6 +22,7 @@ package com.sk89q.worldedit.blocks;
 import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.jnbt.StringTag;
 import com.sk89q.jnbt.Tag;
+import com.sk89q.worldedit.util.gson.GsonUtil;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -33,6 +34,8 @@ public class SignBlock extends BaseBlock implements TileEntityBlock {
 
     private String[] text;
 
+    private static String EMPTY =  "{\"text\":\"\"}";
+
     /**
      * Construct the sign without text.
      * 
@@ -41,7 +44,7 @@ public class SignBlock extends BaseBlock implements TileEntityBlock {
      */
     public SignBlock(int type, int data) {
         super(type, data);
-        this.text = new String[] { "", "", "", "" };
+        this.text = new String[] { EMPTY, EMPTY, EMPTY, EMPTY };
     }
 
     /**
@@ -54,7 +57,15 @@ public class SignBlock extends BaseBlock implements TileEntityBlock {
     public SignBlock(int type, int data, String[] text) {
         super(type, data);
         if (text == null) {
-            this.text = new String[] { "", "", "", "" };
+            this.text = new String[] { EMPTY, EMPTY, EMPTY, EMPTY };
+            return;
+        }
+        for (int i = 0; i < text.length; i++) {
+            if (text[i].isEmpty()) {
+                text[i] = EMPTY;
+            } else {
+                text[i] = "{\"text\":\"" + GsonUtil.stringValue(text[i]) + "\"}";
+            }
         }
         this.text = text;
     }
@@ -110,7 +121,7 @@ public class SignBlock extends BaseBlock implements TileEntityBlock {
 
         Tag t;
 
-        text = new String[] { "", "", "", "" };
+        text = new String[] { EMPTY, EMPTY, EMPTY, EMPTY };
 
         t = values.get("id");
         if (!(t instanceof StringTag) || !((StringTag) t).getValue().equals("Sign")) {
