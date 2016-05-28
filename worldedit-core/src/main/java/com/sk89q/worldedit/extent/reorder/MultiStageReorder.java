@@ -26,7 +26,10 @@ import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.blocks.BlockType;
 import com.sk89q.worldedit.extent.AbstractDelegateExtent;
 import com.sk89q.worldedit.extent.Extent;
-import com.sk89q.worldedit.function.operation.*;
+import com.sk89q.worldedit.function.operation.BlockMapEntryPlacer;
+import com.sk89q.worldedit.function.operation.Operation;
+import com.sk89q.worldedit.function.operation.OperationQueue;
+import com.sk89q.worldedit.function.operation.RunContext;
 import com.sk89q.worldedit.util.collection.LowMemoryTupleArrayList;
 
 import java.util.*;
@@ -40,7 +43,6 @@ public class MultiStageReorder extends AbstractDelegateExtent implements Reorder
 
     private final List<LowMemoryTupleArrayList<BlockVector, BaseBlock>> stages = new ArrayList<LowMemoryTupleArrayList<BlockVector, BaseBlock>>();
     private boolean enabled;
-    private boolean safeMultiPass;
 
     /**
      * Create a new instance when the re-ordering is enabled.
@@ -48,7 +50,7 @@ public class MultiStageReorder extends AbstractDelegateExtent implements Reorder
      * @param extent the extent
      */
     public MultiStageReorder(Extent extent) {
-        this(extent, true, true);
+        this(extent, true);
     }
 
     /**
@@ -58,20 +60,8 @@ public class MultiStageReorder extends AbstractDelegateExtent implements Reorder
      * @param enabled true to enable
      */
     public MultiStageReorder(Extent extent, boolean enabled) {
-        this(extent, enabled, true);
-    }
-
-    /**
-     * Create a new instance.
-     *
-     * @param extent the extent
-     * @param enabled true to enable
-     * @param safeMultiPass true to enable safe multipass mode
-     */
-    public MultiStageReorder(Extent extent, boolean enabled, boolean safeMultiPass) {
         super(extent);
         this.enabled = enabled;
-        this.safeMultiPass = safeMultiPass;
 
         for (int i = 0; i < STAGE_COUNT; ++i) {
             stages.add(new LowMemoryTupleArrayList<BlockVector, BaseBlock>());
@@ -94,24 +84,6 @@ public class MultiStageReorder extends AbstractDelegateExtent implements Reorder
      */
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
-    }
-
-    /**
-     * Return whether safe multi-pass mode is enabled.
-     *
-     * @return true if safe multi-pass mode is enabled
-     */
-    public boolean isSafeMultiPass() {
-        return safeMultiPass;
-    }
-
-    /**
-     * Set whether safe multi-pass mode is enabled.
-     *
-     * @param enabled true if safe multi-pass mode is enabled
-     */
-    public void setSafeMultiPass(boolean enabled) {
-        this.safeMultiPass = enabled;
     }
 
     public int getPlacementPriority(BaseBlock block) {
@@ -152,24 +124,6 @@ public class MultiStageReorder extends AbstractDelegateExtent implements Reorder
 
     @Override
     public Operation commitBefore() {
-        if (safeMultiPass) {
-            // Create operations for all but the first stage
-            List<Operation> operations = new ArrayList<Operation>();
-            for (int i = 1; i < stages.size() - 1; ++i) {
-                operations.add(new BlockMapEntryPlacer(getExtent(), stages.get(i).iterator()));
-            }
-            operations.add(new FinalStageCommitter());
-
-            // Create a new operation queue, with the first stage distributed,
-            // and all remaining operations executed in a single tick
-            return new OperationQueue(
-                    new BlockMapEntryPlacer(getExtent(), stages.get(0).iterator()),
-                    new SinglePassOperationQueue(
-                            operations
-                    )
-            );
-        }
-
         List<Operation> operations = new ArrayList<Operation>();
         for (int i = 0; i < stages.size() - 1; ++i) {
             operations.add(new BlockMapEntryPlacer(getExtent(), stages.get(i).iterator()));
