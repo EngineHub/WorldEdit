@@ -27,7 +27,6 @@ import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldVector;
 import com.sk89q.worldedit.internal.LocalWorldAdapter;
 import com.sk89q.worldedit.world.World;
-import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.event.Event.Result;
 import org.bukkit.event.EventHandler;
@@ -45,7 +44,6 @@ import org.bukkit.inventory.EquipmentSlot;
 public class WorldEditListener implements Listener {
 
     private WorldEditPlugin plugin;
-    private boolean ignoreLeftClickAir = false;
 
     /**
      * Called when a player plays an animation, such as an arm swing
@@ -143,22 +141,7 @@ public class WorldEditListener implements Listener {
                 event.setCancelled(true);
             }
 
-            if (!ignoreLeftClickAir) {
-                final int taskId = Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-                    @Override
-                    public void run() {
-                        ignoreLeftClickAir = false;
-                    }
-                }, 2);
-
-                if (taskId != -1) {
-                    ignoreLeftClickAir = true;
-                }
-            }
         } else if (action == Action.LEFT_CLICK_AIR) {
-            if (ignoreLeftClickAir) {
-                return;
-            }
 
             if (we.handleArmSwing(player)) {
                 event.setCancelled(true);
