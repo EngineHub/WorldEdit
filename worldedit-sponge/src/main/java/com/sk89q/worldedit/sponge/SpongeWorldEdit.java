@@ -136,8 +136,6 @@ public class SpongeWorldEdit {
         WorldEdit.getInstance().getEventBus().post(new PlatformReadyEvent());
     }
 
-    private boolean ignoreLeftClickAir = false;
-
     @Listener
     public void onPlayerInteract(InteractBlockEvent event, @Root Player spongePlayer) {
         if (platform == null) {
@@ -171,20 +169,7 @@ public class SpongeWorldEdit {
                 if (we.handleArmSwing(player)) {
                     event.setCancelled(true);
                 }
-
-                if (!ignoreLeftClickAir) {
-                    Task.builder().delayTicks(2).execute(() -> {
-                        ignoreLeftClickAir = false;
-
-                    }).submit(this);
-
-                    ignoreLeftClickAir = true;
-                }
             } else {
-                if (ignoreLeftClickAir) {
-                    return;
-                }
-
                 if (we.handleArmSwing(player)) {
                     event.setCancelled(true);
                 }
