@@ -31,6 +31,7 @@ import com.sk89q.worldedit.internal.cui.CUIEvent;
 import com.sk89q.worldedit.session.SessionKey;
 import com.sk89q.worldedit.sponge.nms.IDHelper;
 import com.sk89q.worldedit.util.Location;
+import org.spongepowered.api.data.type.HandTypes;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.text.Text;
@@ -60,7 +61,7 @@ public class SpongePlayer extends AbstractPlayerActor {
 
     @Override
     public int getItemInHand() {
-        Optional<ItemStack> is = this.player.getItemInHand();
+        Optional<ItemStack> is = this.player.getItemInHand(HandTypes.MAIN_HAND);
         return is.isPresent() ? IDHelper.resolve(is.get().getItem()) : 0;
     }
 
