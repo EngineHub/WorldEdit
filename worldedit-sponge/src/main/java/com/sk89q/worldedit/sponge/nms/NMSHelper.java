@@ -36,7 +36,7 @@ public final class NMSHelper {
     public static ItemStack makeSpongeStack(BaseItemStack itemStack) {
         net.minecraft.item.ItemStack newStack = new net.minecraft.item.ItemStack(Item.getItemById(itemStack.getType()), itemStack.getAmount(), itemStack.getData());
         for (Map.Entry<Integer, Integer> entry : itemStack.getEnchantments().entrySet()) {
-            newStack.addEnchantment(net.minecraft.enchantment.Enchantment.getEnchantmentById(entry.getKey()), entry.getValue());
+            newStack.addEnchantment(net.minecraft.enchantment.Enchantment.getEnchantmentByID(entry.getKey()), entry.getValue());
         }
         return (ItemStack) (Object) newStack;
     }

@@ -35,7 +35,7 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagInt;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockPos;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.gen.feature.*;
 import org.spongepowered.api.block.BlockState;
 import org.spongepowered.api.entity.Entity;
@@ -49,9 +49,9 @@ import static com.google.common.base.Preconditions.checkNotNull;
 @Deprecated
 public class SpongeNMSWorld extends SpongeWorld {
 
-    private static final IBlockState JUNGLE_LOG = Blocks.log.getDefaultState().withProperty(BlockOldLog.VARIANT, BlockPlanks.EnumType.JUNGLE);
-    private static final IBlockState JUNGLE_LEAF = Blocks.leaves.getDefaultState().withProperty(BlockOldLeaf.VARIANT, BlockPlanks.EnumType.JUNGLE).withProperty(BlockLeaves.CHECK_DECAY, Boolean.valueOf(false));
-    private static final IBlockState JUNGLE_SHRUB = Blocks.leaves.getDefaultState().withProperty(BlockOldLeaf.VARIANT, BlockPlanks.EnumType.OAK).withProperty(BlockLeaves.CHECK_DECAY, Boolean.valueOf(false));
+    private static final IBlockState JUNGLE_LOG = Blocks.LOG.getDefaultState().withProperty(BlockOldLog.VARIANT, BlockPlanks.EnumType.JUNGLE);
+    private static final IBlockState JUNGLE_LEAF = Blocks.LEAVES.getDefaultState().withProperty(BlockOldLeaf.VARIANT, BlockPlanks.EnumType.JUNGLE).withProperty(BlockLeaves.CHECK_DECAY, Boolean.valueOf(false));
+    private static final IBlockState JUNGLE_SHRUB = Blocks.LEAVES.getDefaultState().withProperty(BlockOldLeaf.VARIANT, BlockPlanks.EnumType.OAK).withProperty(BlockLeaves.CHECK_DECAY, Boolean.valueOf(false));
 
     /**
      * Construct a new world.
@@ -119,18 +119,18 @@ public class SpongeNMSWorld extends SpongeWorld {
             case BIG_TREE: return new WorldGenBigTree(true);
             case REDWOOD: return new WorldGenTaiga2(true);
             case TALL_REDWOOD: return new WorldGenTaiga1();
-            case BIRCH: return new WorldGenForest(true, false);
+            case BIRCH: return new WorldGenBirchTree(true, false);
             case JUNGLE: return new WorldGenMegaJungle(true, 10, 20, JUNGLE_LOG, JUNGLE_LEAF);
             case SMALL_JUNGLE: return new WorldGenTrees(true, 4 + random.nextInt(7), JUNGLE_LOG, JUNGLE_LEAF, false);
             case SHORT_JUNGLE: return new WorldGenTrees(true, 4 + random.nextInt(7), JUNGLE_LOG, JUNGLE_LEAF, true);
             case JUNGLE_BUSH: return new WorldGenShrub(JUNGLE_LOG, JUNGLE_SHRUB);
-            case RED_MUSHROOM: return new WorldGenBigMushroom(Blocks.brown_mushroom_block);
-            case BROWN_MUSHROOM: return new WorldGenBigMushroom(Blocks.red_mushroom_block);
+            case RED_MUSHROOM: return new WorldGenBigMushroom(Blocks.BROWN_MUSHROOM_BLOCK);
+            case BROWN_MUSHROOM: return new WorldGenBigMushroom(Blocks.RED_MUSHROOM_BLOCK);
             case SWAMP: return new WorldGenSwamp();
             case ACACIA: return new WorldGenSavannaTree(true);
             case DARK_OAK: return new WorldGenCanopyTree(true);
             case MEGA_REDWOOD: return new WorldGenMegaPineTree(false, random.nextBoolean());
-            case TALL_BIRCH: return new WorldGenForest(true, true);
+            case TALL_BIRCH: return new WorldGenBirchTree(true, true);
             case RANDOM:
             case PINE:
             case RANDOM_REDWOOD:
