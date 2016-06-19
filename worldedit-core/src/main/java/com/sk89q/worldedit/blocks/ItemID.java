@@ -186,12 +186,29 @@ public final class ItemID {
     public static final int MUTTON = 423;
     public static final int COOKED_MUTTON = 424;
     public static final int BANNER = 425;
-    // Nothing at 456
+    public static final int END_CRYSTAL = 426;
     public static final int SPRUCE_DOOR = 427;
     public static final int BIRCH_DOOR = 428;
     public static final int JUNGLE_DOOR = 429;
     public static final int ACACIA_DOOR = 430;
     public static final int DARK_OAK_DOOR = 431;
+    public static final int CHORUS_FRUIT = 432;
+    public static final int CHORUS_FRUIT_POPPED = 433;
+    public static final int BEETROOT = 434;
+    public static final int BEETROOT_SEEDS = 435;
+    public static final int BEETROOT_SOUP = 436;
+    public static final int DRAGON_BREATH = 437;
+    public static final int SPLASH_POTION = 438;
+    public static final int SPECTRAL_ARROW = 439;
+    public static final int TIPPED_ARROW = 440;
+    public static final int LINGERING_POTION = 441;
+    public static final int SHIELD = 442;
+    public static final int ELYTRA = 443;
+    public static final int SPRUCE_BOAT = 444;
+    public static final int BIRCH_BOAT = 445;
+    public static final int JUNGLE_BOAT = 446;
+    public static final int ACACIA_BOAT = 447;
+    public static final int DARK_OAK_BOAT = 448;
 
     @Deprecated public static final int GOLD_RECORD = 2256; // deprecated, but leave it there
     @Deprecated public static final int GREEN_RECORD = 2257; // deprecated, but leave it there

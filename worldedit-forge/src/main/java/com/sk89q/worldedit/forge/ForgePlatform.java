@@ -69,7 +69,7 @@ class ForgePlatform extends AbstractPlatform implements MultiUserPlatform {
 
         int index = name.indexOf(':');
 
-        if (index != -1 && index != 0 && index != name.length() - 1) {
+        if (index != 0 && index != name.length() - 1) {
             Block block = Block.getBlockFromName(name);
             if (block != null) {
                 return Block.getIdFromBlock(block);
@@ -87,7 +87,7 @@ class ForgePlatform extends AbstractPlatform implements MultiUserPlatform {
             }
             if (item.getUnlocalizedName().equalsIgnoreCase(name)) return Item.getIdFromItem(item);
         }
-        return 0;
+        return -1;
     }
 
     @Override

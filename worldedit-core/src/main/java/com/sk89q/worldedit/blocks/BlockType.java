@@ -236,7 +236,28 @@ public enum BlockType {
     BIRCH_DOOR(BlockID.BIRCH_DOOR, "Birch Door", "birchdoor"),
     JUNGLE_DOOR(BlockID.JUNGLE_DOOR, "Jungle Door", "jungledoor"),
     ACACIA_DOOR(BlockID.ACACIA_DOOR, "Acacia Door", "acaciadoor"),
-    DARK_OAK_DOOR(BlockID.DARK_OAK_DOOR, "Dark Oak Door", "darkoakdoor");
+    DARK_OAK_DOOR(BlockID.DARK_OAK_DOOR, "Dark Oak Door", "darkoakdoor"),
+    END_ROD(BlockID.END_ROD, "End Rod", "endrod", "endtorch"),
+    CHORUS_PLANT(BlockID.CHORUS_PLANT, "Chorus Plant", "chorusplant", "chorusstem"),
+    CHORUS_FLOWER(BlockID.CHORUS_FLOWER, "Chorus Flower", "chorusflower"),
+    PURPUR_BLOCK(BlockID.PURPUR_BLOCK, "Purpur Block", "purpurblock", "blockpurpur"),
+    PURPUR_PILLAR(BlockID.PURPUR_PILLAR, "Purpur Pillar", "purpurpillar"),
+    PURPUR_STAIRS(BlockID.PURPUR_STAIRS, "Purpur Stairs", "purpurstairs"),
+    PURPUR_DOUBLE_SLAB(BlockID.PURPUR_DOUBLE_SLAB, "Purpur Double Slab", "purpurdoubleslab", "doubleslabpurpur", "doublepurpurslab"),
+    PURPUR_SLAB(BlockID.PURPUR_SLAB, "Purpur Slab", "purpurslab", "slabpurpur"),
+    END_BRICKS(BlockID.END_BRICKS, "End Bricks", "endbricks"),
+    BEETROOTS(BlockID.BEETROOTS, "Beetroots", "beetroots", "beetroot_plant"),
+    GRASS_PATH(BlockID.GRASS_PATH, "Grass Path", "grasspath", "dirtpath"),
+    END_GATEWAY(BlockID.END_GATEWAY, "End Gateway", "endgateway"),
+    REPEATING_COMMAND_BLOCK(BlockID.REPEATING_COMMAND_BLOCK, "Repeating Command Block", "repeatingcommandblock", "commandblockrepeating"),
+    CHAIN_COMMAND_BLOCK(BlockID.CHAIN_COMMAND_BLOCK, "Chain Command Block", "chaincommandblock", "commandblockchain"),
+    FROSTED_ICE(BlockID.FROSTED_ICE, "Frosted Ice", "frostedice", "frostwalkerice"),
+    MAGMA_BLOCK(BlockID.MAGMA_BLOCK, "Magma Block", "magmablock", "magma"),
+    NETHER_WART_BLOCK(BlockID.NETHER_WART_BLOCK, "Nether Wart Block", "netherwartblock"),
+    RED_NETHER_BRICK(BlockID.RED_NETHER_BRICK, "Red Nether Brick", "rednetherbrick", "netherbrickred"),
+    BONE_BLOCK(BlockID.BONE_BLOCK, "Bone Block", "boneblock", "blockbone", "fossil", "fossilblock", "blockfossil"),
+    STRUCTURE_VOID(BlockID.STRUCTURE_VOID, "Structure Void", "structurevoid", "structureair"),
+    STRUCTURE_BLOCK(BlockID.STRUCTURE_BLOCK, "Structure Block", "structureblock");
 
     /**
      * Stores a map of the IDs for fast access.

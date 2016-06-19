@@ -64,7 +64,7 @@ public class SignBlock extends BaseBlock implements TileEntityBlock {
             if (text[i].isEmpty()) {
                 text[i] = EMPTY;
             } else {
-                text[i] = "{\"text\":\"" + GsonUtil.stringValue(text[i]) + "\"}";
+                text[i] = "{\"text\":" + GsonUtil.stringValue(text[i]) + "}";
             }
         }
         this.text = text;

@@ -55,12 +55,37 @@ class DefaultBlockParser extends InputParser<BaseBlock> {
     }
 
     @Override
-    public BaseBlock parseFromInput(String input, ParserContext context) throws InputParseException {
-        // TODO: Rewrite this entire method to use BaseBlocks and ignore BlockType, as well as to properly handle mod:name IDs
+    public BaseBlock parseFromInput(String input, ParserContext context)
+            throws InputParseException {
+        // TODO: Rewrite this entire method to use BaseBlocks and ignore
+        // BlockType, as well as to properly handle mod:name IDs
 
-        BlockType blockType;
+        String originalInput = input;
         input = input.replace("_", " ");
         input = input.replace(";", "|");
+        Exception suppressed = null;
+        try {
+            BaseBlock modified = parseLogic(input, context);
+            if (modified != null) {
+                return modified;
+            }
+        } catch (Exception e) {
+            suppressed = e;
+        }
+        try {
+            return parseLogic(originalInput, context);
+        } catch (Exception e) {
+            if (suppressed != null) {
+                e.addSuppressed(suppressed);
+            }
+            throw e;
+        }
+    }
+
+    private BaseBlock parseLogic(String input, ParserContext context)
+            throws InputParseException, NoMatchException,
+            DisallowedUsageException {
+        BlockType blockType;
         String[] blockAndExtraData = input.split("\\|");
         String[] blockLocator = blockAndExtraData[0].split(":", 3);
         String[] typeAndData;
@@ -118,12 +143,12 @@ class DefaultBlockParser extends InputParser<BaseBlock> {
                 blockType = BlockType.lookup(testId);
                 if (blockType == null) {
                     int t = worldEdit.getServer().resolveItem(testId);
-                    if (t > 0) {
+                    if (t >= 0) {
                         blockType = BlockType.fromID(t); // Could be null
                         blockId = t;
                     } else if (blockLocator.length == 2) { // Block IDs in MC 1.7 and above use mod:name
                         t = worldEdit.getServer().resolveItem(blockAndExtraData[0]);
-                        if (t > 0) {
+                        if (t >= 0) {
                             blockType = BlockType.fromID(t); // Could be null
                             blockId = t;
                             typeAndData = new String[] { blockAndExtraData[0] };
