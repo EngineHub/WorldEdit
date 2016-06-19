@@ -35,8 +35,8 @@ sponge {
 }
 
 minecraft {
-    version = "1.9.4"
-    mappings = 'snapshot_20160521'
+    version = "1.10"
+    mappings = 'snapshot_20160619'
     runDir = 'run'
 }
 
