@@ -96,7 +96,7 @@ final class TileEntityUtils {
     static void setTileEntity(World world, Vector position, @Nullable NBTTagCompound tag) {
         if (tag != null) {
             updateForSet(tag, position);
-            TileEntity tileEntity = TileEntity.createTileEntity(world.getMinecraftServer(), tag);
+            TileEntity tileEntity = TileEntity.create(tag);
             if (tileEntity != null) {
                 world.setTileEntity(new BlockPos(position.getBlockX(), position.getBlockY(), position.getBlockZ()), tileEntity);
             }
