@@ -7,7 +7,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.1-SNAPSHOT'
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.2-SNAPSHOT'
     }
 }
 
@@ -27,12 +27,12 @@ repositories {
 }
 
 //version = "6.1.2"
-ext.forgeVersion = "12.16.1.1891"
+ext.forgeVersion = "12.17.0.1965"
 //ext.internalVersion = version + ";" + gitCommitHash
 
 minecraft {
-    version = "1.9-${project.forgeVersion}"
-    mappings = "snapshot_20160505"
+    version = "1.9.4-${project.forgeVersion}"
+    mappings = "snapshot_20160617"
     runDir = 'run'
 
     replaceIn "com/sk89q/worldedit/forge/ForgeWorldEdit.java"

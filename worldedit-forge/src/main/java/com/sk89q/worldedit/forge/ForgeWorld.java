@@ -59,9 +59,9 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.ChunkCoordIntPair;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
-import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.gen.ChunkProviderServer;
@@ -205,7 +205,7 @@ public class ForgeWorld extends AbstractWorld {
     @Override
     public BaseBiome getBiome(Vector2D position) {
         checkNotNull(position);
-        return new BaseBiome(BiomeGenBase.getIdForBiome(getWorld().getBiomeGenForCoords(new BlockPos(position.getBlockX(), 0, position.getBlockZ()))));
+        return new BaseBiome(Biome.getIdForBiome(getWorld().getBiomeForCoordsBody(new BlockPos(position.getBlockX(), 0, position.getBlockZ()))));
     }
 
     @Override
@@ -260,7 +260,7 @@ public class ForgeWorld extends AbstractWorld {
                 }
                 ChunkProviderServer chunkServer = (ChunkProviderServer) provider;
                 for (Vector2D coord : chunks) {
-                    long pos = ChunkCoordIntPair.chunkXZ2Int(coord.getBlockX(), coord.getBlockZ());
+                    long pos = ChunkPos.chunkXZ2Int(coord.getBlockX(), coord.getBlockZ());
                     Chunk mcChunk;
                     if (chunkServer.chunkExists(coord.getBlockX(), coord.getBlockZ())) {
                         mcChunk = chunkServer.loadChunk(coord.getBlockX(), coord.getBlockZ());
@@ -269,8 +269,7 @@ public class ForgeWorld extends AbstractWorld {
                     chunkServer.droppedChunksSet.remove(pos);
                     chunkServer.id2ChunkMap.remove(pos);
                     mcChunk = chunkServer.provideChunk(coord.getBlockX(), coord.getBlockZ());
-                    chunkServer.id2ChunkMap.add(pos, mcChunk);
-                    chunkServer.loadedChunks.add(mcChunk);
+                    chunkServer.id2ChunkMap.put(pos, mcChunk);
                     if (mcChunk != null) {
                         mcChunk.onChunkLoad();
                         mcChunk.populateChunk(chunkServer, chunkServer.chunkGenerator);
@@ -340,7 +339,8 @@ public class ForgeWorld extends AbstractWorld {
 
     @Override
     public boolean isValidBlockType(int id) {
-        return (id == 0) || (net.minecraft.block.Block.getBlockById(id) != null);
+        Block block = Block.getBlockById(id);
+        return Block.getIdFromBlock(block) == id;
     }
 
     @Override

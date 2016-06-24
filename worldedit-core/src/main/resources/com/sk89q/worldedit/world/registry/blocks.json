@@ -10202,7 +10202,7 @@
     "legacyId": 159,
     "id": "minecraft:stained_hardened_clay",
     "unlocalizedName": "tile.clayHardenedStained",
-    "localizedName": "Stained Clay",
+    "localizedName": "Stained Hardened Clay",
     "states": {
       "color": {
         "dataMask": 15,
@@ -10791,7 +10791,7 @@
       "fragileWhenPushed": false,
       "unpushable": true,
       "adventureModeExempt": false,
-      "ambientOcclusionLightValue": 0.2,
+      "ambientOcclusionLightValue": 1.0,
       "grassBlocking": false
     }
   },
@@ -14076,6 +14076,176 @@
     }
   },
   {
+    "legacyId": 213,
+    "id": "minecraft:magma",
+    "unlocalizedName": "tile.magma",
+    "localizedName": "Magma Block",
+    "states": {},
+    "material": {
+      "powerSource": false,
+      "lightOpacity": 255,
+      "lightValue": 3,
+      "usingNeighborLight": false,
+      "hardness": 0.5,
+      "resistance": 2.5,
+      "ticksRandomly": true,
+      "fullCube": true,
+      "slipperiness": 0.6,
+      "renderedAsNormalBlock": true,
+      "liquid": false,
+      "solid": true,
+      "movementBlocker": true,
+      "burnable": false,
+      "opaque": true,
+      "replacedDuringPlacement": false,
+      "toolRequired": true,
+      "fragileWhenPushed": false,
+      "unpushable": false,
+      "adventureModeExempt": false,
+      "ambientOcclusionLightValue": 0.2,
+      "grassBlocking": false
+    }
+  },
+  {
+    "legacyId": 214,
+    "id": "minecraft:nether_wart_block",
+    "unlocalizedName": "tile.netherWartBlock",
+    "localizedName": "Nether Wart Block",
+    "states": {},
+    "material": {
+      "powerSource": false,
+      "lightOpacity": 255,
+      "lightValue": 0,
+      "usingNeighborLight": false,
+      "hardness": 1.0,
+      "resistance": 5.0,
+      "ticksRandomly": false,
+      "fullCube": true,
+      "slipperiness": 0.6,
+      "renderedAsNormalBlock": true,
+      "liquid": false,
+      "solid": true,
+      "movementBlocker": true,
+      "burnable": false,
+      "opaque": true,
+      "replacedDuringPlacement": false,
+      "toolRequired": false,
+      "fragileWhenPushed": false,
+      "unpushable": false,
+      "adventureModeExempt": false,
+      "ambientOcclusionLightValue": 0.2,
+      "grassBlocking": false
+    }
+  },
+  {
+    "legacyId": 215,
+    "id": "minecraft:red_nether_brick",
+    "unlocalizedName": "tile.redNetherBrick",
+    "localizedName": "Red Nether Brick",
+    "states": {},
+    "material": {
+      "powerSource": false,
+      "lightOpacity": 255,
+      "lightValue": 0,
+      "usingNeighborLight": false,
+      "hardness": 2.0,
+      "resistance": 30.0,
+      "ticksRandomly": false,
+      "fullCube": true,
+      "slipperiness": 0.6,
+      "renderedAsNormalBlock": true,
+      "liquid": false,
+      "solid": true,
+      "movementBlocker": true,
+      "burnable": false,
+      "opaque": true,
+      "replacedDuringPlacement": false,
+      "toolRequired": true,
+      "fragileWhenPushed": false,
+      "unpushable": false,
+      "adventureModeExempt": false,
+      "ambientOcclusionLightValue": 0.2,
+      "grassBlocking": false
+    }
+  },
+  {
+    "legacyId": 216,
+    "id": "minecraft:bone_block",
+    "unlocalizedName": "tile.boneBlock",
+    "localizedName": "Bone Block",
+    "states": {
+      "axis": {
+        "dataMask": 8,
+        "values": {
+          "x": {
+            "data": 4
+          },
+          "y": {
+            "data": 0
+          },
+          "z": {
+            "data": 8
+          }
+        }
+      }
+    },
+    "material": {
+      "powerSource": false,
+      "lightOpacity": 255,
+      "lightValue": 0,
+      "usingNeighborLight": false,
+      "hardness": 2.0,
+      "resistance": 10.0,
+      "ticksRandomly": false,
+      "fullCube": true,
+      "slipperiness": 0.6,
+      "renderedAsNormalBlock": true,
+      "liquid": false,
+      "solid": true,
+      "movementBlocker": true,
+      "burnable": false,
+      "opaque": true,
+      "replacedDuringPlacement": false,
+      "toolRequired": true,
+      "fragileWhenPushed": false,
+      "unpushable": false,
+      "adventureModeExempt": false,
+      "ambientOcclusionLightValue": 0.2,
+      "grassBlocking": false
+    }
+  },
+  {
+    "legacyId": 217,
+    "id": "minecraft:structure_void",
+    "unlocalizedName": "tile.structureVoid",
+    "localizedName": "Structure Void",
+    "states": {},
+    "material": {
+      "powerSource": false,
+      "lightOpacity": 0,
+      "lightValue": 0,
+      "usingNeighborLight": true,
+      "hardness": 0.0,
+      "resistance": 0.0,
+      "ticksRandomly": false,
+      "fullCube": false,
+      "slipperiness": 0.6,
+      "renderedAsNormalBlock": false,
+      "liquid": false,
+      "solid": false,
+      "movementBlocker": false,
+      "burnable": false,
+      "opaque": false,
+      "replacedDuringPlacement": true,
+      "toolRequired": false,
+      "fragileWhenPushed": false,
+      "unpushable": false,
+      "adventureModeExempt": false,
+      "ambientOcclusionLightValue": 1.0,
+      "grassBlocking": false
+    }
+  },
+  {
     "legacyId": 255,
     "id": "minecraft:structure_block",
     "unlocalizedName": "tile.structureBlock",
@@ -14102,7 +14272,7 @@
     "material": {
       "powerSource": false,
       "lightOpacity": 255,
-      "lightValue": 15,
+      "lightValue": 0,
       "usingNeighborLight": false,
       "hardness": -1.0,
       "resistance": 1.8E7,
