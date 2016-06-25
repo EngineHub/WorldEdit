@@ -96,8 +96,7 @@ final class TileEntityUtils {
     static void setTileEntity(World world, Vector position, @Nullable NBTTagCompound tag) {
         if (tag != null) {
             updateForSet(tag, position);
-            // TileEntity.create(World, NBTTagCompound)
-            TileEntity tileEntity = TileEntity.func_190200_a(world, tag);
+            TileEntity tileEntity = TileEntity.create(world, tag);
             if (tileEntity != null) {
                 world.setTileEntity(new BlockPos(position.getBlockX(), position.getBlockY(), position.getBlockZ()), tileEntity);
             }
@@ -123,8 +122,7 @@ final class TileEntityUtils {
 
         TileEntity genericTE;
         try {
-            // Downcast here for return while retaining the type
-            genericTE = (TileEntity) baseConstructor.newInstance();
+            genericTE = baseConstructor.newInstance();
         } catch (Throwable e) {
             return null;
         }
