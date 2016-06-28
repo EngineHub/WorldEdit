@@ -57,7 +57,6 @@ public class ParametricBuilder {
     private final Map<Type, Binding> bindings = new HashMap<Type, Binding>();
     private final Paranamer paranamer = new CachingParanamer();
     private final List<InvokeListener> invokeListeners = new ArrayList<InvokeListener>();
-    private final List<ExceptionConverter> exceptionConverters = new ArrayList<ExceptionConverter>();
     private Authorizer authorizer = new NullAuthorizer();
     private CommandCompleter defaultCompleter = new NullCompleter();
     
@@ -126,19 +125,6 @@ public class ParametricBuilder {
     public void addInvokeListener(InvokeListener listener) {
         invokeListeners.add(listener);
     }
-    
-    /**
-     * Attach an exception converter to this builder in order to wrap unknown
-     * {@link Throwable}s into known {@link CommandException}s.
-     * 
-     * <p>Exception converters are called in order that they are registered.</p>
-     * 
-     * @param converter the converter
-     * @see ExceptionConverter for an explanation
-     */
-    public void addExceptionConverter(ExceptionConverter converter) {
-        exceptionConverters.add(converter);
-    }
 
     /**
      * Build a list of commands from methods specially annotated with {@link Command}
@@ -199,15 +185,6 @@ public class ParametricBuilder {
      */
     List<InvokeListener> getInvokeListeners() {
         return invokeListeners;
-    }
-
-    /**
-     * Get the list of exception converters.
-     * 
-     * @return a list of exception converters
-     */
-    List<ExceptionConverter> getExceptionConverters() {
-        return exceptionConverters;
     }
 
     /**

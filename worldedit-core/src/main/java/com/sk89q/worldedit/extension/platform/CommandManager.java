@@ -28,41 +28,15 @@ import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.command.BiomeCommands;
-import com.sk89q.worldedit.command.BrushCommands;
-import com.sk89q.worldedit.command.ChunkCommands;
-import com.sk89q.worldedit.command.ClipboardCommands;
-import com.sk89q.worldedit.command.GeneralCommands;
-import com.sk89q.worldedit.command.GenerationCommands;
-import com.sk89q.worldedit.command.HistoryCommands;
-import com.sk89q.worldedit.command.NavigationCommands;
-import com.sk89q.worldedit.command.RegionCommands;
-import com.sk89q.worldedit.command.SchematicCommands;
-import com.sk89q.worldedit.command.ScriptingCommands;
-import com.sk89q.worldedit.command.SelectionCommands;
-import com.sk89q.worldedit.command.SnapshotCommands;
-import com.sk89q.worldedit.command.SnapshotUtilCommands;
-import com.sk89q.worldedit.command.SuperPickaxeCommands;
-import com.sk89q.worldedit.command.ToolCommands;
-import com.sk89q.worldedit.command.ToolUtilCommands;
-import com.sk89q.worldedit.command.UtilityCommands;
-import com.sk89q.worldedit.command.WorldEditCommands;
+import com.sk89q.worldedit.command.*;
 import com.sk89q.worldedit.command.argument.ReplaceParser;
 import com.sk89q.worldedit.command.argument.TreeGeneratorParser;
-import com.sk89q.worldedit.command.composition.ApplyCommand;
-import com.sk89q.worldedit.command.composition.DeformCommand;
-import com.sk89q.worldedit.command.composition.PaintCommand;
-import com.sk89q.worldedit.command.composition.SelectionCommand;
-import com.sk89q.worldedit.command.composition.ShapedBrushCommand;
+import com.sk89q.worldedit.command.composition.*;
 import com.sk89q.worldedit.event.platform.CommandEvent;
 import com.sk89q.worldedit.event.platform.CommandSuggestionEvent;
 import com.sk89q.worldedit.function.factory.Deform;
 import com.sk89q.worldedit.function.factory.Deform.Mode;
-import com.sk89q.worldedit.internal.command.ActorAuthorizer;
-import com.sk89q.worldedit.internal.command.CommandLoggingHandler;
-import com.sk89q.worldedit.internal.command.UserCommandCompleter;
-import com.sk89q.worldedit.internal.command.WorldEditBinding;
-import com.sk89q.worldedit.internal.command.WorldEditExceptionConverter;
+import com.sk89q.worldedit.internal.command.*;
 import com.sk89q.worldedit.session.request.Request;
 import com.sk89q.worldedit.util.command.Dispatcher;
 import com.sk89q.worldedit.util.command.InvalidUsageException;
@@ -129,7 +103,6 @@ public final class CommandManager {
         builder.setAuthorizer(new ActorAuthorizer());
         builder.setDefaultCompleter(new UserCommandCompleter(platformManager));
         builder.addBinding(new WorldEditBinding(worldEdit));
-        builder.addExceptionConverter(exceptionConverter);
         builder.addInvokeListener(new LegacyCommandsHandler());
         builder.addInvokeListener(new CommandLoggingHandler(worldEdit, commandLog));
 
@@ -267,7 +240,23 @@ public final class CommandManager {
         long start = System.currentTimeMillis();
 
         try {
-            dispatcher.call(Joiner.on(" ").join(split), locals, new String[0]);
+            // This is a bit of a hack, since the call method can only throw CommandExceptions
+            // everything needs to be wrapped at least once. Which means to handle all WorldEdit
+            // exceptions without writing a hook into every dispatcher, we need to unwrap these
+            // exceptions and rethrow their converted form, if their is one.
+            try {
+                dispatcher.call(Joiner.on(" ").join(split), locals, new String[0]);
+            } catch (Throwable t) {
+                // Use the exception converter to convert the exception if any of its causes
+                // can be converted, otherwise throw the original exception
+                Throwable next = t;
+                do {
+                    exceptionConverter.convert(next);
+                    next = next.getCause();
+                } while (next != null);
+
+                throw t;
+            }
         } catch (CommandPermissionsException e) {
             actor.printError("You are not permitted to do that. Are you in the right mode?");
         } catch (InvalidUsageException e) {
