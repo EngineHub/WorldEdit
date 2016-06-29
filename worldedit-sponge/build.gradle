@@ -14,7 +14,7 @@ buildscript {
 }
 
 plugins {
-    id 'org.spongepowered.plugin' version '0.5.2'
+    id 'org.spongepowered.plugin' version '0.6'
 }
 
 apply plugin: 'net.minecrell.vanilla.server.library'
@@ -35,8 +35,8 @@ sponge {
 }
 
 minecraft {
-    version = "1.9.4"
-    mappings = 'snapshot_20160521'
+    version = "1.10.2"
+    mappings = 'snapshot_20160628'
     runDir = 'run'
 }
 

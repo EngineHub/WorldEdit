@@ -119,7 +119,7 @@ public class ForgePlayer extends AbstractPlayerActor {
         }
         PacketBuffer buffer = new PacketBuffer(Unpooled.copiedBuffer(send.getBytes(WECUIPacketHandler.UTF_8_CHARSET)));
         SPacketCustomPayload packet = new SPacketCustomPayload(ForgeWorldEdit.CUI_PLUGIN_CHANNEL, buffer);
-        this.player.playerNetServerHandler.sendPacket(packet);
+        this.player.connection.sendPacket(packet);
     }
 
     @Override
@@ -154,7 +154,7 @@ public class ForgePlayer extends AbstractPlayerActor {
 
     @Override
     public void setPosition(Vector pos, float pitch, float yaw) {
-        this.player.playerNetServerHandler.setPlayerLocation(pos.getX(), pos.getY(), pos.getZ(), yaw, pitch);
+        this.player.connection.setPlayerLocation(pos.getX(), pos.getY(), pos.getZ(), yaw, pitch);
     }
 
     @Override

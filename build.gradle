@@ -1,6 +1,6 @@
 println """
 *******************************************
- You are building WorldEdit! 
+ You are building WorldEdit!
 
  If you encounter trouble:
  1) Read COMPILING.md if you haven't yet
@@ -27,7 +27,7 @@ buildscript {
 
     dependencies {
         classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.3'
-        classpath 'org.jfrog.buildinfo:build-info-extractor-gradle:3.0.1'
+        classpath 'org.jfrog.buildinfo:build-info-extractor-gradle:4.4.0'
         classpath 'org.ajoberstar:gradle-git:1.4.2'
     }
 }
@@ -50,12 +50,34 @@ if (!project.hasProperty("gitCommitHash")) {
     ext.gitCommitHash = "no_git_id"
 }
 
+apply plugin: 'com.jfrog.artifactory'
+artifactory {
+    contextUrl = "${artifactory_contextUrl}"
+    publish {
+        repository {
+            repoKey = project.version.contains("SNAPSHOT") ? 'libs-snapshot-local' : 'libs-release-local'
+            username = "${artifactory_user}"
+            password = "${artifactory_password}"
+            maven = true
+        }
+    }
+
+    resolve {
+        repository {
+            repoKey = 'repo'
+            username = "${artifactory_user}"
+            password = "${artifactory_password}"
+            maven = true
+        }
+    }
+}
+
 subprojects {
     apply plugin: 'java'
     apply plugin: 'maven'
     apply plugin: 'checkstyle'
     apply plugin: 'com.github.johnrengelman.shadow'
-    apply plugin: 'com.jfrog.artifactory-upload'
+    apply plugin: 'com.jfrog.artifactory'
 
     group = 'com.sk89q.worldedit'
     version = '7.0-SNAPSHOT'
@@ -116,27 +138,5 @@ subprojects {
         exclude 'GradleStart**'
         exclude '.cache'
         exclude 'LICENSE*'
-    }
-
-    artifactory {
-        contextUrl = "${artifactory_contextUrl}"
-        publish {
-            repository {
-                repoKey = project.version.contains("SNAPSHOT") ? 'libs-snapshot-local' : 'libs-release-local'
-                username = "${artifactory_user}"
-                password = "${artifactory_password}"
-                maven = true
-                
-            }
-        }
-
-        resolve {
-            repository {
-                repoKey = 'repo'
-                username = "${artifactory_user}"
-                password = "${artifactory_password}"
-                maven = true
-            }
-        }
     }
 }

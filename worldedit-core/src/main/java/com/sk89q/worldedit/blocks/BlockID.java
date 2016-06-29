@@ -227,6 +227,27 @@ public final class BlockID {
     public static final int JUNGLE_DOOR = 195;
     public static final int ACACIA_DOOR = 196;
     public static final int DARK_OAK_DOOR = 197;
+    public static final int END_ROD = 198;
+    public static final int CHORUS_PLANT = 199;
+    public static final int CHORUS_FLOWER = 200;
+    public static final int PURPUR_BLOCK = 201;
+    public static final int PURPUR_PILLAR = 202;
+    public static final int PURPUR_STAIRS = 203;
+    public static final int PURPUR_DOUBLE_SLAB = 204;
+    public static final int PURPUR_SLAB = 205;
+    public static final int END_BRICKS = 206;
+    public static final int BEETROOTS = 207;
+    public static final int GRASS_PATH = 208;
+    public static final int END_GATEWAY = 209;
+    public static final int REPEATING_COMMAND_BLOCK = 210;
+    public static final int CHAIN_COMMAND_BLOCK = 211;
+    public static final int FROSTED_ICE = 212;
+    public static final int MAGMA_BLOCK = 213;
+    public static final int NETHER_WART_BLOCK = 214;
+    public static final int RED_NETHER_BRICK = 215;
+    public static final int BONE_BLOCK = 216;
+    public static final int STRUCTURE_VOID = 217;
+    public static final int STRUCTURE_BLOCK = 255;
 
     private BlockID() {
     }
