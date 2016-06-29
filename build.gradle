@@ -27,9 +27,14 @@ buildscript {
 
     dependencies {
         classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.3'
-        classpath 'org.jfrog.buildinfo:build-info-extractor-gradle:4.4.0'
-        classpath 'org.ajoberstar:gradle-git:1.4.2'
+        classpath 'org.jfrog.buildinfo:build-info-extractor-gradle:4.3.0'
+        classpath 'org.ajoberstar:gradle-git:1.5.1'
     }
+}
+
+allprojects {
+    group = 'com.sk89q.worldedit'
+    version = '6.1.5-SNAPSHOT'
 }
 
 if (!project.hasProperty("artifactory_contextUrl")) ext.artifactory_contextUrl = "http://localhost"
@@ -38,9 +43,7 @@ if (!project.hasProperty("artifactory_password")) ext.artifactory_password = ""
 
 if (!project.hasProperty("gitCommitHash") && !JavaVersion.current().isJava6()) {
     try {
-        def Grgit = Class.forName("org.ajoberstar.grgit.Grgit");
-        def Grgit_open = Grgit.getDeclaredMethod("open", File.class)
-        def repo = Grgit_open.invoke(null, project.file('.'))
+        def repo = org.ajoberstar.grgit.Grgit.open(dir: '.')
         ext.gitCommitHash = repo.head().abbreviatedId
     } catch (Exception e) {
         println "Error getting commit hash: " + e.getMessage()
@@ -59,6 +62,7 @@ artifactory {
             username = "${artifactory_user}"
             password = "${artifactory_password}"
             maven = true
+            ivy = false
         }
     }
 
@@ -71,6 +75,7 @@ artifactory {
         }
     }
 }
+artifactoryPublish.skip = true
 
 subprojects {
     apply plugin: 'java'
@@ -79,8 +84,6 @@ subprojects {
     apply plugin: 'com.github.johnrengelman.shadow'
     apply plugin: 'com.jfrog.artifactory'
 
-    group = 'com.sk89q.worldedit'
-    version = '6.1.4-SNAPSHOT'
     ext.internalVersion = version + ";" + gitCommitHash
 
     sourceCompatibility = 1.7
@@ -138,5 +141,9 @@ subprojects {
         exclude 'GradleStart**'
         exclude '.cache'
         exclude 'LICENSE*'
+    }
+
+    artifactoryPublish {
+        publishConfigs('archives')
     }
 }

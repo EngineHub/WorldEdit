@@ -22,11 +22,7 @@ package com.sk89q.worldedit.command;
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.minecraft.util.commands.Logging;
-import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.LocalSession;
-import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extent.clipboard.BlockArrayClipboard;
@@ -162,8 +158,10 @@ public class ClipboardCommands {
         Operations.completeLegacy(operation);
 
         if (selectPasted) {
-            Vector max = to.add(region.getMaximumPoint().subtract(region.getMinimumPoint()));
-            RegionSelector selector = new CuboidRegionSelector(player.getWorld(), to, max);
+            Vector clipboardOffset = clipboard.getRegion().getMinimumPoint().subtract(clipboard.getOrigin());
+            Vector realTo = to.add(holder.getTransform().apply(clipboardOffset));
+            Vector max = realTo.add(holder.getTransform().apply(region.getMaximumPoint().subtract(region.getMinimumPoint())));
+            RegionSelector selector = new CuboidRegionSelector(player.getWorld(), realTo, max);
             session.setRegionSelector(player.getWorld(), selector);
             selector.learnChanges();
             selector.explainRegionAdjust(player, session);

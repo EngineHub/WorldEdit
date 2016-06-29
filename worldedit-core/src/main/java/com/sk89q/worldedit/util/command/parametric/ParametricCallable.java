@@ -20,30 +20,15 @@
 package com.sk89q.worldedit.util.command.parametric;
 
 import com.google.common.primitives.Chars;
-import com.sk89q.minecraft.util.commands.Command;
-import com.sk89q.minecraft.util.commands.CommandContext;
-import com.sk89q.minecraft.util.commands.CommandException;
-import com.sk89q.minecraft.util.commands.CommandLocals;
-import com.sk89q.minecraft.util.commands.CommandPermissions;
-import com.sk89q.minecraft.util.commands.CommandPermissionsException;
-import com.sk89q.minecraft.util.commands.WrappedCommandException;
-import com.sk89q.worldedit.util.command.CommandCallable;
-import com.sk89q.worldedit.util.command.InvalidUsageException;
-import com.sk89q.worldedit.util.command.MissingParameterException;
-import com.sk89q.worldedit.util.command.Parameter;
-import com.sk89q.worldedit.util.command.SimpleDescription;
-import com.sk89q.worldedit.util.command.UnconsumedParameterException;
+import com.sk89q.minecraft.util.commands.*;
+import com.sk89q.worldedit.util.command.*;
 import com.sk89q.worldedit.util.command.binding.Switch;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * The implementation of a {@link CommandCallable} for the {@link ParametricBuilder}.
@@ -256,16 +241,12 @@ class ParametricCallable implements CommandCallable {
 
             throw new InvalidUsageException("For parameter '" + name + "': " + e.getMessage(), this);
         } catch (InvocationTargetException e) {
-            for (ExceptionConverter converter : builder.getExceptionConverters()) {
-                converter.convert(e.getCause());
+            if (e.getCause() instanceof CommandException) {
+                throw (CommandException) e.getCause();
             }
             throw new WrappedCommandException(e);
-        } catch (IllegalArgumentException e) {
-            throw new WrappedCommandException(e);
-        } catch (CommandException e) {
-            throw e;
-        } catch (Throwable e) {
-            throw new WrappedCommandException(e);
+        } catch (Throwable t) {
+            throw new WrappedCommandException(t);
         }
 
         return true;
