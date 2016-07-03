@@ -78,6 +78,9 @@ public class ChunkBatchingModeExtent extends AbstractDelegateExtent {
      */
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
+        if (!enabled) {
+            this.chunkChanges.clear();
+        }
     }
 
     @Override
@@ -98,6 +101,9 @@ public class ChunkBatchingModeExtent extends AbstractDelegateExtent {
             
             @Override
             public Operation resume(RunContext run) throws WorldEditException {
+                if (chunkChanges.isEmpty()) {
+                    return null;
+                }
                 BlockVector2D minimumChunk = chunkLocation(getMinimumPoint());
                 BlockVector2D maximumChunk = chunkLocation(getMaximumPoint());
                 for (int z = minimumChunk.getBlockZ(); z < maximumChunk.getBlockZ(); z++) {
@@ -109,6 +115,7 @@ public class ChunkBatchingModeExtent extends AbstractDelegateExtent {
                         }
                     }
                 }
+                chunkChanges.clear();
                 return null;
             }
             
