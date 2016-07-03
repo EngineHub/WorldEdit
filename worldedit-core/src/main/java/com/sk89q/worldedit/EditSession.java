@@ -37,6 +37,7 @@ import com.sk89q.worldedit.extent.reorder.MultiStageReorder;
 import com.sk89q.worldedit.extent.validation.BlockChangeLimiter;
 import com.sk89q.worldedit.extent.validation.DataValidatorExtent;
 import com.sk89q.worldedit.extent.world.BlockQuirkExtent;
+import com.sk89q.worldedit.extent.world.ChunkBatchingModeExtent;
 import com.sk89q.worldedit.extent.world.ChunkLoadingExtent;
 import com.sk89q.worldedit.extent.world.FastModeExtent;
 import com.sk89q.worldedit.extent.world.SurvivalModeExtent;
@@ -115,6 +116,7 @@ public class EditSession implements Extent {
     private final ChangeSet changeSet = new BlockOptimizedHistory();
 
     private @Nullable FastModeExtent fastModeExtent;
+    private @Nullable ChunkBatchingModeExtent chunkBatchingModeExtent;
     private final SurvivalModeExtent survivalExtent;
     private @Nullable ChunkLoadingExtent chunkLoadingExtent;
     private @Nullable LastAccessExtentCache cacheExtent;
@@ -183,6 +185,7 @@ public class EditSession implements Extent {
             extent = survivalExtent = new SurvivalModeExtent(extent, world);
             extent = quirkExtent = new BlockQuirkExtent(extent, world);
             extent = chunkLoadingExtent = new ChunkLoadingExtent(extent, world);
+            extent = chunkBatchingModeExtent = new ChunkBatchingModeExtent(extent, world, false);
             extent = cacheExtent = new LastAccessExtentCache(extent);
             extent = wrapExtent(extent, eventBus, event, Stage.BEFORE_CHANGE);
             extent = validator = new DataValidatorExtent(extent, world);
@@ -343,6 +346,34 @@ public class EditSession implements Extent {
         if (fastModeExtent != null) {
             fastModeExtent.setEnabled(enabled);
         }
+    }
+
+    /**
+     * Set whether chunk batching mode is enabled.
+     *
+     * <p>Chunk batching mode will group changes and accesses
+     * into the chunks they touch in an attempt to speed up
+     * actions.</p>
+     *
+     * @param enabled true to enable
+     */
+    public void setChunkBatchingMode(boolean enabled) {
+        if (chunkBatchingModeExtent != null) {
+            chunkBatchingModeExtent.setEnabled(enabled);
+        }
+    }
+
+    /**
+     * Return chunk batching mode status.
+     *
+     * <p>Chunk batching mode will group changes and accesses
+     * into the chunks they touch in an attempt to speed up
+     * actions.</p>
+     *
+     * @return true if enabled
+     */
+    public boolean hasChunkBatchingMode() {
+        return chunkBatchingModeExtent != null && chunkBatchingModeExtent.isEnabled();
     }
 
     /**

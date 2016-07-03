@@ -82,6 +82,7 @@ public class LocalSession {
     private transient boolean hasCUISupport = false;
     private transient int cuiVersion = -1;
     private transient boolean fastMode = false;
+    private transient boolean chunkBatchingMode = false;
     private transient Mask mask;
     private transient TimeZone timezone = TimeZone.getDefault();
 
@@ -866,6 +867,7 @@ public class LocalSession {
                 .getEditSession(player.isPlayer() ? player.getWorld() : null,
                         getBlockChangeLimit(), blockBag, player);
         editSession.setFastMode(fastMode);
+        editSession.setChunkBatchingMode(chunkBatchingMode);
         Request.request().setEditSession(editSession);
         editSession.setMask(mask);
 
@@ -888,6 +890,25 @@ public class LocalSession {
      */
     public void setFastMode(boolean fastMode) {
         this.fastMode = fastMode;
+    }
+
+
+    /**
+     * Checks if the session has chunk batching mode enabled.
+     *
+     * @return true if chunk batching mode is enabled
+     */
+    public boolean hasChunkBatchingMode() {
+        return chunkBatchingMode;
+    }
+
+    /**
+     * Set chunk batching mode.
+     *
+     * @param fastMode true if chunk batching mode is enabled
+     */
+    public void setChunkBatchingMode(boolean chunkBatchingMode) {
+        this.chunkBatchingMode = chunkBatchingMode;
     }
 
     /**

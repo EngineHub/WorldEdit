@@ -109,6 +109,36 @@ public class GeneralCommands {
     }
 
     @Command(
+        aliases = { "/chunkbatch" },
+        usage = "[on|off]",
+        desc = "Toggle chunk batching mode",
+        min = 0,
+        max = 1
+    )
+    @CommandPermissions("worldedit.chunkbatch")
+    public void chunkbatch(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
+
+        String newState = args.getString(0, null);
+        if (session.hasChunkBatchingMode()) {
+            if ("on".equals(newState)) {
+                player.printError("Chunk batching mode already enabled.");
+                return;
+            }
+
+            session.setChunkBatchingMode(false);
+            player.print("Chunk batching mode disabled.");
+        } else {
+            if ("off".equals(newState)) {
+                player.printError("Chunk batching mode already disabled.");
+                return;
+            }
+
+            session.setChunkBatchingMode(true);
+            player.print("Chunk batching mode enabled. Beta feature, block placement order may be incorrect but actions should run quicker.");
+        }
+    }
+
+    @Command(
         aliases = { "/gmask", "gmask" },
         usage = "[mask]",
         desc = "Set the global mask",
