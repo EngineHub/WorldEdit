@@ -205,7 +205,7 @@ public abstract class SpongeWorld extends AbstractWorld {
         if (optItem.isPresent()) {
             org.spongepowered.api.entity.Entity entity = optItem.get();
             entity.offer(Keys.REPRESENTED_ITEM, SpongeWorldEdit.toSpongeItemStack(item).createSnapshot());
-            getWorld().spawnEntity(entity, Cause.source(SpongeWorldEdit.container()).build());
+            getWorld().spawnEntity(entity, ENTITY_SPAWN_CAUSE);
         }
     }
 
