@@ -2301,7 +2301,7 @@ public class EditSession implements Extent {
 
                 try {
                     if (expression.evaluate(scaled.getX(), scaled.getZ()) <= 0) {
-                        return null;
+                        return null; // TODO should return OUTSIDE? seems to cause issues otherwise, workedaround for now
                     }
 
                     // TODO: Allow biome setting via a script variable (needs BiomeType<->int mapping)
