@@ -316,12 +316,12 @@ public class GenerationCommands {
 
     @Command(
         aliases = { "/generatebiome", "/genbiome", "/gb" },
-        usage = "<block> <expression>",
+        usage = "<biome> <expression>",
         desc = "Sets biome according to a formula.",
         help =
             "Generates a shape according to a formula that is expected to\n" +
             "return positive numbers (true) if the point is inside the shape\n" +
-            "Optionally set type/data to the desired block.\n" +
+            "Sets the biome of blocks in that shape.\n" +
             "Flags:\n" +
             "  -h to generate a hollow shape\n" +
             "  -r to use raw minecraft coordinates\n" +
