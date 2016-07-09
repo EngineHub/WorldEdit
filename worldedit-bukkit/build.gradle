@@ -39,4 +39,6 @@ shadowJar {
     relocate('com.google.gson', 'com.sk89q.worldedit.internal.gson')
 }
 
-build.dependsOn(shadowJar)
+artifacts {
+    archives shadowJar
+}
