@@ -240,6 +240,11 @@ class ParametricCallable implements CommandCallable {
             String name = parameter.getName();
 
             throw new InvalidUsageException("For parameter '" + name + "': " + e.getMessage(), this);
+        } catch (InvocationTargetException e) {
+            if (e.getCause() instanceof CommandException) {
+                throw (CommandException) e.getCause();
+            }
+            throw new WrappedCommandException(e);
         } catch (Throwable t) {
             throw new WrappedCommandException(t);
         }
