@@ -48,6 +48,7 @@ import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.event.cause.entity.spawn.SpawnCause;
 import org.spongepowered.api.event.cause.entity.spawn.SpawnTypes;
+import org.spongepowered.api.world.BlockChangeFlag;
 import org.spongepowered.api.world.World;
 
 import javax.annotation.Nullable;
@@ -136,7 +137,7 @@ public abstract class SpongeWorld extends AbstractWorld {
                 .world(world.getProperties())
                 .build();
 
-        snapshot.restore(true, notifyAndLight);
+        snapshot.restore(true, notifyAndLight ? BlockChangeFlag.ALL : BlockChangeFlag.NONE);
 
         // Create the TileEntity
         if (block.hasNbtData()) {
