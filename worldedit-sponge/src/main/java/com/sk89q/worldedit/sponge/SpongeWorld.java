@@ -198,16 +198,13 @@ public abstract class SpongeWorld extends AbstractWorld {
             return;
         }
 
-        Optional<org.spongepowered.api.entity.Entity> optItem = getWorld().createEntity(
+        org.spongepowered.api.entity.Entity entity = getWorld().createEntity(
                 EntityTypes.ITEM,
                 new Vector3d(position.getX(), position.getY(), position.getZ())
         );
 
-        if (optItem.isPresent()) {
-            org.spongepowered.api.entity.Entity entity = optItem.get();
-            entity.offer(Keys.REPRESENTED_ITEM, SpongeWorldEdit.toSpongeItemStack(item).createSnapshot());
-            getWorld().spawnEntity(entity, ENTITY_SPAWN_CAUSE);
-        }
+        entity.offer(Keys.REPRESENTED_ITEM, SpongeWorldEdit.toSpongeItemStack(item).createSnapshot());
+        getWorld().spawnEntity(entity, ENTITY_SPAWN_CAUSE);
     }
 
     @Override
@@ -277,24 +274,21 @@ public abstract class SpongeWorld extends AbstractWorld {
         EntityType entityType = Sponge.getRegistry().getType(EntityType.class, entity.getTypeId()).get();
         Vector3d pos = new Vector3d(location.getX(), location.getY(), location.getZ());
 
-        Optional<org.spongepowered.api.entity.Entity> optNewEnt = world.createEntity(entityType, pos);
-        if (optNewEnt.isPresent()) {
-            org.spongepowered.api.entity.Entity newEnt = optNewEnt.get();
-            if (entity.hasNbtData()) {
-                applyEntityData(newEnt, entity);
-            }
+        org.spongepowered.api.entity.Entity newEnt = world.createEntity(entityType, pos);
+        if (entity.hasNbtData()) {
+            applyEntityData(newEnt, entity);
+        }
 
-            // Overwrite any data set by the NBT application
-            Vector dir = location.getDirection();
+        // Overwrite any data set by the NBT application
+        Vector dir = location.getDirection();
 
-            newEnt.setLocationAndRotation(
-                    new org.spongepowered.api.world.Location<>(getWorld(), pos),
-                    new Vector3d(dir.getX(), dir.getY(), dir.getZ())
-            );
+        newEnt.setLocationAndRotation(
+                new org.spongepowered.api.world.Location<>(getWorld(), pos),
+                new Vector3d(dir.getX(), dir.getY(), dir.getZ())
+        );
 
-            if (world.spawnEntity(newEnt, ENTITY_SPAWN_CAUSE)) {
-                return new SpongeEntity(newEnt);
-            }
+        if (world.spawnEntity(newEnt, ENTITY_SPAWN_CAUSE)) {
+            return new SpongeEntity(newEnt);
         }
 
         return null;
