@@ -33,6 +33,7 @@ import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extent.clipboard.BlockArrayClipboard;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormat;
+import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormats;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardReader;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardWriter;
 import com.sk89q.worldedit.function.operation.Operations;
@@ -101,7 +102,7 @@ public class SchematicCommands {
             return;
         }
 
-        ClipboardFormat format = ClipboardFormat.findByAlias(formatName);
+        ClipboardFormat format = ClipboardFormats.findByAlias(formatName);
         if (format == null) {
             player.printError("Unknown schematic format: " + formatName);
             return;
@@ -144,7 +145,7 @@ public class SchematicCommands {
         File dir = worldEdit.getWorkingDirectoryFile(config.saveDir);
         File f = worldEdit.getSafeSaveFile(player, dir, filename, "schematic", "schematic");
 
-        ClipboardFormat format = ClipboardFormat.findByAlias(formatName);
+        ClipboardFormat format = ClipboardFormats.findByAlias(formatName);
         if (format == null) {
             player.printError("Unknown schematic format: " + formatName);
             return;
@@ -232,9 +233,9 @@ public class SchematicCommands {
         actor.print("Available clipboard formats (Name: Lookup names)");
         StringBuilder builder;
         boolean first = true;
-        for (ClipboardFormat format : ClipboardFormat.values()) {
+        for (ClipboardFormat format : ClipboardFormats.getAll()) {
             builder = new StringBuilder();
-            builder.append(format.name()).append(": ");
+            builder.append(format.getName()).append(": ");
             for (String lookupName : format.getAliases()) {
                 if (!first) {
                     builder.append(", ");
@@ -342,10 +343,10 @@ public class SchematicCommands {
             StringBuilder build = new StringBuilder();
 
             build.append("\u00a72");
-            ClipboardFormat format = ClipboardFormat.findByFile(file);
+            ClipboardFormat format = ClipboardFormats.findByFile(file);
             boolean inRoot = file.getParentFile().getName().equals(prefix);
             build.append(inRoot ? file.getName() : file.getPath().split(Pattern.quote(prefix + File.separator))[1])
-                    .append(": ").append(format == null ? "Unknown" : format.name());
+                    .append(": ").append(format == null ? "Unknown" : format.getName());
             result.add(build.toString());
         }
         return result;
