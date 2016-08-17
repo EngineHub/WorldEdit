@@ -22,6 +22,7 @@ package com.sk89q.worldedit.extent.clipboard.io;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.world.registry.WorldData;
 
+import java.io.Closeable;
 import java.io.IOException;
 
 /**
@@ -29,7 +30,7 @@ import java.io.IOException;
  *
  * @see Clipboard
  */
-public interface ClipboardReader {
+public interface ClipboardReader extends Closeable {
 
     /**
      * Read a {@code Clipboard}.

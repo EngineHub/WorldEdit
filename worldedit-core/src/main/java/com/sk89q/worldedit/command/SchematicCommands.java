@@ -112,7 +112,7 @@ public class SchematicCommands {
         try {
             FileInputStream fis = closer.register(new FileInputStream(f));
             BufferedInputStream bis = closer.register(new BufferedInputStream(fis));
-            ClipboardReader reader = format.getReader(bis);
+            ClipboardReader reader = closer.register(format.getReader(bis));
 
             WorldData worldData = player.getWorld().getWorldData();
             Clipboard clipboard = reader.read(player.getWorld().getWorldData());
