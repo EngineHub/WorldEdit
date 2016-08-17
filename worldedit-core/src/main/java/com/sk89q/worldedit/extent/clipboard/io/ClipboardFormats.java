@@ -40,7 +40,12 @@ public final class ClipboardFormats {
         checkNotNull(format);
 
         for (String key : format.getAliases()) {
-            aliasMap.put(key.toLowerCase(Locale.ENGLISH), format);
+            String lowKey = key.toLowerCase(Locale.ENGLISH);
+            ClipboardFormat old = aliasMap.put(lowKey, format);
+            if (old != null) {
+                aliasMap.put(lowKey, old);
+                throw new IllegalArgumentException("Cannot override existing alias '" + lowKey + "' used by " + old.getClass().getName());
+            }
         }
         registeredFormats.add(format);
     }
