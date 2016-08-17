@@ -19,6 +19,8 @@
 
 package com.sk89q.worldedit.extent.clipboard.io;
 
+import com.sk89q.worldedit.WorldEdit;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -44,7 +46,7 @@ public final class ClipboardFormats {
             ClipboardFormat old = aliasMap.put(lowKey, format);
             if (old != null) {
                 aliasMap.put(lowKey, old);
-                throw new IllegalArgumentException("Cannot override existing alias '" + lowKey + "' used by " + old.getClass().getName());
+                WorldEdit.logger.warning(format.getClass().getName() + " cannot override existing alias '" + lowKey + "' used by " + old.getClass().getName());
             }
         }
         registeredFormats.add(format);
