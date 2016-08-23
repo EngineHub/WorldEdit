@@ -102,7 +102,11 @@ public class SchematicCommands {
             return;
         }
 
-        ClipboardFormat format = ClipboardFormats.findByAlias(formatName);
+        ClipboardFormat format = ClipboardFormats.findByFile(f);
+
+        if (format == null) {
+            format = ClipboardFormats.findByAlias(formatName);
+        }
         if (format == null) {
             player.printError("Unknown schematic format: " + formatName);
             return;
