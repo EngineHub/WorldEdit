@@ -19,6 +19,8 @@
 
 package com.sk89q.worldedit;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import com.sk89q.worldedit.CuboidClipboard.FlipDirection;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BaseItem;
@@ -62,6 +64,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
@@ -403,15 +407,8 @@ public class WorldEdit {
                 throw new FileSelectionAbortedException("No file selected");
             }
         } else {
-            if (defaultExt != null && filename.lastIndexOf('.') == -1) {
-                filename += "." + defaultExt;
-            }
-
-            if (!filename.matches("^[A-Za-z0-9_\\- \\./\\\\'\\$@~!%\\^\\*\\(\\)\\[\\]\\+\\{\\},\\?]+\\.[A-Za-z0-9]+$")) {
-                throw new InvalidFilenameException(filename, "Invalid characters or extension missing");
-            }
-
-            f = new File(dir, filename);
+            List<String> exts = extensions == null ? ImmutableList.of(defaultExt) : Lists.asList(defaultExt, extensions);
+            return getSafeFileWithExtensions(dir, filename,  exts, isSave);
         }
 
         try {
@@ -428,6 +425,39 @@ public class WorldEdit {
             throw new FilenameResolutionException(filename,
                     "Failed to resolve path");
         }
+    }
+
+    private File getSafeFileWithExtensions(File dir, String filename, List<String> exts, boolean isSave) throws InvalidFilenameException {
+        if (isSave) {
+            // First is default, only use that.
+            if (exts.size() != 1) {
+                exts = exts.subList(0, 1);
+            }
+        }
+        File result = null;
+        for (Iterator<String> iter = exts.iterator(); iter.hasNext() && (result == null || !result.exists());) {
+            result = getSafeFileWithExtension(dir, filename, iter.next());
+        }
+        if (result == null) {
+            throw new InvalidFilenameException(filename, "Invalid characters or extension missing");
+        }
+        return result;
+    }
+
+    private File getSafeFileWithExtension(File dir, String filename, String extension) {
+        if (extension != null && filename.lastIndexOf('.') == -1) {
+            filename += "." + extension;
+        }
+
+        if (!checkFilename(filename)) {
+            return null;
+        }
+
+        return new File(dir, filename);
+    }
+
+    private boolean checkFilename(String filename) {
+        return filename.matches("^[A-Za-z0-9_\\- \\./\\\\'\\$@~!%\\^\\*\\(\\)\\[\\]\\+\\{\\},\\?]+\\.[A-Za-z0-9]+$");
     }
 
     /**

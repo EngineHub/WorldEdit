@@ -43,6 +43,12 @@ public enum SupportedClipboardFormat implements ClipboardFormat {
      * The Schematic format used by many software.
      */
     SCHEMATIC("mcedit", "mce", "schematic") {
+
+        @Override
+        public String getPrimaryFileExtension() {
+            return "schematic";
+        }
+
         @Override
         public ClipboardReader getReader(InputStream inputStream) throws IOException {
             NBTInputStream nbtStream = new NBTInputStream(new GZIPInputStream(inputStream));
@@ -84,7 +90,6 @@ public enum SupportedClipboardFormat implements ClipboardFormat {
 
     private SupportedClipboardFormat(String... aliases) {
         this.aliases = ImmutableSet.copyOf(aliases);
-        ClipboardFormats.registerClipboardFormat(this);
     }
     
     @Override
@@ -95,6 +100,11 @@ public enum SupportedClipboardFormat implements ClipboardFormat {
     @Override
     public Set<String> getAliases() {
         return this.aliases;
+    }
+
+    @Override
+    public Set<String> getFileExtensions() {
+        return ImmutableSet.of(getPrimaryFileExtension());
     }
 
 }

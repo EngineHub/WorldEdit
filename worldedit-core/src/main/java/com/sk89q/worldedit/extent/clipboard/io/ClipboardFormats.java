@@ -19,6 +19,9 @@
 
 package com.sk89q.worldedit.extent.clipboard.io;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.Multimaps;
 import com.sk89q.worldedit.WorldEdit;
 
 import java.io.File;
@@ -36,6 +39,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public final class ClipboardFormats {
 
     private static final Map<String, ClipboardFormat> aliasMap = new HashMap<>();
+    private static final Multimap<String, ClipboardFormat> fileExtensionMap = HashMultimap.create();
     private static final List<ClipboardFormat> registeredFormats = new ArrayList<>();
 
     public static void registerClipboardFormat(ClipboardFormat format) {
@@ -49,7 +53,17 @@ public final class ClipboardFormats {
                 WorldEdit.logger.warning(format.getClass().getName() + " cannot override existing alias '" + lowKey + "' used by " + old.getClass().getName());
             }
         }
+        for (String ext : format.getFileExtensions()) {
+            String lowExt = ext.toLowerCase(Locale.ENGLISH);
+            fileExtensionMap.put(lowExt, format);
+        }
         registeredFormats.add(format);
+    }
+
+    static {
+        for (SupportedClipboardFormat format : SupportedClipboardFormat.values()) {
+            registerClipboardFormat(format);
+        }
     }
 
     /**
@@ -85,8 +99,23 @@ public final class ClipboardFormats {
         return null;
     }
 
+    /**
+     * @return a multimap from a file extension to the potential matching formats.
+     */
+    public static Multimap<String, ClipboardFormat> getFileExtensionMap() {
+        return Multimaps.unmodifiableMultimap(fileExtensionMap);
+    }
+
     public static Collection<ClipboardFormat> getAll() {
         return Collections.unmodifiableCollection(registeredFormats);
+    }
+
+    /**
+     * Not public API, only used by SchematicCommands.
+     * It is not in SchematicCommands because it may rely on internal register calls.
+     */
+    public static String[] getFileExtensionArray() {
+        return fileExtensionMap.keySet().toArray(new String[fileExtensionMap.keySet().size()]);
     }
 
     private ClipboardFormats() {

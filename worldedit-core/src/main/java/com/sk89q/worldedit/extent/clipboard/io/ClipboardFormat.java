@@ -30,9 +30,10 @@ import java.util.Set;
  * Clipboard. Instances may be provided by WorldEdit or extensions.
  */
 public interface ClipboardFormat {
-    
+
     /**
      * Returns the name of this format.
+     *
      * @return The name of the format
      */
     String getName();
@@ -40,25 +41,30 @@ public interface ClipboardFormat {
     /**
      * Create a reader.
      *
-     * @param inputStream the input stream
+     * @param inputStream
+     *            the input stream
      * @return a reader
-     * @throws IOException thrown on I/O error
+     * @throws IOException
+     *             thrown on I/O error
      */
     ClipboardReader getReader(InputStream inputStream) throws IOException;
 
     /**
      * Create a writer.
      *
-     * @param outputStream the output stream
+     * @param outputStream
+     *            the output stream
      * @return a writer
-     * @throws IOException thrown on I/O error
+     * @throws IOException
+     *             thrown on I/O error
      */
     ClipboardWriter getWriter(OutputStream outputStream) throws IOException;
 
     /**
      * Return whether the given file is of this format.
      *
-     * @param file the file
+     * @param file
+     *            the file
      * @return true if the given file is of this format
      */
     boolean isFormat(File file);
@@ -69,5 +75,20 @@ public interface ClipboardFormat {
      * @return a set of aliases
      */
     Set<String> getAliases();
+
+    /**
+     * Get the file extension this format primarily uses.
+     *
+     * @return the primary file extension
+     */
+    String getPrimaryFileExtension();
+
+    /**
+     * Get the file extensions this format is commonly known to use. This should
+     * include {@link #getPrimaryFileExtension()}.
+     *
+     * @return the file extensions this format might be know by
+     */
+    Set<String> getFileExtensions();
 
 }
