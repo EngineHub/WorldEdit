@@ -43,7 +43,7 @@ if (!project.hasProperty("artifactory_password")) ext.artifactory_password = ""
 
 if (!project.hasProperty("gitCommitHash") && !JavaVersion.current().isJava6()) {
     try {
-        def repo = Grgit.open(dir: '.')
+        def repo = org.ajoberstar.grgit.Grgit.open(dir: '.')
         ext.gitCommitHash = repo.head().abbreviatedId
     } catch (Exception e) {
         println "Error getting commit hash: " + e.getMessage()
