@@ -16,39 +16,34 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.sk89q.worldedit.forge;
 
-import com.sk89q.worldedit.world.registry.BiomeRegistry;
+import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.world.registry.ItemRegistry;
-import com.sk89q.worldedit.world.registry.LegacyWorldData;
+import net.minecraft.item.Item;
+import net.minecraft.util.ResourceLocation;
 
-/**
- * World data for the Forge platform.
- */
-class ForgeWorldData extends LegacyWorldData {
+import javax.annotation.Nullable;
 
-    private static final ForgeWorldData INSTANCE = new ForgeWorldData();
-    private final BiomeRegistry biomeRegistry = new ForgeBiomeRegistry();
-    private final ItemRegistry itemRegistry = new ForgeItemRegistry();
-
+public class ForgeItemRegistry implements ItemRegistry {
+    @Nullable
     @Override
-    public BiomeRegistry getBiomeRegistry() {
-        return biomeRegistry;
+    public BaseItem createFromId(String id) {
+        Item match = Item.REGISTRY.getObject(new ResourceLocation(id));
+        if (match != null) {
+            return new BaseItem(Item.REGISTRY.getIDForObject(match), (short) 0);
+        } else {
+            return null;
+        }
     }
 
+    @Nullable
     @Override
-    public ItemRegistry getItemRegistry() {
-        return itemRegistry;
+    public BaseItem createFromId(int id) {
+        if (Item.REGISTRY.getObjectById(id) != null) {
+            return new BaseItem(id, (short) 0);
+        } else {
+            return null;
+        }
     }
-
-    /**
-     * Get a static instance.
-     *
-     * @return an instance
-     */
-    public static ForgeWorldData getInstance() {
-        return INSTANCE;
-    }
-
 }
