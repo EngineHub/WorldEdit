@@ -177,7 +177,7 @@ public abstract class SpongeWorld extends AbstractWorld {
     @Override
     public BaseBiome getBiome(Vector2D position) {
         checkNotNull(position);
-        return new BaseBiome(IDHelper.resolve(getWorld().getBiome(position.getBlockX(), position.getBlockZ())));
+        return new BaseBiome(IDHelper.resolve(getWorld().getBiome(position.getBlockX(), 0, position.getBlockZ())));
     }
 
     @Override
@@ -185,7 +185,7 @@ public abstract class SpongeWorld extends AbstractWorld {
         checkNotNull(position);
         checkNotNull(biome);
 
-        getWorld().setBiome(position.getBlockX(), position.getBlockZ(), IDHelper.resolveBiome(biome.getId()));
+        getWorld().setBiome(position.getBlockX(), 0, position.getBlockZ(), IDHelper.resolveBiome(biome.getId()));
         return true;
     }
 
