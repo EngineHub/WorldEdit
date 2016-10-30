@@ -21,7 +21,7 @@ apply plugin: 'net.minecrell.vanilla.server.library'
 
 dependencies {
     compile project(':worldedit-core')
-    compile 'org.spongepowered:spongeapi:5.0.0-SNAPSHOT'
+    compile 'org.spongepowered:spongeapi:5.1.0-SNAPSHOT'
     testCompile group: 'org.mockito', name: 'mockito-core', version:'1.9.0-rc1'
 }
 
@@ -36,7 +36,7 @@ sponge {
 
 minecraft {
     version = "1.10.2"
-    mappings = 'snapshot_20160628'
+    mappings = "snapshot_20161029"
     runDir = 'run'
 }
 
