@@ -55,7 +55,6 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -63,8 +62,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * An adapter to Minecraft worlds for WorldEdit.
  */
 public abstract class SpongeWorld extends AbstractWorld {
-
-    protected static final Random random = new Random();
 
     private final WeakReference<World> worldRef;
 

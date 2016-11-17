@@ -19,11 +19,12 @@
 
 package com.sk89q.worldedit.sponge.adapter;
 
-import com.sk89q.jnbt.*;
+import com.flowpowered.math.vector.Vector3d;
+import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.sponge.SpongeWorld;
-import net.minecraft.nbt.*;
+import com.sk89q.worldedit.util.Location;
 import org.spongepowered.api.block.BlockType;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.item.ItemType;
@@ -66,59 +67,15 @@ public interface SpongeImplAdapter {
 
     BiomeType resolveBiome(int intID);
 
-    NBTBase toNative(Tag tag);
-
-    NBTTagIntArray toNative(IntArrayTag tag);
-
-    NBTTagList toNative(ListTag tag);
-
-    NBTTagLong toNative(LongTag tag);
-
-    NBTTagString toNative(StringTag tag);
-
-    NBTTagInt toNative(IntTag tag);
-
-    NBTTagByte toNative(ByteTag tag);
-
-    NBTTagByteArray toNative(ByteArrayTag tag);
-
-    NBTTagCompound toNative(CompoundTag tag);
-
-    NBTTagFloat toNative(FloatTag tag);
-
-    NBTTagShort toNative(ShortTag tag);
-
-    NBTTagDouble toNative(DoubleTag tag);
-
-    Tag fromNative(NBTBase other);
-
-    IntArrayTag fromNative(NBTTagIntArray other);
-
-    ListTag fromNative(NBTTagList other);
-
-    EndTag fromNative(NBTTagEnd other);
-
-    LongTag fromNative(NBTTagLong other);
-
-    StringTag fromNative(NBTTagString other);
-
-    IntTag fromNative(NBTTagInt other);
-
-    ByteTag fromNative(NBTTagByte other);
-
-    ByteArrayTag fromNative(NBTTagByteArray other);
-
-    CompoundTag fromNative(NBTTagCompound other);
-
-    FloatTag fromNative(NBTTagFloat other);
-
-    ShortTag fromNative(NBTTagShort other);
-
-    DoubleTag fromNative(NBTTagDouble other);
-
     BaseEntity createBaseEntity(Entity entity);
 
     ItemStack makeSpongeStack(BaseItemStack itemStack);
 
     SpongeWorld getWorld(World world);
+
+    default Location adapt(org.spongepowered.api.world.Location<org.spongepowered.api.world.World> loc, Vector3d rot) {
+        Vector position = new Vector(loc.getX(), loc.getY(), loc.getZ());
+
+        return new Location(getWorld(loc.getExtent()), position, (float) rot.getY(), (float) rot.getX());
+    }
 }

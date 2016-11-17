@@ -2,22 +2,14 @@ buildscript {
     repositories {
         mavenCentral()
         maven { url = "http://files.minecraftforge.net/maven" }
-        maven { url = "http://repo.minecrell.net/releases" }
         maven { url = "https://oss.sonatype.org/content/repositories/snapshots/" }
         jcenter()
-    }
-
-    dependencies {
-        classpath 'net.minecrell:VanillaGradle:2.0.3_1'
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.2-SNAPSHOT'
     }
 }
 
 plugins {
     id 'org.spongepowered.plugin' version '0.6'
 }
-
-apply plugin: 'net.minecrell.vanilla.server.library'
 
 dependencies {
     compile project(':worldedit-core')
@@ -34,14 +26,6 @@ sponge {
     }
 }
 
-minecraft {
-    version = "1.11"
-    mappings = "snapshot_20161116"
-    runDir = 'run'
-}
-
-project.archivesBaseName = "${project.archivesBaseName}-mc${minecraft.version}"
-
 jar {
     manifest {
         attributes("Class-Path": "truezip.jar WorldEdit/truezip.jar js.jar WorldEdit/js.jar",
@@ -52,12 +36,6 @@ jar {
 shadowJar {
     dependencies {
         include(dependency(':worldedit-core'))
-    }
-}
-
-reobf {
-    shadowJar {
-        mappingType = 'SEARGE'
     }
 }
 

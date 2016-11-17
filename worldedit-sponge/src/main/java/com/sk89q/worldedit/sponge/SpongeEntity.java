@@ -59,7 +59,7 @@ class SpongeEntity implements Entity {
             org.spongepowered.api.world.Location<World> entityLoc = entity.getLocation();
             Vector3d entityRot = entity.getRotation();
 
-            return SpongeAdapter.adapt(entityLoc, entityRot);
+            return SpongeWorldEdit.inst().getAdapter().adapt(entityLoc, entityRot);
         } else {
             return new Location(NullWorld.getInstance());
         }
@@ -69,7 +69,7 @@ class SpongeEntity implements Entity {
     public Extent getExtent() {
         org.spongepowered.api.entity.Entity entity = entityRef.get();
         if (entity != null) {
-            return SpongeAdapter.adapt(entity.getWorld());
+            return SpongeWorldEdit.inst().getAdapter().getWorld(entity.getWorld());
         } else {
             return NullWorld.getInstance();
         }

@@ -79,18 +79,18 @@ public class SpongePlayer extends AbstractPlayerActor {
         org.spongepowered.api.world.Location<World> entityLoc = this.player.getLocation();
         Vector3d entityRot = this.player.getRotation();
 
-        return SpongeAdapter.adapt(entityLoc, entityRot);
+        return SpongeWorldEdit.inst().getAdapter().adapt(entityLoc, entityRot);
     }
 
     @Override
     public WorldVector getPosition() {
         Vector3d pos = this.player.getLocation().getPosition();
-        return new WorldVector(LocalWorldAdapter.adapt(SpongeAdapter.adapt(this.player.getWorld())), pos.getX(), pos.getY(), pos.getZ());
+        return new WorldVector(LocalWorldAdapter.adapt(SpongeWorldEdit.inst().getAdapter().getWorld(this.player.getWorld())), pos.getX(), pos.getY(), pos.getZ());
     }
 
     @Override
     public com.sk89q.worldedit.world.World getWorld() {
-        return SpongeAdapter.adapt(player.getWorld());
+        return SpongeWorldEdit.inst().getAdapter().getWorld(player.getWorld());
     }
 
     @Override
