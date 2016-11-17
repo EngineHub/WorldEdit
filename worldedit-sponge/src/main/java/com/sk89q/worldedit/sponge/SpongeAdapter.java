@@ -21,7 +21,6 @@ package com.sk89q.worldedit.sponge;
 
 import com.flowpowered.math.vector.Vector3d;
 import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.sponge.nms.SpongeNMSWorld;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.World;
 
@@ -31,7 +30,7 @@ final class SpongeAdapter {
     }
 
     public static World adapt(org.spongepowered.api.world.World world) {
-        return new SpongeNMSWorld(world);
+        return SpongeWorldEdit.inst().getAdapter().getWorld(world);
     }
 
     public static Location adapt(org.spongepowered.api.world.Location<org.spongepowered.api.world.World> loc, Vector3d rot) {

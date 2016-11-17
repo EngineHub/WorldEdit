@@ -25,8 +25,6 @@ import com.sk89q.worldedit.event.platform.CommandEvent;
 import com.sk89q.worldedit.event.platform.CommandSuggestionEvent;
 import com.sk89q.worldedit.extension.platform.*;
 import com.sk89q.worldedit.sponge.config.SpongeConfiguration;
-import com.sk89q.worldedit.sponge.nms.IDHelper;
-import com.sk89q.worldedit.sponge.nms.SpongeNMSWorld;
 import com.sk89q.worldedit.util.command.CommandMapping;
 import com.sk89q.worldedit.util.command.Dispatcher;
 import com.sk89q.worldedit.world.World;
@@ -61,11 +59,8 @@ class SpongePlatform extends AbstractPlatform implements MultiUserPlatform {
 
         Optional<ItemType> optType = Sponge.getRegistry().getType(ItemType.class, name);
 
-        if (optType.isPresent()) {
-            return IDHelper.resolve(optType.get());
-        }
+        return optType.map(itemType -> SpongeWorldEdit.inst().getAdapter().resolve(itemType)).orElse(0);
 
-        return 0;
     }
 
     @Override
@@ -89,7 +84,7 @@ class SpongePlatform extends AbstractPlatform implements MultiUserPlatform {
         Collection<org.spongepowered.api.world.World> worlds = Sponge.getServer().getWorlds();
         List<com.sk89q.worldedit.world.World> ret = new ArrayList<>(worlds.size());
         for (org.spongepowered.api.world.World world : worlds) {
-            ret.add(new SpongeNMSWorld(world));
+            ret.add(SpongeWorldEdit.inst().getAdapter().getWorld(world));
         }
         return ret;
     }
@@ -113,7 +108,7 @@ class SpongePlatform extends AbstractPlatform implements MultiUserPlatform {
         } else {
             for (org.spongepowered.api.world.World ws : Sponge.getServer().getWorlds()) {
                 if (ws.getName().equals(world.getName())) {
-                    return new SpongeNMSWorld(ws);
+                    return SpongeWorldEdit.inst().getAdapter().getWorld(ws);
                 }
             }
 

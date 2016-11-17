@@ -18,3 +18,5 @@ run
 
 /dependency-reduced-pom.xml
 *-private.sh
+
+!impl/*.class

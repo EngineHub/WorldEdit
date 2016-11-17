@@ -17,25 +17,25 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.sponge.nms;
+package com.sk89q.worldedit.sponge.adapter;
 
-import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.blocks.TileEntityBlock;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
+/**
+ * Thrown when no adapter can be found.
+ */
+public class AdapterLoadException extends Exception {
 
-@Deprecated
-public class TileEntityBaseBlock extends BaseBlock implements TileEntityBlock {
-
-    public TileEntityBaseBlock(int type, int data, TileEntity tile) {
-        super(type, data);
-        setNbtData(NBTConverter.fromNative(copyNbtData(tile)));
+    public AdapterLoadException() {
     }
 
-    private static NBTTagCompound copyNbtData(TileEntity tile) {
-        NBTTagCompound tag = new NBTTagCompound();
-        tile.writeToNBT(tag);
-        return tag;
+    public AdapterLoadException(String message) {
+        super(message);
     }
 
+    public AdapterLoadException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public AdapterLoadException(Throwable cause) {
+        super(cause);
+    }
 }

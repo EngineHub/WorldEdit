@@ -19,7 +19,6 @@
 
 package com.sk89q.worldedit.sponge;
 
-import com.sk89q.worldedit.sponge.nms.IDHelper;
 import com.sk89q.worldedit.world.biome.BaseBiome;
 import com.sk89q.worldedit.world.biome.BiomeData;
 import com.sk89q.worldedit.world.registry.BiomeRegistry;
@@ -45,7 +44,7 @@ class SpongeBiomeRegistry implements BiomeRegistry {
     public List<BaseBiome> getBiomes() {
         List<BaseBiome> list = new ArrayList<BaseBiome>();
         for (BiomeType biome : Sponge.getGame().getRegistry().getAllOf(BiomeType.class)) {
-            list.add(new BaseBiome(IDHelper.resolve(biome)));
+            list.add(new BaseBiome(SpongeWorldEdit.inst().getAdapter().resolve(biome)));
         }
         return list;
     }
@@ -53,7 +52,7 @@ class SpongeBiomeRegistry implements BiomeRegistry {
     @Nullable
     @Override
     public BiomeData getData(BaseBiome biome) {
-        return new SpongeBiomeData(IDHelper.resolveBiome(biome.getId()));
+        return new SpongeBiomeData(SpongeWorldEdit.inst().getAdapter().resolveBiome(biome.getId()));
     }
 
     private static class SpongeBiomeData implements BiomeData {

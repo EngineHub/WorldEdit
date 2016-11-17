@@ -24,7 +24,6 @@ import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.entity.metadata.EntityType;
 import com.sk89q.worldedit.extent.Extent;
-import com.sk89q.worldedit.sponge.nms.NMSHelper;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.NullWorld;
 import org.spongepowered.api.world.World;
@@ -47,7 +46,7 @@ class SpongeEntity implements Entity {
     public BaseEntity getState() {
         org.spongepowered.api.entity.Entity entity = entityRef.get();
         if (entity != null) {
-            return NMSHelper.createBaseEntity(entity);
+            return SpongeWorldEdit.inst().getAdapter().createBaseEntity(entity);
         } else {
             return null;
         }

@@ -30,7 +30,6 @@ import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.regions.Region;
-import com.sk89q.worldedit.sponge.nms.IDHelper;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.AbstractWorld;
 import com.sk89q.worldedit.world.biome.BaseBiome;
@@ -142,10 +141,7 @@ public abstract class SpongeWorld extends AbstractWorld {
         // Create the TileEntity
         if (block.hasNbtData()) {
             // Kill the old TileEntity
-            Optional<TileEntity> optTile = world.getTileEntity(pos);
-            if (optTile.isPresent()) {
-                applyTileEntityData(optTile.get(), block);
-            }
+            world.getTileEntity(pos).ifPresent(tileEntity -> applyTileEntityData(tileEntity, block));
         }
 
         return true;
@@ -177,7 +173,7 @@ public abstract class SpongeWorld extends AbstractWorld {
     @Override
     public BaseBiome getBiome(Vector2D position) {
         checkNotNull(position);
-        return new BaseBiome(IDHelper.resolve(getWorld().getBiome(position.getBlockX(), 0, position.getBlockZ())));
+        return new BaseBiome(SpongeWorldEdit.inst().getAdapter().resolve(getWorld().getBiome(position.getBlockX(), 0, position.getBlockZ())));
     }
 
     @Override
@@ -185,7 +181,7 @@ public abstract class SpongeWorld extends AbstractWorld {
         checkNotNull(position);
         checkNotNull(biome);
 
-        getWorld().setBiome(position.getBlockX(), 0, position.getBlockZ(), IDHelper.resolveBiome(biome.getId()));
+        getWorld().setBiome(position.getBlockX(), 0, position.getBlockZ(), SpongeWorldEdit.inst().getAdapter().resolveBiome(biome.getId()));
         return true;
     }
 
@@ -214,7 +210,7 @@ public abstract class SpongeWorld extends AbstractWorld {
 
     @Override
     public boolean isValidBlockType(int id) {
-        return (id == 0) || (IDHelper.resolveBlock(id) != null);
+        return id == 0 || SpongeWorldEdit.inst().getAdapter().resolveBlock(id) != null;
     }
 
     @Override
@@ -231,10 +227,9 @@ public abstract class SpongeWorld extends AbstractWorld {
             World otherWorld = other.worldRef.get();
             World thisWorld = worldRef.get();
             return otherWorld != null && thisWorld != null && otherWorld.equals(thisWorld);
-        } else if (o instanceof com.sk89q.worldedit.world.World) {
-            return ((com.sk89q.worldedit.world.World) o).getName().equals(getName());
         } else {
-            return false;
+            return o instanceof com.sk89q.worldedit.world.World
+                    && ((com.sk89q.worldedit.world.World) o).getName().equals(getName());
         }
     }
 
