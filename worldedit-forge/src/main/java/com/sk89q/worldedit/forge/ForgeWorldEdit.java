@@ -138,10 +138,10 @@ public class ForgeWorldEdit {
     @SubscribeEvent
     public void onCommandEvent(CommandEvent event) {
         if ((event.getSender() instanceof EntityPlayerMP)) {
-            if (((EntityPlayerMP) event.getSender()).worldObj.isRemote) return;
+            if (((EntityPlayerMP) event.getSender()).world.isRemote) return;
             String[] split = new String[event.getParameters().length + 1];
             System.arraycopy(event.getParameters(), 0, split, 1, event.getParameters().length);
-            split[0] = event.getCommand().getCommandName();
+            split[0] = event.getCommand().getName();
             com.sk89q.worldedit.event.platform.CommandEvent weEvent =
                     new com.sk89q.worldedit.event.platform.CommandEvent(wrap((EntityPlayerMP) event.getSender()), Joiner.on(" ").join(split));
             WorldEdit.getInstance().getEventBus().post(weEvent);
@@ -164,13 +164,13 @@ public class ForgeWorldEdit {
                 event instanceof PlayerInteractEvent.RightClickBlock
                         && ((PlayerInteractEvent.RightClickBlock) event)
                                 .getUseItem() == Result.DENY;
-        if (isLeftDeny || isRightDeny || event.getEntity().worldObj.isRemote) {
+        if (isLeftDeny || isRightDeny || event.getEntity().world.isRemote) {
             return;
         }
 
         WorldEdit we = WorldEdit.getInstance();
         ForgePlayer player = wrap((EntityPlayerMP) event.getEntityPlayer());
-        ForgeWorld world = getWorld(event.getEntityPlayer().worldObj);
+        ForgeWorld world = getWorld(event.getEntityPlayer().world);
 
         if (event instanceof PlayerInteractEvent.LeftClickBlock) {
             @SuppressWarnings("deprecation")
@@ -229,7 +229,7 @@ public class ForgeWorldEdit {
      */
     public ForgePlayer wrap(EntityPlayerMP player) {
         checkNotNull(player);
-        return new ForgePlayer(platform, player);
+        return new ForgePlayer(player);
     }
 
     /**
