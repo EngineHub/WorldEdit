@@ -188,7 +188,7 @@ public class ForgeWorld extends AbstractWorld {
             IInventory inv = (IInventory) tile;
             int size = inv.getSizeInventory();
             for (int i = 0; i < size; i++) {
-                inv.setInventorySlotContents(i, null);
+                inv.setInventorySlotContents(i, ItemStack.EMPTY);
             }
             return true;
         }
