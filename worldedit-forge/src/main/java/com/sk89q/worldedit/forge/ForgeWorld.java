@@ -27,6 +27,7 @@ import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.blocks.LazyBlock;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
+import com.sk89q.worldedit.history.change.BlockChange;
 import com.sk89q.worldedit.internal.Constants;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.Direction;
@@ -50,6 +51,7 @@ import net.minecraft.server.management.PlayerChunkMapEntry;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
@@ -77,7 +79,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class ForgeWorld extends AbstractWorld {
 
     private static final Random random = new Random();
-    private static final int UPDATE = 1, NOTIFY = 2, NOTIFY_CLIENT = 4;
+    private static final int UPDATE = 1, NOTIFY = 2;
     private static final Logger logger = Logger.getLogger(ForgeWorld.class.getCanonicalName());
 
     private static final IBlockState JUNGLE_LOG = Blocks.LOG.getDefaultState().withProperty(BlockOldLog.VARIANT, BlockPlanks.EnumType.JUNGLE);
@@ -145,6 +147,7 @@ public class ForgeWorld extends AbstractWorld {
         Chunk chunk = world.getChunkFromChunkCoords(x >> 4, z >> 4);
         BlockPos pos = new BlockPos(x, y, z);
         IBlockState old = chunk.getBlockState(pos);
+        @SuppressWarnings("deprecation")
         IBlockState newState = Block.getBlockById(block.getId()).getStateFromMeta(block.getData());
         IBlockState successState = chunk.setBlockState(pos, newState);
         boolean successful = successState != null;
@@ -233,7 +236,7 @@ public class ForgeWorld extends AbstractWorld {
 
         EntityItem entity = new EntityItem(getWorld(), position.getX(), position.getY(), position.getZ(), ForgeWorldEdit.toForgeItemStack(item));
         entity.setPickupDelay(10);
-        getWorld().spawnEntityInWorld(entity);
+        getWorld().spawnEntity(entity);
     }
 
     @Override
@@ -263,7 +266,7 @@ public class ForgeWorld extends AbstractWorld {
             try {
                 ChunkProviderServer chunkServer = (ChunkProviderServer) provider;
                 IChunkGenerator gen = chunkServer.chunkGenerator;
-                long pos = ChunkPos.chunkXZ2Int(chunk.getBlockX(), chunk.getBlockZ());
+                long pos = ChunkPos.asLong(chunk.getBlockX(), chunk.getBlockZ());
                 if (chunkServer.chunkExists(chunk.getBlockX(), chunk.getBlockZ())) {
                     mcChunk = chunkServer.loadChunk(chunk.getBlockX(), chunk.getBlockZ());
                     PlayerChunkMapEntry entry = playerManager.getEntry(chunk.getBlockX(), chunk.getBlockZ());
@@ -295,7 +298,7 @@ public class ForgeWorld extends AbstractWorld {
                         if (!region.contains(pt))
                             editSession.smartSetBlock(pt, history[index]);
                         else {
-                            editSession.rememberChange(pt, history[index], editSession.rawGetBlock(pt));
+                            editSession.getChangeSet().add(new BlockChange(pt.toBlockVector(), history[index], editSession.getBlock(pt)));
                         }
                     }
                 }
@@ -423,7 +426,7 @@ public class ForgeWorld extends AbstractWorld {
     @Override
     public Entity createEntity(Location location, BaseEntity entity) {
         World world = getWorld();
-        net.minecraft.entity.Entity createdEntity = EntityList.createEntityByName(entity.getTypeId(), world);
+        net.minecraft.entity.Entity createdEntity = EntityList.createEntityByIDFromName(new ResourceLocation(entity.getTypeId()), world);
         if (createdEntity != null) {
             CompoundTag nativeTag = entity.getNbtData();
             if (nativeTag != null) {
@@ -436,7 +439,7 @@ public class ForgeWorld extends AbstractWorld {
 
             createdEntity.setLocationAndAngles(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
 
-            world.spawnEntityInWorld(createdEntity);
+            world.spawnEntity(createdEntity);
             return new ForgeEntity(createdEntity);
         } else {
             return null;
@@ -446,6 +449,7 @@ public class ForgeWorld extends AbstractWorld {
     /**
      * Thrown when the reference to the world is lost.
      */
+    @SuppressWarnings("serial")
     private static class WorldReferenceLostException extends WorldEditException {
         private WorldReferenceLostException(String message) {
             super(message);
