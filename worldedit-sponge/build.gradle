@@ -39,11 +39,6 @@ shadowJar {
     }
 }
 
-task deobfJar(type: Jar) {
-    from sourceSets.main.output
-    classifier = 'dev'
-}
-
 artifacts {
-    archives deobfJar
+    archives shadowJar
 }
