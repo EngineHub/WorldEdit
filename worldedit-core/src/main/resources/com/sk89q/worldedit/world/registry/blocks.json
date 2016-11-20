@@ -3,7 +3,7 @@
     "legacyId": 0,
     "id": "minecraft:air",
     "unlocalizedName": "tile.air",
-    "localizedName": "tile.air.name",
+    "localizedName": "Air",
     "states": {},
     "material": {
       "powerSource": false,
@@ -10791,7 +10791,7 @@
       "fragileWhenPushed": false,
       "unpushable": true,
       "adventureModeExempt": false,
-      "ambientOcclusionLightValue": 1.0,
+      "ambientOcclusionLightValue": 0.2,
       "grassBlocking": false
     }
   },
@@ -14238,6 +14238,1462 @@
       "opaque": false,
       "replacedDuringPlacement": true,
       "toolRequired": false,
+      "fragileWhenPushed": false,
+      "unpushable": false,
+      "adventureModeExempt": false,
+      "ambientOcclusionLightValue": 1.0,
+      "grassBlocking": false
+    }
+  },
+  {
+    "legacyId": 218,
+    "id": "minecraft:observer",
+    "unlocalizedName": "tile.observer",
+    "localizedName": "Observer",
+    "states": {
+      "facing": {
+        "dataMask": 7,
+        "values": {
+          "down": {
+            "data": 0,
+            "direction": [
+              0,
+              -1,
+              0
+            ]
+          },
+          "up": {
+            "data": 1,
+            "direction": [
+              0,
+              1,
+              0
+            ]
+          },
+          "north": {
+            "data": 2,
+            "direction": [
+              0,
+              0,
+              -1
+            ]
+          },
+          "south": {
+            "data": 3,
+            "direction": [
+              0,
+              0,
+              1
+            ]
+          },
+          "west": {
+            "data": 4,
+            "direction": [
+              -1,
+              0,
+              0
+            ]
+          },
+          "east": {
+            "data": 5,
+            "direction": [
+              1,
+              0,
+              0
+            ]
+          }
+        }
+      },
+      "powered": {
+        "dataMask": 8,
+        "values": {
+          "true": {
+            "data": 8
+          },
+          "false": {
+            "data": 0
+          }
+        }
+      }
+    },
+    "material": {
+      "powerSource": true,
+      "lightOpacity": 255,
+      "lightValue": 0,
+      "usingNeighborLight": false,
+      "hardness": 3.0,
+      "resistance": 15.0,
+      "ticksRandomly": false,
+      "fullCube": true,
+      "slipperiness": 0.6,
+      "renderedAsNormalBlock": true,
+      "liquid": false,
+      "solid": true,
+      "movementBlocker": true,
+      "burnable": false,
+      "opaque": true,
+      "replacedDuringPlacement": false,
+      "toolRequired": true,
+      "fragileWhenPushed": false,
+      "unpushable": false,
+      "adventureModeExempt": false,
+      "ambientOcclusionLightValue": 0.2,
+      "grassBlocking": false
+    }
+  },
+  {
+    "legacyId": 219,
+    "id": "minecraft:white_shulker_box",
+    "unlocalizedName": "tile.shulkerBoxWhite",
+    "localizedName": "White Shulker Box",
+    "states": {
+      "facing": {
+        "dataMask": 7,
+        "values": {
+          "down": {
+            "data": 0,
+            "direction": [
+              0,
+              -1,
+              0
+            ]
+          },
+          "up": {
+            "data": 1,
+            "direction": [
+              0,
+              1,
+              0
+            ]
+          },
+          "north": {
+            "data": 2,
+            "direction": [
+              0,
+              0,
+              -1
+            ]
+          },
+          "south": {
+            "data": 3,
+            "direction": [
+              0,
+              0,
+              1
+            ]
+          },
+          "west": {
+            "data": 4,
+            "direction": [
+              -1,
+              0,
+              0
+            ]
+          },
+          "east": {
+            "data": 5,
+            "direction": [
+              1,
+              0,
+              0
+            ]
+          }
+        }
+      }
+    },
+    "material": {
+      "powerSource": false,
+      "lightOpacity": 0,
+      "lightValue": 0,
+      "usingNeighborLight": true,
+      "hardness": 2.0,
+      "resistance": 10.0,
+      "ticksRandomly": false,
+      "fullCube": false,
+      "slipperiness": 0.6,
+      "renderedAsNormalBlock": false,
+      "liquid": false,
+      "solid": true,
+      "movementBlocker": true,
+      "burnable": false,
+      "opaque": true,
+      "replacedDuringPlacement": false,
+      "toolRequired": true,
+      "fragileWhenPushed": false,
+      "unpushable": false,
+      "adventureModeExempt": false,
+      "ambientOcclusionLightValue": 1.0,
+      "grassBlocking": false
+    }
+  },
+  {
+    "legacyId": 220,
+    "id": "minecraft:orange_shulker_box",
+    "unlocalizedName": "tile.shulkerBoxOrange",
+    "localizedName": "Orange Shulker Box",
+    "states": {
+      "facing": {
+        "dataMask": 7,
+        "values": {
+          "down": {
+            "data": 0,
+            "direction": [
+              0,
+              -1,
+              0
+            ]
+          },
+          "up": {
+            "data": 1,
+            "direction": [
+              0,
+              1,
+              0
+            ]
+          },
+          "north": {
+            "data": 2,
+            "direction": [
+              0,
+              0,
+              -1
+            ]
+          },
+          "south": {
+            "data": 3,
+            "direction": [
+              0,
+              0,
+              1
+            ]
+          },
+          "west": {
+            "data": 4,
+            "direction": [
+              -1,
+              0,
+              0
+            ]
+          },
+          "east": {
+            "data": 5,
+            "direction": [
+              1,
+              0,
+              0
+            ]
+          }
+        }
+      }
+    },
+    "material": {
+      "powerSource": false,
+      "lightOpacity": 0,
+      "lightValue": 0,
+      "usingNeighborLight": true,
+      "hardness": 2.0,
+      "resistance": 10.0,
+      "ticksRandomly": false,
+      "fullCube": false,
+      "slipperiness": 0.6,
+      "renderedAsNormalBlock": false,
+      "liquid": false,
+      "solid": true,
+      "movementBlocker": true,
+      "burnable": false,
+      "opaque": true,
+      "replacedDuringPlacement": false,
+      "toolRequired": true,
+      "fragileWhenPushed": false,
+      "unpushable": false,
+      "adventureModeExempt": false,
+      "ambientOcclusionLightValue": 1.0,
+      "grassBlocking": false
+    }
+  },
+  {
+    "legacyId": 221,
+    "id": "minecraft:magenta_shulker_box",
+    "unlocalizedName": "tile.shulkerBoxMagenta",
+    "localizedName": "Magenta Shulker Box",
+    "states": {
+      "facing": {
+        "dataMask": 7,
+        "values": {
+          "down": {
+            "data": 0,
+            "direction": [
+              0,
+              -1,
+              0
+            ]
+          },
+          "up": {
+            "data": 1,
+            "direction": [
+              0,
+              1,
+              0
+            ]
+          },
+          "north": {
+            "data": 2,
+            "direction": [
+              0,
+              0,
+              -1
+            ]
+          },
+          "south": {
+            "data": 3,
+            "direction": [
+              0,
+              0,
+              1
+            ]
+          },
+          "west": {
+            "data": 4,
+            "direction": [
+              -1,
+              0,
+              0
+            ]
+          },
+          "east": {
+            "data": 5,
+            "direction": [
+              1,
+              0,
+              0
+            ]
+          }
+        }
+      }
+    },
+    "material": {
+      "powerSource": false,
+      "lightOpacity": 0,
+      "lightValue": 0,
+      "usingNeighborLight": true,
+      "hardness": 2.0,
+      "resistance": 10.0,
+      "ticksRandomly": false,
+      "fullCube": false,
+      "slipperiness": 0.6,
+      "renderedAsNormalBlock": false,
+      "liquid": false,
+      "solid": true,
+      "movementBlocker": true,
+      "burnable": false,
+      "opaque": true,
+      "replacedDuringPlacement": false,
+      "toolRequired": true,
+      "fragileWhenPushed": false,
+      "unpushable": false,
+      "adventureModeExempt": false,
+      "ambientOcclusionLightValue": 1.0,
+      "grassBlocking": false
+    }
+  },
+  {
+    "legacyId": 222,
+    "id": "minecraft:light_blue_shulker_box",
+    "unlocalizedName": "tile.shulkerBoxLightBlue",
+    "localizedName": "Light Blue Shulker Box",
+    "states": {
+      "facing": {
+        "dataMask": 7,
+        "values": {
+          "down": {
+            "data": 0,
+            "direction": [
+              0,
+              -1,
+              0
+            ]
+          },
+          "up": {
+            "data": 1,
+            "direction": [
+              0,
+              1,
+              0
+            ]
+          },
+          "north": {
+            "data": 2,
+            "direction": [
+              0,
+              0,
+              -1
+            ]
+          },
+          "south": {
+            "data": 3,
+            "direction": [
+              0,
+              0,
+              1
+            ]
+          },
+          "west": {
+            "data": 4,
+            "direction": [
+              -1,
+              0,
+              0
+            ]
+          },
+          "east": {
+            "data": 5,
+            "direction": [
+              1,
+              0,
+              0
+            ]
+          }
+        }
+      }
+    },
+    "material": {
+      "powerSource": false,
+      "lightOpacity": 0,
+      "lightValue": 0,
+      "usingNeighborLight": true,
+      "hardness": 2.0,
+      "resistance": 10.0,
+      "ticksRandomly": false,
+      "fullCube": false,
+      "slipperiness": 0.6,
+      "renderedAsNormalBlock": false,
+      "liquid": false,
+      "solid": true,
+      "movementBlocker": true,
+      "burnable": false,
+      "opaque": true,
+      "replacedDuringPlacement": false,
+      "toolRequired": true,
+      "fragileWhenPushed": false,
+      "unpushable": false,
+      "adventureModeExempt": false,
+      "ambientOcclusionLightValue": 1.0,
+      "grassBlocking": false
+    }
+  },
+  {
+    "legacyId": 223,
+    "id": "minecraft:yellow_shulker_box",
+    "unlocalizedName": "tile.shulkerBoxYellow",
+    "localizedName": "Yellow Shulker Box",
+    "states": {
+      "facing": {
+        "dataMask": 7,
+        "values": {
+          "down": {
+            "data": 0,
+            "direction": [
+              0,
+              -1,
+              0
+            ]
+          },
+          "up": {
+            "data": 1,
+            "direction": [
+              0,
+              1,
+              0
+            ]
+          },
+          "north": {
+            "data": 2,
+            "direction": [
+              0,
+              0,
+              -1
+            ]
+          },
+          "south": {
+            "data": 3,
+            "direction": [
+              0,
+              0,
+              1
+            ]
+          },
+          "west": {
+            "data": 4,
+            "direction": [
+              -1,
+              0,
+              0
+            ]
+          },
+          "east": {
+            "data": 5,
+            "direction": [
+              1,
+              0,
+              0
+            ]
+          }
+        }
+      }
+    },
+    "material": {
+      "powerSource": false,
+      "lightOpacity": 0,
+      "lightValue": 0,
+      "usingNeighborLight": true,
+      "hardness": 2.0,
+      "resistance": 10.0,
+      "ticksRandomly": false,
+      "fullCube": false,
+      "slipperiness": 0.6,
+      "renderedAsNormalBlock": false,
+      "liquid": false,
+      "solid": true,
+      "movementBlocker": true,
+      "burnable": false,
+      "opaque": true,
+      "replacedDuringPlacement": false,
+      "toolRequired": true,
+      "fragileWhenPushed": false,
+      "unpushable": false,
+      "adventureModeExempt": false,
+      "ambientOcclusionLightValue": 1.0,
+      "grassBlocking": false
+    }
+  },
+  {
+    "legacyId": 224,
+    "id": "minecraft:lime_shulker_box",
+    "unlocalizedName": "tile.shulkerBoxLime",
+    "localizedName": "Lime Shulker Box",
+    "states": {
+      "facing": {
+        "dataMask": 7,
+        "values": {
+          "down": {
+            "data": 0,
+            "direction": [
+              0,
+              -1,
+              0
+            ]
+          },
+          "up": {
+            "data": 1,
+            "direction": [
+              0,
+              1,
+              0
+            ]
+          },
+          "north": {
+            "data": 2,
+            "direction": [
+              0,
+              0,
+              -1
+            ]
+          },
+          "south": {
+            "data": 3,
+            "direction": [
+              0,
+              0,
+              1
+            ]
+          },
+          "west": {
+            "data": 4,
+            "direction": [
+              -1,
+              0,
+              0
+            ]
+          },
+          "east": {
+            "data": 5,
+            "direction": [
+              1,
+              0,
+              0
+            ]
+          }
+        }
+      }
+    },
+    "material": {
+      "powerSource": false,
+      "lightOpacity": 0,
+      "lightValue": 0,
+      "usingNeighborLight": true,
+      "hardness": 2.0,
+      "resistance": 10.0,
+      "ticksRandomly": false,
+      "fullCube": false,
+      "slipperiness": 0.6,
+      "renderedAsNormalBlock": false,
+      "liquid": false,
+      "solid": true,
+      "movementBlocker": true,
+      "burnable": false,
+      "opaque": true,
+      "replacedDuringPlacement": false,
+      "toolRequired": true,
+      "fragileWhenPushed": false,
+      "unpushable": false,
+      "adventureModeExempt": false,
+      "ambientOcclusionLightValue": 1.0,
+      "grassBlocking": false
+    }
+  },
+  {
+    "legacyId": 225,
+    "id": "minecraft:pink_shulker_box",
+    "unlocalizedName": "tile.shulkerBoxPink",
+    "localizedName": "Pink Shulker Box",
+    "states": {
+      "facing": {
+        "dataMask": 7,
+        "values": {
+          "down": {
+            "data": 0,
+            "direction": [
+              0,
+              -1,
+              0
+            ]
+          },
+          "up": {
+            "data": 1,
+            "direction": [
+              0,
+              1,
+              0
+            ]
+          },
+          "north": {
+            "data": 2,
+            "direction": [
+              0,
+              0,
+              -1
+            ]
+          },
+          "south": {
+            "data": 3,
+            "direction": [
+              0,
+              0,
+              1
+            ]
+          },
+          "west": {
+            "data": 4,
+            "direction": [
+              -1,
+              0,
+              0
+            ]
+          },
+          "east": {
+            "data": 5,
+            "direction": [
+              1,
+              0,
+              0
+            ]
+          }
+        }
+      }
+    },
+    "material": {
+      "powerSource": false,
+      "lightOpacity": 0,
+      "lightValue": 0,
+      "usingNeighborLight": true,
+      "hardness": 2.0,
+      "resistance": 10.0,
+      "ticksRandomly": false,
+      "fullCube": false,
+      "slipperiness": 0.6,
+      "renderedAsNormalBlock": false,
+      "liquid": false,
+      "solid": true,
+      "movementBlocker": true,
+      "burnable": false,
+      "opaque": true,
+      "replacedDuringPlacement": false,
+      "toolRequired": true,
+      "fragileWhenPushed": false,
+      "unpushable": false,
+      "adventureModeExempt": false,
+      "ambientOcclusionLightValue": 1.0,
+      "grassBlocking": false
+    }
+  },
+  {
+    "legacyId": 226,
+    "id": "minecraft:gray_shulker_box",
+    "unlocalizedName": "tile.shulkerBoxGray",
+    "localizedName": "Gray Shulker Box",
+    "states": {
+      "facing": {
+        "dataMask": 7,
+        "values": {
+          "down": {
+            "data": 0,
+            "direction": [
+              0,
+              -1,
+              0
+            ]
+          },
+          "up": {
+            "data": 1,
+            "direction": [
+              0,
+              1,
+              0
+            ]
+          },
+          "north": {
+            "data": 2,
+            "direction": [
+              0,
+              0,
+              -1
+            ]
+          },
+          "south": {
+            "data": 3,
+            "direction": [
+              0,
+              0,
+              1
+            ]
+          },
+          "west": {
+            "data": 4,
+            "direction": [
+              -1,
+              0,
+              0
+            ]
+          },
+          "east": {
+            "data": 5,
+            "direction": [
+              1,
+              0,
+              0
+            ]
+          }
+        }
+      }
+    },
+    "material": {
+      "powerSource": false,
+      "lightOpacity": 0,
+      "lightValue": 0,
+      "usingNeighborLight": true,
+      "hardness": 2.0,
+      "resistance": 10.0,
+      "ticksRandomly": false,
+      "fullCube": false,
+      "slipperiness": 0.6,
+      "renderedAsNormalBlock": false,
+      "liquid": false,
+      "solid": true,
+      "movementBlocker": true,
+      "burnable": false,
+      "opaque": true,
+      "replacedDuringPlacement": false,
+      "toolRequired": true,
+      "fragileWhenPushed": false,
+      "unpushable": false,
+      "adventureModeExempt": false,
+      "ambientOcclusionLightValue": 1.0,
+      "grassBlocking": false
+    }
+  },
+  {
+    "legacyId": 227,
+    "id": "minecraft:silver_shulker_box",
+    "unlocalizedName": "tile.shulkerBoxSilver",
+    "localizedName": "Light Gray Shulker Box",
+    "states": {
+      "facing": {
+        "dataMask": 7,
+        "values": {
+          "down": {
+            "data": 0,
+            "direction": [
+              0,
+              -1,
+              0
+            ]
+          },
+          "up": {
+            "data": 1,
+            "direction": [
+              0,
+              1,
+              0
+            ]
+          },
+          "north": {
+            "data": 2,
+            "direction": [
+              0,
+              0,
+              -1
+            ]
+          },
+          "south": {
+            "data": 3,
+            "direction": [
+              0,
+              0,
+              1
+            ]
+          },
+          "west": {
+            "data": 4,
+            "direction": [
+              -1,
+              0,
+              0
+            ]
+          },
+          "east": {
+            "data": 5,
+            "direction": [
+              1,
+              0,
+              0
+            ]
+          }
+        }
+      }
+    },
+    "material": {
+      "powerSource": false,
+      "lightOpacity": 0,
+      "lightValue": 0,
+      "usingNeighborLight": true,
+      "hardness": 2.0,
+      "resistance": 10.0,
+      "ticksRandomly": false,
+      "fullCube": false,
+      "slipperiness": 0.6,
+      "renderedAsNormalBlock": false,
+      "liquid": false,
+      "solid": true,
+      "movementBlocker": true,
+      "burnable": false,
+      "opaque": true,
+      "replacedDuringPlacement": false,
+      "toolRequired": true,
+      "fragileWhenPushed": false,
+      "unpushable": false,
+      "adventureModeExempt": false,
+      "ambientOcclusionLightValue": 1.0,
+      "grassBlocking": false
+    }
+  },
+  {
+    "legacyId": 228,
+    "id": "minecraft:cyan_shulker_box",
+    "unlocalizedName": "tile.shulkerBoxCyan",
+    "localizedName": "Cyan Shulker Box",
+    "states": {
+      "facing": {
+        "dataMask": 7,
+        "values": {
+          "down": {
+            "data": 0,
+            "direction": [
+              0,
+              -1,
+              0
+            ]
+          },
+          "up": {
+            "data": 1,
+            "direction": [
+              0,
+              1,
+              0
+            ]
+          },
+          "north": {
+            "data": 2,
+            "direction": [
+              0,
+              0,
+              -1
+            ]
+          },
+          "south": {
+            "data": 3,
+            "direction": [
+              0,
+              0,
+              1
+            ]
+          },
+          "west": {
+            "data": 4,
+            "direction": [
+              -1,
+              0,
+              0
+            ]
+          },
+          "east": {
+            "data": 5,
+            "direction": [
+              1,
+              0,
+              0
+            ]
+          }
+        }
+      }
+    },
+    "material": {
+      "powerSource": false,
+      "lightOpacity": 0,
+      "lightValue": 0,
+      "usingNeighborLight": true,
+      "hardness": 2.0,
+      "resistance": 10.0,
+      "ticksRandomly": false,
+      "fullCube": false,
+      "slipperiness": 0.6,
+      "renderedAsNormalBlock": false,
+      "liquid": false,
+      "solid": true,
+      "movementBlocker": true,
+      "burnable": false,
+      "opaque": true,
+      "replacedDuringPlacement": false,
+      "toolRequired": true,
+      "fragileWhenPushed": false,
+      "unpushable": false,
+      "adventureModeExempt": false,
+      "ambientOcclusionLightValue": 1.0,
+      "grassBlocking": false
+    }
+  },
+  {
+    "legacyId": 229,
+    "id": "minecraft:purple_shulker_box",
+    "unlocalizedName": "tile.shulkerBoxPurple",
+    "localizedName": "Purple Shulker Box",
+    "states": {
+      "facing": {
+        "dataMask": 7,
+        "values": {
+          "down": {
+            "data": 0,
+            "direction": [
+              0,
+              -1,
+              0
+            ]
+          },
+          "up": {
+            "data": 1,
+            "direction": [
+              0,
+              1,
+              0
+            ]
+          },
+          "north": {
+            "data": 2,
+            "direction": [
+              0,
+              0,
+              -1
+            ]
+          },
+          "south": {
+            "data": 3,
+            "direction": [
+              0,
+              0,
+              1
+            ]
+          },
+          "west": {
+            "data": 4,
+            "direction": [
+              -1,
+              0,
+              0
+            ]
+          },
+          "east": {
+            "data": 5,
+            "direction": [
+              1,
+              0,
+              0
+            ]
+          }
+        }
+      }
+    },
+    "material": {
+      "powerSource": false,
+      "lightOpacity": 0,
+      "lightValue": 0,
+      "usingNeighborLight": true,
+      "hardness": 2.0,
+      "resistance": 10.0,
+      "ticksRandomly": false,
+      "fullCube": false,
+      "slipperiness": 0.6,
+      "renderedAsNormalBlock": false,
+      "liquid": false,
+      "solid": true,
+      "movementBlocker": true,
+      "burnable": false,
+      "opaque": true,
+      "replacedDuringPlacement": false,
+      "toolRequired": true,
+      "fragileWhenPushed": false,
+      "unpushable": false,
+      "adventureModeExempt": false,
+      "ambientOcclusionLightValue": 1.0,
+      "grassBlocking": false
+    }
+  },
+  {
+    "legacyId": 230,
+    "id": "minecraft:blue_shulker_box",
+    "unlocalizedName": "tile.shulkerBoxBlue",
+    "localizedName": "Blue Shulker Box",
+    "states": {
+      "facing": {
+        "dataMask": 7,
+        "values": {
+          "down": {
+            "data": 0,
+            "direction": [
+              0,
+              -1,
+              0
+            ]
+          },
+          "up": {
+            "data": 1,
+            "direction": [
+              0,
+              1,
+              0
+            ]
+          },
+          "north": {
+            "data": 2,
+            "direction": [
+              0,
+              0,
+              -1
+            ]
+          },
+          "south": {
+            "data": 3,
+            "direction": [
+              0,
+              0,
+              1
+            ]
+          },
+          "west": {
+            "data": 4,
+            "direction": [
+              -1,
+              0,
+              0
+            ]
+          },
+          "east": {
+            "data": 5,
+            "direction": [
+              1,
+              0,
+              0
+            ]
+          }
+        }
+      }
+    },
+    "material": {
+      "powerSource": false,
+      "lightOpacity": 0,
+      "lightValue": 0,
+      "usingNeighborLight": true,
+      "hardness": 2.0,
+      "resistance": 10.0,
+      "ticksRandomly": false,
+      "fullCube": false,
+      "slipperiness": 0.6,
+      "renderedAsNormalBlock": false,
+      "liquid": false,
+      "solid": true,
+      "movementBlocker": true,
+      "burnable": false,
+      "opaque": true,
+      "replacedDuringPlacement": false,
+      "toolRequired": true,
+      "fragileWhenPushed": false,
+      "unpushable": false,
+      "adventureModeExempt": false,
+      "ambientOcclusionLightValue": 1.0,
+      "grassBlocking": false
+    }
+  },
+  {
+    "legacyId": 231,
+    "id": "minecraft:brown_shulker_box",
+    "unlocalizedName": "tile.shulkerBoxBrown",
+    "localizedName": "Brown Shulker Box",
+    "states": {
+      "facing": {
+        "dataMask": 7,
+        "values": {
+          "down": {
+            "data": 0,
+            "direction": [
+              0,
+              -1,
+              0
+            ]
+          },
+          "up": {
+            "data": 1,
+            "direction": [
+              0,
+              1,
+              0
+            ]
+          },
+          "north": {
+            "data": 2,
+            "direction": [
+              0,
+              0,
+              -1
+            ]
+          },
+          "south": {
+            "data": 3,
+            "direction": [
+              0,
+              0,
+              1
+            ]
+          },
+          "west": {
+            "data": 4,
+            "direction": [
+              -1,
+              0,
+              0
+            ]
+          },
+          "east": {
+            "data": 5,
+            "direction": [
+              1,
+              0,
+              0
+            ]
+          }
+        }
+      }
+    },
+    "material": {
+      "powerSource": false,
+      "lightOpacity": 0,
+      "lightValue": 0,
+      "usingNeighborLight": true,
+      "hardness": 2.0,
+      "resistance": 10.0,
+      "ticksRandomly": false,
+      "fullCube": false,
+      "slipperiness": 0.6,
+      "renderedAsNormalBlock": false,
+      "liquid": false,
+      "solid": true,
+      "movementBlocker": true,
+      "burnable": false,
+      "opaque": true,
+      "replacedDuringPlacement": false,
+      "toolRequired": true,
+      "fragileWhenPushed": false,
+      "unpushable": false,
+      "adventureModeExempt": false,
+      "ambientOcclusionLightValue": 1.0,
+      "grassBlocking": false
+    }
+  },
+  {
+    "legacyId": 232,
+    "id": "minecraft:green_shulker_box",
+    "unlocalizedName": "tile.shulkerBoxGreen",
+    "localizedName": "Green Shulker Box",
+    "states": {
+      "facing": {
+        "dataMask": 7,
+        "values": {
+          "down": {
+            "data": 0,
+            "direction": [
+              0,
+              -1,
+              0
+            ]
+          },
+          "up": {
+            "data": 1,
+            "direction": [
+              0,
+              1,
+              0
+            ]
+          },
+          "north": {
+            "data": 2,
+            "direction": [
+              0,
+              0,
+              -1
+            ]
+          },
+          "south": {
+            "data": 3,
+            "direction": [
+              0,
+              0,
+              1
+            ]
+          },
+          "west": {
+            "data": 4,
+            "direction": [
+              -1,
+              0,
+              0
+            ]
+          },
+          "east": {
+            "data": 5,
+            "direction": [
+              1,
+              0,
+              0
+            ]
+          }
+        }
+      }
+    },
+    "material": {
+      "powerSource": false,
+      "lightOpacity": 0,
+      "lightValue": 0,
+      "usingNeighborLight": true,
+      "hardness": 2.0,
+      "resistance": 10.0,
+      "ticksRandomly": false,
+      "fullCube": false,
+      "slipperiness": 0.6,
+      "renderedAsNormalBlock": false,
+      "liquid": false,
+      "solid": true,
+      "movementBlocker": true,
+      "burnable": false,
+      "opaque": true,
+      "replacedDuringPlacement": false,
+      "toolRequired": true,
+      "fragileWhenPushed": false,
+      "unpushable": false,
+      "adventureModeExempt": false,
+      "ambientOcclusionLightValue": 1.0,
+      "grassBlocking": false
+    }
+  },
+  {
+    "legacyId": 233,
+    "id": "minecraft:red_shulker_box",
+    "unlocalizedName": "tile.shulkerBoxRed",
+    "localizedName": "Red Shulker Box",
+    "states": {
+      "facing": {
+        "dataMask": 7,
+        "values": {
+          "down": {
+            "data": 0,
+            "direction": [
+              0,
+              -1,
+              0
+            ]
+          },
+          "up": {
+            "data": 1,
+            "direction": [
+              0,
+              1,
+              0
+            ]
+          },
+          "north": {
+            "data": 2,
+            "direction": [
+              0,
+              0,
+              -1
+            ]
+          },
+          "south": {
+            "data": 3,
+            "direction": [
+              0,
+              0,
+              1
+            ]
+          },
+          "west": {
+            "data": 4,
+            "direction": [
+              -1,
+              0,
+              0
+            ]
+          },
+          "east": {
+            "data": 5,
+            "direction": [
+              1,
+              0,
+              0
+            ]
+          }
+        }
+      }
+    },
+    "material": {
+      "powerSource": false,
+      "lightOpacity": 0,
+      "lightValue": 0,
+      "usingNeighborLight": true,
+      "hardness": 2.0,
+      "resistance": 10.0,
+      "ticksRandomly": false,
+      "fullCube": false,
+      "slipperiness": 0.6,
+      "renderedAsNormalBlock": false,
+      "liquid": false,
+      "solid": true,
+      "movementBlocker": true,
+      "burnable": false,
+      "opaque": true,
+      "replacedDuringPlacement": false,
+      "toolRequired": true,
+      "fragileWhenPushed": false,
+      "unpushable": false,
+      "adventureModeExempt": false,
+      "ambientOcclusionLightValue": 1.0,
+      "grassBlocking": false
+    }
+  },
+  {
+    "legacyId": 234,
+    "id": "minecraft:black_shulker_box",
+    "unlocalizedName": "tile.shulkerBoxBlack",
+    "localizedName": "Black Shulker Box",
+    "states": {
+      "facing": {
+        "dataMask": 7,
+        "values": {
+          "down": {
+            "data": 0,
+            "direction": [
+              0,
+              -1,
+              0
+            ]
+          },
+          "up": {
+            "data": 1,
+            "direction": [
+              0,
+              1,
+              0
+            ]
+          },
+          "north": {
+            "data": 2,
+            "direction": [
+              0,
+              0,
+              -1
+            ]
+          },
+          "south": {
+            "data": 3,
+            "direction": [
+              0,
+              0,
+              1
+            ]
+          },
+          "west": {
+            "data": 4,
+            "direction": [
+              -1,
+              0,
+              0
+            ]
+          },
+          "east": {
+            "data": 5,
+            "direction": [
+              1,
+              0,
+              0
+            ]
+          }
+        }
+      }
+    },
+    "material": {
+      "powerSource": false,
+      "lightOpacity": 0,
+      "lightValue": 0,
+      "usingNeighborLight": true,
+      "hardness": 2.0,
+      "resistance": 10.0,
+      "ticksRandomly": false,
+      "fullCube": false,
+      "slipperiness": 0.6,
+      "renderedAsNormalBlock": false,
+      "liquid": false,
+      "solid": true,
+      "movementBlocker": true,
+      "burnable": false,
+      "opaque": true,
+      "replacedDuringPlacement": false,
+      "toolRequired": true,
       "fragileWhenPushed": false,
       "unpushable": false,
       "adventureModeExempt": false,
