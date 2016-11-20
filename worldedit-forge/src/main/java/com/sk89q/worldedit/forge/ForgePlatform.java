@@ -93,7 +93,7 @@ class ForgePlatform extends AbstractPlatform implements MultiUserPlatform {
 
     @Override
     public boolean isValidMobType(String type) {
-        return EntityList.isStringValidEntityName(new ResourceLocation(type));
+        return EntityList.isRegistered(new ResourceLocation(type));
     }
 
     @Override
