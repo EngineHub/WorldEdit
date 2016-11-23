@@ -247,6 +247,23 @@ public final class BlockID {
     public static final int RED_NETHER_BRICK = 215;
     public static final int BONE_BLOCK = 216;
     public static final int STRUCTURE_VOID = 217;
+    public static final int OBSERVER = 218;
+    public static final int SHULKER_BOX_WHITE = 219;
+    public static final int SHULKER_BOX_ORANGE = 220;
+    public static final int SHULKER_BOX_MAGENTA = 221;
+    public static final int SHULKER_BOX_LIGHT_BLUE = 222;
+    public static final int SHULKER_BOX_YELLOW = 223;
+    public static final int SHULKER_BOX_LIME = 224;
+    public static final int SHULKER_BOX_PINK = 225;
+    public static final int SHULKER_BOX_GRAY = 226;
+    public static final int SHULKER_BOX_LIGHT_GRAY = 227;
+    public static final int SHULKER_BOX_CYAN = 228;
+    public static final int SHULKER_BOX_PURPLE = 229;
+    public static final int SHULKER_BOX_BLUE = 230;
+    public static final int SHULKER_BOX_BROWN = 231;
+    public static final int SHULKER_BOX_GREEN = 232;
+    public static final int SHULKER_BOX_RED = 233;
+    public static final int SHULKER_BOX_BLACK = 234;
     public static final int STRUCTURE_BLOCK = 255;
 
     private BlockID() {

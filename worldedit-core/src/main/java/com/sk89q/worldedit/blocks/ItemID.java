@@ -209,6 +209,8 @@ public final class ItemID {
     public static final int JUNGLE_BOAT = 446;
     public static final int ACACIA_BOAT = 447;
     public static final int DARK_OAK_BOAT = 448;
+    public static final int TOTEM_OF_UNDYING = 449;
+    public static final int SHULKER_SHELL = 450;
 
     @Deprecated public static final int GOLD_RECORD = 2256; // deprecated, but leave it there
     @Deprecated public static final int GREEN_RECORD = 2257; // deprecated, but leave it there
