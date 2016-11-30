@@ -400,6 +400,14 @@ public enum ItemType {
     NETHER_QUARTZ(ItemID.NETHER_QUARTZ, "Nether Quartz", "netherquartz", "quartz"),
     TNT_MINECART(ItemID.TNT_MINECART, "Minecart with TNT", "minecraftwithtnt", "tntminecart", "minecarttnt"),
     HOPPER_MINECART(ItemID.HOPPER_MINECART, "Minecart with Hopper", "minecraftwithhopper", "hopperminecart", "minecarthopper"),
+    PRISMARINE_SHARD(ItemID.PRISMARINE_SHARD, "Prismarine Shard", "prismarineshard"),
+    PRISMARINE_CRYSTALS(ItemID.PRISMARINE_CRYSTALS, "Prismarine Crystals", "prismarinecrystals", "prismarinecrystal"),
+    RABBIT(ItemID.RABBIT, "Raw Rabbit", "rawrabbit", "rabbit"), // raw and wriggling
+    COOKED_RABBIT(ItemID.COOKED_RABBIT, "Cooked Rabbit", "cookedrabbit"), // stupid fat hobbit, you ruins it
+    RABBIT_STEW(ItemID.RABBIT_STEW, "Rabbit Stew", "rabbitstew"), // po-ta-toes
+    RABBIT_FOOT(ItemID.RABBIT_FOOT, "Rabbit's Foot", "rabbitsfoot", "rabbitfoot"),
+    RABBIT_HIDE(ItemID.RABBIT_HIDE, "Rabbit Hide", "rabbithide", "rabbitskin"),
+    ARMOR_STAND(ItemID.ARMOR_STAND, "Armor Stand", "armorstand"),
     HORSE_ARMOR_IRON(ItemID.HORSE_ARMOR_IRON, "Iron Horse Armor", "ironhorsearmor", "ironbarding"),
     HORSE_ARMOR_GOLD(ItemID.HORSE_ARMOR_GOLD, "Gold Horse Armor", "goldhorsearmor", "goldbarding"),
     HORSE_ARMOR_DIAMOND(ItemID.HORSE_ARMOR_DIAMOND, "Diamond Horse Armor", "diamondhorsearmor", "diamondbarding"),
