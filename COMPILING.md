@@ -31,9 +31,9 @@ You will find:
 * WorldEdit for Bukkit in **worldedit-bukkit/build/libs**
 * WorldEdit for Forge in **worldedit-forge/build/libs**
 
-If you want to use WorldEdit, use the `-shadow` version.
+If you want to use WorldEdit, use the `-dist` version.
 
-(The -shadow version includes WorldEdit + necessary libraries.)
+(The -dist version includes WorldEdit + necessary libraries.)
 
 ## Other commands
 
