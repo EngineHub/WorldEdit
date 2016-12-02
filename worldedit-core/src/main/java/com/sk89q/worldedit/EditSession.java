@@ -961,10 +961,15 @@ public class EditSession implements Extent {
         checkNotNull(pattern);
 
         Vector center = region.getCenter();
+        Vector vec1 = new Vector((int) center.getX(), (int) center.getY(), (int) center.getZ());
+        Vector vec2 = center.toBlockVector();
+        boolean condX = (region.getWidth() % 2) == 0;
+        boolean condZ = (region.getLength() % 2) == 0;
+        Vector vec3 = new Vector(vec2.getX() + (condX ? 0.5*Math.signum(vec2.getX()) : 0), vec2.getY(), vec2.getZ() + (condZ ? 0.5*Math.signum(vec2.getZ()) : 0));
         Region centerRegion = new CuboidRegion(
                 getWorld(), // Causes clamping of Y range
-                new Vector((int) center.getX(), (int) center.getY(), (int) center.getZ()),
-                center.toBlockVector());
+                vec1,
+                vec3);
         return setBlocks(centerRegion, pattern);
     }
 
