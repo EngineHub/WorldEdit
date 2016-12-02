@@ -229,6 +229,21 @@ public enum ItemType {
     RED_NETHER_BRICK(BlockID.RED_NETHER_BRICK, "Red Nether Brick", "rednetherbrick", "netherbrickred"),
     BONE_BLOCK(BlockID.BONE_BLOCK, "Bone Block", "boneblock", "blockbone", "fossil", "fossilblock", "blockfossil"),
     STRUCTURE_VOID(BlockID.STRUCTURE_VOID, "Structure Void", "structurevoid", "structureair"),
+    OBSERVER(BlockID.OBSERVER, "Observer", "observer", "blockupdatedetector"),
+    SHULKER_BOX_MAGENTA(BlockID.SHULKER_BOX_MAGENTA, "Magenta Shulker Box", "shulkerboxmagenta"),
+    SHULKER_BOX_LIGHT_BLUE(BlockID.SHULKER_BOX_LIGHT_BLUE, "Light Blue Shulker Box", "shulkerboxlightblue"),
+    SHULKER_BOX_YELLOW(BlockID.SHULKER_BOX_YELLOW, "Yellow Shulker Box", "shulkerboxyellow"),
+    SHULKER_BOX_LIME(BlockID.SHULKER_BOX_LIME, "Lime Shulker Box", "shulkerboxlime"),
+    SHULKER_BOX_PINK(BlockID.SHULKER_BOX_PINK, "Pink Shulker Box", "shulkerboxpink"),
+    SHULKER_BOX_GRAY(BlockID.SHULKER_BOX_GRAY, "Gray Shulker Box", "shulkerboxgray"),
+    SHULKER_BOX_LIGHT_GRAY(BlockID.SHULKER_BOX_LIGHT_GRAY, "Light Gray Shulker Box", "shulkerboxlightgray"),
+    SHULKER_BOX_CYAN(BlockID.SHULKER_BOX_CYAN, "Cyan Shulker Box", "shulkerboxcyan"),
+    SHULKER_BOX_PURPLE(BlockID.SHULKER_BOX_PURPLE, "Purple Shulker Box", "shulkerboxpurple"),
+    SHULKER_BOX_BLUE(BlockID.SHULKER_BOX_BLUE, "Blue Shulker Box", "shulkerboxblue"),
+    SHULKER_BOX_BROWN(BlockID.SHULKER_BOX_BROWN, "Brown Shulker Box", "shulkerboxbrown"),
+    SHULKER_BOX_GREEN(BlockID.SHULKER_BOX_GREEN, "Green Shulker Box", "shulkerboxgreen"),
+    SHULKER_BOX_RED(BlockID.SHULKER_BOX_RED, "Red Shulker Box", "shulkerboxred"),
+    SHULKER_BOX_BLACK(BlockID.SHULKER_BOX_BLACK, "Black Shulker Box", "shulkerboxblack"),
     STRUCTURE_BLOCK(BlockID.STRUCTURE_BLOCK, "Structure Block", "structureblock"),
 
     // Items
@@ -385,6 +400,14 @@ public enum ItemType {
     NETHER_QUARTZ(ItemID.NETHER_QUARTZ, "Nether Quartz", "netherquartz", "quartz"),
     TNT_MINECART(ItemID.TNT_MINECART, "Minecart with TNT", "minecraftwithtnt", "tntminecart", "minecarttnt"),
     HOPPER_MINECART(ItemID.HOPPER_MINECART, "Minecart with Hopper", "minecraftwithhopper", "hopperminecart", "minecarthopper"),
+    PRISMARINE_SHARD(ItemID.PRISMARINE_SHARD, "Prismarine Shard", "prismarineshard"),
+    PRISMARINE_CRYSTALS(ItemID.PRISMARINE_CRYSTALS, "Prismarine Crystals", "prismarinecrystals", "prismarinecrystal"),
+    RABBIT(ItemID.RABBIT, "Raw Rabbit", "rawrabbit", "rabbit"), // raw and wriggling
+    COOKED_RABBIT(ItemID.COOKED_RABBIT, "Cooked Rabbit", "cookedrabbit"), // stupid fat hobbit, you ruins it
+    RABBIT_STEW(ItemID.RABBIT_STEW, "Rabbit Stew", "rabbitstew"), // po-ta-toes
+    RABBIT_FOOT(ItemID.RABBIT_FOOT, "Rabbit's Foot", "rabbitsfoot", "rabbitfoot"),
+    RABBIT_HIDE(ItemID.RABBIT_HIDE, "Rabbit Hide", "rabbithide", "rabbitskin"),
+    ARMOR_STAND(ItemID.ARMOR_STAND, "Armor Stand", "armorstand"),
     HORSE_ARMOR_IRON(ItemID.HORSE_ARMOR_IRON, "Iron Horse Armor", "ironhorsearmor", "ironbarding"),
     HORSE_ARMOR_GOLD(ItemID.HORSE_ARMOR_GOLD, "Gold Horse Armor", "goldhorsearmor", "goldbarding"),
     HORSE_ARMOR_DIAMOND(ItemID.HORSE_ARMOR_DIAMOND, "Diamond Horse Armor", "diamondhorsearmor", "diamondbarding"),
@@ -417,6 +440,8 @@ public enum ItemType {
     JUNGLE_BOAT(ItemID.JUNGLE_BOAT, "Jungle Boat", "jungleboat", "boatjungle"),
     ACACIA_BOAT(ItemID.ACACIA_BOAT, "Acacia Boat", "acaciaboat", "boatacacia"),
     DARK_OAK_BOAT(ItemID.DARK_OAK_BOAT, "Dark Oak Boat", "darkoakboat", "boatdarkoak"),
+    TOTEM_OF_UNDYING(ItemID.TOTEM_OF_UNDYING, "Totem of Undying", "totemofundying", "undyingtotem"),
+    SHULKER_SHELL(ItemID.SHULKER_SHELL, "Shulker Shell", "shulkershell"),
 
     DISC_13(ItemID.DISC_13, "Music Disc - 13", "disc_13"),
     DISC_CAT(ItemID.DISC_CAT, "Music Disc - Cat", "disc_cat"),

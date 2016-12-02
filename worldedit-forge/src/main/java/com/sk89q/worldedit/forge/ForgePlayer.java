@@ -44,11 +44,9 @@ import net.minecraft.util.text.TextFormatting;
 
 public class ForgePlayer extends AbstractPlayerActor {
 
-    private final ForgePlatform platform;
     private final EntityPlayerMP player;
 
-    protected ForgePlayer(ForgePlatform platform, EntityPlayerMP player) {
-        this.platform = platform;
+    protected ForgePlayer(EntityPlayerMP player) {
         this.player = player;
         ThreadSafeCache.getInstance().getOnlineIds().add(getUniqueId());
     }
@@ -78,7 +76,7 @@ public class ForgePlayer extends AbstractPlayerActor {
     public Location getLocation() {
         Vector position = new Vector(this.player.posX, this.player.posY, this.player.posZ);
         return new Location(
-                ForgeWorldEdit.inst.getWorld(this.player.worldObj),
+                ForgeWorldEdit.inst.getWorld(this.player.world),
                 position,
                 this.player.rotationYaw,
                 this.player.rotationPitch);
@@ -87,12 +85,12 @@ public class ForgePlayer extends AbstractPlayerActor {
     @SuppressWarnings("deprecation")
     @Override
     public WorldVector getPosition() {
-        return new WorldVector(LocalWorldAdapter.adapt(ForgeWorldEdit.inst.getWorld(this.player.worldObj)), this.player.posX, this.player.posY, this.player.posZ);
+        return new WorldVector(LocalWorldAdapter.adapt(ForgeWorldEdit.inst.getWorld(this.player.world)), this.player.posX, this.player.posY, this.player.posZ);
     }
 
     @Override
     public com.sk89q.worldedit.world.World getWorld() {
-        return ForgeWorldEdit.inst.getWorld(this.player.worldObj);
+        return ForgeWorldEdit.inst.getWorld(this.player.world);
     }
 
     @Override
@@ -125,7 +123,7 @@ public class ForgePlayer extends AbstractPlayerActor {
     @Override
     public void printRaw(String msg) {
         for (String part : msg.split("\n")) {
-            this.player.addChatMessage(new TextComponentString(part));
+            this.player.sendMessage(new TextComponentString(part));
         }
     }
 
@@ -148,7 +146,7 @@ public class ForgePlayer extends AbstractPlayerActor {
         for (String part : msg.split("\n")) {
             TextComponentString component = new TextComponentString(part);
             component.getStyle().setColor(formatting);
-            this.player.addChatMessage(component);
+            this.player.sendMessage(component);
         }
     }
 

@@ -19,8 +19,14 @@
 
 package com.sk89q.worldedit.forge;
 
+import com.google.common.io.Files;
 import com.sk89q.jnbt.CompoundTag;
-import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.BlockVector;
+import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.MaxChangedBlocksException;
+import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.Vector2D;
+import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.blocks.BaseItemStack;
@@ -28,6 +34,7 @@ import com.sk89q.worldedit.blocks.LazyBlock;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.internal.Constants;
+import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.util.Location;
@@ -35,39 +42,55 @@ import com.sk89q.worldedit.util.TreeGenerator.TreeType;
 import com.sk89q.worldedit.world.AbstractWorld;
 import com.sk89q.worldedit.world.biome.BaseBiome;
 import com.sk89q.worldedit.world.registry.WorldData;
-import net.minecraft.block.*;
+
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockLeaves;
+import net.minecraft.block.BlockOldLeaf;
+import net.minecraft.block.BlockOldLog;
+import net.minecraft.block.BlockPlanks;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.server.management.PlayerChunkMap;
-import net.minecraft.server.management.PlayerChunkMapEntry;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.chunk.IChunkGenerator;
 import net.minecraft.world.chunk.IChunkProvider;
+import net.minecraft.world.chunk.storage.AnvilSaveHandler;
 import net.minecraft.world.gen.ChunkProviderServer;
-import net.minecraft.world.gen.feature.*;
+import net.minecraft.world.gen.feature.WorldGenBigMushroom;
+import net.minecraft.world.gen.feature.WorldGenBigTree;
+import net.minecraft.world.gen.feature.WorldGenBirchTree;
+import net.minecraft.world.gen.feature.WorldGenCanopyTree;
+import net.minecraft.world.gen.feature.WorldGenMegaJungle;
+import net.minecraft.world.gen.feature.WorldGenMegaPineTree;
+import net.minecraft.world.gen.feature.WorldGenSavannaTree;
+import net.minecraft.world.gen.feature.WorldGenShrub;
+import net.minecraft.world.gen.feature.WorldGenSwamp;
+import net.minecraft.world.gen.feature.WorldGenTaiga1;
+import net.minecraft.world.gen.feature.WorldGenTaiga2;
+import net.minecraft.world.gen.feature.WorldGenTrees;
+import net.minecraft.world.gen.feature.WorldGenerator;
+import net.minecraftforge.common.DimensionManager;
 
 import javax.annotation.Nullable;
+
+import java.io.File;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -77,8 +100,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class ForgeWorld extends AbstractWorld {
 
     private static final Random random = new Random();
-    private static final int UPDATE = 1, NOTIFY = 2, NOTIFY_CLIENT = 4;
-    private static final Logger logger = Logger.getLogger(ForgeWorld.class.getCanonicalName());
+    private static final int UPDATE = 1, NOTIFY = 2;
 
     private static final IBlockState JUNGLE_LOG = Blocks.LOG.getDefaultState().withProperty(BlockOldLog.VARIANT, BlockPlanks.EnumType.JUNGLE);
     private static final IBlockState JUNGLE_LEAF = Blocks.LEAVES.getDefaultState().withProperty(BlockOldLeaf.VARIANT, BlockPlanks.EnumType.JUNGLE).withProperty(BlockLeaves.CHECK_DECAY, Boolean.valueOf(false));
@@ -145,6 +167,7 @@ public class ForgeWorld extends AbstractWorld {
         Chunk chunk = world.getChunkFromChunkCoords(x >> 4, z >> 4);
         BlockPos pos = new BlockPos(x, y, z);
         IBlockState old = chunk.getBlockState(pos);
+        @SuppressWarnings("deprecation")
         IBlockState newState = Block.getBlockById(block.getId()).getStateFromMeta(block.getData());
         IBlockState successState = chunk.setBlockState(pos, newState);
         boolean successful = successState != null;
@@ -185,7 +208,7 @@ public class ForgeWorld extends AbstractWorld {
             IInventory inv = (IInventory) tile;
             int size = inv.getSizeInventory();
             for (int i = 0; i < size; i++) {
-                inv.setInventorySlotContents(i, null);
+                inv.setInventorySlotContents(i, ItemStack.EMPTY);
             }
             return true;
         }
@@ -233,7 +256,7 @@ public class ForgeWorld extends AbstractWorld {
 
         EntityItem entity = new EntityItem(getWorld(), position.getX(), position.getY(), position.getZ(), ForgeWorldEdit.toForgeItemStack(item));
         entity.setPickupDelay(10);
-        getWorld().spawnEntityInWorld(entity);
+        getWorld().spawnEntity(entity);
     }
 
     @Override
@@ -243,73 +266,41 @@ public class ForgeWorld extends AbstractWorld {
         if (!(provider instanceof ChunkProviderServer)) {
             return false;
         }
-        BaseBlock[] history = new BaseBlock[256 * (getMaxY() + 1)];
+        
+        File saveFolder = Files.createTempDir();
+        // register this just in case something goes wrong
+        // normally it should be deleted at the end of this method
+        saveFolder.deleteOnExit();
 
-        for (Vector2D chunk : region.getChunks()) {
-            Vector min = new Vector(chunk.getBlockX() * 16, 0, chunk.getBlockZ() * 16);
+        WorldServer originalWorld = (WorldServer) getWorld();
 
-            for (int x = 0; x < 16; x++) {
-                for (int y = 0; y < getMaxY() + 1; y++) {
-                    for (int z = 0; z < 16; z++) {
-                        Vector pt = min.add(x, y, z);
-                        int index = y * 16 * 16 + z * 16 + x;
-                        history[index] = editSession.getBlock(pt);
-                    }
-                }
-            }
-            PlayerChunkMap playerManager = ((WorldServer) getWorld()).getPlayerChunkMap();
-            List<EntityPlayerMP> oldWatchers = null;
-            Chunk mcChunk = null;
-            try {
-                ChunkProviderServer chunkServer = (ChunkProviderServer) provider;
-                IChunkGenerator gen = chunkServer.chunkGenerator;
-                long pos = ChunkPos.chunkXZ2Int(chunk.getBlockX(), chunk.getBlockZ());
-                if (chunkServer.chunkExists(chunk.getBlockX(), chunk.getBlockZ())) {
-                    mcChunk = chunkServer.loadChunk(chunk.getBlockX(), chunk.getBlockZ());
-                    PlayerChunkMapEntry entry = playerManager.getEntry(chunk.getBlockX(), chunk.getBlockZ());
-                    if (entry != null) {
-                        oldWatchers = entry.players;
-                        playerManager.removeEntry(entry);
-                    }
-                    mcChunk.onChunkUnload();
-                }
-                chunkServer.droppedChunksSet.remove(pos);
-                chunkServer.id2ChunkMap.remove(pos);
-                mcChunk = gen.provideChunk(chunk.getBlockX(), chunk.getBlockZ());
-                chunkServer.id2ChunkMap.put(pos, mcChunk);
-                if (mcChunk != null) {
-                    mcChunk.onChunkLoad();
-                    mcChunk.populateChunk(chunkServer, chunkServer.chunkGenerator);
-                }
-            } catch (Throwable t) {
-                logger.log(Level.WARNING, "Failed to generate chunk", t);
-                return false;
-            }
+        MinecraftServer server = originalWorld.getMinecraftServer();
+        AnvilSaveHandler saveHandler = new AnvilSaveHandler(saveFolder,
+                originalWorld.getSaveHandler().getWorldDirectory().getName(), true, server.getDataFixer());
+        World freshWorld = new WorldServer(server, saveHandler, originalWorld.getWorldInfo(),
+                originalWorld.provider.getDimension(), originalWorld.theProfiler).init();
 
-            for (int x = 0; x < 16; x++) {
-                for (int y = 0; y < getMaxY() + 1; y++) {
-                    for (int z = 0; z < 16; z++) {
-                        Vector pt = min.add(x, y, z);
-                        int index = y * 16 * 16 + z * 16 + x;
-
-                        if (!region.contains(pt))
-                            editSession.smartSetBlock(pt, history[index]);
-                        else {
-                            editSession.rememberChange(pt, history[index], editSession.rawGetBlock(pt));
-                        }
-                    }
-                }
+        // Pre-gen all the chunks
+        // We need to also pull one more chunk in every direction
+        CuboidRegion expandedPreGen = new CuboidRegion(region.getMinimumPoint().subtract(16, 0, 16), region.getMaximumPoint().add(16, 0, 16));
+        for (Vector2D chunk : expandedPreGen.getChunks()) {
+            freshWorld.getChunkFromChunkCoords(chunk.getBlockX(), chunk.getBlockZ());
+        }
+        
+        ForgeWorld from = new ForgeWorld(freshWorld);
+        try {
+            for (BlockVector vec : region) {
+                editSession.setBlock(vec, from.getBlock(vec));
             }
-            // We don't need to recreate the ChunkMapEntry unless there are players
-            // but addPlayer handles that for us
-            if (oldWatchers != null) {
-                for (EntityPlayerMP player : oldWatchers) {
-                    playerManager.addPlayer(player);
-                }
-            }
+        } catch (MaxChangedBlocksException e) {
+            throw new RuntimeException(e);
+        } finally {
+            saveFolder.delete();
+            DimensionManager.setWorld(originalWorld.provider.getDimension(), null, server);
+            DimensionManager.setWorld(originalWorld.provider.getDimension(), originalWorld, server);
         }
 
-        return false;
+        return true;
     }
 
     @Nullable
@@ -423,7 +414,7 @@ public class ForgeWorld extends AbstractWorld {
     @Override
     public Entity createEntity(Location location, BaseEntity entity) {
         World world = getWorld();
-        net.minecraft.entity.Entity createdEntity = EntityList.createEntityByName(entity.getTypeId(), world);
+        net.minecraft.entity.Entity createdEntity = EntityList.createEntityByIDFromName(new ResourceLocation(entity.getTypeId()), world);
         if (createdEntity != null) {
             CompoundTag nativeTag = entity.getNbtData();
             if (nativeTag != null) {
@@ -436,7 +427,7 @@ public class ForgeWorld extends AbstractWorld {
 
             createdEntity.setLocationAndAngles(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
 
-            world.spawnEntityInWorld(createdEntity);
+            world.spawnEntity(createdEntity);
             return new ForgeEntity(createdEntity);
         } else {
             return null;
@@ -446,6 +437,7 @@ public class ForgeWorld extends AbstractWorld {
     /**
      * Thrown when the reference to the world is lost.
      */
+    @SuppressWarnings("serial")
     private static class WorldReferenceLostException extends WorldEditException {
         private WorldReferenceLostException(String message) {
             super(message);

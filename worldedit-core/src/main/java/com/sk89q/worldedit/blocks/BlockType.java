@@ -257,6 +257,21 @@ public enum BlockType {
     RED_NETHER_BRICK(BlockID.RED_NETHER_BRICK, "Red Nether Brick", "rednetherbrick", "netherbrickred"),
     BONE_BLOCK(BlockID.BONE_BLOCK, "Bone Block", "boneblock", "blockbone", "fossil", "fossilblock", "blockfossil"),
     STRUCTURE_VOID(BlockID.STRUCTURE_VOID, "Structure Void", "structurevoid", "structureair"),
+    OBSERVER(BlockID.OBSERVER, "Observer", "observer", "blockupdatedetector"),
+    SHULKER_BOX_MAGENTA(BlockID.SHULKER_BOX_MAGENTA, "Magenta Shulker Box", "shulkerboxmagenta"),
+    SHULKER_BOX_LIGHT_BLUE(BlockID.SHULKER_BOX_LIGHT_BLUE, "Light Blue Shulker Box", "shulkerboxlightblue"),
+    SHULKER_BOX_YELLOW(BlockID.SHULKER_BOX_YELLOW, "Yellow Shulker Box", "shulkerboxyellow"),
+    SHULKER_BOX_LIME(BlockID.SHULKER_BOX_LIME, "Lime Shulker Box", "shulkerboxlime"),
+    SHULKER_BOX_PINK(BlockID.SHULKER_BOX_PINK, "Pink Shulker Box", "shulkerboxpink"),
+    SHULKER_BOX_GRAY(BlockID.SHULKER_BOX_GRAY, "Gray Shulker Box", "shulkerboxgray"),
+    SHULKER_BOX_LIGHT_GRAY(BlockID.SHULKER_BOX_LIGHT_GRAY, "Light Gray Shulker Box", "shulkerboxlightgray"),
+    SHULKER_BOX_CYAN(BlockID.SHULKER_BOX_CYAN, "Cyan Shulker Box", "shulkerboxcyan"),
+    SHULKER_BOX_PURPLE(BlockID.SHULKER_BOX_PURPLE, "Purple Shulker Box", "shulkerboxpurple"),
+    SHULKER_BOX_BLUE(BlockID.SHULKER_BOX_BLUE, "Blue Shulker Box", "shulkerboxblue"),
+    SHULKER_BOX_BROWN(BlockID.SHULKER_BOX_BROWN, "Brown Shulker Box", "shulkerboxbrown"),
+    SHULKER_BOX_GREEN(BlockID.SHULKER_BOX_GREEN, "Green Shulker Box", "shulkerboxgreen"),
+    SHULKER_BOX_RED(BlockID.SHULKER_BOX_RED, "Red Shulker Box", "shulkerboxred"),
+    SHULKER_BOX_BLACK(BlockID.SHULKER_BOX_BLACK, "Black Shulker Box", "shulkerboxblack"),
     STRUCTURE_BLOCK(BlockID.STRUCTURE_BLOCK, "Structure Block", "structureblock");
 
     /**

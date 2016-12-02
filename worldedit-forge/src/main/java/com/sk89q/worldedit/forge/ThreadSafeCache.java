@@ -61,7 +61,7 @@ public class ThreadSafeCache {
             if (server == null || server.getPlayerList() == null) {
                 return;
             }
-            for (EntityPlayerMP player : server.getPlayerList().getPlayerList()) {
+            for (EntityPlayerMP player : server.getPlayerList().getPlayers()) {
                 if (player != null) {
                     onlineIds.add(player.getUniqueID());
                 }

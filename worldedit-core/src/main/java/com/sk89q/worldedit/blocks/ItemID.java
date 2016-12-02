@@ -177,6 +177,14 @@ public final class ItemID {
     public static final int NETHER_QUARTZ = 406;
     public static final int TNT_MINECART = 407;
     public static final int HOPPER_MINECART = 408;
+    public static final int PRISMARINE_SHARD = 409;
+    public static final int PRISMARINE_CRYSTALS = 410;
+    public static final int RABBIT = 411;
+    public static final int COOKED_RABBIT = 412;
+    public static final int RABBIT_STEW = 413;
+    public static final int RABBIT_FOOT = 414;
+    public static final int RABBIT_HIDE = 415;
+    public static final int ARMOR_STAND = 416;
     public static final int HORSE_ARMOR_IRON = 417;
     public static final int HORSE_ARMOR_GOLD = 418;
     public static final int HORSE_ARMOR_DIAMOND = 419;
@@ -209,6 +217,8 @@ public final class ItemID {
     public static final int JUNGLE_BOAT = 446;
     public static final int ACACIA_BOAT = 447;
     public static final int DARK_OAK_BOAT = 448;
+    public static final int TOTEM_OF_UNDYING = 449;
+    public static final int SHULKER_SHELL = 450;
 
     @Deprecated public static final int GOLD_RECORD = 2256; // deprecated, but leave it there
     @Deprecated public static final int GREEN_RECORD = 2257; // deprecated, but leave it there

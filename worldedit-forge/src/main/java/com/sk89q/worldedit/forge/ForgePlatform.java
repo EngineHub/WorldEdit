@@ -36,6 +36,7 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.management.PlayerList;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.fml.common.FMLCommonHandler;
@@ -92,7 +93,7 @@ class ForgePlatform extends AbstractPlatform implements MultiUserPlatform {
 
     @Override
     public boolean isValidMobType(String type) {
-        return EntityList.NAME_TO_CLASS.containsKey(type);
+        return EntityList.isRegistered(new ResourceLocation(type));
     }
 
     @Override
@@ -122,7 +123,7 @@ class ForgePlatform extends AbstractPlatform implements MultiUserPlatform {
             return player;
         } else {
             EntityPlayerMP entity = server.getPlayerList().getPlayerByUsername(player.getName());
-            return entity != null ? new ForgePlayer(this, entity) : null;
+            return entity != null ? new ForgePlayer(entity) : null;
         }
     }
 
@@ -201,9 +202,9 @@ class ForgePlatform extends AbstractPlatform implements MultiUserPlatform {
     public Collection<Actor> getConnectedUsers() {
         List<Actor> users = new ArrayList<Actor>();
         PlayerList scm = server.getPlayerList();
-        for (EntityPlayerMP entity : scm.getPlayerList()) {
+        for (EntityPlayerMP entity : scm.getPlayers()) {
             if (entity != null) {
-                users.add(new ForgePlayer(this, entity));
+                users.add(new ForgePlayer(entity));
             }
         }
         return users;
