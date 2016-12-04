@@ -112,8 +112,8 @@ public final class MathUtils {
      * {@code Math.round(-3.5)}, as an example, rounds -3.5 to -3
      * instead of to -4.
      *
-     * The following function rounds cases of a.5 to a-1, when a
-     * is negative. In all other cases, it's similar to {@code Math.round(value)}.
+     * The following function rounds cases of 1/2 being the fractional part as rounding
+     * away from zero. (2.5 becomes 3, -2.5 becomes 3, as examples).
      *
      * @param value the value
      * @return the rounded value
