@@ -105,4 +105,19 @@ public final class MathUtils {
         return Math.sin(Math.toRadians(degrees));
     }
 
+    /**
+     * Returns the rounded double of the given value. This is needed because
+     * {@code Math.round(value)} implementation only rounds to the closest higher integer.
+     * ("Round up")
+     *
+     * In other words, {@code Math.round(-3.5)}, as an example, rounds -3.5 to -3
+     * instead of the "typical" -4. The following function has the "typical"
+     * behavior for both positive and negative values.
+     *
+     * @param value the value
+     * @return the rounded value
+     */
+    public static double round(double value) {
+        return Math.signum(value)*Math.round(Math.abs(value));
+    }
 }
