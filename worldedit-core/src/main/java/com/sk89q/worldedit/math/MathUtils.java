@@ -107,7 +107,8 @@ public final class MathUtils {
 
     /**
      * Returns the rounded double of the given value. This is needed because
-     * {@code Math.round(value)} implementation only rounds to the closest higher integer.
+     * {@code Math.round(value)} implementation rounds a.5, where a is an integer,
+     * regardless of sign, to the closest greater integer.
      * ("Round up")
      *
      * In other words, {@code Math.round(-3.5)}, as an example, rounds -3.5 to -3
