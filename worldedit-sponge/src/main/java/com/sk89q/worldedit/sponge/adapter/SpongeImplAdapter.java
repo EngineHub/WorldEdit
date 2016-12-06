@@ -73,6 +73,10 @@ public interface SpongeImplAdapter {
 
     SpongeWorld getWorld(World world);
 
+    default boolean isBest() {
+        return true;
+    }
+
     default Location adapt(org.spongepowered.api.world.Location<org.spongepowered.api.world.World> loc, Vector3d rot) {
         Vector position = new Vector(loc.getX(), loc.getY(), loc.getZ());
 

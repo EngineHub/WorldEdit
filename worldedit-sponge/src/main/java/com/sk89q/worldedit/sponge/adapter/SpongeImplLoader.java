@@ -19,7 +19,9 @@
 
 package com.sk89q.worldedit.sponge.adapter;
 
+import com.google.common.collect.Lists;
 import com.sk89q.worldedit.util.io.Closer;
+import org.spongepowered.api.Sponge;
 
 import java.io.File;
 import java.io.IOException;
@@ -149,11 +151,12 @@ public class SpongeImplLoader {
      * @throws AdapterLoadException thrown if no adapter could be found
      */
     public SpongeImplAdapter loadAdapter() throws AdapterLoadException {
+        List<SpongeImplAdapter> suitableAdapters = Lists.newArrayList();
         for (String className : adapterCandidates) {
             try {
                 Class<?> cls = Class.forName(className);
                 if (SpongeImplAdapter.class.isAssignableFrom(cls)) {
-                    return (SpongeImplAdapter) cls.newInstance();
+                    suitableAdapters.add((SpongeImplAdapter) cls.newInstance());
                 } else {
                     log.log(Level.WARNING, "Failed to load the Sponge adapter class '" + className +
                             "' because it does not implement " + SpongeImplAdapter.class.getCanonicalName());
@@ -171,6 +174,14 @@ public class SpongeImplLoader {
             }
         }
 
-        throw new AdapterLoadException(LOAD_ERROR_MESSAGE);
+        if (suitableAdapters.isEmpty()) {
+            throw new AdapterLoadException(LOAD_ERROR_MESSAGE);
+        } else {
+            if (suitableAdapters.size() == 1) {
+                return suitableAdapters.get(0);
+            } else {
+                return suitableAdapters.stream().filter(SpongeImplAdapter::isBest).findFirst().orElse(suitableAdapters.get(0));
+            }
+        }
     }
 }
