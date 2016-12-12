@@ -421,6 +421,27 @@ public class LocalSession {
     }
 
     /**
+     * Get the world selection.
+     *
+     * @return the current selection
+     */
+    public Region getWorldSelection() throws IncompleteRegionException {
+        return getSelection(getSelectionWorld());
+    }
+
+    /**
+     * This is an alias for {@link #getSelection(World)}.
+     * It enables CraftScripts to get a world selection as it is
+     * not possible to use getSelection which have two default
+     * implementations.
+     *
+     * @return Get the selection region in the world.
+     */
+    public Region getWorldSelection(World world) throws IncompleteRegionException {
+        return getSelection(world);
+    }
+
+    /**
      * Gets the clipboard.
      *
      * @return clipboard
