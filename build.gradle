@@ -34,7 +34,7 @@ buildscript {
 
 allprojects {
     group = 'com.sk89q.worldedit'
-    version = '6.1.6-SNAPSHOT'
+    version = '6.1.7-SNAPSHOT'
 }
 
 if (!project.hasProperty("artifactory_contextUrl")) ext.artifactory_contextUrl = "http://localhost"
