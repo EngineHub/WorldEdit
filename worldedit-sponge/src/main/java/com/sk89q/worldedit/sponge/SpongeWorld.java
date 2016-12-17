@@ -48,6 +48,7 @@ import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.event.cause.entity.spawn.SpawnCause;
 import org.spongepowered.api.event.cause.entity.spawn.SpawnTypes;
+import org.spongepowered.api.world.BlockChangeFlag;
 import org.spongepowered.api.world.World;
 
 import javax.annotation.Nullable;
@@ -136,7 +137,7 @@ public abstract class SpongeWorld extends AbstractWorld {
                 .world(world.getProperties())
                 .build();
 
-        snapshot.restore(true, notifyAndLight);
+        snapshot.restore(true, notifyAndLight ? BlockChangeFlag.ALL : BlockChangeFlag.NONE);
 
         // Create the TileEntity
         if (block.hasNbtData()) {
@@ -176,7 +177,7 @@ public abstract class SpongeWorld extends AbstractWorld {
     @Override
     public BaseBiome getBiome(Vector2D position) {
         checkNotNull(position);
-        return new BaseBiome(IDHelper.resolve(getWorld().getBiome(position.getBlockX(), position.getBlockZ())));
+        return new BaseBiome(IDHelper.resolve(getWorld().getBiome(position.getBlockX(), 0, position.getBlockZ())));
     }
 
     @Override
@@ -184,7 +185,7 @@ public abstract class SpongeWorld extends AbstractWorld {
         checkNotNull(position);
         checkNotNull(biome);
 
-        getWorld().setBiome(position.getBlockX(), position.getBlockZ(), IDHelper.resolveBiome(biome.getId()));
+        getWorld().setBiome(position.getBlockX(), 0, position.getBlockZ(), IDHelper.resolveBiome(biome.getId()));
         return true;
     }
 
@@ -197,16 +198,13 @@ public abstract class SpongeWorld extends AbstractWorld {
             return;
         }
 
-        Optional<org.spongepowered.api.entity.Entity> optItem = getWorld().createEntity(
+        org.spongepowered.api.entity.Entity entity = getWorld().createEntity(
                 EntityTypes.ITEM,
                 new Vector3d(position.getX(), position.getY(), position.getZ())
         );
 
-        if (optItem.isPresent()) {
-            org.spongepowered.api.entity.Entity entity = optItem.get();
-            entity.offer(Keys.REPRESENTED_ITEM, SpongeWorldEdit.toSpongeItemStack(item).createSnapshot());
-            getWorld().spawnEntity(entity, ENTITY_SPAWN_CAUSE);
-        }
+        entity.offer(Keys.REPRESENTED_ITEM, SpongeWorldEdit.toSpongeItemStack(item).createSnapshot());
+        getWorld().spawnEntity(entity, ENTITY_SPAWN_CAUSE);
     }
 
     @Override
@@ -276,24 +274,21 @@ public abstract class SpongeWorld extends AbstractWorld {
         EntityType entityType = Sponge.getRegistry().getType(EntityType.class, entity.getTypeId()).get();
         Vector3d pos = new Vector3d(location.getX(), location.getY(), location.getZ());
 
-        Optional<org.spongepowered.api.entity.Entity> optNewEnt = world.createEntity(entityType, pos);
-        if (optNewEnt.isPresent()) {
-            org.spongepowered.api.entity.Entity newEnt = optNewEnt.get();
-            if (entity.hasNbtData()) {
-                applyEntityData(newEnt, entity);
-            }
+        org.spongepowered.api.entity.Entity newEnt = world.createEntity(entityType, pos);
+        if (entity.hasNbtData()) {
+            applyEntityData(newEnt, entity);
+        }
 
-            // Overwrite any data set by the NBT application
-            Vector dir = location.getDirection();
+        // Overwrite any data set by the NBT application
+        Vector dir = location.getDirection();
 
-            newEnt.setLocationAndRotation(
-                    new org.spongepowered.api.world.Location<>(getWorld(), pos),
-                    new Vector3d(dir.getX(), dir.getY(), dir.getZ())
-            );
+        newEnt.setLocationAndRotation(
+                new org.spongepowered.api.world.Location<>(getWorld(), pos),
+                new Vector3d(dir.getX(), dir.getY(), dir.getZ())
+        );
 
-            if (world.spawnEntity(newEnt, ENTITY_SPAWN_CAUSE)) {
-                return new SpongeEntity(newEnt);
-            }
+        if (world.spawnEntity(newEnt, ENTITY_SPAWN_CAUSE)) {
+            return new SpongeEntity(newEnt);
         }
 
         return null;

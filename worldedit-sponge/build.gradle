@@ -9,19 +9,19 @@ buildscript {
 
     dependencies {
         classpath 'net.minecrell:VanillaGradle:2.0.3_1'
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.1-SNAPSHOT'
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.2-SNAPSHOT'
     }
 }
 
 plugins {
-    id 'org.spongepowered.plugin' version '0.5.2'
+    id 'org.spongepowered.plugin' version '0.6'
 }
 
 apply plugin: 'net.minecrell.vanilla.server.library'
 
 dependencies {
     compile project(':worldedit-core')
-    compile 'org.spongepowered:spongeapi:4.1.0-SNAPSHOT'
+    compile 'org.spongepowered:spongeapi:6.0.0-SNAPSHOT'
     testCompile group: 'org.mockito', name: 'mockito-core', version:'1.9.0-rc1'
 }
 
@@ -35,8 +35,8 @@ sponge {
 }
 
 minecraft {
-    version = "1.8.9"
-    mappings = "stable_22"
+    version = "1.11"
+    mappings = "snapshot_20161116"
     runDir = 'run'
 }
 
