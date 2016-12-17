@@ -31,11 +31,13 @@ import com.sk89q.worldedit.util.command.CommandMapping;
 import com.sk89q.worldedit.util.command.Dispatcher;
 import com.sk89q.worldedit.world.World;
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.EntityType;
 import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.scheduler.Task;
+import org.spongepowered.api.world.Location;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -131,7 +133,7 @@ class SpongePlatform extends AbstractPlatform implements MultiUserPlatform {
                 }
 
                 @Override
-                public List<String> getSuggestions(CommandSource source, String arguments) throws org.spongepowered.api.command.CommandException {
+                public List<String> getSuggestions(CommandSource source, String arguments, @Nullable Location<org.spongepowered.api.world.World> targetPosition) throws CommandException {
                     CommandSuggestionEvent weEvent = new CommandSuggestionEvent(SpongeWorldEdit.inst().wrapCommandSource(source), command.getPrimaryAlias() + " " + arguments);
                     WorldEdit.getInstance().getEventBus().post(weEvent);
                     return weEvent.getSuggestions();
