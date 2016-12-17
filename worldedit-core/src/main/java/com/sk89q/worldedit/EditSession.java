@@ -1452,6 +1452,9 @@ public class EditSession implements Extent {
         final int ceilRadiusY = (int) Math.ceil(radiusY);
         final int ceilRadiusZ = (int) Math.ceil(radiusZ);
 
+        final boolean genUp = (!hemi || (hemi && !upsideDown));
+        final boolean genDown = (!hemi || (hemi && upsideDown));
+
         double nextXn = 0;
         forX: for (int x = 0; x <= ceilRadiusX; ++x) {
             final double xn = nextXn;
@@ -1482,7 +1485,7 @@ public class EditSession implements Extent {
                         }
                     }
 
-                    if(!hemi || (hemi && !upsideDown)) {
+                    if(genUp) {
                         if (setBlock(pos.add(x, y, z), block)) {
                             ++affected;
                         }
@@ -1496,7 +1499,7 @@ public class EditSession implements Extent {
                             ++affected;
                         }
                     }
-                    if(!hemi || (hemi && upsideDown)) {
+                    if(genDown) {
                         if (setBlock(pos.add(x, -y, z), block)) {
                             ++affected;
                         }
