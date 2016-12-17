@@ -1417,8 +1417,8 @@ public class EditSession implements Extent {
     * @return number of blocks changed
     * @throws MaxChangedBlocksException thrown if too many blocks are changed
     */
-    public int makeSphere(Vector pos, Pattern block, double radius, boolean filled) throws MaxChangedBlocksException {
-        return makeSphere(pos, block, radius, radius, radius, filled);
+    public int makeSphere(Vector pos, Pattern block, double radius, boolean filled, boolean semi) throws MaxChangedBlocksException {
+        return makeSphere(pos, block, radius, radius, radius, filled, semi);
     }
 
     /**
@@ -1430,10 +1430,11 @@ public class EditSession implements Extent {
      * @param radiusY The sphere/ellipsoid's largest up/down extent
      * @param radiusZ The sphere/ellipsoid's largest east/west extent
      * @param filled If false, only a shell will be generated.
+     * @param semi If true, only the top half will be generated.
      * @return number of blocks changed
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
-    public int makeSphere(Vector pos, Pattern block, double radiusX, double radiusY, double radiusZ, boolean filled) throws MaxChangedBlocksException {
+    public int makeSphere(Vector pos, Pattern block, double radiusX, double radiusY, double radiusZ, boolean filled, boolean semi) throws MaxChangedBlocksException {
         int affected = 0;
 
         radiusX += 0.5;
@@ -1484,23 +1485,25 @@ public class EditSession implements Extent {
                     if (setBlock(pos.add(-x, y, z), block)) {
                         ++affected;
                     }
-                    if (setBlock(pos.add(x, -y, z), block)) {
-                        ++affected;
-                    }
                     if (setBlock(pos.add(x, y, -z), block)) {
-                        ++affected;
-                    }
-                    if (setBlock(pos.add(-x, -y, z), block)) {
-                        ++affected;
-                    }
-                    if (setBlock(pos.add(x, -y, -z), block)) {
                         ++affected;
                     }
                     if (setBlock(pos.add(-x, y, -z), block)) {
                         ++affected;
                     }
-                    if (setBlock(pos.add(-x, -y, -z), block)) {
-                        ++affected;
+                    if(!semi) {
+                        if (setBlock(pos.add(x, -y, z), block)) {
+                            ++affected;
+                        }
+                        if (setBlock(pos.add(-x, -y, z), block)) {
+                            ++affected;
+                        }
+                        if (setBlock(pos.add(x, -y, -z), block)) {
+                            ++affected;
+                        }
+                        if (setBlock(pos.add(-x, -y, -z), block)) {
+                            ++affected;
+                        }
                     }
                 }
             }
