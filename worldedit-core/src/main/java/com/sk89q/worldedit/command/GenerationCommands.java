@@ -122,28 +122,28 @@ public class GenerationCommands {
     }
 
     @Command(
-       aliases = { "/semisphere" },
-       usage = "<block> <radius>[,<radius>,<radius>] [raised?]",
-       flags = "h",
-       desc = "Generates a filled semisphere.",
+       aliases = { "/hemisphere" },
+       usage = "<block> <radius>[,<radius>,<radius>]",
+       flags = "ih",
+       desc = "Generates a filled hemisphere.",
        help =
-           "Generates a filled semisphere.\n" +
+           "Generates a filled hemisphere.\n" +
            "By specifying 3 radii, separated by commas,\n" +
            "you can generate an ellipsoid. The order of the ellipsoid radii\n" +
            "is north/south, up/down, east/west.",
        min = 2,
        max = 3
     )
-    @CommandPermissions("worldedit.generation.semisphere")
+    @CommandPermissions("worldedit.generation.hemisphere")
     @Logging(PLACEMENT)
-    public void semisphere(Player player, LocalSession session, EditSession editSession, Pattern pattern, String radiusString, @Optional("false") boolean raised, @Switch('h') boolean hollow) throws WorldEditException {
-        sphere(player, session, editSession, pattern, radiusString, raised, hollow, true);
+    public void hemisphere(Player player, LocalSession session, EditSession editSession, Pattern pattern, String radiusString, @Switch('h') boolean hollow, @Switch('i') boolean upsideDown) throws WorldEditException {
+        sphere(player, session, editSession, pattern, radiusString, false, hollow, true, upsideDown);
     }
 
     @Command(
         aliases = { "/hsphere" },
         usage = "<block> <radius>[,<radius>,<radius>] [raised?]",
-        flags = "s",
+        flags = "si",
         desc = "Generates a hollow sphere.",
         help =
             "Generates a hollow sphere.\n" +
@@ -155,14 +155,14 @@ public class GenerationCommands {
     )
     @CommandPermissions("worldedit.generation.sphere")
     @Logging(PLACEMENT)
-    public void hsphere(Player player, LocalSession session, EditSession editSession, Pattern pattern, String radiusString, @Optional("false") boolean raised, @Switch('s') boolean semi) throws WorldEditException {
-        sphere(player, session, editSession, pattern, radiusString, raised, true, semi);
+    public void hsphere(Player player, LocalSession session, EditSession editSession, Pattern pattern, String radiusString, @Optional("false") boolean raised, @Switch('s') boolean hemi, @Switch('i') boolean upsideDown) throws WorldEditException {
+        sphere(player, session, editSession, pattern, radiusString, raised, true, hemi, upsideDown);
     }
 
     @Command(
         aliases = { "/sphere" },
         usage = "<block> <radius>[,<radius>,<radius>] [raised?]",
-        flags = "hs",
+        flags = "hsi",
         desc = "Generates a filled sphere.",
         help =
             "Generates a filled sphere.\n" +
@@ -174,7 +174,7 @@ public class GenerationCommands {
     )
     @CommandPermissions("worldedit.generation.sphere")
     @Logging(PLACEMENT)
-    public void sphere(Player player, LocalSession session, EditSession editSession, Pattern pattern, String radiusString, @Optional("false") boolean raised, @Switch('h') boolean hollow, @Switch('s') boolean semi) throws WorldEditException {
+    public void sphere(Player player, LocalSession session, EditSession editSession, Pattern pattern, String radiusString, @Optional("false") boolean raised, @Switch('h') boolean hollow, @Switch('s') boolean hemi, @Switch('i') boolean upsideDown) throws WorldEditException {
         String[] radii = radiusString.split(",");
         final double radiusX, radiusY, radiusZ;
         switch (radii.length) {
@@ -198,11 +198,11 @@ public class GenerationCommands {
         worldEdit.checkMaxRadius(radiusZ);
 
         Vector pos = session.getPlacementPosition(player);
-        if (raised && !semi) {
+        if (raised && !hemi) {
             pos = pos.add(0, radiusY, 0);
         }
 
-        int affected = editSession.makeSphere(pos, Patterns.wrap(pattern), radiusX, radiusY, radiusZ, !hollow, semi);
+        int affected = editSession.makeSphere(pos, Patterns.wrap(pattern), radiusX, radiusY, radiusZ, !hollow, hemi, upsideDown);
         player.findFreePosition();
         player.print(affected + " block(s) have been created.");
     }

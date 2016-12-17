@@ -1414,11 +1414,13 @@ public class EditSession implements Extent {
     * @param block The block pattern to use
     * @param radius The sphere's radius
     * @param filled If false, only a shell will be generated.
+    * @param hemi If true, only the top half will be generated.
+    * @param upsideDown If true and hemi is true, only the bottom half will be generated.
     * @return number of blocks changed
     * @throws MaxChangedBlocksException thrown if too many blocks are changed
     */
-    public int makeSphere(Vector pos, Pattern block, double radius, boolean filled, boolean semi) throws MaxChangedBlocksException {
-        return makeSphere(pos, block, radius, radius, radius, filled, semi);
+    public int makeSphere(Vector pos, Pattern block, double radius, boolean filled, boolean hemi, boolean upsideDown) throws MaxChangedBlocksException {
+        return makeSphere(pos, block, radius, radius, radius, filled, hemi, upsideDown);
     }
 
     /**
@@ -1430,11 +1432,12 @@ public class EditSession implements Extent {
      * @param radiusY The sphere/ellipsoid's largest up/down extent
      * @param radiusZ The sphere/ellipsoid's largest east/west extent
      * @param filled If false, only a shell will be generated.
-     * @param semi If true, only the top half will be generated.
+     * @param hemi If true, only the top half will be generated.
+     * @param upsideDown If true and hemi is true, only the bottom half will be generated.
      * @return number of blocks changed
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
-    public int makeSphere(Vector pos, Pattern block, double radiusX, double radiusY, double radiusZ, boolean filled, boolean semi) throws MaxChangedBlocksException {
+    public int makeSphere(Vector pos, Pattern block, double radiusX, double radiusY, double radiusZ, boolean filled, boolean hemi, boolean upsideDown) throws MaxChangedBlocksException {
         int affected = 0;
 
         radiusX += 0.5;
@@ -1479,19 +1482,21 @@ public class EditSession implements Extent {
                         }
                     }
 
-                    if (setBlock(pos.add(x, y, z), block)) {
-                        ++affected;
+                    if(!hemi || (hemi && !upsideDown)) {
+                        if (setBlock(pos.add(x, y, z), block)) {
+                            ++affected;
+                        }
+                        if (setBlock(pos.add(-x, y, z), block)) {
+                            ++affected;
+                        }
+                        if (setBlock(pos.add(x, y, -z), block)) {
+                            ++affected;
+                        }
+                        if (setBlock(pos.add(-x, y, -z), block)) {
+                            ++affected;
+                        }
                     }
-                    if (setBlock(pos.add(-x, y, z), block)) {
-                        ++affected;
-                    }
-                    if (setBlock(pos.add(x, y, -z), block)) {
-                        ++affected;
-                    }
-                    if (setBlock(pos.add(-x, y, -z), block)) {
-                        ++affected;
-                    }
-                    if(!semi) {
+                    if(!hemi || (hemi && upsideDown)) {
                         if (setBlock(pos.add(x, -y, z), block)) {
                             ++affected;
                         }
