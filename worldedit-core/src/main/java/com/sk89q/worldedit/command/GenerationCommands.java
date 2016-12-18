@@ -195,19 +195,19 @@ public class GenerationCommands {
         String[] radii = radiusString.split(",");
         final double radiusX, radiusY, radiusZ;
         switch (radii.length) {
-            case 1:
-                radiusX = radiusY = radiusZ = Math.max(1, Double.parseDouble(radii[0]));
-                break;
+        case 1:
+            radiusX = radiusY = radiusZ = Math.max(1, Double.parseDouble(radii[0]));
+            break;
 
-            case 3:
-                radiusX = Math.max(1, Double.parseDouble(radii[0]));
-                radiusY = Math.max(1, Double.parseDouble(radii[1]));
-                radiusZ = Math.max(1, Double.parseDouble(radii[2]));
-                break;
+        case 3:
+            radiusX = Math.max(1, Double.parseDouble(radii[0]));
+            radiusY = Math.max(1, Double.parseDouble(radii[1]));
+            radiusZ = Math.max(1, Double.parseDouble(radii[2]));
+            break;
 
-            default:
-                player.printError("You must either specify 1 or 3 radius values.");
-                return;
+        default:
+            player.printError("You must either specify 1 or 3 radius values.");
+            return;
         }
 
         worldEdit.checkMaxRadius(radiusX);
