@@ -150,8 +150,8 @@ public class GenerationCommands {
             "By specifying 3 radii, separated by commas,\n" +
             "you can generate an ellipsoid. The order of the ellipsoid radii\n" +
             "is north/south, up/down, east/west.",
-            min = 2,
-            max = 3
+        min = 2,
+        max = 3
     )
     @CommandPermissions("worldedit.generation.sphere")
     @Logging(PLACEMENT)
