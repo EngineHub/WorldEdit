@@ -176,19 +176,19 @@ public class GenerationCommands {
     @Logging(PLACEMENT)
     public void sphere(Player player, LocalSession session, EditSession editSession, Pattern pattern, String radiusString, @Optional("false") boolean raised, @Switch('h') boolean hollow, @Switch('s') boolean hemi, @Switch('i') boolean upsideDown, @Switch('p') boolean precisionMode) throws WorldEditException {
         boolean error = false;
-        if(!hemi) {
-            if(precisionMode) {
-                player.printError("-p flag doesn't have effect when it's not an hemisphere.");
+        if (!hemi) {
+            if (precisionMode) {
+                player.printError("-p flag doesn't have an effect when it's not a hemisphere.");
                 error = true;
             }
 
-            if(upsideDown) {
-                player.printError("-i flag doesn't have effect when it's not an hemisphere.");
+            if (upsideDown) {
+                player.printError("-i flag doesn't have an effect when it's not a hemisphere.");
                 error = true;
             }
         }
 
-        if(error) {
+        if (error) {
             return;
         }
 
