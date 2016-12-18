@@ -1432,7 +1432,7 @@ public class EditSession implements Extent {
      * @param filled If false, only a shell will be generated.
      * @param hemi If true, only the top half will be generated.
      * @param upsideDown If true and hemi is true, only the bottom half will be generated.
-     * @param directionVector If not null and hemi is true, the hemisphere's orientation will depend on the player's viewing angle.
+     * @param directionVector If not null and hemi is true, the hemisphere's direction will match to the vector.
      * @return number of blocks changed
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
