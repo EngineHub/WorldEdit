@@ -122,75 +122,75 @@ public class GenerationCommands {
     }
 
     @Command(
-       aliases = { "/hemisphere" },
-       usage = "<block> <radius>[,<radius>,<radius>]",
-       flags = "ih",
-       desc = "Generates a filled hemisphere.",
-       help =
-           "Generates a filled hemisphere.\n" +
-           "By specifying 3 radii, separated by commas,\n" +
-           "you can generate an ellipsoid. The order of the ellipsoid radii\n" +
-           "is north/south, up/down, east/west.",
-       min = 2,
-       max = 3
+            aliases = { "/hemisphere" },
+            usage = "<block> <radius>[,<radius>,<radius>]",
+            flags = "hip",
+            desc = "Generates a filled hemisphere.",
+            help =
+                    "Generates a filled hemisphere.\n" +
+                            "By specifying 3 radii, separated by commas,\n" +
+                            "you can generate an ellipsoid. The order of the ellipsoid radii\n" +
+                            "is north/south, up/down, east/west.",
+            min = 2,
+            max = 3
     )
     @CommandPermissions("worldedit.generation.hemisphere")
     @Logging(PLACEMENT)
-    public void hemisphere(Player player, LocalSession session, EditSession editSession, Pattern pattern, String radiusString, @Switch('h') boolean hollow, @Switch('i') boolean upsideDown) throws WorldEditException {
-        sphere(player, session, editSession, pattern, radiusString, false, hollow, true, upsideDown);
+    public void hemisphere(Player player, LocalSession session, EditSession editSession, Pattern pattern, String radiusString, @Switch('h') boolean hollow, @Switch('i') boolean upsideDown, @Switch('p') boolean precisionMode) throws WorldEditException {
+        sphere(player, session, editSession, pattern, radiusString, false, hollow, true, upsideDown, precisionMode);
     }
 
     @Command(
-        aliases = { "/hsphere" },
-        usage = "<block> <radius>[,<radius>,<radius>] [raised?]",
-        flags = "si",
-        desc = "Generates a hollow sphere.",
-        help =
-            "Generates a hollow sphere.\n" +
-            "By specifying 3 radii, separated by commas,\n" +
-            "you can generate an ellipsoid. The order of the ellipsoid radii\n" +
-            "is north/south, up/down, east/west.",
-        min = 2,
-        max = 3
+            aliases = { "/hsphere" },
+            usage = "<block> <radius>[,<radius>,<radius>] [raised?]",
+            flags = "sip",
+            desc = "Generates a hollow sphere.",
+            help =
+                    "Generates a hollow sphere.\n" +
+                            "By specifying 3 radii, separated by commas,\n" +
+                            "you can generate an ellipsoid. The order of the ellipsoid radii\n" +
+                            "is north/south, up/down, east/west.",
+            min = 2,
+            max = 3
     )
     @CommandPermissions("worldedit.generation.sphere")
     @Logging(PLACEMENT)
-    public void hsphere(Player player, LocalSession session, EditSession editSession, Pattern pattern, String radiusString, @Optional("false") boolean raised, @Switch('s') boolean hemi, @Switch('i') boolean upsideDown) throws WorldEditException {
-        sphere(player, session, editSession, pattern, radiusString, raised, true, hemi, upsideDown);
+    public void hsphere(Player player, LocalSession session, EditSession editSession, Pattern pattern, String radiusString, @Optional("false") boolean raised, @Switch('s') boolean hemi, @Switch('i') boolean upsideDown, @Switch('p') boolean precisionMode) throws WorldEditException {
+        sphere(player, session, editSession, pattern, radiusString, raised, true, hemi, upsideDown, precisionMode);
     }
 
     @Command(
-        aliases = { "/sphere" },
-        usage = "<block> <radius>[,<radius>,<radius>] [raised?]",
-        flags = "hsi",
-        desc = "Generates a filled sphere.",
-        help =
-            "Generates a filled sphere.\n" +
-            "By specifying 3 radii, separated by commas,\n" +
-            "you can generate an ellipsoid. The order of the ellipsoid radii\n" +
-            "is north/south, up/down, east/west.",
-        min = 2,
-        max = 3
+            aliases = { "/sphere" },
+            usage = "<block> <radius>[,<radius>,<radius>] [raised?]",
+            flags = "hsip",
+            desc = "Generates a filled sphere.",
+            help =
+                    "Generates a filled sphere.\n" +
+                            "By specifying 3 radii, separated by commas,\n" +
+                            "you can generate an ellipsoid. The order of the ellipsoid radii\n" +
+                            "is north/south, up/down, east/west.",
+            min = 2,
+            max = 3
     )
     @CommandPermissions("worldedit.generation.sphere")
     @Logging(PLACEMENT)
-    public void sphere(Player player, LocalSession session, EditSession editSession, Pattern pattern, String radiusString, @Optional("false") boolean raised, @Switch('h') boolean hollow, @Switch('s') boolean hemi, @Switch('i') boolean upsideDown) throws WorldEditException {
+    public void sphere(Player player, LocalSession session, EditSession editSession, Pattern pattern, String radiusString, @Optional("false") boolean raised, @Switch('h') boolean hollow, @Switch('s') boolean hemi, @Switch('i') boolean upsideDown, @Switch('p') boolean precisionMode) throws WorldEditException {
         String[] radii = radiusString.split(",");
         final double radiusX, radiusY, radiusZ;
         switch (radii.length) {
-        case 1:
-            radiusX = radiusY = radiusZ = Math.max(1, Double.parseDouble(radii[0]));
-            break;
+            case 1:
+                radiusX = radiusY = radiusZ = Math.max(1, Double.parseDouble(radii[0]));
+                break;
 
-        case 3:
-            radiusX = Math.max(1, Double.parseDouble(radii[0]));
-            radiusY = Math.max(1, Double.parseDouble(radii[1]));
-            radiusZ = Math.max(1, Double.parseDouble(radii[2]));
-            break;
+            case 3:
+                radiusX = Math.max(1, Double.parseDouble(radii[0]));
+                radiusY = Math.max(1, Double.parseDouble(radii[1]));
+                radiusZ = Math.max(1, Double.parseDouble(radii[2]));
+                break;
 
-        default:
-            player.printError("You must either specify 1 or 3 radius values.");
-            return;
+            default:
+                player.printError("You must either specify 1 or 3 radius values.");
+                return;
         }
 
         worldEdit.checkMaxRadius(radiusX);
@@ -202,7 +202,12 @@ public class GenerationCommands {
             pos = pos.add(0, radiusY, 0);
         }
 
-        int affected = editSession.makeSphere(pos, Patterns.wrap(pattern), radiusX, radiusY, radiusZ, !hollow, hemi, upsideDown);
+        Vector directionVector = null;
+        if (hemi && precisionMode) {
+            directionVector = player.getLocation().getDirection();
+        }
+
+        int affected = editSession.makeSphere(pos, Patterns.wrap(pattern), radiusX, radiusY, radiusZ, !hollow, hemi, upsideDown, directionVector);
         player.findFreePosition();
         player.print(affected + " block(s) have been created.");
     }

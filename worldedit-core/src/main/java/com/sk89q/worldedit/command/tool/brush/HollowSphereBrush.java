@@ -35,6 +35,6 @@ public class HollowSphereBrush implements Brush {
         if (pattern == null) {
             pattern = new BlockPattern(new BaseBlock(BlockID.COBBLESTONE));
         }
-        editSession.makeSphere(position, Patterns.wrap(pattern), size, size, size, false, false, false);
+        editSession.makeSphere(position, Patterns.wrap(pattern), size, size, size, false, false, false, null);
     }
 }

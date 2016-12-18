@@ -35,6 +35,6 @@ public class SphereBrush implements Brush {
         if (pattern == null) {
             pattern = new BlockPattern(new BaseBlock(BlockID.COBBLESTONE));
         }
-        editSession.makeSphere(position, Patterns.wrap(pattern), size, size, size, true, false, false);
+        editSession.makeSphere(position, Patterns.wrap(pattern), size, size, size, true, false, false, null);
     }
 }

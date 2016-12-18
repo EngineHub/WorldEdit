@@ -24,6 +24,7 @@ import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.blocks.BlockType;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
+import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.event.extent.EditSessionEvent;
 import com.sk89q.worldedit.extent.ChangeSetExtent;
 import com.sk89q.worldedit.extent.Extent;
@@ -1414,13 +1415,11 @@ public class EditSession implements Extent {
     * @param block The block pattern to use
     * @param radius The sphere's radius
     * @param filled If false, only a shell will be generated.
-    * @param hemi If true, only the top half will be generated.
-    * @param upsideDown If true and hemi is true, only the bottom half will be generated.
     * @return number of blocks changed
     * @throws MaxChangedBlocksException thrown if too many blocks are changed
     */
-    public int makeSphere(Vector pos, Pattern block, double radius, boolean filled, boolean hemi, boolean upsideDown) throws MaxChangedBlocksException {
-        return makeSphere(pos, block, radius, radius, radius, filled, hemi, upsideDown);
+    public int makeSphere(Vector pos, Pattern block, double radius, boolean filled) throws MaxChangedBlocksException {
+        return makeSphere(pos, block, radius, radius, radius, filled, false, false, null);
     }
 
     /**
@@ -1437,7 +1436,7 @@ public class EditSession implements Extent {
      * @return number of blocks changed
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
-    public int makeSphere(Vector pos, Pattern block, double radiusX, double radiusY, double radiusZ, boolean filled, boolean hemi, boolean upsideDown) throws MaxChangedBlocksException {
+    public int makeSphere(Vector pos, Pattern block, double radiusX, double radiusY, double radiusZ, boolean filled, boolean hemi, boolean upsideDown, @Nullable Vector directionVector) throws MaxChangedBlocksException {
         int affected = 0;
 
         radiusX += 0.5;
@@ -1454,6 +1453,10 @@ public class EditSession implements Extent {
 
         final boolean genUp = (!hemi || (hemi && !upsideDown));
         final boolean genDown = (!hemi || (hemi && upsideDown));
+
+        if (directionVector != null && upsideDown) {
+            directionVector = directionVector.multiply(-1);
+        }
 
         double nextXn = 0;
         forX: for (int x = 0; x <= ceilRadiusX; ++x) {
@@ -1485,32 +1488,44 @@ public class EditSession implements Extent {
                         }
                     }
 
-                    if(genUp) {
-                        if (setBlock(pos.add(x, y, z), block)) {
-                            ++affected;
-                        }
-                        if (setBlock(pos.add(-x, y, z), block)) {
-                            ++affected;
-                        }
-                        if (setBlock(pos.add(x, y, -z), block)) {
-                            ++affected;
-                        }
-                        if (setBlock(pos.add(-x, y, -z), block)) {
-                            ++affected;
+                    if (directionVector != null) {
+                        Vector vectors[] = {pos.add(x, y, z), pos.add(-x, y, z), pos.add(x, y, -z), pos.add(-x, y, -z), pos.add(x, -y, z), pos.add(-x, -y, z), pos.add(x, -y, -z), pos.add(-x, -y, -z)};
+
+                        for (Vector vector : vectors) {
+                            Vector vectorFromCenter = vector.subtract(pos);
+                            if((vectorFromCenter.dot(directionVector) >= 0) && (setBlock(vector, block))) {
+                                       ++affected;
+                            }
                         }
                     }
-                    if(genDown) {
-                        if (setBlock(pos.add(x, -y, z), block)) {
-                            ++affected;
+                    else {
+                        if (genUp) {
+                            if (setBlock(pos.add(x, y, z), block)) {
+                                ++affected;
+                            }
+                            if (setBlock(pos.add(-x, y, z), block)) {
+                                ++affected;
+                            }
+                            if (setBlock(pos.add(x, y, -z), block)) {
+                                ++affected;
+                            }
+                            if (setBlock(pos.add(-x, y, -z), block)) {
+                                ++affected;
+                            }
                         }
-                        if (setBlock(pos.add(-x, -y, z), block)) {
-                            ++affected;
-                        }
-                        if (setBlock(pos.add(x, -y, -z), block)) {
-                            ++affected;
-                        }
-                        if (setBlock(pos.add(-x, -y, -z), block)) {
-                            ++affected;
+                        if (genDown) {
+                            if (setBlock(pos.add(x, -y, z), block)) {
+                                ++affected;
+                            }
+                            if (setBlock(pos.add(-x, -y, z), block)) {
+                                ++affected;
+                            }
+                            if (setBlock(pos.add(x, -y, -z), block)) {
+                                ++affected;
+                            }
+                            if (setBlock(pos.add(-x, -y, -z), block)) {
+                                ++affected;
+                            }
                         }
                     }
                 }
