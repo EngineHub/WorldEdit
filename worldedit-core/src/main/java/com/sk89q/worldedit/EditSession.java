@@ -1492,7 +1492,7 @@ public class EditSession implements Extent {
 
                         for (Vector vector : vectors) {
                             Vector vectorFromCenter = vector.subtract(pos);
-                            if((vectorFromCenter.dot(directionVector) >= 0) && (setBlock(vector, block))) {
+                            if ((vectorFromCenter.dot(directionVector) >= 0) && (setBlock(vector, block))) {
                                        ++affected;
                             }
                         }
