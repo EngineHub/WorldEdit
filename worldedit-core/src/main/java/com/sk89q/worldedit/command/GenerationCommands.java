@@ -122,17 +122,17 @@ public class GenerationCommands {
     }
 
     @Command(
-            aliases = { "/hemisphere" },
-            usage = "<block> <radius>[,<radius>,<radius>]",
-            flags = "hip",
-            desc = "Generates a filled hemisphere.",
-            help =
-                    "Generates a filled hemisphere.\n" +
-                            "By specifying 3 radii, separated by commas,\n" +
-                            "you can generate an ellipsoid. The order of the ellipsoid radii\n" +
-                            "is north/south, up/down, east/west.",
-            min = 2,
-            max = 3
+        aliases = { "/hemisphere" },
+        usage = "<block> <radius>[,<radius>,<radius>]",
+        flags = "hip",
+        desc = "Generates a filled hemisphere.",
+        help =
+            "Generates a filled hemisphere.\n" +
+            "By specifying 3 radii, separated by commas,\n" +
+            "you can generate an ellipsoid. The order of the ellipsoid radii\n" +
+            "is north/south, up/down, east/west.",
+        min = 2,
+        max = 2
     )
     @CommandPermissions("worldedit.generation.hemisphere")
     @Logging(PLACEMENT)
@@ -141,15 +141,15 @@ public class GenerationCommands {
     }
 
     @Command(
-            aliases = { "/hsphere" },
-            usage = "<block> <radius>[,<radius>,<radius>] [raised?]",
-            flags = "sip",
-            desc = "Generates a hollow sphere.",
-            help =
-                    "Generates a hollow sphere.\n" +
-                            "By specifying 3 radii, separated by commas,\n" +
-                            "you can generate an ellipsoid. The order of the ellipsoid radii\n" +
-                            "is north/south, up/down, east/west.",
+        aliases = { "/hsphere" },
+        usage = "<block> <radius>[,<radius>,<radius>] [raised?]",
+        flags = "sip",
+        desc = "Generates a hollow sphere.",
+        help =
+            "Generates a hollow sphere.\n" +
+            "By specifying 3 radii, separated by commas,\n" +
+            "you can generate an ellipsoid. The order of the ellipsoid radii\n" +
+            "is north/south, up/down, east/west.",
             min = 2,
             max = 3
     )
@@ -160,21 +160,38 @@ public class GenerationCommands {
     }
 
     @Command(
-            aliases = { "/sphere" },
-            usage = "<block> <radius>[,<radius>,<radius>] [raised?]",
-            flags = "hsip",
-            desc = "Generates a filled sphere.",
-            help =
-                    "Generates a filled sphere.\n" +
-                            "By specifying 3 radii, separated by commas,\n" +
-                            "you can generate an ellipsoid. The order of the ellipsoid radii\n" +
-                            "is north/south, up/down, east/west.",
-            min = 2,
-            max = 3
+        aliases = { "/sphere" },
+        usage = "<block> <radius>[,<radius>,<radius>] [raised?]",
+        flags = "hsip",
+        desc = "Generates a filled sphere.",
+        help =
+            "Generates a filled sphere.\n" +
+            "By specifying 3 radii, separated by commas,\n" +
+            "you can generate an ellipsoid. The order of the ellipsoid radii\n" +
+            "is north/south, up/down, east/west.",
+        min = 2,
+        max = 3
     )
     @CommandPermissions("worldedit.generation.sphere")
     @Logging(PLACEMENT)
     public void sphere(Player player, LocalSession session, EditSession editSession, Pattern pattern, String radiusString, @Optional("false") boolean raised, @Switch('h') boolean hollow, @Switch('s') boolean hemi, @Switch('i') boolean upsideDown, @Switch('p') boolean precisionMode) throws WorldEditException {
+        boolean error = false;
+        if(!hemi) {
+            if(precisionMode) {
+                player.printError("-p flag doesn't have effect when it's not an hemisphere.");
+                error = true;
+            }
+
+            if(upsideDown) {
+                player.printError("-i flag doesn't have effect when it's not an hemisphere.");
+                error = true;
+            }
+        }
+
+        if(error) {
+            return;
+        }
+
         String[] radii = radiusString.split(",");
         final double radiusX, radiusY, radiusZ;
         switch (radii.length) {

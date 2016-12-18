@@ -1432,11 +1432,30 @@ public class EditSession implements Extent {
      * @param filled If false, only a shell will be generated.
      * @param hemi If true, only the top half will be generated.
      * @param upsideDown If true and hemi is true, only the bottom half will be generated.
+     * @param directionVector If true and hemi is true, the hemisphere's orientation will depend on the player's viewing angle.
      * @return number of blocks changed
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
     public int makeSphere(Vector pos, Pattern block, double radiusX, double radiusY, double radiusZ, boolean filled, boolean hemi, boolean upsideDown, @Nullable Vector directionVector) throws MaxChangedBlocksException {
         int affected = 0;
+
+        if(!hemi) {
+            if(directionVector != null) {
+                return -2;
+            }
+
+            if(upsideDown) {
+                return -3;
+            }
+        }
+
+        if ((directionVector != null) && !hemi) {
+            return -2;
+        }
+
+        if (upsideDown && !hemi) {
+            return -3;
+        }
 
         radiusX += 0.5;
         radiusY += 0.5;
