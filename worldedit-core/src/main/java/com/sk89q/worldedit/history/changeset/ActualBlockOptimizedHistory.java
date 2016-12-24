@@ -71,7 +71,7 @@ public class ActualBlockOptimizedHistory extends BlockOptimizedHistory {
      */
     private int originX,originY,originZ;
     private int lastX,lastY,lastZ;
-    private byte[] compressed_blocks;
+    private byte[] compressedBlocks;
     private ByteArrayOutputStream outByteArray;
     private DeflaterOutputStream outCompress;
     private DataOutputStream out;
@@ -94,13 +94,13 @@ public class ActualBlockOptimizedHistory extends BlockOptimizedHistory {
             deflater.setStrategy(Deflater.FILTERED);
             this.outCompress = new DeflaterOutputStream(outByteArray, deflater, 8192);
             this.out = new DataOutputStream(new BufferedOutputStream(outCompress));
-            if (compressed_blocks != null) {
+            if (compressedBlocks != null) {
                 try {
-                    this.outByteArray.write(compressed_blocks);
+                    this.outByteArray.write(compressedBlocks);
                 } catch (IOException neverHappens) {
                     neverHappens.printStackTrace();
                 }
-                compressed_blocks = null;
+                compressedBlocks = null;
             }
         }
     }
@@ -112,7 +112,7 @@ public class ActualBlockOptimizedHistory extends BlockOptimizedHistory {
             } catch (IOException neverHappens) {
                 neverHappens.printStackTrace();
             }
-            this.compressed_blocks = outByteArray.toByteArray();
+            this.compressedBlocks = outByteArray.toByteArray();
             this.outByteArray = null;
             this.outCompress = null;
             this.out = null;
@@ -123,7 +123,7 @@ public class ActualBlockOptimizedHistory extends BlockOptimizedHistory {
         close();
         try {
             Inflater inflate = new Inflater(true);
-            inflate.setInput(compressed_blocks);
+            inflate.setInput(compressedBlocks);
             byte[] buffer = new byte[size * ENTRY_SIZE];
             inflate.inflate(buffer);
             return buffer;
