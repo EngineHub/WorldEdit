@@ -31,7 +31,6 @@ import com.sk89q.worldedit.WorldVector;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.util.command.parametric.Optional;
 
-
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.sk89q.minecraft.util.commands.Logging.LogMode.POSITION;
 
