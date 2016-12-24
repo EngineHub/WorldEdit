@@ -348,7 +348,6 @@ public class SchematicCommands {
                 build.append(file.getName());
             } else {
                 String relative = dir.toURI().relativize(file.toURI()).getPath();
-                String[] split = file.getPath().split(Pattern.quote(prefix + File.separator));
                 build.append(relative);
             }
             build.append(": ").append(format == null ? "Unknown" : format.name());
