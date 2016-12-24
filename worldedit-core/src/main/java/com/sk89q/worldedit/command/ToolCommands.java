@@ -44,7 +44,7 @@ public class ToolCommands {
         min = 0,
         max = 0
     )
-    public void none(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
+    public void none(Player player, LocalSession session, CommandContext args) throws WorldEditException {
 
         session.setTool(player.getItemInHand(), null);
         player.print("Tool unbound from your current item.");
@@ -58,7 +58,7 @@ public class ToolCommands {
         max = 0
     )
     @CommandPermissions("worldedit.tool.info")
-    public void info(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
+    public void info(Player player, LocalSession session, CommandContext args) throws WorldEditException {
 
         session.setTool(player.getItemInHand(), new QueryTool());
         player.print("Info tool bound to "
@@ -74,7 +74,7 @@ public class ToolCommands {
     )
     @CommandPermissions("worldedit.tool.tree")
     @SuppressWarnings("deprecation")
-    public void tree(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
+    public void tree(Player player, LocalSession session, CommandContext args) throws WorldEditException {
 
         TreeGenerator.TreeType type = args.argsLength() > 0 ?
                 type = TreeGenerator.lookup(args.getString(0))
@@ -98,7 +98,7 @@ public class ToolCommands {
         max = 1
     )
     @CommandPermissions("worldedit.tool.replacer")
-    public void repl(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
+    public void repl(Player player, LocalSession session, CommandContext args) throws WorldEditException {
 
         BaseBlock targetBlock = we.getBlock(player, args.getString(0));
         session.setTool(player.getItemInHand(), new BlockReplacer(targetBlock));
@@ -114,7 +114,7 @@ public class ToolCommands {
         max = 0
     )
     @CommandPermissions("worldedit.tool.data-cycler")
-    public void cycler(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
+    public void cycler(Player player, LocalSession session, CommandContext args) throws WorldEditException {
 
         session.setTool(player.getItemInHand(), new BlockDataCyler());
         player.print("Block data cycler tool bound to "
@@ -129,7 +129,7 @@ public class ToolCommands {
         max = 2
     )
     @CommandPermissions("worldedit.tool.flood-fill")
-    public void floodFill(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
+    public void floodFill(Player player, LocalSession session, CommandContext args) throws WorldEditException {
 
         LocalConfiguration config = we.getConfiguration();
         int range = args.getInteger(1);
@@ -153,7 +153,7 @@ public class ToolCommands {
             max = 0
     )
     @CommandPermissions("worldedit.tool.deltree")
-    public void deltree(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
+    public void deltree(Player player, LocalSession session, CommandContext args) throws WorldEditException {
 
     session.setTool(player.getItemInHand(), new FloatingTreeRemover());
     player.print("Floating tree remover tool bound to "
@@ -168,7 +168,7 @@ public class ToolCommands {
             max = 0
     )
     @CommandPermissions("worldedit.tool.farwand")
-    public void farwand(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
+    public void farwand(Player player, LocalSession session, CommandContext args) throws WorldEditException {
 
         session.setTool(player.getItemInHand(), new DistanceWand());
         player.print("Far wand tool bound to " + ItemType.toHeldName(player.getItemInHand()) + ".");
@@ -182,7 +182,7 @@ public class ToolCommands {
             max = 2
     )
     @CommandPermissions("worldedit.tool.lrbuild")
-    public void longrangebuildtool(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
+    public void longrangebuildtool(Player player, LocalSession session, CommandContext args) throws WorldEditException {
 
         BaseBlock secondary = we.getBlock(player, args.getString(0));
         BaseBlock primary = we.getBlock(player, args.getString(1));

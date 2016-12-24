@@ -23,7 +23,6 @@ import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandException;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
-import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
@@ -201,7 +200,7 @@ public class SchematicCommands {
             max = 1
     )
     @CommandPermissions("worldedit.schematic.delete")
-    public void delete(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
+    public void delete(Player player, LocalSession session, CommandContext args) throws WorldEditException {
 
         LocalConfiguration config = worldEdit.getConfiguration();
         String filename = args.getString(0);
@@ -336,6 +335,7 @@ public class SchematicCommands {
     }
 
     private List<String> listFiles(String prefix, File[] files) {
+        File dir = worldEdit.getWorkingDirectoryFile(prefix);
         if (prefix == null) prefix = "";
         List<String> result = new ArrayList<String>();
         for (File file : files) {
@@ -344,8 +344,13 @@ public class SchematicCommands {
             build.append("\u00a72");
             ClipboardFormat format = ClipboardFormat.findByFile(file);
             boolean inRoot = file.getParentFile().getName().equals(prefix);
-            build.append(inRoot ? file.getName() : file.getPath().split(Pattern.quote(prefix + File.separator))[1])
-                    .append(": ").append(format == null ? "Unknown" : format.name());
+            if (inRoot) {
+                build.append(file.getName());
+            } else {
+                String relative = dir.toURI().relativize(file.toURI()).getPath();
+                build.append(relative);
+            }
+            build.append(": ").append(format == null ? "Unknown" : format.name());
             result.add(build.toString());
         }
         return result;

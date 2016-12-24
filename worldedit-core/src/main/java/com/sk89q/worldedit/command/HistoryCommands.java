@@ -52,7 +52,7 @@ public class HistoryCommands {
         max = 2
     )
     @CommandPermissions("worldedit.history.undo")
-    public void undo(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
+    public void undo(Player player, LocalSession session, CommandContext args) throws WorldEditException {
         int times = Math.max(1, args.getInteger(0, 1));
         for (int i = 0; i < times; ++i) {
             EditSession undone;
@@ -85,7 +85,7 @@ public class HistoryCommands {
         max = 2
     )
     @CommandPermissions("worldedit.history.redo")
-    public void redo(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
+    public void redo(Player player, LocalSession session, CommandContext args) throws WorldEditException {
         
         int times = Math.max(1, args.getInteger(0, 1));
 
@@ -119,7 +119,7 @@ public class HistoryCommands {
         max = 0
     )
     @CommandPermissions("worldedit.history.clear")
-    public void clearHistory(Player player, LocalSession session, EditSession editSession) throws WorldEditException {
+    public void clearHistory(Player player, LocalSession session) throws WorldEditException {
         session.clearHistory();
         player.print("History cleared.");
     }

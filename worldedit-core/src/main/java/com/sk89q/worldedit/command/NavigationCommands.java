@@ -23,7 +23,6 @@ import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.minecraft.util.commands.Logging;
-import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
@@ -116,7 +115,7 @@ public class NavigationCommands {
     )
     @CommandPermissions("worldedit.navigation.ceiling")
     @Logging(POSITION)
-    public void ceiling(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
+    public void ceiling(Player player, LocalSession session, CommandContext args) throws WorldEditException {
 
         final int clearance = args.argsLength() > 0 ?
             Math.max(0, args.getInteger(0)) : 0;
@@ -137,7 +136,7 @@ public class NavigationCommands {
         max = 0
     )
     @CommandPermissions("worldedit.navigation.thru.command")
-    public void thru(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
+    public void thru(Player player, LocalSession session, CommandContext args) throws WorldEditException {
         if (player.passThroughForwardWall(6)) {
             player.print("Whoosh!");
         } else {
@@ -153,7 +152,7 @@ public class NavigationCommands {
         max = 0
     )
     @CommandPermissions("worldedit.navigation.jumpto.command")
-    public void jumpTo(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
+    public void jumpTo(Player player, LocalSession session, CommandContext args) throws WorldEditException {
 
         WorldVector pos = player.getSolidBlockTrace(300);
         if (pos != null) {
@@ -174,7 +173,7 @@ public class NavigationCommands {
     )
     @CommandPermissions("worldedit.navigation.up")
     @Logging(POSITION)
-    public void up(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
+    public void up(Player player, LocalSession session, CommandContext args) throws WorldEditException {
         final int distance = args.getInteger(0);
 
         final boolean alwaysGlass = getAlwaysGlass(args);
