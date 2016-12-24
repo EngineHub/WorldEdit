@@ -28,6 +28,14 @@ class SimpleStateValue implements StateValue {
     private Byte data;
     private Vector direction;
 
+    public SimpleStateValue() {}
+
+    public SimpleStateValue(SimpleStateValue other) {
+        this.state = other.state;
+        this.data = other.data;
+        this.direction = other.direction;
+    }
+
     void setState(SimpleState state) {
         this.state = state;
     }
@@ -52,4 +60,8 @@ class SimpleStateValue implements StateValue {
         return direction;
     }
 
+    public SimpleStateValue setDirection(Vector direction) {
+        this.direction = direction;
+        return this;
+    }
 }

@@ -87,6 +87,64 @@ public class BundledBlockData {
             entry.postDeserialization();
             idMap.put(entry.id, entry);
             legacyMap.put(entry.legacyId, entry);
+            if (entry.states == null) {
+                return;
+            }
+            SimpleState half = entry.states.get("half");
+            if (half != null && half.valueMap() != null) { // Fixes rotation for slabs and other half blocks
+                SimpleStateValue top = half.valueMap().get("top");
+                SimpleStateValue bot = half.valueMap().get("bottom");
+                if (top != null && top.getDirection() == null) {
+                    top.setDirection(new Vector(0, 1, 0));
+                }
+                if (bot != null && bot.getDirection() == null) {
+                    bot.setDirection(new Vector(0, -1, 0));
+                }
+                return;
+            }
+            SimpleState dir = entry.states.get("rotation");
+            if (dir != null && dir.valueMap() != null) {
+                Vector[] range = new Vector[]{new Vector(0, 0, -1),
+                        new Vector(0.5, 0, -1),
+                        new Vector(1, 0, -1),
+                        new Vector(1, 0, -0.5),
+                        new Vector(1, 0, 0),
+                        new Vector(1, 0, 0.5),
+                        new Vector(1, 0, 1),
+                        new Vector(0.5, 0, 1),
+                        new Vector(0, 0, 1),
+                        new Vector(-0.5, 0, 1),
+                        new Vector(-1, 0, 1),
+                        new Vector(-1, 0, 0.5),
+                        new Vector(-1, 0, 0),
+                        new Vector(-1, 0, -0.5),
+                        new Vector(-1, 0, -1),
+                        new Vector(-0.5, 0, -1)};
+                for (Map.Entry<String, SimpleStateValue> valuesEntry : dir.valueMap().entrySet()) {
+                    int index = Integer.parseInt(valuesEntry.getKey());
+                    valuesEntry.getValue().setDirection(range[index]);
+                }
+                return;
+            }
+            SimpleState axis = entry.states.get("axis");
+            if (axis != null && axis.valueMap() != null) { // Fix rotation for logs and such with axis information
+                SimpleStateValue x = axis.valueMap().get("x");
+                SimpleStateValue y = axis.valueMap().get("y");
+                SimpleStateValue z = axis.valueMap().get("z");
+                if (x != null) {
+                    x.setDirection(new Vector(1, 0, 0));
+                    axis.valueMap().put("-x", new SimpleStateValue(x).setDirection(new Vector(-1, 0, 0)));
+                }
+                if (y != null) {
+                    y.setDirection(new Vector(0, 1, 0));
+                    axis.valueMap().put("-y", new SimpleStateValue(y).setDirection(new Vector(0, -1, 0)));
+                }
+                if (z != null) {
+                    z.setDirection(new Vector(0, 0, 1));
+                    axis.valueMap().put("-z", new SimpleStateValue(z).setDirection(new Vector(0, 0, -1)));
+                }
+                return;
+            }
         }
     }
 
