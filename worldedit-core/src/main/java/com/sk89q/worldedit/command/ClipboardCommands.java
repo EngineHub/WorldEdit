@@ -205,7 +205,7 @@ public class ClipboardCommands {
         max = 1
     )
     @CommandPermissions("worldedit.clipboard.flip")
-    public void flip(Player player, LocalSession session, EditSession editSession,
+    public void flip(Player player, LocalSession session,
                      @Optional(Direction.AIM) @Direction Vector direction) throws WorldEditException {
         ClipboardHolder holder = session.getClipboard();
         Clipboard clipboard = holder.getClipboard();
@@ -249,7 +249,7 @@ public class ClipboardCommands {
         max = 0
     )
     @CommandPermissions("worldedit.clipboard.clear")
-    public void clearClipboard(Player player, LocalSession session, EditSession editSession) throws WorldEditException {
+    public void clearClipboard(Player player, LocalSession session) throws WorldEditException {
         session.setClipboard(null);
         player.print("Clipboard cleared.");
     }

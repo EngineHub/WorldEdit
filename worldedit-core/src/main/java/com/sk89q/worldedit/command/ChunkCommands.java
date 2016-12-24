@@ -57,7 +57,7 @@ public class ChunkCommands {
         max = 0
     )
     @CommandPermissions("worldedit.chunkinfo")
-    public void chunkInfo(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
+    public void chunkInfo(Player player, LocalSession session, CommandContext args) throws WorldEditException {
         Vector pos = player.getBlockIn();
         int chunkX = (int) Math.floor(pos.getBlockX() / 16.0);
         int chunkZ = (int) Math.floor(pos.getBlockZ() / 16.0);
@@ -81,7 +81,7 @@ public class ChunkCommands {
         max = 0
     )
     @CommandPermissions("worldedit.listchunks")
-    public void listChunks(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
+    public void listChunks(Player player, LocalSession session, CommandContext args) throws WorldEditException {
         Set<Vector2D> chunks = session.getSelection(player.getWorld()).getChunks();
 
         for (Vector2D chunk : chunks) {
@@ -98,7 +98,7 @@ public class ChunkCommands {
     )
     @CommandPermissions("worldedit.delchunks")
     @Logging(REGION)
-    public void deleteChunks(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
+    public void deleteChunks(Player player, LocalSession session, CommandContext args) throws WorldEditException {
         player.print("Note that this command does not yet support the mcregion format.");
         LocalConfiguration config = worldEdit.getConfiguration();
 
