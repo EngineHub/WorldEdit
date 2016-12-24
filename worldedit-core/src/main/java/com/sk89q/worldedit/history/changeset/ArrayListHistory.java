@@ -56,4 +56,8 @@ public class ArrayListHistory implements ChangeSet {
         return changes.size();
     }
 
+    @Override
+    public void close() {
+        // do nothing
+    }
 }

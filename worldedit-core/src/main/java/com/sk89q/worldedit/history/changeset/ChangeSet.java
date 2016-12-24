@@ -63,4 +63,8 @@ public interface ChangeSet {
      */
     int size();
 
+    /**
+     * Call when you are done with the ChangeSet
+     */
+    void close();
 }

@@ -54,7 +54,7 @@ import com.sk89q.worldedit.function.util.RegionOffset;
 import com.sk89q.worldedit.function.visitor.*;
 import com.sk89q.worldedit.history.UndoContext;
 import com.sk89q.worldedit.history.change.BlockChange;
-import com.sk89q.worldedit.history.changeset.BlockOptimizedHistory;
+import com.sk89q.worldedit.history.changeset.ActualBlockOptimizedHistory;
 import com.sk89q.worldedit.history.changeset.ChangeSet;
 import com.sk89q.worldedit.internal.expression.Expression;
 import com.sk89q.worldedit.internal.expression.ExpressionException;
@@ -112,7 +112,7 @@ public class EditSession implements Extent {
 
     @SuppressWarnings("ProtectedField")
     protected final World world;
-    private final ChangeSet changeSet = new BlockOptimizedHistory();
+    private final ChangeSet changeSet = new ActualBlockOptimizedHistory();
 
     private @Nullable FastModeExtent fastModeExtent;
     private final SurvivalModeExtent survivalExtent;
@@ -689,6 +689,7 @@ public class EditSession implements Extent {
      */
     public void flushQueue() {
         Operations.completeBlindly(commit());
+        this.changeSet.close();
     }
 
     @Override
