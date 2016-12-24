@@ -83,6 +83,23 @@ public class BundledBlockData {
         String data = Resources.toString(url, Charset.defaultCharset());
         List<BlockEntry> entries = gson.fromJson(data, new TypeToken<List<BlockEntry>>() {}.getType());
 
+        Vector[] range = new Vector[]{new Vector(0, 0, -1),
+                new Vector(0.5, 0, -1),
+                new Vector(1, 0, -1),
+                new Vector(1, 0, -0.5),
+                new Vector(1, 0, 0),
+                new Vector(1, 0, 0.5),
+                new Vector(1, 0, 1),
+                new Vector(0.5, 0, 1),
+                new Vector(0, 0, 1),
+                new Vector(-0.5, 0, 1),
+                new Vector(-1, 0, 1),
+                new Vector(-1, 0, 0.5),
+                new Vector(-1, 0, 0),
+                new Vector(-1, 0, -0.5),
+                new Vector(-1, 0, -1),
+                new Vector(-0.5, 0, -1)};
+
         for (BlockEntry entry : entries) {
             entry.postDeserialization();
             idMap.put(entry.id, entry);
@@ -104,22 +121,6 @@ public class BundledBlockData {
             }
             SimpleState dir = entry.states.get("rotation");
             if (dir != null && dir.valueMap() != null) {
-                Vector[] range = new Vector[]{new Vector(0, 0, -1),
-                        new Vector(0.5, 0, -1),
-                        new Vector(1, 0, -1),
-                        new Vector(1, 0, -0.5),
-                        new Vector(1, 0, 0),
-                        new Vector(1, 0, 0.5),
-                        new Vector(1, 0, 1),
-                        new Vector(0.5, 0, 1),
-                        new Vector(0, 0, 1),
-                        new Vector(-0.5, 0, 1),
-                        new Vector(-1, 0, 1),
-                        new Vector(-1, 0, 0.5),
-                        new Vector(-1, 0, 0),
-                        new Vector(-1, 0, -0.5),
-                        new Vector(-1, 0, -1),
-                        new Vector(-0.5, 0, -1)};
                 for (Map.Entry<String, SimpleStateValue> valuesEntry : dir.valueMap().entrySet()) {
                     int index = Integer.parseInt(valuesEntry.getKey());
                     valuesEntry.getValue().setDirection(range[index]);
