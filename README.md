@@ -13,6 +13,8 @@ single player and multiplayer, that lets you:
 WorldEdit is open source and is available under the GNU Lesser General Public
 License v3.
 
+> NOTE: Issue tracker at http://enginehub.myjetbrains.com/youtrack/ is temporarily unavailable
+
 Compiling
 ---------
 
