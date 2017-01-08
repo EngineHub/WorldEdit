@@ -134,15 +134,15 @@ public class BundledBlockData {
                 SimpleStateValue z = axis.valueMap().get("z");
                 if (x != null) {
                     x.setDirection(new Vector(1, 0, 0));
-                    axis.valueMap().put("-x", new SimpleStateValue(x).setDirection(new Vector(-1, 0, 0)));
+                    axis.addDirection("-x", new SimpleStateValue(x).setDirection(new Vector(-1, 0, 0)));
                 }
                 if (y != null) {
                     y.setDirection(new Vector(0, 1, 0));
-                    axis.valueMap().put("-y", new SimpleStateValue(y).setDirection(new Vector(0, -1, 0)));
+                    axis.addDirection("-y", new SimpleStateValue(y).setDirection(new Vector(0, -1, 0)));
                 }
                 if (z != null) {
                     z.setDirection(new Vector(0, 0, 1));
-                    axis.valueMap().put("-z", new SimpleStateValue(z).setDirection(new Vector(0, 0, -1)));
+                    axis.addDirection("-z", new SimpleStateValue(z).setDirection(new Vector(0, 0, -1)));
                 }
                 return;
             }

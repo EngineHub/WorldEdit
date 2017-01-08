@@ -47,6 +47,10 @@ class SimpleState implements State {
         return null;
     }
 
+    public SimpleStateValue addDirection(String name, SimpleStateValue state) {
+        return this.values.put(name, state);
+    }
+
     byte getDataMask() {
         return dataMask != null ? dataMask : 0xF;
     }
