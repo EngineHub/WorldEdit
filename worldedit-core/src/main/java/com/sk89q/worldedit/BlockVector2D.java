@@ -70,6 +70,11 @@ public class BlockVector2D extends Vector2D {
     }
 
     @Override
+    public int hashCode() {
+        return ((int) x << 16) ^ (int) z;
+    }
+
+    @Override
     public boolean equals(Object obj) {
         if (!(obj instanceof Vector2D)) {
             return false;
