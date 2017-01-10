@@ -85,13 +85,6 @@ public class BlockVector extends Vector {
     }
 
     @Override
-    public int hashCode() {
-        return ((int) x << 19) ^
-                ((int) y << 12) ^
-                (int) z;
-    }
-
-    @Override
     public BlockVector toBlockVector() {
         return this;
     }
