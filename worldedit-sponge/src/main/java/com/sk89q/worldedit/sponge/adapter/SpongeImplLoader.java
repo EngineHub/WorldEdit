@@ -21,7 +21,6 @@ package com.sk89q.worldedit.sponge.adapter;
 
 import com.google.common.collect.Lists;
 import com.sk89q.worldedit.util.io.Closer;
-import org.spongepowered.api.Sponge;
 
 import java.io.File;
 import java.io.IOException;
@@ -180,7 +179,14 @@ public class SpongeImplLoader {
             if (suitableAdapters.size() == 1) {
                 return suitableAdapters.get(0);
             } else {
-                return suitableAdapters.stream().filter(SpongeImplAdapter::isBest).findFirst().orElse(suitableAdapters.get(0));
+                return suitableAdapters.stream().sorted((o1, o2) -> {
+                    if (o1.isBest() && !o2.isBest()) {
+                        return -1;
+                    } else if (!o1.isBest() && o2.isBest()) {
+                        return 1;
+                    }
+                    return 0;
+                }).findFirst().orElse(suitableAdapters.get(0));
             }
         }
     }
