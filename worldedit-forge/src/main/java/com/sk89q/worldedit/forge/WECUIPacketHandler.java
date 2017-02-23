@@ -67,6 +67,6 @@ public class WECUIPacketHandler {
     }
 
     private static EntityPlayerMP getPlayerFromEvent(ServerCustomPacketEvent event) {
-        return ((NetHandlerPlayServer) event.getHandler()).playerEntity;
+        return ((NetHandlerPlayServer) event.getHandler()).player;
     }
 }

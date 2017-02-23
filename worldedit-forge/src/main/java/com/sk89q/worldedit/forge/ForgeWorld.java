@@ -278,7 +278,7 @@ public class ForgeWorld extends AbstractWorld {
         AnvilSaveHandler saveHandler = new AnvilSaveHandler(saveFolder,
                 originalWorld.getSaveHandler().getWorldDirectory().getName(), true, server.getDataFixer());
         World freshWorld = new WorldServer(server, saveHandler, originalWorld.getWorldInfo(),
-                originalWorld.provider.getDimension(), originalWorld.theProfiler).init();
+                originalWorld.provider.getDimension(), originalWorld.profiler).init();
 
         // Pre-gen all the chunks
         // We need to also pull one more chunk in every direction
