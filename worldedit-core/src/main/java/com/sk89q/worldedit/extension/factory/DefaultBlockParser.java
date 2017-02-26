@@ -163,21 +163,28 @@ public class DefaultBlockParser extends InputParser<BaseBlock> {
             } else {
                 BundledBlockData.BlockEntry block = BundledBlockData.getInstance().findById(testId);
                 if (block == null) {
-                    blockType = BlockType.lookup(testId);
-                    if (blockType == null) {
-                        int t = worldEdit.getServer().resolveItem(testId);
-                        if (t >= 0) {
-                            blockType = BlockType.fromID(t); // Could be null
-                            blockId = t;
-                        } else if (blockLocator.length == 2) { // Block IDs in MC 1.7 and above use mod:name
-                            t = worldEdit.getServer().resolveItem(blockAndExtraData[0]);
+                    BaseBlock baseBlock = BundledBlockData.getInstance().findByState(testId);
+                    if (baseBlock == null) {
+                        blockType = BlockType.lookup(testId);
+                        if (blockType == null) {
+                            int t = worldEdit.getServer().resolveItem(testId);
                             if (t >= 0) {
                                 blockType = BlockType.fromID(t); // Could be null
                                 blockId = t;
-                                typeAndData = new String[] { blockAndExtraData[0] };
-                                testId = blockAndExtraData[0];
+                            } else if (blockLocator.length == 2) { // Block IDs in MC 1.7 and above use mod:name
+                                t = worldEdit.getServer().resolveItem(blockAndExtraData[0]);
+                                if (t >= 0) {
+                                    blockType = BlockType.fromID(t); // Could be null
+                                    blockId = t;
+                                    typeAndData = new String[]{blockAndExtraData[0]};
+                                    testId = blockAndExtraData[0];
+                                }
                             }
                         }
+                    } else {
+                        blockId = baseBlock.getId();
+                        blockType = BlockType.fromID(blockId);
+                        data = baseBlock.getData();
                     }
                 } else {
                     blockId = block.legacyId;

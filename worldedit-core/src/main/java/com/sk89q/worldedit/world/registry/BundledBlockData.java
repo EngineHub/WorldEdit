@@ -24,10 +24,9 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockMaterial;
 import com.sk89q.worldedit.util.gson.VectorAdapter;
-
-import javax.annotation.Nullable;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.Charset;
@@ -36,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.Nullable;
 
 /**
  * Provides block data based on the built-in block database that is bundled
@@ -54,6 +54,7 @@ public class BundledBlockData {
     private static final BundledBlockData INSTANCE = new BundledBlockData();
 
     private final Map<String, BlockEntry> idMap = new HashMap<String, BlockEntry>();
+    private final Map<String, BaseBlock> stateMap = new HashMap<String, BaseBlock>();
     private final Map<Integer, BlockEntry> legacyMap = new HashMap<Integer, BlockEntry>(); // Trove usage removed temporarily
 
     /**
@@ -87,7 +88,27 @@ public class BundledBlockData {
             entry.postDeserialization();
             idMap.put(entry.id, entry);
             legacyMap.put(entry.legacyId, entry);
+            String id = (entry.id.contains(":") ? entry.id.split(":")[1] : entry.id).toLowerCase().replace(" ", "_");
+            if (!idMap.containsKey(id)) {
+                idMap.put(id, entry);
+            }
+            if (entry.states != null) {
+                for (Map.Entry<String, SimpleState> stateEntry : entry.states.entrySet()) {
+                    for (Map.Entry<String, SimpleStateValue> valueEntry : stateEntry.getValue().valueMap().entrySet()) {
+                        String key = valueEntry.getKey();
+                        if (!stateMap.containsKey(key)) {
+                            stateMap.put(key, new BaseBlock(entry.legacyId, valueEntry.getValue().data));
+                        }
+                    }
+
+                }
+
+            }
         }
+    }
+
+    public BaseBlock findByState(String state) {
+        return stateMap.get(state);
     }
 
     /**
