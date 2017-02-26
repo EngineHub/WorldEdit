@@ -1,3 +1,22 @@
+/*
+ * WorldEdit, a Minecraft world manipulation toolkit
+ * Copyright (C) sk89q <http://www.sk89q.com>
+ * Copyright (C) WorldEdit team and contributors
+ *
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as published by the
+ * Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package com.sk89q.jnbt;
 
 import com.google.common.base.Splitter;
@@ -86,12 +105,12 @@ public class JSON2NBT {
         if(value.startsWith("{")) {
             value = value.substring(1, value.length() - 1);
 
-            JSON2NBT.Compound JSON2NBT$list1;
-            for(JSON2NBT$list1 = new JSON2NBT.Compound(key); value.length() > 0; value = value.substring(s.length() + 1)) {
+            JSON2NBT.Compound json2nbtlist1;
+            for(json2nbtlist1 = new JSON2NBT.Compound(key); value.length() > 0; value = value.substring(s.length() + 1)) {
                 s = nextNameValuePair(value, true);
                 if(s.length() > 0) {
                     c0 = false;
-                    JSON2NBT$list1.tagList.add(getTagFromNameValue(s, false));
+                    json2nbtlist1.tagList.add(getTagFromNameValue(s, false));
                 }
 
                 if(value.length() < s.length() + 1) {
@@ -104,16 +123,16 @@ public class JSON2NBT {
                 }
             }
 
-            return JSON2NBT$list1;
+            return json2nbtlist1;
         } else if(value.startsWith("[") && !INT_ARRAY_MATCHER.matcher(value).matches()) {
             value = value.substring(1, value.length() - 1);
 
-            JSON2NBT.List JSON2NBT$list;
-            for(JSON2NBT$list = new JSON2NBT.List(key); value.length() > 0; value = value.substring(s.length() + 1)) {
+            JSON2NBT.List json2nbtlist;
+            for(json2nbtlist = new JSON2NBT.List(key); value.length() > 0; value = value.substring(s.length() + 1)) {
                 s = nextNameValuePair(value, false);
                 if(s.length() > 0) {
                     c0 = true;
-                    JSON2NBT$list.tagList.add(getTagFromNameValue(s, true));
+                    json2nbtlist.tagList.add(getTagFromNameValue(s, true));
                 }
 
                 if(value.length() < s.length() + 1) {
@@ -126,7 +145,7 @@ public class JSON2NBT {
                 }
             }
 
-            return JSON2NBT$list;
+            return json2nbtlist;
         } else {
             return new JSON2NBT.Primitive(key, value);
         }
@@ -380,8 +399,8 @@ public class JSON2NBT {
             Iterator var2 = this.tagList.iterator();
 
             while(var2.hasNext()) {
-                JSON2NBT.Any JSON2NBT$any = (JSON2NBT.Any)var2.next();
-                list.add(JSON2NBT$any.parse());
+                JSON2NBT.Any json2nbtany = (JSON2NBT.Any)var2.next();
+                list.add(json2nbtany.parse());
             }
             Class<? extends Tag> tagType = list.isEmpty() ? CompoundTag.class : list.get(0).getClass();
             return new ListTag(tagType, list);
@@ -400,8 +419,8 @@ public class JSON2NBT {
             Iterator var2 = this.tagList.iterator();
 
             while(var2.hasNext()) {
-                JSON2NBT.Any JSON2NBT$any = (JSON2NBT.Any)var2.next();
-                map.put(JSON2NBT$any.json, JSON2NBT$any.parse());
+                JSON2NBT.Any json2nbtany = (JSON2NBT.Any)var2.next();
+                map.put(json2nbtany.json, json2nbtany.parse());
             }
 
             return new CompoundTag(map);
