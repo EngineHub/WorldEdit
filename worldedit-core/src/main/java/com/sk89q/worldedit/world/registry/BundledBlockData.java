@@ -105,7 +105,7 @@ public class BundledBlockData {
             idMap.put(entry.id, entry);
             legacyMap.put(entry.legacyId, entry);
             if (entry.states == null) {
-                return;
+                continue;
             }
             SimpleState half = entry.states.get("half");
             if (half != null && half.valueMap() != null) { // Fixes rotation for slabs and other half blocks
@@ -117,7 +117,7 @@ public class BundledBlockData {
                 if (bot != null && bot.getDirection() == null) {
                     bot.setDirection(new Vector(0, -1, 0));
                 }
-                return;
+                continue;
             }
             SimpleState dir = entry.states.get("rotation");
             if (dir != null && dir.valueMap() != null) {
@@ -125,7 +125,7 @@ public class BundledBlockData {
                     int index = Integer.parseInt(valuesEntry.getKey());
                     valuesEntry.getValue().setDirection(range[index]);
                 }
-                return;
+                continue;
             }
             SimpleState axis = entry.states.get("axis");
             if (axis != null && axis.valueMap() != null) { // Fix rotation for logs and such with axis information
@@ -134,17 +134,17 @@ public class BundledBlockData {
                 SimpleStateValue z = axis.valueMap().get("z");
                 if (x != null) {
                     x.setDirection(new Vector(1, 0, 0));
-                    axis.addDirection("-x", new SimpleStateValue(x).setDirection(new Vector(-1, 0, 0)));
+                    axis.addDirection("-x", new SimpleStateValue().init(x).setDirection(new Vector(-1, 0, 0)));
                 }
                 if (y != null) {
                     y.setDirection(new Vector(0, 1, 0));
-                    axis.addDirection("-y", new SimpleStateValue(y).setDirection(new Vector(0, -1, 0)));
+                    axis.addDirection("-y", new SimpleStateValue().init(y).setDirection(new Vector(0, -1, 0)));
                 }
                 if (z != null) {
                     z.setDirection(new Vector(0, 0, 1));
-                    axis.addDirection("-z", new SimpleStateValue(z).setDirection(new Vector(0, 0, -1)));
+                    axis.addDirection("-z", new SimpleStateValue().init(z).setDirection(new Vector(0, 0, -1)));
                 }
-                return;
+                continue;
             }
         }
     }

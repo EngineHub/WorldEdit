@@ -28,13 +28,13 @@ class SimpleStateValue implements StateValue {
     private Byte data;
     private Vector direction;
 
-    public SimpleStateValue() {}
-
-    public SimpleStateValue(SimpleStateValue other) {
+    public SimpleStateValue init(SimpleStateValue other) {
         this.state = other.state;
         this.data = other.data;
         this.direction = other.direction;
+        return this;
     }
+
 
     void setState(SimpleState state) {
         this.state = state;
