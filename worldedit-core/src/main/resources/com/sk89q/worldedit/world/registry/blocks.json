@@ -95,6 +95,7 @@
     "localizedName": "Grass Block",
     "states": {
       "snowy": {
+        "dataMask": 0,
         "values": {
           "true": {
             "data": 0
@@ -137,6 +138,7 @@
     "localizedName": "Dirt",
     "states": {
       "snowy": {
+        "dataMask": 0,
         "values": {
           "true": {
             "data": 0
@@ -886,13 +888,52 @@
         "dataMask": 12,
         "values": {
           "x": {
-            "data": 4
+            "data": 4,
+            "direction": [
+              1,
+              0,
+              0
+            ]
+          },
+          "-x": {
+            "data": 4,
+            "direction": [
+              -1,
+              0,
+              0
+            ]
           },
           "y": {
-            "data": 0
+            "data": 0,
+            "direction": [
+              0,
+              1,
+              0
+            ]
+          },
+          "-y": {
+            "data": 0,
+            "direction": [
+              0,
+              -1,
+              0
+            ]
           },
           "z": {
-            "data": 8
+            "data": 8,
+            "direction": [
+              0,
+              0,
+              1
+            ]
+          },
+          "-z": {
+            "data": 8,
+            "direction": [
+              0,
+              0,
+              -1
+            ]
           },
           "none": {
             "data": 12
@@ -1366,6 +1407,7 @@
         }
       },
       "occupied": {
+        "dataMask": 0,
         "values": {
           "true": {
             "data": 0
@@ -1904,6 +1946,7 @@
         }
       },
       "short": {
+        "dataMask": 0,
         "values": {
           "true": {
             "data": 0
@@ -2138,6 +2181,7 @@
     "localizedName": "Flower",
     "states": {
       "type": {
+        "dataMask": 0,
         "values": {
           "dandelion": {
             "data": 0
@@ -2177,7 +2221,7 @@
     "localizedName": "Flower",
     "states": {
       "type": {
-        "dataMask": 8,
+        "dataMask": 15,
         "values": {
           "poppy": {
             "data": 0
@@ -2440,10 +2484,20 @@
         "dataMask": 8,
         "values": {
           "top": {
-            "data": 8
+            "data": 8,
+            "direction": [
+              0,
+              1,
+              0
+            ]
           },
           "bottom": {
-            "data": 0
+            "data": 0,
+            "direction": [
+              0,
+              -1,
+              0
+            ]
           }
         }
       },
@@ -2806,6 +2860,7 @@
         }
       },
       "east": {
+        "dataMask": 0,
         "values": {
           "true": {
             "data": 0
@@ -2816,6 +2871,7 @@
         }
       },
       "north": {
+        "dataMask": 0,
         "values": {
           "true": {
             "data": 0
@@ -2826,6 +2882,7 @@
         }
       },
       "south": {
+        "dataMask": 0,
         "values": {
           "true": {
             "data": 0
@@ -2836,6 +2893,7 @@
         }
       },
       "up": {
+        "dataMask": 0,
         "values": {
           "true": {
             "data": 0
@@ -2846,6 +2904,7 @@
         }
       },
       "west": {
+        "dataMask": 0,
         "values": {
           "true": {
             "data": 0
@@ -2959,15 +3018,25 @@
         "dataMask": 4,
         "values": {
           "top": {
-            "data": 4
+            "data": 4,
+            "direction": [
+              0,
+              1,
+              0
+            ]
           },
           "bottom": {
-            "data": 0
+            "data": 0,
+            "direction": [
+              0,
+              -1,
+              0
+            ]
           }
         }
       },
       "shape": {
-        "dataMask": 7,
+        "dataMask": 0,
         "values": {
           "straight": {
             "data": 0
@@ -3088,6 +3157,7 @@
     "localizedName": "Redstone Dust",
     "states": {
       "east": {
+        "dataMask": 0,
         "values": {
           "up": {
             "data": 0
@@ -3101,6 +3171,7 @@
         }
       },
       "north": {
+        "dataMask": 0,
         "values": {
           "up": {
             "data": 0
@@ -3167,6 +3238,7 @@
         }
       },
       "south": {
+        "dataMask": 0,
         "values": {
           "up": {
             "data": 0
@@ -3180,6 +3252,7 @@
         }
       },
       "west": {
+        "dataMask": 0,
         "values": {
           "up": {
             "data": 0
@@ -3581,52 +3654,132 @@
         "dataMask": 15,
         "values": {
           "0": {
-            "data": 0
+            "data": 0,
+            "direction": [
+              0.0,
+              0.0,
+              -1.0
+            ]
           },
           "1": {
-            "data": 1
+            "data": 1,
+            "direction": [
+              0.5,
+              0.0,
+              -1.0
+            ]
           },
           "2": {
-            "data": 2
+            "data": 2,
+            "direction": [
+              1.0,
+              0.0,
+              -1.0
+            ]
           },
           "3": {
-            "data": 3
+            "data": 3,
+            "direction": [
+              1.0,
+              0.0,
+              -0.5
+            ]
           },
           "4": {
-            "data": 4
+            "data": 4,
+            "direction": [
+              1.0,
+              0.0,
+              0.0
+            ]
           },
           "5": {
-            "data": 5
+            "data": 5,
+            "direction": [
+              1.0,
+              0.0,
+              0.5
+            ]
           },
           "6": {
-            "data": 6
+            "data": 6,
+            "direction": [
+              1.0,
+              0.0,
+              1.0
+            ]
           },
           "7": {
-            "data": 7
+            "data": 7,
+            "direction": [
+              0.5,
+              0.0,
+              1.0
+            ]
           },
           "8": {
-            "data": 8
+            "data": 8,
+            "direction": [
+              0.0,
+              0.0,
+              1.0
+            ]
           },
           "9": {
-            "data": 9
+            "data": 9,
+            "direction": [
+              -0.5,
+              0.0,
+              1.0
+            ]
           },
           "10": {
-            "data": 10
+            "data": 10,
+            "direction": [
+              -1.0,
+              0.0,
+              1.0
+            ]
           },
           "11": {
-            "data": 11
+            "data": 11,
+            "direction": [
+              -1.0,
+              0.0,
+              0.5
+            ]
           },
           "12": {
-            "data": 12
+            "data": 12,
+            "direction": [
+              -1.0,
+              0.0,
+              0.0
+            ]
           },
           "13": {
-            "data": 13
+            "data": 13,
+            "direction": [
+              -1.0,
+              0.0,
+              -0.5
+            ]
           },
           "14": {
-            "data": 14
+            "data": 14,
+            "direction": [
+              -1.0,
+              0.0,
+              -1.0
+            ]
           },
           "15": {
-            "data": 15
+            "data": 15,
+            "direction": [
+              -0.5,
+              0.0,
+              -1.0
+            ]
           }
         }
       }
@@ -3711,6 +3864,7 @@
         }
       },
       "hinge": {
+        "dataMask": 0,
         "values": {
           "left": {
             "data": 0
@@ -3732,6 +3886,7 @@
         }
       },
       "powered": {
+        "dataMask": 0,
         "values": {
           "true": {
             "data": 0
@@ -3843,7 +3998,7 @@
     "localizedName": "Rail",
     "states": {
       "shape": {
-        "dataMask": 12,
+        "dataMask": 15,
         "values": {
           "north_south": {
             "data": 0
@@ -3950,15 +4105,25 @@
         "dataMask": 4,
         "values": {
           "top": {
-            "data": 4
+            "data": 4,
+            "direction": [
+              0,
+              1,
+              0
+            ]
           },
           "bottom": {
-            "data": 0
+            "data": 0,
+            "direction": [
+              0,
+              -1,
+              0
+            ]
           }
         }
       },
       "shape": {
-        "dataMask": 7,
+        "dataMask": 0,
         "values": {
           "straight": {
             "data": 0
@@ -4085,16 +4250,36 @@
             "data": 0
           },
           "east": {
-            "data": 1
+            "data": 1,
+            "direction": [
+              1,
+              0,
+              0
+            ]
           },
           "west": {
-            "data": 2
+            "data": 2,
+            "direction": [
+              -1,
+              0,
+              0
+            ]
           },
           "south": {
-            "data": 3
+            "data": 3,
+            "direction": [
+              0,
+              0,
+              1
+            ]
           },
           "north": {
-            "data": 4
+            "data": 4,
+            "direction": [
+              0,
+              0,
+              -1
+            ]
           },
           "up_z": {
             "data": 5
@@ -4242,6 +4427,7 @@
         }
       },
       "hinge": {
+        "dataMask": 0,
         "values": {
           "left": {
             "data": 0
@@ -4263,6 +4449,7 @@
         }
       },
       "powered": {
+        "dataMask": 0,
         "values": {
           "true": {
             "data": 0
@@ -5027,6 +5214,7 @@
     "localizedName": "Oak Fence",
     "states": {
       "east": {
+        "dataMask": 0,
         "values": {
           "true": {
             "data": 0
@@ -5037,6 +5225,7 @@
         }
       },
       "north": {
+        "dataMask": 0,
         "values": {
           "true": {
             "data": 0
@@ -5047,6 +5236,7 @@
         }
       },
       "south": {
+        "dataMask": 0,
         "values": {
           "true": {
             "data": 0
@@ -5057,6 +5247,7 @@
         }
       },
       "west": {
+        "dataMask": 0,
         "values": {
           "true": {
             "data": 0
@@ -5261,13 +5452,39 @@
     "localizedName": "Portal",
     "states": {
       "axis": {
-        "dataMask": 1,
+        "dataMask": 3,
         "values": {
           "x": {
-            "data": 1
+            "data": 1,
+            "direction": [
+              1,
+              0,
+              0
+            ]
+          },
+          "-x": {
+            "data": 1,
+            "direction": [
+              -1,
+              0,
+              0
+            ]
           },
           "z": {
-            "data": 2
+            "data": 2,
+            "direction": [
+              0,
+              0,
+              1
+            ]
+          },
+          "-z": {
+            "data": 2,
+            "direction": [
+              0,
+              0,
+              -1
+            ]
           }
         }
       }
@@ -5485,6 +5702,7 @@
         }
       },
       "locked": {
+        "dataMask": 0,
         "values": {
           "true": {
             "data": 0
@@ -5581,6 +5799,7 @@
         }
       },
       "locked": {
+        "dataMask": 0,
         "values": {
           "true": {
             "data": 0
@@ -5748,10 +5967,20 @@
         "dataMask": 8,
         "values": {
           "top": {
-            "data": 8
+            "data": 8,
+            "direction": [
+              0,
+              1,
+              0
+            ]
           },
           "bottom": {
-            "data": 0
+            "data": 0,
+            "direction": [
+              0,
+              -1,
+              0
+            ]
           }
         }
       },
@@ -6055,6 +6284,7 @@
     "localizedName": "Iron Bars",
     "states": {
       "east": {
+        "dataMask": 0,
         "values": {
           "true": {
             "data": 0
@@ -6065,6 +6295,7 @@
         }
       },
       "north": {
+        "dataMask": 0,
         "values": {
           "true": {
             "data": 0
@@ -6075,6 +6306,7 @@
         }
       },
       "south": {
+        "dataMask": 0,
         "values": {
           "true": {
             "data": 0
@@ -6085,6 +6317,7 @@
         }
       },
       "west": {
+        "dataMask": 0,
         "values": {
           "true": {
             "data": 0
@@ -6127,6 +6360,7 @@
     "localizedName": "Glass Pane",
     "states": {
       "east": {
+        "dataMask": 0,
         "values": {
           "true": {
             "data": 0
@@ -6137,6 +6371,7 @@
         }
       },
       "north": {
+        "dataMask": 0,
         "values": {
           "true": {
             "data": 0
@@ -6147,6 +6382,7 @@
         }
       },
       "south": {
+        "dataMask": 0,
         "values": {
           "true": {
             "data": 0
@@ -6157,6 +6393,7 @@
         }
       },
       "west": {
+        "dataMask": 0,
         "values": {
           "true": {
             "data": 0
@@ -6259,7 +6496,7 @@
         }
       },
       "facing": {
-        "dataMask": 7,
+        "dataMask": 0,
         "values": {
           "up": {
             "data": 0,
@@ -6365,7 +6602,7 @@
         }
       },
       "facing": {
-        "dataMask": 7,
+        "dataMask": 0,
         "values": {
           "up": {
             "data": 0,
@@ -6475,6 +6712,7 @@
         }
       },
       "up": {
+        "dataMask": 0,
         "values": {
           "true": {
             "data": 0
@@ -6485,6 +6723,7 @@
         }
       },
       "west": {
+        "dataMask": 2,
         "values": {
           "true": {
             "data": 2
@@ -6564,6 +6803,7 @@
         }
       },
       "in_wall": {
+        "dataMask": 0,
         "values": {
           "true": {
             "data": 0
@@ -6668,15 +6908,25 @@
         "dataMask": 4,
         "values": {
           "top": {
-            "data": 4
+            "data": 4,
+            "direction": [
+              0,
+              1,
+              0
+            ]
           },
           "bottom": {
-            "data": 0
+            "data": 0,
+            "direction": [
+              0,
+              -1,
+              0
+            ]
           }
         }
       },
       "shape": {
-        "dataMask": 7,
+        "dataMask": 0,
         "values": {
           "straight": {
             "data": 0
@@ -6768,15 +7018,25 @@
         "dataMask": 4,
         "values": {
           "top": {
-            "data": 4
+            "data": 4,
+            "direction": [
+              0,
+              1,
+              0
+            ]
           },
           "bottom": {
-            "data": 0
+            "data": 0,
+            "direction": [
+              0,
+              -1,
+              0
+            ]
           }
         }
       },
       "shape": {
-        "dataMask": 7,
+        "dataMask": 0,
         "values": {
           "straight": {
             "data": 0
@@ -6828,6 +7088,7 @@
     "localizedName": "Mycelium",
     "states": {
       "snowy": {
+        "dataMask": 0,
         "values": {
           "true": {
             "data": 0
@@ -6932,6 +7193,7 @@
     "localizedName": "Nether Brick Fence",
     "states": {
       "east": {
+        "dataMask": 0,
         "values": {
           "true": {
             "data": 0
@@ -6942,6 +7204,7 @@
         }
       },
       "north": {
+        "dataMask": 0,
         "values": {
           "true": {
             "data": 0
@@ -6952,6 +7215,7 @@
         }
       },
       "south": {
+        "dataMask": 0,
         "values": {
           "true": {
             "data": 0
@@ -6962,6 +7226,7 @@
         }
       },
       "west": {
+        "dataMask": 0,
         "values": {
           "true": {
             "data": 0
@@ -7044,15 +7309,25 @@
         "dataMask": 4,
         "values": {
           "top": {
-            "data": 4
+            "data": 4,
+            "direction": [
+              0,
+              1,
+              0
+            ]
           },
           "bottom": {
-            "data": 0
+            "data": 0,
+            "direction": [
+              0,
+              -1,
+              0
+            ]
           }
         }
       },
       "shape": {
-        "dataMask": 7,
+        "dataMask": 0,
         "values": {
           "straight": {
             "data": 0
@@ -7195,6 +7470,7 @@
         }
       },
       "has_bottle_1": {
+        "dataMask": 2,
         "values": {
           "true": {
             "data": 2
@@ -7590,10 +7866,20 @@
         "dataMask": 8,
         "values": {
           "top": {
-            "data": 8
+            "data": 8,
+            "direction": [
+              0,
+              1,
+              0
+            ]
           },
           "bottom": {
-            "data": 0
+            "data": 0,
+            "direction": [
+              0,
+              -1,
+              0
+            ]
           }
         }
       },
@@ -7653,7 +7939,7 @@
     "localizedName": "Cocoa",
     "states": {
       "age": {
-        "dataMask": 8,
+        "dataMask": 12,
         "values": {
           "0": {
             "data": 0
@@ -7776,15 +8062,25 @@
         "dataMask": 4,
         "values": {
           "top": {
-            "data": 4
+            "data": 4,
+            "direction": [
+              0,
+              1,
+              0
+            ]
           },
           "bottom": {
-            "data": 0
+            "data": 0,
+            "direction": [
+              0,
+              -1,
+              0
+            ]
           }
         }
       },
       "shape": {
-        "dataMask": 7,
+        "dataMask": 0,
         "values": {
           "straight": {
             "data": 0
@@ -8049,6 +8345,7 @@
         }
       },
       "east": {
+        "dataMask": 0,
         "values": {
           "true": {
             "data": 0
@@ -8059,6 +8356,7 @@
         }
       },
       "north": {
+        "dataMask": 0,
         "values": {
           "true": {
             "data": 0
@@ -8080,6 +8378,7 @@
         }
       },
       "south": {
+        "dataMask": 0,
         "values": {
           "true": {
             "data": 0
@@ -8090,6 +8389,7 @@
         }
       },
       "west": {
+        "dataMask": 0,
         "values": {
           "true": {
             "data": 0
@@ -8203,15 +8503,25 @@
         "dataMask": 4,
         "values": {
           "top": {
-            "data": 4
+            "data": 4,
+            "direction": [
+              0,
+              1,
+              0
+            ]
           },
           "bottom": {
-            "data": 0
+            "data": 0,
+            "direction": [
+              0,
+              -1,
+              0
+            ]
           }
         }
       },
       "shape": {
-        "dataMask": 7,
+        "dataMask": 0,
         "values": {
           "straight": {
             "data": 0
@@ -8303,15 +8613,25 @@
         "dataMask": 4,
         "values": {
           "top": {
-            "data": 4
+            "data": 4,
+            "direction": [
+              0,
+              1,
+              0
+            ]
           },
           "bottom": {
-            "data": 0
+            "data": 0,
+            "direction": [
+              0,
+              -1,
+              0
+            ]
           }
         }
       },
       "shape": {
-        "dataMask": 7,
+        "dataMask": 0,
         "values": {
           "straight": {
             "data": 0
@@ -8403,15 +8723,25 @@
         "dataMask": 4,
         "values": {
           "top": {
-            "data": 4
+            "data": 4,
+            "direction": [
+              0,
+              1,
+              0
+            ]
           },
           "bottom": {
-            "data": 0
+            "data": 0,
+            "direction": [
+              0,
+              -1,
+              0
+            ]
           }
         }
       },
       "shape": {
-        "dataMask": 7,
+        "dataMask": 0,
         "values": {
           "straight": {
             "data": 0
@@ -8590,6 +8920,7 @@
     "localizedName": "Cobblestone Wall",
     "states": {
       "east": {
+        "dataMask": 0,
         "values": {
           "true": {
             "data": 0
@@ -8600,6 +8931,7 @@
         }
       },
       "north": {
+        "dataMask": 0,
         "values": {
           "true": {
             "data": 0
@@ -8610,6 +8942,7 @@
         }
       },
       "south": {
+        "dataMask": 0,
         "values": {
           "true": {
             "data": 0
@@ -8620,6 +8953,7 @@
         }
       },
       "up": {
+        "dataMask": 0,
         "values": {
           "true": {
             "data": 0
@@ -8641,6 +8975,7 @@
         }
       },
       "west": {
+        "dataMask": 0,
         "values": {
           "true": {
             "data": 0
@@ -8683,6 +9018,7 @@
     "localizedName": "Flower Pot",
     "states": {
       "contents": {
+        "dataMask": 0,
         "values": {
           "empty": {
             "data": 0
@@ -9152,7 +9488,7 @@
     "localizedName": "Anvil",
     "states": {
       "damage": {
-        "dataMask": 8,
+        "dataMask": 12,
         "values": {
           "0": {
             "data": 0
@@ -9891,7 +10227,7 @@
     "localizedName": "Block of Quartz",
     "states": {
       "variant": {
-        "dataMask": 4,
+        "dataMask": 7,
         "values": {
           "default": {
             "data": 0
@@ -9983,15 +10319,25 @@
         "dataMask": 4,
         "values": {
           "top": {
-            "data": 4
+            "data": 4,
+            "direction": [
+              0,
+              1,
+              0
+            ]
           },
           "bottom": {
-            "data": 0
+            "data": 0,
+            "direction": [
+              0,
+              -1,
+              0
+            ]
           }
         }
       },
       "shape": {
-        "dataMask": 7,
+        "dataMask": 0,
         "values": {
           "straight": {
             "data": 0
@@ -10343,6 +10689,7 @@
         }
       },
       "east": {
+        "dataMask": 0,
         "values": {
           "true": {
             "data": 0
@@ -10353,6 +10700,7 @@
         }
       },
       "north": {
+        "dataMask": 0,
         "values": {
           "true": {
             "data": 0
@@ -10363,6 +10711,7 @@
         }
       },
       "south": {
+        "dataMask": 0,
         "values": {
           "true": {
             "data": 0
@@ -10373,6 +10722,7 @@
         }
       },
       "west": {
+        "dataMask": 0,
         "values": {
           "true": {
             "data": 0
@@ -10483,13 +10833,52 @@
         "dataMask": 12,
         "values": {
           "x": {
-            "data": 4
+            "data": 4,
+            "direction": [
+              1,
+              0,
+              0
+            ]
+          },
+          "-x": {
+            "data": 4,
+            "direction": [
+              -1,
+              0,
+              0
+            ]
           },
           "y": {
-            "data": 0
+            "data": 0,
+            "direction": [
+              0,
+              1,
+              0
+            ]
+          },
+          "-y": {
+            "data": 0,
+            "direction": [
+              0,
+              -1,
+              0
+            ]
           },
           "z": {
-            "data": 8
+            "data": 8,
+            "direction": [
+              0,
+              0,
+              1
+            ]
+          },
+          "-z": {
+            "data": 8,
+            "direction": [
+              0,
+              0,
+              -1
+            ]
           },
           "none": {
             "data": 12
@@ -10580,15 +10969,25 @@
         "dataMask": 4,
         "values": {
           "top": {
-            "data": 4
+            "data": 4,
+            "direction": [
+              0,
+              1,
+              0
+            ]
           },
           "bottom": {
-            "data": 0
+            "data": 0,
+            "direction": [
+              0,
+              -1,
+              0
+            ]
           }
         }
       },
       "shape": {
-        "dataMask": 7,
+        "dataMask": 0,
         "values": {
           "straight": {
             "data": 0
@@ -10680,15 +11079,25 @@
         "dataMask": 4,
         "values": {
           "top": {
-            "data": 4
+            "data": 4,
+            "direction": [
+              0,
+              1,
+              0
+            ]
           },
           "bottom": {
-            "data": 0
+            "data": 0,
+            "direction": [
+              0,
+              -1,
+              0
+            ]
           }
         }
       },
       "shape": {
-        "dataMask": 7,
+        "dataMask": 0,
         "values": {
           "straight": {
             "data": 0
@@ -10842,10 +11251,20 @@
         "dataMask": 8,
         "values": {
           "top": {
-            "data": 8
+            "data": 8,
+            "direction": [
+              0,
+              1,
+              0
+            ]
           },
           "bottom": {
-            "data": 0
+            "data": 0,
+            "direction": [
+              0,
+              -1,
+              0
+            ]
           }
         }
       },
@@ -10970,16 +11389,55 @@
     "localizedName": "Hay Bale",
     "states": {
       "axis": {
-        "dataMask": 8,
+        "dataMask": 12,
         "values": {
           "x": {
-            "data": 4
+            "data": 4,
+            "direction": [
+              1,
+              0,
+              0
+            ]
+          },
+          "-x": {
+            "data": 4,
+            "direction": [
+              -1,
+              0,
+              0
+            ]
           },
           "y": {
-            "data": 0
+            "data": 0,
+            "direction": [
+              0,
+              1,
+              0
+            ]
+          },
+          "-y": {
+            "data": 0,
+            "direction": [
+              0,
+              -1,
+              0
+            ]
           },
           "z": {
-            "data": 8
+            "data": 8,
+            "direction": [
+              0,
+              0,
+              1
+            ]
+          },
+          "-z": {
+            "data": 8,
+            "direction": [
+              0,
+              0,
+              -1
+            ]
           }
         }
       }
@@ -11194,7 +11652,7 @@
     "localizedName": "Plant",
     "states": {
       "facing": {
-        "dataMask": 3,
+        "dataMask": 0,
         "values": {
           "north": {
             "data": 0,
@@ -11231,6 +11689,7 @@
         }
       },
       "half": {
+        "dataMask": 10,
         "values": {
           "upper": {
             "data": 10
@@ -11299,52 +11758,132 @@
         "dataMask": 15,
         "values": {
           "0": {
-            "data": 0
+            "data": 0,
+            "direction": [
+              0.0,
+              0.0,
+              -1.0
+            ]
           },
           "1": {
-            "data": 1
+            "data": 1,
+            "direction": [
+              0.5,
+              0.0,
+              -1.0
+            ]
           },
           "2": {
-            "data": 2
+            "data": 2,
+            "direction": [
+              1.0,
+              0.0,
+              -1.0
+            ]
           },
           "3": {
-            "data": 3
+            "data": 3,
+            "direction": [
+              1.0,
+              0.0,
+              -0.5
+            ]
           },
           "4": {
-            "data": 4
+            "data": 4,
+            "direction": [
+              1.0,
+              0.0,
+              0.0
+            ]
           },
           "5": {
-            "data": 5
+            "data": 5,
+            "direction": [
+              1.0,
+              0.0,
+              0.5
+            ]
           },
           "6": {
-            "data": 6
+            "data": 6,
+            "direction": [
+              1.0,
+              0.0,
+              1.0
+            ]
           },
           "7": {
-            "data": 7
+            "data": 7,
+            "direction": [
+              0.5,
+              0.0,
+              1.0
+            ]
           },
           "8": {
-            "data": 8
+            "data": 8,
+            "direction": [
+              0.0,
+              0.0,
+              1.0
+            ]
           },
           "9": {
-            "data": 9
+            "data": 9,
+            "direction": [
+              -0.5,
+              0.0,
+              1.0
+            ]
           },
           "10": {
-            "data": 10
+            "data": 10,
+            "direction": [
+              -1.0,
+              0.0,
+              1.0
+            ]
           },
           "11": {
-            "data": 11
+            "data": 11,
+            "direction": [
+              -1.0,
+              0.0,
+              0.5
+            ]
           },
           "12": {
-            "data": 12
+            "data": 12,
+            "direction": [
+              -1.0,
+              0.0,
+              0.0
+            ]
           },
           "13": {
-            "data": 13
+            "data": 13,
+            "direction": [
+              -1.0,
+              0.0,
+              -0.5
+            ]
           },
           "14": {
-            "data": 14
+            "data": 14,
+            "direction": [
+              -1.0,
+              0.0,
+              -1.0
+            ]
           },
           "15": {
-            "data": 15
+            "data": 15,
+            "direction": [
+              -0.5,
+              0.0,
+              -1.0
+            ]
           }
         }
       }
@@ -11621,15 +12160,25 @@
         "dataMask": 4,
         "values": {
           "top": {
-            "data": 4
+            "data": 4,
+            "direction": [
+              0,
+              1,
+              0
+            ]
           },
           "bottom": {
-            "data": 0
+            "data": 0,
+            "direction": [
+              0,
+              -1,
+              0
+            ]
           }
         }
       },
       "shape": {
-        "dataMask": 7,
+        "dataMask": 0,
         "values": {
           "straight": {
             "data": 0
@@ -11692,6 +12241,7 @@
         }
       },
       "variant": {
+        "dataMask": 0,
         "values": {
           "red_sandstone": {
             "data": 0
@@ -11734,14 +12284,25 @@
         "dataMask": 8,
         "values": {
           "top": {
-            "data": 8
+            "data": 8,
+            "direction": [
+              0,
+              1,
+              0
+            ]
           },
           "bottom": {
-            "data": 0
+            "data": 0,
+            "direction": [
+              0,
+              -1,
+              0
+            ]
           }
         }
       },
       "variant": {
+        "dataMask": 0,
         "values": {
           "red_sandstone": {
             "data": 0
@@ -11818,6 +12379,7 @@
         }
       },
       "in_wall": {
+        "dataMask": 0,
         "values": {
           "true": {
             "data": 0
@@ -11919,6 +12481,7 @@
         }
       },
       "in_wall": {
+        "dataMask": 0,
         "values": {
           "true": {
             "data": 0
@@ -12020,6 +12583,7 @@
         }
       },
       "in_wall": {
+        "dataMask": 0,
         "values": {
           "true": {
             "data": 0
@@ -12121,6 +12685,7 @@
         }
       },
       "in_wall": {
+        "dataMask": 0,
         "values": {
           "true": {
             "data": 0
@@ -12222,6 +12787,7 @@
         }
       },
       "in_wall": {
+        "dataMask": 0,
         "values": {
           "true": {
             "data": 0
@@ -12286,6 +12852,7 @@
     "localizedName": "Spruce Fence",
     "states": {
       "east": {
+        "dataMask": 0,
         "values": {
           "true": {
             "data": 0
@@ -12296,6 +12863,7 @@
         }
       },
       "north": {
+        "dataMask": 0,
         "values": {
           "true": {
             "data": 0
@@ -12306,6 +12874,7 @@
         }
       },
       "south": {
+        "dataMask": 0,
         "values": {
           "true": {
             "data": 0
@@ -12316,6 +12885,7 @@
         }
       },
       "west": {
+        "dataMask": 0,
         "values": {
           "true": {
             "data": 0
@@ -12358,6 +12928,7 @@
     "localizedName": "Birch Fence",
     "states": {
       "east": {
+        "dataMask": 0,
         "values": {
           "true": {
             "data": 0
@@ -12368,6 +12939,7 @@
         }
       },
       "north": {
+        "dataMask": 0,
         "values": {
           "true": {
             "data": 0
@@ -12378,6 +12950,7 @@
         }
       },
       "south": {
+        "dataMask": 0,
         "values": {
           "true": {
             "data": 0
@@ -12388,6 +12961,7 @@
         }
       },
       "west": {
+        "dataMask": 0,
         "values": {
           "true": {
             "data": 0
@@ -12430,6 +13004,7 @@
     "localizedName": "Jungle Fence",
     "states": {
       "east": {
+        "dataMask": 0,
         "values": {
           "true": {
             "data": 0
@@ -12440,6 +13015,7 @@
         }
       },
       "north": {
+        "dataMask": 0,
         "values": {
           "true": {
             "data": 0
@@ -12450,6 +13026,7 @@
         }
       },
       "south": {
+        "dataMask": 0,
         "values": {
           "true": {
             "data": 0
@@ -12460,6 +13037,7 @@
         }
       },
       "west": {
+        "dataMask": 0,
         "values": {
           "true": {
             "data": 0
@@ -12502,6 +13080,7 @@
     "localizedName": "Dark Oak Fence",
     "states": {
       "east": {
+        "dataMask": 0,
         "values": {
           "true": {
             "data": 0
@@ -12512,6 +13091,7 @@
         }
       },
       "north": {
+        "dataMask": 0,
         "values": {
           "true": {
             "data": 0
@@ -12522,6 +13102,7 @@
         }
       },
       "south": {
+        "dataMask": 0,
         "values": {
           "true": {
             "data": 0
@@ -12532,6 +13113,7 @@
         }
       },
       "west": {
+        "dataMask": 0,
         "values": {
           "true": {
             "data": 0
@@ -12574,6 +13156,7 @@
     "localizedName": "Acacia Fence",
     "states": {
       "east": {
+        "dataMask": 0,
         "values": {
           "true": {
             "data": 0
@@ -12584,6 +13167,7 @@
         }
       },
       "north": {
+        "dataMask": 0,
         "values": {
           "true": {
             "data": 0
@@ -12594,6 +13178,7 @@
         }
       },
       "south": {
+        "dataMask": 0,
         "values": {
           "true": {
             "data": 0
@@ -12604,6 +13189,7 @@
         }
       },
       "west": {
+        "dataMask": 0,
         "values": {
           "true": {
             "data": 0
@@ -12694,6 +13280,7 @@
         }
       },
       "hinge": {
+        "dataMask": 0,
         "values": {
           "left": {
             "data": 0
@@ -12715,6 +13302,7 @@
         }
       },
       "powered": {
+        "dataMask": 0,
         "values": {
           "true": {
             "data": 0
@@ -12805,6 +13393,7 @@
         }
       },
       "hinge": {
+        "dataMask": 0,
         "values": {
           "left": {
             "data": 0
@@ -12826,6 +13415,7 @@
         }
       },
       "powered": {
+        "dataMask": 0,
         "values": {
           "true": {
             "data": 0
@@ -12916,6 +13506,7 @@
         }
       },
       "hinge": {
+        "dataMask": 0,
         "values": {
           "left": {
             "data": 0
@@ -12937,6 +13528,7 @@
         }
       },
       "powered": {
+        "dataMask": 0,
         "values": {
           "true": {
             "data": 0
@@ -13027,6 +13619,7 @@
         }
       },
       "hinge": {
+        "dataMask": 0,
         "values": {
           "left": {
             "data": 0
@@ -13048,6 +13641,7 @@
         }
       },
       "powered": {
+        "dataMask": 0,
         "values": {
           "true": {
             "data": 0
@@ -13138,6 +13732,7 @@
         }
       },
       "hinge": {
+        "dataMask": 0,
         "values": {
           "left": {
             "data": 0
@@ -13159,6 +13754,7 @@
         }
       },
       "powered": {
+        "dataMask": 0,
         "values": {
           "true": {
             "data": 0
@@ -13286,6 +13882,7 @@
     "localizedName": "Chorus Plant",
     "states": {
       "down": {
+        "dataMask": 0,
         "values": {
           "true": {
             "data": 0
@@ -13296,6 +13893,7 @@
         }
       },
       "east": {
+        "dataMask": 0,
         "values": {
           "true": {
             "data": 0
@@ -13306,6 +13904,7 @@
         }
       },
       "north": {
+        "dataMask": 0,
         "values": {
           "true": {
             "data": 0
@@ -13316,6 +13915,7 @@
         }
       },
       "south": {
+        "dataMask": 0,
         "values": {
           "true": {
             "data": 0
@@ -13326,6 +13926,7 @@
         }
       },
       "up": {
+        "dataMask": 0,
         "values": {
           "true": {
             "data": 0
@@ -13336,6 +13937,7 @@
         }
       },
       "west": {
+        "dataMask": 0,
         "values": {
           "true": {
             "data": 0
@@ -13464,16 +14066,55 @@
     "localizedName": "Purpur Pillar",
     "states": {
       "axis": {
-        "dataMask": 8,
+        "dataMask": 12,
         "values": {
           "x": {
-            "data": 4
+            "data": 4,
+            "direction": [
+              1,
+              0,
+              0
+            ]
+          },
+          "-x": {
+            "data": 4,
+            "direction": [
+              -1,
+              0,
+              0
+            ]
           },
           "y": {
-            "data": 0
+            "data": 0,
+            "direction": [
+              0,
+              1,
+              0
+            ]
+          },
+          "-y": {
+            "data": 0,
+            "direction": [
+              0,
+              -1,
+              0
+            ]
           },
           "z": {
-            "data": 8
+            "data": 8,
+            "direction": [
+              0,
+              0,
+              1
+            ]
+          },
+          "-z": {
+            "data": 8,
+            "direction": [
+              0,
+              0,
+              -1
+            ]
           }
         }
       }
@@ -13550,15 +14191,25 @@
         "dataMask": 4,
         "values": {
           "top": {
-            "data": 4
+            "data": 4,
+            "direction": [
+              0,
+              1,
+              0
+            ]
           },
           "bottom": {
-            "data": 0
+            "data": 0,
+            "direction": [
+              0,
+              -1,
+              0
+            ]
           }
         }
       },
       "shape": {
-        "dataMask": 7,
+        "dataMask": 0,
         "values": {
           "straight": {
             "data": 0
@@ -13610,6 +14261,7 @@
     "localizedName": "Purpur Slab",
     "states": {
       "variant": {
+        "dataMask": 0,
         "values": {
           "default": {
             "data": 0
@@ -13652,14 +14304,25 @@
         "dataMask": 8,
         "values": {
           "top": {
-            "data": 8
+            "data": 8,
+            "direction": [
+              0,
+              1,
+              0
+            ]
           },
           "bottom": {
-            "data": 0
+            "data": 0,
+            "direction": [
+              0,
+              -1,
+              0
+            ]
           }
         }
       },
       "variant": {
+        "dataMask": 0,
         "values": {
           "default": {
             "data": 0
@@ -14175,16 +14838,55 @@
     "localizedName": "Bone Block",
     "states": {
       "axis": {
-        "dataMask": 8,
+        "dataMask": 12,
         "values": {
           "x": {
-            "data": 4
+            "data": 4,
+            "direction": [
+              1,
+              0,
+              0
+            ]
+          },
+          "-x": {
+            "data": 4,
+            "direction": [
+              -1,
+              0,
+              0
+            ]
           },
           "y": {
-            "data": 0
+            "data": 0,
+            "direction": [
+              0,
+              1,
+              0
+            ]
+          },
+          "-y": {
+            "data": 0,
+            "direction": [
+              0,
+              -1,
+              0
+            ]
           },
           "z": {
-            "data": 8
+            "data": 8,
+            "direction": [
+              0,
+              0,
+              1
+            ]
+          },
+          "-z": {
+            "data": 8,
+            "direction": [
+              0,
+              0,
+              -1
+            ]
           }
         }
       }

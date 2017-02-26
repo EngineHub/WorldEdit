@@ -33,6 +33,7 @@ import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.registry.BundledBlockData;
+import com.sk89q.worldedit.world.registry.SimpleState;
 import com.sk89q.worldedit.world.registry.State;
 import com.sk89q.worldedit.world.registry.StateValue;
 
@@ -80,9 +81,14 @@ public class QueryTool implements BlockTool {
         StringBuilder builder = new StringBuilder();
         builder.append("States: ");
         boolean first = true;
+        boolean hasVisibleStates = false;
         for (Entry<String, ? extends State> e : states.entrySet()) {
             String name = e.getKey();
             State state = e.getValue();
+            if (state instanceof SimpleState && ((SimpleState) state).getDataMask() == 0) {
+                continue; // don't try to determine states that aren't reflected in their data value
+            }
+            hasVisibleStates = true;
             if (!first) {
                 builder.append(", ");
             }
@@ -91,11 +97,14 @@ public class QueryTool implements BlockTool {
             for (Entry<String, ? extends StateValue> entry : state.valueMap().entrySet()) {
                 if (entry.getValue().isSet(block)) {
                     valName = entry.getKey();
+                    break;
                 }
             }
             builder.append("\u00A79").append(name).append(": \u00A7f").append(valName != null ? valName : "set");
         }
-        player.printRaw(builder.toString());
+        if (hasVisibleStates) {
+            player.printRaw(builder.toString());
+        }
 
         return true;
     }
