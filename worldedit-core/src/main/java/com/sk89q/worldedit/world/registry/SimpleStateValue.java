@@ -22,11 +22,11 @@ package com.sk89q.worldedit.world.registry;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.blocks.BaseBlock;
 
-class SimpleStateValue implements StateValue {
+public class SimpleStateValue implements StateValue {
 
-    private SimpleState state;
-    private Byte data;
-    private Vector direction;
+    public SimpleState state;
+    public Byte data;
+    public Vector direction;
 
     void setState(SimpleState state) {
         this.state = state;
