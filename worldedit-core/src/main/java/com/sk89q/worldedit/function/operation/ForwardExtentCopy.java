@@ -58,6 +58,7 @@ public class ForwardExtentCopy implements Operation {
     private int repetitions = 1;
     private Mask sourceMask = Masks.alwaysTrue();
     private boolean removingEntities;
+    private boolean copyingEntities = true; // default to true for backwards compatibility, sort of
     private RegionFunction sourceFunction = null;
     private Transform transform = new Identity();
     private Transform currentTransform = null;
@@ -184,6 +185,24 @@ public class ForwardExtentCopy implements Operation {
     }
 
     /**
+     * Return whether entities should be copied along with blocks.
+     *
+     * @return true if copying
+     */
+    public boolean isCopyingEntities() {
+        return copyingEntities;
+    }
+
+    /**
+     * Set whether entities should be copied along with blocks.
+     *
+     * @param copyingEntities true if copying
+     */
+    public void setCopyingEntities(boolean copyingEntities) {
+        this.copyingEntities = copyingEntities;
+    }
+
+    /**
      * Return whether entities that are copied should be removed.
      *
      * @return true if removing
@@ -229,14 +248,18 @@ public class ForwardExtentCopy implements Operation {
             RegionFunction function = sourceFunction != null ? new CombinedRegionFunction(filter, sourceFunction) : filter;
             RegionVisitor blockVisitor = new RegionVisitor(region, function);
 
-            ExtentEntityCopy entityCopy = new ExtentEntityCopy(from, destination, to, currentTransform);
-            entityCopy.setRemoving(removingEntities);
-            List<? extends Entity> entities = source.getEntities(region);
-            EntityVisitor entityVisitor = new EntityVisitor(entities.iterator(), entityCopy);
-
             lastVisitor = blockVisitor;
             currentTransform = currentTransform.combine(transform);
-            return new DelegateOperation(this, new OperationQueue(blockVisitor, entityVisitor));
+
+            if (copyingEntities) {
+                ExtentEntityCopy entityCopy = new ExtentEntityCopy(from, destination, to, currentTransform);
+                entityCopy.setRemoving(removingEntities);
+                List<? extends Entity> entities = source.getEntities(region);
+                EntityVisitor entityVisitor = new EntityVisitor(entities.iterator(), entityCopy);
+                return new DelegateOperation(this, new OperationQueue(blockVisitor, entityVisitor));
+            } else {
+                return new DelegateOperation(this, blockVisitor);
+            }
         } else {
             return null;
         }

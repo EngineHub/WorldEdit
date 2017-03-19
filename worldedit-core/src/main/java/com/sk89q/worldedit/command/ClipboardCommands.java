@@ -70,7 +70,7 @@ public class ClipboardCommands {
         desc = "Copy the selection to the clipboard",
         help = "Copy the selection to the clipboard\n" +
                 "Flags:\n" +
-                "  -e controls whether entities are copied\n" +
+                "  -e will also copy entities\n" +
                 "  -m sets a source mask so that excluded blocks become air\n" +
                 "WARNING: Pasting entities cannot yet be undone!",
         min = 0,
@@ -84,6 +84,7 @@ public class ClipboardCommands {
         BlockArrayClipboard clipboard = new BlockArrayClipboard(region);
         clipboard.setOrigin(session.getPlacementPosition(player));
         ForwardExtentCopy copy = new ForwardExtentCopy(editSession, region, clipboard, region.getMinimumPoint());
+        copy.setCopyingEntities(copyEntities);
         if (mask != null) {
             copy.setSourceMask(mask);
         }
@@ -100,10 +101,9 @@ public class ClipboardCommands {
         desc = "Cut the selection to the clipboard",
         help = "Copy the selection to the clipboard\n" +
                 "Flags:\n" +
-                "  -e controls whether entities are copied\n" +
+                "  -e will also cut entities\n" +
                 "  -m sets a source mask so that excluded blocks become air\n" +
                 "WARNING: Cutting and pasting entities cannot yet be undone!",
-        min = 0,
         max = 1
     )
     @CommandPermissions("worldedit.clipboard.cut")
@@ -116,6 +116,8 @@ public class ClipboardCommands {
         clipboard.setOrigin(session.getPlacementPosition(player));
         ForwardExtentCopy copy = new ForwardExtentCopy(editSession, region, clipboard, region.getMinimumPoint());
         copy.setSourceFunction(new BlockReplace(editSession, leavePattern));
+        copy.setCopyingEntities(copyEntities);
+        copy.setRemovingEntities(true);
         if (mask != null) {
             copy.setSourceMask(mask);
         }
