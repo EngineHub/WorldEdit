@@ -167,7 +167,7 @@ public class Polygonal2DRegionSelector extends com.sk89q.worldedit.regions.Polyg
 
     @Override
     public void explainPrimarySelection(Actor player, LocalSession session, Vector pos) {
-        if (player.hasPermission("worldedit.hidechatcoords")) {
+        if (player.hasPermission("worldedit.showchatcoords")) {
             player.print("Starting a new polygon at " + pos + ".");
         } else {
             player.print("Starting a new polygon.");
