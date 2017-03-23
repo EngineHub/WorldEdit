@@ -150,9 +150,17 @@ public class CuboidRegionSelector extends com.sk89q.worldedit.regions.CuboidRegi
         checkNotNull(pos);
 
         if (position1 != null && position2 != null) {
-            player.print("First position set to " + position1 + " (" + region.getArea() + ").");
+            if (player.hasPermission("worldedit.showchatcoords")) {
+                player.print("First position set to " + position1 + " (" + region.getArea() + ").");
+            } else {
+                player.print("First position set (" + region.getArea() + ").");
+            }
         } else {
-            player.print("First position set to " + position1 + ".");
+            if (player.hasPermission("worldedit.showchatcoords")) {
+                player.print("First position set to " + position1 + ".");
+            } else {
+                player.print("First position set.");
+            }
         }
 
         session.dispatchCUIEvent(player, new SelectionPointEvent(0, pos, getArea()));
@@ -165,9 +173,17 @@ public class CuboidRegionSelector extends com.sk89q.worldedit.regions.CuboidRegi
         checkNotNull(pos);
 
         if (position1 != null && position2 != null) {
-            player.print("Second position set to " + position2 + " (" + region.getArea() + ").");
+            if (player.hasPermission("worldedit.showchatcoords")) {
+                player.print("Second position set to " + position2 + " (" + region.getArea() + ").");
+            } else {
+                player.print("Second position set (" + region.getArea() + ").");
+            }
         } else {
-            player.print("Second position set to " + position2 + ".");
+            if (player.hasPermission("worldedit.showchatcoords")) {
+                player.print("Second position set to " + position2 + ".");
+            } else {
+                player.print("Second position set.");
+            }
         }
 
         session.dispatchCUIEvent(player, new SelectionPointEvent(1, pos, getArea()));

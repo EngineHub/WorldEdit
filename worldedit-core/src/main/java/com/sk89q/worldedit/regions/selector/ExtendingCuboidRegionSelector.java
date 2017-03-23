@@ -130,14 +130,22 @@ public class ExtendingCuboidRegionSelector extends CuboidRegionSelector {
 
     @Override
     public void explainPrimarySelection(Actor player, LocalSession session, Vector pos) {
-        player.print("Started selection at " + pos + " (" + region.getArea() + ").");
+        if (player.hasPermission("worldedit.showchatcoords")) {
+            player.print("Started selection at " + pos + " (" + region.getArea() + ").");
+        } else {
+            player.print("Started selection (" + region.getArea() + ").");
+        }
 
         explainRegionAdjust(player, session);
     }
 
     @Override
     public void explainSecondarySelection(Actor player, LocalSession session, Vector pos) {
-        player.print("Extended selection to encompass " + pos + " (" + region.getArea() + ").");
+        if (player.hasPermission("worldedit.showchatcoords")) {
+            player.print("Extended selection to encompass " + pos + " (" + region.getArea() + ").");
+        } else {
+            player.print("Extended selection (" + region.getArea() + ").");
+        }
 
         explainRegionAdjust(player, session);
     }

@@ -141,9 +141,17 @@ public class EllipsoidRegionSelector extends com.sk89q.worldedit.regions.Ellipso
     @Override
     public void explainPrimarySelection(Actor player, LocalSession session, Vector pos) {
         if (isDefined()) {
-            player.print("Center position set to " + region.getCenter() + " (" + region.getArea() + ").");
+            if (player.hasPermission("worldedit.showchatcoords")) {
+                player.print("Center position set to " + region.getCenter() + " (" + region.getArea() + ").");
+            } else {
+                player.print("Center position set (" + region.getArea() + ").");
+            }
         } else {
-            player.print("Center position set to " + region.getCenter() + ".");
+            if (player.hasPermission("worldedit.showchatcoords")) {
+                player.print("Center position set to " + region.getCenter() + ".");
+            } else {
+                player.print("Center position set.");
+            }
         }
 
         session.describeCUI(player);

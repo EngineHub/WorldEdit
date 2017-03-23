@@ -167,7 +167,11 @@ public class Polygonal2DRegionSelector extends com.sk89q.worldedit.regions.Polyg
 
     @Override
     public void explainPrimarySelection(Actor player, LocalSession session, Vector pos) {
-        player.print("Starting a new polygon at " + pos + ".");
+        if (player.hasPermission("worldedit.hidechatcoords")) {
+            player.print("Starting a new polygon at " + pos + ".");
+        } else {
+            player.print("Starting a new polygon.");
+        }
 
         session.dispatchCUIEvent(player, new SelectionShapeEvent(getTypeID()));
         session.dispatchCUIEvent(player, new SelectionPoint2DEvent(0, pos, getArea()));
@@ -176,7 +180,11 @@ public class Polygonal2DRegionSelector extends com.sk89q.worldedit.regions.Polyg
 
     @Override
     public void explainSecondarySelection(Actor player, LocalSession session, Vector pos) {
-        player.print("Added point #" + region.size() + " at " + pos + ".");
+        if (player.hasPermission("worldedit.showchatcoords")) {
+            player.print("Added point #" + region.size() + " at " + pos + ".");
+        } else {
+            player.print("Added point #" + region.size() + ".");
+        }
 
         session.dispatchCUIEvent(player, new SelectionPoint2DEvent(region.size() - 1, pos, getArea()));
         session.dispatchCUIEvent(player, new SelectionMinMaxEvent(region.getMinimumY(), region.getMaximumY()));

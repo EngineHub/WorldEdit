@@ -157,7 +157,11 @@ public class CylinderRegionSelector extends com.sk89q.worldedit.regions.Cylinder
 
     @Override
     public void explainPrimarySelection(Actor player, LocalSession session, Vector pos) {
-        player.print("Starting a new cylindrical selection at " + pos + ".");
+        if (player.hasPermission("worldedit.showchatcoords")) {
+            player.print("Starting a new cylindrical selection at " + pos + ".");
+        } else {
+            player.print("Starting a new cylindrical selection.");
+        }
 
         session.describeCUI(player);
     }

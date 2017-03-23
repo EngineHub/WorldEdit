@@ -199,8 +199,11 @@ public class ConvexPolyhedralRegionSelector extends com.sk89q.worldedit.regions.
         checkNotNull(pos);
 
         session.describeCUI(player);
-
-        player.print("Started new selection with vertex "+pos+".");
+        if (player.hasPermission("worldedit.showchatcoords")) {
+            player.print("Started new selection with vertex " + pos + ".");
+        } else {
+            player.print("Started new selection with that vertex.");
+        }
     }
 
     @Override
@@ -211,7 +214,11 @@ public class ConvexPolyhedralRegionSelector extends com.sk89q.worldedit.regions.
 
         session.describeCUI(player);
 
-        player.print("Added vertex " + pos + " to the selection.");
+        if (player.hasPermission("worldedit.showchatcoords")) {
+            player.print("Added vertex " + pos + " to the selection.");
+        } else {
+            player.print("Added that vertex to the selection.");;
+        }
     }
 
     @Override

@@ -169,7 +169,11 @@ public class ClipboardCommands {
             selector.explainRegionAdjust(player, session);
         }
 
-        player.print("The clipboard has been pasted at " + to);
+        if (player.hasPermission("worldedit.showchatcoords")) {
+            player.print("The clipboard has been pasted at " + to);
+        } else {
+            player.print("The clipboard has been pasted.");
+        }
     }
 
     @Command(
