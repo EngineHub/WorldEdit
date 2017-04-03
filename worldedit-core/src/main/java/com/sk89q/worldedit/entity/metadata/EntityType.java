@@ -32,6 +32,13 @@ public interface EntityType {
     boolean isPlayerDerived();
 
     /**
+     * Test whether the entity is a player entity.
+     *
+     * @return true if a player entity
+     */
+    boolean isPlayer();
+
+    /**
      * Test whether the entity is a projectile.
      *
      * @return true if a projectile
@@ -154,4 +161,11 @@ public interface EntityType {
      * @return true if an armor stand
      */
     boolean isArmorStand();
+
+    /**
+     * Test whether the entity is a complex part.
+     *
+     * @return true if a complex part
+     */
+    boolean isComplexPart();
 }
