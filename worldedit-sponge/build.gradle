@@ -8,7 +8,7 @@ buildscript {
 }
 
 plugins {
-    id 'org.spongepowered.plugin' version '0.6'
+    id 'org.spongepowered.plugin' version '0.8.1'
 }
 
 dependencies {
@@ -17,8 +17,8 @@ dependencies {
     testCompile group: 'org.mockito', name: 'mockito-core', version:'1.9.0-rc1'
 }
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
 
 sponge {
     plugin {
