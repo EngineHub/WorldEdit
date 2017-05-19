@@ -10548,7 +10548,7 @@
     "legacyId": 159,
     "id": "minecraft:stained_hardened_clay",
     "unlocalizedName": "tile.clayHardenedStained",
-    "localizedName": "Stained Hardened Clay",
+    "localizedName": "Stained Terracotta",
     "states": {
       "color": {
         "dataMask": 15,
@@ -11556,7 +11556,7 @@
     "legacyId": 172,
     "id": "minecraft:hardened_clay",
     "unlocalizedName": "tile.clayHardened",
-    "localizedName": "Hardened Clay",
+    "localizedName": "Terracotta",
     "states": {},
     "material": {
       "powerSource": false,
@@ -16400,6 +16400,1280 @@
       "unpushable": false,
       "adventureModeExempt": false,
       "ambientOcclusionLightValue": 1.0,
+      "grassBlocking": false
+    }
+  },
+  {
+    "legacyId": 235,
+    "id": "minecraft:white_glazed_terracotta",
+    "unlocalizedName": "tile.glazedTerracottaWhite",
+    "localizedName": "White Glazed Terracotta",
+    "states": {
+      "facing": {
+        "dataMask": 3,
+        "values": {
+          "north": {
+            "data": 2,
+            "direction": [
+              0,
+              0,
+              -1
+            ]
+          },
+          "south": {
+            "data": 0,
+            "direction": [
+              0,
+              0,
+              1
+            ]
+          },
+          "west": {
+            "data": 1,
+            "direction": [
+              -1,
+              0,
+              0
+            ]
+          },
+          "east": {
+            "data": 3,
+            "direction": [
+              1,
+              0,
+              0
+            ]
+          }
+        }
+      }
+    },
+    "material": {
+      "powerSource": false,
+      "lightOpacity": 255,
+      "lightValue": 0,
+      "usingNeighborLight": false,
+      "hardness": 1.4,
+      "resistance": 7.0,
+      "ticksRandomly": false,
+      "fullCube": true,
+      "slipperiness": 0.6,
+      "renderedAsNormalBlock": true,
+      "liquid": false,
+      "solid": true,
+      "movementBlocker": true,
+      "burnable": false,
+      "opaque": true,
+      "replacedDuringPlacement": false,
+      "toolRequired": true,
+      "fragileWhenPushed": false,
+      "unpushable": false,
+      "adventureModeExempt": false,
+      "ambientOcclusionLightValue": 0.2,
+      "grassBlocking": false
+    }
+  },
+  {
+    "legacyId": 236,
+    "id": "minecraft:orange_glazed_terracotta",
+    "unlocalizedName": "tile.glazedTerracottaOrange",
+    "localizedName": "Orange Glazed Terracotta",
+    "states": {
+      "facing": {
+        "dataMask": 3,
+        "values": {
+          "north": {
+            "data": 2,
+            "direction": [
+              0,
+              0,
+              -1
+            ]
+          },
+          "south": {
+            "data": 0,
+            "direction": [
+              0,
+              0,
+              1
+            ]
+          },
+          "west": {
+            "data": 1,
+            "direction": [
+              -1,
+              0,
+              0
+            ]
+          },
+          "east": {
+            "data": 3,
+            "direction": [
+              1,
+              0,
+              0
+            ]
+          }
+        }
+      }
+    },
+    "material": {
+      "powerSource": false,
+      "lightOpacity": 255,
+      "lightValue": 0,
+      "usingNeighborLight": false,
+      "hardness": 1.4,
+      "resistance": 7.0,
+      "ticksRandomly": false,
+      "fullCube": true,
+      "slipperiness": 0.6,
+      "renderedAsNormalBlock": true,
+      "liquid": false,
+      "solid": true,
+      "movementBlocker": true,
+      "burnable": false,
+      "opaque": true,
+      "replacedDuringPlacement": false,
+      "toolRequired": true,
+      "fragileWhenPushed": false,
+      "unpushable": false,
+      "adventureModeExempt": false,
+      "ambientOcclusionLightValue": 0.2,
+      "grassBlocking": false
+    }
+  },
+  {
+    "legacyId": 237,
+    "id": "minecraft:magenta_glazed_terracotta",
+    "unlocalizedName": "tile.glazedTerracottaMagenta",
+    "localizedName": "Magenta Glazed Terracotta",
+    "states": {
+      "facing": {
+        "dataMask": 3,
+        "values": {
+          "north": {
+            "data": 2,
+            "direction": [
+              0,
+              0,
+              -1
+            ]
+          },
+          "south": {
+            "data": 0,
+            "direction": [
+              0,
+              0,
+              1
+            ]
+          },
+          "west": {
+            "data": 1,
+            "direction": [
+              -1,
+              0,
+              0
+            ]
+          },
+          "east": {
+            "data": 3,
+            "direction": [
+              1,
+              0,
+              0
+            ]
+          }
+        }
+      }
+    },
+    "material": {
+      "powerSource": false,
+      "lightOpacity": 255,
+      "lightValue": 0,
+      "usingNeighborLight": false,
+      "hardness": 1.4,
+      "resistance": 7.0,
+      "ticksRandomly": false,
+      "fullCube": true,
+      "slipperiness": 0.6,
+      "renderedAsNormalBlock": true,
+      "liquid": false,
+      "solid": true,
+      "movementBlocker": true,
+      "burnable": false,
+      "opaque": true,
+      "replacedDuringPlacement": false,
+      "toolRequired": true,
+      "fragileWhenPushed": false,
+      "unpushable": false,
+      "adventureModeExempt": false,
+      "ambientOcclusionLightValue": 0.2,
+      "grassBlocking": false
+    }
+  },
+  {
+    "legacyId": 238,
+    "id": "minecraft:light_blue_glazed_terracotta",
+    "unlocalizedName": "tile.glazedTerracottaLightBlue",
+    "localizedName": "Light Blue Glazed Terracotta",
+    "states": {
+      "facing": {
+        "dataMask": 3,
+        "values": {
+          "north": {
+            "data": 2,
+            "direction": [
+              0,
+              0,
+              -1
+            ]
+          },
+          "south": {
+            "data": 0,
+            "direction": [
+              0,
+              0,
+              1
+            ]
+          },
+          "west": {
+            "data": 1,
+            "direction": [
+              -1,
+              0,
+              0
+            ]
+          },
+          "east": {
+            "data": 3,
+            "direction": [
+              1,
+              0,
+              0
+            ]
+          }
+        }
+      }
+    },
+    "material": {
+      "powerSource": false,
+      "lightOpacity": 255,
+      "lightValue": 0,
+      "usingNeighborLight": false,
+      "hardness": 1.4,
+      "resistance": 7.0,
+      "ticksRandomly": false,
+      "fullCube": true,
+      "slipperiness": 0.6,
+      "renderedAsNormalBlock": true,
+      "liquid": false,
+      "solid": true,
+      "movementBlocker": true,
+      "burnable": false,
+      "opaque": true,
+      "replacedDuringPlacement": false,
+      "toolRequired": true,
+      "fragileWhenPushed": false,
+      "unpushable": false,
+      "adventureModeExempt": false,
+      "ambientOcclusionLightValue": 0.2,
+      "grassBlocking": false
+    }
+  },
+  {
+    "legacyId": 239,
+    "id": "minecraft:yellow_glazed_terracotta",
+    "unlocalizedName": "tile.glazedTerracottaYellow",
+    "localizedName": "Yellow Glazed Terracotta",
+    "states": {
+      "facing": {
+        "dataMask": 3,
+        "values": {
+          "north": {
+            "data": 2,
+            "direction": [
+              0,
+              0,
+              -1
+            ]
+          },
+          "south": {
+            "data": 0,
+            "direction": [
+              0,
+              0,
+              1
+            ]
+          },
+          "west": {
+            "data": 1,
+            "direction": [
+              -1,
+              0,
+              0
+            ]
+          },
+          "east": {
+            "data": 3,
+            "direction": [
+              1,
+              0,
+              0
+            ]
+          }
+        }
+      }
+    },
+    "material": {
+      "powerSource": false,
+      "lightOpacity": 255,
+      "lightValue": 0,
+      "usingNeighborLight": false,
+      "hardness": 1.4,
+      "resistance": 7.0,
+      "ticksRandomly": false,
+      "fullCube": true,
+      "slipperiness": 0.6,
+      "renderedAsNormalBlock": true,
+      "liquid": false,
+      "solid": true,
+      "movementBlocker": true,
+      "burnable": false,
+      "opaque": true,
+      "replacedDuringPlacement": false,
+      "toolRequired": true,
+      "fragileWhenPushed": false,
+      "unpushable": false,
+      "adventureModeExempt": false,
+      "ambientOcclusionLightValue": 0.2,
+      "grassBlocking": false
+    }
+  },
+  {
+    "legacyId": 240,
+    "id": "minecraft:lime_glazed_terracotta",
+    "unlocalizedName": "tile.glazedTerracottaLime",
+    "localizedName": "Lime Glazed Terracotta",
+    "states": {
+      "facing": {
+        "dataMask": 3,
+        "values": {
+          "north": {
+            "data": 2,
+            "direction": [
+              0,
+              0,
+              -1
+            ]
+          },
+          "south": {
+            "data": 0,
+            "direction": [
+              0,
+              0,
+              1
+            ]
+          },
+          "west": {
+            "data": 1,
+            "direction": [
+              -1,
+              0,
+              0
+            ]
+          },
+          "east": {
+            "data": 3,
+            "direction": [
+              1,
+              0,
+              0
+            ]
+          }
+        }
+      }
+    },
+    "material": {
+      "powerSource": false,
+      "lightOpacity": 255,
+      "lightValue": 0,
+      "usingNeighborLight": false,
+      "hardness": 1.4,
+      "resistance": 7.0,
+      "ticksRandomly": false,
+      "fullCube": true,
+      "slipperiness": 0.6,
+      "renderedAsNormalBlock": true,
+      "liquid": false,
+      "solid": true,
+      "movementBlocker": true,
+      "burnable": false,
+      "opaque": true,
+      "replacedDuringPlacement": false,
+      "toolRequired": true,
+      "fragileWhenPushed": false,
+      "unpushable": false,
+      "adventureModeExempt": false,
+      "ambientOcclusionLightValue": 0.2,
+      "grassBlocking": false
+    }
+  },
+  {
+    "legacyId": 241,
+    "id": "minecraft:pink_glazed_terracotta",
+    "unlocalizedName": "tile.glazedTerracottaPink",
+    "localizedName": "Pink Glazed Terracotta",
+    "states": {
+      "facing": {
+        "dataMask": 3,
+        "values": {
+          "north": {
+            "data": 2,
+            "direction": [
+              0,
+              0,
+              -1
+            ]
+          },
+          "south": {
+            "data": 0,
+            "direction": [
+              0,
+              0,
+              1
+            ]
+          },
+          "west": {
+            "data": 1,
+            "direction": [
+              -1,
+              0,
+              0
+            ]
+          },
+          "east": {
+            "data": 3,
+            "direction": [
+              1,
+              0,
+              0
+            ]
+          }
+        }
+      }
+    },
+    "material": {
+      "powerSource": false,
+      "lightOpacity": 255,
+      "lightValue": 0,
+      "usingNeighborLight": false,
+      "hardness": 1.4,
+      "resistance": 7.0,
+      "ticksRandomly": false,
+      "fullCube": true,
+      "slipperiness": 0.6,
+      "renderedAsNormalBlock": true,
+      "liquid": false,
+      "solid": true,
+      "movementBlocker": true,
+      "burnable": false,
+      "opaque": true,
+      "replacedDuringPlacement": false,
+      "toolRequired": true,
+      "fragileWhenPushed": false,
+      "unpushable": false,
+      "adventureModeExempt": false,
+      "ambientOcclusionLightValue": 0.2,
+      "grassBlocking": false
+    }
+  },
+  {
+    "legacyId": 242,
+    "id": "minecraft:gray_glazed_terracotta",
+    "unlocalizedName": "tile.glazedTerracottaGray",
+    "localizedName": "Gray Glazed Terracotta",
+    "states": {
+      "facing": {
+        "dataMask": 3,
+        "values": {
+          "north": {
+            "data": 2,
+            "direction": [
+              0,
+              0,
+              -1
+            ]
+          },
+          "south": {
+            "data": 0,
+            "direction": [
+              0,
+              0,
+              1
+            ]
+          },
+          "west": {
+            "data": 1,
+            "direction": [
+              -1,
+              0,
+              0
+            ]
+          },
+          "east": {
+            "data": 3,
+            "direction": [
+              1,
+              0,
+              0
+            ]
+          }
+        }
+      }
+    },
+    "material": {
+      "powerSource": false,
+      "lightOpacity": 255,
+      "lightValue": 0,
+      "usingNeighborLight": false,
+      "hardness": 1.4,
+      "resistance": 7.0,
+      "ticksRandomly": false,
+      "fullCube": true,
+      "slipperiness": 0.6,
+      "renderedAsNormalBlock": true,
+      "liquid": false,
+      "solid": true,
+      "movementBlocker": true,
+      "burnable": false,
+      "opaque": true,
+      "replacedDuringPlacement": false,
+      "toolRequired": true,
+      "fragileWhenPushed": false,
+      "unpushable": false,
+      "adventureModeExempt": false,
+      "ambientOcclusionLightValue": 0.2,
+      "grassBlocking": false
+    }
+  },
+  {
+    "legacyId": 243,
+    "id": "minecraft:silver_glazed_terracotta",
+    "unlocalizedName": "tile.glazedTerracottaSilver",
+    "localizedName": "Light Gray Glazed Terracotta",
+    "states": {
+      "facing": {
+        "dataMask": 3,
+        "values": {
+          "north": {
+            "data": 2,
+            "direction": [
+              0,
+              0,
+              -1
+            ]
+          },
+          "south": {
+            "data": 0,
+            "direction": [
+              0,
+              0,
+              1
+            ]
+          },
+          "west": {
+            "data": 1,
+            "direction": [
+              -1,
+              0,
+              0
+            ]
+          },
+          "east": {
+            "data": 3,
+            "direction": [
+              1,
+              0,
+              0
+            ]
+          }
+        }
+      }
+    },
+    "material": {
+      "powerSource": false,
+      "lightOpacity": 255,
+      "lightValue": 0,
+      "usingNeighborLight": false,
+      "hardness": 1.4,
+      "resistance": 7.0,
+      "ticksRandomly": false,
+      "fullCube": true,
+      "slipperiness": 0.6,
+      "renderedAsNormalBlock": true,
+      "liquid": false,
+      "solid": true,
+      "movementBlocker": true,
+      "burnable": false,
+      "opaque": true,
+      "replacedDuringPlacement": false,
+      "toolRequired": true,
+      "fragileWhenPushed": false,
+      "unpushable": false,
+      "adventureModeExempt": false,
+      "ambientOcclusionLightValue": 0.2,
+      "grassBlocking": false
+    }
+  },
+  {
+    "legacyId": 244,
+    "id": "minecraft:cyan_glazed_terracotta",
+    "unlocalizedName": "tile.glazedTerracottaCyan",
+    "localizedName": "Cyan Glazed Terracotta",
+    "states": {
+      "facing": {
+        "dataMask": 3,
+        "values": {
+          "north": {
+            "data": 2,
+            "direction": [
+              0,
+              0,
+              -1
+            ]
+          },
+          "south": {
+            "data": 0,
+            "direction": [
+              0,
+              0,
+              1
+            ]
+          },
+          "west": {
+            "data": 1,
+            "direction": [
+              -1,
+              0,
+              0
+            ]
+          },
+          "east": {
+            "data": 3,
+            "direction": [
+              1,
+              0,
+              0
+            ]
+          }
+        }
+      }
+    },
+    "material": {
+      "powerSource": false,
+      "lightOpacity": 255,
+      "lightValue": 0,
+      "usingNeighborLight": false,
+      "hardness": 1.4,
+      "resistance": 7.0,
+      "ticksRandomly": false,
+      "fullCube": true,
+      "slipperiness": 0.6,
+      "renderedAsNormalBlock": true,
+      "liquid": false,
+      "solid": true,
+      "movementBlocker": true,
+      "burnable": false,
+      "opaque": true,
+      "replacedDuringPlacement": false,
+      "toolRequired": true,
+      "fragileWhenPushed": false,
+      "unpushable": false,
+      "adventureModeExempt": false,
+      "ambientOcclusionLightValue": 0.2,
+      "grassBlocking": false
+    }
+  },
+  {
+    "legacyId": 245,
+    "id": "minecraft:purple_glazed_terracotta",
+    "unlocalizedName": "tile.glazedTerracottaPurple",
+    "localizedName": "Purple Glazed Terracotta",
+    "states": {
+      "facing": {
+        "dataMask": 3,
+        "values": {
+          "north": {
+            "data": 2,
+            "direction": [
+              0,
+              0,
+              -1
+            ]
+          },
+          "south": {
+            "data": 0,
+            "direction": [
+              0,
+              0,
+              1
+            ]
+          },
+          "west": {
+            "data": 1,
+            "direction": [
+              -1,
+              0,
+              0
+            ]
+          },
+          "east": {
+            "data": 3,
+            "direction": [
+              1,
+              0,
+              0
+            ]
+          }
+        }
+      }
+    },
+    "material": {
+      "powerSource": false,
+      "lightOpacity": 255,
+      "lightValue": 0,
+      "usingNeighborLight": false,
+      "hardness": 1.4,
+      "resistance": 7.0,
+      "ticksRandomly": false,
+      "fullCube": true,
+      "slipperiness": 0.6,
+      "renderedAsNormalBlock": true,
+      "liquid": false,
+      "solid": true,
+      "movementBlocker": true,
+      "burnable": false,
+      "opaque": true,
+      "replacedDuringPlacement": false,
+      "toolRequired": true,
+      "fragileWhenPushed": false,
+      "unpushable": false,
+      "adventureModeExempt": false,
+      "ambientOcclusionLightValue": 0.2,
+      "grassBlocking": false
+    }
+  },
+  {
+    "legacyId": 246,
+    "id": "minecraft:blue_glazed_terracotta",
+    "unlocalizedName": "tile.glazedTerracottaBlue",
+    "localizedName": "Blue Glazed Terracotta",
+    "states": {
+      "facing": {
+        "dataMask": 3,
+        "values": {
+          "north": {
+            "data": 2,
+            "direction": [
+              0,
+              0,
+              -1
+            ]
+          },
+          "south": {
+            "data": 0,
+            "direction": [
+              0,
+              0,
+              1
+            ]
+          },
+          "west": {
+            "data": 1,
+            "direction": [
+              -1,
+              0,
+              0
+            ]
+          },
+          "east": {
+            "data": 3,
+            "direction": [
+              1,
+              0,
+              0
+            ]
+          }
+        }
+      }
+    },
+    "material": {
+      "powerSource": false,
+      "lightOpacity": 255,
+      "lightValue": 0,
+      "usingNeighborLight": false,
+      "hardness": 1.4,
+      "resistance": 7.0,
+      "ticksRandomly": false,
+      "fullCube": true,
+      "slipperiness": 0.6,
+      "renderedAsNormalBlock": true,
+      "liquid": false,
+      "solid": true,
+      "movementBlocker": true,
+      "burnable": false,
+      "opaque": true,
+      "replacedDuringPlacement": false,
+      "toolRequired": true,
+      "fragileWhenPushed": false,
+      "unpushable": false,
+      "adventureModeExempt": false,
+      "ambientOcclusionLightValue": 0.2,
+      "grassBlocking": false
+    }
+  },
+  {
+    "legacyId": 247,
+    "id": "minecraft:brown_glazed_terracotta",
+    "unlocalizedName": "tile.glazedTerracottaBrown",
+    "localizedName": "Brown Glazed Terracotta",
+    "states": {
+      "facing": {
+        "dataMask": 3,
+        "values": {
+          "north": {
+            "data": 2,
+            "direction": [
+              0,
+              0,
+              -1
+            ]
+          },
+          "south": {
+            "data": 0,
+            "direction": [
+              0,
+              0,
+              1
+            ]
+          },
+          "west": {
+            "data": 1,
+            "direction": [
+              -1,
+              0,
+              0
+            ]
+          },
+          "east": {
+            "data": 3,
+            "direction": [
+              1,
+              0,
+              0
+            ]
+          }
+        }
+      }
+    },
+    "material": {
+      "powerSource": false,
+      "lightOpacity": 255,
+      "lightValue": 0,
+      "usingNeighborLight": false,
+      "hardness": 1.4,
+      "resistance": 7.0,
+      "ticksRandomly": false,
+      "fullCube": true,
+      "slipperiness": 0.6,
+      "renderedAsNormalBlock": true,
+      "liquid": false,
+      "solid": true,
+      "movementBlocker": true,
+      "burnable": false,
+      "opaque": true,
+      "replacedDuringPlacement": false,
+      "toolRequired": true,
+      "fragileWhenPushed": false,
+      "unpushable": false,
+      "adventureModeExempt": false,
+      "ambientOcclusionLightValue": 0.2,
+      "grassBlocking": false
+    }
+  },
+  {
+    "legacyId": 248,
+    "id": "minecraft:green_glazed_terracotta",
+    "unlocalizedName": "tile.glazedTerracottaGreen",
+    "localizedName": "Green Glazed Terracotta",
+    "states": {
+      "facing": {
+        "dataMask": 3,
+        "values": {
+          "north": {
+            "data": 2,
+            "direction": [
+              0,
+              0,
+              -1
+            ]
+          },
+          "south": {
+            "data": 0,
+            "direction": [
+              0,
+              0,
+              1
+            ]
+          },
+          "west": {
+            "data": 1,
+            "direction": [
+              -1,
+              0,
+              0
+            ]
+          },
+          "east": {
+            "data": 3,
+            "direction": [
+              1,
+              0,
+              0
+            ]
+          }
+        }
+      }
+    },
+    "material": {
+      "powerSource": false,
+      "lightOpacity": 255,
+      "lightValue": 0,
+      "usingNeighborLight": false,
+      "hardness": 1.4,
+      "resistance": 7.0,
+      "ticksRandomly": false,
+      "fullCube": true,
+      "slipperiness": 0.6,
+      "renderedAsNormalBlock": true,
+      "liquid": false,
+      "solid": true,
+      "movementBlocker": true,
+      "burnable": false,
+      "opaque": true,
+      "replacedDuringPlacement": false,
+      "toolRequired": true,
+      "fragileWhenPushed": false,
+      "unpushable": false,
+      "adventureModeExempt": false,
+      "ambientOcclusionLightValue": 0.2,
+      "grassBlocking": false
+    }
+  },
+  {
+    "legacyId": 249,
+    "id": "minecraft:red_glazed_terracotta",
+    "unlocalizedName": "tile.glazedTerracottaRed",
+    "localizedName": "Red Glazed Terracotta",
+    "states": {
+      "facing": {
+        "dataMask": 3,
+        "values": {
+          "north": {
+            "data": 2,
+            "direction": [
+              0,
+              0,
+              -1
+            ]
+          },
+          "south": {
+            "data": 0,
+            "direction": [
+              0,
+              0,
+              1
+            ]
+          },
+          "west": {
+            "data": 1,
+            "direction": [
+              -1,
+              0,
+              0
+            ]
+          },
+          "east": {
+            "data": 3,
+            "direction": [
+              1,
+              0,
+              0
+            ]
+          }
+        }
+      }
+    },
+    "material": {
+      "powerSource": false,
+      "lightOpacity": 255,
+      "lightValue": 0,
+      "usingNeighborLight": false,
+      "hardness": 1.4,
+      "resistance": 7.0,
+      "ticksRandomly": false,
+      "fullCube": true,
+      "slipperiness": 0.6,
+      "renderedAsNormalBlock": true,
+      "liquid": false,
+      "solid": true,
+      "movementBlocker": true,
+      "burnable": false,
+      "opaque": true,
+      "replacedDuringPlacement": false,
+      "toolRequired": true,
+      "fragileWhenPushed": false,
+      "unpushable": false,
+      "adventureModeExempt": false,
+      "ambientOcclusionLightValue": 0.2,
+      "grassBlocking": false
+    }
+  },
+  {
+    "legacyId": 250,
+    "id": "minecraft:black_glazed_terracotta",
+    "unlocalizedName": "tile.glazedTerracottaBlack",
+    "localizedName": "Black Glazed Terracotta",
+    "states": {
+      "facing": {
+        "dataMask": 3,
+        "values": {
+          "north": {
+            "data": 2,
+            "direction": [
+              0,
+              0,
+              -1
+            ]
+          },
+          "south": {
+            "data": 0,
+            "direction": [
+              0,
+              0,
+              1
+            ]
+          },
+          "west": {
+            "data": 1,
+            "direction": [
+              -1,
+              0,
+              0
+            ]
+          },
+          "east": {
+            "data": 3,
+            "direction": [
+              1,
+              0,
+              0
+            ]
+          }
+        }
+      }
+    },
+    "material": {
+      "powerSource": false,
+      "lightOpacity": 255,
+      "lightValue": 0,
+      "usingNeighborLight": false,
+      "hardness": 1.4,
+      "resistance": 7.0,
+      "ticksRandomly": false,
+      "fullCube": true,
+      "slipperiness": 0.6,
+      "renderedAsNormalBlock": true,
+      "liquid": false,
+      "solid": true,
+      "movementBlocker": true,
+      "burnable": false,
+      "opaque": true,
+      "replacedDuringPlacement": false,
+      "toolRequired": true,
+      "fragileWhenPushed": false,
+      "unpushable": false,
+      "adventureModeExempt": false,
+      "ambientOcclusionLightValue": 0.2,
+      "grassBlocking": false
+    }
+  },
+  {
+    "legacyId": 251,
+    "id": "minecraft:concrete",
+    "unlocalizedName": "tile.concrete",
+    "localizedName": "tile.concrete.name",
+    "states": {
+      "color": {
+        "dataMask": 15,
+        "values": {
+          "white": {
+            "data": 0
+          },
+          "orange": {
+            "data": 1
+          },
+          "magenta": {
+            "data": 2
+          },
+          "light_blue": {
+            "data": 3
+          },
+          "yellow": {
+            "data": 4
+          },
+          "lime": {
+            "data": 5
+          },
+          "pink": {
+            "data": 6
+          },
+          "gray": {
+            "data": 7
+          },
+          "silver": {
+            "data": 8
+          },
+          "cyan": {
+            "data": 9
+          },
+          "purple": {
+            "data": 10
+          },
+          "blue": {
+            "data": 11
+          },
+          "brown": {
+            "data": 12
+          },
+          "green": {
+            "data": 13
+          },
+          "red": {
+            "data": 14
+          },
+          "black": {
+            "data": 15
+          }
+        }
+      }
+    },
+    "material": {
+      "powerSource": false,
+      "lightOpacity": 255,
+      "lightValue": 0,
+      "usingNeighborLight": false,
+      "hardness": 1.8,
+      "resistance": 9.0,
+      "ticksRandomly": false,
+      "fullCube": true,
+      "slipperiness": 0.6,
+      "renderedAsNormalBlock": true,
+      "liquid": false,
+      "solid": true,
+      "movementBlocker": true,
+      "burnable": false,
+      "opaque": true,
+      "replacedDuringPlacement": false,
+      "toolRequired": true,
+      "fragileWhenPushed": false,
+      "unpushable": false,
+      "adventureModeExempt": false,
+      "ambientOcclusionLightValue": 0.2,
+      "grassBlocking": false
+    }
+  },
+  {
+    "legacyId": 252,
+    "id": "minecraft:concrete_powder",
+    "unlocalizedName": "tile.concretePowder",
+    "localizedName": "tile.concretePowder.name",
+    "states": {
+      "color": {
+        "dataMask": 15,
+        "values": {
+          "white": {
+            "data": 0
+          },
+          "orange": {
+            "data": 1
+          },
+          "magenta": {
+            "data": 2
+          },
+          "light_blue": {
+            "data": 3
+          },
+          "yellow": {
+            "data": 4
+          },
+          "lime": {
+            "data": 5
+          },
+          "pink": {
+            "data": 6
+          },
+          "gray": {
+            "data": 7
+          },
+          "silver": {
+            "data": 8
+          },
+          "cyan": {
+            "data": 9
+          },
+          "purple": {
+            "data": 10
+          },
+          "blue": {
+            "data": 11
+          },
+          "brown": {
+            "data": 12
+          },
+          "green": {
+            "data": 13
+          },
+          "red": {
+            "data": 14
+          },
+          "black": {
+            "data": 15
+          }
+        }
+      }
+    },
+    "material": {
+      "powerSource": false,
+      "lightOpacity": 255,
+      "lightValue": 0,
+      "usingNeighborLight": false,
+      "hardness": 0.5,
+      "resistance": 2.5,
+      "ticksRandomly": false,
+      "fullCube": true,
+      "slipperiness": 0.6,
+      "renderedAsNormalBlock": true,
+      "liquid": false,
+      "solid": true,
+      "movementBlocker": true,
+      "burnable": false,
+      "opaque": true,
+      "replacedDuringPlacement": false,
+      "toolRequired": false,
+      "fragileWhenPushed": false,
+      "unpushable": false,
+      "adventureModeExempt": false,
+      "ambientOcclusionLightValue": 0.2,
       "grassBlocking": false
     }
   },

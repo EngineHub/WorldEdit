@@ -20,9 +20,12 @@
 package com.sk89q.worldedit.util.command.argument;
 
 import com.google.common.collect.Lists;
-
 import java.util.Collection;
 import java.util.List;
+import javax.annotation.Nullable;
+
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class ArgumentUtils {
 
@@ -42,4 +45,7 @@ public final class ArgumentUtils {
         return suggestions;
     }
 
+    public static <T> T firstNonNull(@Nullable T first, @Nullable T second) {
+        return first != null ? first: checkNotNull(second);
+    }
 }
