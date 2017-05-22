@@ -264,6 +264,24 @@ public final class BlockID {
     public static final int SHULKER_BOX_GREEN = 232;
     public static final int SHULKER_BOX_RED = 233;
     public static final int SHULKER_BOX_BLACK = 234;
+    public static final int TERRACOTTA_WHITE = 235;
+    public static final int TERRACOTTA_ORANGE = 236;
+    public static final int TERRACOTTA_MAGENTA = 237;
+    public static final int TERRACOTTA_LIGHT_BLUE = 238;
+    public static final int TERRACOTTA_YELLOW = 239;
+    public static final int TERRACOTTA_LIME = 240;
+    public static final int TERRACOTTA_PINK = 241;
+    public static final int TERRACOTTA_GRAY = 242;
+    public static final int TERRACOTTA_LIGHT_GRAY = 243;
+    public static final int TERRACOTTA_CYAN = 244;
+    public static final int TERRACOTTA_PURPLE = 245;
+    public static final int TERRACOTTA_BLUE = 246;
+    public static final int TERRACOTTA_BROWN = 247;
+    public static final int TERRACOTTA_GREEN = 248;
+    public static final int TERRACOTTA_RED = 249;
+    public static final int TERRACOTTA_BLACK = 250;
+    public static final int CONCRETE = 251;
+    public static final int CONCRETE_POWDER = 252;
     public static final int STRUCTURE_BLOCK = 255;
 
     private BlockID() {
