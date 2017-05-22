@@ -30,7 +30,8 @@ import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.util.command.argument.CommandArgs;
 import com.sk89q.worldedit.util.command.composition.SimpleCommand;
 
-import static com.google.common.base.Objects.firstNonNull;
+import static com.sk89q.worldedit.util.GuavaUtil.firstNonNull;
+
 
 public class ReplaceParser extends SimpleCommand<Contextual<? extends RegionFunction>> {
 
