@@ -105,4 +105,16 @@ public final class MathUtils {
         return Math.sin(Math.toRadians(degrees));
     }
 
+    /**
+     * Returns the rounded double of the given value, rounding to the
+     * nearest integer value away from zero on ties.
+     *
+     * This behavior is the same as {@link java.math.RoundingMode#HALF_UP}.
+     *
+     * @param value the value
+     * @return the rounded value
+     */
+    public static double roundHalfUp(double value) {
+        return Math.signum(value) * Math.round(Math.abs(value));
+    }
 }

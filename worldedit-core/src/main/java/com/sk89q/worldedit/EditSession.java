@@ -59,6 +59,7 @@ import com.sk89q.worldedit.history.changeset.ChangeSet;
 import com.sk89q.worldedit.internal.expression.Expression;
 import com.sk89q.worldedit.internal.expression.ExpressionException;
 import com.sk89q.worldedit.internal.expression.runtime.RValue;
+import com.sk89q.worldedit.math.MathUtils;
 import com.sk89q.worldedit.math.interpolation.Interpolation;
 import com.sk89q.worldedit.math.interpolation.KochanekBartelsInterpolation;
 import com.sk89q.worldedit.math.interpolation.Node;
@@ -963,8 +964,9 @@ public class EditSession implements Extent {
         Vector center = region.getCenter();
         Region centerRegion = new CuboidRegion(
                 getWorld(), // Causes clamping of Y range
-                new Vector((int) center.getX(), (int) center.getY(), (int) center.getZ()),
-                center.toBlockVector());
+                new Vector(((int) center.getX()), ((int) center.getY()), ((int) center.getZ())),
+                new Vector(MathUtils.roundHalfUp(center.getX()),
+                            center.getY(), MathUtils.roundHalfUp(center.getZ())));
         return setBlocks(centerRegion, pattern);
     }
 
