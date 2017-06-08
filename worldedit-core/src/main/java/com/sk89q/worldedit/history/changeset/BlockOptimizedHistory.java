@@ -85,7 +85,7 @@ public class BlockOptimizedHistory extends ArrayListHistory {
      *
      * @return a function
      */
-    private Function<Entry<BlockVector, BaseBlock>, Change> createTransform() {
+    protected Function<Entry<BlockVector, BaseBlock>, Change> createTransform() {
         return new Function<Entry<BlockVector, BaseBlock>, Change>() {
             @Override
             public Change apply(Entry<BlockVector, BaseBlock> entry) {
