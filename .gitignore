@@ -2,6 +2,7 @@
 .project
 .settings
 eclipse
+*.launch
 .idea
 *.iml
 *.ipr
