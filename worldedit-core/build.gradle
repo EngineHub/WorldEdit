@@ -27,4 +27,6 @@ sourceSets {
     }
 }
 
-build.dependsOn(shadowJar)
+artifacts {
+    archives shadowJar
+}
