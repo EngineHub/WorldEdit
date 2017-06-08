@@ -82,6 +82,7 @@ public final class BlockData {
         case BlockID.JUNGLE_WOOD_STAIRS:
         case BlockID.QUARTZ_STAIRS:
         case BlockID.ACACIA_STAIRS:
+        case BlockID.RED_SANDSTONE_STAIRS:
         case BlockID.DARK_OAK_STAIRS:
             switch (data) {
             case 0: return 2;
@@ -322,6 +323,7 @@ public final class BlockData {
         case BlockID.JUNGLE_WOOD_STAIRS:
         case BlockID.QUARTZ_STAIRS:
         case BlockID.ACACIA_STAIRS:
+        case BlockID.RED_SANDSTONE_STAIRS:
         case BlockID.DARK_OAK_STAIRS:
             switch (data) {
             case 2: return 0;
