@@ -1367,7 +1367,7 @@
     "legacyId": 26,
     "id": "minecraft:bed",
     "unlocalizedName": "tile.bed",
-    "localizedName": "Bed",
+    "localizedName": "tile.bed.name",
     "states": {
       "facing": {
         "dataMask": 3,
@@ -1700,7 +1700,7 @@
       "slipperiness": 0.6,
       "renderedAsNormalBlock": false,
       "liquid": false,
-      "solid": true,
+      "solid": false,
       "movementBlocker": false,
       "burnable": false,
       "opaque": false,
