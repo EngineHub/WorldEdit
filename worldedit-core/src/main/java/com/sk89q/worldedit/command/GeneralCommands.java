@@ -56,7 +56,7 @@ public class GeneralCommands {
         max = 1
     )
     @CommandPermissions("worldedit.limit")
-    public void limit(Player player, LocalSession session, CommandContext args) throws WorldEditException {
+    public void limit(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
         
         LocalConfiguration config = worldEdit.getConfiguration();
         boolean mayDisable = player.hasPermission("worldedit.limit.unrestricted");
@@ -86,7 +86,7 @@ public class GeneralCommands {
         max = 1
     )
     @CommandPermissions("worldedit.fast")
-    public void fast(Player player, LocalSession session, CommandContext args) throws WorldEditException {
+    public void fast(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
 
         String newState = args.getString(0, null);
         if (session.hasFastMode()) {
@@ -116,7 +116,7 @@ public class GeneralCommands {
         max = -1
     )
     @CommandPermissions("worldedit.global-mask")
-    public void gmask(Player player, LocalSession session, @Optional Mask mask) throws WorldEditException {
+    public void gmask(Player player, LocalSession session, EditSession editSession, @Optional Mask mask) throws WorldEditException {
         if (mask == null) {
             session.setMask((Mask) null);
             player.print("Global mask disabled.");
@@ -133,7 +133,7 @@ public class GeneralCommands {
         min = 0,
         max = 0
     )
-    public void togglePlace(Player player, LocalSession session, CommandContext args) throws WorldEditException {
+    public void togglePlace(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
 
         if (session.togglePlacementPosition()) {
             player.print("Now placing at pos #1.");

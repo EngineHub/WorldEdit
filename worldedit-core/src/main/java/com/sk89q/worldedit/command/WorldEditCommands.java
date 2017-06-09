@@ -90,7 +90,7 @@ public class WorldEditCommands {
         min = 0,
         max = 0
     )
-    public void cui(Player player, LocalSession session, CommandContext args) throws WorldEditException {
+    public void cui(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
         session.setCUISupport(true);
         session.dispatchCUISetup(player);
     }
@@ -102,7 +102,7 @@ public class WorldEditCommands {
         min = 1,
         max = 1
     )
-    public void tz(Player player, LocalSession session, CommandContext args) throws WorldEditException {
+    public void tz(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
         TimeZone tz = TimeZone.getTimeZone(args.getString(0));
         session.setTimezone(tz);
         player.print("Timezone set for this session to: " + tz.getDisplayName());

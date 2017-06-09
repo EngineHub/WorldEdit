@@ -177,8 +177,13 @@ public class SimpleDispatcher implements Dispatcher {
 
     @Override
     public boolean testPermission(CommandLocals locals) {
-        // checking EVERY perm here doesn't do anything but waste cpu
-        return true;
+        for (CommandMapping mapping : getCommands()) {
+            if (mapping.getCallable().testPermission(locals)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
 }
