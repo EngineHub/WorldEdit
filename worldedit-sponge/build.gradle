@@ -13,7 +13,7 @@ plugins {
 
 dependencies {
     compile project(':worldedit-core')
-    compile 'org.spongepowered:spongeapi:6.0.0-SNAPSHOT'
+    compile 'org.spongepowered:spongeapi:7.0.0-SNAPSHOT'
     testCompile group: 'org.mockito', name: 'mockito-core', version:'1.9.0-rc1'
 }
 

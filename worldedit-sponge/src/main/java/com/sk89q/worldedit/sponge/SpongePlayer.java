@@ -61,7 +61,7 @@ public class SpongePlayer extends AbstractPlayerActor {
     @Override
     public int getItemInHand() {
         Optional<ItemStack> is = this.player.getItemInHand(HandTypes.MAIN_HAND);
-        return is.isPresent() ? SpongeWorldEdit.inst().getAdapter().resolve(is.get().getItem()) : 0;
+        return is.map(itemStack -> SpongeWorldEdit.inst().getAdapter().resolve(itemStack.getItem())).orElse(0);
     }
 
     @Override

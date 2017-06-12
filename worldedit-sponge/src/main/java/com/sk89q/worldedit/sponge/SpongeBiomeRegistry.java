@@ -42,7 +42,7 @@ class SpongeBiomeRegistry implements BiomeRegistry {
 
     @Override
     public List<BaseBiome> getBiomes() {
-        List<BaseBiome> list = new ArrayList<BaseBiome>();
+        List<BaseBiome> list = new ArrayList<>();
         for (BiomeType biome : Sponge.getGame().getRegistry().getAllOf(BiomeType.class)) {
             list.add(new BaseBiome(SpongeWorldEdit.inst().getAdapter().resolve(biome)));
         }

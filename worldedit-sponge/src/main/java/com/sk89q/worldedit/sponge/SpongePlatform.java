@@ -20,6 +20,7 @@
 package com.sk89q.worldedit.sponge;
 
 import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.blocks.BlockType;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.event.platform.CommandEvent;
 import com.sk89q.worldedit.event.platform.CommandSuggestionEvent;
@@ -57,10 +58,13 @@ class SpongePlatform extends AbstractPlatform implements MultiUserPlatform {
     public int resolveItem(String name) {
         if (name == null) return 0;
 
-        Optional<ItemType> optType = Sponge.getRegistry().getType(ItemType.class, name);
-
-        return optType.map(itemType -> SpongeWorldEdit.inst().getAdapter().resolve(itemType)).orElse(0);
-
+        Optional<org.spongepowered.api.block.BlockType> optBlock = Sponge.getRegistry().getType(org.spongepowered.api.block.BlockType.class, name);
+        if (optBlock.isPresent()) {
+            return optBlock.map(blockType -> SpongeWorldEdit.inst().getAdapter().resolve(blockType)).orElse(0);
+        } else {
+            Optional<ItemType> optType = Sponge.getRegistry().getType(ItemType.class, name);
+            return optType.map(itemType -> SpongeWorldEdit.inst().getAdapter().resolve(itemType)).orElse(0);
+        }
     }
 
     @Override
@@ -96,7 +100,7 @@ class SpongePlatform extends AbstractPlatform implements MultiUserPlatform {
             return player;
         } else {
             Optional<org.spongepowered.api.entity.living.player.Player> optPlayer = Sponge.getServer().getPlayer(player.getUniqueId());
-            return optPlayer.isPresent() ? new SpongePlayer(this, optPlayer.get()) : null;
+            return optPlayer.<Player>map(player1 -> new SpongePlayer(this, player1)).orElse(null);
         }
     }
 
@@ -178,7 +182,7 @@ class SpongePlatform extends AbstractPlatform implements MultiUserPlatform {
 
     @Override
     public Collection<Actor> getConnectedUsers() {
-        List<Actor> users = new ArrayList<Actor>();
+        List<Actor> users = new ArrayList<>();
         for (org.spongepowered.api.entity.living.player.Player player : Sponge.getServer().getOnlinePlayers()) {
             users.add(new SpongePlayer(this, player));
         }
