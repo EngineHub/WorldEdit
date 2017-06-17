@@ -19,8 +19,6 @@
 
 package com.sk89q.worldedit.math.convolution;
 
-import java.awt.image.Kernel;
-
 /**
  * A linear Kernel generator (all cells weight the same)
  */

@@ -17,26 +17,17 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.sponge;
+package com.sk89q.worldedit.util;
 
-import com.flowpowered.math.vector.Vector3d;
-import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.sponge.nms.SpongeNMSWorld;
-import com.sk89q.worldedit.util.Location;
-import com.sk89q.worldedit.world.World;
+import javax.annotation.Nullable;
 
-final class SpongeAdapter {
+import static com.google.common.base.Preconditions.checkNotNull;
 
-    private SpongeAdapter() {
-    }
+public final class GuavaUtil {
 
-    public static World adapt(org.spongepowered.api.world.World world) {
-        return new SpongeNMSWorld(world);
-    }
+    private GuavaUtil() {}
 
-    public static Location adapt(org.spongepowered.api.world.Location<org.spongepowered.api.world.World> loc, Vector3d rot) {
-        Vector position = new Vector(loc.getX(), loc.getY(), loc.getZ());
-
-        return new Location(SpongeAdapter.adapt(loc.getExtent()), position, (float) rot.getY(), (float) rot.getX());
+    public static <T> T firstNonNull(@Nullable T first, @Nullable T second) {
+        return first != null ? first : checkNotNull(second);
     }
 }

@@ -8,9 +8,9 @@ ask that you make note of the following guidelines.
 * **Follow the [Oracle coding conventions](http://www.oracle.com/technetwork/java/codeconv-138413.html).**
   We can't stress this enough; if your code has notable issues, it may delay
   the process significantly.
-* **Target Java 6 for source and compilation.** Make sure to mark methods with
+* **Target Java 7 for source and compilation.** Make sure to mark methods with
   ` @Override` that override methods of parent classes, or that implement
-  methods of interfaces (Java 6+).
+  methods of interfaces.
 * **Use only spaces for indentation.** Our indents are 4-spaces long, and tabs
   are unacceptable.
 * **Wrap code to a 120 column limit.** We do this to make side by side diffs

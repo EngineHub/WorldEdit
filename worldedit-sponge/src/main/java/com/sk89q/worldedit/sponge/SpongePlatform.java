@@ -20,13 +20,12 @@
 package com.sk89q.worldedit.sponge;
 
 import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.blocks.BlockType;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.event.platform.CommandEvent;
 import com.sk89q.worldedit.event.platform.CommandSuggestionEvent;
 import com.sk89q.worldedit.extension.platform.*;
 import com.sk89q.worldedit.sponge.config.SpongeConfiguration;
-import com.sk89q.worldedit.sponge.nms.IDHelper;
-import com.sk89q.worldedit.sponge.nms.SpongeNMSWorld;
 import com.sk89q.worldedit.util.command.CommandMapping;
 import com.sk89q.worldedit.util.command.Dispatcher;
 import com.sk89q.worldedit.world.World;
@@ -59,13 +58,13 @@ class SpongePlatform extends AbstractPlatform implements MultiUserPlatform {
     public int resolveItem(String name) {
         if (name == null) return 0;
 
-        Optional<ItemType> optType = Sponge.getRegistry().getType(ItemType.class, name);
-
-        if (optType.isPresent()) {
-            return IDHelper.resolve(optType.get());
+        Optional<org.spongepowered.api.block.BlockType> optBlock = Sponge.getRegistry().getType(org.spongepowered.api.block.BlockType.class, name);
+        if (optBlock.isPresent()) {
+            return optBlock.map(blockType -> SpongeWorldEdit.inst().getAdapter().resolve(blockType)).orElse(0);
+        } else {
+            Optional<ItemType> optType = Sponge.getRegistry().getType(ItemType.class, name);
+            return optType.map(itemType -> SpongeWorldEdit.inst().getAdapter().resolve(itemType)).orElse(0);
         }
-
-        return 0;
     }
 
     @Override
@@ -89,7 +88,7 @@ class SpongePlatform extends AbstractPlatform implements MultiUserPlatform {
         Collection<org.spongepowered.api.world.World> worlds = Sponge.getServer().getWorlds();
         List<com.sk89q.worldedit.world.World> ret = new ArrayList<>(worlds.size());
         for (org.spongepowered.api.world.World world : worlds) {
-            ret.add(new SpongeNMSWorld(world));
+            ret.add(SpongeWorldEdit.inst().getAdapter().getWorld(world));
         }
         return ret;
     }
@@ -101,7 +100,7 @@ class SpongePlatform extends AbstractPlatform implements MultiUserPlatform {
             return player;
         } else {
             Optional<org.spongepowered.api.entity.living.player.Player> optPlayer = Sponge.getServer().getPlayer(player.getUniqueId());
-            return optPlayer.isPresent() ? new SpongePlayer(this, optPlayer.get()) : null;
+            return optPlayer.<Player>map(player1 -> new SpongePlayer(this, player1)).orElse(null);
         }
     }
 
@@ -113,7 +112,7 @@ class SpongePlatform extends AbstractPlatform implements MultiUserPlatform {
         } else {
             for (org.spongepowered.api.world.World ws : Sponge.getServer().getWorlds()) {
                 if (ws.getName().equals(world.getName())) {
-                    return new SpongeNMSWorld(ws);
+                    return SpongeWorldEdit.inst().getAdapter().getWorld(ws);
                 }
             }
 
@@ -183,7 +182,7 @@ class SpongePlatform extends AbstractPlatform implements MultiUserPlatform {
 
     @Override
     public Collection<Actor> getConnectedUsers() {
-        List<Actor> users = new ArrayList<Actor>();
+        List<Actor> users = new ArrayList<>();
         for (org.spongepowered.api.entity.living.player.Player player : Sponge.getServer().getOnlinePlayers()) {
             users.add(new SpongePlayer(this, player));
         }

@@ -25,7 +25,7 @@ import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.Map;
 
-class SimpleState implements State {
+public class SimpleState implements State {
 
     private Byte dataMask;
     private Map<String, SimpleStateValue> values;
@@ -47,7 +47,7 @@ class SimpleState implements State {
         return null;
     }
 
-    byte getDataMask() {
+    public byte getDataMask() {
         return dataMask != null ? dataMask : 0xF;
     }
 

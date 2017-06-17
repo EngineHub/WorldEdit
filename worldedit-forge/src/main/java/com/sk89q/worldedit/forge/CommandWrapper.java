@@ -38,12 +38,12 @@ public class CommandWrapper extends CommandBase {
     }
 
     @Override
-    public String getCommandName() {
+    public String getName() {
         return command.getPrimaryAlias();
     }
 
     @Override
-    public List<String> getCommandAliases() {
+    public List<String> getAliases() {
         return Arrays.asList(command.getAllAliases());
     }
 
@@ -52,7 +52,7 @@ public class CommandWrapper extends CommandBase {
     }
 
     @Override
-    public String getCommandUsage(ICommandSender icommandsender) {
+    public String getUsage(ICommandSender icommandsender) {
         return "/" + command.getPrimaryAlias() + " " + command.getDescription().getUsage();
     }
 
@@ -70,10 +70,8 @@ public class CommandWrapper extends CommandBase {
     public int compareTo(@Nullable ICommand o) {
         if (o == null) {
             return 0;
-        } else if (o instanceof ICommand) {
-            return super.compareTo((ICommand) o);
         } else {
-            return 0;
+            return super.compareTo(o);
         }
     }
 }

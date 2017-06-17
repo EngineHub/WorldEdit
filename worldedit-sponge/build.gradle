@@ -2,45 +2,29 @@ buildscript {
     repositories {
         mavenCentral()
         maven { url = "http://files.minecraftforge.net/maven" }
-        maven { url = "http://repo.minecrell.net/releases" }
         maven { url = "https://oss.sonatype.org/content/repositories/snapshots/" }
         jcenter()
-    }
-
-    dependencies {
-        classpath 'net.minecrell:VanillaGradle:2.0.3_1'
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.2-SNAPSHOT'
     }
 }
 
 plugins {
-    id 'org.spongepowered.plugin' version '0.6'
+    id 'org.spongepowered.plugin' version '0.8.1'
 }
-
-apply plugin: 'net.minecrell.vanilla.server.library'
 
 dependencies {
     compile project(':worldedit-core')
-    compile 'org.spongepowered:spongeapi:5.+'
+    compile 'org.spongepowered:spongeapi:7.0.0-SNAPSHOT'
     testCompile group: 'org.mockito', name: 'mockito-core', version:'1.9.0-rc1'
 }
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
 
 sponge {
     plugin {
         id = 'worldedit'
     }
 }
-
-minecraft {
-    version = "1.10.2"
-    mappings = 'snapshot_20160628'
-    runDir = 'run'
-}
-
-project.archivesBaseName = "${project.archivesBaseName}-mc${minecraft.version}"
 
 jar {
     manifest {
@@ -55,17 +39,6 @@ shadowJar {
     }
 }
 
-reobf {
-    shadowJar {
-        mappingType = 'SEARGE'
-    }
-}
-
-task deobfJar(type: Jar) {
-    from sourceSets.main.output
-    classifier = 'dev'
-}
-
 artifacts {
-    archives deobfJar
+    archives shadowJar
 }

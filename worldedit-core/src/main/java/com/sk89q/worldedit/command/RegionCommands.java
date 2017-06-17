@@ -132,7 +132,7 @@ public class RegionCommands {
                       @Optional("0") @Range(min = 0) int thickness,
                       @Switch('h') boolean shell) throws WorldEditException {
         if (!(region instanceof ConvexPolyhedralRegion)) {
-            player.printError("//line only works with convex polyhedral selections");
+            player.printError("//curve only works with convex polyhedral selections");
             return;
         }
 

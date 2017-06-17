@@ -29,7 +29,6 @@ import com.sk89q.worldedit.extent.inventory.BlockBag;
 import com.sk89q.worldedit.internal.LocalWorldAdapter;
 import com.sk89q.worldedit.internal.cui.CUIEvent;
 import com.sk89q.worldedit.session.SessionKey;
-import com.sk89q.worldedit.sponge.nms.IDHelper;
 import com.sk89q.worldedit.util.Location;
 import org.spongepowered.api.data.type.HandTypes;
 import org.spongepowered.api.entity.living.player.Player;
@@ -62,7 +61,7 @@ public class SpongePlayer extends AbstractPlayerActor {
     @Override
     public int getItemInHand() {
         Optional<ItemStack> is = this.player.getItemInHand(HandTypes.MAIN_HAND);
-        return is.isPresent() ? IDHelper.resolve(is.get().getItem()) : 0;
+        return is.map(itemStack -> SpongeWorldEdit.inst().getAdapter().resolve(itemStack.getItem())).orElse(0);
     }
 
     @Override
@@ -80,18 +79,18 @@ public class SpongePlayer extends AbstractPlayerActor {
         org.spongepowered.api.world.Location<World> entityLoc = this.player.getLocation();
         Vector3d entityRot = this.player.getRotation();
 
-        return SpongeAdapter.adapt(entityLoc, entityRot);
+        return SpongeWorldEdit.inst().getAdapter().adapt(entityLoc, entityRot);
     }
 
     @Override
     public WorldVector getPosition() {
         Vector3d pos = this.player.getLocation().getPosition();
-        return new WorldVector(LocalWorldAdapter.adapt(SpongeAdapter.adapt(this.player.getWorld())), pos.getX(), pos.getY(), pos.getZ());
+        return new WorldVector(LocalWorldAdapter.adapt(SpongeWorldEdit.inst().getAdapter().getWorld(this.player.getWorld())), pos.getX(), pos.getY(), pos.getZ());
     }
 
     @Override
     public com.sk89q.worldedit.world.World getWorld() {
-        return SpongeAdapter.adapt(player.getWorld());
+        return SpongeWorldEdit.inst().getAdapter().getWorld(player.getWorld());
     }
 
     @Override
@@ -106,7 +105,7 @@ public class SpongePlayer extends AbstractPlayerActor {
 
     @Override
     public void giveItem(int type, int amt) {
-        this.player.getInventory().offer(ItemStack.of(IDHelper.resolveItem(type), amt));
+        this.player.getInventory().offer(ItemStack.of(SpongeWorldEdit.inst().getAdapter().resolveItem(type), amt));
     }
 
     @Override
@@ -160,7 +159,7 @@ public class SpongePlayer extends AbstractPlayerActor {
 
     @Override
     public String[] getGroups() {
-        return new String[]{}; // WorldEditMod.inst.getPermissionsResolver().getGroups(this.player.username);
+        return SpongeWorldEdit.inst().getPermissionsProvider().getGroups(this.player);
     }
 
     @Override

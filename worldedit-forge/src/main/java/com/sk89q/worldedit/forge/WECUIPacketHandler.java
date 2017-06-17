@@ -46,7 +46,7 @@ public class WECUIPacketHandler {
     public void onPacketData(ServerCustomPacketEvent event) {
         if (event.getPacket().channel().equals(ForgeWorldEdit.CUI_PLUGIN_CHANNEL)) {
             EntityPlayerMP player = getPlayerFromEvent(event);
-            LocalSession session = ForgeWorldEdit.inst.getSession((EntityPlayerMP) player);
+            LocalSession session = ForgeWorldEdit.inst.getSession(player);
 
             if (session.hasCUISupport()) {
                 return;
@@ -67,6 +67,6 @@ public class WECUIPacketHandler {
     }
 
     private static EntityPlayerMP getPlayerFromEvent(ServerCustomPacketEvent event) {
-        return ((NetHandlerPlayServer) event.getHandler()).playerEntity;
+        return ((NetHandlerPlayServer) event.getHandler()).player;
     }
 }

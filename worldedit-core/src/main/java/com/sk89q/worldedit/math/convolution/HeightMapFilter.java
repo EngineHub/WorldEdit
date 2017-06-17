@@ -19,8 +19,6 @@
 
 package com.sk89q.worldedit.math.convolution;
 
-import java.awt.image.Kernel;
-
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**

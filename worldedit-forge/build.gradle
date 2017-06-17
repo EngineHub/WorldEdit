@@ -26,13 +26,11 @@ repositories {
     }
 }
 
-//version = "6.1.2"
-ext.forgeVersion = "12.17.0.1965"
-//ext.internalVersion = version + ";" + gitCommitHash
+ext.forgeVersion = "13.20.0.2237"
 
 minecraft {
-    version = "1.9.4-${project.forgeVersion}"
-    mappings = "snapshot_20160617"
+    version = "1.11.2-${project.forgeVersion}"
+    mappings = "snapshot_20170221"
     runDir = 'run'
 
     replaceIn "com/sk89q/worldedit/forge/ForgeWorldEdit.java"

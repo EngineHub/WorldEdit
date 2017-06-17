@@ -23,6 +23,7 @@ import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.internal.expression.Expression;
 import com.sk89q.worldedit.internal.expression.ExpressionException;
 import com.sk89q.worldedit.internal.expression.runtime.EvaluationException;
+import com.sk89q.worldedit.regions.shape.WorldEditExpressionEnvironment;
 
 import javax.annotation.Nullable;
 
@@ -62,6 +63,9 @@ public class ExpressionMask extends AbstractMask {
     @Override
     public boolean test(Vector vector) {
         try {
+            if (expression.getEnvironment() instanceof WorldEditExpressionEnvironment) {
+                ((WorldEditExpressionEnvironment) expression.getEnvironment()).setCurrentBlock(vector);
+            }
             return expression.evaluate(vector.getX(), vector.getY(), vector.getZ()) > 0;
         } catch (EvaluationException e) {
             return false;
