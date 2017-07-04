@@ -19,6 +19,8 @@
 
 package com.sk89q.worldedit.extension.factory.delegate.block;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.jnbt.StringTag;
 import com.sk89q.jnbt.Tag;
@@ -38,7 +40,9 @@ public class WallSignParser implements DelegateParser<CompoundTag> {
 
         Map<String, Tag> values = new HashMap<String, Tag>();
         for (int i = 0; i < text.length; ++i) {
-            values.put("Text" + (i + 1), new StringTag(text[i]));
+            JsonObject jsonTextObject = new JsonObject();
+            jsonTextObject.add("text", new JsonPrimitive(text[i]));
+            values.put("Text" + (i + 1), new StringTag(jsonTextObject.toString()));
         }
 
         return new CompoundTag(values);
