@@ -28,6 +28,8 @@ import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.extent.clipboard.BlockArrayClipboard;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
+import com.sk89q.worldedit.extent.clipboard.io.legacycompat.NBTCompatibilityHandler;
+import com.sk89q.worldedit.extent.clipboard.io.legacycompat.SignCompatibilityHandler;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.Location;
@@ -36,6 +38,7 @@ import com.sk89q.worldedit.world.storage.NBTConversions;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,6 +51,12 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * Reads schematic files based that are compatible with MCEdit and other editors.
  */
 public class SchematicReader implements ClipboardReader {
+
+    private static final List<NBTCompatibilityHandler> COMPATIBILITY_HANDLERS = new ArrayList<>();
+
+    static {
+        COMPATIBILITY_HANDLERS.add(new SignCompatibilityHandler());
+    }
 
     private static final Logger log = Logger.getLogger(SchematicReader.class.getCanonicalName());
     private final NBTInputStream inputStream;
@@ -172,6 +181,14 @@ public class SchematicReader implements ClipboardReader {
                 }
 
                 values.put(entry.getKey(), entry.getValue());
+            }
+
+            int index = y * width * length + z * width + x;
+            BaseBlock block = WorldEdit.getInstance().getBaseBlockFactory().getBaseBlock(blocks[index], blockData[index]);
+            for (NBTCompatibilityHandler handler : COMPATIBILITY_HANDLERS) {
+                if (handler.isAffectedBlock(block)) {
+                    handler.updateNBT(block, values);
+                }
             }
 
             BlockVector vec = new BlockVector(x, y, z);
