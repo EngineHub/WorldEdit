@@ -50,7 +50,7 @@ public final class Java8Detector {
                         "WorldEdit has detected you are using Java 7"
                                 + " (based on detected version "
                                 + major 
-                                + ").";
+                                + ").");
                 WorldEdit.logger.warning(
                         "WorldEdit will stop supporting Java less than version 8 in the future,"
                                 + " due to Java 7 being EOL since April 2015."
