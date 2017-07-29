@@ -1,3 +1,4 @@
+
 /*
  * WorldEdit, a Minecraft world manipulation toolkit
  * Copyright (C) sk89q <http://www.sk89q.com>
@@ -24,13 +25,16 @@ import com.sk89q.worldedit.WorldEdit;
 public final class Java8Detector {
 
     public static void notifyIfNot8() {
+        int major;
+        String[] ver;
         if (System.getProperty("java.version").contains(".")){
-            String[] ver = System.getProperty("java.version").split("\\.");
-            int major = Integer.parseInt(ver[1]);
+            ver = System.getProperty("java.version").split("\\.");
+            major = Integer.parseInt(ver[1]);
         } else {
-            int major = Integer.parseInt(System.getProperty("java.version"));
+            ver[0] = System.getProperty("java.version");
+            major = Integer.parseInt(System.getProperty("java.version"));
         }
-        
+
         if (major <= 7) {
             // Implicitly java 7 because we compile against 7, so this won't
             // even launch on 6.
