@@ -56,6 +56,7 @@ public final class Java8Detector {
                                 + " due to Java 7 being EOL since April 2015."
                                 + " Please update your server to Java 8.");
             }
+        }
     }
 
     private Java8Detector() {
