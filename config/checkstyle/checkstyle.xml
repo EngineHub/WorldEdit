@@ -27,7 +27,6 @@
       <property name="max" value="2"/>
     </module>
     <module name="SuperFinalize"/> <!-- We don't actually use this -->
-    <module name="JUnitTestCase"/> <!-- Checks tearDown(), setUp() etc. -->
 
     <!-- Style -->
     <module name="LeftCurly"> <!-- Left brace never goes on another line -->

@@ -90,6 +90,7 @@ subprojects {
     targetCompatibility = 1.7
 
     checkstyle.configFile = new File(rootProject.projectDir, "config/checkstyle/checkstyle.xml")
+    checkstyle.toolVersion = '7.6.1'
 
     repositories {
         mavenCentral()
