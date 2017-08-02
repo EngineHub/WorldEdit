@@ -24,8 +24,8 @@ import com.sk89q.worldedit.WorldEdit;
 public final class Java8Detector {
 
     public static void notifyIfNot8() {
-        String[] ver = System.getProperty("java.version").split("\\.");
-        int major = Integer.parseInt(ver[1]);
+        String ver = System.getProperty("java.version").split("_")[0].replace("1.", "").replace(".0", "").replace("-ea", "");
+        int major = Integer.parseInt(ver);
         if (major <= 7) {
             // Implicitly java 7 because we compile against 7, so this won't
             // even launch on 6.
