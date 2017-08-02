@@ -24,7 +24,8 @@ import com.sk89q.worldedit.WorldEdit;
 public final class Java8Detector {
 
     public static void notifyIfNot8() {
-        String ver = System.getProperty("java.version").split("_")[0].replace("1.", "").replace(".0", "").replace("-ea", "");
+        String verProperty = System.getProperty("java.version");
+        String ver = verProperty.split("_")[0].replace("1.", "").replace(".0", "").replace("-ea", "");
         int major = Integer.parseInt(ver);
         if (major <= 7) {
             // Implicitly java 7 because we compile against 7, so this won't
@@ -32,7 +33,7 @@ public final class Java8Detector {
             WorldEdit.logger.warning(
                     "WorldEdit has detected you are using Java 7"
                             + " (based on detected version "
-                            + Joiner.on('.').join(ver) + ").");
+                            + verProperty + ").");
             WorldEdit.logger.warning(
                     "WorldEdit will stop supporting Java less than version 8 in the future,"
                             + " due to Java 7 being EOL since April 2015."
