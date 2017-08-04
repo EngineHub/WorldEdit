@@ -26,6 +26,7 @@ public final class Java8Detector {
     public static void notifyIfNot8() {
         String verProperty = System.getProperty("java.version").replace("+", "_");
         String ver = verProperty.split("_")[0].replace("1.", "").replace(".0", "").replace("-ea", "");
+        if (ver.contains("u")) ver = ver.substring(0, ver.lastIndexOf("u"));
         int major = Integer.parseInt(ver);
         if (major <= 7) {
             // Implicitly java 7 because we compile against 7, so this won't
