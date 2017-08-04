@@ -24,7 +24,7 @@ import com.sk89q.worldedit.WorldEdit;
 public final class Java8Detector {
 
     public static void notifyIfNot8() {
-        String verProperty = System.getProperty("java.version");
+        String verProperty = System.getProperty("java.version").replace("+", "_");
         String ver = verProperty.split("_")[0].replace("1.", "").replace(".0", "").replace("-ea", "");
         int major = Integer.parseInt(ver);
         if (major <= 7) {
