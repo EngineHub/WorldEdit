@@ -22,10 +22,9 @@ import com.sk89q.worldedit.WorldEdit;
 
 public final class Java8Detector {
 
-    private static int major;
-
     public static void notifyIfNot8() {
 
+        int major;
         try {
             Class.forName("java.lang.Runtime.Version");
             major = 9;
