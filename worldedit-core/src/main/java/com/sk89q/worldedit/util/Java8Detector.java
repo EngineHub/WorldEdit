@@ -26,27 +26,27 @@ public final class Java8Detector {
 
     public static void notifyIfNot8() {
 
-            try {
-                Class.forName("java.lang.Runtime.Version");
-                major = 9;
-            } catch (ClassNotFoundException exception){
-                String[] ver = System.getProperty("java.version").split("\\.");
-                int major = Integer.parseInt(ver[1]);
-            }
+        try {
+            Class.forName("java.lang.Runtime.Version");
+            major = 9;
+        } catch (ClassNotFoundException exception){
+            String[] ver = System.getProperty("java.version").split("\\.");
+            major = Integer.parseInt(ver[1]);
+        }
         
         if (major <= 7) {
-                // Implicitly java 7 because we compile against 7, so this won't
-                // even launch on 6.
-                WorldEdit.logger.warning(
-                        "WorldEdit has detected you are using Java 7"
-                                + " (based on detected version "
-                                + version(major)
-                                + ").");
-                WorldEdit.logger.warning(
-                        "WorldEdit will stop supporting Java less than version 8 in the future,"
-                                + " due to Java 7 being EOL since April 2015."
-                                + " Please update your server to Java 8.");
-            }
+            // Implicitly java 7 because we compile against 7, so this won't
+            // even launch on 6.
+            WorldEdit.logger.warning(
+                    "WorldEdit has detected you are using Java 7"
+                            + " (based on detected version "
+                            + version(major)
+                            + ").");
+            WorldEdit.logger.warning(
+                    "WorldEdit will stop supporting Java less than version 8 in the future,"
+                            + " due to Java 7 being EOL since April 2015."
+                            + " Please update your server to Java 8.");
+        }
 
     }
 
