@@ -27,7 +27,7 @@ public final class Java8Detector {
     public static void notifyIfNot8() {
 
             try {
-                Class.forName("Runtime.Version");
+                Class.forName("java.lang.Runtime.Version");
                 major = 9;
             } catch (ClassNotFoundException exception){
                 String[] ver = System.getProperty("java.version").split("\\.");
@@ -52,7 +52,7 @@ public final class Java8Detector {
 
     /**
      *
-     * Retrieves simplified version string from the major version of Java, that the user is using.
+     * Retrieves simplified version string from the major version of Java.
      *
      */
     static String version(int major){
