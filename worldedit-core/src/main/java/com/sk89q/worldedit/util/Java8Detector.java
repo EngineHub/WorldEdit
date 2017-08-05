@@ -27,7 +27,8 @@ public final class Java8Detector {
     public static void notifyIfNot8() {
 
             try {
-                int major = Runtime.version().major();
+                Class.forName("Runtime.Version");
+                major = 9;
             } catch (ClassNotFoundException exception){
                 String[] ver = System.getProperty("java.version").split("\\.");
                 int major = Integer.parseInt(ver[1]);
