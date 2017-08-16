@@ -63,10 +63,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 @Mod(modid = ForgeWorldEdit.MOD_ID, name = "WorldEdit", version = "%VERSION%", acceptableRemoteVersions = "*")
 public class ForgeWorldEdit {
-    
-    static {
-        Java8Detector.notifyIfNot8();
-    }
 
     public static Logger logger;
     public static final String MOD_ID = "worldedit";
