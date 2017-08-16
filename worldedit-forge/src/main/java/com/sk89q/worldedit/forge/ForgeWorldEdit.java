@@ -30,7 +30,6 @@ import com.sk89q.worldedit.event.platform.PlatformReadyEvent;
 import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.forge.net.LeftClickAirEventMessage;
 import com.sk89q.worldedit.internal.LocalWorldAdapter;
-import com.sk89q.worldedit.util.Java8Detector;
 
 import java.io.File;
 import java.util.Map;
