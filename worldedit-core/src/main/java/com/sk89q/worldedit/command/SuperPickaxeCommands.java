@@ -43,7 +43,7 @@ public class SuperPickaxeCommands {
         max = 0
     )
     @CommandPermissions("worldedit.superpickaxe")
-    public void single(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
+    public void single(Player player, LocalSession session, CommandContext args) throws WorldEditException {
 
         session.setSuperPickaxe(new SinglePickaxe());
         session.enableSuperPickAxe();
@@ -58,7 +58,7 @@ public class SuperPickaxeCommands {
         max = 1
     )
     @CommandPermissions("worldedit.superpickaxe.area")
-    public void area(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
+    public void area(Player player, LocalSession session, CommandContext args) throws WorldEditException {
 
         LocalConfiguration config = we.getConfiguration();
         int range = args.getInteger(0);
@@ -81,7 +81,7 @@ public class SuperPickaxeCommands {
         max = 1
     )
     @CommandPermissions("worldedit.superpickaxe.recursive")
-    public void recursive(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
+    public void recursive(Player player, LocalSession session, CommandContext args) throws WorldEditException {
 
         LocalConfiguration config = we.getConfiguration();
         double range = args.getDouble(0);
