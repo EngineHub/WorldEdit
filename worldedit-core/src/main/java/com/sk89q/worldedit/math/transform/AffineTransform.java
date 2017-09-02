@@ -169,13 +169,13 @@ public class AffineTransform implements Transform {
                 (m01 * m12 - m11 * m02) / det,
                 (m01 * (m22 * m13 - m12 * m23) + m02 * (m11 * m23 - m21 * m13)
                         - m03 * (m11 * m22 - m21 * m12)) / det,
-                (m12 * m20 - m22 * m10) / det,
+                (m20 * m12 - m10 * m22) / det,
                 (m00 * m22 - m20 * m02) / det,
-                (m02 * m10 - m12 * m00) / det,
+                (m10 * m02 - m00 * m12) / det,
                 (m00 * (m12 * m23 - m22 * m13) - m02 * (m10 * m23 - m20 * m13)
                         + m03 * (m10 * m22 - m20 * m12)) / det,
                 (m10 * m21 - m20 * m11) / det,
-                (m01 * m20 - m21 * m00) / det,
+                (m20 * m01 - m00 * m21) / det,
                 (m00 * m11 - m10 * m01) / det,
                 (m00 * (m21 * m13 - m11 * m23) + m01 * (m10 * m23 - m20 * m13)
                         - m03 * (m10 * m21 - m20 * m11)) / det);
