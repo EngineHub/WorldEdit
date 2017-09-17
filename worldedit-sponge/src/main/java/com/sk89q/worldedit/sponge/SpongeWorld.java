@@ -43,10 +43,6 @@ import org.spongepowered.api.data.property.block.GroundLuminanceProperty;
 import org.spongepowered.api.data.property.block.SkyLuminanceProperty;
 import org.spongepowered.api.entity.EntityType;
 import org.spongepowered.api.entity.EntityTypes;
-import org.spongepowered.api.event.cause.Cause;
-import org.spongepowered.api.event.cause.NamedCause;
-import org.spongepowered.api.event.cause.entity.spawn.SpawnCause;
-import org.spongepowered.api.event.cause.entity.spawn.SpawnTypes;
 import org.spongepowered.api.world.BlockChangeFlag;
 import org.spongepowered.api.world.World;
 
@@ -197,7 +193,7 @@ public abstract class SpongeWorld extends AbstractWorld {
         );
 
         entity.offer(Keys.REPRESENTED_ITEM, SpongeWorldEdit.toSpongeItemStack(item).createSnapshot());
-        getWorld().spawnEntity(entity, ENTITY_SPAWN_CAUSE);
+        getWorld().spawnEntity(entity);
     }
 
     @Override
@@ -253,11 +249,6 @@ public abstract class SpongeWorld extends AbstractWorld {
 
     protected abstract void applyEntityData(org.spongepowered.api.entity.Entity entity, BaseEntity data);
 
-    private static final Cause ENTITY_SPAWN_CAUSE = Cause
-            .source(SpawnCause.builder().type(SpawnTypes.PLUGIN).build())
-            .suggestNamed(NamedCause.SOURCE, SpongeWorldEdit.inst())
-            .build();
-
     @Nullable
     @Override
     public Entity createEntity(Location location, BaseEntity entity) {
@@ -279,7 +270,7 @@ public abstract class SpongeWorld extends AbstractWorld {
                 new Vector3d(dir.getX(), dir.getY(), dir.getZ())
         );
 
-        if (world.spawnEntity(newEnt, ENTITY_SPAWN_CAUSE)) {
+        if (world.spawnEntity(newEnt)) {
             return new SpongeEntity(newEnt);
         }
 
