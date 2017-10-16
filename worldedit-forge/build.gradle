@@ -15,7 +15,7 @@ apply plugin: 'net.minecraftforge.gradle.forge'
 
 configurations.all {
     resolutionStrategy {
-        force 'org.ow2.asm:asm:5.2'
+        force 'org.ow2.asm:asm:6.0_BETA'
     }
 }
 
