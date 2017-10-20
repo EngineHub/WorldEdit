@@ -22,6 +22,7 @@ buildscript {
     configurations.all {
         resolutionStrategy {
             force 'com.google.guava:guava:20.0'
+            force 'org.ow2.asm:asm:6.0_BETA'
         }
     }
 
