@@ -517,12 +517,11 @@ public class UtilityCommands {
     )
     @CommandPermissions("worldedit.calc")
     public void calc(final Actor actor, @Text final String input) throws CommandException {
-        // executing as a thread should keep the server from crashing. Prints the same results.
-        Executors.newSingleThreadExecutor().execute(new Runnable() {
+        // executing as a thread should keep the server from crashing when using for loops.
+        Executors.newCachedThreadPool().execute(new Runnable() {
             @Override
             public void run() {
                 try {
-                    actor.print("Calculating...");
                     Expression expression = Expression.compile(input);
                     actor.print(input + " = " + expression.evaluate());
                 } catch (EvaluationException e) {
@@ -530,10 +529,11 @@ public class UtilityCommands {
                 } catch (ExpressionException e) {
                     actor.printError(String.format("'%s' could not be evaluated (error: %s)", input, e.getMessage()));
                 }
+                // shuts the thread down so its not sitting somewhere aimlessly after executing fully
+                Thread.currentThread().stop();
             }
         });
     }
-
 
     @Command(
             aliases = { "/help" },
