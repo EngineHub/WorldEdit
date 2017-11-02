@@ -19,6 +19,8 @@
 
 package com.sk89q.worldedit.internal.expression;
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.internal.expression.lexer.Lexer;
 import com.sk89q.worldedit.internal.expression.lexer.tokens.Token;
 import com.sk89q.worldedit.internal.expression.parser.Parser;
@@ -34,6 +36,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 /**
  * Compiles and evaluates expressions.
@@ -69,6 +78,11 @@ import java.util.Stack;
 public class Expression {
 
     private static final ThreadLocal<Stack<Expression>> instance = new ThreadLocal<>();
+    private static final ExecutorService evalThread = Executors.newCachedThreadPool(
+            new ThreadFactoryBuilder()
+                    .setDaemon(true)
+                    .setNameFormat("worldedit-expression-eval-%d")
+                    .build());
 
     private final Map<String, RValue> variables = new HashMap<>();
     private final String[] variableNames;
@@ -115,9 +129,30 @@ public class Expression {
 
         pushInstance();
         try {
-            return root.getValue();
-        } catch (ReturnException e) {
-            return e.getValue();
+            Future<Double> result = evalThread.submit(new Callable<Double>() {
+                @Override
+                public Double call() throws Exception {
+                    return root.getValue();
+                }
+            });
+            try {
+                return result.get(WorldEdit.getInstance().getConfiguration().calculationTimeout, TimeUnit.MILLISECONDS);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new RuntimeException(e);
+            } catch (ExecutionException e) {
+                Throwable cause = e.getCause();
+                if (cause instanceof ReturnException) {
+                    return ((ReturnException) cause).getValue();
+                }
+                if (cause instanceof RuntimeException) {
+                    throw (RuntimeException) cause;
+                }
+                throw new RuntimeException(cause);
+            } catch (TimeoutException e) {
+                result.cancel(true);
+                throw new EvaluationException(-1, "Calculations exceeded time limit.");
+            }
         } finally {
             popInstance();
         }

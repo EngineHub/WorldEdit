@@ -49,6 +49,9 @@ public class While extends Node {
                 if (iterations > 256) {
                     throw new EvaluationException(getPosition(), "Loop exceeded 256 iterations.");
                 }
+                if (Thread.interrupted()) {
+                    throw new EvaluationException(getPosition(), "Calculations exceeded time limit.");
+                }
                 ++iterations;
 
                 try {
@@ -65,6 +68,9 @@ public class While extends Node {
             while (condition.getValue() > 0.0) {
                 if (iterations > 256) {
                     throw new EvaluationException(getPosition(), "Loop exceeded 256 iterations.");
+                }
+                if (Thread.interrupted()) {
+                    throw new EvaluationException(getPosition(), "Calculations exceeded time limit.");
                 }
                 ++iterations;
 

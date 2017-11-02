@@ -50,6 +50,9 @@ public class For extends Node {
             if (iterations > 256) {
                 throw new EvaluationException(getPosition(), "Loop exceeded 256 iterations.");
             }
+            if (Thread.interrupted()) {
+                throw new EvaluationException(getPosition(), "Calculations exceeded time limit.");
+            }
             ++iterations;
 
             try {
