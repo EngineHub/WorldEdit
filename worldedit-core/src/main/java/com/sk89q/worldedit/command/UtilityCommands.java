@@ -63,11 +63,13 @@ import com.sk89q.worldedit.util.formatting.component.CommandListBox;
 import com.sk89q.worldedit.util.formatting.component.CommandUsageBox;
 import com.sk89q.worldedit.world.World;
 
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.Executors;
 
 import static com.sk89q.minecraft.util.commands.Logging.LogMode.PLACEMENT;
-import static java.lang.Integer.*;
 
 /**
  * Utility commands.
@@ -81,11 +83,11 @@ public class UtilityCommands {
     }
 
     @Command(
-        aliases = { "/fill" },
-        usage = "<block> <radius> [depth]",
-        desc = "Fill a hole",
-        min = 2,
-        max = 3
+            aliases = { "/fill" },
+            usage = "<block> <radius> [depth]",
+            desc = "Fill a hole",
+            min = 2,
+            max = 3
     )
     @CommandPermissions("worldedit.fill")
     @Logging(PLACEMENT)
@@ -109,11 +111,11 @@ public class UtilityCommands {
     }
 
     @Command(
-        aliases = { "/fillr" },
-        usage = "<block> <radius> [depth]",
-        desc = "Fill a hole recursively",
-        min = 2,
-        max = 3
+            aliases = { "/fillr" },
+            usage = "<block> <radius> [depth]",
+            desc = "Fill a hole recursively",
+            min = 2,
+            max = 3
     )
     @CommandPermissions("worldedit.fill.recursive")
     @Logging(PLACEMENT)
@@ -122,7 +124,7 @@ public class UtilityCommands {
         Pattern pattern = we.getBlockPattern(player, args.getString(0));
         double radius = Math.max(1, args.getDouble(1));
         we.checkMaxRadius(radius);
-        int depth = args.argsLength() > 2 ? Math.max(1, args.getInteger(2)) : MAX_VALUE;
+        int depth = args.argsLength() > 2 ? Math.max(1, args.getInteger(2)) : Integer.MAX_VALUE;
 
         Vector pos = session.getPlacementPosition(player);
         int affected = 0;
@@ -137,11 +139,11 @@ public class UtilityCommands {
     }
 
     @Command(
-        aliases = { "/drain" },
-        usage = "<radius>",
-        desc = "Drain a pool",
-        min = 1,
-        max = 1
+            aliases = { "/drain" },
+            usage = "<radius>",
+            desc = "Drain a pool",
+            min = 1,
+            max = 1
     )
     @CommandPermissions("worldedit.drain")
     @Logging(PLACEMENT)
@@ -155,11 +157,11 @@ public class UtilityCommands {
     }
 
     @Command(
-        aliases = { "/fixlava", "fixlava" },
-        usage = "<radius>",
-        desc = "Fix lava to be stationary",
-        min = 1,
-        max = 1
+            aliases = { "/fixlava", "fixlava" },
+            usage = "<radius>",
+            desc = "Fix lava to be stationary",
+            min = 1,
+            max = 1
     )
     @CommandPermissions("worldedit.fixlava")
     @Logging(PLACEMENT)
@@ -173,11 +175,11 @@ public class UtilityCommands {
     }
 
     @Command(
-        aliases = { "/fixwater", "fixwater" },
-        usage = "<radius>",
-        desc = "Fix water to be stationary",
-        min = 1,
-        max = 1
+            aliases = { "/fixwater", "fixwater" },
+            usage = "<radius>",
+            desc = "Fix water to be stationary",
+            min = 1,
+            max = 1
     )
     @CommandPermissions("worldedit.fixwater")
     @Logging(PLACEMENT)
@@ -191,16 +193,16 @@ public class UtilityCommands {
     }
 
     @Command(
-        aliases = { "/removeabove", "removeabove" },
-        usage = "[size] [height]",
-        desc = "Remove blocks above your head.",
-        min = 0,
-        max = 2
+            aliases = { "/removeabove", "removeabove" },
+            usage = "[size] [height]",
+            desc = "Remove blocks above your head.",
+            min = 0,
+            max = 2
     )
     @CommandPermissions("worldedit.removeabove")
     @Logging(PLACEMENT)
     public void removeAbove(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
-        
+
         int size = args.argsLength() > 0 ? Math.max(1, args.getInteger(0)) : 1;
         we.checkMaxRadius(size);
         World world = player.getWorld();
@@ -212,11 +214,11 @@ public class UtilityCommands {
     }
 
     @Command(
-        aliases = { "/removebelow", "removebelow" },
-        usage = "[size] [height]",
-        desc = "Remove blocks below you.",
-        min = 0,
-        max = 2
+            aliases = { "/removebelow", "removebelow" },
+            usage = "[size] [height]",
+            desc = "Remove blocks below you.",
+            min = 0,
+            max = 2
     )
     @CommandPermissions("worldedit.removebelow")
     @Logging(PLACEMENT)
@@ -232,11 +234,11 @@ public class UtilityCommands {
     }
 
     @Command(
-        aliases = { "/removenear", "removenear" },
-        usage = "<block> [size]",
-        desc = "Remove blocks near you.",
-        min = 1,
-        max = 2
+            aliases = { "/removenear", "removenear" },
+            usage = "<block> [size]",
+            desc = "Remove blocks near you.",
+            min = 1,
+            max = 2
     )
     @CommandPermissions("worldedit.removenear")
     @Logging(PLACEMENT)
@@ -251,17 +253,17 @@ public class UtilityCommands {
     }
 
     @Command(
-        aliases = { "/replacenear", "replacenear" },
-        usage = "<size> <from-id> <to-id>",
-        desc = "Replace nearby blocks",
-        flags = "f",
-        min = 3,
-        max = 3
+            aliases = { "/replacenear", "replacenear" },
+            usage = "<size> <from-id> <to-id>",
+            desc = "Replace nearby blocks",
+            flags = "f",
+            min = 3,
+            max = 3
     )
     @CommandPermissions("worldedit.replacenear")
     @Logging(PLACEMENT)
     public void replaceNear(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
-        
+
         int size = Math.max(1, args.getInteger(0));
         int affected;
         Set<BaseBlock> from;
@@ -288,11 +290,11 @@ public class UtilityCommands {
     }
 
     @Command(
-        aliases = { "/snow", "snow" },
-        usage = "[radius]",
-        desc = "Simulates snow",
-        min = 0,
-        max = 1
+            aliases = { "/snow", "snow" },
+            usage = "[radius]",
+            desc = "Simulates snow",
+            min = 0,
+            max = 1
     )
     @CommandPermissions("worldedit.snow")
     @Logging(PLACEMENT)
@@ -305,11 +307,11 @@ public class UtilityCommands {
     }
 
     @Command(
-        aliases = {"/thaw", "thaw"},
-        usage = "[radius]",
-        desc = "Thaws the area",
-        min = 0,
-        max = 1
+            aliases = {"/thaw", "thaw"},
+            usage = "[radius]",
+            desc = "Thaws the area",
+            min = 0,
+            max = 1
     )
     @CommandPermissions("worldedit.thaw")
     @Logging(PLACEMENT)
@@ -322,12 +324,12 @@ public class UtilityCommands {
     }
 
     @Command(
-        aliases = { "/green", "green" },
-        usage = "[radius]",
-        desc = "Greens the area",
-        flags = "f",
-        min = 0,
-        max = 1
+            aliases = { "/green", "green" },
+            usage = "[radius]",
+            desc = "Greens the area",
+            flags = "f",
+            min = 0,
+            max = 1
     )
     @CommandPermissions("worldedit.green")
     @Logging(PLACEMENT)
@@ -346,7 +348,7 @@ public class UtilityCommands {
             desc = "Extinguish nearby fire",
             min = 0,
             max = 1
-        )
+    )
     @CommandPermissions("worldedit.extinguish")
     @Logging(PLACEMENT)
     public void extinguish(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
@@ -363,24 +365,24 @@ public class UtilityCommands {
     }
 
     @Command(
-        aliases = { "butcher" },
-        usage = "[radius]",
-        flags = "plangbtfr",
-        desc = "Kill all or nearby mobs",
-        help =
-            "Kills nearby mobs, based on radius, if none is given uses default in configuration.\n" +
-            "Flags:\n" +
-            "  -p also kills pets.\n" +
-            "  -n also kills NPCs.\n" +
-            "  -g also kills Golems.\n" +
-            "  -a also kills animals.\n" +
-            "  -b also kills ambient mobs.\n" +
-            "  -t also kills mobs with name tags.\n" +
-            "  -f compounds all previous flags.\n" +
-            "  -r also destroys armor stands.\n" +
-            "  -l currently does nothing.",
-        min = 0,
-        max = 1
+            aliases = { "butcher" },
+            usage = "[radius]",
+            flags = "plangbtfr",
+            desc = "Kill all or nearby mobs",
+            help =
+                    "Kills nearby mobs, based on radius, if none is given uses default in configuration.\n" +
+                            "Flags:\n" +
+                            "  -p also kills pets.\n" +
+                            "  -n also kills NPCs.\n" +
+                            "  -g also kills Golems.\n" +
+                            "  -a also kills animals.\n" +
+                            "  -b also kills ambient mobs.\n" +
+                            "  -t also kills mobs with name tags.\n" +
+                            "  -f compounds all previous flags.\n" +
+                            "  -r also destroys armor stands.\n" +
+                            "  -l currently does nothing.",
+            min = 0,
+            max = 1
     )
     @CommandPermissions("worldedit.butcher")
     @Logging(PLACEMENT)
@@ -449,11 +451,11 @@ public class UtilityCommands {
     }
 
     @Command(
-        aliases = { "remove", "rem", "rement" },
-        usage = "<type> <radius>",
-        desc = "Remove all entities of a type",
-        min = 2,
-        max = 2
+            aliases = { "remove", "rem", "rement" },
+            usage = "<type> <radius>",
+            desc = "Remove all entities of a type",
+            min = 2,
+            max = 2
     )
     @CommandPermissions("worldedit.remove")
     @Logging(PLACEMENT)
@@ -509,13 +511,13 @@ public class UtilityCommands {
     }
 
     @Command(
-        aliases = { "/calc", "/calculate", "/eval", "/evaluate", "/solve" },
-        usage = "<expression>",
-        desc = "Evaluate a mathematical expression"
+            aliases = { "/calc", "/calculate", "/eval", "/evaluate", "/solve" },
+            usage = "<expression>",
+            desc = "Evaluate a mathematical expression"
     )
     @CommandPermissions("worldedit.calc")
     public void calc(final Actor actor, @Text final String input) throws CommandException {
-        // Dev should have threaded it years ago to prevent the exploit from happening.
+        // executing as a thread should keep the server from crashing. Prints the same results.
         Executors.newSingleThreadExecutor().execute(new Runnable() {
             @Override
             public void run() {
@@ -532,12 +534,13 @@ public class UtilityCommands {
         });
     }
 
+
     @Command(
-        aliases = { "/help" },
-        usage = "[<command>]",
-        desc = "Displays help for WorldEdit commands",
-        min = 0,
-        max = -1
+            aliases = { "/help" },
+            usage = "[<command>]",
+            desc = "Displays help for WorldEdit commands",
+            min = 0,
+            max = -1
     )
     @CommandPermissions("worldedit.help")
     public void help(Actor actor, CommandContext args) throws WorldEditException {
