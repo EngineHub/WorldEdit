@@ -63,12 +63,11 @@ import com.sk89q.worldedit.util.formatting.component.CommandListBox;
 import com.sk89q.worldedit.util.formatting.component.CommandUsageBox;
 import com.sk89q.worldedit.world.World;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.concurrent.*;
 
 import static com.sk89q.minecraft.util.commands.Logging.LogMode.PLACEMENT;
+import static java.lang.Integer.*;
 
 /**
  * Utility commands.
@@ -123,7 +122,7 @@ public class UtilityCommands {
         Pattern pattern = we.getBlockPattern(player, args.getString(0));
         double radius = Math.max(1, args.getDouble(1));
         we.checkMaxRadius(radius);
-        int depth = args.argsLength() > 2 ? Math.max(1, args.getInteger(2)) : Integer.MAX_VALUE;
+        int depth = args.argsLength() > 2 ? Math.max(1, args.getInteger(2)) : MAX_VALUE;
 
         Vector pos = session.getPlacementPosition(player);
         int affected = 0;
@@ -515,17 +514,22 @@ public class UtilityCommands {
         desc = "Evaluate a mathematical expression"
     )
     @CommandPermissions("worldedit.calc")
-    public void calc(Actor actor, @Text String input) throws CommandException {
-        try {
-            Expression expression = Expression.compile(input);
-            actor.print("= " + expression.evaluate());
-        } catch (EvaluationException e) {
-            actor.printError(String.format(
-                    "'%s' could not be parsed as a valid expression", input));
-        } catch (ExpressionException e) {
-            actor.printError(String.format(
-                    "'%s' could not be evaluated (error: %s)", input, e.getMessage()));
-        }
+    public void calc(final Actor actor, @Text final String input) throws CommandException {
+        // Dev should have threaded it years ago to prevent the exploit from happening.
+        Executors.newSingleThreadExecutor().execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    actor.print("Calculating...");
+                    Expression expression = Expression.compile(input);
+                    actor.print(input + " = " + expression.evaluate());
+                } catch (EvaluationException e) {
+                    actor.printError(String.format("'%s' could not be parsed as a valid expression", input));
+                } catch (ExpressionException e) {
+                    actor.printError(String.format("'%s' could not be evaluated (error: %s)", input, e.getMessage()));
+                }
+            }
+        });
     }
 
     @Command(
