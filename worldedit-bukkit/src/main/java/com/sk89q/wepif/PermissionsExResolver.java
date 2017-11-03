@@ -37,14 +37,14 @@ public class PermissionsExResolver extends DinnerPermsResolver {
                 return null;
             }
 
-            return new PermissionsExResolver(server, manager);
+            return new PermissionsExResolver(server, config, manager);
         } catch (Throwable t) {
             return null;
         }
     }
 
-    public PermissionsExResolver(Server server, PermissionManager manager) {
-        super(server);
+    public PermissionsExResolver(Server server, YAMLProcessor config, PermissionManager manager) {
+        super(server, config);
         this.manager = manager;
     }
 
