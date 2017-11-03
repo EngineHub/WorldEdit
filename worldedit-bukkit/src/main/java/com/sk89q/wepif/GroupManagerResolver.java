@@ -38,14 +38,14 @@ public class GroupManagerResolver extends DinnerPermsResolver {
                 return null;
             }
 
-            return new GroupManagerResolver(server, worldsHolder);
+            return new GroupManagerResolver(server, config, worldsHolder);
         } catch (Throwable t) {
             return null;
         }
     }
 
-    public GroupManagerResolver(Server server, WorldsHolder worldsHolder) {
-        super(server);
+    public GroupManagerResolver(Server server, YAMLProcessor config, WorldsHolder worldsHolder) {
+        super(server, config);
         this.worldsHolder = worldsHolder;
     }
 

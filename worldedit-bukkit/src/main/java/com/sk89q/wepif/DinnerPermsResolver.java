@@ -32,15 +32,27 @@ import java.util.List;
 
 public class DinnerPermsResolver implements PermissionsResolver {
 
+    // the default group prefix
     public static final String GROUP_PREFIX = "group.";
+
     protected final Server server;
+    protected final String groupPrefix;
+
+    public DinnerPermsResolver(Server server, String groupPrefix) {
+        this.server = server;
+        this.groupPrefix = groupPrefix;
+    }
+
+    public DinnerPermsResolver(Server server, YAMLProcessor config) {
+        this(server, config.getString("dinnerperms-group-prefix", GROUP_PREFIX));
+    }
 
     public DinnerPermsResolver(Server server) {
-        this.server = server;
+        this(server, GROUP_PREFIX);
     }
 
     public static PermissionsResolver factory(Server server, YAMLProcessor config) {
-        return new DinnerPermsResolver(server);
+        return new DinnerPermsResolver(server, config);
     }
 
     @Override
@@ -104,7 +116,7 @@ public class DinnerPermsResolver implements PermissionsResolver {
             return false;
         }
 
-        final String perm = GROUP_PREFIX + group;
+        final String perm = groupPrefix + group;
         return perms.isPermissionSet(perm) && perms.hasPermission(perm);
     }
 
@@ -117,10 +129,10 @@ public class DinnerPermsResolver implements PermissionsResolver {
         List<String> groupNames = new ArrayList<String>();
         for (PermissionAttachmentInfo permAttach : perms.getEffectivePermissions()) {
             String perm = permAttach.getPermission();
-            if (!(perm.startsWith(GROUP_PREFIX) && permAttach.getValue())) {
+            if (!(perm.startsWith(groupPrefix) && permAttach.getValue())) {
                 continue;
             }
-            groupNames.add(perm.substring(GROUP_PREFIX.length(), perm.length()));
+            groupNames.add(perm.substring(groupPrefix.length(), perm.length()));
         }
         return groupNames.toArray(new String[groupNames.size()]);
     }

@@ -211,6 +211,11 @@ public class PermissionsResolverManager implements PermissionsResolver {
             isUpdated = true;
         }
 
+        if (!keys.contains("dinnerperms-group-prefix")) {
+            config.setProperty("dinnerperms-group-prefix", DinnerPermsResolver.GROUP_PREFIX);
+            isUpdated = true;
+        }
+
         if (!keys.contains("resolvers")) {
             //List<String> resolverKeys = config.getKeys("resolvers");
             List<String> resolvers = new ArrayList<String>();
