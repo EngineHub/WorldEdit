@@ -127,34 +127,34 @@ public class Expression {
             ((Variable) invokable).value = values[i];
         }
 
-        pushInstance();
-        try {
-            Future<Double> result = evalThread.submit(new Callable<Double>() {
-                @Override
-                public Double call() throws Exception {
+        Future<Double> result = evalThread.submit(new Callable<Double>() {
+            @Override
+            public Double call() throws Exception {
+                pushInstance();
+                try {
                     return root.getValue();
+                } finally {
+                    popInstance();
                 }
-            });
-            try {
-                return result.get(WorldEdit.getInstance().getConfiguration().calculationTimeout, TimeUnit.MILLISECONDS);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                throw new RuntimeException(e);
-            } catch (ExecutionException e) {
-                Throwable cause = e.getCause();
-                if (cause instanceof ReturnException) {
-                    return ((ReturnException) cause).getValue();
-                }
-                if (cause instanceof RuntimeException) {
-                    throw (RuntimeException) cause;
-                }
-                throw new RuntimeException(cause);
-            } catch (TimeoutException e) {
-                result.cancel(true);
-                throw new EvaluationException(-1, "Calculations exceeded time limit.");
             }
-        } finally {
-            popInstance();
+        });
+        try {
+            return result.get(WorldEdit.getInstance().getConfiguration().calculationTimeout, TimeUnit.MILLISECONDS);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException(e);
+        } catch (ExecutionException e) {
+            Throwable cause = e.getCause();
+            if (cause instanceof ReturnException) {
+                return ((ReturnException) cause).getValue();
+            }
+            if (cause instanceof RuntimeException) {
+                throw (RuntimeException) cause;
+            }
+            throw new RuntimeException(cause);
+        } catch (TimeoutException e) {
+            result.cancel(true);
+            throw new EvaluationException(-1, "Calculations exceeded time limit.");
         }
     }
 
