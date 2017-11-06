@@ -24,13 +24,23 @@ import static java.lang.Math.sin;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
+import org.junit.Before;
+import org.junit.Test;
+
+import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.event.platform.PlatformReadyEvent;
 import com.sk89q.worldedit.internal.expression.lexer.LexerException;
 import com.sk89q.worldedit.internal.expression.parser.ParserException;
 import com.sk89q.worldedit.internal.expression.runtime.EvaluationException;
 import com.sk89q.worldedit.internal.expression.runtime.ExpressionEnvironment;
-import org.junit.Test;
 
 public class ExpressionTest {
+    @Before
+    public void setup() {
+        WorldEdit.getInstance().getPlatformManager().register(new ExpressionPlatform());
+        WorldEdit.getInstance().getPlatformManager().handlePlatformReady(new PlatformReadyEvent());
+    }
+
     @Test
     public void testEvaluate() throws ExpressionException {
         // check 
