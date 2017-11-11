@@ -3,9 +3,9 @@
 
 WorldEdit is Minecraft mod that turns Minecraft into an in-game map editor (sorta, kinda).
 
-* Make awesome stuff with half the time OR make ***doubly** awesome* creations with the same time :sparkles:
+* Make awesome stuff with half the time OR make ***quadriply** awesome* creations with the same time :sparkles:
 * Get lost in hundreds of options and functions that even we've forgotten existed
-* Utilize Phtoshop-like tools like "selection areas" and "brushes"
+* Utilize Photoshop-like tools like "selection areas" and "brushes"
 * Making fjords and other natural wonders with weird names
 * Also: fix grief, broken water, missing snow, raging fires, and other :poop:
 
