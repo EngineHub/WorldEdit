@@ -33,8 +33,7 @@ import com.sk89q.worldedit.function.pattern.Patterns;
 import com.sk89q.worldedit.internal.annotation.Selection;
 import com.sk89q.worldedit.internal.expression.ExpressionException;
 import com.sk89q.worldedit.regions.Region;
-import com.sk89q.worldedit.util.TreeGenerator;
-import com.sk89q.worldedit.util.TreeGenerator.TreeType;
+import com.sk89q.worldedit.util.TreeTypes;
 import com.sk89q.worldedit.util.command.binding.Range;
 import com.sk89q.worldedit.util.command.binding.Switch;
 import com.sk89q.worldedit.util.command.binding.Text;
@@ -189,17 +188,16 @@ public class GenerationCommands {
 
     @Command(
         aliases = { "forestgen" },
-        usage = "[size] [type] [density]",
+        usage = "[size] [pattern] [density]",
         desc = "Generate a forest",
         min = 0,
         max = 3
     )
     @CommandPermissions("worldedit.generation.forest")
     @Logging(POSITION)
-    @SuppressWarnings("deprecation")
-    public void forestGen(Player player, LocalSession session, EditSession editSession, @Optional("10") int size, @Optional("tree") TreeType type, @Optional("5") double density) throws WorldEditException {
+    public void forestGen(Player player, LocalSession session, EditSession editSession, @Optional("10") int size, @Optional("tree") TreeTypes types, @Optional("5") double density) throws WorldEditException {
         density = density / 100;
-        int affected = editSession.makeForest(session.getPlacementPosition(player), size, density, new TreeGenerator(type));
+        int affected = editSession.makeForest(session.getPlacementPosition(player), size, density, types.getGenerators());
         player.print(affected + " trees created.");
     }
 

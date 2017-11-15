@@ -25,7 +25,7 @@ import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.function.RegionFunction;
-import com.sk89q.worldedit.util.TreeGenerator;
+import com.sk89q.worldedit.util.TreeGenerators;
 
 /**
  * Generates forests by searching for the ground starting from the given upper Y
@@ -33,18 +33,18 @@ import com.sk89q.worldedit.util.TreeGenerator;
  */
 public class ForestGenerator implements RegionFunction {
 
-    private final TreeGenerator treeGenerator;
+    private final TreeGenerators treeGenerators;
     private final EditSession editSession;
 
     /**
      * Create a new instance.
      *
      * @param editSession the edit session
-     * @param treeGenerator a tree generator
+     * @param treeGenerators a tree generator
      */
-    public ForestGenerator(EditSession editSession, TreeGenerator treeGenerator) {
+    public ForestGenerator(EditSession editSession, TreeGenerators treeGenerators) {
         this.editSession = editSession;
-        this.treeGenerator = treeGenerator;
+        this.treeGenerators = treeGenerators;
     }
 
     @Override
@@ -53,11 +53,11 @@ public class ForestGenerator implements RegionFunction {
         int t = block.getType();
 
         if (t == BlockID.GRASS || t == BlockID.DIRT) {
-            treeGenerator.generate(editSession, position.add(0, 1, 0));
+            treeGenerators.get().generate(editSession, position.add(0, 1, 0));
             return true;
         } else if (t == BlockID.LONG_GRASS || t == BlockID.DEAD_BUSH || t == BlockID.RED_FLOWER || t == BlockID.YELLOW_FLOWER) { // TODO: This list needs to be moved
             editSession.setBlock(position, new BaseBlock(0));
-            treeGenerator.generate(editSession, position);
+            treeGenerators.get().generate(editSession, position);
             return true;
         } else if (t == BlockID.SNOW) {
             editSession.setBlock(position, new BaseBlock(BlockID.AIR));

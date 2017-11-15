@@ -40,6 +40,7 @@ import com.sk89q.worldedit.internal.annotation.Selection;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.TreeGenerator;
 import com.sk89q.worldedit.util.TreeGenerator.TreeType;
+import com.sk89q.worldedit.util.TreeTypes;
 import com.sk89q.worldedit.util.command.parametric.ArgumentStack;
 import com.sk89q.worldedit.util.command.parametric.BindingBehavior;
 import com.sk89q.worldedit.util.command.parametric.BindingHelper;
@@ -290,6 +291,38 @@ public class WorldEditBinding extends BindingHelper {
         }
     }
 
+    /**
+     * Gets an {@link TreeTypes} from a {@link ArgumentStack}.
+     *
+     * @param context
+     *            the context
+     * @return a TreeTypes list
+     * @throws ParameterException
+     *             on error
+     * @throws ParameterException
+     *             on error
+     * @throws WorldEditException
+     *             on error
+     */
+    @BindingMatch(type = TreeTypes.class, behavior = BindingBehavior.CONSUMES, consumedCount = 1)
+    public TreeTypes getTreeTypes(ArgumentStack context) throws ParameterException, WorldEditException {
+        Actor actor = context.getContext().getLocals().get(Actor.class);
+        ParserContext parserContext = new ParserContext();
+        parserContext.setActor(context.getContext().getLocals().get(Actor.class));
+        if (actor instanceof Entity) {
+            Extent extent = ((Entity) actor).getExtent();
+            if (extent instanceof World) {
+                parserContext.setWorld((World) extent);
+            }
+        }
+        parserContext.setSession(worldEdit.getSessionManager().get(actor));
+        try {
+            return worldEdit.getTreeTypesFactory().parseFromInput(context.next(), parserContext);
+        } catch (NoMatchException e) {
+            throw new ParameterException(e.getMessage(), e);
+        }
+    }
+    
     /**
      * Gets an {@link BaseBiome} from a {@link ArgumentStack}.
      *

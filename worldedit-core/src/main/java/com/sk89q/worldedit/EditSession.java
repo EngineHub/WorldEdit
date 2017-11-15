@@ -1790,7 +1790,7 @@ public class EditSession implements Extent {
      * @return number of trees created
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
-    public int makeForest(Vector basePosition, int size, double density, TreeGenerator treeGenerator) throws MaxChangedBlocksException {
+    public int makeForest(Vector basePosition, int size, double density, TreeGenerators treeGenerators) throws MaxChangedBlocksException {
         int affected = 0;
 
         for (int x = basePosition.getBlockX() - size; x <= basePosition.getBlockX()
@@ -1810,7 +1810,7 @@ public class EditSession implements Extent {
                     // Check if we hit the ground
                     int t = getBlock(new Vector(x, y, z)).getType();
                     if (t == BlockID.GRASS || t == BlockID.DIRT) {
-                        treeGenerator.generate(this, new Vector(x, y + 1, z));
+                        treeGenerators.get().generate(this, new Vector(x, y + 1, z));
                         ++affected;
                         break;
                     } else if (t == BlockID.SNOW) {
