@@ -1346,6 +1346,7 @@ public enum BlockType {
         isTranslucent.add(BlockID.BARRIER);
         isTranslucent.add(BlockID.IRON_TRAP_DOOR);
         isTranslucent.add(BlockID.CARPET);
+        isTranslucent.add(BlockID.LEAVES2);
         isTranslucent.add(BlockID.STAINED_GLASS_PANE);
         isTranslucent.add(BlockID.DOUBLE_PLANT);
         isTranslucent.add(BlockID.STANDING_BANNER);
