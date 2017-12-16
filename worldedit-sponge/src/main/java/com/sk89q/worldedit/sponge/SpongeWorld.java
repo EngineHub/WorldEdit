@@ -43,7 +43,7 @@ import org.spongepowered.api.data.property.block.GroundLuminanceProperty;
 import org.spongepowered.api.data.property.block.SkyLuminanceProperty;
 import org.spongepowered.api.entity.EntityType;
 import org.spongepowered.api.entity.EntityTypes;
-import org.spongepowered.api.world.BlockChangeFlag;
+import org.spongepowered.api.world.BlockChangeFlags;
 import org.spongepowered.api.world.World;
 
 import javax.annotation.Nullable;
@@ -129,7 +129,7 @@ public abstract class SpongeWorld extends AbstractWorld {
                 .world(world.getProperties())
                 .build();
 
-        snapshot.restore(true, notifyAndLight ? BlockChangeFlag.ALL : BlockChangeFlag.NONE);
+        snapshot.restore(true, notifyAndLight ? BlockChangeFlags.ALL : BlockChangeFlags.NONE);
 
         // Create the TileEntity
         if (block.hasNbtData()) {
