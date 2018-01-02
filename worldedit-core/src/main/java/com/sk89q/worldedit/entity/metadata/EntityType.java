@@ -154,4 +154,11 @@ public interface EntityType {
      * @return true if an armor stand
      */
     boolean isArmorStand();
+
+    /**
+     * Test whether this entity can be pasted.
+     *
+     * @return true if pasteable
+     */
+    boolean isPasteable();
 }
