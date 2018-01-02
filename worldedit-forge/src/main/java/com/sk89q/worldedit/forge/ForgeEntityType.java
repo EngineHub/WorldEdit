@@ -25,6 +25,7 @@ import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.IMerchant;
 import net.minecraft.entity.INpc;
 import net.minecraft.entity.IProjectile;
+import net.minecraft.entity.boss.EntityDragonPart;
 import net.minecraft.entity.item.EntityArmorStand;
 import net.minecraft.entity.item.EntityBoat;
 import net.minecraft.entity.item.EntityEnderEye;
@@ -40,6 +41,7 @@ import net.minecraft.entity.passive.EntityAmbientCreature;
 import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -55,6 +57,11 @@ public class ForgeEntityType implements EntityType {
     @Override
     public boolean isPlayerDerived() {
         return entity instanceof EntityPlayer;
+    }
+
+    @Override
+    public boolean isPlayer() {
+        return entity instanceof EntityPlayerMP;
     }
 
     @Override
@@ -140,5 +147,10 @@ public class ForgeEntityType implements EntityType {
     @Override
     public boolean isArmorStand() {
         return entity instanceof EntityArmorStand;
+    }
+
+    @Override
+    public boolean isComplexPart() {
+        return entity instanceof EntityDragonPart;
     }
 }

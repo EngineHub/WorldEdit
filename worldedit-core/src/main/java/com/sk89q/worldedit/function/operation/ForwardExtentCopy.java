@@ -22,6 +22,7 @@ package com.sk89q.worldedit.function.operation;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.entity.Entity;
+import com.sk89q.worldedit.entity.metadata.EntityType;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.function.CombinedRegionFunction;
 import com.sk89q.worldedit.function.RegionFunction;
@@ -36,6 +37,7 @@ import com.sk89q.worldedit.math.transform.Identity;
 import com.sk89q.worldedit.math.transform.Transform;
 import com.sk89q.worldedit.regions.Region;
 
+import java.util.Iterator;
 import java.util.List;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -255,6 +257,14 @@ public class ForwardExtentCopy implements Operation {
                 ExtentEntityCopy entityCopy = new ExtentEntityCopy(from, destination, to, currentTransform);
                 entityCopy.setRemoving(removingEntities);
                 List<? extends Entity> entities = source.getEntities(region);
+                Iterator<? extends Entity> it = entities.iterator();
+                while (it.hasNext()) {
+                    EntityType type = it.next().getFacet(EntityType.class);
+                    // exclude players and complex parts from being copied
+                    if (type != null && (type.isPlayer() || type.isComplexPart())) {
+                        it.remove();
+                    }
+                }
                 EntityVisitor entityVisitor = new EntityVisitor(entities.iterator(), entityCopy);
                 return new DelegateOperation(this, new OperationQueue(blockVisitor, entityVisitor));
             } else {
