@@ -80,11 +80,9 @@ public abstract class LegacyChunkStore extends ChunkStore {
                 + "." + Integer.toString(z, 36) + ".dat";
 
         InputStream stream = getInputStream(folder1, folder2, filename);
-        NBTInputStream nbt = new NBTInputStream(
-                new GZIPInputStream(stream));
         Tag tag;
 
-        try {
+        try (NBTInputStream nbt = new NBTInputStream(new GZIPInputStream(stream))) {
             tag = nbt.readNamedTag().getTag();
             if (!(tag instanceof CompoundTag)) {
                 throw new ChunkStoreException("CompoundTag expected for chunk; got "
@@ -112,8 +110,6 @@ public abstract class LegacyChunkStore extends ChunkStore {
             }
 
             return rootTag;
-        } finally {
-            nbt.close();
         }
     }
 

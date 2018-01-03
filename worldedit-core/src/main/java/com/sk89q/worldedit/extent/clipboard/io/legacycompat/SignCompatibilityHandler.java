@@ -28,13 +28,14 @@ import com.sk89q.jnbt.StringTag;
 import com.sk89q.jnbt.Tag;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
+import com.sk89q.worldedit.blocks.type.BlockTypes;
 
 import java.util.Map;
 
 public class SignCompatibilityHandler implements NBTCompatibilityHandler {
     @Override
     public boolean isAffectedBlock(BaseBlock block) {
-        return block.getType().getLegacyId() == BlockID.SIGN_POST || block.getType().getLegacyId() == BlockID.WALL_SIGN;
+        return block.getType() == BlockTypes.SIGN || block.getType() == BlockTypes.WALL_SIGN;
     }
 
     @Override

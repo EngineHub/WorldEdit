@@ -24,6 +24,7 @@ import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.blocks.type.BlockTypes;
 import com.sk89q.worldedit.patterns.Pattern;
 import com.sk89q.worldedit.regions.Region;
 
@@ -113,7 +114,7 @@ public abstract class ArbitraryShape {
 
         case -2:
             // type and data 0
-            return new BaseBlock(0, 0);
+            return new BaseBlock(BlockTypes.AIR);
         }
 
         return new BaseBlock(cacheEntry & 255, ((cacheEntry >> 8) - 1) & 15);

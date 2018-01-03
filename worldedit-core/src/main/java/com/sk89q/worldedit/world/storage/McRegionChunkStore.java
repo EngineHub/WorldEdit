@@ -71,10 +71,9 @@ public abstract class McRegionChunkStore extends ChunkStore {
         McRegionReader reader = getReader(position, world.getName());
 
         InputStream stream = reader.getChunkInputStream(position);
-        NBTInputStream nbt = new NBTInputStream(stream);
         Tag tag;
 
-        try {
+        try (NBTInputStream nbt = new NBTInputStream(stream)) {
             tag = nbt.readNamedTag().getTag();
             if (!(tag instanceof CompoundTag)) {
                 throw new ChunkStoreException("CompoundTag expected for chunk; got " + tag.getClass().getName());
@@ -100,8 +99,6 @@ public abstract class McRegionChunkStore extends ChunkStore {
             }
 
             return rootTag;
-        } finally {
-            nbt.close();
         }
     }
 

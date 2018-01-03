@@ -73,9 +73,7 @@ public class RegionIntersection extends AbstractRegion {
         super(world);
         checkNotNull(regions);
         checkArgument(!regions.isEmpty(), "empty region list is not supported");
-        for (Region region : regions) {
-            this.regions.add(region);
-        }
+        this.regions.addAll(regions);
     }
 
     /**

@@ -30,6 +30,7 @@ import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
+import com.sk89q.worldedit.blocks.type.BlockTypes;
 import com.sk89q.worldedit.command.tool.BrushTool;
 import com.sk89q.worldedit.command.tool.brush.ButcherBrush;
 import com.sk89q.worldedit.command.tool.brush.ClipboardBrush;
@@ -193,10 +194,10 @@ public class BrushCommands {
         worldEdit.checkMaxBrushRadius(radius);
 
         BrushTool tool = session.getBrushTool(player.getItemInHand());
-        Pattern fill = new BlockPattern(new BaseBlock(0));
+        Pattern fill = new BlockPattern(new BaseBlock(BlockTypes.AIR));
         tool.setFill(fill);
         tool.setSize(radius);
-        tool.setMask(new BlockMask(editSession, new BaseBlock(BlockID.FIRE)));
+        tool.setMask(new BlockMask(editSession, new BaseBlock(BlockTypes.FIRE)));
         tool.setBrush(new SphereBrush(), "worldedit.brush.ex");
 
         player.print(String.format("Extinguisher equipped (%.0f).", radius));

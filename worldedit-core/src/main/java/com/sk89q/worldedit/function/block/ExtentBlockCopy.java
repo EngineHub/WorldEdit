@@ -104,7 +104,7 @@ public class ExtentBlockCopy implements RegionFunction {
 
                         builder.putByte("Rot", (byte) MCDirections.toRotation(newDirection));
 
-                        return new BaseBlock(state.getId(), state.getData(), builder.build());
+                        return new BaseBlock(state.getType(), state.getData(), builder.build());
                     }
                 }
             }

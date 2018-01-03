@@ -84,9 +84,9 @@ public class FloraGenerator implements RegionFunction {
      */
     public static Pattern getDesertPattern() {
         RandomPattern pattern = new RandomPattern();
-        pattern.add(new BlockPattern(new BaseBlock(BlockID.DEAD_BUSH)), 30);
-        pattern.add(new BlockPattern(new BaseBlock(BlockID.CACTUS)), 20);
-        pattern.add(new BlockPattern(new BaseBlock(BlockID.AIR)), 300);
+        pattern.add(new BlockPattern(new BaseBlock(BlockTypes.DEAD_BUSH)), 30);
+        pattern.add(new BlockPattern(new BaseBlock(BlockTypes.CACTUS)), 20);
+        pattern.add(new BlockPattern(new BaseBlock(BlockTypes.AIR)), 300);
         return pattern;
     }
 
@@ -97,9 +97,9 @@ public class FloraGenerator implements RegionFunction {
      */
     public static Pattern getTemperatePattern() {
         RandomPattern pattern = new RandomPattern();
-        pattern.add(new BlockPattern(new BaseBlock(BlockID.LONG_GRASS, 1)), 300);
-        pattern.add(new BlockPattern(new BaseBlock(BlockID.RED_FLOWER)), 5);
-        pattern.add(new BlockPattern(new BaseBlock(BlockID.YELLOW_FLOWER)), 5);
+        pattern.add(new BlockPattern(new BaseBlock(BlockTypes.TALL_GRASS, 1)), 300);
+        pattern.add(new BlockPattern(new BaseBlock(BlockTypes.POPPY)), 5);
+        pattern.add(new BlockPattern(new BaseBlock(BlockTypes.DANDELION)), 5);
         return pattern;
     }
 
@@ -107,10 +107,10 @@ public class FloraGenerator implements RegionFunction {
     public boolean apply(Vector position) throws WorldEditException {
         BaseBlock block = editSession.getBlock(position);
 
-        if (block.getType().getId().equals(BlockTypes.GRASS)) {
+        if (block.getType() == BlockTypes.GRASS) {
             editSession.setBlock(position.add(0, 1, 0), temperatePattern.apply(position));
             return true;
-        } else if (block.getType().getLegacyId() == BlockID.SAND) {
+        } else if (block.getType() == BlockTypes.SAND) {
             editSession.setBlock(position.add(0, 1, 0), desertPattern.apply(position));
             return true;
         }

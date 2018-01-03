@@ -123,7 +123,7 @@ public class SpongePlayer extends AbstractPlayerActor {
     @Override
     public void printRaw(String msg) {
         for (String part : msg.split("\n")) {
-            this.player.sendMessage(TextSerializers.LEGACY_FORMATTING_CODE.deserialize(part));
+            this.player.sendMessage(TextSerializers.FORMATTING_CODE.deserialize(part));
         }
     }
 
@@ -144,7 +144,7 @@ public class SpongePlayer extends AbstractPlayerActor {
 
     private void sendColorized(String msg, TextColor formatting) {
         for (String part : msg.split("\n")) {
-            this.player.sendMessage(Text.of(formatting, TextSerializers.LEGACY_FORMATTING_CODE.deserialize(part)));
+            this.player.sendMessage(Text.of(formatting, TextSerializers.FORMATTING_CODE.deserialize(part)));
         }
     }
 

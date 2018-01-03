@@ -21,7 +21,8 @@ package com.sk89q.worldedit.command.tool;
 
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.blocks.BlockID;
+import com.sk89q.worldedit.blocks.type.BlockType;
+import com.sk89q.worldedit.blocks.type.BlockTypes;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Platform;
@@ -32,7 +33,7 @@ import com.sk89q.worldedit.world.World;
  */
 public class AreaPickaxe implements BlockTool {
 
-    private static final BaseBlock air = new BaseBlock(0);
+    private static final BaseBlock air = new BaseBlock(BlockTypes.AIR);
     private int range;
 
     public AreaPickaxe(int range) {
@@ -49,13 +50,13 @@ public class AreaPickaxe implements BlockTool {
         int ox = clicked.getBlockX();
         int oy = clicked.getBlockY();
         int oz = clicked.getBlockZ();
-        int initialType = ((World) clicked.getExtent()).getBlockType(clicked.toVector());
+        BlockType initialType = ((World) clicked.getExtent()).getBlock(clicked.toVector()).getType();
 
-        if (initialType == 0) {
+        if (initialType == BlockTypes.AIR) {
             return true;
         }
 
-        if (initialType == BlockID.BEDROCK && !player.canDestroyBedrock()) {
+        if (initialType == BlockTypes.BEDROCK && !player.canDestroyBedrock()) {
             return true;
         }
 
@@ -67,11 +68,11 @@ public class AreaPickaxe implements BlockTool {
                 for (int y = oy - range; y <= oy + range; ++y) {
                     for (int z = oz - range; z <= oz + range; ++z) {
                         Vector pos = new Vector(x, y, z);
-                        if (editSession.getBlockType(pos) != initialType) {
+                        if (editSession.getBlock(pos).getType() != initialType) {
                             continue;
                         }
 
-                        ((World) clicked.getExtent()).queueBlockBreakEffect(server, pos, initialType, clicked.toVector().distanceSq(pos));
+                        ((World) clicked.getExtent()).queueBlockBreakEffect(server, pos, initialType.getLegacyId(), clicked.toVector().distanceSq(pos));
 
                         editSession.setBlock(pos, air);
                     }

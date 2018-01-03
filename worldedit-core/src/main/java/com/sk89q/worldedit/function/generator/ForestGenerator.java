@@ -24,6 +24,8 @@ import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
+import com.sk89q.worldedit.blocks.type.BlockType;
+import com.sk89q.worldedit.blocks.type.BlockTypes;
 import com.sk89q.worldedit.function.RegionFunction;
 import com.sk89q.worldedit.util.TreeGenerator;
 
@@ -50,17 +52,17 @@ public class ForestGenerator implements RegionFunction {
     @Override
     public boolean apply(Vector position) throws WorldEditException {
         BaseBlock block = editSession.getBlock(position);
-        int t = block.getType().getLegacyId();
+        BlockType t = block.getType();
 
-        if (t == BlockID.GRASS || t == BlockID.DIRT) {
+        if (t == BlockTypes.GRASS || t == BlockTypes.DIRT) {
             treeGenerator.generate(editSession, position.add(0, 1, 0));
             return true;
-        } else if (t == BlockID.LONG_GRASS || t == BlockID.DEAD_BUSH || t == BlockID.RED_FLOWER || t == BlockID.YELLOW_FLOWER) { // TODO: This list needs to be moved
-            editSession.setBlock(position, new BaseBlock(0));
+        } else if (t == BlockTypes.TALL_GRASS || t == BlockTypes.DEAD_BUSH || t == BlockTypes.POPPY || t == BlockTypes.DANDELION) { // TODO: This list needs to be moved
+            editSession.setBlock(position, new BaseBlock(BlockTypes.AIR));
             treeGenerator.generate(editSession, position);
             return true;
-        } else if (t == BlockID.SNOW) {
-            editSession.setBlock(position, new BaseBlock(BlockID.AIR));
+        } else if (t == BlockTypes.SNOW) {
+            editSession.setBlock(position, new BaseBlock(BlockTypes.AIR));
             return false;
         } else { // Trees won't grow on this!
             return false;

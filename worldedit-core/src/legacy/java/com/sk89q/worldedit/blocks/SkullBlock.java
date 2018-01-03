@@ -100,7 +100,7 @@ public class SkullBlock extends BaseBlock implements TileEntityBlock {
             if (owner.length() > 16 || owner.isEmpty()) this.owner = "";
             else this.owner = owner;
         }
-        if (this.owner != null && !this.owner.isEmpty()) this.skullType = (byte) 3;
+        if (!this.owner.isEmpty()) this.skullType = (byte) 3;
     }
 
     /**

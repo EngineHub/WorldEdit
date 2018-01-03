@@ -318,7 +318,7 @@ public class BaseBlock extends Block implements TileEntityBlock {
      * @return if air
      */
     public boolean isAir() {
-        return getType().getId().equals(BlockTypes.AIR);
+        return getType() == BlockTypes.AIR;
     }
 
     /**

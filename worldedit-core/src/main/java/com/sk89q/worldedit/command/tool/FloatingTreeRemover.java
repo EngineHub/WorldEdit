@@ -22,6 +22,7 @@ package com.sk89q.worldedit.command.tool;
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
+import com.sk89q.worldedit.blocks.type.BlockTypes;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Platform;
@@ -37,7 +38,7 @@ import java.util.Set;
  * to anything else)
  */
 public class FloatingTreeRemover implements BlockTool {
-    private static final BaseBlock AIR = new BaseBlock(BlockID.AIR);
+    private static final BaseBlock AIR = new BaseBlock(BlockTypes.AIR);
     private int rangeSq;
 
     public FloatingTreeRemover() {

@@ -24,6 +24,7 @@ import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.blocks.BlockType;
+import com.sk89q.worldedit.blocks.type.BlockTypes;
 import com.sk89q.worldedit.extent.AbstractDelegateExtent;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.world.World;
@@ -58,7 +59,7 @@ public class BlockQuirkExtent extends AbstractDelegateExtent {
         if (BlockType.isContainerBlock(existing)) {
             world.clearContainerBlockContents(position); // Clear the container block so that it doesn't drop items
         } else if (existing == BlockID.ICE) {
-            world.setBlock(position, new BaseBlock(BlockID.AIR)); // Ice turns until water so this has to be done first
+            world.setBlock(position, new BaseBlock(BlockTypes.AIR)); // Ice turns until water so this has to be done first
         }
 
         return super.setBlock(position, block);

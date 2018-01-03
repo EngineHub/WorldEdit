@@ -29,6 +29,7 @@ import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.blocks.BlockType;
+import com.sk89q.worldedit.blocks.type.BlockTypes;
 import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.function.mask.BlockMask;
 import com.sk89q.worldedit.function.mask.Mask;
@@ -102,10 +103,10 @@ public abstract class AbstractWorld implements World {
     @Override
     public Mask createLiquidMask() {
         return new BlockMask(this,
-                new BaseBlock(BlockID.STATIONARY_LAVA, -1),
-                new BaseBlock(BlockID.LAVA, -1),
-                new BaseBlock(BlockID.STATIONARY_WATER, -1),
-                new BaseBlock(BlockID.WATER, -1));
+                new BaseBlock(BlockTypes.LAVA, -1),
+                new BaseBlock(BlockTypes.FLOWING_LAVA, -1),
+                new BaseBlock(BlockTypes.WATER, -1),
+                new BaseBlock(BlockTypes.FLOWING_WATER, -1));
     }
 
     @Override
@@ -140,7 +141,7 @@ public abstract class AbstractWorld implements World {
         }
 
         try {
-            setBlock(pt, new BaseBlock(BlockID.AIR));
+            setBlock(pt, new BaseBlock(BlockTypes.AIR));
         } catch (WorldEditException e) {
             throw new RuntimeException(e);
         }

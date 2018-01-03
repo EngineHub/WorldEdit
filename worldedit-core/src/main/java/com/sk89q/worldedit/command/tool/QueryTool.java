@@ -56,7 +56,7 @@ public class QueryTool implements BlockTool {
 
         World world = (World) clicked.getExtent();
         EditSession editSession = session.createEditSession(player);
-        BaseBlock block = (editSession).rawGetBlock(clicked.toVector());
+        BaseBlock block = editSession.getBlock(clicked.toVector());
         BlockType type = BlockType.fromID(block.getType().getLegacyId());
 
         player.print("\u00A79@" + clicked.toVector() + ": " + "\u00A7e"
@@ -71,13 +71,9 @@ public class QueryTool implements BlockTool {
         } else if (block instanceof NoteBlock) {
             player.printRaw("\u00A7e" + "Note block: "
                     + ((NoteBlock) block).getNote());
-        } else if (block.getType().getId().equals(BlockTypes.WOOL)) {
-            // Should never be null
-            player.printRaw("\u00A7e" + "Color: "
-                    + ClothColor.fromID(block.getData()).getName());
         }
 
-        Map<String, ? extends State> states = BundledBlockData.getInstance().getStatesById(block.getId());
+        Map<String, ? extends State> states = BundledBlockData.getInstance().getStatesById(block.getType().getId());
         if (states == null || states.isEmpty()) return true;
         StringBuilder builder = new StringBuilder();
         builder.append("States: ");

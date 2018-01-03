@@ -27,6 +27,7 @@ import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.blocks.BlockType;
+import com.sk89q.worldedit.blocks.type.BlockTypes;
 import com.sk89q.worldedit.extent.AbstractDelegateExtent;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.function.operation.BlockMapEntryPlacer;
@@ -103,7 +104,7 @@ public class MultiStageReorder extends AbstractDelegateExtent implements Reorder
             return !(lazyBlock.getType() == block.getType() && lazyBlock.getData() == block.getData());
         } else if (BlockType.shouldPlaceLast(lazyBlock.getType().getLegacyId())) {
             // Destroy torches, etc. first
-            super.setBlock(location, new BaseBlock(BlockID.AIR));
+            super.setBlock(location, new BaseBlock(BlockTypes.AIR));
             return super.setBlock(location, block);
         } else {
             stage1.put(location.toBlockVector(), block);

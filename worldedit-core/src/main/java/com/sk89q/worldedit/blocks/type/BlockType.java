@@ -50,6 +50,7 @@ public class BlockType {
         }
     }
 
+    @Deprecated
     public com.sk89q.worldedit.blocks.BlockType getLegacyType() {
         return com.sk89q.worldedit.blocks.BlockType.fromID(getLegacyId());
     }

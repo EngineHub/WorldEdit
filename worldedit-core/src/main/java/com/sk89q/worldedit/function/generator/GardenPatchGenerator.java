@@ -87,25 +87,25 @@ public class GardenPatchGenerator implements RegionFunction {
      */
     private void placeVine(Vector basePos, Vector pos) throws MaxChangedBlocksException {
         if (pos.distance(basePos) > 4) return;
-        if (editSession.getBlockType(pos) != 0) return;
+        if (!editSession.getBlock(pos).isAir()) return;
 
         for (int i = -1; i > -3; --i) {
             Vector testPos = pos.add(0, i, 0);
-            if (editSession.getBlockType(testPos) == BlockID.AIR) {
+            if (editSession.getBlock(testPos).isAir()) {
                 pos = testPos;
             } else {
                 break;
             }
         }
 
-        editSession.setBlockIfAir(pos, new BaseBlock(BlockID.LEAVES));
+        editSession.setBlockIfAir(pos, new BaseBlock(BlockTypes.OAK_LEAVES));
         affected++;
 
         int t = random.nextInt(4);
         int h = random.nextInt(3) - 1;
         Vector p;
 
-        BaseBlock log = new BaseBlock(BlockID.LOG);
+        BaseBlock log = new BaseBlock(BlockTypes.OAK_LOG);
 
         switch (t) {
             case 0:
@@ -160,17 +160,19 @@ public class GardenPatchGenerator implements RegionFunction {
 
     @Override
     public boolean apply(Vector position) throws WorldEditException {
-        if (!editSession.getBlock(position).getType().getId().equals(BlockTypes.AIR)) {
+        if (!editSession.getBlock(position).isAir()) {
             position = position.add(0, 1, 0);
         }
 
-        if (!editSession.getBlock(position.add(0, -1, 0)).getType().getId().equals(BlockTypes.GRASS)) {
+        if (editSession.getBlock(position.add(0, -1, 0)).getType() != BlockTypes.GRASS) {
             return false;
         }
 
-        BaseBlock leavesBlock = new BaseBlock(BlockID.LEAVES);
+        BaseBlock leavesBlock = new BaseBlock(BlockTypes.OAK_LEAVES);
 
-        editSession.setBlockIfAir(position, leavesBlock);
+        if (editSession.getBlock(position).isAir()) {
+            editSession.setBlock(position, leavesBlock);
+        }
 
         placeVine(position, position.add(0, 0, 1));
         placeVine(position, position.add(0, 0, -1));
@@ -188,7 +190,7 @@ public class GardenPatchGenerator implements RegionFunction {
     public static Pattern getPumpkinPattern() {
         RandomPattern pattern = new RandomPattern();
         for (int i = 0; i < 4; i++) {
-            pattern.add(new BlockPattern(new BaseBlock(BlockID.PUMPKIN, i)), 100);
+            pattern.add(new BlockPattern(new BaseBlock(BlockTypes.PUMPKIN, i)), 100);
         }
         return pattern;
     }
@@ -199,6 +201,6 @@ public class GardenPatchGenerator implements RegionFunction {
      * @return a melon pattern
      */
     public static Pattern getMelonPattern() {
-        return new BlockPattern(new BaseBlock(BlockID.MELON_BLOCK));
+        return new BlockPattern(new BaseBlock(BlockTypes.MELON_BLOCK));
     }
 }

@@ -24,6 +24,7 @@ import com.sk89q.worldedit.Vector2D;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
+import com.sk89q.worldedit.blocks.type.BlockTypes;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.function.operation.Operation;
@@ -129,7 +130,7 @@ public class BlockArrayClipboard implements Clipboard {
             }
         }
 
-        return new BaseBlock(BlockID.AIR);
+        return new BaseBlock(BlockTypes.AIR);
     }
 
     @Override

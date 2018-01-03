@@ -21,6 +21,7 @@ package com.sk89q.worldedit.util.formatting;
 
 import com.google.common.base.Joiner;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -183,9 +184,7 @@ public class ColorCodeBuilder {
                     if ((transformed = transform(wordStr)) != null) {
                         line.append(transformed);
                     } else {
-                        for (String partialWord : word.toString().split("(?<=\\G.{" + lineLength + "})")) {
-                            lines.add(partialWord);
-                        }
+                        lines.addAll(Arrays.asList(word.toString().split("(?<=\\G.{" + lineLength + "})")));
                     }
                 } else if (line.length() + word.length() - lineColorChars == lineLength) { // Line exactly the correct length...newline
                     line.append(' ');

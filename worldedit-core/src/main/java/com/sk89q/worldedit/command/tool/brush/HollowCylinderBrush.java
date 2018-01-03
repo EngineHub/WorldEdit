@@ -24,6 +24,7 @@ import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
+import com.sk89q.worldedit.blocks.type.BlockTypes;
 import com.sk89q.worldedit.function.pattern.BlockPattern;
 import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.function.pattern.Patterns;
@@ -39,7 +40,7 @@ public class HollowCylinderBrush implements Brush {
     @Override
     public void build(EditSession editSession, Vector position, Pattern pattern, double size) throws MaxChangedBlocksException {
         if (pattern == null) {
-            pattern = new BlockPattern(new BaseBlock(BlockID.COBBLESTONE));
+            pattern = new BlockPattern(new BaseBlock(BlockTypes.COBBLESTONE));
         }
         editSession.makeCylinder(position, Patterns.wrap(pattern), size, size, height, false);
     }

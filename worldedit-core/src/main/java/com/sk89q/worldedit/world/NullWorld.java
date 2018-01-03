@@ -26,7 +26,7 @@ import com.sk89q.worldedit.Vector2D;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BaseItemStack;
-import com.sk89q.worldedit.blocks.BlockID;
+import com.sk89q.worldedit.blocks.type.BlockTypes;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.regions.Region;
@@ -102,12 +102,12 @@ public class NullWorld extends AbstractWorld {
 
     @Override
     public BaseBlock getBlock(Vector position) {
-        return new BaseBlock(BlockID.AIR);
+        return new BaseBlock(BlockTypes.AIR);
     }
 
     @Override
     public BaseBlock getLazyBlock(Vector position) {
-        return new BaseBlock(BlockID.AIR);
+        return new BaseBlock(BlockTypes.AIR);
     }
 
     @Override

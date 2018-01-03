@@ -25,6 +25,7 @@ import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
+import com.sk89q.worldedit.blocks.type.BlockTypes;
 
 import javax.annotation.Nullable;
 import java.util.Collections;
@@ -198,8 +199,8 @@ public class TreeGenerator {
         int trunkHeight = (int) Math.floor(Math.random() * 2) + 3;
         int height = (int) Math.floor(Math.random() * 5) + 8;
 
-        BaseBlock logBlock = new BaseBlock(BlockID.LOG);
-        BaseBlock leavesBlock = new BaseBlock(BlockID.LEAVES);
+        BaseBlock logBlock = new BaseBlock(BlockTypes.OAK_LOG);
+        BaseBlock leavesBlock = new BaseBlock(BlockTypes.OAK_LEAVES);
 
         // Create trunk
         for (int i = 0; i < trunkHeight; ++i) {

@@ -20,6 +20,7 @@
 package com.sk89q.worldedit.bukkit;
 
 import com.sk89q.worldedit.blocks.BlockID;
+import com.sk89q.worldedit.blocks.type.BlockTypes;
 import org.bukkit.BlockChangeDelegate;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.Vector;
@@ -67,7 +68,7 @@ public class EditSessionBlockChangeDelegate implements BlockChangeDelegate {
 
     @Override
     public int getTypeId(int x, int y, int z) {
-        return editSession.getBlockType(new Vector(x, y, z));
+        return editSession.getBlock(new Vector(x, y, z)).getId();
     }
 
     @Override
@@ -77,7 +78,7 @@ public class EditSessionBlockChangeDelegate implements BlockChangeDelegate {
 
     @Override
     public boolean isEmpty(int x, int y, int z) {
-        return editSession.getBlockType(new Vector(x, y, z)) == BlockID.AIR;
+        return editSession.getBlock(new Vector(x, y, z)).isAir();
     }
 
 }

@@ -22,6 +22,7 @@ package com.sk89q.worldedit.extent.validation;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.blocks.type.BlockType;
 import com.sk89q.worldedit.extent.AbstractDelegateExtent;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.world.World;
@@ -50,13 +51,13 @@ public class DataValidatorExtent extends AbstractDelegateExtent {
     @Override
     public boolean setBlock(Vector location, BaseBlock block) throws WorldEditException {
         final int y = location.getBlockY();
-        final int type = block.getType().getLegacyId();
+        final BlockType type = block.getType();
         if (y < 0 || y > world.getMaxY()) {
             return false;
         }
 
         // No invalid blocks
-        if (!world.isValidBlockType(type)) {
+        if (type == null) {
             return false;
         }
 
