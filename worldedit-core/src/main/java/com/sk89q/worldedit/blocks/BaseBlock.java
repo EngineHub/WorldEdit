@@ -81,7 +81,7 @@ public class BaseBlock extends Block implements TileEntityBlock {
      */
     @Deprecated
     public BaseBlock(int id) {
-        setId(id);
+        internalSetId(id);
         internalSetData(0);
     }
 
@@ -104,7 +104,7 @@ public class BaseBlock extends Block implements TileEntityBlock {
      */
     @Deprecated
     public BaseBlock(int id, int data) {
-        setId(id);
+        internalSetId(id);
         internalSetData(data);
     }
 
@@ -133,7 +133,7 @@ public class BaseBlock extends Block implements TileEntityBlock {
      */
     @Deprecated
     public BaseBlock(int id, int data, @Nullable CompoundTag nbtData) {
-        setId(id);
+        internalSetId(id);
         setData(data);
         setNbtData(nbtData);
     }
@@ -195,6 +195,11 @@ public class BaseBlock extends Block implements TileEntityBlock {
     @Override
     @Deprecated
     public void setId(int id) {
+        internalSetId(id);
+    }
+
+    @Deprecated
+    private void internalSetId(int id) {
         BlockType type = BlockTypes.getBlockType(BundledBlockData.getInstance().fromLegacyId(id));
         internalSetType(type);
     }
