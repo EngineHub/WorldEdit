@@ -21,6 +21,7 @@ package com.sk89q.worldedit.blocks;
 
 import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.blocks.type.BlockType;
 import com.sk89q.worldedit.extent.Extent;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -49,6 +50,22 @@ public class LazyBlock extends BaseBlock {
      * @param extent the extent to later load the full block data from
      * @param position the position to later load the full block data from
      */
+    public LazyBlock(BlockType type, Extent extent, Vector position) {
+        super(type);
+        checkNotNull(extent);
+        checkNotNull(position);
+        this.extent = extent;
+        this.position = position;
+    }
+
+    /**
+     * Create a new lazy block.
+     *
+     * @param type the block type
+     * @param extent the extent to later load the full block data from
+     * @param position the position to later load the full block data from
+     */
+    @Deprecated
     public LazyBlock(int type, Extent extent, Vector position) {
         super(type);
         checkNotNull(extent);
@@ -65,6 +82,24 @@ public class LazyBlock extends BaseBlock {
      * @param extent the extent to later load the full block data from
      * @param position the position to later load the full block data from
      */
+    @Deprecated
+    public LazyBlock(BlockType type, int data, Extent extent, Vector position) {
+        super(type, data);
+        checkNotNull(extent);
+        checkNotNull(position);
+        this.extent = extent;
+        this.position = position;
+    }
+
+    /**
+     * Create a new lazy block.
+     *
+     * @param type the block type
+     * @param data the data value
+     * @param extent the extent to later load the full block data from
+     * @param position the position to later load the full block data from
+     */
+    @Deprecated
     public LazyBlock(int type, int data, Extent extent, Vector position) {
         super(type, data);
         checkNotNull(extent);
@@ -80,6 +115,11 @@ public class LazyBlock extends BaseBlock {
 
     @Override
     public void setData(int data) {
+        throw new UnsupportedOperationException("This object is immutable");
+    }
+
+    @Override
+    public void setType(BlockType type) {
         throw new UnsupportedOperationException("This object is immutable");
     }
 

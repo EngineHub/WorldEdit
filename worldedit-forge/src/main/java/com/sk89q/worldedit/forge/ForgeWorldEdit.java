@@ -19,6 +19,8 @@
 
 package com.sk89q.worldedit.forge;
 
+import net.minecraft.block.Block;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import org.apache.logging.log4j.Logger;
 
 import com.google.common.base.Joiner;
@@ -54,8 +56,11 @@ import net.minecraftforge.fml.common.event.FMLServerStartedEvent;
 import net.minecraftforge.fml.common.event.FMLServerStoppingEvent;
 import net.minecraftforge.fml.common.eventhandler.Event.Result;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import org.spongepowered.api.Sponge;
+import org.spongepowered.api.block.BlockType;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static net.minecraft.block.Block.REGISTRY;
 
 /**
  * The Forge implementation of WorldEdit.
@@ -120,6 +125,10 @@ public class ForgeWorldEdit {
             this.provider = new ForgePermissionsProvider.SpongePermissionsProvider();
         } else {
             this.provider = new ForgePermissionsProvider.VanillaPermissionsProvider(platform);
+        }
+
+        for (Block block : REGISTRY) {
+            com.sk89q.worldedit.blocks.type.BlockTypes.registerBlock(new com.sk89q.worldedit.blocks.type.BlockType(REGISTRY.getNameForObject(block).toString()));
         }
     }
 
