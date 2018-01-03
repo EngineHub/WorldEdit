@@ -30,7 +30,7 @@ import java.util.Map;
  * A block registry that uses {@link BundledBlockData} to serve information
  * about blocks.
  */
-public class LegacyBlockRegistry implements BlockRegistry {
+public class BundledBlockRegistry implements BlockRegistry {
 
     @Nullable
     @Override

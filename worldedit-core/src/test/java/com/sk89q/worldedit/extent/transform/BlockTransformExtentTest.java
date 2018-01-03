@@ -25,7 +25,7 @@ import com.sk89q.worldedit.blocks.BlockType;
 import com.sk89q.worldedit.math.transform.AffineTransform;
 import com.sk89q.worldedit.math.transform.Transform;
 import com.sk89q.worldedit.world.registry.BlockRegistry;
-import com.sk89q.worldedit.world.registry.LegacyBlockRegistry;
+import com.sk89q.worldedit.world.registry.BundledBlockRegistry;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -54,7 +54,7 @@ public class BlockTransformExtentTest {
 
     @Test
     public void testTransform() throws Exception {
-        BlockRegistry blockRegistry = new LegacyBlockRegistry();
+        BlockRegistry blockRegistry = new BundledBlockRegistry();
         for (BlockType type : BlockType.values()) {
             if (ignored.contains(type)) {
                 continue;

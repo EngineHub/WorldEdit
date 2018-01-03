@@ -20,12 +20,12 @@
 package com.sk89q.worldedit.bukkit;
 
 import com.sk89q.worldedit.world.registry.BiomeRegistry;
-import com.sk89q.worldedit.world.registry.LegacyWorldData;
+import com.sk89q.worldedit.world.registry.BundledWorldData;
 
 /**
  * World data for the Bukkit platform.
  */
-class BukkitWorldData extends LegacyWorldData {
+class BukkitWorldData extends BundledWorldData {
 
     private static final BukkitWorldData INSTANCE = new BukkitWorldData();
     private final BiomeRegistry biomeRegistry = new BukkitBiomeRegistry();

@@ -20,13 +20,13 @@
 package com.sk89q.worldedit.world.registry;
 
 /**
- * An implementation of {@link WorldData} that uses legacy numeric IDs and
- * a built-in block database.
+ * An implementation of {@link WorldData} that converts legacy numeric IDs and
+ * a contains a built-in block database.
  */
-public class LegacyWorldData implements WorldData {
+public class BundledWorldData implements WorldData {
 
-    private static final LegacyWorldData INSTANCE = new LegacyWorldData();
-    private final LegacyBlockRegistry blockRegistry = new LegacyBlockRegistry();
+    private static final BundledWorldData INSTANCE = new BundledWorldData();
+    private final BundledBlockRegistry blockRegistry = new BundledBlockRegistry();
     private final NullItemRegistry itemRegistry = new NullItemRegistry();
     private final NullEntityRegistry entityRegistry = new NullEntityRegistry();
     private final NullBiomeRegistry biomeRegistry = new NullBiomeRegistry();
@@ -34,7 +34,7 @@ public class LegacyWorldData implements WorldData {
     /**
      * Create a new instance.
      */
-    protected LegacyWorldData() {
+    protected BundledWorldData() {
     }
 
     @Override
@@ -62,7 +62,7 @@ public class LegacyWorldData implements WorldData {
      *
      * @return an instance
      */
-    public static LegacyWorldData getInstance() {
+    public static BundledWorldData getInstance() {
         return INSTANCE;
     }
 

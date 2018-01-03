@@ -21,12 +21,12 @@ package com.sk89q.worldedit.forge;
 
 import com.sk89q.worldedit.world.registry.BiomeRegistry;
 import com.sk89q.worldedit.world.registry.ItemRegistry;
-import com.sk89q.worldedit.world.registry.LegacyWorldData;
+import com.sk89q.worldedit.world.registry.BundledWorldData;
 
 /**
  * World data for the Forge platform.
  */
-class ForgeWorldData extends LegacyWorldData {
+class ForgeWorldData extends BundledWorldData {
 
     private static final ForgeWorldData INSTANCE = new ForgeWorldData();
     private final BiomeRegistry biomeRegistry = new ForgeBiomeRegistry();

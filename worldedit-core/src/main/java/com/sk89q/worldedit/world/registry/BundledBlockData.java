@@ -147,23 +147,6 @@ public class BundledBlockData {
     /**
      * Get the material properties for the given block.
      *
-     * @param id the legacy numeric ID
-     * @return the material's properties, or null
-     */
-    @Nullable
-    @Deprecated
-    public BlockMaterial getMaterialById(int id) {
-        BlockEntry entry = findById(id);
-        if (entry != null) {
-            return entry.material;
-        } else {
-            return null;
-        }
-    }
-
-    /**
-     * Get the material properties for the given block.
-     *
      * @param id the string ID
      * @return the material's properties, or null
      */
@@ -172,23 +155,6 @@ public class BundledBlockData {
         BlockEntry entry = findById(id);
         if (entry != null) {
             return entry.material;
-        } else {
-            return null;
-        }
-    }
-
-    /**
-     * Get the states for the given block.
-     *
-     * @param id the legacy numeric ID
-     * @return the block's states, or null if no information is available
-     */
-    @Nullable
-    @Deprecated
-    public Map<String, ? extends State> getStatesById(int id) {
-        BlockEntry entry = findById(id);
-        if (entry != null) {
-            return entry.states;
         } else {
             return null;
         }

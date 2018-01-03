@@ -20,12 +20,12 @@
 package com.sk89q.worldedit.sponge;
 
 import com.sk89q.worldedit.world.registry.BiomeRegistry;
-import com.sk89q.worldedit.world.registry.LegacyWorldData;
+import com.sk89q.worldedit.world.registry.BundledWorldData;
 
 /**
  * World data for the Sponge platform.
  */
-class SpongeWorldData extends LegacyWorldData {
+class SpongeWorldData extends BundledWorldData {
 
     private static final SpongeWorldData INSTANCE = new SpongeWorldData();
     private final BiomeRegistry biomeRegistry = new SpongeBiomeRegistry();
