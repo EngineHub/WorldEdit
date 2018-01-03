@@ -247,7 +247,7 @@ public class UtilityCommands {
         int size = Math.max(1, args.getInteger(1, 50));
         we.checkMaxRadius(size);
 
-        int affected = editSession.removeNear(session.getPlacementPosition(player), block.getType(), size);
+        int affected = editSession.removeNear(session.getPlacementPosition(player), block.getType().getLegacyId(), size);
         player.print(affected + " block(s) have been removed.");
     }
 

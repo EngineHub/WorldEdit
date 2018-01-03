@@ -129,13 +129,46 @@ public class BundledBlockData {
     }
 
     /**
+     * Convert the given legacy numeric ID to a string ID.
+     *
+     * @param id the legacy ID
+     * @return the ID, which may be null if the block does not have a ID
+     */
+    @Nullable
+    public String fromLegacyId(Integer id) {
+        BlockEntry entry = findById(id);
+        if (entry != null) {
+            return entry.id;
+        } else {
+            return null;
+        }
+    }
+
+    /**
      * Get the material properties for the given block.
      *
      * @param id the legacy numeric ID
      * @return the material's properties, or null
      */
     @Nullable
+    @Deprecated
     public BlockMaterial getMaterialById(int id) {
+        BlockEntry entry = findById(id);
+        if (entry != null) {
+            return entry.material;
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Get the material properties for the given block.
+     *
+     * @param id the string ID
+     * @return the material's properties, or null
+     */
+    @Nullable
+    public BlockMaterial getMaterialById(String id) {
         BlockEntry entry = findById(id);
         if (entry != null) {
             return entry.material;
@@ -151,7 +184,24 @@ public class BundledBlockData {
      * @return the block's states, or null if no information is available
      */
     @Nullable
+    @Deprecated
     public Map<String, ? extends State> getStatesById(int id) {
+        BlockEntry entry = findById(id);
+        if (entry != null) {
+            return entry.states;
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Get the states for the given block.
+     *
+     * @param id the string ID
+     * @return the block's states, or null if no information is available
+     */
+    @Nullable
+    public Map<String, ? extends State> getStatesById(String id) {
         BlockEntry entry = findById(id);
         if (entry != null) {
             return entry.states;

@@ -86,7 +86,7 @@ public class FloodFillTool implements BlockTool {
 
         visited.add(pos);
 
-        if (editSession.getBlock(pos).getType() == initialType) {
+        if (editSession.getBlock(pos).getType().getLegacyId() == initialType) {
             editSession.setBlock(pos, pattern.next(pos));
         } else {
             return;

@@ -23,8 +23,11 @@ import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.jnbt.StringTag;
 import com.sk89q.jnbt.Tag;
 import com.sk89q.worldedit.CuboidClipboard.FlipDirection;
+import com.sk89q.worldedit.blocks.type.BlockType;
+import com.sk89q.worldedit.blocks.type.BlockTypes;
 import com.sk89q.worldedit.foundation.Block;
 import com.sk89q.worldedit.function.mask.Mask;
+import com.sk89q.worldedit.world.registry.BundledBlockData;
 import com.sk89q.worldedit.world.registry.WorldData;
 
 import javax.annotation.Nullable;
@@ -57,15 +60,6 @@ import java.util.Collection;
 public class BaseBlock extends Block implements TileEntityBlock {
 
     /**
-     * Indicates the highest possible block ID (inclusive) that can be used.
-     * This value is subject to change depending on the implementation, but
-     * internally this class only supports a range of 4096 IDs (for space
-     * reasons), which coincides with the number of possible IDs that official
-     * Minecraft supports as of version 1.7.
-     */
-    public static final int MAX_ID = 4095;
-
-    /**
      * Indicates the maximum data value (inclusive) that can be used. A future
      * version of Minecraft may abolish block data values.
      */
@@ -74,7 +68,7 @@ public class BaseBlock extends Block implements TileEntityBlock {
     // Instances of this class should be _as small as possible_ because there will
     // be millions of instances of this object.
 
-    private short id;
+    private BlockType blockType;
     private short data;
     @Nullable
     private CompoundTag nbtData;
@@ -85,9 +79,19 @@ public class BaseBlock extends Block implements TileEntityBlock {
      * @param id ID value
      * @see #setId(int)
      */
+    @Deprecated
     public BaseBlock(int id) {
-        internalSetId(id);
+        setId(id);
         internalSetData(0);
+    }
+
+    /**
+     * Construct a block with the given type and default data.
+     *
+     * @param blockType The block type
+     */
+    public BaseBlock(BlockType blockType) {
+        internalSetType(blockType);
     }
 
     /**
@@ -98,8 +102,25 @@ public class BaseBlock extends Block implements TileEntityBlock {
      * @see #setId(int)
      * @see #setData(int)
      */
+    @Deprecated
     public BaseBlock(int id, int data) {
-        internalSetId(id);
+        setId(id);
+        internalSetData(data);
+    }
+
+    /**
+     * Construct a block with the given ID and data value.
+     *
+     * THIS WILL GET REMOVED SOON.
+     *
+     * @param blockType The block type
+     * @param data data value
+     * @see #setId(int)
+     * @see #setData(int)
+     */
+    @Deprecated
+    public BaseBlock(BlockType blockType, int data) {
+        internalSetType(blockType);
         internalSetData(data);
     }
 
@@ -110,8 +131,25 @@ public class BaseBlock extends Block implements TileEntityBlock {
      * @param data data value
      * @param nbtData NBT data, which may be null
      */
+    @Deprecated
     public BaseBlock(int id, int data, @Nullable CompoundTag nbtData) {
         setId(id);
+        setData(data);
+        setNbtData(nbtData);
+    }
+
+    /**
+     * Construct a block with the given ID, data value and NBT data structure.
+     *
+     * THIS WILL GET REMOVED SOON.
+     *
+     * @param blockType The block type
+     * @param data data value
+     * @param nbtData NBT data, which may be null
+     */
+    @Deprecated
+    public BaseBlock(BlockType blockType, int data, @Nullable CompoundTag nbtData) {
+        setType(blockType);
         setData(data);
         setNbtData(nbtData);
     }
@@ -126,41 +164,48 @@ public class BaseBlock extends Block implements TileEntityBlock {
     }
 
     /**
-     * Get the ID of the block.
+     * Get the legacy numerical ID of the block.
      *
-     * @return ID (between 0 and {@link #MAX_ID})
+     * @return legacy numerical ID
      */
     @Override
+    @Deprecated
     public int getId() {
-        return id;
+        return this.blockType.getLegacyId();
     }
 
     /**
      * Set the block ID.
      *
-     * @param id block id (between 0 and {@link #MAX_ID}).
+     * @param type block type
      */
-    protected final void internalSetId(int id) {
-        if (id > MAX_ID) {
-            throw new IllegalArgumentException("Can't have a block ID above "
-                    + MAX_ID + " (" + id + " given)");
+    protected final void internalSetType(BlockType type) {
+        if (type == null) {
+            throw new IllegalArgumentException("You must provide a BlockType");
         }
 
-        if (id < 0) {
-            throw new IllegalArgumentException("Can't have a block ID below 0");
-        }
-
-        this.id = (short) id;
+        this.blockType = type;
     }
 
     /**
      * Set the block ID.
      *
-     * @param id block id (between 0 and {@link #MAX_ID}).
+     * @param id block id
      */
     @Override
+    @Deprecated
     public void setId(int id) {
-        internalSetId(id);
+        BlockType type = BlockTypes.getBlockType(BundledBlockData.getInstance().fromLegacyId(id));
+        internalSetType(type);
+    }
+
+    /**
+     * Set the block type.
+     *
+     * @param type block type
+     */
+    public void setType(BlockType type) {
+        internalSetType(type);
     }
 
     /**
@@ -211,6 +256,7 @@ public class BaseBlock extends Block implements TileEntityBlock {
      * @see #setData(int)
      */
     @Override
+    @Deprecated
     public void setIdAndData(int id, int data) {
         setId(id);
         setData(data);
@@ -262,17 +308,8 @@ public class BaseBlock extends Block implements TileEntityBlock {
      * 
      * @return the type
      */
-    public int getType() {
-        return getId();
-    }
-
-    /**
-     * Set the type of block.
-     * 
-     * @param type the type to set
-     */
-    public void setType(int type) {
-        setId(type);
+    public BlockType getType() {
+        return this.blockType;
     }
 
     /**
@@ -281,7 +318,7 @@ public class BaseBlock extends Block implements TileEntityBlock {
      * @return if air
      */
     public boolean isAir() {
-        return getType() == BlockID.AIR;
+        return getType().getId().equals(BlockTypes.AIR);
     }
 
     /**
@@ -292,7 +329,7 @@ public class BaseBlock extends Block implements TileEntityBlock {
      */
     @Deprecated
     public int rotate90() {
-        int newData = BlockData.rotate90(getType(), getData());
+        int newData = BlockData.rotate90(getType().getLegacyId(), getData());
         setData(newData);
         return newData;
     }
@@ -305,7 +342,7 @@ public class BaseBlock extends Block implements TileEntityBlock {
      */
     @Deprecated
     public int rotate90Reverse() {
-        int newData = BlockData.rotate90Reverse(getType(), getData());
+        int newData = BlockData.rotate90Reverse(getType().getLegacyId(), getData());
         setData((short) newData);
         return newData;
     }
@@ -319,7 +356,7 @@ public class BaseBlock extends Block implements TileEntityBlock {
      */
     @Deprecated
     public int cycleData(int increment) {
-        int newData = BlockData.cycle(getType(), getData(), increment);
+        int newData = BlockData.cycle(getType().getLegacyId(), getData(), increment);
         setData((short) newData);
         return newData;
     }
@@ -332,7 +369,7 @@ public class BaseBlock extends Block implements TileEntityBlock {
      */
     @Deprecated
     public BaseBlock flip() {
-        setData((short) BlockData.flip(getType(), getData()));
+        setData((short) BlockData.flip(getType().getLegacyId(), getData()));
         return this;
     }
 
@@ -345,7 +382,7 @@ public class BaseBlock extends Block implements TileEntityBlock {
      */
     @Deprecated
     public BaseBlock flip(FlipDirection direction) {
-        setData((short) BlockData.flip(getType(), getData(), direction));
+        setData((short) BlockData.flip(getType().getLegacyId(), getData(), direction));
         return this;
     }
 
@@ -397,14 +434,14 @@ public class BaseBlock extends Block implements TileEntityBlock {
 
     @Override
     public int hashCode() {
-        int ret = getId() << 3;
+        int ret = getType().hashCode() << 3;
         if (getData() != (byte) -1) ret |= getData();
         return ret;
     }
 
     @Override
     public String toString() {
-        return "Block{ID:" + getId() + ", Data: " + getData() + "}";
+        return "Block{Type:" + getType().getId() + ", Data: " + getData() + "}";
     }
 
 }

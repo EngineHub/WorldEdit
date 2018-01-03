@@ -50,7 +50,7 @@ public class ForestGenerator implements RegionFunction {
     @Override
     public boolean apply(Vector position) throws WorldEditException {
         BaseBlock block = editSession.getBlock(position);
-        int t = block.getType();
+        int t = block.getType().getLegacyId();
 
         if (t == BlockID.GRASS || t == BlockID.DIRT) {
             treeGenerator.generate(editSession, position.add(0, 1, 0));

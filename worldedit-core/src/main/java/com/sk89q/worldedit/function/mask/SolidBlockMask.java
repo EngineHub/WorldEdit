@@ -36,7 +36,7 @@ public class SolidBlockMask extends AbstractExtentMask {
     public boolean test(Vector vector) {
         Extent extent = getExtent();
         BaseBlock lazyBlock = extent.getLazyBlock(vector);
-        return !BlockType.canPassThrough(lazyBlock.getType(), lazyBlock.getData());
+        return !BlockType.canPassThrough(lazyBlock.getType().getLegacyId(), lazyBlock.getData());
     }
 
     @Nullable

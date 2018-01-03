@@ -188,7 +188,7 @@ public class ToolCommands {
         BaseBlock primary = we.getBlock(player, args.getString(1));
         session.setTool(player.getItemInHand(), new LongRangeBuildTool(primary, secondary));
         player.print("Long-range building tool bound to " + ItemType.toHeldName(player.getItemInHand()) + ".");
-        player.print("Left-click set to " + ItemType.toName(secondary.getType()) + "; right-click set to "
-                + ItemType.toName(primary.getType()) + ".");
+        player.print("Left-click set to " + ItemType.toName(secondary.getType().getLegacyId()) + "; right-click set to "
+                + ItemType.toName(primary.getType().getLegacyId()) + ".");
     }
 }

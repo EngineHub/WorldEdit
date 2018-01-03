@@ -63,7 +63,7 @@ public class BlockTransformExtentTest {
             BaseBlock orig = new BaseBlock(type.getID());
             for (int i = 1; i < 4; i++) {
                 BaseBlock rotated = BlockTransformExtent.transform(new BaseBlock(orig), ROTATE_90, blockRegistry);
-                BaseBlock reference = new BaseBlock(orig.getType(), BlockData.rotate90(orig.getType(), orig.getData()));
+                BaseBlock reference = new BaseBlock(orig.getType(), BlockData.rotate90(orig.getType().getLegacyId(), orig.getData()));
                 assertThat(type + "#" + type.getID() + " rotated " + (90 * i) + " degrees did not match BlockData.rotate90()'s expected result", rotated, equalTo(reference));
                 orig = rotated;
             }
@@ -71,7 +71,7 @@ public class BlockTransformExtentTest {
             orig = new BaseBlock(type.getID());
             for (int i = 0; i < 4; i++) {
                 BaseBlock rotated = BlockTransformExtent.transform(new BaseBlock(orig), ROTATE_NEG_90, blockRegistry);
-                BaseBlock reference = new BaseBlock(orig.getType(), BlockData.rotate90Reverse(orig.getType(), orig.getData()));
+                BaseBlock reference = new BaseBlock(orig.getType(), BlockData.rotate90Reverse(orig.getType().getLegacyId(), orig.getData()));
                 assertThat(type + "#" + type.getID() + " rotated " + (-90 * i) + " degrees did not match BlockData.rotate90Reverse()'s expected result", rotated, equalTo(reference));
                 orig = rotated;
             }

@@ -88,7 +88,7 @@ public class RecursivePickaxe implements BlockTool {
 
         visited.add(pos);
 
-        if (editSession.getBlock(pos).getType() != initialType) {
+        if (editSession.getBlock(pos).getType().getLegacyId() != initialType) {
             return;
         }
 

@@ -53,7 +53,7 @@ public class BlockQuirkExtent extends AbstractDelegateExtent {
     @Override
     public boolean setBlock(Vector position, BaseBlock block) throws WorldEditException {
         BaseBlock lazyBlock = getExtent().getLazyBlock(position);
-        int existing = lazyBlock.getType();
+        int existing = lazyBlock.getType().getLegacyId();
 
         if (BlockType.isContainerBlock(existing)) {
             world.clearContainerBlockContents(position); // Clear the container block so that it doesn't drop items

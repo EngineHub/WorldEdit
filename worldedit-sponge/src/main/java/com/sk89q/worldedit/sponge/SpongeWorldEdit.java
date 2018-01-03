@@ -34,6 +34,7 @@ import com.sk89q.worldedit.sponge.adapter.SpongeImplAdapter;
 import com.sk89q.worldedit.sponge.adapter.SpongeImplLoader;
 import com.sk89q.worldedit.sponge.config.SpongeConfiguration;
 import org.slf4j.Logger;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockSnapshot;
 import org.spongepowered.api.block.BlockType;
 import org.spongepowered.api.block.BlockTypes;
@@ -126,6 +127,10 @@ public class SpongeWorldEdit {
 
         this.platform = new SpongePlatform(this);
         this.provider = new SpongePermissionsProvider();
+
+        for (BlockType blockType : Sponge.getRegistry().getAllOf(BlockType.class)) {
+            com.sk89q.worldedit.blocks.type.BlockTypes.registerBlock(new com.sk89q.worldedit.blocks.type.BlockType(blockType.getId()));
+        }
 
         WorldEdit.getInstance().getPlatformManager().register(platform);
     }

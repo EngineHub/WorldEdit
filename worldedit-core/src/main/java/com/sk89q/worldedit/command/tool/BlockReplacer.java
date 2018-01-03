@@ -69,7 +69,7 @@ public class BlockReplacer implements DoubleActionBlockTool {
         World world = (World) clicked.getExtent();
         EditSession editSession = session.createEditSession(player);
         targetBlock = (editSession).getBlock(clicked.toVector());
-        BlockType type = BlockType.fromID(targetBlock.getType());
+        BlockType type = BlockType.fromID(targetBlock.getType().getLegacyId());
 
         if (type != null) {
             player.print("Replacer tool switched to: " + type.getName());

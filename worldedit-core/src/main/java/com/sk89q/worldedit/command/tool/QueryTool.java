@@ -28,6 +28,7 @@ import com.sk89q.worldedit.blocks.BlockType;
 import com.sk89q.worldedit.blocks.ClothColor;
 import com.sk89q.worldedit.blocks.MobSpawnerBlock;
 import com.sk89q.worldedit.blocks.NoteBlock;
+import com.sk89q.worldedit.blocks.type.BlockTypes;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Platform;
@@ -56,7 +57,7 @@ public class QueryTool implements BlockTool {
         World world = (World) clicked.getExtent();
         EditSession editSession = session.createEditSession(player);
         BaseBlock block = (editSession).rawGetBlock(clicked.toVector());
-        BlockType type = BlockType.fromID(block.getType());
+        BlockType type = BlockType.fromID(block.getType().getLegacyId());
 
         player.print("\u00A79@" + clicked.toVector() + ": " + "\u00A7e"
                 + "#" + block.getType() + "\u00A77" + " ("
@@ -70,7 +71,7 @@ public class QueryTool implements BlockTool {
         } else if (block instanceof NoteBlock) {
             player.printRaw("\u00A7e" + "Note block: "
                     + ((NoteBlock) block).getNote());
-        } else if (block.getType() == BlockID.CLOTH) {
+        } else if (block.getType().getId().equals(BlockTypes.WOOL)) {
             // Should never be null
             player.printRaw("\u00A7e" + "Color: "
                     + ClothColor.fromID(block.getData()).getName());

@@ -46,6 +46,7 @@ public interface BlockRegistry {
      * @return the block, which may be null if no block exists
      */
     @Nullable
+    @Deprecated
     BaseBlock createFromId(int id);
 
     /**

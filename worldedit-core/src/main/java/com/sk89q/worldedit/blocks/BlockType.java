@@ -35,7 +35,10 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Block types.
+ *
+ * {@Deprecated Please use {@link com.sk89q.worldedit.blocks.type.BlockType}}
  */
+@Deprecated
 public enum BlockType {
 
     AIR(BlockID.AIR, "Air", "air"),
@@ -477,7 +480,6 @@ public enum BlockType {
         shouldPlaceLast.add(BlockID.DETECTOR_RAIL);
         shouldPlaceLast.add(BlockID.LONG_GRASS);
         shouldPlaceLast.add(BlockID.DEAD_BUSH);
-        shouldPlaceLast.add(BlockID.PISTON_EXTENSION);
         shouldPlaceLast.add(BlockID.YELLOW_FLOWER);
         shouldPlaceLast.add(BlockID.RED_FLOWER);
         shouldPlaceLast.add(BlockID.BROWN_MUSHROOM);

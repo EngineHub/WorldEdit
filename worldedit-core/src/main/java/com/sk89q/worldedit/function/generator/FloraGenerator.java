@@ -24,6 +24,7 @@ import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
+import com.sk89q.worldedit.blocks.type.BlockTypes;
 import com.sk89q.worldedit.function.RegionFunction;
 import com.sk89q.worldedit.function.pattern.BlockPattern;
 import com.sk89q.worldedit.function.pattern.Pattern;
@@ -106,10 +107,10 @@ public class FloraGenerator implements RegionFunction {
     public boolean apply(Vector position) throws WorldEditException {
         BaseBlock block = editSession.getBlock(position);
 
-        if (block.getType() == BlockID.GRASS) {
+        if (block.getType().getId().equals(BlockTypes.GRASS)) {
             editSession.setBlock(position.add(0, 1, 0), temperatePattern.apply(position));
             return true;
-        } else if (block.getType() == BlockID.SAND) {
+        } else if (block.getType().getLegacyId() == BlockID.SAND) {
             editSession.setBlock(position.add(0, 1, 0), desertPattern.apply(position));
             return true;
         }

@@ -25,6 +25,7 @@ import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
+import com.sk89q.worldedit.blocks.type.BlockTypes;
 import com.sk89q.worldedit.function.RegionFunction;
 import com.sk89q.worldedit.function.pattern.BlockPattern;
 import com.sk89q.worldedit.function.pattern.Pattern;
@@ -159,11 +160,11 @@ public class GardenPatchGenerator implements RegionFunction {
 
     @Override
     public boolean apply(Vector position) throws WorldEditException {
-        if (editSession.getBlock(position).getType() != BlockID.AIR) {
+        if (!editSession.getBlock(position).getType().getId().equals(BlockTypes.AIR)) {
             position = position.add(0, 1, 0);
         }
 
-        if (editSession.getBlock(position.add(0, -1, 0)).getType() != BlockID.GRASS) {
+        if (!editSession.getBlock(position.add(0, -1, 0)).getType().getId().equals(BlockTypes.GRASS)) {
             return false;
         }
 

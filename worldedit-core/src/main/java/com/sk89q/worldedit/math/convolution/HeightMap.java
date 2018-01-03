@@ -24,6 +24,7 @@ import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
+import com.sk89q.worldedit.blocks.type.BlockTypes;
 import com.sk89q.worldedit.regions.Region;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -148,8 +149,8 @@ public class HeightMap {
                     BaseBlock existing = session.getBlock(new Vector(xr, curHeight, zr));
 
                     // Skip water/lava
-                    if (existing.getType() != BlockID.WATER && existing.getType() != BlockID.STATIONARY_WATER
-                            && existing.getType() != BlockID.LAVA && existing.getType() != BlockID.STATIONARY_LAVA) {
+                    if (!existing.getType().getId().equals(BlockTypes.WATER) && !existing.getType().getId().equals(BlockTypes.STATIONARY_WATER)
+                            && !existing.getType().getId().equals(BlockTypes.LAVA) && !existing.getType().getId().equals(BlockTypes.STATIONARY_LAVA)) {
                         session.setBlock(new Vector(xr, newHeight, zr), existing);
                         ++blocksChanged;
 

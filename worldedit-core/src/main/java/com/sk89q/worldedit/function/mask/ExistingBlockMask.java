@@ -42,7 +42,7 @@ public class ExistingBlockMask extends AbstractExtentMask {
 
     @Override
     public boolean test(Vector vector) {
-        return getExtent().getLazyBlock(vector).getType() != BlockID.AIR;
+        return getExtent().getLazyBlock(vector).getType().getLegacyId() != BlockID.AIR;
     }
 
     @Nullable

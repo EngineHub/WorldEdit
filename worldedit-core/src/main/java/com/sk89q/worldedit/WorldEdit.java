@@ -308,7 +308,7 @@ public class WorldEdit {
         String[] items = list.split(",");
         Set<Integer> blocks = new HashSet<Integer>();
         for (String s : items) {
-            blocks.add(getBlock(player, s, allBlocksAllowed).getType());
+            blocks.add(getBlock(player, s, allBlocksAllowed).getType().getLegacyId());
         }
         return blocks;
     }

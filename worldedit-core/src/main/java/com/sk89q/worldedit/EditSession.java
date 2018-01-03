@@ -1811,7 +1811,7 @@ public class EditSession implements Extent {
 
                 for (int y = basePosition.getBlockY(); y >= basePosition.getBlockY() - 10; --y) {
                     // Check if we hit the ground
-                    int t = getBlock(new Vector(x, y, z)).getType();
+                    int t = getBlock(new Vector(x, y, z)).getType().getLegacyId();
                     if (t == BlockID.GRASS || t == BlockID.DIRT) {
                         treeGenerator.generate(this, new Vector(x, y + 1, z));
                         ++affected;
@@ -1963,7 +1963,7 @@ public class EditSession implements Extent {
                 final Vector scaled = current.subtract(zero).divide(unit);
 
                 try {
-                    if (expression.evaluate(scaled.getX(), scaled.getY(), scaled.getZ(), defaultMaterial.getType(), defaultMaterial.getData()) <= 0) {
+                    if (expression.evaluate(scaled.getX(), scaled.getY(), scaled.getZ(), defaultMaterial.getType().getLegacyId(), defaultMaterial.getData()) <= 0) {
                         return null;
                     }
 

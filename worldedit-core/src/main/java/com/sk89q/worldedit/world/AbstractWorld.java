@@ -110,7 +110,7 @@ public abstract class AbstractWorld implements World {
 
     @Override
     public int getBlockType(Vector pt) {
-        return getLazyBlock(pt).getType();
+        return getLazyBlock(pt).getType().getLegacyId();
     }
 
     @Override

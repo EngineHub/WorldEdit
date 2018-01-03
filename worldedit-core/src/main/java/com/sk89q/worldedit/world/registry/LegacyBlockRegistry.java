@@ -21,6 +21,7 @@ package com.sk89q.worldedit.world.registry;
 
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockMaterial;
+import com.sk89q.worldedit.blocks.type.BlockTypes;
 
 import javax.annotation.Nullable;
 import java.util.Map;
@@ -34,9 +35,15 @@ public class LegacyBlockRegistry implements BlockRegistry {
     @Nullable
     @Override
     public BaseBlock createFromId(String id) {
-        Integer legacyId = BundledBlockData.getInstance().toLegacyId(id);
-        if (legacyId != null) {
-            return createFromId(legacyId);
+        return new BaseBlock(BlockTypes.getBlockType(id));
+    }
+
+    @Nullable
+    @Override
+    public BaseBlock createFromId(int legacyId) {
+        String id = BundledBlockData.getInstance().fromLegacyId(legacyId);
+        if (id != null) {
+            return createFromId(id);
         } else {
             return null;
         }
@@ -44,20 +51,14 @@ public class LegacyBlockRegistry implements BlockRegistry {
 
     @Nullable
     @Override
-    public BaseBlock createFromId(int id) {
-        return new BaseBlock(id);
-    }
-
-    @Nullable
-    @Override
     public BlockMaterial getMaterial(BaseBlock block) {
-        return BundledBlockData.getInstance().getMaterialById(block.getId());
+        return BundledBlockData.getInstance().getMaterialById(block.getType().getId());
     }
 
     @Nullable
     @Override
     public Map<String, ? extends State> getStates(BaseBlock block) {
-        return BundledBlockData.getInstance().getStatesById(block.getId());
+        return BundledBlockData.getInstance().getStatesById(block.getType().getId());
     }
 
 }

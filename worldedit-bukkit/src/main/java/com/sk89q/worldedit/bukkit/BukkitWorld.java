@@ -416,7 +416,7 @@ public class BukkitWorld extends LocalWorld {
             return adapter.setBlock(BukkitAdapter.adapt(getWorld(), position), block, notifyAndLight);
         } else {
             Block bukkitBlock = getWorld().getBlockAt(position.getBlockX(), position.getBlockY(), position.getBlockZ());
-            return bukkitBlock.setTypeIdAndData(block.getType(), (byte) block.getData(), notifyAndLight);
+            return bukkitBlock.setTypeIdAndData(block.getType().getLegacyId(), (byte) block.getData(), notifyAndLight);
         }
     }
 
