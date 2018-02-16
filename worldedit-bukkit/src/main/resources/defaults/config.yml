@@ -1,18 +1,20 @@
 #
-# WorldEdit's configuration file
+# WorldEdit's Configuration File
 #
 # About editing this file:
-# - DO NOT USE TABS. You MUST use spaces or Bukkit will complain. If
-#   you use an editor like Notepad++ (recommended for Windows users), you
-#   must configure it to "replace tabs with spaces." In Notepad++, this can
-#   be changed in Settings > Preferences > Language Menu.
-# - Don't get rid of the indents. They are indented so some entries are
-#   in categories (like "max-blocks-changed" is in the "limits"
+# - DO NOT USE TABS. You MUST use spaces or Bukkit will complain and post
+#   errors. If you use an editor, like Notepad++ (recommended for Windows 
+#   users), you must configure it to "replace tabs with spaces."
+#   This can be changed in Settings > Preferences > Language Menu.
+# - Don't get rid of indentions. They are indented so some entries that are
+#   in categories, like "max-blocks-changed", is placed in the "limits"
 #   category.
 # - If you want to check the format of this file before putting it
 #   into WorldEdit, paste it into http://yaml-online-parser.appspot.com/
-#   and see if it gives "ERROR:".
-# - Lines starting with # are commentsand so they are ignored.
+#   and see if it gives you "ERROR:".
+# - Lines starting with # are comments, so they are ignored.
+# - If you dont want to disallow blocks, make sure to change it to []
+#   so WorldEdit doesn't act up when checking for disallowed blocks
 #
 
 limits:
