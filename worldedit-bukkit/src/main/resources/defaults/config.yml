@@ -6,15 +6,14 @@
 #   errors. If you use an editor, like Notepad++ (recommended for Windows 
 #   users), you must configure it to "replace tabs with spaces."
 #   This can be changed in Settings > Preferences > Language Menu.
-# - Don't get rid of indentions. They are indented so some entries that are
-#   in categories, like "max-blocks-changed", is placed in the "limits"
+# - Don't get rid of indentations. They are indented so some entries that are
+#   in categories, like "max-blocks-changed", are placed in the "limits"
 #   category.
 # - If you want to check the format of this file before putting it
 #   into WorldEdit, paste it into http://yaml-online-parser.appspot.com/
 #   and see if it gives you "ERROR:".
 # - Lines starting with # are comments, so they are ignored.
-# - If you dont want to disallow blocks, make sure to change it to []
-#   so WorldEdit doesn't act up when checking for disallowed blocks
+# - If you want to allow blocks, make sure to change "disallowed-blocks" to []
 #
 
 limits:
