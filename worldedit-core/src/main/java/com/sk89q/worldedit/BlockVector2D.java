@@ -70,6 +70,11 @@ public class BlockVector2D extends Vector2D {
     }
 
     @Override
+    public int hashCode() {
+        return ((int) x << 16) ^ (int) z;
+    }
+
+    @Override
     public boolean equals(Object obj) {
         if (!(obj instanceof Vector2D)) {
             return false;
@@ -78,12 +83,6 @@ public class BlockVector2D extends Vector2D {
         Vector2D other = (Vector2D) obj;
         return (int) other.x == (int) this.x && (int) other.z == (int) this.z;
 
-    }
-
-    @Override
-    public int hashCode() {
-        return (Integer.valueOf((int) x).hashCode() >> 13) ^
-                Integer.valueOf((int) z).hashCode();
     }
 
     @Override

@@ -789,12 +789,7 @@ public class Vector implements Comparable<Vector> {
 
     @Override
     public int hashCode() {
-        int hash = 7;
-
-        hash = 79 * hash + (int) (Double.doubleToLongBits(this.x) ^ (Double.doubleToLongBits(this.x) >>> 32));
-        hash = 79 * hash + (int) (Double.doubleToLongBits(this.y) ^ (Double.doubleToLongBits(this.y) >>> 32));
-        hash = 79 * hash + (int) (Double.doubleToLongBits(this.z) ^ (Double.doubleToLongBits(this.z) >>> 32));
-        return hash;
+        return ((int) x ^ ((int) z << 12)) ^ ((int) y << 24);
     }
 
     @Override

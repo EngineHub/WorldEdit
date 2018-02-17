@@ -74,6 +74,11 @@ public class BlockVector extends Vector {
     }
 
     @Override
+    public int hashCode() {
+        return ((int) x ^ ((int) z << 12)) ^ ((int) y << 24);
+    }
+
+    @Override
     public boolean equals(Object obj) {
         if (!(obj instanceof Vector)) {
             return false;
@@ -82,13 +87,6 @@ public class BlockVector extends Vector {
         return (int) other.getX() == (int) this.x && (int) other.getY() == (int) this.y
                 && (int) other.getZ() == (int) this.z;
 
-    }
-
-    @Override
-    public int hashCode() {
-        return ((int) x << 19) ^
-                ((int) y << 12) ^
-                (int) z;
     }
 
     @Override

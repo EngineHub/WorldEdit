@@ -627,8 +627,7 @@ public class Vector2D {
 
     @Override
     public int hashCode() {
-        return ((new Double(x)).hashCode() >> 13) ^
-                (new Double(z)).hashCode();
+        return ((int) x << 16) ^ (int) z;
     }
 
     @Override
