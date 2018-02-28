@@ -65,6 +65,7 @@ public class LocalSession {
     // Non-session related fields
     private transient LocalConfiguration config;
     private transient final AtomicBoolean dirty = new AtomicBoolean();
+    private transient int failedCuiAttempts = 0;
 
     // Session related
     private transient RegionSelector selector = new CuboidRegionSelector();
@@ -772,14 +773,22 @@ public class LocalSession {
      */
     public void handleCUIInitializationMessage(String text) {
         checkNotNull(text);
+        if (this.failedCuiAttempts > 3) {
+            return;
+        }
 
-        String[] split = text.split("\\|");
+        String[] split = text.split("\\|", 2);
         if (split.length > 1 && split[0].equalsIgnoreCase("v")) { // enough fields and right message
+            if (split[1].length() > 4) {
+                this.failedCuiAttempts ++;
+                return;
+            }
             setCUISupport(true);
             try {
                 setCUIVersion(Integer.parseInt(split[1]));
             } catch (NumberFormatException e) {
                 WorldEdit.logger.warning("Error while reading CUI init message: " + e.getMessage());
+                this.failedCuiAttempts ++;
             }
         }
     }
