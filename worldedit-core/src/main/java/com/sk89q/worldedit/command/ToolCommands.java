@@ -197,7 +197,7 @@ public class ToolCommands {
             usage = "<script> <args>",
             desc = "Command tool",
             min = 1,
-            max = 10
+            max = -1
     )
     @CommandPermissions("worldedit.tool.command")
     public void command(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
