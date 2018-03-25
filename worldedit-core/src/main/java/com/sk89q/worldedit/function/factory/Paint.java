@@ -35,7 +35,7 @@ import com.sk89q.worldedit.regions.Region;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.sk89q.worldedit.regions.Regions.*;
-import static com.sk89q.worldedit.util.GuavaUtil.firstNonNull;
+import static com.google.common.base.MoreObjects.firstNonNull;
 
 public class Paint implements Contextual<Operation> {
 
