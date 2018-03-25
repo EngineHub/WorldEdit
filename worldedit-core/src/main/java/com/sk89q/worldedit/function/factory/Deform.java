@@ -35,7 +35,7 @@ import com.sk89q.worldedit.regions.Region;
 import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static com.sk89q.worldedit.util.GuavaUtil.firstNonNull;
+import static com.google.common.base.MoreObjects.firstNonNull;
 
 public class Deform implements Contextual<Operation> {
 
