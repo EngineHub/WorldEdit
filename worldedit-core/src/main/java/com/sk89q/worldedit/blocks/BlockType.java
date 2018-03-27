@@ -1273,6 +1273,7 @@ public enum BlockType {
         isTranslucent.add(BlockID.RED_FLOWER);
         isTranslucent.add(BlockID.BROWN_MUSHROOM);
         isTranslucent.add(BlockID.RED_MUSHROOM);
+        isTranslucent.add(BlockID.STEP);
         isTranslucent.add(BlockID.TORCH);
         isTranslucent.add(BlockID.FIRE);
         isTranslucent.add(BlockID.MOB_SPAWNER);
@@ -1343,6 +1344,8 @@ public enum BlockType {
         isTranslucent.add(BlockID.HOPPER);
         isTranslucent.add(BlockID.QUARTZ_STAIRS);
         isTranslucent.add(BlockID.ACTIVATOR_RAIL);
+        isTranslucent.add(BlockID.ACACIA_STAIRS);
+        isTranslucent.add(BlockID.DARK_OAK_STAIRS);
         isTranslucent.add(BlockID.BARRIER);
         isTranslucent.add(BlockID.IRON_TRAP_DOOR);
         isTranslucent.add(BlockID.CARPET);
@@ -1369,6 +1372,12 @@ public enum BlockType {
         isTranslucent.add(BlockID.JUNGLE_DOOR);
         isTranslucent.add(BlockID.ACACIA_DOOR);
         isTranslucent.add(BlockID.DARK_OAK_DOOR);
+        isTranslucent.add(BlockID.END_ROD);
+        isTranslucent.add(BlockID.CHORUS_PLANT);
+        isTranslucent.add(BlockID.CHORUS_FLOWER);
+        isTranslucent.add(BlockID.PURPUR_STAIRS);
+        isTranslucent.add(BlockID.PURPUR_SLAB);
+        isTranslucent.add(BlockID.BEETROOTS);
     }
 
     /**
