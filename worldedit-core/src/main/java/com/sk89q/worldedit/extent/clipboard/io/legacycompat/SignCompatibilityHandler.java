@@ -23,6 +23,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSyntaxException;
 import com.sk89q.jnbt.StringTag;
 import com.sk89q.jnbt.Tag;
 import com.sk89q.worldedit.blocks.BaseBlock;
@@ -43,7 +44,17 @@ public class SignCompatibilityHandler implements NBTCompatibilityHandler {
             Tag value = values.get(key);
             if (value instanceof StringTag) {
                 String storedString = ((StringTag) value).getValue();
-                JsonElement jsonElement = new JsonParser().parse(storedString);
+                JsonElement jsonElement = null;
+                if (storedString != null && storedString.startsWith("{")) {
+                    try {
+                        jsonElement = new JsonParser().parse(storedString);
+                    } catch (JsonSyntaxException ex) {
+                        // ignore: jsonElement will be null in the next check
+                    }
+                }
+                if (jsonElement == null) {
+                    jsonElement = new JsonPrimitive(storedString == null ? "" : storedString);
+                }
                 if (jsonElement.isJsonObject()) {
                     continue;
                 }
