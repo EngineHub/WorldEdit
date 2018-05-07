@@ -20,10 +20,13 @@
 package com.sk89q.worldedit.util.logging;
 
 import java.util.logging.Formatter;
+
 import java.util.logging.LogRecord;
 import java.util.logging.Level;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+
+import java.util.Date;
 
 /**
  * A standard logging format for WorldEdit.
@@ -33,6 +36,9 @@ public class LogFormat extends Formatter {
     public String format(LogRecord record) {
         StringBuilder text = new StringBuilder();
         Level level = record.getLevel();
+        
+        Date today = new Date();
+        text.append("[" + today + "] ");
 
         if (level == Level.FINEST) {
             text.append("[FINEST] ");
