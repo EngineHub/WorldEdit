@@ -95,6 +95,7 @@ public class PropertiesConfiguration extends LocalConfiguration {
         maxBrushRadius = getInt("max-brush-radius", maxBrushRadius);
         logCommands = getBool("log-commands", logCommands);
         logFile = getString("log-file", logFile);
+        logFormat = getString("log-format", logFormat);
         registerHelp = getBool("register-help", registerHelp);
         wandItem = getInt("wand-item", wandItem);
         superPickaxeDrop = getBool("super-pickaxe-drop-items", superPickaxeDrop);

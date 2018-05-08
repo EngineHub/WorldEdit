@@ -96,7 +96,6 @@ public final class CommandManager {
 
         // Setup the logger
         commandLog.addHandler(dynamicHandler);
-        dynamicHandler.setFormatter(new LogFormat());
 
         // Set up the commands manager
         ParametricBuilder builder = new ParametricBuilder();
@@ -185,6 +184,8 @@ public final class CommandManager {
             } catch (IOException e) {
                 log.log(Level.WARNING, "Could not use command log file " + path + ": " + e.getMessage());
             }
+
+            dynamicHandler.setFormatter(new LogFormat(platformManager.getConfiguration().logFormat));
         }
 
         platform.registerCommands(dispatcher);
