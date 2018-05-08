@@ -21,6 +21,7 @@ package com.sk89q.worldedit;
 
 import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.blocks.ItemID;
+import com.sk89q.worldedit.util.logging.LogFormat;
 import com.sk89q.worldedit.world.snapshot.SnapshotRepository;
 
 import java.io.File;
@@ -92,6 +93,7 @@ public abstract class LocalConfiguration {
     public int maxBrushRadius = 6;
     public boolean logCommands = false;
     public String logFile = "";
+    public String logFormat = LogFormat.DEFAULT_FORMAT;
     public boolean registerHelp = true; // what is the point of this, it's not even used
     public int wandItem = ItemID.WOOD_AXE;
     public boolean superPickaxeDrop = true;
