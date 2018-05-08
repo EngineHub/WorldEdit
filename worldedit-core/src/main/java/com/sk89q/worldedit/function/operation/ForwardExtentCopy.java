@@ -250,9 +250,7 @@ public class ForwardExtentCopy implements Operation {
             RegionFunction function = sourceFunction != null ? new CombinedRegionFunction(filter, sourceFunction) : filter;
             RegionVisitor blockVisitor = new RegionVisitor(region, function);
 
-            lastVisitor = blockVisitor;
-            currentTransform = currentTransform.combine(transform);
-
+            Operation operation = blockVisitor;
             if (copyingEntities) {
                 ExtentEntityCopy entityCopy = new ExtentEntityCopy(from, destination, to, currentTransform);
                 entityCopy.setRemoving(removingEntities);
@@ -267,10 +265,13 @@ public class ForwardExtentCopy implements Operation {
                     }
                 }
                 EntityVisitor entityVisitor = new EntityVisitor(entities.iterator(), entityCopy);
-                return new DelegateOperation(this, new OperationQueue(blockVisitor, entityVisitor));
-            } else {
-                return new DelegateOperation(this, blockVisitor);
+                operation = new DelegateOperation(this, new OperationQueue(blockVisitor, entityVisitor));
             }
+
+            lastVisitor = blockVisitor;
+            currentTransform = currentTransform.combine(transform);
+
+            return new DelegateOperation(this, operation);
         } else {
             return null;
         }
