@@ -82,6 +82,7 @@ public class YAMLConfiguration extends LocalConfiguration {
         registerHelp = config.getBoolean("register-help", true);
         logCommands = config.getBoolean("logging.log-commands", logCommands);
         logFile = config.getString("logging.file", logFile);
+        logFormat = config.getString("logging.format", logFormat);
 
         superPickaxeDrop = config.getBoolean("super-pickaxe.drop-items",
                 superPickaxeDrop);
