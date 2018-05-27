@@ -39,7 +39,6 @@ public class LogFormat extends Formatter {
     }
 
     public LogFormat(String format) {
-        System.out.println(format);
         if (format == null || format.isEmpty()) {
             format = DEFAULT_FORMAT;
         }
