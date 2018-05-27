@@ -86,6 +86,7 @@ public class ConfigurateConfiguration extends LocalConfiguration {
         registerHelp = node.getNode("register-help").getBoolean(true);
         logCommands = node.getNode("logging", "log-commands").getBoolean(logCommands);
         logFile = node.getNode("logging", "file").getString(logFile);
+        logFormat = node.getNode("logging", "format").getString(logFormat);
 
         superPickaxeDrop = node.getNode("super-pickaxe", "drop-items").getBoolean(superPickaxeDrop);
         superPickaxeManyDrop = node.getNode("super-pickaxe", "many-drop-items").getBoolean(superPickaxeManyDrop);
