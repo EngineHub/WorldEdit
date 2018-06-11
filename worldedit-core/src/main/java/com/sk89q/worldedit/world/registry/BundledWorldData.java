@@ -21,13 +21,13 @@ package com.sk89q.worldedit.world.registry;
 
 /**
  * An implementation of {@link WorldData} that converts legacy numeric IDs and
- * a contains a built-in block database.
+ * a contains a built-in block and item database.
  */
 public class BundledWorldData implements WorldData {
 
     private static final BundledWorldData INSTANCE = new BundledWorldData();
     private final BundledBlockRegistry blockRegistry = new BundledBlockRegistry();
-    private final NullItemRegistry itemRegistry = new NullItemRegistry();
+    private final BundledItemRegistry itemRegistry = new BundledItemRegistry();
     private final NullEntityRegistry entityRegistry = new NullEntityRegistry();
     private final NullBiomeRegistry biomeRegistry = new NullBiomeRegistry();
 

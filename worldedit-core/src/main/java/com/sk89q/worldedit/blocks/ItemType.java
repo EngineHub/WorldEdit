@@ -31,7 +31,10 @@ import java.util.Set;
 
 /**
  * An enum of types of items.
+ *
+ * {@Deprecated Please use {@link com.sk89q.worldedit.blocks.type.ItemType}}
  */
+@Deprecated
 public enum ItemType {
 
     // Blocks
