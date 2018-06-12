@@ -21,7 +21,10 @@ package com.sk89q.worldedit.blocks;
 
 /**
  * List of item IDs.
+ *
+ * {@Deprecated Please use {@link com.sk89q.worldedit.blocks.type.ItemTypes}}
  */
+@Deprecated
 public final class ItemID {
 
     public static final int IRON_SHOVEL = 256;

@@ -19,6 +19,8 @@
 
 package com.sk89q.worldedit.blocks;
 
+import com.sk89q.worldedit.blocks.type.ItemType;
+
 /**
  * Represents a stack of BaseItems.
  *
@@ -33,8 +35,18 @@ public class BaseItemStack extends BaseItem {
      *
      * @param id with data value of 0.
      */
+    @Deprecated
     public BaseItemStack(int id) {
         super(id);
+    }
+
+    /**
+     * Construct the object with default stack size of one, with damage value of 0.
+     *
+     * @param itemType The item type
+     */
+    public BaseItemStack(ItemType itemType) {
+        super(itemType);
     }
 
     /**
@@ -43,8 +55,20 @@ public class BaseItemStack extends BaseItem {
      * @param id type ID
      * @param amount amount in the stack
      */
+    @Deprecated
     public BaseItemStack(int id, int amount) {
         super(id);
+        this.amount = amount;
+    }
+
+    /**
+     * Construct the object.
+     *
+     * @param itemType The item type
+     * @param amount amount in the stack
+     */
+    public BaseItemStack(ItemType itemType, int amount) {
+        super(itemType);
         this.amount = amount;
     }
 
@@ -55,8 +79,21 @@ public class BaseItemStack extends BaseItem {
      * @param amount amount in the stack
      * @param data data value
      */
+    @Deprecated
     public BaseItemStack(int id, int amount, short data) {
         super(id, data);
+        this.amount = amount;
+    }
+
+    /**
+     * Construct the object.
+     *
+     * @param id The item type
+     * @param amount amount in the stack
+     * @param damage Damage value
+     */
+    public BaseItemStack(ItemType id, int amount, short damage) {
+        super(id, damage);
         this.amount = amount;
     }
 

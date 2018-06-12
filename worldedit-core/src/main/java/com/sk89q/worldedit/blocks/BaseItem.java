@@ -19,6 +19,10 @@
 
 package com.sk89q.worldedit.blocks;
 
+import com.sk89q.worldedit.blocks.type.ItemType;
+import com.sk89q.worldedit.blocks.type.ItemTypes;
+import com.sk89q.worldedit.world.registry.BundledItemData;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -30,18 +34,27 @@ import java.util.Map;
  */
 public class BaseItem {
     
-    private int id;
-    private short data;
-    private final Map<Integer, Integer> enchantments = new HashMap<Integer, Integer>();
+    private ItemType itemType;
+    private short damage;
+    private final Map<Integer, Integer> enchantments = new HashMap<>();
 
     /**
      * Construct the object.
      *
      * @param id ID of the item
      */
+    @Deprecated
     public BaseItem(int id) {
-        this.id = id;
-        this.data = 0;
+        this(id, (short) 0);
+    }
+
+    /**
+     * Construct the object.
+     *
+     * @param itemType Type of the item
+     */
+    public BaseItem(ItemType itemType) {
+        this.itemType = itemType;
     }
 
     /**
@@ -50,9 +63,21 @@ public class BaseItem {
      * @param id ID of the item
      * @param data data value of the item
      */
+    @Deprecated
     public BaseItem(int id, short data) {
-        this.id = id;
-        this.data = data;
+        setType(id);
+        this.damage = data;
+    }
+
+    /**
+     * Construct the object.
+     *
+     * @param itemType Type of the item
+     * @param damage Damage value of the item
+     */
+    public BaseItem(ItemType itemType, short damage) {
+        this.itemType = itemType;
+        this.damage = damage;
     }
 
     /**
@@ -60,17 +85,29 @@ public class BaseItem {
      * 
      * @return the id
      */
+    @Deprecated
     public int getType() {
-        return id;
+        return this.itemType.getLegacyId();
     }
 
     /**
-     * Get the type of item.
+     * Set the type of item.
      * 
      * @param id the id to set
      */
+    @Deprecated
     public void setType(int id) {
-        this.id = id;
+        ItemType type = ItemTypes.getItemType(BundledItemData.getInstance().fromLegacyId(id));
+        setItemType(type);
+    }
+
+    /**
+     * Set the type of the item.
+     *
+     * @param itemType The type to set
+     */
+    public void setItemType(ItemType itemType) {
+        this.itemType = itemType;
     }
 
     /**
@@ -78,9 +115,8 @@ public class BaseItem {
      * 
      * @return the damage
      */
-    @Deprecated
     public short getDamage() {
-        return data;
+        return this.damage;
     }
 
     /**
@@ -88,8 +124,18 @@ public class BaseItem {
      * 
      * @return the data
      */
+    @Deprecated
     public short getData() {
-        return data;
+        return this.damage;
+    }
+
+    /**
+     * Set the data value.
+     * 
+     * @param damage the damage to set
+     */
+    public void setDamage(short damage) {
+        this.damage = damage;
     }
 
     /**
@@ -98,17 +144,8 @@ public class BaseItem {
      * @param data the damage to set
      */
     @Deprecated
-    public void setDamage(short data) {
-        this.data = data;
-    }
-
-    /**
-     * Set the data value.
-     * 
-     * @param data the damage to set
-     */
     public void setData(short data) {
-        this.data = data;
+        this.damage = data;
     }
 
     /**
