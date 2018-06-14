@@ -31,9 +31,11 @@ import com.sk89q.worldedit.world.registry.BundledBlockData;
 import com.sk89q.worldedit.world.registry.state.State;
 import com.sk89q.worldedit.world.registry.state.value.StateValue;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Nullable;
@@ -288,15 +290,17 @@ public class BaseBlock extends Block implements TileEntityBlock {
     }
 
     /**
-     * Returns whether the data value is -1, indicating that this block is to be
-     * used as a wildcard matching block.
+     * Returns whether there are no matched states.
      *
-     * @return true if the data value is -1
+     * @return true if there are no matched states
      */
     @Override
-    @Deprecated
     public boolean hasWildcardData() {
-        return getData() == -1;
+        return getStates().isEmpty();
+    }
+
+    public boolean hasWildcardDataFor(State state) {
+        return getState(state) == null;
     }
 
     @Override
@@ -428,13 +432,35 @@ public class BaseBlock extends Block implements TileEntityBlock {
     }
 
     /**
-     * Checks if the type is the same, and if data is the same if only data != -1.
+     * Checks if the type is the same, and if the matched states are the same.
      * 
      * @param o other block
      * @return true if equal
      */
     public boolean equalsFuzzy(BaseBlock o) {
-        return (getType().equals(o.getType())) && (getData() == o.getData() || getData() == -1 || o.getData() == -1);
+        if (!getType().equals(o.getType())) {
+            return false;
+        }
+
+        List<State> differingStates = new ArrayList<>();
+        for (State state : o.getStates().keySet()) {
+            if (getState(state) == null) {
+                differingStates.add(state);
+            }
+        }
+        for (State state : getStates().keySet()) {
+            if (o.getState(state) == null) {
+                differingStates.add(state);
+            }
+        }
+
+        for (State state : differingStates) {
+            if (!getState(state).equals(o.getState(state))) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**
@@ -461,7 +487,7 @@ public class BaseBlock extends Block implements TileEntityBlock {
     @Override
     public int hashCode() {
         int ret = getType().hashCode() << 3;
-        if (getData() != (byte) -1) ret |= getData();
+        ret += getStates().hashCode();
         return ret;
     }
 

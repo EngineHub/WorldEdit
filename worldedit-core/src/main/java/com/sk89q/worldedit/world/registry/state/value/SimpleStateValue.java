@@ -19,6 +19,8 @@
 
 package com.sk89q.worldedit.world.registry.state.value;
 
+import java.util.Objects;
+
 public class SimpleStateValue implements StateValue {
 
     private String data;
@@ -38,4 +40,13 @@ public class SimpleStateValue implements StateValue {
         return this.data;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof StateValue && Objects.equals(((StateValue) obj).getData(), getData());
+    }
+
+    @Override
+    public int hashCode() {
+        return this.data.hashCode();
+    }
 }
