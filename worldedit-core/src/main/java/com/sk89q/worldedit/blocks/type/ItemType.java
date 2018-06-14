@@ -26,6 +26,10 @@ public class ItemType {
     private String id;
 
     public ItemType(String id) {
+        // If it has no namespace, assume minecraft.
+        if (!id.contains(":")) {
+            id = "minecraft:" + id;
+        }
         this.id = id;
     }
 

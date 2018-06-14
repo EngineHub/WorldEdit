@@ -35,7 +35,7 @@ public class DefaultItemParser extends InputParser<BaseItem> {
     public BaseItem parseFromInput(String input, ParserContext context) throws InputParseException {
         String[] tokens = input.split(":", 3);
         BaseItem item;
-        short meta = 0;
+        short damage = 0;
 
         try {
             int id = Integer.parseInt(tokens[0]);
@@ -43,24 +43,23 @@ public class DefaultItemParser extends InputParser<BaseItem> {
             // Parse metadata
             if (tokens.length == 2) {
                 try {
-                    meta = Short.parseShort(tokens[1]);
+                    damage = Short.parseShort(tokens[1]);
                 } catch (NumberFormatException ignored) {
-                    throw new InputParseException("Expected '" + tokens[1] + "' to be a metadata value but it's not a number");
+                    throw new InputParseException("Expected '" + tokens[1] + "' to be a damage value but it's not a number");
                 }
             }
 
             item = context.requireWorld().getWorldData().getItemRegistry().createFromId(id);
         } catch (NumberFormatException e) {
-            if (input.length() < 2) {
-                throw new InputParseException("'" + input + "' isn't a known item name format");
+            String name = tokens[0];
+            if (input.length() >= 2) {
+                name += ":" + tokens[1];
             }
-
-            String name = tokens[0] + ":" + tokens[1];
 
             // Parse metadata
             if (tokens.length == 3) {
                 try {
-                    meta = Short.parseShort(tokens[2]);
+                    damage = Short.parseShort(tokens[2]);
                 } catch (NumberFormatException ignored) {
                     throw new InputParseException("Expected '" + tokens[2] + "' to be a metadata value but it's not a number");
                 }
@@ -72,7 +71,7 @@ public class DefaultItemParser extends InputParser<BaseItem> {
         if (item == null) {
             throw new InputParseException("'" + input + "' did not match any item");
         } else {
-            item.setData(meta);
+            item.setDamage(damage);
             return item;
         }
     }

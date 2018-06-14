@@ -587,6 +587,10 @@ public class BlockTypes {
 
     @Nullable
     public static BlockType getBlockType(String id) {
+        // If it has no namespace, assume minecraft.
+        if (id != null && !id.contains(":")) {
+            id = "minecraft:" + id;
+        }
         return blockMapping.get(id);
     }
 }

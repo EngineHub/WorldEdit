@@ -27,7 +27,6 @@ import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.util.command.composition.SimpleCommand;
 import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.extension.input.InputParseException;
-import com.sk89q.worldedit.extension.input.NoMatchException;
 import com.sk89q.worldedit.extension.input.ParserContext;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extent.Extent;
@@ -65,8 +64,6 @@ public class ItemParser extends SimpleCommand<BaseItem> {
 
         try {
             return WorldEdit.getInstance().getItemFactory().parseFromInput(itemString, parserContext);
-        } catch (NoMatchException e) {
-            throw new CommandException(e.getMessage(), e);
         } catch (InputParseException e) {
             throw new CommandException(e.getMessage(), e);
         }

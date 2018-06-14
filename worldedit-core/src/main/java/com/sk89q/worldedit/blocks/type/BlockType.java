@@ -26,6 +26,10 @@ public class BlockType {
     private String id;
 
     public BlockType(String id) {
+        // If it has no namespace, assume minecraft.
+        if (!id.contains(":")) {
+            id = "minecraft:" + id;
+        }
         this.id = id;
     }
 

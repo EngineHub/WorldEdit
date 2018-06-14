@@ -98,6 +98,10 @@ public class BundledBlockData {
      */
     @Nullable
     private BlockEntry findById(String id) {
+        // If it has no namespace, assume minecraft.
+        if (!id.contains(":")) {
+            id = "minecraft:" + id;
+        }
         return idMap.get(id);
     }
 
@@ -190,7 +194,7 @@ public class BundledBlockData {
         private String id;
         private String unlocalizedName;
         private List<String> aliases;
-        private Map<String, SimpleState> states = new HashMap<String, SimpleState>();
+        private Map<String, SimpleState> states = new HashMap<>();
         private SimpleBlockMaterial material = new SimpleBlockMaterial();
 
         void postDeserialization() {

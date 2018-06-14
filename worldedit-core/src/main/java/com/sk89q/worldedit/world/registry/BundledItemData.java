@@ -99,6 +99,10 @@ public class BundledItemData {
      */
     @Nullable
     private ItemEntry findById(String id) {
+        // If it has no namespace, assume minecraft.
+        if (!id.contains(":")) {
+            id = "minecraft:" + id;
+        }
         return idMap.get(id);
     }
 

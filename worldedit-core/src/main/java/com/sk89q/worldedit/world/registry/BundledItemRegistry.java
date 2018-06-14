@@ -33,8 +33,7 @@ public class BundledItemRegistry implements ItemRegistry {
     @Nullable
     @Override
     public BaseItem createFromId(String id) {
-        // TODO Fix legacy ID usage
-        return new BaseItem(ItemTypes.getItemType(id).getLegacyId());
+        return new BaseItem(ItemTypes.getItemType(id));
     }
 
     @Nullable

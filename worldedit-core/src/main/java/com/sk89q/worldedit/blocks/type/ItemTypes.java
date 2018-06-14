@@ -766,6 +766,10 @@ public class ItemTypes {
 
     @Nullable
     public static ItemType getItemType(String id) {
+        // If it has no namespace, assume minecraft.
+        if (id != null && !id.contains(":")) {
+            id = "minecraft:" + id;
+        }
         return itemMapping.get(id);
     }
 }

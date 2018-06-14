@@ -290,7 +290,7 @@ public class BaseBlock extends Block implements TileEntityBlock {
             return "";
         }
         Tag idTag = nbtData.getValue().get("id");
-        if (idTag != null && idTag instanceof StringTag) {
+        if (idTag instanceof StringTag) {
             return ((StringTag) idTag).getValue();
         } else {
             return "";
@@ -413,7 +413,7 @@ public class BaseBlock extends Block implements TileEntityBlock {
      * @return true if equal
      */
     public boolean equalsFuzzy(BaseBlock o) {
-        return (getType() == o.getType()) && (getData() == o.getData() || getData() == -1 || o.getData() == -1);
+        return (getType().equals(o.getType())) && (getData() == o.getData() || getData() == -1 || o.getData() == -1);
     }
 
     /**
