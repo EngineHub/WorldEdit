@@ -22,6 +22,7 @@ package com.sk89q.worldedit.world.registry;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockMaterial;
 import com.sk89q.worldedit.blocks.type.BlockTypes;
+import com.sk89q.worldedit.world.registry.state.State;
 
 import javax.annotation.Nullable;
 import java.util.Map;

@@ -17,31 +17,21 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.function.mask;
+package com.sk89q.worldedit.world.registry.state;
 
-import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.blocks.Blocks;
-import com.sk89q.worldedit.extent.Extent;
+import com.sk89q.worldedit.world.registry.state.value.SimpleStateValue;
 
-import java.util.Collection;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
-public class FuzzyBlockMask extends BlockMask {
+public class SimpleState<T extends SimpleStateValue> implements State<T> {
 
-    public FuzzyBlockMask(Extent extent, Collection<BaseBlock> blocks) {
-        super(extent, blocks);
-    }
-
-    public FuzzyBlockMask(Extent extent, BaseBlock... block) {
-        super(extent, block);
-    }
+    private List<T> values = new ArrayList<>();
 
     @Override
-    public boolean test(Vector vector) {
-        Extent extent = getExtent();
-        Collection<BaseBlock> blocks = getBlocks();
-        BaseBlock lazyBlock = extent.getLazyBlock(vector);
-        BaseBlock compare = new BaseBlock(lazyBlock.getType(), lazyBlock.getStates());
-        return Blocks.containsFuzzy(blocks, compare);
+    public List<T> getValues() {
+        return Collections.unmodifiableList(values);
     }
+
 }

@@ -26,6 +26,8 @@ import com.google.gson.reflect.TypeToken;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.blocks.BlockMaterial;
 import com.sk89q.worldedit.util.gson.VectorAdapter;
+import com.sk89q.worldedit.world.registry.state.SimpleState;
+import com.sk89q.worldedit.world.registry.state.State;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -53,8 +55,8 @@ public class BundledBlockData {
     private static final Logger log = Logger.getLogger(BundledBlockData.class.getCanonicalName());
     private static final BundledBlockData INSTANCE = new BundledBlockData();
 
-    private final Map<String, BlockEntry> idMap = new HashMap<String, BlockEntry>();
-    private final Map<Integer, BlockEntry> legacyMap = new HashMap<Integer, BlockEntry>(); // Trove usage removed temporarily
+    private final Map<String, BlockEntry> idMap = new HashMap<>();
+    private final Map<Integer, BlockEntry> legacyMap = new HashMap<>(); // Trove usage removed temporarily
 
     /**
      * Create a new instance.
@@ -84,7 +86,6 @@ public class BundledBlockData {
         List<BlockEntry> entries = gson.fromJson(data, new TypeToken<List<BlockEntry>>() {}.getType());
 
         for (BlockEntry entry : entries) {
-            entry.postDeserialization();
             idMap.put(entry.id, entry);
             legacyMap.put(entry.legacyId, entry);
         }
@@ -196,12 +197,6 @@ public class BundledBlockData {
         private List<String> aliases;
         private Map<String, SimpleState> states = new HashMap<>();
         private SimpleBlockMaterial material = new SimpleBlockMaterial();
-
-        void postDeserialization() {
-            for (SimpleState state : states.values()) {
-                state.postDeserialization();
-            }
-        }
     }
 
 }

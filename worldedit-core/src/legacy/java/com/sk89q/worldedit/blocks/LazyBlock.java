@@ -23,8 +23,12 @@ import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.blocks.type.BlockType;
 import com.sk89q.worldedit.extent.Extent;
+import com.sk89q.worldedit.world.registry.state.State;
+import com.sk89q.worldedit.world.registry.state.value.StateValue;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+
+import java.util.Map;
 
 /**
  * A implementation of a lazy block for {@link Extent#getLazyBlock(Vector)}
@@ -78,13 +82,13 @@ public class LazyBlock extends BaseBlock {
      * Create a new lazy block.
      *
      * @param type the block type
-     * @param data the data value
+     * @param states the block states
      * @param extent the extent to later load the full block data from
      * @param position the position to later load the full block data from
      */
     @Deprecated
-    public LazyBlock(BlockType type, int data, Extent extent, Vector position) {
-        super(type, data);
+    public LazyBlock(BlockType type, Map<State, StateValue> states, Extent extent, Vector position) {
+        super(type, states);
         checkNotNull(extent);
         checkNotNull(position);
         this.extent = extent;
@@ -120,6 +124,11 @@ public class LazyBlock extends BaseBlock {
 
     @Override
     public void setType(BlockType type) {
+        throw new UnsupportedOperationException("This object is immutable");
+    }
+
+    @Override
+    public void setState(State state, StateValue stateValue) {
         throw new UnsupportedOperationException("This object is immutable");
     }
 

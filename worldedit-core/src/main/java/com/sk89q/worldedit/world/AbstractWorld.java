@@ -27,7 +27,6 @@ import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.blocks.BaseItemStack;
-import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.blocks.BlockType;
 import com.sk89q.worldedit.blocks.type.BlockTypes;
 import com.sk89q.worldedit.extension.platform.Platform;
@@ -37,15 +36,16 @@ import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.util.TreeGenerator.TreeType;
 
-import javax.annotation.Nullable;
 import java.util.PriorityQueue;
+
+import javax.annotation.Nullable;
 
 /**
  * An abstract implementation of {@link World}.
  */
 public abstract class AbstractWorld implements World {
 
-    private final PriorityQueue<QueuedEffect> effectQueue = new PriorityQueue<QueuedEffect>();
+    private final PriorityQueue<QueuedEffect> effectQueue = new PriorityQueue<>();
     private int taskId = -1;
 
     @Override
@@ -65,7 +65,7 @@ public abstract class AbstractWorld implements World {
     @Override
     public final void setBlockData(Vector position, int data) {
         try {
-            setBlock(position, new BaseBlock(getLazyBlock(position).getType(), data));
+            setBlock(position, new BaseBlock(getLazyBlock(position).getType().getLegacyId(), data));
         } catch (WorldEditException ignored) {
         }
     }
@@ -103,10 +103,10 @@ public abstract class AbstractWorld implements World {
     @Override
     public Mask createLiquidMask() {
         return new BlockMask(this,
-                new BaseBlock(BlockTypes.LAVA, -1),
-                new BaseBlock(BlockTypes.FLOWING_LAVA, -1),
-                new BaseBlock(BlockTypes.WATER, -1),
-                new BaseBlock(BlockTypes.FLOWING_WATER, -1));
+                new BaseBlock(BlockTypes.LAVA),
+                new BaseBlock(BlockTypes.FLOWING_LAVA),
+                new BaseBlock(BlockTypes.WATER),
+                new BaseBlock(BlockTypes.FLOWING_WATER));
     }
 
     @Override

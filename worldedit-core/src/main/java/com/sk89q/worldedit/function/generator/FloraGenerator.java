@@ -23,7 +23,6 @@ import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.blocks.type.BlockTypes;
 import com.sk89q.worldedit.function.RegionFunction;
 import com.sk89q.worldedit.function.pattern.BlockPattern;
@@ -97,7 +96,7 @@ public class FloraGenerator implements RegionFunction {
      */
     public static Pattern getTemperatePattern() {
         RandomPattern pattern = new RandomPattern();
-        pattern.add(new BlockPattern(new BaseBlock(BlockTypes.TALL_GRASS, 1)), 300);
+        pattern.add(new BlockPattern(new BaseBlock(BlockTypes.GRASS)), 300);
         pattern.add(new BlockPattern(new BaseBlock(BlockTypes.POPPY)), 5);
         pattern.add(new BlockPattern(new BaseBlock(BlockTypes.DANDELION)), 5);
         return pattern;

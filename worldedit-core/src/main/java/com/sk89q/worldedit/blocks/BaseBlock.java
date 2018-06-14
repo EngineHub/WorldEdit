@@ -28,10 +28,15 @@ import com.sk89q.worldedit.blocks.type.BlockTypes;
 import com.sk89q.worldedit.foundation.Block;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.world.registry.BundledBlockData;
-import com.sk89q.worldedit.world.registry.WorldData;
+import com.sk89q.worldedit.world.registry.state.State;
+import com.sk89q.worldedit.world.registry.state.value.StateValue;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.annotation.Nullable;
-import java.util.Collection;
 
 /**
  * Represents a mutable "snapshot" of a block.
@@ -42,15 +47,6 @@ import java.util.Collection;
  * snapshot of blocks correctly, so, for example, the NBT data for a block
  * may be missing.</p>
  *
- * <p>This class identifies blocks using an integer ID. However, IDs for
- * a given block may differ between worlds so it is important that users of
- * this class convert the ID from one "world space" to another "world space,"
- * a task that that is assisted with by working with the source and
- * destination {@link WorldData} instances. Numeric IDs are utilized because
- * they are more space efficient to store, and it also implies that internal
- * uses of this class (i.e. history, etc.) do not need to worry about
- * interning block string IDs.</p>
- *
  * <p>A peculiar detail of this class is that it accepts {@code -1} as a
  * valid data value. This is due to legacy reasons: WorldEdit uses -1
  * as a "wildcard" block value, even though a {@link Mask} would be
@@ -59,17 +55,11 @@ import java.util.Collection;
 @SuppressWarnings("deprecation")
 public class BaseBlock extends Block implements TileEntityBlock {
 
-    /**
-     * Indicates the maximum data value (inclusive) that can be used. A future
-     * version of Minecraft may abolish block data values.
-     */
-    public static final int MAX_DATA = 15;
-
     // Instances of this class should be _as small as possible_ because there will
     // be millions of instances of this object.
 
     private BlockType blockType;
-    private short data;
+    private Map<State, StateValue> states;
     @Nullable
     private CompoundTag nbtData;
 
@@ -83,6 +73,7 @@ public class BaseBlock extends Block implements TileEntityBlock {
     public BaseBlock(int id) {
         internalSetId(id);
         internalSetData(0);
+        this.states = new HashMap<>();
     }
 
     /**
@@ -92,6 +83,7 @@ public class BaseBlock extends Block implements TileEntityBlock {
      */
     public BaseBlock(BlockType blockType) {
         internalSetType(blockType);
+        this.states = new HashMap<>();
     }
 
     /**
@@ -106,22 +98,20 @@ public class BaseBlock extends Block implements TileEntityBlock {
     public BaseBlock(int id, int data) {
         internalSetId(id);
         internalSetData(data);
+        this.states = new HashMap<>();
     }
 
     /**
      * Construct a block with the given ID and data value.
      *
-     * THIS WILL GET REMOVED SOON.
-     *
      * @param blockType The block type
-     * @param data data value
+     * @param states The states
      * @see #setId(int)
      * @see #setData(int)
      */
-    @Deprecated
-    public BaseBlock(BlockType blockType, int data) {
+    public BaseBlock(BlockType blockType, Map<State, StateValue> states) {
         internalSetType(blockType);
-        internalSetData(data);
+        setStates(states);
     }
 
     /**
@@ -136,21 +126,19 @@ public class BaseBlock extends Block implements TileEntityBlock {
         internalSetId(id);
         setData(data);
         setNbtData(nbtData);
+        this.states = new HashMap<>();
     }
 
     /**
      * Construct a block with the given ID, data value and NBT data structure.
      *
-     * THIS WILL GET REMOVED SOON.
-     *
      * @param blockType The block type
-     * @param data data value
+     * @param states The states
      * @param nbtData NBT data, which may be null
      */
-    @Deprecated
-    public BaseBlock(BlockType blockType, int data, @Nullable CompoundTag nbtData) {
+    public BaseBlock(BlockType blockType, Map<State, StateValue> states, @Nullable CompoundTag nbtData) {
         setType(blockType);
-        setData(data);
+        setStates(states);
         setNbtData(nbtData);
     }
 
@@ -160,7 +148,7 @@ public class BaseBlock extends Block implements TileEntityBlock {
      * @param other the other block
      */
     public BaseBlock(BaseBlock other) {
-        this(other.getId(), other.getData(), other.getNbtData());
+        this(other.getType(), other.getStates(), other.getNbtData());
     }
 
     /**
@@ -216,38 +204,70 @@ public class BaseBlock extends Block implements TileEntityBlock {
     /**
      * Get the block's data value.
      *
+     * Broken - do not use
+     *
      * @return data value (0-15)
      */
     @Override
+    @Deprecated
     public int getData() {
-        return data;
+        return 0;
     }
 
     /**
-     * Set the block's data value.
+     * Gets a map of state to statevalue
      *
-     * @param data block data value (between 0 and {@link #MAX_DATA}).
+     * @return The state map
      */
-    protected final void internalSetData(int data) {
-        if (data > MAX_DATA) {
-            throw new IllegalArgumentException(
-                    "Can't have a block data value above " + MAX_DATA + " ("
-                            + data + " given)");
-        }
+    public Map<State, StateValue> getStates() {
+        return Collections.unmodifiableMap(states);
+    }
 
-        if (data < -1) {
-            throw new IllegalArgumentException("Can't have a block data value below -1");
-        }
+    /**
+     * Sets the states of this block.
+     *
+     * @param states The states
+     */
+    private void setStates(Map<State, StateValue> states) {
+        this.states = states;
+    }
 
-        this.data = (short) data;
+    /**
+     * Gets the State for this Block.
+     *
+     * @param state The state to get the value for
+     * @return The state value
+     */
+    public StateValue getState(State state) {
+        return states.get(state);
+    }
+
+    /**
+     * Sets a state to a specific value
+     *
+     * @param state The state
+     * @param stateValue The value
+     */
+    public void setState(State state, StateValue stateValue) {
+        this.states.put(state, stateValue);
     }
 
     /**
      * Set the block's data value.
      *
-     * @param data block data value (between 0 and {@link #MAX_DATA}).
+     * @param data block data value
+     */
+    @Deprecated
+    protected final void internalSetData(int data) {
+    }
+
+    /**
+     * Set the block's data value.
+     *
+     * @param data block data value
      */
     @Override
+    @Deprecated
     public void setData(int data) {
         internalSetData(data);
     }
@@ -274,6 +294,7 @@ public class BaseBlock extends Block implements TileEntityBlock {
      * @return true if the data value is -1
      */
     @Override
+    @Deprecated
     public boolean hasWildcardData() {
         return getData() == -1;
     }
@@ -446,7 +467,7 @@ public class BaseBlock extends Block implements TileEntityBlock {
 
     @Override
     public String toString() {
-        return "Block{Type:" + getType().getId() + ", Data: " + getData() + "}";
+        return "Block{Type:" + getType().getId() + ", States: " + getStates().toString() + "}";
     }
 
 }

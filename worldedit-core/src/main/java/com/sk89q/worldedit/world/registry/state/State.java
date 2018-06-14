@@ -17,40 +17,25 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.world.registry;
+package com.sk89q.worldedit.world.registry.state;
 
-import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.world.registry.state.value.SimpleStateValue;
 
-import javax.annotation.Nullable;
+import java.util.List;
 
 /**
- * Describes a possible value for a {@code State}.
+ * Describes a state property of a block.
+ *
+ * <p>Example states include "variant" (indicating material or type) and
+ * "facing" (indicating orientation).</p>
  */
-public interface StateValue {
+public interface State<T extends SimpleStateValue> {
 
     /**
-     * Return whether this state is set on the given block.
+     * Return a list of available values for this state.
      *
-     * @param block the block
-     * @return true if this value is set
+     * @return the list of state values
      */
-    boolean isSet(BaseBlock block);
-
-    /**
-     * Set the state to this value on the given block.
-     *
-     * @param block the block to change
-     * @return true if the value was set successfully
-     */
-    boolean set(BaseBlock block);
-
-    /**
-     * Return the direction associated with this value.
-     *
-     * @return the direction, otherwise null
-     */
-    @Nullable
-    Vector getDirection();
+    List<T> getValues();
 
 }

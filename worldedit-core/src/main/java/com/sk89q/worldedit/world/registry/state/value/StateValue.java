@@ -17,45 +17,33 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.world.registry;
-
-import com.sk89q.worldedit.blocks.BaseBlock;
+package com.sk89q.worldedit.world.registry.state.value;
 
 import javax.annotation.Nullable;
-import java.util.Map;
 
 /**
- * Describes a state property of a block.
- *
- * <p>Example states include "variant" (indicating material or type) and
- * "facing" (indicating orientation).</p>
+ * Describes a possible value for a {@code State}.
  */
-public interface State {
+public interface StateValue {
 
     /**
-     * Return a map of available values for this state.
+     * Return whether this state is set on the given block.
      *
-     * <p>Keys are the value of state and map values describe that
-     * particular state value.</p>
-     *
-     * @return the map of state values
+     * @return true if this value is set
      */
-    Map<String, ? extends StateValue> valueMap();
+    boolean isSet();
 
     /**
-     * Get the value that the block is set to.
+     * Set the state to the given value.
+     */
+    void set(String data);
+
+    /**
+     * Returns the data associated with this value.
      *
-     * @param block the block
-     * @return the state, otherwise null if the block isn't set to any of the values
+     * @return The data, otherwise null
      */
     @Nullable
-    StateValue getValue(BaseBlock block);
-
-    /**
-     * Returns whether this state contains directional data.
-     *
-     * @return true if directional data is available
-     */
-    boolean hasDirection();
+    String getData();
 
 }

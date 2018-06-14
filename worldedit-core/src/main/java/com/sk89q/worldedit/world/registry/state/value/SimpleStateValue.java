@@ -17,39 +17,25 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.world.registry;
+package com.sk89q.worldedit.world.registry.state.value;
 
-import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.blocks.BaseBlock;
+public class SimpleStateValue implements StateValue {
 
-class SimpleStateValue implements StateValue {
+    private String data;
 
-    private SimpleState state;
-    private Byte data;
-    private Vector direction;
-
-    void setState(SimpleState state) {
-        this.state = state;
+    @Override
+    public boolean isSet() {
+        return data != null;
     }
 
     @Override
-    public boolean isSet(BaseBlock block) {
-        return data != null && (block.getData() & state.getDataMask()) == data;
+    public void set(String data) {
+        this.data = data;
     }
 
     @Override
-    public boolean set(BaseBlock block) {
-        if (data != null) {
-            block.setData((block.getData() & ~state.getDataMask()) | data);
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    @Override
-    public Vector getDirection() {
-        return direction;
+    public String getData() {
+        return this.data;
     }
 
 }

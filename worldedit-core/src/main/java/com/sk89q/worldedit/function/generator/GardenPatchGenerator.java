@@ -190,7 +190,7 @@ public class GardenPatchGenerator implements RegionFunction {
     public static Pattern getPumpkinPattern() {
         RandomPattern pattern = new RandomPattern();
         for (int i = 0; i < 4; i++) {
-            pattern.add(new BlockPattern(new BaseBlock(BlockTypes.PUMPKIN, i)), 100);
+// TODO           pattern.add(new BlockPattern(new BaseBlock(BlockTypes.CARVED_PUMPKIN, i)), 100);
         }
         return pattern;
     }

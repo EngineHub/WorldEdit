@@ -67,7 +67,7 @@ public class BlockMask extends AbstractMask {
     public boolean matches(EditSession editSession, Vector position) {
         BaseBlock block = editSession.getBlock(position);
         return blocks.contains(block)
-                || blocks.contains(new BaseBlock(block.getType(), -1));
+                || blocks.contains(new BaseBlock(block.getType()));
     }
 
 }
