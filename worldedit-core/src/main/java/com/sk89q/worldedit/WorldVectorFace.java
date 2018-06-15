@@ -22,7 +22,6 @@ package com.sk89q.worldedit;
 /**
  * @deprecated Use {@link com.sk89q.worldedit.util.Location} wherever possible
  */
-@SuppressWarnings("deprecation")
 @Deprecated
 public class WorldVectorFace extends WorldVector {
 

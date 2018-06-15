@@ -25,7 +25,6 @@ import com.sk89q.jnbt.Tag;
 import com.sk89q.worldedit.CuboidClipboard.FlipDirection;
 import com.sk89q.worldedit.blocks.type.BlockType;
 import com.sk89q.worldedit.blocks.type.BlockTypes;
-import com.sk89q.worldedit.foundation.Block;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.world.registry.BundledBlockData;
 import com.sk89q.worldedit.world.registry.state.State;
@@ -54,8 +53,7 @@ import javax.annotation.Nullable;
  * as a "wildcard" block value, even though a {@link Mask} would be
  * more appropriate.</p>
  */
-@SuppressWarnings("deprecation")
-public class BaseBlock extends Block implements TileEntityBlock {
+public class BaseBlock implements TileEntityBlock {
 
     // Instances of this class should be _as small as possible_ because there will
     // be millions of instances of this object.
@@ -158,7 +156,6 @@ public class BaseBlock extends Block implements TileEntityBlock {
      *
      * @return legacy numerical ID
      */
-    @Override
     @Deprecated
     public int getId() {
         return this.blockType.getLegacyId();
@@ -182,7 +179,6 @@ public class BaseBlock extends Block implements TileEntityBlock {
      *
      * @param id block id
      */
-    @Override
     @Deprecated
     public void setId(int id) {
         internalSetId(id);
@@ -210,7 +206,6 @@ public class BaseBlock extends Block implements TileEntityBlock {
      *
      * @return data value (0-15)
      */
-    @Override
     @Deprecated
     public int getData() {
         return 0;
@@ -268,7 +263,6 @@ public class BaseBlock extends Block implements TileEntityBlock {
      *
      * @param data block data value
      */
-    @Override
     @Deprecated
     public void setData(int data) {
         internalSetData(data);
@@ -282,7 +276,6 @@ public class BaseBlock extends Block implements TileEntityBlock {
      * @see #setId(int)
      * @see #setData(int)
      */
-    @Override
     @Deprecated
     public void setIdAndData(int id, int data) {
         setId(id);
@@ -294,7 +287,6 @@ public class BaseBlock extends Block implements TileEntityBlock {
      *
      * @return true if there are no matched states
      */
-    @Override
     public boolean hasWildcardData() {
         return getStates().isEmpty();
     }

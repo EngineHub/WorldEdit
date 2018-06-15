@@ -25,7 +25,7 @@ import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.type.BlockTypes;
-import com.sk89q.worldedit.patterns.Pattern;
+import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.regions.Region;
 
 /**
@@ -92,7 +92,7 @@ public abstract class ArbitraryShape {
         switch (cacheEntry) {
         case 0:
             // unknown, fetch material
-            final BaseBlock material = getMaterial(x, y, z, pattern.next(new BlockVector(x, y, z)));
+            final BaseBlock material = getMaterial(x, y, z, pattern.apply(new BlockVector(x, y, z)));
             if (material == null) {
                 // outside
                 cache[index] = -1;
@@ -156,7 +156,7 @@ public abstract class ArbitraryShape {
             int z = position.getBlockZ();
 
             if (!hollow) {
-                final BaseBlock material = getMaterial(x, y, z, pattern.next(position));
+                final BaseBlock material = getMaterial(x, y, z, pattern.apply(position));
                 if (material != null && editSession.setBlock(position, material)) {
                     ++affected;
                 }

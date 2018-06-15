@@ -49,14 +49,6 @@ public class CuboidRegion extends AbstractRegion implements FlatRegion {
     }
 
     /**
-     * @deprecated cast {@code world} to {@link World}
-     */
-    @Deprecated
-    public CuboidRegion(LocalWorld world, Vector pos1, Vector pos2) {
-        this((World) world, pos1, pos2);
-    }
-
-    /**
      * Construct a new instance of this cuboid using two corners of the cuboid.
      *
      * @param world the world

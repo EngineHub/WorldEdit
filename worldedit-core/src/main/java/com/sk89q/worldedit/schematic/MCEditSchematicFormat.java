@@ -34,7 +34,7 @@ import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.CuboidClipboard;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.data.DataException;
+import com.sk89q.worldedit.world.DataException;
 
 import java.io.DataInputStream;
 import java.io.File;
@@ -138,7 +138,7 @@ public class MCEditSchematicFormat extends SchematicFormat {
         List<Tag> tileEntities = getChildTag(schematic, "TileEntities", ListTag.class)
                 .getValue();
         Map<BlockVector, Map<String, Tag>> tileEntitiesMap =
-                new HashMap<BlockVector, Map<String, Tag>>();
+                new HashMap<>();
 
         for (Tag tag : tileEntities) {
             if (!(tag instanceof CompoundTag)) continue;
@@ -148,7 +148,7 @@ public class MCEditSchematicFormat extends SchematicFormat {
             int y = 0;
             int z = 0;
 
-            Map<String, Tag> values = new HashMap<String, Tag>();
+            Map<String, Tag> values = new HashMap<>();
 
             for (Map.Entry<String, Tag> entry : t.getValue().entrySet()) {
                 if (entry.getKey().equals("x")) {
@@ -216,7 +216,7 @@ public class MCEditSchematicFormat extends SchematicFormat {
             throw new DataException("Length of region too large for a .schematic");
         }
 
-        HashMap<String, Tag> schematic = new HashMap<String, Tag>();
+        HashMap<String, Tag> schematic = new HashMap<>();
         schematic.put("Width", new ShortTag((short) width));
         schematic.put("Length", new ShortTag((short) length));
         schematic.put("Height", new ShortTag((short) height));
@@ -232,7 +232,7 @@ public class MCEditSchematicFormat extends SchematicFormat {
         byte[] blocks = new byte[width * height * length];
         byte[] addBlocks = null;
         byte[] blockData = new byte[width * height * length];
-        ArrayList<Tag> tileEntities = new ArrayList<Tag>();
+        ArrayList<Tag> tileEntities = new ArrayList<>();
 
         for (int x = 0; x < width; ++x) {
             for (int y = 0; y < height; ++y) {
@@ -257,7 +257,7 @@ public class MCEditSchematicFormat extends SchematicFormat {
                     // Get the list of key/values from the block
                     CompoundTag rawTag = block.getNbtData();
                     if (rawTag != null) {
-                        Map<String, Tag> values = new HashMap<String, Tag>();
+                        Map<String, Tag> values = new HashMap<>();
                         for (Entry<String, Tag> entry : rawTag.getValue().entrySet()) {
                             values.put(entry.getKey(), entry.getValue());
                         }

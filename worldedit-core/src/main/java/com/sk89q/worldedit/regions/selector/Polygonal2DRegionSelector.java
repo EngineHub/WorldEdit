@@ -41,7 +41,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * Creates a {@code Polygonal2DRegion} from a user's selections.
  */
-public class Polygonal2DRegionSelector extends com.sk89q.worldedit.regions.Polygonal2DRegionSelector implements RegionSelector, CUIRegion {
+public class Polygonal2DRegionSelector implements RegionSelector, CUIRegion {
 
     private transient BlockVector pos1;
     private transient Polygonal2DRegion region;
@@ -248,7 +248,6 @@ public class Polygonal2DRegionSelector extends com.sk89q.worldedit.regions.Polyg
      *
      * @return the number of points
      */
-    @Override
     public int getPointCount() {
         return region.getPoints().size();
     }

@@ -48,7 +48,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * Creates a {@code ConvexPolyhedralRegion} from a user's selections.
  */
-public class ConvexPolyhedralRegionSelector extends com.sk89q.worldedit.regions.ConvexPolyhedralRegionSelector implements RegionSelector, CUIRegion {
+public class ConvexPolyhedralRegionSelector implements RegionSelector, CUIRegion {
 
     private final transient ConvexPolyhedralRegion region;
     private transient BlockVector pos1;

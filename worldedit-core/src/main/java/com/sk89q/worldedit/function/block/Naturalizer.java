@@ -19,14 +19,15 @@
 
 package com.sk89q.worldedit.function.block;
 
+import com.google.common.collect.Sets;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.type.BlockTypes;
 import com.sk89q.worldedit.function.LayerFunction;
-import com.sk89q.worldedit.masks.BlockMask;
-import com.sk89q.worldedit.masks.Mask;
+import com.sk89q.worldedit.function.mask.BlockMask;
+import com.sk89q.worldedit.function.mask.Mask;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -37,11 +38,12 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class Naturalizer implements LayerFunction {
 
+    private static final BaseBlock grass = new BaseBlock(BlockTypes.GRASS_BLOCK);
+    private static final BaseBlock dirt = new BaseBlock(BlockTypes.DIRT);
+    private static final BaseBlock stone = new BaseBlock(BlockTypes.STONE);
+
     private final EditSession editSession;
-    private final BaseBlock grass = new BaseBlock(BlockTypes.GRASS_BLOCK);
-    private final BaseBlock dirt = new BaseBlock(BlockTypes.DIRT);
-    private final BaseBlock stone = new BaseBlock(BlockTypes.STONE);
-    private final Mask mask = new BlockMask(grass, dirt, stone);
+    private final Mask mask;
     private int affected = 0;
 
     /**
@@ -52,6 +54,7 @@ public class Naturalizer implements LayerFunction {
     public Naturalizer(EditSession editSession) {
         checkNotNull(editSession);
         this.editSession = editSession;
+        this.mask = new BlockMask(editSession, Sets.newHashSet(grass, dirt, stone));
     }
 
     /**
@@ -65,12 +68,12 @@ public class Naturalizer implements LayerFunction {
 
     @Override
     public boolean isGround(Vector position) {
-        return mask.matches(editSession, position);
+        return mask.test(position);
     }
 
     @Override
     public boolean apply(Vector position, int depth) throws WorldEditException {
-        if (mask.matches(editSession, position)) {
+        if (mask.test(position)) {
             affected++;
             switch (depth) {
                 case 0:

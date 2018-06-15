@@ -37,10 +37,6 @@ import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.extension.platform.PlatformManager;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
-import com.sk89q.worldedit.function.mask.Masks;
-import com.sk89q.worldedit.function.pattern.Patterns;
-import com.sk89q.worldedit.masks.Mask;
-import com.sk89q.worldedit.patterns.Pattern;
 import com.sk89q.worldedit.scripting.CraftScriptContext;
 import com.sk89q.worldedit.scripting.CraftScriptEngine;
 import com.sk89q.worldedit.scripting.RhinoCraftScriptEngine;
@@ -311,32 +307,6 @@ public class WorldEdit {
             blocks.add(getBlock(player, s, allBlocksAllowed).getType().getLegacyId());
         }
         return blocks;
-    }
-
-    /**
-     * @deprecated Use {@link #getPatternFactory()} and {@link BlockFactory#parseFromInput(String, ParserContext)}
-     */
-    @Deprecated
-    @SuppressWarnings("deprecation")
-    public Pattern getBlockPattern(Player player, String input) throws WorldEditException {
-        ParserContext context = new ParserContext();
-        context.setActor(player);
-        context.setWorld(player.getWorld());
-        context.setSession(getSession(player));
-        return Patterns.wrap(getPatternFactory().parseFromInput(input, context));
-    }
-
-    /**
-     * @deprecated Use {@link #getMaskFactory()} ()} and {@link MaskFactory#parseFromInput(String, ParserContext)}
-     */
-    @Deprecated
-    @SuppressWarnings("deprecation")
-    public Mask getBlockMask(Player player, LocalSession session, String input) throws WorldEditException {
-        ParserContext context = new ParserContext();
-        context.setActor(player);
-        context.setWorld(player.getWorld());
-        context.setSession(session);
-        return Masks.wrap(getMaskFactory().parseFromInput(input, context));
     }
 
     /**

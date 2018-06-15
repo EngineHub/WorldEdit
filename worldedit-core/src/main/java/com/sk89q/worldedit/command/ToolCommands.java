@@ -26,8 +26,9 @@ import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.ItemType;
 import com.sk89q.worldedit.entity.Player;
-import com.sk89q.worldedit.patterns.Pattern;
+import com.sk89q.worldedit.extension.input.ParserContext;
 import com.sk89q.worldedit.command.tool.*;
+import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.util.TreeGenerator;
 
 public class ToolCommands {
@@ -139,7 +140,12 @@ public class ToolCommands {
             return;
         }
 
-        Pattern pattern = we.getBlockPattern(player, args.getString(0));
+        ParserContext context = new ParserContext();
+        context.setActor(player);
+        context.setWorld(player.getWorld());
+        context.setSession(session);
+        Pattern pattern = we.getPatternFactory().parseFromInput(args.getString(0), context);
+
         session.setTool(player.getItemInHand(), new FloodFillTool(range, pattern));
         player.print("Block flood fill tool bound to "
                 + ItemType.toHeldName(player.getItemInHand()) + ".");

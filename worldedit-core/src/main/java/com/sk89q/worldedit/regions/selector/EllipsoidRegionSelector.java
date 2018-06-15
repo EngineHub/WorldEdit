@@ -39,7 +39,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * Creates a {@code EllipsoidRegionSelector} from a user's selections.
  */
-public class EllipsoidRegionSelector extends com.sk89q.worldedit.regions.EllipsoidRegionSelector implements RegionSelector, CUIRegion {
+public class EllipsoidRegionSelector implements RegionSelector, CUIRegion {
 
     protected transient EllipsoidRegion region;
     protected transient boolean started = false;

@@ -23,8 +23,9 @@ import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.command.InsufficientArgumentsException;
 import com.sk89q.worldedit.entity.Player;
+import com.sk89q.worldedit.extension.input.ParserContext;
 import com.sk89q.worldedit.extension.platform.Platform;
-import com.sk89q.worldedit.patterns.Pattern;
+import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.util.io.file.FilenameException;
 
 import java.io.File;
@@ -36,10 +37,9 @@ import java.util.Set;
 /**
  * The context given to scripts.
  */
-@SuppressWarnings("deprecation")
 public class CraftScriptContext extends CraftScriptEnvironment {
 
-    private List<EditSession> editSessions = new ArrayList<EditSession>();
+    private List<EditSession> editSessions = new ArrayList<>();
     private String[] args;
 
     public CraftScriptContext(WorldEdit controller,
@@ -176,7 +176,11 @@ public class CraftScriptContext extends CraftScriptEnvironment {
      * @throws DisallowedItemException 
      */
     public Pattern getBlockPattern(String list) throws WorldEditException {
-        return controller.getBlockPattern(player, list);
+        ParserContext context = new ParserContext();
+        context.setActor(player);
+        context.setWorld(player.getWorld());
+        context.setSession(session);
+        return controller.getPatternFactory().parseFromInput(list, context);
     }
 
     /**

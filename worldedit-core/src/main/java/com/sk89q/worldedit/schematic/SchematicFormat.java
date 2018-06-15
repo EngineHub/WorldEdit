@@ -21,7 +21,8 @@ package com.sk89q.worldedit.schematic;
 
 import com.sk89q.worldedit.CuboidClipboard;
 import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.data.DataException;
+import com.sk89q.worldedit.extent.clipboard.Clipboard;
+import com.sk89q.worldedit.world.DataException;
 
 import java.io.File;
 import java.io.IOException;
@@ -29,13 +30,13 @@ import java.util.*;
 
 public abstract class SchematicFormat {
 
-    private static final Map<String, SchematicFormat> SCHEMATIC_FORMATS = new HashMap<String, SchematicFormat>();
+    private static final Map<String, SchematicFormat> SCHEMATIC_FORMATS = new HashMap<>();
 
     // Built-in schematic formats
     public static final SchematicFormat MCEDIT = new MCEditSchematicFormat();
 
     public static Set<SchematicFormat> getFormats() {
-        return Collections.unmodifiableSet(new HashSet<SchematicFormat>(SCHEMATIC_FORMATS.values()));
+        return Collections.unmodifiableSet(new HashSet<>(SCHEMATIC_FORMATS.values()));
     }
 
     public static SchematicFormat getFormat(String lookupName) {
@@ -60,7 +61,7 @@ public abstract class SchematicFormat {
 
     protected SchematicFormat(String name, String... lookupNames) {
         this.name = name;
-        List<String> registeredLookupNames = new ArrayList<String>(lookupNames.length);
+        List<String> registeredLookupNames = new ArrayList<>(lookupNames.length);
         for (int i = 0; i < lookupNames.length; ++i) {
             if (i == 0 || !SCHEMATIC_FORMATS.containsKey(lookupNames[i].toLowerCase())) {
                 SCHEMATIC_FORMATS.put(lookupNames[i].toLowerCase(), this);

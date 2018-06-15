@@ -917,14 +917,4 @@ public class LocalSession {
         this.mask = mask;
     }
 
-    /**
-     * Set a mask.
-     *
-     * @param mask mask or null
-     */
-    @SuppressWarnings("deprecation")
-    public void setMask(com.sk89q.worldedit.masks.Mask mask) {
-        setMask(mask != null ? Masks.wrap(mask) : null);
-    }
-
 }
