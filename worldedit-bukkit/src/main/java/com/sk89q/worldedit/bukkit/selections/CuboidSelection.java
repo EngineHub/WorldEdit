@@ -49,7 +49,7 @@ public class CuboidSelection extends RegionSelection {
         }
 
         // Create new selector
-        CuboidRegionSelector sel = new CuboidRegionSelector(BukkitUtil.getLocalWorld(world));
+        CuboidRegionSelector sel = new CuboidRegionSelector(BukkitUtil.getWorld(world));
 
         // set up selector
         sel.selectPrimary(pt1, PermissiveSelectorLimits.getInstance());

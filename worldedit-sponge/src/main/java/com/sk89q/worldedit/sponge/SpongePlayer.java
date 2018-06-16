@@ -22,11 +22,9 @@ package com.sk89q.worldedit.sponge;
 import com.flowpowered.math.vector.Vector3d;
 import com.sk89q.util.StringUtil;
 import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.WorldVector;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.extension.platform.AbstractPlayerActor;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
-import com.sk89q.worldedit.internal.LocalWorldAdapter;
 import com.sk89q.worldedit.internal.cui.CUIEvent;
 import com.sk89q.worldedit.session.SessionKey;
 import com.sk89q.worldedit.util.Location;
@@ -39,10 +37,11 @@ import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.serializer.TextSerializers;
 import org.spongepowered.api.world.World;
 
-import javax.annotation.Nullable;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import java.util.UUID;
+
+import javax.annotation.Nullable;
 
 public class SpongePlayer extends AbstractPlayerActor {
 
@@ -83,9 +82,9 @@ public class SpongePlayer extends AbstractPlayerActor {
     }
 
     @Override
-    public WorldVector getPosition() {
+    public Location getPosition() {
         Vector3d pos = this.player.getLocation().getPosition();
-        return new WorldVector(LocalWorldAdapter.adapt(SpongeWorldEdit.inst().getAdapter().getWorld(this.player.getWorld())), pos.getX(), pos.getY(), pos.getZ());
+        return new Location(SpongeWorldEdit.inst().getAdapter().getWorld(this.player.getWorld()), pos.getX(), pos.getY(), pos.getZ());
     }
 
     @Override

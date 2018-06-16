@@ -19,16 +19,16 @@
 
 package com.sk89q.worldedit.sponge;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.google.inject.Inject;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.WorldVector;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.event.platform.PlatformReadyEvent;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.extension.platform.Platform;
-import com.sk89q.worldedit.internal.LocalWorldAdapter;
 import com.sk89q.worldedit.sponge.adapter.AdapterLoadException;
 import com.sk89q.worldedit.sponge.adapter.SpongeImplAdapter;
 import com.sk89q.worldedit.sponge.adapter.SpongeImplLoader;
@@ -44,7 +44,12 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.block.InteractBlockEvent;
 import org.spongepowered.api.event.filter.cause.Root;
-import org.spongepowered.api.event.game.state.*;
+import org.spongepowered.api.event.game.state.GameAboutToStartServerEvent;
+import org.spongepowered.api.event.game.state.GameInitializationEvent;
+import org.spongepowered.api.event.game.state.GamePostInitializationEvent;
+import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
+import org.spongepowered.api.event.game.state.GameStartedServerEvent;
+import org.spongepowered.api.event.game.state.GameStoppingServerEvent;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
@@ -56,8 +61,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * The Sponge implementation of WorldEdit.
@@ -207,7 +210,8 @@ public class SpongeWorldEdit {
                 }
 
                 Location<World> loc = optLoc.get();
-                WorldVector pos = new WorldVector(LocalWorldAdapter.adapt(world), loc.getX(), loc.getY(), loc.getZ());
+                com.sk89q.worldedit.util.Location pos = new com.sk89q.worldedit.util.Location(
+                        world, loc.getX(), loc.getY(), loc.getZ());
 
                 if (we.handleBlockLeftClick(player, pos)) {
                     event.setCancelled(true);
@@ -228,7 +232,8 @@ public class SpongeWorldEdit {
                 }
 
                 Location<World> loc = optLoc.get();
-                WorldVector pos = new WorldVector(LocalWorldAdapter.adapt(world), loc.getX(), loc.getY(), loc.getZ());
+                com.sk89q.worldedit.util.Location pos = new com.sk89q.worldedit.util.Location(
+                        world, loc.getX(), loc.getY(), loc.getZ());
 
                 if (we.handleBlockRightClick(player, pos)) {
                     event.setCancelled(true);

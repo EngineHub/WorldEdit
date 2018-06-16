@@ -94,14 +94,6 @@ public class Polygonal2DRegionSelector implements RegionSelector, CUIRegion {
     }
 
     /**
-     * @deprecated cast {@code world} to {@link World}
-     */
-    @Deprecated
-    public Polygonal2DRegionSelector(@Nullable LocalWorld world, List<BlockVector2D> points, int minY, int maxY) {
-        this((World) world, points, minY, maxY);
-    }
-
-    /**
      * Create a new selector.
      *
      * @param world the world

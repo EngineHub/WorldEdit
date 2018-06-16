@@ -19,9 +19,10 @@
 
 package com.sk89q.worldedit.bukkit;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.sk89q.worldedit.BlockVector2D;
 import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.Vector2D;
 import com.sk89q.worldedit.WorldEdit;
@@ -33,6 +34,7 @@ import com.sk89q.worldedit.bukkit.adapter.BukkitImplAdapter;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.TreeGenerator;
+import com.sk89q.worldedit.world.AbstractWorld;
 import com.sk89q.worldedit.world.biome.BaseBiome;
 import com.sk89q.worldedit.world.registry.WorldData;
 import org.bukkit.Effect;
@@ -48,7 +50,6 @@ import org.bukkit.inventory.DoubleChestInventory;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import javax.annotation.Nullable;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.EnumMap;
@@ -58,13 +59,13 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import javax.annotation.Nullable;
 
-public class BukkitWorld extends LocalWorld {
+public class BukkitWorld extends AbstractWorld {
 
     private static final Logger logger = WorldEdit.logger;
 
-    private static final Map<Integer, Effect> effects = new HashMap<Integer, Effect>();
+    private static final Map<Integer, Effect> effects = new HashMap<>();
     static {
         for (Effect effect : Effect.values()) {
             effects.put(effect.getId(), effect);
@@ -80,7 +81,7 @@ public class BukkitWorld extends LocalWorld {
      */
     @SuppressWarnings("unchecked")
     public BukkitWorld(World world) {
-        this.worldRef = new WeakReference<World>(world);
+        this.worldRef = new WeakReference<>(world);
     }
 
     @Override
@@ -88,7 +89,7 @@ public class BukkitWorld extends LocalWorld {
         World world = getWorld();
 
         List<Entity> ents = world.getEntities();
-        List<com.sk89q.worldedit.entity.Entity> entities = new ArrayList<com.sk89q.worldedit.entity.Entity>();
+        List<com.sk89q.worldedit.entity.Entity> entities = new ArrayList<>();
         for (Entity ent : ents) {
             if (region.contains(BukkitUtil.toVector(ent.getLocation()))) {
                 entities.add(BukkitAdapter.adapt(ent));
@@ -99,7 +100,7 @@ public class BukkitWorld extends LocalWorld {
 
     @Override
     public List<com.sk89q.worldedit.entity.Entity> getEntities() {
-        List<com.sk89q.worldedit.entity.Entity> list = new ArrayList<com.sk89q.worldedit.entity.Entity>();
+        List<com.sk89q.worldedit.entity.Entity> list = new ArrayList<>();
         for (Entity entity : getWorld().getEntities()) {
             list.add(BukkitAdapter.adapt(entity));
         }
@@ -282,7 +283,7 @@ public class BukkitWorld extends LocalWorld {
      * An EnumMap that stores which WorldEdit TreeTypes apply to which Bukkit TreeTypes
      */
     private static final EnumMap<TreeGenerator.TreeType, TreeType> treeTypeMapping =
-            new EnumMap<TreeGenerator.TreeType, TreeType>(TreeGenerator.TreeType.class);
+            new EnumMap<>(TreeGenerator.TreeType.class);
 
     static {
         for (TreeGenerator.TreeType type : TreeGenerator.TreeType.values()) {

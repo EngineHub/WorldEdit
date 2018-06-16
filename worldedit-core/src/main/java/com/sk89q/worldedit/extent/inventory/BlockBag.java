@@ -19,8 +19,8 @@
 
 package com.sk89q.worldedit.extent.inventory;
 
-import com.sk89q.worldedit.WorldVector;
 import com.sk89q.worldedit.blocks.*;
+import com.sk89q.worldedit.util.Location;
 
 /**
  * Represents a source to get blocks from and store removed ones.
@@ -187,12 +187,12 @@ public abstract class BlockBag {
      *
      * @param pos the position
      */
-    public abstract void addSourcePosition(WorldVector pos);
+    public abstract void addSourcePosition(Location pos);
 
     /**
      * Adds a position to be used a source.
      *
      * @param pos the position
      */
-    public abstract void addSingleSourcePosition(WorldVector pos);
+    public abstract void addSingleSourcePosition(Location pos);
 }

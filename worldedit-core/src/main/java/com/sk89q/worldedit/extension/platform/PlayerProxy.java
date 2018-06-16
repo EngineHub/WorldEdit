@@ -20,7 +20,6 @@
 package com.sk89q.worldedit.extension.platform;
 
 import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.WorldVector;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
@@ -89,7 +88,7 @@ class PlayerProxy extends AbstractPlayerActor {
     }
 
     @Override
-    public WorldVector getPosition() {
+    public Location getPosition() {
         return basePlayer.getPosition();
     }
 

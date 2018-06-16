@@ -19,14 +19,17 @@
 
 package com.sk89q.worldedit.bukkit;
 
-import com.sk89q.worldedit.WorldVector;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import com.sk89q.worldedit.extent.inventory.*;
 import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.blocks.ItemType;
+import com.sk89q.worldedit.extent.inventory.BlockBag;
+import com.sk89q.worldedit.extent.inventory.BlockBagException;
+import com.sk89q.worldedit.extent.inventory.OutOfBlocksException;
+import com.sk89q.worldedit.extent.inventory.OutOfSpaceException;
+import com.sk89q.worldedit.util.Location;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 public class BukkitPlayerBlockBag extends BlockBag {
 
@@ -191,11 +194,11 @@ public class BukkitPlayerBlockBag extends BlockBag {
     }
 
     @Override
-    public void addSourcePosition(WorldVector pos) {
+    public void addSourcePosition(Location pos) {
     }
 
     @Override
-    public void addSingleSourcePosition(WorldVector pos) {
+    public void addSingleSourcePosition(Location pos) {
     }
 
 }

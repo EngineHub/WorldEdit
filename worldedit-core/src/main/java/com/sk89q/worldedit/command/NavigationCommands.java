@@ -28,8 +28,8 @@ import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.WorldVector;
 import com.sk89q.worldedit.entity.Player;
+import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.command.parametric.Optional;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -161,7 +161,7 @@ public class NavigationCommands {
     @CommandPermissions("worldedit.navigation.jumpto.command")
     public void jumpTo(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
 
-        WorldVector pos = player.getSolidBlockTrace(300);
+        Location pos = player.getSolidBlockTrace(300);
         if (pos != null) {
             player.findFreePosition(pos);
             player.print("Poof!");

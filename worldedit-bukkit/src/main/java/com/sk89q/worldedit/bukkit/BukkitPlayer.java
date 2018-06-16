@@ -20,32 +20,31 @@
 package com.sk89q.worldedit.bukkit;
 
 import com.sk89q.util.StringUtil;
-import com.sk89q.worldedit.LocalPlayer;
-import com.sk89q.worldedit.LocalWorld;
-import com.sk89q.worldedit.ServerInterface;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.WorldVector;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.entity.BaseEntity;
+import com.sk89q.worldedit.extension.platform.AbstractPlayerActor;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
 import com.sk89q.worldedit.internal.cui.CUIEvent;
 import com.sk89q.worldedit.session.SessionKey;
+import com.sk89q.worldedit.world.World;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import javax.annotation.Nullable;
 import java.util.UUID;
 
-public class BukkitPlayer extends LocalPlayer {
+import javax.annotation.Nullable;
+
+public class BukkitPlayer extends AbstractPlayerActor {
 
     private Player player;
     private WorldEditPlugin plugin;
 
-    public BukkitPlayer(WorldEditPlugin plugin, ServerInterface server, Player player) {
+    public BukkitPlayer(WorldEditPlugin plugin, Player player) {
         this.plugin = plugin;
         this.player = player;
     }
@@ -73,9 +72,9 @@ public class BukkitPlayer extends LocalPlayer {
     }
 
     @Override
-    public WorldVector getPosition() {
+    public com.sk89q.worldedit.util.Location getPosition() {
         Location loc = player.getLocation();
-        return new WorldVector(BukkitUtil.getLocalWorld(loc.getWorld()),
+        return new com.sk89q.worldedit.util.Location(BukkitUtil.getWorld(loc.getWorld()),
                 loc.getX(), loc.getY(), loc.getZ());
     }
 
@@ -146,8 +145,8 @@ public class BukkitPlayer extends LocalPlayer {
     }
 
     @Override
-    public LocalWorld getWorld() {
-        return BukkitUtil.getLocalWorld(player.getWorld());
+    public World getWorld() {
+        return BukkitUtil.getWorld(player.getWorld());
     }
 
     @Override

@@ -19,19 +19,17 @@
 
 package com.sk89q.worldedit.forge;
 
+import com.sk89q.worldedit.util.Location;
 import net.minecraft.block.Block;
-import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import org.apache.logging.log4j.Logger;
 
 import com.google.common.base.Joiner;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.WorldVector;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.event.platform.PlatformReadyEvent;
 import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.forge.net.LeftClickAirEventMessage;
-import com.sk89q.worldedit.internal.LocalWorldAdapter;
 
 import java.io.File;
 import java.util.Map;
@@ -56,8 +54,6 @@ import net.minecraftforge.fml.common.event.FMLServerStartedEvent;
 import net.minecraftforge.fml.common.event.FMLServerStoppingEvent;
 import net.minecraftforge.fml.common.eventhandler.Event.Result;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import org.spongepowered.api.Sponge;
-import org.spongepowered.api.block.BlockType;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static net.minecraft.block.Block.REGISTRY;
@@ -191,9 +187,7 @@ public class ForgeWorldEdit {
                 // event.setCanceled(true);
             }
         } else if (event instanceof PlayerInteractEvent.LeftClickBlock) {
-            @SuppressWarnings("deprecation")
-            WorldVector pos = new WorldVector(LocalWorldAdapter.adapt(world),
-                    event.getPos().getX(), event.getPos().getY(), event.getPos().getZ());
+            Location pos = new Location(world, event.getPos().getX(), event.getPos().getY(), event.getPos().getZ());
 
             if (we.handleBlockLeftClick(player, pos)) {
                 event.setCanceled(true);
@@ -203,9 +197,7 @@ public class ForgeWorldEdit {
                 event.setCanceled(true);
             }
         } else if (event instanceof PlayerInteractEvent.RightClickBlock) {
-            @SuppressWarnings("deprecation")
-            WorldVector pos = new WorldVector(LocalWorldAdapter.adapt(world),
-                    event.getPos().getX(), event.getPos().getY(), event.getPos().getZ());
+            Location pos = new Location(world, event.getPos().getX(), event.getPos().getY(), event.getPos().getZ());
 
             if (we.handleBlockRightClick(player, pos)) {
                 event.setCanceled(true);

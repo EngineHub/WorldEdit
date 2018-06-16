@@ -108,11 +108,6 @@ public class NullRegion implements Region {
     }
 
     @Override
-    public void setWorld(LocalWorld world) {
-        setWorld((World) world);
-    }
-
-    @Override
     public NullRegion clone() {
         return new NullRegion();
     }

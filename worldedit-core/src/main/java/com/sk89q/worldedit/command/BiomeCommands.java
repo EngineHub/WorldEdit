@@ -41,6 +41,7 @@ import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.FlatRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.Regions;
+import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.command.binding.Switch;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.biome.BaseBiome;
@@ -125,22 +126,22 @@ public class BiomeCommands {
     @CommandPermissions("worldedit.biome.info")
     public void biomeInfo(Player player, LocalSession session, CommandContext args) throws WorldEditException {
         BiomeRegistry biomeRegistry = player.getWorld().getWorldData().getBiomeRegistry();
-        Set<BaseBiome> biomes = new HashSet<BaseBiome>();
+        Set<BaseBiome> biomes = new HashSet<>();
         String qualifier;
 
         if (args.hasFlag('t')) {
-            Vector blockPosition = player.getBlockTrace(300);
+            Location blockPosition = player.getBlockTrace(300);
             if (blockPosition == null) {
                 player.printError("No block in sight!");
                 return;
             }
 
-            BaseBiome biome = player.getWorld().getBiome(blockPosition.toVector2D());
+            BaseBiome biome = player.getWorld().getBiome(blockPosition.toVector().toVector2D());
             biomes.add(biome);
 
             qualifier = "at line of sight point";
         } else if (args.hasFlag('p')) {
-            BaseBiome biome = player.getWorld().getBiome(player.getPosition().toVector2D());
+            BaseBiome biome = player.getWorld().getBiome(player.getPosition().toVector().toVector2D());
             biomes.add(biome);
 
             qualifier = "at your position";
@@ -191,7 +192,7 @@ public class BiomeCommands {
         Mask2D mask2d = mask != null ? mask.toMask2D() : null;
 
         if (atPosition) {
-            region = new CuboidRegion(player.getPosition(), player.getPosition());
+            region = new CuboidRegion(player.getPosition().toVector(), player.getPosition().toVector());
         } else {
             region = session.getSelection(world);
         }

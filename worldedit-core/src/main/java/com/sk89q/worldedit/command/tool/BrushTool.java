@@ -19,11 +19,12 @@
 
 package com.sk89q.worldedit.command.tool;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
-import com.sk89q.worldedit.WorldVector;
 import com.sk89q.worldedit.command.tool.brush.Brush;
 import com.sk89q.worldedit.command.tool.brush.SphereBrush;
 import com.sk89q.worldedit.entity.Player;
@@ -34,10 +35,9 @@ import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.function.mask.MaskIntersection;
 import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.session.request.Request;
+import com.sk89q.worldedit.util.Location;
 
 import javax.annotation.Nullable;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Builds a shape at the place being looked at.
@@ -162,7 +162,7 @@ public class BrushTool implements TraceTool {
 
     @Override
     public boolean actPrimary(Platform server, LocalConfiguration config, Player player, LocalSession session) {
-        WorldVector target = null;
+        Location target = null;
         target = player.getBlockTrace(getRange(), true);
 
         if (target == null) {
@@ -189,7 +189,7 @@ public class BrushTool implements TraceTool {
         }
 
         try {
-            brush.build(editSession, target, material, size);
+            brush.build(editSession, target.toVector(), material, size);
         } catch (MaxChangedBlocksException e) {
             player.printError("Max blocks change limit reached.");
         } finally {

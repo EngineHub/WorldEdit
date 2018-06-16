@@ -19,6 +19,8 @@
 
 package com.sk89q.worldedit;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.sk89q.jchronic.Chronic;
 import com.sk89q.jchronic.Options;
 import com.sk89q.jchronic.utils.Span;
@@ -32,7 +34,6 @@ import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
 import com.sk89q.worldedit.function.mask.Mask;
-import com.sk89q.worldedit.function.mask.Masks;
 import com.sk89q.worldedit.internal.cui.CUIEvent;
 import com.sk89q.worldedit.internal.cui.CUIRegion;
 import com.sk89q.worldedit.internal.cui.SelectionShapeEvent;
@@ -45,7 +46,6 @@ import com.sk89q.worldedit.session.request.Request;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.snapshot.Snapshot;
 
-import javax.annotation.Nullable;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -53,7 +53,7 @@ import java.util.Map;
 import java.util.TimeZone;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import javax.annotation.Nullable;
 
 /**
  * Stores session information.
@@ -70,13 +70,13 @@ public class LocalSession {
     // Session related
     private transient RegionSelector selector = new CuboidRegionSelector();
     private transient boolean placeAtPos1 = false;
-    private transient LinkedList<EditSession> history = new LinkedList<EditSession>();
+    private transient LinkedList<EditSession> history = new LinkedList<>();
     private transient int historyPointer = 0;
     private transient ClipboardHolder clipboard;
     private transient boolean toolControl = true;
     private transient boolean superPickaxe = false;
     private transient BlockTool pickaxeMode = new SinglePickaxe();
-    private transient Map<Integer, Tool> tools = new HashMap<Integer, Tool>();
+    private transient Map<Integer, Tool> tools = new HashMap<>();
     private transient int maxBlocksChanged = -1;
     private transient boolean useInventory;
     private transient Snapshot snapshot;
@@ -211,17 +211,6 @@ public class LocalSession {
      * @param player the player
      * @return whether anything was undone
      */
-    public EditSession undo(@Nullable BlockBag newBlockBag, LocalPlayer player) {
-        return undo(newBlockBag, (Player) player);
-    }
-
-    /**
-     * Performs an undo.
-     *
-     * @param newBlockBag a new block bag
-     * @param player the player
-     * @return whether anything was undone
-     */
     public EditSession undo(@Nullable BlockBag newBlockBag, Player player) {
         checkNotNull(player);
         --historyPointer;
@@ -237,17 +226,6 @@ public class LocalSession {
             historyPointer = 0;
             return null;
         }
-    }
-
-    /**
-     * Performs a redo
-     *
-     * @param newBlockBag a new block bag
-     * @param player the player
-     * @return whether anything was redone
-     */
-    public EditSession redo(@Nullable BlockBag newBlockBag, LocalPlayer player) {
-        return redo(newBlockBag, (Player) player);
     }
 
     /**
@@ -294,14 +272,6 @@ public class LocalSession {
     }
 
     /**
-     * @deprecated Use {@link #getRegionSelector(World)}
-     */
-    @Deprecated
-    public RegionSelector getRegionSelector(LocalWorld world) {
-        return getRegionSelector((World) world);
-    }
-
-    /**
      * Get the region selector for defining the selection. If the selection
      * was defined for a different world, the old selection will be discarded.
      *
@@ -318,22 +288,6 @@ public class LocalSession {
     }
 
     /**
-     * @deprecated use {@link #getRegionSelector(World)}
-     */
-    @Deprecated
-    public RegionSelector getRegionSelector() {
-        return selector;
-    }
-
-    /**
-     * @deprecated use {@link #setRegionSelector(World, RegionSelector)}
-     */
-    @Deprecated
-    public void setRegionSelector(LocalWorld world, RegionSelector selector) {
-        setRegionSelector((World) world, selector);
-    }
-
-    /**
      * Set the region selector.
      *
      * @param world the world
@@ -344,24 +298,6 @@ public class LocalSession {
         checkNotNull(selector);
         selector.setWorld(world);
         this.selector = selector;
-    }
-
-    /**
-     * Returns true if the region is fully defined.
-     *
-     * @return true if a region selection is defined
-     */
-    @Deprecated
-    public boolean isRegionDefined() {
-        return selector.isDefined();
-    }
-
-    /**
-     * @deprecated use {@link #isSelectionDefined(World)}
-     */
-    @Deprecated
-    public boolean isSelectionDefined(LocalWorld world) {
-        return isSelectionDefined((World) world);
     }
 
     /**
@@ -376,22 +312,6 @@ public class LocalSession {
             return false;
         }
         return selector.isDefined();
-    }
-
-    /**
-     * @deprecated use {@link #getSelection(World)}
-     */
-    @Deprecated
-    public Region getRegion() throws IncompleteRegionException {
-        return selector.getRegion();
-    }
-
-    /**
-     * @deprecated use {@link #getSelection(World)}
-     */
-    @Deprecated
-    public Region getSelection(LocalWorld world) throws IncompleteRegionException {
-        return getSelection((World) world);
     }
 
     /**
@@ -525,7 +445,7 @@ public class LocalSession {
     public Vector getPlacementPosition(Player player) throws IncompleteRegionException {
         checkNotNull(player);
         if (!placeAtPos1) {
-            return player.getBlockIn();
+            return player.getBlockIn().toVector();
         }
 
         return selector.getPrimaryPosition();
@@ -851,20 +771,11 @@ public class LocalSession {
     }
 
     /**
-     * @deprecated use {@link #createEditSession(Player)}
-     */
-    @Deprecated
-    public EditSession createEditSession(LocalPlayer player) {
-        return createEditSession((Player) player);
-    }
-
-    /**
      * Construct a new edit session.
      *
      * @param player the player
      * @return an edit session
      */
-    @SuppressWarnings("deprecation")
     public EditSession createEditSession(Player player) {
         checkNotNull(player);
 

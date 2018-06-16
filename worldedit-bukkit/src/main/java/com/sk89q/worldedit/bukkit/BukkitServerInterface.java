@@ -22,8 +22,6 @@ package com.sk89q.worldedit.bukkit;
 import com.sk89q.bukkit.util.CommandInfo;
 import com.sk89q.bukkit.util.CommandRegistration;
 import com.sk89q.worldedit.LocalConfiguration;
-import com.sk89q.worldedit.LocalWorld;
-import com.sk89q.worldedit.ServerInterface;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Capability;
@@ -38,14 +36,15 @@ import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.entity.EntityType;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
-public class BukkitServerInterface extends ServerInterface implements MultiUserPlatform {
+import javax.annotation.Nullable;
+
+public class BukkitServerInterface implements MultiUserPlatform {
     public Server server;
     public WorldEditPlugin plugin;
     private CommandRegistration dynamicCommands;
@@ -86,12 +85,12 @@ public class BukkitServerInterface extends ServerInterface implements MultiUserP
     }
 
     @Override
-    public List<LocalWorld> getWorlds() {
+    public List<com.sk89q.worldedit.world.World> getWorlds() {
         List<World> worlds = server.getWorlds();
-        List<LocalWorld> ret = new ArrayList<LocalWorld>(worlds.size());
+        List<com.sk89q.worldedit.world.World> ret = new ArrayList<>(worlds.size());
 
         for (World world : worlds) {
-            ret.add(BukkitUtil.getLocalWorld(world));
+            ret.add(BukkitUtil.getWorld(world));
         }
 
         return ret;
@@ -104,7 +103,7 @@ public class BukkitServerInterface extends ServerInterface implements MultiUserP
             return player;
         } else {
             org.bukkit.entity.Player bukkitPlayer = server.getPlayerExact(player.getName());
-            return bukkitPlayer != null ? new BukkitPlayer(plugin, this, bukkitPlayer) : null;
+            return bukkitPlayer != null ? new BukkitPlayer(plugin, bukkitPlayer) : null;
         }
     }
 
@@ -181,7 +180,7 @@ public class BukkitServerInterface extends ServerInterface implements MultiUserP
     public Collection<Actor> getConnectedUsers() {
         List<Actor> users = new ArrayList<Actor>();
         for (org.bukkit.entity.Player player : Bukkit.getServer().getOnlinePlayers()) {
-            users.add(new BukkitPlayer(plugin, this, player));
+            users.add(new BukkitPlayer(plugin, player));
         }
         return users;
     }

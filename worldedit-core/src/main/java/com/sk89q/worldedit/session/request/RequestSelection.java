@@ -31,7 +31,7 @@ import java.util.Set;
 
 /**
  * A region that mirrors the current selection according to the current
- * {@link LocalSession} and {@link LocalWorld} set on the current
+ * {@link LocalSession} and {@link World} set on the current
  * {@link Request}.
  *
  * <p>If a selection cannot be taken, then the selection will be assumed to be
@@ -126,11 +126,6 @@ public class RequestSelection implements Region {
     @Override
     public World getWorld() {
         return getRegion().getWorld();
-    }
-
-    @Override
-    public void setWorld(LocalWorld world) {
-        setWorld((World) world);
     }
 
     @Override

@@ -21,7 +21,6 @@ package com.sk89q.worldedit.regions;
 
 import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.BlockVector2D;
-import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.Vector2D;
 import com.sk89q.worldedit.regions.iterator.FlatRegion3DIterator;
@@ -52,11 +51,6 @@ public class Polygonal2DRegion extends AbstractRegion implements FlatRegion {
         this((World) null);
     }
 
-    @Deprecated
-    public Polygonal2DRegion(LocalWorld world) {
-        this((World) world);
-    }
-
     /**
      * Construct the region.
      *
@@ -65,11 +59,6 @@ public class Polygonal2DRegion extends AbstractRegion implements FlatRegion {
     public Polygonal2DRegion(World world) {
         this(world, Collections.<BlockVector2D>emptyList(), 0, 0);
         hasY = false;
-    }
-
-    @Deprecated
-    public Polygonal2DRegion(LocalWorld world, List<BlockVector2D> points, int minY, int maxY) {
-        this((World) world, points, minY, maxY);
     }
 
     /**

@@ -22,11 +22,10 @@ package com.sk89q.worldedit.entity;
 import com.sk89q.worldedit.PlayerDirection;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.WorldVector;
-import com.sk89q.worldedit.WorldVectorFace;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
+import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.World;
 
 /**
@@ -100,14 +99,14 @@ public interface Player extends Entity, Actor {
      *
      * @param searchPos search position
      */
-    void findFreePosition(WorldVector searchPos);
+    void findFreePosition(Location searchPos);
 
     /**
      * Set the actor on the ground.
      *
      * @param searchPos The location to start searching from
      */
-    void setOnGround(WorldVector searchPos);
+    void setOnGround(Location searchPos);
 
     /**
      * Find a position for the player to stand that is not inside a block.
@@ -179,14 +178,14 @@ public interface Player extends Entity, Actor {
      *
      * @return point
      */
-    WorldVector getBlockIn();
+    Location getBlockIn();
 
     /**
      * Get the point of the block that is being stood upon.
      *
      * @return point
      */
-    WorldVector getBlockOn();
+    Location getBlockOn();
 
     /**
      * Get the point of the block being looked at. May return null.
@@ -196,7 +195,7 @@ public interface Player extends Entity, Actor {
      * @param useLastBlock try to return the last valid air block found
      * @return point
      */
-    WorldVector getBlockTrace(int range, boolean useLastBlock);
+    Location getBlockTrace(int range, boolean useLastBlock);
 
     /**
      * Get the face that the player is looking at.
@@ -205,7 +204,7 @@ public interface Player extends Entity, Actor {
      * @param useLastBlock try to return the last valid air block found
      * @return a face
      */
-    WorldVectorFace getBlockTraceFace(int range, boolean useLastBlock);
+    Location getBlockTraceFace(int range, boolean useLastBlock);
 
     /**
      * Get the point of the block being looked at. May return null.
@@ -213,7 +212,7 @@ public interface Player extends Entity, Actor {
      * @param range How far to checks for blocks
      * @return point
      */
-    WorldVector getBlockTrace(int range);
+    Location getBlockTrace(int range);
 
     /**
      * Get the point of the block being looked at. May return null.
@@ -221,7 +220,7 @@ public interface Player extends Entity, Actor {
      * @param range How far to checks for blocks
      * @return point
      */
-    WorldVector getSolidBlockTrace(int range);
+    Location getSolidBlockTrace(int range);
 
     /**
      * Get the player's cardinal direction (N, W, NW, etc.). May return null.
@@ -238,8 +237,7 @@ public interface Player extends Entity, Actor {
      * @return the actor's position
      * @deprecated use {@link #getLocation()}
      */
-    @Deprecated
-    WorldVector getPosition();
+    Location getPosition();
 
     /**
      * Get the player's view pitch in degrees.

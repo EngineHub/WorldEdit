@@ -22,7 +22,6 @@ package com.sk89q.worldedit.bukkit.selections;
 import java.util.Collections;
 import java.util.List;
 
-import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.regions.selector.Polygonal2DRegionSelector;
 import org.bukkit.World;
 import com.sk89q.worldedit.BlockVector2D;
@@ -40,7 +39,7 @@ public class Polygonal2DSelection extends RegionSelection {
 
     public Polygonal2DSelection(World world, List<BlockVector2D> points, int minY, int maxY) {
         super(world);
-        LocalWorld lWorld = BukkitUtil.getLocalWorld(world);
+        com.sk89q.worldedit.world.World lWorld = BukkitUtil.getWorld(world);
 
         // Validate input
         minY = Math.min(Math.max(0, minY), world.getMaxHeight());

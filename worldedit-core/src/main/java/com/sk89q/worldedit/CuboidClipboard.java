@@ -23,6 +23,7 @@ import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.command.ClipboardCommands;
 import com.sk89q.worldedit.command.SchematicCommands;
+import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.function.operation.ForwardExtentCopy;
@@ -74,7 +75,7 @@ public class CuboidClipboard {
     private Vector offset;
     private Vector origin;
     private Vector size;
-    private List<CopiedEntity> entities = new ArrayList<CopiedEntity>();
+    private List<CopiedEntity> entities = new ArrayList<>();
 
     /**
      * Constructs the clipboard.
@@ -448,11 +449,14 @@ public class CuboidClipboard {
      * @param newOrigin the new origin
      * @return a list of entities that were pasted
      */
-    public LocalEntity[] pasteEntities(Vector newOrigin) {
-        LocalEntity[] entities = new LocalEntity[this.entities.size()];
+    public Entity[] pasteEntities(Vector newOrigin) {
+        Entity[] entities = new Entity[this.entities.size()];
         for (int i = 0; i < this.entities.size(); ++i) {
             CopiedEntity copied = this.entities.get(i);
-            if (copied.entity.spawn(copied.entity.getPosition().setPosition(copied.relativePosition.add(newOrigin)))) {
+            if (copied.entity.getExtent().createEntity(
+                    copied.entity.getLocation().setPosition(copied.relativePosition.add(newOrigin)),
+                    copied.entity.getState()
+            ) != null) {
                 entities[i] = copied.entity;
             }
         }
@@ -464,7 +468,7 @@ public class CuboidClipboard {
      *
      * @param entity the entity
      */
-    public void storeEntity(LocalEntity entity) {
+    public void storeEntity(Entity entity) {
         this.entities.add(new CopiedEntity(entity));
     }
 
@@ -683,12 +687,12 @@ public class CuboidClipboard {
      * Stores a copied entity.
      */
     private class CopiedEntity {
-        private final LocalEntity entity;
+        private final Entity entity;
         private final Vector relativePosition;
 
-        private CopiedEntity(LocalEntity entity) {
+        private CopiedEntity(Entity entity) {
             this.entity = entity;
-            this.relativePosition = entity.getPosition().getPosition().subtract(getOrigin());
+            this.relativePosition = entity.getLocation().toVector().subtract(getOrigin());
         }
     }
 

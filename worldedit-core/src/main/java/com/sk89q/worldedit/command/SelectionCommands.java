@@ -49,6 +49,7 @@ import com.sk89q.worldedit.regions.selector.RegionSelectorType;
 import com.sk89q.worldedit.regions.selector.SphereRegionSelector;
 import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.util.Countable;
+import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.formatting.ColorCodeBuilder;
 import com.sk89q.worldedit.util.formatting.Style;
 import com.sk89q.worldedit.util.formatting.StyledFragment;
@@ -85,12 +86,12 @@ public class SelectionCommands {
     @CommandPermissions("worldedit.selection.pos")
     public void pos1(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
 
-        Vector pos;
+        Location pos;
 
         if (args.argsLength() == 1) {
             if (args.getString(0).matches("-?\\d+,-?\\d+,-?\\d+")) {
                 String[] coords = args.getString(0).split(",");
-                pos = new Vector(Integer.parseInt(coords[0]), Integer.parseInt(coords[1]), Integer.parseInt(coords[2]));
+                pos = new Location(player.getWorld(), Integer.parseInt(coords[0]), Integer.parseInt(coords[1]), Integer.parseInt(coords[2]));
             } else {
                 player.printError("Invalid coordinates " + args.getString(0));
                 return;
@@ -99,13 +100,13 @@ public class SelectionCommands {
             pos = player.getBlockIn();
         }
 
-        if (!session.getRegionSelector(player.getWorld()).selectPrimary(pos, ActorSelectorLimits.forActor(player))) {
+        if (!session.getRegionSelector(player.getWorld()).selectPrimary(pos.toVector(), ActorSelectorLimits.forActor(player))) {
             player.printError("Position already set.");
             return;
         }
 
         session.getRegionSelector(player.getWorld())
-                .explainPrimarySelection(player, session, pos);
+                .explainPrimarySelection(player, session, pos.toVector());
     }
 
     @Command(
@@ -119,11 +120,11 @@ public class SelectionCommands {
     @CommandPermissions("worldedit.selection.pos")
     public void pos2(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
 
-        Vector pos;
+        Location pos;
         if (args.argsLength() == 1) {
             if (args.getString(0).matches("-?\\d+,-?\\d+,-?\\d+")) {
                 String[] coords = args.getString(0).split(",");
-                pos = new Vector(Integer.parseInt(coords[0]),
+                pos = new Location(player.getWorld(), Integer.parseInt(coords[0]),
                         Integer.parseInt(coords[1]),
                         Integer.parseInt(coords[2]));
             } else {
@@ -134,13 +135,13 @@ public class SelectionCommands {
             pos = player.getBlockIn();
         }
 
-        if (!session.getRegionSelector(player.getWorld()).selectSecondary(pos, ActorSelectorLimits.forActor(player))) {
+        if (!session.getRegionSelector(player.getWorld()).selectSecondary(pos.toVector(), ActorSelectorLimits.forActor(player))) {
             player.printError("Position already set.");
             return;
         }
 
         session.getRegionSelector(player.getWorld())
-                .explainSecondarySelection(player, session, pos);
+                .explainSecondarySelection(player, session, pos.toVector());
     }
 
     @Command(
@@ -152,17 +153,17 @@ public class SelectionCommands {
     )
     @CommandPermissions("worldedit.selection.hpos")
     public void hpos1(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
-        
-        Vector pos = player.getBlockTrace(300);
+
+        Location pos = player.getBlockTrace(300);
 
         if (pos != null) {
-            if (!session.getRegionSelector(player.getWorld()).selectPrimary(pos, ActorSelectorLimits.forActor(player))) {
+            if (!session.getRegionSelector(player.getWorld()).selectPrimary(pos.toVector(), ActorSelectorLimits.forActor(player))) {
                 player.printError("Position already set.");
                 return;
             }
 
             session.getRegionSelector(player.getWorld())
-                    .explainPrimarySelection(player, session, pos);
+                    .explainPrimarySelection(player, session, pos.toVector());
         } else {
             player.printError("No block in sight!");
         }
@@ -177,17 +178,17 @@ public class SelectionCommands {
     )
     @CommandPermissions("worldedit.selection.hpos")
     public void hpos2(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
-        
-        Vector pos = player.getBlockTrace(300);
+
+        Location pos = player.getBlockTrace(300);
 
         if (pos != null) {
-            if (!session.getRegionSelector(player.getWorld()).selectSecondary(pos, ActorSelectorLimits.forActor(player))) {
+            if (!session.getRegionSelector(player.getWorld()).selectSecondary(pos.toVector(), ActorSelectorLimits.forActor(player))) {
                 player.printError("Position already set.");
                 return;
             }
 
             session.getRegionSelector(player.getWorld())
-                    .explainSecondarySelection(player, session, pos);
+                    .explainSecondarySelection(player, session, pos.toVector());
         } else {
             player.printError("No block in sight!");
         }
@@ -241,7 +242,7 @@ public class SelectionCommands {
                 min2D = (args.hasFlag('c')) ? pos : ChunkStore.toChunk(pos.toVector());
             } else {
                 // use player loc
-                min2D = ChunkStore.toChunk(player.getBlockIn());
+                min2D = ChunkStore.toChunk(player.getBlockIn().toVector());
             }
 
             min = new Vector(min2D.getBlockX() * 16, 0, min2D.getBlockZ() * 16);

@@ -42,6 +42,7 @@ import com.sk89q.worldedit.scripting.CraftScriptEngine;
 import com.sk89q.worldedit.scripting.RhinoCraftScriptEngine;
 import com.sk89q.worldedit.session.SessionManager;
 import com.sk89q.worldedit.session.request.Request;
+import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.eventbus.EventBus;
 import com.sk89q.worldedit.util.io.file.FileSelectionAbortedException;
 import com.sk89q.worldedit.util.io.file.FilenameException;
@@ -655,8 +656,8 @@ public class WorldEdit {
      * @param clicked the clicked block
      * @return false if you want the action to go through
      */
-    public boolean handleBlockRightClick(Player player, WorldVector clicked) {
-        BlockInteractEvent event = new BlockInteractEvent(player, clicked.toLocation(), OPEN);
+    public boolean handleBlockRightClick(Player player, Location clicked) {
+        BlockInteractEvent event = new BlockInteractEvent(player, clicked, OPEN);
         getEventBus().post(event);
         return event.isCancelled();
     }
@@ -668,8 +669,8 @@ public class WorldEdit {
      * @param clicked the clicked block
      * @return false if you want the action to go through
      */
-    public boolean handleBlockLeftClick(Player player, WorldVector clicked) {
-        BlockInteractEvent event = new BlockInteractEvent(player, clicked.toLocation(), HIT);
+    public boolean handleBlockLeftClick(Player player, Location clicked) {
+        BlockInteractEvent event = new BlockInteractEvent(player, clicked, HIT);
         getEventBus().post(event);
         return event.isCancelled();
     }

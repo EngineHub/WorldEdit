@@ -54,11 +54,6 @@ public class ItemType {
         }
     }
 
-    @Deprecated
-    public com.sk89q.worldedit.blocks.ItemType getLegacyType() {
-        return com.sk89q.worldedit.blocks.ItemType.fromID(getLegacyId());
-    }
-
     @Override
     public int hashCode() {
         return this.id.hashCode();

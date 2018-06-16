@@ -56,11 +56,6 @@ public abstract class AbstractRegion implements Region {
     }
 
     @Override
-    public void setWorld(LocalWorld world) {
-        setWorld((World) world);
-    }
-
-    @Override
     public void setWorld(World world) {
         this.world = world;
     }
@@ -89,7 +84,7 @@ public abstract class AbstractRegion implements Region {
         final BlockVector min = getMinimumPoint().toBlockVector();
         final BlockVector max = getMaximumPoint().toBlockVector();
 
-        final List<BlockVector2D> points = new ArrayList<BlockVector2D>(4);
+        final List<BlockVector2D> points = new ArrayList<>(4);
 
         points.add(new BlockVector2D(min.getX(), min.getZ()));
         points.add(new BlockVector2D(min.getX(), max.getZ()));
@@ -160,7 +155,7 @@ public abstract class AbstractRegion implements Region {
      */
     @Override
     public Set<Vector2D> getChunks() {
-        final Set<Vector2D> chunks = new HashSet<Vector2D>();
+        final Set<Vector2D> chunks = new HashSet<>();
 
         final Vector min = getMinimumPoint();
         final Vector max = getMaximumPoint();
@@ -185,7 +180,7 @@ public abstract class AbstractRegion implements Region {
 
     @Override
     public Set<Vector> getChunkCubes() {
-        final Set<Vector> chunks = new HashSet<Vector>();
+        final Set<Vector> chunks = new HashSet<>();
 
         final Vector min = getMinimumPoint();
         final Vector max = getMaximumPoint();

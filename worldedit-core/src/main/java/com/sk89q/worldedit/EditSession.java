@@ -133,31 +133,6 @@ public class EditSession implements Extent {
     private Mask oldMask;
 
     /**
-     * Create a new instance.
-     *
-     * @param world a world
-     * @param maxBlocks the maximum number of blocks that can be changed, or -1 to use no limit
-     * @deprecated use {@link WorldEdit#getEditSessionFactory()} to create {@link EditSession}s
-     */
-    @Deprecated
-    public EditSession(LocalWorld world, int maxBlocks) {
-        this(world, maxBlocks, null);
-    }
-
-    /**
-     * Create a new instance.
-     *
-     * @param world a world
-     * @param maxBlocks the maximum number of blocks that can be changed, or -1 to use no limit
-     * @param blockBag the block bag to set, or null to use none
-     * @deprecated use {@link WorldEdit#getEditSessionFactory()} to create {@link EditSession}s
-     */
-    @Deprecated
-    public EditSession(LocalWorld world, int maxBlocks, @Nullable BlockBag blockBag) {
-        this(WorldEdit.getInstance().getEventBus(), world, maxBlocks, blockBag, new EditSessionEvent(world, null, maxBlocks, null));
-    }
-
-    /**
      * Construct the object with a maximum number of blocks and a block bag.
      *
      * @param eventBus the event bus

@@ -26,6 +26,7 @@ import com.sk89q.minecraft.util.commands.Logging;
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.math.MathUtils;
+import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.storage.LegacyChunkStore;
 import com.sk89q.worldedit.world.storage.McRegionChunkStore;
 
@@ -58,7 +59,7 @@ public class ChunkCommands {
     )
     @CommandPermissions("worldedit.chunkinfo")
     public void chunkInfo(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
-        Vector pos = player.getBlockIn();
+        Location pos = player.getBlockIn();
         int chunkX = (int) Math.floor(pos.getBlockX() / 16.0);
         int chunkZ = (int) Math.floor(pos.getBlockZ() / 16.0);
 

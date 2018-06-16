@@ -19,12 +19,13 @@
 
 package com.sk89q.worldedit.extension.platform;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.ServerInterface;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.WorldVector;
 import com.sk89q.worldedit.command.tool.BlockTool;
 import com.sk89q.worldedit.command.tool.DoubleActionBlockTool;
 import com.sk89q.worldedit.command.tool.DoubleActionTraceTool;
@@ -44,7 +45,6 @@ import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.eventbus.Subscribe;
 import com.sk89q.worldedit.world.World;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.Iterator;
@@ -55,7 +55,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import javax.annotation.Nullable;
 
 /**
  * Manages registered {@link Platform}s for WorldEdit. Platforms are
@@ -403,7 +403,7 @@ public class PlatformManager {
                         return;
                     }
 
-                    WorldVector pos = player.getSolidBlockTrace(getConfiguration().navigationWandMaxDistance);
+                    Location pos = player.getSolidBlockTrace(getConfiguration().navigationWandMaxDistance);
                     if (pos != null) {
                         player.findFreePosition(pos);
                     } else {
@@ -417,7 +417,7 @@ public class PlatformManager {
                 LocalSession session = worldEdit.getSessionManager().get(player);
 
                 Tool tool = session.getTool(player.getItemInHand());
-                if (tool != null && tool instanceof DoubleActionTraceTool) {
+                if (tool instanceof DoubleActionTraceTool) {
                     if (tool.canUse(player)) {
                         ((DoubleActionTraceTool) tool).actSecondary(queryCapability(Capability.WORLD_EDITING), getConfiguration(), player, session);
                         event.setCancelled(true);

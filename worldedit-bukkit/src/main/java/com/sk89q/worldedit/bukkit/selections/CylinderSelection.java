@@ -23,7 +23,6 @@ import com.sk89q.worldedit.regions.selector.CylinderRegionSelector;
 import org.bukkit.World;
 
 import com.sk89q.worldedit.BlockVector2D;
-import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.bukkit.BukkitUtil;
 import com.sk89q.worldedit.regions.CylinderRegion;
 import com.sk89q.worldedit.regions.RegionSelector;
@@ -42,7 +41,7 @@ public class CylinderSelection extends RegionSelection {
     
     public CylinderSelection(World world, BlockVector2D center, BlockVector2D radius, int minY, int maxY) {
         super(world);
-        LocalWorld lWorld = BukkitUtil.getLocalWorld(world);
+        com.sk89q.worldedit.world.World lWorld = BukkitUtil.getWorld(world);
 
         // Validate input
         minY = Math.min(Math.max(0, minY), world.getMaxHeight());
