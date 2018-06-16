@@ -42,7 +42,7 @@ public class ListTagBuilder {
     ListTagBuilder(Class<? extends Tag> type) {
         checkNotNull(type);
         this.type = type;
-        this.entries = new ArrayList<Tag>();
+        this.entries = new ArrayList<>();
     }
 
     /**
@@ -80,7 +80,7 @@ public class ListTagBuilder {
      * @return the new list tag
      */
     public ListTag build() {
-        return new ListTag(type, new ArrayList<Tag>(entries));
+        return new ListTag(type, new ArrayList<>(entries));
     }
 
     /**

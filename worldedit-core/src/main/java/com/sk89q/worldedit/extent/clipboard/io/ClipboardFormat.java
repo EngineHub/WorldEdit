@@ -65,9 +65,7 @@ public enum ClipboardFormat {
 
         @Override
         public boolean isFormat(File file) {
-            DataInputStream str = null;
-            try {
-                str = new DataInputStream(new GZIPInputStream(new FileInputStream(file)));
+            try (DataInputStream str = new DataInputStream(new GZIPInputStream(new FileInputStream(file)))) {
                 if ((str.readByte() & 0xFF) != NBTConstants.TYPE_COMPOUND) {
                     return false;
                 }
@@ -77,18 +75,11 @@ public enum ClipboardFormat {
                 return name.equals("Schematic");
             } catch (IOException e) {
                 return false;
-            } finally {
-                if (str != null) {
-                    try {
-                        str.close();
-                    } catch (IOException ignored) {
-                    }
-                }
             }
         }
     };
 
-    private static final Map<String, ClipboardFormat> aliasMap = new HashMap<String, ClipboardFormat>();
+    private static final Map<String, ClipboardFormat> aliasMap = new HashMap<>();
 
     private final String[] aliases;
 
@@ -107,7 +98,7 @@ public enum ClipboardFormat {
      * @return a set of aliases
      */
     public Set<String> getAliases() {
-        return Collections.unmodifiableSet(new HashSet<String>(Arrays.asList(aliases)));
+        return Collections.unmodifiableSet(new HashSet<>(Arrays.asList(aliases)));
     }
 
     /**

@@ -82,24 +82,8 @@ public class SpongePlayer extends AbstractPlayerActor {
     }
 
     @Override
-    public Location getPosition() {
-        Vector3d pos = this.player.getLocation().getPosition();
-        return new Location(SpongeWorldEdit.inst().getAdapter().getWorld(this.player.getWorld()), pos.getX(), pos.getY(), pos.getZ());
-    }
-
-    @Override
     public com.sk89q.worldedit.world.World getWorld() {
         return SpongeWorldEdit.inst().getAdapter().getWorld(player.getWorld());
-    }
-
-    @Override
-    public double getPitch() {
-        return getLocation().getPitch();
-    }
-
-    @Override
-    public double getYaw() {
-        return getLocation().getYaw();
     }
 
     @Override

@@ -54,9 +54,9 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class ParametricBuilder {
 
-    private final Map<Type, Binding> bindings = new HashMap<Type, Binding>();
+    private final Map<Type, Binding> bindings = new HashMap<>();
     private final Paranamer paranamer = new CachingParanamer();
-    private final List<InvokeListener> invokeListeners = new ArrayList<InvokeListener>();
+    private final List<InvokeListener> invokeListeners = new ArrayList<>();
     private Authorizer authorizer = new NullAuthorizer();
     private CommandCompleter defaultCompleter = new NullCompleter();
     

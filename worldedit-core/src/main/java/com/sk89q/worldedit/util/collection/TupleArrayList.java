@@ -39,7 +39,7 @@ public class TupleArrayList<A, B> extends ArrayList<Map.Entry<A, B>> {
      * @param b the 'value'
      */
     public void put(A a, B b) {
-        add(new Tuple<A, B>(a, b));
+        add(new Tuple<>(a, b));
     }
 
     /**

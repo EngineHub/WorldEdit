@@ -329,7 +329,6 @@ public class BukkitWorld extends AbstractWorld {
         world.dropItemNaturally(BukkitUtil.toLocation(world, pt), bukkitItem);
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     public boolean isValidBlockType(int type) {
         return Material.getMaterial(type) != null && Material.getMaterial(type).isBlock();
@@ -421,7 +420,6 @@ public class BukkitWorld extends AbstractWorld {
         }
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     public BaseBlock getLazyBlock(Vector position) {
         World world = getWorld();

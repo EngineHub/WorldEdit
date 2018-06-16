@@ -39,7 +39,7 @@ public class FlagParser implements CommandExecutor<FlagData> {
     private final Map<Character, CommandExecutor<?>> flags = Maps.newHashMap();
 
     public <T> Flag<T> registerFlag(char flag, CommandExecutor<T> executor) {
-        Flag<T> ret = new Flag<T>(flag);
+        Flag<T> ret = new Flag<>(flag);
         flags.put(flag, executor);
         return ret;
     }

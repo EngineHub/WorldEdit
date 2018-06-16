@@ -25,6 +25,7 @@ import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
+import com.sk89q.worldedit.blocks.type.BlockTypes;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Platform;
@@ -43,7 +44,7 @@ public class SinglePickaxe implements BlockTool {
     @Override
     public boolean actPrimary(Platform server, LocalConfiguration config, Player player, LocalSession session, com.sk89q.worldedit.util.Location clicked) {
         World world = (World) clicked.getExtent();
-        final int blockType = world.getBlockType(clicked.toVector());
+        final int blockType = world.getLazyBlock(clicked.toVector()).getId();
         if (blockType == BlockID.BEDROCK
                 && !player.canDestroyBedrock()) {
             return true;
@@ -53,7 +54,7 @@ public class SinglePickaxe implements BlockTool {
         editSession.getSurvivalExtent().setToolUse(config.superPickaxeDrop);
 
         try {
-            editSession.setBlock(clicked.toVector(), new BaseBlock(BlockID.AIR));
+            editSession.setBlock(clicked.toVector(), new BaseBlock(BlockTypes.AIR));
         } catch (MaxChangedBlocksException e) {
             player.printError("Max blocks change limit reached.");
         } finally {

@@ -22,7 +22,6 @@ package com.sk89q.worldedit.blocks.type;
 import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Nullable;

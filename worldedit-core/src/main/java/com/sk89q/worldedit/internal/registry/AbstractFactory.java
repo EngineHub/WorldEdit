@@ -38,7 +38,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public abstract class AbstractFactory<E> {
 
     protected final WorldEdit worldEdit;
-    protected final List<InputParser<E>> parsers = new ArrayList<InputParser<E>>();
+    protected final List<InputParser<E>> parsers = new ArrayList<>();
 
     /**
      * Create a new factory.

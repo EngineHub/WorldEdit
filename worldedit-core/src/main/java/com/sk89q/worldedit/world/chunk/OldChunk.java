@@ -123,7 +123,7 @@ public class OldChunk implements Chunk {
                 rootTag.getValue(), "TileEntities", ListTag.class)
                 .getValue();
 
-        tileEntities = new HashMap<BlockVector, Map<String, Tag>>();
+        tileEntities = new HashMap<>();
 
         for (Tag tag : tags) {
             if (!(tag instanceof CompoundTag)) {
@@ -136,21 +136,25 @@ public class OldChunk implements Chunk {
             int y = 0;
             int z = 0;
 
-            Map<String, Tag> values = new HashMap<String, Tag>();
+            Map<String, Tag> values = new HashMap<>();
 
             for (Map.Entry<String, Tag> entry : t.getValue().entrySet()) {
-                if (entry.getKey().equals("x")) {
-                    if (entry.getValue() instanceof IntTag) {
-                        x = ((IntTag) entry.getValue()).getValue();
-                    }
-                } else if (entry.getKey().equals("y")) {
-                    if (entry.getValue() instanceof IntTag) {
-                        y = ((IntTag) entry.getValue()).getValue();
-                    }
-                } else if (entry.getKey().equals("z")) {
-                    if (entry.getValue() instanceof IntTag) {
-                        z = ((IntTag) entry.getValue()).getValue();
-                    }
+                switch (entry.getKey()) {
+                    case "x":
+                        if (entry.getValue() instanceof IntTag) {
+                            x = ((IntTag) entry.getValue()).getValue();
+                        }
+                        break;
+                    case "y":
+                        if (entry.getValue() instanceof IntTag) {
+                            y = ((IntTag) entry.getValue()).getValue();
+                        }
+                        break;
+                    case "z":
+                        if (entry.getValue() instanceof IntTag) {
+                            z = ((IntTag) entry.getValue()).getValue();
+                        }
+                        break;
                 }
 
                 values.put(entry.getKey(), entry.getValue());

@@ -71,7 +71,7 @@ public class Polygonal2DRegion extends AbstractRegion implements FlatRegion {
      */
     public Polygonal2DRegion(World world, List<BlockVector2D> points, int minY, int maxY) {
         super(world);
-        this.points = new ArrayList<BlockVector2D>(points);
+        this.points = new ArrayList<>(points);
         this.minY = minY;
         this.maxY = maxY;
         hasY = true;
@@ -409,12 +409,7 @@ public class Polygonal2DRegion extends AbstractRegion implements FlatRegion {
 
     @Override
     public Iterable<Vector2D> asFlatRegion() {
-        return new Iterable<Vector2D>() {
-            @Override
-            public Iterator<Vector2D> iterator() {
-                return new FlatRegionIterator(Polygonal2DRegion.this);
-            }
-        };
+        return () -> new FlatRegionIterator(Polygonal2DRegion.this);
     }
 
     /**
@@ -440,7 +435,7 @@ public class Polygonal2DRegion extends AbstractRegion implements FlatRegion {
     @Override
     public Polygonal2DRegion clone() {
         Polygonal2DRegion clone = (Polygonal2DRegion) super.clone();
-        clone.points = new ArrayList<BlockVector2D>(points);
+        clone.points = new ArrayList<>(points);
         return clone; 
     }
 

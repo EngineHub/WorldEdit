@@ -488,11 +488,11 @@ public enum ItemType {
     /**
      * Stores a map of the IDs for fast access.
      */
-    private static final Map<Integer, ItemType> ids = new HashMap<Integer, ItemType>();
+    private static final Map<Integer, ItemType> ids = new HashMap<>();
     /**
      * Stores a map of the names for fast access.
      */
-    private static final Map<String, ItemType> lookup = new LinkedHashMap<String, ItemType>();
+    private static final Map<String, ItemType> lookup = new LinkedHashMap<>();
 
     private final int id;
     private final String name;
@@ -636,7 +636,7 @@ public enum ItemType {
         return lookupKeys;
     }
 
-    private static final Set<Integer> shouldNotStack = new HashSet<Integer>();
+    private static final Set<Integer> shouldNotStack = new HashSet<>();
     static {
         shouldNotStack.add(ItemID.IRON_SHOVEL);
         shouldNotStack.add(ItemID.IRON_PICK);
@@ -735,7 +735,7 @@ public enum ItemType {
         return shouldNotStack.contains(id);
     }
 
-    private static final Set<Integer> usesDamageValue = new HashSet<Integer>();
+    private static final Set<Integer> usesDamageValue = new HashSet<>();
     static {
         usesDamageValue.add(BlockID.DIRT);
         usesDamageValue.add(BlockID.WOOD);

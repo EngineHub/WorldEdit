@@ -40,7 +40,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class BlockMask extends AbstractExtentMask {
 
-    private final Set<BaseBlock> blocks = new HashSet<BaseBlock>();
+    private final Set<BaseBlock> blocks = new HashSet<>();
 
     /**
      * Create a new block mask.

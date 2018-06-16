@@ -299,11 +299,11 @@ public enum BlockType {
     /**
      * Stores a map of the IDs for fast access.
      */
-    private static final Map<Integer, BlockType> ids = new HashMap<Integer, BlockType>();
+    private static final Map<Integer, BlockType> ids = new HashMap<>();
     /**
      * Stores a map of the names for fast access.
      */
-    private static final Map<String, BlockType> lookup = new HashMap<String, BlockType>();
+    private static final Map<String, BlockType> lookup = new HashMap<>();
 
     private final int id;
     private final String name;
@@ -383,8 +383,8 @@ public enum BlockType {
         }
     }
 
-    private static final Map<Integer, BaseBlock> itemBlockMapping = new HashMap<Integer, BaseBlock>();
-    private static final Map<Integer, BaseBlock> dataItemBlockMapping = new HashMap<Integer, BaseBlock>();
+    private static final Map<Integer, BaseBlock> itemBlockMapping = new HashMap<>();
+    private static final Map<Integer, BaseBlock> dataItemBlockMapping = new HashMap<>();
     static {
         for (int data = 0; data < 16; ++data) {
             dataItemBlockMapping.put(typeDataKey(BlockID.DIRT, data), new BaseBlock(BlockID.DIRT, data));
@@ -472,7 +472,7 @@ public enum BlockType {
     /**
      * HashSet for shouldPlaceLast.
      */
-    private static final Set<Integer> shouldPlaceLast = new HashSet<Integer>();
+    private static final Set<Integer> shouldPlaceLast = new HashSet<>();
     static {
         shouldPlaceLast.add(BlockID.SAPLING);
         shouldPlaceLast.add(BlockID.BED);
@@ -551,7 +551,7 @@ public enum BlockType {
     /**
      * HashSet for shouldPlaceLast.
      */
-    private static final Set<Integer> shouldPlaceFinal = new HashSet<Integer>();
+    private static final Set<Integer> shouldPlaceFinal = new HashSet<>();
     static {
         shouldPlaceFinal.add(BlockID.SIGN_POST);
         shouldPlaceFinal.add(BlockID.WOODEN_DOOR);
@@ -586,7 +586,7 @@ public enum BlockType {
     /**
      * HashSet for canPassThrough.
      */
-    private static final Set<Integer> canPassThrough = new HashSet<Integer>();
+    private static final Set<Integer> canPassThrough = new HashSet<>();
     static {
         canPassThrough.add(BlockID.AIR);
         canPassThrough.add(BlockID.WATER);
@@ -688,7 +688,7 @@ public enum BlockType {
     /**
      * HashSet for centralTopLimit.
      */
-    private static final Map<Integer, Double> centralTopLimit = new HashMap<Integer, Double>();
+    private static final Map<Integer, Double> centralTopLimit = new HashMap<>();
     static {
         centralTopLimit.put(BlockID.BED, 0.5625);
         centralTopLimit.put(BlockID.BREWING_STAND, 0.875);
@@ -789,7 +789,7 @@ public enum BlockType {
     /**
      * HashSet for usesData.
      */
-    private static final Set<Integer> usesData = new HashSet<Integer>();
+    private static final Set<Integer> usesData = new HashSet<>();
     static {
         usesData.add(BlockID.STONE);
         usesData.add(BlockID.DIRT);
@@ -934,7 +934,7 @@ public enum BlockType {
     /**
      * HashSet for isContainerBlock.
      */
-    private static final Set<Integer> isContainerBlock = new HashSet<Integer>();
+    private static final Set<Integer> isContainerBlock = new HashSet<>();
     static {
         isContainerBlock.add(BlockID.DISPENSER);
         isContainerBlock.add(BlockID.FURNACE);
@@ -969,7 +969,7 @@ public enum BlockType {
     /**
      * HashSet for isRedstoneBlock.
      */
-    private static final Set<Integer> isRedstoneBlock = new HashSet<Integer>();
+    private static final Set<Integer> isRedstoneBlock = new HashSet<>();
     static {
         isRedstoneBlock.add(BlockID.POWERED_RAIL);
         isRedstoneBlock.add(BlockID.DETECTOR_RAIL);
@@ -1032,7 +1032,7 @@ public enum BlockType {
     /**
      * HashSet for canTransferRedstone.
      */
-    private static final Set<Integer> canTransferRedstone = new HashSet<Integer>();
+    private static final Set<Integer> canTransferRedstone = new HashSet<>();
     static {
         canTransferRedstone.add(BlockID.REDSTONE_TORCH_OFF);
         canTransferRedstone.add(BlockID.REDSTONE_TORCH_ON);
@@ -1069,7 +1069,7 @@ public enum BlockType {
     /**
      * HashSet for isRedstoneSource.
      */
-    private static final Set<Integer> isRedstoneSource = new HashSet<Integer>();
+    private static final Set<Integer> isRedstoneSource = new HashSet<>();
     static {
         isRedstoneSource.add(BlockID.DETECTOR_RAIL);
         isRedstoneSource.add(BlockID.REDSTONE_TORCH_OFF);
@@ -1109,7 +1109,7 @@ public enum BlockType {
     /**
      * HashSet for isRailBlock.
      */
-    private static final Set<Integer> isRailBlock = new HashSet<Integer>();
+    private static final Set<Integer> isRailBlock = new HashSet<>();
     static {
         isRailBlock.add(BlockID.POWERED_RAIL);
         isRailBlock.add(BlockID.DETECTOR_RAIL);
@@ -1139,7 +1139,7 @@ public enum BlockType {
     /**
      * HashSet for isNaturalBlock.
      */
-    private static final Set<Integer> isNaturalTerrainBlock = new HashSet<Integer>();
+    private static final Set<Integer> isNaturalTerrainBlock = new HashSet<>();
     static {
         isNaturalTerrainBlock.add(BlockID.STONE);
         isNaturalTerrainBlock.add(BlockID.GRASS);
@@ -1215,7 +1215,7 @@ public enum BlockType {
     /**
      * HashSet for emitsLight.
      */
-    private static final Set<Integer> emitsLight = new HashSet<Integer>();
+    private static final Set<Integer> emitsLight = new HashSet<>();
     static {
         emitsLight.add(BlockID.LAVA);
         emitsLight.add(BlockID.STATIONARY_LAVA);
@@ -1253,7 +1253,7 @@ public enum BlockType {
     /**
      * HashSet for isTranslucent.
      */
-    private static final Set<Integer> isTranslucent = new HashSet<Integer>();
+    private static final Set<Integer> isTranslucent = new HashSet<>();
     static {
         isTranslucent.add(BlockID.AIR);
         isTranslucent.add(BlockID.SAPLING);
@@ -1395,8 +1395,8 @@ public enum BlockType {
     /**
      * HashMap for getBlockBagItem.
      */
-    private static final Map<Integer, BaseItem> dataBlockBagItems = new HashMap<Integer, BaseItem>();
-    private static final Map<Integer, BaseItem> nonDataBlockBagItems = new HashMap<Integer, BaseItem>();
+    private static final Map<Integer, BaseItem> dataBlockBagItems = new HashMap<>();
+    private static final Map<Integer, BaseItem> nonDataBlockBagItems = new HashMap<>();
     private static final BaseItem doNotDestroy = new BaseItemStack(BlockID.AIR, 0);
     static {
         /*
@@ -1886,8 +1886,8 @@ public enum BlockType {
         }
     }
 
-    private static final Map<Integer, PlayerDirection> dataAttachments = new HashMap<Integer, PlayerDirection>();
-    private static final Map<Integer, PlayerDirection> nonDataAttachments = new HashMap<Integer, PlayerDirection>();
+    private static final Map<Integer, PlayerDirection> dataAttachments = new HashMap<>();
+    private static final Map<Integer, PlayerDirection> nonDataAttachments = new HashMap<>();
     static {
         nonDataAttachments.put(BlockID.SAPLING, PlayerDirection.DOWN);
         nonDataAttachments.put(BlockID.LONG_GRASS, PlayerDirection.DOWN);

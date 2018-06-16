@@ -61,8 +61,6 @@ public class PatternParser extends SimpleCommand<Pattern> {
 
         try {
             return WorldEdit.getInstance().getPatternFactory().parseFromInput(patternString, parserContext);
-        } catch (NoMatchException e) {
-            throw new CommandException(e.getMessage(), e);
         } catch (InputParseException e) {
             throw new CommandException(e.getMessage(), e);
         }

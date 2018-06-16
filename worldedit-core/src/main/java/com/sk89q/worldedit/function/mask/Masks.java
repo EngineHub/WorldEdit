@@ -20,7 +20,6 @@
 package com.sk89q.worldedit.function.mask;
 
 import com.sk89q.worldedit.*;
-import com.sk89q.worldedit.session.request.Request;
 
 import javax.annotation.Nullable;
 

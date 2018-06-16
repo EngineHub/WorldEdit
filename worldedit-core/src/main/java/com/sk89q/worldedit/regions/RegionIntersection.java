@@ -43,7 +43,7 @@ import java.util.List;
  */
 public class RegionIntersection extends AbstractRegion {
 
-    private final List<Region> regions = new ArrayList<Region>();
+    private final List<Region> regions = new ArrayList<>();
 
     /**
      * Create a new instance with the included list of regions.

@@ -34,7 +34,7 @@ import java.util.*;
 @RequiresNewerGuava
 class HierarchyCache {
 
-    private final Map<Class<?>, Set<Class<?>>> cache = new WeakHashMap<Class<?>, Set<Class<?>>>();
+    private final Map<Class<?>, Set<Class<?>>> cache = new WeakHashMap<>();
 
     public Set<Class<?>> get(Class<?> concreteClass) {
         Set<Class<?>> ret = cache.get(concreteClass);

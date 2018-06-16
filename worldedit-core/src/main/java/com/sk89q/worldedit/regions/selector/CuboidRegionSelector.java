@@ -234,7 +234,7 @@ public class CuboidRegionSelector implements RegionSelector, CUIRegion {
 
     @Override
     public List<String> getInformationLines() {
-        final List<String> lines = new ArrayList<String>();
+        final List<String> lines = new ArrayList<>();
 
         if (position1 != null) {
             lines.add("Position 1: " + position1);

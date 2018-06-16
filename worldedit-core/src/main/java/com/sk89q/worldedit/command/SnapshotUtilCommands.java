@@ -115,10 +115,7 @@ public class SnapshotUtilCommands {
         try {
             chunkStore = snapshot.getChunkStore();
             player.print("Snapshot '" + snapshot.getName() + "' loaded; now restoring...");
-        } catch (DataException e) {
-            player.printError("Failed to load snapshot: " + e.getMessage());
-            return;
-        } catch (IOException e) {
+        } catch (DataException | IOException e) {
             player.printError("Failed to load snapshot: " + e.getMessage());
             return;
         }

@@ -167,8 +167,7 @@ public class ForgeWorld extends AbstractWorld {
         Chunk chunk = world.getChunkFromChunkCoords(x >> 4, z >> 4);
         BlockPos pos = new BlockPos(x, y, z);
         IBlockState old = chunk.getBlockState(pos);
-        @SuppressWarnings("deprecation")
-        IBlockState newState = Block.getBlockById(block.getId()).getStateFromMeta(block.getData());
+            IBlockState newState = Block.getBlockById(block.getId()).getStateFromMeta(block.getData());
         IBlockState successState = chunk.setBlockState(pos, newState);
         boolean successful = successState != null;
 

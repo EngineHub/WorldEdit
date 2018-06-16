@@ -28,7 +28,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public class CommandException extends Exception {
 
-    private List<String> commandStack = new ArrayList<String>();
+    private List<String> commandStack = new ArrayList<>();
 
     public CommandException() {
         super();

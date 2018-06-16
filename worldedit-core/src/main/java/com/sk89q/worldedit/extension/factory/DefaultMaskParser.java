@@ -64,7 +64,7 @@ class DefaultMaskParser extends InputParser<Mask> {
 
     @Override
     public Mask parseFromInput(String input, ParserContext context) throws InputParseException {
-        List<Mask> masks = new ArrayList<Mask>();
+        List<Mask> masks = new ArrayList<>();
 
         for (String component : input.split(" ")) {
             if (component.isEmpty()) {
@@ -126,7 +126,7 @@ class DefaultMaskParser extends InputParser<Mask> {
                 return new MaskIntersection(offsetMask, Masks.negate(submask));
 
             case '$':
-                Set<BaseBiome> biomes = new HashSet<BaseBiome>();
+                Set<BaseBiome> biomes = new HashSet<>();
                 String[] biomesList = component.substring(1).split(",");
                 BiomeRegistry biomeRegistry = context.requireWorld().getWorldData().getBiomeRegistry();
                 List<BaseBiome> knownBiomes = biomeRegistry.getBiomes();

@@ -54,8 +54,8 @@ public class BindingHelper implements Binding {
      * Create a new instance.
      */
     public BindingHelper() {
-        List<BoundMethod> bindings = new ArrayList<BoundMethod>();
-        List<Type> types = new ArrayList<Type>();
+        List<BoundMethod> bindings = new ArrayList<>();
+        List<Type> types = new ArrayList<>();
         
         for (Method method : this.getClass().getMethods()) {
             BindingMatch info = method.getAnnotation(BindingMatch.class);
@@ -145,7 +145,7 @@ public class BindingHelper implements Binding {
     public Object bind(ParameterData parameter, ArgumentStack scoped,
             boolean onlyConsume) throws ParameterException, CommandException, InvocationTargetException {
         BoundMethod binding = match(parameter);
-        List<Object> args = new ArrayList<Object>();
+        List<Object> args = new ArrayList<>();
         args.add(scoped);
         
         if (binding.classifier != null) {
@@ -184,7 +184,7 @@ public class BindingHelper implements Binding {
 
     @Override
     public List<String> getSuggestions(ParameterData parameter, String prefix) {
-        return new ArrayList<String>();
+        return new ArrayList<>();
     }
     
     private static class BoundMethod implements Comparable<BoundMethod> {

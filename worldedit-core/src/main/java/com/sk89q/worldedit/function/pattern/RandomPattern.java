@@ -34,7 +34,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class RandomPattern extends AbstractPattern {
 
     private final Random random = new Random();
-    private List<Chance> patterns = new ArrayList<Chance>();
+    private List<Chance> patterns = new ArrayList<>();
     private double max = 0;
 
     /**

@@ -40,7 +40,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class FastModeExtent extends AbstractDelegateExtent {
 
     private final World world;
-    private final Set<BlockVector2D> dirtyChunks = new HashSet<BlockVector2D>();
+    private final Set<BlockVector2D> dirtyChunks = new HashSet<>();
     private boolean enabled = true;
 
     /**

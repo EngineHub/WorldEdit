@@ -44,9 +44,9 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public abstract class BreadthFirstSearch implements Operation {
 
     private final RegionFunction function;
-    private final Queue<BlockVector> queue = new ArrayDeque<BlockVector>();
-    private final Set<BlockVector> visited = new HashSet<BlockVector>();
-    private final List<Vector> directions = new ArrayList<Vector>();
+    private final Queue<BlockVector> queue = new ArrayDeque<>();
+    private final Set<BlockVector> visited = new HashSet<>();
+    private final List<Vector> directions = new ArrayList<>();
     private int affected = 0;
 
     /**

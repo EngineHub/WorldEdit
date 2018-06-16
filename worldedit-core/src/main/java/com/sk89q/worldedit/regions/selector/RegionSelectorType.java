@@ -57,9 +57,7 @@ public enum RegionSelectorType {
     public RegionSelector createSelector() {
         try {
             return getSelectorClass().newInstance();
-        } catch (InstantiationException e) {
-            throw new RuntimeException("Could not create selector", e);
-        } catch (IllegalAccessException e) {
+        } catch (InstantiationException | IllegalAccessException e) {
             throw new RuntimeException("Could not create selector", e);
         }
     }

@@ -85,8 +85,7 @@ public class JsonFileSessionStore implements SessionStore {
     @Override
     public LocalSession load(UUID id) throws IOException {
         File file = getPath(id);
-        Closer closer = Closer.create();
-        try {
+        try (Closer closer = Closer.create()) {
             FileReader fr = closer.register(new FileReader(file));
             BufferedReader br = closer.register(new BufferedReader(fr));
             return gson.fromJson(br, LocalSession.class);
@@ -94,11 +93,6 @@ public class JsonFileSessionStore implements SessionStore {
             throw new IOException(e);
         } catch (FileNotFoundException e) {
             return new LocalSession();
-        } finally {
-            try {
-                closer.close();
-            } catch (IOException ignored) {
-            }
         }
     }
 
@@ -106,19 +100,13 @@ public class JsonFileSessionStore implements SessionStore {
     public void save(UUID id, LocalSession session) throws IOException {
         File finalFile = getPath(id);
         File tempFile = new File(finalFile.getParentFile(), finalFile.getName() + ".tmp");
-        Closer closer = Closer.create();
 
-        try {
+        try (Closer closer = Closer.create()) {
             FileWriter fr = closer.register(new FileWriter(tempFile));
             BufferedWriter bw = closer.register(new BufferedWriter(fr));
             gson.toJson(session, bw);
         } catch (JsonIOException e) {
             throw new IOException(e);
-        } finally {
-            try {
-                closer.close();
-            } catch (IOException ignored) {
-            }
         }
 
         if (finalFile.exists()) {

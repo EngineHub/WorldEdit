@@ -44,16 +44,7 @@ public class SimpleInjector implements Injector {
             Constructor<?> ctr = clazz.getConstructor(argClasses);
             ctr.setAccessible(true);
             return ctr.newInstance(args);
-        } catch (NoSuchMethodException e) {
-            log.log(Level.SEVERE, "Error initializing commands class " + clazz, e);
-            return null;
-        } catch (InvocationTargetException e) {
-            log.log(Level.SEVERE, "Error initializing commands class " + clazz, e);
-            return null;
-        } catch (InstantiationException e) {
-            log.log(Level.SEVERE, "Error initializing commands class " + clazz, e);
-            return null;
-        } catch (IllegalAccessException e) {
+        } catch (NoSuchMethodException | IllegalAccessException | InstantiationException | InvocationTargetException e) {
             log.log(Level.SEVERE, "Error initializing commands class " + clazz, e);
             return null;
         }

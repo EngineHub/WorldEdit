@@ -43,9 +43,9 @@ import java.util.*;
  */
 public class MultiStageReorder extends AbstractDelegateExtent implements ReorderingExtent {
 
-    private TupleArrayList<BlockVector, BaseBlock> stage1 = new TupleArrayList<BlockVector, BaseBlock>();
-    private TupleArrayList<BlockVector, BaseBlock> stage2 = new TupleArrayList<BlockVector, BaseBlock>();
-    private TupleArrayList<BlockVector, BaseBlock> stage3 = new TupleArrayList<BlockVector, BaseBlock>();
+    private TupleArrayList<BlockVector, BaseBlock> stage1 = new TupleArrayList<>();
+    private TupleArrayList<BlockVector, BaseBlock> stage2 = new TupleArrayList<>();
+    private TupleArrayList<BlockVector, BaseBlock> stage3 = new TupleArrayList<>();
     private boolean enabled;
 
     /**
@@ -127,8 +127,8 @@ public class MultiStageReorder extends AbstractDelegateExtent implements Reorder
         public Operation resume(RunContext run) throws WorldEditException {
             Extent extent = getExtent();
 
-            final Set<BlockVector> blocks = new HashSet<BlockVector>();
-            final Map<BlockVector, BaseBlock> blockTypes = new HashMap<BlockVector, BaseBlock>();
+            final Set<BlockVector> blocks = new HashSet<>();
+            final Map<BlockVector, BaseBlock> blockTypes = new HashMap<>();
             for (Map.Entry<BlockVector, BaseBlock> entry : stage3) {
                 final BlockVector pt = entry.getKey();
                 blocks.add(pt);
@@ -141,7 +141,7 @@ public class MultiStageReorder extends AbstractDelegateExtent implements Reorder
                     continue;
                 }
 
-                final Deque<BlockVector> walked = new LinkedList<BlockVector>();
+                final Deque<BlockVector> walked = new LinkedList<>();
 
                 while (true) {
                     walked.addFirst(current);

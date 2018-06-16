@@ -36,7 +36,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class BiomeMask2D extends AbstractMask2D {
 
     private final Extent extent;
-    private final Set<BaseBiome> biomes = new HashSet<BaseBiome>();
+    private final Set<BaseBiome> biomes = new HashSet<>();
 
     /**
      * Create a new biome mask.

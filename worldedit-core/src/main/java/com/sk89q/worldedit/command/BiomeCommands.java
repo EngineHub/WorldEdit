@@ -141,7 +141,7 @@ public class BiomeCommands {
 
             qualifier = "at line of sight point";
         } else if (args.hasFlag('p')) {
-            BaseBiome biome = player.getWorld().getBiome(player.getPosition().toVector().toVector2D());
+            BaseBiome biome = player.getWorld().getBiome(player.getLocation().toVector().toVector2D());
             biomes.add(biome);
 
             qualifier = "at your position";
@@ -192,7 +192,7 @@ public class BiomeCommands {
         Mask2D mask2d = mask != null ? mask.toMask2D() : null;
 
         if (atPosition) {
-            region = new CuboidRegion(player.getPosition().toVector(), player.getPosition().toVector());
+            region = new CuboidRegion(player.getLocation().toVector(), player.getLocation().toVector());
         } else {
             region = session.getSelection(world);
         }

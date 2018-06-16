@@ -19,7 +19,9 @@
 
 package com.sk89q.worldedit.command;
 
-import com.google.common.base.Optional;
+import static com.sk89q.minecraft.util.commands.Logging.LogMode.POSITION;
+import static com.sk89q.minecraft.util.commands.Logging.LogMode.REGION;
+
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandException;
@@ -59,10 +61,8 @@ import com.sk89q.worldedit.world.storage.ChunkStore;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
-
-import static com.sk89q.minecraft.util.commands.Logging.LogMode.POSITION;
-import static com.sk89q.minecraft.util.commands.Logging.LogMode.REGION;
 
 /**
  * Selection commands.
@@ -332,7 +332,7 @@ public class SelectionCommands {
             return;
         }
 
-        List<Vector> dirs = new ArrayList<Vector>();
+        List<Vector> dirs = new ArrayList<>();
         int change = args.getInteger(0);
         int reverseChange = 0;
 
@@ -405,7 +405,7 @@ public class SelectionCommands {
     @CommandPermissions("worldedit.selection.contract")
     public void contract(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
 
-        List<Vector> dirs = new ArrayList<Vector>();
+        List<Vector> dirs = new ArrayList<>();
         int change = args.getInteger(0);
         int reverseChange = 0;
 
@@ -480,7 +480,7 @@ public class SelectionCommands {
     @CommandPermissions("worldedit.selection.shift")
     public void shift(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
 
-        List<Vector> dirs = new ArrayList<Vector>();
+        List<Vector> dirs = new ArrayList<>();
         int change = args.getInteger(0);
         if (args.argsLength() == 2) {
             if (args.getString(1).contains(",")) {
@@ -558,7 +558,7 @@ public class SelectionCommands {
     }
 
     private Vector[] getChangesForEachDir(CommandContext args) {
-        List<Vector> changes = new ArrayList<Vector>(6);
+        List<Vector> changes = new ArrayList<>(6);
         int change = args.getInteger(0);
 
         if (!args.hasFlag('h')) {
@@ -739,9 +739,7 @@ public class SelectionCommands {
             selector = new Polygonal2DRegionSelector(oldSelector);
             player.print("2D polygon selector: Left/right click to add a point.");
             Optional<Integer> limit = ActorSelectorLimits.forActor(player).getPolygonVertexLimit();
-            if (limit.isPresent()) {
-                player.print(limit.get() + " points maximum.");
-            }
+            limit.ifPresent(integer -> player.print(integer + " points maximum."));
         } else if (typeName.equalsIgnoreCase("ellipsoid")) {
             selector = new EllipsoidRegionSelector(oldSelector);
             player.print("Ellipsoid selector: left click=center, right click to extend");
@@ -755,9 +753,7 @@ public class SelectionCommands {
             selector = new ConvexPolyhedralRegionSelector(oldSelector);
             player.print("Convex polyhedral selector: Left click=First vertex, right click to add more.");
             Optional<Integer> limit = ActorSelectorLimits.forActor(player).getPolyhedronVertexLimit();
-            if (limit.isPresent()) {
-                player.print(limit.get() + " points maximum.");
-            }
+            limit.ifPresent(integer -> player.print(integer + " points maximum."));
         } else {
             CommandListBox box = new CommandListBox("Selection modes");
             StyledFragment contents = box.getContents();

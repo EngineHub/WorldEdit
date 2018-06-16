@@ -64,7 +64,7 @@ public class SessionManager {
     private static final Logger log = Logger.getLogger(SessionManager.class.getCanonicalName());
     private final Timer timer = new Timer();
     private final WorldEdit worldEdit;
-    private final Map<UUID, SessionHolder> sessions = new HashMap<UUID, SessionHolder>();
+    private final Map<UUID, SessionHolder> sessions = new HashMap<>();
     private SessionStore store = new VoidStore();
 
     /**
@@ -204,30 +204,27 @@ public class SessionManager {
             return Futures.immediateFuture(sessions);
         }
 
-        return executorService.submit(new Callable<Object>() {
-            @Override
-            public Object call() throws Exception {
-                Exception exception = null;
+        return executorService.submit((Callable<Object>) () -> {
+            Exception exception = null;
 
-                for (Map.Entry<SessionKey, LocalSession> entry : sessions.entrySet()) {
-                    SessionKey key = entry.getKey();
+            for (Map.Entry<SessionKey, LocalSession> entry : sessions.entrySet()) {
+                SessionKey key = entry.getKey();
 
-                    if (key.isPersistent()) {
-                        try {
-                            store.save(getKey(key), entry.getValue());
-                        } catch (IOException e) {
-                            log.log(Level.WARNING, "Failed to write session for UUID " + getKey(key), e);
-                            exception = e;
-                        }
+                if (key.isPersistent()) {
+                    try {
+                        store.save(getKey(key), entry.getValue());
+                    } catch (IOException e) {
+                        log.log(Level.WARNING, "Failed to write session for UUID " + getKey(key), e);
+                        exception = e;
                     }
                 }
-
-                if (exception != null) {
-                    throw exception;
-                }
-
-                return sessions;
             }
+
+            if (exception != null) {
+                throw exception;
+            }
+
+            return sessions;
         });
     }
 
@@ -305,7 +302,7 @@ public class SessionManager {
             synchronized (SessionManager.this) {
                 long now = System.currentTimeMillis();
                 Iterator<SessionHolder> it = sessions.values().iterator();
-                Map<SessionKey, LocalSession> saveQueue = new HashMap<SessionKey, LocalSession>();
+                Map<SessionKey, LocalSession> saveQueue = new HashMap<>();
 
                 while (it.hasNext()) {
                     SessionHolder stored = it.next();

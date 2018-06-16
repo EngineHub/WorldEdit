@@ -426,7 +426,7 @@ public class UtilityCommands {
         CreatureButcher flags = new CreatureButcher(actor);
         flags.fromCommand(args);
 
-        List<EntityVisitor> visitors = new ArrayList<EntityVisitor>();
+        List<EntityVisitor> visitors = new ArrayList<>();
         LocalSession session = null;
         EditSession editSession = null;
 
@@ -486,7 +486,7 @@ public class UtilityCommands {
         EntityRemover remover = new EntityRemover();
         remover.fromString(typeStr);
 
-        List<EntityVisitor> visitors = new ArrayList<EntityVisitor>();
+        List<EntityVisitor> visitors = new ArrayList<>();
         LocalSession session = null;
         EditSession editSession = null;
 
@@ -606,7 +606,7 @@ public class UtilityCommands {
         }
 
         boolean isRootLevel = true;
-        List<String> visited = new ArrayList<String>();
+        List<String> visited = new ArrayList<>();
 
         // Drill down to the command
         for (int i = 0; i < effectiveLength; i++) {
@@ -646,8 +646,8 @@ public class UtilityCommands {
             Dispatcher dispatcher = (Dispatcher) callable;
 
             // Get a list of aliases
-            List<CommandMapping> aliases = new ArrayList<CommandMapping>(dispatcher.getCommands());
-            Collections.sort(aliases, new PrimaryAliasComparator(CommandManager.COMMAND_CLEAN_PATTERN));
+            List<CommandMapping> aliases = new ArrayList<>(dispatcher.getCommands());
+            aliases.sort(new PrimaryAliasComparator(CommandManager.COMMAND_CLEAN_PATTERN));
 
             // Calculate pagination
             int offset = perPage * page;

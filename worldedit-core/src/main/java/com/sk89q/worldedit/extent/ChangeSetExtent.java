@@ -85,7 +85,7 @@ public class ChangeSetExtent extends AbstractDelegateExtent {
     }
 
     private List<? extends Entity> wrapEntities(List<? extends Entity> entities) {
-        List<Entity> newList = new ArrayList<Entity>(entities.size());
+        List<Entity> newList = new ArrayList<>(entities.size());
         for (Entity entity : entities) {
             newList.add(new TrackedEntity(entity));
         }

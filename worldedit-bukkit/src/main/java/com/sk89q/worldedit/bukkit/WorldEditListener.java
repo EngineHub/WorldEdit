@@ -66,7 +66,7 @@ public class WorldEditListener implements Listener {
         }
 
         // this will automatically refresh their session, we don't have to do anything
-        WorldEdit.getInstance().getSession(plugin.wrapPlayer(event.getPlayer()));
+        WorldEdit.getInstance().getSessionManager().get(plugin.wrapPlayer(event.getPlayer()));
     }
 
     /**

@@ -75,7 +75,7 @@ public class CombinedTransform implements Transform {
 
     @Override
     public Transform inverse() {
-        List<Transform> list = new ArrayList<Transform>();
+        List<Transform> list = new ArrayList<>();
         for (int i = transforms.length - 1; i >= 0; i--) {
             list.add(transforms[i].inverse());
         }

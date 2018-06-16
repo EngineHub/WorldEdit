@@ -178,7 +178,7 @@ public class EllipsoidRegion extends AbstractRegion {
 
     @Override
     public Set<Vector2D> getChunks() {
-        final Set<Vector2D> chunks = new HashSet<Vector2D>();
+        final Set<Vector2D> chunks = new HashSet<>();
 
         final Vector min = getMinimumPoint();
         final Vector max = getMaximumPoint();

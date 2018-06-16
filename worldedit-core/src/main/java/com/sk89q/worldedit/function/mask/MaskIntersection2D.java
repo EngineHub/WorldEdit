@@ -33,7 +33,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class MaskIntersection2D implements Mask2D {
 
-    private final Set<Mask2D> masks = new HashSet<Mask2D>();
+    private final Set<Mask2D> masks = new HashSet<>();
 
     /**
      * Create a new intersection.

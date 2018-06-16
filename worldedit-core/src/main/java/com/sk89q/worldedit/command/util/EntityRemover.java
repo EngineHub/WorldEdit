@@ -140,20 +140,17 @@ public class EntityRemover {
 
     public EntityFunction createFunction(final EntityRegistry entityRegistry) {
         final Type type = this.type;
-        checkNotNull("type can't be null", type);
-        return new EntityFunction() {
-            @Override
-            public boolean apply(Entity entity) throws WorldEditException {
-                EntityType registryType = entity.getFacet(EntityType.class);
-                if (registryType != null) {
-                    if (type.matches(registryType)) {
-                        entity.remove();
-                        return true;
-                    }
+        checkNotNull(type, "type can't be null");
+        return entity -> {
+            EntityType registryType = entity.getFacet(EntityType.class);
+            if (registryType != null) {
+                if (type.matches(registryType)) {
+                    entity.remove();
+                    return true;
                 }
-
-                return false;
             }
+
+            return false;
         };
     }
 

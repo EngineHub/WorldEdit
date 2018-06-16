@@ -57,7 +57,7 @@ public class BlockFactory extends AbstractFactory<BaseBlock> {
      * @throws InputParseException thrown in error with the input
      */
     public Set<BaseBlock> parseFromListInput(String input, ParserContext context) throws InputParseException {
-        Set<BaseBlock> blocks = new HashSet<BaseBlock>();
+        Set<BaseBlock> blocks = new HashSet<>();
         for (String token : input.split(",")) {
             blocks.add(parseFromInput(token, context));
         }

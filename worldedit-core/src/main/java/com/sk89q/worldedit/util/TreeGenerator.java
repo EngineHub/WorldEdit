@@ -24,7 +24,6 @@ import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.blocks.type.BlockTypes;
 
 import javax.annotation.Nullable;
@@ -108,7 +107,7 @@ public class TreeGenerator {
         /**
          * Stores a map of the names for fast access.
          */
-        private static final Map<String, TreeType> lookup = new HashMap<String, TreeType>();
+        private static final Map<String, TreeType> lookup = new HashMap<>();
         private static final Set<String> primaryAliases = Sets.newHashSet();
 
         private final String name;
@@ -204,7 +203,7 @@ public class TreeGenerator {
 
         // Create trunk
         for (int i = 0; i < trunkHeight; ++i) {
-            if (!editSession.setBlockIfAir(basePosition.add(0, i, 0), logBlock)) {
+            if (!setBlockIfAir(editSession, basePosition.add(0, i, 0), logBlock)) {
                 return;
             }
         }
@@ -214,38 +213,38 @@ public class TreeGenerator {
 
         // Create tree + leaves
         for (int i = 0; i < height; ++i) {
-            editSession.setBlockIfAir(basePosition.add(0, i, 0), logBlock);
+            setBlockIfAir(editSession, basePosition.add(0, i, 0), logBlock);
 
             // Less leaves at these levels
             double chance = ((i == 0 || i == height - 1) ? 0.6 : 1);
 
             // Inner leaves
-            editSession.setChanceBlockIfAir(basePosition.add(-1, i, 0), leavesBlock, chance);
-            editSession.setChanceBlockIfAir(basePosition.add(1, i, 0), leavesBlock, chance);
-            editSession.setChanceBlockIfAir(basePosition.add(0, i, -1), leavesBlock, chance);
-            editSession.setChanceBlockIfAir(basePosition.add(0, i, 1), leavesBlock, chance);
-            editSession.setChanceBlockIfAir(basePosition.add(1, i, 1), leavesBlock, chance);
-            editSession.setChanceBlockIfAir(basePosition.add(-1, i, 1), leavesBlock, chance);
-            editSession.setChanceBlockIfAir(basePosition.add(1, i, -1), leavesBlock, chance);
-            editSession.setChanceBlockIfAir(basePosition.add(-1, i, -1), leavesBlock, chance);
+            setChanceBlockIfAir(editSession, basePosition.add(-1, i, 0), leavesBlock, chance);
+            setChanceBlockIfAir(editSession, basePosition.add(1, i, 0), leavesBlock, chance);
+            setChanceBlockIfAir(editSession, basePosition.add(0, i, -1), leavesBlock, chance);
+            setChanceBlockIfAir(editSession, basePosition.add(0, i, 1), leavesBlock, chance);
+            setChanceBlockIfAir(editSession, basePosition.add(1, i, 1), leavesBlock, chance);
+            setChanceBlockIfAir(editSession, basePosition.add(-1, i, 1), leavesBlock, chance);
+            setChanceBlockIfAir(editSession, basePosition.add(1, i, -1), leavesBlock, chance);
+            setChanceBlockIfAir(editSession, basePosition.add(-1, i, -1), leavesBlock, chance);
 
             if (!(i == 0 || i == height - 1)) {
                 for (int j = -2; j <= 2; ++j) {
-                    editSession.setChanceBlockIfAir(basePosition.add(-2, i, j), leavesBlock, 0.6);
+                    setChanceBlockIfAir(editSession, basePosition.add(-2, i, j), leavesBlock, 0.6);
                 }
                 for (int j = -2; j <= 2; ++j) {
-                    editSession.setChanceBlockIfAir(basePosition.add(2, i, j), leavesBlock, 0.6);
+                    setChanceBlockIfAir(editSession, basePosition.add(2, i, j), leavesBlock, 0.6);
                 }
                 for (int j = -2; j <= 2; ++j) {
-                    editSession.setChanceBlockIfAir(basePosition.add(j, i, -2), leavesBlock, 0.6);
+                    setChanceBlockIfAir(editSession, basePosition.add(j, i, -2), leavesBlock, 0.6);
                 }
                 for (int j = -2; j <= 2; ++j) {
-                    editSession.setChanceBlockIfAir(basePosition.add(j, i, 2), leavesBlock, 0.6);
+                    setChanceBlockIfAir(editSession, basePosition.add(j, i, 2), leavesBlock, 0.6);
                 }
             }
         }
 
-        editSession.setBlockIfAir(basePosition.add(0, height, 0), leavesBlock);
+        setBlockIfAir(editSession, basePosition.add(0, height, 0), leavesBlock);
     }
 
     /**
@@ -260,4 +259,30 @@ public class TreeGenerator {
         return TreeType.lookup(type);
     }
 
+    /**
+     * Set a block (only if a previous block was not there) if {@link Math#random()}
+     * returns a number less than the given probability.
+     *
+     * @param position the position
+     * @param block the block
+     * @param probability a probability between 0 and 1, inclusive
+     * @return whether a block was changed
+     * @throws MaxChangedBlocksException thrown if too many blocks are changed
+     */
+    private static boolean setChanceBlockIfAir(EditSession session, Vector position, BaseBlock block, double probability)
+            throws MaxChangedBlocksException {
+        return Math.random() <= probability && setBlockIfAir(session, position, block);
+    }
+
+    /**
+     * Set a block only if there's no block already there.
+     *
+     * @param position the position
+     * @param block the block to set
+     * @return if block was changed
+     * @throws MaxChangedBlocksException thrown if too many blocks are changed
+     */
+    private static boolean setBlockIfAir(EditSession session, Vector position, BaseBlock block) throws MaxChangedBlocksException {
+        return session.getBlock(position).isAir() && session.setBlock(position, block);
+    }
 }

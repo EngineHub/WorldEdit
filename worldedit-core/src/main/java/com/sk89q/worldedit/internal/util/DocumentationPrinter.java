@@ -59,7 +59,7 @@ public final class DocumentationPrinter {
     }
 
     private static List<Class<?>> getCommandClasses(File dir) {
-        List<Class<?>> classes = new ArrayList<Class<?>>();
+        List<Class<?>> classes = new ArrayList<>();
 
         classes.add(BiomeCommands.class);
         classes.add(ChunkCommands.class);
@@ -100,15 +100,9 @@ public final class DocumentationPrinter {
 
     private static void writePermissionsWikiTable(List<Class<?>> commandClasses)
             throws IOException {
-        FileOutputStream stream = null;
-        try {
-            stream = new FileOutputStream("wiki_permissions.txt");
+        try (FileOutputStream stream = new FileOutputStream("wiki_permissions.txt")) {
             PrintStream print = new PrintStream(stream);
             writePermissionsWikiTable(print, commandClasses, "/");
-        } finally {
-            if (stream != null) {
-                stream.close();
-            }
         }
     }
 
@@ -180,15 +174,9 @@ public final class DocumentationPrinter {
 
     private static void writeBukkitYAML()
             throws IOException {
-        FileOutputStream stream = null;
-        try {
-            stream = new FileOutputStream("plugin.yml");
+        try (FileOutputStream stream = new FileOutputStream("plugin.yml")) {
             PrintStream print = new PrintStream(stream);
             writeBukkitYAML(print);
-        } finally {
-            if (stream != null) {
-                stream.close();
-            }
         }
     }
 

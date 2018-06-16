@@ -67,7 +67,7 @@ public class MaskUnion extends MaskIntersection {
     @Nullable
     @Override
     public Mask2D toMask2D() {
-        List<Mask2D> mask2dList = new ArrayList<Mask2D>();
+        List<Mask2D> mask2dList = new ArrayList<>();
         for (Mask mask : getMasks()) {
             Mask2D mask2d = mask.toMask2D();
             if (mask2d != null) {

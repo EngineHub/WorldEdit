@@ -126,11 +126,8 @@ public class ColorCodeBuilder {
             return builder.toString();
         } else if (!resetFrom.hasEqualFormatting(resetTo) || 
                 (resetFrom.getColor() != null && resetTo.getColor() == null)) {
-            StringBuilder builder = new StringBuilder();
             // Have to set reset code and add back all the formatting codes
-            builder.append(Style.RESET);
-            builder.append(getCode(resetTo));
-            return builder.toString();
+            return String.valueOf(Style.RESET) + getCode(resetTo);
         } else {
             if (resetFrom.getColor() != resetTo.getColor()) {
                 return String.valueOf(resetTo.getColor());
@@ -163,7 +160,7 @@ public class ColorCodeBuilder {
         char[] rawChars = (rawString + ' ').toCharArray(); // add a trailing space to trigger pagination
         StringBuilder word = new StringBuilder();
         StringBuilder line = new StringBuilder();
-        List<String> lines = new LinkedList<String>();
+        List<String> lines = new LinkedList<>();
         int lineColorChars = 0;
 
         for (int i = 0; i < rawChars.length; i++) {

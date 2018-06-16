@@ -31,7 +31,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class CombinedRegionFunction implements RegionFunction {
 
-    private final List<RegionFunction> functions = new ArrayList<RegionFunction>();
+    private final List<RegionFunction> functions = new ArrayList<>();
 
     /**
      * Create a combined region function.

@@ -34,7 +34,7 @@ import java.util.Map;
  */
 public class BlockBagExtent extends AbstractDelegateExtent {
 
-    private Map<Integer, Integer> missingBlocks = new HashMap<Integer, Integer>();
+    private Map<Integer, Integer> missingBlocks = new HashMap<>();
     private BlockBag blockBag;
 
     /**
@@ -74,7 +74,7 @@ public class BlockBagExtent extends AbstractDelegateExtent {
      */
     public Map<Integer, Integer> popMissing() {
         Map<Integer, Integer> missingBlocks = this.missingBlocks;
-        this.missingBlocks = new HashMap<Integer, Integer>();
+        this.missingBlocks = new HashMap<>();
         return missingBlocks;
     }
 

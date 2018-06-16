@@ -47,7 +47,6 @@ import com.sk89q.worldedit.regions.CylinderRegion;
 import com.sk89q.worldedit.regions.Polygonal2DRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.RegionSelector;
-import com.sk89q.worldedit.util.Java7Detector;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -114,9 +113,6 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
         WorldEdit.getInstance().getEventBus().post(new PlatformReadyEvent());
 
         loadAdapter(); // Need an adapter to work with special blocks with NBT data
-
-        // Check Java version
-        Java7Detector.notifyIfNot8();
     }
 
     private void loadConfig() {
@@ -164,7 +160,7 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
     @Override
     public void onDisable() {
         WorldEdit worldEdit = WorldEdit.getInstance();
-        worldEdit.clearSessions();
+        worldEdit.getSessionManager().clear();
         worldEdit.getPlatformManager().unregister(server);
         if (config != null) {
             config.unload();
@@ -264,7 +260,7 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
      * @return a session
      */
     public LocalSession getSession(Player player) {
-        return WorldEdit.getInstance().getSession(wrapPlayer(player));
+        return WorldEdit.getInstance().getSessionManager().get(wrapPlayer(player));
     }
 
     /**
@@ -364,7 +360,7 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
             throw new IllegalArgumentException("Offline player not allowed");
         }
 
-        LocalSession session = WorldEdit.getInstance().getSession(wrapPlayer(player));
+        LocalSession session = WorldEdit.getInstance().getSessionManager().get(wrapPlayer(player));
         RegionSelector selector = session.getRegionSelector(BukkitUtil.getWorld(player.getWorld()));
 
         try {
@@ -402,7 +398,7 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
             throw new IllegalArgumentException("Null selection not allowed");
         }
 
-        LocalSession session = WorldEdit.getInstance().getSession(wrapPlayer(player));
+        LocalSession session = WorldEdit.getInstance().getSessionManager().get(wrapPlayer(player));
         RegionSelector sel = selection.getRegionSelector();
         session.setRegionSelector(BukkitUtil.getWorld(player.getWorld()), sel);
         session.dispatchCUISelection(wrapPlayer(player));

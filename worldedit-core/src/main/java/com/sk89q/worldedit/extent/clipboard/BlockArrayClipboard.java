@@ -23,7 +23,6 @@ import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.Vector2D;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.blocks.type.BlockTypes;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
@@ -48,7 +47,7 @@ public class BlockArrayClipboard implements Clipboard {
     private final Region region;
     private Vector origin = new Vector();
     private final BaseBlock[][][] blocks;
-    private final List<ClipboardEntity> entities = new ArrayList<ClipboardEntity>();
+    private final List<ClipboardEntity> entities = new ArrayList<>();
 
     /**
      * Create a new instance.
@@ -98,7 +97,7 @@ public class BlockArrayClipboard implements Clipboard {
 
     @Override
     public List<? extends Entity> getEntities(Region region) {
-        List<Entity> filtered = new ArrayList<Entity>();
+        List<Entity> filtered = new ArrayList<>();
         for (Entity entity : entities) {
             if (region.contains(entity.getLocation().toVector())) {
                 filtered.add(entity);

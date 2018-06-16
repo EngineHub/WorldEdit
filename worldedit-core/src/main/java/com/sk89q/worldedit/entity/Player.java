@@ -230,34 +230,6 @@ public interface Player extends Entity, Actor {
     PlayerDirection getCardinalDirection();
 
     /**
-     * Get the actor's position.
-     *
-     * <p>If the actor has no permission, then a dummy location is returned.</p>
-     *
-     * @return the actor's position
-     * @deprecated use {@link #getLocation()}
-     */
-    Location getPosition();
-
-    /**
-     * Get the player's view pitch in degrees.
-     *
-     * @return pitch
-     * @deprecated use {@link #getLocation()}
-     */
-    @Deprecated
-    double getPitch();
-
-    /**
-     * Get the player's view yaw in degrees.
-     *
-     * @return yaw
-     * @deprecated use {@link #getLocation()}
-     */
-    @Deprecated
-    double getYaw();
-
-    /**
      * Pass through the wall that you are looking at.
      *
      * @param range How far to checks for blocks

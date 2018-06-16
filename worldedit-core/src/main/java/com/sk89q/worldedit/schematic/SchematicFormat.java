@@ -21,7 +21,6 @@ package com.sk89q.worldedit.schematic;
 
 import com.sk89q.worldedit.CuboidClipboard;
 import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.world.DataException;
 
 import java.io.File;

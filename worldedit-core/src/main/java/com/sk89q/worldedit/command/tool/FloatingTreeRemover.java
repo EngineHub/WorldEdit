@@ -56,7 +56,7 @@ public class FloatingTreeRemover implements BlockTool {
 
         final World world = (World) clicked.getExtent();
 
-        switch (world.getBlockType(clicked.toVector())) {
+        switch (world.getLazyBlock(clicked.toVector()).getId()) {
         case BlockID.LOG:
         case BlockID.LOG2:
         case BlockID.LEAVES:
@@ -119,8 +119,8 @@ public class FloatingTreeRemover implements BlockTool {
      * @return a set containing all blocks in the tree/shroom or null if this is not a floating tree/shroom.
      */
     private Set<Vector> bfs(World world, Vector origin) throws MaxChangedBlocksException {
-        final Set<Vector> visited = new HashSet<Vector>();
-        final LinkedList<Vector> queue = new LinkedList<Vector>();
+        final Set<Vector> visited = new HashSet<>();
+        final LinkedList<Vector> queue = new LinkedList<>();
 
         queue.addLast(origin);
         visited.add(origin);
@@ -135,7 +135,7 @@ public class FloatingTreeRemover implements BlockTool {
                 }
 
                 if (visited.add(next)) {
-                    switch (world.getBlockType(next)) {
+                    switch (world.getLazyBlock(next).getId()) {
                     case BlockID.AIR:
                     case BlockID.SNOW:
                         // we hit air or snow => stop walking this route
@@ -154,7 +154,7 @@ public class FloatingTreeRemover implements BlockTool {
 
                     default:
                         // we hit something solid - evaluate where we came from
-                        final int curId = world.getBlockType(current);
+                        final int curId = world.getLazyBlock(current).getId();
                         if (curId == BlockID.LEAVES || curId == BlockID.LEAVES2
                                 || curId == BlockID.VINE) {
                             // leaves touching a wall/the ground => stop walking this route

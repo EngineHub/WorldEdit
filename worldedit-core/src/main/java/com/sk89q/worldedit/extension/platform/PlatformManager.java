@@ -69,8 +69,8 @@ public class PlatformManager {
 
     private final WorldEdit worldEdit;
     private final CommandManager commandManager;
-    private final List<Platform> platforms = new ArrayList<Platform>();
-    private final Map<Capability, Platform> preferences = new EnumMap<Capability, Platform>(Capability.class);
+    private final List<Platform> platforms = new ArrayList<>();
+    private final Map<Capability, Platform> preferences = new EnumMap<>(Capability.class);
     private @Nullable String firstSeenVersion;
     private final AtomicBoolean initialized = new AtomicBoolean();
     private final AtomicBoolean configured = new AtomicBoolean();
@@ -218,7 +218,7 @@ public class PlatformManager {
      * @return a list of platforms
      */
     public synchronized List<Platform> getPlatforms() {
-        return new ArrayList<Platform>(platforms);
+        return new ArrayList<>(platforms);
     }
 
     /**
@@ -291,7 +291,6 @@ public class PlatformManager {
      * @return a {@link ServerInterface}
      * @throws IllegalStateException if no platform has been registered
      */
-    @SuppressWarnings("deprecation")
     public ServerInterface getServerInterface() throws IllegalStateException {
         return ServerInterfaceAdapter.adapt(queryCapability(Capability.USER_COMMANDS));
     }
@@ -304,7 +303,6 @@ public class PlatformManager {
         }
     }
 
-    @SuppressWarnings("deprecation")
     @Subscribe
     public void handleBlockInteract(BlockInteractEvent event) {
         // Create a proxy actor with a potentially different world for
@@ -385,7 +383,6 @@ public class PlatformManager {
         }
     }
 
-    @SuppressWarnings("deprecation")
     @Subscribe
     public void handlePlayerInput(PlayerInputEvent event) {
         // Create a proxy actor with a potentially different world for

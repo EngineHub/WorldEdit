@@ -110,16 +110,6 @@ public abstract class AbstractWorld implements World {
     }
 
     @Override
-    public int getBlockType(Vector pt) {
-        return getLazyBlock(pt).getType().getLegacyId();
-    }
-
-    @Override
-    public int getBlockData(Vector pt) {
-        return getLazyBlock(pt).getData();
-    }
-
-    @Override
     public void dropItem(Vector pt, BaseItemStack item, int times) {
         for (int i = 0; i < times; ++i) {
             dropItem(pt, item);
@@ -189,19 +179,15 @@ public abstract class AbstractWorld implements World {
         return false;
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     public boolean queueBlockBreakEffect(Platform server, Vector position, int blockId, double priority) {
         if (taskId == -1) {
-            taskId = server.schedule(0, 1, new Runnable() {
-                @Override
-                public void run() {
-                    int max = Math.max(1, Math.min(30, effectQueue.size() / 3));
-                    for (int i = 0; i < max; ++i) {
-                        if (effectQueue.isEmpty()) return;
+            taskId = server.schedule(0, 1, () -> {
+                int max = Math.max(1, Math.min(30, effectQueue.size() / 3));
+                for (int i = 0; i < max; ++i) {
+                    if (effectQueue.isEmpty()) return;
 
-                        effectQueue.poll().play();
-                    }
+                    effectQueue.poll().play();
                 }
             });
         }

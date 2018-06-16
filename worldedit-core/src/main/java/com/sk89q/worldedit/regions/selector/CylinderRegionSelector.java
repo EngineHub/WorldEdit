@@ -225,7 +225,7 @@ public class CylinderRegionSelector implements RegionSelector, CUIRegion {
 
     @Override
     public List<String> getInformationLines() {
-        final List<String> lines = new ArrayList<String>();
+        final List<String> lines = new ArrayList<>();
 
         if (!region.getCenter().equals(Vector.ZERO)) {
             lines.add("Center: " + region.getCenter());

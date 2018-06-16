@@ -99,7 +99,7 @@ public class CommandLoggingHandler extends AbstractInvokeListener implements Inv
         }
         
         if (logMode != null && sender.isPlayer()) {
-            Vector position = player.getPosition().toVector();
+            Vector position = player.getLocation().toVector();
             LocalSession session = worldEdit.getSessionManager().get(player);
             
             switch (logMode) {

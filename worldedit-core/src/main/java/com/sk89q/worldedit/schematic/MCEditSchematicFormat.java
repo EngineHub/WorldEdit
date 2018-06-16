@@ -151,18 +151,22 @@ public class MCEditSchematicFormat extends SchematicFormat {
             Map<String, Tag> values = new HashMap<>();
 
             for (Map.Entry<String, Tag> entry : t.getValue().entrySet()) {
-                if (entry.getKey().equals("x")) {
-                    if (entry.getValue() instanceof IntTag) {
-                        x = ((IntTag) entry.getValue()).getValue();
-                    }
-                } else if (entry.getKey().equals("y")) {
-                    if (entry.getValue() instanceof IntTag) {
-                        y = ((IntTag) entry.getValue()).getValue();
-                    }
-                } else if (entry.getKey().equals("z")) {
-                    if (entry.getValue() instanceof IntTag) {
-                        z = ((IntTag) entry.getValue()).getValue();
-                    }
+                switch (entry.getKey()) {
+                    case "x":
+                        if (entry.getValue() instanceof IntTag) {
+                            x = ((IntTag) entry.getValue()).getValue();
+                        }
+                        break;
+                    case "y":
+                        if (entry.getValue() instanceof IntTag) {
+                            y = ((IntTag) entry.getValue()).getValue();
+                        }
+                        break;
+                    case "z":
+                        if (entry.getValue() instanceof IntTag) {
+                            z = ((IntTag) entry.getValue()).getValue();
+                        }
+                        break;
                 }
 
                 values.put(entry.getKey(), entry.getValue());
@@ -276,7 +280,7 @@ public class MCEditSchematicFormat extends SchematicFormat {
 
         schematic.put("Blocks", new ByteArrayTag(blocks));
         schematic.put("Data", new ByteArrayTag(blockData));
-        schematic.put("Entities", new ListTag(CompoundTag.class, new ArrayList<Tag>()));
+        schematic.put("Entities", new ListTag(CompoundTag.class, new ArrayList<>()));
         schematic.put("TileEntities", new ListTag(CompoundTag.class, tileEntities));
         if (addBlocks != null) {
             schematic.put("AddBlocks", new ByteArrayTag(addBlocks));
@@ -291,9 +295,7 @@ public class MCEditSchematicFormat extends SchematicFormat {
 
     @Override
     public boolean isOfFormat(File file) {
-        DataInputStream str = null;
-        try {
-            str = new DataInputStream(new GZIPInputStream(new FileInputStream(file)));
+        try (DataInputStream str = new DataInputStream(new GZIPInputStream(new FileInputStream(file)))) {
             if ((str.readByte() & 0xFF) != NBTConstants.TYPE_COMPOUND) {
                 return false;
             }
@@ -303,15 +305,8 @@ public class MCEditSchematicFormat extends SchematicFormat {
             return name.equals("Schematic");
         } catch (IOException e) {
             return false;
-        } finally {
-            if (str != null) {
-                try {
-                    str.close();
-                } catch (IOException ignore) {
-                    // blargh
-                }
-            }
         }
+        // blargh
     }
 
     /**

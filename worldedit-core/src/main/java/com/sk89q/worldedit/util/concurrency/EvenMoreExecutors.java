@@ -46,7 +46,7 @@ public final class EvenMoreExecutors {
         ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(
                 minThreads, maxThreads,
                 60L, TimeUnit.SECONDS,
-                new ArrayBlockingQueue<Runnable>(queueSize));
+                new ArrayBlockingQueue<>(queueSize));
         threadPoolExecutor.allowCoreThreadTimeOut(true);
         return threadPoolExecutor;
     }

@@ -201,7 +201,7 @@ public class EllipsoidRegionSelector implements RegionSelector, CUIRegion {
 
     @Override
     public List<String> getInformationLines() {
-        final List<String> lines = new ArrayList<String>();
+        final List<String> lines = new ArrayList<>();
 
         final Vector center = region.getCenter();
         if (center.lengthSq() > 0) {

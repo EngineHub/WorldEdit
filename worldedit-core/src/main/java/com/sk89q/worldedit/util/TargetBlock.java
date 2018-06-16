@@ -20,8 +20,8 @@
 package com.sk89q.worldedit.util;
 
 import com.sk89q.worldedit.*;
-import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.blocks.BlockType;
+import com.sk89q.worldedit.blocks.type.BlockTypes;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.world.World;
 
@@ -49,7 +49,7 @@ public class TargetBlock {
      */
     public TargetBlock(Player player) {
         this.world = player.getWorld();
-        this.setValues(player.getPosition().toVector(), player.getYaw(), player.getPitch(),
+        this.setValues(player.getLocation().toVector(), player.getLocation().getYaw(), player.getLocation().getPitch(),
                 300, 1.65, 0.2);
     }
 
@@ -62,7 +62,7 @@ public class TargetBlock {
      */
     public TargetBlock(Player player, int maxDistance, double checkDistance) {
         this.world = player.getWorld();
-        this.setValues(player.getPosition().toVector(), player.getYaw(), player.getPitch(), maxDistance, 1.65, checkDistance);
+        this.setValues(player.getLocation().toVector(), player.getLocation().getYaw(), player.getLocation().getPitch(), maxDistance, 1.65, checkDistance);
     }
 
     /**
@@ -103,7 +103,7 @@ public class TargetBlock {
         boolean searchForLastBlock = true;
         Location lastBlock = null;
         while (getNextBlock() != null) {
-            if (world.getBlockType(getCurrentBlock().toVector()) == BlockID.AIR) {
+            if (world.getLazyBlock(getCurrentBlock().toVector()).getType() == BlockTypes.AIR) {
                 if (searchForLastBlock) {
                     lastBlock = getCurrentBlock();
                     if (lastBlock.getBlockY() <= 0 || lastBlock.getBlockY() >= world.getMaxY()) {
@@ -125,7 +125,7 @@ public class TargetBlock {
      * @return Block
      */
     public Location getTargetBlock() {
-        while (getNextBlock() != null && world.getBlockType(getCurrentBlock().toVector()) == 0) ;
+        while (getNextBlock() != null && world.getLazyBlock(getCurrentBlock().toVector()).getType() == BlockTypes.AIR) ;
         return getCurrentBlock();
     }
 

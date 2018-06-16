@@ -287,7 +287,7 @@ public class CuboidRegion extends AbstractRegion implements FlatRegion {
 
     @Override
     public Set<Vector2D> getChunks() {
-        Set<Vector2D> chunks = new HashSet<Vector2D>();
+        Set<Vector2D> chunks = new HashSet<>();
 
         Vector min = getMinimumPoint();
         Vector max = getMaximumPoint();
@@ -303,7 +303,7 @@ public class CuboidRegion extends AbstractRegion implements FlatRegion {
 
     @Override
     public Set<Vector> getChunkCubes() {
-        Set<Vector> chunks = new HashSet<Vector>();
+        Set<Vector> chunks = new HashSet<>();
 
         Vector min = getMinimumPoint();
         Vector max = getMaximumPoint();
@@ -372,38 +372,33 @@ public class CuboidRegion extends AbstractRegion implements FlatRegion {
 
     @Override
     public Iterable<Vector2D> asFlatRegion() {
-        return new Iterable<Vector2D>() {
+        return () -> new Iterator<Vector2D>() {
+            private Vector min = getMinimumPoint();
+            private Vector max = getMaximumPoint();
+            private int nextX = min.getBlockX();
+            private int nextZ = min.getBlockZ();
+
             @Override
-            public Iterator<Vector2D> iterator() {
-                return new Iterator<Vector2D>() {
-                    private Vector min = getMinimumPoint();
-                    private Vector max = getMaximumPoint();
-                    private int nextX = min.getBlockX();
-                    private int nextZ = min.getBlockZ();
+            public boolean hasNext() {
+                return (nextX != Integer.MIN_VALUE);
+            }
 
-                    @Override
-                    public boolean hasNext() {
-                        return (nextX != Integer.MIN_VALUE);
+            @Override
+            public Vector2D next() {
+                if (!hasNext()) throw new java.util.NoSuchElementException();
+                Vector2D answer = new Vector2D(nextX, nextZ);
+                if (++nextX > max.getBlockX()) {
+                    nextX = min.getBlockX();
+                    if (++nextZ > max.getBlockZ()) {
+                        nextX = Integer.MIN_VALUE;
                     }
+                }
+                return answer;
+            }
 
-                    @Override
-                    public Vector2D next() {
-                        if (!hasNext()) throw new java.util.NoSuchElementException();
-                        Vector2D answer = new Vector2D(nextX, nextZ);
-                        if (++nextX > max.getBlockX()) {
-                            nextX = min.getBlockX();
-                            if (++nextZ > max.getBlockZ()) {
-                                nextX = Integer.MIN_VALUE;
-                            }
-                        }
-                        return answer;
-                    }
-
-                    @Override
-                    public void remove() {
-                        throw new UnsupportedOperationException();
-                    }
-                };
+            @Override
+            public void remove() {
+                throw new UnsupportedOperationException();
             }
         };
     }

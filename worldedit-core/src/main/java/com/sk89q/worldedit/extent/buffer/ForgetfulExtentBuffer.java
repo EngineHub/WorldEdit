@@ -23,7 +23,6 @@ import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.blocks.type.BlockTypes;
 import com.sk89q.worldedit.extent.AbstractDelegateExtent;
 import com.sk89q.worldedit.extent.Extent;
@@ -51,7 +50,7 @@ public class ForgetfulExtentBuffer extends AbstractDelegateExtent implements Pat
 
     private static final BaseBlock AIR = new BaseBlock(BlockTypes.AIR);
 
-    private final Map<BlockVector, BaseBlock> buffer = new LinkedHashMap<BlockVector, BaseBlock>();
+    private final Map<BlockVector, BaseBlock> buffer = new LinkedHashMap<>();
     private final Mask mask;
     private Vector min = null;
     private Vector max = null;

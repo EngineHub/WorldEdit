@@ -375,30 +375,6 @@ public class EditSession implements Extent {
     }
 
     /**
-     * Get a block type at the given position.
-     *
-     * @param position the position
-     * @return the block type
-     * @deprecated Use {@link #getLazyBlock(Vector)} or {@link #getBlock(Vector)}
-     */
-    @Deprecated
-    public int getBlockType(Vector position) {
-        return world.getBlockType(position);
-    }
-
-    /**
-     * Get a block data at the given position.
-     *
-     * @param position the position
-     * @return the block data
-     * @deprecated Use {@link #getLazyBlock(Vector)} or {@link #getBlock(Vector)}
-     */
-    @Deprecated
-    public int getBlockData(Vector position) {
-        return world.getBlockData(position);
-    }
-
-    /**
      * Gets the block type at a position.
      *
      * @param position the position
@@ -436,8 +412,9 @@ public class EditSession implements Extent {
     public int getHighestTerrainBlock(int x, int z, int minY, int maxY, boolean naturalOnly) {
         for (int y = maxY; y >= minY; --y) {
             Vector pt = new Vector(x, y, z);
-            int id = getBlockType(pt);
-            int data = getBlockData(pt);
+            BaseBlock block = getLazyBlock(pt);
+            int id = block.getId();
+            int data = block.getData();
             if (naturalOnly ? BlockType.isNaturalTerrainBlock(id, data) : !BlockType.canPassThrough(id, data)) {
                 return y;
             }
@@ -536,35 +513,6 @@ public class EditSession implements Extent {
             affected += setBlock(v, pattern) ? 1 : 0;
         }
         return affected;
-    }
-
-    /**
-     * Set a block (only if a previous block was not there) if {@link Math#random()}
-     * returns a number less than the given probability.
-     *
-     * @param position the position
-     * @param block the block
-     * @param probability a probability between 0 and 1, inclusive
-     * @return whether a block was changed
-     * @throws MaxChangedBlocksException thrown if too many blocks are changed
-     */
-    public boolean setChanceBlockIfAir(Vector position, BaseBlock block, double probability)
-            throws MaxChangedBlocksException {
-        return Math.random() <= probability && setBlockIfAir(position, block);
-    }
-
-    /**
-     * Set a block only if there's no block already there.
-     *
-     * @param position the position
-     * @param block the block to set
-     * @return if block was changed
-     * @throws MaxChangedBlocksException thrown if too many blocks are changed
-     * @deprecated Use your own method
-     */
-    @Deprecated
-    public boolean setBlockIfAir(Vector position, BaseBlock block) throws MaxChangedBlocksException {
-        return getBlock(position).isAir() && setBlock(position, block);
     }
 
     @Override
@@ -1504,8 +1452,8 @@ public class EditSession implements Extent {
         int oy = position.getBlockY();
         int oz = position.getBlockZ();
 
-        BaseBlock air = new BaseBlock(0);
-        BaseBlock water = new BaseBlock(BlockID.STATIONARY_WATER);
+        BaseBlock air = new BaseBlock(BlockTypes.AIR);
+        BaseBlock water = new BaseBlock(BlockTypes.WATER);
 
         int ceilRadius = (int) Math.ceil(radius);
         for (int x = ox - ceilRadius; x <= ox + ceilRadius; ++x) {
@@ -1516,26 +1464,18 @@ public class EditSession implements Extent {
 
                 for (int y = world.getMaxY(); y >= 1; --y) {
                     Vector pt = new Vector(x, y, z);
-                    int id = getBlockType(pt);
+                    com.sk89q.worldedit.blocks.type.BlockType id = getLazyBlock(pt).getType();
 
-                    switch (id) {
-                    case BlockID.ICE:
+                    if (id == BlockTypes.ICE) {
                         if (setBlock(pt, water)) {
                             ++affected;
                         }
-                        break;
-
-                    case BlockID.SNOW:
+                    } else if (id == BlockTypes.SNOW) {
                         if (setBlock(pt, air)) {
                             ++affected;
                         }
-                        break;
-
-                    case BlockID.AIR:
+                    } else if (id == BlockTypes.AIR) {
                         continue;
-
-                    default:
-                        break;
                     }
 
                     break;
@@ -1562,8 +1502,8 @@ public class EditSession implements Extent {
         int oy = position.getBlockY();
         int oz = position.getBlockZ();
 
-        BaseBlock ice = new BaseBlock(BlockID.ICE);
-        BaseBlock snow = new BaseBlock(BlockID.SNOW);
+        BaseBlock ice = new BaseBlock(BlockTypes.ICE);
+        BaseBlock snow = new BaseBlock(BlockTypes.SNOW);
 
         int ceilRadius = (int) Math.ceil(radius);
         for (int x = ox - ceilRadius; x <= ox + ceilRadius; ++x) {
@@ -1574,7 +1514,7 @@ public class EditSession implements Extent {
 
                 for (int y = world.getMaxY(); y >= 1; --y) {
                     Vector pt = new Vector(x, y, z);
-                    int id = getBlockType(pt);
+                    int id = getLazyBlock(pt).getId();
 
                     if (id == BlockID.AIR) {
                         continue;
@@ -1618,20 +1558,6 @@ public class EditSession implements Extent {
      *
      * @param position a position
      * @param radius a radius
-     * @return number of blocks affected
-     * @throws MaxChangedBlocksException thrown if too many blocks are changed
-     * @deprecated Use {@link #green(Vector, double, boolean)}.
-     */
-    @Deprecated
-    public int green(Vector position, double radius) throws MaxChangedBlocksException {
-        return green(position, radius, true);
-    }
-
-    /**
-     * Make dirt green.
-     *
-     * @param position a position
-     * @param radius a radius
      * @param onlyNormalDirt only affect normal dirt (data value 0)
      * @return number of blocks affected
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
@@ -1656,8 +1582,9 @@ public class EditSession implements Extent {
 
                 loop: for (int y = world.getMaxY(); y >= 1; --y) {
                     final Vector pt = new Vector(x, y, z);
-                    final int id = getBlockType(pt);
-                    final int data = getBlockData(pt);
+                    final BaseBlock block = getLazyBlock(pt);
+                    final int id = block.getId();
+                    final int data = block.getData();
 
                     switch (id) {
                     case BlockID.DIRT:
@@ -1789,7 +1716,7 @@ public class EditSession implements Extent {
                     for (int z = minZ; z <= maxZ; ++z) {
                         Vector pt = new Vector(x, y, z);
 
-                        int id = getBlockType(pt);
+                        int id = getLazyBlock(pt).getId();
 
                         if (map.containsKey(id)) {
                             map.get(id).increment();
@@ -1803,7 +1730,7 @@ public class EditSession implements Extent {
             }
         } else {
             for (Vector pt : region) {
-                int id = getBlockType(pt);
+                int id = getLazyBlock(pt).getId();
 
                 if (map.containsKey(id)) {
                     map.get(id).increment();
@@ -1848,7 +1775,7 @@ public class EditSession implements Extent {
                     for (int z = minZ; z <= maxZ; ++z) {
                         Vector pt = new Vector(x, y, z);
 
-                        BaseBlock blk = new BaseBlock(getBlockType(pt), getBlockData(pt));
+                        BaseBlock blk = getBlock(pt);
 
                         if (map.containsKey(blk)) {
                             map.get(blk).increment();
@@ -1862,7 +1789,7 @@ public class EditSession implements Extent {
             }
         } else {
             for (Vector pt : region) {
-                BaseBlock blk = new BaseBlock(getBlockType(pt), getBlockData(pt));
+                BaseBlock blk = getBlock(pt);
 
                 if (map.containsKey(blk)) {
                     map.get(blk).increment();
@@ -1935,8 +1862,7 @@ public class EditSession implements Extent {
             final BlockVector sourcePosition = environment.toWorld(x.getValue(), y.getValue(), z.getValue());
 
             // read block from world
-            // TODO: use getBlock here once the reflection is out of the way
-            final BaseBlock material = new BaseBlock(world.getBlockType(sourcePosition), world.getBlockData(sourcePosition));
+            final BaseBlock material = world.getBlock(sourcePosition);
 
             // queue operation
             queue.put(position, material);
@@ -2202,7 +2128,8 @@ public class EditSession implements Extent {
 
         while (!queue.isEmpty()) {
             final BlockVector current = queue.removeFirst();
-            if (!BlockType.canPassThrough(getBlockType(current), getBlockData(current))) {
+            final BaseBlock block = getLazyBlock(current);
+            if (!BlockType.canPassThrough(block.getId(), block.getData())) {
                 continue;
             }
 

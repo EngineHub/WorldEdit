@@ -154,7 +154,7 @@ public class TransformRegion extends AbstractRegion {
     @Override
     public List<BlockVector2D> polygonize(int maxPoints) {
         List<BlockVector2D> origPoints = region.polygonize(maxPoints);
-        List<BlockVector2D> transformedPoints = new ArrayList<BlockVector2D>();
+        List<BlockVector2D> transformedPoints = new ArrayList<>();
         for (BlockVector2D vector : origPoints) {
             transformedPoints.add(transform.apply(vector.toVector(0)).toVector2D().toBlockVector2D());
         }

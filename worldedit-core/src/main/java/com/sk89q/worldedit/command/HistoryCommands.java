@@ -60,7 +60,7 @@ public class HistoryCommands {
                 undone = session.undo(session.getBlockBag(player), player);
             } else {
                 player.checkPermission("worldedit.history.undo.other");
-                LocalSession sess = worldEdit.getSession(args.getString(1));
+                LocalSession sess = worldEdit.getSessionManager().findByName(args.getString(1));
                 if (sess == null) {
                     player.printError("Unable to find session for " + args.getString(1));
                     break;
@@ -95,7 +95,7 @@ public class HistoryCommands {
                 redone = session.redo(session.getBlockBag(player), player);
             } else {
                 player.checkPermission("worldedit.history.redo.other");
-                LocalSession sess = worldEdit.getSession(args.getString(1));
+                LocalSession sess = worldEdit.getSessionManager().findByName(args.getString(1));
                 if (sess == null) {
                     player.printError("Unable to find session for " + args.getString(1));
                     break;

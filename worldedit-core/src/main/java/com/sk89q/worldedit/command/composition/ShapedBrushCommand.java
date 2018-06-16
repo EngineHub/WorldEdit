@@ -74,9 +74,7 @@ public class ShapedBrushCommand extends SimpleCommand<Object> {
             BrushTool tool = session.getBrushTool(player.getItemInHand());
             tool.setSize(radius);
             tool.setBrush(new OperationFactoryBrush(factory, regionFactory), permission);
-        } catch (MaxBrushRadiusException e) {
-            WorldEdit.getInstance().getPlatformManager().getCommandManager().getExceptionConverter().convert(e);
-        } catch (InvalidToolBindException e) {
+        } catch (MaxBrushRadiusException | InvalidToolBindException e) {
             WorldEdit.getInstance().getPlatformManager().getCommandManager().getExceptionConverter().convert(e);
         }
 

@@ -72,23 +72,6 @@ public class BukkitPlayer extends AbstractPlayerActor {
     }
 
     @Override
-    public com.sk89q.worldedit.util.Location getPosition() {
-        Location loc = player.getLocation();
-        return new com.sk89q.worldedit.util.Location(BukkitUtil.getWorld(loc.getWorld()),
-                loc.getX(), loc.getY(), loc.getZ());
-    }
-
-    @Override
-    public double getPitch() {
-        return player.getLocation().getPitch();
-    }
-
-    @Override
-    public double getYaw() {
-        return player.getLocation().getYaw();
-    }
-
-    @Override
     public void giveItem(int type, int amt) {
         player.getInventory().addItem(new ItemStack(type, amt));
     }

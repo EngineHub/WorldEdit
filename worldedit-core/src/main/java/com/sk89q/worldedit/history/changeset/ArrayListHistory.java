@@ -33,7 +33,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class ArrayListHistory implements ChangeSet {
 
-    private final List<Change> changes = new ArrayList<Change>();
+    private final List<Change> changes = new ArrayList<>();
 
     @Override
     public void add(Change change) {

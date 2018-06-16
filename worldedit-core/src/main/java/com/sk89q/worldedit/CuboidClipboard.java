@@ -159,7 +159,6 @@ public class CuboidClipboard {
      *
      * @param angle in degrees
      */
-    @SuppressWarnings("deprecation")
     public void rotate2D(int angle) {
         angle = angle % 360;
         if (angle % 90 != 0) { // Can only rotate 90 degrees at the moment
@@ -229,7 +228,6 @@ public class CuboidClipboard {
      * @param dir direction to flip
      * @param aroundPlayer flip the offset around the player
      */
-    @SuppressWarnings("deprecation")
     public void flip(FlipDirection dir, boolean aroundPlayer) {
         checkNotNull(dir);
 
@@ -607,8 +605,8 @@ public class CuboidClipboard {
      * @return a block distribution
      */
     public List<Countable<Integer>> getBlockDistribution() {
-        List<Countable<Integer>> distribution = new ArrayList<Countable<Integer>>();
-        Map<Integer, Countable<Integer>> map = new HashMap<Integer, Countable<Integer>>();
+        List<Countable<Integer>> distribution = new ArrayList<>();
+        Map<Integer, Countable<Integer>> map = new HashMap<>();
 
         int maxX = getWidth();
         int maxY = getHeight();
@@ -627,7 +625,7 @@ public class CuboidClipboard {
                     if (map.containsKey(id)) {
                         map.get(id).increment();
                     } else {
-                        Countable<Integer> c = new Countable<Integer>(id, 1);
+                        Countable<Integer> c = new Countable<>(id, 1);
                         map.put(id, c);
                         distribution.add(c);
                     }
@@ -648,8 +646,8 @@ public class CuboidClipboard {
      */
     // TODO reduce code duplication
     public List<Countable<BaseBlock>> getBlockDistributionWithData() {
-        List<Countable<BaseBlock>> distribution = new ArrayList<Countable<BaseBlock>>();
-        Map<BaseBlock, Countable<BaseBlock>> map = new HashMap<BaseBlock, Countable<BaseBlock>>();
+        List<Countable<BaseBlock>> distribution = new ArrayList<>();
+        Map<BaseBlock, Countable<BaseBlock>> map = new HashMap<>();
 
         int maxX = getWidth();
         int maxY = getHeight();
@@ -669,7 +667,7 @@ public class CuboidClipboard {
                     if (map.containsKey(bareBlock)) {
                         map.get(bareBlock).increment();
                     } else {
-                        Countable<BaseBlock> c = new Countable<BaseBlock>(bareBlock, 1);
+                        Countable<BaseBlock> c = new Countable<>(bareBlock, 1);
                         map.put(bareBlock, c);
                         distribution.add(c);
                     }

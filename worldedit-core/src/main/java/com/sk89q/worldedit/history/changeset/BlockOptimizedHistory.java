@@ -43,8 +43,8 @@ import static java.util.Map.Entry;
  */
 public class BlockOptimizedHistory extends ArrayListHistory {
 
-    private final TupleArrayList<BlockVector, BaseBlock> previous = new TupleArrayList<BlockVector, BaseBlock>();
-    private final TupleArrayList<BlockVector, BaseBlock> current = new TupleArrayList<BlockVector, BaseBlock>();
+    private final TupleArrayList<BlockVector, BaseBlock> previous = new TupleArrayList<>();
+    private final TupleArrayList<BlockVector, BaseBlock> current = new TupleArrayList<>();
 
     @Override
     public void add(Change change) {
@@ -86,12 +86,7 @@ public class BlockOptimizedHistory extends ArrayListHistory {
      * @return a function
      */
     private Function<Entry<BlockVector, BaseBlock>, Change> createTransform() {
-        return new Function<Entry<BlockVector, BaseBlock>, Change>() {
-            @Override
-            public Change apply(Entry<BlockVector, BaseBlock> entry) {
-                return new BlockChange(entry.getKey(), entry.getValue(), entry.getValue());
-            }
-        };
+        return entry -> new BlockChange(entry.getKey(), entry.getValue(), entry.getValue());
     }
 
 }

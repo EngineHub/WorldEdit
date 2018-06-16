@@ -35,7 +35,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class OperationQueue implements Operation {
 
     private final List<Operation> operations = Lists.newArrayList();
-    private final Deque<Operation> queue = new ArrayDeque<Operation>();
+    private final Deque<Operation> queue = new ArrayDeque<>();
     private Operation current;
 
     /**

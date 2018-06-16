@@ -73,11 +73,11 @@ public enum ClothColor {
     /**
      * Stores a map of the IDs for fast access.
      */
-    private static final Map<Integer, ClothColor> ids = new HashMap<Integer, ClothColor>();
+    private static final Map<Integer, ClothColor> ids = new HashMap<>();
     /**
      * Stores a map of the names for fast access.
      */
-    private static final Map<String, ClothColor> lookup = new HashMap<String, ClothColor>();
+    private static final Map<String, ClothColor> lookup = new HashMap<>();
 
     private final int id;
     private final String name;

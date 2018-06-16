@@ -192,49 +192,8 @@ public class WorldEdit {
     }
 
     /**
-     * @deprecated Use {@link #getSessionManager()}
-     */
-    @Deprecated
-    public LocalSession getSession(String player) {
-        return sessions.findByName(player);
-    }
-
-    /**
-     * @deprecated use {@link #getSessionManager()}
-     */
-    @Deprecated
-    public LocalSession getSession(Player player) {
-        return sessions.get(player);
-    }
-
-    /**
-     * @deprecated use {@link #getSessionManager()}
-     */
-    @Deprecated
-    public void removeSession(Player player) {
-        sessions.remove(player);
-    }
-
-    /**
-     * @deprecated use {@link #getSessionManager()}
-     */
-    @Deprecated
-    public void clearSessions() {
-        sessions.clear();
-    }
-
-    /**
-     * @deprecated use {@link #getSessionManager()}
-     */
-    @Deprecated
-    public boolean hasSession(Player player) {
-        return sessions.contains(player);
-    }
-
-    /**
      * @deprecated Use {@link #getBlockFactory()} and {@link BlockFactory#parseFromInput(String, ParserContext)}
      */
-    @SuppressWarnings("deprecation")
     @Deprecated
     public BaseBlock getBlock(Player player, String arg, boolean allAllowed) throws WorldEditException {
         return getBlock(player, arg, allAllowed, false);
@@ -243,13 +202,12 @@ public class WorldEdit {
     /**
      * @deprecated Use {@link #getBlockFactory()} and {@link BlockFactory#parseFromInput(String, ParserContext)}
      */
-    @SuppressWarnings("deprecation")
     @Deprecated
     public BaseBlock getBlock(Player player, String arg, boolean allAllowed, boolean allowNoData) throws WorldEditException {
         ParserContext context = new ParserContext();
         context.setActor(player);
         context.setWorld(player.getWorld());
-        context.setSession(getSession(player));
+        context.setSession(getSessionManager().get(player));
         context.setRestricted(!allAllowed);
         context.setPreferringWildcard(allowNoData);
         return getBlockFactory().parseFromInput(arg, context);
@@ -258,7 +216,6 @@ public class WorldEdit {
     /**
      * @deprecated Use {@link #getBlockFactory()} and {@link BlockFactory#parseFromInput(String, ParserContext)}
      */
-    @SuppressWarnings("deprecation")
     @Deprecated
     public BaseBlock getBlock(Player player, String id) throws WorldEditException {
         return getBlock(player, id, false);
@@ -268,10 +225,9 @@ public class WorldEdit {
      * @deprecated Use {@link #getBlockFactory()} and {@link BlockFactory#parseFromListInput(String, ParserContext)}
      */
     @Deprecated
-    @SuppressWarnings("deprecation")
     public Set<BaseBlock> getBlocks(Player player, String list, boolean allAllowed, boolean allowNoData) throws WorldEditException {
         String[] items = list.split(",");
-        Set<BaseBlock> blocks = new HashSet<BaseBlock>();
+        Set<BaseBlock> blocks = new HashSet<>();
         for (String id : items) {
             blocks.add(getBlock(player, id, allAllowed, allowNoData));
         }
@@ -282,7 +238,6 @@ public class WorldEdit {
      * @deprecated Use {@link #getBlockFactory()} and {@link BlockFactory#parseFromInput(String, ParserContext)}
      */
     @Deprecated
-    @SuppressWarnings("deprecation")
     public Set<BaseBlock> getBlocks(Player player, String list, boolean allAllowed) throws WorldEditException {
         return getBlocks(player, list, allAllowed, false);
     }
@@ -291,7 +246,6 @@ public class WorldEdit {
      * @deprecated Use {@link #getBlockFactory()} and {@link BlockFactory#parseFromListInput(String, ParserContext)}
      */
     @Deprecated
-    @SuppressWarnings("deprecation")
     public Set<BaseBlock> getBlocks(Player player, String list) throws WorldEditException {
         return getBlocks(player, list, false);
     }
@@ -300,10 +254,9 @@ public class WorldEdit {
      * @deprecated Use {@link #getBlockFactory()} and {@link BlockFactory#parseFromListInput(String, ParserContext)}
      */
     @Deprecated
-    @SuppressWarnings("deprecation")
     public Set<Integer> getBlockIDs(Player player, String list, boolean allBlocksAllowed) throws WorldEditException {
         String[] items = list.split(",");
-        Set<Integer> blocks = new HashSet<Integer>();
+        Set<Integer> blocks = new HashSet<>();
         for (String s : items) {
             blocks.add(getBlock(player, s, allBlocksAllowed).getType().getLegacyId());
         }
@@ -736,7 +689,7 @@ public class WorldEdit {
 
         engine.setTimeLimit(getConfiguration().scriptTimeout);
 
-        Map<String, Object> vars = new HashMap<String, Object>();
+        Map<String, Object> vars = new HashMap<>();
         vars.put("argv", args);
         vars.put("context", scriptContext);
         vars.put("player", player);
@@ -747,9 +700,7 @@ public class WorldEdit {
             player.printError("Failed to execute:");
             player.printRaw(e.getMessage());
             logger.log(Level.WARNING, "Failed to execute script", e);
-        } catch (NumberFormatException e) {
-            throw e;
-        } catch (WorldEditException e) {
+        } catch (NumberFormatException | WorldEditException e) {
             throw e;
         } catch (Throwable e) {
             player.printError("Failed to execute (see console):");

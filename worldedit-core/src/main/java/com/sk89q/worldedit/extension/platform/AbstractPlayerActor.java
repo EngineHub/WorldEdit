@@ -244,7 +244,7 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
         int initialY = Math.max(0, pos.getBlockY());
         int y = Math.max(0, pos.getBlockY() + 2);
         int z = pos.getBlockZ();
-        Extent world = getPosition().getExtent();
+        Extent world = getLocation().getExtent();
 
         // No free space above
         if (world.getBlock(new Vector(x, y, z)).getId() != 0) {
@@ -278,7 +278,7 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
         int y = Math.max(0, pos.getBlockY() + 1);
         final int z = pos.getBlockZ();
         final int maxY = Math.min(getWorld().getMaxY() + 1, initialY + distance);
-        final Extent world = getPosition().getExtent();
+        final Extent world = getLocation().getExtent();
 
         while (y <= world.getMaximumPoint().getY() + 2) {
             if (!BlockType.canPassThrough(world.getBlock(new Vector(x, y, z)))) {
@@ -299,7 +299,7 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
     @Override
     public void floatAt(int x, int y, int z, boolean alwaysGlass) {
         try {
-            getPosition().getExtent().setBlock(new Vector(x, y - 1, z), new BaseBlock(BlockTypes.GLASS));
+            getLocation().getExtent().setBlock(new Vector(x, y - 1, z), new BaseBlock(BlockTypes.GLASS));
         } catch (WorldEditException e) {
             e.printStackTrace();
         }
@@ -308,12 +308,12 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
 
     @Override
     public Location getBlockIn() {
-        return getPosition();
+        return getLocation();
     }
 
     @Override
     public Location getBlockOn() {
-        return getPosition().setY(getPosition().getY() - 1);
+        return getLocation().setY(getLocation().getY() - 1);
     }
 
     @Override
@@ -346,15 +346,15 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
 
     @Override
     public PlayerDirection getCardinalDirection(int yawOffset) {
-        if (getPitch() > 67.5) {
+        if (getLocation().getPitch() > 67.5) {
             return PlayerDirection.DOWN;
         }
-        if (getPitch() < -67.5) {
+        if (getLocation().getPitch() < -67.5) {
             return PlayerDirection.UP;
         }
 
         // From hey0's code
-        double rot = (getYaw() + yawOffset) % 360; //let's use real yaw now
+        double rot = (getLocation().getYaw() + yawOffset) % 360; //let's use real yaw now
         if (rot < 0) {
             rot += 360.0;
         }
@@ -380,7 +380,7 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
     public boolean passThroughForwardWall(int range) {
         int searchDist = 0;
         TargetBlock hitBlox = new TargetBlock(this, range, 0.2);
-        Extent world = getPosition().getExtent();
+        Extent world = getLocation().getExtent();
         Location block;
         boolean firstBlock = true;
         int freeToFind = 2;
@@ -422,7 +422,7 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
 
     @Override
     public void setPosition(Vector pos) {
-        setPosition(pos, (float) getPitch(), (float) getYaw());
+        setPosition(pos, getLocation().getPitch(), getLocation().getYaw());
     }
 
     @Override

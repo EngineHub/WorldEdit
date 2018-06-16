@@ -23,7 +23,6 @@ import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.blocks.type.BlockTypes;
 import com.sk89q.worldedit.function.pattern.Pattern;
 
@@ -44,7 +43,7 @@ public class GravityBrush implements Brush {
         for (double x = position.getBlockX() + size; x > position.getBlockX() - size; --x) {
             for (double z = position.getBlockZ() + size; z > position.getBlockZ() - size; --z) {
                 double y = startY;
-                final List<BaseBlock> blockTypes = new ArrayList<BaseBlock>();
+                final List<BaseBlock> blockTypes = new ArrayList<>();
                 for (; y > position.getBlockY() - size; --y) {
                     final Vector pt = new Vector(x, y, z);
                     final BaseBlock block = editSession.getBlock(pt);

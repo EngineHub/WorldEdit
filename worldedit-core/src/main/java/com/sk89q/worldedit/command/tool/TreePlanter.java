@@ -24,7 +24,6 @@ import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.util.*;
-import com.sk89q.worldedit.util.Location;
 
 /**
  * Plants a tree.

@@ -74,7 +74,6 @@ public class ToolCommands {
         max = 1
     )
     @CommandPermissions("worldedit.tool.tree")
-    @SuppressWarnings("deprecation")
     public void tree(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
 
         TreeGenerator.TreeType type = args.argsLength() > 0 ?

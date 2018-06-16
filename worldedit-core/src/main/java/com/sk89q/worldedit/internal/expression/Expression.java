@@ -68,9 +68,9 @@ import java.util.Stack;
  */
 public class Expression {
 
-    private static final ThreadLocal<Stack<Expression>> instance = new ThreadLocal<Stack<Expression>>();
+    private static final ThreadLocal<Stack<Expression>> instance = new ThreadLocal<>();
 
-    private final Map<String, RValue> variables = new HashMap<String, RValue>();
+    private final Map<String, RValue> variables = new HashMap<>();
     private final String[] variableNames;
     private RValue root;
     private final Functions functions = new Functions();
@@ -148,7 +148,7 @@ public class Expression {
     private void pushInstance() {
         Stack<Expression> foo = instance.get();
         if (foo == null) {
-            instance.set(foo = new Stack<Expression>());
+            instance.set(foo = new Stack<>());
         }
 
         foo.push(this);

@@ -42,7 +42,7 @@ public class ReparametrisingInterpolation implements Interpolation {
 
     private final Interpolation baseInterpolation;
     private double totalArcLength;
-    private final TreeMap<Double, Double> cache = new TreeMap<Double, Double>();
+    private final TreeMap<Double, Double> cache = new TreeMap<>();
 
     public ReparametrisingInterpolation(Interpolation baseInterpolation) {
         checkNotNull(baseInterpolation);

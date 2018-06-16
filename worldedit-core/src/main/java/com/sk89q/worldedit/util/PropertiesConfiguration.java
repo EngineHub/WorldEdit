@@ -63,20 +63,11 @@ public class PropertiesConfiguration extends LocalConfiguration {
 
     @Override
     public void load() {
-        InputStream stream = null;
-        try {
-            stream = new FileInputStream(path);
+        try (InputStream stream = new FileInputStream(path)) {
             properties.load(stream);
         } catch (FileNotFoundException ignored) {
         } catch (IOException e) {
             log.log(Level.WARNING, "Failed to read configuration", e);
-        } finally {
-            if (stream != null) {
-                try {
-                    stream.close();
-                } catch (IOException ignored) {
-                }
-            }
         }
 
         loadExtra();
@@ -121,22 +112,11 @@ public class PropertiesConfiguration extends LocalConfiguration {
             snapshotRepo = new SnapshotRepository(snapshotsDir);
         }
 
-        OutputStream output = null;
         path.getParentFile().mkdirs();
-        try {
-            output = new FileOutputStream(path);
+        try (OutputStream output = new FileOutputStream(path)) {
             properties.store(output, "Don't put comments; they get removed");
-        } catch (FileNotFoundException e) {
-            log.log(Level.WARNING, "Failed to write configuration", e);
         } catch (IOException e) {
             log.log(Level.WARNING, "Failed to write configuration", e);
-        } finally {
-            if (output != null) {
-                try {
-                    output.close();
-                } catch (IOException ignored) {
-                }
-            }
         }
     }
 
@@ -239,13 +219,13 @@ public class PropertiesConfiguration extends LocalConfiguration {
         String val = properties.getProperty(key);
         if (val == null) {
             properties.setProperty(key, StringUtil.joinString(def, ",", 0));
-            Set<Integer> set = new HashSet<Integer>();
+            Set<Integer> set = new HashSet<>();
             for (int i : def) {
                 set.add(i);
             }
             return set;
         } else {
-            Set<Integer> set = new HashSet<Integer>();
+            Set<Integer> set = new HashSet<>();
             String[] parts = val.split(",");
             for (String part : parts) {
                 try {

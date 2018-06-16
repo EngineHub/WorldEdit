@@ -89,7 +89,7 @@ public class SchematicWriter implements ClipboardWriter {
         // Metadata
         // ====================================================================
 
-        HashMap<String, Tag> schematic = new HashMap<String, Tag>();
+        HashMap<String, Tag> schematic = new HashMap<>();
         schematic.put("Width", new ShortTag((short) width));
         schematic.put("Length", new ShortTag((short) length));
         schematic.put("Height", new ShortTag((short) height));
@@ -108,7 +108,7 @@ public class SchematicWriter implements ClipboardWriter {
         byte[] blocks = new byte[width * height * length];
         byte[] addBlocks = null;
         byte[] blockData = new byte[width * height * length];
-        List<Tag> tileEntities = new ArrayList<Tag>();
+        List<Tag> tileEntities = new ArrayList<>();
 
         for (Vector point : region) {
             Vector relative = point.subtract(min);
@@ -136,7 +136,7 @@ public class SchematicWriter implements ClipboardWriter {
             // Store TileEntity data
             CompoundTag rawTag = block.getNbtData();
             if (rawTag != null) {
-                Map<String, Tag> values = new HashMap<String, Tag>();
+                Map<String, Tag> values = new HashMap<>();
                 for (Entry<String, Tag> entry : rawTag.getValue().entrySet()) {
                     values.put(entry.getKey(), entry.getValue());
                 }
@@ -163,12 +163,12 @@ public class SchematicWriter implements ClipboardWriter {
         // Entities
         // ====================================================================
 
-        List<Tag> entities = new ArrayList<Tag>();
+        List<Tag> entities = new ArrayList<>();
         for (Entity entity : clipboard.getEntities()) {
             BaseEntity state = entity.getState();
 
             if (state != null) {
-                Map<String, Tag> values = new HashMap<String, Tag>();
+                Map<String, Tag> values = new HashMap<>();
 
                 // Put NBT provided data
                 CompoundTag rawTag = state.getNbtData();
@@ -197,7 +197,7 @@ public class SchematicWriter implements ClipboardWriter {
     }
 
     private Tag writeVector(Vector vector, String name) {
-        List<DoubleTag> list = new ArrayList<DoubleTag>();
+        List<DoubleTag> list = new ArrayList<>();
         list.add(new DoubleTag(vector.getX()));
         list.add(new DoubleTag(vector.getY()));
         list.add(new DoubleTag(vector.getZ()));
@@ -205,7 +205,7 @@ public class SchematicWriter implements ClipboardWriter {
     }
 
     private Tag writeRotation(Location location, String name) {
-        List<FloatTag> list = new ArrayList<FloatTag>();
+        List<FloatTag> list = new ArrayList<>();
         list.add(new FloatTag(location.getYaw()));
         list.add(new FloatTag(location.getPitch()));
         return new ListTag(FloatTag.class, list);

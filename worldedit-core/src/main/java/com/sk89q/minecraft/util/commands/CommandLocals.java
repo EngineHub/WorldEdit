@@ -24,7 +24,7 @@ import java.util.Map;
 
 public class CommandLocals {
     
-    private final Map<Object, Object> locals = new HashMap<Object, Object>();
+    private final Map<Object, Object> locals = new HashMap<>();
 
     public boolean containsKey(Object key) {
         return locals.containsKey(key);
