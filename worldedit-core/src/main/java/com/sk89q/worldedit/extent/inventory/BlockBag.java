@@ -32,18 +32,6 @@ public abstract class BlockBag {
      * Stores a block as if it was mined.
      * 
      * @param id the type ID
-     * @throws BlockBagException on error
-     * @deprecated Use {@link BlockBag#storeDroppedBlock(int, int)} instead
-     */
-    @Deprecated
-    public void storeDroppedBlock(int id) throws BlockBagException {
-        storeDroppedBlock(id, 0);
-    }
-
-    /**
-     * Stores a block as if it was mined.
-     * 
-     * @param id the type ID
      * @param data the data value
      * @throws BlockBagException on error
      */
@@ -53,18 +41,6 @@ public abstract class BlockBag {
         if (dropped.getType() == ItemTypes.AIR) return;
 
         storeItem(dropped);
-    }
-
-    /**
-     * Sets a block as if it was placed by hand.
-     *
-     * @param id the type ID
-     * @throws BlockBagException on error
-     * @deprecated Use {@link #fetchPlacedBlock(int,int)} instead
-     */
-    @Deprecated
-    public void fetchPlacedBlock(int id) throws BlockBagException {
-        fetchPlacedBlock(id, 0);
     }
 
     /**

@@ -23,6 +23,9 @@ import com.sk89q.worldedit.world.registry.state.value.SimpleStateValue;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+
+import javax.annotation.Nullable;
 
 public class SimpleState<T extends SimpleStateValue> implements State<T> {
 
@@ -40,5 +43,11 @@ public class SimpleState<T extends SimpleStateValue> implements State<T> {
     @Override
     public List<T> getValues() {
         return Collections.unmodifiableList(values);
+    }
+
+    @Nullable
+    @Override
+    public T getValueFor(String string) {
+        return values.stream().filter(value -> Objects.equals(value.getData(), string)).findFirst().orElse(null);
     }
 }

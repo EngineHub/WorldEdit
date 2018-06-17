@@ -22,6 +22,7 @@ package com.sk89q.worldedit.blocks;
 import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.jnbt.StringTag;
 import com.sk89q.jnbt.Tag;
+import com.sk89q.worldedit.blocks.type.BlockState;
 import com.sk89q.worldedit.util.gson.GsonUtil;
 
 import java.util.HashMap;
@@ -37,25 +38,13 @@ public class SignBlock extends BaseBlock implements TileEntityBlock {
     private static String EMPTY =  "{\"text\":\"\"}";
 
     /**
-     * Construct the sign without text.
-     * 
-     * @param type type ID
-     * @param data data value (orientation)
-     */
-    public SignBlock(int type, int data) {
-        super(type, data);
-        this.text = new String[] { EMPTY, EMPTY, EMPTY, EMPTY };
-    }
-
-    /**
      * Construct the sign with text.
      * 
-     * @param type type ID
-     * @param data data value (orientation)
+     * @param blockState The block state
      * @param text lines of text
      */
-    public SignBlock(int type, int data, String[] text) {
-        super(type, data);
+    public SignBlock(BlockState blockState, String[] text) {
+        super(blockState);
         if (text == null) {
             this.text = new String[] { EMPTY, EMPTY, EMPTY, EMPTY };
             return;

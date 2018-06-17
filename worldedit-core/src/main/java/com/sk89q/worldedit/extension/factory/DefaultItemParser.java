@@ -61,7 +61,7 @@ public class DefaultItemParser extends InputParser<BaseItem> {
                 try {
                     damage = Short.parseShort(tokens[2]);
                 } catch (NumberFormatException ignored) {
-                    throw new InputParseException("Expected '" + tokens[2] + "' to be a metadata value but it's not a number");
+                    throw new InputParseException("Expected '" + tokens[2] + "' to be a damage value but it's not a number");
                 }
             }
 

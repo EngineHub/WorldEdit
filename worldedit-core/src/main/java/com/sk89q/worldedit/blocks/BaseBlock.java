@@ -23,6 +23,7 @@ import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.jnbt.StringTag;
 import com.sk89q.jnbt.Tag;
 import com.sk89q.worldedit.CuboidClipboard.FlipDirection;
+import com.sk89q.worldedit.blocks.type.BlockState;
 import com.sk89q.worldedit.blocks.type.BlockType;
 import com.sk89q.worldedit.blocks.type.BlockTypes;
 import com.sk89q.worldedit.function.mask.Mask;
@@ -74,6 +75,11 @@ public class BaseBlock implements TileEntityBlock {
         internalSetId(id);
         internalSetData(0);
         this.states = new HashMap<>();
+    }
+
+    public BaseBlock(BlockState blockState) {
+        this.blockType = blockState.getBlockType();
+        this.states = blockState.getStates();
     }
 
     /**

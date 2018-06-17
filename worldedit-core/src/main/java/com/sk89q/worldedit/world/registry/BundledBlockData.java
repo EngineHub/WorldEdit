@@ -196,7 +196,7 @@ public class BundledBlockData {
         private String unlocalizedName;
         public String localizedName;
         private List<String> aliases;
-        private Map<String, SimpleState> states = new HashMap<>();
+        public Map<String, SimpleState> states = new HashMap<>();
         private SimpleBlockMaterial material = new SimpleBlockMaterial();
     }
 

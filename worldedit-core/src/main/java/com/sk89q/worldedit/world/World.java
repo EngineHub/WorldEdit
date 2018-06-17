@@ -62,6 +62,7 @@ public interface World extends Extent {
      * @param id the block ID
      * @return true if the block ID is a valid one
      */
+    @Deprecated
     boolean isValidBlockType(int id);
 
     /**

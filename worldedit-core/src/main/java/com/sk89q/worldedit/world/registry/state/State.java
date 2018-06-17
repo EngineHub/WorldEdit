@@ -23,6 +23,8 @@ import com.sk89q.worldedit.world.registry.state.value.SimpleStateValue;
 
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 /**
  * Describes a state property of a block.
  *
@@ -38,4 +40,12 @@ public interface State<T extends SimpleStateValue> {
      */
     List<T> getValues();
 
+    /**
+     * Gets the value for the given string, or null.
+     *
+     * @param string The string
+     * @return The value, or null
+     */
+    @Nullable
+    T getValueFor(String string);
 }

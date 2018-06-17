@@ -24,36 +24,52 @@ import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Table;
 import com.sk89q.worldedit.world.registry.state.State;
-import com.sk89q.worldedit.world.registry.state.value.SimpleStateValue;
+import com.sk89q.worldedit.world.registry.state.value.StateValue;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * An immutable class that represents the state a block can be in.
  */
+@SuppressWarnings("unchecked")
 public class BlockState {
 
     private final BlockType blockType;
-    private final Map<State<SimpleStateValue>, SimpleStateValue> values;
+    private final Map<State, StateValue> values;
+    private final boolean fuzzy;
 
     // Neighbouring state table.
-    private Table<State<SimpleStateValue>, SimpleStateValue, BlockState> states;
+    private Table<State, StateValue, BlockState> states;
 
     BlockState(BlockType blockType) {
         this.blockType = blockType;
         this.values = new HashMap<>();
+        this.fuzzy = false;
     }
 
-    public void populate(Map<Map<State<SimpleStateValue>, SimpleStateValue>, BlockState> stateMap) {
-        final Table<State<SimpleStateValue>, SimpleStateValue, BlockState> states = HashBasedTable.create();
+    /**
+     * Creates a fuzzy BlockState. This can be used for partial matching.
+     *
+     * @param blockType The block type
+     * @param values The block state values
+     */
+    public BlockState(BlockType blockType, Map<State, StateValue> values) {
+        this.blockType = blockType;
+        this.values = values;
+        this.fuzzy = true;
+    }
 
-        for(final Map.Entry<State<SimpleStateValue>, SimpleStateValue> entry : this.values.entrySet()) {
-            final State<SimpleStateValue> state = entry.getKey();
+    public void populate(Map<Map<State, StateValue>, BlockState> stateMap) {
+        final Table<State, StateValue, BlockState> states = HashBasedTable.create();
 
-            state.getValues().forEach(value -> {
+        for(final Map.Entry<State, StateValue> entry : this.values.entrySet()) {
+            final State state = entry.getKey();
+
+            state.getValues().stream().forEach(value -> {
                 if(value != entry.getValue()) {
-                    states.put(state, value, stateMap.get(this.withValue(state, value)));
+                    states.put(state, (StateValue) value, stateMap.get(this.withValue(state, (StateValue) value)));
                 }
             });
         }
@@ -61,8 +77,8 @@ public class BlockState {
         this.states = states.isEmpty() ? states : ArrayTable.create(states);
     }
 
-    private Map<State<SimpleStateValue>, SimpleStateValue> withValue(final State<SimpleStateValue> property, final SimpleStateValue value) {
-        final Map<State<SimpleStateValue>, SimpleStateValue> values = Maps.newHashMap(this.values);
+    private Map<State, StateValue> withValue(final State property, final StateValue value) {
+        final Map<State, StateValue> values = Maps.newHashMap(this.values);
         values.put(property, value);
         return values;
     }
@@ -83,9 +99,13 @@ public class BlockState {
      * @param value The value
      * @return The modified state, or same if could not be applied
      */
-    public BlockState with(State<SimpleStateValue> state, SimpleStateValue value) {
-        BlockState result = states.get(state, value);
-        return result == null ? this : result;
+    public BlockState with(State state, StateValue value) {
+        if (fuzzy) {
+            return setState(state, value);
+        } else {
+            BlockState result = states.get(state, value);
+            return result == null ? this : result;
+        }
     }
 
     /**
@@ -94,8 +114,17 @@ public class BlockState {
      * @param state The state
      * @return The value
      */
-    public SimpleStateValue getState(State<SimpleStateValue> state) {
+    public StateValue getState(State state) {
         return this.values.get(state);
+    }
+
+    /**
+     * Gets an immutable collection of the states.
+     *
+     * @return The states
+     */
+    public Map<State, StateValue> getStates() {
+        return Collections.unmodifiableMap(this.values);
     }
 
     /**
@@ -107,7 +136,7 @@ public class BlockState {
      * @param value The value
      * @return The blockstate, for chaining
      */
-    BlockState setState(State<SimpleStateValue> state, SimpleStateValue value) {
+    BlockState setState(State state, StateValue value) {
         this.values.put(state, value);
         return this;
     }

@@ -25,7 +25,7 @@ import com.sk89q.jnbt.NBTUtils;
 import com.sk89q.jnbt.ShortTag;
 import com.sk89q.jnbt.StringTag;
 import com.sk89q.jnbt.Tag;
-import com.sk89q.worldedit.blocks.metadata.MobType;
+import com.sk89q.worldedit.blocks.type.BlockState;
 import com.sk89q.worldedit.world.storage.InvalidFormatException;
 
 import java.util.HashMap;
@@ -50,40 +50,22 @@ public class MobSpawnerBlock extends BaseBlock implements TileEntityBlock {
     private short requiredPlayerRange;
 
     /**
-     * Construct the mob spawner block with a pig as the mob type.
-     */
-    public MobSpawnerBlock() {
-        super(BlockID.MOB_SPAWNER);
-        this.mobType = MobType.PIG.getName();
-    }
-
-    /**
-     * Construct the mob spawner block with a given mob type.
-     *
-     * @param mobType mob type
-     */
-    public MobSpawnerBlock(String mobType) {
-        super(BlockID.MOB_SPAWNER);
-        this.mobType = mobType;
-    }
-
-    /**
      * Construct the mob spawner block with a specified data value.
      *
-     * @param data data value
+     * @param blockState The block state
      */
-    public MobSpawnerBlock(int data) {
-        super(BlockID.MOB_SPAWNER, data);
+    public MobSpawnerBlock(BlockState blockState) {
+        super(blockState);
     }
 
     /**
      * Construct the mob spawner block.
      *
-     * @param data data value
+     * @param blockState The block state
      * @param mobType mob type
      */
-    public MobSpawnerBlock(int data, String mobType) {
-        super(BlockID.MOB_SPAWNER, data);
+    public MobSpawnerBlock(BlockState blockState, String mobType) {
+        super(blockState);
         this.mobType = mobType;
     }
 

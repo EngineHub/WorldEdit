@@ -28,7 +28,6 @@ import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.blocks.BlockType;
 import com.sk89q.worldedit.blocks.ItemID;
-import com.sk89q.worldedit.blocks.SkullBlock;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.util.Location;
 import org.bukkit.DyeColor;
@@ -135,9 +134,6 @@ public final class BukkitUtil {
                     return new BaseBlock(BlockID.COCOA_PLANT, -1);
                 }
                 break;
-
-            case ItemID.HEAD:
-                return new SkullBlock(0, (byte) itemStack.getDurability());
 
             default:
                 final BaseBlock baseBlock = BlockType.getBlockForItem(typeId, itemStack.getDurability());
