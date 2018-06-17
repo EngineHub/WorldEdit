@@ -600,21 +600,6 @@ public class EditSession implements Extent {
     }
 
     /**
-     * Count the number of blocks of a given list of types in a region.
-     *
-     * @param region the region
-     * @param searchIDs a list of IDs to search
-     * @return the number of found blocks
-     */
-    public int countBlock(Region region, Set<Integer> searchIDs) {
-        Set<BaseBlock> passOn = new HashSet<>();
-        for (Integer i : searchIDs) {
-            passOn.add(new BaseBlock(i, -1));
-        }
-        return countBlocks(region, passOn);
-    }
-
-    /**
      * Count the number of blocks of a list of types in a region.
      *
      * @param region the region

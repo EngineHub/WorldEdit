@@ -21,20 +21,59 @@ package com.sk89q.worldedit.blocks.type;
 
 import com.sk89q.worldedit.world.registry.BundledBlockData;
 
+import java.util.function.Function;
+
 public class BlockType {
 
     private String id;
+    private BlockState defaultState;
 
     public BlockType(String id) {
+        this(id, null);
+    }
+
+    public BlockType(String id, Function<BlockState, BlockState> values) {
         // If it has no namespace, assume minecraft.
         if (!id.contains(":")) {
             id = "minecraft:" + id;
         }
         this.id = id;
+        this.defaultState = new BlockState(this);
+        if (values != null) {
+            this.defaultState = values.apply(this.defaultState);
+        }
     }
 
+    /**
+     * Gets the ID of this block.
+     *
+     * @return The id
+     */
     public String getId() {
         return this.id;
+    }
+
+    /**
+     * Gets the name of this block, or the ID if the name cannot be found.
+     *
+     * @return The name, or ID
+     */
+    public String getName() {
+        BundledBlockData.BlockEntry entry = BundledBlockData.getInstance().findById(this.id);
+        if (entry == null) {
+            return getId();
+        } else {
+            return entry.localizedName;
+        }
+    }
+
+    /**
+     * Gets the default state of this block type.
+     *
+     * @return The default state
+     */
+    public BlockState getDefaultState() {
+        return this.defaultState;
     }
 
     /**

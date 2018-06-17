@@ -93,7 +93,7 @@ public class RecursivePickaxe implements BlockTool {
             return;
         }
 
-        world.queueBlockBreakEffect(server, pos, initialType.getLegacyId(), distanceSq);
+        world.queueBlockBreakEffect(server, pos, initialType, distanceSq);
 
         editSession.setBlock(pos, air);
 

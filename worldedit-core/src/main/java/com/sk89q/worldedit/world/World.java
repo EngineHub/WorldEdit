@@ -27,6 +27,7 @@ import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.blocks.BaseItemStack;
+import com.sk89q.worldedit.blocks.type.BlockType;
 import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.function.mask.Mask;
@@ -262,11 +263,11 @@ public interface World extends Extent {
      *
      * @param server the server
      * @param position the position
-     * @param blockId the block ID
+     * @param blockType the block type
      * @param priority the priority
      * @return true if the effect was played
      */
-    boolean queueBlockBreakEffect(Platform server, Vector position, int blockId, double priority);
+    boolean queueBlockBreakEffect(Platform server, Vector position, BlockType blockType, double priority);
 
     /**
      * Get the data for blocks and so on for this world.

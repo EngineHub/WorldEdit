@@ -21,17 +21,24 @@ package com.sk89q.worldedit.world.registry.state;
 
 import com.sk89q.worldedit.world.registry.state.value.SimpleStateValue;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public class SimpleState<T extends SimpleStateValue> implements State<T> {
 
-    private List<T> values = new ArrayList<>();
+    private List<T> values;
+
+    /**
+     * Creates a state with values
+     *
+     * @param values The values
+     */
+    public SimpleState(List<T> values) {
+        this.values = values;
+    }
 
     @Override
     public List<T> getValues() {
         return Collections.unmodifiableList(values);
     }
-
 }

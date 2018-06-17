@@ -102,7 +102,7 @@ public class FloatingTreeRemover implements BlockTool {
         return true;
     }
 
-    Vector[] recurseDirections = {
+    private Vector[] recurseDirections = {
         PlayerDirection.NORTH.vector(),
         PlayerDirection.EAST.vector(),
         PlayerDirection.SOUTH.vector(),

@@ -100,7 +100,14 @@ public class ToolCommands {
     @CommandPermissions("worldedit.tool.replacer")
     public void repl(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
 
-        BaseBlock targetBlock = we.getBlock(player, args.getString(0));
+        ParserContext context = new ParserContext();
+        context.setActor(player);
+        context.setWorld(player.getWorld());
+        context.setSession(session);
+        context.setRestricted(true);
+        context.setPreferringWildcard(false);
+
+        BaseBlock targetBlock = we.getBlockFactory().parseFromInput(args.getString(0), context);
         session.setTool(player.getItemInHand(), new BlockReplacer(targetBlock));
         player.print("Block replacer tool bound to "
                 + ItemType.toHeldName(player.getItemInHand()) + ".");
@@ -189,8 +196,16 @@ public class ToolCommands {
     @CommandPermissions("worldedit.tool.lrbuild")
     public void longrangebuildtool(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
 
-        BaseBlock secondary = we.getBlock(player, args.getString(0));
-        BaseBlock primary = we.getBlock(player, args.getString(1));
+        ParserContext context = new ParserContext();
+        context.setActor(player);
+        context.setWorld(player.getWorld());
+        context.setSession(session);
+        context.setRestricted(true);
+        context.setPreferringWildcard(false);
+
+        BaseBlock secondary = we.getBlockFactory().parseFromInput(args.getString(0), context);
+        BaseBlock primary = we.getBlockFactory().parseFromInput(args.getString(1), context);
+
         session.setTool(player.getItemInHand(), new LongRangeBuildTool(primary, secondary));
         player.print("Long-range building tool bound to " + ItemType.toHeldName(player.getItemInHand()) + ".");
         player.print("Left-click set to " + ItemType.toName(secondary.getType().getLegacyId()) + "; right-click set to "

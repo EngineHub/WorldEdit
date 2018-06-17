@@ -24,7 +24,7 @@ import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.blocks.BlockID;
+import com.sk89q.worldedit.blocks.type.BlockType;
 import com.sk89q.worldedit.blocks.type.BlockTypes;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
@@ -44,8 +44,8 @@ public class SinglePickaxe implements BlockTool {
     @Override
     public boolean actPrimary(Platform server, LocalConfiguration config, Player player, LocalSession session, com.sk89q.worldedit.util.Location clicked) {
         World world = (World) clicked.getExtent();
-        final int blockType = world.getLazyBlock(clicked.toVector()).getId();
-        if (blockType == BlockID.BEDROCK
+        final BlockType blockType = world.getLazyBlock(clicked.toVector()).getType();
+        if (blockType == BlockTypes.BEDROCK
                 && !player.canDestroyBedrock()) {
             return true;
         }
@@ -61,7 +61,7 @@ public class SinglePickaxe implements BlockTool {
             editSession.flushQueue();
         }
 
-        world.playEffect(clicked.toVector(), 2001, blockType);
+        world.playEffect(clicked.toVector(), 2001, blockType.getLegacyId());
 
         return true;
     }

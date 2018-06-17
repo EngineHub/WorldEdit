@@ -26,7 +26,6 @@ import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
-import com.sk89q.worldedit.world.World;
 
 /**
  * A mode that replaces one block.
@@ -66,10 +65,9 @@ public class BlockReplacer implements DoubleActionBlockTool {
 
     @Override
     public boolean actSecondary(Platform server, LocalConfiguration config, Player player, LocalSession session, com.sk89q.worldedit.util.Location clicked) {
-        World world = (World) clicked.getExtent();
         EditSession editSession = session.createEditSession(player);
         targetBlock = (editSession).getBlock(clicked.toVector());
-        BlockType type = BlockType.fromID(targetBlock.getType().getLegacyId());
+        BlockType type = targetBlock.getType().getLegacyType();
 
         if (type != null) {
             player.print("Replacer tool switched to: " + type.getName());

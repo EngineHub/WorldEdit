@@ -19,12 +19,14 @@
 
 package com.sk89q.worldedit;
 
+import static com.sk89q.worldedit.event.platform.Interaction.HIT;
+import static com.sk89q.worldedit.event.platform.Interaction.OPEN;
+
 import com.sk89q.worldedit.CuboidClipboard.FlipDirection;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.blocks.BlockType;
 import com.sk89q.worldedit.entity.Player;
-import com.sk89q.worldedit.event.extent.EditSessionEvent;
 import com.sk89q.worldedit.event.platform.BlockInteractEvent;
 import com.sk89q.worldedit.event.platform.InputType;
 import com.sk89q.worldedit.event.platform.PlayerInputEvent;
@@ -32,7 +34,6 @@ import com.sk89q.worldedit.extension.factory.BlockFactory;
 import com.sk89q.worldedit.extension.factory.ItemFactory;
 import com.sk89q.worldedit.extension.factory.MaskFactory;
 import com.sk89q.worldedit.extension.factory.PatternFactory;
-import com.sk89q.worldedit.extension.input.ParserContext;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.extension.platform.PlatformManager;
@@ -50,23 +51,19 @@ import com.sk89q.worldedit.util.io.file.FilenameResolutionException;
 import com.sk89q.worldedit.util.io.file.InvalidFilenameException;
 import com.sk89q.worldedit.util.logging.WorldEditPrefixHandler;
 import com.sk89q.worldedit.world.registry.BundledBlockData;
+import com.sk89q.worldedit.world.registry.BundledItemData;
 
-import javax.script.ScriptException;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.sk89q.worldedit.event.platform.Interaction.HIT;
-import static com.sk89q.worldedit.event.platform.Interaction.OPEN;
+import javax.script.ScriptException;
 
 /**
  * The entry point and container for a working implementation of WorldEdit.
@@ -102,6 +99,7 @@ public class WorldEdit {
         WorldEditPrefixHandler.register("com.sk89q.worldedit");
         getVersion();
         BundledBlockData.getInstance(); // Load block registry
+        BundledItemData.getInstance(); // Load item registry
     }
 
     private WorldEdit() {
@@ -189,78 +187,6 @@ public class WorldEdit {
      */
     public SessionManager getSessionManager() {
         return sessions;
-    }
-
-    /**
-     * @deprecated Use {@link #getBlockFactory()} and {@link BlockFactory#parseFromInput(String, ParserContext)}
-     */
-    @Deprecated
-    public BaseBlock getBlock(Player player, String arg, boolean allAllowed) throws WorldEditException {
-        return getBlock(player, arg, allAllowed, false);
-    }
-
-    /**
-     * @deprecated Use {@link #getBlockFactory()} and {@link BlockFactory#parseFromInput(String, ParserContext)}
-     */
-    @Deprecated
-    public BaseBlock getBlock(Player player, String arg, boolean allAllowed, boolean allowNoData) throws WorldEditException {
-        ParserContext context = new ParserContext();
-        context.setActor(player);
-        context.setWorld(player.getWorld());
-        context.setSession(getSessionManager().get(player));
-        context.setRestricted(!allAllowed);
-        context.setPreferringWildcard(allowNoData);
-        return getBlockFactory().parseFromInput(arg, context);
-    }
-
-    /**
-     * @deprecated Use {@link #getBlockFactory()} and {@link BlockFactory#parseFromInput(String, ParserContext)}
-     */
-    @Deprecated
-    public BaseBlock getBlock(Player player, String id) throws WorldEditException {
-        return getBlock(player, id, false);
-    }
-
-    /**
-     * @deprecated Use {@link #getBlockFactory()} and {@link BlockFactory#parseFromListInput(String, ParserContext)}
-     */
-    @Deprecated
-    public Set<BaseBlock> getBlocks(Player player, String list, boolean allAllowed, boolean allowNoData) throws WorldEditException {
-        String[] items = list.split(",");
-        Set<BaseBlock> blocks = new HashSet<>();
-        for (String id : items) {
-            blocks.add(getBlock(player, id, allAllowed, allowNoData));
-        }
-        return blocks;
-    }
-
-    /**
-     * @deprecated Use {@link #getBlockFactory()} and {@link BlockFactory#parseFromInput(String, ParserContext)}
-     */
-    @Deprecated
-    public Set<BaseBlock> getBlocks(Player player, String list, boolean allAllowed) throws WorldEditException {
-        return getBlocks(player, list, allAllowed, false);
-    }
-
-    /**
-     * @deprecated Use {@link #getBlockFactory()} and {@link BlockFactory#parseFromListInput(String, ParserContext)}
-     */
-    @Deprecated
-    public Set<BaseBlock> getBlocks(Player player, String list) throws WorldEditException {
-        return getBlocks(player, list, false);
-    }
-
-    /**
-     * @deprecated Use {@link #getBlockFactory()} and {@link BlockFactory#parseFromListInput(String, ParserContext)}
-     */
-    @Deprecated
-    public Set<Integer> getBlockIDs(Player player, String list, boolean allBlocksAllowed) throws WorldEditException {
-        String[] items = list.split(",");
-        Set<Integer> blocks = new HashSet<>();
-        for (String s : items) {
-            blocks.add(getBlock(player, s, allBlocksAllowed).getType().getLegacyId());
-        }
-        return blocks;
     }
 
     /**
@@ -641,7 +567,7 @@ public class WorldEdit {
 
         String filename = f.getPath();
         int index = filename.lastIndexOf(".");
-        String ext = filename.substring(index + 1, filename.length());
+        String ext = filename.substring(index + 1);
 
         if (!ext.equalsIgnoreCase("js")) {
             player.printError("Only .js scripts are currently supported");
@@ -677,7 +603,7 @@ public class WorldEdit {
         LocalSession session = getSessionManager().get(player);
         CraftScriptContext scriptContext = new CraftScriptContext(this, getServer(), getConfiguration(), session, player, args);
 
-        CraftScriptEngine engine = null;
+        CraftScriptEngine engine;
 
         try {
             engine = new RhinoCraftScriptEngine();
@@ -740,20 +666,6 @@ public class WorldEdit {
     }
 
     /**
-     * @deprecated EditSessionFactories are no longer used. Please register an {@link EditSessionEvent} event
-     *             with the event bus in order to override or catch changes to the world
-     */
-    @Deprecated
-    public void setEditSessionFactory(EditSessionFactory factory) {
-        checkNotNull(factory);
-        logger.severe("Got request to set EditSessionFactory of type " +
-                factory.getClass().getName() + " from " + factory.getClass().getPackage().getName() +
-                " but EditSessionFactories have been removed in favor of extending EditSession's extents.\n\n" +
-                "This may mean that any block logger / intercepters addons/plugins/mods that you have installed will not " +
-                "intercept WorldEdit's changes! Please notify the maintainer of the other addon about this.");
-    }
-
-    /**
      * Get the version.
      *
      * @return the version of WorldEdit
@@ -780,13 +692,6 @@ public class WorldEdit {
         }
 
         return version;
-    }
-
-    /**
-     * @deprecated Declare your platform version with {@link Platform#getPlatformVersion()}
-     */
-    @Deprecated
-    public static void setVersion(String version) {
     }
 
 }

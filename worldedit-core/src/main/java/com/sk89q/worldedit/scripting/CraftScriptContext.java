@@ -143,7 +143,7 @@ public class CraftScriptContext extends CraftScriptEnvironment {
     }
 
     /**
-     * Get an item ID from an item name or an item ID number.
+     * Get an item from an item name or an item ID number.
      *
      * @param input input to parse
      * @param allAllowed true to ignore blacklists
@@ -152,7 +152,14 @@ public class CraftScriptContext extends CraftScriptEnvironment {
      * @throws DisallowedItemException
      */
     public BaseBlock getBlock(String input, boolean allAllowed) throws WorldEditException {
-        return controller.getBlock(player, input, allAllowed);
+        ParserContext context = new ParserContext();
+        context.setActor(player);
+        context.setWorld(player.getWorld());
+        context.setSession(session);
+        context.setRestricted(!allAllowed);
+        context.setPreferringWildcard(false);
+
+        return controller.getBlockFactory().parseFromListInput(input, context).stream().findFirst().orElse(null);
     }
 
     /**
@@ -164,7 +171,7 @@ public class CraftScriptContext extends CraftScriptEnvironment {
      * @throws DisallowedItemException
      */
     public BaseBlock getBlock(String id) throws WorldEditException {
-        return controller.getBlock(player, id, false);
+        return getBlock(id, false);
     }
 
     /**
@@ -192,27 +199,13 @@ public class CraftScriptContext extends CraftScriptEnvironment {
      * @throws UnknownItemException 
      * @throws DisallowedItemException 
      */
-    public Set<Integer> getBlockIDs(String list, boolean allBlocksAllowed) throws WorldEditException {
-        return controller.getBlockIDs(player, list, allBlocksAllowed);
-    }
-
-    /**
-     * Gets the path to a file. This method will check to see if the filename
-     * has valid characters and has an extension. It also prevents directory
-     * traversal exploits by checking the root directory and the file directory.
-     * On success, a {@code java.io.File} object will be returned.
-     * 
-     * <p>Use this method if you need to read a file from a directory.</p>
-     * 
-     * @param folder sub-directory to look in
-     * @param filename filename (user-submitted)
-     * @return a file
-     * @throws FilenameException
-     */
-    @Deprecated
-    public File getSafeFile(String folder, String filename) throws FilenameException {
-        File dir = controller.getWorkingDirectoryFile(folder);
-        return controller.getSafeOpenFile(player, dir, filename, null, (String[]) null);
+    public Set<BaseBlock> getBlocks(String list, boolean allBlocksAllowed) throws WorldEditException {
+        ParserContext context = new ParserContext();
+        context.setActor(player);
+        context.setWorld(player.getWorld());
+        context.setSession(session);
+        context.setRestricted(!allBlocksAllowed);
+        return controller.getBlockFactory().parseFromListInput(list, context);
     }
 
     /**

@@ -21,6 +21,11 @@ package com.sk89q.worldedit.world.registry.state;
 
 import com.sk89q.worldedit.world.registry.state.value.DirectionalStateValue;
 
+import java.util.List;
+
 public class DirectionalState extends SimpleState<DirectionalStateValue> {
 
+    public DirectionalState(List<DirectionalStateValue> values) {
+        super(values);
+    }
 }

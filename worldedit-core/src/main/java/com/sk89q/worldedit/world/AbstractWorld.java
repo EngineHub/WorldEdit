@@ -180,7 +180,7 @@ public abstract class AbstractWorld implements World {
     }
 
     @Override
-    public boolean queueBlockBreakEffect(Platform server, Vector position, int blockId, double priority) {
+    public boolean queueBlockBreakEffect(Platform server, Vector position, com.sk89q.worldedit.blocks.type.BlockType blockType, double priority) {
         if (taskId == -1) {
             taskId = server.schedule(0, 1, () -> {
                 int max = Math.max(1, Math.min(30, effectQueue.size() / 3));
@@ -196,7 +196,7 @@ public abstract class AbstractWorld implements World {
             return false;
         }
 
-        effectQueue.offer(new QueuedEffect(position, blockId, priority));
+        effectQueue.offer(new QueuedEffect(position, blockType, priority));
 
         return true;
     }
@@ -218,17 +218,17 @@ public abstract class AbstractWorld implements World {
 
     private class QueuedEffect implements Comparable<QueuedEffect> {
         private final Vector position;
-        private final int blockId;
+        private final com.sk89q.worldedit.blocks.type.BlockType blockType;
         private final double priority;
 
-        private QueuedEffect(Vector position, int blockId, double priority) {
+        private QueuedEffect(Vector position, com.sk89q.worldedit.blocks.type.BlockType blockType, double priority) {
             this.position = position;
-            this.blockId = blockId;
+            this.blockType = blockType;
             this.priority = priority;
         }
 
         public void play() {
-            playEffect(position, 2001, blockId);
+            playEffect(position, 2001, blockType.getLegacyId());
         }
 
         @Override

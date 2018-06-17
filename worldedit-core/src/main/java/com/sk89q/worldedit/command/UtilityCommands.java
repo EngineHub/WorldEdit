@@ -250,7 +250,14 @@ public class UtilityCommands {
     @Logging(PLACEMENT)
     public void removeNear(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
 
-        BaseBlock block = we.getBlock(player, args.getString(0), true);
+        ParserContext context = new ParserContext();
+        context.setActor(player);
+        context.setWorld(player.getWorld());
+        context.setSession(session);
+        context.setRestricted(false);
+        context.setPreferringWildcard(false);
+
+        BaseBlock block = we.getBlockFactory().parseFromInput(args.getString(0), context);
         int size = Math.max(1, args.getInteger(1, 50));
         we.checkMaxRadius(size);
 

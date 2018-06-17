@@ -98,7 +98,7 @@ public class BundledBlockData {
      * @return the entry, or null
      */
     @Nullable
-    private BlockEntry findById(String id) {
+    public BlockEntry findById(String id) {
         // If it has no namespace, assume minecraft.
         if (!id.contains(":")) {
             id = "minecraft:" + id;
@@ -190,10 +190,11 @@ public class BundledBlockData {
         return INSTANCE;
     }
 
-    private static class BlockEntry {
+    public static class BlockEntry {
         private int legacyId;
         private String id;
         private String unlocalizedName;
+        public String localizedName;
         private List<String> aliases;
         private Map<String, SimpleState> states = new HashMap<>();
         private SimpleBlockMaterial material = new SimpleBlockMaterial();

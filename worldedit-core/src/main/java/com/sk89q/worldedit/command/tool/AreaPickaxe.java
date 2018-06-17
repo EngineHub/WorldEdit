@@ -50,7 +50,7 @@ public class AreaPickaxe implements BlockTool {
         int ox = clicked.getBlockX();
         int oy = clicked.getBlockY();
         int oz = clicked.getBlockZ();
-        BlockType initialType = ((World) clicked.getExtent()).getBlock(clicked.toVector()).getType();
+        BlockType initialType = clicked.getExtent().getBlock(clicked.toVector()).getType();
 
         if (initialType == BlockTypes.AIR) {
             return true;
@@ -72,7 +72,7 @@ public class AreaPickaxe implements BlockTool {
                             continue;
                         }
 
-                        ((World) clicked.getExtent()).queueBlockBreakEffect(server, pos, initialType.getLegacyId(), clicked.toVector().distanceSq(pos));
+                        ((World) clicked.getExtent()).queueBlockBreakEffect(server, pos, initialType, clicked.toVector().distanceSq(pos));
 
                         editSession.setBlock(pos, air);
                     }
