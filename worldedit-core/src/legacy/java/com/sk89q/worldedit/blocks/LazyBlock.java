@@ -66,22 +66,6 @@ public class LazyBlock extends BaseBlock {
      * Create a new lazy block.
      *
      * @param type the block type
-     * @param extent the extent to later load the full block data from
-     * @param position the position to later load the full block data from
-     */
-    @Deprecated
-    public LazyBlock(int type, Extent extent, Vector position) {
-        super(type);
-        checkNotNull(extent);
-        checkNotNull(position);
-        this.extent = extent;
-        this.position = position;
-    }
-
-    /**
-     * Create a new lazy block.
-     *
-     * @param type the block type
      * @param states the block states
      * @param extent the extent to later load the full block data from
      * @param position the position to later load the full block data from

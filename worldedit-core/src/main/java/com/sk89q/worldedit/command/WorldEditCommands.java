@@ -78,7 +78,7 @@ public class WorldEditCommands {
     )
     @CommandPermissions("worldedit.reload")
     public void reload(Actor actor) throws WorldEditException {
-        we.getServer().reload();
+        we.getPlatformManager().queryCapability(Capability.CONFIGURATION).reload();
         we.getEventBus().post(new ConfigurationLoadEvent(we.getPlatformManager().queryCapability(Capability.CONFIGURATION).getConfiguration()));
         actor.print("Configuration reloaded!");
     }

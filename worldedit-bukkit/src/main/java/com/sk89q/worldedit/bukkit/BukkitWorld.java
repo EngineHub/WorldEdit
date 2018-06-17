@@ -79,7 +79,6 @@ public class BukkitWorld extends AbstractWorld {
      *
      * @param world the world
      */
-    @SuppressWarnings("unchecked")
     public BukkitWorld(World world) {
         this.worldRef = new WeakReference<>(world);
     }

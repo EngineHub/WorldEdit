@@ -50,6 +50,7 @@ import org.spongepowered.api.event.game.state.GamePostInitializationEvent;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 import org.spongepowered.api.event.game.state.GameStartedServerEvent;
 import org.spongepowered.api.event.game.state.GameStoppingServerEvent;
+import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
@@ -132,7 +133,12 @@ public class SpongeWorldEdit {
         this.provider = new SpongePermissionsProvider();
 
         for (BlockType blockType : Sponge.getRegistry().getAllOf(BlockType.class)) {
+            // TODO Handle blockstate stuff
             com.sk89q.worldedit.blocks.type.BlockTypes.registerBlock(new com.sk89q.worldedit.blocks.type.BlockType(blockType.getId()));
+        }
+
+        for (ItemType itemType : Sponge.getRegistry().getAllOf(ItemType.class)) {
+            com.sk89q.worldedit.blocks.type.ItemTypes.registerItem(new com.sk89q.worldedit.blocks.type.ItemType(itemType.getId()));
         }
 
         WorldEdit.getInstance().getPlatformManager().register(platform);

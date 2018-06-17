@@ -35,6 +35,7 @@ import com.sk89q.worldedit.extension.factory.ItemFactory;
 import com.sk89q.worldedit.extension.factory.MaskFactory;
 import com.sk89q.worldedit.extension.factory.PatternFactory;
 import com.sk89q.worldedit.extension.platform.Actor;
+import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.extension.platform.PlatformManager;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
@@ -601,7 +602,8 @@ public class WorldEdit {
         }
 
         LocalSession session = getSessionManager().get(player);
-        CraftScriptContext scriptContext = new CraftScriptContext(this, getServer(), getConfiguration(), session, player, args);
+        CraftScriptContext scriptContext = new CraftScriptContext(this, getPlatformManager().queryCapability(Capability.USER_COMMANDS),
+                getConfiguration(), session, player, args);
 
         CraftScriptEngine engine;
 
@@ -647,15 +649,6 @@ public class WorldEdit {
      */
     public LocalConfiguration getConfiguration() {
         return getPlatformManager().getConfiguration();
-    }
-
-    /**
-     * Get the server interface.
-     *
-     * @return the server interface
-     */
-    public ServerInterface getServer() {
-        return getPlatformManager().getServerInterface();
     }
 
     /**
