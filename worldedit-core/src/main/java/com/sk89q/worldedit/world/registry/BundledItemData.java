@@ -97,8 +97,7 @@ public class BundledItemData {
      * @param id the ID
      * @return the entry, or null
      */
-    @Nullable
-    private ItemEntry findById(String id) {
+    @Nullable public ItemEntry findById(String id) {
         // If it has no namespace, assume minecraft.
         if (!id.contains(":")) {
             id = "minecraft:" + id;
@@ -158,12 +157,12 @@ public class BundledItemData {
         return INSTANCE;
     }
 
-    private static class ItemEntry {
+    public static class ItemEntry {
         private int legacyId; // -1 for items without legacy IDs.
         private short legacyData;
         private String id;
         private String unlocalizedName;
-        private String localizedName;
+        public String localizedName;
         private int maxDamage;
         private int maxStackSize;
     }

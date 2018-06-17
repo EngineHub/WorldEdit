@@ -31,6 +31,7 @@ import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.blocks.LazyBlock;
+import com.sk89q.worldedit.blocks.type.ItemTypes;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.internal.Constants;
@@ -226,7 +227,7 @@ public class ForgeWorld extends AbstractWorld {
         checkNotNull(biome);
 
         Chunk chunk = getWorld().getChunkFromBlockCoords(new BlockPos(position.getBlockX(), 0, position.getBlockZ()));
-        if ((chunk != null) && (chunk.isLoaded())) {
+        if (chunk.isLoaded()) {
             chunk.getBiomeArray()[((position.getBlockZ() & 0xF) << 4 | position.getBlockX() & 0xF)] = (byte) biome.getId();
             return true;
         }
@@ -236,7 +237,7 @@ public class ForgeWorld extends AbstractWorld {
 
     @Override
     public boolean useItem(Vector position, BaseItem item, Direction face) {
-        Item nativeItem = Item.getItemById(item.getType());
+        Item nativeItem = Item.getByNameOrId(item.getType().getId());
         ItemStack stack = new ItemStack(nativeItem, 1, item.getData());
         World world = getWorld();
         EnumActionResult used = stack.onItemUse(new WorldEditFakePlayer((WorldServer) world), world, ForgeAdapter.toBlockPos(position),
@@ -249,7 +250,7 @@ public class ForgeWorld extends AbstractWorld {
         checkNotNull(position);
         checkNotNull(item);
 
-        if (item.getType() == 0) {
+        if (item.getType() == ItemTypes.AIR) {
             return;
         }
 

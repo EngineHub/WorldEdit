@@ -35,6 +35,7 @@ import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.function.Contextual;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.regions.factory.RegionFactory;
+import com.sk89q.worldedit.util.HandSide;
 import com.sk89q.worldedit.util.command.argument.CommandArgs;
 import com.sk89q.worldedit.util.command.composition.CommandExecutor;
 import com.sk89q.worldedit.util.command.composition.SimpleCommand;
@@ -71,7 +72,7 @@ public class ShapedBrushCommand extends SimpleCommand<Object> {
 
         try {
             WorldEdit.getInstance().checkMaxBrushRadius(radius);
-            BrushTool tool = session.getBrushTool(player.getItemInHand());
+            BrushTool tool = session.getBrushTool(player.getItemInHand(HandSide.MAIN_HAND).getType());
             tool.setSize(radius);
             tool.setBrush(new OperationFactoryBrush(factory, regionFactory), permission);
         } catch (MaxBrushRadiusException | InvalidToolBindException e) {

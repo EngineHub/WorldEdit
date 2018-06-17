@@ -24,6 +24,7 @@ import com.sk89q.worldedit.NotABlockException;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.blocks.BlockType;
 import com.sk89q.worldedit.blocks.ItemID;
@@ -151,5 +152,9 @@ public final class BukkitUtil {
         }
 
         throw new NotABlockException(typeId);
+    }
+
+    public static BaseItemStack toBaseItemStack(ItemStack itemStack) {
+        return new BaseItemStack(itemStack.getTypeId(), itemStack.getDurability());
     }
 }

@@ -29,6 +29,7 @@ import com.sk89q.worldedit.extension.input.NoMatchException;
 import com.sk89q.worldedit.extension.input.ParserContext;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.internal.registry.InputParser;
+import com.sk89q.worldedit.util.HandSide;
 import com.sk89q.worldedit.world.World;
 
 /**
@@ -40,10 +41,10 @@ class DefaultBlockParser extends InputParser<BaseBlock> {
         super(worldEdit);
     }
 
-    private static BaseBlock getBlockInHand(Actor actor) throws InputParseException {
+    private static BaseBlock getBlockInHand(Actor actor, HandSide handSide) throws InputParseException {
         if (actor instanceof Player) {
             try {
-                return ((Player) actor).getBlockInHand();
+                return ((Player) actor).getBlockInHand(handSide);
             } catch (NotABlockException e) {
                 throw new InputParseException("You're not holding a block!");
             } catch (WorldEditException e) {
@@ -108,7 +109,17 @@ class DefaultBlockParser extends InputParser<BaseBlock> {
 
         if ("hand".equalsIgnoreCase(testId)) {
             // Get the block type from the item in the user's hand.
-            final BaseBlock blockInHand = getBlockInHand(context.requireActor());
+            final BaseBlock blockInHand = getBlockInHand(context.requireActor(), HandSide.MAIN_HAND);
+            if (blockInHand.getClass() != BaseBlock.class) {
+                return blockInHand;
+            }
+
+            blockId = blockInHand.getId();
+            blockType = BlockType.fromID(blockId);
+            data = blockInHand.getData();
+        } else if ("offhand".equalsIgnoreCase(testId)) {
+            // Get the block type from the item in the user's off hand.
+            final BaseBlock blockInHand = getBlockInHand(context.requireActor(), HandSide.OFF_HAND);
             if (blockInHand.getClass() != BaseBlock.class) {
                 return blockInHand;
             }

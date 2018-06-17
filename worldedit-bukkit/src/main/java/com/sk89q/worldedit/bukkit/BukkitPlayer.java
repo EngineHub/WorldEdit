@@ -23,11 +23,13 @@ import com.sk89q.util.StringUtil;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.extension.platform.AbstractPlayerActor;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
 import com.sk89q.worldedit.internal.cui.CUIEvent;
 import com.sk89q.worldedit.session.SessionKey;
+import com.sk89q.worldedit.util.HandSide;
 import com.sk89q.worldedit.world.World;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -55,14 +57,18 @@ public class BukkitPlayer extends AbstractPlayerActor {
     }
 
     @Override
-    public int getItemInHand() {
-        ItemStack itemStack = player.getItemInHand();
-        return itemStack != null ? itemStack.getTypeId() : 0;
+    public BaseItemStack getItemInHand(HandSide handSide) {
+        ItemStack itemStack = handSide == HandSide.MAIN_HAND
+                ? player.getInventory().getItemInMainHand()
+                : player.getInventory().getItemInOffHand();
+        return BukkitUtil.toBaseItemStack(itemStack);
     }
 
     @Override
-    public BaseBlock getBlockInHand() throws WorldEditException {
-        ItemStack itemStack = player.getItemInHand();
+    public BaseBlock getBlockInHand(HandSide handSide) throws WorldEditException {
+        ItemStack itemStack = handSide == HandSide.MAIN_HAND
+                ? player.getInventory().getItemInMainHand()
+                : player.getInventory().getItemInOffHand();
         return BukkitUtil.toBlock(getWorld(), itemStack);
     }
 

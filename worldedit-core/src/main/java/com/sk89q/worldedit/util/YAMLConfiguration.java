@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.util;
 
+import com.google.common.collect.Lists;
 import com.sk89q.util.yaml.YAMLProcessor;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
@@ -53,7 +54,7 @@ public class YAMLConfiguration extends LocalConfiguration {
         }
 
         profile = config.getBoolean("debug", profile);
-        wandItem = config.getInt("wand-item", wandItem);
+        wandItem = config.getString("wand-item", wandItem);
 
         defaultChangeLimit = Math.max(-1, config.getInt(
                 "limits.max-blocks-changed.default", defaultChangeLimit));
@@ -76,7 +77,7 @@ public class YAMLConfiguration extends LocalConfiguration {
         butcherDefaultRadius = Math.max(-1, config.getInt("limits.butcher-radius.default", butcherDefaultRadius));
         butcherMaxRadius = Math.max(-1, config.getInt("limits.butcher-radius.maximum", butcherMaxRadius));
 
-        disallowedBlocks = new HashSet<>(config.getIntList("limits.disallowed-blocks", null));
+        disallowedBlocks = new HashSet<>(config.getStringList("limits.disallowed-blocks", Lists.newArrayList(defaultDisallowedBlocks)));
         allowedDataCycleBlocks = new HashSet<>(config.getIntList("limits.allowed-data-cycle-blocks", null));
 
         registerHelp = config.getBoolean("register-help", true);
@@ -97,7 +98,7 @@ public class YAMLConfiguration extends LocalConfiguration {
         useInventoryCreativeOverride = config.getBoolean("use-inventory.creative-mode-overrides",
                 useInventoryCreativeOverride);
 
-        navigationWand = config.getInt("navigation-wand.item", navigationWand);
+        navigationWand = config.getString("navigation-wand.item", navigationWand);
         navigationWandMaxDistance = config.getInt("navigation-wand.max-distance", navigationWandMaxDistance);
         navigationUseGlass = config.getBoolean("navigation.use-glass", navigationUseGlass);
 

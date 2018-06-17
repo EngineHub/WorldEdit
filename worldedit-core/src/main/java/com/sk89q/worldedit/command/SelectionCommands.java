@@ -34,6 +34,7 @@ import com.sk89q.worldedit.Vector2D;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.blocks.type.ItemTypes;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.input.ParserContext;
 import com.sk89q.worldedit.extension.platform.permission.ActorSelectorLimits;
@@ -276,7 +277,7 @@ public class SelectionCommands {
     @CommandPermissions("worldedit.wand")
     public void wand(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
 
-        player.giveItem(we.getConfiguration().wandItem, 1);
+        player.giveItem(ItemTypes.getItemType(we.getConfiguration().wandItem).getLegacyId(), 1);
         player.print("Left click: select pos #1; Right click: select pos #2");
     }
 

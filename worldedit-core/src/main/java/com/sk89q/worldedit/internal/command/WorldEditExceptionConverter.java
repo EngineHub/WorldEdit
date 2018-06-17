@@ -19,9 +19,20 @@
 
 package com.sk89q.worldedit.internal.command;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.sk89q.minecraft.util.commands.CommandException;
-import com.sk89q.worldedit.*;
-import com.sk89q.worldedit.blocks.ItemType;
+import com.sk89q.worldedit.DisallowedItemException;
+import com.sk89q.worldedit.EmptyClipboardException;
+import com.sk89q.worldedit.IncompleteRegionException;
+import com.sk89q.worldedit.InvalidItemException;
+import com.sk89q.worldedit.MaxBrushRadiusException;
+import com.sk89q.worldedit.MaxChangedBlocksException;
+import com.sk89q.worldedit.MaxRadiusException;
+import com.sk89q.worldedit.UnknownDirectionException;
+import com.sk89q.worldedit.UnknownItemException;
+import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.command.InsufficientArgumentsException;
 import com.sk89q.worldedit.command.tool.InvalidToolBindException;
 import com.sk89q.worldedit.internal.expression.ExpressionException;
@@ -34,8 +45,6 @@ import com.sk89q.worldedit.util.io.file.InvalidFilenameException;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * converts WorldEdit exceptions and converts them into {@link CommandException}s.
@@ -138,8 +147,7 @@ public class WorldEditExceptionConverter extends ExceptionConverterHelper {
 
     @ExceptionMatch
     public void convert(InvalidToolBindException e) throws CommandException {
-        throw new CommandException("Can't bind tool to "
-                + ItemType.toHeldName(e.getItemId()) + ": " + e.getMessage());
+        throw new CommandException("Can't bind tool to " + e.getItemType().getName() + ": " + e.getMessage());
     }
 
     @ExceptionMatch

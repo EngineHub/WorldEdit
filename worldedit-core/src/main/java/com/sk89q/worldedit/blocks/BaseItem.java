@@ -65,7 +65,7 @@ public class BaseItem {
      */
     @Deprecated
     public BaseItem(int id, short data) {
-        setType(id);
+        setLegacyId(id);
         this.damage = data;
     }
 
@@ -86,7 +86,7 @@ public class BaseItem {
      * @return the id
      */
     @Deprecated
-    public int getType() {
+    public int getLegacyId() {
         return this.itemType.getLegacyId();
     }
 
@@ -96,9 +96,18 @@ public class BaseItem {
      * @param id the id to set
      */
     @Deprecated
-    public void setType(int id) {
+    public void setLegacyId(int id) {
         ItemType type = ItemTypes.getItemType(BundledItemData.getInstance().fromLegacyId(id));
-        setItemType(type);
+        setType(type);
+    }
+
+    /**
+     * Get the type of item.
+     *
+     * @return the type
+     */
+    public ItemType getType() {
+        return this.itemType;
     }
 
     /**
@@ -106,7 +115,7 @@ public class BaseItem {
      *
      * @param itemType The type to set
      */
-    public void setItemType(ItemType itemType) {
+    public void setType(ItemType itemType) {
         this.itemType = itemType;
     }
 

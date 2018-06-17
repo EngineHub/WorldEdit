@@ -20,11 +20,13 @@
 package com.sk89q.worldedit.extension.platform;
 
 import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
 import com.sk89q.worldedit.internal.cui.CUIEvent;
 import com.sk89q.worldedit.session.SessionKey;
+import com.sk89q.worldedit.util.HandSide;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.World;
 
@@ -58,8 +60,8 @@ class PlayerProxy extends AbstractPlayerActor {
     }
 
     @Override
-    public int getItemInHand() {
-        return basePlayer.getItemInHand();
+    public BaseItemStack getItemInHand(HandSide handSide) {
+        return basePlayer.getItemInHand(handSide);
     }
 
     @Override

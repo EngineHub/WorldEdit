@@ -57,7 +57,7 @@ public class ConfigurateConfiguration extends LocalConfiguration {
         }
 
         profile = node.getNode("debug").getBoolean(profile);
-        wandItem = node.getNode("wand-item").getInt(wandItem);
+        wandItem = node.getNode("wand-item").getString(wandItem);
 
         defaultChangeLimit = Math.max(-1, node.getNode("limits", "max-blocks-changed", "default").getInt(defaultChangeLimit));
         maxChangeLimit = Math.max(-1, node.getNode("limits", "max-blocks-changed", "maximum").getInt(maxChangeLimit));
@@ -73,7 +73,7 @@ public class ConfigurateConfiguration extends LocalConfiguration {
         butcherMaxRadius = Math.max(-1, node.getNode("limits", "butcher-radius", "maximum").getInt(butcherMaxRadius));
 
         try {
-            disallowedBlocks = new HashSet<>(node.getNode("limits", "disallowed-blocks").getList(TypeToken.of(Integer.class)));
+            disallowedBlocks = new HashSet<>(node.getNode("limits", "disallowed-blocks").getList(TypeToken.of(String.class)));
         } catch (ObjectMappingException e) {
             logger.warn("Error loading WorldEdit configuration", e);
         }
@@ -97,7 +97,7 @@ public class ConfigurateConfiguration extends LocalConfiguration {
         useInventoryOverride = node.getNode("use-inventory", "allow-override").getBoolean(useInventoryOverride);
         useInventoryCreativeOverride = node.getNode("use-inventory", "creative-mode-overrides").getBoolean(useInventoryCreativeOverride);
 
-        navigationWand = node.getNode("navigation-wand", "item").getInt(navigationWand);
+        navigationWand = node.getNode("navigation-wand", "item").getString(navigationWand);
         navigationWandMaxDistance = node.getNode("navigation-wand", "max-distance").getInt(navigationWandMaxDistance);
         navigationUseGlass = node.getNode("navigation", "use-glass").getBoolean(navigationUseGlass);
 

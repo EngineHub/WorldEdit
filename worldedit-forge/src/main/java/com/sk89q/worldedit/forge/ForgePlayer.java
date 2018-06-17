@@ -21,11 +21,14 @@ package com.sk89q.worldedit.forge;
 
 import com.sk89q.util.StringUtil;
 import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.blocks.BaseItemStack;
+import com.sk89q.worldedit.blocks.type.ItemTypes;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.extension.platform.AbstractPlayerActor;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
 import com.sk89q.worldedit.internal.cui.CUIEvent;
 import com.sk89q.worldedit.session.SessionKey;
+import com.sk89q.worldedit.util.HandSide;
 import com.sk89q.worldedit.util.Location;
 import io.netty.buffer.Unpooled;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -36,6 +39,7 @@ import net.minecraft.network.play.server.SPacketCustomPayload;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
 import java.util.UUID;
 
@@ -56,9 +60,9 @@ public class ForgePlayer extends AbstractPlayerActor {
     }
 
     @Override
-    public int getItemInHand() {
-        ItemStack is = this.player.getHeldItem(EnumHand.MAIN_HAND);
-        return Item.getIdFromItem(is.getItem());
+    public BaseItemStack getItemInHand(HandSide handSide) {
+        ItemStack is = this.player.getHeldItem(handSide == HandSide.MAIN_HAND ? EnumHand.MAIN_HAND : EnumHand.OFF_HAND);
+        return new BaseItemStack(ItemTypes.getItemType(ForgeRegistries.ITEMS.getKey(is.getItem()).toString()));
     }
 
     @Override

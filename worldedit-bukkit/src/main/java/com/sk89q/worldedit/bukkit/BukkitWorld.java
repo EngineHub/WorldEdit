@@ -324,7 +324,7 @@ public class BukkitWorld extends AbstractWorld {
     @Override
     public void dropItem(Vector pt, BaseItemStack item) {
         World world = getWorld();
-        ItemStack bukkitItem = new ItemStack(item.getType(), item.getAmount(),
+        ItemStack bukkitItem = new ItemStack(item.getLegacyId(), item.getAmount(),
                 item.getData());
         world.dropItemNaturally(BukkitUtil.toLocation(world, pt), bukkitItem);
     }

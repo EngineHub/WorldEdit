@@ -26,11 +26,13 @@ import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.blocks.BlockType;
-import com.sk89q.worldedit.blocks.ItemID;
 import com.sk89q.worldedit.blocks.type.BlockTypes;
+import com.sk89q.worldedit.blocks.type.ItemType;
+import com.sk89q.worldedit.blocks.type.ItemTypes;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.internal.cui.CUIEvent;
+import com.sk89q.worldedit.util.HandSide;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.TargetBlock;
 import com.sk89q.worldedit.util.auth.AuthorizationException;
@@ -81,12 +83,12 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
 
     @Override
     public boolean isHoldingPickAxe() {
-        int item = getItemInHand();
-        return item == ItemID.IRON_PICK
-                || item == ItemID.WOOD_PICKAXE
-                || item == ItemID.STONE_PICKAXE
-                || item == ItemID.DIAMOND_PICKAXE
-                || item == ItemID.GOLD_PICKAXE;
+        ItemType item = getItemInHand(HandSide.MAIN_HAND).getType();
+        return item == ItemTypes.IRON_PICKAXE
+                || item == ItemTypes.WOODEN_PICKAXE
+                || item == ItemTypes.STONE_PICKAXE
+                || item == ItemTypes.DIAMOND_PICKAXE
+                || item == ItemTypes.GOLDEN_PICKAXE;
     }
 
     @Override
@@ -362,12 +364,12 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
     }
 
     @Override
-    public BaseBlock getBlockInHand() throws WorldEditException {
-        final int typeId = getItemInHand();
-        if (!getWorld().isValidBlockType(typeId)) {
-            throw new NotABlockException(typeId);
+    public BaseBlock getBlockInHand(HandSide handSide) throws WorldEditException {
+        final ItemType typeId = getItemInHand(handSide).getType();
+        if (!getWorld().isValidBlockType(typeId.getLegacyId())) {
+            throw new NotABlockException(typeId.getId());
         }
-        return new BaseBlock(typeId);
+        return new BaseBlock(typeId.getLegacyId());
     }
 
     /**

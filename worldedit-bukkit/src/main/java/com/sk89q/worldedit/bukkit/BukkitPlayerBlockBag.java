@@ -22,7 +22,6 @@ package com.sk89q.worldedit.bukkit;
 import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.blocks.BlockID;
-import com.sk89q.worldedit.blocks.ItemType;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
 import com.sk89q.worldedit.extent.inventory.BlockBagException;
 import com.sk89q.worldedit.extent.inventory.OutOfBlocksException;
@@ -65,11 +64,11 @@ public class BukkitPlayerBlockBag extends BlockBag {
 
     @Override
     public void fetchItem(BaseItem item) throws BlockBagException {
-        final int id = item.getType();
+        final int id = item.getLegacyId();
         final int damage = item.getData();
         int amount = (item instanceof BaseItemStack) ? ((BaseItemStack) item).getAmount() : 1;
         assert(amount == 1);
-        boolean usesDamageValue = ItemType.usesDamageValue(id);
+        boolean usesDamageValue = true;// TODO ItemType.usesDamageValue(id);
 
         if (id == BlockID.AIR) {
             throw new IllegalArgumentException("Can't fetch air block");
@@ -120,11 +119,11 @@ public class BukkitPlayerBlockBag extends BlockBag {
 
     @Override
     public void storeItem(BaseItem item) throws BlockBagException {
-        final int id = item.getType();
+        final int id = item.getLegacyId();
         final int damage = item.getData();
         int amount = (item instanceof BaseItemStack) ? ((BaseItemStack) item).getAmount() : 1;
         assert(amount <= 64);
-        boolean usesDamageValue = ItemType.usesDamageValue(id);
+        boolean usesDamageValue = true; //TODO ItemType.usesDamageValue(id);
 
         if (id == BlockID.AIR) {
             throw new IllegalArgumentException("Can't store air block");

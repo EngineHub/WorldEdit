@@ -46,6 +46,7 @@ import com.sk89q.worldedit.function.mask.BlockMask;
 import com.sk89q.worldedit.function.pattern.BlockPattern;
 import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.session.ClipboardHolder;
+import com.sk89q.worldedit.util.HandSide;
 import com.sk89q.worldedit.util.command.binding.Switch;
 import com.sk89q.worldedit.util.command.parametric.Optional;
 
@@ -84,7 +85,7 @@ public class BrushCommands {
                             @Optional("2") double radius, @Switch('h') boolean hollow) throws WorldEditException {
         worldEdit.checkMaxBrushRadius(radius);
 
-        BrushTool tool = session.getBrushTool(player.getItemInHand());
+        BrushTool tool = session.getBrushTool(player.getItemInHand(HandSide.MAIN_HAND).getType());
         tool.setFill(fill);
         tool.setSize(radius);
 
@@ -114,7 +115,7 @@ public class BrushCommands {
         worldEdit.checkMaxBrushRadius(radius);
         worldEdit.checkMaxBrushRadius(height);
 
-        BrushTool tool = session.getBrushTool(player.getItemInHand());
+        BrushTool tool = session.getBrushTool(player.getItemInHand(HandSide.MAIN_HAND).getType());
         tool.setFill(fill);
         tool.setSize(radius);
 
@@ -149,7 +150,7 @@ public class BrushCommands {
         worldEdit.checkMaxBrushRadius(size.getBlockY());
         worldEdit.checkMaxBrushRadius(size.getBlockZ());
 
-        BrushTool tool = session.getBrushTool(player.getItemInHand());
+        BrushTool tool = session.getBrushTool(player.getItemInHand(HandSide.MAIN_HAND).getType());
         tool.setBrush(new ClipboardBrush(holder, ignoreAir, usingOrigin), "worldedit.brush.clipboard");
 
         player.print("Clipboard brush shape equipped.");
@@ -173,7 +174,7 @@ public class BrushCommands {
 
         worldEdit.checkMaxBrushRadius(radius);
 
-        BrushTool tool = session.getBrushTool(player.getItemInHand());
+        BrushTool tool = session.getBrushTool(player.getItemInHand(HandSide.MAIN_HAND).getType());
         tool.setSize(radius);
         tool.setBrush(new SmoothBrush(iterations, naturalBlocksOnly), "worldedit.brush.smooth");
 
@@ -192,7 +193,7 @@ public class BrushCommands {
     public void extinguishBrush(Player player, LocalSession session, EditSession editSession, @Optional("5") double radius) throws WorldEditException {
         worldEdit.checkMaxBrushRadius(radius);
 
-        BrushTool tool = session.getBrushTool(player.getItemInHand());
+        BrushTool tool = session.getBrushTool(player.getItemInHand(HandSide.MAIN_HAND).getType());
         Pattern fill = new BlockPattern(new BaseBlock(BlockTypes.AIR));
         tool.setFill(fill);
         tool.setSize(radius);
@@ -218,7 +219,7 @@ public class BrushCommands {
     public void gravityBrush(Player player, LocalSession session, EditSession editSession, @Optional("5") double radius, @Switch('h') boolean fromMaxY) throws WorldEditException {
         worldEdit.checkMaxBrushRadius(radius);
 
-        BrushTool tool = session.getBrushTool(player.getItemInHand());
+        BrushTool tool = session.getBrushTool(player.getItemInHand(HandSide.MAIN_HAND).getType());
         tool.setSize(radius);
         tool.setBrush(new GravityBrush(fromMaxY), "worldedit.brush.gravity");
 
@@ -265,7 +266,7 @@ public class BrushCommands {
         CreatureButcher flags = new CreatureButcher(player);
         flags.fromCommand(args);
 
-        BrushTool tool = session.getBrushTool(player.getItemInHand());
+        BrushTool tool = session.getBrushTool(player.getItemInHand(HandSide.MAIN_HAND).getType());
         tool.setSize(radius);
         tool.setBrush(new ButcherBrush(flags), "worldedit.brush.butcher");
 

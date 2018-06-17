@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.blocks.type;
 
+import com.sk89q.worldedit.world.registry.BundledBlockData;
 import com.sk89q.worldedit.world.registry.BundledItemData;
 
 public class ItemType {
@@ -35,6 +36,20 @@ public class ItemType {
 
     public String getId() {
         return this.id;
+    }
+
+    /**
+     * Gets the name of this item, or the ID if the name cannot be found.
+     *
+     * @return The name, or ID
+     */
+    public String getName() {
+        BundledItemData.ItemEntry entry = BundledItemData.getInstance().findById(this.id);
+        if (entry == null) {
+            return getId();
+        } else {
+            return entry.localizedName;
+        }
     }
 
     /**

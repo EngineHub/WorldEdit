@@ -17,22 +17,9 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.command.tool;
+package com.sk89q.worldedit.util;
 
-import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.blocks.type.ItemType;
-
-public class InvalidToolBindException extends WorldEditException {
-
-    private ItemType item;
-
-    public InvalidToolBindException(ItemType item, String msg) {
-        super(msg);
-        this.item = item;
-    }
-
-    public ItemType getItemType() {
-        return this.item;
-    }
-
+public enum HandSide {
+    MAIN_HAND,
+    OFF_HAND
 }

@@ -1634,24 +1634,6 @@ public enum BlockType {
     }
 
     /**
-     * Get the block or item that would have been dropped. If nothing is
-     * dropped, 0 will be returned. If the block should not be destroyed
-     * (i.e. bedrock), -1 will be returned.
-     *
-     * @param id the type ID of the block
-     * @return the dropped item
-     * @deprecated This function ignores the data value.
-     */
-    @Deprecated
-    public static int getDroppedBlock(int id) {
-        BaseItem dropped = nonDataBlockBagItems.get(id);
-        if (dropped == null) {
-            return BlockID.AIR;
-        }
-        return dropped.getType();
-    }
-
-    /**
      * Get the block drop for this type given a data value.
      *
      * @param data the data value

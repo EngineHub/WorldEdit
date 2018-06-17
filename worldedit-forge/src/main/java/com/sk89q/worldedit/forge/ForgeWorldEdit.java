@@ -214,7 +214,7 @@ public class ForgeWorldEdit {
     }
 
     public static ItemStack toForgeItemStack(BaseItemStack item) {
-        ItemStack ret = new ItemStack(Item.getItemById(item.getType()), item.getAmount(), item.getData());
+        ItemStack ret = new ItemStack(Item.getByNameOrId(item.getType().getId()), item.getAmount(), item.getData());
         for (Map.Entry<Integer, Integer> entry : item.getEnchantments().entrySet()) {
             ret.addEnchantment(net.minecraft.enchantment.Enchantment.getEnchantmentByID(entry.getKey()), entry.getValue());
         }

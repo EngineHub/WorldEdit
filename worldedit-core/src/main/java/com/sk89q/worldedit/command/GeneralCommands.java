@@ -19,11 +19,13 @@
 
 package com.sk89q.worldedit.command;
 
+import com.google.common.collect.Sets;
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.worldedit.*;
-import com.sk89q.worldedit.blocks.ItemType;
+import com.sk89q.worldedit.blocks.type.ItemType;
+import com.sk89q.worldedit.blocks.type.ItemTypes;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.function.mask.Mask;
@@ -161,64 +163,55 @@ public class GeneralCommands {
         boolean blocksOnly = args.hasFlag('b');
         boolean itemsOnly = args.hasFlag('i');
 
-        try {
-            int id = Integer.parseInt(query);
+        ItemType type = ItemTypes.getItemType(query);
 
-            ItemType type = ItemType.fromID(id);
-
-            if (type != null) {
-                actor.print("#" + type.getID() + " (" + type.getName() + ")");
-            } else {
-                actor.printError("No item found by ID " + id);
-            }
-
-            return;
-        } catch (NumberFormatException ignored) {
-        }
-
-        if (query.length() <= 2) {
-            actor.printError("Enter a longer search string (len > 2).");
-            return;
-        }
-
-        if (!blocksOnly && !itemsOnly) {
-            actor.print("Searching for: " + query);
-        } else if (blocksOnly && itemsOnly) {
-            actor.printError("You cannot use both the 'b' and 'i' flags simultaneously.");
-            return;
-        } else if (blocksOnly) {
-            actor.print("Searching for blocks: " + query);
+        if (type != null) {
+            actor.print(type.getId() + " (" + type.getName() + ")");
         } else {
-            actor.print("Searching for items: " + query);
-        }
-
-        int found = 0;
-
-        for (ItemType type : ItemType.values()) {
-            if (found >= 15) {
-                actor.print("Too many results!");
-                break;
+            if (query.length() <= 2) {
+                actor.printError("Enter a longer search string (len > 2).");
+                return;
             }
 
-            if (blocksOnly && type.getID() > 255) {
-                continue;
+            if (!blocksOnly && !itemsOnly) {
+                actor.print("Searching for: " + query);
+            } else if (blocksOnly && itemsOnly) {
+                actor.printError("You cannot use both the 'b' and 'i' flags simultaneously.");
+                return;
+            } else if (blocksOnly) {
+                actor.print("Searching for blocks: " + query);
+            } else {
+                actor.print("Searching for items: " + query);
             }
 
-            if (itemsOnly && type.getID() <= 255) {
-                continue;
-            }
+            int found = 0;
 
-            for (String alias : type.getAliases()) {
-                if (alias.contains(query)) {
-                    actor.print("#" + type.getID() + " (" + type.getName() + ")");
-                    ++found;
+            for (ItemType searchType : ItemTypes.values()) {
+                if (found >= 15) {
+                    actor.print("Too many results!");
                     break;
                 }
-            }
-        }
 
-        if (found == 0) {
-            actor.printError("No items found.");
+//                TODO if (blocksOnly && searchType.getID() > 255) {
+//                    continue;
+//                }
+//
+//                if (itemsOnly && searchType.getID() <= 255) {
+//                    continue;
+//                }
+
+                for (String alias : Sets.newHashSet(searchType.getId(), searchType.getName())) {
+                    if (alias.contains(query)) {
+                        actor.print(searchType.getId() + " (" + searchType.getName() + ")");
+                        ++found;
+                        break;
+                    }
+                }
+            }
+
+            if (found == 0) {
+                actor.printError("No items found.");
+            }
         }
     }
 

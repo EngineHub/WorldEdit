@@ -23,8 +23,11 @@ import com.sk89q.worldedit.PlayerDirection;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.blocks.BaseItemStack;
+import com.sk89q.worldedit.blocks.type.ItemType;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
+import com.sk89q.worldedit.util.HandSide;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.World;
 
@@ -56,18 +59,18 @@ public interface Player extends Entity, Actor {
     PlayerDirection getCardinalDirection(int yawOffset);
 
     /**
-     * Get the ID of the item that the player is holding.
+     * Get the item that the player is holding.
      *
-     * @return the item id of the item the player is holding
+     * @return the item the player is holding
      */
-    int getItemInHand();
+    BaseItemStack getItemInHand(HandSide handSide);
 
     /**
      * Get the Block that the player is holding.
      *
      * @return the item id of the item the player is holding
      */
-    BaseBlock getBlockInHand() throws WorldEditException;
+    BaseBlock getBlockInHand(HandSide handSide) throws WorldEditException;
 
     /**
      * Gives the player an item.

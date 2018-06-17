@@ -22,11 +22,14 @@ package com.sk89q.worldedit.sponge;
 import com.flowpowered.math.vector.Vector3d;
 import com.sk89q.util.StringUtil;
 import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.blocks.BaseItemStack;
+import com.sk89q.worldedit.blocks.type.ItemTypes;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.extension.platform.AbstractPlayerActor;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
 import com.sk89q.worldedit.internal.cui.CUIEvent;
 import com.sk89q.worldedit.session.SessionKey;
+import com.sk89q.worldedit.util.HandSide;
 import com.sk89q.worldedit.util.Location;
 import org.spongepowered.api.data.type.HandTypes;
 import org.spongepowered.api.entity.living.player.Player;
@@ -58,9 +61,10 @@ public class SpongePlayer extends AbstractPlayerActor {
     }
 
     @Override
-    public int getItemInHand() {
-        Optional<ItemStack> is = this.player.getItemInHand(HandTypes.MAIN_HAND);
-        return is.map(itemStack -> SpongeWorldEdit.inst().getAdapter().resolve(itemStack.getItem())).orElse(0);
+    public BaseItemStack getItemInHand(HandSide handSide) {
+        Optional<ItemStack> is = this.player.getItemInHand(handSide == HandSide.MAIN_HAND
+                ? HandTypes.MAIN_HAND : HandTypes.OFF_HAND);
+        return is.map(itemStack -> new BaseItemStack(ItemTypes.getItemType(itemStack.getType().getId()))).orElse(null);
     }
 
     @Override

@@ -25,6 +25,8 @@ import com.sk89q.jchronic.Chronic;
 import com.sk89q.jchronic.Options;
 import com.sk89q.jchronic.utils.Span;
 import com.sk89q.jchronic.utils.Time;
+import com.sk89q.worldedit.blocks.type.ItemType;
+import com.sk89q.worldedit.blocks.type.ItemTypes;
 import com.sk89q.worldedit.command.tool.BlockTool;
 import com.sk89q.worldedit.command.tool.BrushTool;
 import com.sk89q.worldedit.command.tool.InvalidToolBindException;
@@ -76,7 +78,7 @@ public class LocalSession {
     private transient boolean toolControl = true;
     private transient boolean superPickaxe = false;
     private transient BlockTool pickaxeMode = new SinglePickaxe();
-    private transient Map<Integer, Tool> tools = new HashMap<>();
+    private transient Map<ItemType, Tool> tools = new HashMap<>();
     private transient int maxBlocksChanged = -1;
     private transient boolean useInventory;
     private transient Snapshot snapshot;
@@ -517,11 +519,11 @@ public class LocalSession {
     /**
      * Get the tool assigned to the item.
      *
-     * @param item the item type ID
+     * @param item the item type
      * @return the tool, which may be {@link null}
      */
     @Nullable
-    public Tool getTool(int item) {
+    public Tool getTool(ItemType item) {
         return tools.get(item);
     }
 
@@ -530,14 +532,14 @@ public class LocalSession {
      * or the tool is not assigned, the slot will be replaced with the
      * brush tool.
      *
-     * @param item the item type ID
+     * @param item the item type
      * @return the tool, or {@code null}
      * @throws InvalidToolBindException if the item can't be bound to that item
      */
-    public BrushTool getBrushTool(int item) throws InvalidToolBindException {
+    public BrushTool getBrushTool(ItemType item) throws InvalidToolBindException {
         Tool tool = getTool(item);
 
-        if (tool == null || !(tool instanceof BrushTool)) {
+        if (!(tool instanceof BrushTool)) {
             tool = new BrushTool("worldedit.brush.sphere");
             setTool(item, tool);
         }
@@ -548,16 +550,16 @@ public class LocalSession {
     /**
      * Set the tool.
      *
-     * @param item the item type ID
+     * @param item the item type
      * @param tool the tool to set, which can be {@code null}
      * @throws InvalidToolBindException if the item can't be bound to that item
      */
-    public void setTool(int item, @Nullable Tool tool) throws InvalidToolBindException {
-        if (item > 0 && item < 255) {
+    public void setTool(ItemType item, @Nullable Tool tool) throws InvalidToolBindException {
+        if (false /*TODO item > 0 && item < 255*/) {
             throw new InvalidToolBindException(item, "Blocks can't be used");
-        } else if (item == config.wandItem) {
+        } else if (item == ItemTypes.getItemType(config.wandItem)) {
             throw new InvalidToolBindException(item, "Already used for the wand");
-        } else if (item == config.navigationWand) {
+        } else if (item == ItemTypes.getItemType(config.navigationWand)) {
             throw new InvalidToolBindException(item, "Already used for the navigation wand");
         }
 

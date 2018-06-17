@@ -33,6 +33,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
@@ -73,7 +74,7 @@ public class PropertiesConfiguration extends LocalConfiguration {
         loadExtra();
 
         profile = getBool("profile", profile);
-        disallowedBlocks = getIntSet("disallowed-blocks", defaultDisallowedBlocks);
+        disallowedBlocks = getStringSet("disallowed-blocks", defaultDisallowedBlocks);
         defaultChangeLimit = getInt("default-max-changed-blocks", defaultChangeLimit);
         maxChangeLimit = getInt("max-changed-blocks", maxChangeLimit);
         defaultMaxPolygonalPoints = getInt("default-max-polygon-points", defaultMaxPolygonalPoints);
@@ -88,14 +89,14 @@ public class PropertiesConfiguration extends LocalConfiguration {
         logFile = getString("log-file", logFile);
         logFormat = getString("log-format", logFormat);
         registerHelp = getBool("register-help", registerHelp);
-        wandItem = getInt("wand-item", wandItem);
+        wandItem = getString("wand-item", wandItem);
         superPickaxeDrop = getBool("super-pickaxe-drop-items", superPickaxeDrop);
         superPickaxeManyDrop = getBool("super-pickaxe-many-drop-items", superPickaxeManyDrop);
         noDoubleSlash = getBool("no-double-slash", noDoubleSlash);
         useInventory = getBool("use-inventory", useInventory);
         useInventoryOverride = getBool("use-inventory-override", useInventoryOverride);
         useInventoryCreativeOverride = getBool("use-inventory-creative-override", useInventoryCreativeOverride);
-        navigationWand = getInt("nav-wand-item", navigationWand);
+        navigationWand = getString("nav-wand-item", navigationWand);
         navigationWandMaxDistance = getInt("nav-wand-distance", navigationWandMaxDistance);
         navigationUseGlass = getBool("nav-use-glass", navigationUseGlass);
         scriptTimeout = getInt("scripting-timeout", scriptTimeout);
@@ -230,6 +231,32 @@ public class PropertiesConfiguration extends LocalConfiguration {
             for (String part : parts) {
                 try {
                     int v = Integer.parseInt(part.trim());
+                    set.add(v);
+                } catch (NumberFormatException ignored) {
+                }
+            }
+            return set;
+        }
+    }
+
+    /**
+     * Get a String set.
+     *
+     * @param key the key
+     * @param def the default value
+     * @return the value
+     */
+    protected Set<String> getStringSet(String key, String[] def) {
+        String val = properties.getProperty(key);
+        if (val == null) {
+            properties.setProperty(key, StringUtil.joinString(def, ",", 0));
+            return new HashSet<>(Arrays.asList(def));
+        } else {
+            Set<String> set = new HashSet<>();
+            String[] parts = val.split(",");
+            for (String part : parts) {
+                try {
+                    String v = part.trim();
                     set.add(v);
                 } catch (NumberFormatException ignored) {
                 }

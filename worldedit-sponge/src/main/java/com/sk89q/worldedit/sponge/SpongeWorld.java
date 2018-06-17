@@ -27,6 +27,7 @@ import com.sk89q.worldedit.Vector2D;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BaseItemStack;
+import com.sk89q.worldedit.blocks.type.ItemTypes;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.regions.Region;
@@ -183,7 +184,7 @@ public abstract class SpongeWorld extends AbstractWorld {
         checkNotNull(position);
         checkNotNull(item);
 
-        if (item.getType() == 0) {
+        if (item.getType() == ItemTypes.AIR) {
             return;
         }
 

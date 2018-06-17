@@ -20,6 +20,7 @@
 package com.sk89q.worldedit.blocks.type;
 
 import java.lang.reflect.Field;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -771,5 +772,9 @@ public class ItemTypes {
             id = "minecraft:" + id;
         }
         return itemMapping.get(id);
+    }
+
+    public static Collection<ItemType> values() {
+        return itemMapping.values();
     }
 }

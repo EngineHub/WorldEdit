@@ -41,6 +41,7 @@ import com.sk89q.worldedit.event.platform.PlayerInputEvent;
 import com.sk89q.worldedit.extension.platform.permission.ActorSelectorLimits;
 import com.sk89q.worldedit.internal.ServerInterfaceAdapter;
 import com.sk89q.worldedit.regions.RegionSelector;
+import com.sk89q.worldedit.util.HandSide;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.eventbus.Subscribe;
 import com.sk89q.worldedit.world.World;
@@ -318,7 +319,7 @@ public class PlatformManager {
             LocalSession session = worldEdit.getSessionManager().get(actor);
 
             if (event.getType() == Interaction.HIT) {
-                if (player.getItemInHand() == getConfiguration().wandItem) {
+                if (player.getItemInHand(HandSide.MAIN_HAND).getType().getId().equals(getConfiguration().wandItem)) {
                     if (!session.isToolControlEnabled()) {
                         return;
                     }
@@ -345,8 +346,8 @@ public class PlatformManager {
                     }
                 }
 
-                Tool tool = session.getTool(player.getItemInHand());
-                if (tool != null && tool instanceof DoubleActionBlockTool) {
+                Tool tool = session.getTool(player.getItemInHand(HandSide.MAIN_HAND).getType());
+                if (tool instanceof DoubleActionBlockTool) {
                     if (tool.canUse(player)) {
                         ((DoubleActionBlockTool) tool).actSecondary(queryCapability(Capability.WORLD_EDITING), getConfiguration(), player, session, location);
                         event.setCancelled(true);
@@ -354,7 +355,7 @@ public class PlatformManager {
                 }
 
             } else if (event.getType() == Interaction.OPEN) {
-                if (player.getItemInHand() == getConfiguration().wandItem) {
+                if (player.getItemInHand(HandSide.MAIN_HAND).getType().getId().equals(getConfiguration().wandItem)) {
                     if (!session.isToolControlEnabled()) {
                         return;
                     }
@@ -372,8 +373,8 @@ public class PlatformManager {
                     return;
                 }
 
-                Tool tool = session.getTool(player.getItemInHand());
-                if (tool != null && tool instanceof BlockTool) {
+                Tool tool = session.getTool(player.getItemInHand(HandSide.MAIN_HAND).getType());
+                if (tool instanceof BlockTool) {
                     if (tool.canUse(player)) {
                         ((BlockTool) tool).actPrimary(queryCapability(Capability.WORLD_EDITING), getConfiguration(), player, session, location);
                         event.setCancelled(true);
@@ -391,7 +392,7 @@ public class PlatformManager {
 
         switch (event.getInputType()) {
             case PRIMARY: {
-                if (player.getItemInHand() == getConfiguration().navigationWand) {
+                if (player.getItemInHand(HandSide.MAIN_HAND).getType().getId().equals(getConfiguration().navigationWand)) {
                     if (getConfiguration().navigationWandMaxDistance <= 0) {
                         return;
                     }
@@ -413,7 +414,7 @@ public class PlatformManager {
 
                 LocalSession session = worldEdit.getSessionManager().get(player);
 
-                Tool tool = session.getTool(player.getItemInHand());
+                Tool tool = session.getTool(player.getItemInHand(HandSide.MAIN_HAND).getType());
                 if (tool instanceof DoubleActionTraceTool) {
                     if (tool.canUse(player)) {
                         ((DoubleActionTraceTool) tool).actSecondary(queryCapability(Capability.WORLD_EDITING), getConfiguration(), player, session);
@@ -426,7 +427,7 @@ public class PlatformManager {
             }
 
             case SECONDARY: {
-                if (player.getItemInHand() == getConfiguration().navigationWand) {
+                if (player.getItemInHand(HandSide.MAIN_HAND).getType().getId().equals(getConfiguration().navigationWand)) {
                     if (getConfiguration().navigationWandMaxDistance <= 0) {
                         return;
                     }
@@ -445,8 +446,8 @@ public class PlatformManager {
 
                 LocalSession session = worldEdit.getSessionManager().get(player);
 
-                Tool tool = session.getTool(player.getItemInHand());
-                if (tool != null && tool instanceof TraceTool) {
+                Tool tool = session.getTool(player.getItemInHand(HandSide.MAIN_HAND).getType());
+                if (tool instanceof TraceTool) {
                     if (tool.canUse(player)) {
                         ((TraceTool) tool).actPrimary(queryCapability(Capability.WORLD_EDITING), getConfiguration(), player, session);
                         event.setCancelled(true);
