@@ -23,6 +23,9 @@ import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.Vector2D;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.blocks.LazyBlock;
+import com.sk89q.worldedit.blocks.type.BlockState;
+import com.sk89q.worldedit.blocks.type.BlockStateHolder;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.function.operation.Operation;
@@ -64,17 +67,22 @@ public abstract class AbstractDelegateExtent implements Extent {
     }
 
     @Override
-    public BaseBlock getBlock(Vector position) {
+    public BlockState getBlock(Vector position) {
         return extent.getBlock(position);
     }
 
     @Override
-    public BaseBlock getLazyBlock(Vector position) {
+    public LazyBlock getLazyBlock(Vector position) {
         return extent.getLazyBlock(position);
     }
 
     @Override
-    public boolean setBlock(Vector location, BaseBlock block) throws WorldEditException {
+    public BaseBlock getFullBlock(Vector position) {
+        return extent.getFullBlock(position);
+    }
+
+    @Override
+    public boolean setBlock(Vector location, BlockStateHolder block) throws WorldEditException {
         return extent.setBlock(location, block);
     }
 

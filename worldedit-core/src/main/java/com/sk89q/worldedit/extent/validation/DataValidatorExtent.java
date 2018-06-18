@@ -22,6 +22,7 @@ package com.sk89q.worldedit.extent.validation;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.blocks.type.BlockStateHolder;
 import com.sk89q.worldedit.blocks.type.BlockType;
 import com.sk89q.worldedit.extent.AbstractDelegateExtent;
 import com.sk89q.worldedit.extent.Extent;
@@ -49,7 +50,7 @@ public class DataValidatorExtent extends AbstractDelegateExtent {
     }
 
     @Override
-    public boolean setBlock(Vector location, BaseBlock block) throws WorldEditException {
+    public boolean setBlock(Vector location, BlockStateHolder block) throws WorldEditException {
         final int y = location.getBlockY();
         final BlockType type = block.getBlockType();
         if (y < 0 || y > world.getMaxY()) {
@@ -61,16 +62,7 @@ public class DataValidatorExtent extends AbstractDelegateExtent {
             return false;
         }
 
-        if (block.getData() < 0) {
-            throw new SevereValidationException("Cannot set a data value that is less than 0");
-        }
-
         return super.setBlock(location, block);
     }
 
-    private static class SevereValidationException extends WorldEditException {
-        private SevereValidationException(String message) {
-            super(message);
-        }
-    }
 }

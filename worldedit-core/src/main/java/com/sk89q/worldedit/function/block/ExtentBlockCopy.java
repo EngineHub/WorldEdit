@@ -24,6 +24,7 @@ import com.sk89q.jnbt.CompoundTagBuilder;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.blocks.type.BlockStateHolder;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.function.RegionFunction;
 import com.sk89q.worldedit.internal.helper.MCDirections;
@@ -68,7 +69,7 @@ public class ExtentBlockCopy implements RegionFunction {
 
     @Override
     public boolean apply(Vector position) throws WorldEditException {
-        BaseBlock block = source.getBlock(position);
+        BaseBlock block = source.getFullBlock(position);
         Vector orig = position.subtract(from);
         Vector transformed = transform.apply(orig);
 

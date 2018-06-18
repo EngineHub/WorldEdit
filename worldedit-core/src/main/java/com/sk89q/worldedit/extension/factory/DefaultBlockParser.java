@@ -30,6 +30,7 @@ import com.sk89q.worldedit.blocks.SignBlock;
 import com.sk89q.worldedit.blocks.SkullBlock;
 import com.sk89q.worldedit.blocks.metadata.MobType;
 import com.sk89q.worldedit.blocks.type.BlockState;
+import com.sk89q.worldedit.blocks.type.BlockStateHolder;
 import com.sk89q.worldedit.blocks.type.BlockType;
 import com.sk89q.worldedit.blocks.type.BlockTypes;
 import com.sk89q.worldedit.entity.Player;
@@ -54,7 +55,7 @@ import java.util.regex.Pattern;
 /**
  * Parses block input strings.
  */
-class DefaultBlockParser extends InputParser<BaseBlock> {
+class DefaultBlockParser extends InputParser<BlockStateHolder> {
 
     protected DefaultBlockParser(WorldEdit worldEdit) {
         super(worldEdit);
@@ -75,14 +76,14 @@ class DefaultBlockParser extends InputParser<BaseBlock> {
     }
 
     @Override
-    public BaseBlock parseFromInput(String input, ParserContext context)
+    public BlockStateHolder parseFromInput(String input, ParserContext context)
             throws InputParseException {
         String originalInput = input;
         input = input.replace("_", " ");
         input = input.replace(";", "|");
         Exception suppressed = null;
         try {
-            BaseBlock modified = parseLogic(input, context);
+            BlockStateHolder modified = parseLogic(input, context);
             if (modified != null) {
                 return modified;
             }
@@ -99,22 +100,22 @@ class DefaultBlockParser extends InputParser<BaseBlock> {
         }
     }
 
-    private static Pattern blockStatePattern = Pattern.compile("([a-z:]+)(?:\\[([a-zA-Z0-9=, ]+)\\])?", Pattern.CASE_INSENSITIVE);
+    private static Pattern blockStatePattern = Pattern.compile("([a-z:]+)(?:\\[([a-zA-Z0-9=, ]+)])?", Pattern.CASE_INSENSITIVE);
     private static String[] EMPTY_STRING_ARRAY = new String[]{};
 
-    private BaseBlock parseLogic(String input, ParserContext context)
+    private BlockStateHolder parseLogic(String input, ParserContext context)
             throws InputParseException, NoMatchException,
             DisallowedUsageException {
         BlockType blockType;
         Map<State, StateValue> blockStates = new HashMap<>();
-        String[] blockAndExtraData = input.split("\\|");
+        String[] blockAndExtraData = input.trim().split("\\|");
         Matcher matcher = blockStatePattern.matcher(blockAndExtraData[0]);
-        if (matcher.groupCount() < 1 || matcher.groupCount() > 2) {
+        if (!matcher.matches() || matcher.groupCount() < 2 || matcher.groupCount() > 3) {
             throw new InputParseException("Invalid format");
         }
         String typeString = matcher.group(1);
         String[] stateProperties = EMPTY_STRING_ARRAY;
-        if (matcher.groupCount() == 2) {
+        if (matcher.groupCount() == 3) {
             stateProperties = matcher.group(2).split(",");
         }
 
@@ -145,10 +146,7 @@ class DefaultBlockParser extends InputParser<BaseBlock> {
             } catch (IncompleteRegionException e) {
                 throw new InputParseException("Your selection is not complete.");
             }
-            final BaseBlock blockInHand = world.getBlock(primaryPosition);
-            if (blockInHand.getClass() != BaseBlock.class) {
-                return blockInHand;
-            }
+            final BlockState blockInHand = world.getBlock(primaryPosition);
 
             blockType = blockInHand.getBlockType();
             blockStates = blockInHand.getStates();
@@ -239,7 +237,7 @@ class DefaultBlockParser extends InputParser<BaseBlock> {
 
             return new SkullBlock(state, type.replace(" ", "_")); // valid MC usernames
         } else {
-            return new BaseBlock(state);
+            return state;
         }
     }
 

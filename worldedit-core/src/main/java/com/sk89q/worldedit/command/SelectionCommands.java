@@ -35,6 +35,7 @@ import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BaseItemStack;
+import com.sk89q.worldedit.blocks.type.BlockStateHolder;
 import com.sk89q.worldedit.blocks.type.ItemTypes;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.input.ParserContext;
@@ -639,7 +640,7 @@ public class SelectionCommands {
         context.setSession(session);
         context.setRestricted(false);
 
-        Set<BaseBlock> searchBlocks = we.getBlockFactory().parseFromListInput(args.getString(0), context);
+        Set<BlockStateHolder> searchBlocks = we.getBlockFactory().parseFromListInput(args.getString(0), context);
         int count = editSession.countBlocks(session.getSelection(player.getWorld()), searchBlocks);
         player.print("Counted: " + count);
     }
@@ -660,7 +661,7 @@ public class SelectionCommands {
     public void distr(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException, CommandException {
 
         int size;
-        List<Countable<BaseBlock>> distributionData;
+        List<Countable<BlockStateHolder>> distributionData;
 
         if (args.hasFlag('c')) {
             // TODO: Update for new clipboard
@@ -677,7 +678,7 @@ public class SelectionCommands {
 
         player.print("# total blocks: " + size);
 
-        for (Countable<BaseBlock> c : distributionData) {
+        for (Countable<BlockStateHolder> c : distributionData) {
             String name = c.getID().getBlockType().getName();
             String str = String.format("%-7s (%.3f%%) %s #%s%s",
                     String.valueOf(c.getAmount()),

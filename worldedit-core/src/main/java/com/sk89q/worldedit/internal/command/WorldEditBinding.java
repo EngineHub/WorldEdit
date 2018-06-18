@@ -27,6 +27,7 @@ import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.blocks.type.BlockStateHolder;
 import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.input.NoMatchException;
@@ -169,7 +170,7 @@ public class WorldEditBinding extends BindingHelper {
     @BindingMatch(type = BaseBlock.class,
                   behavior = BindingBehavior.CONSUMES,
                   consumedCount = 1)
-    public BaseBlock getBaseBlock(ArgumentStack context) throws ParameterException, WorldEditException {
+    public BlockStateHolder getBaseBlock(ArgumentStack context) throws ParameterException, WorldEditException {
         Actor actor = context.getContext().getLocals().get(Actor.class);
         ParserContext parserContext = new ParserContext();
         parserContext.setActor(context.getContext().getLocals().get(Actor.class));

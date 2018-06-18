@@ -21,7 +21,6 @@ package com.sk89q.worldedit.extent.clipboard.io;
 
 import com.sk89q.jnbt.NBTConstants;
 import com.sk89q.jnbt.NBTInputStream;
-import com.sk89q.jnbt.NBTOutputStream;
 
 import javax.annotation.Nullable;
 import java.io.DataInputStream;
@@ -38,7 +37,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -59,8 +57,7 @@ public enum ClipboardFormat {
 
         @Override
         public ClipboardWriter getWriter(OutputStream outputStream) throws IOException {
-            NBTOutputStream nbtStream = new NBTOutputStream(new GZIPOutputStream(outputStream));
-            return new SchematicWriter(nbtStream);
+            throw new UnsupportedOperationException("This clipboard format is deprecated.");
         }
 
         @Override

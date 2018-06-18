@@ -19,10 +19,13 @@
 
 package com.sk89q.worldedit.extent.buffer;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.blocks.type.BlockState;
+import com.sk89q.worldedit.blocks.type.BlockStateHolder;
 import com.sk89q.worldedit.blocks.type.BlockTypes;
 import com.sk89q.worldedit.extent.AbstractDelegateExtent;
 import com.sk89q.worldedit.extent.Extent;
@@ -37,8 +40,6 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 /**
  * Buffers changes to an {@link Extent} and allows later retrieval for
  * actual application of the changes.
@@ -48,9 +49,9 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class ForgetfulExtentBuffer extends AbstractDelegateExtent implements Pattern {
 
-    private static final BaseBlock AIR = new BaseBlock(BlockTypes.AIR);
+    private static final BlockState AIR = BlockTypes.AIR.getDefaultState();
 
-    private final Map<BlockVector, BaseBlock> buffer = new LinkedHashMap<>();
+    private final Map<BlockVector, BlockStateHolder> buffer = new LinkedHashMap<>();
     private final Mask mask;
     private Vector min = null;
     private Vector max = null;
@@ -79,7 +80,7 @@ public class ForgetfulExtentBuffer extends AbstractDelegateExtent implements Pat
     }
 
     @Override
-    public boolean setBlock(Vector location, BaseBlock block) throws WorldEditException {
+    public boolean setBlock(Vector location, BlockStateHolder block) throws WorldEditException {
         // Update minimum
         if (min == null) {
             min = location;
@@ -104,8 +105,8 @@ public class ForgetfulExtentBuffer extends AbstractDelegateExtent implements Pat
     }
 
     @Override
-    public BaseBlock apply(Vector pos) {
-        BaseBlock block = buffer.get(pos.toBlockVector());
+    public BlockStateHolder apply(Vector pos) {
+        BlockStateHolder block = buffer.get(pos.toBlockVector());
         if (block != null) {
             return block;
         } else {

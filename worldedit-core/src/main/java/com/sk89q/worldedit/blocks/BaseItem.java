@@ -21,7 +21,9 @@ package com.sk89q.worldedit.blocks;
 
 import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.worldedit.blocks.type.ItemType;
+import com.sk89q.worldedit.blocks.type.ItemTypes;
 import com.sk89q.worldedit.world.NbtValued;
+import com.sk89q.worldedit.world.registry.BundledItemData;
 
 import javax.annotation.Nullable;
 
@@ -44,6 +46,7 @@ public class BaseItem implements NbtValued {
      */
     @Deprecated
     public BaseItem(int id) {
+        this(ItemTypes.getItemType(BundledItemData.getInstance().fromLegacyId(id)));
     }
 
     /**

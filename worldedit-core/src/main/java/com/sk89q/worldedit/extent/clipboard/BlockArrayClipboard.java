@@ -23,6 +23,9 @@ import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.Vector2D;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.blocks.LazyBlock;
+import com.sk89q.worldedit.blocks.type.BlockState;
+import com.sk89q.worldedit.blocks.type.BlockStateHolder;
 import com.sk89q.worldedit.blocks.type.BlockTypes;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
@@ -45,8 +48,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class BlockArrayClipboard implements Clipboard {
 
     private final Region region;
-    private Vector origin = new Vector();
-    private final BaseBlock[][][] blocks;
+    private Vector origin;
+    private final BlockStateHolder[][][] blocks;
     private final List<ClipboardEntity> entities = new ArrayList<>();
 
     /**
@@ -120,12 +123,38 @@ public class BlockArrayClipboard implements Clipboard {
     }
 
     @Override
-    public BaseBlock getBlock(Vector position) {
+    public BlockState getBlock(Vector position) {
         if (region.contains(position)) {
             Vector v = position.subtract(region.getMinimumPoint());
-            BaseBlock block = blocks[v.getBlockX()][v.getBlockY()][v.getBlockZ()];
+            BlockStateHolder block = blocks[v.getBlockX()][v.getBlockY()][v.getBlockZ()];
             if (block != null) {
-                return new BaseBlock(block);
+                if (block instanceof BlockState) {
+                    return (BlockState) block;
+                } else if (block instanceof BaseBlock) {
+                    return ((BaseBlock) block).getState();
+                }
+            }
+        }
+
+        return BlockTypes.AIR.getDefaultState();
+    }
+
+    @Override
+    public LazyBlock getLazyBlock(Vector position) {
+        return new LazyBlock(getBlock(position), null, position);
+    }
+
+    @Override
+    public BaseBlock getFullBlock(Vector position) {
+        if (region.contains(position)) {
+            Vector v = position.subtract(region.getMinimumPoint());
+            BlockStateHolder block = blocks[v.getBlockX()][v.getBlockY()][v.getBlockZ()];
+            if (block != null) {
+                if (block instanceof BlockState) {
+                    return new BaseBlock((BlockState) block);
+                } else if (block instanceof BaseBlock) {
+                    return (BaseBlock) block;
+                }
             }
         }
 
@@ -133,15 +162,10 @@ public class BlockArrayClipboard implements Clipboard {
     }
 
     @Override
-    public BaseBlock getLazyBlock(Vector position) {
-        return getBlock(position);
-    }
-
-    @Override
-    public boolean setBlock(Vector position, BaseBlock block) throws WorldEditException {
+    public boolean setBlock(Vector position, BlockStateHolder block) throws WorldEditException {
         if (region.contains(position)) {
             Vector v = position.subtract(region.getMinimumPoint());
-            blocks[v.getBlockX()][v.getBlockY()][v.getBlockZ()] = new BaseBlock(block);
+            blocks[v.getBlockX()][v.getBlockY()][v.getBlockZ()] = block;
             return true;
         } else {
             return false;

@@ -56,4 +56,12 @@ public interface BlockStateHolder<T extends BlockStateHolder> {
      * @return The states
      */
     Map<State, StateValue> getStates();
+
+    /**
+     * Checks if the type is the same, and if the matched states are the same.
+     *
+     * @param o other block
+     * @return true if equal
+     */
+    boolean equalsFuzzy(BlockStateHolder o);
 }

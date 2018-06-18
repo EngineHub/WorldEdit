@@ -26,8 +26,10 @@ import com.google.common.collect.Table;
 import com.sk89q.worldedit.world.registry.state.State;
 import com.sk89q.worldedit.world.registry.state.value.StateValue;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -106,6 +108,33 @@ public class BlockState implements BlockStateHolder<BlockState> {
     @Override
     public Map<State, StateValue> getStates() {
         return Collections.unmodifiableMap(this.values);
+    }
+
+    @Override
+    public boolean equalsFuzzy(BlockStateHolder o) {
+        if (!getBlockType().equals(o.getBlockType())) {
+            return false;
+        }
+
+        List<State> differingStates = new ArrayList<>();
+        for (Object state : o.getStates().keySet()) {
+            if (getState((State) state) == null) {
+                differingStates.add((State) state);
+            }
+        }
+        for (State state : getStates().keySet()) {
+            if (o.getState(state) == null) {
+                differingStates.add(state);
+            }
+        }
+
+        for (State state : differingStates) {
+            if (!getState(state).equals(o.getState(state))) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**

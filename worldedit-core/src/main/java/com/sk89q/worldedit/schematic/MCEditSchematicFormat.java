@@ -25,7 +25,6 @@ import com.sk89q.jnbt.IntTag;
 import com.sk89q.jnbt.ListTag;
 import com.sk89q.jnbt.NBTConstants;
 import com.sk89q.jnbt.NBTInputStream;
-import com.sk89q.jnbt.NBTOutputStream;
 import com.sk89q.jnbt.NamedTag;
 import com.sk89q.jnbt.ShortTag;
 import com.sk89q.jnbt.StringTag;
@@ -39,16 +38,12 @@ import com.sk89q.worldedit.world.DataException;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
 
 public class MCEditSchematicFormat extends SchematicFormat {
 
@@ -206,91 +201,7 @@ public class MCEditSchematicFormat extends SchematicFormat {
 
     @Override
     public void save(CuboidClipboard clipboard, File file) throws IOException, DataException {
-        int width = clipboard.getWidth();
-        int height = clipboard.getHeight();
-        int length = clipboard.getLength();
-
-        if (width > MAX_SIZE) {
-            throw new DataException("Width of region too large for a .schematic");
-        }
-        if (height > MAX_SIZE) {
-            throw new DataException("Height of region too large for a .schematic");
-        }
-        if (length > MAX_SIZE) {
-            throw new DataException("Length of region too large for a .schematic");
-        }
-
-        HashMap<String, Tag> schematic = new HashMap<>();
-        schematic.put("Width", new ShortTag((short) width));
-        schematic.put("Length", new ShortTag((short) length));
-        schematic.put("Height", new ShortTag((short) height));
-        schematic.put("Materials", new StringTag("Alpha"));
-        schematic.put("WEOriginX", new IntTag(clipboard.getOrigin().getBlockX()));
-        schematic.put("WEOriginY", new IntTag(clipboard.getOrigin().getBlockY()));
-        schematic.put("WEOriginZ", new IntTag(clipboard.getOrigin().getBlockZ()));
-        schematic.put("WEOffsetX", new IntTag(clipboard.getOffset().getBlockX()));
-        schematic.put("WEOffsetY", new IntTag(clipboard.getOffset().getBlockY()));
-        schematic.put("WEOffsetZ", new IntTag(clipboard.getOffset().getBlockZ()));
-
-        // Copy
-        byte[] blocks = new byte[width * height * length];
-        byte[] addBlocks = null;
-        byte[] blockData = new byte[width * height * length];
-        ArrayList<Tag> tileEntities = new ArrayList<>();
-
-        for (int x = 0; x < width; ++x) {
-            for (int y = 0; y < height; ++y) {
-                for (int z = 0; z < length; ++z) {
-                    int index = y * width * length + z * width + x;
-                    BaseBlock block = clipboard.getPoint(new BlockVector(x, y, z));
-
-                    // Save 4096 IDs in an AddBlocks section
-                    if (block.getId() > 255) {
-                        if (addBlocks == null) { // Lazily create section
-                            addBlocks = new byte[(blocks.length >> 1) + 1];
-                        }
-
-                        addBlocks[index >> 1] = (byte) (((index & 1) == 0) ?
-                                addBlocks[index >> 1] & 0xF0 | (block.getId() >> 8) & 0xF
-                                : addBlocks[index >> 1] & 0xF | ((block.getId() >> 8) & 0xF) << 4);
-                    }
-
-                    blocks[index] = (byte) block.getId();
-                    blockData[index] = (byte) block.getData();
-
-                    // Get the list of key/values from the block
-                    CompoundTag rawTag = block.getNbtData();
-                    if (rawTag != null) {
-                        Map<String, Tag> values = new HashMap<>();
-                        for (Entry<String, Tag> entry : rawTag.getValue().entrySet()) {
-                            values.put(entry.getKey(), entry.getValue());
-                        }
-
-                        values.put("id", new StringTag(block.getNbtId()));
-                        values.put("x", new IntTag(x));
-                        values.put("y", new IntTag(y));
-                        values.put("z", new IntTag(z));
-
-                        CompoundTag tileEntityTag = new CompoundTag(values);
-                        tileEntities.add(tileEntityTag);
-                    }
-                }
-            }
-        }
-
-        schematic.put("Blocks", new ByteArrayTag(blocks));
-        schematic.put("Data", new ByteArrayTag(blockData));
-        schematic.put("Entities", new ListTag(CompoundTag.class, new ArrayList<>()));
-        schematic.put("TileEntities", new ListTag(CompoundTag.class, tileEntities));
-        if (addBlocks != null) {
-            schematic.put("AddBlocks", new ByteArrayTag(addBlocks));
-        }
-
-        // Build and output
-        CompoundTag schematicTag = new CompoundTag(schematic);
-        NBTOutputStream stream = new NBTOutputStream(new GZIPOutputStream(new FileOutputStream(file)));
-        stream.writeNamedTag("Schematic", schematicTag);
-        stream.close();
+        throw new UnsupportedOperationException("Saving is deprecated");
     }
 
     @Override

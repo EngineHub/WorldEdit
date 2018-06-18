@@ -95,7 +95,7 @@ public class LazyBlock extends BaseBlock {
     @Override
     public CompoundTag getNbtData() {
         if (!loaded) {
-            BaseBlock loadedBlock = extent.getBlock(position);
+            BaseBlock loadedBlock = extent.getFullBlock(position);
             super.setNbtData(loadedBlock.getNbtData());
             loaded = true;
         }

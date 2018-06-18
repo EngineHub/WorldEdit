@@ -26,6 +26,8 @@ import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.blocks.BlockType;
+import com.sk89q.worldedit.blocks.type.BlockState;
+import com.sk89q.worldedit.blocks.type.BlockStateHolder;
 import com.sk89q.worldedit.blocks.type.BlockTypes;
 import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.function.mask.BlockMask;
@@ -33,6 +35,7 @@ import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.util.Direction;
 
+import java.util.HashMap;
 import java.util.PriorityQueue;
 
 import javax.annotation.Nullable;
@@ -51,7 +54,7 @@ public abstract class AbstractWorld implements World {
     }
 
     @Override
-    public final boolean setBlock(Vector pt, BaseBlock block) throws WorldEditException {
+    public final boolean setBlock(Vector pt, BlockStateHolder block) throws WorldEditException {
         return setBlock(pt, block, true);
     }
 
@@ -63,10 +66,10 @@ public abstract class AbstractWorld implements World {
     @Override
     public Mask createLiquidMask() {
         return new BlockMask(this,
-                new BaseBlock(BlockTypes.LAVA),
-                new BaseBlock(BlockTypes.FLOWING_LAVA),
-                new BaseBlock(BlockTypes.WATER),
-                new BaseBlock(BlockTypes.FLOWING_WATER));
+                new BlockState(BlockTypes.LAVA, new HashMap<>()),
+                new BlockState(BlockTypes.FLOWING_LAVA, new HashMap<>()),
+                new BlockState(BlockTypes.WATER, new HashMap<>()),
+                new BlockState(BlockTypes.FLOWING_WATER, new HashMap<>()));
     }
 
     @Override

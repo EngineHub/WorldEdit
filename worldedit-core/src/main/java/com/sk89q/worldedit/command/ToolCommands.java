@@ -25,6 +25,7 @@ import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BaseItemStack;
+import com.sk89q.worldedit.blocks.type.BlockStateHolder;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.input.ParserContext;
 import com.sk89q.worldedit.command.tool.*;
@@ -109,7 +110,7 @@ public class ToolCommands {
         context.setRestricted(true);
         context.setPreferringWildcard(false);
 
-        BaseBlock targetBlock = we.getBlockFactory().parseFromInput(args.getString(0), context);
+        BlockStateHolder targetBlock = we.getBlockFactory().parseFromInput(args.getString(0), context);
         BaseItemStack itemStack = player.getItemInHand(HandSide.MAIN_HAND);
         session.setTool(itemStack.getType(), new BlockReplacer(targetBlock));
         player.print("Block replacer tool bound to " + itemStack.getType().getName() + ".");
@@ -207,8 +208,8 @@ public class ToolCommands {
         context.setRestricted(true);
         context.setPreferringWildcard(false);
 
-        BaseBlock secondary = we.getBlockFactory().parseFromInput(args.getString(0), context);
-        BaseBlock primary = we.getBlockFactory().parseFromInput(args.getString(1), context);
+        BlockStateHolder secondary = we.getBlockFactory().parseFromInput(args.getString(0), context);
+        BlockStateHolder primary = we.getBlockFactory().parseFromInput(args.getString(1), context);
 
         BaseItemStack itemStack = player.getItemInHand(HandSide.MAIN_HAND);
 

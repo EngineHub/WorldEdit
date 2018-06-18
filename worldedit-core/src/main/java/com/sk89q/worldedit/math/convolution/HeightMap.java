@@ -23,6 +23,7 @@ import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.blocks.type.BlockState;
 import com.sk89q.worldedit.blocks.type.BlockTypes;
 import com.sk89q.worldedit.regions.Region;
 
@@ -145,7 +146,7 @@ public class HeightMap {
                 // Depending on growing or shrinking we need to start at the bottom or top
                 if (newHeight > curHeight) {
                     // Set the top block of the column to be the same type (this might go wrong with rounding)
-                    BaseBlock existing = session.getBlock(new Vector(xr, curHeight, zr));
+                    BlockState existing = session.getBlock(new Vector(xr, curHeight, zr));
 
                     // Skip water/lava
                     if (existing.getBlockType() != BlockTypes.WATER && existing.getBlockType() != BlockTypes.FLOWING_WATER

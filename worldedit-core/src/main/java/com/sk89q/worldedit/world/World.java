@@ -27,6 +27,7 @@ import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.blocks.BaseItemStack;
+import com.sk89q.worldedit.blocks.type.BlockStateHolder;
 import com.sk89q.worldedit.blocks.type.BlockType;
 import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.extent.Extent;
@@ -75,7 +76,7 @@ public interface World extends Extent {
     boolean useItem(Vector position, BaseItem item, Direction face);
 
     /**
-     * Similar to {@link Extent#setBlock(Vector, BaseBlock)} but a
+     * Similar to {@link Extent#setBlock(Vector, BlockStateHolder)} but a
      * {@code notifyAndLight} parameter indicates whether adjacent blocks
      * should be notified that changes have been made and lighting operations
      * should be executed.
@@ -92,7 +93,7 @@ public interface World extends Extent {
      * @param notifyAndLight true to to notify and light
      * @return true if the block was successfully set (return value may not be accurate)
      */
-    boolean setBlock(Vector position, BaseBlock block, boolean notifyAndLight) throws WorldEditException;
+    boolean setBlock(Vector position, BlockStateHolder block, boolean notifyAndLight) throws WorldEditException;
 
     /**
      * Get the light level at the given block.
@@ -165,7 +166,7 @@ public interface World extends Extent {
     /**
      * Fix the given chunks after fast mode was used.
      *
-     * <p>Fast mode makes calls to {@link #setBlock(Vector, BaseBlock, boolean)}
+     * <p>Fast mode makes calls to {@link #setBlock(Vector, BlockStateHolder, boolean)}
      * with {@code false} for the {@code notifyAndLight} parameter, which
      * may causes lighting errors to accumulate. Use of this method, if
      * it is implemented by the underlying world, corrects those lighting

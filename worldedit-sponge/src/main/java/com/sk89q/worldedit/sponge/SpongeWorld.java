@@ -27,6 +27,7 @@ import com.sk89q.worldedit.Vector2D;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BaseItemStack;
+import com.sk89q.worldedit.blocks.type.BlockStateHolder;
 import com.sk89q.worldedit.blocks.type.ItemTypes;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
@@ -35,10 +36,15 @@ import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.AbstractWorld;
 import com.sk89q.worldedit.world.biome.BaseBiome;
 import com.sk89q.worldedit.world.registry.WorldData;
+import com.sk89q.worldedit.world.registry.state.State;
+import com.sk89q.worldedit.world.registry.state.value.StateValue;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockSnapshot;
 import org.spongepowered.api.block.BlockState;
+import org.spongepowered.api.block.BlockType;
+import org.spongepowered.api.block.BlockTypes;
 import org.spongepowered.api.block.tileentity.TileEntity;
+import org.spongepowered.api.block.trait.BlockTrait;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.property.block.GroundLuminanceProperty;
 import org.spongepowered.api.data.property.block.SkyLuminanceProperty;
@@ -51,7 +57,10 @@ import javax.annotation.Nullable;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -107,14 +116,26 @@ public abstract class SpongeWorld extends AbstractWorld {
         return getWorld().getName();
     }
 
-    protected abstract BlockState getBlockState(BaseBlock block);
+    @SuppressWarnings("WeakerAccess")
+    protected BlockState getBlockState(BlockStateHolder<?> block) {
+        if (block instanceof com.sk89q.worldedit.blocks.type.BlockState) {
+            BlockState state = Sponge.getRegistry().getType(BlockType.class, block.getBlockType().getId()).orElse(BlockTypes.AIR).getDefaultState();
+            for (Map.Entry<State, StateValue> entry : block.getStates().entrySet()) {
+                // TODO Convert across states
+            }
+            return state;
+        } else {
+            throw new UnsupportedOperationException("Missing Sponge adapter for WorldEdit!");
+        }
+    }
 
+    @SuppressWarnings("WeakerAccess")
     protected abstract void applyTileEntityData(TileEntity entity, BaseBlock block);
 
     private static final BlockSnapshot.Builder builder = BlockSnapshot.builder();
 
     @Override
-    public boolean setBlock(Vector position, BaseBlock block, boolean notifyAndLight) throws WorldEditException {
+    public boolean setBlock(Vector position, BlockStateHolder block, boolean notifyAndLight) throws WorldEditException {
         checkNotNull(position);
         checkNotNull(block);
 
@@ -133,9 +154,9 @@ public abstract class SpongeWorld extends AbstractWorld {
         snapshot.restore(true, notifyAndLight ? BlockChangeFlags.ALL : BlockChangeFlags.NONE);
 
         // Create the TileEntity
-        if (block.hasNbtData()) {
+        if (block instanceof BaseBlock && ((BaseBlock) block).hasNbtData()) {
             // Kill the old TileEntity
-            world.getTileEntity(pos).ifPresent(tileEntity -> applyTileEntityData(tileEntity, block));
+            world.getTileEntity(pos).ifPresent(tileEntity -> applyTileEntityData(tileEntity, (BaseBlock) block));
         }
 
         return true;

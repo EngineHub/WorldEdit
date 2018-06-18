@@ -19,6 +19,8 @@
 
 package com.sk89q.worldedit.blocks;
 
+import com.sk89q.worldedit.blocks.type.BlockStateHolder;
+
 import java.util.Collection;
 
 /**
@@ -36,9 +38,9 @@ public final class Blocks {
      * @param o the block
      * @return true if the collection contains the given block
      */
-    public static boolean containsFuzzy(Collection<? extends BaseBlock> collection, BaseBlock o) {
+    public static boolean containsFuzzy(Collection<? extends BlockStateHolder> collection, BlockStateHolder o) {
         // Allow masked data in the searchBlocks to match various types
-        for (BaseBlock b : collection) {
+        for (BlockStateHolder b : collection) {
             if (b.equalsFuzzy(o)) {
                 return true;
             }

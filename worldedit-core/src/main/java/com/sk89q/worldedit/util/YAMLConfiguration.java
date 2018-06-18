@@ -24,6 +24,7 @@ import com.sk89q.util.yaml.YAMLProcessor;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.session.SessionManager;
+import com.sk89q.worldedit.world.registry.BundledItemData;
 import com.sk89q.worldedit.world.snapshot.SnapshotRepository;
 
 import java.io.IOException;
@@ -55,6 +56,10 @@ public class YAMLConfiguration extends LocalConfiguration {
 
         profile = config.getBoolean("debug", profile);
         wandItem = config.getString("wand-item", wandItem);
+        try {
+            wandItem = BundledItemData.getInstance().fromLegacyId(Integer.parseInt(wandItem));
+        } catch (Throwable e) {
+        }
 
         defaultChangeLimit = Math.max(-1, config.getInt(
                 "limits.max-blocks-changed.default", defaultChangeLimit));
@@ -99,6 +104,10 @@ public class YAMLConfiguration extends LocalConfiguration {
                 useInventoryCreativeOverride);
 
         navigationWand = config.getString("navigation-wand.item", navigationWand);
+        try {
+            navigationWand = BundledItemData.getInstance().fromLegacyId(Integer.parseInt(navigationWand));
+        } catch (Throwable e) {
+        }
         navigationWandMaxDistance = config.getInt("navigation-wand.max-distance", navigationWandMaxDistance);
         navigationUseGlass = config.getBoolean("navigation.use-glass", navigationUseGlass);
 

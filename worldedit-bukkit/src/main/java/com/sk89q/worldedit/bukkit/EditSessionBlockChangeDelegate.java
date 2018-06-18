@@ -68,7 +68,7 @@ public class EditSessionBlockChangeDelegate implements BlockChangeDelegate {
 
     @Override
     public int getTypeId(int x, int y, int z) {
-        return editSession.getBlock(new Vector(x, y, z)).getId();
+        return editSession.getBlock(new Vector(x, y, z)).getBlockType().getLegacyId();
     }
 
     @Override
@@ -78,7 +78,7 @@ public class EditSessionBlockChangeDelegate implements BlockChangeDelegate {
 
     @Override
     public boolean isEmpty(int x, int y, int z) {
-        return editSession.getBlock(new Vector(x, y, z)).isAir();
+        return editSession.getBlock(new Vector(x, y, z)).getBlockType() == BlockTypes.AIR;
     }
 
 }

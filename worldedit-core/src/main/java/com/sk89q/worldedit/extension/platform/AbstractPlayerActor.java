@@ -23,8 +23,9 @@ import com.sk89q.worldedit.PlayerDirection;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.blocks.BlockType;
+import com.sk89q.worldedit.blocks.type.BlockState;
+import com.sk89q.worldedit.blocks.type.BlockStateHolder;
 import com.sk89q.worldedit.blocks.type.BlockTypes;
 import com.sk89q.worldedit.blocks.type.ItemType;
 import com.sk89q.worldedit.blocks.type.ItemTypes;
@@ -110,9 +111,8 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
             if (free == 2) {
                 if (y - 1 != origY) {
                     final Vector pos = new Vector(x, y - 2, z);
-                    final int id = world.getBlock(pos).getId();
-                    final int data = world.getBlock(pos).getData();
-                    setPosition(new Vector(x + 0.5, y - 2 + BlockType.centralTopLimit(id, data), z + 0.5));
+                    final BlockState state = world.getBlock(pos);
+                    setPosition(new Vector(x + 0.5, y - 2 + BlockType.centralTopLimit(state), z + 0.5));
                 }
 
                 return;
@@ -131,10 +131,9 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
 
         while (y >= 0) {
             final Vector pos = new Vector(x, y, z);
-            final int id = world.getBlock(pos).getId();
-            final int data = world.getBlock(pos).getData();
-            if (!BlockType.canPassThrough(id, data)) {
-                setPosition(new Vector(x + 0.5, y + BlockType.centralTopLimit(id, data), z + 0.5));
+            final BlockState id = world.getBlock(pos);
+            if (!BlockType.canPassThrough(id.getBlockType().getLegacyId())) {
+                setPosition(new Vector(x + 0.5, y + BlockType.centralTopLimit(id), z + 0.5));
                 return;
             }
 
@@ -169,11 +168,11 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
                 ++spots;
                 if (spots == 2) {
                     final Vector platform = new Vector(x, y - 2, z);
-                    final BaseBlock block = world.getBlock(platform);
-                    final int type = block.getId();
+                    final BlockStateHolder block = world.getBlock(platform);
+                    final com.sk89q.worldedit.blocks.type.BlockType type = block.getBlockType();
 
                     // Don't get put in lava!
-                    if (type == BlockID.LAVA || type == BlockID.STATIONARY_LAVA) {
+                    if (type == BlockTypes.LAVA || type == BlockTypes.FLOWING_LAVA) {
                         return false;
                     }
 
@@ -211,11 +210,11 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
                 // stand upon
                 while (y >= 0) {
                     final Vector platform = new Vector(x, y, z);
-                    final BaseBlock block = world.getBlock(platform);
-                    final int type = block.getId();
+                    final BlockStateHolder block = world.getBlock(platform);
+                    final com.sk89q.worldedit.blocks.type.BlockType type = block.getBlockType();
 
                     // Don't want to end up in lava
-                    if (type != BlockID.AIR && type != BlockID.LAVA && type != BlockID.STATIONARY_LAVA) {
+                    if (type != BlockTypes.AIR && type != BlockTypes.LAVA && type != BlockTypes.FLOWING_LAVA) {
                         // Found a block!
                         setPosition(platform.add(0.5, BlockType.centralTopLimit(block), 0.5));
                         return true;
@@ -248,7 +247,7 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
         Extent world = getLocation().getExtent();
 
         // No free space above
-        if (world.getBlock(new Vector(x, y, z)).getId() != 0) {
+        if (world.getBlock(new Vector(x, y, z)).getBlockType() != BlockTypes.AIR) {
             return false;
         }
 

@@ -22,7 +22,9 @@ package com.sk89q.worldedit.sponge.config;
 import com.google.common.reflect.TypeToken;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
+import com.sk89q.worldedit.blocks.type.ItemTypes;
 import com.sk89q.worldedit.session.SessionManager;
+import com.sk89q.worldedit.world.registry.BundledItemData;
 import com.sk89q.worldedit.world.snapshot.SnapshotRepository;
 import ninja.leaping.configurate.ConfigurationOptions;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
@@ -58,6 +60,10 @@ public class ConfigurateConfiguration extends LocalConfiguration {
 
         profile = node.getNode("debug").getBoolean(profile);
         wandItem = node.getNode("wand-item").getString(wandItem);
+        try {
+            wandItem = BundledItemData.getInstance().fromLegacyId(Integer.parseInt(wandItem));
+        } catch (Throwable e) {
+        }
 
         defaultChangeLimit = Math.max(-1, node.getNode("limits", "max-blocks-changed", "default").getInt(defaultChangeLimit));
         maxChangeLimit = Math.max(-1, node.getNode("limits", "max-blocks-changed", "maximum").getInt(maxChangeLimit));
@@ -98,6 +104,10 @@ public class ConfigurateConfiguration extends LocalConfiguration {
         useInventoryCreativeOverride = node.getNode("use-inventory", "creative-mode-overrides").getBoolean(useInventoryCreativeOverride);
 
         navigationWand = node.getNode("navigation-wand", "item").getString(navigationWand);
+        try {
+            navigationWand = BundledItemData.getInstance().fromLegacyId(Integer.parseInt(navigationWand));
+        } catch (Throwable e) {
+        }
         navigationWandMaxDistance = node.getNode("navigation-wand", "max-distance").getInt(navigationWandMaxDistance);
         navigationUseGlass = node.getNode("navigation", "use-glass").getBoolean(navigationUseGlass);
 

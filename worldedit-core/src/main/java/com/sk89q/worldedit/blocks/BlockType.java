@@ -21,6 +21,7 @@ package com.sk89q.worldedit.blocks;
 
 import com.sk89q.util.StringUtil;
 import com.sk89q.worldedit.PlayerDirection;
+import com.sk89q.worldedit.blocks.type.BlockStateHolder;
 
 import javax.annotation.Nullable;
 
@@ -671,9 +672,9 @@ public enum BlockType {
      * @param block the block
      * @return true if the block can be passed through
      */
-    public static boolean canPassThrough(BaseBlock block) {
+    public static boolean canPassThrough(BlockStateHolder block) {
         checkNotNull(block);
-        return canPassThrough(block.getId(), block.getData());
+        return canPassThrough(block.getBlockType().getLegacyId());
     }
 
     /**
@@ -769,9 +770,9 @@ public enum BlockType {
      * @param block the block
      * @return the y offset
      */
-    public static double centralTopLimit(BaseBlock block) {
+    public static double centralTopLimit(BlockStateHolder block) {
         checkNotNull(block);
-        return centralTopLimit(block.getId(), block.getData());
+        return centralTopLimit(block.getBlockType().getLegacyId(), 0);
     }
 
     /**

@@ -30,15 +30,18 @@ import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.blocks.LazyBlock;
+import com.sk89q.worldedit.blocks.type.BlockStateHolder;
+import com.sk89q.worldedit.blocks.type.BlockType;
+import com.sk89q.worldedit.blocks.type.BlockTypes;
 import com.sk89q.worldedit.bukkit.adapter.BukkitImplAdapter;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.TreeGenerator;
 import com.sk89q.worldedit.world.AbstractWorld;
 import com.sk89q.worldedit.world.biome.BaseBiome;
+import com.sk89q.worldedit.world.registry.BundledBlockData;
 import com.sk89q.worldedit.world.registry.WorldData;
 import org.bukkit.Effect;
-import org.bukkit.Material;
 import org.bukkit.TreeType;
 import org.bukkit.World;
 import org.bukkit.block.Biome;
@@ -167,7 +170,7 @@ public class BukkitWorld extends AbstractWorld {
                     for (int z = 0; z < 16; ++z) {
                         Vector pt = min.add(x, y, z);
                         int index = y * 16 * 16 + z * 16 + x;
-                        history[index] = editSession.getBlock(pt);
+                        history[index] = editSession.getFullBlock(pt);
                     }
                 }
             }
@@ -190,7 +193,7 @@ public class BukkitWorld extends AbstractWorld {
                             editSession.smartSetBlock(pt, history[index]);
                         } else { // Otherwise fool with history
                             editSession.rememberChange(pt, history[index],
-                                    editSession.rawGetBlock(pt));
+                                    editSession.getFullBlock(pt));
                         }
                     }
                 }
@@ -362,7 +365,32 @@ public class BukkitWorld extends AbstractWorld {
     }
 
     @Override
-    public BaseBlock getBlock(Vector position) {
+    public com.sk89q.worldedit.blocks.type.BlockState getBlock(Vector position) {
+        Block bukkitBlock = getWorld().getBlockAt(position.getBlockX(), position.getBlockY(), position.getBlockZ());
+        BlockType blockType = BlockTypes.getBlockType(BundledBlockData.getInstance().fromLegacyId(bukkitBlock.getTypeId()));
+        return blockType.getDefaultState(); // TODO Data
+    }
+
+    @Override
+    public boolean setBlock(Vector position, BlockStateHolder block, boolean notifyAndLight) throws WorldEditException {
+        BukkitImplAdapter adapter = WorldEditPlugin.getInstance().getBukkitImplAdapter();
+        if (adapter != null) {
+            return adapter.setBlock(BukkitAdapter.adapt(getWorld(), position), block, notifyAndLight);
+        } else {
+            Block bukkitBlock = getWorld().getBlockAt(position.getBlockX(), position.getBlockY(), position.getBlockZ());
+            return bukkitBlock.setTypeIdAndData(block.getBlockType().getLegacyId(), (byte) 0, notifyAndLight); // TODO Data
+        }
+    }
+
+    @Override
+    public LazyBlock getLazyBlock(Vector position) {
+        World world = getWorld();
+        Block bukkitBlock = world.getBlockAt(position.getBlockX(), position.getBlockY(), position.getBlockZ());
+        return new LazyBlock(bukkitBlock.getTypeId(), bukkitBlock.getData(), this, position);
+    }
+
+    @Override
+    public BaseBlock getFullBlock(Vector position) {
         BukkitImplAdapter adapter = WorldEditPlugin.getInstance().getBukkitImplAdapter();
         if (adapter != null) {
             return adapter.getBlock(BukkitAdapter.adapt(getWorld(), position));
@@ -370,24 +398,6 @@ public class BukkitWorld extends AbstractWorld {
             Block bukkitBlock = getWorld().getBlockAt(position.getBlockX(), position.getBlockY(), position.getBlockZ());
             return new BaseBlock(bukkitBlock.getTypeId(), bukkitBlock.getData());
         }
-    }
-
-    @Override
-    public boolean setBlock(Vector position, BaseBlock block, boolean notifyAndLight) throws WorldEditException {
-        BukkitImplAdapter adapter = WorldEditPlugin.getInstance().getBukkitImplAdapter();
-        if (adapter != null) {
-            return adapter.setBlock(BukkitAdapter.adapt(getWorld(), position), block, notifyAndLight);
-        } else {
-            Block bukkitBlock = getWorld().getBlockAt(position.getBlockX(), position.getBlockY(), position.getBlockZ());
-            return bukkitBlock.setTypeIdAndData(block.getBlockType().getLegacyId(), (byte) block.getData(), notifyAndLight);
-        }
-    }
-
-    @Override
-    public BaseBlock getLazyBlock(Vector position) {
-        World world = getWorld();
-        Block bukkitBlock = world.getBlockAt(position.getBlockX(), position.getBlockY(), position.getBlockZ());
-        return new LazyBlock(bukkitBlock.getTypeId(), bukkitBlock.getData(), this, position);
     }
 
     @Override

@@ -24,6 +24,7 @@ import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.blocks.type.BlockStateHolder;
 import com.sk89q.worldedit.blocks.type.BlockTypes;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
@@ -35,10 +36,10 @@ import com.sk89q.worldedit.util.Location;
  */
 public class LongRangeBuildTool extends BrushTool implements DoubleActionTraceTool {
 
-    private BaseBlock primary;
-    private BaseBlock secondary;
+    private BlockStateHolder primary;
+    private BlockStateHolder secondary;
 
-    public LongRangeBuildTool(BaseBlock primary, BaseBlock secondary) {
+    public LongRangeBuildTool(BlockStateHolder primary, BlockStateHolder secondary) {
         super("worldedit.tool.lrbuild");
         this.primary = primary;
         this.secondary = secondary;

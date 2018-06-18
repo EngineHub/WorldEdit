@@ -21,6 +21,7 @@ package com.sk89q.worldedit.function.pattern;
 
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.blocks.type.BlockStateHolder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,7 +54,7 @@ public class RandomPattern extends AbstractPattern {
     }
 
     @Override
-    public BaseBlock apply(Vector position) {
+    public BlockStateHolder apply(Vector position) {
         double r = random.nextDouble();
         double offset = 0;
 

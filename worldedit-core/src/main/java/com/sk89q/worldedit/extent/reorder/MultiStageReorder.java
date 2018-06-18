@@ -27,6 +27,7 @@ import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.blocks.BlockType;
+import com.sk89q.worldedit.blocks.type.BlockStateHolder;
 import com.sk89q.worldedit.blocks.type.BlockTypes;
 import com.sk89q.worldedit.extent.AbstractDelegateExtent;
 import com.sk89q.worldedit.extent.Extent;
@@ -43,9 +44,9 @@ import java.util.*;
  */
 public class MultiStageReorder extends AbstractDelegateExtent implements ReorderingExtent {
 
-    private TupleArrayList<BlockVector, BaseBlock> stage1 = new TupleArrayList<>();
-    private TupleArrayList<BlockVector, BaseBlock> stage2 = new TupleArrayList<>();
-    private TupleArrayList<BlockVector, BaseBlock> stage3 = new TupleArrayList<>();
+    private TupleArrayList<BlockVector, BlockStateHolder> stage1 = new TupleArrayList<>();
+    private TupleArrayList<BlockVector, BlockStateHolder> stage2 = new TupleArrayList<>();
+    private TupleArrayList<BlockVector, BlockStateHolder> stage3 = new TupleArrayList<>();
     private boolean enabled;
 
     /**
@@ -87,7 +88,7 @@ public class MultiStageReorder extends AbstractDelegateExtent implements Reorder
     }
 
     @Override
-    public boolean setBlock(Vector location, BaseBlock block) throws WorldEditException {
+    public boolean setBlock(Vector location, BlockStateHolder block) throws WorldEditException {
         BaseBlock lazyBlock = getLazyBlock(location);
 
         if (!enabled) {
@@ -97,18 +98,18 @@ public class MultiStageReorder extends AbstractDelegateExtent implements Reorder
         if (BlockType.shouldPlaceLast(block.getBlockType().getLegacyId())) {
             // Place torches, etc. last
             stage2.put(location.toBlockVector(), block);
-            return !(lazyBlock.getBlockType() == block.getBlockType() && lazyBlock.getData() == block.getData());
+            return !(lazyBlock.getBlockType() == block.getBlockType()); // TODO  && lazyBlock.getData() == block.getData());
         } else if (BlockType.shouldPlaceFinal(block.getBlockType().getLegacyId())) {
             // Place signs, reed, etc even later
             stage3.put(location.toBlockVector(), block);
-            return !(lazyBlock.getBlockType() == block.getBlockType() && lazyBlock.getData() == block.getData());
+            return !(lazyBlock.getBlockType() == block.getBlockType()); // TODO  && lazyBlock.getData() == block.getData());
         } else if (BlockType.shouldPlaceLast(lazyBlock.getBlockType().getLegacyId())) {
             // Destroy torches, etc. first
-            super.setBlock(location, new BaseBlock(BlockTypes.AIR));
+            super.setBlock(location, BlockTypes.AIR.getDefaultState());
             return super.setBlock(location, block);
         } else {
             stage1.put(location.toBlockVector(), block);
-            return !(lazyBlock.getBlockType() == block.getBlockType() && lazyBlock.getData() == block.getData());
+            return !(lazyBlock.getBlockType() == block.getBlockType()); // TODO && lazyBlock.getData() == block.getData());
         }
     }
 
@@ -128,8 +129,8 @@ public class MultiStageReorder extends AbstractDelegateExtent implements Reorder
             Extent extent = getExtent();
 
             final Set<BlockVector> blocks = new HashSet<>();
-            final Map<BlockVector, BaseBlock> blockTypes = new HashMap<>();
-            for (Map.Entry<BlockVector, BaseBlock> entry : stage3) {
+            final Map<BlockVector, BlockStateHolder> blockTypes = new HashMap<>();
+            for (Map.Entry<BlockVector, BlockStateHolder> entry : stage3) {
                 final BlockVector pt = entry.getKey();
                 blocks.add(pt);
                 blockTypes.put(pt, entry.getValue());
@@ -148,10 +149,10 @@ public class MultiStageReorder extends AbstractDelegateExtent implements Reorder
 
                     assert (blockTypes.containsKey(current));
 
-                    final BaseBlock baseBlock = blockTypes.get(current);
+                    final BlockStateHolder baseBlock = blockTypes.get(current);
 
                     final int type = baseBlock.getBlockType().getLegacyId();
-                    final int data = baseBlock.getData();
+//                    final int data = baseBlock.getData();
 
                     switch (type) {
                         case BlockID.WOODEN_DOOR:
@@ -161,13 +162,13 @@ public class MultiStageReorder extends AbstractDelegateExtent implements Reorder
                         case BlockID.DARK_OAK_DOOR:
                         case BlockID.SPRUCE_DOOR:
                         case BlockID.IRON_DOOR:
-                            if ((data & 0x8) == 0) {
-                                // Deal with lower door halves being attached to the floor AND the upper half
-                                BlockVector upperBlock = current.add(0, 1, 0).toBlockVector();
-                                if (blocks.contains(upperBlock) && !walked.contains(upperBlock)) {
-                                    walked.addFirst(upperBlock);
-                                }
-                            }
+// TODO                            if ((data & 0x8) == 0) {
+//                                // Deal with lower door halves being attached to the floor AND the upper half
+//                                BlockVector upperBlock = current.add(0, 1, 0).toBlockVector();
+//                                if (blocks.contains(upperBlock) && !walked.contains(upperBlock)) {
+//                                    walked.addFirst(upperBlock);
+//                                }
+//                            }
                             break;
 
                         case BlockID.MINECART_TRACKS:
@@ -183,7 +184,7 @@ public class MultiStageReorder extends AbstractDelegateExtent implements Reorder
                             break;
                     }
 
-                    final PlayerDirection attachment = BlockType.getAttachment(type, data);
+                    final PlayerDirection attachment = BlockType.getAttachment(type, 0); // TODO
                     if (attachment == null) {
                         // Block is not attached to anything => we can place it
                         break;

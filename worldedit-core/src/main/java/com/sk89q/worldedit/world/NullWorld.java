@@ -26,6 +26,9 @@ import com.sk89q.worldedit.Vector2D;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BaseItemStack;
+import com.sk89q.worldedit.blocks.LazyBlock;
+import com.sk89q.worldedit.blocks.type.BlockState;
+import com.sk89q.worldedit.blocks.type.BlockStateHolder;
 import com.sk89q.worldedit.blocks.type.BlockTypes;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
@@ -57,7 +60,7 @@ public class NullWorld extends AbstractWorld {
     }
 
     @Override
-    public boolean setBlock(Vector position, BaseBlock block, boolean notifyAndLight) throws WorldEditException {
+    public boolean setBlock(Vector position, BlockStateHolder block, boolean notifyAndLight) throws WorldEditException {
         return false;
     }
 
@@ -101,13 +104,18 @@ public class NullWorld extends AbstractWorld {
     }
 
     @Override
-    public BaseBlock getBlock(Vector position) {
-        return new BaseBlock(BlockTypes.AIR);
+    public BlockState getBlock(Vector position) {
+        return BlockTypes.AIR.getDefaultState();
     }
 
     @Override
-    public BaseBlock getLazyBlock(Vector position) {
-        return new BaseBlock(BlockTypes.AIR);
+    public LazyBlock getLazyBlock(Vector position) {
+        return new LazyBlock(getBlock(position), this, position);
+    }
+
+    @Override
+    public BaseBlock getFullBlock(Vector position) {
+        return new BaseBlock(getBlock(position));
     }
 
     @Override

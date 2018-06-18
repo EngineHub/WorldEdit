@@ -21,6 +21,8 @@ package com.sk89q.worldedit.world.registry;
 
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockMaterial;
+import com.sk89q.worldedit.blocks.type.BlockState;
+import com.sk89q.worldedit.blocks.type.BlockStateHolder;
 import com.sk89q.worldedit.world.registry.state.State;
 
 import javax.annotation.Nullable;
@@ -38,7 +40,7 @@ public interface BlockRegistry {
      * @return the block, which may be null if no block exists
      */
     @Nullable
-    BaseBlock createFromId(String id);
+    BlockState createFromId(String id);
 
     /**
      * Create a new block using its legacy numeric ID.
@@ -48,7 +50,7 @@ public interface BlockRegistry {
      */
     @Nullable
     @Deprecated
-    BaseBlock createFromId(int id);
+    BlockState createFromId(int id);
 
     /**
      * Get the material for the given block.
@@ -66,6 +68,6 @@ public interface BlockRegistry {
      * @return a map of states where the key is the state's ID
      */
     @Nullable
-    Map<String, ? extends State> getStates(BaseBlock block);
+    Map<String, ? extends State> getStates(BlockStateHolder block);
 
 }

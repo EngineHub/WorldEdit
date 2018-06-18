@@ -28,12 +28,10 @@ import com.sk89q.worldedit.blocks.type.BlockStateHolder;
 import com.sk89q.worldedit.blocks.type.BlockType;
 import com.sk89q.worldedit.blocks.type.BlockTypes;
 import com.sk89q.worldedit.function.mask.Mask;
+import com.sk89q.worldedit.world.registry.BundledBlockData;
 import com.sk89q.worldedit.world.registry.state.State;
 import com.sk89q.worldedit.world.registry.state.value.StateValue;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -69,6 +67,13 @@ public class BaseBlock implements BlockStateHolder<BaseBlock>, TileEntityBlock {
      */
     @Deprecated
     public BaseBlock(int id) {
+        try {
+            this.blockState = BlockTypes.getBlockType(BundledBlockData.getInstance().fromLegacyId(id)).getDefaultState();
+        } catch (Exception e) {
+            System.out.println(id);
+            System.out.println(BundledBlockData.getInstance().fromLegacyId(id));
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -108,6 +113,7 @@ public class BaseBlock implements BlockStateHolder<BaseBlock>, TileEntityBlock {
      */
     @Deprecated
     public BaseBlock(int id, int data) {
+        this(id);
     }
 
     /**
@@ -119,6 +125,7 @@ public class BaseBlock implements BlockStateHolder<BaseBlock>, TileEntityBlock {
      */
     @Deprecated
     public BaseBlock(int id, int data, @Nullable CompoundTag nbtData) {
+        this(id);
         setNbtData(nbtData);
     }
 
@@ -325,51 +332,9 @@ public class BaseBlock implements BlockStateHolder<BaseBlock>, TileEntityBlock {
      * @param o other block
      * @return true if equal
      */
-    public boolean equalsFuzzy(BaseBlock o) {
-        if (!getBlockType().equals(o.getBlockType())) {
-            return false;
-        }
-
-        List<State> differingStates = new ArrayList<>();
-        for (State state : o.getStates().keySet()) {
-            if (getState(state) == null) {
-                differingStates.add(state);
-            }
-        }
-        for (State state : getStates().keySet()) {
-            if (o.getState(state) == null) {
-                differingStates.add(state);
-            }
-        }
-
-        for (State state : differingStates) {
-            if (!getState(state).equals(o.getState(state))) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    /**
-     * @deprecated This method is silly, use {@link #containsFuzzy(java.util.Collection, BaseBlock)} instead.
-     */
-    @Deprecated
-    public boolean inIterable(Iterable<BaseBlock> iter) {
-        for (BaseBlock block : iter) {
-            if (block.equalsFuzzy(this)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * @deprecated Use {@link Blocks#containsFuzzy(Collection, BaseBlock)}
-     */
-    @Deprecated
-    public static boolean containsFuzzy(Collection<BaseBlock> collection, BaseBlock o) {
-        return Blocks.containsFuzzy(collection, o);
+    @Override
+    public boolean equalsFuzzy(BlockStateHolder o) {
+        return this.getState().equalsFuzzy(o);
     }
 
     @Override

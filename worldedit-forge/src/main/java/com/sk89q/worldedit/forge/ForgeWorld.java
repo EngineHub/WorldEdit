@@ -31,6 +31,9 @@ import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.blocks.LazyBlock;
+import com.sk89q.worldedit.blocks.type.BlockState;
+import com.sk89q.worldedit.blocks.type.BlockStateHolder;
+import com.sk89q.worldedit.blocks.type.BlockTypes;
 import com.sk89q.worldedit.blocks.type.ItemTypes;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
@@ -84,6 +87,7 @@ import net.minecraft.world.gen.feature.WorldGenTaiga2;
 import net.minecraft.world.gen.feature.WorldGenTrees;
 import net.minecraft.world.gen.feature.WorldGenerator;
 import net.minecraftforge.common.DimensionManager;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
 import javax.annotation.Nullable;
 
@@ -116,7 +120,7 @@ public class ForgeWorld extends AbstractWorld {
      */
     ForgeWorld(World world) {
         checkNotNull(world);
-        this.worldRef = new WeakReference<World>(world);
+        this.worldRef = new WeakReference<>(world);
     }
 
     /**
@@ -155,7 +159,7 @@ public class ForgeWorld extends AbstractWorld {
     }
 
     @Override
-    public boolean setBlock(Vector position, BaseBlock block, boolean notifyAndLight) throws WorldEditException {
+    public boolean setBlock(Vector position, BlockStateHolder block, boolean notifyAndLight) throws WorldEditException {
         checkNotNull(position);
         checkNotNull(block);
 
@@ -168,17 +172,17 @@ public class ForgeWorld extends AbstractWorld {
         Chunk chunk = world.getChunkFromChunkCoords(x >> 4, z >> 4);
         BlockPos pos = new BlockPos(x, y, z);
         IBlockState old = chunk.getBlockState(pos);
-            IBlockState newState = Block.getBlockById(block.getId()).getStateFromMeta(block.getData());
+        IBlockState newState = Block.getBlockById(block.getBlockType().getLegacyId()).getDefaultState(); // TODO .getStateFromMeta(block.getData());
         IBlockState successState = chunk.setBlockState(pos, newState);
         boolean successful = successState != null;
 
         // Create the TileEntity
         if (successful) {
-            if (block.hasNbtData()) {
+            if (block instanceof BaseBlock && ((BaseBlock) block).hasNbtData()) {
                 // Kill the old TileEntity
                 world.removeTileEntity(pos);
-                NBTTagCompound nativeTag = NBTConverter.toNative(block.getNbtData());
-                nativeTag.setString("id", block.getNbtId());
+                NBTTagCompound nativeTag = NBTConverter.toNative(((BaseBlock) block).getNbtData());
+                nativeTag.setString("id", ((BaseBlock) block).getNbtId());
                 TileEntityUtils.setTileEntity(world, position, nativeTag);
             }
         }
@@ -347,7 +351,24 @@ public class ForgeWorld extends AbstractWorld {
     }
 
     @Override
-    public BaseBlock getBlock(Vector position) {
+    public BlockState getBlock(Vector position) {
+        World world = getWorld();
+        BlockPos pos = new BlockPos(position.getBlockX(), position.getBlockY(), position.getBlockZ());
+        IBlockState state = world.getBlockState(pos);
+
+        return BlockTypes.getBlockType(ForgeRegistries.BLOCKS.getKey(state.getBlock()).toString()).getDefaultState(); // TODO Data
+    }
+
+    @Override
+    public LazyBlock getLazyBlock(Vector position) {
+        World world = getWorld();
+        BlockPos pos = new BlockPos(position.getBlockX(), position.getBlockY(), position.getBlockZ());
+        IBlockState state = world.getBlockState(pos);
+        return new LazyBlock(Block.getIdFromBlock(state.getBlock()), state.getBlock().getMetaFromState(state), this, position);
+    }
+
+    @Override
+    public BaseBlock getFullBlock(Vector position) {
         World world = getWorld();
         BlockPos pos = new BlockPos(position.getBlockX(), position.getBlockY(), position.getBlockZ());
         IBlockState state = world.getBlockState(pos);
@@ -358,14 +379,6 @@ public class ForgeWorld extends AbstractWorld {
         } else {
             return new BaseBlock(Block.getIdFromBlock(state.getBlock()), state.getBlock().getMetaFromState(state));
         }
-    }
-
-    @Override
-    public BaseBlock getLazyBlock(Vector position) {
-        World world = getWorld();
-        BlockPos pos = new BlockPos(position.getBlockX(), position.getBlockY(), position.getBlockZ());
-        IBlockState state = world.getBlockState(pos);
-        return new LazyBlock(Block.getIdFromBlock(state.getBlock()), state.getBlock().getMetaFromState(state), this, position);
     }
 
     @Override

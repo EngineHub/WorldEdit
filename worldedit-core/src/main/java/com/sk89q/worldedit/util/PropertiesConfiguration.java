@@ -24,6 +24,7 @@ package com.sk89q.worldedit.util;
 import com.sk89q.util.StringUtil;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
+import com.sk89q.worldedit.world.registry.BundledItemData;
 import com.sk89q.worldedit.world.snapshot.SnapshotRepository;
 
 import java.io.File;
@@ -90,6 +91,10 @@ public class PropertiesConfiguration extends LocalConfiguration {
         logFormat = getString("log-format", logFormat);
         registerHelp = getBool("register-help", registerHelp);
         wandItem = getString("wand-item", wandItem);
+        try {
+            wandItem = BundledItemData.getInstance().fromLegacyId(Integer.parseInt(wandItem));
+        } catch (Throwable e) {
+        }
         superPickaxeDrop = getBool("super-pickaxe-drop-items", superPickaxeDrop);
         superPickaxeManyDrop = getBool("super-pickaxe-many-drop-items", superPickaxeManyDrop);
         noDoubleSlash = getBool("no-double-slash", noDoubleSlash);
@@ -97,6 +102,10 @@ public class PropertiesConfiguration extends LocalConfiguration {
         useInventoryOverride = getBool("use-inventory-override", useInventoryOverride);
         useInventoryCreativeOverride = getBool("use-inventory-creative-override", useInventoryCreativeOverride);
         navigationWand = getString("nav-wand-item", navigationWand);
+        try {
+            navigationWand = BundledItemData.getInstance().fromLegacyId(Integer.parseInt(navigationWand));
+        } catch (Throwable e) {
+        }
         navigationWandMaxDistance = getInt("nav-wand-distance", navigationWandMaxDistance);
         navigationUseGlass = getBool("nav-use-glass", navigationUseGlass);
         scriptTimeout = getInt("scripting-timeout", scriptTimeout);

@@ -20,8 +20,8 @@
 package com.sk89q.worldedit.command.tool;
 
 import com.sk89q.worldedit.*;
-import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.blocks.BlockType;
+import com.sk89q.worldedit.blocks.type.BlockStateHolder;
+import com.sk89q.worldedit.blocks.type.BlockType;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Platform;
@@ -32,9 +32,9 @@ import com.sk89q.worldedit.extent.inventory.BlockBag;
  */
 public class BlockReplacer implements DoubleActionBlockTool {
 
-    private BaseBlock targetBlock;
+    private BlockStateHolder targetBlock;
 
-    public BlockReplacer(BaseBlock targetBlock) {
+    public BlockReplacer(BlockStateHolder targetBlock) {
         this.targetBlock = targetBlock;
     }
 
@@ -67,7 +67,7 @@ public class BlockReplacer implements DoubleActionBlockTool {
     public boolean actSecondary(Platform server, LocalConfiguration config, Player player, LocalSession session, com.sk89q.worldedit.util.Location clicked) {
         EditSession editSession = session.createEditSession(player);
         targetBlock = (editSession).getBlock(clicked.toVector());
-        BlockType type = targetBlock.getBlockType().getLegacyType();
+        BlockType type = targetBlock.getBlockType();
 
         if (type != null) {
             player.print("Replacer tool switched to: " + type.getName());

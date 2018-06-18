@@ -20,6 +20,7 @@
 package com.sk89q.worldedit.bukkit.adapter;
 
 import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.blocks.type.BlockStateHolder;
 import com.sk89q.worldedit.entity.BaseEntity;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -89,7 +90,7 @@ public interface BukkitImplAdapter {
      * @param notifyAndLight notify and light if set
      * @return true if a block was likely changed
      */
-    boolean setBlock(Location location, BaseBlock state, boolean notifyAndLight);
+    boolean setBlock(Location location, BlockStateHolder state, boolean notifyAndLight);
 
     /**
      * Get the state for the given entity.

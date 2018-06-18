@@ -19,8 +19,11 @@
 
 package com.sk89q.worldedit;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.blocks.BlockID;
+import com.sk89q.worldedit.blocks.type.BlockStateHolder;
+import com.sk89q.worldedit.blocks.type.BlockTypes;
 import com.sk89q.worldedit.command.ClipboardCommands;
 import com.sk89q.worldedit.command.SchematicCommands;
 import com.sk89q.worldedit.entity.Entity;
@@ -30,18 +33,12 @@ import com.sk89q.worldedit.function.operation.ForwardExtentCopy;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.schematic.SchematicFormat;
-import com.sk89q.worldedit.util.Countable;
 import com.sk89q.worldedit.world.DataException;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * The clipboard remembers the state of a cuboid region.
@@ -71,7 +68,7 @@ public class CuboidClipboard {
         UP_DOWN
     }
 
-    private BaseBlock[][][] data;
+    private BlockStateHolder[][][] data;
     private Vector offset;
     private Vector origin;
     private Vector size;
@@ -152,186 +149,6 @@ public class CuboidClipboard {
      */
     public int getHeight() {
         return size.getBlockY();
-    }
-
-    /**
-     * Rotate the clipboard in 2D. It can only rotate by angles divisible by 90.
-     *
-     * @param angle in degrees
-     */
-    public void rotate2D(int angle) {
-        angle = angle % 360;
-        if (angle % 90 != 0) { // Can only rotate 90 degrees at the moment
-            return;
-        }
-        final boolean reverse = angle < 0;
-        final int numRotations = Math.abs((int) Math.floor(angle / 90.0));
-
-        final int width = getWidth();
-        final int length = getLength();
-        final int height = getHeight();
-        final Vector sizeRotated = size.transform2D(angle, 0, 0, 0, 0);
-        final int shiftX = sizeRotated.getX() < 0 ? -sizeRotated.getBlockX() - 1 : 0;
-        final int shiftZ = sizeRotated.getZ() < 0 ? -sizeRotated.getBlockZ() - 1 : 0;
-
-        final BaseBlock[][][] newData = new BaseBlock
-                [Math.abs(sizeRotated.getBlockX())]
-                [Math.abs(sizeRotated.getBlockY())]
-                [Math.abs(sizeRotated.getBlockZ())];
-
-        for (int x = 0; x < width; ++x) {
-            for (int z = 0; z < length; ++z) {
-                final Vector2D v = new Vector2D(x, z).transform2D(angle, 0, 0, shiftX, shiftZ);
-                final int newX = v.getBlockX();
-                final int newZ = v.getBlockZ();
-                for (int y = 0; y < height; ++y) {
-                    final BaseBlock block = data[x][y][z];
-                    newData[newX][y][newZ] = block;
-
-                    if (block == null) {
-                        continue;
-                    }
-
-                    if (reverse) {
-                        for (int i = 0; i < numRotations; ++i) {
-                            block.rotate90Reverse();
-                        }
-                    } else {
-                        for (int i = 0; i < numRotations; ++i) {
-                            block.rotate90();
-                        }
-                    }
-                }
-            }
-        }
-
-        data = newData;
-        size = new Vector(Math.abs(sizeRotated.getBlockX()),
-                          Math.abs(sizeRotated.getBlockY()),
-                          Math.abs(sizeRotated.getBlockZ()));
-        offset = offset.transform2D(angle, 0, 0, 0, 0)
-                .subtract(shiftX, 0, shiftZ);
-    }
-
-    /**
-     * Flip the clipboard.
-     *
-     * @param dir direction to flip
-     */
-    public void flip(FlipDirection dir) {
-        flip(dir, false);
-    }
-
-    /**
-     * Flip the clipboard.
-     *
-     * @param dir direction to flip
-     * @param aroundPlayer flip the offset around the player
-     */
-    public void flip(FlipDirection dir, boolean aroundPlayer) {
-        checkNotNull(dir);
-
-        final int width = getWidth();
-        final int length = getLength();
-        final int height = getHeight();
-
-        switch (dir) {
-        case WEST_EAST:
-            final int wid = (int) Math.ceil(width / 2.0f);
-            for (int xs = 0; xs < wid; ++xs) {
-                for (int z = 0; z < length; ++z) {
-                    for (int y = 0; y < height; ++y) {
-                        final BaseBlock block1 = data[xs][y][z];
-                        if (block1 != null) {
-                            block1.flip(dir);
-                        }
-
-                        // Skip the center plane
-                        if (xs == width - xs - 1) {
-                            continue;
-                        }
-
-                        final BaseBlock block2 = data[width - xs - 1][y][z];
-                        if (block2 != null) {
-                            block2.flip(dir);
-                        }
-
-                        data[xs][y][z] = block2;
-                        data[width - xs - 1][y][z] = block1;
-                    }
-                }
-            }
-
-            if (aroundPlayer) {
-                offset = offset.setX(1 - offset.getX() - width);
-            }
-
-            break;
-
-        case NORTH_SOUTH:
-            final int len = (int) Math.ceil(length / 2.0f);
-            for (int zs = 0; zs < len; ++zs) {
-                for (int x = 0; x < width; ++x) {
-                    for (int y = 0; y < height; ++y) {
-                        final BaseBlock block1 = data[x][y][zs];
-                        if (block1 != null) {
-                            block1.flip(dir);
-                        }
-
-                        // Skip the center plane
-                        if (zs == length - zs - 1) {
-                            continue;
-                        }
-
-                        final BaseBlock block2 = data[x][y][length - zs - 1];
-                        if (block2 != null) {
-                            block2.flip(dir);
-                        }
-
-                        data[x][y][zs] = block2;
-                        data[x][y][length - zs - 1] = block1;
-                    }
-                }
-            }
-
-            if (aroundPlayer) {
-                offset = offset.setZ(1 - offset.getZ() - length);
-            }
-
-            break;
-
-        case UP_DOWN:
-            final int hei = (int) Math.ceil(height / 2.0f);
-            for (int ys = 0; ys < hei; ++ys) {
-                for (int x = 0; x < width; ++x) {
-                    for (int z = 0; z < length; ++z) {
-                        final BaseBlock block1 = data[x][ys][z];
-                        if (block1 != null) {
-                            block1.flip(dir);
-                        }
-
-                        // Skip the center plane
-                        if (ys == height - ys - 1) {
-                            continue;
-                        }
-
-                        final BaseBlock block2 = data[x][height - ys - 1][z];
-                        if (block2 != null) {
-                            block2.flip(dir);
-                        }
-
-                        data[x][ys][z] = block2;
-                        data[x][height - ys - 1][z] = block1;
-                    }
-                }
-            }
-
-            if (aroundPlayer) {
-                offset = offset.setY(1 - offset.getY() - height);
-            }
-
-            break;
-        }
     }
 
     /**
@@ -426,12 +243,12 @@ public class CuboidClipboard {
         for (int x = 0; x < size.getBlockX(); ++x) {
             for (int y = 0; y < size.getBlockY(); ++y) {
                 for (int z = 0; z < size.getBlockZ(); ++z) {
-                    final BaseBlock block = data[x][y][z];
+                    final BlockStateHolder block = data[x][y][z];
                     if (block == null) {
                         continue;
                     }
 
-                    if (noAir && block.isAir()) {
+                    if (noAir && block.getBlockType() == BlockTypes.AIR) {
                         continue;
                     }
 
@@ -481,10 +298,10 @@ public class CuboidClipboard {
      * @deprecated use {@link #getBlock(Vector)} instead
      */
     @Deprecated
-    public BaseBlock getPoint(Vector position) throws ArrayIndexOutOfBoundsException {
-        final BaseBlock block = getBlock(position);
+    public BlockStateHolder getPoint(Vector position) throws ArrayIndexOutOfBoundsException {
+        final BlockStateHolder block = getBlock(position);
         if (block == null) {
-            return new BaseBlock(BlockID.AIR);
+            return BlockTypes.AIR.getDefaultState();
         }
 
         return block;
@@ -499,7 +316,7 @@ public class CuboidClipboard {
      * @return null, if this block was outside the (non-cuboid) selection while copying
      * @throws ArrayIndexOutOfBoundsException if the position is outside the bounds of the CuboidClipboard
      */
-    public BaseBlock getBlock(Vector position) throws ArrayIndexOutOfBoundsException {
+    public BlockStateHolder getBlock(Vector position) throws ArrayIndexOutOfBoundsException {
         return data[position.getBlockX()][position.getBlockY()][position.getBlockZ()];
     }
 
@@ -597,88 +414,6 @@ public class CuboidClipboard {
      */
     public void setOffset(Vector offset) {
         this.offset = offset;
-    }
-
-    /**
-     * Get the block distribution inside a clipboard.
-     *
-     * @return a block distribution
-     */
-    public List<Countable<Integer>> getBlockDistribution() {
-        List<Countable<Integer>> distribution = new ArrayList<>();
-        Map<Integer, Countable<Integer>> map = new HashMap<>();
-
-        int maxX = getWidth();
-        int maxY = getHeight();
-        int maxZ = getLength();
-
-        for (int x = 0; x < maxX; ++x) {
-            for (int y = 0; y < maxY; ++y) {
-                for (int z = 0; z < maxZ; ++z) {
-                    final BaseBlock block = data[x][y][z];
-                    if (block == null) {
-                        continue;
-                    }
-
-                    int id = block.getId();
-
-                    if (map.containsKey(id)) {
-                        map.get(id).increment();
-                    } else {
-                        Countable<Integer> c = new Countable<>(id, 1);
-                        map.put(id, c);
-                        distribution.add(c);
-                    }
-                }
-            }
-        }
-
-        Collections.sort(distribution);
-        // Collections.reverse(distribution);
-
-        return distribution;
-    }
-
-    /**
-     * Get the block distribution inside a clipboard with data values.
-     *
-     * @return a block distribution
-     */
-    // TODO reduce code duplication
-    public List<Countable<BaseBlock>> getBlockDistributionWithData() {
-        List<Countable<BaseBlock>> distribution = new ArrayList<>();
-        Map<BaseBlock, Countable<BaseBlock>> map = new HashMap<>();
-
-        int maxX = getWidth();
-        int maxY = getHeight();
-        int maxZ = getLength();
-
-        for (int x = 0; x < maxX; ++x) {
-            for (int y = 0; y < maxY; ++y) {
-                for (int z = 0; z < maxZ; ++z) {
-                    final BaseBlock block = data[x][y][z];
-                    if (block == null) {
-                        continue;
-                    }
-
-                    // Strip the block from metadata that is not part of our key
-                    final BaseBlock bareBlock = new BaseBlock(block.getId(), block.getData());
-
-                    if (map.containsKey(bareBlock)) {
-                        map.get(bareBlock).increment();
-                    } else {
-                        Countable<BaseBlock> c = new Countable<>(bareBlock, 1);
-                        map.put(bareBlock, c);
-                        distribution.add(c);
-                    }
-                }
-            }
-        }
-
-        Collections.sort(distribution);
-        // Collections.reverse(distribution);
-
-        return distribution;
     }
 
     /**

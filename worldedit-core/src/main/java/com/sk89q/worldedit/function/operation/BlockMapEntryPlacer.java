@@ -22,6 +22,7 @@ package com.sk89q.worldedit.function.operation;
 import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.blocks.type.BlockStateHolder;
 import com.sk89q.worldedit.extent.Extent;
 
 import java.util.Iterator;
@@ -37,7 +38,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class BlockMapEntryPlacer implements Operation {
 
     private final Extent extent;
-    private final Iterator<Map.Entry<BlockVector, BaseBlock>> iterator;
+    private final Iterator<Map.Entry<BlockVector, BlockStateHolder>> iterator;
 
     /**
      * Create a new instance.
@@ -45,7 +46,7 @@ public class BlockMapEntryPlacer implements Operation {
      * @param extent the extent to set the blocks on
      * @param iterator the iterator
      */
-    public BlockMapEntryPlacer(Extent extent, Iterator<Map.Entry<BlockVector, BaseBlock>> iterator) {
+    public BlockMapEntryPlacer(Extent extent, Iterator<Map.Entry<BlockVector, BlockStateHolder>> iterator) {
         checkNotNull(extent);
         checkNotNull(iterator);
         this.extent = extent;
@@ -55,7 +56,7 @@ public class BlockMapEntryPlacer implements Operation {
     @Override
     public Operation resume(RunContext run) throws WorldEditException {
         while (iterator.hasNext()) {
-            Map.Entry<BlockVector, BaseBlock> entry = iterator.next();
+            Map.Entry<BlockVector, BlockStateHolder> entry = iterator.next();
             extent.setBlock(entry.getKey(), entry.getValue());
         }
 

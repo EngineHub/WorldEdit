@@ -21,6 +21,8 @@ package com.sk89q.worldedit.world.registry;
 
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockMaterial;
+import com.sk89q.worldedit.blocks.type.BlockState;
+import com.sk89q.worldedit.blocks.type.BlockStateHolder;
 import com.sk89q.worldedit.blocks.type.BlockTypes;
 import com.sk89q.worldedit.world.registry.state.State;
 
@@ -35,13 +37,13 @@ public class BundledBlockRegistry implements BlockRegistry {
 
     @Nullable
     @Override
-    public BaseBlock createFromId(String id) {
-        return new BaseBlock(BlockTypes.getBlockType(id));
+    public BlockState createFromId(String id) {
+        return BlockTypes.getBlockType(id).getDefaultState();
     }
 
     @Nullable
     @Override
-    public BaseBlock createFromId(int legacyId) {
+    public BlockState createFromId(int legacyId) {
         String id = BundledBlockData.getInstance().fromLegacyId(legacyId);
         if (id != null) {
             return createFromId(id);
@@ -58,7 +60,7 @@ public class BundledBlockRegistry implements BlockRegistry {
 
     @Nullable
     @Override
-    public Map<String, ? extends State> getStates(BaseBlock block) {
+    public Map<String, ? extends State> getStates(BlockStateHolder block) {
         return BundledBlockData.getInstance().getStatesById(block.getBlockType().getId());
     }
 

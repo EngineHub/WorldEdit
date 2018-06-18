@@ -24,6 +24,9 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.blocks.LazyBlock;
+import com.sk89q.worldedit.blocks.type.BlockState;
+import com.sk89q.worldedit.blocks.type.BlockStateHolder;
 import com.sk89q.worldedit.extent.AbstractDelegateExtent;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.math.transform.Transform;
@@ -77,24 +80,29 @@ public class BlockTransformExtent extends AbstractDelegateExtent {
      * @param reverse true to transform in the opposite direction
      * @return the same block
      */
-    private BaseBlock transformBlock(BaseBlock block, boolean reverse) {
+    private <T extends BlockStateHolder> T transformBlock(T block, boolean reverse) {
         transform(block, reverse ? transform.inverse() : transform, blockRegistry);
         return block;
     }
 
     @Override
-    public BaseBlock getBlock(Vector position) {
+    public BlockState getBlock(Vector position) {
         return transformBlock(super.getBlock(position), false);
     }
 
     @Override
-    public BaseBlock getLazyBlock(Vector position) {
+    public LazyBlock getLazyBlock(Vector position) {
         return transformBlock(super.getLazyBlock(position), false);
     }
 
     @Override
-    public boolean setBlock(Vector location, BaseBlock block) throws WorldEditException {
-        return super.setBlock(location, transformBlock(new BaseBlock(block), true));
+    public BaseBlock getFullBlock(Vector position) {
+        return transformBlock(super.getFullBlock(position), false);
+    }
+
+    @Override
+    public boolean setBlock(Vector location, BlockStateHolder block) throws WorldEditException {
+        return super.setBlock(location, transformBlock(block, true));
     }
 
 
@@ -108,7 +116,7 @@ public class BlockTransformExtent extends AbstractDelegateExtent {
      * @param registry the registry
      * @return the same block
      */
-    public static BaseBlock transform(BaseBlock block, Transform transform, BlockRegistry registry) {
+    public static <T extends BlockStateHolder> T transform(T block, Transform transform, BlockRegistry registry) {
         return transform(block, transform, registry, block);
     }
 
@@ -121,7 +129,7 @@ public class BlockTransformExtent extends AbstractDelegateExtent {
      * @param changedBlock the block to change
      * @return the changed block
      */
-    private static BaseBlock transform(BaseBlock block, Transform transform, BlockRegistry registry, BaseBlock changedBlock) {
+    private static <T extends BlockStateHolder> T transform(T block, Transform transform, BlockRegistry registry, T changedBlock) {
         checkNotNull(block);
         checkNotNull(transform);
         checkNotNull(registry);

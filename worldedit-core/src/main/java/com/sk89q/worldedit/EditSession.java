@@ -22,6 +22,9 @@ package com.sk89q.worldedit;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.blocks.BlockType;
+import com.sk89q.worldedit.blocks.LazyBlock;
+import com.sk89q.worldedit.blocks.type.BlockState;
+import com.sk89q.worldedit.blocks.type.BlockStateHolder;
 import com.sk89q.worldedit.blocks.type.BlockTypes;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
@@ -101,7 +104,7 @@ public class EditSession implements Extent {
     private static final Logger log = Logger.getLogger(EditSession.class.getCanonicalName());
 
     /**
-     * Used by {@link #setBlock(Vector, BaseBlock, Stage)} to
+     * Used by {@link #setBlock(Vector, BlockStateHolder, Stage)} to
      * determine which {@link Extent}s should be bypassed.
      */
     public enum Stage {
@@ -365,25 +368,18 @@ public class EditSession implements Extent {
     }
 
     @Override
-    public BaseBlock getLazyBlock(Vector position) {
+    public LazyBlock getLazyBlock(Vector position) {
         return world.getLazyBlock(position);
     }
 
     @Override
-    public BaseBlock getBlock(Vector position) {
+    public BlockState getBlock(Vector position) {
         return world.getBlock(position);
     }
 
-    /**
-     * Gets the block type at a position.
-     *
-     * @param position the position
-     * @return a block
-     * @deprecated Use {@link #getBlock(Vector)}
-     */
-    @Deprecated
-    public BaseBlock rawGetBlock(Vector position) {
-        return getBlock(position);
+    @Override
+    public BaseBlock getFullBlock(Vector position) {
+        return world.getFullBlock(position);
     }
 
     /**
@@ -432,7 +428,7 @@ public class EditSession implements Extent {
      * @return whether the block changed
      * @throws WorldEditException thrown on a set error
      */
-    public boolean setBlock(Vector position, BaseBlock block, Stage stage) throws WorldEditException {
+    public boolean setBlock(Vector position, BlockStateHolder block, Stage stage) throws WorldEditException {
         switch (stage) {
             case BEFORE_HISTORY:
                 return bypassNone.setBlock(position, block);
@@ -452,7 +448,7 @@ public class EditSession implements Extent {
      * @param block the block
      * @return whether the block changed
      */
-    public boolean rawSetBlock(Vector position, BaseBlock block) {
+    public boolean rawSetBlock(Vector position, BlockStateHolder block) {
         try {
             return setBlock(position, block, Stage.BEFORE_CHANGE);
         } catch (WorldEditException e) {
@@ -467,7 +463,7 @@ public class EditSession implements Extent {
      * @param block the block
      * @return whether the block changed
      */
-    public boolean smartSetBlock(Vector position, BaseBlock block) {
+    public boolean smartSetBlock(Vector position, BlockStateHolder block) {
         try {
             return setBlock(position, block, Stage.BEFORE_REORDER);
         } catch (WorldEditException e) {
@@ -476,7 +472,7 @@ public class EditSession implements Extent {
     }
 
     @Override
-    public boolean setBlock(Vector position, BaseBlock block) throws MaxChangedBlocksException {
+    public boolean setBlock(Vector position, BlockStateHolder block) throws MaxChangedBlocksException {
         try {
             return setBlock(position, block, Stage.BEFORE_HISTORY);
         } catch (MaxChangedBlocksException e) {
@@ -606,7 +602,7 @@ public class EditSession implements Extent {
      * @param searchBlocks the list of blocks to search
      * @return the number of blocks that matched the pattern
      */
-    public int countBlocks(Region region, Set<BaseBlock> searchBlocks) {
+    public int countBlocks(Region region, Set<BlockStateHolder> searchBlocks) {
         FuzzyBlockMask mask = new FuzzyBlockMask(this, searchBlocks);
         Counter count = new Counter();
         RegionMaskingFilter filter = new RegionMaskingFilter(mask, count);
@@ -626,7 +622,7 @@ public class EditSession implements Extent {
      * @return number of blocks affected
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
-    public int fillXZ(Vector origin, BaseBlock block, double radius, int depth, boolean recursive) throws MaxChangedBlocksException {
+    public int fillXZ(Vector origin, BlockStateHolder block, double radius, int depth, boolean recursive) throws MaxChangedBlocksException {
         return fillXZ(origin, new BlockPattern(block), radius, depth, recursive);
     }
 
@@ -781,7 +777,7 @@ public class EditSession implements Extent {
      * @return number of blocks affected
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
-    public int replaceBlocks(Region region, Set<BaseBlock> filter, BaseBlock replacement) throws MaxChangedBlocksException {
+    public int replaceBlocks(Region region, Set<BlockStateHolder> filter, BlockStateHolder replacement) throws MaxChangedBlocksException {
         return replaceBlocks(region, filter, new BlockPattern(replacement));
     }
 
@@ -795,7 +791,7 @@ public class EditSession implements Extent {
      * @return number of blocks affected
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
-    public int replaceBlocks(Region region, Set<BaseBlock> filter, Pattern pattern) throws MaxChangedBlocksException {
+    public int replaceBlocks(Region region, Set<BlockStateHolder> filter, Pattern pattern) throws MaxChangedBlocksException {
         Mask mask = filter == null ? new ExistingBlockMask(this) : new FuzzyBlockMask(this, filter);
         return replaceBlocks(region, mask, pattern);
     }
@@ -948,7 +944,7 @@ public class EditSession implements Extent {
             final int maxY = region.getMaximumPoint().getBlockY();
             final ArbitraryShape shape = new RegionShape(region) {
                 @Override
-                protected BaseBlock getMaterial(int x, int y, int z, BaseBlock defaultMaterial) {
+                protected BlockStateHolder getMaterial(int x, int y, int z, BlockStateHolder defaultMaterial) {
                     if (y > maxY || y < minY) {
                         // Put holes into the floor and ceiling by telling ArbitraryShape that the shape goes on outside the region
                         return defaultMaterial;
@@ -1647,7 +1643,7 @@ public class EditSession implements Extent {
             for (int z = basePosition.getBlockZ() - size; z <= basePosition.getBlockZ()
                     + size; ++z) {
                 // Don't want to be in the ground
-                if (!getBlock(new Vector(x, basePosition.getBlockY(), z)).isAir()) {
+                if (getBlock(new Vector(x, basePosition.getBlockY(), z)).getBlockType() != BlockTypes.AIR) {
                     continue;
                 }
                 // The gods don't want a tree here
@@ -1739,9 +1735,9 @@ public class EditSession implements Extent {
      * @return the results
      */
     // TODO reduce code duplication - probably during ops-redux
-    public List<Countable<BaseBlock>> getBlockDistributionWithData(Region region) {
-        List<Countable<BaseBlock>> distribution = new ArrayList<>();
-        Map<BaseBlock, Countable<BaseBlock>> map = new HashMap<>();
+    public List<Countable<BlockStateHolder>> getBlockDistributionWithData(Region region) {
+        List<Countable<BlockStateHolder>> distribution = new ArrayList<>();
+        Map<BlockStateHolder, Countable<BlockStateHolder>> map = new HashMap<>();
 
         if (region instanceof CuboidRegion) {
             // Doing this for speed
@@ -1760,12 +1756,12 @@ public class EditSession implements Extent {
                     for (int z = minZ; z <= maxZ; ++z) {
                         Vector pt = new Vector(x, y, z);
 
-                        BaseBlock blk = getBlock(pt);
+                        BlockStateHolder blk = getBlock(pt);
 
                         if (map.containsKey(blk)) {
                             map.get(blk).increment();
                         } else {
-                            Countable<BaseBlock> c = new Countable<>(blk, 1);
+                            Countable<BlockStateHolder> c = new Countable<>(blk, 1);
                             map.put(blk, c);
                             distribution.add(c);
                         }
@@ -1774,12 +1770,12 @@ public class EditSession implements Extent {
             }
         } else {
             for (Vector pt : region) {
-                BaseBlock blk = getBlock(pt);
+                BlockStateHolder blk = getBlock(pt);
 
                 if (map.containsKey(blk)) {
                     map.get(blk).increment();
                 } else {
-                    Countable<BaseBlock> c = new Countable<>(blk, 1);
+                    Countable<BlockStateHolder> c = new Countable<>(blk, 1);
                     map.put(blk, c);
                 }
             }
@@ -1803,13 +1799,14 @@ public class EditSession implements Extent {
 
         final ArbitraryShape shape = new ArbitraryShape(region) {
             @Override
-            protected BaseBlock getMaterial(int x, int y, int z, BaseBlock defaultMaterial) {
+            protected BlockStateHolder getMaterial(int x, int y, int z, BlockStateHolder defaultMaterial) {
                 final Vector current = new Vector(x, y, z);
                 environment.setCurrentBlock(current);
                 final Vector scaled = current.subtract(zero).divide(unit);
 
                 try {
-                    if (expression.evaluate(scaled.getX(), scaled.getY(), scaled.getZ(), defaultMaterial.getBlockType().getLegacyId(), defaultMaterial.getData()) <= 0) {
+                    if (expression.evaluate(scaled.getX(), scaled.getY(), scaled.getZ(), defaultMaterial.getBlockType().getLegacyId(), 0) <= 0) {
+                        // TODO data
                         return null;
                     }
 
@@ -1847,7 +1844,7 @@ public class EditSession implements Extent {
             final BlockVector sourcePosition = environment.toWorld(x.getValue(), y.getValue(), z.getValue());
 
             // read block from world
-            final BaseBlock material = world.getBlock(sourcePosition);
+            final BaseBlock material = world.getFullBlock(sourcePosition);
 
             // queue operation
             queue.put(position, material);

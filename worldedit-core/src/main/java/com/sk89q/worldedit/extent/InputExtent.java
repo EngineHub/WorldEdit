@@ -22,6 +22,9 @@ package com.sk89q.worldedit.extent;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.Vector2D;
 import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.blocks.LazyBlock;
+import com.sk89q.worldedit.blocks.type.BlockState;
+import com.sk89q.worldedit.blocks.type.BlockStateHolder;
 import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.world.biome.BaseBiome;
 
@@ -37,20 +40,14 @@ public interface InputExtent {
      * is undefined (an air block could be returned). However, {@code null}
      * should <strong>not</strong> be returned.</p>
      *
-     * <p>The returned block is mutable and is a snapshot of the block at the time
+     * <p>The returned block is immutable and is a snapshot of the block at the time
      * of call. It has no position attached to it, so it could be reused in
      * {@link Pattern}s and so on.</p>
-     *
-     * <p>Calls to this method can actually be quite expensive, so cache results
-     * whenever it is possible, while being aware of the mutability aspect.
-     * The cost, however, depends on the implementation and particular extent.
-     * If only basic information about the block is required, then use of
-     * {@link #getLazyBlock(Vector)} is recommended.</p>
      *
      * @param position position of the block
      * @return the block
      */
-    BaseBlock getBlock(Vector position);
+    BlockState getBlock(Vector position);
 
     /**
      * Get a lazy, immutable snapshot of the block at the given location that only
@@ -73,7 +70,15 @@ public interface InputExtent {
      * @param position position of the block
      * @return the block
      */
-    BaseBlock getLazyBlock(Vector position);
+    LazyBlock getLazyBlock(Vector position);
+
+    /**
+     * Get a immutable snapshot of the block at the given location.
+     *
+     * @param position position of the block
+     * @return the block
+     */
+    BaseBlock getFullBlock(Vector position);
 
     /**
      * Get the biome at the given location.

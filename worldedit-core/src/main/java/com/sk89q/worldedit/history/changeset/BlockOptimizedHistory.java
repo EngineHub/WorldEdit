@@ -23,6 +23,7 @@ import com.google.common.base.Function;
 import com.google.common.collect.Iterators;
 import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.blocks.type.BlockStateHolder;
 import com.sk89q.worldedit.history.change.BlockChange;
 import com.sk89q.worldedit.history.change.Change;
 import com.sk89q.worldedit.util.collection.TupleArrayList;
@@ -43,8 +44,8 @@ import static java.util.Map.Entry;
  */
 public class BlockOptimizedHistory extends ArrayListHistory {
 
-    private final TupleArrayList<BlockVector, BaseBlock> previous = new TupleArrayList<>();
-    private final TupleArrayList<BlockVector, BaseBlock> current = new TupleArrayList<>();
+    private final TupleArrayList<BlockVector, BlockStateHolder> previous = new TupleArrayList<>();
+    private final TupleArrayList<BlockVector, BlockStateHolder> current = new TupleArrayList<>();
 
     @Override
     public void add(Change change) {
@@ -85,7 +86,7 @@ public class BlockOptimizedHistory extends ArrayListHistory {
      *
      * @return a function
      */
-    private Function<Entry<BlockVector, BaseBlock>, Change> createTransform() {
+    private Function<Entry<BlockVector, BlockStateHolder>, Change> createTransform() {
         return entry -> new BlockChange(entry.getKey(), entry.getValue(), entry.getValue());
     }
 

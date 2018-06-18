@@ -22,6 +22,7 @@ package com.sk89q.worldedit.extent.inventory;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.blocks.type.BlockStateHolder;
 import com.sk89q.worldedit.extent.AbstractDelegateExtent;
 import com.sk89q.worldedit.extent.Extent;
 
@@ -79,7 +80,7 @@ public class BlockBagExtent extends AbstractDelegateExtent {
     }
 
     @Override
-    public boolean setBlock(Vector position, BaseBlock block) throws WorldEditException {
+    public boolean setBlock(Vector position, BlockStateHolder block) throws WorldEditException {
         if (blockBag != null) {
             BaseBlock lazyBlock = getExtent().getLazyBlock(position);
             int existing = lazyBlock.getBlockType().getLegacyId();

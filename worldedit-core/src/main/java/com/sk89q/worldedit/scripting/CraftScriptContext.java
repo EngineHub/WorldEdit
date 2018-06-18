@@ -21,6 +21,7 @@ package com.sk89q.worldedit.scripting;
 
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.blocks.type.BlockStateHolder;
 import com.sk89q.worldedit.command.InsufficientArgumentsException;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.input.ParserContext;
@@ -151,7 +152,7 @@ public class CraftScriptContext extends CraftScriptEnvironment {
      * @throws UnknownItemException
      * @throws DisallowedItemException
      */
-    public BaseBlock getBlock(String input, boolean allAllowed) throws WorldEditException {
+    public BlockStateHolder getBlock(String input, boolean allAllowed) throws WorldEditException {
         ParserContext context = new ParserContext();
         context.setActor(player);
         context.setWorld(player.getWorld());
@@ -170,7 +171,7 @@ public class CraftScriptContext extends CraftScriptEnvironment {
      * @throws UnknownItemException
      * @throws DisallowedItemException
      */
-    public BaseBlock getBlock(String id) throws WorldEditException {
+    public BlockStateHolder getBlock(String id) throws WorldEditException {
         return getBlock(id, false);
     }
 
@@ -199,7 +200,7 @@ public class CraftScriptContext extends CraftScriptEnvironment {
      * @throws UnknownItemException 
      * @throws DisallowedItemException 
      */
-    public Set<BaseBlock> getBlocks(String list, boolean allBlocksAllowed) throws WorldEditException {
+    public Set<BlockStateHolder> getBlocks(String list, boolean allBlocksAllowed) throws WorldEditException {
         ParserContext context = new ParserContext();
         context.setActor(player);
         context.setWorld(player.getWorld());

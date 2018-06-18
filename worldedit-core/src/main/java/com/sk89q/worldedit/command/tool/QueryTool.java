@@ -25,6 +25,7 @@ import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.MobSpawnerBlock;
 import com.sk89q.worldedit.blocks.NoteBlock;
+import com.sk89q.worldedit.blocks.type.BlockStateHolder;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Platform;
@@ -45,7 +46,7 @@ public class QueryTool implements BlockTool {
 
         World world = (World) clicked.getExtent();
         EditSession editSession = session.createEditSession(player);
-        BaseBlock block = editSession.getBlock(clicked.toVector());
+        BlockStateHolder block = editSession.getFullBlock(clicked.toVector());
 
         player.print("\u00A79@" + clicked.toVector() + ": " + "\u00A7e"
                 + "#" + block.getBlockType() + "\u00A77" + " ("

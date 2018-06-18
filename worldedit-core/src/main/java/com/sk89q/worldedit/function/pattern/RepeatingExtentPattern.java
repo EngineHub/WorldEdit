@@ -21,6 +21,7 @@ package com.sk89q.worldedit.function.pattern;
 
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.blocks.type.BlockStateHolder;
 import com.sk89q.worldedit.extent.Extent;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -83,7 +84,7 @@ public class RepeatingExtentPattern extends AbstractPattern {
     }
 
     @Override
-    public BaseBlock apply(Vector position) {
+    public BlockStateHolder apply(Vector position) {
         Vector base = position.add(offset);
         Vector size = extent.getMaximumPoint().subtract(extent.getMinimumPoint()).add(1, 1, 1);
         int x = base.getBlockX() % size.getBlockX();

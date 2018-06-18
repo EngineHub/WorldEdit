@@ -19,6 +19,8 @@
 
 package com.sk89q.worldedit.command;
 
+import static com.sk89q.minecraft.util.commands.Logging.LogMode.PLACEMENT;
+
 import com.google.common.base.Joiner;
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
@@ -31,7 +33,7 @@ import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.blocks.type.BlockStateHolder;
 import com.sk89q.worldedit.blocks.type.BlockTypes;
 import com.sk89q.worldedit.command.util.CreatureButcher;
 import com.sk89q.worldedit.command.util.EntityRemover;
@@ -68,8 +70,6 @@ import com.sk89q.worldedit.world.World;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-
-import static com.sk89q.minecraft.util.commands.Logging.LogMode.PLACEMENT;
 
 /**
  * Utility commands.
@@ -257,7 +257,7 @@ public class UtilityCommands {
         context.setRestricted(false);
         context.setPreferringWildcard(false);
 
-        BaseBlock block = we.getBlockFactory().parseFromInput(args.getString(0), context);
+        BlockStateHolder block = we.getBlockFactory().parseFromInput(args.getString(0), context);
         int size = Math.max(1, args.getInteger(1, 50));
         we.checkMaxRadius(size);
 
@@ -279,7 +279,7 @@ public class UtilityCommands {
         
         int size = Math.max(1, args.getInteger(0));
         int affected;
-        Set<BaseBlock> from;
+        Set<BlockStateHolder> from;
         Pattern to;
 
         ParserContext context = new ParserContext();
