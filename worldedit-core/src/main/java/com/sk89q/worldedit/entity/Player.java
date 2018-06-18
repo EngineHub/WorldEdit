@@ -24,7 +24,6 @@ import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BaseItemStack;
-import com.sk89q.worldedit.blocks.type.ItemType;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
 import com.sk89q.worldedit.util.HandSide;
@@ -75,10 +74,9 @@ public interface Player extends Entity, Actor {
     /**
      * Gives the player an item.
      *
-     * @param type The item id of the item to be given to the player
-     * @param amount How many items in the stack
+     * @param itemStack The item to give
      */
-    void giveItem(int type, int amount);
+    void giveItem(BaseItemStack itemStack);
 
     /**
      * Get this actor's block bag.

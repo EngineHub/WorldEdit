@@ -138,7 +138,7 @@ public class BlockTransformExtent extends AbstractDelegateExtent {
                 if (value != null && value.getData() != null) {
                     DirectionalStateValue newValue = getNewStateValue((DirectionalState) state, transform, value.getDirection());
                     if (newValue != null) {
-                        changedBlock.setState(state, newValue);
+                        changedBlock.with(state, newValue);
                     }
                 }
             }

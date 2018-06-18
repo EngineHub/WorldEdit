@@ -94,21 +94,21 @@ public class MultiStageReorder extends AbstractDelegateExtent implements Reorder
             return super.setBlock(location, block);
         }
 
-        if (BlockType.shouldPlaceLast(block.getType().getLegacyId())) {
+        if (BlockType.shouldPlaceLast(block.getBlockType().getLegacyId())) {
             // Place torches, etc. last
             stage2.put(location.toBlockVector(), block);
-            return !(lazyBlock.getType() == block.getType() && lazyBlock.getData() == block.getData());
-        } else if (BlockType.shouldPlaceFinal(block.getType().getLegacyId())) {
+            return !(lazyBlock.getBlockType() == block.getBlockType() && lazyBlock.getData() == block.getData());
+        } else if (BlockType.shouldPlaceFinal(block.getBlockType().getLegacyId())) {
             // Place signs, reed, etc even later
             stage3.put(location.toBlockVector(), block);
-            return !(lazyBlock.getType() == block.getType() && lazyBlock.getData() == block.getData());
-        } else if (BlockType.shouldPlaceLast(lazyBlock.getType().getLegacyId())) {
+            return !(lazyBlock.getBlockType() == block.getBlockType() && lazyBlock.getData() == block.getData());
+        } else if (BlockType.shouldPlaceLast(lazyBlock.getBlockType().getLegacyId())) {
             // Destroy torches, etc. first
             super.setBlock(location, new BaseBlock(BlockTypes.AIR));
             return super.setBlock(location, block);
         } else {
             stage1.put(location.toBlockVector(), block);
-            return !(lazyBlock.getType() == block.getType() && lazyBlock.getData() == block.getData());
+            return !(lazyBlock.getBlockType() == block.getBlockType() && lazyBlock.getData() == block.getData());
         }
     }
 
@@ -150,7 +150,7 @@ public class MultiStageReorder extends AbstractDelegateExtent implements Reorder
 
                     final BaseBlock baseBlock = blockTypes.get(current);
 
-                    final int type = baseBlock.getType().getLegacyId();
+                    final int type = baseBlock.getBlockType().getLegacyId();
                     final int data = baseBlock.getData();
 
                     switch (type) {

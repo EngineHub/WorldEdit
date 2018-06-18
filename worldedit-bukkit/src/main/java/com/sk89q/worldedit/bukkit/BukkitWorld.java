@@ -248,36 +248,6 @@ public class BukkitWorld extends AbstractWorld {
         return true;
     }
 
-    @Override
-    @Deprecated
-    public boolean generateTree(EditSession editSession, Vector pt) {
-        return generateTree(TreeGenerator.TreeType.TREE, editSession, pt);
-    }
-
-    @Override
-    @Deprecated
-    public boolean generateBigTree(EditSession editSession, Vector pt) {
-        return generateTree(TreeGenerator.TreeType.BIG_TREE, editSession, pt);
-    }
-
-    @Override
-    @Deprecated
-    public boolean generateBirchTree(EditSession editSession, Vector pt) {
-        return generateTree(TreeGenerator.TreeType.BIRCH, editSession, pt);
-    }
-
-    @Override
-    @Deprecated
-    public boolean generateRedwoodTree(EditSession editSession, Vector pt) {
-        return generateTree(TreeGenerator.TreeType.REDWOOD, editSession, pt);
-    }
-
-    @Override
-    @Deprecated
-    public boolean generateTallRedwoodTree(EditSession editSession, Vector pt) {
-        return generateTree(TreeGenerator.TreeType.TALL_REDWOOD, editSession, pt);
-    }
-
     /**
      * An EnumMap that stores which WorldEdit TreeTypes apply to which Bukkit TreeTypes
      */
@@ -323,14 +293,8 @@ public class BukkitWorld extends AbstractWorld {
     @Override
     public void dropItem(Vector pt, BaseItemStack item) {
         World world = getWorld();
-        ItemStack bukkitItem = new ItemStack(item.getLegacyId(), item.getAmount(),
-                item.getData());
+        ItemStack bukkitItem = new ItemStack(item.getLegacyId(), item.getAmount()); // TODO Add data.
         world.dropItemNaturally(BukkitUtil.toLocation(world, pt), bukkitItem);
-    }
-
-    @Override
-    public boolean isValidBlockType(int type) {
-        return Material.getMaterial(type) != null && Material.getMaterial(type).isBlock();
     }
 
     @Override
@@ -415,7 +379,7 @@ public class BukkitWorld extends AbstractWorld {
             return adapter.setBlock(BukkitAdapter.adapt(getWorld(), position), block, notifyAndLight);
         } else {
             Block bukkitBlock = getWorld().getBlockAt(position.getBlockX(), position.getBlockY(), position.getBlockZ());
-            return bukkitBlock.setTypeIdAndData(block.getType().getLegacyId(), (byte) block.getData(), notifyAndLight);
+            return bukkitBlock.setTypeIdAndData(block.getBlockType().getLegacyId(), (byte) block.getData(), notifyAndLight);
         }
     }
 

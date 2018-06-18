@@ -20,14 +20,13 @@
 package com.sk89q.worldedit.bukkit;
 
 import com.sk89q.worldedit.BlockVector;
-import com.sk89q.worldedit.NotABlockException;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BaseItemStack;
-import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.blocks.BlockType;
 import com.sk89q.worldedit.blocks.ItemID;
+import com.sk89q.worldedit.blocks.type.BlockTypes;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.util.Location;
 import org.bukkit.DyeColor;
@@ -131,7 +130,7 @@ public final class BukkitUtil {
             case ItemID.INK_SACK:
                 final Dye materialData = (Dye) itemStack.getData();
                 if (materialData.getColor() == DyeColor.BROWN) {
-                    return new BaseBlock(BlockID.COCOA_PLANT, -1);
+                    return new BaseBlock(BlockTypes.COCOA);
                 }
                 break;
 
@@ -143,11 +142,7 @@ public final class BukkitUtil {
                 break;
         }
 
-        if (world.isValidBlockType(typeId)) {
-            return new BaseBlock(typeId, -1);
-        }
-
-        throw new NotABlockException(typeId);
+        return new BaseBlock(typeId, -1);
     }
 
     public static BaseItemStack toBaseItemStack(ItemStack itemStack) {

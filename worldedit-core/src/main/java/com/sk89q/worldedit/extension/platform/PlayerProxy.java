@@ -65,8 +65,8 @@ class PlayerProxy extends AbstractPlayerActor {
     }
 
     @Override
-    public void giveItem(int type, int amount) {
-        basePlayer.giveItem(type, amount);
+    public void giveItem(BaseItemStack itemStack) {
+        basePlayer.giveItem(itemStack);
     }
 
     @Override

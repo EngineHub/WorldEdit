@@ -20,8 +20,6 @@
 package com.sk89q.worldedit.world;
 
 import com.sk89q.worldedit.BlockVector2D;
-import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
@@ -34,7 +32,6 @@ import com.sk89q.worldedit.function.mask.BlockMask;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.util.Direction;
-import com.sk89q.worldedit.util.TreeGenerator.TreeType;
 
 import java.util.PriorityQueue;
 
@@ -54,32 +51,6 @@ public abstract class AbstractWorld implements World {
     }
 
     @Override
-    public final boolean setBlockType(Vector position, int type) {
-        try {
-            return setBlock(position, new BaseBlock(type));
-        } catch (WorldEditException ignored) {
-            return false;
-        }
-    }
-
-    @Override
-    public final void setBlockData(Vector position, int data) {
-        try {
-            setBlock(position, new BaseBlock(getLazyBlock(position).getType().getLegacyId(), data));
-        } catch (WorldEditException ignored) {
-        }
-    }
-
-    @Override
-    public final boolean setTypeIdAndData(Vector position, int type, int data) {
-        try {
-            return setBlock(position, new BaseBlock(type, data));
-        } catch (WorldEditException ignored) {
-            return false;
-        }
-    }
-
-    @Override
     public final boolean setBlock(Vector pt, BaseBlock block) throws WorldEditException {
         return setBlock(pt, block, true);
     }
@@ -87,17 +58,6 @@ public abstract class AbstractWorld implements World {
     @Override
     public int getMaxY() {
         return getMaximumPoint().getBlockY();
-    }
-
-    @Override
-    public boolean isValidBlockType(int type) {
-        return BlockType.fromID(type) != null;
-    }
-
-    @Override
-    public boolean usesBlockData(int type) {
-        // We future proof here by assuming all unknown blocks use data
-        return BlockType.usesData(type) || BlockType.fromID(type) == null;
     }
 
     @Override
@@ -124,7 +84,7 @@ public abstract class AbstractWorld implements World {
         if (stack != null) {
             final int amount = stack.getAmount();
             if (amount > 1) {
-                dropItem(pt, new BaseItemStack(stack.getType(), 1, stack.getData()), amount);
+                dropItem(pt, new BaseItemStack(stack.getType(), stack.getNbtData(), 1), amount);
             } else {
                 dropItem(pt, stack, amount);
             }
@@ -135,31 +95,6 @@ public abstract class AbstractWorld implements World {
         } catch (WorldEditException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    @Override
-    public boolean generateTree(EditSession editSession, Vector pt) throws MaxChangedBlocksException {
-        return generateTree(TreeType.TREE, editSession, pt);
-    }
-
-    @Override
-    public boolean generateBigTree(EditSession editSession, Vector pt) throws MaxChangedBlocksException {
-        return generateTree(TreeType.BIG_TREE, editSession, pt);
-    }
-
-    @Override
-    public boolean generateBirchTree(EditSession editSession, Vector pt) throws MaxChangedBlocksException {
-        return generateTree(TreeType.BIRCH, editSession, pt);
-    }
-
-    @Override
-    public boolean generateRedwoodTree(EditSession editSession, Vector pt) throws MaxChangedBlocksException {
-        return generateTree(TreeType.REDWOOD, editSession, pt);
-    }
-
-    @Override
-    public boolean generateTallRedwoodTree(EditSession editSession, Vector pt) throws MaxChangedBlocksException {
-        return generateTree(TreeType.TALL_REDWOOD, editSession, pt);
     }
 
     @Override

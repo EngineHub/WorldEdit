@@ -81,7 +81,7 @@ public class FloatingTreeRemover implements BlockTool {
             }
 
             for (Vector blockVector : blockSet) {
-                final int typeId = editSession.getBlock(blockVector).getType().getLegacyId();
+                final int typeId = editSession.getBlock(blockVector).getBlockType().getLegacyId();
                 switch (typeId) {
                 case BlockID.LOG:
                 case BlockID.LOG2:

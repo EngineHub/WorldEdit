@@ -54,7 +54,7 @@ public class FloodFillTool implements BlockTool {
     public boolean actPrimary(Platform server, LocalConfiguration config, Player player, LocalSession session, Location clicked) {
         World world = (World) clicked.getExtent();
 
-        BlockType initialType = world.getLazyBlock(clicked.toVector()).getType();
+        BlockType initialType = world.getLazyBlock(clicked.toVector()).getBlockType();
 
         if (initialType == BlockTypes.AIR) {
             return true;
@@ -87,7 +87,7 @@ public class FloodFillTool implements BlockTool {
 
         visited.add(pos);
 
-        if (editSession.getBlock(pos).getType() == initialType) {
+        if (editSession.getBlock(pos).getBlockType() == initialType) {
             editSession.setBlock(pos, pattern.apply(pos));
         } else {
             return;

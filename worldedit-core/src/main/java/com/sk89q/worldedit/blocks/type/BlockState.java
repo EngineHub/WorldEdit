@@ -34,7 +34,7 @@ import java.util.Map;
  * An immutable class that represents the state a block can be in.
  */
 @SuppressWarnings("unchecked")
-public class BlockState {
+public class BlockState implements BlockStateHolder<BlockState> {
 
     private final BlockType blockType;
     private final Map<State, StateValue> values;
@@ -67,7 +67,7 @@ public class BlockState {
         for(final Map.Entry<State, StateValue> entry : this.values.entrySet()) {
             final State state = entry.getKey();
 
-            state.getValues().stream().forEach(value -> {
+            state.getValues().forEach(value -> {
                 if(value != entry.getValue()) {
                     states.put(state, (StateValue) value, stateMap.get(this.withValue(state, (StateValue) value)));
                 }
@@ -83,22 +83,12 @@ public class BlockState {
         return values;
     }
 
-    /**
-     * Get the block type
-     *
-     * @return The type
-     */
+    @Override
     public BlockType getBlockType() {
         return this.blockType;
     }
 
-    /**
-     * Returns a BlockState with the given state and value applied.
-     *
-     * @param state The state
-     * @param value The value
-     * @return The modified state, or same if could not be applied
-     */
+    @Override
     public BlockState with(State state, StateValue value) {
         if (fuzzy) {
             return setState(state, value);
@@ -108,21 +98,12 @@ public class BlockState {
         }
     }
 
-    /**
-     * Gets the value at the given state
-     *
-     * @param state The state
-     * @return The value
-     */
+    @Override
     public StateValue getState(State state) {
         return this.values.get(state);
     }
 
-    /**
-     * Gets an immutable collection of the states.
-     *
-     * @return The states
-     */
+    @Override
     public Map<State, StateValue> getStates() {
         return Collections.unmodifiableMap(this.values);
     }
@@ -136,7 +117,7 @@ public class BlockState {
      * @param value The value
      * @return The blockstate, for chaining
      */
-    BlockState setState(State state, StateValue value) {
+    private BlockState setState(State state, StateValue value) {
         this.values.put(state, value);
         return this;
     }

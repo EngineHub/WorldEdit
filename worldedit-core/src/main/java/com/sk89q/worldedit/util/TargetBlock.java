@@ -103,7 +103,7 @@ public class TargetBlock {
         boolean searchForLastBlock = true;
         Location lastBlock = null;
         while (getNextBlock() != null) {
-            if (world.getLazyBlock(getCurrentBlock().toVector()).getType() == BlockTypes.AIR) {
+            if (world.getLazyBlock(getCurrentBlock().toVector()).getBlockType() == BlockTypes.AIR) {
                 if (searchForLastBlock) {
                     lastBlock = getCurrentBlock();
                     if (lastBlock.getBlockY() <= 0 || lastBlock.getBlockY() >= world.getMaxY()) {
@@ -125,7 +125,7 @@ public class TargetBlock {
      * @return Block
      */
     public Location getTargetBlock() {
-        while (getNextBlock() != null && world.getLazyBlock(getCurrentBlock().toVector()).getType() == BlockTypes.AIR) ;
+        while (getNextBlock() != null && world.getLazyBlock(getCurrentBlock().toVector()).getBlockType() == BlockTypes.AIR) ;
         return getCurrentBlock();
     }
 

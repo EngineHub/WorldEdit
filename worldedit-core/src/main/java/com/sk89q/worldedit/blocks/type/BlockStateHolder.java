@@ -17,32 +17,43 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.extent.inventory;
+package com.sk89q.worldedit.blocks.type;
 
-import com.sk89q.worldedit.blocks.type.ItemType;
+import com.sk89q.worldedit.world.registry.state.State;
+import com.sk89q.worldedit.world.registry.state.value.StateValue;
 
-/**
- * Thrown when the target inventory of a block bag is full.
- */
-public class OutOfSpaceException extends BlockBagException {
+import java.util.Map;
 
-    private ItemType type;
+public interface BlockStateHolder<T extends BlockStateHolder> {
 
     /**
-     * Construct the object.
+     * Get the block type
      *
-     * @param type the type of the block
+     * @return The type
      */
-    public OutOfSpaceException(ItemType type) {
-        this.type = type;
-    }
+    BlockType getBlockType();
 
     /**
-     * Get the type of the block
+     * Returns a BlockState with the given state and value applied.
      *
-     * @return the type
+     * @param state The state
+     * @param value The value
+     * @return The modified state, or same if could not be applied
      */
-    public ItemType getType() {
-        return this.type;
-    }
+    T with(State state, StateValue value);
+
+    /**
+     * Gets the value at the given state
+     *
+     * @param state The state
+     * @return The value
+     */
+    StateValue getState(State state);
+
+    /**
+     * Gets an immutable collection of the states.
+     *
+     * @return The states
+     */
+    Map<State, StateValue> getStates();
 }

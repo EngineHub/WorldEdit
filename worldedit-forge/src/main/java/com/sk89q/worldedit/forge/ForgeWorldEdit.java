@@ -19,9 +19,8 @@
 
 package com.sk89q.worldedit.forge;
 
-import com.sk89q.worldedit.util.Location;
-import net.minecraft.block.Block;
-import org.apache.logging.log4j.Logger;
+import static com.google.common.base.Preconditions.checkNotNull;
+import static net.minecraft.block.Block.REGISTRY;
 
 import com.google.common.base.Joiner;
 import com.sk89q.worldedit.LocalSession;
@@ -30,12 +29,12 @@ import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.event.platform.PlatformReadyEvent;
 import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.forge.net.LeftClickAirEventMessage;
-
-import java.io.File;
-import java.util.Map;
+import com.sk89q.worldedit.util.Location;
+import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.CommandEvent;
@@ -54,9 +53,9 @@ import net.minecraftforge.fml.common.event.FMLServerStartedEvent;
 import net.minecraftforge.fml.common.event.FMLServerStoppingEvent;
 import net.minecraftforge.fml.common.eventhandler.Event.Result;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import org.apache.logging.log4j.Logger;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-import static net.minecraft.block.Block.REGISTRY;
+import java.io.File;
 
 /**
  * The Forge implementation of WorldEdit.
@@ -214,12 +213,11 @@ public class ForgeWorldEdit {
     }
 
     public static ItemStack toForgeItemStack(BaseItemStack item) {
-        ItemStack ret = new ItemStack(Item.getByNameOrId(item.getType().getId()), item.getAmount(), item.getData());
-        for (Map.Entry<Integer, Integer> entry : item.getEnchantments().entrySet()) {
-            ret.addEnchantment(net.minecraft.enchantment.Enchantment.getEnchantmentByID(entry.getKey()), entry.getValue());
+        NBTTagCompound forgeCompound = null;
+        if (item.getNbtData() != null) {
+            forgeCompound = NBTConverter.toNative(item.getNbtData());
         }
-
-        return ret;
+        return new ItemStack(Item.getByNameOrId(item.getType().getId()), item.getAmount(), 0, forgeCompound);
     }
 
     /**

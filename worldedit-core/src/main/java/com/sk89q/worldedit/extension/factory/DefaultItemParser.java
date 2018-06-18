@@ -33,45 +33,11 @@ public class DefaultItemParser extends InputParser<BaseItem> {
 
     @Override
     public BaseItem parseFromInput(String input, ParserContext context) throws InputParseException {
-        String[] tokens = input.split(":", 3);
-        BaseItem item;
-        short damage = 0;
-
-        try {
-            int id = Integer.parseInt(tokens[0]);
-
-            // Parse metadata
-            if (tokens.length == 2) {
-                try {
-                    damage = Short.parseShort(tokens[1]);
-                } catch (NumberFormatException ignored) {
-                    throw new InputParseException("Expected '" + tokens[1] + "' to be a damage value but it's not a number");
-                }
-            }
-
-            item = context.requireWorld().getWorldData().getItemRegistry().createFromId(id);
-        } catch (NumberFormatException e) {
-            String name = tokens[0];
-            if (input.length() >= 2) {
-                name += ":" + tokens[1];
-            }
-
-            // Parse metadata
-            if (tokens.length == 3) {
-                try {
-                    damage = Short.parseShort(tokens[2]);
-                } catch (NumberFormatException ignored) {
-                    throw new InputParseException("Expected '" + tokens[2] + "' to be a damage value but it's not a number");
-                }
-            }
-
-            item = context.requireWorld().getWorldData().getItemRegistry().createFromId(name);
-        }
+        BaseItem item = context.requireWorld().getWorldData().getItemRegistry().createFromId(input);
 
         if (item == null) {
             throw new InputParseException("'" + input + "' did not match any item");
         } else {
-            item.setDamage(damage);
             return item;
         }
     }

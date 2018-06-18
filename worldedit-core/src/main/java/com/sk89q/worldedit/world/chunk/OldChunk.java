@@ -28,6 +28,7 @@ import com.sk89q.jnbt.Tag;
 import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.blocks.type.BlockTypes;
 import com.sk89q.worldedit.world.DataException;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.storage.InvalidFormatException;
@@ -73,43 +74,6 @@ public class OldChunk implements Chunk {
         if (data.length != (size/2)) {
             throw new InvalidFormatException("Chunk block data byte array "
                     + "expected to be " + size + " bytes; found " + data.length);
-        }
-    }
-
-    @Override
-    public int getBlockID(Vector position) throws DataException {
-        if(position.getBlockY() >= 128) return 0;
-        
-        int x = position.getBlockX() - rootX * 16;
-        int y = position.getBlockY();
-        int z = position.getBlockZ() - rootZ * 16;
-        int index = y + (z * 128 + (x * 128 * 16));
-        try {
-            return blocks[index];
-        } catch (IndexOutOfBoundsException e) {
-            throw new DataException("Chunk does not contain position " + position);
-        }
-    }
-
-    @Override
-    public int getBlockData(Vector position) throws DataException {
-        if(position.getBlockY() >= 128) return 0;
-        
-        int x = position.getBlockX() - rootX * 16;
-        int y = position.getBlockY();
-        int z = position.getBlockZ() - rootZ * 16;
-        int index = y + (z * 128 + (x * 128 * 16));
-        boolean shift = index % 2 == 0;
-        index /= 2;
-
-        try {
-            if (!shift) {
-                return (data[index] & 0xF0) >> 4;
-            } else {
-                return data[index] & 0xF;
-            }
-        } catch (IndexOutOfBoundsException e) {
-            throw new DataException("Chunk does not contain position " + position);
         }
     }
 
@@ -188,25 +152,33 @@ public class OldChunk implements Chunk {
 
     @Override
     public BaseBlock getBlock(Vector position) throws DataException {
-        int id = getBlockID(position);
-        int data = getBlockData(position);
-        BaseBlock block;
+        if(position.getBlockY() >= 128) new BaseBlock(BlockTypes.AIR);
+        int id, dataVal;
 
-        /*if (id == BlockID.WALL_SIGN || id == BlockID.SIGN_POST) {
-            block = new SignBlock(id, data);
-        } else if (id == BlockID.CHEST) {
-            block = new ChestBlock(data);
-        } else if (id == BlockID.FURNACE || id == BlockID.BURNING_FURNACE) {
-            block = new FurnaceBlock(id, data);
-        } else if (id == BlockID.DISPENSER) {
-            block = new DispenserBlock(data);
-        } else if (id == BlockID.MOB_SPAWNER) {
-            block = new MobSpawnerBlock(data);
-        } else if (id == BlockID.NOTE_BLOCK) {
-            block = new NoteBlock(data);
-        } else {*/
-            block = new BaseBlock(id, data);
-        //}
+        int x = position.getBlockX() - rootX * 16;
+        int y = position.getBlockY();
+        int z = position.getBlockZ() - rootZ * 16;
+        int index = y + (z * 128 + (x * 128 * 16));
+        try {
+            id = blocks[index];
+        } catch (IndexOutOfBoundsException e) {
+            throw new DataException("Chunk does not contain position " + position);
+        }
+
+        boolean shift = index % 2 == 0;
+        index /= 2;
+
+        try {
+            if (!shift) {
+                dataVal = (data[index] & 0xF0) >> 4;
+            } else {
+                dataVal = data[index] & 0xF;
+            }
+        } catch (IndexOutOfBoundsException e) {
+            throw new DataException("Chunk does not contain position " + position);
+        }
+
+        BaseBlock block = new BaseBlock(id, dataVal);
 
         CompoundTag tileEntity = getBlockTileEntity(position);
         if (tileEntity != null) {

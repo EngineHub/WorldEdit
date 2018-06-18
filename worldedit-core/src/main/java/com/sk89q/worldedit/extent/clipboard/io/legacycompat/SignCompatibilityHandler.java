@@ -34,7 +34,7 @@ import java.util.Map;
 public class SignCompatibilityHandler implements NBTCompatibilityHandler {
     @Override
     public boolean isAffectedBlock(BaseBlock block) {
-        return block.getType() == BlockTypes.SIGN || block.getType() == BlockTypes.WALL_SIGN;
+        return block.getBlockType() == BlockTypes.SIGN || block.getBlockType() == BlockTypes.WALL_SIGN;
     }
 
     @Override

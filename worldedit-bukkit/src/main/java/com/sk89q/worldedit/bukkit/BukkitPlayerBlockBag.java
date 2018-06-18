@@ -21,7 +21,8 @@ package com.sk89q.worldedit.bukkit;
 
 import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.blocks.BaseItemStack;
-import com.sk89q.worldedit.blocks.BlockID;
+import com.sk89q.worldedit.blocks.type.ItemType;
+import com.sk89q.worldedit.blocks.type.ItemTypes;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
 import com.sk89q.worldedit.extent.inventory.BlockBagException;
 import com.sk89q.worldedit.extent.inventory.OutOfBlocksException;
@@ -64,13 +65,11 @@ public class BukkitPlayerBlockBag extends BlockBag {
 
     @Override
     public void fetchItem(BaseItem item) throws BlockBagException {
-        final int id = item.getLegacyId();
-        final int damage = item.getData();
+        final ItemType id = item.getType();
         int amount = (item instanceof BaseItemStack) ? ((BaseItemStack) item).getAmount() : 1;
         assert(amount == 1);
-        boolean usesDamageValue = true;// TODO ItemType.usesDamageValue(id);
 
-        if (id == BlockID.AIR) {
+        if (id == ItemTypes.AIR) {
             throw new IllegalArgumentException("Can't fetch air block");
         }
 
@@ -85,13 +84,9 @@ public class BukkitPlayerBlockBag extends BlockBag {
                 continue;
             }
 
-            if (bukkitItem.getTypeId() != id) {
+            if (bukkitItem.getTypeId() != id.getLegacyId()) {
+                // TODO Fix when bukkit gets not awful
                 // Type id doesn't fit
-                continue;
-            }
-
-            if (usesDamageValue && bukkitItem.getDurability() != damage) {
-                // Damage value doesn't fit.
                 continue;
             }
 
@@ -119,13 +114,11 @@ public class BukkitPlayerBlockBag extends BlockBag {
 
     @Override
     public void storeItem(BaseItem item) throws BlockBagException {
-        final int id = item.getLegacyId();
-        final int damage = item.getData();
+        final ItemType id = item.getType();
         int amount = (item instanceof BaseItemStack) ? ((BaseItemStack) item).getAmount() : 1;
         assert(amount <= 64);
-        boolean usesDamageValue = true; //TODO ItemType.usesDamageValue(id);
 
-        if (id == BlockID.AIR) {
+        if (id == ItemTypes.AIR) {
             throw new IllegalArgumentException("Can't store air block");
         }
 
@@ -146,13 +139,9 @@ public class BukkitPlayerBlockBag extends BlockBag {
                 continue;
             }
 
-            if (bukkitItem.getTypeId() != id) {
+            if (bukkitItem.getTypeId() != id.getLegacyId()) {
+                // TODO Fix when bukkit gets not terrible
                 // Type id doesn't fit
-                continue;
-            }
-
-            if (usesDamageValue && bukkitItem.getDurability() != damage) {
-                // Damage value doesn't fit.
                 continue;
             }
 
@@ -177,7 +166,7 @@ public class BukkitPlayerBlockBag extends BlockBag {
         }
 
         if (freeSlot > -1) {
-            items[freeSlot] = new ItemStack(id, amount);
+            items[freeSlot] = new ItemStack(id.getLegacyId(), amount); // TODO Ditto
             return;
         }
 

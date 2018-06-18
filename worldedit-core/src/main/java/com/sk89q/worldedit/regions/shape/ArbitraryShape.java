@@ -99,7 +99,7 @@ public abstract class ArbitraryShape {
                 return null;
             }
 
-            short newCacheEntry = (short) (material.getType().getLegacyId() | ((material.getData() + 1) << 8));
+            short newCacheEntry = (short) (material.getBlockType().getLegacyId() | ((material.getData() + 1) << 8));
             if (newCacheEntry == 0) {
                 // type and data 0
                 newCacheEntry = -2;

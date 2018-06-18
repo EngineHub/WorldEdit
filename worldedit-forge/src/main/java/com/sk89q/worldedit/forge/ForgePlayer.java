@@ -91,8 +91,9 @@ public class ForgePlayer extends AbstractPlayerActor {
     }
 
     @Override
-    public void giveItem(int type, int amt) {
-        this.player.inventory.addItemStackToInventory(new ItemStack(Item.getItemById(type), amt, 0));
+    public void giveItem(BaseItemStack itemStack) {
+        this.player.inventory.addItemStackToInventory(
+                new ItemStack(Item.getByNameOrId(itemStack.getType().getId()), itemStack.getAmount(), 0));
     }
 
     @Override

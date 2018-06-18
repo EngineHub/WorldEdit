@@ -95,7 +95,7 @@ public class BlockMask extends AbstractExtentMask {
     @Override
     public boolean test(Vector vector) {
         BaseBlock block = getExtent().getBlock(vector);
-        return blocks.contains(block) || blocks.contains(new BaseBlock(block.getType()));
+        return blocks.contains(block) || blocks.contains(new BaseBlock(block.getBlockType()));
     }
 
     @Nullable

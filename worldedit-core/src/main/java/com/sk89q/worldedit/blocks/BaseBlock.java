@@ -24,19 +24,18 @@ import com.sk89q.jnbt.StringTag;
 import com.sk89q.jnbt.Tag;
 import com.sk89q.worldedit.CuboidClipboard.FlipDirection;
 import com.sk89q.worldedit.blocks.type.BlockState;
+import com.sk89q.worldedit.blocks.type.BlockStateHolder;
 import com.sk89q.worldedit.blocks.type.BlockType;
 import com.sk89q.worldedit.blocks.type.BlockTypes;
 import com.sk89q.worldedit.function.mask.Mask;
-import com.sk89q.worldedit.world.registry.BundledBlockData;
 import com.sk89q.worldedit.world.registry.state.State;
 import com.sk89q.worldedit.world.registry.state.value.StateValue;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import javax.annotation.Nullable;
 
@@ -54,13 +53,12 @@ import javax.annotation.Nullable;
  * as a "wildcard" block value, even though a {@link Mask} would be
  * more appropriate.</p>
  */
-public class BaseBlock implements TileEntityBlock {
+public class BaseBlock implements BlockStateHolder<BaseBlock>, TileEntityBlock {
 
     // Instances of this class should be _as small as possible_ because there will
     // be millions of instances of this object.
 
-    private BlockType blockType;
-    private Map<State, StateValue> states;
+    private BlockState blockState;
     @Nullable
     private CompoundTag nbtData;
 
@@ -68,18 +66,18 @@ public class BaseBlock implements TileEntityBlock {
      * Construct a block with the given ID and a data value of 0.
      *
      * @param id ID value
-     * @see #setId(int)
      */
     @Deprecated
     public BaseBlock(int id) {
-        internalSetId(id);
-        internalSetData(0);
-        this.states = new HashMap<>();
     }
 
+    /**
+     * Construct a block with a state.
+     *
+     * @param blockState The blockstate
+     */
     public BaseBlock(BlockState blockState) {
-        this.blockType = blockState.getBlockType();
-        this.states = blockState.getStates();
+        this.blockState = blockState;
     }
 
     /**
@@ -88,8 +86,18 @@ public class BaseBlock implements TileEntityBlock {
      * @param blockType The block type
      */
     public BaseBlock(BlockType blockType) {
-        internalSetType(blockType);
-        this.states = new HashMap<>();
+        this.blockState = blockType.getDefaultState();
+    }
+
+    /**
+     * Construct a block with the given ID, data value and NBT data structure.
+     *
+     * @param state The block state
+     * @param nbtData NBT data, which may be null
+     */
+    public BaseBlock(BlockState state, @Nullable CompoundTag nbtData) {
+        this.blockState = state;
+        setNbtData(nbtData);
     }
 
     /**
@@ -97,27 +105,9 @@ public class BaseBlock implements TileEntityBlock {
      *
      * @param id ID value
      * @param data data value
-     * @see #setId(int)
-     * @see #setData(int)
      */
     @Deprecated
     public BaseBlock(int id, int data) {
-        internalSetId(id);
-        internalSetData(data);
-        this.states = new HashMap<>();
-    }
-
-    /**
-     * Construct a block with the given ID and data value.
-     *
-     * @param blockType The block type
-     * @param states The states
-     * @see #setId(int)
-     * @see #setData(int)
-     */
-    public BaseBlock(BlockType blockType, Map<State, StateValue> states) {
-        internalSetType(blockType);
-        setStates(states);
     }
 
     /**
@@ -129,22 +119,6 @@ public class BaseBlock implements TileEntityBlock {
      */
     @Deprecated
     public BaseBlock(int id, int data, @Nullable CompoundTag nbtData) {
-        internalSetId(id);
-        setData(data);
-        setNbtData(nbtData);
-        this.states = new HashMap<>();
-    }
-
-    /**
-     * Construct a block with the given ID, data value and NBT data structure.
-     *
-     * @param blockType The block type
-     * @param states The states
-     * @param nbtData NBT data, which may be null
-     */
-    public BaseBlock(BlockType blockType, Map<State, StateValue> states, @Nullable CompoundTag nbtData) {
-        setType(blockType);
-        setStates(states);
         setNbtData(nbtData);
     }
 
@@ -154,7 +128,16 @@ public class BaseBlock implements TileEntityBlock {
      * @param other the other block
      */
     public BaseBlock(BaseBlock other) {
-        this(other.getType(), other.getStates(), other.getNbtData());
+        this(other.getState(), other.getNbtData());
+    }
+
+    /**
+     * Get the block state
+     *
+     * @return The block state
+     */
+    public BlockState getState() {
+        return this.blockState;
     }
 
     /**
@@ -164,45 +147,7 @@ public class BaseBlock implements TileEntityBlock {
      */
     @Deprecated
     public int getId() {
-        return this.blockType.getLegacyId();
-    }
-
-    /**
-     * Set the block ID.
-     *
-     * @param type block type
-     */
-    protected final void internalSetType(BlockType type) {
-        if (type == null) {
-            throw new IllegalArgumentException("You must provide a BlockType");
-        }
-
-        this.blockType = type;
-    }
-
-    /**
-     * Set the block ID.
-     *
-     * @param id block id
-     */
-    @Deprecated
-    public void setId(int id) {
-        internalSetId(id);
-    }
-
-    @Deprecated
-    private void internalSetId(int id) {
-        BlockType type = BlockTypes.getBlockType(BundledBlockData.getInstance().fromLegacyId(id));
-        internalSetType(type);
-    }
-
-    /**
-     * Set the block type.
-     *
-     * @param type block type
-     */
-    public void setType(BlockType type) {
-        internalSetType(type);
+        return this.blockState.getBlockType().getLegacyId();
     }
 
     /**
@@ -223,16 +168,17 @@ public class BaseBlock implements TileEntityBlock {
      * @return The state map
      */
     public Map<State, StateValue> getStates() {
-        return Collections.unmodifiableMap(states);
+        return this.blockState.getStates();
     }
 
-    /**
-     * Sets the states of this block.
-     *
-     * @param states The states
-     */
-    private void setStates(Map<State, StateValue> states) {
-        this.states = states;
+    @Override
+    public BlockType getBlockType() {
+        return this.blockState.getBlockType();
+    }
+
+    @Override
+    public BaseBlock with(State state, StateValue value) {
+        return new BaseBlock(this.blockState.with(state, value), getNbtData());
     }
 
     /**
@@ -242,26 +188,7 @@ public class BaseBlock implements TileEntityBlock {
      * @return The state value
      */
     public StateValue getState(State state) {
-        return states.get(state);
-    }
-
-    /**
-     * Sets a state to a specific value
-     *
-     * @param state The state
-     * @param stateValue The value
-     */
-    public void setState(State state, StateValue stateValue) {
-        this.states.put(state, stateValue);
-    }
-
-    /**
-     * Set the block's data value.
-     *
-     * @param data block data value
-     */
-    @Deprecated
-    protected final void internalSetData(int data) {
+        return this.blockState.getState(state);
     }
 
     /**
@@ -271,34 +198,6 @@ public class BaseBlock implements TileEntityBlock {
      */
     @Deprecated
     public void setData(int data) {
-        internalSetData(data);
-    }
-
-    /**
-     * Set both the block's ID and data value.
-     *
-     * @param id ID value
-     * @param data data value
-     * @see #setId(int)
-     * @see #setData(int)
-     */
-    @Deprecated
-    public void setIdAndData(int id, int data) {
-        setId(id);
-        setData(data);
-    }
-
-    /**
-     * Returns whether there are no matched states.
-     *
-     * @return true if there are no matched states
-     */
-    public boolean hasWildcardData() {
-        return getStates().isEmpty();
-    }
-
-    public boolean hasWildcardDataFor(State state) {
-        return getState(state) == null;
     }
 
     @Override
@@ -323,21 +222,12 @@ public class BaseBlock implements TileEntityBlock {
     @Nullable
     @Override
     public CompoundTag getNbtData() {
-        return nbtData;
+        return this.nbtData;
     }
 
     @Override
     public void setNbtData(@Nullable CompoundTag nbtData) {
-        this.nbtData = nbtData;
-    }
-
-    /**
-     * Get the type of block.
-     * 
-     * @return the type
-     */
-    public BlockType getType() {
-        return this.blockType;
+        throw new UnsupportedOperationException("This class is immutable.");
     }
 
     /**
@@ -346,7 +236,7 @@ public class BaseBlock implements TileEntityBlock {
      * @return if air
      */
     public boolean isAir() {
-        return getType() == BlockTypes.AIR;
+        return getBlockType() == BlockTypes.AIR;
     }
 
     /**
@@ -357,7 +247,7 @@ public class BaseBlock implements TileEntityBlock {
      */
     @Deprecated
     public int rotate90() {
-        int newData = BlockData.rotate90(getType().getLegacyId(), getData());
+        int newData = BlockData.rotate90(getBlockType().getLegacyId(), getData());
         setData(newData);
         return newData;
     }
@@ -370,7 +260,7 @@ public class BaseBlock implements TileEntityBlock {
      */
     @Deprecated
     public int rotate90Reverse() {
-        int newData = BlockData.rotate90Reverse(getType().getLegacyId(), getData());
+        int newData = BlockData.rotate90Reverse(getBlockType().getLegacyId(), getData());
         setData((short) newData);
         return newData;
     }
@@ -384,7 +274,7 @@ public class BaseBlock implements TileEntityBlock {
      */
     @Deprecated
     public int cycleData(int increment) {
-        int newData = BlockData.cycle(getType().getLegacyId(), getData(), increment);
+        int newData = BlockData.cycle(getBlockType().getLegacyId(), getData(), increment);
         setData((short) newData);
         return newData;
     }
@@ -397,7 +287,7 @@ public class BaseBlock implements TileEntityBlock {
      */
     @Deprecated
     public BaseBlock flip() {
-        setData((short) BlockData.flip(getType().getLegacyId(), getData()));
+        setData((short) BlockData.flip(getBlockType().getLegacyId(), getData()));
         return this;
     }
 
@@ -410,7 +300,7 @@ public class BaseBlock implements TileEntityBlock {
      */
     @Deprecated
     public BaseBlock flip(FlipDirection direction) {
-        setData((short) BlockData.flip(getType().getLegacyId(), getData(), direction));
+        setData((short) BlockData.flip(getBlockType().getLegacyId(), getData(), direction));
         return this;
     }
 
@@ -425,7 +315,7 @@ public class BaseBlock implements TileEntityBlock {
 
         final BaseBlock otherBlock = (BaseBlock) o;
 
-        return getType() == otherBlock.getType() && getData() == otherBlock.getData();
+        return this.getState().equals(otherBlock.getState()) && Objects.equals(getNbtData(), otherBlock.getNbtData());
 
     }
 
@@ -436,7 +326,7 @@ public class BaseBlock implements TileEntityBlock {
      * @return true if equal
      */
     public boolean equalsFuzzy(BaseBlock o) {
-        if (!getType().equals(o.getType())) {
+        if (!getBlockType().equals(o.getBlockType())) {
             return false;
         }
 
@@ -484,14 +374,16 @@ public class BaseBlock implements TileEntityBlock {
 
     @Override
     public int hashCode() {
-        int ret = getType().hashCode() << 3;
-        ret += getStates().hashCode();
+        int ret = getState().hashCode() << 3;
+        if (hasNbtData()) {
+            ret += getNbtData().hashCode();
+        }
         return ret;
     }
 
     @Override
     public String toString() {
-        return "Block{Type:" + getType().getId() + ", States: " + getStates().toString() + "}";
+        return "Block{State: " + this.getState().toString() + ", NBT: " + String.valueOf(getNbtData()) + "}";
     }
 
 }

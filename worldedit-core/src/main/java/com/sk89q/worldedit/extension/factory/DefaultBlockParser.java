@@ -125,7 +125,7 @@ class DefaultBlockParser extends InputParser<BaseBlock> {
                 return blockInHand;
             }
 
-            blockType = blockInHand.getType();
+            blockType = blockInHand.getBlockType();
             blockStates = blockInHand.getStates();
         } else if ("offhand".equalsIgnoreCase(typeString)) {
             // Get the block type from the item in the user's off hand.
@@ -134,7 +134,7 @@ class DefaultBlockParser extends InputParser<BaseBlock> {
                 return blockInHand;
             }
 
-            blockType = blockInHand.getType();
+            blockType = blockInHand.getBlockType();
             blockStates = blockInHand.getStates();
         } else if ("pos1".equalsIgnoreCase(typeString)) {
             // Get the block type from the "primary position"
@@ -150,7 +150,7 @@ class DefaultBlockParser extends InputParser<BaseBlock> {
                 return blockInHand;
             }
 
-            blockType = blockInHand.getType();
+            blockType = blockInHand.getBlockType();
             blockStates = blockInHand.getStates();
         } else {
             // Attempt to lookup a block from ID or name.

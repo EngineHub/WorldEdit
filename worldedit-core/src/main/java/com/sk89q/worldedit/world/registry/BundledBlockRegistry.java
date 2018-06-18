@@ -53,13 +53,13 @@ public class BundledBlockRegistry implements BlockRegistry {
     @Nullable
     @Override
     public BlockMaterial getMaterial(BaseBlock block) {
-        return BundledBlockData.getInstance().getMaterialById(block.getType().getId());
+        return BundledBlockData.getInstance().getMaterialById(block.getBlockType().getId());
     }
 
     @Nullable
     @Override
     public Map<String, ? extends State> getStates(BaseBlock block) {
-        return BundledBlockData.getInstance().getStatesById(block.getType().getId());
+        return BundledBlockData.getInstance().getStatesById(block.getBlockType().getId());
     }
 
 }

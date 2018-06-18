@@ -19,12 +19,11 @@
 
 package com.sk89q.worldedit.blocks;
 
+import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.worldedit.blocks.type.ItemType;
-import com.sk89q.worldedit.blocks.type.ItemTypes;
-import com.sk89q.worldedit.world.registry.BundledItemData;
+import com.sk89q.worldedit.world.NbtValued;
 
-import java.util.HashMap;
-import java.util.Map;
+import javax.annotation.Nullable;
 
 /**
  * Represents an item, without an amount value. See {@link BaseItemStack}
@@ -32,11 +31,11 @@ import java.util.Map;
  *
  * <p>This class may be removed in the future.</p>
  */
-public class BaseItem {
+public class BaseItem implements NbtValued {
     
     private ItemType itemType;
-    private short damage;
-    private final Map<Integer, Integer> enchantments = new HashMap<>();
+    @Nullable
+    private CompoundTag nbtData;
 
     /**
      * Construct the object.
@@ -45,7 +44,6 @@ public class BaseItem {
      */
     @Deprecated
     public BaseItem(int id) {
-        this(id, (short) 0);
     }
 
     /**
@@ -60,24 +58,12 @@ public class BaseItem {
     /**
      * Construct the object.
      *
-     * @param id ID of the item
-     * @param data data value of the item
-     */
-    @Deprecated
-    public BaseItem(int id, short data) {
-        setLegacyId(id);
-        this.damage = data;
-    }
-
-    /**
-     * Construct the object.
-     *
      * @param itemType Type of the item
-     * @param damage Damage value of the item
+     * @param tag NBT Compound tag
      */
-    public BaseItem(ItemType itemType, short damage) {
+    public BaseItem(ItemType itemType, CompoundTag tag) {
         this.itemType = itemType;
-        this.damage = damage;
+        this.nbtData = tag;
     }
 
     /**
@@ -88,17 +74,6 @@ public class BaseItem {
     @Deprecated
     public int getLegacyId() {
         return this.itemType.getLegacyId();
-    }
-
-    /**
-     * Set the type of item.
-     * 
-     * @param id the id to set
-     */
-    @Deprecated
-    public void setLegacyId(int id) {
-        ItemType type = ItemTypes.getItemType(BundledItemData.getInstance().fromLegacyId(id));
-        setType(type);
     }
 
     /**
@@ -119,50 +94,19 @@ public class BaseItem {
         this.itemType = itemType;
     }
 
-    /**
-     * Get the damage value.
-     * 
-     * @return the damage
-     */
-    public short getDamage() {
-        return this.damage;
+    @Override
+    public boolean hasNbtData() {
+        return this.nbtData != null;
     }
 
-    /**
-     * Get the data value.
-     * 
-     * @return the data
-     */
-    @Deprecated
-    public short getData() {
-        return this.damage;
+    @Nullable
+    @Override
+    public CompoundTag getNbtData() {
+        return this.nbtData;
     }
 
-    /**
-     * Set the data value.
-     * 
-     * @param damage the damage to set
-     */
-    public void setDamage(short damage) {
-        this.damage = damage;
-    }
-
-    /**
-     * Set the data value.
-     * 
-     * @param data the damage to set
-     */
-    @Deprecated
-    public void setData(short data) {
-        this.damage = data;
-    }
-
-    /**
-     * Get the map of enchantments.
-     * 
-     * @return map of enchantments
-     */
-    public Map<Integer, Integer> getEnchantments() {
-        return enchantments;
+    @Override
+    public void setNbtData(@Nullable CompoundTag nbtData) {
+        this.nbtData = nbtData;
     }
 }

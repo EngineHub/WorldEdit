@@ -50,7 +50,7 @@ public class AreaPickaxe implements BlockTool {
         int ox = clicked.getBlockX();
         int oy = clicked.getBlockY();
         int oz = clicked.getBlockZ();
-        BlockType initialType = clicked.getExtent().getBlock(clicked.toVector()).getType();
+        BlockType initialType = clicked.getExtent().getBlock(clicked.toVector()).getBlockType();
 
         if (initialType == BlockTypes.AIR) {
             return true;
@@ -68,7 +68,7 @@ public class AreaPickaxe implements BlockTool {
                 for (int y = oy - range; y <= oy + range; ++y) {
                     for (int z = oz - range; z <= oz + range; ++z) {
                         Vector pos = new Vector(x, y, z);
-                        if (editSession.getBlock(pos).getType() != initialType) {
+                        if (editSession.getBlock(pos).getBlockType() != initialType) {
                             continue;
                         }
 

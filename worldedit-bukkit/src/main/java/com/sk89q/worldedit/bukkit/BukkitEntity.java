@@ -47,7 +47,7 @@ class BukkitEntity implements Entity {
      */
     BukkitEntity(org.bukkit.entity.Entity entity) {
         checkNotNull(entity);
-        this.entityRef = new WeakReference<org.bukkit.entity.Entity>(entity);
+        this.entityRef = new WeakReference<>(entity);
     }
 
     @Override

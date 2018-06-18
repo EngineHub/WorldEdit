@@ -34,6 +34,7 @@ import com.sk89q.worldedit.Vector2D;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.blocks.type.ItemTypes;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.input.ParserContext;
@@ -277,7 +278,7 @@ public class SelectionCommands {
     @CommandPermissions("worldedit.wand")
     public void wand(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
 
-        player.giveItem(ItemTypes.getItemType(we.getConfiguration().wandItem).getLegacyId(), 1);
+        player.giveItem(new BaseItemStack(ItemTypes.getItemType(we.getConfiguration().wandItem), 1));
         player.print("Left click: select pos #1; Right click: select pos #2");
     }
 
@@ -677,12 +678,12 @@ public class SelectionCommands {
         player.print("# total blocks: " + size);
 
         for (Countable<BaseBlock> c : distributionData) {
-            String name = c.getID().getType().getName();
+            String name = c.getID().getBlockType().getName();
             String str = String.format("%-7s (%.3f%%) %s #%s%s",
                     String.valueOf(c.getAmount()),
                     c.getAmount() / (double) size * 100,
                     name,
-                    c.getID().getType().getId(),
+                    c.getID().getBlockType().getId(),
                     c.getID().getStates());
             player.print(str);
         }

@@ -1063,7 +1063,7 @@ public class EditSession implements Extent {
         // Remove the original blocks
         com.sk89q.worldedit.function.pattern.Pattern pattern = replacement != null ?
                 new BlockPattern(replacement) :
-                new BlockPattern(new BaseBlock(BlockID.AIR));
+                new BlockPattern(new BaseBlock(BlockTypes.AIR));
         BlockReplace remove = new BlockReplace(this, pattern);
 
         // Copy to a buffer so we don't destroy our original before we can copy all the blocks from it
@@ -1143,22 +1143,22 @@ public class EditSession implements Extent {
      * @return number of blocks affected
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
-    public int fixLiquid(Vector origin, double radius, int moving, int stationary) throws MaxChangedBlocksException {
+    public int fixLiquid(Vector origin, double radius, com.sk89q.worldedit.blocks.type.BlockType moving, com.sk89q.worldedit.blocks.type.BlockType stationary) throws MaxChangedBlocksException {
         checkNotNull(origin);
         checkArgument(radius >= 0, "radius >= 0 required");
 
         // Our origins can only be liquids
         BlockMask liquidMask = new BlockMask(
                 this,
-                new BaseBlock(moving, -1),
-                new BaseBlock(stationary, -1));
+                new BaseBlock(moving),
+                new BaseBlock(stationary));
 
         // But we will also visit air blocks
         MaskIntersection blockMask =
                 new MaskUnion(liquidMask,
                         new BlockMask(
                                 this,
-                                new BaseBlock(BlockID.AIR)));
+                                new BaseBlock(BlockTypes.AIR)));
 
         // There are boundaries that the routine needs to stay in
         MaskIntersection mask = new MaskIntersection(
@@ -1449,7 +1449,7 @@ public class EditSession implements Extent {
 
                 for (int y = world.getMaxY(); y >= 1; --y) {
                     Vector pt = new Vector(x, y, z);
-                    com.sk89q.worldedit.blocks.type.BlockType id = getLazyBlock(pt).getType();
+                    com.sk89q.worldedit.blocks.type.BlockType id = getLazyBlock(pt).getBlockType();
 
                     if (id == BlockTypes.ICE) {
                         if (setBlock(pt, water)) {
@@ -1657,14 +1657,14 @@ public class EditSession implements Extent {
 
                 for (int y = basePosition.getBlockY(); y >= basePosition.getBlockY() - 10; --y) {
                     // Check if we hit the ground
-                    int t = getBlock(new Vector(x, y, z)).getType().getLegacyId();
-                    if (t == BlockID.GRASS || t == BlockID.DIRT) {
+                    com.sk89q.worldedit.blocks.type.BlockType t = getBlock(new Vector(x, y, z)).getBlockType();
+                    if (t == BlockTypes.GRASS_BLOCK || t == BlockTypes.DIRT) {
                         treeGenerator.generate(this, new Vector(x, y + 1, z));
                         ++affected;
                         break;
-                    } else if (t == BlockID.SNOW) {
-                        setBlock(new Vector(x, y, z), new BaseBlock(BlockID.AIR));
-                    } else if (t != BlockID.AIR) { // Trees won't grow on this!
+                    } else if (t == BlockTypes.SNOW) {
+                        setBlock(new Vector(x, y, z), new BaseBlock(BlockTypes.AIR));
+                    } else if (t != BlockTypes.AIR) { // Trees won't grow on this!
                         break;
                     }
                 }
@@ -1680,9 +1680,9 @@ public class EditSession implements Extent {
      * @param region a region
      * @return the results
      */
-    public List<Countable<Integer>> getBlockDistribution(Region region) {
-        List<Countable<Integer>> distribution = new ArrayList<>();
-        Map<Integer, Countable<Integer>> map = new HashMap<>();
+    public List<Countable<com.sk89q.worldedit.blocks.type.BlockType>> getBlockDistribution(Region region) {
+        List<Countable<com.sk89q.worldedit.blocks.type.BlockType>> distribution = new ArrayList<>();
+        Map<com.sk89q.worldedit.blocks.type.BlockType, Countable<com.sk89q.worldedit.blocks.type.BlockType>> map = new HashMap<>();
 
         if (region instanceof CuboidRegion) {
             // Doing this for speed
@@ -1701,13 +1701,13 @@ public class EditSession implements Extent {
                     for (int z = minZ; z <= maxZ; ++z) {
                         Vector pt = new Vector(x, y, z);
 
-                        int id = getLazyBlock(pt).getId();
+                        com.sk89q.worldedit.blocks.type.BlockType type = getLazyBlock(pt).getBlockType();
 
-                        if (map.containsKey(id)) {
-                            map.get(id).increment();
+                        if (map.containsKey(type)) {
+                            map.get(type).increment();
                         } else {
-                            Countable<Integer> c = new Countable<>(id, 1);
-                            map.put(id, c);
+                            Countable<com.sk89q.worldedit.blocks.type.BlockType> c = new Countable<>(type, 1);
+                            map.put(type, c);
                             distribution.add(c);
                         }
                     }
@@ -1715,13 +1715,13 @@ public class EditSession implements Extent {
             }
         } else {
             for (Vector pt : region) {
-                int id = getLazyBlock(pt).getId();
+                com.sk89q.worldedit.blocks.type.BlockType type = getLazyBlock(pt).getBlockType();
 
-                if (map.containsKey(id)) {
-                    map.get(id).increment();
+                if (map.containsKey(type)) {
+                    map.get(type).increment();
                 } else {
-                    Countable<Integer> c = new Countable<>(id, 1);
-                    map.put(id, c);
+                    Countable<com.sk89q.worldedit.blocks.type.BlockType> c = new Countable<>(type, 1);
+                    map.put(type, c);
                 }
             }
         }
@@ -1809,7 +1809,7 @@ public class EditSession implements Extent {
                 final Vector scaled = current.subtract(zero).divide(unit);
 
                 try {
-                    if (expression.evaluate(scaled.getX(), scaled.getY(), scaled.getZ(), defaultMaterial.getType().getLegacyId(), defaultMaterial.getData()) <= 0) {
+                    if (expression.evaluate(scaled.getX(), scaled.getY(), scaled.getZ(), defaultMaterial.getBlockType().getLegacyId(), defaultMaterial.getData()) <= 0) {
                         return null;
                     }
 

@@ -238,7 +238,12 @@ public class ForgeWorld extends AbstractWorld {
     @Override
     public boolean useItem(Vector position, BaseItem item, Direction face) {
         Item nativeItem = Item.getByNameOrId(item.getType().getId());
-        ItemStack stack = new ItemStack(nativeItem, 1, item.getData());
+        ItemStack stack = null;
+        if (item.getNbtData() == null) {
+            stack = new ItemStack(nativeItem, 1, 0);
+        } else {
+            stack = new ItemStack(nativeItem, 1, 0, NBTConverter.toNative(item.getNbtData()));
+        }
         World world = getWorld();
         EnumActionResult used = stack.onItemUse(new WorldEditFakePlayer((WorldServer) world), world, ForgeAdapter.toBlockPos(position),
                 EnumHand.MAIN_HAND, ForgeAdapter.adapt(face), 0, 0, 0);
@@ -333,18 +338,12 @@ public class ForgeWorld extends AbstractWorld {
     @Override
     public boolean generateTree(TreeType type, EditSession editSession, Vector position) throws MaxChangedBlocksException {
         WorldGenerator generator = createWorldGenerator(type);
-        return generator != null ? generator.generate(getWorld(), random, ForgeAdapter.toBlockPos(position)) : false;
+        return generator != null && generator.generate(getWorld(), random, ForgeAdapter.toBlockPos(position));
     }
 
     @Override
     public WorldData getWorldData() {
         return ForgeWorldData.getInstance();
-    }
-
-    @Override
-    public boolean isValidBlockType(int id) {
-        Block block = Block.getBlockById(id);
-        return Block.getIdFromBlock(block) == id;
     }
 
     @Override

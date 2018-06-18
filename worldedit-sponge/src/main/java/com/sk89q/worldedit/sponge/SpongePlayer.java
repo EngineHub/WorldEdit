@@ -31,8 +31,10 @@ import com.sk89q.worldedit.internal.cui.CUIEvent;
 import com.sk89q.worldedit.session.SessionKey;
 import com.sk89q.worldedit.util.HandSide;
 import com.sk89q.worldedit.util.Location;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.type.HandTypes;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColor;
@@ -91,8 +93,11 @@ public class SpongePlayer extends AbstractPlayerActor {
     }
 
     @Override
-    public void giveItem(int type, int amt) {
-        this.player.getInventory().offer(ItemStack.of(SpongeWorldEdit.inst().getAdapter().resolveItem(type), amt));
+    public void giveItem(BaseItemStack itemStack) {
+        this.player.getInventory().offer(
+                ItemStack.of(Sponge.getGame().getRegistry().getType(ItemType.class, itemStack.getType().getId()).get(),
+                itemStack.getAmount())
+        );
     }
 
     @Override

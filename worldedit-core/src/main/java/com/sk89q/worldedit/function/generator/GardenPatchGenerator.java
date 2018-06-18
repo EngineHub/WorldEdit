@@ -163,7 +163,7 @@ public class GardenPatchGenerator implements RegionFunction {
             position = position.add(0, 1, 0);
         }
 
-        if (editSession.getBlock(position.add(0, -1, 0)).getType() != BlockTypes.GRASS) {
+        if (editSession.getBlock(position.add(0, -1, 0)).getBlockType() != BlockTypes.GRASS) {
             return false;
         }
 

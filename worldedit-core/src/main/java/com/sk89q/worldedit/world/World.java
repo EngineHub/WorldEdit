@@ -34,7 +34,6 @@ import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.util.TreeGenerator;
-import com.sk89q.worldedit.util.TreeGenerator.TreeType;
 import com.sk89q.worldedit.world.registry.WorldData;
 
 /**
@@ -55,24 +54,6 @@ public interface World extends Extent {
      * @return the maximum Y
      */
     int getMaxY();
-
-    /**
-     * Checks whether the given block ID is a valid block ID.
-     *
-     * @param id the block ID
-     * @return true if the block ID is a valid one
-     */
-    @Deprecated
-    boolean isValidBlockType(int id);
-
-    /**
-     * Checks whether the given block ID uses data values for differentiating
-     * types of blocks.
-     *
-     * @param id the block ID
-     * @return true if the block uses data values
-     */
-    boolean usesBlockData(int id);
 
     /**
      * Create a mask that matches all liquids.
@@ -112,24 +93,6 @@ public interface World extends Extent {
      * @return true if the block was successfully set (return value may not be accurate)
      */
     boolean setBlock(Vector position, BaseBlock block, boolean notifyAndLight) throws WorldEditException;
-
-    /**
-     * @deprecated Use {@link #setBlock(Vector, BaseBlock)}
-     */
-    @Deprecated
-    boolean setBlockType(Vector position, int type);
-
-    /**
-     * @deprecated Use {@link #setBlock(Vector, BaseBlock)}
-     */
-    @Deprecated
-    void setBlockData(Vector position, int data);
-
-    /**
-     * @deprecated Use {@link #setBlock(Vector, BaseBlock)}
-     */
-    @Deprecated
-    boolean setTypeIdAndData(Vector position, int type, int data);
 
     /**
      * Get the light level at the given block.
@@ -191,36 +154,6 @@ public interface World extends Extent {
      * @throws MaxChangedBlocksException thrown if too many blocks were changed
      */
     boolean generateTree(TreeGenerator.TreeType type, EditSession editSession, Vector position) throws MaxChangedBlocksException;
-
-    /**
-     * @deprecated Use {@link #generateTree(TreeType, EditSession, Vector)}
-     */
-    @Deprecated
-    boolean generateTree(EditSession editSession, Vector position) throws MaxChangedBlocksException;
-
-    /**
-     * @deprecated Use {@link #generateTree(TreeType, EditSession, Vector)}
-     */
-    @Deprecated
-    boolean generateBigTree(EditSession editSession, Vector position) throws MaxChangedBlocksException;
-
-    /**
-     * @deprecated Use {@link #generateTree(TreeType, EditSession, Vector)}
-     */
-    @Deprecated
-    boolean generateBirchTree(EditSession editSession, Vector position) throws MaxChangedBlocksException;
-
-    /**
-     * @deprecated Use {@link #generateTree(TreeType, EditSession, Vector)}
-     */
-    @Deprecated
-    boolean generateRedwoodTree(EditSession editSession, Vector position) throws MaxChangedBlocksException;
-
-    /**
-     * @deprecated Use {@link #generateTree(TreeType, EditSession, Vector)}
-     */
-    @Deprecated
-    boolean generateTallRedwoodTree(EditSession editSession, Vector position) throws MaxChangedBlocksException;
 
     /**
      * Load the chunk at the given position if it isn't loaded.

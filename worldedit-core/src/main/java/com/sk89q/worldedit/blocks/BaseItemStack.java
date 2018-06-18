@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.blocks;
 
+import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.worldedit.blocks.type.ItemType;
 
 /**
@@ -81,7 +82,7 @@ public class BaseItemStack extends BaseItem {
      */
     @Deprecated
     public BaseItemStack(int id, int amount, short data) {
-        super(id, data);
+        super(id);
         this.amount = amount;
     }
 
@@ -89,11 +90,11 @@ public class BaseItemStack extends BaseItem {
      * Construct the object.
      *
      * @param id The item type
+     * @param tag Tag value
      * @param amount amount in the stack
-     * @param damage Damage value
      */
-    public BaseItemStack(ItemType id, int amount, short damage) {
-        super(id, damage);
+    public BaseItemStack(ItemType id, CompoundTag tag, int amount) {
+        super(id, tag);
         this.amount = amount;
     }
 

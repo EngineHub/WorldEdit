@@ -48,8 +48,8 @@ public class QueryTool implements BlockTool {
         BaseBlock block = editSession.getBlock(clicked.toVector());
 
         player.print("\u00A79@" + clicked.toVector() + ": " + "\u00A7e"
-                + "#" + block.getType() + "\u00A77" + " ("
-                + block.getType().getId() + ") "
+                + "#" + block.getBlockType() + "\u00A77" + " ("
+                + block.getBlockType().getId() + ") "
                 + "\u00A7f"
                 + "[" + block.getStates().toString() + "]" + " (" + world.getBlockLightLevel(clicked.toVector()) + "/" + world.getBlockLightLevel(clicked.toVector().add(0, 1, 0)) + ")");
 

@@ -214,7 +214,7 @@ public class ToolCommands {
 
         session.setTool(itemStack.getType(), new LongRangeBuildTool(primary, secondary));
         player.print("Long-range building tool bound to " + itemStack.getType().getName() + ".");
-        player.print("Left-click set to " + secondary.getType().getName() + "; right-click set to "
-                + primary.getType().getName() + ".");
+        player.print("Left-click set to " + secondary.getBlockType().getName() + "; right-click set to "
+                + primary.getBlockType().getName() + ".");
     }
 }

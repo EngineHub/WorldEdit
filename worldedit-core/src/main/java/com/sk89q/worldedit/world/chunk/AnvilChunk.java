@@ -118,8 +118,7 @@ public class AnvilChunk implements Chunk {
         }
     }
     
-    @Override
-    public int getBlockID(Vector position) throws DataException {
+    private int getBlockID(Vector position) throws DataException {
         int x = position.getBlockX() - rootX * 16;
         int y = position.getBlockY();
         int z = position.getBlockZ() - rootZ * 16;
@@ -130,9 +129,6 @@ public class AnvilChunk implements Chunk {
         }
         
         int yindex = y & 0x0F;
-        if (yindex < 0 || yindex >= 16) {
-            throw new DataException("Chunk does not contain position " + position);
-        }
 
         int index = x + (z * 16 + (yindex * 16 * 16));
         
@@ -155,8 +151,7 @@ public class AnvilChunk implements Chunk {
         }
     }
 
-    @Override
-    public int getBlockData(Vector position) throws DataException {
+    private int getBlockData(Vector position) throws DataException {
         int x = position.getBlockX() - rootX * 16;
         int y = position.getBlockY();
         int z = position.getBlockZ() - rootZ * 16;
@@ -165,10 +160,6 @@ public class AnvilChunk implements Chunk {
         int yIndex = y & 0x0F;
         
         if (section < 0 || section >= blocks.length) {
-            throw new DataException("Chunk does not contain position " + position);
-        }
-        
-        if (yIndex < 0 || yIndex >= 16) {
             throw new DataException("Chunk does not contain position " + position);
         }
 
@@ -200,8 +191,7 @@ public class AnvilChunk implements Chunk {
 
         for (Tag tag : tags) {
             if (!(tag instanceof CompoundTag)) {
-                throw new InvalidFormatException(
-                        "CompoundTag expected in TileEntities");
+                throw new InvalidFormatException("CompoundTag expected in TileEntities");
             }
 
             CompoundTag t = (CompoundTag) tag;
@@ -268,21 +258,7 @@ public class AnvilChunk implements Chunk {
         int data = getBlockData(position);
         BaseBlock block;
 
-        /*if (id == BlockID.WALL_SIGN || id == BlockID.SIGN_POST) {
-            block = new SignBlock(id, data);
-        } else if (id == BlockID.CHEST) {
-            block = new ChestBlock(data);
-        } else if (id == BlockID.FURNACE || id == BlockID.BURNING_FURNACE) {
-            block = new FurnaceBlock(id, data);
-        } else if (id == BlockID.DISPENSER) {
-            block = new DispenserBlock(data);
-        } else if (id == BlockID.MOB_SPAWNER) {
-            block = new MobSpawnerBlock(data);
-        } else if (id == BlockID.NOTE_BLOCK) {
-            block = new NoteBlock(data);
-        } else {*/
-            block = new BaseBlock(id, data);
-        //}
+        block = new BaseBlock(id, data);
 
         CompoundTag tileEntity = getBlockTileEntity(position);
         if (tileEntity != null) {

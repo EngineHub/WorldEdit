@@ -1540,7 +1540,7 @@ public enum BlockType {
 
         addIdentities(BlockID.DOUBLE_WOODEN_STEP, 7); // rule 3
         addIdentities(BlockID.WOODEN_STEP, 7); // rule 1
-        nonDataBlockBagItems.put(BlockID.COCOA_PLANT, new BaseItem(ItemID.INK_SACK, (short) (15 - ClothColor.ID.BROWN))); // rule 3
+        nonDataBlockBagItems.put(BlockID.COCOA_PLANT, new BaseItem(ItemID.INK_SACK)); // rule 3 TODO data removed
         addIdentity(BlockID.SANDSTONE_STAIRS); // rule 1
         nonDataBlockBagItems.put(BlockID.EMERALD_ORE, new BaseItem(ItemID.EMERALD)); // rule 5
         addIdentity(BlockID.ENDER_CHEST); // rule 3
@@ -1569,7 +1569,8 @@ public enum BlockType {
         addIdentity(BlockID.HOPPER); // rule 1
         addIdentities(BlockID.QUARTZ_BLOCK, 1); // rule 4
         for (int i = 2; i <= 4; i++) {
-            dataBlockBagItems.put(typeDataKey(BlockID.QUARTZ_BLOCK, i), new BaseItem(BlockID.QUARTZ_BLOCK, (short) 2)); // rule 4, quartz pillars
+            dataBlockBagItems.put(typeDataKey(BlockID.QUARTZ_BLOCK, i), new BaseItem(BlockID.QUARTZ_BLOCK)); // rule 4, quartz pillars TODO data
+            // removed
         }
         addIdentity(BlockID.QUARTZ_STAIRS); // rule 1
         addIdentity(BlockID.ACTIVATOR_RAIL); // rule 1
@@ -1629,7 +1630,7 @@ public enum BlockType {
 
     private static void addIdentities(int type, int maxData) {
         for (int data = 0; data < maxData; ++data) {
-            dataBlockBagItems.put(typeDataKey(type, data), new BaseItem(type, (short) data));
+            dataBlockBagItems.put(typeDataKey(type, data), new BaseItem(type)); // TODO data removed
         }
     }
 

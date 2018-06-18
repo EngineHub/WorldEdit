@@ -44,7 +44,7 @@ public class SinglePickaxe implements BlockTool {
     @Override
     public boolean actPrimary(Platform server, LocalConfiguration config, Player player, LocalSession session, com.sk89q.worldedit.util.Location clicked) {
         World world = (World) clicked.getExtent();
-        final BlockType blockType = world.getLazyBlock(clicked.toVector()).getType();
+        final BlockType blockType = world.getLazyBlock(clicked.toVector()).getBlockType();
         if (blockType == BlockTypes.BEDROCK
                 && !player.canDestroyBedrock()) {
             return true;

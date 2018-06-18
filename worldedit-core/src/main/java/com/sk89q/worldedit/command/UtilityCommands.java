@@ -32,6 +32,7 @@ import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.blocks.type.BlockTypes;
 import com.sk89q.worldedit.command.util.CreatureButcher;
 import com.sk89q.worldedit.command.util.EntityRemover;
 import com.sk89q.worldedit.entity.Entity;
@@ -65,7 +66,6 @@ import com.sk89q.worldedit.util.formatting.component.CommandUsageBox;
 import com.sk89q.worldedit.world.World;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -176,7 +176,7 @@ public class UtilityCommands {
         double radius = Math.max(0, args.getDouble(0));
         we.checkMaxRadius(radius);
         int affected = editSession.fixLiquid(
-                session.getPlacementPosition(player), radius, 10, 11);
+                session.getPlacementPosition(player), radius, BlockTypes.FLOWING_LAVA, BlockTypes.LAVA);
         player.print(affected + " block(s) have been changed.");
     }
 
@@ -194,7 +194,7 @@ public class UtilityCommands {
         double radius = Math.max(0, args.getDouble(0));
         we.checkMaxRadius(radius);
         int affected = editSession.fixLiquid(
-                session.getPlacementPosition(player), radius, 8, 9);
+                session.getPlacementPosition(player), radius, BlockTypes.FLOWING_WATER, BlockTypes.WATER);
         player.print(affected + " block(s) have been changed.");
     }
 
@@ -261,7 +261,7 @@ public class UtilityCommands {
         int size = Math.max(1, args.getInteger(1, 50));
         we.checkMaxRadius(size);
 
-        int affected = editSession.removeNear(session.getPlacementPosition(player), block.getType().getLegacyId(), size);
+        int affected = editSession.removeNear(session.getPlacementPosition(player), block.getBlockType().getLegacyId(), size);
         player.print(affected + " block(s) have been removed.");
     }
 

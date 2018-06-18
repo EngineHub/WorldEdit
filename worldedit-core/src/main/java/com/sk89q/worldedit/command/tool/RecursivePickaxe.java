@@ -53,7 +53,7 @@ public class RecursivePickaxe implements BlockTool {
     public boolean actPrimary(Platform server, LocalConfiguration config, Player player, LocalSession session, com.sk89q.worldedit.util.Location clicked) {
         World world = (World) clicked.getExtent();
 
-        BlockType initialType = world.getBlock(clicked.toVector()).getType();
+        BlockType initialType = world.getBlock(clicked.toVector()).getBlockType();
 
         if (initialType == BlockTypes.AIR) {
             return true;
@@ -89,7 +89,7 @@ public class RecursivePickaxe implements BlockTool {
 
         visited.add(pos);
 
-        if (editSession.getBlock(pos).getType() != initialType) {
+        if (editSession.getBlock(pos).getBlockType() != initialType) {
             return;
         }
 

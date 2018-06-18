@@ -78,8 +78,8 @@ public class BukkitPlayer extends AbstractPlayerActor {
     }
 
     @Override
-    public void giveItem(int type, int amt) {
-        player.getInventory().addItem(new ItemStack(type, amt));
+    public void giveItem(BaseItemStack itemStack) {
+        player.getInventory().addItem(new ItemStack(itemStack.getLegacyId(), itemStack.getAmount()));
     }
 
     @Override

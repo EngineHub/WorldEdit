@@ -19,7 +19,6 @@
 
 package com.sk89q.worldedit.extension.platform;
 
-import com.sk89q.worldedit.NotABlockException;
 import com.sk89q.worldedit.PlayerDirection;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
@@ -366,9 +365,6 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
     @Override
     public BaseBlock getBlockInHand(HandSide handSide) throws WorldEditException {
         final ItemType typeId = getItemInHand(handSide).getType();
-        if (!getWorld().isValidBlockType(typeId.getLegacyId())) {
-            throw new NotABlockException(typeId.getId());
-        }
         return new BaseBlock(typeId.getLegacyId());
     }
 

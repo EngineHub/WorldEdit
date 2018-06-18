@@ -19,16 +19,13 @@
 
 package com.sk89q.worldedit.blocks;
 
-import com.sk89q.jnbt.CompoundTag;
-import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.blocks.type.BlockType;
-import com.sk89q.worldedit.extent.Extent;
-import com.sk89q.worldedit.world.registry.state.State;
-import com.sk89q.worldedit.world.registry.state.value.StateValue;
-
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import java.util.Map;
+import com.sk89q.jnbt.CompoundTag;
+import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.blocks.type.BlockState;
+import com.sk89q.worldedit.blocks.type.BlockType;
+import com.sk89q.worldedit.extent.Extent;
 
 /**
  * A implementation of a lazy block for {@link Extent#getLazyBlock(Vector)}
@@ -65,14 +62,13 @@ public class LazyBlock extends BaseBlock {
     /**
      * Create a new lazy block.
      *
-     * @param type the block type
-     * @param states the block states
+     * @param state the block state
      * @param extent the extent to later load the full block data from
      * @param position the position to later load the full block data from
      */
     @Deprecated
-    public LazyBlock(BlockType type, Map<State, StateValue> states, Extent extent, Vector position) {
-        super(type, states);
+    public LazyBlock(BlockState state, Extent extent, Vector position) {
+        super(state);
         checkNotNull(extent);
         checkNotNull(position);
         this.extent = extent;
@@ -97,30 +93,11 @@ public class LazyBlock extends BaseBlock {
     }
 
     @Override
-    public void setId(int id) {
-        throw new UnsupportedOperationException("This object is immutable");
-    }
-
-    @Override
-    public void setData(int data) {
-        throw new UnsupportedOperationException("This object is immutable");
-    }
-
-    @Override
-    public void setType(BlockType type) {
-        throw new UnsupportedOperationException("This object is immutable");
-    }
-
-    @Override
-    public void setState(State state, StateValue stateValue) {
-        throw new UnsupportedOperationException("This object is immutable");
-    }
-
-    @Override
     public CompoundTag getNbtData() {
         if (!loaded) {
             BaseBlock loadedBlock = extent.getBlock(position);
             super.setNbtData(loadedBlock.getNbtData());
+            loaded = true;
         }
         return super.getNbtData();
     }

@@ -203,11 +203,6 @@ public abstract class SpongeWorld extends AbstractWorld {
     }
 
     @Override
-    public boolean isValidBlockType(int id) {
-        return id == 0 || SpongeWorldEdit.inst().getAdapter().resolveBlock(id) != null;
-    }
-
-    @Override
     public int hashCode() {
         return getWorld().hashCode();
     }
@@ -220,7 +215,7 @@ public abstract class SpongeWorld extends AbstractWorld {
             SpongeWorld other = ((SpongeWorld) o);
             World otherWorld = other.worldRef.get();
             World thisWorld = worldRef.get();
-            return otherWorld != null && thisWorld != null && otherWorld.equals(thisWorld);
+            return otherWorld != null && otherWorld.equals(thisWorld);
         } else {
             return o instanceof com.sk89q.worldedit.world.World
                     && ((com.sk89q.worldedit.world.World) o).getName().equals(getName());
