@@ -22,9 +22,7 @@ package com.sk89q.worldedit.command.tool;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
-import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.MobSpawnerBlock;
-import com.sk89q.worldedit.blocks.NoteBlock;
 import com.sk89q.worldedit.blocks.type.BlockStateHolder;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
@@ -57,9 +55,6 @@ public class QueryTool implements BlockTool {
         if (block instanceof MobSpawnerBlock) {
             player.printRaw("\u00A7e" + "Mob Type: "
                     + ((MobSpawnerBlock) block).getMobType());
-        } else if (block instanceof NoteBlock) {
-            player.printRaw("\u00A7e" + "Note block: "
-                    + ((NoteBlock) block).getNote());
         }
 
         return true;

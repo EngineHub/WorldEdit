@@ -164,31 +164,10 @@ public class TreeGenerator {
         }
     }
 
+    private TreeGenerator() {
+    }
+
     private static final Random RANDOM = new Random();
-
-    private TreeType type;
-
-    /**
-     * Construct the tree generator with a tree type.
-     *
-     * @param type the tree type
-     */
-    @Deprecated
-    public TreeGenerator(TreeType type) {
-        this.type = type;
-    }
-
-    /**
-     * Generate a tree.
-     *
-     * @param editSession the edit session
-     * @param position the position to generate the tree at
-     * @return true if generation was successful
-     * @throws MaxChangedBlocksException
-     */
-    public boolean generate(EditSession editSession, Vector position) throws MaxChangedBlocksException {
-        return type.generate(editSession, position);
-    }
 
      /**
      * Makes a terrible looking pine tree.

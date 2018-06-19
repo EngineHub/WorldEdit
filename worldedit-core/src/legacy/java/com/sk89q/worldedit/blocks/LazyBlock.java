@@ -66,7 +66,6 @@ public class LazyBlock extends BaseBlock {
      * @param extent the extent to later load the full block data from
      * @param position the position to later load the full block data from
      */
-    @Deprecated
     public LazyBlock(BlockState state, Extent extent, Vector position) {
         super(state);
         checkNotNull(extent);

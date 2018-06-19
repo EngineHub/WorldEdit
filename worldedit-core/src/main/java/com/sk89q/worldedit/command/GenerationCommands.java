@@ -197,7 +197,7 @@ public class GenerationCommands {
     @Logging(POSITION)
     public void forestGen(Player player, LocalSession session, EditSession editSession, @Optional("10") int size, @Optional("tree") TreeType type, @Optional("5") double density) throws WorldEditException {
         density = density / 100;
-        int affected = editSession.makeForest(session.getPlacementPosition(player), size, density, new TreeGenerator(type));
+        int affected = editSession.makeForest(session.getPlacementPosition(player), size, density, type);
         player.print(affected + " trees created.");
     }
 

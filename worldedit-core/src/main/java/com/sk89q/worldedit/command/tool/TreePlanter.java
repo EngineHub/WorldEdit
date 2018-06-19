@@ -30,10 +30,10 @@ import com.sk89q.worldedit.util.*;
  */
 public class TreePlanter implements BlockTool {
 
-    private TreeGenerator gen;
+    private TreeGenerator.TreeType treeType;
 
-    public TreePlanter(TreeGenerator gen) {
-        this.gen = gen;
+    public TreePlanter(TreeGenerator.TreeType treeType) {
+        this.treeType = treeType;
     }
 
     @Override
@@ -50,7 +50,7 @@ public class TreePlanter implements BlockTool {
             boolean successful = false;
             
             for (int i = 0; i < 10; i++) {
-                if (gen.generate(editSession, clicked.toVector().add(0, 1, 0))) {
+                if (treeType.generate(editSession, clicked.toVector().add(0, 1, 0))) {
                     successful = true;
                     break;
                 }

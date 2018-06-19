@@ -22,7 +22,7 @@ package com.sk89q.worldedit.blocks;
 /**
  * List of block IDs.
  *
- * {@Deprecated Please use {@link com.sk89q.worldedit.blocks.type.BlockTypes}}
+ * {@deprecated Please use {@link com.sk89q.worldedit.blocks.type.BlockTypes}}
  */
 @Deprecated
 public final class BlockID {

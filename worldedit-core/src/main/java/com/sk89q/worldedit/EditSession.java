@@ -19,8 +19,13 @@
 
 package com.sk89q.worldedit;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.sk89q.worldedit.regions.Regions.asFlatRegion;
+import static com.sk89q.worldedit.regions.Regions.maximumBlockY;
+import static com.sk89q.worldedit.regions.Regions.minimumBlockY;
+
 import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.blocks.BlockType;
 import com.sk89q.worldedit.blocks.LazyBlock;
 import com.sk89q.worldedit.blocks.type.BlockCategories;
@@ -51,14 +56,30 @@ import com.sk89q.worldedit.function.block.BlockReplace;
 import com.sk89q.worldedit.function.block.Counter;
 import com.sk89q.worldedit.function.block.Naturalizer;
 import com.sk89q.worldedit.function.generator.GardenPatchGenerator;
-import com.sk89q.worldedit.function.mask.*;
-import com.sk89q.worldedit.function.operation.*;
+import com.sk89q.worldedit.function.mask.BlockMask;
+import com.sk89q.worldedit.function.mask.BoundedHeightMask;
+import com.sk89q.worldedit.function.mask.ExistingBlockMask;
+import com.sk89q.worldedit.function.mask.FuzzyBlockMask;
+import com.sk89q.worldedit.function.mask.Mask;
+import com.sk89q.worldedit.function.mask.MaskIntersection;
+import com.sk89q.worldedit.function.mask.MaskUnion;
+import com.sk89q.worldedit.function.mask.Masks;
+import com.sk89q.worldedit.function.mask.NoiseFilter2D;
+import com.sk89q.worldedit.function.mask.RegionMask;
+import com.sk89q.worldedit.function.operation.ChangeSetExecutor;
+import com.sk89q.worldedit.function.operation.ForwardExtentCopy;
+import com.sk89q.worldedit.function.operation.Operation;
+import com.sk89q.worldedit.function.operation.OperationQueue;
+import com.sk89q.worldedit.function.operation.Operations;
 import com.sk89q.worldedit.function.pattern.BlockPattern;
 import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.function.util.RegionOffset;
-import com.sk89q.worldedit.function.visitor.*;
+import com.sk89q.worldedit.function.visitor.DownwardVisitor;
+import com.sk89q.worldedit.function.visitor.LayerVisitor;
+import com.sk89q.worldedit.function.visitor.NonRisingVisitor;
+import com.sk89q.worldedit.function.visitor.RecursiveVisitor;
+import com.sk89q.worldedit.function.visitor.RegionVisitor;
 import com.sk89q.worldedit.history.UndoContext;
-import com.sk89q.worldedit.history.change.BlockChange;
 import com.sk89q.worldedit.history.changeset.BlockOptimizedHistory;
 import com.sk89q.worldedit.history.changeset.ChangeSet;
 import com.sk89q.worldedit.internal.expression.Expression;
@@ -70,26 +91,36 @@ import com.sk89q.worldedit.math.interpolation.KochanekBartelsInterpolation;
 import com.sk89q.worldedit.math.interpolation.Node;
 import com.sk89q.worldedit.math.noise.RandomNoise;
 import com.sk89q.worldedit.math.transform.AffineTransform;
-import com.sk89q.worldedit.regions.*;
+import com.sk89q.worldedit.regions.CuboidRegion;
+import com.sk89q.worldedit.regions.EllipsoidRegion;
+import com.sk89q.worldedit.regions.FlatRegion;
+import com.sk89q.worldedit.regions.Region;
+import com.sk89q.worldedit.regions.Regions;
 import com.sk89q.worldedit.regions.shape.ArbitraryBiomeShape;
 import com.sk89q.worldedit.regions.shape.ArbitraryShape;
 import com.sk89q.worldedit.regions.shape.RegionShape;
 import com.sk89q.worldedit.regions.shape.WorldEditExpressionEnvironment;
-import com.sk89q.worldedit.util.*;
+import com.sk89q.worldedit.util.Countable;
+import com.sk89q.worldedit.util.Direction;
+import com.sk89q.worldedit.util.TreeGenerator;
 import com.sk89q.worldedit.util.collection.DoubleArrayList;
 import com.sk89q.worldedit.util.eventbus.EventBus;
 import com.sk89q.worldedit.world.NullWorld;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.biome.BaseBiome;
 
-import javax.annotation.Nullable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.sk89q.worldedit.regions.Regions.*;
+import javax.annotation.Nullable;
 
 /**
  * An {@link Extent} that handles history, {@link BlockBag}s, change limits,
@@ -516,19 +547,6 @@ public class EditSession implements Extent {
     @Nullable
     public Entity createEntity(com.sk89q.worldedit.util.Location location, BaseEntity entity) {
         return bypassNone.createEntity(location, entity);
-    }
-
-    /**
-     * Insert a contrived block change into the history.
-     *
-     * @param position the position
-     * @param existing the previous block at that position
-     * @param block the new block
-     * @deprecated Get the change set with {@link #getChangeSet()} and add the change with that
-     */
-    @Deprecated
-    public void rememberChange(Vector position, BaseBlock existing, BaseBlock block) {
-        changeSet.add(new BlockChange(position.toBlockVector(), existing, block));
     }
 
     /**
@@ -1115,7 +1133,7 @@ public class EditSession implements Extent {
                 new RegionMask(new EllipsoidRegion(null, origin, new Vector(radius, radius, radius))),
                 getWorld().createLiquidMask());
 
-        BlockReplace replace = new BlockReplace(this, new BlockPattern(new BaseBlock(BlockID.AIR)));
+        BlockReplace replace = new BlockReplace(this, new BlockPattern(BlockTypes.AIR.getDefaultState()));
         RecursiveVisitor visitor = new RecursiveVisitor(mask, replace);
 
         // Around the origin in a 3x3 block
@@ -1553,7 +1571,7 @@ public class EditSession implements Extent {
         final int oy = position.getBlockY();
         final int oz = position.getBlockZ();
 
-        final BaseBlock grass = new BaseBlock(BlockID.GRASS);
+        final BlockState grass = BlockTypes.GRASS_BLOCK.getDefaultState();
 
         final int ceilRadius = (int) Math.ceil(radius);
         for (int x = ox - ceilRadius; x <= ox + ceilRadius; ++x) {
@@ -1562,35 +1580,21 @@ public class EditSession implements Extent {
                     continue;
                 }
 
-                loop: for (int y = world.getMaxY(); y >= 1; --y) {
+                for (int y = world.getMaxY(); y >= 1; --y) {
                     final Vector pt = new Vector(x, y, z);
-                    final BaseBlock block = getLazyBlock(pt);
-                    final int id = block.getId();
-                    final int data = block.getData();
+                    final BlockState block = getBlock(pt);
+                    final com.sk89q.worldedit.blocks.type.BlockType id = block.getBlockType();
 
-                    switch (id) {
-                    case BlockID.DIRT:
-                        if (onlyNormalDirt && data != 0) {
-                            break loop;
-                        }
-
+                    if (block.getBlockType() == BlockTypes.DIRT ||
+                            (!onlyNormalDirt && block.getBlockType() == BlockTypes.COARSE_DIRT)) {
                         if (setBlock(pt, grass)) {
                             ++affected;
                         }
-                        break loop;
-
-                    case BlockID.WATER:
-                    case BlockID.STATIONARY_WATER:
-                    case BlockID.LAVA:
-                    case BlockID.STATIONARY_LAVA:
-                        // break on liquids...
-                        break loop;
-
-                    default:
-                        // ...and all non-passable blocks
-                        if (!BlockType.canPassThrough(id, data)) {
-                            break loop;
-                        }
+                        break;
+                    } else if (block.getBlockType() == BlockTypes.WATER || block.getBlockType() == BlockTypes.LAVA) {
+                        break;
+                    } else if (!BlockType.canPassThrough(id.getLegacyId())) {
+                        break;
                     }
                 }
             }
@@ -1632,11 +1636,11 @@ public class EditSession implements Extent {
      * @param basePosition a position
      * @param size a size
      * @param density between 0 and 1, inclusive
-     * @param treeGenerator the tree genreator
+     * @param treeType the tree type
      * @return number of trees created
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
-    public int makeForest(Vector basePosition, int size, double density, TreeGenerator treeGenerator) throws MaxChangedBlocksException {
+    public int makeForest(Vector basePosition, int size, double density, TreeGenerator.TreeType treeType) throws MaxChangedBlocksException {
         int affected = 0;
 
         for (int x = basePosition.getBlockX() - size; x <= basePosition.getBlockX()
@@ -1656,7 +1660,7 @@ public class EditSession implements Extent {
                     // Check if we hit the ground
                     com.sk89q.worldedit.blocks.type.BlockType t = getBlock(new Vector(x, y, z)).getBlockType();
                     if (t == BlockTypes.GRASS_BLOCK || t == BlockTypes.DIRT) {
-                        treeGenerator.generate(this, new Vector(x, y + 1, z));
+                        treeType.generate(this, new Vector(x, y + 1, z));
                         ++affected;
                         break;
                     } else if (t == BlockTypes.SNOW) {

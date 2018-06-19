@@ -35,12 +35,12 @@ import com.sk89q.worldedit.blocks.type.BlockType;
 import com.sk89q.worldedit.blocks.type.BlockTypes;
 import com.sk89q.worldedit.bukkit.adapter.BukkitImplAdapter;
 import com.sk89q.worldedit.entity.BaseEntity;
+import com.sk89q.worldedit.history.change.BlockChange;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.TreeGenerator;
 import com.sk89q.worldedit.world.AbstractWorld;
 import com.sk89q.worldedit.world.biome.BaseBiome;
 import com.sk89q.worldedit.world.registry.BundledBlockData;
-import com.sk89q.worldedit.world.registry.Registries;
 import org.bukkit.Effect;
 import org.bukkit.TreeType;
 import org.bukkit.World;
@@ -159,7 +159,7 @@ public class BukkitWorld extends AbstractWorld {
 
     @Override
     public boolean regenerate(Region region, EditSession editSession) {
-        BaseBlock[] history = new BaseBlock[16 * 16 * (getMaxY() + 1)];
+        BlockStateHolder[] history = new BlockStateHolder[16 * 16 * (getMaxY() + 1)];
 
         for (Vector2D chunk : region.getChunks()) {
             Vector min = new Vector(chunk.getBlockX() * 16, 0, chunk.getBlockZ() * 16);
@@ -192,8 +192,7 @@ public class BukkitWorld extends AbstractWorld {
                         if (!region.contains(pt)) {
                             editSession.smartSetBlock(pt, history[index]);
                         } else { // Otherwise fool with history
-                            editSession.rememberChange(pt, history[index],
-                                    editSession.getFullBlock(pt));
+                            editSession.getChangeSet().add(new BlockChange(pt.toBlockVector(), history[index], editSession.getFullBlock(pt)));
                         }
                     }
                 }

@@ -37,7 +37,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * Block types.
  *
- * {@Deprecated Please use {@link com.sk89q.worldedit.blocks.type.BlockType}}
+ * {@deprecated Please use {@link com.sk89q.worldedit.blocks.type.BlockType}}
  */
 @Deprecated
 public enum BlockType {

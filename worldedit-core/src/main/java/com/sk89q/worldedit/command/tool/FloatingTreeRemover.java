@@ -24,8 +24,9 @@ import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.blocks.BlockID;
+import com.sk89q.worldedit.blocks.type.BlockCategories;
 import com.sk89q.worldedit.blocks.type.BlockState;
+import com.sk89q.worldedit.blocks.type.BlockType;
 import com.sk89q.worldedit.blocks.type.BlockTypes;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
@@ -55,6 +56,15 @@ public class FloatingTreeRemover implements BlockTool {
         return player.hasPermission("worldedit.tool.deltree");
     }
 
+    private boolean isTreeBlock(BlockType type) {
+        return BlockCategories.LEAVES.contains(type)
+                || BlockCategories.LOGS.contains(type)
+                || type == BlockTypes.RED_MUSHROOM_BLOCK
+                || type == BlockTypes.BROWN_MUSHROOM_BLOCK
+                || type == BlockTypes.MUSHROOM_STEM
+                || type == BlockTypes.VINE;
+    }
+
     @Override
     public boolean actPrimary(Platform server, LocalConfiguration config,
             Player player, LocalSession session, Location clicked) {
@@ -62,17 +72,7 @@ public class FloatingTreeRemover implements BlockTool {
         final World world = (World) clicked.getExtent();
         final BlockState state = world.getBlock(clicked.toVector());
 
-        switch (world.getLazyBlock(clicked.toVector()).getId()) {
-        case BlockID.LOG:
-        case BlockID.LOG2:
-        case BlockID.LEAVES:
-        case BlockID.LEAVES2:
-        case BlockID.BROWN_MUSHROOM_CAP:
-        case BlockID.RED_MUSHROOM_CAP:
-        case BlockID.VINE:
-            break;
-
-        default:
+        if (!isTreeBlock(state.getBlockType())) {
             player.printError("That's not a tree.");
             return true;
         }
@@ -87,15 +87,8 @@ public class FloatingTreeRemover implements BlockTool {
             }
 
             for (Vector blockVector : blockSet) {
-                final int typeId = editSession.getBlock(blockVector).getBlockType().getLegacyId();
-                switch (typeId) {
-                case BlockID.LOG:
-                case BlockID.LOG2:
-                case BlockID.LEAVES:
-                case BlockID.LEAVES2:
-                case BlockID.BROWN_MUSHROOM_CAP:
-                case BlockID.RED_MUSHROOM_CAP:
-                case BlockID.VINE:
+                final BlockState otherState = editSession.getBlock(blockVector);
+                if (isTreeBlock(otherState.getBlockType())) {
                     editSession.setBlock(blockVector, AIR);
                 }
             }
@@ -141,39 +134,24 @@ public class FloatingTreeRemover implements BlockTool {
                 }
 
                 if (visited.add(next)) {
-                    switch (world.getLazyBlock(next).getId()) {
-                    case BlockID.AIR:
-                    case BlockID.SNOW:
-                        // we hit air or snow => stop walking this route
+                    BlockState state = world.getBlock(next);
+                    if (state.getBlockType() == BlockTypes.AIR || state.getBlockType() == BlockTypes.SNOW) {
                         continue;
-
-                    case BlockID.LOG:
-                    case BlockID.LOG2:
-                    case BlockID.LEAVES:
-                    case BlockID.LEAVES2:
-                    case BlockID.BROWN_MUSHROOM_CAP:
-                    case BlockID.RED_MUSHROOM_CAP:
-                    case BlockID.VINE:
-                        // queue next point
+                    }
+                    if (isTreeBlock(state.getBlockType())) {
                         queue.addLast(next);
-                        break;
-
-                    default:
+                    } else {
                         // we hit something solid - evaluate where we came from
-                        final int curId = world.getLazyBlock(current).getId();
-                        if (curId == BlockID.LEAVES || curId == BlockID.LEAVES2
-                                || curId == BlockID.VINE) {
-                            // leaves touching a wall/the ground => stop walking this route
-                            continue;
-                        } else {
+                        final BlockType currentType = world.getBlock(current).getBlockType();
+                        if (!BlockCategories.LEAVES.contains(currentType) && currentType != BlockTypes.VINE) {
                             // log/shroom touching a wall/the ground => this is not a floating tree, bail out
                             return null;
                         }
-                    } // switch
-                } // if
-            } // for
-        } // while
+                    }
+                }
+            }
+        }
 
         return visited;
-    } // bfs
+    }
 }

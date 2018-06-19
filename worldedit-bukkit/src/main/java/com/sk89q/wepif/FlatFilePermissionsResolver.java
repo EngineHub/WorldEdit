@@ -66,11 +66,6 @@ public class FlatFilePermissionsResolver implements PermissionsResolver {
         this.userFile = userFile;
     }
 
-    @Deprecated
-    public static boolean filesExists() {
-        return (new File("perms_groups.txt")).exists() && (new File("perms_users.txt")).exists();
-    }
-
     public Map<String, Set<String>> loadGroupPermissions() {
         Map<String, Set<String>> userGroupPermissions = new HashMap<String, Set<String>>();
 

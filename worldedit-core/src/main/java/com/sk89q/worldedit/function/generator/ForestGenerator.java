@@ -22,7 +22,6 @@ package com.sk89q.worldedit.function.generator;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.type.BlockStateHolder;
 import com.sk89q.worldedit.blocks.type.BlockType;
 import com.sk89q.worldedit.blocks.type.BlockTypes;
@@ -35,18 +34,18 @@ import com.sk89q.worldedit.util.TreeGenerator;
  */
 public class ForestGenerator implements RegionFunction {
 
-    private final TreeGenerator treeGenerator;
+    private final TreeGenerator.TreeType treeType;
     private final EditSession editSession;
 
     /**
      * Create a new instance.
      *
      * @param editSession the edit session
-     * @param treeGenerator a tree generator
+     * @param treeType a tree generator
      */
-    public ForestGenerator(EditSession editSession, TreeGenerator treeGenerator) {
+    public ForestGenerator(EditSession editSession, TreeGenerator.TreeType treeType) {
         this.editSession = editSession;
-        this.treeGenerator = treeGenerator;
+        this.treeType = treeType;
     }
 
     @Override
@@ -55,11 +54,11 @@ public class ForestGenerator implements RegionFunction {
         BlockType t = block.getBlockType();
 
         if (t == BlockTypes.GRASS || t == BlockTypes.DIRT) {
-            treeGenerator.generate(editSession, position.add(0, 1, 0));
+            treeType.generate(editSession, position.add(0, 1, 0));
             return true;
         } else if (t == BlockTypes.TALL_GRASS || t == BlockTypes.DEAD_BUSH || t == BlockTypes.POPPY || t == BlockTypes.DANDELION) { // TODO: This list needs to be moved
             editSession.setBlock(position, BlockTypes.AIR.getDefaultState());
-            treeGenerator.generate(editSession, position);
+            treeType.generate(editSession, position);
             return true;
         } else if (t == BlockTypes.SNOW) {
             editSession.setBlock(position, BlockTypes.AIR.getDefaultState());

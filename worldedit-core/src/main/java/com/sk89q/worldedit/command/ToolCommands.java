@@ -89,7 +89,7 @@ public class ToolCommands {
         }
 
         BaseItemStack itemStack = player.getItemInHand(HandSide.MAIN_HAND);
-        session.setTool(itemStack.getType(), new TreePlanter(new TreeGenerator(type)));
+        session.setTool(itemStack.getType(), new TreePlanter(type));
         player.print("Tree tool bound to " + itemStack.getType().getName() + ".");
     }
 

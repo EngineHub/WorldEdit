@@ -110,16 +110,6 @@ public class CylinderRegion extends AbstractRegion implements FlatRegion {
     /**
      * Sets the main center point of the region
      *
-     * @deprecated replaced by {@link #setCenter(Vector2D)}
-     */
-    @Deprecated
-    public void setCenter(Vector center) {
-        setCenter(center.toVector2D());
-    }
-
-    /**
-     * Sets the main center point of the region
-     *
      * @param center the center point
      */
     public void setCenter(Vector2D center) {
