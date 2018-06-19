@@ -103,12 +103,61 @@ class DefaultBlockParser extends InputParser<BlockStateHolder> {
     private static Pattern blockStatePattern = Pattern.compile("([a-z:]+)(?:\\[([a-zA-Z0-9=, ]+)])?", Pattern.CASE_INSENSITIVE);
     private static String[] EMPTY_STRING_ARRAY = new String[]{};
 
-    private BlockStateHolder parseLogic(String input, ParserContext context)
-            throws InputParseException, NoMatchException,
-            DisallowedUsageException {
+    /**
+     * Backwards compatibility for wool colours in block syntax.
+     *
+     * @param string Input string
+     * @return Mapped string
+     */
+    private String woolMapper(String string) {
+        switch (string.toLowerCase()) {
+            case "white":
+                return BlockTypes.WHITE_WOOL.getId();
+            case "black":
+                return BlockTypes.BLACK_WOOL.getId();
+            case "blue":
+                return BlockTypes.BLUE_WOOL.getId();
+            case "brown":
+                return BlockTypes.BROWN_WOOL.getId();
+            case "cyan":
+                return BlockTypes.CYAN_WOOL.getId();
+            case "gray":
+            case "grey":
+                return BlockTypes.GRAY_WOOL.getId();
+            case "green":
+                return BlockTypes.GREEN_WOOL.getId();
+            case "light_blue":
+            case "lightblue":
+                return BlockTypes.LIGHT_BLUE_WOOL.getId();
+            case "light_gray":
+            case "light_grey":
+            case "lightgray":
+            case "lightgrey":
+                return BlockTypes.LIGHT_GRAY_WOOL.getId();
+            case "lime":
+                return BlockTypes.LIME_WOOL.getId();
+            case "magenta":
+                return BlockTypes.MAGENTA_WOOL.getId();
+            case "orange":
+                return BlockTypes.ORANGE_WOOL.getId();
+            case "pink":
+                return BlockTypes.PINK_WOOL.getId();
+            case "purple":
+                return BlockTypes.PURPLE_WOOL.getId();
+            case "yellow":
+                return BlockTypes.YELLOW_WOOL.getId();
+            case "red":
+                return BlockTypes.RED_WOOL.getId();
+            default:
+                return string;
+        }
+    }
+
+    private BlockStateHolder parseLogic(String input, ParserContext context) throws InputParseException {
         BlockType blockType;
         Map<State, StateValue> blockStates = new HashMap<>();
         String[] blockAndExtraData = input.trim().split("\\|");
+        blockAndExtraData[0] = woolMapper(blockAndExtraData[0]);
         Matcher matcher = blockStatePattern.matcher(blockAndExtraData[0]);
         if (!matcher.matches() || matcher.groupCount() < 2 || matcher.groupCount() > 3) {
             throw new InputParseException("Invalid format");
