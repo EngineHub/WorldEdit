@@ -54,7 +54,7 @@ public class SinglePickaxe implements BlockTool {
         editSession.getSurvivalExtent().setToolUse(config.superPickaxeDrop);
 
         try {
-            editSession.setBlock(clicked.toVector(), new BaseBlock(BlockTypes.AIR));
+            editSession.setBlock(clicked.toVector(), BlockTypes.AIR.getDefaultState());
         } catch (MaxChangedBlocksException e) {
             player.printError("Max blocks change limit reached.");
         } finally {

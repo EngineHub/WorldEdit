@@ -688,7 +688,7 @@ public class EditSession implements Extent {
                 getWorld(), // Causes clamping of Y range
                 position.add(-apothem + 1, 0, -apothem + 1),
                 position.add(apothem - 1, height - 1, apothem - 1));
-        Pattern pattern = new BlockPattern(new BaseBlock(BlockTypes.AIR));
+        Pattern pattern = new BlockPattern(BlockTypes.AIR.getDefaultState());
         return setBlocks(region, pattern);
     }
 
@@ -710,7 +710,7 @@ public class EditSession implements Extent {
                 getWorld(), // Causes clamping of Y range
                 position.add(-apothem + 1, 0, -apothem + 1),
                 position.add(apothem - 1, -height + 1, apothem - 1));
-        Pattern pattern = new BlockPattern(new BaseBlock(BlockTypes.AIR));
+        Pattern pattern = new BlockPattern(BlockTypes.AIR.getDefaultState());
         return setBlocks(region, pattern);
     }
 
@@ -723,17 +723,17 @@ public class EditSession implements Extent {
      * @return number of blocks affected
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
-    public int removeNear(Vector position, int blockType, int apothem) throws MaxChangedBlocksException {
+    public int removeNear(Vector position, com.sk89q.worldedit.blocks.type.BlockType blockType, int apothem) throws MaxChangedBlocksException {
         checkNotNull(position);
         checkArgument(apothem >= 1, "apothem >= 1");
 
-        Mask mask = new FuzzyBlockMask(this, new BaseBlock(blockType, -1));
+        Mask mask = new FuzzyBlockMask(this, blockType.getDefaultState().toFuzzy());
         Vector adjustment = new Vector(1, 1, 1).multiply(apothem - 1);
         Region region = new CuboidRegion(
                 getWorld(), // Causes clamping of Y range
                 position.add(adjustment.multiply(-1)),
                 position.add(adjustment));
-        Pattern pattern = new BlockPattern(new BaseBlock(BlockTypes.AIR));
+        Pattern pattern = new BlockPattern(BlockTypes.AIR.getDefaultState());
         return replaceBlocks(region, mask, pattern);
     }
 
@@ -1059,7 +1059,7 @@ public class EditSession implements Extent {
         // Remove the original blocks
         com.sk89q.worldedit.function.pattern.Pattern pattern = replacement != null ?
                 new BlockPattern(replacement) :
-                new BlockPattern(new BaseBlock(BlockTypes.AIR));
+                new BlockPattern(BlockTypes.AIR.getDefaultState());
         BlockReplace remove = new BlockReplace(this, pattern);
 
         // Copy to a buffer so we don't destroy our original before we can copy all the blocks from it
@@ -1146,15 +1146,15 @@ public class EditSession implements Extent {
         // Our origins can only be liquids
         BlockMask liquidMask = new BlockMask(
                 this,
-                new BaseBlock(moving),
-                new BaseBlock(stationary));
+                moving.getDefaultState(),
+                stationary.getDefaultState());
 
         // But we will also visit air blocks
         MaskIntersection blockMask =
                 new MaskUnion(liquidMask,
                         new BlockMask(
                                 this,
-                                new BaseBlock(BlockTypes.AIR)));
+                                BlockTypes.AIR.getDefaultState()));
 
         // There are boundaries that the routine needs to stay in
         MaskIntersection mask = new MaskIntersection(
@@ -1162,7 +1162,7 @@ public class EditSession implements Extent {
                 new RegionMask(new EllipsoidRegion(null, origin, new Vector(radius, radius, radius))),
                 blockMask);
 
-        BlockReplace replace = new BlockReplace(this, new BlockPattern(new BaseBlock(stationary)));
+        BlockReplace replace = new BlockReplace(this, new BlockPattern(stationary.getDefaultState()));
         NonRisingVisitor visitor = new NonRisingVisitor(mask, replace);
 
         // Around the origin in a 3x3 block
@@ -1433,8 +1433,8 @@ public class EditSession implements Extent {
         int oy = position.getBlockY();
         int oz = position.getBlockZ();
 
-        BaseBlock air = new BaseBlock(BlockTypes.AIR);
-        BaseBlock water = new BaseBlock(BlockTypes.WATER);
+        BlockState air = BlockTypes.AIR.getDefaultState();
+        BlockState water = BlockTypes.WATER.getDefaultState();
 
         int ceilRadius = (int) Math.ceil(radius);
         for (int x = ox - ceilRadius; x <= ox + ceilRadius; ++x) {
@@ -1483,8 +1483,8 @@ public class EditSession implements Extent {
         int oy = position.getBlockY();
         int oz = position.getBlockZ();
 
-        BaseBlock ice = new BaseBlock(BlockTypes.ICE);
-        BaseBlock snow = new BaseBlock(BlockTypes.SNOW);
+        BlockState ice = BlockTypes.ICE.getDefaultState();
+        BlockState snow = BlockTypes.SNOW.getDefaultState();
 
         int ceilRadius = (int) Math.ceil(radius);
         for (int x = ox - ceilRadius; x <= ox + ceilRadius; ++x) {
@@ -1659,7 +1659,7 @@ public class EditSession implements Extent {
                         ++affected;
                         break;
                     } else if (t == BlockTypes.SNOW) {
-                        setBlock(new Vector(x, y, z), new BaseBlock(BlockTypes.AIR));
+                        setBlock(new Vector(x, y, z), BlockTypes.AIR.getDefaultState());
                     } else if (t != BlockTypes.AIR) { // Trees won't grow on this!
                         break;
                     }

@@ -23,16 +23,18 @@ import com.google.common.collect.Sets;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.blocks.type.BlockState;
+import com.sk89q.worldedit.blocks.type.BlockStateHolder;
 import com.sk89q.worldedit.blocks.type.BlockTypes;
 
-import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+
+import javax.annotation.Nullable;
 
 /**
  * Tree generator.
@@ -198,8 +200,8 @@ public class TreeGenerator {
         int trunkHeight = (int) Math.floor(Math.random() * 2) + 3;
         int height = (int) Math.floor(Math.random() * 5) + 8;
 
-        BaseBlock logBlock = new BaseBlock(BlockTypes.OAK_LOG);
-        BaseBlock leavesBlock = new BaseBlock(BlockTypes.OAK_LEAVES);
+        BlockState logBlock = BlockTypes.OAK_LOG.getDefaultState();
+        BlockState leavesBlock = BlockTypes.OAK_LEAVES.getDefaultState();
 
         // Create trunk
         for (int i = 0; i < trunkHeight; ++i) {
@@ -269,7 +271,7 @@ public class TreeGenerator {
      * @return whether a block was changed
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
-    private static boolean setChanceBlockIfAir(EditSession session, Vector position, BaseBlock block, double probability)
+    private static boolean setChanceBlockIfAir(EditSession session, Vector position, BlockStateHolder block, double probability)
             throws MaxChangedBlocksException {
         return Math.random() <= probability && setBlockIfAir(session, position, block);
     }
@@ -282,7 +284,7 @@ public class TreeGenerator {
      * @return if block was changed
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
-    private static boolean setBlockIfAir(EditSession session, Vector position, BaseBlock block) throws MaxChangedBlocksException {
+    private static boolean setBlockIfAir(EditSession session, Vector position, BlockStateHolder block) throws MaxChangedBlocksException {
         return session.getBlock(position).getBlockType() == BlockTypes.AIR && session.setBlock(position, block);
     }
 }

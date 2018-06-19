@@ -299,7 +299,7 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
     @Override
     public void floatAt(int x, int y, int z, boolean alwaysGlass) {
         try {
-            getLocation().getExtent().setBlock(new Vector(x, y - 1, z), new BaseBlock(BlockTypes.GLASS));
+            getLocation().getExtent().setBlock(new Vector(x, y - 1, z), BlockTypes.GLASS.getDefaultState());
         } catch (WorldEditException e) {
             e.printStackTrace();
         }

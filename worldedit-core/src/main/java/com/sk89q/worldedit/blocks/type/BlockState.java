@@ -110,6 +110,10 @@ public class BlockState implements BlockStateHolder<BlockState> {
         return Collections.unmodifiableMap(this.values);
     }
 
+    public BlockState toFuzzy() {
+        return new BlockState(this.getBlockType(), new HashMap<>());
+    }
+
     @Override
     public boolean equalsFuzzy(BlockStateHolder o) {
         if (!getBlockType().equals(o.getBlockType())) {

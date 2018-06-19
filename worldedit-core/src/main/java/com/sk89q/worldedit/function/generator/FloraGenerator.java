@@ -22,7 +22,6 @@ package com.sk89q.worldedit.function.generator;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.type.BlockStateHolder;
 import com.sk89q.worldedit.blocks.type.BlockTypes;
 import com.sk89q.worldedit.function.RegionFunction;
@@ -84,9 +83,9 @@ public class FloraGenerator implements RegionFunction {
      */
     public static Pattern getDesertPattern() {
         RandomPattern pattern = new RandomPattern();
-        pattern.add(new BlockPattern(new BaseBlock(BlockTypes.DEAD_BUSH)), 30);
-        pattern.add(new BlockPattern(new BaseBlock(BlockTypes.CACTUS)), 20);
-        pattern.add(new BlockPattern(new BaseBlock(BlockTypes.AIR)), 300);
+        pattern.add(new BlockPattern(BlockTypes.DEAD_BUSH.getDefaultState()), 30);
+        pattern.add(new BlockPattern(BlockTypes.CACTUS.getDefaultState()), 20);
+        pattern.add(new BlockPattern(BlockTypes.AIR.getDefaultState()), 300);
         return pattern;
     }
 
@@ -97,9 +96,9 @@ public class FloraGenerator implements RegionFunction {
      */
     public static Pattern getTemperatePattern() {
         RandomPattern pattern = new RandomPattern();
-        pattern.add(new BlockPattern(new BaseBlock(BlockTypes.GRASS)), 300);
-        pattern.add(new BlockPattern(new BaseBlock(BlockTypes.POPPY)), 5);
-        pattern.add(new BlockPattern(new BaseBlock(BlockTypes.DANDELION)), 5);
+        pattern.add(new BlockPattern(BlockTypes.GRASS.getDefaultState()), 300);
+        pattern.add(new BlockPattern(BlockTypes.POPPY.getDefaultState()), 5);
+        pattern.add(new BlockPattern(BlockTypes.DANDELION.getDefaultState()), 5);
         return pattern;
     }
 

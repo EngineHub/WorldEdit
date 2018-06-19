@@ -19,6 +19,8 @@
 
 package com.sk89q.worldedit.command;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
@@ -28,7 +30,6 @@ import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.type.BlockTypes;
 import com.sk89q.worldedit.command.tool.BrushTool;
 import com.sk89q.worldedit.command.tool.brush.ButcherBrush;
@@ -49,8 +50,6 @@ import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.util.HandSide;
 import com.sk89q.worldedit.util.command.binding.Switch;
 import com.sk89q.worldedit.util.command.parametric.Optional;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Commands to set brush shape.
@@ -194,10 +193,10 @@ public class BrushCommands {
         worldEdit.checkMaxBrushRadius(radius);
 
         BrushTool tool = session.getBrushTool(player.getItemInHand(HandSide.MAIN_HAND).getType());
-        Pattern fill = new BlockPattern(new BaseBlock(BlockTypes.AIR));
+        Pattern fill = new BlockPattern(BlockTypes.AIR.getDefaultState());
         tool.setFill(fill);
         tool.setSize(radius);
-        tool.setMask(new BlockMask(editSession, new BaseBlock(BlockTypes.FIRE)));
+        tool.setMask(new BlockMask(editSession, BlockTypes.FIRE.getDefaultState().toFuzzy()));
         tool.setBrush(new SphereBrush(), "worldedit.brush.ex");
 
         player.print(String.format("Extinguisher equipped (%.0f).", radius));

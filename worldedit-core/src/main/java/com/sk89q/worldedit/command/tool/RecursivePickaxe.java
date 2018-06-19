@@ -21,6 +21,7 @@ package com.sk89q.worldedit.command.tool;
 
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.blocks.type.BlockState;
 import com.sk89q.worldedit.blocks.type.BlockType;
 import com.sk89q.worldedit.blocks.type.BlockTypes;
 import com.sk89q.worldedit.entity.Player;
@@ -37,7 +38,7 @@ import java.util.Set;
  */
 public class RecursivePickaxe implements BlockTool {
 
-    private static final BaseBlock air = new BaseBlock(BlockTypes.AIR);
+    private static final BlockState air = BlockTypes.AIR.getDefaultState();
     private double range;
 
     public RecursivePickaxe(double range) {

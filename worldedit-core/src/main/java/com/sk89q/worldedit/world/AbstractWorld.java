@@ -94,7 +94,7 @@ public abstract class AbstractWorld implements World {
         }
 
         try {
-            setBlock(pt, new BaseBlock(BlockTypes.AIR));
+            setBlock(pt, BlockTypes.AIR.getDefaultState());
         } catch (WorldEditException e) {
             throw new RuntimeException(e);
         }

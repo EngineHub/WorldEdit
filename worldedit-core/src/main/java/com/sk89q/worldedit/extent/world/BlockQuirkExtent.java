@@ -55,12 +55,12 @@ public class BlockQuirkExtent extends AbstractDelegateExtent {
     @Override
     public boolean setBlock(Vector position, BlockStateHolder block) throws WorldEditException {
         BaseBlock lazyBlock = getExtent().getLazyBlock(position);
-        int existing = lazyBlock.getBlockType().getLegacyId();
+        com.sk89q.worldedit.blocks.type.BlockType existing = lazyBlock.getBlockType();
 
-        if (BlockType.isContainerBlock(existing)) {
+        if (BlockType.isContainerBlock(existing.getLegacyId())) {
             world.clearContainerBlockContents(position); // Clear the container block so that it doesn't drop items
-        } else if (existing == BlockID.ICE) {
-            world.setBlock(position, new BaseBlock(BlockTypes.AIR)); // Ice turns until water so this has to be done first
+        } else if (existing == BlockTypes.ICE) {
+            world.setBlock(position, BlockTypes.AIR.getDefaultState()); // Ice turns until water so this has to be done first
         }
 
         return super.setBlock(position, block);

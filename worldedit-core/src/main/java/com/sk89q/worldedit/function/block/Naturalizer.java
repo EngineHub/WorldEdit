@@ -24,6 +24,7 @@ import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.blocks.type.BlockState;
 import com.sk89q.worldedit.blocks.type.BlockTypes;
 import com.sk89q.worldedit.function.LayerFunction;
 import com.sk89q.worldedit.function.mask.BlockMask;
@@ -38,9 +39,9 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class Naturalizer implements LayerFunction {
 
-    private static final BaseBlock grass = new BaseBlock(BlockTypes.GRASS_BLOCK);
-    private static final BaseBlock dirt = new BaseBlock(BlockTypes.DIRT);
-    private static final BaseBlock stone = new BaseBlock(BlockTypes.STONE);
+    private static final BlockState grass = BlockTypes.GRASS_BLOCK.getDefaultState();
+    private static final BlockState dirt = BlockTypes.DIRT.getDefaultState();
+    private static final BlockState stone = BlockTypes.STONE.getDefaultState();
 
     private final EditSession editSession;
     private final Mask mask;

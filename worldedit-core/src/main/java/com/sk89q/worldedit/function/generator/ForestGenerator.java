@@ -58,11 +58,11 @@ public class ForestGenerator implements RegionFunction {
             treeGenerator.generate(editSession, position.add(0, 1, 0));
             return true;
         } else if (t == BlockTypes.TALL_GRASS || t == BlockTypes.DEAD_BUSH || t == BlockTypes.POPPY || t == BlockTypes.DANDELION) { // TODO: This list needs to be moved
-            editSession.setBlock(position, new BaseBlock(BlockTypes.AIR));
+            editSession.setBlock(position, BlockTypes.AIR.getDefaultState());
             treeGenerator.generate(editSession, position);
             return true;
         } else if (t == BlockTypes.SNOW) {
-            editSession.setBlock(position, new BaseBlock(BlockTypes.AIR));
+            editSession.setBlock(position, BlockTypes.AIR.getDefaultState());
             return false;
         } else { // Trees won't grow on this!
             return false;

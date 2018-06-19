@@ -19,15 +19,14 @@
 
 package com.sk89q.worldedit.math.convolution;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.type.BlockState;
 import com.sk89q.worldedit.blocks.type.BlockTypes;
 import com.sk89q.worldedit.regions.Region;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Allows applications of Kernels onto the region's height map.
@@ -123,7 +122,7 @@ public class HeightMap {
         int originZ = minY.getBlockZ();
 
         int maxY = region.getMaximumPoint().getBlockY();
-        BaseBlock fillerAir = new BaseBlock(BlockTypes.AIR);
+        BlockState fillerAir = BlockTypes.AIR.getDefaultState();
 
         int blocksChanged = 0;
 
