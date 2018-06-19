@@ -23,6 +23,7 @@ import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.extension.input.InputParseException;
 import com.sk89q.worldedit.extension.input.ParserContext;
+import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.internal.registry.InputParser;
 
 public class DefaultItemParser extends InputParser<BaseItem> {
@@ -33,7 +34,8 @@ public class DefaultItemParser extends InputParser<BaseItem> {
 
     @Override
     public BaseItem parseFromInput(String input, ParserContext context) throws InputParseException {
-        BaseItem item = context.requireWorld().getWorldData().getItemRegistry().createFromId(input);
+        BaseItem item = WorldEdit.getInstance().getPlatformManager()
+                .queryCapability(Capability.GAME_HOOKS).getRegistries().getItemRegistry().createFromId(input);
 
         if (item == null) {
             throw new InputParseException("'" + input + "' did not match any item");

@@ -19,13 +19,18 @@
 
 package com.sk89q.worldedit.command.tool;
 
-import com.sk89q.worldedit.*;
-import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.LocalConfiguration;
+import com.sk89q.worldedit.LocalSession;
+import com.sk89q.worldedit.MaxChangedBlocksException;
+import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.blocks.BlockID;
+import com.sk89q.worldedit.blocks.type.BlockState;
 import com.sk89q.worldedit.blocks.type.BlockTypes;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Platform;
+import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.World;
 
@@ -38,7 +43,7 @@ import java.util.Set;
  * to anything else)
  */
 public class FloatingTreeRemover implements BlockTool {
-    private static final BaseBlock AIR = new BaseBlock(BlockTypes.AIR);
+    private static final BlockState AIR = BlockTypes.AIR.getDefaultState();
     private int rangeSq;
 
     public FloatingTreeRemover() {
@@ -55,6 +60,7 @@ public class FloatingTreeRemover implements BlockTool {
             Player player, LocalSession session, Location clicked) {
 
         final World world = (World) clicked.getExtent();
+        final BlockState state = world.getBlock(clicked.toVector());
 
         switch (world.getLazyBlock(clicked.toVector()).getId()) {
         case BlockID.LOG:
@@ -103,12 +109,12 @@ public class FloatingTreeRemover implements BlockTool {
     }
 
     private Vector[] recurseDirections = {
-        PlayerDirection.NORTH.vector(),
-        PlayerDirection.EAST.vector(),
-        PlayerDirection.SOUTH.vector(),
-        PlayerDirection.WEST.vector(),
-        PlayerDirection.UP.vector(),
-        PlayerDirection.DOWN.vector(),
+            Direction.NORTH.toVector(),
+            Direction.EAST.toVector(),
+            Direction.SOUTH.toVector(),
+            Direction.WEST.toVector(),
+            Direction.UP.toVector(),
+            Direction.DOWN.toVector(),
     };
 
     /**

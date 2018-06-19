@@ -25,6 +25,7 @@ import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.extension.input.InputParseException;
 import com.sk89q.worldedit.extension.input.NoMatchException;
 import com.sk89q.worldedit.extension.input.ParserContext;
+import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.function.mask.BiomeMask2D;
 import com.sk89q.worldedit.function.mask.BlockMask;
@@ -128,7 +129,8 @@ class DefaultMaskParser extends InputParser<Mask> {
             case '$':
                 Set<BaseBiome> biomes = new HashSet<>();
                 String[] biomesList = component.substring(1).split(",");
-                BiomeRegistry biomeRegistry = context.requireWorld().getWorldData().getBiomeRegistry();
+                BiomeRegistry biomeRegistry = WorldEdit.getInstance().getPlatformManager()
+                        .queryCapability(Capability.GAME_HOOKS).getRegistries().getBiomeRegistry();
                 List<BaseBiome> knownBiomes = biomeRegistry.getBiomes();
                 for (String biomeName : biomesList) {
                     BaseBiome biome = Biomes.findBiomeByName(knownBiomes, biomeName, biomeRegistry);

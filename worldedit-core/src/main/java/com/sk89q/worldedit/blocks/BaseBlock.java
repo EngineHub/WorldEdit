@@ -22,7 +22,6 @@ package com.sk89q.worldedit.blocks;
 import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.jnbt.StringTag;
 import com.sk89q.jnbt.Tag;
-import com.sk89q.worldedit.CuboidClipboard.FlipDirection;
 import com.sk89q.worldedit.blocks.type.BlockState;
 import com.sk89q.worldedit.blocks.type.BlockStateHolder;
 import com.sk89q.worldedit.blocks.type.BlockType;
@@ -102,7 +101,7 @@ public class BaseBlock implements BlockStateHolder<BaseBlock>, TileEntityBlock {
      */
     public BaseBlock(BlockState state, @Nullable CompoundTag nbtData) {
         this.blockState = state;
-        setNbtData(nbtData);
+        this.nbtData = nbtData;
     }
 
     /**
@@ -126,7 +125,7 @@ public class BaseBlock implements BlockStateHolder<BaseBlock>, TileEntityBlock {
     @Deprecated
     public BaseBlock(int id, int data, @Nullable CompoundTag nbtData) {
         this(id);
-        setNbtData(nbtData);
+        this.nbtData = nbtData;
     }
 
     /**
@@ -174,6 +173,7 @@ public class BaseBlock implements BlockStateHolder<BaseBlock>, TileEntityBlock {
      *
      * @return The state map
      */
+    @Override
     public Map<State, StateValue> getStates() {
         return this.blockState.getStates();
     }
@@ -194,17 +194,9 @@ public class BaseBlock implements BlockStateHolder<BaseBlock>, TileEntityBlock {
      * @param state The state to get the value for
      * @return The state value
      */
+    @Override
     public StateValue getState(State state) {
         return this.blockState.getState(state);
-    }
-
-    /**
-     * Set the block's data value.
-     *
-     * @param data block data value
-     */
-    @Deprecated
-    public void setData(int data) {
     }
 
     @Override
@@ -235,80 +227,6 @@ public class BaseBlock implements BlockStateHolder<BaseBlock>, TileEntityBlock {
     @Override
     public void setNbtData(@Nullable CompoundTag nbtData) {
         throw new UnsupportedOperationException("This class is immutable.");
-    }
-
-    /**
-     * Returns true if it's air.
-     *
-     * @return if air
-     */
-    public boolean isAir() {
-        return getBlockType() == BlockTypes.AIR;
-    }
-
-    /**
-     * Rotate this block 90 degrees.
-     *
-     * @return new data value
-     * @deprecated Use {@link BlockData#rotate90(int, int)}
-     */
-    @Deprecated
-    public int rotate90() {
-        int newData = BlockData.rotate90(getBlockType().getLegacyId(), getData());
-        setData(newData);
-        return newData;
-    }
-
-    /**
-     * Rotate this block -90 degrees.
-     * 
-     * @return new data value
-     * @deprecated Use {@link BlockData#rotate90Reverse(int, int)}
-     */
-    @Deprecated
-    public int rotate90Reverse() {
-        int newData = BlockData.rotate90Reverse(getBlockType().getLegacyId(), getData());
-        setData((short) newData);
-        return newData;
-    }
-
-    /**
-     * Cycle the damage value of the block forward or backward
-     *
-     * @param increment 1 for forward, -1 for backward
-     * @return new data value
-     * @deprecated Use {@link BlockData#cycle(int, int, int)}
-     */
-    @Deprecated
-    public int cycleData(int increment) {
-        int newData = BlockData.cycle(getBlockType().getLegacyId(), getData(), increment);
-        setData((short) newData);
-        return newData;
-    }
-
-    /**
-     * Flip this block.
-     * 
-     * @return this block
-     * @deprecated Use {@link BlockData#flip(int, int)}
-     */
-    @Deprecated
-    public BaseBlock flip() {
-        setData((short) BlockData.flip(getBlockType().getLegacyId(), getData()));
-        return this;
-    }
-
-    /**
-     * Flip this block.
-     * 
-     * @param direction direction to flip in
-     * @return this block
-     * @deprecated Use {@link BlockData#flip(int, int, FlipDirection)}
-     */
-    @Deprecated
-    public BaseBlock flip(FlipDirection direction) {
-        setData((short) BlockData.flip(getBlockType().getLegacyId(), getData(), direction));
-        return this;
     }
 
     /**

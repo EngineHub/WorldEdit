@@ -44,7 +44,7 @@ import com.sk89q.worldedit.util.command.binding.Switch;
 import com.sk89q.worldedit.util.command.parametric.Optional;
 import com.sk89q.worldedit.util.io.Closer;
 import com.sk89q.worldedit.util.io.file.FilenameException;
-import com.sk89q.worldedit.world.registry.WorldData;
+import com.sk89q.worldedit.world.registry.Registries;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -111,9 +111,8 @@ public class SchematicCommands {
             BufferedInputStream bis = closer.register(new BufferedInputStream(fis));
             ClipboardReader reader = format.getReader(bis);
 
-            WorldData worldData = player.getWorld().getWorldData();
-            Clipboard clipboard = reader.read(player.getWorld().getWorldData());
-            session.setClipboard(new ClipboardHolder(clipboard, worldData));
+            Clipboard clipboard = reader.read();
+            session.setClipboard(new ClipboardHolder(clipboard));
 
             log.info(player.getName() + " loaded " + f.getCanonicalPath());
             player.print(filename + " loaded. Paste it with //paste");
@@ -150,7 +149,7 @@ public class SchematicCommands {
 
         // If we have a transform, bake it into the copy
         if (!transform.isIdentity()) {
-            FlattenedClipboardTransform result = FlattenedClipboardTransform.transform(clipboard, transform, holder.getWorldData());
+            FlattenedClipboardTransform result = FlattenedClipboardTransform.transform(clipboard, transform);
             target = new BlockArrayClipboard(result.getTransformedRegion());
             target.setOrigin(clipboard.getOrigin());
             Operations.completeLegacy(result.copyTo(target));
@@ -170,7 +169,7 @@ public class SchematicCommands {
             FileOutputStream fos = closer.register(new FileOutputStream(f));
             BufferedOutputStream bos = closer.register(new BufferedOutputStream(fos));
             ClipboardWriter writer = closer.register(format.getWriter(bos));
-            writer.write(target, holder.getWorldData());
+            writer.write(target);
             log.info(player.getName() + " saved " + f.getCanonicalPath());
             player.print(filename + " saved.");
         } catch (IOException e) {

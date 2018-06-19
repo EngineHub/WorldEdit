@@ -30,8 +30,8 @@ import com.sk89q.worldedit.extension.platform.Preference;
 import com.sk89q.worldedit.util.command.CommandMapping;
 import com.sk89q.worldedit.util.command.Description;
 import com.sk89q.worldedit.util.command.Dispatcher;
+import com.sk89q.worldedit.world.registry.Registries;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.entity.EntityType;
@@ -48,13 +48,11 @@ public class BukkitServerInterface implements MultiUserPlatform {
     public Server server;
     public WorldEditPlugin plugin;
     private CommandRegistration dynamicCommands;
-    private BukkitBiomeRegistry biomes;
     private boolean hookingEvents;
 
     public BukkitServerInterface(WorldEditPlugin plugin, Server server) {
         this.plugin = plugin;
         this.server = server;
-        this.biomes = new BukkitBiomeRegistry();
         dynamicCommands = new CommandRegistration(plugin);
     }
 
@@ -63,9 +61,8 @@ public class BukkitServerInterface implements MultiUserPlatform {
     }
 
     @Override
-    public int resolveItem(String name) {
-        Material mat = Material.matchMaterial(name);
-        return mat == null ? 0 : mat.getId();
+    public Registries getRegistries() {
+        return BukkitRegistries.getInstance();
     }
 
     @Override

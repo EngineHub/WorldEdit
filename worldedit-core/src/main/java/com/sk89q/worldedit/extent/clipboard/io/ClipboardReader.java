@@ -20,7 +20,7 @@
 package com.sk89q.worldedit.extent.clipboard.io;
 
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
-import com.sk89q.worldedit.world.registry.WorldData;
+import com.sk89q.worldedit.world.registry.Registries;
 
 import java.io.IOException;
 
@@ -34,10 +34,9 @@ public interface ClipboardReader {
     /**
      * Read a {@code Clipboard}.
      *
-     * @param data the world data space to convert the blocks to
      * @return the read clipboard
      * @throws IOException thrown on I/O error
      */
-    Clipboard read(WorldData data) throws IOException;
+    Clipboard read() throws IOException;
 
 }

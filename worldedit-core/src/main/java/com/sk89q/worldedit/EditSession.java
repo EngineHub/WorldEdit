@@ -2165,12 +2165,12 @@ public class EditSession implements Extent {
     }
 
     private static final Vector[] recurseDirections = {
-            PlayerDirection.NORTH.vector(),
-            PlayerDirection.EAST.vector(),
-            PlayerDirection.SOUTH.vector(),
-            PlayerDirection.WEST.vector(),
-            PlayerDirection.UP.vector(),
-            PlayerDirection.DOWN.vector(),
+            Direction.NORTH.toVector(),
+            Direction.EAST.toVector(),
+            Direction.SOUTH.toVector(),
+            Direction.WEST.toVector(),
+            Direction.UP.toVector(),
+            Direction.DOWN.toVector(),
     };
 
     private static double lengthSq(double x, double y, double z) {

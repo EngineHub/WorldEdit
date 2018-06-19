@@ -17,40 +17,31 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.world.registry;
+package com.sk89q.worldedit.sponge;
+
+import com.sk89q.worldedit.world.registry.BiomeRegistry;
+import com.sk89q.worldedit.world.registry.BundledRegistries;
 
 /**
- * Describes the necessary data for blocks, entities, and other objects
- * on a world.
+ * World data for the Sponge platform.
  */
-public interface WorldData {
+class SpongeRegistries extends BundledRegistries {
+
+    private static final SpongeRegistries INSTANCE = new SpongeRegistries();
+    private final BiomeRegistry biomeRegistry = new SpongeBiomeRegistry();
+
+    @Override
+    public BiomeRegistry getBiomeRegistry() {
+        return biomeRegistry;
+    }
 
     /**
-     * Get the block registry.
+     * Get a static instance.
      *
-     * @return the block registry
+     * @return an instance
      */
-    BlockRegistry getBlockRegistry();
-
-    /**
-     * Get the item registry.
-     *
-     * @return the item registry
-     */
-    ItemRegistry getItemRegistry();
-
-    /**
-     * Get the entity registry.
-     *
-     * @return the entity registry
-     */
-    EntityRegistry getEntityRegistry();
-
-    /**
-     * Get the biome registry.
-     *
-     * @return the biome registry
-     */
-    BiomeRegistry getBiomeRegistry();
+    public static SpongeRegistries getInstance() {
+        return INSTANCE;
+    }
 
 }

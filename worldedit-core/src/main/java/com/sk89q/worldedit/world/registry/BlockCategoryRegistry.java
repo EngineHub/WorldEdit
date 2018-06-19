@@ -17,37 +17,13 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.bukkit;
+package com.sk89q.worldedit.world.registry;
 
-import com.sk89q.worldedit.world.registry.BiomeRegistry;
-import com.sk89q.worldedit.world.registry.BundledWorldData;
+import com.sk89q.worldedit.blocks.type.BlockType;
 
 /**
- * World data for the Bukkit platform.
+ * A registry for BlockType categories.
  */
-class BukkitWorldData extends BundledWorldData {
-
-    private static final BukkitWorldData INSTANCE = new BukkitWorldData();
-    private final BiomeRegistry biomeRegistry = new BukkitBiomeRegistry();
-
-    /**
-     * Create a new instance.
-     */
-    BukkitWorldData() {
-    }
-
-    @Override
-    public BiomeRegistry getBiomeRegistry() {
-        return biomeRegistry;
-    }
-
-    /**
-     * Get a static instance.
-     *
-     * @return an instance
-     */
-    public static BukkitWorldData getInstance() {
-        return INSTANCE;
-    }
+public interface BlockCategoryRegistry extends CategoryRegistry<BlockType> {
 
 }

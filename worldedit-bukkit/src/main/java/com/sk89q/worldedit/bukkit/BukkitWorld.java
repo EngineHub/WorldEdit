@@ -40,7 +40,7 @@ import com.sk89q.worldedit.util.TreeGenerator;
 import com.sk89q.worldedit.world.AbstractWorld;
 import com.sk89q.worldedit.world.biome.BaseBiome;
 import com.sk89q.worldedit.world.registry.BundledBlockData;
-import com.sk89q.worldedit.world.registry.WorldData;
+import com.sk89q.worldedit.world.registry.Registries;
 import org.bukkit.Effect;
 import org.bukkit.TreeType;
 import org.bukkit.World;
@@ -355,11 +355,6 @@ public class BukkitWorld extends AbstractWorld {
     }
 
     @Override
-    public WorldData getWorldData() {
-        return BukkitWorldData.getInstance();
-    }
-
-    @Override
     public void simulateBlockMine(Vector pt) {
         getWorld().getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ()).breakNaturally();
     }
@@ -367,7 +362,9 @@ public class BukkitWorld extends AbstractWorld {
     @Override
     public com.sk89q.worldedit.blocks.type.BlockState getBlock(Vector position) {
         Block bukkitBlock = getWorld().getBlockAt(position.getBlockX(), position.getBlockY(), position.getBlockZ());
-        BlockType blockType = BlockTypes.getBlockType(BundledBlockData.getInstance().fromLegacyId(bukkitBlock.getTypeId()));
+        BlockType blockType = BlockTypes.getBlockType(
+                BundledBlockData.getInstance().fromLegacyId(bukkitBlock.getTypeId())
+        );
         return blockType.getDefaultState(); // TODO Data
     }
 

@@ -19,6 +19,8 @@
 
 package com.sk89q.worldedit.extent.clipboard.io;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.sk89q.jnbt.ByteArrayTag;
 import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.jnbt.IntTag;
@@ -40,10 +42,8 @@ import com.sk89q.worldedit.extent.clipboard.io.legacycompat.SignCompatibilityHan
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.Location;
-import com.sk89q.worldedit.world.registry.WorldData;
 import com.sk89q.worldedit.world.storage.NBTConversions;
 
-import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -52,7 +52,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import javax.annotation.Nullable;
 
 /**
  * Reads schematic files based that are compatible with MCEdit and other editors.
@@ -79,7 +79,7 @@ public class SchematicReader implements ClipboardReader {
     }
 
     @Override
-    public Clipboard read(WorldData data) throws IOException {
+    public Clipboard read() throws IOException {
         // Schematic tag
         NamedTag rootTag = inputStream.readNamedTag();
         if (!rootTag.getName().equals("Schematic")) {

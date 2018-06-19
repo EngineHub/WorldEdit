@@ -35,7 +35,7 @@ import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.AbstractWorld;
 import com.sk89q.worldedit.world.biome.BaseBiome;
-import com.sk89q.worldedit.world.registry.WorldData;
+import com.sk89q.worldedit.world.registry.Registries;
 import com.sk89q.worldedit.world.registry.state.State;
 import com.sk89q.worldedit.world.registry.state.value.StateValue;
 import org.spongepowered.api.Sponge;
@@ -44,7 +44,6 @@ import org.spongepowered.api.block.BlockState;
 import org.spongepowered.api.block.BlockType;
 import org.spongepowered.api.block.BlockTypes;
 import org.spongepowered.api.block.tileentity.TileEntity;
-import org.spongepowered.api.block.trait.BlockTrait;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.property.block.GroundLuminanceProperty;
 import org.spongepowered.api.data.property.block.SkyLuminanceProperty;
@@ -59,8 +58,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -216,11 +213,6 @@ public abstract class SpongeWorld extends AbstractWorld {
 
         entity.offer(Keys.REPRESENTED_ITEM, SpongeWorldEdit.toSpongeItemStack(item).createSnapshot());
         getWorld().spawnEntity(entity);
-    }
-
-    @Override
-    public WorldData getWorldData() {
-        return SpongeWorldData.getInstance();
     }
 
     @Override

@@ -20,12 +20,9 @@
 package com.sk89q.worldedit.command.util;
 
 import com.sk89q.minecraft.util.commands.CommandContext;
-import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.entity.metadata.EntityType;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.function.EntityFunction;
-import com.sk89q.worldedit.world.registry.EntityRegistry;
 
 /**
  * The implementation of /butcher.
@@ -80,7 +77,7 @@ public class CreatureButcher {
         or(Flags.WITH_LIGHTNING, args.hasFlag('l'), "worldedit.butcher.lightning");
     }
 
-    public EntityFunction createFunction(final EntityRegistry entityRegistry) {
+    public EntityFunction createFunction() {
         return entity -> {
             boolean killPets = (flags & Flags.PETS) != 0;
             boolean killNPCs = (flags & Flags.NPCS) != 0;

@@ -17,26 +17,38 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.extent.clipboard.io;
+package com.sk89q.worldedit.forge;
 
-import com.sk89q.worldedit.extent.clipboard.Clipboard;
-
-import java.io.Closeable;
-import java.io.IOException;
+import com.sk89q.worldedit.world.registry.BiomeRegistry;
+import com.sk89q.worldedit.world.registry.ItemRegistry;
+import com.sk89q.worldedit.world.registry.BundledRegistries;
 
 /**
- * Writes {@code Clipboard}s.
- *
- * @see Clipboard
+ * World data for the Forge platform.
  */
-public interface ClipboardWriter extends Closeable {
+class ForgeRegistries extends BundledRegistries {
+
+    private static final ForgeRegistries INSTANCE = new ForgeRegistries();
+    private final BiomeRegistry biomeRegistry = new ForgeBiomeRegistry();
+    private final ItemRegistry itemRegistry = new ForgeItemRegistry();
+
+    @Override
+    public BiomeRegistry getBiomeRegistry() {
+        return biomeRegistry;
+    }
+
+    @Override
+    public ItemRegistry getItemRegistry() {
+        return itemRegistry;
+    }
 
     /**
-     * Writes a clipboard.
+     * Get a static instance.
      *
-     * @param clipboard the clipboard
-     * @throws IOException thrown on I/O error
+     * @return an instance
      */
-    void write(Clipboard clipboard) throws IOException;
+    public static ForgeRegistries getInstance() {
+        return INSTANCE;
+    }
 
 }

@@ -24,7 +24,6 @@ import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.blocks.type.BlockStateHolder;
@@ -35,7 +34,7 @@ import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.util.TreeGenerator;
-import com.sk89q.worldedit.world.registry.WorldData;
+import com.sk89q.worldedit.world.registry.Registries;
 
 /**
  * Represents a world (dimension).
@@ -203,13 +202,6 @@ public interface World extends Extent {
      * @return true if the effect was played
      */
     boolean queueBlockBreakEffect(Platform server, Vector position, BlockType blockType, double priority);
-
-    /**
-     * Get the data for blocks and so on for this world.
-     *
-     * @return the world data
-     */
-    WorldData getWorldData();
 
     @Override
     boolean equals(Object other);

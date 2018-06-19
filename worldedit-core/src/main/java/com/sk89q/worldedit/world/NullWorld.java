@@ -36,12 +36,11 @@ import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.TreeGenerator.TreeType;
 import com.sk89q.worldedit.world.biome.BaseBiome;
-import com.sk89q.worldedit.world.registry.BundledWorldData;
-import com.sk89q.worldedit.world.registry.WorldData;
 
-import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
+
+import javax.annotation.Nullable;
 
 /**
  * A null implementation of {@link World} that drops all changes and
@@ -96,11 +95,6 @@ public class NullWorld extends AbstractWorld {
     @Override
     public boolean generateTree(TreeType type, EditSession editSession, Vector position) throws MaxChangedBlocksException {
         return false;
-    }
-
-    @Override
-    public WorldData getWorldData() {
-        return BundledWorldData.getInstance();
     }
 
     @Override

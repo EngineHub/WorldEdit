@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.function.mask;
 
+import com.sk89q.worldedit.blocks.type.BlockTypes;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.Vector;
 
@@ -41,7 +42,7 @@ public class ExistingBlockMask extends AbstractExtentMask {
 
     @Override
     public boolean test(Vector vector) {
-        return !getExtent().getLazyBlock(vector).isAir();
+        return getExtent().getBlock(vector).getBlockType() != BlockTypes.AIR;
     }
 
     @Nullable

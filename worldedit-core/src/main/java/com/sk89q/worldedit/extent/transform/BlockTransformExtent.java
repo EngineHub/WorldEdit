@@ -22,15 +22,16 @@ package com.sk89q.worldedit.extent.transform;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.LazyBlock;
 import com.sk89q.worldedit.blocks.type.BlockState;
 import com.sk89q.worldedit.blocks.type.BlockStateHolder;
+import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.extent.AbstractDelegateExtent;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.math.transform.Transform;
-import com.sk89q.worldedit.world.registry.BlockRegistry;
 import com.sk89q.worldedit.world.registry.state.DirectionalState;
 import com.sk89q.worldedit.world.registry.state.State;
 import com.sk89q.worldedit.world.registry.state.value.DirectionalStateValue;
@@ -48,20 +49,16 @@ public class BlockTransformExtent extends AbstractDelegateExtent {
     private static final double RIGHT_ANGLE = Math.toRadians(90);
 
     private final Transform transform;
-    private final BlockRegistry blockRegistry;
 
     /**
      * Create a new instance.
      *
      * @param extent the extent
-     * @param blockRegistry the block registry used for block direction data
      */
-    public BlockTransformExtent(Extent extent, Transform transform, BlockRegistry blockRegistry) {
+    public BlockTransformExtent(Extent extent, Transform transform) {
         super(extent);
         checkNotNull(transform);
-        checkNotNull(blockRegistry);
         this.transform = transform;
-        this.blockRegistry = blockRegistry;
     }
 
     /**
@@ -81,7 +78,7 @@ public class BlockTransformExtent extends AbstractDelegateExtent {
      * @return the same block
      */
     private <T extends BlockStateHolder> T transformBlock(T block, boolean reverse) {
-        transform(block, reverse ? transform.inverse() : transform, blockRegistry);
+        transform(block, reverse ? transform.inverse() : transform);
         return block;
     }
 
@@ -113,11 +110,10 @@ public class BlockTransformExtent extends AbstractDelegateExtent {
      *
      * @param block the block
      * @param transform the transform
-     * @param registry the registry
      * @return the same block
      */
-    public static <T extends BlockStateHolder> T transform(T block, Transform transform, BlockRegistry registry) {
-        return transform(block, transform, registry, block);
+    public static <T extends BlockStateHolder> T transform(T block, Transform transform) {
+        return transform(block, transform, block);
     }
 
     /**
@@ -125,16 +121,15 @@ public class BlockTransformExtent extends AbstractDelegateExtent {
      *
      * @param block the block
      * @param transform the transform
-     * @param registry the registry
      * @param changedBlock the block to change
      * @return the changed block
      */
-    private static <T extends BlockStateHolder> T transform(T block, Transform transform, BlockRegistry registry, T changedBlock) {
+    private static <T extends BlockStateHolder> T transform(T block, Transform transform, T changedBlock) {
         checkNotNull(block);
         checkNotNull(transform);
-        checkNotNull(registry);
 
-        Map<String, ? extends State> states = registry.getStates(block);
+        Map<String, ? extends State> states = WorldEdit.getInstance().getPlatformManager()
+                .queryCapability(Capability.GAME_HOOKS).getRegistries().getBlockRegistry().getStates(block);
 
         if (states == null) {
             return changedBlock;

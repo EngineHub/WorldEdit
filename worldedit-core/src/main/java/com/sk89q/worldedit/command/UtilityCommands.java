@@ -448,12 +448,12 @@ public class UtilityCommands {
             } else {
                 entities = editSession.getEntities();
             }
-            visitors.add(new EntityVisitor(entities.iterator(), flags.createFunction(editSession.getWorld().getWorldData().getEntityRegistry())));
+            visitors.add(new EntityVisitor(entities.iterator(), flags.createFunction()));
         } else {
             Platform platform = we.getPlatformManager().queryCapability(Capability.WORLD_EDITING);
             for (World world : platform.getWorlds()) {
                 List<? extends Entity> entities = world.getEntities();
-                visitors.add(new EntityVisitor(entities.iterator(), flags.createFunction(world.getWorldData().getEntityRegistry())));
+                visitors.add(new EntityVisitor(entities.iterator(), flags.createFunction()));
             }
         }
 
@@ -508,12 +508,12 @@ public class UtilityCommands {
             } else {
                 entities = editSession.getEntities();
             }
-            visitors.add(new EntityVisitor(entities.iterator(), remover.createFunction(editSession.getWorld().getWorldData().getEntityRegistry())));
+            visitors.add(new EntityVisitor(entities.iterator(), remover.createFunction()));
         } else {
             Platform platform = we.getPlatformManager().queryCapability(Capability.WORLD_EDITING);
             for (World world : platform.getWorlds()) {
                 List<? extends Entity> entities = world.getEntities();
-                visitors.add(new EntityVisitor(entities.iterator(), remover.createFunction(world.getWorldData().getEntityRegistry())));
+                visitors.add(new EntityVisitor(entities.iterator(), remover.createFunction()));
             }
         }
 

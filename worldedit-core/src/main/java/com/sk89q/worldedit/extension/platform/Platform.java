@@ -23,6 +23,7 @@ import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.util.command.Dispatcher;
 import com.sk89q.worldedit.world.World;
+import com.sk89q.worldedit.world.registry.Registries;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -37,12 +38,11 @@ import java.util.Map;
 public interface Platform {
 
     /**
-     * Resolves an item name to its ID.
+     * Gets the registry holder.
      *
-     * @param name The name to look up
-     * @return The id that corresponds to the name, or -1 if no such ID exists
+     * @return The registry holder
      */
-    int resolveItem(String name);
+    Registries getRegistries();
 
     /**
      * Checks if a mob type is valid.

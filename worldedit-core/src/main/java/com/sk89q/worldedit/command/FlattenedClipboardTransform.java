@@ -19,6 +19,8 @@
 
 package com.sk89q.worldedit.command;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
@@ -30,9 +32,6 @@ import com.sk89q.worldedit.math.transform.CombinedTransform;
 import com.sk89q.worldedit.math.transform.Transform;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
-import com.sk89q.worldedit.world.registry.WorldData;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Helper class to 'bake' a transform into a clipboard.
@@ -46,22 +45,18 @@ class FlattenedClipboardTransform {
 
     private final Clipboard original;
     private final Transform transform;
-    private final WorldData worldData;
 
     /**
      * Create a new instance.
      *
      * @param original the original clipboard
      * @param transform the transform
-     * @param worldData the world data instance
      */
-    private FlattenedClipboardTransform(Clipboard original, Transform transform, WorldData worldData) {
+    private FlattenedClipboardTransform(Clipboard original, Transform transform) {
         checkNotNull(original);
         checkNotNull(transform);
-        checkNotNull(worldData);
         this.original = original;
         this.transform = transform;
-        this.worldData = worldData;
     }
 
     /**
@@ -122,7 +117,7 @@ class FlattenedClipboardTransform {
      * @return the operation
      */
     public Operation copyTo(Extent target) {
-        BlockTransformExtent extent = new BlockTransformExtent(original, transform, worldData.getBlockRegistry());
+        BlockTransformExtent extent = new BlockTransformExtent(original, transform);
         ForwardExtentCopy copy = new ForwardExtentCopy(extent, original.getRegion(), original.getOrigin(), target, original.getOrigin());
         copy.setTransform(transform);
         return copy;
@@ -133,11 +128,10 @@ class FlattenedClipboardTransform {
      *
      * @param original the original clipboard
      * @param transform the transform
-     * @param worldData the world data instance
      * @return a builder
      */
-    public static FlattenedClipboardTransform transform(Clipboard original, Transform transform, WorldData worldData) {
-        return new FlattenedClipboardTransform(original, transform, worldData);
+    public static FlattenedClipboardTransform transform(Clipboard original, Transform transform) {
+        return new FlattenedClipboardTransform(original, transform);
     }
 
 }

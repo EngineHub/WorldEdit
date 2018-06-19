@@ -30,6 +30,7 @@ import com.sk89q.worldedit.Vector2D;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.entity.Player;
+import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.function.FlatRegionFunction;
 import com.sk89q.worldedit.function.FlatRegionMaskingFilter;
 import com.sk89q.worldedit.function.biome.BiomeReplace;
@@ -91,7 +92,8 @@ public class BiomeCommands {
             offset = (page - 1) * 19;
         }
 
-        BiomeRegistry biomeRegistry = player.getWorld().getWorldData().getBiomeRegistry();
+        BiomeRegistry biomeRegistry = WorldEdit.getInstance().getPlatformManager()
+                .queryCapability(Capability.GAME_HOOKS).getRegistries().getBiomeRegistry();
         List<BaseBiome> biomes = biomeRegistry.getBiomes();
         int totalPages = biomes.size() / 19 + 1;
         player.print("Available Biomes (page " + page + "/" + totalPages + ") :");
@@ -125,7 +127,8 @@ public class BiomeCommands {
     )
     @CommandPermissions("worldedit.biome.info")
     public void biomeInfo(Player player, LocalSession session, CommandContext args) throws WorldEditException {
-        BiomeRegistry biomeRegistry = player.getWorld().getWorldData().getBiomeRegistry();
+        BiomeRegistry biomeRegistry = WorldEdit.getInstance().getPlatformManager()
+                .queryCapability(Capability.GAME_HOOKS).getRegistries().getBiomeRegistry();
         Set<BaseBiome> biomes = new HashSet<>();
         String qualifier;
 

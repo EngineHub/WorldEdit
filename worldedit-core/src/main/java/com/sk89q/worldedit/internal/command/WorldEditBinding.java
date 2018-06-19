@@ -33,6 +33,7 @@ import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.input.NoMatchException;
 import com.sk89q.worldedit.extension.input.ParserContext;
 import com.sk89q.worldedit.extension.platform.Actor;
+import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.function.pattern.Pattern;
@@ -318,7 +319,8 @@ public class WorldEditBinding extends BindingHelper {
                 throw new ParameterException("An entity is required.");
             }
 
-            BiomeRegistry biomeRegistry = world.getWorldData().getBiomeRegistry();
+            BiomeRegistry biomeRegistry = WorldEdit.getInstance().getPlatformManager()
+                    .queryCapability(Capability.GAME_HOOKS).getRegistries().getBiomeRegistry();
             List<BaseBiome> knownBiomes = biomeRegistry.getBiomes();
             BaseBiome biome = Biomes.findBiomeByName(knownBiomes, input, biomeRegistry);
             if (biome != null) {

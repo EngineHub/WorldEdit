@@ -17,38 +17,28 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.forge;
+package com.sk89q.worldedit.world.registry;
 
-import com.sk89q.worldedit.world.registry.BiomeRegistry;
-import com.sk89q.worldedit.world.registry.ItemRegistry;
-import com.sk89q.worldedit.world.registry.BundledWorldData;
+import java.util.Set;
 
 /**
- * World data for the Forge platform.
+ * A registry of categories. Minecraft internally calls these 'Tags'.
  */
-class ForgeWorldData extends BundledWorldData {
-
-    private static final ForgeWorldData INSTANCE = new ForgeWorldData();
-    private final BiomeRegistry biomeRegistry = new ForgeBiomeRegistry();
-    private final ItemRegistry itemRegistry = new ForgeItemRegistry();
-
-    @Override
-    public BiomeRegistry getBiomeRegistry() {
-        return biomeRegistry;
-    }
-
-    @Override
-    public ItemRegistry getItemRegistry() {
-        return itemRegistry;
-    }
+public interface CategoryRegistry<T> {
 
     /**
-     * Get a static instance.
+     * Gets a set of values with a given category.
      *
-     * @return an instance
+     * @param category The category
+     * @return A set of values
      */
-    public static ForgeWorldData getInstance() {
-        return INSTANCE;
-    }
+    Set<T> getCategorisedByName(String category);
 
+    /**
+     * Gets a list of categories given to a value.
+     *
+     * @param categorised The value
+     * @return A set of categories
+     */
+    Set<String> getCategories(T categorised);
 }

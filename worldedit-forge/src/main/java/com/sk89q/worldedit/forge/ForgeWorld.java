@@ -45,7 +45,7 @@ import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.TreeGenerator.TreeType;
 import com.sk89q.worldedit.world.AbstractWorld;
 import com.sk89q.worldedit.world.biome.BaseBiome;
-import com.sk89q.worldedit.world.registry.WorldData;
+import com.sk89q.worldedit.world.registry.Registries;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLeaves;
@@ -87,7 +87,6 @@ import net.minecraft.world.gen.feature.WorldGenTaiga2;
 import net.minecraft.world.gen.feature.WorldGenTrees;
 import net.minecraft.world.gen.feature.WorldGenerator;
 import net.minecraftforge.common.DimensionManager;
-import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
 import javax.annotation.Nullable;
 
@@ -346,17 +345,12 @@ public class ForgeWorld extends AbstractWorld {
     }
 
     @Override
-    public WorldData getWorldData() {
-        return ForgeWorldData.getInstance();
-    }
-
-    @Override
     public BlockState getBlock(Vector position) {
         World world = getWorld();
         BlockPos pos = new BlockPos(position.getBlockX(), position.getBlockY(), position.getBlockZ());
         IBlockState state = world.getBlockState(pos);
 
-        return BlockTypes.getBlockType(ForgeRegistries.BLOCKS.getKey(state.getBlock()).toString()).getDefaultState(); // TODO Data
+        return BlockTypes.getBlockType(net.minecraftforge.fml.common.registry.ForgeRegistries.BLOCKS.getKey(state.getBlock()).toString()).getDefaultState(); // TODO Data
     }
 
     @Override

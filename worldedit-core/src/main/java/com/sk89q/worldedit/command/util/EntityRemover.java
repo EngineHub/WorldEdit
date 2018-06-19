@@ -19,17 +19,15 @@
 
 package com.sk89q.worldedit.command.util;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.sk89q.minecraft.util.commands.CommandException;
-import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.entity.metadata.EntityType;
 import com.sk89q.worldedit.function.EntityFunction;
-import com.sk89q.worldedit.world.registry.EntityRegistry;
 
-import javax.annotation.Nullable;
 import java.util.regex.Pattern;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import javax.annotation.Nullable;
 
 /**
  * The implementation of /remove.
@@ -138,7 +136,7 @@ public class EntityRemover {
         }
     }
 
-    public EntityFunction createFunction(final EntityRegistry entityRegistry) {
+    public EntityFunction createFunction() {
         final Type type = this.type;
         checkNotNull(type, "type can't be null");
         return entity -> {

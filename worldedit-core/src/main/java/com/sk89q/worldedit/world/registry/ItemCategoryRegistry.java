@@ -17,26 +17,13 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.extent.clipboard.io;
+package com.sk89q.worldedit.world.registry;
 
-import com.sk89q.worldedit.extent.clipboard.Clipboard;
-
-import java.io.Closeable;
-import java.io.IOException;
+import com.sk89q.worldedit.blocks.type.ItemType;
 
 /**
- * Writes {@code Clipboard}s.
- *
- * @see Clipboard
+ * A registry for ItemType categories.
  */
-public interface ClipboardWriter extends Closeable {
-
-    /**
-     * Writes a clipboard.
-     *
-     * @param clipboard the clipboard
-     * @throws IOException thrown on I/O error
-     */
-    void write(Clipboard clipboard) throws IOException;
+public interface ItemCategoryRegistry extends CategoryRegistry<ItemType> {
 
 }

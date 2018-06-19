@@ -17,39 +17,23 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.world.registry;
+package com.sk89q.worldedit.bukkit;
+
+import com.sk89q.worldedit.world.registry.BiomeRegistry;
+import com.sk89q.worldedit.world.registry.BundledRegistries;
 
 /**
- * An implementation of {@link WorldData} that converts legacy numeric IDs and
- * a contains a built-in block and item database.
+ * World data for the Bukkit platform.
  */
-public class BundledWorldData implements WorldData {
+class BukkitRegistries extends BundledRegistries {
 
-    private static final BundledWorldData INSTANCE = new BundledWorldData();
-    private final BundledBlockRegistry blockRegistry = new BundledBlockRegistry();
-    private final BundledItemRegistry itemRegistry = new BundledItemRegistry();
-    private final NullEntityRegistry entityRegistry = new NullEntityRegistry();
-    private final NullBiomeRegistry biomeRegistry = new NullBiomeRegistry();
+    private static final BukkitRegistries INSTANCE = new BukkitRegistries();
+    private final BiomeRegistry biomeRegistry = new BukkitBiomeRegistry();
 
     /**
      * Create a new instance.
      */
-    protected BundledWorldData() {
-    }
-
-    @Override
-    public BlockRegistry getBlockRegistry() {
-        return blockRegistry;
-    }
-
-    @Override
-    public ItemRegistry getItemRegistry() {
-        return itemRegistry;
-    }
-
-    @Override
-    public EntityRegistry getEntityRegistry() {
-        return entityRegistry;
+    BukkitRegistries() {
     }
 
     @Override
@@ -58,11 +42,11 @@ public class BundledWorldData implements WorldData {
     }
 
     /**
-     * Get a singleton instance.
+     * Get a static instance.
      *
      * @return an instance
      */
-    public static BundledWorldData getInstance() {
+    public static BukkitRegistries getInstance() {
         return INSTANCE;
     }
 
