@@ -23,6 +23,7 @@ import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.blocks.BlockType;
 import com.sk89q.worldedit.blocks.LazyBlock;
+import com.sk89q.worldedit.blocks.type.BlockCategories;
 import com.sk89q.worldedit.blocks.type.BlockState;
 import com.sk89q.worldedit.blocks.type.BlockStateHolder;
 import com.sk89q.worldedit.blocks.type.BlockTypes;
@@ -1445,7 +1446,7 @@ public class EditSession implements Extent {
 
                 for (int y = world.getMaxY(); y >= 1; --y) {
                     Vector pt = new Vector(x, y, z);
-                    com.sk89q.worldedit.blocks.type.BlockType id = getLazyBlock(pt).getBlockType();
+                    com.sk89q.worldedit.blocks.type.BlockType id = getBlock(pt).getBlockType();
 
                     if (id == BlockTypes.ICE) {
                         if (setBlock(pt, water)) {
@@ -1495,14 +1496,14 @@ public class EditSession implements Extent {
 
                 for (int y = world.getMaxY(); y >= 1; --y) {
                     Vector pt = new Vector(x, y, z);
-                    int id = getLazyBlock(pt).getId();
+                    com.sk89q.worldedit.blocks.type.BlockType id = getBlock(pt).getBlockType();
 
-                    if (id == BlockID.AIR) {
+                    if (id == BlockTypes.AIR) {
                         continue;
                     }
 
                     // Ice!
-                    if (id == BlockID.WATER || id == BlockID.STATIONARY_WATER) {
+                    if (id == BlockTypes.WATER) {
                         if (setBlock(pt, ice)) {
                             ++affected;
                         }
@@ -1510,9 +1511,9 @@ public class EditSession implements Extent {
                     }
 
                     // Snow should not cover these blocks
-                    if (BlockType.isTranslucent(id)) {
+                    if (BlockType.isTranslucent(id.getLegacyId())) {
                         // Add snow on leaves
-                        if (id != BlockID.LEAVES && id != BlockID.LEAVES2) {
+                        if (BlockCategories.LEAVES.contains(id)) {
                             break;
                         }
                     }

@@ -67,9 +67,7 @@ public abstract class AbstractWorld implements World {
     public Mask createLiquidMask() {
         return new BlockMask(this,
                 new BlockState(BlockTypes.LAVA, new HashMap<>()),
-                new BlockState(BlockTypes.FLOWING_LAVA, new HashMap<>()),
-                new BlockState(BlockTypes.WATER, new HashMap<>()),
-                new BlockState(BlockTypes.FLOWING_WATER, new HashMap<>()));
+                new BlockState(BlockTypes.WATER, new HashMap<>()));
     }
 
     @Override

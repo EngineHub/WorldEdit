@@ -88,7 +88,7 @@ public class ItemCategories {
     }
 
     @Nullable
-    public static ItemCategory getBlockType(String id) {
+    public static ItemCategory getItemCategory(String id) {
         // If it has no namespace, assume minecraft.
         if (id != null && !id.contains(":")) {
             id = "minecraft:" + id;

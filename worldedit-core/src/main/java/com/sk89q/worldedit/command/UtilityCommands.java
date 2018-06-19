@@ -175,8 +175,9 @@ public class UtilityCommands {
 
         double radius = Math.max(0, args.getDouble(0));
         we.checkMaxRadius(radius);
+        // TODO Investigate with a real build of 1.13
         int affected = editSession.fixLiquid(
-                session.getPlacementPosition(player), radius, BlockTypes.FLOWING_LAVA, BlockTypes.LAVA);
+                session.getPlacementPosition(player), radius, BlockTypes.LAVA, BlockTypes.LAVA);
         player.print(affected + " block(s) have been changed.");
     }
 
@@ -193,8 +194,9 @@ public class UtilityCommands {
 
         double radius = Math.max(0, args.getDouble(0));
         we.checkMaxRadius(radius);
+        // TODO Investigate with a real build of 1.13
         int affected = editSession.fixLiquid(
-                session.getPlacementPosition(player), radius, BlockTypes.FLOWING_WATER, BlockTypes.WATER);
+                session.getPlacementPosition(player), radius, BlockTypes.WATER, BlockTypes.WATER);
         player.print(affected + " block(s) have been changed.");
     }
 

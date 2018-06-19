@@ -172,7 +172,7 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
                     final com.sk89q.worldedit.blocks.type.BlockType type = block.getBlockType();
 
                     // Don't get put in lava!
-                    if (type == BlockTypes.LAVA || type == BlockTypes.FLOWING_LAVA) {
+                    if (type == BlockTypes.LAVA) {
                         return false;
                     }
 
@@ -214,7 +214,7 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
                     final com.sk89q.worldedit.blocks.type.BlockType type = block.getBlockType();
 
                     // Don't want to end up in lava
-                    if (type != BlockTypes.AIR && type != BlockTypes.LAVA && type != BlockTypes.FLOWING_LAVA) {
+                    if (type != BlockTypes.AIR && type != BlockTypes.LAVA) {
                         // Found a block!
                         setPosition(platform.add(0.5, BlockType.centralTopLimit(block), 0.5));
                         return true;

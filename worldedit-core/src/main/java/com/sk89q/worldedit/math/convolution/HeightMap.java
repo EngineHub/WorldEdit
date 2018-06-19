@@ -148,8 +148,7 @@ public class HeightMap {
                     BlockState existing = session.getBlock(new Vector(xr, curHeight, zr));
 
                     // Skip water/lava
-                    if (existing.getBlockType() != BlockTypes.WATER && existing.getBlockType() != BlockTypes.FLOWING_WATER
-                            && existing.getBlockType() != BlockTypes.LAVA && existing.getBlockType() != BlockTypes.FLOWING_LAVA) {
+                    if (existing.getBlockType() != BlockTypes.WATER && existing.getBlockType() != BlockTypes.LAVA) {
                         session.setBlock(new Vector(xr, newHeight, zr), existing);
                         ++blocksChanged;
 

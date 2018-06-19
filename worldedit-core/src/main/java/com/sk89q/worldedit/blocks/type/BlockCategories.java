@@ -67,10 +67,6 @@ public class BlockCategories {
     public static final BlockCategory WOODEN_STAIRS = new BlockCategory("minecraft:wooden_stairs");
     public static final BlockCategory WOOL = new BlockCategory("minecraft:wool");
 
-    // Fluids
-    public static final BlockCategory LAVA = new BlockCategory("minecraft:lava");
-    public static final BlockCategory WATER = new BlockCategory("minecraft:water");
-
     private static final Map<String, BlockCategory> categoryMapping = new HashMap<>();
 
     static {
@@ -94,7 +90,7 @@ public class BlockCategories {
     }
 
     @Nullable
-    public static BlockCategory getBlockType(String id) {
+    public static BlockCategory getBlockCategory(String id) {
         // If it has no namespace, assume minecraft.
         if (id != null && !id.contains(":")) {
             id = "minecraft:" + id;

@@ -23,7 +23,6 @@ import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.type.BlockState;
 import com.sk89q.worldedit.blocks.type.BlockStateHolder;
 import com.sk89q.worldedit.blocks.type.BlockTypes;
@@ -214,6 +213,6 @@ public class GardenPatchGenerator implements RegionFunction {
      * @return a melon pattern
      */
     public static Pattern getMelonPattern() {
-        return new BlockPattern(BlockTypes.MELON_BLOCK.getDefaultState());
+        return new BlockPattern(BlockTypes.MELON.getDefaultState());
     }
 }
