@@ -31,8 +31,6 @@ import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.blocks.LazyBlock;
 import com.sk89q.worldedit.blocks.type.BlockStateHolder;
-import com.sk89q.worldedit.blocks.type.BlockType;
-import com.sk89q.worldedit.blocks.type.BlockTypes;
 import com.sk89q.worldedit.bukkit.adapter.BukkitImplAdapter;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.history.change.BlockChange;
@@ -40,7 +38,7 @@ import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.TreeGenerator;
 import com.sk89q.worldedit.world.AbstractWorld;
 import com.sk89q.worldedit.world.biome.BaseBiome;
-import com.sk89q.worldedit.world.registry.BundledBlockData;
+import com.sk89q.worldedit.world.registry.LegacyMapper;
 import org.bukkit.Effect;
 import org.bukkit.TreeType;
 import org.bukkit.World;
@@ -361,10 +359,7 @@ public class BukkitWorld extends AbstractWorld {
     @Override
     public com.sk89q.worldedit.blocks.type.BlockState getBlock(Vector position) {
         Block bukkitBlock = getWorld().getBlockAt(position.getBlockX(), position.getBlockY(), position.getBlockZ());
-        BlockType blockType = BlockTypes.getBlockType(
-                BundledBlockData.getInstance().fromLegacyId(bukkitBlock.getTypeId())
-        );
-        return blockType.getDefaultState(); // TODO Data
+        return LegacyMapper.getInstance().getBlockFromLegacy(bukkitBlock.getTypeId(), bukkitBlock.getData());
     }
 
     @Override
@@ -374,7 +369,11 @@ public class BukkitWorld extends AbstractWorld {
             return adapter.setBlock(BukkitAdapter.adapt(getWorld(), position), block, notifyAndLight);
         } else {
             Block bukkitBlock = getWorld().getBlockAt(position.getBlockX(), position.getBlockY(), position.getBlockZ());
-            return bukkitBlock.setTypeIdAndData(block.getBlockType().getLegacyId(), (byte) 0, notifyAndLight); // TODO Data
+            int[] datas = LegacyMapper.getInstance().getLegacyFromBlock(block.toImmutableState());
+            if (datas == null) {
+                throw new WorldEditException("Unknown block"){}; // TODO Remove.
+            }
+            return bukkitBlock.setTypeIdAndData(datas[0], (byte) datas[1], notifyAndLight);
         }
     }
 

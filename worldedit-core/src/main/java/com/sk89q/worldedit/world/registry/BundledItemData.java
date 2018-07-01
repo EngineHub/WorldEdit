@@ -54,7 +54,6 @@ public class BundledItemData {
     private static final BundledItemData INSTANCE = new BundledItemData();
 
     private final Map<String, ItemEntry> idMap = new HashMap<>();
-    private final Map<Integer, ItemEntry> legacyMap = new HashMap<>(); // Trove usage removed temporarily
 
     /**
      * Create a new instance.
@@ -85,9 +84,6 @@ public class BundledItemData {
 
         for (ItemEntry entry : entries) {
             idMap.put(entry.id, entry);
-            if (entry.legacyId >= 0) {
-                legacyMap.put(entry.legacyId, entry);
-            }
         }
     }
 
@@ -97,55 +93,13 @@ public class BundledItemData {
      * @param id the ID
      * @return the entry, or null
      */
-    @Nullable public ItemEntry findById(String id) {
+    @Nullable
+    public ItemEntry findById(String id) {
         // If it has no namespace, assume minecraft.
         if (!id.contains(":")) {
             id = "minecraft:" + id;
         }
         return idMap.get(id);
-    }
-
-    /**
-     * Return the entry for the given item legacy numeric ID.
-     *
-     * @param id the ID
-     * @return the entry, or null
-     */
-    @Nullable
-    private ItemEntry findById(int id) {
-        return legacyMap.get(id);
-    }
-
-    /**
-     * Convert the given string ID to a legacy numeric ID.
-     *
-     * @param id the ID
-     * @return the legacy ID, which may be null if the item does not have a legacy ID
-     */
-    @Nullable
-    public Integer toLegacyId(String id) {
-        ItemEntry entry = findById(id);
-        if (entry != null) {
-            return entry.legacyId;
-        } else {
-            return null;
-        }
-    }
-
-    /**
-     * Convert the given legacy numeric ID to a string ID.
-     *
-     * @param id the legacy ID
-     * @return the ID, which may be null if the item does not have a ID
-     */
-    @Nullable
-    public String fromLegacyId(Integer id) {
-        ItemEntry entry = findById(id);
-        if (entry != null) {
-            return entry.id;
-        } else {
-            return null;
-        }
     }
 
     /**
@@ -158,8 +112,6 @@ public class BundledItemData {
     }
 
     public static class ItemEntry {
-        private int legacyId; // -1 for items without legacy IDs.
-        private short legacyData;
         private String id;
         private String unlocalizedName;
         public String localizedName;

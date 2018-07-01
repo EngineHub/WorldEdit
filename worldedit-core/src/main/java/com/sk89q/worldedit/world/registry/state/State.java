@@ -34,6 +34,13 @@ import javax.annotation.Nullable;
 public interface State<T extends SimpleStateValue> {
 
     /**
+     * Returns the name of this state.
+     *
+     * @return The state name
+     */
+    String getName();
+
+    /**
      * Return a list of available values for this state.
      *
      * @return the list of state values

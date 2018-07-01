@@ -29,6 +29,7 @@ import javax.annotation.Nullable;
 
 public class SimpleState<T extends SimpleStateValue> implements State<T> {
 
+    private String name;
     private List<T> values;
 
     /**
@@ -37,7 +38,19 @@ public class SimpleState<T extends SimpleStateValue> implements State<T> {
      * @param values The values
      */
     public SimpleState(List<T> values) {
+        this.name = "Unknown";
         this.values = values;
+    }
+
+    /**
+     * Internal method for name setting post-deserialise. Do not use.
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return this.name;
     }
 
     @Override

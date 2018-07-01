@@ -141,6 +141,11 @@ public class BlockState implements BlockStateHolder<BlockState> {
         return true;
     }
 
+    @Override
+    public BlockState toImmutableState() {
+        return this;
+    }
+
     /**
      * Internal method used for creating the initial BlockState.
      *

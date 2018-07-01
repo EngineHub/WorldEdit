@@ -108,6 +108,7 @@ import com.sk89q.worldedit.util.eventbus.EventBus;
 import com.sk89q.worldedit.world.NullWorld;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.biome.BaseBiome;
+import com.sk89q.worldedit.world.registry.LegacyMapper;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -440,10 +441,9 @@ public class EditSession implements Extent {
     public int getHighestTerrainBlock(int x, int z, int minY, int maxY, boolean naturalOnly) {
         for (int y = maxY; y >= minY; --y) {
             Vector pt = new Vector(x, y, z);
-            BaseBlock block = getLazyBlock(pt);
-            int id = block.getId();
-            int data = block.getData();
-            if (naturalOnly ? BlockType.isNaturalTerrainBlock(id, data) : !BlockType.canPassThrough(id, data)) {
+            BlockState block = getBlock(pt);
+            int[] datas = LegacyMapper.getInstance().getLegacyFromBlock(block);
+            if (naturalOnly ? BlockType.isNaturalTerrainBlock(datas[0], datas[1]) : !BlockType.canPassThrough(datas[0], datas[1])) {
                 return y;
             }
         }
@@ -2115,8 +2115,9 @@ public class EditSession implements Extent {
 
         while (!queue.isEmpty()) {
             final BlockVector current = queue.removeFirst();
-            final BaseBlock block = getLazyBlock(current);
-            if (!BlockType.canPassThrough(block.getId(), block.getData())) {
+            final BlockState block = getBlock(current);
+            int[] datas = LegacyMapper.getInstance().getLegacyFromBlock(block);
+            if (!BlockType.canPassThrough(datas[0], datas[1])) {
                 continue;
             }
 

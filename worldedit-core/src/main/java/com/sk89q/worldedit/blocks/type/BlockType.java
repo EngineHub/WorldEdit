@@ -20,6 +20,7 @@
 package com.sk89q.worldedit.blocks.type;
 
 import com.sk89q.worldedit.world.registry.BundledBlockData;
+import com.sk89q.worldedit.world.registry.LegacyMapper;
 
 import java.util.function.Function;
 
@@ -85,9 +86,9 @@ public class BlockType {
      */
     @Deprecated
     public int getLegacyId() {
-        Integer id = BundledBlockData.getInstance().toLegacyId(this.id);
+        int[] id = LegacyMapper.getInstance().getLegacyFromBlock(this.getDefaultState());
         if (id != null) {
-            return id;
+            return id[0];
         } else {
             return 0;
         }

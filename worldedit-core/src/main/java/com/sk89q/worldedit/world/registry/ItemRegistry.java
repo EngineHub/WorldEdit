@@ -34,13 +34,4 @@ public interface ItemRegistry {
     @Nullable
     BaseItem createFromId(String id);
 
-    /**
-     * Create a new item using its legacy numeric ID.
-     *
-     * @param id the id
-     * @return the item, which may be null if no item exists
-     */
-    @Nullable
-    BaseItem createFromId(int id);
-
 }

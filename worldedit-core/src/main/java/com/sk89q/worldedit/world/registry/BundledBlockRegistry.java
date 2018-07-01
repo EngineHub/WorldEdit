@@ -43,17 +43,6 @@ public class BundledBlockRegistry implements BlockRegistry {
 
     @Nullable
     @Override
-    public BlockState createFromId(int legacyId) {
-        String id = BundledBlockData.getInstance().fromLegacyId(legacyId);
-        if (id != null) {
-            return createFromId(id);
-        } else {
-            return null;
-        }
-    }
-
-    @Nullable
-    @Override
     public BlockMaterial getMaterial(BaseBlock block) {
         return BundledBlockData.getInstance().getMaterialById(block.getBlockType().getId());
     }

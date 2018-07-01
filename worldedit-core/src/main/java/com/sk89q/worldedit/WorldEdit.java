@@ -53,6 +53,7 @@ import com.sk89q.worldedit.util.io.file.InvalidFilenameException;
 import com.sk89q.worldedit.util.logging.WorldEditPrefixHandler;
 import com.sk89q.worldedit.world.registry.BundledBlockData;
 import com.sk89q.worldedit.world.registry.BundledItemData;
+import com.sk89q.worldedit.world.registry.LegacyMapper;
 
 import java.io.DataInputStream;
 import java.io.File;
@@ -101,6 +102,7 @@ public class WorldEdit {
         getVersion();
         BundledBlockData.getInstance(); // Load block registry
         BundledItemData.getInstance(); // Load item registry
+        LegacyMapper.getInstance(); // Load item registry
     }
 
     private WorldEdit() {

@@ -128,11 +128,7 @@ public class BlockArrayClipboard implements Clipboard {
             Vector v = position.subtract(region.getMinimumPoint());
             BlockStateHolder block = blocks[v.getBlockX()][v.getBlockY()][v.getBlockZ()];
             if (block != null) {
-                if (block instanceof BlockState) {
-                    return (BlockState) block;
-                } else if (block instanceof BaseBlock) {
-                    return ((BaseBlock) block).getState();
-                }
+                return block.toImmutableState();
             }
         }
 

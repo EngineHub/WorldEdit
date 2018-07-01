@@ -35,15 +35,4 @@ public class BundledItemRegistry implements ItemRegistry {
     public BaseItem createFromId(String id) {
         return new BaseItem(ItemTypes.getItemType(id));
     }
-
-    @Nullable
-    @Override
-    public BaseItem createFromId(int legacyId) {
-        String id = BundledItemData.getInstance().fromLegacyId(legacyId);
-        if (id != null) {
-            return createFromId(id);
-        } else {
-            return null;
-        }
-    }
 }

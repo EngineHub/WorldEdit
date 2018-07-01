@@ -25,6 +25,7 @@ import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.session.SessionManager;
 import com.sk89q.worldedit.world.registry.BundledItemData;
+import com.sk89q.worldedit.world.registry.LegacyMapper;
 import com.sk89q.worldedit.world.snapshot.SnapshotRepository;
 
 import java.io.IOException;
@@ -57,7 +58,7 @@ public class YAMLConfiguration extends LocalConfiguration {
         profile = config.getBoolean("debug", profile);
         wandItem = config.getString("wand-item", wandItem);
         try {
-            wandItem = BundledItemData.getInstance().fromLegacyId(Integer.parseInt(wandItem));
+            wandItem = LegacyMapper.getInstance().getItemFromLegacy(Integer.parseInt(wandItem)).getId();
         } catch (Throwable e) {
         }
 
@@ -105,7 +106,7 @@ public class YAMLConfiguration extends LocalConfiguration {
 
         navigationWand = config.getString("navigation-wand.item", navigationWand);
         try {
-            navigationWand = BundledItemData.getInstance().fromLegacyId(Integer.parseInt(navigationWand));
+            navigationWand = LegacyMapper.getInstance().getItemFromLegacy(Integer.parseInt(navigationWand)).getId();
         } catch (Throwable e) {
         }
         navigationWandMaxDistance = config.getInt("navigation-wand.max-distance", navigationWandMaxDistance);

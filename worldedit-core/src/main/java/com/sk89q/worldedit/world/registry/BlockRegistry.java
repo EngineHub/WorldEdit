@@ -43,16 +43,6 @@ public interface BlockRegistry {
     BlockState createFromId(String id);
 
     /**
-     * Create a new block using its legacy numeric ID.
-     *
-     * @param id the id
-     * @return the block, which may be null if no block exists
-     */
-    @Nullable
-    @Deprecated
-    BlockState createFromId(int id);
-
-    /**
      * Get the material for the given block.
      *
      * @param block the block

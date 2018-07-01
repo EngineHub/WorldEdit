@@ -19,13 +19,12 @@
 
 package com.sk89q.worldedit.bukkit;
 
-import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.blocks.type.BlockTypes;
+import com.sk89q.worldedit.world.registry.LegacyMapper;
 import org.bukkit.BlockChangeDelegate;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.MaxChangedBlocksException;
-import com.sk89q.worldedit.blocks.BaseBlock;
 
 /**
  * Proxy class to catch calls to set blocks.
@@ -41,7 +40,7 @@ public class EditSessionBlockChangeDelegate implements BlockChangeDelegate {
     @Override
     public boolean setRawTypeId(int x, int y, int z, int typeId) {
         try {
-            return editSession.setBlock(new Vector(x, y, z), new BaseBlock(typeId));
+            return editSession.setBlock(new Vector(x, y, z), LegacyMapper.getInstance().getBlockFromLegacy(typeId));
         } catch (MaxChangedBlocksException ex) {
             return false;
         }
@@ -50,7 +49,7 @@ public class EditSessionBlockChangeDelegate implements BlockChangeDelegate {
     @Override
     public boolean setRawTypeIdAndData(int x, int y, int z, int typeId, int data) {
         try {
-            return editSession.setBlock(new Vector(x, y, z), new BaseBlock(typeId, data));
+            return editSession.setBlock(new Vector(x, y, z), LegacyMapper.getInstance().getBlockFromLegacy(typeId, data));
         } catch (MaxChangedBlocksException ex) {
             return false;
         }
@@ -68,7 +67,8 @@ public class EditSessionBlockChangeDelegate implements BlockChangeDelegate {
 
     @Override
     public int getTypeId(int x, int y, int z) {
-        return editSession.getBlock(new Vector(x, y, z)).getBlockType().getLegacyId();
+        int[] datas = LegacyMapper.getInstance().getLegacyFromBlock(editSession.getBlock(new Vector(x, y, z)));
+        return datas[0];
     }
 
     @Override

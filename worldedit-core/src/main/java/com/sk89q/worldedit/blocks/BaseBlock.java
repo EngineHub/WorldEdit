@@ -27,7 +27,7 @@ import com.sk89q.worldedit.blocks.type.BlockStateHolder;
 import com.sk89q.worldedit.blocks.type.BlockType;
 import com.sk89q.worldedit.blocks.type.BlockTypes;
 import com.sk89q.worldedit.function.mask.Mask;
-import com.sk89q.worldedit.world.registry.BundledBlockData;
+import com.sk89q.worldedit.world.registry.LegacyMapper;
 import com.sk89q.worldedit.world.registry.state.State;
 import com.sk89q.worldedit.world.registry.state.value.StateValue;
 
@@ -52,9 +52,6 @@ import javax.annotation.Nullable;
  */
 public class BaseBlock implements BlockStateHolder<BaseBlock>, TileEntityBlock {
 
-    // Instances of this class should be _as small as possible_ because there will
-    // be millions of instances of this object.
-
     private BlockState blockState;
     @Nullable
     private CompoundTag nbtData;
@@ -67,10 +64,12 @@ public class BaseBlock implements BlockStateHolder<BaseBlock>, TileEntityBlock {
     @Deprecated
     public BaseBlock(int id) {
         try {
-            this.blockState = BlockTypes.getBlockType(BundledBlockData.getInstance().fromLegacyId(id)).getDefaultState();
+            this.blockState = LegacyMapper.getInstance().getBlockFromLegacy(id);
+            if (this.blockState == null) {
+                this.blockState = BlockTypes.AIR.getDefaultState();
+            }
         } catch (Exception e) {
             System.out.println(id);
-            System.out.println(BundledBlockData.getInstance().fromLegacyId(id));
             e.printStackTrace();
         }
     }
@@ -134,16 +133,7 @@ public class BaseBlock implements BlockStateHolder<BaseBlock>, TileEntityBlock {
      * @param other the other block
      */
     public BaseBlock(BaseBlock other) {
-        this(other.getState(), other.getNbtData());
-    }
-
-    /**
-     * Get the block state
-     *
-     * @return The block state
-     */
-    public BlockState getState() {
-        return this.blockState;
+        this(other.toImmutableState(), other.getNbtData());
     }
 
     /**
@@ -240,7 +230,7 @@ public class BaseBlock implements BlockStateHolder<BaseBlock>, TileEntityBlock {
 
         final BaseBlock otherBlock = (BaseBlock) o;
 
-        return this.getState().equals(otherBlock.getState()) && Objects.equals(getNbtData(), otherBlock.getNbtData());
+        return this.toImmutableState().equals(otherBlock.toImmutableState()) && Objects.equals(getNbtData(), otherBlock.getNbtData());
 
     }
 
@@ -252,12 +242,17 @@ public class BaseBlock implements BlockStateHolder<BaseBlock>, TileEntityBlock {
      */
     @Override
     public boolean equalsFuzzy(BlockStateHolder o) {
-        return this.getState().equalsFuzzy(o);
+        return this.toImmutableState().equalsFuzzy(o);
+    }
+
+    @Override
+    public BlockState toImmutableState() {
+        return this.blockState;
     }
 
     @Override
     public int hashCode() {
-        int ret = getState().hashCode() << 3;
+        int ret = toImmutableState().hashCode() << 3;
         if (hasNbtData()) {
             ret += getNbtData().hashCode();
         }
@@ -266,7 +261,7 @@ public class BaseBlock implements BlockStateHolder<BaseBlock>, TileEntityBlock {
 
     @Override
     public String toString() {
-        return "Block{State: " + this.getState().toString() + ", NBT: " + String.valueOf(getNbtData()) + "}";
+        return "Block{State: " + this.toImmutableState().toString() + ", NBT: " + String.valueOf(getNbtData()) + "}";
     }
 
 }

@@ -37,14 +37,4 @@ public class ForgeItemRegistry implements ItemRegistry {
             return null;
         }
     }
-
-    @Nullable
-    @Override
-    public BaseItem createFromId(int id) {
-        if (Item.REGISTRY.getObjectById(id) != null) {
-            return new BaseItem(id);
-        } else {
-            return null;
-        }
-    }
 }

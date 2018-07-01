@@ -25,11 +25,13 @@ import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockData;
+import com.sk89q.worldedit.blocks.type.BlockState;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.World;
+import com.sk89q.worldedit.world.registry.LegacyMapper;
 
 /**
  * A mode that cycles the data values of supported blocks.
@@ -46,9 +48,10 @@ public class BlockDataCyler implements DoubleActionBlockTool {
 
         World world = (World) clicked.getExtent();
 
-        BaseBlock block = world.getLazyBlock(clicked.toVector());
-        int type = block.getId();
-        int data = block.getData();
+        BlockState block = world.getBlock(clicked.toVector());
+        int[] datas = LegacyMapper.getInstance().getLegacyFromBlock(block);
+        int type = datas[0];
+        int data = datas[1];
 
         if (!config.allowedDataCycleBlocks.isEmpty()
                 && !player.hasPermission("worldedit.override.data-cycler")

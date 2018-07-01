@@ -56,7 +56,6 @@ public class BundledBlockData {
     private static final BundledBlockData INSTANCE = new BundledBlockData();
 
     private final Map<String, BlockEntry> idMap = new HashMap<>();
-    private final Map<Integer, BlockEntry> legacyMap = new HashMap<>(); // Trove usage removed temporarily
 
     /**
      * Create a new instance.
@@ -87,7 +86,7 @@ public class BundledBlockData {
 
         for (BlockEntry entry : entries) {
             idMap.put(entry.id, entry);
-            legacyMap.put(entry.legacyId, entry);
+            entry.postDeserialization();
         }
     }
 
@@ -104,49 +103,6 @@ public class BundledBlockData {
             id = "minecraft:" + id;
         }
         return idMap.get(id);
-    }
-
-    /**
-     * Return the entry for the given block legacy numeric ID.
-     *
-     * @param id the ID
-     * @return the entry, or null
-     */
-    @Nullable
-    private BlockEntry findById(int id) {
-        return legacyMap.get(id);
-    }
-
-    /**
-     * Convert the given string ID to a legacy numeric ID.
-     *
-     * @param id the ID
-     * @return the legacy ID, which may be null if the block does not have a legacy ID
-     */
-    @Nullable
-    public Integer toLegacyId(String id) {
-        BlockEntry entry = findById(id);
-        if (entry != null) {
-            return entry.legacyId;
-        } else {
-            return null;
-        }
-    }
-
-    /**
-     * Convert the given legacy numeric ID to a string ID.
-     *
-     * @param id the legacy ID
-     * @return the ID, which may be null if the block does not have a ID
-     */
-    @Nullable
-    public String fromLegacyId(Integer id) {
-        BlockEntry entry = findById(id);
-        if (entry != null) {
-            return entry.id;
-        } else {
-            return null;
-        }
     }
 
     /**
@@ -191,13 +147,18 @@ public class BundledBlockData {
     }
 
     public static class BlockEntry {
-        private int legacyId;
         private String id;
         private String unlocalizedName;
         public String localizedName;
         private List<String> aliases;
         public Map<String, SimpleState> states = new HashMap<>();
         private SimpleBlockMaterial material = new SimpleBlockMaterial();
+
+        void postDeserialization() {
+            for (Map.Entry<String, SimpleState> state : states.entrySet()) {
+                state.getValue().setName(state.getKey());
+            }
+        }
     }
 
 }

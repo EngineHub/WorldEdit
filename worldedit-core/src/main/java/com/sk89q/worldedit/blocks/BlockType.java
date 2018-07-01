@@ -1195,25 +1195,6 @@ public enum BlockType {
     }
 
     /**
-     * Checks if the block type is naturally occurring
-     *
-     * @param block the block
-     * @return true if the block type is naturally occurring
-     */
-    public static boolean isNaturalTerrainBlock(BaseBlock block) {
-        return isNaturalTerrainBlock(block.getId(), block.getData());
-    }
-
-    /**
-     * Checks if the block type is naturally occurring
-     *
-     * @return true if the block type is naturally occurring
-     */
-    public boolean isNaturalTerrainBlock() {
-        return isNaturalTerrainBlock.contains(id);
-    }
-
-    /**
      * HashSet for emitsLight.
      */
     private static final Set<Integer> emitsLight = new HashSet<>();

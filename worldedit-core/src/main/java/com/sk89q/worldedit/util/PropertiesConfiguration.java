@@ -24,7 +24,7 @@ package com.sk89q.worldedit.util;
 import com.sk89q.util.StringUtil;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
-import com.sk89q.worldedit.world.registry.BundledItemData;
+import com.sk89q.worldedit.world.registry.LegacyMapper;
 import com.sk89q.worldedit.world.snapshot.SnapshotRepository;
 
 import java.io.File;
@@ -92,7 +92,7 @@ public class PropertiesConfiguration extends LocalConfiguration {
         registerHelp = getBool("register-help", registerHelp);
         wandItem = getString("wand-item", wandItem);
         try {
-            wandItem = BundledItemData.getInstance().fromLegacyId(Integer.parseInt(wandItem));
+            wandItem = LegacyMapper.getInstance().getItemFromLegacy(Integer.parseInt(wandItem)).getId();
         } catch (Throwable e) {
         }
         superPickaxeDrop = getBool("super-pickaxe-drop-items", superPickaxeDrop);
@@ -103,7 +103,7 @@ public class PropertiesConfiguration extends LocalConfiguration {
         useInventoryCreativeOverride = getBool("use-inventory-creative-override", useInventoryCreativeOverride);
         navigationWand = getString("nav-wand-item", navigationWand);
         try {
-            navigationWand = BundledItemData.getInstance().fromLegacyId(Integer.parseInt(navigationWand));
+            navigationWand = LegacyMapper.getInstance().getItemFromLegacy(Integer.parseInt(navigationWand)).getId();
         } catch (Throwable e) {
         }
         navigationWandMaxDistance = getInt("nav-wand-distance", navigationWandMaxDistance);

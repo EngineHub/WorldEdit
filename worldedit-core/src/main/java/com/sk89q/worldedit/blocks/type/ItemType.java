@@ -19,8 +19,8 @@
 
 package com.sk89q.worldedit.blocks.type;
 
-import com.sk89q.worldedit.world.registry.BundledBlockData;
 import com.sk89q.worldedit.world.registry.BundledItemData;
+import com.sk89q.worldedit.world.registry.LegacyMapper;
 
 public class ItemType {
 
@@ -61,9 +61,9 @@ public class ItemType {
      */
     @Deprecated
     public int getLegacyId() {
-        Integer id = BundledItemData.getInstance().toLegacyId(this.id);
-        if (id != null) {
-            return id;
+        int ids[] = LegacyMapper.getInstance().getLegacyFromItem(this);
+        if (ids != null) {
+            return ids[0];
         } else {
             return 0;
         }

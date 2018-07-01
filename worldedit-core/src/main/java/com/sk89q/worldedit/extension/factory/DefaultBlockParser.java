@@ -153,6 +153,37 @@ class DefaultBlockParser extends InputParser<BlockStateHolder> {
         }
     }
 
+    private static BlockState applyProperties(BlockState state, String[] stateProperties) throws NoMatchException {
+        if (stateProperties.length > 0) { // Block data not yet detected
+            // Parse the block data (optional)
+            for (String parseableData : stateProperties) {
+                try {
+                    String[] parts = parseableData.split("=");
+                    if (parts.length != 2) {
+                        throw new NoMatchException("Bad state format in " + parseableData);
+                    }
+
+                    State stateKey = BundledBlockData.getInstance().findById(state.getBlockType().getId()).states.get(parts[0]);
+                    if (stateKey == null) {
+                        throw new NoMatchException("Unknown state " + parts[0] + " for block " + state.getBlockType().getName());
+                    }
+                    StateValue value = stateKey.getValueFor(parts[1]);
+                    if (value == null) {
+                        throw new NoMatchException("Unknown value " + parts[1] + " for state " + parts[0]);
+                    }
+
+                    state = state.with(stateKey, value);
+                } catch (NoMatchException e) {
+                    throw e; // Pass-through
+                } catch (Exception e) {
+                    throw new NoMatchException("Unknown state '" + parseableData + "'");
+                }
+            }
+        }
+
+        return state;
+    }
+
     private BlockStateHolder parseLogic(String input, ParserContext context) throws InputParseException {
         BlockType blockType;
         Map<State, StateValue> blockStates = new HashMap<>();
@@ -217,38 +248,15 @@ class DefaultBlockParser extends InputParser<BlockStateHolder> {
             state = new BlockState(blockType, blockStates);
         }
 
-        if (stateProperties.length > 0) { // Block data not yet detected
-            // Parse the block data (optional)
-            for (String parseableData : stateProperties) {
-                try {
-                    String[] parts = parseableData.split("=");
-                    if (parts.length != 2) {
-                        throw new NoMatchException("Bad state format in " + parseableData);
-                    }
-
-                    State stateKey = BundledBlockData.getInstance().findById(blockType.getId()).states.get(parts[0]);
-                    if (stateKey == null) {
-                        throw new NoMatchException("Unknown state " + parts[0] + " for block " + blockType.getName());
-                    }
-                    StateValue value = stateKey.getValueFor(parts[1]);
-                    if (value == null) {
-                        throw new NoMatchException("Unknown value " + parts[1] + " for state " + parts[0]);
-                    }
-
-                    state = state.with(stateKey, value);
-                } catch (NoMatchException e) {
-                    throw e; // Pass-through
-                } catch (Exception e) {
-                    throw new NoMatchException("Unknown state '" + parseableData + "'");
-                }
-            }
-        }
+        state = applyProperties(state, stateProperties);
 
         // Check if the item is allowed
-        Actor actor = context.requireActor();
-        if (context.isRestricted() && actor != null && !actor.hasPermission("worldedit.anyblock")
-                && worldEdit.getConfiguration().disallowedBlocks.contains(blockType.getId())) {
-            throw new DisallowedUsageException("You are not allowed to use '" + input + "'");
+        if (context.isRestricted()) {
+            Actor actor = context.requireActor();
+            if (actor != null && !actor.hasPermission("worldedit.anyblock")
+                    && worldEdit.getConfiguration().disallowedBlocks.contains(blockType.getId())) {
+                throw new DisallowedUsageException("You are not allowed to use '" + input + "'");
+            }
         }
 
         if (blockType == BlockTypes.SIGN || blockType == BlockTypes.WALL_SIGN) {

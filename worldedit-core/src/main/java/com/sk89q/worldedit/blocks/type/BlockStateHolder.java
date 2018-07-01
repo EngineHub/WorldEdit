@@ -64,4 +64,11 @@ public interface BlockStateHolder<T extends BlockStateHolder> {
      * @return true if equal
      */
     boolean equalsFuzzy(BlockStateHolder o);
+
+    /**
+     * Returns an immutable BlockState from this BlockStateHolder.
+     *
+     * @return A BlockState
+     */
+    BlockState toImmutableState();
 }
