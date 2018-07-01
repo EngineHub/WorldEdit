@@ -88,6 +88,10 @@ public class NullWorld extends AbstractWorld {
     }
 
     @Override
+    public void simulateBlockMine(Vector position) {
+    }
+
+    @Override
     public boolean regenerate(Region region, EditSession editSession) {
         return false;
     }

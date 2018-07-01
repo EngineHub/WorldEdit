@@ -22,10 +22,8 @@ package com.sk89q.worldedit.world;
 import com.sk89q.worldedit.BlockVector2D;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.blocks.BaseItemStack;
-import com.sk89q.worldedit.blocks.BlockType;
 import com.sk89q.worldedit.blocks.type.BlockState;
 import com.sk89q.worldedit.blocks.type.BlockStateHolder;
 import com.sk89q.worldedit.blocks.type.BlockTypes;
@@ -74,27 +72,6 @@ public abstract class AbstractWorld implements World {
     public void dropItem(Vector pt, BaseItemStack item, int times) {
         for (int i = 0; i < times; ++i) {
             dropItem(pt, item);
-        }
-    }
-
-    @Override
-    public void simulateBlockMine(Vector pt) {
-        BaseBlock block = getLazyBlock(pt);
-        BaseItemStack stack = BlockType.getBlockDrop(block.getId(), (short) block.getData());
-
-        if (stack != null) {
-            final int amount = stack.getAmount();
-            if (amount > 1) {
-                dropItem(pt, new BaseItemStack(stack.getType(), stack.getNbtData(), 1), amount);
-            } else {
-                dropItem(pt, stack, amount);
-            }
-        }
-
-        try {
-            setBlock(pt, BlockTypes.AIR.getDefaultState());
-        } catch (WorldEditException e) {
-            throw new RuntimeException(e);
         }
     }
 

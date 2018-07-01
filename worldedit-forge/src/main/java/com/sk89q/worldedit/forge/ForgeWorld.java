@@ -19,6 +19,8 @@
 
 package com.sk89q.worldedit.forge;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.google.common.io.Files;
 import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.worldedit.BlockVector;
@@ -45,8 +47,6 @@ import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.TreeGenerator.TreeType;
 import com.sk89q.worldedit.world.AbstractWorld;
 import com.sk89q.worldedit.world.biome.BaseBiome;
-import com.sk89q.worldedit.world.registry.Registries;
-
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLeaves;
 import net.minecraft.block.BlockOldLeaf;
@@ -88,15 +88,13 @@ import net.minecraft.world.gen.feature.WorldGenTrees;
 import net.minecraft.world.gen.feature.WorldGenerator;
 import net.minecraftforge.common.DimensionManager;
 
-import javax.annotation.Nullable;
-
 import java.io.File;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import javax.annotation.Nullable;
 
 /**
  * An adapter to Minecraft worlds for WorldEdit.
@@ -265,6 +263,14 @@ public class ForgeWorld extends AbstractWorld {
         EntityItem entity = new EntityItem(getWorld(), position.getX(), position.getY(), position.getZ(), ForgeWorldEdit.toForgeItemStack(item));
         entity.setPickupDelay(10);
         getWorld().spawnEntity(entity);
+    }
+
+    @Override
+    public void simulateBlockMine(Vector position) {
+        BlockPos pos = ForgeAdapter.toBlockPos(position);
+        IBlockState state = getWorld().getBlockState(pos);
+        state.getBlock().dropBlockAsItem(getWorld(), pos, state, 0);
+        getWorld().setBlockToAir(pos);
     }
 
     @Override

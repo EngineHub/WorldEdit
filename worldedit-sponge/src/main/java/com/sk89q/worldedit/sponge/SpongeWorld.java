@@ -216,6 +216,11 @@ public abstract class SpongeWorld extends AbstractWorld {
     }
 
     @Override
+    public void simulateBlockMine(Vector position) {
+        // TODO
+    }
+
+    @Override
     public int hashCode() {
         return getWorld().hashCode();
     }
