@@ -102,7 +102,7 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
         byte free = 0;
 
         while (y <= world.getMinimumPoint().getBlockY() + 2) {
-            if (BlockType.canPassThrough(world.getBlock(new Vector(x, y, z)))) {
+            if (!world.getBlock(new Vector(x, y, z)).getBlockType().getMaterial().isMovementBlocker()) {
                 ++free;
             } else {
                 free = 0;
@@ -132,7 +132,7 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
         while (y >= 0) {
             final Vector pos = new Vector(x, y, z);
             final BlockState id = world.getBlock(pos);
-            if (!BlockType.canPassThrough(id.getBlockType().getLegacyId())) {
+            if (id.getBlockType().getMaterial().isMovementBlocker()) {
                 setPosition(new Vector(x + 0.5, y + BlockType.centralTopLimit(id), z + 0.5));
                 return;
             }
@@ -158,7 +158,7 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
         byte spots = 0;
 
         while (y <= world.getMaximumPoint().getY() + 2) {
-            if (BlockType.canPassThrough(world.getBlock(new Vector(x, y, z)))) {
+            if (!world.getBlock(new Vector(x, y, z)).getBlockType().getMaterial().isMovementBlocker()) {
                 ++free;
             } else {
                 free = 0;
@@ -198,7 +198,7 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
         byte free = 0;
 
         while (y >= 1) {
-            if (BlockType.canPassThrough(world.getBlock(new Vector(x, y, z)))) {
+            if (!world.getBlock(new Vector(x, y, z)).getBlockType().getMaterial().isMovementBlocker()) {
                 ++free;
             } else {
                 free = 0;
@@ -253,7 +253,7 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
 
         while (y <= world.getMaximumPoint().getY()) {
             // Found a ceiling!
-            if (!BlockType.canPassThrough(world.getBlock(new Vector(x, y, z)))) {
+            if (world.getBlock(new Vector(x, y, z)).getBlockType().getMaterial().isMovementBlocker()) {
                 int platformY = Math.max(initialY, y - 3 - clearance);
                 floatAt(x, platformY + 1, z, alwaysGlass);
                 return true;
@@ -281,7 +281,7 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
         final Extent world = getLocation().getExtent();
 
         while (y <= world.getMaximumPoint().getY() + 2) {
-            if (!BlockType.canPassThrough(world.getBlock(new Vector(x, y, z)))) {
+            if (world.getBlock(new Vector(x, y, z)).getBlockType().getMaterial().isMovementBlocker()) {
                 break; // Hit something
             } else if (y > maxY + 1) {
                 break;
@@ -364,7 +364,11 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
     @Override
     public BaseBlock getBlockInHand(HandSide handSide) throws WorldEditException {
         final ItemType typeId = getItemInHand(handSide).getType();
-        return new BaseBlock(typeId.getLegacyId());
+        if (typeId.hasBlockType()) {
+            return new BaseBlock(typeId.getBlockType());
+        } else {
+            return new BaseBlock(BlockTypes.AIR);
+        }
     }
 
     /**
@@ -384,7 +388,7 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
         boolean inFree = false;
 
         while ((block = hitBlox.getNextBlock()) != null) {
-            boolean free = BlockType.canPassThrough(world.getBlock(block.toVector()));
+            boolean free = !world.getBlock(block.toVector()).getBlockType().getMaterial().isMovementBlocker();
 
             if (firstBlock) {
                 firstBlock = false;

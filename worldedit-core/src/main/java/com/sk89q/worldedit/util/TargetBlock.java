@@ -136,7 +136,7 @@ public class TargetBlock {
      * @return Block
      */
     public Location getSolidTargetBlock() {
-        while (getNextBlock() != null && BlockType.canPassThrough(world.getBlock(getCurrentBlock().toVector()))) ;
+        while (getNextBlock() != null && !world.getBlock(getCurrentBlock().toVector()).getBlockType().getMaterial().isMovementBlocker()) ;
         return getCurrentBlock();
     }
 

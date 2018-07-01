@@ -24,19 +24,17 @@ import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BaseItemStack;
-import com.sk89q.worldedit.blocks.BlockType;
-import com.sk89q.worldedit.blocks.ItemID;
 import com.sk89q.worldedit.blocks.type.BlockTypes;
+import com.sk89q.worldedit.blocks.type.ItemType;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.util.Location;
-import org.bukkit.DyeColor;
+import com.sk89q.worldedit.world.registry.LegacyMapper;
 import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.material.Dye;
 
 import java.util.List;
 
@@ -123,29 +121,17 @@ public final class BukkitUtil {
         return ((BukkitWorld) world).getWorld();
     }
 
-    public static BaseBlock toBlock(com.sk89q.worldedit.world.World world, ItemStack itemStack) throws WorldEditException {
-        final int typeId = itemStack.getTypeId();
-
-        switch (typeId) {
-            case ItemID.INK_SACK:
-                final Dye materialData = (Dye) itemStack.getData();
-                if (materialData.getColor() == DyeColor.BROWN) {
-                    return new BaseBlock(BlockTypes.COCOA);
-                }
-                break;
-
-            default:
-                final BaseBlock baseBlock = BlockType.getBlockForItem(typeId, itemStack.getDurability());
-                if (baseBlock != null) {
-                    return baseBlock;
-                }
-                break;
+    public static BaseBlock toBlock(ItemStack itemStack) throws WorldEditException {
+        ItemType itemType = LegacyMapper.getInstance().getItemFromLegacy(itemStack.getTypeId(), itemStack.getData().getData());
+        if (itemType.hasBlockType()) {
+            return new BaseBlock(itemType.getBlockType().getDefaultState());
+        } else {
+            return new BaseBlock(BlockTypes.AIR.getDefaultState());
         }
-
-        return new BaseBlock(typeId, -1);
     }
 
     public static BaseItemStack toBaseItemStack(ItemStack itemStack) {
-        return new BaseItemStack(itemStack.getTypeId(), itemStack.getDurability());
+        ItemType itemType = LegacyMapper.getInstance().getItemFromLegacy(itemStack.getTypeId(), itemStack.getData().getData());
+        return new BaseItemStack(itemType, itemStack.getAmount());
     }
 }

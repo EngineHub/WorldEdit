@@ -555,7 +555,7 @@ public class LocalSession {
      * @throws InvalidToolBindException if the item can't be bound to that item
      */
     public void setTool(ItemType item, @Nullable Tool tool) throws InvalidToolBindException {
-        if (false /*TODO item > 0 && item < 255*/) {
+        if (item.hasBlockType()) {
             throw new InvalidToolBindException(item, "Blocks can't be used");
         } else if (item == ItemTypes.getItemType(config.wandItem)) {
             throw new InvalidToolBindException(item, "Already used for the wand");

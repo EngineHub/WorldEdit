@@ -69,7 +69,7 @@ public class BukkitPlayer extends AbstractPlayerActor {
         ItemStack itemStack = handSide == HandSide.MAIN_HAND
                 ? player.getInventory().getItemInMainHand()
                 : player.getInventory().getItemInOffHand();
-        return BukkitUtil.toBlock(getWorld(), itemStack);
+        return BukkitUtil.toBlock(itemStack);
     }
 
     @Override

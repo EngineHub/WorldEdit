@@ -443,7 +443,7 @@ public class EditSession implements Extent {
             Vector pt = new Vector(x, y, z);
             BlockState block = getBlock(pt);
             int[] datas = LegacyMapper.getInstance().getLegacyFromBlock(block);
-            if (naturalOnly ? BlockType.isNaturalTerrainBlock(datas[0], datas[1]) : !BlockType.canPassThrough(datas[0], datas[1])) {
+            if (naturalOnly ? BlockType.isNaturalTerrainBlock(datas[0], datas[1]) : block.getBlockType().getMaterial().isMovementBlocker()) {
                 return y;
             }
         }
@@ -1583,7 +1583,6 @@ public class EditSession implements Extent {
                 for (int y = world.getMaxY(); y >= 1; --y) {
                     final Vector pt = new Vector(x, y, z);
                     final BlockState block = getBlock(pt);
-                    final com.sk89q.worldedit.blocks.type.BlockType id = block.getBlockType();
 
                     if (block.getBlockType() == BlockTypes.DIRT ||
                             (!onlyNormalDirt && block.getBlockType() == BlockTypes.COARSE_DIRT)) {
@@ -1593,7 +1592,7 @@ public class EditSession implements Extent {
                         break;
                     } else if (block.getBlockType() == BlockTypes.WATER || block.getBlockType() == BlockTypes.LAVA) {
                         break;
-                    } else if (!BlockType.canPassThrough(id.getLegacyId())) {
+                    } else if (block.getBlockType().getMaterial().isMovementBlocker()) {
                         break;
                     }
                 }
@@ -2116,8 +2115,7 @@ public class EditSession implements Extent {
         while (!queue.isEmpty()) {
             final BlockVector current = queue.removeFirst();
             final BlockState block = getBlock(current);
-            int[] datas = LegacyMapper.getInstance().getLegacyFromBlock(block);
-            if (!BlockType.canPassThrough(datas[0], datas[1])) {
+            if (block.getBlockType().getMaterial().isMovementBlocker()) {
                 continue;
             }
 

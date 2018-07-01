@@ -19,15 +19,15 @@
 
 package com.sk89q.worldedit.world.registry;
 
-import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockMaterial;
 import com.sk89q.worldedit.blocks.type.BlockState;
 import com.sk89q.worldedit.blocks.type.BlockStateHolder;
 import com.sk89q.worldedit.blocks.type.BlockTypes;
 import com.sk89q.worldedit.world.registry.state.State;
 
-import javax.annotation.Nullable;
 import java.util.Map;
+
+import javax.annotation.Nullable;
 
 /**
  * A block registry that uses {@link BundledBlockData} to serve information
@@ -43,8 +43,8 @@ public class BundledBlockRegistry implements BlockRegistry {
 
     @Nullable
     @Override
-    public BlockMaterial getMaterial(BaseBlock block) {
-        return BundledBlockData.getInstance().getMaterialById(block.getBlockType().getId());
+    public BlockMaterial getMaterial(String id) {
+        return BundledBlockData.getInstance().getMaterialById(id);
     }
 
     @Nullable

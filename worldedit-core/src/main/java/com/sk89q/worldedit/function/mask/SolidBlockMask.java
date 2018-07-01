@@ -19,10 +19,9 @@
 
 package com.sk89q.worldedit.function.mask;
 
-import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.blocks.BlockType;
+import com.sk89q.worldedit.blocks.type.BlockState;
+import com.sk89q.worldedit.extent.Extent;
 
 import javax.annotation.Nullable;
 
@@ -35,8 +34,8 @@ public class SolidBlockMask extends AbstractExtentMask {
     @Override
     public boolean test(Vector vector) {
         Extent extent = getExtent();
-        BaseBlock lazyBlock = extent.getLazyBlock(vector);
-        return !BlockType.canPassThrough(lazyBlock.getBlockType().getLegacyId(), lazyBlock.getData());
+        BlockState block = extent.getBlock(vector);
+        return block.getBlockType().getMaterial().isMovementBlocker();
     }
 
     @Nullable

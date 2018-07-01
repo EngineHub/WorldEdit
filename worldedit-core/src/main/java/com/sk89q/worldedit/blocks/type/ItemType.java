@@ -22,6 +22,8 @@ package com.sk89q.worldedit.blocks.type;
 import com.sk89q.worldedit.world.registry.BundledItemData;
 import com.sk89q.worldedit.world.registry.LegacyMapper;
 
+import javax.annotation.Nullable;
+
 public class ItemType {
 
     private String id;
@@ -50,6 +52,26 @@ public class ItemType {
         } else {
             return entry.localizedName;
         }
+    }
+
+
+    /**
+     * Gets whether this item type has a block representation.
+     *
+     * @return If it has a block
+     */
+    public boolean hasBlockType() {
+        return getBlockType() != null;
+    }
+
+    /**
+     * Gets the block representation of this item type, if it exists.
+     *
+     * @return The block representation
+     */
+    @Nullable
+    public BlockType getBlockType() {
+        return BlockTypes.getBlockType(this.id);
     }
 
     /**

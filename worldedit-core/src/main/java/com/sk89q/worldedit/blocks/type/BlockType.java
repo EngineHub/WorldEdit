@@ -19,10 +19,15 @@
 
 package com.sk89q.worldedit.blocks.type;
 
+import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.blocks.BlockMaterial;
+import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.world.registry.BundledBlockData;
 import com.sk89q.worldedit.world.registry.LegacyMapper;
 
 import java.util.function.Function;
+
+import javax.annotation.Nullable;
 
 public class BlockType {
 
@@ -78,6 +83,34 @@ public class BlockType {
     }
 
     /**
+     * Gets whether this block type has an item representation.
+     *
+     * @return If it has an item
+     */
+    public boolean hasItemType() {
+        return getItemType() != null;
+    }
+
+    /**
+     * Gets the item representation of this block type, if it exists.
+     *
+     * @return The item representation
+     */
+    @Nullable
+    public ItemType getItemType() {
+        return ItemTypes.getItemType(this.id);
+    }
+
+    /**
+     * Get the material for this BlockType.
+     *
+     * @return The material
+     */
+    public BlockMaterial getMaterial() {
+        return WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.GAME_HOOKS).getRegistries().getBlockRegistry().getMaterial(this.id);
+    }
+
+    /**
      * Gets the legacy ID. Needed for legacy reasons.
      *
      * DO NOT USE THIS.
@@ -92,11 +125,6 @@ public class BlockType {
         } else {
             return 0;
         }
-    }
-
-    @Deprecated
-    public com.sk89q.worldedit.blocks.BlockType getLegacyType() {
-        return com.sk89q.worldedit.blocks.BlockType.fromID(getLegacyId());
     }
 
     @Override

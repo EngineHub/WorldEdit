@@ -192,13 +192,13 @@ public class GeneralCommands {
                     break;
                 }
 
-//                TODO if (blocksOnly && searchType.getID() > 255) {
-//                    continue;
-//                }
-//
-//                if (itemsOnly && searchType.getID() <= 255) {
-//                    continue;
-//                }
+                if (blocksOnly && !searchType.hasBlockType()) {
+                    continue;
+                }
+
+                if (itemsOnly && searchType.hasBlockType()) {
+                    continue;
+                }
 
                 for (String alias : Sets.newHashSet(searchType.getId(), searchType.getName())) {
                     if (alias.contains(query)) {
