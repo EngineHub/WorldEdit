@@ -479,7 +479,7 @@ public class WorldEdit {
             blockBag.flushChanges();
         }
 
-        Map<Integer, Integer> missingBlocks = editSession.popMissingBlocks();
+        Map<BlockType, Integer> missingBlocks = editSession.popMissingBlocks();
 
         if (!missingBlocks.isEmpty()) {
             StringBuilder str = new StringBuilder();
@@ -487,12 +487,8 @@ public class WorldEdit {
             int size = missingBlocks.size();
             int i = 0;
 
-            for (Integer id : missingBlocks.keySet()) {
-                BlockType type = LegacyMapper.getInstance().getBlockFromLegacy(id).getBlockType();
-
-                str.append(type != null
-                        ? type.getName() + " (" + id + ")"
-                        : id.toString());
+            for (BlockType id : missingBlocks.keySet()) {
+                str.append(id.getName());
 
                 str.append(" [Amt: ").append(missingBlocks.get(id)).append("]");
 

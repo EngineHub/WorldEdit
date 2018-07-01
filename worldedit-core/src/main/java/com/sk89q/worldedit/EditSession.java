@@ -375,7 +375,7 @@ public class EditSession implements Extent {
      *
      * @return a map of missing blocks
      */
-    public Map<Integer, Integer> popMissingBlocks() {
+    public Map<com.sk89q.worldedit.blocks.type.BlockType, Integer> popMissingBlocks() {
         return blockBagExtent.popMissing();
     }
 

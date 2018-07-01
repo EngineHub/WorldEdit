@@ -19,8 +19,8 @@
 
 package com.sk89q.worldedit.extent.inventory;
 
-import com.sk89q.worldedit.blocks.*;
-import com.sk89q.worldedit.blocks.type.ItemTypes;
+import com.sk89q.worldedit.blocks.type.BlockState;
+import com.sk89q.worldedit.blocks.type.BlockTypes;
 import com.sk89q.worldedit.util.Location;
 
 /**
@@ -31,123 +31,95 @@ public abstract class BlockBag {
     /**
      * Stores a block as if it was mined.
      * 
-     * @param id the type ID
-     * @param data the data value
+     * @param blockState the block state
      * @throws BlockBagException on error
      */
-    public void storeDroppedBlock(int id, int data) throws BlockBagException {
-        BaseItem dropped = BlockType.getBlockBagItem(id, data);
+    public void storeDroppedBlock(BlockState blockState) throws BlockBagException {
+        BlockState dropped = blockState; // TODO BlockType.getBlockBagItem(id, data);
         if (dropped == null) return;
-        if (dropped.getType() == ItemTypes.AIR) return;
+        if (dropped.getBlockType() == BlockTypes.AIR) return;
 
-        storeItem(dropped);
+        storeBlock(dropped);
     }
 
     /**
      * Sets a block as if it was placed by hand.
      *
-     * @param id the type ID
-     * @param data the data value
+     * @param blockState The block state
      * @throws BlockBagException on error
      */
-    public void fetchPlacedBlock(int id, int data) throws BlockBagException {
+    public void fetchPlacedBlock(BlockState blockState) throws BlockBagException {
         try {
             // Blocks that can't be fetched...
-            switch (id) {
-            case BlockID.BEDROCK:
-            case BlockID.GOLD_ORE:
-            case BlockID.IRON_ORE:
-            case BlockID.COAL_ORE:
-            case BlockID.DIAMOND_ORE:
-            case BlockID.TNT:
-            case BlockID.MOB_SPAWNER:
-            case BlockID.CROPS:
-            case BlockID.REDSTONE_ORE:
-            case BlockID.GLOWING_REDSTONE_ORE:
-            case BlockID.SNOW:
-            case BlockID.LIGHTSTONE:
-            case BlockID.PORTAL:
-                throw new UnplaceableBlockException();
-
-            case BlockID.WATER:
-            case BlockID.STATIONARY_WATER:
-            case BlockID.LAVA:
-            case BlockID.STATIONARY_LAVA:
-                // Override liquids
-                return;
-
-            default:
-                fetchBlock(id);
-                break;
-            }
-
+//            TODO switch (id) {
+//            case BlockID.BEDROCK:
+//            case BlockID.GOLD_ORE:
+//            case BlockID.IRON_ORE:
+//            case BlockID.COAL_ORE:
+//            case BlockID.DIAMOND_ORE:
+//            case BlockID.TNT:
+//            case BlockID.MOB_SPAWNER:
+//            case BlockID.CROPS:
+//            case BlockID.REDSTONE_ORE:
+//            case BlockID.GLOWING_REDSTONE_ORE:
+//            case BlockID.SNOW:
+//            case BlockID.LIGHTSTONE:
+//            case BlockID.PORTAL:
+//                throw new UnplaceableBlockException();
+//
+//            case BlockID.WATER:
+//            case BlockID.STATIONARY_WATER:
+//            case BlockID.LAVA:
+//            case BlockID.STATIONARY_LAVA:
+//                // Override liquids
+//                return;
+//            }
+            fetchBlock(blockState);
         } catch (OutOfBlocksException e) {
-            BaseItem placed = BlockType.getBlockBagItem(id, data);
-            if (placed == null) throw e; // TODO: check
-            if (placed.getType() == ItemTypes.AIR) throw e; // TODO: check
+            BlockState placed = blockState;// TODO BlockType.getBlockBagItem(id, data);
+            if (placed == null || placed.getBlockType() == BlockTypes.AIR) throw e; // TODO: check
 
-            fetchItem(placed);
+            fetchBlock(placed);
         }
     }
 
     /**
      * Get a block.
      *
-     * <p>Either this method or fetchItem needs to be overridden.</p>
-     *
-     * @param id the type ID
+     * @param blockState the block state
      * @throws BlockBagException on error
      */
-    public void fetchBlock(int id) throws BlockBagException {
-        fetchItem(new BaseItem(id));
-    }
+    public abstract void fetchBlock(BlockState blockState) throws BlockBagException;
 
     /**
-     * Get a block.
+     * Store a block.
      *
-     * <p>Either this method or fetchItem needs to be overridden.</p>
-     *
-     * @param item the item
+     * @param blockState The block state
      * @throws BlockBagException on error
      */
-    public void fetchItem(BaseItem item) throws BlockBagException {
-        fetchBlock(item.getLegacyId());
+    public void storeBlock(BlockState blockState) throws BlockBagException {
+        this.storeBlock(blockState, 1);
     }
 
     /**
      * Store a block.
      *
-     * <p>Either this method or fetchItem needs to be overridden.</p>
-     * 
-     * @param id the type ID
+     * @param blockState The block state
+     * @param amount The amount
      * @throws BlockBagException on error
      */
-    public void storeBlock(int id) throws BlockBagException {
-        storeItem(new BaseItem(id));
-    }
-
-    /**
-     * Store a block.
-     *
-     * <p>Either this method or fetchItem needs to be overridden.</p>
-     * 
-     * @param item the item
-     * @throws BlockBagException on error
-     */
-    public void storeItem(BaseItem item) throws BlockBagException {
-        storeBlock(item.getLegacyId());
-    }
+    public abstract void storeBlock(BlockState blockState, int amount) throws BlockBagException;
 
     /**
      * Checks to see if a block exists without removing it.
      * 
-     * @param id the type ID
+     * @param blockState the block state
      * @return whether the block exists
      */
-    public boolean peekBlock(int id) {
+    public boolean peekBlock(BlockState blockState) {
         try {
-            fetchBlock(id);
-            storeBlock(id);
+            fetchBlock(blockState);
+            storeBlock(blockState);
             return true;
         } catch (BlockBagException e) {
             return false;
