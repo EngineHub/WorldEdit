@@ -26,6 +26,7 @@ import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.blocks.type.BlockState;
 import com.sk89q.worldedit.blocks.type.BlockStateHolder;
+import com.sk89q.worldedit.blocks.type.BlockType;
 import com.sk89q.worldedit.blocks.type.BlockTypes;
 import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.function.mask.BlockMask;
@@ -93,7 +94,7 @@ public abstract class AbstractWorld implements World {
     }
 
     @Override
-    public boolean queueBlockBreakEffect(Platform server, Vector position, com.sk89q.worldedit.blocks.type.BlockType blockType, double priority) {
+    public boolean queueBlockBreakEffect(Platform server, Vector position, BlockType blockType, double priority) {
         if (taskId == -1) {
             taskId = server.schedule(0, 1, () -> {
                 int max = Math.max(1, Math.min(30, effectQueue.size() / 3));
@@ -131,10 +132,10 @@ public abstract class AbstractWorld implements World {
 
     private class QueuedEffect implements Comparable<QueuedEffect> {
         private final Vector position;
-        private final com.sk89q.worldedit.blocks.type.BlockType blockType;
+        private final BlockType blockType;
         private final double priority;
 
-        private QueuedEffect(Vector position, com.sk89q.worldedit.blocks.type.BlockType blockType, double priority) {
+        private QueuedEffect(Vector position, BlockType blockType, double priority) {
             this.position = position;
             this.blockType = blockType;
             this.priority = priority;

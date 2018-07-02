@@ -379,9 +379,7 @@ public class BukkitWorld extends AbstractWorld {
 
     @Override
     public LazyBlock getLazyBlock(Vector position) {
-        World world = getWorld();
-        Block bukkitBlock = world.getBlockAt(position.getBlockX(), position.getBlockY(), position.getBlockZ());
-        return new LazyBlock(bukkitBlock.getTypeId(), bukkitBlock.getData(), this, position);
+        return new LazyBlock(getBlock(position), this, position);
     }
 
     @Override
@@ -390,8 +388,7 @@ public class BukkitWorld extends AbstractWorld {
         if (adapter != null) {
             return adapter.getBlock(BukkitAdapter.adapt(getWorld(), position));
         } else {
-            Block bukkitBlock = getWorld().getBlockAt(position.getBlockX(), position.getBlockY(), position.getBlockZ());
-            return new BaseBlock(bukkitBlock.getTypeId(), bukkitBlock.getData());
+            return new BaseBlock(getBlock(position));
         }
     }
 

@@ -115,35 +115,12 @@ public class BaseBlock implements BlockStateHolder<BaseBlock>, TileEntityBlock {
     }
 
     /**
-     * Construct a block with the given ID, data value and NBT data structure.
-     *
-     * @param id ID value
-     * @param data data value
-     * @param nbtData NBT data, which may be null
-     */
-    @Deprecated
-    public BaseBlock(int id, int data, @Nullable CompoundTag nbtData) {
-        this(id);
-        this.nbtData = nbtData;
-    }
-
-    /**
      * Create a clone of another block.
      *
      * @param other the other block
      */
     public BaseBlock(BaseBlock other) {
         this(other.toImmutableState(), other.getNbtData());
-    }
-
-    /**
-     * Get the legacy numerical ID of the block.
-     *
-     * @return legacy numerical ID
-     */
-    @Deprecated
-    public int getId() {
-        return this.blockState.getBlockType().getLegacyId();
     }
 
     /**

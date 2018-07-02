@@ -32,23 +32,18 @@ public final class BlockID {
     public static final int DIRT = 3;
     public static final int SAPLING = 6;
     public static final int BEDROCK = 7;
-    public static final int WATER = 8; // FLOWING_WATER
-    public static final int STATIONARY_WATER = 9; // WATER
     public static final int SAND = 12;
     public static final int GRAVEL = 13;
     public static final int GOLD_ORE = 14;
     public static final int IRON_ORE = 15;
     public static final int COAL_ORE = 16;
     public static final int LOG = 17;
-    public static final int LEAVES = 18;
-    public static final int GLASS = 20;
     public static final int LAPIS_LAZULI_ORE = 21; // LAPIS_ORE
     public static final int DISPENSER = 23;
     public static final int BED = 26;
     public static final int POWERED_RAIL = 27; // GOLDEN_RAIL
     public static final int DETECTOR_RAIL = 28;
     public static final int PISTON_STICKY_BASE = 29; // STICKY_PISTON
-    public static final int WEB = 30;
     public static final int LONG_GRASS = 31; // TALLGRASS
     public static final int DEAD_BUSH = 32; // DEADBUSH
     public static final int PISTON_BASE = 33; // PISTON
@@ -62,7 +57,6 @@ public final class BlockID {
     public static final int TNT = 46;
     public static final int TORCH = 50;
     public static final int FIRE = 51;
-    public static final int MOB_SPAWNER = 52;
     @Deprecated
     public static final int WOODEN_STAIRS = 53;
     public static final int OAK_WOOD_STAIRS = 53; // OAK_STAIRS
@@ -88,7 +82,6 @@ public final class BlockID {
     public static final int REDSTONE_TORCH_ON = 76; // LIT_REDSTONE_TORCH
     public static final int STONE_BUTTON = 77;
     public static final int SNOW = 78; // SNOW_LAYER
-    public static final int ICE = 79;
     public static final int CACTUS = 81;
     public static final int CLAY = 82;
     public static final int REED = 83; // REEDS
@@ -109,8 +102,6 @@ public final class BlockID {
     public static final int TRAP_DOOR = 96; // TRAPDOOR
     public static final int BROWN_MUSHROOM_CAP = 99; // BROWN_MUSHROOM_BLOCK
     public static final int RED_MUSHROOM_CAP = 100; // RED_MUSHROOM_BLOCK
-    public static final int IRON_BARS = 101;
-    public static final int GLASS_PANE = 102;
     public static final int PUMPKIN_STEM = 104;
     public static final int MELON_STEM = 105;
     public static final int VINE = 106;
@@ -119,7 +110,6 @@ public final class BlockID {
     public static final int STONE_BRICK_STAIRS = 109;
     public static final int MYCELIUM = 110;
     public static final int LILY_PAD = 111; // WATERLILY
-    public static final int NETHER_BRICK_FENCE = 113;
     public static final int NETHER_BRICK_STAIRS = 114;
     public static final int NETHER_WART = 115;
     public static final int ENCHANTMENT_TABLE = 116; // ENCHANTING_TABLE
@@ -155,12 +145,9 @@ public final class BlockID {
     public static final int ACTIVATOR_RAIL = 157;
     public static final int DROPPER = 158;
     public static final int STAINED_CLAY = 159; // STAINED_HARDENED_CLAY
-    public static final int STAINED_GLASS_PANE = 160;
-    public static final int LEAVES2 = 161;
     public static final int LOG2 = 162;
     public static final int ACACIA_STAIRS = 163;
     public static final int DARK_OAK_STAIRS = 164;
-    public static final int BARRIER = 166;
     public static final int IRON_TRAP_DOOR = 167;
     public static final int HAY_BLOCK = 170;
     public static final int CARPET = 171;
@@ -169,29 +156,12 @@ public final class BlockID {
     public static final int STANDING_BANNER = 176;
     public static final int WALL_BANNER = 177;
     public static final int DAYLIGHT_SENSOR_INVERTED = 178;
-    public static final int RED_SANDSTONE_STAIRS = 180;
     public static final int STEP2 = 182;
-    public static final int SPRUCE_FENCE_GATE = 183;
-    public static final int BIRCH_FENCE_GATE = 184;
-    public static final int JUNGLE_FENCE_GATE = 185;
-    public static final int DARK_OAK_FENCE_GATE = 186;
-    public static final int ACACIA_FENCE_GATE = 187;
-    public static final int SPRUCE_FENCE = 188;
-    public static final int BIRCH_FENCE = 189;
-    public static final int JUNGLE_FENCE = 190;
-    public static final int DARK_OAK_FENCE = 191;
-    public static final int ACACIA_FENCE = 192;
     public static final int SPRUCE_DOOR = 193;
     public static final int BIRCH_DOOR = 194;
     public static final int JUNGLE_DOOR = 195;
     public static final int ACACIA_DOOR = 196;
     public static final int DARK_OAK_DOOR = 197;
-    public static final int END_ROD = 198;
-    public static final int CHORUS_PLANT = 199;
-    public static final int CHORUS_FLOWER = 200;
-    public static final int PURPUR_STAIRS = 203;
-    public static final int PURPUR_SLAB = 205;
-    public static final int BEETROOTS = 207;
 
     private BlockID() {
     }

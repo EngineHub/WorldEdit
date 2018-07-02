@@ -233,32 +233,6 @@ public enum BlockType {
     }
 
     /**
-     * HashSet for isContainerBlock.
-     */
-    private static final Set<Integer> isContainerBlock = new HashSet<>();
-    static {
-        isContainerBlock.add(BlockID.DISPENSER);
-        isContainerBlock.add(BlockID.FURNACE);
-        isContainerBlock.add(BlockID.BURNING_FURNACE);
-        isContainerBlock.add(BlockID.CHEST);
-        isContainerBlock.add(BlockID.BREWING_STAND);
-        isContainerBlock.add(BlockID.TRAPPED_CHEST);
-        isContainerBlock.add(BlockID.HOPPER);
-        isContainerBlock.add(BlockID.DROPPER);
-        //isContainerBlock.add(BlockID.ENDER_CHEST); // ender chest has no own inventory, don't add this here
-    }
-
-    /**
-     * Returns true if the block is a container block.
-     *
-     * @param id the block ID
-     * @return true if the block is a container
-     */
-    public static boolean isContainerBlock(int id) {
-        return isContainerBlock.contains(id);
-    }
-
-    /**
      * HashSet for isNaturalBlock.
      */
     private static final Set<Integer> isNaturalTerrainBlock = new HashSet<>();
@@ -293,18 +267,6 @@ public enum BlockType {
     }
 
     /**
-     * Checks if the block type is naturally occurring.
-     *
-     * @param id the type ID of the block
-     * @return true if the block type is naturally occurring
-     * @deprecated Use {@link #isNaturalTerrainBlock(int, int)}
-     */
-    @Deprecated
-    public static boolean isNaturalTerrainBlock(int id) {
-        return isNaturalTerrainBlock.contains(id);
-    }
-
-    /**
      * Checks if the block type is naturally occurring
      *
      * @param id the type ID of the block
@@ -313,148 +275,6 @@ public enum BlockType {
      */
     public static boolean isNaturalTerrainBlock(int id, int data) {
         return isNaturalTerrainBlock.contains(-16*id-data) || isNaturalTerrainBlock.contains(id);
-    }
-
-    /**
-     * HashSet for isTranslucent.
-     */
-    private static final Set<Integer> isTranslucent = new HashSet<>();
-    static {
-        isTranslucent.add(BlockID.AIR);
-        isTranslucent.add(BlockID.SAPLING);
-        isTranslucent.add(BlockID.WATER);
-        isTranslucent.add(BlockID.STATIONARY_WATER);
-        isTranslucent.add(BlockID.LEAVES);
-        isTranslucent.add(BlockID.GLASS);
-        isTranslucent.add(BlockID.BED);
-        isTranslucent.add(BlockID.POWERED_RAIL);
-        isTranslucent.add(BlockID.DETECTOR_RAIL);
-        //isTranslucent.add(BlockID.PISTON_STICKY_BASE);
-        isTranslucent.add(BlockID.WEB);
-        isTranslucent.add(BlockID.LONG_GRASS);
-        isTranslucent.add(BlockID.DEAD_BUSH);
-        //isTranslucent.add(BlockID.PISTON_BASE);
-        isTranslucent.add(BlockID.PISTON_EXTENSION);
-        //isTranslucent.add(BlockID.PISTON_MOVING_PIECE);
-        isTranslucent.add(BlockID.YELLOW_FLOWER);
-        isTranslucent.add(BlockID.RED_FLOWER);
-        isTranslucent.add(BlockID.BROWN_MUSHROOM);
-        isTranslucent.add(BlockID.RED_MUSHROOM);
-        isTranslucent.add(BlockID.STEP);
-        isTranslucent.add(BlockID.TORCH);
-        isTranslucent.add(BlockID.FIRE);
-        isTranslucent.add(BlockID.MOB_SPAWNER);
-        isTranslucent.add(BlockID.OAK_WOOD_STAIRS);
-        isTranslucent.add(BlockID.CHEST);
-        isTranslucent.add(BlockID.REDSTONE_WIRE);
-        isTranslucent.add(BlockID.CROPS);
-        isTranslucent.add(BlockID.SIGN_POST);
-        isTranslucent.add(BlockID.WOODEN_DOOR);
-        isTranslucent.add(BlockID.LADDER);
-        isTranslucent.add(BlockID.MINECART_TRACKS);
-        isTranslucent.add(BlockID.COBBLESTONE_STAIRS);
-        isTranslucent.add(BlockID.WALL_SIGN);
-        isTranslucent.add(BlockID.LEVER);
-        isTranslucent.add(BlockID.STONE_PRESSURE_PLATE);
-        isTranslucent.add(BlockID.IRON_DOOR);
-        isTranslucent.add(BlockID.WOODEN_PRESSURE_PLATE);
-        isTranslucent.add(BlockID.REDSTONE_TORCH_OFF);
-        isTranslucent.add(BlockID.REDSTONE_TORCH_ON);
-        isTranslucent.add(BlockID.STONE_BUTTON);
-        isTranslucent.add(BlockID.SNOW);
-        isTranslucent.add(BlockID.ICE);
-        isTranslucent.add(BlockID.CACTUS);
-        isTranslucent.add(BlockID.REED);
-        isTranslucent.add(BlockID.FENCE);
-        isTranslucent.add(BlockID.PORTAL);
-        isTranslucent.add(BlockID.CAKE_BLOCK);
-        isTranslucent.add(BlockID.REDSTONE_REPEATER_OFF);
-        isTranslucent.add(BlockID.REDSTONE_REPEATER_ON);
-        isTranslucent.add(BlockID.TRAP_DOOR);
-        isTranslucent.add(BlockID.IRON_BARS);
-        isTranslucent.add(BlockID.GLASS_PANE);
-        isTranslucent.add(BlockID.PUMPKIN_STEM);
-        isTranslucent.add(BlockID.MELON_STEM);
-        isTranslucent.add(BlockID.VINE);
-        isTranslucent.add(BlockID.FENCE_GATE);
-        isTranslucent.add(BlockID.BRICK_STAIRS);
-        isTranslucent.add(BlockID.STONE_BRICK_STAIRS);
-        isTranslucent.add(BlockID.LILY_PAD);
-        isTranslucent.add(BlockID.NETHER_BRICK_FENCE);
-        isTranslucent.add(BlockID.NETHER_BRICK_STAIRS);
-        isTranslucent.add(BlockID.NETHER_WART);
-        isTranslucent.add(BlockID.ENCHANTMENT_TABLE);
-        isTranslucent.add(BlockID.BREWING_STAND);
-        isTranslucent.add(BlockID.CAULDRON);
-        isTranslucent.add(BlockID.WOODEN_STEP);
-        isTranslucent.add(BlockID.COCOA_PLANT);
-        isTranslucent.add(BlockID.SANDSTONE_STAIRS);
-        isTranslucent.add(BlockID.ENDER_CHEST);
-        isTranslucent.add(BlockID.TRIPWIRE_HOOK);
-        isTranslucent.add(BlockID.TRIPWIRE);
-        isTranslucent.add(BlockID.SPRUCE_WOOD_STAIRS);
-        isTranslucent.add(BlockID.BIRCH_WOOD_STAIRS);
-        isTranslucent.add(BlockID.JUNGLE_WOOD_STAIRS);
-        isTranslucent.add(BlockID.COBBLESTONE_WALL);
-        isTranslucent.add(BlockID.FLOWER_POT);
-        isTranslucent.add(BlockID.CARROTS);
-        isTranslucent.add(BlockID.POTATOES);
-        isTranslucent.add(BlockID.WOODEN_BUTTON);
-        isTranslucent.add(BlockID.HEAD);
-        isTranslucent.add(BlockID.ANVIL);
-        isTranslucent.add(BlockID.TRAPPED_CHEST);
-        isTranslucent.add(BlockID.PRESSURE_PLATE_LIGHT);
-        isTranslucent.add(BlockID.PRESSURE_PLATE_HEAVY);
-        isTranslucent.add(BlockID.COMPARATOR_OFF);
-        isTranslucent.add(BlockID.COMPARATOR_ON);
-        isTranslucent.add(BlockID.DAYLIGHT_SENSOR);
-        isTranslucent.add(BlockID.HOPPER);
-        isTranslucent.add(BlockID.QUARTZ_STAIRS);
-        isTranslucent.add(BlockID.ACTIVATOR_RAIL);
-        isTranslucent.add(BlockID.ACACIA_STAIRS);
-        isTranslucent.add(BlockID.DARK_OAK_STAIRS);
-        isTranslucent.add(BlockID.BARRIER);
-        isTranslucent.add(BlockID.IRON_TRAP_DOOR);
-        isTranslucent.add(BlockID.CARPET);
-        isTranslucent.add(BlockID.LEAVES2);
-        isTranslucent.add(BlockID.STAINED_GLASS_PANE);
-        isTranslucent.add(BlockID.DOUBLE_PLANT);
-        isTranslucent.add(BlockID.STANDING_BANNER);
-        isTranslucent.add(BlockID.WALL_BANNER);
-        isTranslucent.add(BlockID.DAYLIGHT_SENSOR_INVERTED);
-        isTranslucent.add(BlockID.RED_SANDSTONE_STAIRS);
-        isTranslucent.add(BlockID.STEP2);
-        isTranslucent.add(BlockID.SPRUCE_FENCE_GATE);
-        isTranslucent.add(BlockID.BIRCH_FENCE_GATE);
-        isTranslucent.add(BlockID.JUNGLE_FENCE_GATE);
-        isTranslucent.add(BlockID.DARK_OAK_FENCE_GATE);
-        isTranslucent.add(BlockID.ACACIA_FENCE_GATE);
-        isTranslucent.add(BlockID.SPRUCE_FENCE);
-        isTranslucent.add(BlockID.BIRCH_FENCE);
-        isTranslucent.add(BlockID.JUNGLE_FENCE);
-        isTranslucent.add(BlockID.DARK_OAK_FENCE);
-        isTranslucent.add(BlockID.ACACIA_FENCE);
-        isTranslucent.add(BlockID.SPRUCE_DOOR);
-        isTranslucent.add(BlockID.BIRCH_DOOR);
-        isTranslucent.add(BlockID.JUNGLE_DOOR);
-        isTranslucent.add(BlockID.ACACIA_DOOR);
-        isTranslucent.add(BlockID.DARK_OAK_DOOR);
-        isTranslucent.add(BlockID.END_ROD);
-        isTranslucent.add(BlockID.CHORUS_PLANT);
-        isTranslucent.add(BlockID.CHORUS_FLOWER);
-        isTranslucent.add(BlockID.PURPUR_STAIRS);
-        isTranslucent.add(BlockID.PURPUR_SLAB);
-        isTranslucent.add(BlockID.BEETROOTS);
-    }
-
-    /**
-     * Checks if the block type lets light through.
-     *
-     * @param id the type ID of the block
-     * @return true if the block type lets light through
-     */
-    public static boolean isTranslucent(int id) {
-        return isTranslucent.contains(id);
     }
 
     private static final Map<Integer, PlayerDirection> dataAttachments = new HashMap<>();

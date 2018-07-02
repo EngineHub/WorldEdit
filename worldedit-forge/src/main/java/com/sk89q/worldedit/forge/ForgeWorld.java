@@ -35,7 +35,6 @@ import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.blocks.LazyBlock;
 import com.sk89q.worldedit.blocks.type.BlockState;
 import com.sk89q.worldedit.blocks.type.BlockStateHolder;
-import com.sk89q.worldedit.blocks.type.BlockTypes;
 import com.sk89q.worldedit.blocks.type.ItemTypes;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
@@ -47,6 +46,7 @@ import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.TreeGenerator.TreeType;
 import com.sk89q.worldedit.world.AbstractWorld;
 import com.sk89q.worldedit.world.biome.BaseBiome;
+import com.sk89q.worldedit.world.registry.LegacyMapper;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLeaves;
 import net.minecraft.block.BlockOldLeaf;
@@ -356,15 +356,12 @@ public class ForgeWorld extends AbstractWorld {
         BlockPos pos = new BlockPos(position.getBlockX(), position.getBlockY(), position.getBlockZ());
         IBlockState state = world.getBlockState(pos);
 
-        return BlockTypes.getBlockType(net.minecraftforge.fml.common.registry.ForgeRegistries.BLOCKS.getKey(state.getBlock()).toString()).getDefaultState(); // TODO Data
+        return LegacyMapper.getInstance().getBlockFromLegacy(Block.getIdFromBlock(state.getBlock()), state.getBlock().getMetaFromState(state));
     }
 
     @Override
     public LazyBlock getLazyBlock(Vector position) {
-        World world = getWorld();
-        BlockPos pos = new BlockPos(position.getBlockX(), position.getBlockY(), position.getBlockZ());
-        IBlockState state = world.getBlockState(pos);
-        return new LazyBlock(Block.getIdFromBlock(state.getBlock()), state.getBlock().getMetaFromState(state), this, position);
+        return new LazyBlock(getBlock(position), this, position);
     }
 
     @Override
@@ -377,7 +374,7 @@ public class ForgeWorld extends AbstractWorld {
         if (tile != null) {
             return new TileEntityBaseBlock(Block.getIdFromBlock(state.getBlock()), state.getBlock().getMetaFromState(state), tile);
         } else {
-            return new BaseBlock(Block.getIdFromBlock(state.getBlock()), state.getBlock().getMetaFromState(state));
+            return new BaseBlock(getBlock(position));
         }
     }
 
@@ -404,7 +401,7 @@ public class ForgeWorld extends AbstractWorld {
 
     @Override
     public List<? extends Entity> getEntities(Region region) {
-        List<Entity> entities = new ArrayList<Entity>();
+        List<Entity> entities = new ArrayList<>();
         for (net.minecraft.entity.Entity entity : getWorld().loadedEntityList) {
             if (region.contains(new Vector(entity.posX, entity.posY, entity.posZ))) {
                 entities.add(new ForgeEntity(entity));
@@ -415,7 +412,7 @@ public class ForgeWorld extends AbstractWorld {
 
     @Override
     public List<? extends Entity> getEntities() {
-        List<Entity> entities = new ArrayList<Entity>();
+        List<Entity> entities = new ArrayList<>();
         for (net.minecraft.entity.Entity entity : getWorld().loadedEntityList) {
             entities.add(new ForgeEntity(entity));
         }

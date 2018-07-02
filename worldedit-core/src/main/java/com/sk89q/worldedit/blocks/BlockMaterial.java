@@ -180,4 +180,17 @@ public interface BlockMaterial {
      */
     boolean isReplacedDuringPlacement();
 
+    /**
+     * Get whether this block is translucent.
+     *
+     * @return true if the block is translucent
+     */
+    boolean isTranslucent();
+
+    /**
+     * Gets whether the block has a container (Item container)
+     *
+     * @return If it has a container
+     */
+    boolean hasContainer();
 }

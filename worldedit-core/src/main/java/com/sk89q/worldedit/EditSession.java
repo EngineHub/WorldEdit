@@ -1529,7 +1529,7 @@ public class EditSession implements Extent {
                     }
 
                     // Snow should not cover these blocks
-                    if (BlockType.isTranslucent(id.getLegacyId())) {
+                    if (id.getMaterial().isTranslucent()) {
                         // Add snow on leaves
                         if (BlockCategories.LEAVES.contains(id)) {
                             break;

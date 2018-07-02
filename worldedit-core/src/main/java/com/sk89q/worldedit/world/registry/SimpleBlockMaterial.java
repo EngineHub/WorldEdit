@@ -45,6 +45,8 @@ class SimpleBlockMaterial implements BlockMaterial {
     private boolean burnable;
     private boolean toolRequired;
     private boolean replacedDuringPlacement;
+    private boolean isTranslucent;
+    private boolean hasContainer;
 
     @Override
     public boolean isRenderedAsNormalBlock() {
@@ -240,7 +242,25 @@ class SimpleBlockMaterial implements BlockMaterial {
         return replacedDuringPlacement;
     }
 
+    public void setTranslucent(boolean isTranslucent) {
+        this.isTranslucent = isTranslucent;
+    }
+
+    @Override
+    public boolean isTranslucent() {
+        return this.isTranslucent;
+    }
+
     public void setReplacedDuringPlacement(boolean replacedDuringPlacement) {
         this.replacedDuringPlacement = replacedDuringPlacement;
+    }
+
+    @Override
+    public boolean hasContainer() {
+        return this.hasContainer;
+    }
+
+    public void setHasContainer(boolean hasContainer) {
+        this.hasContainer = hasContainer;
     }
 }
