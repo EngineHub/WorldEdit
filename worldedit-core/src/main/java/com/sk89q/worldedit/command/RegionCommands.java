@@ -234,18 +234,16 @@ public class RegionCommands {
     @Command(
         aliases = { "/smooth" },
         usage = "[iterations]",
-        flags = "n",
         desc = "Smooth the elevation in the selection",
         help =
-            "Smooths the elevation in the selection.\n" +
-            "The -n flag makes it only consider naturally occuring blocks.",
+            "Smooths the elevation in the selection.",
         min = 0,
         max = 1
     )
     @CommandPermissions("worldedit.region.smooth")
     @Logging(REGION)
-    public void smooth(Player player, EditSession editSession, @Selection Region region, @Optional("1") int iterations, @Switch('n') boolean affectNatural) throws WorldEditException {
-        HeightMap heightMap = new HeightMap(editSession, region, affectNatural);
+    public void smooth(Player player, EditSession editSession, @Selection Region region, @Optional("1") int iterations) throws WorldEditException {
+        HeightMap heightMap = new HeightMap(editSession, region);
         HeightMapFilter filter = new HeightMapFilter(new GaussianKernel(5, 1.0));
         int affected = heightMap.applyFilter(filter, iterations);
         player.print("Terrain's height map smoothed. " + affected + " block(s) changed.");

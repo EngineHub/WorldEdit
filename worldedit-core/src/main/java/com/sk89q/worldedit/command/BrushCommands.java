@@ -158,27 +158,23 @@ public class BrushCommands {
     @Command(
         aliases = { "smooth" },
         usage = "[size] [iterations]",
-        flags = "n",
         desc = "Choose the terrain softener brush",
         help =
-            "Chooses the terrain softener brush.\n" +
-            "The -n flag makes it only consider naturally occurring blocks.",
+            "Chooses the terrain softener brush.",
         min = 0,
         max = 2
     )
     @CommandPermissions("worldedit.brush.smooth")
     public void smoothBrush(Player player, LocalSession session, EditSession editSession,
-                            @Optional("2") double radius, @Optional("4") int iterations, @Switch('n')
-                            boolean naturalBlocksOnly) throws WorldEditException {
+                            @Optional("2") double radius, @Optional("4") int iterations) throws WorldEditException {
 
         worldEdit.checkMaxBrushRadius(radius);
 
         BrushTool tool = session.getBrushTool(player.getItemInHand(HandSide.MAIN_HAND).getType());
         tool.setSize(radius);
-        tool.setBrush(new SmoothBrush(iterations, naturalBlocksOnly), "worldedit.brush.smooth");
+        tool.setBrush(new SmoothBrush(iterations), "worldedit.brush.smooth");
 
-        player.print(String.format("Smooth brush equipped (%.0f x %dx, using " + (naturalBlocksOnly ? "natural blocks only" : "any block") + ").",
-                radius, iterations));
+        player.print(String.format("Smooth brush equipped (%.0f x %dx, using any block).", radius, iterations));
     }
 
     @Command(

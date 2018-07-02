@@ -416,34 +416,19 @@ public class EditSession implements Extent {
     }
 
     /**
-     * Returns the highest solid 'terrain' block which can occur naturally.
-     *
-     * @param x the X coordinate
-     * @param z the Z cooridnate
-     * @param minY minimal height
-     * @param maxY maximal height
-     * @return height of highest block found or 'minY'
-     */
-    public int getHighestTerrainBlock(int x, int z, int minY, int maxY) {
-        return getHighestTerrainBlock(x, z, minY, maxY, false);
-    }
-
-    /**
-     * Returns the highest solid 'terrain' block which can occur naturally.
+     * Returns the highest solid 'terrain' block.
      *
      * @param x the X coordinate
      * @param z the Z coordinate
      * @param minY minimal height
      * @param maxY maximal height
-     * @param naturalOnly look at natural blocks or all blocks
      * @return height of highest block found or 'minY'
      */
-    public int getHighestTerrainBlock(int x, int z, int minY, int maxY, boolean naturalOnly) {
+    public int getHighestTerrainBlock(int x, int z, int minY, int maxY) {
         for (int y = maxY; y >= minY; --y) {
             Vector pt = new Vector(x, y, z);
             BlockState block = getBlock(pt);
-            int[] datas = LegacyMapper.getInstance().getLegacyFromBlock(block);
-            if (naturalOnly ? BlockType.isNaturalTerrainBlock(datas[0], datas[1]) : block.getBlockType().getMaterial().isMovementBlocker()) {
+            if (block.getBlockType().getMaterial().isMovementBlocker()) {
                 return y;
             }
         }

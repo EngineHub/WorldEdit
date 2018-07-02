@@ -232,51 +232,6 @@ public enum BlockType {
         return centralTopLimit(block.getBlockType().getLegacyId(), 0);
     }
 
-    /**
-     * HashSet for isNaturalBlock.
-     */
-    private static final Set<Integer> isNaturalTerrainBlock = new HashSet<>();
-    static {
-        isNaturalTerrainBlock.add(BlockID.STONE);
-        isNaturalTerrainBlock.add(BlockID.GRASS);
-        isNaturalTerrainBlock.add(BlockID.DIRT);
-        // isNaturalBlock.add(BlockID.COBBLESTONE); // technically can occur next to water and lava
-        isNaturalTerrainBlock.add(BlockID.BEDROCK);
-        isNaturalTerrainBlock.add(BlockID.SAND);
-        isNaturalTerrainBlock.add(BlockID.GRAVEL);
-        isNaturalTerrainBlock.add(BlockID.CLAY);
-        isNaturalTerrainBlock.add(BlockID.MYCELIUM);
-        isNaturalTerrainBlock.add(BlockID.PACKED_ICE);
-        isNaturalTerrainBlock.add(BlockID.STAINED_CLAY);
-
-        // hell
-        isNaturalTerrainBlock.add(BlockID.NETHERRACK);
-        isNaturalTerrainBlock.add(BlockID.SLOW_SAND);
-        isNaturalTerrainBlock.add(BlockID.LIGHTSTONE);
-        isNaturalTerrainBlock.add(BlockID.QUARTZ_ORE);
-
-        // ores
-        isNaturalTerrainBlock.add(BlockID.COAL_ORE);
-        isNaturalTerrainBlock.add(BlockID.IRON_ORE);
-        isNaturalTerrainBlock.add(BlockID.GOLD_ORE);
-        isNaturalTerrainBlock.add(BlockID.LAPIS_LAZULI_ORE);
-        isNaturalTerrainBlock.add(BlockID.DIAMOND_ORE);
-        isNaturalTerrainBlock.add(BlockID.REDSTONE_ORE);
-        isNaturalTerrainBlock.add(BlockID.GLOWING_REDSTONE_ORE);
-        isNaturalTerrainBlock.add(BlockID.EMERALD_ORE);
-    }
-
-    /**
-     * Checks if the block type is naturally occurring
-     *
-     * @param id the type ID of the block
-     * @param data data value of the block
-     * @return true if the block type is naturally occurring
-     */
-    public static boolean isNaturalTerrainBlock(int id, int data) {
-        return isNaturalTerrainBlock.contains(-16*id-data) || isNaturalTerrainBlock.contains(id);
-    }
-
     private static final Map<Integer, PlayerDirection> dataAttachments = new HashMap<>();
     private static final Map<Integer, PlayerDirection> nonDataAttachments = new HashMap<>();
     static {

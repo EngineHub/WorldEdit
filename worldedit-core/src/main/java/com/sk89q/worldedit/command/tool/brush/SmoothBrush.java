@@ -33,15 +33,9 @@ import com.sk89q.worldedit.util.Location;
 public class SmoothBrush implements Brush {
 
     private int iterations;
-    private boolean naturalOnly;
 
     public SmoothBrush(int iterations) {
-        this(iterations, false);
-    }
-
-    public SmoothBrush(int iterations, boolean naturalOnly) {
         this.iterations = iterations;
-        this.naturalOnly = naturalOnly;
     }
 
     @Override
@@ -49,7 +43,7 @@ public class SmoothBrush implements Brush {
         Location min = new Location(editSession.getWorld(), position.subtract(size, size, size));
         Vector max = position.add(size, size + 10, size);
         Region region = new CuboidRegion(editSession.getWorld(), min.toVector(), max);
-        HeightMap heightMap = new HeightMap(editSession, region, naturalOnly);
+        HeightMap heightMap = new HeightMap(editSession, region);
         HeightMapFilter filter = new HeightMapFilter(new GaussianKernel(5, 1.0));
         heightMap.applyFilter(filter, iterations);
     }
