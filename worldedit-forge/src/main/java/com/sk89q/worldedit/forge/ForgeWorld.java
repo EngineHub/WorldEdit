@@ -366,13 +366,11 @@ public class ForgeWorld extends AbstractWorld {
 
     @Override
     public BaseBlock getFullBlock(Vector position) {
-        World world = getWorld();
         BlockPos pos = new BlockPos(position.getBlockX(), position.getBlockY(), position.getBlockZ());
-        IBlockState state = world.getBlockState(pos);
         TileEntity tile = getWorld().getTileEntity(pos);
 
         if (tile != null) {
-            return new TileEntityBaseBlock(Block.getIdFromBlock(state.getBlock()), state.getBlock().getMetaFromState(state), tile);
+            return new TileEntityBaseBlock(getBlock(position), tile);
         } else {
             return new BaseBlock(getBlock(position));
         }

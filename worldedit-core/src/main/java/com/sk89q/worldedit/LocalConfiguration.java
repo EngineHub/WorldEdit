@@ -126,7 +126,7 @@ public abstract class LocalConfiguration {
     public String navigationWand = ItemTypes.COMPASS.getId();
     public int navigationWandMaxDistance = 50;
     public int scriptTimeout = 3000;
-    public Set<Integer> allowedDataCycleBlocks = new HashSet<>();
+    public Set<String> allowedDataCycleBlocks = new HashSet<>();
     public String saveDir = "schematics";
     public String scriptsDir = "craftscripts";
     public boolean showHelpInfo = true;

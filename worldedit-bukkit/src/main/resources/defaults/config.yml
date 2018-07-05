@@ -30,7 +30,67 @@ limits:
     butcher-radius:
         default: -1
         maximum: -1
-    disallowed-blocks: [6, 7, 14, 15, 16, 26, 27, 28, 29, 39, 31, 32, 33, 34, 36, 37, 38, 39, 40, 46, 50, 51, 56, 59, 69, 73, 74, 75, 76, 77, 81, 83, 137, 210, 211, 255]
+    disallowed-blocks:
+    - "minecraft:oak_sapling"
+    - "minecraft:jungle_sapling"
+    - "minecraft:dark_oak_sapling:"
+    - "minecraft:spruce_sapling"
+    - "minecraft:birch_sapling"
+    - "minecraft:acacia_sapling"
+    - "minecraft:black_bed"
+    - "minecraft:blue_bed"
+    - "minecraft:brown_bed"
+    - "minecraft:cyan_bed"
+    - "minecraft:gray_bed"
+    - "minecraft:green_bed"
+    - "minecraft:light_blue_bed"
+    - "minecraft:light_gray_bed"
+    - "minecraft:lime_bed"
+    - "minecraft:magenta_bed"
+    - "minecraft:orange_bed"
+    - "minecraft:pink_bed"
+    - "minecraft:purple_bed"
+    - "minecraft:red_bed"
+    - "minecraft:white_bed"
+    - "minecraft:yellow_bed"
+    - "minecraft:powered_rail"
+    - "minecraft:detector_rail"
+    - "minecraft:grass"
+    - "minecraft:dead_bush"
+    - "minecraft:moving_piston"
+    - "minecraft:piston_head"
+    - "minecraft:sunflower"
+    - "minecraft:rose_bush"
+    - "minecraft:dandelion"
+    - "minecraft:poppy"
+    - "minecraft:brown_mushroom"
+    - "minecraft:red_mushroom"
+    - "minecraft:tnt"
+    - "minecraft:torch"
+    - "minecraft:fire"
+    - "minecraft:redstone_wire"
+    - "minecraft:wheat"
+    - "minecraft:potatoes"
+    - "minecraft:carrots"
+    - "minecraft:melon_stem"
+    - "minecraft:pumpkin_stem"
+    - "minecraft:beetroots"
+    - "minecraft:rail"
+    - "minecraft:lever"
+    - "minecraft:redstone_torch"
+    - "minecraft:redstone_wall_torch"
+    - "minecraft:repeater"
+    - "minecraft:comparator"
+    - "minecraft:stone_button"
+    - "minecraft:birch_button"
+    - "minecraft:acacia_button"
+    - "minecraft:dark_oak_button"
+    - "minecraft:jungle_button"
+    - "minecraft:oak_button"
+    - "minecraft:spruce_button"
+    - "minecraft:cactus"
+    - "minecraft:sugar_cane"
+    - "minecraft:bedrock"
 
 use-inventory:
     enable: false
@@ -60,7 +120,7 @@ snapshots:
     directory:
 
 navigation-wand:
-    item: 345
+    item: minecraft:compass
     max-distance: 100
 
 scripting:
@@ -77,7 +137,7 @@ history:
     size: 15
     expiration: 10
 
-wand-item: 271
+wand-item: minecraft:wooden_axe
 shell-save-type:
 no-double-slash: false
 no-op-permissions: false

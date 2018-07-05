@@ -23,15 +23,12 @@ import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
-import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.blocks.BlockData;
-import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.World;
-import com.sk89q.worldedit.world.registry.LegacyMapper;
+import com.sk89q.worldedit.world.block.BlockState;
 
 /**
  * A mode that cycles the data values of supported blocks.
@@ -49,24 +46,24 @@ public class BlockDataCyler implements DoubleActionBlockTool {
         World world = (World) clicked.getExtent();
 
         BlockState block = world.getBlock(clicked.toVector());
-        int[] datas = LegacyMapper.getInstance().getLegacyFromBlock(block);
-        int type = datas[0];
-        int data = datas[1];
 
         if (!config.allowedDataCycleBlocks.isEmpty()
                 && !player.hasPermission("worldedit.override.data-cycler")
-                && !config.allowedDataCycleBlocks.contains(type)) {
+                && !config.allowedDataCycleBlocks.contains(block.getBlockType().getId())) {
             player.printError("You are not permitted to cycle the data value of that block.");
             return true;
         }
 
-        int increment = forward ? 1 : -1;
-        BaseBlock newBlock = new BaseBlock(type, BlockData.cycle(type, data, increment));
-        EditSession editSession = session.createEditSession(player);
-
-        if (newBlock.getData() < 0) {
+        if (block.getStates().keySet().isEmpty()) {
             player.printError("That block's data cannot be cycled!");
         } else {
+            BlockState newBlock = block;
+
+            // TODO Forward = cycle value, Backward = Next property
+            //        int increment = forward ? 1 : -1;
+            //        BaseBlock newBlock = new BaseBlock(type, BlockData.cycle(type, data, increment));
+            EditSession editSession = session.createEditSession(player);
+
             try {
                 editSession.setBlock(clicked.toVector(), newBlock);
             } catch (MaxChangedBlocksException e) {

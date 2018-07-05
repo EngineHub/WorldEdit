@@ -83,7 +83,7 @@ public class ConfigurateConfiguration extends LocalConfiguration {
             logger.warn("Error loading WorldEdit configuration", e);
         }
         try {
-            allowedDataCycleBlocks = new HashSet<>(node.getNode("limits", "allowed-data-cycle-blocks").getList(TypeToken.of(Integer.class)));
+            allowedDataCycleBlocks = new HashSet<>(node.getNode("limits", "allowed-data-cycle-blocks").getList(TypeToken.of(String.class)));
         } catch (ObjectMappingException e) {
             logger.warn("Error loading WorldEdit configuration", e);
         }
