@@ -17,7 +17,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.blocks.type;
+package com.sk89q.worldedit.world.block;
 
 import com.google.common.collect.ArrayTable;
 import com.google.common.collect.HashBasedTable;

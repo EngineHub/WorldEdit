@@ -20,8 +20,8 @@
 package com.sk89q.worldedit.blocks;
 
 import com.sk89q.jnbt.CompoundTag;
-import com.sk89q.worldedit.blocks.type.ItemType;
-import com.sk89q.worldedit.blocks.type.ItemTypes;
+import com.sk89q.worldedit.world.item.ItemType;
+import com.sk89q.worldedit.world.item.ItemTypes;
 import com.sk89q.worldedit.world.NbtValued;
 import com.sk89q.worldedit.world.registry.LegacyMapper;
 

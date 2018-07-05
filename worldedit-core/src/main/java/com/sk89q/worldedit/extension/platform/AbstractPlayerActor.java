@@ -24,11 +24,11 @@ import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockType;
-import com.sk89q.worldedit.blocks.type.BlockState;
-import com.sk89q.worldedit.blocks.type.BlockStateHolder;
-import com.sk89q.worldedit.blocks.type.BlockTypes;
-import com.sk89q.worldedit.blocks.type.ItemType;
-import com.sk89q.worldedit.blocks.type.ItemTypes;
+import com.sk89q.worldedit.world.block.BlockState;
+import com.sk89q.worldedit.world.block.BlockStateHolder;
+import com.sk89q.worldedit.world.block.BlockTypes;
+import com.sk89q.worldedit.world.item.ItemType;
+import com.sk89q.worldedit.world.item.ItemTypes;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.internal.cui.CUIEvent;
@@ -169,7 +169,7 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
                 if (spots == 2) {
                     final Vector platform = new Vector(x, y - 2, z);
                     final BlockStateHolder block = world.getBlock(platform);
-                    final com.sk89q.worldedit.blocks.type.BlockType type = block.getBlockType();
+                    final com.sk89q.worldedit.world.block.BlockType type = block.getBlockType();
 
                     // Don't get put in lava!
                     if (type == BlockTypes.LAVA) {
@@ -211,7 +211,7 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
                 while (y >= 0) {
                     final Vector platform = new Vector(x, y, z);
                     final BlockStateHolder block = world.getBlock(platform);
-                    final com.sk89q.worldedit.blocks.type.BlockType type = block.getBlockType();
+                    final com.sk89q.worldedit.world.block.BlockType type = block.getBlockType();
 
                     // Don't want to end up in lava
                     if (type != BlockTypes.AIR && type != BlockTypes.LAVA) {

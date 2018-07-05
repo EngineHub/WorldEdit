@@ -21,7 +21,7 @@ package com.sk89q.worldedit.function.mask;
 
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.blocks.Blocks;
-import com.sk89q.worldedit.blocks.type.BlockStateHolder;
+import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.extent.Extent;
 
 import java.util.Collection;

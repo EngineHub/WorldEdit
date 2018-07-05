@@ -20,8 +20,7 @@
 package com.sk89q.worldedit.regions.shape;
 
 import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.blocks.type.BlockStateHolder;
+import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.regions.Region;
 
 /**

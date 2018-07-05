@@ -17,7 +17,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.blocks.type;
+package com.sk89q.worldedit.world.fluid;
 
 import java.lang.reflect.Field;
 import java.util.Collection;
@@ -27,23 +27,27 @@ import java.util.Map;
 import javax.annotation.Nullable;
 
 /**
- * Stores a list of categories of Block Types.
+ * Stores a list of common Fluid String IDs.
  */
-public class FluidCategories {
+public class FluidTypes {
 
-    private FluidCategories() {
+    private FluidTypes() {
     }
 
-    public static final FluidCategory LAVA = new FluidCategory("minecraft:lava");
-    public static final FluidCategory WATER = new FluidCategory("minecraft:water");
+    public static final FluidType EMPTY = new FluidType("minecraft:empty");
+    public static final FluidType FLOWING_LAVA = new FluidType("minecraft:flowing_lava");
+    public static final FluidType FLOWING_WATER = new FluidType("minecraft:flowing_water");
+    public static final FluidType LAVA = new FluidType("minecraft:lava");
+    public static final FluidType WATER = new FluidType("minecraft:water");
 
-    private static final Map<String, FluidCategory> categoryMapping = new HashMap<>();
+
+    private static final Map<String, FluidType> fluidMapping = new HashMap<>();
 
     static {
-        for (Field field : FluidCategories.class.getFields()) {
-            if (field.getType() == FluidCategory.class) {
+        for (Field field : FluidTypes.class.getFields()) {
+            if (field.getType() == FluidType.class) {
                 try {
-                    registerCategory((FluidCategory) field.get(null));
+                    registerFluid((FluidType) field.get(null));
                 } catch (IllegalAccessException e) {
                     e.printStackTrace();
                 }
@@ -51,24 +55,24 @@ public class FluidCategories {
         }
     }
 
-    public static void registerCategory(FluidCategory fluidCategory) {
-        if (categoryMapping.containsKey(fluidCategory.getId()) && !fluidCategory.getId().startsWith("minecraft:")) {
-            throw new IllegalArgumentException("Existing category with this ID already registered");
+    public static void registerFluid(FluidType fluidType) {
+        if (fluidMapping.containsKey(fluidType.getId()) && !fluidType.getId().startsWith("minecraft:")) {
+            throw new IllegalArgumentException("Existing fluid with this ID already registered");
         }
 
-        categoryMapping.put(fluidCategory.getId(), fluidCategory);
+        fluidMapping.put(fluidType.getId(), fluidType);
     }
 
     @Nullable
-    public static FluidCategory getFluidCategory(String id) {
+    public static FluidType getFluidType(String id) {
         // If it has no namespace, assume minecraft.
         if (id != null && !id.contains(":")) {
             id = "minecraft:" + id;
         }
-        return categoryMapping.get(id);
+        return fluidMapping.get(id);
     }
 
-    public static Collection<FluidCategory> values() {
-        return categoryMapping.values();
+    public static Collection<FluidType> values() {
+        return fluidMapping.values();
     }
 }

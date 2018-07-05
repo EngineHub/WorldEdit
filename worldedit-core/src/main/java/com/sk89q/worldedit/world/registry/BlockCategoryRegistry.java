@@ -19,7 +19,7 @@
 
 package com.sk89q.worldedit.world.registry;
 
-import com.sk89q.worldedit.blocks.type.BlockType;
+import com.sk89q.worldedit.world.block.BlockType;
 
 /**
  * A registry for BlockType categories.

@@ -21,9 +21,7 @@ package com.sk89q.worldedit.event.extent;
 
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.blocks.type.BlockState;
-import com.sk89q.worldedit.blocks.type.BlockStateHolder;
+import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.event.Event;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extent.Extent;

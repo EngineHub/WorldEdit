@@ -19,8 +19,8 @@
 
 package com.sk89q.worldedit;
 
-import com.sk89q.worldedit.blocks.type.BlockTypes;
-import com.sk89q.worldedit.blocks.type.ItemTypes;
+import com.sk89q.worldedit.world.block.BlockTypes;
+import com.sk89q.worldedit.world.item.ItemTypes;
 import com.sk89q.worldedit.util.logging.LogFormat;
 import com.sk89q.worldedit.world.snapshot.SnapshotRepository;
 

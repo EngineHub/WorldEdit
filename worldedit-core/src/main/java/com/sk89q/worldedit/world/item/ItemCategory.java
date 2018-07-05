@@ -17,22 +17,23 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.blocks.type;
+package com.sk89q.worldedit.world.item;
 
 import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.extension.platform.Capability;
 
 import java.util.Set;
 
 /**
- * A category of blocks. This is due to the splitting up of
- * blocks such as wool into separate ids.
+ * A category of items. This is due to the splitting up of
+ * items such as wool into separate ids.
  */
-public class BlockCategory {
+public class ItemCategory {
 
     private final String id;
 
-    public BlockCategory(String id) {
+    public ItemCategory(String id) {
         this.id = id;
     }
 
@@ -40,31 +41,31 @@ public class BlockCategory {
         return this.id;
     }
 
-    public Set<BlockType> getBlockTypes() {
+    public Set<ItemType> getItemTypes() {
         return WorldEdit.getInstance().getPlatformManager()
                 .queryCapability(Capability.GAME_HOOKS).getRegistries()
-                .getBlockCategoryRegistry().getCategorisedByName(this.id);
+                .getItemCategoryRegistry().getCategorisedByName(this.id);
     }
 
     /**
-     * Checks whether the BlocKType is contained within
+     * Checks whether the ItemType is contained within
      * this category.
      *
-     * @param blockType The blocktype
+     * @param itemType The itemType
      * @return If it's a part of this category
      */
-    public boolean contains(BlockType blockType) {
-        return getBlockTypes().contains(blockType);
+    public boolean contains(ItemType itemType) {
+        return getItemTypes().contains(itemType);
     }
 
     /**
-     * Checks whether the BlockStateHolder is contained within
+     * Checks whether the BaseItem is contained within
      * this category.
      *
-     * @param blockStateHolder The blockstateholder
+     * @param baseItem The item
      * @return If it's a part of this category
      */
-    public boolean contains(BlockStateHolder blockStateHolder) {
-        return getBlockTypes().contains(blockStateHolder.getBlockType());
+    public boolean contains(BaseItem baseItem) {
+        return getItemTypes().contains(baseItem.getType());
     }
 }

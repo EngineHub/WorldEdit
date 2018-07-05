@@ -17,25 +17,20 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.blocks.type;
-
-import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.blocks.BaseItem;
-import com.sk89q.worldedit.extension.platform.Capability;
+package com.sk89q.worldedit.world.fluid;
 
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
 
 /**
- * A category of items. This is due to the splitting up of
- * items such as wool into separate ids.
+ * A category of fluids. This is due to the splitting up of
+ * blocks such as wool into separate ids.
  */
-public class ItemCategory {
+public class FluidCategory {
 
     private final String id;
 
-    public ItemCategory(String id) {
+    public FluidCategory(String id) {
         this.id = id;
     }
 
@@ -43,31 +38,21 @@ public class ItemCategory {
         return this.id;
     }
 
-    public Set<ItemType> getItemTypes() {
-        return WorldEdit.getInstance().getPlatformManager()
-                .queryCapability(Capability.GAME_HOOKS).getRegistries()
-                .getItemCategoryRegistry().getCategorisedByName(this.id);
+    public Set<FluidType> getFluidTypes() {
+        return Collections.emptySet(); // TODO Make this work.
+        //        return WorldEdit.getInstance().getPlatformManager()
+//                .queryCapability(Capability.GAME_HOOKS).getRegistries()
+//                .getBlockCategoryRegistry().getCategorisedByName(this.id);
     }
 
     /**
-     * Checks whether the ItemType is contained within
+     * Checks whether the FluidType is contained within
      * this category.
      *
-     * @param itemType The itemType
+     * @param fluidType The fluidType
      * @return If it's a part of this category
      */
-    public boolean contains(ItemType itemType) {
-        return getItemTypes().contains(itemType);
-    }
-
-    /**
-     * Checks whether the BaseItem is contained within
-     * this category.
-     *
-     * @param baseItem The item
-     * @return If it's a part of this category
-     */
-    public boolean contains(BaseItem baseItem) {
-        return getItemTypes().contains(baseItem.getType());
+    public boolean contains(FluidType fluidType) {
+        return getFluidTypes().contains(fluidType);
     }
 }

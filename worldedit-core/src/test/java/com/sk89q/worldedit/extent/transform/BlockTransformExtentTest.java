@@ -21,8 +21,8 @@ package com.sk89q.worldedit.extent.transform;
 
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockData;
-import com.sk89q.worldedit.blocks.type.BlockType;
-import com.sk89q.worldedit.blocks.type.BlockTypes;
+import com.sk89q.worldedit.world.block.BlockType;
+import com.sk89q.worldedit.world.block.BlockTypes;
 import com.sk89q.worldedit.math.transform.AffineTransform;
 import com.sk89q.worldedit.math.transform.Transform;
 import com.sk89q.worldedit.world.registry.BlockRegistry;

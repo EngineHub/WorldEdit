@@ -20,7 +20,7 @@
 package com.sk89q.worldedit.util;
 
 import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.blocks.type.BlockTypes;
+import com.sk89q.worldedit.world.block.BlockTypes;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.world.World;
 

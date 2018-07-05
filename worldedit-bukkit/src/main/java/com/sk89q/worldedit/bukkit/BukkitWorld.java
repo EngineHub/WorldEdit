@@ -30,7 +30,7 @@ import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.blocks.LazyBlock;
-import com.sk89q.worldedit.blocks.type.BlockStateHolder;
+import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.bukkit.adapter.BukkitImplAdapter;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.history.change.BlockChange;
@@ -357,7 +357,7 @@ public class BukkitWorld extends AbstractWorld {
     }
 
     @Override
-    public com.sk89q.worldedit.blocks.type.BlockState getBlock(Vector position) {
+    public com.sk89q.worldedit.world.block.BlockState getBlock(Vector position) {
         Block bukkitBlock = getWorld().getBlockAt(position.getBlockX(), position.getBlockY(), position.getBlockZ());
         return LegacyMapper.getInstance().getBlockFromLegacy(bukkitBlock.getTypeId(), bukkitBlock.getData());
     }

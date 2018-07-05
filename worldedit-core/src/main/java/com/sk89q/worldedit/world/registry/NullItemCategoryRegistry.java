@@ -19,7 +19,7 @@
 
 package com.sk89q.worldedit.world.registry;
 
-import com.sk89q.worldedit.blocks.type.ItemType;
+import com.sk89q.worldedit.world.item.ItemType;
 
 import java.util.Collections;
 import java.util.Set;

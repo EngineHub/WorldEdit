@@ -23,8 +23,7 @@ import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.Vector2D;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.LazyBlock;
-import com.sk89q.worldedit.blocks.type.BlockState;
-import com.sk89q.worldedit.blocks.type.BlockStateHolder;
+import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.world.biome.BaseBiome;
 

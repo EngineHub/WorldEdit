@@ -20,7 +20,7 @@
 package com.sk89q.worldedit.blocks;
 
 import com.sk89q.jnbt.CompoundTag;
-import com.sk89q.worldedit.blocks.type.ItemType;
+import com.sk89q.worldedit.world.item.ItemType;
 
 /**
  * Represents a stack of BaseItems.

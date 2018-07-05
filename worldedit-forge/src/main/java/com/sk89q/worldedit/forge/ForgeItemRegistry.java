@@ -19,7 +19,7 @@
 package com.sk89q.worldedit.forge;
 
 import com.sk89q.worldedit.blocks.BaseItem;
-import com.sk89q.worldedit.blocks.type.ItemTypes;
+import com.sk89q.worldedit.world.item.ItemTypes;
 import com.sk89q.worldedit.world.registry.ItemRegistry;
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;

@@ -19,7 +19,7 @@
 
 package com.sk89q.worldedit.extent.inventory;
 
-import com.sk89q.worldedit.blocks.type.BlockType;
+import com.sk89q.worldedit.world.block.BlockType;
 
 /**
  * Thrown when the target inventory of a block bag is full.

@@ -20,8 +20,8 @@
 package com.sk89q.worldedit.command.tool;
 
 import com.sk89q.worldedit.*;
-import com.sk89q.worldedit.blocks.type.BlockStateHolder;
-import com.sk89q.worldedit.blocks.type.BlockType;
+import com.sk89q.worldedit.world.block.BlockStateHolder;
+import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Platform;

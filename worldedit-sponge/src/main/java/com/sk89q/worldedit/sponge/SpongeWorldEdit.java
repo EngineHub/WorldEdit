@@ -33,6 +33,7 @@ import com.sk89q.worldedit.sponge.adapter.AdapterLoadException;
 import com.sk89q.worldedit.sponge.adapter.SpongeImplAdapter;
 import com.sk89q.worldedit.sponge.adapter.SpongeImplLoader;
 import com.sk89q.worldedit.sponge.config.SpongeConfiguration;
+import com.sk89q.worldedit.world.item.ItemTypes;
 import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockSnapshot;
@@ -134,11 +135,11 @@ public class SpongeWorldEdit {
 
         for (BlockType blockType : Sponge.getRegistry().getAllOf(BlockType.class)) {
             // TODO Handle blockstate stuff
-            com.sk89q.worldedit.blocks.type.BlockTypes.registerBlock(new com.sk89q.worldedit.blocks.type.BlockType(blockType.getId()));
+            com.sk89q.worldedit.world.block.BlockTypes.registerBlock(new com.sk89q.worldedit.world.block.BlockType(blockType.getId()));
         }
 
         for (ItemType itemType : Sponge.getRegistry().getAllOf(ItemType.class)) {
-            com.sk89q.worldedit.blocks.type.ItemTypes.registerItem(new com.sk89q.worldedit.blocks.type.ItemType(itemType.getId()));
+            ItemTypes.registerItem(new com.sk89q.worldedit.world.item.ItemType(itemType.getId()));
         }
 
         WorldEdit.getInstance().getPlatformManager().register(platform);

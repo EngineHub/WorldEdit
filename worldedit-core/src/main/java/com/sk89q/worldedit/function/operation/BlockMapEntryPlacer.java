@@ -22,7 +22,7 @@ package com.sk89q.worldedit.function.operation;
 import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.blocks.type.BlockStateHolder;
+import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.extent.Extent;
 
 import java.util.Iterator;

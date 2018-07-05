@@ -19,14 +19,6 @@
 
 package com.sk89q.worldedit;
 
-import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.blocks.BlockID;
-import com.sk89q.worldedit.blocks.type.BlockType;
-import com.sk89q.worldedit.blocks.type.BlockTypes;
-import org.junit.Test;
-
-import static org.junit.Assert.*;
-
 // TODO FIX
 public class CuboidClipboardTest {
 //    @Test

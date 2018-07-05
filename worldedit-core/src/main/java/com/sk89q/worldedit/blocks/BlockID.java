@@ -19,10 +19,12 @@
 
 package com.sk89q.worldedit.blocks;
 
+import com.sk89q.worldedit.world.block.BlockTypes;
+
 /**
  * List of block IDs.
  *
- * {@deprecated Please use {@link com.sk89q.worldedit.blocks.type.BlockTypes}}
+ * {@deprecated Please use {@link BlockTypes }}
  */
 @Deprecated
 public final class BlockID {

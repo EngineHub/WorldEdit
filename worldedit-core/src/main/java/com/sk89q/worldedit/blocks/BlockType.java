@@ -22,7 +22,7 @@ package com.sk89q.worldedit.blocks;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.sk89q.worldedit.PlayerDirection;
-import com.sk89q.worldedit.blocks.type.BlockStateHolder;
+import com.sk89q.worldedit.world.block.BlockStateHolder;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -30,7 +30,7 @@ import java.util.Map;
 /**
  * Block types.
  *
- * {@deprecated Please use {@link com.sk89q.worldedit.blocks.type.BlockType}}
+ * {@deprecated Please use {@link com.sk89q.worldedit.world.block.BlockType }}
  */
 @Deprecated
 public enum BlockType {

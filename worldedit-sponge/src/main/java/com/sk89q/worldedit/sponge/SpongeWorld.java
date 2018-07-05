@@ -27,15 +27,14 @@ import com.sk89q.worldedit.Vector2D;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BaseItemStack;
-import com.sk89q.worldedit.blocks.type.BlockStateHolder;
-import com.sk89q.worldedit.blocks.type.ItemTypes;
+import com.sk89q.worldedit.world.block.BlockStateHolder;
+import com.sk89q.worldedit.world.item.ItemTypes;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.AbstractWorld;
 import com.sk89q.worldedit.world.biome.BaseBiome;
-import com.sk89q.worldedit.world.registry.Registries;
 import com.sk89q.worldedit.world.registry.state.State;
 import com.sk89q.worldedit.world.registry.state.value.StateValue;
 import org.spongepowered.api.Sponge;
@@ -115,7 +114,7 @@ public abstract class SpongeWorld extends AbstractWorld {
 
     @SuppressWarnings("WeakerAccess")
     protected BlockState getBlockState(BlockStateHolder<?> block) {
-        if (block instanceof com.sk89q.worldedit.blocks.type.BlockState) {
+        if (block instanceof com.sk89q.worldedit.world.block.BlockState) {
             BlockState state = Sponge.getRegistry().getType(BlockType.class, block.getBlockType().getId()).orElse(BlockTypes.AIR).getDefaultState();
             for (Map.Entry<State, StateValue> entry : block.getStates().entrySet()) {
                 // TODO Convert across states

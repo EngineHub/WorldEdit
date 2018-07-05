@@ -17,20 +17,22 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.blocks.type;
+package com.sk89q.worldedit.world.block;
 
-import java.util.Collections;
+import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.extension.platform.Capability;
+
 import java.util.Set;
 
 /**
- * A category of fluids. This is due to the splitting up of
+ * A category of blocks. This is due to the splitting up of
  * blocks such as wool into separate ids.
  */
-public class FluidCategory {
+public class BlockCategory {
 
     private final String id;
 
-    public FluidCategory(String id) {
+    public BlockCategory(String id) {
         this.id = id;
     }
 
@@ -38,21 +40,31 @@ public class FluidCategory {
         return this.id;
     }
 
-    public Set<FluidType> getFluidTypes() {
-        return Collections.emptySet(); // TODO Make this work.
-        //        return WorldEdit.getInstance().getPlatformManager()
-//                .queryCapability(Capability.GAME_HOOKS).getRegistries()
-//                .getBlockCategoryRegistry().getCategorisedByName(this.id);
+    public Set<BlockType> getBlockTypes() {
+        return WorldEdit.getInstance().getPlatformManager()
+                .queryCapability(Capability.GAME_HOOKS).getRegistries()
+                .getBlockCategoryRegistry().getCategorisedByName(this.id);
     }
 
     /**
-     * Checks whether the FluidType is contained within
+     * Checks whether the BlocKType is contained within
      * this category.
      *
-     * @param fluidType The fluidType
+     * @param blockType The blocktype
      * @return If it's a part of this category
      */
-    public boolean contains(FluidType fluidType) {
-        return getFluidTypes().contains(fluidType);
+    public boolean contains(BlockType blockType) {
+        return getBlockTypes().contains(blockType);
+    }
+
+    /**
+     * Checks whether the BlockStateHolder is contained within
+     * this category.
+     *
+     * @param blockStateHolder The blockstateholder
+     * @return If it's a part of this category
+     */
+    public boolean contains(BlockStateHolder blockStateHolder) {
+        return getBlockTypes().contains(blockStateHolder.getBlockType());
     }
 }

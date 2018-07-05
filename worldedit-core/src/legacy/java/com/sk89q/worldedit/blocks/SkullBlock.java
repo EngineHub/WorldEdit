@@ -22,7 +22,7 @@ package com.sk89q.worldedit.blocks;
 import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.jnbt.StringTag;
 import com.sk89q.jnbt.Tag;
-import com.sk89q.worldedit.blocks.type.BlockState;
+import com.sk89q.worldedit.world.block.BlockState;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -26,12 +26,12 @@ import static com.sk89q.worldedit.regions.Regions.maximumBlockY;
 import static com.sk89q.worldedit.regions.Regions.minimumBlockY;
 
 import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.blocks.BlockType;
 import com.sk89q.worldedit.blocks.LazyBlock;
-import com.sk89q.worldedit.blocks.type.BlockCategories;
-import com.sk89q.worldedit.blocks.type.BlockState;
-import com.sk89q.worldedit.blocks.type.BlockStateHolder;
-import com.sk89q.worldedit.blocks.type.BlockTypes;
+import com.sk89q.worldedit.world.block.BlockCategories;
+import com.sk89q.worldedit.world.block.BlockState;
+import com.sk89q.worldedit.world.block.BlockStateHolder;
+import com.sk89q.worldedit.world.block.BlockType;
+import com.sk89q.worldedit.world.block.BlockTypes;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.event.extent.EditSessionEvent;
@@ -108,7 +108,6 @@ import com.sk89q.worldedit.util.eventbus.EventBus;
 import com.sk89q.worldedit.world.NullWorld;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.biome.BaseBiome;
-import com.sk89q.worldedit.world.registry.LegacyMapper;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -375,7 +374,7 @@ public class EditSession implements Extent {
      *
      * @return a map of missing blocks
      */
-    public Map<com.sk89q.worldedit.blocks.type.BlockType, Integer> popMissingBlocks() {
+    public Map<BlockType, Integer> popMissingBlocks() {
         return blockBagExtent.popMissing();
     }
 
@@ -727,7 +726,7 @@ public class EditSession implements Extent {
      * @return number of blocks affected
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
-    public int removeNear(Vector position, com.sk89q.worldedit.blocks.type.BlockType blockType, int apothem) throws MaxChangedBlocksException {
+    public int removeNear(Vector position, BlockType blockType, int apothem) throws MaxChangedBlocksException {
         checkNotNull(position);
         checkArgument(apothem >= 1, "apothem >= 1");
 
@@ -1143,7 +1142,7 @@ public class EditSession implements Extent {
      * @return number of blocks affected
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
-    public int fixLiquid(Vector origin, double radius, com.sk89q.worldedit.blocks.type.BlockType moving, com.sk89q.worldedit.blocks.type.BlockType stationary) throws MaxChangedBlocksException {
+    public int fixLiquid(Vector origin, double radius, BlockType moving, BlockType stationary) throws MaxChangedBlocksException {
         checkNotNull(origin);
         checkArgument(radius >= 0, "radius >= 0 required");
 
@@ -1449,7 +1448,7 @@ public class EditSession implements Extent {
 
                 for (int y = world.getMaxY(); y >= 1; --y) {
                     Vector pt = new Vector(x, y, z);
-                    com.sk89q.worldedit.blocks.type.BlockType id = getBlock(pt).getBlockType();
+                    BlockType id = getBlock(pt).getBlockType();
 
                     if (id == BlockTypes.ICE) {
                         if (setBlock(pt, water)) {
@@ -1499,7 +1498,7 @@ public class EditSession implements Extent {
 
                 for (int y = world.getMaxY(); y >= 1; --y) {
                     Vector pt = new Vector(x, y, z);
-                    com.sk89q.worldedit.blocks.type.BlockType id = getBlock(pt).getBlockType();
+                    BlockType id = getBlock(pt).getBlockType();
 
                     if (id == BlockTypes.AIR) {
                         continue;
@@ -1642,7 +1641,7 @@ public class EditSession implements Extent {
 
                 for (int y = basePosition.getBlockY(); y >= basePosition.getBlockY() - 10; --y) {
                     // Check if we hit the ground
-                    com.sk89q.worldedit.blocks.type.BlockType t = getBlock(new Vector(x, y, z)).getBlockType();
+                    BlockType t = getBlock(new Vector(x, y, z)).getBlockType();
                     if (t == BlockTypes.GRASS_BLOCK || t == BlockTypes.DIRT) {
                         treeType.generate(this, new Vector(x, y + 1, z));
                         ++affected;
@@ -1665,9 +1664,9 @@ public class EditSession implements Extent {
      * @param region a region
      * @return the results
      */
-    public List<Countable<com.sk89q.worldedit.blocks.type.BlockType>> getBlockDistribution(Region region) {
-        List<Countable<com.sk89q.worldedit.blocks.type.BlockType>> distribution = new ArrayList<>();
-        Map<com.sk89q.worldedit.blocks.type.BlockType, Countable<com.sk89q.worldedit.blocks.type.BlockType>> map = new HashMap<>();
+    public List<Countable<BlockType>> getBlockDistribution(Region region) {
+        List<Countable<BlockType>> distribution = new ArrayList<>();
+        Map<BlockType, Countable<BlockType>> map = new HashMap<>();
 
         if (region instanceof CuboidRegion) {
             // Doing this for speed
@@ -1686,12 +1685,12 @@ public class EditSession implements Extent {
                     for (int z = minZ; z <= maxZ; ++z) {
                         Vector pt = new Vector(x, y, z);
 
-                        com.sk89q.worldedit.blocks.type.BlockType type = getLazyBlock(pt).getBlockType();
+                        BlockType type = getLazyBlock(pt).getBlockType();
 
                         if (map.containsKey(type)) {
                             map.get(type).increment();
                         } else {
-                            Countable<com.sk89q.worldedit.blocks.type.BlockType> c = new Countable<>(type, 1);
+                            Countable<BlockType> c = new Countable<>(type, 1);
                             map.put(type, c);
                             distribution.add(c);
                         }
@@ -1700,12 +1699,12 @@ public class EditSession implements Extent {
             }
         } else {
             for (Vector pt : region) {
-                com.sk89q.worldedit.blocks.type.BlockType type = getLazyBlock(pt).getBlockType();
+                BlockType type = getLazyBlock(pt).getBlockType();
 
                 if (map.containsKey(type)) {
                     map.get(type).increment();
                 } else {
-                    Countable<com.sk89q.worldedit.blocks.type.BlockType> c = new Countable<>(type, 1);
+                    Countable<BlockType> c = new Countable<>(type, 1);
                     map.put(type, c);
                 }
             }

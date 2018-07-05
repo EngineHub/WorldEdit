@@ -20,7 +20,7 @@
 package com.sk89q.worldedit.bukkit.adapter;
 
 import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.blocks.type.BlockStateHolder;
+import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.entity.BaseEntity;
 import org.bukkit.Location;
 import org.bukkit.block.Biome;

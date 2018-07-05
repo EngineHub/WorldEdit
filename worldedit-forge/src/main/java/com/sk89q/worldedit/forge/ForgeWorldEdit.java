@@ -30,6 +30,8 @@ import com.sk89q.worldedit.event.platform.PlatformReadyEvent;
 import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.forge.net.LeftClickAirEventMessage;
 import com.sk89q.worldedit.util.Location;
+import com.sk89q.worldedit.world.block.BlockType;
+import com.sk89q.worldedit.world.block.BlockTypes;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
@@ -123,7 +125,7 @@ public class ForgeWorldEdit {
         }
 
         for (Block block : REGISTRY) {
-            com.sk89q.worldedit.blocks.type.BlockTypes.registerBlock(new com.sk89q.worldedit.blocks.type.BlockType(REGISTRY.getNameForObject(block).toString()));
+            BlockTypes.registerBlock(new BlockType(REGISTRY.getNameForObject(block).toString()));
         }
     }
 

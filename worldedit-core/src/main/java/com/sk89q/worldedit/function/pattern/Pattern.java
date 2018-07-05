@@ -20,8 +20,7 @@
 package com.sk89q.worldedit.function.pattern;
 
 import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.blocks.type.BlockStateHolder;
+import com.sk89q.worldedit.world.block.BlockStateHolder;
 
 /**
  * Returns a {@link BlockStateHolder} for a given position.
