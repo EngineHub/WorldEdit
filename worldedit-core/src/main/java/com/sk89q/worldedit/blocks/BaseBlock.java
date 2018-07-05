@@ -57,24 +57,6 @@ public class BaseBlock implements BlockStateHolder<BaseBlock>, TileEntityBlock {
     private CompoundTag nbtData;
 
     /**
-     * Construct a block with the given ID and a data value of 0.
-     *
-     * @param id ID value
-     */
-    @Deprecated
-    public BaseBlock(int id) {
-        try {
-            this.blockState = LegacyMapper.getInstance().getBlockFromLegacy(id);
-            if (this.blockState == null) {
-                this.blockState = BlockTypes.AIR.getDefaultState();
-            }
-        } catch (Exception e) {
-            System.out.println(id);
-            e.printStackTrace();
-        }
-    }
-
-    /**
      * Construct a block with a state.
      *
      * @param blockState The blockstate
@@ -111,7 +93,15 @@ public class BaseBlock implements BlockStateHolder<BaseBlock>, TileEntityBlock {
      */
     @Deprecated
     public BaseBlock(int id, int data) {
-        this(id);
+        try {
+            this.blockState = LegacyMapper.getInstance().getBlockFromLegacy(id, data);
+            if (this.blockState == null) {
+                this.blockState = BlockTypes.AIR.getDefaultState();
+            }
+        } catch (Exception e) {
+            System.out.println(id);
+            e.printStackTrace();
+        }
     }
 
     /**

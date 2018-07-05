@@ -74,23 +74,6 @@ public class LazyBlock extends BaseBlock {
         this.position = position;
     }
 
-    /**
-     * Create a new lazy block.
-     *
-     * @param type the block type
-     * @param data the data value
-     * @param extent the extent to later load the full block data from
-     * @param position the position to later load the full block data from
-     */
-    @Deprecated
-    public LazyBlock(int type, int data, Extent extent, Vector position) {
-        super(type, data);
-        checkNotNull(extent);
-        checkNotNull(position);
-        this.extent = extent;
-        this.position = position;
-    }
-
     @Override
     public CompoundTag getNbtData() {
         if (!loaded) {

@@ -37,14 +37,12 @@ public final class BlockID {
     public static final int DEAD_BUSH = 32; // DEADBUSH
     public static final int PISTON_BASE = 33; // PISTON
     public static final int PISTON_EXTENSION = 34; // PISTON_HEAD
-    public static final int PISTON_MOVING_PIECE = 36; // PISTON_EXTENSION
     public static final int YELLOW_FLOWER = 37;
     public static final int RED_FLOWER = 38;
     public static final int BROWN_MUSHROOM = 39;
     public static final int RED_MUSHROOM = 40;
     public static final int STEP = 44; // STONE_SLAB
     public static final int TORCH = 50;
-    public static final int FIRE = 51;
     public static final int OAK_WOOD_STAIRS = 53; // OAK_STAIRS
     public static final int CHEST = 54;
     public static final int REDSTONE_WIRE = 55;
@@ -70,7 +68,6 @@ public final class BlockID {
     public static final int FENCE = 85;
     public static final int PUMPKIN = 86;
     public static final int SLOW_SAND = 88; // SOUL_SAND
-    public static final int PORTAL = 90;
     public static final int JACKOLANTERN = 91; // LIT_PUMPKIN
     public static final int CAKE_BLOCK = 92; // CAKE
     public static final int REDSTONE_REPEATER_OFF = 93; // UNPOWERED_REPEATER
@@ -126,7 +123,6 @@ public final class BlockID {
     public static final int DOUBLE_PLANT = 175;
     public static final int STANDING_BANNER = 176;
     public static final int WALL_BANNER = 177;
-    public static final int DAYLIGHT_SENSOR_INVERTED = 178;
     public static final int STEP2 = 182;
     public static final int SPRUCE_DOOR = 193;
     public static final int BIRCH_DOOR = 194;

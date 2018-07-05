@@ -24,9 +24,10 @@ import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.PlayerDirection;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.blocks.BlockType;
+import com.sk89q.worldedit.blocks.Blocks;
+import com.sk89q.worldedit.blocks.type.BlockCategories;
+import com.sk89q.worldedit.blocks.type.BlockState;
 import com.sk89q.worldedit.blocks.type.BlockStateHolder;
 import com.sk89q.worldedit.blocks.type.BlockTypes;
 import com.sk89q.worldedit.extent.AbstractDelegateExtent;
@@ -89,27 +90,27 @@ public class MultiStageReorder extends AbstractDelegateExtent implements Reorder
 
     @Override
     public boolean setBlock(Vector location, BlockStateHolder block) throws WorldEditException {
-        BaseBlock lazyBlock = getLazyBlock(location);
+        BlockState existing = getBlock(location);
 
         if (!enabled) {
             return super.setBlock(location, block);
         }
 
-        if (BlockType.shouldPlaceLast(block.getBlockType().getLegacyId())) {
+        if (Blocks.shouldPlaceLast(block.getBlockType())) {
             // Place torches, etc. last
             stage2.put(location.toBlockVector(), block);
-            return !(lazyBlock.getBlockType() == block.getBlockType()); // TODO  && lazyBlock.getData() == block.getData());
-        } else if (BlockType.shouldPlaceFinal(block.getBlockType().getLegacyId())) {
+            return !existing.equalsFuzzy(block);
+        } else if (Blocks.shouldPlaceFinal(block.getBlockType())) {
             // Place signs, reed, etc even later
             stage3.put(location.toBlockVector(), block);
-            return !(lazyBlock.getBlockType() == block.getBlockType()); // TODO  && lazyBlock.getData() == block.getData());
-        } else if (BlockType.shouldPlaceLast(lazyBlock.getBlockType().getLegacyId())) {
+            return !existing.equalsFuzzy(block);
+        } else if (Blocks.shouldPlaceLast(existing.getBlockType())) {
             // Destroy torches, etc. first
             super.setBlock(location, BlockTypes.AIR.getDefaultState());
             return super.setBlock(location, block);
         } else {
             stage1.put(location.toBlockVector(), block);
-            return !(lazyBlock.getBlockType() == block.getBlockType()); // TODO && lazyBlock.getData() == block.getData());
+            return !existing.equalsFuzzy(block);
         }
     }
 
@@ -149,19 +150,10 @@ public class MultiStageReorder extends AbstractDelegateExtent implements Reorder
 
                     assert (blockTypes.containsKey(current));
 
-                    final BlockStateHolder baseBlock = blockTypes.get(current);
-
-                    final int type = baseBlock.getBlockType().getLegacyId();
+                    final BlockStateHolder blockStateHolder = blockTypes.get(current);
 //                    final int data = baseBlock.getData();
 
-                    switch (type) {
-                        case BlockID.WOODEN_DOOR:
-                        case BlockID.ACACIA_DOOR:
-                        case BlockID.BIRCH_DOOR:
-                        case BlockID.JUNGLE_DOOR:
-                        case BlockID.DARK_OAK_DOOR:
-                        case BlockID.SPRUCE_DOOR:
-                        case BlockID.IRON_DOOR:
+                    if (BlockCategories.DOORS.contains(blockStateHolder.getBlockType())) {
 // TODO                            if ((data & 0x8) == 0) {
 //                                // Deal with lower door halves being attached to the floor AND the upper half
 //                                BlockVector upperBlock = current.add(0, 1, 0).toBlockVector();
@@ -169,22 +161,14 @@ public class MultiStageReorder extends AbstractDelegateExtent implements Reorder
 //                                    walked.addFirst(upperBlock);
 //                                }
 //                            }
-                            break;
-
-                        case BlockID.MINECART_TRACKS:
-                        case BlockID.POWERED_RAIL:
-                        case BlockID.DETECTOR_RAIL:
-                        case BlockID.ACTIVATOR_RAIL:
-                            // Here, rails are hardcoded to be attached to the block below them.
-                            // They're also attached to the block they're ascending towards via BlockType.getAttachment.
-                            BlockVector lowerBlock = current.add(0, -1, 0).toBlockVector();
-                            if (blocks.contains(lowerBlock) && !walked.contains(lowerBlock)) {
-                                walked.addFirst(lowerBlock);
-                            }
-                            break;
+                    } else if (BlockCategories.RAILS.contains(blockStateHolder.getBlockType())) {
+                        BlockVector lowerBlock = current.add(0, -1, 0).toBlockVector();
+                        if (blocks.contains(lowerBlock) && !walked.contains(lowerBlock)) {
+                            walked.addFirst(lowerBlock);
+                        }
                     }
 
-                    final PlayerDirection attachment = BlockType.getAttachment(type, 0); // TODO
+                    final PlayerDirection attachment = BlockType.getAttachment(blockStateHolder.getBlockType().getLegacyId(), 0); // TODO
                     if (attachment == null) {
                         // Block is not attached to anything => we can place it
                         break;

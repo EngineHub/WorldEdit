@@ -25,9 +25,7 @@ import com.sk89q.worldedit.PlayerDirection;
 import com.sk89q.worldedit.blocks.type.BlockStateHolder;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Block types.
@@ -38,110 +36,6 @@ import java.util.Set;
 public enum BlockType {
 
     ;
-
-    /**
-     * HashSet for shouldPlaceLast.
-     */
-    private static final Set<Integer> shouldPlaceLast = new HashSet<>();
-    static {
-        shouldPlaceLast.add(BlockID.SAPLING);
-        shouldPlaceLast.add(BlockID.BED);
-        shouldPlaceLast.add(BlockID.POWERED_RAIL);
-        shouldPlaceLast.add(BlockID.DETECTOR_RAIL);
-        shouldPlaceLast.add(BlockID.LONG_GRASS);
-        shouldPlaceLast.add(BlockID.DEAD_BUSH);
-        shouldPlaceLast.add(BlockID.YELLOW_FLOWER);
-        shouldPlaceLast.add(BlockID.RED_FLOWER);
-        shouldPlaceLast.add(BlockID.BROWN_MUSHROOM);
-        shouldPlaceLast.add(BlockID.RED_MUSHROOM);
-        shouldPlaceLast.add(BlockID.TORCH);
-        shouldPlaceLast.add(BlockID.FIRE);
-        shouldPlaceLast.add(BlockID.REDSTONE_WIRE);
-        shouldPlaceLast.add(BlockID.CROPS);
-        shouldPlaceLast.add(BlockID.LADDER);
-        shouldPlaceLast.add(BlockID.MINECART_TRACKS);
-        shouldPlaceLast.add(BlockID.LEVER);
-        shouldPlaceLast.add(BlockID.STONE_PRESSURE_PLATE);
-        shouldPlaceLast.add(BlockID.WOODEN_PRESSURE_PLATE);
-        shouldPlaceLast.add(BlockID.REDSTONE_TORCH_OFF);
-        shouldPlaceLast.add(BlockID.REDSTONE_TORCH_ON);
-        shouldPlaceLast.add(BlockID.STONE_BUTTON);
-        shouldPlaceLast.add(BlockID.SNOW);
-        shouldPlaceLast.add(BlockID.PORTAL);
-        shouldPlaceLast.add(BlockID.REDSTONE_REPEATER_OFF);
-        shouldPlaceLast.add(BlockID.REDSTONE_REPEATER_ON);
-        shouldPlaceLast.add(BlockID.TRAP_DOOR);
-        shouldPlaceLast.add(BlockID.VINE);
-        shouldPlaceLast.add(BlockID.LILY_PAD);
-        shouldPlaceLast.add(BlockID.NETHER_WART);
-        shouldPlaceLast.add(BlockID.PISTON_BASE);
-        shouldPlaceLast.add(BlockID.PISTON_STICKY_BASE);
-        shouldPlaceLast.add(BlockID.PISTON_EXTENSION);
-        shouldPlaceLast.add(BlockID.PISTON_MOVING_PIECE);
-        shouldPlaceLast.add(BlockID.COCOA_PLANT);
-        shouldPlaceLast.add(BlockID.TRIPWIRE_HOOK);
-        shouldPlaceLast.add(BlockID.TRIPWIRE);
-        shouldPlaceLast.add(BlockID.FLOWER_POT);
-        shouldPlaceLast.add(BlockID.CARROTS);
-        shouldPlaceLast.add(BlockID.POTATOES);
-        shouldPlaceLast.add(BlockID.WOODEN_BUTTON);
-        shouldPlaceLast.add(BlockID.ANVIL); // becomes relevant with asynchronous placement
-        shouldPlaceLast.add(BlockID.PRESSURE_PLATE_LIGHT);
-        shouldPlaceLast.add(BlockID.PRESSURE_PLATE_HEAVY);
-        shouldPlaceLast.add(BlockID.COMPARATOR_OFF);
-        shouldPlaceLast.add(BlockID.COMPARATOR_ON);
-        shouldPlaceLast.add(BlockID.ACTIVATOR_RAIL);
-        shouldPlaceLast.add(BlockID.IRON_TRAP_DOOR);
-        shouldPlaceLast.add(BlockID.CARPET);
-        shouldPlaceLast.add(BlockID.DOUBLE_PLANT);
-        shouldPlaceLast.add(BlockID.DAYLIGHT_SENSOR_INVERTED);
-    }
-
-    /**
-     * Checks to see whether a block should be placed last (when reordering
-     * blocks that are placed).
-     *
-     * @param id the block ID
-     * @return true if the block should be placed last
-     */
-    public static boolean shouldPlaceLast(int id) {
-        return shouldPlaceLast.contains(id);
-    }
-
-    /**
-     * HashSet for shouldPlaceLast.
-     */
-    private static final Set<Integer> shouldPlaceFinal = new HashSet<>();
-    static {
-        shouldPlaceFinal.add(BlockID.SIGN_POST);
-        shouldPlaceFinal.add(BlockID.WOODEN_DOOR);
-        shouldPlaceFinal.add(BlockID.ACACIA_DOOR);
-        shouldPlaceFinal.add(BlockID.BIRCH_DOOR);
-        shouldPlaceFinal.add(BlockID.JUNGLE_DOOR);
-        shouldPlaceFinal.add(BlockID.DARK_OAK_DOOR);
-        shouldPlaceFinal.add(BlockID.SPRUCE_DOOR);
-        shouldPlaceFinal.add(BlockID.WALL_SIGN);
-        shouldPlaceFinal.add(BlockID.IRON_DOOR);
-        shouldPlaceFinal.add(BlockID.CACTUS);
-        shouldPlaceFinal.add(BlockID.REED);
-        shouldPlaceFinal.add(BlockID.CAKE_BLOCK);
-        shouldPlaceFinal.add(BlockID.PISTON_EXTENSION);
-        shouldPlaceFinal.add(BlockID.PISTON_MOVING_PIECE);
-        shouldPlaceFinal.add(BlockID.STANDING_BANNER);
-        shouldPlaceFinal.add(BlockID.WALL_BANNER);
-    }
-
-    /**
-     * Checks to see whether a block should be placed in the final queue.
-     *
-     * This applies to blocks that can be attached to other blocks that have an attachment.
-     *
-     * @param id the type ID of the block
-     * @return whether the block is in the final queue
-     */
-    public static boolean shouldPlaceFinal(int id) {
-        return shouldPlaceFinal.contains(id);
-    }
 
     /**
      * HashSet for centralTopLimit.
