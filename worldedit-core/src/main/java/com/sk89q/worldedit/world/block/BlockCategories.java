@@ -19,20 +19,12 @@
 
 package com.sk89q.worldedit.world.block;
 
-import java.lang.reflect.Field;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.annotation.Nullable;
 
 /**
  * Stores a list of categories of Block Types.
  */
-public class BlockCategories {
-
-    private BlockCategories() {
-    }
+public final class BlockCategories {
 
     public static final BlockCategory ACACIA_LOGS = register("minecraft:acacia_logs");
     public static final BlockCategory ANVIL = register("minecraft:anvil");
@@ -67,6 +59,9 @@ public class BlockCategories {
     public static final BlockCategory WOODEN_STAIRS = register("minecraft:wooden_stairs");
     public static final BlockCategory WOOL = register("minecraft:wool");
 
+    private BlockCategories() {
+    }
+
     private static BlockCategory register(final String id) {
         return register(new BlockCategory(id));
     }
@@ -75,12 +70,7 @@ public class BlockCategories {
         return BlockCategory.REGISTRY.register(tag.getId(), tag);
     }
 
-    @Nullable
-    public static BlockCategory get(final String id) {
+    public static @Nullable BlockCategory get(final String id) {
         return BlockCategory.REGISTRY.get(id);
-    }
-
-    public static Collection<BlockCategory> values() {
-        return BlockCategory.REGISTRY.values();
     }
 }

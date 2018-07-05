@@ -19,17 +19,12 @@
 
 package com.sk89q.worldedit.world.block;
 
-import java.util.Collection;
-
 import javax.annotation.Nullable;
 
 /**
  * Stores a list of common Block String IDs.
  */
-public class BlockTypes {
-
-    private BlockTypes() {
-    }
+public final class BlockTypes {
 
     public static final BlockType ACACIA_BARK = register("minecraft:acacia_bark");
     public static final BlockType ACACIA_BUTTON = register("minecraft:acacia_button");
@@ -604,6 +599,9 @@ public class BlockTypes {
     public static final BlockType ZOMBIE_HEAD = register("minecraft:zombie_head");
     public static final BlockType ZOMBIE_WALL_HEAD = register("minecraft:zombie_wall_head");
 
+    private BlockTypes() {
+    }
+
     private static BlockType register(final String id) {
         return register(new BlockType(id));
     }
@@ -612,12 +610,7 @@ public class BlockTypes {
         return BlockType.REGISTRY.register(block.getId(), block);
     }
 
-    @Nullable
-    public static BlockType get(final String id) {
+    public static @Nullable BlockType get(final String id) {
         return BlockType.REGISTRY.get(id);
-    }
-
-    public static Collection<BlockType> values() {
-        return BlockType.REGISTRY.values();
     }
 }

@@ -41,13 +41,13 @@ public final class Blocks {
      */
     private static final Set<BlockType> shouldPlaceLast = new HashSet<>();
     static {
-        shouldPlaceLast.addAll(BlockCategories.SAPLINGS.getBlockTypes());
-        shouldPlaceLast.addAll(BlockCategories.FLOWER_POTS.getBlockTypes());
-        shouldPlaceLast.addAll(BlockCategories.BUTTONS.getBlockTypes());
-        shouldPlaceLast.addAll(BlockCategories.ANVIL.getBlockTypes()); // becomes relevant with asynchronous placement
-        shouldPlaceLast.addAll(BlockCategories.WOODEN_PRESSURE_PLATES.getBlockTypes());
-        shouldPlaceLast.addAll(BlockCategories.CARPETS.getBlockTypes());
-        shouldPlaceLast.addAll(BlockCategories.RAILS.getBlockTypes());
+        shouldPlaceLast.addAll(BlockCategories.SAPLINGS.getAll());
+        shouldPlaceLast.addAll(BlockCategories.FLOWER_POTS.getAll());
+        shouldPlaceLast.addAll(BlockCategories.BUTTONS.getAll());
+        shouldPlaceLast.addAll(BlockCategories.ANVIL.getAll()); // becomes relevant with asynchronous placement
+        shouldPlaceLast.addAll(BlockCategories.WOODEN_PRESSURE_PLATES.getAll());
+        shouldPlaceLast.addAll(BlockCategories.CARPETS.getAll());
+        shouldPlaceLast.addAll(BlockCategories.RAILS.getAll());
         shouldPlaceLast.add(BlockTypes.BLACK_BED);
         shouldPlaceLast.add(BlockTypes.BLUE_BED);
         shouldPlaceLast.add(BlockTypes.BROWN_BED);
@@ -128,8 +128,8 @@ public final class Blocks {
      */
     private static final Set<BlockType> shouldPlaceFinal = new HashSet<>();
     static {
-        shouldPlaceFinal.addAll(BlockCategories.DOORS.getBlockTypes());
-        shouldPlaceFinal.addAll(BlockCategories.BANNERS.getBlockTypes());
+        shouldPlaceFinal.addAll(BlockCategories.DOORS.getAll());
+        shouldPlaceFinal.addAll(BlockCategories.BANNERS.getAll());
         shouldPlaceFinal.add(BlockTypes.SIGN);
         shouldPlaceFinal.add(BlockTypes.WALL_SIGN);
         shouldPlaceFinal.add(BlockTypes.CACTUS);

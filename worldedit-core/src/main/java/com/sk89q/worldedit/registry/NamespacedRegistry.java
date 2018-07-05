@@ -22,6 +22,7 @@ package com.sk89q.worldedit.registry;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -30,9 +31,14 @@ import javax.annotation.Nullable;
 import static com.google.common.base.Preconditions.checkState;
 import static java.util.Objects.requireNonNull;
 
-public final class NamespacedRegistry<V> {
+public final class NamespacedRegistry<V> implements Iterable<V> {
     private static final String MINECRAFT_NAMESPACE = "minecraft";
     private final Map<String, V> map = new HashMap<>();
+    private final String name;
+
+    public NamespacedRegistry(final String name) {
+        this.name = name;
+    }
 
     public @Nullable V get(final String key) {
         checkState(key.equals(key.toLowerCase()), "key must be lowercase");
@@ -44,7 +50,7 @@ public final class NamespacedRegistry<V> {
         requireNonNull(value, "value");
         checkState(key.indexOf(':') > -1, "key is not namespaced");
         checkState(key.equals(key.toLowerCase()), "key must be lowercase");
-        checkState(!this.map.containsKey(key), "key %s already has an entry", key);
+        checkState(!this.map.containsKey(key), "key '%s' already has an associated %s", key, this.name);
         this.map.put(key, value);
         return value;
     }
@@ -62,5 +68,10 @@ public final class NamespacedRegistry<V> {
             return MINECRAFT_NAMESPACE + ':' + key;
         }
         return key;
+    }
+
+    @Override
+    public Iterator<V> iterator() {
+        return this.map.values().iterator();
     }
 }

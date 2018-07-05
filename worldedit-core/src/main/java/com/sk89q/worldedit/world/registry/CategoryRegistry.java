@@ -19,6 +19,8 @@
 
 package com.sk89q.worldedit.world.registry;
 
+import com.sk89q.worldedit.registry.Category;
+
 import java.util.Set;
 
 /**
@@ -33,6 +35,8 @@ public interface CategoryRegistry<T> {
      * @return A set of values
      */
     Set<T> getCategorisedByName(String category);
+
+    Set<T> getAll(final Category<T> category);
 
     /**
      * Gets a list of categories given to a value.

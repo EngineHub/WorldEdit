@@ -29,7 +29,7 @@ import javax.annotation.Nullable;
 
 public class ItemType {
 
-    public static final NamespacedRegistry<ItemType> REGISTRY = new NamespacedRegistry<>();
+    public static final NamespacedRegistry<ItemType> REGISTRY = new NamespacedRegistry<>("item type");
 
     private String id;
 

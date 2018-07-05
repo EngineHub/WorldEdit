@@ -27,7 +27,7 @@ import com.sk89q.worldedit.registry.NamespacedRegistry;
  */
 public class FluidType {
 
-    public static final NamespacedRegistry<FluidType> REGISTRY = new NamespacedRegistry<>();
+    public static final NamespacedRegistry<FluidType> REGISTRY = new NamespacedRegistry<>("fluid type");
 
     private String id;
 

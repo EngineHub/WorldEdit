@@ -19,17 +19,9 @@
 
 package com.sk89q.worldedit.world.item;
 
-import java.lang.reflect.Field;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.annotation.Nullable;
 
-public class ItemTypes {
-
-    private ItemTypes() {
-    }
+public final class ItemTypes {
 
     public static final ItemType ACACIA_BARK = register("minecraft:acacia_bark");
     public static final ItemType ACACIA_BOAT = register("minecraft:acacia_boat");
@@ -743,6 +735,9 @@ public class ItemTypes {
     public static final ItemType ZOMBIE_SPAWN_EGG = register("minecraft:zombie_spawn_egg");
     public static final ItemType ZOMBIE_VILLAGER_SPAWN_EGG = register("minecraft:zombie_villager_spawn_egg");
 
+    private ItemTypes() {
+    }
+
     private static ItemType register(final String id) {
         return register(new ItemType(id));
     }
@@ -751,12 +746,7 @@ public class ItemTypes {
         return ItemType.REGISTRY.register(item.getId(), item);
     }
 
-    @Nullable
-    public static ItemType get(final String id) {
+    public static @Nullable ItemType get(final String id) {
         return ItemType.REGISTRY.get(id);
-    }
-
-    public static Collection<ItemType> values() {
-        return ItemType.REGISTRY.values();
     }
 }

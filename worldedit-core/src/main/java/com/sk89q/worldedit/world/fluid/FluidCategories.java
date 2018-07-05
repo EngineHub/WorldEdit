@@ -19,20 +19,18 @@
 
 package com.sk89q.worldedit.world.fluid;
 
-import java.util.Collection;
-
 import javax.annotation.Nullable;
 
 /**
  * Stores a list of categories of Block Types.
  */
-public class FluidCategories {
-
-    private FluidCategories() {
-    }
+public final class FluidCategories {
 
     public static final FluidCategory LAVA = register("minecraft:lava");
     public static final FluidCategory WATER = register("minecraft:water");
+
+    private FluidCategories() {
+    }
 
     private static FluidCategory register(final String id) {
         return register(new FluidCategory(id));
@@ -42,12 +40,7 @@ public class FluidCategories {
         return FluidCategory.REGISTRY.register(tag.getId(), tag);
     }
 
-    @Nullable
-    public static FluidCategory get(final String id) {
+    public static @Nullable FluidCategory get(final String id) {
         return FluidCategory.REGISTRY.get(id);
-    }
-
-    public static Collection<FluidCategory> values() {
-        return FluidCategory.REGISTRY.values();
     }
 }

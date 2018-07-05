@@ -34,7 +34,7 @@ import javax.annotation.Nullable;
 
 public class BlockType {
 
-    public static final NamespacedRegistry<BlockType> REGISTRY = new NamespacedRegistry<>();
+    public static final NamespacedRegistry<BlockType> REGISTRY = new NamespacedRegistry<>("block type");
 
     private String id;
     private BlockState defaultState;

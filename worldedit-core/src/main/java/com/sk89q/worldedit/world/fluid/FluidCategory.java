@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.world.fluid;
 
+import com.sk89q.worldedit.registry.Category;
 import com.sk89q.worldedit.registry.NamespacedRegistry;
 
 import java.util.Collections;
@@ -28,35 +29,19 @@ import java.util.Set;
  * A category of fluids. This is due to the splitting up of
  * blocks such as wool into separate ids.
  */
-public class FluidCategory {
+public class FluidCategory extends Category<FluidType> {
 
-    public static final NamespacedRegistry<FluidCategory> REGISTRY = new NamespacedRegistry<>();
+    public static final NamespacedRegistry<FluidCategory> REGISTRY = new NamespacedRegistry<>("fluid tag");
 
-    private final String id;
-
-    public FluidCategory(String id) {
-        this.id = id;
+    public FluidCategory(final String id) {
+        super(id);
     }
 
-    public String getId() {
-        return this.id;
-    }
-
-    public Set<FluidType> getFluidTypes() {
+    @Override
+    protected Set<FluidType> load() {
         return Collections.emptySet(); // TODO Make this work.
         //        return WorldEdit.getInstance().getPlatformManager()
 //                .queryCapability(Capability.GAME_HOOKS).getRegistries()
 //                .getBlockCategoryRegistry().getCategorisedByName(this.id);
-    }
-
-    /**
-     * Checks whether the FluidType is contained within
-     * this category.
-     *
-     * @param fluidType The fluidType
-     * @return If it's a part of this category
-     */
-    public boolean contains(FluidType fluidType) {
-        return getFluidTypes().contains(fluidType);
     }
 }

@@ -22,6 +22,7 @@ package com.sk89q.worldedit.world.item;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.extension.platform.Capability;
+import com.sk89q.worldedit.registry.Category;
 import com.sk89q.worldedit.registry.NamespacedRegistry;
 
 import java.util.Set;
@@ -30,35 +31,19 @@ import java.util.Set;
  * A category of items. This is due to the splitting up of
  * items such as wool into separate ids.
  */
-public class ItemCategory {
+public class ItemCategory extends Category<ItemType> {
 
-    public static final NamespacedRegistry<ItemCategory> REGISTRY = new NamespacedRegistry<>();
+    public static final NamespacedRegistry<ItemCategory> REGISTRY = new NamespacedRegistry<>("item tag");
 
-    private final String id;
-
-    public ItemCategory(String id) {
-        this.id = id;
+    public ItemCategory(final String id) {
+        super(id);
     }
 
-    public String getId() {
-        return this.id;
-    }
-
-    public Set<ItemType> getItemTypes() {
+    @Override
+    protected Set<ItemType> load() {
         return WorldEdit.getInstance().getPlatformManager()
                 .queryCapability(Capability.GAME_HOOKS).getRegistries()
-                .getItemCategoryRegistry().getCategorisedByName(this.id);
-    }
-
-    /**
-     * Checks whether the ItemType is contained within
-     * this category.
-     *
-     * @param itemType The itemType
-     * @return If it's a part of this category
-     */
-    public boolean contains(ItemType itemType) {
-        return getItemTypes().contains(itemType);
+                .getItemCategoryRegistry().getAll(this);
     }
 
     /**
@@ -69,6 +54,6 @@ public class ItemCategory {
      * @return If it's a part of this category
      */
     public boolean contains(BaseItem baseItem) {
-        return getItemTypes().contains(baseItem.getType());
+        return this.getAll().contains(baseItem.getType());
     }
 }

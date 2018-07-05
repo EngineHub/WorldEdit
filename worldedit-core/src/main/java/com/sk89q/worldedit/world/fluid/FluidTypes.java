@@ -19,23 +19,21 @@
 
 package com.sk89q.worldedit.world.fluid;
 
-import java.util.Collection;
-
 import javax.annotation.Nullable;
 
 /**
  * Stores a list of common Fluid String IDs.
  */
-public class FluidTypes {
-
-    private FluidTypes() {
-    }
+public final class FluidTypes {
 
     public static final FluidType EMPTY = register("minecraft:empty");
     public static final FluidType FLOWING_LAVA = register("minecraft:flowing_lava");
     public static final FluidType FLOWING_WATER = register("minecraft:flowing_water");
     public static final FluidType LAVA = register("minecraft:lava");
     public static final FluidType WATER = register("minecraft:water");
+
+    private FluidTypes() {
+    }
 
     private static FluidType register(final String id) {
         return register(new FluidType(id));
@@ -45,12 +43,7 @@ public class FluidTypes {
         return FluidType.REGISTRY.register(fluid.getId(), fluid);
     }
 
-    @Nullable
-    public static FluidType getFluidType(final String id) {
+    public static @Nullable FluidType get(final String id) {
         return FluidType.REGISTRY.get(id);
-    }
-
-    public static Collection<FluidType> values() {
-        return FluidType.REGISTRY.values();
     }
 }

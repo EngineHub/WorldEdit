@@ -186,7 +186,7 @@ public class GeneralCommands {
 
             int found = 0;
 
-            for (ItemType searchType : ItemTypes.values()) {
+            for (ItemType searchType : ItemType.REGISTRY) {
                 if (found >= 15) {
                     actor.print("Too many results!");
                     break;

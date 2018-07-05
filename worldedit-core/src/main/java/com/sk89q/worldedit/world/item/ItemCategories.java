@@ -19,20 +19,12 @@
 
 package com.sk89q.worldedit.world.item;
 
-import java.lang.reflect.Field;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.annotation.Nullable;
 
 /**
  * Stores a list of categories of Item Types.
  */
-public class ItemCategories {
-
-    private ItemCategories() {
-    }
+public final class ItemCategories {
 
     public static final ItemCategory ACACIA_LOGS = register("minecraft:acacia_logs");
     public static final ItemCategory ANVIL = register("minecraft:anvil");
@@ -65,6 +57,9 @@ public class ItemCategories {
     public static final ItemCategory WOODEN_STAIRS = register("minecraft:wooden_stairs");
     public static final ItemCategory WOOL = register("minecraft:wool");
 
+    private ItemCategories() {
+    }
+
     private static ItemCategory register(final String id) {
         return register(new ItemCategory(id));
     }
@@ -73,12 +68,7 @@ public class ItemCategories {
         return ItemCategory.REGISTRY.register(tag.getId(), tag);
     }
 
-    @Nullable
-    public static ItemCategory get(final String id) {
+    public static @Nullable ItemCategory get(final String id) {
         return ItemCategory.REGISTRY.get(id);
-    }
-
-    public static Collection<ItemCategory> values() {
-        return ItemCategory.REGISTRY.values();
     }
 }
