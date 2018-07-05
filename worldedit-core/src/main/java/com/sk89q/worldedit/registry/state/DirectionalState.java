@@ -17,42 +17,15 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.world.registry.state;
+package com.sk89q.worldedit.registry.state;
 
-import com.sk89q.worldedit.world.registry.state.value.SimpleStateValue;
+import com.sk89q.worldedit.registry.state.value.DirectionalStateValue;
 
 import java.util.List;
 
-import javax.annotation.Nullable;
+public class DirectionalState extends SimpleState<DirectionalStateValue> {
 
-/**
- * Describes a state property of a block.
- *
- * <p>Example states include "variant" (indicating material or type) and
- * "facing" (indicating orientation).</p>
- */
-public interface State<T extends SimpleStateValue> {
-
-    /**
-     * Returns the name of this state.
-     *
-     * @return The state name
-     */
-    String getName();
-
-    /**
-     * Return a list of available values for this state.
-     *
-     * @return the list of state values
-     */
-    List<T> getValues();
-
-    /**
-     * Gets the value for the given string, or null.
-     *
-     * @param string The string
-     * @return The value, or null
-     */
-    @Nullable
-    T getValueFor(String string);
+    public DirectionalState(List<DirectionalStateValue> values) {
+        super(values);
+    }
 }

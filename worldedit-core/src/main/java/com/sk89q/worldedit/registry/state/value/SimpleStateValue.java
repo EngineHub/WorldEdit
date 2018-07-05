@@ -17,33 +17,36 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.world.registry.state.value;
+package com.sk89q.worldedit.registry.state.value;
 
-import javax.annotation.Nullable;
+import java.util.Objects;
 
-/**
- * Describes a possible value for a {@code State}.
- */
-public interface StateValue {
+public class SimpleStateValue implements StateValue {
 
-    /**
-     * Return whether this state is set on the given block.
-     *
-     * @return true if this value is set
-     */
-    boolean isSet();
+    private String data;
 
-    /**
-     * Set the state to the given value.
-     */
-    void set(String data);
+    @Override
+    public boolean isSet() {
+        return data != null;
+    }
 
-    /**
-     * Returns the data associated with this value.
-     *
-     * @return The data, otherwise null
-     */
-    @Nullable
-    String getData();
+    @Override
+    public void set(String data) {
+        this.data = data;
+    }
 
+    @Override
+    public String getData() {
+        return this.data;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof StateValue && Objects.equals(((StateValue) obj).getData(), getData());
+    }
+
+    @Override
+    public int hashCode() {
+        return this.data.hashCode();
+    }
 }

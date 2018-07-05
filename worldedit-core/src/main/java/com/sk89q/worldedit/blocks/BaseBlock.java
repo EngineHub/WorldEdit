@@ -28,8 +28,8 @@ import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.block.BlockTypes;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.world.registry.LegacyMapper;
-import com.sk89q.worldedit.world.registry.state.State;
-import com.sk89q.worldedit.world.registry.state.value.StateValue;
+import com.sk89q.worldedit.registry.state.State;
+import com.sk89q.worldedit.registry.state.value.StateValue;
 
 import java.util.Map;
 import java.util.Objects;

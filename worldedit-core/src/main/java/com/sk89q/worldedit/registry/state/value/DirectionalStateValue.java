@@ -17,36 +17,13 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.world.registry.state.value;
+package com.sk89q.worldedit.registry.state.value;
 
-import java.util.Objects;
+import com.sk89q.worldedit.Vector;
 
-public class SimpleStateValue implements StateValue {
+public class DirectionalStateValue extends SimpleStateValue {
 
-    private String data;
-
-    @Override
-    public boolean isSet() {
-        return data != null;
-    }
-
-    @Override
-    public void set(String data) {
-        this.data = data;
-    }
-
-    @Override
-    public String getData() {
-        return this.data;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        return obj instanceof StateValue && Objects.equals(((StateValue) obj).getData(), getData());
-    }
-
-    @Override
-    public int hashCode() {
-        return this.data.hashCode();
+    public Vector getDirection() {
+        return new Vector(); // TODO
     }
 }

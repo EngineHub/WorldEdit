@@ -44,8 +44,8 @@ import com.sk89q.worldedit.internal.registry.InputParser;
 import com.sk89q.worldedit.util.HandSide;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.registry.BundledBlockData;
-import com.sk89q.worldedit.world.registry.state.State;
-import com.sk89q.worldedit.world.registry.state.value.StateValue;
+import com.sk89q.worldedit.registry.state.State;
+import com.sk89q.worldedit.registry.state.value.StateValue;
 
 import java.util.HashMap;
 import java.util.Map;

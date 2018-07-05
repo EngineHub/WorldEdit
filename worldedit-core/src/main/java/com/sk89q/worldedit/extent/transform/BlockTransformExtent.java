@@ -32,9 +32,9 @@ import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.extent.AbstractDelegateExtent;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.math.transform.Transform;
-import com.sk89q.worldedit.world.registry.state.DirectionalState;
-import com.sk89q.worldedit.world.registry.state.State;
-import com.sk89q.worldedit.world.registry.state.value.DirectionalStateValue;
+import com.sk89q.worldedit.registry.state.DirectionalState;
+import com.sk89q.worldedit.registry.state.State;
+import com.sk89q.worldedit.registry.state.value.DirectionalStateValue;
 
 import java.util.Map;
 

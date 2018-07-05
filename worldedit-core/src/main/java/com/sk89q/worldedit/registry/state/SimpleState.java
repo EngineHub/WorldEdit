@@ -17,9 +17,9 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.world.registry.state;
+package com.sk89q.worldedit.registry.state;
 
-import com.sk89q.worldedit.world.registry.state.value.SimpleStateValue;
+import com.sk89q.worldedit.registry.state.value.SimpleStateValue;
 
 import java.util.Collections;
 import java.util.List;

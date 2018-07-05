@@ -23,7 +23,7 @@ import com.sk89q.worldedit.blocks.BlockMaterial;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.block.BlockTypes;
-import com.sk89q.worldedit.world.registry.state.State;
+import com.sk89q.worldedit.registry.state.State;
 
 import java.util.Map;
 

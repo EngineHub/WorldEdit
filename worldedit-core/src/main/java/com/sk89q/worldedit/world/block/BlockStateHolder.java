@@ -19,8 +19,8 @@
 
 package com.sk89q.worldedit.world.block;
 
-import com.sk89q.worldedit.world.registry.state.State;
-import com.sk89q.worldedit.world.registry.state.value.StateValue;
+import com.sk89q.worldedit.registry.state.State;
+import com.sk89q.worldedit.registry.state.value.StateValue;
 
 import java.util.Map;
 

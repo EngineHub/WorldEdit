@@ -23,8 +23,8 @@ import com.google.common.collect.ArrayTable;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Table;
-import com.sk89q.worldedit.world.registry.state.State;
-import com.sk89q.worldedit.world.registry.state.value.StateValue;
+import com.sk89q.worldedit.registry.state.State;
+import com.sk89q.worldedit.registry.state.value.StateValue;
 
 import java.util.ArrayList;
 import java.util.Collections;

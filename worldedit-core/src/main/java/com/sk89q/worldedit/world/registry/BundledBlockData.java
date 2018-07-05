@@ -26,8 +26,8 @@ import com.google.gson.reflect.TypeToken;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.blocks.BlockMaterial;
 import com.sk89q.worldedit.util.gson.VectorAdapter;
-import com.sk89q.worldedit.world.registry.state.SimpleState;
-import com.sk89q.worldedit.world.registry.state.State;
+import com.sk89q.worldedit.registry.state.SimpleState;
+import com.sk89q.worldedit.registry.state.State;
 
 import javax.annotation.Nullable;
 import java.io.IOException;

@@ -17,15 +17,33 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.world.registry.state;
+package com.sk89q.worldedit.registry.state.value;
 
-import com.sk89q.worldedit.world.registry.state.value.DirectionalStateValue;
+import javax.annotation.Nullable;
 
-import java.util.List;
+/**
+ * Describes a possible value for a {@code State}.
+ */
+public interface StateValue {
 
-public class DirectionalState extends SimpleState<DirectionalStateValue> {
+    /**
+     * Return whether this state is set on the given block.
+     *
+     * @return true if this value is set
+     */
+    boolean isSet();
 
-    public DirectionalState(List<DirectionalStateValue> values) {
-        super(values);
-    }
+    /**
+     * Set the state to the given value.
+     */
+    void set(String data);
+
+    /**
+     * Returns the data associated with this value.
+     *
+     * @return The data, otherwise null
+     */
+    @Nullable
+    String getData();
+
 }
