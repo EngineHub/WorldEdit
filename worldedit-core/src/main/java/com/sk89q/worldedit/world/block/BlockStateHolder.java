@@ -19,8 +19,7 @@
 
 package com.sk89q.worldedit.world.block;
 
-import com.sk89q.worldedit.registry.state.State;
-import com.sk89q.worldedit.registry.state.value.StateValue;
+import com.sk89q.worldedit.registry.state.Property;
 
 import java.util.Map;
 
@@ -36,26 +35,26 @@ public interface BlockStateHolder<T extends BlockStateHolder> {
     /**
      * Returns a BlockState with the given state and value applied.
      *
-     * @param state The state
+     * @param property The state
      * @param value The value
      * @return The modified state, or same if could not be applied
      */
-    T with(State state, StateValue value);
+    <V> T with(final Property<V> property, final V value);
 
     /**
      * Gets the value at the given state
      *
-     * @param state The state
+     * @param property The state
      * @return The value
      */
-    StateValue getState(State state);
+    <V> V getState(Property<V> property);
 
     /**
      * Gets an immutable collection of the states.
      *
      * @return The states
      */
-    Map<State, StateValue> getStates();
+    Map<Property<?>, Object> getStates();
 
     /**
      * Checks if the type is the same, and if the matched states are the same.

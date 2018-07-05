@@ -32,8 +32,8 @@ import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.extent.AbstractDelegateExtent;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.math.transform.Transform;
-import com.sk89q.worldedit.registry.state.DirectionalState;
-import com.sk89q.worldedit.registry.state.State;
+import com.sk89q.worldedit.registry.state.DirectionalProperty;
+import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.registry.state.value.DirectionalStateValue;
 
 import java.util.Map;
@@ -128,20 +128,20 @@ public class BlockTransformExtent extends AbstractDelegateExtent {
         checkNotNull(block);
         checkNotNull(transform);
 
-        Map<String, ? extends State> states = WorldEdit.getInstance().getPlatformManager()
+        Map<String, ? extends Property> states = WorldEdit.getInstance().getPlatformManager()
                 .queryCapability(Capability.GAME_HOOKS).getRegistries().getBlockRegistry().getStates(block);
 
         if (states == null) {
             return changedBlock;
         }
 
-        for (State state : states.values()) {
-            if (state instanceof DirectionalState) {
-                DirectionalStateValue value = (DirectionalStateValue) block.getState(state);
-                if (value != null && value.getData() != null) {
-                    DirectionalStateValue newValue = getNewStateValue((DirectionalState) state, transform, value.getDirection());
+        for (Property property : states.values()) {
+            if (property instanceof DirectionalProperty) {
+                DirectionalStateValue value = (DirectionalStateValue) block.getState(property);
+                if (value != null) {
+                    DirectionalStateValue newValue = getNewStateValue((DirectionalProperty) property, transform, value.getDirection());
                     if (newValue != null) {
-                        changedBlock.with(state, newValue);
+                        changedBlock.with(property, newValue);
                     }
                 }
             }
@@ -159,7 +159,7 @@ public class BlockTransformExtent extends AbstractDelegateExtent {
      * @return a new state or null if none could be found
      */
     @Nullable
-    private static DirectionalStateValue getNewStateValue(DirectionalState state, Transform transform, Vector oldDirection) {
+    private static DirectionalStateValue getNewStateValue(DirectionalProperty state, Transform transform, Vector oldDirection) {
         Vector newDirection = transform.apply(oldDirection).subtract(transform.apply(Vector.ZERO)).normalize();
         DirectionalStateValue newValue = null;
         double closest = -2;

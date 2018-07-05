@@ -17,36 +17,31 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.registry.state.value;
+package com.sk89q.worldedit.registry.state;
 
-import java.util.Objects;
+import static com.google.common.base.Preconditions.checkState;
 
-public class SimpleStateValue implements StateValue {
+public abstract class AbstractProperty<T> implements Property<T> {
 
-    private String data;
+    private String name;
 
-    @Override
-    public boolean isSet() {
-        return data != null;
+    public AbstractProperty() {
+    }
+
+    public AbstractProperty(final String name) {
+        this.name = name;
     }
 
     @Override
-    public void set(String data) {
-        this.data = data;
+    public String getName() {
+        return this.name;
     }
 
-    @Override
-    public String getData() {
-        return this.data;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        return obj instanceof StateValue && Objects.equals(((StateValue) obj).getData(), getData());
-    }
-
-    @Override
-    public int hashCode() {
-        return this.data.hashCode();
+    /**
+     * Internal method for name setting post-deserialise. Do not use.
+     */
+    public void setName(final String name) {
+        checkState(this.name == null, "name already set");
+        this.name = name;
     }
 }

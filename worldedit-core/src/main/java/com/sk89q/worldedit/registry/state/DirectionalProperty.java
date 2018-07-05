@@ -23,9 +23,17 @@ import com.sk89q.worldedit.registry.state.value.DirectionalStateValue;
 
 import java.util.List;
 
-public class DirectionalState extends SimpleState<DirectionalStateValue> {
+import javax.annotation.Nullable;
 
-    public DirectionalState(List<DirectionalStateValue> values) {
-        super(values);
+public class DirectionalProperty extends AbstractProperty<DirectionalStateValue> {
+    @Override
+    public List<DirectionalStateValue> getValues() {
+        return null;
+    }
+
+    @Nullable
+    @Override
+    public DirectionalStateValue getValueFor(final String string) {
+        return null;
     }
 }

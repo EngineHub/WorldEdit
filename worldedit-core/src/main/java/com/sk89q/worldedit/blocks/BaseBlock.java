@@ -22,14 +22,13 @@ package com.sk89q.worldedit.blocks;
 import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.jnbt.StringTag;
 import com.sk89q.jnbt.Tag;
+import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.block.BlockTypes;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.world.registry.LegacyMapper;
-import com.sk89q.worldedit.registry.state.State;
-import com.sk89q.worldedit.registry.state.value.StateValue;
 
 import java.util.Map;
 import java.util.Objects;
@@ -131,7 +130,7 @@ public class BaseBlock implements BlockStateHolder<BaseBlock>, TileEntityBlock {
      * @return The state map
      */
     @Override
-    public Map<State, StateValue> getStates() {
+    public Map<Property<?>, Object> getStates() {
         return this.blockState.getStates();
     }
 
@@ -141,19 +140,19 @@ public class BaseBlock implements BlockStateHolder<BaseBlock>, TileEntityBlock {
     }
 
     @Override
-    public BaseBlock with(State state, StateValue value) {
-        return new BaseBlock(this.blockState.with(state, value), getNbtData());
+    public <V> BaseBlock with(Property<V> property, V value) {
+        return new BaseBlock(this.blockState.with(property, value), getNbtData());
     }
 
     /**
      * Gets the State for this Block.
      *
-     * @param state The state to get the value for
+     * @param property The state to get the value for
      * @return The state value
      */
     @Override
-    public StateValue getState(State state) {
-        return this.blockState.getState(state);
+    public <V> V getState(Property<V> property) {
+        return this.blockState.getState(property);
     }
 
     @Override

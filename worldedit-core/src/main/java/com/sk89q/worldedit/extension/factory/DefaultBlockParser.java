@@ -44,8 +44,7 @@ import com.sk89q.worldedit.internal.registry.InputParser;
 import com.sk89q.worldedit.util.HandSide;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.registry.BundledBlockData;
-import com.sk89q.worldedit.registry.state.State;
-import com.sk89q.worldedit.registry.state.value.StateValue;
+import com.sk89q.worldedit.registry.state.Property;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -163,16 +162,16 @@ class DefaultBlockParser extends InputParser<BlockStateHolder> {
                         throw new NoMatchException("Bad state format in " + parseableData);
                     }
 
-                    State stateKey = BundledBlockData.getInstance().findById(state.getBlockType().getId()).states.get(parts[0]);
-                    if (stateKey == null) {
+                    Property propertyKey = BundledBlockData.getInstance().findById(state.getBlockType().getId()).states.get(parts[0]);
+                    if (propertyKey == null) {
                         throw new NoMatchException("Unknown state " + parts[0] + " for block " + state.getBlockType().getName());
                     }
-                    StateValue value = stateKey.getValueFor(parts[1]);
+                    Object value = propertyKey.getValueFor(parts[1]);
                     if (value == null) {
                         throw new NoMatchException("Unknown value " + parts[1] + " for state " + parts[0]);
                     }
 
-                    state = state.with(stateKey, value);
+                    state = state.with(propertyKey, value);
                 } catch (NoMatchException e) {
                     throw e; // Pass-through
                 } catch (Exception e) {
@@ -186,7 +185,7 @@ class DefaultBlockParser extends InputParser<BlockStateHolder> {
 
     private BlockStateHolder parseLogic(String input, ParserContext context) throws InputParseException {
         BlockType blockType;
-        Map<State, StateValue> blockStates = new HashMap<>();
+        Map<Property<?>, Object> blockStates = new HashMap<>();
         String[] blockAndExtraData = input.trim().split("\\|");
         blockAndExtraData[0] = woolMapper(blockAndExtraData[0]);
         Matcher matcher = blockStatePattern.matcher(blockAndExtraData[0]);

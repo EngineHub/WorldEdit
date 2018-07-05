@@ -25,9 +25,9 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.blocks.BlockMaterial;
+import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.util.gson.VectorAdapter;
-import com.sk89q.worldedit.registry.state.SimpleState;
-import com.sk89q.worldedit.registry.state.State;
+import com.sk89q.worldedit.registry.state.AbstractProperty;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -128,7 +128,7 @@ public class BundledBlockData {
      * @return the block's states, or null if no information is available
      */
     @Nullable
-    public Map<String, ? extends State> getStatesById(String id) {
+    public Map<String, ? extends Property> getStatesById(String id) {
         BlockEntry entry = findById(id);
         if (entry != null) {
             return entry.states;
@@ -151,11 +151,11 @@ public class BundledBlockData {
         private String unlocalizedName;
         public String localizedName;
         private List<String> aliases;
-        public Map<String, SimpleState> states = new HashMap<>();
+        public Map<String, AbstractProperty> states = new HashMap<>();
         private SimpleBlockMaterial material = new SimpleBlockMaterial();
 
         void postDeserialization() {
-            for (Map.Entry<String, SimpleState> state : states.entrySet()) {
+            for (Map.Entry<String, AbstractProperty> state : states.entrySet()) {
                 state.getValue().setName(state.getKey());
             }
         }

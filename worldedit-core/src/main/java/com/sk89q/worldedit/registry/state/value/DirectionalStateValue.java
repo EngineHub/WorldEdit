@@ -21,7 +21,7 @@ package com.sk89q.worldedit.registry.state.value;
 
 import com.sk89q.worldedit.Vector;
 
-public class DirectionalStateValue extends SimpleStateValue {
+public class DirectionalStateValue {
 
     public Vector getDirection() {
         return new Vector(); // TODO

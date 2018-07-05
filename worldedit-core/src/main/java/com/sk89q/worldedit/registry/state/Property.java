@@ -17,33 +17,40 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.registry.state.value;
+package com.sk89q.worldedit.registry.state;
+
+import java.util.List;
 
 import javax.annotation.Nullable;
 
 /**
- * Describes a possible value for a {@code State}.
+ * Describes a state property of a block.
+ *
+ * <p>Example states include "variant" (indicating material or type) and
+ * "facing" (indicating orientation).</p>
  */
-public interface StateValue {
+public interface Property<T> {
 
     /**
-     * Return whether this state is set on the given block.
+     * Returns the name of this state.
      *
-     * @return true if this value is set
+     * @return The state name
      */
-    boolean isSet();
+    String getName();
 
     /**
-     * Set the state to the given value.
-     */
-    void set(String data);
-
-    /**
-     * Returns the data associated with this value.
+     * Return a list of available values for this state.
      *
-     * @return The data, otherwise null
+     * @return the list of state values
+     */
+    List<T> getValues();
+
+    /**
+     * Gets the value for the given string, or null.
+     *
+     * @param string The string
+     * @return The value, or null
      */
     @Nullable
-    String getData();
-
+    T getValueFor(String string);
 }

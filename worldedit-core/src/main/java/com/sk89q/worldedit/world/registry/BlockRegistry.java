@@ -22,7 +22,7 @@ package com.sk89q.worldedit.world.registry;
 import com.sk89q.worldedit.blocks.BlockMaterial;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
-import com.sk89q.worldedit.registry.state.State;
+import com.sk89q.worldedit.registry.state.Property;
 
 import java.util.Map;
 
@@ -58,6 +58,6 @@ public interface BlockRegistry {
      * @return a map of states where the key is the state's ID
      */
     @Nullable
-    Map<String, ? extends State> getStates(BlockStateHolder block);
+    Map<String, ? extends Property> getStates(BlockStateHolder block);
 
 }
