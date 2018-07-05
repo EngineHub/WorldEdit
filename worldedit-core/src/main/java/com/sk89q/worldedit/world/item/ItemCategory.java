@@ -22,6 +22,7 @@ package com.sk89q.worldedit.world.item;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.extension.platform.Capability;
+import com.sk89q.worldedit.registry.NamespacedRegistry;
 
 import java.util.Set;
 
@@ -30,6 +31,8 @@ import java.util.Set;
  * items such as wool into separate ids.
  */
 public class ItemCategory {
+
+    public static final NamespacedRegistry<ItemCategory> REGISTRY = new NamespacedRegistry<>();
 
     private final String id;
 

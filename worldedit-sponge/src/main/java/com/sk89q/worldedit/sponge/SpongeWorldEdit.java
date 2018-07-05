@@ -135,11 +135,11 @@ public class SpongeWorldEdit {
 
         for (BlockType blockType : Sponge.getRegistry().getAllOf(BlockType.class)) {
             // TODO Handle blockstate stuff
-            com.sk89q.worldedit.world.block.BlockTypes.registerBlock(new com.sk89q.worldedit.world.block.BlockType(blockType.getId()));
+            com.sk89q.worldedit.world.block.BlockTypes.register(new com.sk89q.worldedit.world.block.BlockType(blockType.getId()));
         }
 
         for (ItemType itemType : Sponge.getRegistry().getAllOf(ItemType.class)) {
-            ItemTypes.registerItem(new com.sk89q.worldedit.world.item.ItemType(itemType.getId()));
+            ItemTypes.register(new com.sk89q.worldedit.world.item.ItemType(itemType.getId()));
         }
 
         WorldEdit.getInstance().getPlatformManager().register(platform);

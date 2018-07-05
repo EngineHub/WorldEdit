@@ -19,10 +19,7 @@
 
 package com.sk89q.worldedit.world.fluid;
 
-import java.lang.reflect.Field;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.annotation.Nullable;
 
@@ -34,41 +31,23 @@ public class FluidCategories {
     private FluidCategories() {
     }
 
-    public static final FluidCategory LAVA = new FluidCategory("minecraft:lava");
-    public static final FluidCategory WATER = new FluidCategory("minecraft:water");
+    public static final FluidCategory LAVA = register("minecraft:lava");
+    public static final FluidCategory WATER = register("minecraft:water");
 
-    private static final Map<String, FluidCategory> categoryMapping = new HashMap<>();
-
-    static {
-        for (Field field : FluidCategories.class.getFields()) {
-            if (field.getType() == FluidCategory.class) {
-                try {
-                    registerCategory((FluidCategory) field.get(null));
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
+    private static FluidCategory register(final String id) {
+        return register(new FluidCategory(id));
     }
 
-    public static void registerCategory(FluidCategory fluidCategory) {
-        if (categoryMapping.containsKey(fluidCategory.getId()) && !fluidCategory.getId().startsWith("minecraft:")) {
-            throw new IllegalArgumentException("Existing category with this ID already registered");
-        }
-
-        categoryMapping.put(fluidCategory.getId(), fluidCategory);
+    public static FluidCategory register(final FluidCategory tag) {
+        return FluidCategory.REGISTRY.register(tag.getId(), tag);
     }
 
     @Nullable
-    public static FluidCategory getFluidCategory(String id) {
-        // If it has no namespace, assume minecraft.
-        if (id != null && !id.contains(":")) {
-            id = "minecraft:" + id;
-        }
-        return categoryMapping.get(id);
+    public static FluidCategory get(final String id) {
+        return FluidCategory.REGISTRY.get(id);
     }
 
     public static Collection<FluidCategory> values() {
-        return categoryMapping.values();
+        return FluidCategory.REGISTRY.values();
     }
 }

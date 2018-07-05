@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.world.item;
 
+import com.sk89q.worldedit.registry.NamespacedRegistry;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.block.BlockTypes;
 import com.sk89q.worldedit.world.registry.BundledItemData;
@@ -27,6 +28,8 @@ import com.sk89q.worldedit.world.registry.LegacyMapper;
 import javax.annotation.Nullable;
 
 public class ItemType {
+
+    public static final NamespacedRegistry<ItemType> REGISTRY = new NamespacedRegistry<>();
 
     private String id;
 
@@ -73,7 +76,7 @@ public class ItemType {
      */
     @Nullable
     public BlockType getBlockType() {
-        return BlockTypes.getBlockType(this.id);
+        return BlockTypes.get(this.id);
     }
 
     /**

@@ -32,7 +32,7 @@ public class ForgeItemRegistry implements ItemRegistry {
     public BaseItem createFromId(String id) {
         Item match = Item.REGISTRY.getObject(new ResourceLocation(id));
         if (match != null) {
-            return new BaseItem(ItemTypes.getItemType(id));
+            return new BaseItem(ItemTypes.get(id));
         } else {
             return null;
         }

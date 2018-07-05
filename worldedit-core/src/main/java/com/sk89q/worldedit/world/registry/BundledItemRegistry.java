@@ -33,6 +33,6 @@ public class BundledItemRegistry implements ItemRegistry {
     @Nullable
     @Override
     public BaseItem createFromId(String id) {
-        return new BaseItem(ItemTypes.getItemType(id));
+        return new BaseItem(ItemTypes.get(id));
     }
 }

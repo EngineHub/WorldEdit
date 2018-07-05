@@ -278,7 +278,7 @@ public class SelectionCommands {
     @CommandPermissions("worldedit.wand")
     public void wand(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
 
-        player.giveItem(new BaseItemStack(ItemTypes.getItemType(we.getConfiguration().wandItem), 1));
+        player.giveItem(new BaseItemStack(ItemTypes.get(we.getConfiguration().wandItem), 1));
         player.print("Left click: select pos #1; Right click: select pos #2");
     }
 

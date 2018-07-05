@@ -557,9 +557,9 @@ public class LocalSession {
     public void setTool(ItemType item, @Nullable Tool tool) throws InvalidToolBindException {
         if (item.hasBlockType()) {
             throw new InvalidToolBindException(item, "Blocks can't be used");
-        } else if (item == ItemTypes.getItemType(config.wandItem)) {
+        } else if (item == ItemTypes.get(config.wandItem)) {
             throw new InvalidToolBindException(item, "Already used for the wand");
-        } else if (item == ItemTypes.getItemType(config.navigationWand)) {
+        } else if (item == ItemTypes.get(config.navigationWand)) {
             throw new InvalidToolBindException(item, "Already used for the navigation wand");
         }
 

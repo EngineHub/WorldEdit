@@ -62,7 +62,7 @@ public class ForgePlayer extends AbstractPlayerActor {
     @Override
     public BaseItemStack getItemInHand(HandSide handSide) {
         ItemStack is = this.player.getHeldItem(handSide == HandSide.MAIN_HAND ? EnumHand.MAIN_HAND : EnumHand.OFF_HAND);
-        return new BaseItemStack(ItemTypes.getItemType(ForgeRegistries.ITEMS.getKey(is.getItem()).toString()));
+        return new BaseItemStack(ItemTypes.get(ForgeRegistries.ITEMS.getKey(is.getItem()).toString()));
     }
 
     @Override

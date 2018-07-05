@@ -66,7 +66,7 @@ public class SpongePlayer extends AbstractPlayerActor {
     public BaseItemStack getItemInHand(HandSide handSide) {
         Optional<ItemStack> is = this.player.getItemInHand(handSide == HandSide.MAIN_HAND
                 ? HandTypes.MAIN_HAND : HandTypes.OFF_HAND);
-        return is.map(itemStack -> new BaseItemStack(ItemTypes.getItemType(itemStack.getType().getId()))).orElse(null);
+        return is.map(itemStack -> new BaseItemStack(ItemTypes.get(itemStack.getType().getId()))).orElse(null);
     }
 
     @Override

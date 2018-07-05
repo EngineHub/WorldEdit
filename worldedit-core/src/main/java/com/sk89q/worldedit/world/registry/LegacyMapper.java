@@ -93,7 +93,7 @@ public class LegacyMapper {
 
         for (Map.Entry<String, String> itemEntry : dataFile.items.entrySet()) {
             try {
-                itemMap.put(itemEntry.getKey(), ItemTypes.getItemType(itemEntry.getValue()));
+                itemMap.put(itemEntry.getKey(), ItemTypes.get(itemEntry.getValue()));
             } catch (Exception e) {
                 log.warning("Unknown item: " + itemEntry.getValue());
             }

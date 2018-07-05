@@ -22,6 +22,7 @@ package com.sk89q.worldedit.world.block;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.blocks.BlockMaterial;
 import com.sk89q.worldedit.extension.platform.Capability;
+import com.sk89q.worldedit.registry.NamespacedRegistry;
 import com.sk89q.worldedit.world.item.ItemType;
 import com.sk89q.worldedit.world.item.ItemTypes;
 import com.sk89q.worldedit.world.registry.BundledBlockData;
@@ -32,6 +33,8 @@ import java.util.function.Function;
 import javax.annotation.Nullable;
 
 public class BlockType {
+
+    public static final NamespacedRegistry<BlockType> REGISTRY = new NamespacedRegistry<>();
 
     private String id;
     private BlockState defaultState;
@@ -100,7 +103,7 @@ public class BlockType {
      */
     @Nullable
     public ItemType getItemType() {
-        return ItemTypes.getItemType(this.id);
+        return ItemTypes.get(this.id);
     }
 
     /**

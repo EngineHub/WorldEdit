@@ -34,71 +34,53 @@ public class BlockCategories {
     private BlockCategories() {
     }
 
-    public static final BlockCategory ACACIA_LOGS = new BlockCategory("minecraft:acacia_logs");
-    public static final BlockCategory ANVIL = new BlockCategory("minecraft:anvil");
-    public static final BlockCategory BANNERS = new BlockCategory("minecraft:banners");
-    public static final BlockCategory BIRCH_LOGS = new BlockCategory("minecraft:birch_logs");
-    public static final BlockCategory BUTTONS = new BlockCategory("minecraft:buttons");
-    public static final BlockCategory CARPETS = new BlockCategory("minecraft:carpets");
-    public static final BlockCategory CORAL = new BlockCategory("minecraft:coral");
-    public static final BlockCategory CORAL_PLANTS = new BlockCategory("minecraft:coral_plants");
-    public static final BlockCategory DARK_OAK_LOGS = new BlockCategory("minecraft:dark_oak_logs");
-    public static final BlockCategory DOORS = new BlockCategory("minecraft:doors");
-    public static final BlockCategory ENDERMAN_HOLDABLE = new BlockCategory("minecraft:enderman_holdable");
-    public static final BlockCategory FLOWER_POTS = new BlockCategory("minecraft:flower_pots");
-    public static final BlockCategory ICE = new BlockCategory("minecraft:ice");
-    public static final BlockCategory JUNGLE_LOGS = new BlockCategory("minecraft:jungle_logs");
-    public static final BlockCategory LEAVES = new BlockCategory("minecraft:leaves");
-    public static final BlockCategory LOGS = new BlockCategory("minecraft:logs");
-    public static final BlockCategory OAK_LOGS = new BlockCategory("minecraft:oak_logs");
-    public static final BlockCategory PLANKS = new BlockCategory("minecraft:planks");
-    public static final BlockCategory RAILS = new BlockCategory("minecraft:rails");
-    public static final BlockCategory SAND = new BlockCategory("minecraft:sand");
-    public static final BlockCategory SAPLINGS = new BlockCategory("minecraft:saplings");
-    public static final BlockCategory SLABS = new BlockCategory("minecraft:slabs");
-    public static final BlockCategory SPRUCE_LOGS = new BlockCategory("minecraft:spruce_logs");
-    public static final BlockCategory STAIRS = new BlockCategory("minecraft:stairs");
-    public static final BlockCategory STONE_BRICKS = new BlockCategory("minecraft:stone_bricks");
-    public static final BlockCategory VALID_SPAWN = new BlockCategory("minecraft:valid_spawn");
-    public static final BlockCategory WOODEN_BUTTONS = new BlockCategory("minecraft:wooden_buttons");
-    public static final BlockCategory WOODEN_DOORS = new BlockCategory("minecraft:wooden_doors");
-    public static final BlockCategory WOODEN_PRESSURE_PLATES = new BlockCategory("minecraft:wooden_pressure_plates");
-    public static final BlockCategory WOODEN_SLABS = new BlockCategory("minecraft:wooden_slabs");
-    public static final BlockCategory WOODEN_STAIRS = new BlockCategory("minecraft:wooden_stairs");
-    public static final BlockCategory WOOL = new BlockCategory("minecraft:wool");
+    public static final BlockCategory ACACIA_LOGS = register("minecraft:acacia_logs");
+    public static final BlockCategory ANVIL = register("minecraft:anvil");
+    public static final BlockCategory BANNERS = register("minecraft:banners");
+    public static final BlockCategory BIRCH_LOGS = register("minecraft:birch_logs");
+    public static final BlockCategory BUTTONS = register("minecraft:buttons");
+    public static final BlockCategory CARPETS = register("minecraft:carpets");
+    public static final BlockCategory CORAL = register("minecraft:coral");
+    public static final BlockCategory CORAL_PLANTS = register("minecraft:coral_plants");
+    public static final BlockCategory DARK_OAK_LOGS = register("minecraft:dark_oak_logs");
+    public static final BlockCategory DOORS = register("minecraft:doors");
+    public static final BlockCategory ENDERMAN_HOLDABLE = register("minecraft:enderman_holdable");
+    public static final BlockCategory FLOWER_POTS = register("minecraft:flower_pots");
+    public static final BlockCategory ICE = register("minecraft:ice");
+    public static final BlockCategory JUNGLE_LOGS = register("minecraft:jungle_logs");
+    public static final BlockCategory LEAVES = register("minecraft:leaves");
+    public static final BlockCategory LOGS = register("minecraft:logs");
+    public static final BlockCategory OAK_LOGS = register("minecraft:oak_logs");
+    public static final BlockCategory PLANKS = register("minecraft:planks");
+    public static final BlockCategory RAILS = register("minecraft:rails");
+    public static final BlockCategory SAND = register("minecraft:sand");
+    public static final BlockCategory SAPLINGS = register("minecraft:saplings");
+    public static final BlockCategory SLABS = register("minecraft:slabs");
+    public static final BlockCategory SPRUCE_LOGS = register("minecraft:spruce_logs");
+    public static final BlockCategory STAIRS = register("minecraft:stairs");
+    public static final BlockCategory STONE_BRICKS = register("minecraft:stone_bricks");
+    public static final BlockCategory VALID_SPAWN = register("minecraft:valid_spawn");
+    public static final BlockCategory WOODEN_BUTTONS = register("minecraft:wooden_buttons");
+    public static final BlockCategory WOODEN_DOORS = register("minecraft:wooden_doors");
+    public static final BlockCategory WOODEN_PRESSURE_PLATES = register("minecraft:wooden_pressure_plates");
+    public static final BlockCategory WOODEN_SLABS = register("minecraft:wooden_slabs");
+    public static final BlockCategory WOODEN_STAIRS = register("minecraft:wooden_stairs");
+    public static final BlockCategory WOOL = register("minecraft:wool");
 
-    private static final Map<String, BlockCategory> categoryMapping = new HashMap<>();
-
-    static {
-        for (Field field : BlockCategories.class.getFields()) {
-            if (field.getType() == BlockCategory.class) {
-                try {
-                    registerCategory((BlockCategory) field.get(null));
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
+    private static BlockCategory register(final String id) {
+        return register(new BlockCategory(id));
     }
 
-    public static void registerCategory(BlockCategory blockCategory) {
-        if (categoryMapping.containsKey(blockCategory.getId()) && !blockCategory.getId().startsWith("minecraft:")) {
-            throw new IllegalArgumentException("Existing category with this ID already registered");
-        }
-
-        categoryMapping.put(blockCategory.getId(), blockCategory);
+    public static BlockCategory register(final BlockCategory tag) {
+        return BlockCategory.REGISTRY.register(tag.getId(), tag);
     }
 
     @Nullable
-    public static BlockCategory getBlockCategory(String id) {
-        // If it has no namespace, assume minecraft.
-        if (id != null && !id.contains(":")) {
-            id = "minecraft:" + id;
-        }
-        return categoryMapping.get(id);
+    public static BlockCategory get(final String id) {
+        return BlockCategory.REGISTRY.get(id);
     }
 
     public static Collection<BlockCategory> values() {
-        return categoryMapping.values();
+        return BlockCategory.REGISTRY.values();
     }
 }

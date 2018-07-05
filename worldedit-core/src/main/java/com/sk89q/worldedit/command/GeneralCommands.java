@@ -163,7 +163,7 @@ public class GeneralCommands {
         boolean blocksOnly = args.hasFlag('b');
         boolean itemsOnly = args.hasFlag('i');
 
-        ItemType type = ItemTypes.getItemType(query);
+        ItemType type = ItemTypes.get(query);
 
         if (type != null) {
             actor.print(type.getId() + " (" + type.getName() + ")");

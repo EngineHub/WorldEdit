@@ -38,7 +38,7 @@ public class BundledBlockRegistry implements BlockRegistry {
     @Nullable
     @Override
     public BlockState createFromId(String id) {
-        return BlockTypes.getBlockType(id).getDefaultState();
+        return BlockTypes.get(id).getDefaultState();
     }
 
     @Nullable

@@ -19,11 +19,15 @@
 
 package com.sk89q.worldedit.world.fluid;
 
+import com.sk89q.worldedit.registry.NamespacedRegistry;
+
 /**
  * Minecraft now has a 'fluid' system. This is a
  * stub class to represent what it may be in the future.
  */
 public class FluidType {
+
+    public static final NamespacedRegistry<FluidType> REGISTRY = new NamespacedRegistry<>();
 
     private String id;
 

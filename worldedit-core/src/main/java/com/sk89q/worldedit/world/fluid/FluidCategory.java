@@ -19,6 +19,8 @@
 
 package com.sk89q.worldedit.world.fluid;
 
+import com.sk89q.worldedit.registry.NamespacedRegistry;
+
 import java.util.Collections;
 import java.util.Set;
 
@@ -27,6 +29,8 @@ import java.util.Set;
  * blocks such as wool into separate ids.
  */
 public class FluidCategory {
+
+    public static final NamespacedRegistry<FluidCategory> REGISTRY = new NamespacedRegistry<>();
 
     private final String id;
 

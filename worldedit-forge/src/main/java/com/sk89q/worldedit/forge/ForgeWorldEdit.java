@@ -125,7 +125,7 @@ public class ForgeWorldEdit {
         }
 
         for (Block block : REGISTRY) {
-            BlockTypes.registerBlock(new BlockType(REGISTRY.getNameForObject(block).toString()));
+            BlockTypes.register(new BlockType(REGISTRY.getNameForObject(block).toString()));
         }
     }
 

@@ -19,10 +19,7 @@
 
 package com.sk89q.worldedit.world.fluid;
 
-import java.lang.reflect.Field;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.annotation.Nullable;
 
@@ -34,45 +31,26 @@ public class FluidTypes {
     private FluidTypes() {
     }
 
-    public static final FluidType EMPTY = new FluidType("minecraft:empty");
-    public static final FluidType FLOWING_LAVA = new FluidType("minecraft:flowing_lava");
-    public static final FluidType FLOWING_WATER = new FluidType("minecraft:flowing_water");
-    public static final FluidType LAVA = new FluidType("minecraft:lava");
-    public static final FluidType WATER = new FluidType("minecraft:water");
+    public static final FluidType EMPTY = register("minecraft:empty");
+    public static final FluidType FLOWING_LAVA = register("minecraft:flowing_lava");
+    public static final FluidType FLOWING_WATER = register("minecraft:flowing_water");
+    public static final FluidType LAVA = register("minecraft:lava");
+    public static final FluidType WATER = register("minecraft:water");
 
-
-    private static final Map<String, FluidType> fluidMapping = new HashMap<>();
-
-    static {
-        for (Field field : FluidTypes.class.getFields()) {
-            if (field.getType() == FluidType.class) {
-                try {
-                    registerFluid((FluidType) field.get(null));
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
+    private static FluidType register(final String id) {
+        return register(new FluidType(id));
     }
 
-    public static void registerFluid(FluidType fluidType) {
-        if (fluidMapping.containsKey(fluidType.getId()) && !fluidType.getId().startsWith("minecraft:")) {
-            throw new IllegalArgumentException("Existing fluid with this ID already registered");
-        }
-
-        fluidMapping.put(fluidType.getId(), fluidType);
+    public static FluidType register(final FluidType fluid) {
+        return FluidType.REGISTRY.register(fluid.getId(), fluid);
     }
 
     @Nullable
-    public static FluidType getFluidType(String id) {
-        // If it has no namespace, assume minecraft.
-        if (id != null && !id.contains(":")) {
-            id = "minecraft:" + id;
-        }
-        return fluidMapping.get(id);
+    public static FluidType getFluidType(final String id) {
+        return FluidType.REGISTRY.get(id);
     }
 
     public static Collection<FluidType> values() {
-        return fluidMapping.values();
+        return FluidType.REGISTRY.values();
     }
 }
