@@ -99,7 +99,7 @@ class DefaultBlockParser extends InputParser<BlockStateHolder> {
         }
     }
 
-    private static Pattern blockStatePattern = Pattern.compile("([a-z:]+)(?:\\[([a-zA-Z0-9=, ]+)])?", Pattern.CASE_INSENSITIVE);
+    private static Pattern blockStatePattern = Pattern.compile("([a-z:_]+)(?:\\[([a-zA-Z0-9=, _]+)])?", Pattern.CASE_INSENSITIVE);
     private static String[] EMPTY_STRING_ARRAY = new String[]{};
 
     /**
