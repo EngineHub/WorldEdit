@@ -82,7 +82,7 @@ public class CommandRegistration {
 
     public boolean unregisterCommands() {
         CommandMap commandMap = getCommandMap();
-        List<String> toRemove = new ArrayList<String>();
+        List<String> toRemove = new ArrayList<>();
         Map<String, org.bukkit.command.Command> knownCommands = ReflectionUtil.getField(commandMap, "knownCommands");
         Set<String> aliases = ReflectionUtil.getField(commandMap, "aliases");
         if (knownCommands == null || aliases == null) {

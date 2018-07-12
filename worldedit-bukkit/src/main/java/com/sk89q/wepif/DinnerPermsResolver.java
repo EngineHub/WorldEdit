@@ -114,13 +114,13 @@ public class DinnerPermsResolver implements PermissionsResolver {
         if (perms == null) {
             return new String[0];
         }
-        List<String> groupNames = new ArrayList<String>();
+        List<String> groupNames = new ArrayList<>();
         for (PermissionAttachmentInfo permAttach : perms.getEffectivePermissions()) {
             String perm = permAttach.getPermission();
             if (!(perm.startsWith(GROUP_PREFIX) && permAttach.getValue())) {
                 continue;
             }
-            groupNames.add(perm.substring(GROUP_PREFIX.length(), perm.length()));
+            groupNames.add(perm.substring(GROUP_PREFIX.length()));
         }
         return groupNames.toArray(new String[groupNames.size()]);
     }

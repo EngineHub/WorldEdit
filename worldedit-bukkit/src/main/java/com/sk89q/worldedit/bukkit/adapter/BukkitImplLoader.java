@@ -38,7 +38,7 @@ import java.util.logging.Logger;
 public class BukkitImplLoader {
 
     private static final Logger log = Logger.getLogger(BukkitImplLoader.class.getCanonicalName());
-    private final List<String> adapterCandidates = new ArrayList<String>();
+    private final List<String> adapterCandidates = new ArrayList<>();
     private String customCandidate;
 
     private static final String SEARCH_PACKAGE = "com.sk89q.worldedit.bukkit.adapter.impl";

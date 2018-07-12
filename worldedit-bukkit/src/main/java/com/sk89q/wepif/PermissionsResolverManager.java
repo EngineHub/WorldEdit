@@ -86,7 +86,7 @@ public class PermissionsResolverManager implements PermissionsResolver {
     private PermissionsResolver permissionResolver;
     private YAMLProcessor config;
     private Logger logger = Logger.getLogger(getClass().getCanonicalName());
-    private List<Class<? extends PermissionsResolver>> enabledResolvers = new ArrayList<Class<? extends PermissionsResolver>>();
+    private List<Class<? extends PermissionsResolver>> enabledResolvers = new ArrayList<>();
 
     @SuppressWarnings("unchecked")
     protected Class<? extends PermissionsResolver>[] availableResolvers = new Class[] {
@@ -213,7 +213,7 @@ public class PermissionsResolverManager implements PermissionsResolver {
 
         if (!keys.contains("resolvers")) {
             //List<String> resolverKeys = config.getKeys("resolvers");
-            List<String> resolvers = new ArrayList<String>();
+            List<String> resolvers = new ArrayList<>();
             for (Class<?> clazz : availableResolvers) {
                 resolvers.add(clazz.getSimpleName());
             }
@@ -221,7 +221,7 @@ public class PermissionsResolverManager implements PermissionsResolver {
             config.setProperty("resolvers.enabled", resolvers);
             isUpdated = true;
         } else {
-            List<String> disabledResolvers = config.getStringList("resolvers.disabled", new ArrayList<String>());
+            List<String> disabledResolvers = config.getStringList("resolvers.disabled", new ArrayList<>());
             List<String> stagedEnabled = config.getStringList("resolvers.enabled", null);
             for (Iterator<String> i = stagedEnabled.iterator(); i.hasNext();) {
                 String nextName = i.next();

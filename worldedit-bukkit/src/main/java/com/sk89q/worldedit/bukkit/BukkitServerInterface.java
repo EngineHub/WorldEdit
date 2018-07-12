@@ -117,7 +117,7 @@ public class BukkitServerInterface implements MultiUserPlatform {
 
     @Override
     public void registerCommands(Dispatcher dispatcher) {
-        List<CommandInfo> toRegister = new ArrayList<CommandInfo>();
+        List<CommandInfo> toRegister = new ArrayList<>();
         BukkitCommandInspector inspector = new BukkitCommandInspector(plugin, dispatcher);
         
         for (CommandMapping command : dispatcher.getCommands()) {
@@ -159,7 +159,7 @@ public class BukkitServerInterface implements MultiUserPlatform {
 
     @Override
     public Map<Capability, Preference> getCapabilities() {
-        Map<Capability, Preference> capabilities = new EnumMap<Capability, Preference>(Capability.class);
+        Map<Capability, Preference> capabilities = new EnumMap<>(Capability.class);
         capabilities.put(Capability.CONFIGURATION, Preference.NORMAL);
         capabilities.put(Capability.WORLDEDIT_CUI, Preference.NORMAL);
         capabilities.put(Capability.GAME_HOOKS, Preference.PREFERRED);
@@ -175,7 +175,7 @@ public class BukkitServerInterface implements MultiUserPlatform {
 
     @Override
     public Collection<Actor> getConnectedUsers() {
-        List<Actor> users = new ArrayList<Actor>();
+        List<Actor> users = new ArrayList<>();
         for (org.bukkit.entity.Player player : Bukkit.getServer().getOnlinePlayers()) {
             users.add(new BukkitPlayer(plugin, player));
         }

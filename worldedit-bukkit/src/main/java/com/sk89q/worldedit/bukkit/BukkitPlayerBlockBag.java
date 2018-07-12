@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.bukkit;
 
+import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockTypes;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
@@ -78,8 +79,7 @@ public class BukkitPlayerBlockBag extends BlockBag {
                 continue;
             }
 
-            if (bukkitItem.getTypeId() != blockState.getBlockType().getLegacyId()) {
-                // TODO Fix when bukkit gets not awful
+            if (!bukkitItem.getType().getKey().toString().equals(blockState.getBlockType().getId())) {
                 // Type id doesn't fit
                 continue;
             }
@@ -111,6 +111,9 @@ public class BukkitPlayerBlockBag extends BlockBag {
         if (blockState.getBlockType() == BlockTypes.AIR) {
             throw new IllegalArgumentException("Can't store air block");
         }
+        if (!blockState.getBlockType().hasItemType()) {
+            throw new IllegalArgumentException("This block cannot be stored");
+        }
 
         loadInventory();
 
@@ -129,8 +132,7 @@ public class BukkitPlayerBlockBag extends BlockBag {
                 continue;
             }
 
-            if (bukkitItem.getTypeId() != blockState.getBlockType().getLegacyId()) {
-                // TODO Fix when bukkit gets not terrible
+            if (!bukkitItem.getType().getKey().toString().equals(blockState.getBlockType().getId())) {
                 // Type id doesn't fit
                 continue;
             }
@@ -156,7 +158,7 @@ public class BukkitPlayerBlockBag extends BlockBag {
         }
 
         if (freeSlot > -1) {
-            items[freeSlot] = new ItemStack(blockState.getBlockType().getLegacyId(), amount); // TODO Ditto
+            items[freeSlot] = new ItemStack(BukkitUtil.toItemStack(new BaseItemStack(blockState.getBlockType().getItemType(), amount)));
             return;
         }
 

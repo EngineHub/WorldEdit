@@ -28,7 +28,7 @@ import org.spongepowered.api.network.*;
 import java.nio.charset.StandardCharsets;
 
 public class CUIChannelHandler implements RawDataListener {
-    public static final String CUI_PLUGIN_CHANNEL = "WECUI";
+    public static final String CUI_PLUGIN_CHANNEL = "worldedit:cui";
 
     private static ChannelBinding.RawDataChannel channel;
 

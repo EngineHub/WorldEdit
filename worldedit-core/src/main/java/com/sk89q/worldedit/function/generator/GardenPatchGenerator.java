@@ -23,6 +23,7 @@ import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.block.BlockTypes;
@@ -30,6 +31,7 @@ import com.sk89q.worldedit.function.RegionFunction;
 import com.sk89q.worldedit.function.pattern.BlockPattern;
 import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.function.pattern.RandomPattern;
+import com.sun.xml.internal.bind.v2.TODO;
 
 import java.util.Random;
 
@@ -188,11 +190,7 @@ public class GardenPatchGenerator implements RegionFunction {
      * @return a pumpkin pattern
      */
     public static Pattern getPumpkinPattern() {
-        RandomPattern pattern = new RandomPattern();
-        for (int i = 0; i < 4; i++) {
-// TODO           pattern.add(new BlockPattern(new BaseBlock(BlockTypes.CARVED_PUMPKIN, i)), 100);
-        }
-        return pattern;
+        return new BlockPattern(BlockTypes.CARVED_PUMPKIN.getDefaultState());
     }
 
     /**

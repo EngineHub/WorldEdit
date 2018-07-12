@@ -69,7 +69,7 @@ public class BukkitPlayer extends AbstractPlayerActor {
         ItemStack itemStack = handSide == HandSide.MAIN_HAND
                 ? player.getInventory().getItemInMainHand()
                 : player.getInventory().getItemInOffHand();
-        return BukkitUtil.toBlock(itemStack);
+        return new BaseBlock(BukkitUtil.toBlock(itemStack));
     }
 
     @Override
@@ -79,7 +79,7 @@ public class BukkitPlayer extends AbstractPlayerActor {
 
     @Override
     public void giveItem(BaseItemStack itemStack) {
-        player.getInventory().addItem(new ItemStack(itemStack.getLegacyId(), itemStack.getAmount()));
+        player.getInventory().addItem(BukkitUtil.toItemStack(itemStack));
     }
 
     @Override
@@ -223,7 +223,7 @@ public class BukkitPlayer extends AbstractPlayerActor {
             // CopyOnWrite list for the list of players, but the Bukkit
             // specification doesn't require thread safety (though the
             // spec is extremely incomplete)
-            return Bukkit.getServer().getPlayerExact(name) != null;
+            return Bukkit.getServer().getPlayer(uuid) != null;
         }
 
         @Override

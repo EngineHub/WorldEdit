@@ -30,7 +30,6 @@ import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.blocks.LazyBlock;
-import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.bukkit.adapter.BukkitImplAdapter;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.history.change.BlockChange;
@@ -38,7 +37,7 @@ import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.TreeGenerator;
 import com.sk89q.worldedit.world.AbstractWorld;
 import com.sk89q.worldedit.world.biome.BaseBiome;
-import com.sk89q.worldedit.world.registry.LegacyMapper;
+import com.sk89q.worldedit.world.block.BlockStateHolder;
 import org.bukkit.Effect;
 import org.bukkit.TreeType;
 import org.bukkit.World;
@@ -49,7 +48,6 @@ import org.bukkit.block.Chest;
 import org.bukkit.entity.Entity;
 import org.bukkit.inventory.DoubleChestInventory;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -286,15 +284,16 @@ public class BukkitWorld extends AbstractWorld {
     public boolean generateTree(TreeGenerator.TreeType type, EditSession editSession, Vector pt) {
         World world = getWorld();
         TreeType bukkitType = toBukkitTreeType(type);
-        return type != null && world.generateTree(BukkitUtil.toLocation(world, pt), bukkitType,
-                new EditSessionBlockChangeDelegate(editSession));
+        return type != null && world.generateTree(BukkitUtil.toLocation(world, pt), bukkitType);
+//        return type != null && world.generateTree(BukkitUtil.toLocation(world, pt), bukkitType,
+//                new EditSessionBlockChangeDelegate(editSession));
+        // TODO
     }
 
     @Override
     public void dropItem(Vector pt, BaseItemStack item) {
         World world = getWorld();
-        ItemStack bukkitItem = new ItemStack(item.getLegacyId(), item.getAmount()); // TODO Add data.
-        world.dropItemNaturally(BukkitUtil.toLocation(world, pt), bukkitItem);
+        world.dropItemNaturally(BukkitUtil.toLocation(world, pt), BukkitUtil.toItemStack(item));
     }
 
     @Override
@@ -359,7 +358,7 @@ public class BukkitWorld extends AbstractWorld {
     @Override
     public com.sk89q.worldedit.world.block.BlockState getBlock(Vector position) {
         Block bukkitBlock = getWorld().getBlockAt(position.getBlockX(), position.getBlockY(), position.getBlockZ());
-        return LegacyMapper.getInstance().getBlockFromLegacy(bukkitBlock.getTypeId(), bukkitBlock.getData());
+        return BukkitUtil.toBlock(bukkitBlock.getBlockData());
     }
 
     @Override
@@ -369,11 +368,8 @@ public class BukkitWorld extends AbstractWorld {
             return adapter.setBlock(BukkitAdapter.adapt(getWorld(), position), block, notifyAndLight);
         } else {
             Block bukkitBlock = getWorld().getBlockAt(position.getBlockX(), position.getBlockY(), position.getBlockZ());
-            int[] datas = LegacyMapper.getInstance().getLegacyFromBlock(block.toImmutableState());
-            if (datas == null) {
-                throw new WorldEditException("Unknown block"){}; // TODO Remove.
-            }
-            return bukkitBlock.setTypeIdAndData(datas[0], (byte) datas[1], notifyAndLight);
+            bukkitBlock.setData(BukkitUtil.toBlock(block), notifyAndLight);
+            return true;
         }
     }
 

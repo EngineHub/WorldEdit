@@ -22,17 +22,19 @@ package com.sk89q.worldedit.bukkit;
 import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BaseItemStack;
-import com.sk89q.worldedit.world.block.BlockTypes;
-import com.sk89q.worldedit.world.item.ItemType;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.util.Location;
-import com.sk89q.worldedit.world.registry.LegacyMapper;
+import com.sk89q.worldedit.world.block.BlockState;
+import com.sk89q.worldedit.world.block.BlockStateHolder;
+import com.sk89q.worldedit.world.block.BlockTypes;
+import com.sk89q.worldedit.world.item.ItemTypes;
+import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -121,17 +123,28 @@ public final class BukkitUtil {
         return ((BukkitWorld) world).getWorld();
     }
 
-    public static BaseBlock toBlock(ItemStack itemStack) throws WorldEditException {
-        ItemType itemType = LegacyMapper.getInstance().getItemFromLegacy(itemStack.getTypeId(), itemStack.getData().getData());
-        if (itemType.hasBlockType()) {
-            return new BaseBlock(itemType.getBlockType().getDefaultState());
+    public static BlockState toBlock(BlockData blockData) {
+        return null; // TODO BLOCKING
+    }
+
+    public static BlockData toBlock(BlockStateHolder block) {
+        return Bukkit.createBlockData(block.toString()); // TODO BLOCKING
+    }
+
+    public static BlockState toBlock(ItemStack itemStack) throws WorldEditException {
+        if (itemStack.getType().isBlock()) {
+            return toBlock(itemStack.getType().createBlockData());
         } else {
-            return new BaseBlock(BlockTypes.AIR.getDefaultState());
+            return BlockTypes.AIR.getDefaultState();
         }
     }
 
     public static BaseItemStack toBaseItemStack(ItemStack itemStack) {
-        ItemType itemType = LegacyMapper.getInstance().getItemFromLegacy(itemStack.getTypeId(), itemStack.getData().getData());
-        return new BaseItemStack(itemType, itemStack.getAmount());
+        return new BaseItemStack(ItemTypes.get(itemStack.getType().getKey().toString()), itemStack.getAmount());
+    }
+
+    public static ItemStack toItemStack(BaseItemStack item) {
+        BlockData blockData = Bukkit.createBlockData(item.getType().getId());
+        return new ItemStack(blockData.getMaterial(), item.getAmount());
     }
 }

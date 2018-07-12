@@ -138,7 +138,7 @@ class BukkitEntityType implements EntityType {
 
     @Override
     public boolean isTagged() {
-        return entity instanceof LivingEntity && ((LivingEntity) entity).getCustomName() != null;
+        return entity instanceof LivingEntity && entity.getCustomName() != null;
     }
 
     @Override

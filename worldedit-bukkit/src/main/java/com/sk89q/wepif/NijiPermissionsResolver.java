@@ -50,7 +50,7 @@ public class NijiPermissionsResolver implements PermissionsResolver {
         Plugin plugin = pluginManager.getPlugin("Permissions");
 
         // Check if plugin is loaded and has Permissions interface
-        if (plugin == null || !(plugin instanceof Permissions)) {
+        if (!(plugin instanceof Permissions)) {
             return null;
         }
 

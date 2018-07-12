@@ -25,16 +25,11 @@ import com.google.common.base.Joiner;
 import com.sk89q.util.yaml.YAMLProcessor;
 import com.sk89q.wepif.PermissionsResolverManager;
 import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.IncompleteRegionException;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.bukkit.adapter.AdapterLoadException;
 import com.sk89q.worldedit.bukkit.adapter.BukkitImplAdapter;
 import com.sk89q.worldedit.bukkit.adapter.BukkitImplLoader;
-import com.sk89q.worldedit.bukkit.selections.CuboidSelection;
-import com.sk89q.worldedit.bukkit.selections.CylinderSelection;
-import com.sk89q.worldedit.bukkit.selections.Polygonal2DSelection;
-import com.sk89q.worldedit.bukkit.selections.Selection;
 import com.sk89q.worldedit.event.platform.CommandEvent;
 import com.sk89q.worldedit.event.platform.CommandSuggestionEvent;
 import com.sk89q.worldedit.event.platform.PlatformReadyEvent;
@@ -42,12 +37,6 @@ import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
-import com.sk89q.worldedit.regions.CuboidRegion;
-import com.sk89q.worldedit.regions.CylinderRegion;
-import com.sk89q.worldedit.regions.Polygonal2DRegion;
-import com.sk89q.worldedit.regions.Region;
-import com.sk89q.worldedit.regions.RegionSelector;
-import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
@@ -73,7 +62,7 @@ import javax.annotation.Nullable;
 public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
 
     private static final Logger log = Logger.getLogger(WorldEditPlugin.class.getCanonicalName());
-    public static final String CUI_PLUGIN_CHANNEL = "WECUI";
+    public static final String CUI_PLUGIN_CHANNEL = "worldedit:cui";
     private static WorldEditPlugin INSTANCE;
 
     private BukkitImplAdapter bukkitAdapter;
@@ -344,64 +333,6 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
      */
     public WorldEdit getWorldEdit() {
         return WorldEdit.getInstance();
-    }
-
-    /**
-     * Gets the region selection for the player.
-     *
-     * @param player aplayer
-     * @return the selection or null if there was none
-     */
-    public Selection getSelection(Player player) {
-        if (player == null) {
-            throw new IllegalArgumentException("Null player not allowed");
-        }
-        if (!player.isOnline()) {
-            throw new IllegalArgumentException("Offline player not allowed");
-        }
-
-        LocalSession session = WorldEdit.getInstance().getSessionManager().get(wrapPlayer(player));
-        RegionSelector selector = session.getRegionSelector(BukkitUtil.getWorld(player.getWorld()));
-
-        try {
-            Region region = selector.getRegion();
-            World world = BukkitAdapter.asBukkitWorld(session.getSelectionWorld()).getWorld();
-
-            if (region instanceof CuboidRegion) {
-                return new CuboidSelection(world, selector, (CuboidRegion) region);
-            } else if (region instanceof Polygonal2DRegion) {
-                return new Polygonal2DSelection(world, selector, (Polygonal2DRegion) region);
-            } else if (region instanceof CylinderRegion) {
-                return new CylinderSelection(world, selector, (CylinderRegion) region);
-            } else {
-                return null;
-            }
-        } catch (IncompleteRegionException e) {
-            return null;
-        }
-    }
-
-    /**
-     * Sets the region selection for a player.
-     *
-     * @param player the player
-     * @param selection a selection
-     */
-    public void setSelection(Player player, Selection selection) {
-        if (player == null) {
-            throw new IllegalArgumentException("Null player not allowed");
-        }
-        if (!player.isOnline()) {
-            throw new IllegalArgumentException("Offline player not allowed");
-        }
-        if (selection == null) {
-            throw new IllegalArgumentException("Null selection not allowed");
-        }
-
-        LocalSession session = WorldEdit.getInstance().getSessionManager().get(wrapPlayer(player));
-        RegionSelector sel = selection.getRegionSelector();
-        session.setRegionSelector(BukkitUtil.getWorld(player.getWorld()), sel);
-        session.dispatchCUISelection(wrapPlayer(player));
     }
 
     /**

@@ -50,7 +50,7 @@ public class CommandsManagerRegistration extends CommandRegistration {
     }
 
     public boolean registerAll(List<Command> registered) {
-        List<CommandInfo> toRegister = new ArrayList<CommandInfo>();
+        List<CommandInfo> toRegister = new ArrayList<>();
         for (Command command : registered) {
             List<String> permissions = null;
             Method cmdMethod = commands.getMethods().get(null).get(command.aliases()[0]);
@@ -59,7 +59,7 @@ public class CommandsManagerRegistration extends CommandRegistration {
             if (cmdMethod != null && cmdMethod.isAnnotationPresent(CommandPermissions.class)) {
                 permissions = Arrays.asList(cmdMethod.getAnnotation(CommandPermissions.class).value());
             } else if (cmdMethod != null && childMethods != null && !childMethods.isEmpty()) {
-                permissions = new ArrayList<String>();
+                permissions = new ArrayList<>();
                 for (Method m : childMethods.values()) {
                     if (m.isAnnotationPresent(CommandPermissions.class)) {
                         permissions.addAll(Arrays.asList(m.getAnnotation(CommandPermissions.class).value()));

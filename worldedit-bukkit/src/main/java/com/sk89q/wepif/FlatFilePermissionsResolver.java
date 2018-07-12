@@ -67,7 +67,7 @@ public class FlatFilePermissionsResolver implements PermissionsResolver {
     }
 
     public Map<String, Set<String>> loadGroupPermissions() {
-        Map<String, Set<String>> userGroupPermissions = new HashMap<String, Set<String>>();
+        Map<String, Set<String>> userGroupPermissions = new HashMap<>();
 
         BufferedReader buff = null;
 
@@ -93,7 +93,7 @@ public class FlatFilePermissionsResolver implements PermissionsResolver {
                 if (parts.length > 1) {
                     String[] perms = parts[1].split(",");
 
-                    Set<String> groupPerms = new HashSet<String>(Arrays.asList(perms));
+                    Set<String> groupPerms = new HashSet<>(Arrays.asList(perms));
                     userGroupPermissions.put(key, groupPerms);
                 }
             }
@@ -113,9 +113,9 @@ public class FlatFilePermissionsResolver implements PermissionsResolver {
 
     @Override
     public void load() {
-        userGroups = new HashMap<String, Set<String>>();
-        userPermissionsCache = new HashMap<String, Set<String>>();
-        defaultPermissionsCache = new HashSet<String>();
+        userGroups = new HashMap<>();
+        userPermissionsCache = new HashMap<>();
+        defaultPermissionsCache = new HashSet<>();
 
         Map<String, Set<String>> userGroupPermissions = loadGroupPermissions();
 
@@ -131,7 +131,7 @@ public class FlatFilePermissionsResolver implements PermissionsResolver {
 
             String line;
             while ((line = buff.readLine()) != null) {
-                Set<String> permsCache = new HashSet<String>();
+                Set<String> permsCache = new HashSet<>();
 
                 line = line.trim();
 
@@ -160,7 +160,7 @@ public class FlatFilePermissionsResolver implements PermissionsResolver {
                     }
 
                     userPermissionsCache.put(key.toLowerCase(), permsCache);
-                    userGroups.put(key.toLowerCase(), new HashSet<String>(Arrays.asList(groups)));
+                    userGroups.put(key.toLowerCase(), new HashSet<>(Arrays.asList(groups)));
                 }
             }
         } catch (IOException e) {

@@ -67,7 +67,7 @@ public class ForgeWorldEdit {
 
     public static Logger logger;
     public static final String MOD_ID = "worldedit";
-    public static final String CUI_PLUGIN_CHANNEL = "WECUI";
+    public static final String CUI_PLUGIN_CHANNEL = "worldedit:cui";
 
     private ForgePermissionsProvider provider;
 
