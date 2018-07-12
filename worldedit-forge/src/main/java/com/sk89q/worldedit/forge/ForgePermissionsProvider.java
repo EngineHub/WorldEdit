@@ -28,11 +28,11 @@ import net.minecraftforge.fml.common.FMLCommonHandler;
 
 public interface ForgePermissionsProvider {
 
-    public boolean hasPermission(EntityPlayerMP player, String permission);
+    boolean hasPermission(EntityPlayerMP player, String permission);
 
-    public void registerPermission(ICommand command, String permission);
+    void registerPermission(ICommand command, String permission);
 
-    public static class VanillaPermissionsProvider implements ForgePermissionsProvider {
+    class VanillaPermissionsProvider implements ForgePermissionsProvider {
 
         private ForgePlatform platform;
 
@@ -52,7 +52,7 @@ public interface ForgePermissionsProvider {
         public void registerPermission(ICommand command, String permission) {}
     }
 
-    public static class SpongePermissionsProvider implements ForgePermissionsProvider {
+    class SpongePermissionsProvider implements ForgePermissionsProvider {
 
         @Override
         public boolean hasPermission(EntityPlayerMP player, String permission) {

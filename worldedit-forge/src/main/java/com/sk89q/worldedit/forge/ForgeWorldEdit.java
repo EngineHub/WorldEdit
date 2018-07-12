@@ -20,7 +20,6 @@
 package com.sk89q.worldedit.forge;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static net.minecraft.block.Block.REGISTRY;
 
 import com.google.common.base.Joiner;
 import com.sk89q.worldedit.LocalSession;
@@ -32,6 +31,8 @@ import com.sk89q.worldedit.forge.net.LeftClickAirEventMessage;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.block.BlockTypes;
+import com.sk89q.worldedit.world.item.ItemType;
+import com.sk89q.worldedit.world.item.ItemTypes;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
@@ -124,8 +125,12 @@ public class ForgeWorldEdit {
             this.provider = new ForgePermissionsProvider.VanillaPermissionsProvider(platform);
         }
 
-        for (Block block : REGISTRY) {
-            BlockTypes.register(new BlockType(REGISTRY.getNameForObject(block).toString()));
+        for (Block block : Block.REGISTRY) {
+            BlockTypes.register(new BlockType(Block.REGISTRY.getNameForObject(block).toString()));
+        }
+
+        for (Item item : Item.REGISTRY) {
+            ItemTypes.register(new ItemType(Item.REGISTRY.getNameForObject(item).toString()));
         }
     }
 

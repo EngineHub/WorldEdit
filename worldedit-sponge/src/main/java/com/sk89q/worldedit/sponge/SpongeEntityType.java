@@ -19,6 +19,8 @@
 
 package com.sk89q.worldedit.sponge;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.sk89q.worldedit.entity.metadata.EntityType;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.Entity;
@@ -28,7 +30,11 @@ import org.spongepowered.api.entity.Item;
 import org.spongepowered.api.entity.explosive.PrimedTNT;
 import org.spongepowered.api.entity.hanging.ItemFrame;
 import org.spongepowered.api.entity.hanging.Painting;
-import org.spongepowered.api.entity.living.*;
+import org.spongepowered.api.entity.living.Ambient;
+import org.spongepowered.api.entity.living.ArmorStand;
+import org.spongepowered.api.entity.living.Humanoid;
+import org.spongepowered.api.entity.living.Living;
+import org.spongepowered.api.entity.living.Villager;
 import org.spongepowered.api.entity.living.animal.Animal;
 import org.spongepowered.api.entity.living.complex.ComplexLivingPart;
 import org.spongepowered.api.entity.living.golem.Golem;
@@ -39,9 +45,6 @@ import org.spongepowered.api.entity.vehicle.minecart.Minecart;
 import org.spongepowered.api.text.Text;
 
 import java.util.Optional;
-import java.util.UUID;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 public class SpongeEntityType implements EntityType {
 
@@ -129,7 +132,7 @@ public class SpongeEntityType implements EntityType {
 
     @Override
     public boolean isTamed() {
-        return entity.get(Keys.TAMED_OWNER).orElse(Optional.<UUID>empty()).isPresent();
+        return entity.get(Keys.TAMED_OWNER).orElse(Optional.empty()).isPresent();
     }
 
     @Override
