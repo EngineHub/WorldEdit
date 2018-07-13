@@ -79,7 +79,7 @@ public class BukkitPlayerBlockBag extends BlockBag {
                 continue;
             }
 
-            if (!bukkitItem.getType().getKey().toString().equals(blockState.getBlockType().getId())) {
+            if (!BukkitUtil.equals(blockState.getBlockType(), bukkitItem.getType())) {
                 // Type id doesn't fit
                 continue;
             }
@@ -132,7 +132,7 @@ public class BukkitPlayerBlockBag extends BlockBag {
                 continue;
             }
 
-            if (!bukkitItem.getType().getKey().toString().equals(blockState.getBlockType().getId())) {
+            if (!BukkitUtil.equals(blockState.getBlockType(), bukkitItem.getType())) {
                 // Type id doesn't fit
                 continue;
             }

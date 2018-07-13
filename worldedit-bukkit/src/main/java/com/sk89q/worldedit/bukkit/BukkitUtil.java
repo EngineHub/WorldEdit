@@ -27,9 +27,11 @@ import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
+import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.block.BlockTypes;
 import com.sk89q.worldedit.world.item.ItemTypes;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -39,6 +41,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
+import java.util.Objects;
 
 public final class BukkitUtil {
 
@@ -106,6 +109,10 @@ public final class BukkitUtil {
         if (Math.abs(a.getY() - b.getY()) > EQUALS_PRECISION) return false;
         if (Math.abs(a.getZ() - b.getZ()) > EQUALS_PRECISION) return false;
         return true;
+    }
+
+    public static boolean equals(BlockType blockType, Material type) {
+        return Objects.equals(blockType.getId(), type.getKey().toString());
     }
 
     public static final double EQUALS_PRECISION = 0.0001;
