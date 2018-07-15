@@ -22,6 +22,7 @@ package com.sk89q.worldedit.world.block;
 import com.sk89q.worldedit.registry.state.Property;
 
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public interface BlockStateHolder<T extends BlockStateHolder> {
 
@@ -70,4 +71,13 @@ public interface BlockStateHolder<T extends BlockStateHolder> {
      * @return A BlockState
      */
     BlockState toImmutableState();
+
+    default String getAsString() {
+        if (getStates().isEmpty()) {
+            return this.getBlockType().getId();
+        } else {
+            String properties = getStates().entrySet().stream().map(entry -> entry.getKey() + "=" + entry.getValue()).collect(Collectors.joining(","));
+            return this.getBlockType().getId() + "[" + properties + "]";
+        }
+    }
 }

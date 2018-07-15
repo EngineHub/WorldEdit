@@ -21,14 +21,18 @@ package com.sk89q.worldedit.bukkit;
 
 import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseItemStack;
+import com.sk89q.worldedit.extension.input.InputParseException;
+import com.sk89q.worldedit.extension.input.ParserContext;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.block.BlockTypes;
+import com.sk89q.worldedit.world.item.ItemType;
 import com.sk89q.worldedit.world.item.ItemTypes;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -46,6 +50,12 @@ import java.util.Objects;
 public final class BukkitUtil {
 
     private BukkitUtil() {
+    }
+
+    private static final ParserContext TO_BLOCK_CONTEXT = new ParserContext();
+
+    static {
+        TO_BLOCK_CONTEXT.setRestricted(false);
     }
 
     public static com.sk89q.worldedit.world.World getWorld(World w) {
@@ -130,12 +140,31 @@ public final class BukkitUtil {
         return ((BukkitWorld) world).getWorld();
     }
 
+    public static Material toMaterial(ItemType itemType) {
+        if (!itemType.getId().startsWith("minecraft:")) {
+            throw new IllegalArgumentException("Bukkit only supports Minecraft items");
+        }
+        return Material.getMaterial(itemType.getId().replace("minecraft:", "").toUpperCase());
+    }
+
+    public static Material toMaterial(BlockType blockType) {
+        if (!blockType.getId().startsWith("minecraft:")) {
+            throw new IllegalArgumentException("Bukkit only supports Minecraft blocks");
+        }
+        return Material.getMaterial(blockType.getId().replace("minecraft:", "").toUpperCase());
+    }
+
     public static BlockState toBlock(BlockData blockData) {
-        return null; // TODO BLOCKING
+        try {
+            return WorldEdit.getInstance().getBlockFactory().parseFromInput(blockData.getAsString(), TO_BLOCK_CONTEXT).toImmutableState();
+        } catch (InputParseException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public static BlockData toBlock(BlockStateHolder block) {
-        return Bukkit.createBlockData(block.toString()); // TODO BLOCKING
+        return Bukkit.createBlockData(block.getAsString());
     }
 
     public static BlockState toBlock(ItemStack itemStack) throws WorldEditException {
@@ -151,7 +180,6 @@ public final class BukkitUtil {
     }
 
     public static ItemStack toItemStack(BaseItemStack item) {
-        BlockData blockData = Bukkit.createBlockData(item.getType().getId());
-        return new ItemStack(blockData.getMaterial(), item.getAmount());
+        return new ItemStack(toMaterial(item.getType()), item.getAmount());
     }
 }

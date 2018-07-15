@@ -22,6 +22,7 @@ package com.sk89q.worldedit;
 import com.sk89q.worldedit.world.block.BlockTypes;
 import com.sk89q.worldedit.world.item.ItemTypes;
 import com.sk89q.worldedit.util.logging.LogFormat;
+import com.sk89q.worldedit.world.registry.LegacyMapper;
 import com.sk89q.worldedit.world.snapshot.SnapshotRepository;
 
 import java.io.File;
@@ -146,6 +147,25 @@ public abstract class LocalConfiguration {
      */
     public File getWorkingDirectory() {
         return new File(".");
+    }
+
+    public String convertLegacyItem(String legacy) {
+        String item = legacy;
+        try {
+            String[] splitter = item.split(":", 2);
+            int id = 0;
+            byte data = 0;
+            if (splitter.length == 1) {
+                id = Integer.parseInt(item);
+            } else {
+                id = Integer.parseInt(splitter[0]);
+                data = Byte.parseByte(splitter[1]);
+            }
+            item = LegacyMapper.getInstance().getItemFromLegacy(id, data).getId();
+        } catch (Throwable e) {
+        }
+
+        return item;
     }
 
 }

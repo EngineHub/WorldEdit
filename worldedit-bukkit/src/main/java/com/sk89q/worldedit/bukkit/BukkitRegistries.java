@@ -20,6 +20,7 @@
 package com.sk89q.worldedit.bukkit;
 
 import com.sk89q.worldedit.world.registry.BiomeRegistry;
+import com.sk89q.worldedit.world.registry.BlockRegistry;
 import com.sk89q.worldedit.world.registry.BundledRegistries;
 
 /**
@@ -28,12 +29,18 @@ import com.sk89q.worldedit.world.registry.BundledRegistries;
 class BukkitRegistries extends BundledRegistries {
 
     private static final BukkitRegistries INSTANCE = new BukkitRegistries();
+    private final BlockRegistry blockRegistry = new BukkitBlockRegistry();
     private final BiomeRegistry biomeRegistry = new BukkitBiomeRegistry();
 
     /**
      * Create a new instance.
      */
     BukkitRegistries() {
+    }
+
+    @Override
+    public BlockRegistry getBlockRegistry() {
+        return blockRegistry;
     }
 
     @Override

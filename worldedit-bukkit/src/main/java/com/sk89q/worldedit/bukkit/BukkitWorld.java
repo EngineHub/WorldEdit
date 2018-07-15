@@ -284,10 +284,8 @@ public class BukkitWorld extends AbstractWorld {
     public boolean generateTree(TreeGenerator.TreeType type, EditSession editSession, Vector pt) {
         World world = getWorld();
         TreeType bukkitType = toBukkitTreeType(type);
-        return type != null && world.generateTree(BukkitUtil.toLocation(world, pt), bukkitType);
-//        return type != null && world.generateTree(BukkitUtil.toLocation(world, pt), bukkitType,
-//                new EditSessionBlockChangeDelegate(editSession));
-        // TODO
+        return type != null && world.generateTree(BukkitUtil.toLocation(world, pt), bukkitType,
+                new EditSessionBlockChangeDelegate(editSession));
     }
 
     @Override
@@ -368,7 +366,7 @@ public class BukkitWorld extends AbstractWorld {
             return adapter.setBlock(BukkitAdapter.adapt(getWorld(), position), block, notifyAndLight);
         } else {
             Block bukkitBlock = getWorld().getBlockAt(position.getBlockX(), position.getBlockY(), position.getBlockZ());
-            bukkitBlock.setData(BukkitUtil.toBlock(block), notifyAndLight);
+            bukkitBlock.setBlockData(BukkitUtil.toBlock(block), notifyAndLight);
             return true;
         }
     }

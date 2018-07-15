@@ -56,11 +56,7 @@ public class YAMLConfiguration extends LocalConfiguration {
         }
 
         profile = config.getBoolean("debug", profile);
-        wandItem = config.getString("wand-item", wandItem);
-        try {
-            wandItem = LegacyMapper.getInstance().getItemFromLegacy(Integer.parseInt(wandItem)).getId();
-        } catch (Throwable e) {
-        }
+        wandItem = convertLegacyItem(config.getString("wand-item", wandItem));
 
         defaultChangeLimit = Math.max(-1, config.getInt(
                 "limits.max-blocks-changed.default", defaultChangeLimit));
@@ -104,11 +100,7 @@ public class YAMLConfiguration extends LocalConfiguration {
         useInventoryCreativeOverride = config.getBoolean("use-inventory.creative-mode-overrides",
                 useInventoryCreativeOverride);
 
-        navigationWand = config.getString("navigation-wand.item", navigationWand);
-        try {
-            navigationWand = LegacyMapper.getInstance().getItemFromLegacy(Integer.parseInt(navigationWand)).getId();
-        } catch (Throwable e) {
-        }
+        navigationWand = convertLegacyItem(config.getString("navigation-wand.item", navigationWand));
         navigationWandMaxDistance = config.getInt("navigation-wand.max-distance", navigationWandMaxDistance);
         navigationUseGlass = config.getBoolean("navigation.use-glass", navigationUseGlass);
 

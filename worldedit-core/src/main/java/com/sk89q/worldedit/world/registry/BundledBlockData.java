@@ -63,7 +63,7 @@ public class BundledBlockData {
     private BundledBlockData() {
         try {
             loadFromResource();
-        } catch (IOException e) {
+        } catch (Throwable e) {
             log.log(Level.WARNING, "Failed to load the built-in block registry", e);
         }
     }

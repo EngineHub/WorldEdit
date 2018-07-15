@@ -61,7 +61,7 @@ public class BundledItemData {
     private BundledItemData() {
         try {
             loadFromResource();
-        } catch (IOException e) {
+        } catch (Throwable e) {
             log.log(Level.WARNING, "Failed to load the built-in item registry", e);
         }
     }
