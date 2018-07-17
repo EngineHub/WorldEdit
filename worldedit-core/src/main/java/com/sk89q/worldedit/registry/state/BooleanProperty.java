@@ -17,39 +17,22 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.world.registry;
+package com.sk89q.worldedit.registry.state;
 
-import com.sk89q.worldedit.blocks.BlockMaterial;
-import com.sk89q.worldedit.registry.state.Property;
-import com.sk89q.worldedit.world.block.BlockType;
-
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import javax.annotation.Nullable;
 
-/**
- * A block registry that uses {@link BundledBlockData} to serve information
- * about blocks.
- */
-public class BundledBlockRegistry implements BlockRegistry {
-
-    @Nullable
-    @Override
-    public BlockMaterial getMaterial(String id) {
-        return new PassthroughBlockMaterial(BundledBlockData.getInstance().getMaterialById(id));
-    }
+public class BooleanProperty extends AbstractProperty<Boolean> {
 
     @Override
-    public List<Object> getPropertyValues(BlockType blockType, Property<?> property) {
-        return Collections.emptyList(); // Oof
+    public List<Boolean> getValues() {
+        return null;
     }
 
     @Nullable
     @Override
-    public Map<String, ? extends Property> getProperties(BlockType blockType) {
-        return Collections.emptyMap(); // Oof
+    public Boolean getValueFor(String string) {
+        return null;
     }
-
 }

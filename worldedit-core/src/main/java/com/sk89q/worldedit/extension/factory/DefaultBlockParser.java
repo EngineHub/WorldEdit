@@ -29,10 +29,6 @@ import com.sk89q.worldedit.blocks.MobSpawnerBlock;
 import com.sk89q.worldedit.blocks.SignBlock;
 import com.sk89q.worldedit.blocks.SkullBlock;
 import com.sk89q.worldedit.blocks.metadata.MobType;
-import com.sk89q.worldedit.world.block.BlockState;
-import com.sk89q.worldedit.world.block.BlockStateHolder;
-import com.sk89q.worldedit.world.block.BlockType;
-import com.sk89q.worldedit.world.block.BlockTypes;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.input.DisallowedUsageException;
 import com.sk89q.worldedit.extension.input.InputParseException;
@@ -41,11 +37,15 @@ import com.sk89q.worldedit.extension.input.ParserContext;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.internal.registry.InputParser;
+import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.util.HandSide;
 import com.sk89q.worldedit.world.World;
-import com.sk89q.worldedit.world.registry.BundledBlockData;
-import com.sk89q.worldedit.registry.state.Property;
+import com.sk89q.worldedit.world.block.BlockState;
+import com.sk89q.worldedit.world.block.BlockStateHolder;
+import com.sk89q.worldedit.world.block.BlockType;
+import com.sk89q.worldedit.world.block.BlockTypes;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -162,7 +162,8 @@ class DefaultBlockParser extends InputParser<BlockStateHolder> {
                         throw new NoMatchException("Bad state format in " + parseableData);
                     }
 
-                    Property propertyKey = BundledBlockData.getInstance().findById(state.getBlockType().getId()).states.get(parts[0]);
+                    Property propertyKey = WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.GAME_HOOKS)
+                            .getRegistries().getBlockRegistry().getProperties(state.getBlockType()).get(parts[0]);
                     if (propertyKey == null) {
                         throw new NoMatchException("Unknown state " + parts[0] + " for block " + state.getBlockType().getName());
                     }
@@ -194,7 +195,7 @@ class DefaultBlockParser extends InputParser<BlockStateHolder> {
         }
         String typeString = matcher.group(1);
         String[] stateProperties = EMPTY_STRING_ARRAY;
-        if (matcher.groupCount() == 3) {
+        if (matcher.groupCount() >= 2 && matcher.group(2) != null) {
             stateProperties = matcher.group(2).split(",");
         }
 

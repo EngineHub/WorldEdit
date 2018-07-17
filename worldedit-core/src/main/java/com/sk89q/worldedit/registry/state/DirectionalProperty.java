@@ -19,21 +19,21 @@
 
 package com.sk89q.worldedit.registry.state;
 
-import com.sk89q.worldedit.registry.state.value.DirectionalStateValue;
+import com.sk89q.worldedit.Vector;
 
 import java.util.List;
 
 import javax.annotation.Nullable;
 
-public class DirectionalProperty extends AbstractProperty<DirectionalStateValue> {
+public class DirectionalProperty extends AbstractProperty<Vector> {
     @Override
-    public List<DirectionalStateValue> getValues() {
+    public List<Vector> getValues() {
         return null;
     }
 
     @Nullable
     @Override
-    public DirectionalStateValue getValueFor(final String string) {
+    public Vector getValueFor(final String string) {
         return null;
     }
 }

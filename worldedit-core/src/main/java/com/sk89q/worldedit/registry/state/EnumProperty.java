@@ -17,13 +17,22 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.registry.state.value;
+package com.sk89q.worldedit.registry.state;
 
-import com.sk89q.worldedit.Vector;
+import java.util.List;
 
-public class DirectionalStateValue {
+import javax.annotation.Nullable;
 
-    public Vector getDirection() {
-        return new Vector(); // TODO
+public class EnumProperty extends AbstractProperty<String> {
+
+    @Override
+    public List<String> getValues() {
+        return null;
+    }
+
+    @Nullable
+    @Override
+    public String getValueFor(String string) {
+        return null;
     }
 }

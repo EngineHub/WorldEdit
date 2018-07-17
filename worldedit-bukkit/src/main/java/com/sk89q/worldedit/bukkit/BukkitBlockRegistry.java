@@ -20,12 +20,15 @@
 package com.sk89q.worldedit.bukkit;
 
 import com.sk89q.worldedit.blocks.BlockMaterial;
+import com.sk89q.worldedit.registry.state.Property;
+import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.block.BlockTypes;
 import com.sk89q.worldedit.world.registry.BundledBlockRegistry;
 import com.sk89q.worldedit.world.registry.PassthroughBlockMaterial;
 import org.bukkit.Material;
 
 import java.util.EnumMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Nullable;
@@ -39,6 +42,23 @@ public class BukkitBlockRegistry extends BundledBlockRegistry {
     public BlockMaterial getMaterial(String id) {
         return materialMap.computeIfAbsent(BukkitUtil.toMaterial(BlockTypes.get(id)),
                 material -> new BukkitBlockMaterial(BukkitBlockRegistry.super.getMaterial(id), material));
+    }
+
+    @Override
+    public List<Object> getPropertyValues(BlockType blockType, Property<?> property) {
+        if (WorldEditPlugin.getInstance().getBukkitImplAdapter() != null) {
+            return WorldEditPlugin.getInstance().getBukkitImplAdapter().getPropertyValues(blockType, property);
+        }
+        return super.getPropertyValues(blockType, property);
+    }
+
+    @Nullable
+    @Override
+    public Map<String, ? extends Property> getProperties(BlockType blockType) {
+        if (WorldEditPlugin.getInstance().getBukkitImplAdapter() != null) {
+            return WorldEditPlugin.getInstance().getBukkitImplAdapter().getProperties(blockType);
+        }
+        return super.getProperties(blockType);
     }
 
     public static class BukkitBlockMaterial extends PassthroughBlockMaterial {

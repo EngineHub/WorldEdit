@@ -20,10 +20,10 @@
 package com.sk89q.worldedit.world.registry;
 
 import com.sk89q.worldedit.blocks.BlockMaterial;
-import com.sk89q.worldedit.world.block.BlockState;
-import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.registry.state.Property;
+import com.sk89q.worldedit.world.block.BlockType;
 
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Nullable;
@@ -32,15 +32,6 @@ import javax.annotation.Nullable;
  * Provides information on blocks and provides methods to create them.
  */
 public interface BlockRegistry {
-
-    /**
-     * Create a new block using its ID.
-     *
-     * @param id the id
-     * @return the block, which may be null if no block exists
-     */
-    @Nullable
-    BlockState createFromId(String id);
 
     /**
      * Get the material for the given block.
@@ -52,12 +43,20 @@ public interface BlockRegistry {
     BlockMaterial getMaterial(String id);
 
     /**
+     * Get an unmodifiable list of values for this property.
+     *
+     * @param blockType The block
+     * @param property the property
+     * @return the list of values
+     */
+    List<Object> getPropertyValues(BlockType blockType, Property<?> property);
+
+    /**
      * Get an unmodifiable map of states for this block.
      *
-     * @param block the block
+     * @param blockType the block
      * @return a map of states where the key is the state's ID
      */
-    @Nullable
-    Map<String, ? extends Property> getStates(BlockStateHolder block);
+    Map<String, ? extends Property> getProperties(BlockType blockType);
 
 }

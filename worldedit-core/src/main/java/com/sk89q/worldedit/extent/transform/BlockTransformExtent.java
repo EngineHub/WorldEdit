@@ -34,7 +34,6 @@ import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.math.transform.Transform;
 import com.sk89q.worldedit.registry.state.DirectionalProperty;
 import com.sk89q.worldedit.registry.state.Property;
-import com.sk89q.worldedit.registry.state.value.DirectionalStateValue;
 
 import java.util.Map;
 
@@ -129,7 +128,7 @@ public class BlockTransformExtent extends AbstractDelegateExtent {
         checkNotNull(transform);
 
         Map<String, ? extends Property> states = WorldEdit.getInstance().getPlatformManager()
-                .queryCapability(Capability.GAME_HOOKS).getRegistries().getBlockRegistry().getStates(block);
+                .queryCapability(Capability.GAME_HOOKS).getRegistries().getBlockRegistry().getProperties(block.getBlockType());
 
         if (states == null) {
             return changedBlock;
@@ -137,9 +136,9 @@ public class BlockTransformExtent extends AbstractDelegateExtent {
 
         for (Property property : states.values()) {
             if (property instanceof DirectionalProperty) {
-                DirectionalStateValue value = (DirectionalStateValue) block.getState(property);
+                Vector value = (Vector) block.getState(property);
                 if (value != null) {
-                    DirectionalStateValue newValue = getNewStateValue((DirectionalProperty) property, transform, value.getDirection());
+                    Vector newValue = getNewStateValue((DirectionalProperty) property, transform, value);
                     if (newValue != null) {
                         changedBlock.with(property, newValue);
                     }
@@ -159,20 +158,18 @@ public class BlockTransformExtent extends AbstractDelegateExtent {
      * @return a new state or null if none could be found
      */
     @Nullable
-    private static DirectionalStateValue getNewStateValue(DirectionalProperty state, Transform transform, Vector oldDirection) {
+    private static Vector getNewStateValue(DirectionalProperty state, Transform transform, Vector oldDirection) {
         Vector newDirection = transform.apply(oldDirection).subtract(transform.apply(Vector.ZERO)).normalize();
-        DirectionalStateValue newValue = null;
+        Vector newValue = null;
         double closest = -2;
         boolean found = false;
 
-        for (DirectionalStateValue v : state.getValues()) {
-            if (v.getDirection() != null) {
-                double dot = v.getDirection().normalize().dot(newDirection);
-                if (dot >= closest) {
-                    closest = dot;
-                    newValue = v;
-                    found = true;
-                }
+        for (Vector v : state.getValues()) {
+            double dot = v.normalize().dot(newDirection);
+            if (dot >= closest) {
+                closest = dot;
+                newValue = v;
+                found = true;
             }
         }
 

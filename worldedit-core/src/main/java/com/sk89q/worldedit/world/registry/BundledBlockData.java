@@ -25,11 +25,8 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.blocks.BlockMaterial;
-import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.util.gson.VectorAdapter;
-import com.sk89q.worldedit.registry.state.AbstractProperty;
 
-import javax.annotation.Nullable;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.Charset;
@@ -38,6 +35,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.annotation.Nullable;
 
 /**
  * Provides block data based on the built-in block database that is bundled
@@ -86,7 +85,6 @@ public class BundledBlockData {
 
         for (BlockEntry entry : entries) {
             idMap.put(entry.id, entry);
-            entry.postDeserialization();
         }
     }
 
@@ -122,22 +120,6 @@ public class BundledBlockData {
     }
 
     /**
-     * Get the states for the given block.
-     *
-     * @param id the string ID
-     * @return the block's states, or null if no information is available
-     */
-    @Nullable
-    public Map<String, ? extends Property> getStatesById(String id) {
-        BlockEntry entry = findById(id);
-        if (entry != null) {
-            return entry.states;
-        } else {
-            return null;
-        }
-    }
-
-    /**
      * Get a singleton instance of this object.
      *
      * @return the instance
@@ -151,14 +133,7 @@ public class BundledBlockData {
         private String unlocalizedName;
         public String localizedName;
         private List<String> aliases;
-        public Map<String, AbstractProperty> states = new HashMap<>();
         private SimpleBlockMaterial material = new SimpleBlockMaterial();
-
-        void postDeserialization() {
-            for (Map.Entry<String, AbstractProperty> state : states.entrySet()) {
-                state.getValue().setName(state.getKey());
-            }
-        }
     }
 
 }

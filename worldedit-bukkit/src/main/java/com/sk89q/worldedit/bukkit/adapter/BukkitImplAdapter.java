@@ -20,11 +20,16 @@
 package com.sk89q.worldedit.bukkit.adapter;
 
 import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.entity.BaseEntity;
+import com.sk89q.worldedit.world.block.BlockType;
 import org.bukkit.Location;
 import org.bukkit.block.Biome;
 import org.bukkit.entity.Entity;
+
+import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Nullable;
 
@@ -91,4 +96,19 @@ public interface BukkitImplAdapter {
     Entity createEntity(Location location, BaseEntity state);
 
 
+    /**
+     * Get a list of values for a property.
+     *
+     * @param property The property
+     * @return The list of values
+     */
+    List<Object> getPropertyValues(BlockType blockType, Property<?> property);
+
+    /**
+     * Get a map of string -> properties
+     *
+     * @param blockType The block type
+     * @return The properties map
+     */
+    Map<String, ? extends Property> getProperties(BlockType blockType);
 }
