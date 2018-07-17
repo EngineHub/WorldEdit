@@ -28,7 +28,6 @@ import org.bukkit.Location;
 import org.bukkit.block.Biome;
 import org.bukkit.entity.Entity;
 
-import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Nullable;
@@ -94,15 +93,6 @@ public interface BukkitImplAdapter {
      */
     @Nullable
     Entity createEntity(Location location, BaseEntity state);
-
-
-    /**
-     * Get a list of values for a property.
-     *
-     * @param property The property
-     * @return The list of values
-     */
-    List<Object> getPropertyValues(BlockType blockType, Property<?> property);
 
     /**
      * Get a map of string -> properties

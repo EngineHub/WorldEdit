@@ -25,14 +25,16 @@ import javax.annotation.Nullable;
 
 public class EnumProperty extends AbstractProperty<String> {
 
-    @Override
-    public List<String> getValues() {
-        return null;
+    public EnumProperty(final String name, final List<String> values) {
+        super(name, values);
     }
 
     @Nullable
     @Override
     public String getValueFor(String string) {
-        return null;
+        if (!getValues().contains(string)) {
+            throw new IllegalArgumentException("Invalid value: " + string + ". Must be in " + getValues().toString());
+        }
+        return string;
     }
 }

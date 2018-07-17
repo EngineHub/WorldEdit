@@ -52,7 +52,7 @@ import javax.annotation.Nullable;
 public class BundledBlockData {
 
     private static final Logger log = Logger.getLogger(BundledBlockData.class.getCanonicalName());
-    private static final BundledBlockData INSTANCE = new BundledBlockData();
+    private static BundledBlockData INSTANCE;
 
     private final Map<String, BlockEntry> idMap = new HashMap<>();
 
@@ -125,6 +125,9 @@ public class BundledBlockData {
      * @return the instance
      */
     public static BundledBlockData getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new BundledBlockData();
+        }
         return INSTANCE;
     }
 

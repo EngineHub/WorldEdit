@@ -25,14 +25,17 @@ import javax.annotation.Nullable;
 
 public class BooleanProperty extends AbstractProperty<Boolean> {
 
-    @Override
-    public List<Boolean> getValues() {
-        return null;
+    public BooleanProperty(final String name, final List<Boolean> values) {
+        super(name, values);
     }
 
     @Nullable
     @Override
     public Boolean getValueFor(String string) {
-        return null;
+        boolean val = Boolean.parseBoolean(string);
+        if (!getValues().contains(val)) {
+            throw new IllegalArgumentException("Invalid boolean value: " + string + ". Must be in " + getValues().toString());
+        }
+        return val;
     }
 }

@@ -19,21 +19,25 @@
 
 package com.sk89q.worldedit.registry.state;
 
-import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.util.Direction;
 
 import java.util.List;
 
 import javax.annotation.Nullable;
 
-public class DirectionalProperty extends AbstractProperty<Vector> {
-    @Override
-    public List<Vector> getValues() {
-        return null;
+public class DirectionalProperty extends AbstractProperty<Direction> {
+
+    public DirectionalProperty(final String name, final List<Direction> values) {
+        super(name, values);
     }
 
     @Nullable
     @Override
-    public Vector getValueFor(final String string) {
-        return null;
+    public Direction getValueFor(final String string) {
+        Direction direction = Direction.valueOf(string);
+        if (!getValues().contains(direction)) {
+            throw new IllegalArgumentException("Invalid direction value: " + string + ". Must be in " + getValues().toString());
+        }
+        return direction;
     }
 }

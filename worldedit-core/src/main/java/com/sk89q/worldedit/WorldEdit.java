@@ -100,9 +100,6 @@ public class WorldEdit {
     static {
         WorldEditPrefixHandler.register("com.sk89q.worldedit");
         getVersion();
-        BundledBlockData.getInstance(); // Load block registry
-        BundledItemData.getInstance(); // Load item registry
-        LegacyMapper.getInstance(); // Load item registry
     }
 
     private WorldEdit() {
@@ -281,6 +278,15 @@ public class WorldEdit {
             throw new FilenameResolutionException(filename,
                     "Failed to resolve path");
         }
+    }
+
+    /**
+     * Load the bundled mappings.
+     */
+    public void loadMappings() {
+        BundledBlockData.getInstance(); // Load block registry
+        BundledItemData.getInstance(); // Load item registry
+        LegacyMapper.getInstance(); // Load item registry
     }
 
     /**

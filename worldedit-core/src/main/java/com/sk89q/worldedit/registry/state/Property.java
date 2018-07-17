@@ -50,7 +50,8 @@ public interface Property<T> {
      *
      * @param string The string
      * @return The value, or null
+     * @throws IllegalArgumentException When the value is invalid.
      */
     @Nullable
-    T getValueFor(String string);
+    T getValueFor(String string) throws IllegalArgumentException;
 }

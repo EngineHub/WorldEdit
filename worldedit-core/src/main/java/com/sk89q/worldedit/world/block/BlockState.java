@@ -21,6 +21,7 @@ package com.sk89q.worldedit.world.block;
 
 import com.google.common.collect.ArrayTable;
 import com.google.common.collect.HashBasedTable;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Table;
 import com.sk89q.worldedit.registry.state.Property;
@@ -28,8 +29,10 @@ import com.sk89q.worldedit.registry.state.Property;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * An immutable class that represents the state a block can be in.
@@ -46,7 +49,7 @@ public class BlockState implements BlockStateHolder<BlockState> {
 
     BlockState(BlockType blockType) {
         this.blockType = blockType;
-        this.values = new HashMap<>();
+        this.values = new LinkedHashMap<>();
         this.fuzzy = false;
     }
 
@@ -60,6 +63,34 @@ public class BlockState implements BlockStateHolder<BlockState> {
         this.blockType = blockType;
         this.values = values;
         this.fuzzy = true;
+    }
+
+    public static Map<Map<Property<?>, Object>, BlockState> generateStateMap(BlockType blockType) {
+        List<? extends Property> properties = blockType.getProperties();
+        List<List<Object>> valueLists = Lists.cartesianProduct(properties.stream().map(Property::getValues).collect(Collectors.toList()));
+        Map<Map<Property<?>, Object>, BlockState> stateMap = new LinkedHashMap<>();
+        for (int i = 0; i < valueLists.size(); i++) {
+            List<Object> valueList = valueLists.get(i);
+            Property<?> property = properties.get(i);
+            LinkedHashMap<Property<?>, Object> valueMap = new LinkedHashMap<>();
+            BlockState stateMaker = new BlockState(blockType);
+            for (Object value : valueList) {
+                valueMap.put(property, value);
+                stateMaker.setState(property, value);
+            }
+            stateMap.put(valueMap, stateMaker);
+        }
+
+        if (stateMap.isEmpty()) {
+            // No properties.
+            stateMap.put(new LinkedHashMap<>(), new BlockState(blockType));
+        }
+
+        for (BlockState state : stateMap.values()) {
+            state.populate(stateMap);
+        }
+
+        return stateMap;
     }
 
     public void populate(Map<Map<Property<?>, Object>, BlockState> stateMap) {
@@ -154,7 +185,7 @@ public class BlockState implements BlockStateHolder<BlockState> {
      * @param value The value
      * @return The blockstate, for chaining
      */
-    private <V> BlockState setState(final Property<V> property, final V value) {
+    private BlockState setState(final Property<?> property, final Object value) {
         this.values.put(property, value);
         return this;
     }

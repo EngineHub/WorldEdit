@@ -21,15 +21,21 @@ package com.sk89q.worldedit.registry.state;
 
 import static com.google.common.base.Preconditions.checkState;
 
+import java.util.List;
+
 public abstract class AbstractProperty<T> implements Property<T> {
 
     private String name;
+    private List<T> values;
 
-    public AbstractProperty() {
+    public AbstractProperty(final String name, final List<T> values) {
+        this.name = name;
+        this.values = values;
     }
 
-    public AbstractProperty(final String name) {
-        this.name = name;
+    @Override
+    public List<T> getValues() {
+        return this.values;
     }
 
     @Override

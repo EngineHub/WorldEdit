@@ -19,15 +19,21 @@
 
 package com.sk89q.worldedit.world.block;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.blocks.BlockMaterial;
 import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.registry.NamespacedRegistry;
+import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.world.item.ItemType;
 import com.sk89q.worldedit.world.item.ItemTypes;
 import com.sk89q.worldedit.world.registry.BundledBlockData;
 import com.sk89q.worldedit.world.registry.LegacyMapper;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 
 import javax.annotation.Nullable;
@@ -38,6 +44,8 @@ public class BlockType {
 
     private String id;
     private BlockState defaultState;
+    private Map<String, ? extends Property> properties;
+    private BlockMaterial blockMaterial;
 
     public BlockType(String id) {
         this(id, null);
@@ -49,7 +57,7 @@ public class BlockType {
             id = "minecraft:" + id;
         }
         this.id = id;
-        this.defaultState = new BlockState(this);
+        this.defaultState = new ArrayList<>(BlockState.generateStateMap(this).values()).get(0);
         if (values != null) {
             this.defaultState = values.apply(this.defaultState);
         }
@@ -76,6 +84,28 @@ public class BlockType {
         } else {
             return entry.localizedName;
         }
+    }
+
+    /**
+     * Gets the properties of this BlockType in a key->property mapping.
+     *
+     * @return The properties map
+     */
+    public Map<String, ? extends Property> getPropertyMap() {
+        if (properties == null) {
+            properties = ImmutableMap.copyOf(WorldEdit.getInstance().getPlatformManager()
+                    .queryCapability(Capability.GAME_HOOKS).getRegistries().getBlockRegistry().getProperties(this));
+        }
+        return this.properties;
+    }
+
+    /**
+     * Gets the properties of this BlockType.
+     *
+     * @return the properties
+     */
+    public List<? extends Property> getProperties() {
+        return ImmutableList.copyOf(this.getPropertyMap().values());
     }
 
     /**
@@ -112,7 +142,10 @@ public class BlockType {
      * @return The material
      */
     public BlockMaterial getMaterial() {
-        return WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.GAME_HOOKS).getRegistries().getBlockRegistry().getMaterial(this.id);
+        if (this.blockMaterial == null) {
+            this.blockMaterial = WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.GAME_HOOKS).getRegistries().getBlockRegistry().getMaterial(this);
+        }
+        return this.blockMaterial;
     }
 
     /**

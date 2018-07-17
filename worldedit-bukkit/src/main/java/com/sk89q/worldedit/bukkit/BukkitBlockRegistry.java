@@ -28,7 +28,6 @@ import com.sk89q.worldedit.world.registry.PassthroughBlockMaterial;
 import org.bukkit.Material;
 
 import java.util.EnumMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Nullable;
@@ -39,17 +38,9 @@ public class BukkitBlockRegistry extends BundledBlockRegistry {
 
     @Nullable
     @Override
-    public BlockMaterial getMaterial(String id) {
-        return materialMap.computeIfAbsent(BukkitUtil.toMaterial(BlockTypes.get(id)),
-                material -> new BukkitBlockMaterial(BukkitBlockRegistry.super.getMaterial(id), material));
-    }
-
-    @Override
-    public List<Object> getPropertyValues(BlockType blockType, Property<?> property) {
-        if (WorldEditPlugin.getInstance().getBukkitImplAdapter() != null) {
-            return WorldEditPlugin.getInstance().getBukkitImplAdapter().getPropertyValues(blockType, property);
-        }
-        return super.getPropertyValues(blockType, property);
+    public BlockMaterial getMaterial(BlockType blockType) {
+        return materialMap.computeIfAbsent(BukkitUtil.toMaterial(blockType),
+                material -> new BukkitBlockMaterial(BukkitBlockRegistry.super.getMaterial(blockType), material));
     }
 
     @Nullable

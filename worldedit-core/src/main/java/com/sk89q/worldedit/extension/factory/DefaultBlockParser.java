@@ -45,7 +45,6 @@ import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.block.BlockTypes;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -78,7 +77,6 @@ class DefaultBlockParser extends InputParser<BlockStateHolder> {
     public BlockStateHolder parseFromInput(String input, ParserContext context)
             throws InputParseException {
         String originalInput = input;
-        input = input.replace("_", " ");
         input = input.replace(";", "|");
         Exception suppressed = null;
         try {
@@ -162,8 +160,7 @@ class DefaultBlockParser extends InputParser<BlockStateHolder> {
                         throw new NoMatchException("Bad state format in " + parseableData);
                     }
 
-                    Property propertyKey = WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.GAME_HOOKS)
-                            .getRegistries().getBlockRegistry().getProperties(state.getBlockType()).get(parts[0]);
+                    Property propertyKey = state.getBlockType().getPropertyMap().get(parts[0]);
                     if (propertyKey == null) {
                         throw new NoMatchException("Unknown state " + parts[0] + " for block " + state.getBlockType().getName());
                     }
@@ -176,6 +173,7 @@ class DefaultBlockParser extends InputParser<BlockStateHolder> {
                 } catch (NoMatchException e) {
                     throw e; // Pass-through
                 } catch (Exception e) {
+                    e.printStackTrace();
                     throw new NoMatchException("Unknown state '" + parseableData + "'");
                 }
             }

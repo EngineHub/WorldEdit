@@ -22,20 +22,17 @@ package com.sk89q.worldedit.extent.transform;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.LazyBlock;
-import com.sk89q.worldedit.world.block.BlockState;
-import com.sk89q.worldedit.world.block.BlockStateHolder;
-import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.extent.AbstractDelegateExtent;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.math.transform.Transform;
 import com.sk89q.worldedit.registry.state.DirectionalProperty;
 import com.sk89q.worldedit.registry.state.Property;
-
-import java.util.Map;
+import com.sk89q.worldedit.util.Direction;
+import com.sk89q.worldedit.world.block.BlockState;
+import com.sk89q.worldedit.world.block.BlockStateHolder;
 
 import javax.annotation.Nullable;
 
@@ -127,14 +124,7 @@ public class BlockTransformExtent extends AbstractDelegateExtent {
         checkNotNull(block);
         checkNotNull(transform);
 
-        Map<String, ? extends Property> states = WorldEdit.getInstance().getPlatformManager()
-                .queryCapability(Capability.GAME_HOOKS).getRegistries().getBlockRegistry().getProperties(block.getBlockType());
-
-        if (states == null) {
-            return changedBlock;
-        }
-
-        for (Property property : states.values()) {
+        for (Property property : block.getBlockType().getProperties()) {
             if (property instanceof DirectionalProperty) {
                 Vector value = (Vector) block.getState(property);
                 if (value != null) {
@@ -164,11 +154,11 @@ public class BlockTransformExtent extends AbstractDelegateExtent {
         double closest = -2;
         boolean found = false;
 
-        for (Vector v : state.getValues()) {
-            double dot = v.normalize().dot(newDirection);
+        for (Direction v : state.getValues()) {
+            double dot = v.toVector().normalize().dot(newDirection);
             if (dot >= closest) {
                 closest = dot;
-                newValue = v;
+                newValue = v.toVector();
                 found = true;
             }
         }

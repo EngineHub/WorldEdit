@@ -51,7 +51,7 @@ import javax.annotation.Nullable;
 public class BundledItemData {
 
     private static final Logger log = Logger.getLogger(BundledItemData.class.getCanonicalName());
-    private static final BundledItemData INSTANCE = new BundledItemData();
+    private static BundledItemData INSTANCE;
 
     private final Map<String, ItemEntry> idMap = new HashMap<>();
 
@@ -108,6 +108,9 @@ public class BundledItemData {
      * @return the instance
      */
     public static BundledItemData getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new BundledItemData();
+        }
         return INSTANCE;
     }
 

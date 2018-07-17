@@ -24,7 +24,6 @@ import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.world.block.BlockType;
 
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Nullable;
@@ -37,13 +36,8 @@ public class BundledBlockRegistry implements BlockRegistry {
 
     @Nullable
     @Override
-    public BlockMaterial getMaterial(String id) {
-        return new PassthroughBlockMaterial(BundledBlockData.getInstance().getMaterialById(id));
-    }
-
-    @Override
-    public List<Object> getPropertyValues(BlockType blockType, Property<?> property) {
-        return Collections.emptyList(); // Oof
+    public BlockMaterial getMaterial(BlockType blockType) {
+        return new PassthroughBlockMaterial(BundledBlockData.getInstance().getMaterialById(blockType.getId()));
     }
 
     @Nullable

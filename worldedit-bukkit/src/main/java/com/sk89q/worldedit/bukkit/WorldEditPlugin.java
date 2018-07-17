@@ -82,12 +82,13 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
 
         WorldEdit worldEdit = WorldEdit.getInstance();
 
-        loadConfig(); // Load configuration
-        PermissionsResolverManager.initialize(this); // Setup permission resolver
-
         // Setup platform
         server = new BukkitServerInterface(this, getServer());
         worldEdit.getPlatformManager().register(server);
+        worldEdit.loadMappings();
+
+        loadConfig(); // Load configuration
+        PermissionsResolverManager.initialize(this); // Setup permission resolver
 
         // Register CUI
         getServer().getMessenger().registerIncomingPluginChannel(this, CUI_PLUGIN_CHANNEL, new CUIChannelListener(this));

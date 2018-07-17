@@ -46,7 +46,7 @@ import javax.annotation.Nullable;
 public class LegacyMapper {
 
     private static final Logger log = Logger.getLogger(LegacyMapper.class.getCanonicalName());
-    private static final LegacyMapper INSTANCE = new LegacyMapper();
+    private static LegacyMapper INSTANCE;
 
     private BiMap<String, BlockState> blockMap = HashBiMap.create();
     private BiMap<String, ItemType> itemMap = HashBiMap.create();
@@ -141,6 +141,9 @@ public class LegacyMapper {
     }
 
     public static LegacyMapper getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new LegacyMapper();
+        }
         return INSTANCE;
     }
 

@@ -25,14 +25,21 @@ import javax.annotation.Nullable;
 
 public class IntegerProperty extends AbstractProperty<Integer> {
 
-    @Override
-    public List<Integer> getValues() {
-        return null;
+    public IntegerProperty(final String name, final List<Integer> values) {
+        super(name, values);
     }
 
     @Nullable
     @Override
     public Integer getValueFor(String string) {
-        return null;
+        try {
+            int val = Integer.parseInt(string);
+            if (!getValues().contains(val)) {
+                throw new IllegalArgumentException("Invalid int value: " + string + ". Must be in " + getValues().toString());
+            }
+            return val;
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Invalid int value: " + string + ". Not an int.");
+        }
     }
 }

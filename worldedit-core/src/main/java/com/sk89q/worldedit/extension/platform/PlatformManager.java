@@ -165,6 +165,9 @@ public class PlatformManager {
         if (platform != null) {
             return platform;
         } else {
+            if (preferences.isEmpty()) {
+                return platforms.get(0); // Use the first available if preferences have not been decided yet.
+            }
             throw new NoCapablePlatformException("No platform was found supporting " + capability.name());
         }
     }

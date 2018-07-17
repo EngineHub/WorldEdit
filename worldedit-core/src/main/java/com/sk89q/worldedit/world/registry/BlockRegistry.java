@@ -36,20 +36,11 @@ public interface BlockRegistry {
     /**
      * Get the material for the given block.
      *
-     * @param id the block
+     * @param blockType the block
      * @return the material, or null if the material information is not known
      */
     @Nullable
-    BlockMaterial getMaterial(String id);
-
-    /**
-     * Get an unmodifiable list of values for this property.
-     *
-     * @param blockType The block
-     * @param property the property
-     * @return the list of values
-     */
-    List<Object> getPropertyValues(BlockType blockType, Property<?> property);
+    BlockMaterial getMaterial(BlockType blockType);
 
     /**
      * Get an unmodifiable map of states for this block.
