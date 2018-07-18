@@ -24,10 +24,12 @@ import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Table;
+import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.registry.state.Property;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -66,19 +68,28 @@ public class BlockState implements BlockStateHolder<BlockState> {
     }
 
     public static Map<Map<Property<?>, Object>, BlockState> generateStateMap(BlockType blockType) {
-        List<? extends Property> properties = blockType.getProperties();
-        List<List<Object>> valueLists = Lists.cartesianProduct(properties.stream().map(Property::getValues).collect(Collectors.toList()));
         Map<Map<Property<?>, Object>, BlockState> stateMap = new LinkedHashMap<>();
-        for (int i = 0; i < valueLists.size(); i++) {
-            List<Object> valueList = valueLists.get(i);
-            Property<?> property = properties.get(i);
-            LinkedHashMap<Property<?>, Object> valueMap = new LinkedHashMap<>();
-            BlockState stateMaker = new BlockState(blockType);
-            for (Object value : valueList) {
-                valueMap.put(property, value);
-                stateMaker.setState(property, value);
+        List<? extends Property> properties = blockType.getProperties();
+
+        if (!properties.isEmpty()) {
+            List<List<Object>> separatedValues = Lists.newArrayList();
+            for (Property prop : properties) {
+                List<Object> vals = Lists.newArrayList();
+                vals.addAll(prop.getValues());
+                separatedValues.add(vals);
             }
-            stateMap.put(valueMap, stateMaker);
+            List<List<Object>> valueLists = Lists.cartesianProduct(separatedValues);
+            for (List<Object> valueList : valueLists) {
+                Map<Property<?>, Object> valueMap = Maps.newTreeMap(Comparator.comparing(Property::getName));
+                BlockState stateMaker = new BlockState(blockType);
+                for (int i = 0; i < valueList.size(); i++) {
+                    Property<?> property = properties.get(i);
+                    Object value = valueList.get(i);
+                    valueMap.put(property, value);
+                    stateMaker.setState(property, value);
+                }
+                stateMap.put(valueMap, stateMaker);
+            }
         }
 
         if (stateMap.isEmpty()) {
@@ -101,7 +112,13 @@ public class BlockState implements BlockStateHolder<BlockState> {
 
             property.getValues().forEach(value -> {
                 if(value != entry.getValue()) {
-                    states.put(property, value, stateMap.get(this.withValue(property, value)));
+                    BlockState modifiedState = stateMap.get(this.withValue(property, value));
+                    if (modifiedState != null) {
+                        states.put(property, value, modifiedState);
+                    } else {
+                        System.out.println(stateMap);
+                        WorldEdit.logger.warning("Found a null state at " + this.withValue(property, value));
+                    }
                 }
             });
         }

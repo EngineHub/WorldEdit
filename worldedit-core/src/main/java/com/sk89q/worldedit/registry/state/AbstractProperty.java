@@ -21,6 +21,9 @@ package com.sk89q.worldedit.registry.state;
 
 import static com.google.common.base.Preconditions.checkState;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
+
 import java.util.List;
 
 public abstract class AbstractProperty<T> implements Property<T> {

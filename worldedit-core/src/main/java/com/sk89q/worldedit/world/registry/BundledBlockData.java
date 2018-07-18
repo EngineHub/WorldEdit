@@ -133,9 +133,7 @@ public class BundledBlockData {
 
     public static class BlockEntry {
         private String id;
-        private String unlocalizedName;
         public String localizedName;
-        private List<String> aliases;
         private SimpleBlockMaterial material = new SimpleBlockMaterial();
     }
 

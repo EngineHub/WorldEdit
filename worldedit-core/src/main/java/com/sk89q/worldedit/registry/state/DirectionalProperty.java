@@ -34,7 +34,7 @@ public class DirectionalProperty extends AbstractProperty<Direction> {
     @Nullable
     @Override
     public Direction getValueFor(final String string) {
-        Direction direction = Direction.valueOf(string);
+        Direction direction = Direction.valueOf(string.toUpperCase());
         if (!getValues().contains(direction)) {
             throw new IllegalArgumentException("Invalid direction value: " + string + ". Must be in " + getValues().toString());
         }

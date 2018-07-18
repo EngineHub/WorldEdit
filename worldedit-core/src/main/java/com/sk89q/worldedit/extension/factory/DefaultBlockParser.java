@@ -164,8 +164,10 @@ class DefaultBlockParser extends InputParser<BlockStateHolder> {
                     if (propertyKey == null) {
                         throw new NoMatchException("Unknown state " + parts[0] + " for block " + state.getBlockType().getName());
                     }
-                    Object value = propertyKey.getValueFor(parts[1]);
-                    if (value == null) {
+                    Object value;
+                    try {
+                        value = propertyKey.getValueFor(parts[1]);
+                    } catch (IllegalArgumentException e) {
                         throw new NoMatchException("Unknown value " + parts[1] + " for state " + parts[0]);
                     }
 

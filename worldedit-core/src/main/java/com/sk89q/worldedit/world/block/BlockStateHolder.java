@@ -76,7 +76,9 @@ public interface BlockStateHolder<T extends BlockStateHolder> {
         if (getStates().isEmpty()) {
             return this.getBlockType().getId();
         } else {
-            String properties = getStates().entrySet().stream().map(entry -> entry.getKey() + "=" + entry.getValue()).collect(Collectors.joining(","));
+            String properties =
+                    getStates().entrySet().stream().map(entry -> entry.getKey().getName() + "=" + entry.getValue().toString().toLowerCase()).collect(Collectors.joining(
+                    ","));
             return this.getBlockType().getId() + "[" + properties + "]";
         }
     }
