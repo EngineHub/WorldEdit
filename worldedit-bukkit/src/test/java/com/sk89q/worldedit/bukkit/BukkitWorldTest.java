@@ -28,7 +28,7 @@ public class BukkitWorldTest {
     @Test
     public void testTreeTypeMapping() {
         for (TreeGenerator.TreeType type : TreeGenerator.TreeType.values()) {
-//            Assert.assertNotNull("No mapping for: " + type, BukkitWorld.toBukkitTreeType(type)); // TODO
+            Assert.assertNotNull("No mapping for: " + type, BukkitWorld.toBukkitTreeType(type));
         }
     }
 

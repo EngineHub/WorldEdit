@@ -32,15 +32,6 @@ public class PassthroughBlockMaterial implements BlockMaterial {
     }
 
     @Override
-    public boolean isRenderedAsNormalBlock() {
-        if (blockMaterial == null) {
-            return true;
-        } else {
-            return blockMaterial.isRenderedAsNormalBlock();
-        }
-    }
-
-    @Override
     public boolean isFullCube() {
         if (blockMaterial == null) {
             return true;
@@ -113,33 +104,6 @@ public class PassthroughBlockMaterial implements BlockMaterial {
     }
 
     @Override
-    public boolean isGrassBlocking() {
-        if (blockMaterial == null) {
-            return true;
-        } else {
-            return blockMaterial.isGrassBlocking();
-        }
-    }
-
-    @Override
-    public float getAmbientOcclusionLightValue() {
-        if (blockMaterial == null) {
-            return 0;
-        } else {
-            return blockMaterial.getAmbientOcclusionLightValue();
-        }
-    }
-
-    @Override
-    public int getLightOpacity() {
-        if (blockMaterial == null) {
-            return 0;
-        } else {
-            return blockMaterial.getLightOpacity();
-        }
-    }
-
-    @Override
     public int getLightValue() {
         if (blockMaterial == null) {
             return 0;
@@ -167,29 +131,11 @@ public class PassthroughBlockMaterial implements BlockMaterial {
     }
 
     @Override
-    public boolean isAdventureModeExempt() {
-        if (blockMaterial == null) {
-            return false;
-        } else {
-            return blockMaterial.isAdventureModeExempt();
-        }
-    }
-
-    @Override
     public boolean isTicksRandomly() {
         if (blockMaterial == null) {
             return true;
         } else {
             return blockMaterial.isTicksRandomly();
-        }
-    }
-
-    @Override
-    public boolean isUsingNeighborLight() {
-        if (blockMaterial == null) {
-            return false;
-        } else {
-            return blockMaterial.isUsingNeighborLight();
         }
     }
 

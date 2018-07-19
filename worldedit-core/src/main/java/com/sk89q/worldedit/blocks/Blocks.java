@@ -88,7 +88,7 @@ public final class Blocks {
         shouldPlaceLast.add(BlockTypes.REDSTONE_TORCH);
         shouldPlaceLast.add(BlockTypes.REDSTONE_WALL_TORCH);
         shouldPlaceLast.add(BlockTypes.SNOW);
-        shouldPlaceLast.add(BlockTypes.PORTAL);
+        shouldPlaceLast.add(BlockTypes.NETHER_PORTAL);
         shouldPlaceLast.add(BlockTypes.END_PORTAL);
         shouldPlaceLast.add(BlockTypes.REPEATER);
         shouldPlaceLast.add(BlockTypes.VINE);

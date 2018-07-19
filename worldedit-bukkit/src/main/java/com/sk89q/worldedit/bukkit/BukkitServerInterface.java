@@ -87,7 +87,7 @@ public class BukkitServerInterface implements MultiUserPlatform {
         List<com.sk89q.worldedit.world.World> ret = new ArrayList<>(worlds.size());
 
         for (World world : worlds) {
-            ret.add(BukkitUtil.getWorld(world));
+            ret.add(BukkitAdapter.adapt(world));
         }
 
         return ret;

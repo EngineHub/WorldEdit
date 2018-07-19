@@ -267,7 +267,7 @@ class DefaultBlockParser extends InputParser<BlockStateHolder> {
             text[2] = blockAndExtraData.length > 3 ? blockAndExtraData[3] : "";
             text[3] = blockAndExtraData.length > 4 ? blockAndExtraData[4] : "";
             return new SignBlock(state, text);
-        } else if (blockType == BlockTypes.MOB_SPAWNER) {
+        } else if (blockType == BlockTypes.SPAWNER) {
             // Allow setting mob spawn type
             if (blockAndExtraData.length > 1) {
                 String mobName = blockAndExtraData[1];

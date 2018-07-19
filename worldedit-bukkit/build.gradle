@@ -11,7 +11,6 @@ dependencies {
     compile project(':worldedit-core')
     compile 'com.sk89q:dummypermscompat:1.8'
     compile 'org.bukkit:bukkit:1.13-pre7-R0.1-SNAPSHOT' // zzz
-//    compile 'org.bukkit:bukkit:1.9.4-R0.1-SNAPSHOT' // zzz
     testCompile 'org.mockito:mockito-core:1.9.0-rc1'
 }
 
@@ -36,10 +35,7 @@ jar {
 shadowJar {
     dependencies {
         include(dependency(':worldedit-core'))
-        include(dependency('com.google.code.gson:gson'))
     }
-
-    relocate('com.google.gson', 'com.sk89q.worldedit.internal.gson')
 }
 
 build.dependsOn(shadowJar)

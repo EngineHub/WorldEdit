@@ -79,7 +79,7 @@ public class BukkitPlayerBlockBag extends BlockBag {
                 continue;
             }
 
-            if (!BukkitUtil.equals(blockState.getBlockType(), bukkitItem.getType())) {
+            if (!BukkitAdapter.equals(blockState.getBlockType(), bukkitItem.getType())) {
                 // Type id doesn't fit
                 continue;
             }
@@ -132,7 +132,7 @@ public class BukkitPlayerBlockBag extends BlockBag {
                 continue;
             }
 
-            if (!BukkitUtil.equals(blockState.getBlockType(), bukkitItem.getType())) {
+            if (!BukkitAdapter.equals(blockState.getBlockType(), bukkitItem.getType())) {
                 // Type id doesn't fit
                 continue;
             }
@@ -158,7 +158,7 @@ public class BukkitPlayerBlockBag extends BlockBag {
         }
 
         if (freeSlot > -1) {
-            items[freeSlot] = new ItemStack(BukkitUtil.toItemStack(new BaseItemStack(blockState.getBlockType().getItemType(), amount)));
+            items[freeSlot] = BukkitAdapter.adapt(new BaseItemStack(blockState.getBlockType().getItemType(), amount));
             return;
         }
 

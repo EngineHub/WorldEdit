@@ -89,7 +89,7 @@ public class BukkitWorld extends AbstractWorld {
         List<Entity> ents = world.getEntities();
         List<com.sk89q.worldedit.entity.Entity> entities = new ArrayList<>();
         for (Entity ent : ents) {
-            if (region.contains(BukkitUtil.toVector(ent.getLocation()))) {
+            if (region.contains(BukkitAdapter.asVector(ent.getLocation()))) {
                 entities.add(BukkitAdapter.adapt(ent));
             }
         }
@@ -284,14 +284,14 @@ public class BukkitWorld extends AbstractWorld {
     public boolean generateTree(TreeGenerator.TreeType type, EditSession editSession, Vector pt) {
         World world = getWorld();
         TreeType bukkitType = toBukkitTreeType(type);
-        return type != null && world.generateTree(BukkitUtil.toLocation(world, pt), bukkitType,
+        return type != null && world.generateTree(BukkitAdapter.adapt(world, pt), bukkitType,
                 new EditSessionBlockChangeDelegate(editSession));
     }
 
     @Override
     public void dropItem(Vector pt, BaseItemStack item) {
         World world = getWorld();
-        world.dropItemNaturally(BukkitUtil.toLocation(world, pt), BukkitUtil.toItemStack(item));
+        world.dropItemNaturally(BukkitAdapter.adapt(world, pt), BukkitAdapter.adapt(item));
     }
 
     @Override
@@ -343,7 +343,7 @@ public class BukkitWorld extends AbstractWorld {
             return false;
         }
 
-        world.playEffect(BukkitUtil.toLocation(world, position), effect, data);
+        world.playEffect(BukkitAdapter.adapt(world, position), effect, data);
 
         return true;
     }
@@ -356,7 +356,7 @@ public class BukkitWorld extends AbstractWorld {
     @Override
     public com.sk89q.worldedit.world.block.BlockState getBlock(Vector position) {
         Block bukkitBlock = getWorld().getBlockAt(position.getBlockX(), position.getBlockY(), position.getBlockZ());
-        return BukkitUtil.toBlock(bukkitBlock.getBlockData());
+        return BukkitAdapter.adapt(bukkitBlock.getBlockData());
     }
 
     @Override
@@ -366,7 +366,7 @@ public class BukkitWorld extends AbstractWorld {
             return adapter.setBlock(BukkitAdapter.adapt(getWorld(), position), block, notifyAndLight);
         } else {
             Block bukkitBlock = getWorld().getBlockAt(position.getBlockX(), position.getBlockY(), position.getBlockZ());
-            bukkitBlock.setBlockData(BukkitUtil.toBlock(block), notifyAndLight);
+            bukkitBlock.setBlockData(BukkitAdapter.adapt(block), notifyAndLight);
             return true;
         }
     }

@@ -22,7 +22,6 @@ package com.sk89q.worldedit.bukkit;
 import com.sk89q.worldedit.blocks.BlockMaterial;
 import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.world.block.BlockType;
-import com.sk89q.worldedit.world.block.BlockTypes;
 import com.sk89q.worldedit.world.registry.BundledBlockRegistry;
 import com.sk89q.worldedit.world.registry.PassthroughBlockMaterial;
 import org.bukkit.Material;
@@ -39,7 +38,7 @@ public class BukkitBlockRegistry extends BundledBlockRegistry {
     @Nullable
     @Override
     public BlockMaterial getMaterial(BlockType blockType) {
-        return materialMap.computeIfAbsent(BukkitUtil.toMaterial(blockType),
+        return materialMap.computeIfAbsent(BukkitAdapter.adapt(blockType),
                 material -> new BukkitBlockMaterial(BukkitBlockRegistry.super.getMaterial(blockType), material));
     }
 

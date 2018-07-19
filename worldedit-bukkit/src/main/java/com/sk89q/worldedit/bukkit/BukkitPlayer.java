@@ -61,7 +61,7 @@ public class BukkitPlayer extends AbstractPlayerActor {
         ItemStack itemStack = handSide == HandSide.MAIN_HAND
                 ? player.getInventory().getItemInMainHand()
                 : player.getInventory().getItemInOffHand();
-        return BukkitUtil.toBaseItemStack(itemStack);
+        return BukkitAdapter.adapt(itemStack);
     }
 
     @Override
@@ -69,7 +69,7 @@ public class BukkitPlayer extends AbstractPlayerActor {
         ItemStack itemStack = handSide == HandSide.MAIN_HAND
                 ? player.getInventory().getItemInMainHand()
                 : player.getInventory().getItemInOffHand();
-        return new BaseBlock(BukkitUtil.toBlock(itemStack));
+        return new BaseBlock(BukkitAdapter.asBlockState(itemStack));
     }
 
     @Override
@@ -79,7 +79,7 @@ public class BukkitPlayer extends AbstractPlayerActor {
 
     @Override
     public void giveItem(BaseItemStack itemStack) {
-        player.getInventory().addItem(BukkitUtil.toItemStack(itemStack));
+        player.getInventory().addItem(BukkitAdapter.adapt(itemStack));
     }
 
     @Override
@@ -135,7 +135,7 @@ public class BukkitPlayer extends AbstractPlayerActor {
 
     @Override
     public World getWorld() {
-        return BukkitUtil.getWorld(player.getWorld());
+        return BukkitAdapter.adapt(player.getWorld());
     }
 
     @Override
@@ -176,7 +176,7 @@ public class BukkitPlayer extends AbstractPlayerActor {
     @Override
     public com.sk89q.worldedit.util.Location getLocation() {
         Location nativeLocation = player.getLocation();
-        Vector position = BukkitUtil.toVector(nativeLocation);
+        Vector position = BukkitAdapter.asVector(nativeLocation);
         return new com.sk89q.worldedit.util.Location(
                 getWorld(),
                 position,

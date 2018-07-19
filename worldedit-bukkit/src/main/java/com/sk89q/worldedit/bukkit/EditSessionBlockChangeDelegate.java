@@ -40,7 +40,7 @@ public class EditSessionBlockChangeDelegate implements BlockChangeDelegate {
     @Override
     public boolean setBlockData(int x, int y, int z, BlockData blockData) {
         try {
-            editSession.setBlock(new Vector(x, y, z), BukkitUtil.toBlock(blockData));
+            editSession.setBlock(new Vector(x, y, z), BukkitAdapter.adapt(blockData));
         } catch (MaxChangedBlocksException e) {
             return false;
         }
@@ -49,7 +49,7 @@ public class EditSessionBlockChangeDelegate implements BlockChangeDelegate {
 
     @Override
     public BlockData getBlockData(int x, int y, int z) {
-        return BukkitUtil.toBlock(editSession.getBlock(new Vector(x, y, z)));
+        return BukkitAdapter.adapt(editSession.getBlock(new Vector(x, y, z)));
     }
 
     @Override
