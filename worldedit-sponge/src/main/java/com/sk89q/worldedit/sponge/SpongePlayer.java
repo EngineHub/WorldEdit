@@ -23,6 +23,8 @@ import com.flowpowered.math.vector.Vector3d;
 import com.sk89q.util.StringUtil;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.blocks.BaseItemStack;
+import com.sk89q.worldedit.world.gamemode.GameMode;
+import com.sk89q.worldedit.world.gamemode.GameModes;
 import com.sk89q.worldedit.world.item.ItemTypes;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.extension.platform.AbstractPlayerActor;
@@ -168,6 +170,17 @@ public class SpongePlayer extends AbstractPlayerActor {
     @Override
     public <T> T getFacet(Class<? extends T> cls) {
         return null;
+    }
+
+    @Override
+    public GameMode getGameMode() {
+        return GameModes.get(player.getGameModeData().type().get().getId());
+    }
+
+    @Override
+    public void setGameMode(GameMode gameMode) {
+        player.getGameModeData().type().set(Sponge.getRegistry().getType(org.spongepowered.api.entity.living.player.gamemode.GameMode.class,
+                gameMode.getId()).get());
     }
 
     @Override

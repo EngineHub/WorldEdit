@@ -29,6 +29,7 @@ import com.sk89q.worldedit.extent.inventory.BlockBag;
 import com.sk89q.worldedit.util.HandSide;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.World;
+import com.sk89q.worldedit.world.gamemode.GameMode;
 
 /**
  * Represents a player
@@ -86,11 +87,18 @@ public interface Player extends Entity, Actor {
     BlockBag getInventoryBlockBag();
 
     /**
-     * Return whether this actor has creative mode.
+     * Return this actor's game mode.
      *
-     * @return true if creative mode is enabled
+     * @return the game mode
      */
-    boolean hasCreativeMode();
+    GameMode getGameMode();
+
+    /**
+     * Sets the player to the given game mode.
+     *
+     * @param gameMode The game mode
+     */
+    void setGameMode(GameMode gameMode);
 
     /**
      * Find a position for the actor to stand that is not inside a block.

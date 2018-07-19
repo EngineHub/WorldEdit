@@ -31,8 +31,9 @@ import com.sk89q.worldedit.internal.cui.CUIEvent;
 import com.sk89q.worldedit.session.SessionKey;
 import com.sk89q.worldedit.util.HandSide;
 import com.sk89q.worldedit.world.World;
+import com.sk89q.worldedit.world.gamemode.GameMode;
+import com.sk89q.worldedit.world.gamemode.GameModes;
 import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -127,6 +128,16 @@ public class BukkitPlayer extends AbstractPlayerActor {
     }
 
     @Override
+    public GameMode getGameMode() {
+        return GameModes.get(player.getGameMode().name().toLowerCase());
+    }
+
+    @Override
+    public void setGameMode(GameMode gameMode) {
+        player.setGameMode(org.bukkit.GameMode.valueOf(gameMode.getId().toUpperCase()));
+    }
+
+    @Override
     public boolean hasPermission(String perm) {
         return (!plugin.getLocalConfiguration().noOpPermissions && player.isOp())
                 || plugin.getPermissionsResolver().hasPermission(
@@ -150,11 +161,6 @@ public class BukkitPlayer extends AbstractPlayerActor {
 
     public Player getPlayer() {
         return player;
-    }
-
-    @Override
-    public boolean hasCreativeMode() {
-        return player.getGameMode() == GameMode.CREATIVE;
     }
 
     @Override

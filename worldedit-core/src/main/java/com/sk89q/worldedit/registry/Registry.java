@@ -22,35 +22,48 @@ package com.sk89q.worldedit.registry;
 import static com.google.common.base.Preconditions.checkState;
 import static java.util.Objects.requireNonNull;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+
 import javax.annotation.Nullable;
 
-public final class NamespacedRegistry<V> extends Registry<V> {
-    private static final String MINECRAFT_NAMESPACE = "minecraft";
-    private final String defaultNamespace;
+public class Registry<V> implements Iterable<V> {
+    private final Map<String, V> map = new HashMap<>();
+    private final String name;
 
-    public NamespacedRegistry(final String name) {
-        this(name, MINECRAFT_NAMESPACE);
-    }
-
-    public NamespacedRegistry(final String name, final String defaultNamespace) {
-        super(name);
-        this.defaultNamespace = defaultNamespace;
+    public Registry(final String name) {
+        this.name = name;
     }
 
     public @Nullable V get(final String key) {
-        return super.get(this.orDefaultNamespace(key));
+        checkState(key.equals(key.toLowerCase()), "key must be lowercase");
+        return this.map.get(key);
     }
 
     public V register(final String key, final V value) {
         requireNonNull(key, "key");
-        checkState(key.indexOf(':') > -1, "key is not namespaced");
-        return super.register(key, value);
+        requireNonNull(value, "value");
+        checkState(key.equals(key.toLowerCase()), "key must be lowercase");
+        checkState(!this.map.containsKey(key), "key '%s' already has an associated %s", key, this.name);
+        this.map.put(key, value);
+        return value;
     }
 
-    private String orDefaultNamespace(final String key) {
-        if (key.indexOf(':') == -1) {
-            return defaultNamespace + ':' + key;
-        }
-        return key;
+    public Set<String> keySet() {
+        return Collections.unmodifiableSet(this.map.keySet());
     }
+
+    public Collection<V> values() {
+        return Collections.unmodifiableCollection(this.map.values());
+    }
+
+    @Override
+    public Iterator<V> iterator() {
+        return this.map.values().iterator();
+    }
+
 }

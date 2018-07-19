@@ -47,6 +47,7 @@ import com.sk89q.worldedit.util.TreeGenerator.TreeType;
 import com.sk89q.worldedit.world.AbstractWorld;
 import com.sk89q.worldedit.world.biome.BaseBiome;
 import com.sk89q.worldedit.world.registry.LegacyMapper;
+import com.sk89q.worldedit.world.weather.WeatherType;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLeaves;
 import net.minecraft.block.BlockOldLeaf;
@@ -351,6 +352,27 @@ public class ForgeWorld extends AbstractWorld {
     }
 
     @Override
+    public WeatherType getWeather() {
+        // TODO Weather implementation
+        return null;
+    }
+
+    @Override
+    public long getRemainingWeatherDuration() {
+        return 0;
+    }
+
+    @Override
+    public void setWeather(WeatherType weatherType) {
+
+    }
+
+    @Override
+    public void setWeather(WeatherType weatherType, long duration) {
+
+    }
+
+    @Override
     public BlockState getBlock(Vector position) {
         World world = getWorld();
         BlockPos pos = new BlockPos(position.getBlockX(), position.getBlockY(), position.getBlockZ());
@@ -421,7 +443,7 @@ public class ForgeWorld extends AbstractWorld {
     @Override
     public Entity createEntity(Location location, BaseEntity entity) {
         World world = getWorld();
-        net.minecraft.entity.Entity createdEntity = EntityList.createEntityByIDFromName(new ResourceLocation(entity.getTypeId()), world);
+        net.minecraft.entity.Entity createdEntity = EntityList.createEntityByIDFromName(new ResourceLocation(entity.getType().getId()), world);
         if (createdEntity != null) {
             CompoundTag nativeTag = entity.getNbtData();
             if (nativeTag != null) {

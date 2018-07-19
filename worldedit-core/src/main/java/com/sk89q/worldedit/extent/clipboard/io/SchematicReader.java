@@ -42,6 +42,7 @@ import com.sk89q.worldedit.extent.clipboard.io.legacycompat.SignCompatibilityHan
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.Location;
+import com.sk89q.worldedit.world.entity.EntityTypes;
 import com.sk89q.worldedit.world.storage.NBTConversions;
 
 import java.io.IOException;
@@ -256,7 +257,7 @@ public class SchematicReader implements ClipboardReader {
                     Location location = NBTConversions.toLocation(clipboard, compound.getListTag("Pos"), compound.getListTag("Rotation"));
 
                     if (!id.isEmpty()) {
-                        BaseEntity state = new BaseEntity(id, compound);
+                        BaseEntity state = new BaseEntity(EntityTypes.get(id), compound);
                         clipboard.createEntity(location, state);
                     }
                 }

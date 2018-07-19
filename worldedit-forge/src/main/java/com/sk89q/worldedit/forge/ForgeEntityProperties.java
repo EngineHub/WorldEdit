@@ -19,7 +19,7 @@
 
 package com.sk89q.worldedit.forge;
 
-import com.sk89q.worldedit.entity.metadata.EntityType;
+import com.sk89q.worldedit.entity.metadata.EntityProperties;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.IMerchant;
@@ -45,11 +45,11 @@ import net.minecraft.entity.player.EntityPlayerMP;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class ForgeEntityType implements EntityType {
+public class ForgeEntityProperties implements EntityProperties {
 
     private final Entity entity;
 
-    public ForgeEntityType(Entity entity) {
+    public ForgeEntityProperties(Entity entity) {
         checkNotNull(entity);
         this.entity = entity;
     }

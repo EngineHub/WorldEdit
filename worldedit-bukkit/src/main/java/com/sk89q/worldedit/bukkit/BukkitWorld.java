@@ -38,6 +38,8 @@ import com.sk89q.worldedit.util.TreeGenerator;
 import com.sk89q.worldedit.world.AbstractWorld;
 import com.sk89q.worldedit.world.biome.BaseBiome;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
+import com.sk89q.worldedit.world.weather.WeatherType;
+import com.sk89q.worldedit.world.weather.WeatherTypes;
 import org.bukkit.Effect;
 import org.bukkit.TreeType;
 import org.bukkit.World;
@@ -346,6 +348,51 @@ public class BukkitWorld extends AbstractWorld {
         world.playEffect(BukkitAdapter.adapt(world, position), effect, data);
 
         return true;
+    }
+
+    @Override
+    public WeatherType getWeather() {
+        if (getWorld().isThundering()) {
+            return WeatherTypes.THUNDER_STORM;
+        } else if (getWorld().hasStorm()) {
+            return WeatherTypes.RAIN;
+        }
+
+        return WeatherTypes.CLEAR;
+    }
+
+    @Override
+    public long getRemainingWeatherDuration() {
+        return getWorld().getWeatherDuration();
+    }
+
+    @Override
+    public void setWeather(WeatherType weatherType) {
+        if (weatherType == WeatherTypes.THUNDER_STORM) {
+            getWorld().setThundering(true);
+        } else if (weatherType == WeatherTypes.RAIN) {
+            getWorld().setStorm(true);
+        } else {
+            getWorld().setStorm(false);
+            getWorld().setThundering(false);
+        }
+    }
+
+    @Override
+    public void setWeather(WeatherType weatherType, long duration) {
+        // Who named these methods...
+        if (weatherType == WeatherTypes.THUNDER_STORM) {
+            getWorld().setThundering(true);
+            getWorld().setThunderDuration((int) duration);
+            getWorld().setWeatherDuration((int) duration);
+        } else if (weatherType == WeatherTypes.RAIN) {
+            getWorld().setStorm(true);
+            getWorld().setWeatherDuration((int) duration);
+        } else {
+            getWorld().setStorm(false);
+            getWorld().setThundering(false);
+            getWorld().setWeatherDuration((int) duration);
+        }
     }
 
     @Override

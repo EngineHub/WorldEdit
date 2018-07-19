@@ -167,7 +167,7 @@ public class ExtentEntityCopy implements EntityFunction {
                     }
                 }
 
-                return new BaseEntity(state.getTypeId(), builder.build());
+                return new BaseEntity(state.getType(), builder.build());
             }
         }
 

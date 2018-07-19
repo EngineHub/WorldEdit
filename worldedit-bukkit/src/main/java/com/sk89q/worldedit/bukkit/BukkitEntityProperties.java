@@ -19,7 +19,7 @@
 
 package com.sk89q.worldedit.bukkit;
 
-import com.sk89q.worldedit.entity.metadata.EntityType;
+import com.sk89q.worldedit.entity.metadata.EntityProperties;
 import com.sk89q.worldedit.util.Enums;
 import org.bukkit.entity.Ambient;
 import org.bukkit.entity.Animals;
@@ -44,14 +44,14 @@ import org.bukkit.entity.minecart.ExplosiveMinecart;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-class BukkitEntityType implements EntityType {
+class BukkitEntityProperties implements EntityProperties {
 
     private static final org.bukkit.entity.EntityType armorStandType =
             Enums.findByValue(org.bukkit.entity.EntityType.class, "ARMOR_STAND");
 
     private final Entity entity;
 
-    BukkitEntityType(Entity entity) {
+    BukkitEntityProperties(Entity entity) {
         checkNotNull(entity);
         this.entity = entity;
     }

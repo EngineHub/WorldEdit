@@ -27,6 +27,8 @@ import com.sk89q.worldedit.blocks.BlockType;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.block.BlockTypes;
+import com.sk89q.worldedit.world.gamemode.GameMode;
+import com.sk89q.worldedit.world.gamemode.GameModes;
 import com.sk89q.worldedit.world.item.ItemType;
 import com.sk89q.worldedit.world.item.ItemTypes;
 import com.sk89q.worldedit.entity.Player;
@@ -474,8 +476,13 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
     }
 
     @Override
-    public boolean hasCreativeMode() {
-        return false;
+    public GameMode getGameMode() {
+        return GameModes.SURVIVAL;
+    }
+
+    @Override
+    public void setGameMode(GameMode gameMode) {
+
     }
 
     @SuppressWarnings("CloneDoesntCallSuperClone")

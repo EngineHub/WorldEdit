@@ -22,7 +22,7 @@ package com.sk89q.worldedit.entity.metadata;
 /**
  * Describes various classes of entities.
  */
-public interface EntityType {
+public interface EntityProperties {
 
     /**
      * Test whether the entity is a player-derived entity.

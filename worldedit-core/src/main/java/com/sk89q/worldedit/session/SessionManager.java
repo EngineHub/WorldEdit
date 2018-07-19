@@ -33,6 +33,7 @@ import com.sk89q.worldedit.session.storage.SessionStore;
 import com.sk89q.worldedit.session.storage.VoidStore;
 import com.sk89q.worldedit.util.concurrency.EvenMoreExecutors;
 import com.sk89q.worldedit.util.eventbus.Subscribe;
+import com.sk89q.worldedit.world.gamemode.GameModes;
 
 import javax.annotation.Nullable;
 import java.io.File;
@@ -186,7 +187,7 @@ public class SessionManager {
         session.setUseInventory(config.useInventory
                 && !(config.useInventoryOverride
                 && (owner.hasPermission("worldedit.inventory.unrestricted")
-                || (config.useInventoryCreativeOverride && (!(owner instanceof Player) || ((Player) owner).hasCreativeMode())))));
+                || (config.useInventoryCreativeOverride && (!(owner instanceof Player) || ((Player) owner).getGameMode() == GameModes.CREATIVE)))));
 
         return session;
     }

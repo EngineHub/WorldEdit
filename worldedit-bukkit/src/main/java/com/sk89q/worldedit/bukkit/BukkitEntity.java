@@ -23,7 +23,7 @@ import com.sk89q.worldedit.bukkit.adapter.BukkitImplAdapter;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.entity.Player;
-import com.sk89q.worldedit.entity.metadata.EntityType;
+import com.sk89q.worldedit.entity.metadata.EntityProperties;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.NullWorld;
@@ -105,8 +105,8 @@ class BukkitEntity implements Entity {
     @Override
     public <T> T getFacet(Class<? extends T> cls) {
         org.bukkit.entity.Entity entity = entityRef.get();
-        if (entity != null && EntityType.class.isAssignableFrom(cls)) {
-            return (T) new BukkitEntityType(entity);
+        if (entity != null && EntityProperties.class.isAssignableFrom(cls)) {
+            return (T) new BukkitEntityProperties(entity);
         } else {
             return null;
         }

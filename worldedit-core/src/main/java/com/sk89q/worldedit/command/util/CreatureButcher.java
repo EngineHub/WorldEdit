@@ -20,7 +20,7 @@
 package com.sk89q.worldedit.command.util;
 
 import com.sk89q.minecraft.util.commands.CommandContext;
-import com.sk89q.worldedit.entity.metadata.EntityType;
+import com.sk89q.worldedit.entity.metadata.EntityProperties;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.function.EntityFunction;
 
@@ -87,7 +87,7 @@ public class CreatureButcher {
             boolean killTagged = (flags & Flags.TAGGED) != 0;
             boolean killArmorStands = (flags & Flags.ARMOR_STAND) != 0;
 
-            EntityType type = entity.getFacet(EntityType.class);
+            EntityProperties type = entity.getFacet(EntityProperties.class);
 
             if (type == null) {
                 return false;

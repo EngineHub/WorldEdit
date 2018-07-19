@@ -36,6 +36,7 @@ import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.TreeGenerator.TreeType;
 import com.sk89q.worldedit.world.biome.BaseBiome;
+import com.sk89q.worldedit.world.weather.WeatherType;
 
 import java.util.Collections;
 import java.util.List;
@@ -99,6 +100,24 @@ public class NullWorld extends AbstractWorld {
     @Override
     public boolean generateTree(TreeType type, EditSession editSession, Vector position) throws MaxChangedBlocksException {
         return false;
+    }
+
+    @Override
+    public WeatherType getWeather() {
+        return null;
+    }
+
+    @Override
+    public long getRemainingWeatherDuration() {
+        return 0;
+    }
+
+    @Override
+    public void setWeather(WeatherType weatherType) {
+    }
+
+    @Override
+    public void setWeather(WeatherType weatherType, long duration) {
     }
 
     @Override

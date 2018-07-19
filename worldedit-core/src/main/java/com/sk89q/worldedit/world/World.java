@@ -34,6 +34,7 @@ import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.util.TreeGenerator;
+import com.sk89q.worldedit.world.weather.WeatherType;
 
 /**
  * Represents a world (dimension).
@@ -201,6 +202,35 @@ public interface World extends Extent {
      * @return true if the effect was played
      */
     boolean queueBlockBreakEffect(Platform server, Vector position, BlockType blockType, double priority);
+
+    /**
+     * Gets the weather type of the world.
+     *
+     * @return The weather
+     */
+    WeatherType getWeather();
+
+    /**
+     * Gets the remaining weather duration.
+     *
+     * @return The weather duration
+     */
+    long getRemainingWeatherDuration();
+
+    /**
+     * Sets the weather type of the world.
+     *
+     * @param weatherType The weather type
+     */
+    void setWeather(WeatherType weatherType);
+
+    /**
+     * Sets the weather type of the world.
+     *
+     * @param weatherType The weather type
+     * @param duration The duration of the weather
+     */
+    void setWeather(WeatherType weatherType, long duration);
 
     @Override
     boolean equals(Object other);

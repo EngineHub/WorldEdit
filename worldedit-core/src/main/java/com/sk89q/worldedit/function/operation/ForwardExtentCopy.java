@@ -22,7 +22,7 @@ package com.sk89q.worldedit.function.operation;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.entity.Entity;
-import com.sk89q.worldedit.entity.metadata.EntityType;
+import com.sk89q.worldedit.entity.metadata.EntityProperties;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.function.CombinedRegionFunction;
 import com.sk89q.worldedit.function.RegionFunction;
@@ -261,7 +261,7 @@ public class ForwardExtentCopy implements Operation {
                 // Switch to entities.removeIf after Java 8 cutoff.
                 Iterator<? extends Entity> entityIterator = entities.iterator();
                 while (entityIterator.hasNext()) {
-                    EntityType type = entityIterator.next().getFacet(EntityType.class);
+                    EntityProperties type = entityIterator.next().getFacet(EntityProperties.class);
 
                     if (type != null && !type.isPasteable()) {
                         entityIterator.remove();

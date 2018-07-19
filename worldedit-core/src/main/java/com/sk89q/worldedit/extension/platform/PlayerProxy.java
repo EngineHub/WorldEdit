@@ -29,6 +29,7 @@ import com.sk89q.worldedit.session.SessionKey;
 import com.sk89q.worldedit.util.HandSide;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.World;
+import com.sk89q.worldedit.world.gamemode.GameMode;
 
 import javax.annotation.Nullable;
 
@@ -143,5 +144,15 @@ class PlayerProxy extends AbstractPlayerActor {
     @Override
     public SessionKey getSessionKey() {
         return basePlayer.getSessionKey();
+    }
+
+    @Override
+    public GameMode getGameMode() {
+        return basePlayer.getGameMode();
+    }
+
+    @Override
+    public void setGameMode(GameMode gameMode) {
+        basePlayer.setGameMode(gameMode);
     }
 }

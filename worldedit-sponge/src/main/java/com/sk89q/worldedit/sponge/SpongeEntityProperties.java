@@ -21,7 +21,7 @@ package com.sk89q.worldedit.sponge;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import com.sk89q.worldedit.entity.metadata.EntityType;
+import com.sk89q.worldedit.entity.metadata.EntityProperties;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.ExperienceOrb;
@@ -46,11 +46,11 @@ import org.spongepowered.api.text.Text;
 
 import java.util.Optional;
 
-public class SpongeEntityType implements EntityType {
+public class SpongeEntityProperties implements EntityProperties {
 
     private final Entity entity;
 
-    public SpongeEntityType(Entity entity) {
+    public SpongeEntityProperties(Entity entity) {
         checkNotNull(entity);
         this.entity = entity;
     }

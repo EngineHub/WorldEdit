@@ -19,6 +19,8 @@
 
 package com.sk89q.worldedit.sponge;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.flowpowered.math.vector.Vector3d;
 import com.flowpowered.math.vector.Vector3i;
 import com.sk89q.worldedit.EditSession;
@@ -27,15 +29,17 @@ import com.sk89q.worldedit.Vector2D;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BaseItemStack;
-import com.sk89q.worldedit.registry.state.Property;
-import com.sk89q.worldedit.world.block.BlockStateHolder;
-import com.sk89q.worldedit.world.item.ItemTypes;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.regions.Region;
+import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.AbstractWorld;
 import com.sk89q.worldedit.world.biome.BaseBiome;
+import com.sk89q.worldedit.world.block.BlockStateHolder;
+import com.sk89q.worldedit.world.item.ItemTypes;
+import com.sk89q.worldedit.world.weather.WeatherType;
+import com.sk89q.worldedit.world.weather.WeatherTypes;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockSnapshot;
 import org.spongepowered.api.block.BlockState;
@@ -49,15 +53,15 @@ import org.spongepowered.api.entity.EntityType;
 import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.world.BlockChangeFlags;
 import org.spongepowered.api.world.World;
+import org.spongepowered.api.world.weather.Weather;
 
-import javax.annotation.Nullable;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import javax.annotation.Nullable;
 
 /**
  * An adapter to Minecraft worlds for WorldEdit.
@@ -266,7 +270,7 @@ public abstract class SpongeWorld extends AbstractWorld {
     public Entity createEntity(Location location, BaseEntity entity) {
         World world = getWorld();
 
-        EntityType entityType = Sponge.getRegistry().getType(EntityType.class, entity.getTypeId()).get();
+        EntityType entityType = Sponge.getRegistry().getType(EntityType.class, entity.getType().getId()).get();
         Vector3d pos = new Vector3d(location.getX(), location.getY(), location.getZ());
 
         org.spongepowered.api.entity.Entity newEnt = world.createEntity(entityType, pos);
@@ -287,6 +291,26 @@ public abstract class SpongeWorld extends AbstractWorld {
         }
 
         return null;
+    }
+
+    @Override
+    public WeatherType getWeather() {
+        return WeatherTypes.get(getWorld().getWeather().getId());
+    }
+
+    @Override
+    public long getRemainingWeatherDuration() {
+        return getWorld().getRemainingDuration();
+    }
+
+    @Override
+    public void setWeather(WeatherType weatherType) {
+        getWorld().setWeather(Sponge.getRegistry().getType(Weather.class, weatherType.getId()).get());
+    }
+
+    @Override
+    public void setWeather(WeatherType weatherType, long duration) {
+        getWorld().setWeather(Sponge.getRegistry().getType(Weather.class, weatherType.getId()).get(), duration);
     }
 
     /**
