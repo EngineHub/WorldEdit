@@ -95,7 +95,13 @@ public class BlockMask extends AbstractExtentMask {
     @Override
     public boolean test(Vector vector) {
         BlockStateHolder block = getExtent().getBlock(vector);
-        return blocks.contains(block) || blocks.contains(block);
+        for (BlockStateHolder testBlock : blocks) {
+            if (testBlock.equalsFuzzy(block)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     @Nullable

@@ -53,4 +53,17 @@ public abstract class AbstractProperty<T> implements Property<T> {
         checkState(this.name == null, "name already set");
         this.name = name;
     }
+
+    @Override
+    public int hashCode() {
+        return name.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof Property)) {
+            return false;
+        }
+        return getName().equals(((Property) obj).getName());
+    }
 }

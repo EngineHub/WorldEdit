@@ -31,9 +31,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -167,7 +170,7 @@ public class BlockState implements BlockStateHolder<BlockState> {
             return false;
         }
 
-        List<Property> differingProperties = new ArrayList<>();
+        Set<Property> differingProperties = new HashSet<>();
         for (Object state : o.getStates().keySet()) {
             if (getState((Property) state) == null) {
                 differingProperties.add((Property) state);
@@ -179,8 +182,11 @@ public class BlockState implements BlockStateHolder<BlockState> {
             }
         }
 
-        for (Property property : differingProperties) {
-            if (!getState(property).equals(o.getState(property))) {
+        for (Property property : getStates().keySet()) {
+            if (differingProperties.contains(property)) {
+                continue;
+            }
+            if (!Objects.equals(getState(property), o.getState(property))) {
                 return false;
             }
         }
