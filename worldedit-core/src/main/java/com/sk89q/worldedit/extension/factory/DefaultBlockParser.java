@@ -19,8 +19,22 @@
 
 package com.sk89q.worldedit.extension.factory;
 
-import com.sk89q.worldedit.*;
-import com.sk89q.worldedit.blocks.*;
+import com.sk89q.jnbt.CompoundTag;
+import com.sk89q.jnbt.JSON2NBT;
+import com.sk89q.jnbt.Tag;
+import com.sk89q.util.StringUtil;
+import com.sk89q.worldedit.BlockVector;
+import com.sk89q.worldedit.IncompleteRegionException;
+import com.sk89q.worldedit.NotABlockException;
+import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.blocks.BlockType;
+import com.sk89q.worldedit.blocks.ClothColor;
+import com.sk89q.worldedit.blocks.MobSpawnerBlock;
+import com.sk89q.worldedit.blocks.NoteBlock;
+import com.sk89q.worldedit.blocks.SignBlock;
+import com.sk89q.worldedit.blocks.SkullBlock;
 import com.sk89q.worldedit.blocks.metadata.MobType;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.input.DisallowedUsageException;
@@ -29,14 +43,21 @@ import com.sk89q.worldedit.extension.input.NoMatchException;
 import com.sk89q.worldedit.extension.input.ParserContext;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.internal.registry.InputParser;
+import com.sk89q.worldedit.math.MathUtils;
 import com.sk89q.worldedit.world.World;
+import com.sk89q.worldedit.world.registry.BundledBlockData;
+import com.sk89q.worldedit.world.registry.SimpleState;
+import com.sk89q.worldedit.world.registry.SimpleStateValue;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Parses block input strings.
  */
-class DefaultBlockParser extends InputParser<BaseBlock> {
+public class DefaultBlockParser extends InputParser<BaseBlock> {
 
-    protected DefaultBlockParser(WorldEdit worldEdit) {
+    public  DefaultBlockParser(WorldEdit worldEdit) {
         super(worldEdit);
     }
 
@@ -61,8 +82,8 @@ class DefaultBlockParser extends InputParser<BaseBlock> {
         // BlockType, as well as to properly handle mod:name IDs
 
         String originalInput = input;
-        input = input.replace("_", " ");
-        input = input.replace(";", "|");
+//        input = input.replace("_", " ");
+//        input = input.replace(";", "|");
         Exception suppressed = null;
         try {
             BaseBlock modified = parseLogic(input, context);
@@ -136,28 +157,40 @@ class DefaultBlockParser extends InputParser<BaseBlock> {
         } else {
             // Attempt to parse the item ID or otherwise resolve an item/block
             // name to its numeric ID
-            try {
+            if (MathUtils.isInteger(testId)) {
                 blockId = Integer.parseInt(testId);
                 blockType = BlockType.fromID(blockId);
-            } catch (NumberFormatException e) {
-                blockType = BlockType.lookup(testId);
-                if (blockType == null) {
-                    int t = worldEdit.getServer().resolveItem(testId);
-                    if (t >= 0) {
-                        blockType = BlockType.fromID(t); // Could be null
-                        blockId = t;
-                    } else if (blockLocator.length == 2) { // Block IDs in MC 1.7 and above use mod:name
-                        t = worldEdit.getServer().resolveItem(blockAndExtraData[0]);
-                        if (t >= 0) {
-                            blockType = BlockType.fromID(t); // Could be null
-                            blockId = t;
-                            typeAndData = new String[] { blockAndExtraData[0] };
-                            testId = blockAndExtraData[0];
+            } else {
+                BundledBlockData.BlockEntry block = BundledBlockData.getInstance().findById(testId);
+                if (block == null) {
+                    BaseBlock baseBlock = BundledBlockData.getInstance().findByState(testId);
+                    if (baseBlock == null) {
+                        blockType = BlockType.lookup(testId);
+                        if (blockType == null) {
+                            int t = worldEdit.getServer().resolveItem(testId);
+                            if (t >= 0) {
+                                blockType = BlockType.fromID(t); // Could be null
+                                blockId = t;
+                            } else if (blockLocator.length == 2) { // Block IDs in MC 1.7 and above use mod:name
+                                t = worldEdit.getServer().resolveItem(blockAndExtraData[0]);
+                                if (t >= 0) {
+                                    blockType = BlockType.fromID(t); // Could be null
+                                    blockId = t;
+                                    typeAndData = new String[]{blockAndExtraData[0]};
+                                    testId = blockAndExtraData[0];
+                                }
+                            }
                         }
+                    } else {
+                        blockId = baseBlock.getId();
+                        blockType = BlockType.fromID(blockId);
+                        data = baseBlock.getData();
                     }
+                } else {
+                    blockId = block.legacyId;
+                    blockType = BlockType.fromID(blockId);
                 }
             }
-
             if (blockId == -1 && blockType == null) {
                 // Maybe it's a cloth
                 ClothColor col = ClothColor.lookup(testId);
@@ -191,7 +224,25 @@ class DefaultBlockParser extends InputParser<BaseBlock> {
             // Parse the block data (optional)
             try {
                 if (typeAndData.length > 1 && !typeAndData[1].isEmpty()) {
-                    data = Integer.parseInt(typeAndData[1]);
+                    if (MathUtils.isInteger(typeAndData[1])) {
+                        data = Integer.parseInt(typeAndData[1]);
+                    } else {
+                        data = Integer.MAX_VALUE; // Some invalid value
+                        BundledBlockData.BlockEntry block = BundledBlockData.getInstance().findById(blockId);
+                        if (block != null && block.states != null) {
+                            loop:
+                            for (Map.Entry<String, SimpleState> stateEntry : block.states.entrySet()) {
+                                for (Map.Entry<String, SimpleStateValue> valueEntry : stateEntry.getValue().valueMap().entrySet()) {
+                                    String key = valueEntry.getKey();
+                                    if (key.equalsIgnoreCase(typeAndData[1])) {
+                                        data = valueEntry.getValue().data;
+                                        break loop;
+                                    }
+                                }
+
+                            }
+                        }
+                    }
                 }
 
                 if (data > 15) {
@@ -274,6 +325,21 @@ class DefaultBlockParser extends InputParser<BaseBlock> {
             return new BaseBlock(blockId, data);
         }
 
+        if (blockAndExtraData.length > 1 && blockAndExtraData[1].startsWith("{")) {
+            String joined = StringUtil.joinString(Arrays.copyOfRange(blockAndExtraData, 1, blockAndExtraData.length), "|");
+            try {
+                CompoundTag nbt = JSON2NBT.getTagFromJson(joined);
+                if (nbt != null) {
+                    if (context.isRestricted() && actor != null && !actor.hasPermission("worldedit.anyblock")) {
+                        throw new DisallowedUsageException("You are not allowed to nbt'");
+                    }
+                    return new BaseBlock(blockId, data, nbt);
+                }
+            } catch (InputParseException e) {
+                throw new NoMatchException(e.getMessage());
+            }
+        }
+
         switch (blockType) {
             case SIGN_POST:
             case WALL_SIGN:
@@ -284,7 +350,10 @@ class DefaultBlockParser extends InputParser<BaseBlock> {
                 text[2] = blockAndExtraData.length > 3 ? blockAndExtraData[3] : "";
                 text[3] = blockAndExtraData.length > 4 ? blockAndExtraData[4] : "";
                 return new SignBlock(blockType.getID(), data, text);
-
+            case CHEST:
+            case END_GATEWAY:
+            case END_PORTAL:
+                return new BaseBlock(blockId, data, new CompoundTag(new HashMap<String, Tag>()));
             case MOB_SPAWNER:
                 // Allow setting mob spawn type
                 if (blockAndExtraData.length > 1) {
@@ -356,5 +425,4 @@ class DefaultBlockParser extends InputParser<BaseBlock> {
                 return new BaseBlock(blockId, data);
         }
     }
-
 }
