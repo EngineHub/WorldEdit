@@ -19,6 +19,8 @@
 
 package com.sk89q.worldedit.bukkit;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.google.common.base.Function;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEdit;
@@ -32,14 +34,14 @@ import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.block.BlockTypes;
+import com.sk89q.worldedit.world.gamemode.GameMode;
+import com.sk89q.worldedit.world.gamemode.GameModes;
 import com.sk89q.worldedit.world.item.ItemType;
 import com.sk89q.worldedit.world.item.ItemTypes;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.inventory.ItemStack;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -236,6 +238,45 @@ public class BukkitAdapter {
             throw new IllegalArgumentException("Bukkit only supports Minecraft blocks");
         }
         return Material.getMaterial(blockType.getId().replace("minecraft:", "").toUpperCase());
+    }
+
+    /**
+     * Create a WorldEdit GameMode from a Bukkit one.
+     *
+     * @param gameMode Bukkit GameMode
+     * @return WorldEdit GameMode
+     */
+    public static GameMode adapt(org.bukkit.GameMode gameMode) {
+        checkNotNull(gameMode);
+        return GameModes.get(gameMode.name().toLowerCase());
+    }
+
+    /**
+     * Converts a Material to a BlockType
+     *
+     * @param material The material
+     * @return The blocktype
+     */
+    public static BlockType asBlockType(Material material) {
+        checkNotNull(material);
+        if (!material.isBlock()) {
+            throw new IllegalArgumentException(material.getKey().toString() + " is not a block!");
+        }
+        return BlockTypes.get(material.getKey().toString());
+    }
+
+    /**
+     * Converts a Material to a ItemType
+     *
+     * @param material The material
+     * @return The itemtype
+     */
+    public static ItemType asItemType(Material material) {
+        checkNotNull(material);
+        if (!material.isItem()) {
+            throw new IllegalArgumentException(material.getKey().toString() + " is not an item!");
+        }
+        return ItemTypes.get(material.getKey().toString());
     }
 
     private static Map<String, BlockState> blockStateCache = new HashMap<>();

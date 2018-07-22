@@ -104,12 +104,7 @@ public class UtilityCommands {
         int depth = args.argsLength() > 2 ? Math.max(1, args.getInteger(2)) : 1;
 
         Vector pos = session.getPlacementPosition(player);
-        int affected;
-        if (pattern instanceof BlockPattern) {
-            affected = editSession.fillXZ(pos, ((BlockPattern) pattern).getBlock(), radius, depth, false);
-        } else {
-            affected = editSession.fillXZ(pos, pattern, radius, depth, false);
-        }
+        int affected = editSession.fillXZ(pos, pattern, radius, depth, false);
         player.print(affected + " block(s) have been created.");
     }
 

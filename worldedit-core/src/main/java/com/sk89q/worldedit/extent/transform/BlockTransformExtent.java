@@ -74,8 +74,7 @@ public class BlockTransformExtent extends AbstractDelegateExtent {
      * @return the same block
      */
     private <T extends BlockStateHolder> T transformBlock(T block, boolean reverse) {
-        transform(block, reverse ? transform.inverse() : transform);
-        return block;
+        return transform(block, reverse ? transform.inverse() : transform);
     }
 
     @Override
@@ -126,11 +125,11 @@ public class BlockTransformExtent extends AbstractDelegateExtent {
 
         for (Property property : block.getBlockType().getProperties()) {
             if (property instanceof DirectionalProperty) {
-                Vector value = (Vector) block.getState(property);
+                Direction value = (Direction) block.getState(property);
                 if (value != null) {
-                    Vector newValue = getNewStateValue((DirectionalProperty) property, transform, value);
+                    Vector newValue = getNewStateValue((DirectionalProperty) property, transform, value.toVector());
                     if (newValue != null) {
-                        changedBlock.with(property, newValue);
+                        changedBlock = (T) changedBlock.with(property, Direction.findClosest(newValue, Direction.Flag.ALL));
                     }
                 }
             }

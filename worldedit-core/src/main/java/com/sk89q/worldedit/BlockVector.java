@@ -37,7 +37,7 @@ public class BlockVector extends Vector {
      * @param position the other position
      */
     public BlockVector(Vector position) {
-        super(position);
+        this(position.getBlockX(), position.getBlockY(), position.getBlockZ());
     }
 
     /**
@@ -59,7 +59,7 @@ public class BlockVector extends Vector {
      * @param z the Z coordinate
      */
     public BlockVector(float x, float y, float z) {
-        super(x, y, z);
+        this((int) x, (int) y, (int) z);
     }
 
     /**
@@ -70,7 +70,7 @@ public class BlockVector extends Vector {
      * @param z the Z coordinate
      */
     public BlockVector(double x, double y, double z) {
-        super(x, y, z);
+        this((int) x, (int) y, (int) z);
     }
 
     @Override

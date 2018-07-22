@@ -36,7 +36,7 @@ public class BlockVector2D extends Vector2D {
      * @param position the position to copy
      */
     public BlockVector2D(Vector2D position) {
-        super(position);
+        this(position.getBlockX(), position.getBlockZ());
     }
 
     /**
@@ -56,7 +56,7 @@ public class BlockVector2D extends Vector2D {
      * @param z the Z coordinate
      */
     public BlockVector2D(float x, float z) {
-        super(x, z);
+        this((int) x, (int) z);
     }
 
     /**
@@ -66,7 +66,7 @@ public class BlockVector2D extends Vector2D {
      * @param z the Z coordinate
      */
     public BlockVector2D(double x, double z) {
-        super(x, z);
+        this((int) x, (int) z);
     }
 
     @Override
