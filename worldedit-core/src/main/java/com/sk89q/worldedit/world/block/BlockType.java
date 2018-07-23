@@ -109,6 +109,16 @@ public class BlockType {
     }
 
     /**
+     * Gets a property by name.
+     *
+     * @param name The name
+     * @return The property
+     */
+    public <V> Property<V> getProperty(String name) {
+        return getPropertyMap().get(name);
+    }
+
+    /**
      * Gets the default state of this block type.
      *
      * @return The default state
