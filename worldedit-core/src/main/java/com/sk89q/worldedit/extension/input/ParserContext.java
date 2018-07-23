@@ -40,6 +40,7 @@ public class ParserContext {
     private @Nullable World world;
     private @Nullable Actor actor;
     private boolean restricted = true;
+    private boolean tryLegacy = true;
     private boolean preferringWildcard;
 
     /**
@@ -60,6 +61,7 @@ public class ParserContext {
         setActor(other.getActor());
         setRestricted(other.isRestricted());
         setPreferringWildcard(other.isPreferringWildcard());
+        setTryLegacy(other.isTryingLegacy());
     }
 
     /**
@@ -229,4 +231,21 @@ public class ParserContext {
         this.preferringWildcard = preferringWildcard;
     }
 
+    /**
+     * Set whether legacy IDs should be attempted.
+     *
+     * @param tryLegacy true if legacy IDs should be attempted
+     */
+    public void setTryLegacy(boolean tryLegacy) {
+        this.tryLegacy = tryLegacy;
+    }
+
+    /**
+     * Get whether legacy IDs should be tried.
+     *
+     * @return true if legacy should be tried
+     */
+    public boolean isTryingLegacy() {
+        return tryLegacy;
+    }
 }

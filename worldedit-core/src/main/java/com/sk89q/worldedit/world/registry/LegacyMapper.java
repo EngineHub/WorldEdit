@@ -81,13 +81,14 @@ public class LegacyMapper {
         ParserContext parserContext = new ParserContext();
         parserContext.setPreferringWildcard(false);
         parserContext.setRestricted(false);
+        parserContext.setTryLegacy(false); // This is legacy. Don't match itself.
 
         for (Map.Entry<String, String> blockEntry : dataFile.blocks.entrySet()) {
             try {
                 blockMap.put(blockEntry.getKey(),
                         (BlockState) WorldEdit.getInstance().getBlockFactory().parseFromInput(blockEntry.getValue(), parserContext));
             } catch (Exception e) {
-                log.warning("Unknown block: " + blockEntry.getValue());
+                log.fine("Unknown block: " + blockEntry.getValue());
             }
         }
 
@@ -95,7 +96,7 @@ public class LegacyMapper {
             try {
                 itemMap.put(itemEntry.getKey(), ItemTypes.get(itemEntry.getValue()));
             } catch (Exception e) {
-                log.warning("Unknown item: " + itemEntry.getValue());
+                log.fine("Unknown item: " + itemEntry.getValue());
             }
         }
     }

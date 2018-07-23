@@ -227,7 +227,11 @@ public class BaseBlock implements BlockStateHolder<BaseBlock>, TileEntityBlock {
 
     @Override
     public String toString() {
-        return "Block{State: " + this.toImmutableState().toString() + ", NBT: " + String.valueOf(getNbtData()) + "}";
+//        if (getNbtData() != null) { // TODO Maybe make some JSON serialiser to make this not awful.
+//            return blockState.getAsString() + " {" + String.valueOf(getNbtData()) + "}";
+//        } else {
+            return blockState.getAsString();
+//        }
     }
 
 }

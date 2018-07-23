@@ -44,6 +44,7 @@ import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.block.BlockTypes;
+import com.sk89q.worldedit.world.registry.LegacyMapper;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -185,70 +186,89 @@ class DefaultBlockParser extends InputParser<BlockStateHolder> {
     }
 
     private BlockStateHolder parseLogic(String input, ParserContext context) throws InputParseException {
-        BlockType blockType;
+        BlockType blockType = null;
         Map<Property<?>, Object> blockStates = new HashMap<>();
         String[] blockAndExtraData = input.trim().split("\\|");
         blockAndExtraData[0] = woolMapper(blockAndExtraData[0]);
-        Matcher matcher = blockStatePattern.matcher(blockAndExtraData[0]);
-        if (!matcher.matches() || matcher.groupCount() < 2 || matcher.groupCount() > 3) {
-            throw new InputParseException("Invalid format");
-        }
-        String typeString = matcher.group(1);
-        String[] stateProperties = EMPTY_STRING_ARRAY;
-        if (matcher.groupCount() >= 2 && matcher.group(2) != null) {
-            stateProperties = matcher.group(2).split(",");
-        }
 
-        if ("hand".equalsIgnoreCase(typeString)) {
-            // Get the block type from the item in the user's hand.
-            final BaseBlock blockInHand = getBlockInHand(context.requireActor(), HandSide.MAIN_HAND);
-            if (blockInHand.getClass() != BaseBlock.class) {
-                return blockInHand;
-            }
+        BlockState state = null;
 
-            blockType = blockInHand.getBlockType();
-            blockStates = blockInHand.getStates();
-        } else if ("offhand".equalsIgnoreCase(typeString)) {
-            // Get the block type from the item in the user's off hand.
-            final BaseBlock blockInHand = getBlockInHand(context.requireActor(), HandSide.OFF_HAND);
-            if (blockInHand.getClass() != BaseBlock.class) {
-                return blockInHand;
-            }
-
-            blockType = blockInHand.getBlockType();
-            blockStates = blockInHand.getStates();
-        } else if ("pos1".equalsIgnoreCase(typeString)) {
-            // Get the block type from the "primary position"
-            final World world = context.requireWorld();
-            final BlockVector primaryPosition;
+        // Legacy matcher
+        if (context.isTryingLegacy()) {
             try {
-                primaryPosition = context.requireSession().getRegionSelector(world).getPrimaryPosition();
-            } catch (IncompleteRegionException e) {
-                throw new InputParseException("Your selection is not complete.");
-            }
-            final BlockState blockInHand = world.getBlock(primaryPosition);
-
-            blockType = blockInHand.getBlockType();
-            blockStates = blockInHand.getStates();
-        } else {
-            // Attempt to lookup a block from ID or name.
-            blockType = BlockTypes.get(typeString);
-
-            if (blockType == null) {
-                throw new NoMatchException("Does not match a valid block type: '" + input + "'");
+                String[] split = blockAndExtraData[0].split(":");
+                if (split.length == 1) {
+                    state = LegacyMapper.getInstance().getBlockFromLegacy(Integer.parseInt(split[0]));
+                } else {
+                    state = LegacyMapper.getInstance().getBlockFromLegacy(Integer.parseInt(split[0]), Integer.parseInt(split[1]));
+                }
+                if (state != null) {
+                    blockType = state.getBlockType();
+                }
+            } catch (NumberFormatException e) {
             }
         }
 
-        BlockState state;
+        if (state == null) {
+            Matcher matcher = blockStatePattern.matcher(blockAndExtraData[0]); // TODO Move away from regex because it's hella slow
+            if (!matcher.matches() || matcher.groupCount() < 2 || matcher.groupCount() > 3) {
+                throw new InputParseException("Invalid format");
+            }
+            String typeString = matcher.group(1);
+            String[] stateProperties = EMPTY_STRING_ARRAY;
+            if (matcher.groupCount() >= 2 && matcher.group(2) != null) {
+                stateProperties = matcher.group(2).split(",");
+            }
 
-        if (!context.isPreferringWildcard()) {
-            // No wildcards allowed => eliminate them. (Start with default state)
-            state = blockType.getDefaultState();
-        } else {
-            state = new BlockState(blockType, blockStates);
+            if ("hand".equalsIgnoreCase(typeString)) {
+                // Get the block type from the item in the user's hand.
+                final BaseBlock blockInHand = getBlockInHand(context.requireActor(), HandSide.MAIN_HAND);
+                if (blockInHand.getClass() != BaseBlock.class) {
+                    return blockInHand;
+                }
+
+                blockType = blockInHand.getBlockType();
+                blockStates = blockInHand.getStates();
+            } else if ("offhand".equalsIgnoreCase(typeString)) {
+                // Get the block type from the item in the user's off hand.
+                final BaseBlock blockInHand = getBlockInHand(context.requireActor(), HandSide.OFF_HAND);
+                if (blockInHand.getClass() != BaseBlock.class) {
+                    return blockInHand;
+                }
+
+                blockType = blockInHand.getBlockType();
+                blockStates = blockInHand.getStates();
+            } else if ("pos1".equalsIgnoreCase(typeString)) {
+                // Get the block type from the "primary position"
+                final World world = context.requireWorld();
+                final BlockVector primaryPosition;
+                try {
+                    primaryPosition = context.requireSession().getRegionSelector(world).getPrimaryPosition();
+                } catch (IncompleteRegionException e) {
+                    throw new InputParseException("Your selection is not complete.");
+                }
+                final BlockState blockInHand = world.getBlock(primaryPosition);
+
+                blockType = blockInHand.getBlockType();
+                blockStates = blockInHand.getStates();
+            } else {
+                // Attempt to lookup a block from ID or name.
+                blockType = BlockTypes.get(typeString);
+
+                if (blockType == null) {
+                    throw new NoMatchException("Does not match a valid block type: '" + input + "'");
+                }
+            }
+
+            if (!context.isPreferringWildcard()) {
+                // No wildcards allowed => eliminate them. (Start with default state)
+                state = blockType.getDefaultState();
+            } else {
+                state = new BlockState(blockType, blockStates);
+            }
+
+            state = applyProperties(state, stateProperties);
         }
-
-        state = applyProperties(state, stateProperties);
 
         // Check if the item is allowed
         if (context.isRestricted()) {

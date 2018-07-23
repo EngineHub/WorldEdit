@@ -212,4 +212,9 @@ public class BlockState implements BlockStateHolder<BlockState> {
         this.values.put(property, value);
         return this;
     }
+
+    @Override
+    public String toString() {
+        return getAsString();
+    }
 }
