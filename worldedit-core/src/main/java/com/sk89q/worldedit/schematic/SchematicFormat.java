@@ -83,42 +83,6 @@ public abstract class SchematicFormat {
         return lookupNames;
     }
 
-    public BaseBlock getBlockForId(int id, short data) {
-        BaseBlock block;
-        switch (id) {
-            /*case BlockID.WALL_SIGN:
-            case BlockID.SIGN_POST:
-                block = new SignBlock(id, data);
-                break;
-
-            case BlockID.CHEST:
-                block = new ChestBlock(data);
-                break;
-
-            case BlockID.FURNACE:
-            case BlockID.BURNING_FURNACE:
-                block = new FurnaceBlock(id, data);
-                break;
-
-            case BlockID.DISPENSER:
-                block = new DispenserBlock(data);
-                break;
-
-            case BlockID.MOB_SPAWNER:
-                block = new MobSpawnerBlock(id);
-                break;
-
-            case BlockID.NOTE_BLOCK:
-                block = new NoteBlock(data);
-                break;*/
-
-            default:
-                block = new BaseBlock(id, data);
-                break;
-        }
-        return block;
-    }
-
     /**
      * Loads a schematic from the given file into a CuboidClipboard
      * @param file The file to load from

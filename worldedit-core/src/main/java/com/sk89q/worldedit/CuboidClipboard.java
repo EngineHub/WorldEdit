@@ -22,8 +22,6 @@ package com.sk89q.worldedit;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.world.block.BlockStateHolder;
-import com.sk89q.worldedit.world.block.BlockTypes;
 import com.sk89q.worldedit.command.ClipboardCommands;
 import com.sk89q.worldedit.command.SchematicCommands;
 import com.sk89q.worldedit.entity.Entity;
@@ -32,11 +30,9 @@ import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.function.operation.ForwardExtentCopy;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
-import com.sk89q.worldedit.schematic.SchematicFormat;
-import com.sk89q.worldedit.world.DataException;
+import com.sk89q.worldedit.world.block.BlockStateHolder;
+import com.sk89q.worldedit.world.block.BlockTypes;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -83,7 +79,7 @@ public class CuboidClipboard {
         checkNotNull(size);
 
         this.size = size;
-        data = new BaseBlock[size.getBlockX()][size.getBlockY()][size.getBlockZ()];
+        data = new BlockStateHolder[size.getBlockX()][size.getBlockY()][size.getBlockZ()];
         origin = new Vector();
         offset = new Vector();
     }
@@ -100,7 +96,7 @@ public class CuboidClipboard {
         checkNotNull(origin);
 
         this.size = size;
-        data = new BaseBlock[size.getBlockX()][size.getBlockY()][size.getBlockZ()];
+        data = new BlockStateHolder[size.getBlockX()][size.getBlockY()][size.getBlockZ()];
         this.origin = origin;
         offset = new Vector();
     }
@@ -119,7 +115,7 @@ public class CuboidClipboard {
         checkNotNull(offset);
 
         this.size = size;
-        data = new BaseBlock[size.getBlockX()][size.getBlockY()][size.getBlockZ()];
+        data = new BlockStateHolder[size.getBlockX()][size.getBlockY()][size.getBlockZ()];
         this.origin = origin;
         this.offset = offset;
     }
@@ -160,8 +156,12 @@ public class CuboidClipboard {
         for (int x = 0; x < size.getBlockX(); ++x) {
             for (int y = 0; y < size.getBlockY(); ++y) {
                 for (int z = 0; z < size.getBlockZ(); ++z) {
-                    data[x][y][z] =
-                            editSession.getBlock(new Vector(x, y, z).add(getOrigin()));
+                    BaseBlock fullBlock = editSession.getFullBlock(new Vector(x, y, z).add(getOrigin()));
+                    if (fullBlock.getNbtData() != null) {
+                        data[x][y][z] = fullBlock;
+                    } else {
+                        data[x][y][z] = fullBlock.toImmutableState();
+                    }
                 }
             }
         }
@@ -179,7 +179,12 @@ public class CuboidClipboard {
                 for (int z = 0; z < size.getBlockZ(); ++z) {
                     final Vector pt = new Vector(x, y, z).add(getOrigin());
                     if (region.contains(pt)) {
-                        data[x][y][z] = editSession.getBlock(pt);
+                        BaseBlock fullBlock = editSession.getFullBlock(pt);
+                        if (fullBlock.getNbtData() != null) {
+                            data[x][y][z] = fullBlock;
+                        } else {
+                            data[x][y][z] = fullBlock.toImmutableState();
+                        }
                     } else {
                         data[x][y][z] = null;
                     }
@@ -293,26 +298,6 @@ public class CuboidClipboard {
      * <p>If the position is out of bounds, air will be returned.</p>
      *
      * @param position the point, relative to the origin of the copy (0, 0, 0) and not to the actual copy origin
-     * @return air, if this block was outside the (non-cuboid) selection while copying
-     * @throws ArrayIndexOutOfBoundsException if the position is outside the bounds of the CuboidClipboard
-     * @deprecated use {@link #getBlock(Vector)} instead
-     */
-    @Deprecated
-    public BlockStateHolder getPoint(Vector position) throws ArrayIndexOutOfBoundsException {
-        final BlockStateHolder block = getBlock(position);
-        if (block == null) {
-            return BlockTypes.AIR.getDefaultState();
-        }
-
-        return block;
-    }
-
-    /**
-     * Get the block at the given position.
-     *
-     * <p>If the position is out of bounds, air will be returned.</p>
-     *
-     * @param position the point, relative to the origin of the copy (0, 0, 0) and not to the actual copy origin
      * @return null, if this block was outside the (non-cuboid) selection while copying
      * @throws ArrayIndexOutOfBoundsException if the position is outside the bounds of the CuboidClipboard
      */
@@ -327,7 +312,7 @@ public class CuboidClipboard {
      * @param block the block to set
      * @throws ArrayIndexOutOfBoundsException if the position is outside the bounds of the CuboidClipboard
      */
-    public void setBlock(Vector position, BaseBlock block) {
+    public void setBlock(Vector position, BlockStateHolder block) {
         data[position.getBlockX()][position.getBlockY()][position.getBlockZ()] = block;
     }
 
@@ -338,35 +323,6 @@ public class CuboidClipboard {
      */
     public Vector getSize() {
         return size;
-    }
-
-    /**
-     * Saves the clipboard data to a .schematic-format file.
-     *
-     * @param path the path to the file to save
-     * @throws IOException thrown on I/O error
-     * @throws DataException thrown on error writing the data for other reasons
-     * @deprecated use {@link SchematicFormat#MCEDIT}
-     */
-    @Deprecated
-    public void saveSchematic(File path) throws IOException, DataException {
-        checkNotNull(path);
-        SchematicFormat.MCEDIT.save(this, path);
-    }
-
-    /**
-     * Load a .schematic file into a clipboard.
-     *
-     * @param path the path to the file to load
-     * @return a clipboard
-     * @throws IOException thrown on I/O error
-     * @throws DataException thrown on error writing the data for other reasons
-     * @deprecated use {@link SchematicFormat#MCEDIT}
-     */
-    @Deprecated
-    public static CuboidClipboard loadSchematic(File path) throws DataException, IOException {
-        checkNotNull(path);
-        return SchematicFormat.MCEDIT.load(path);
     }
 
     /**

@@ -34,6 +34,8 @@ import com.sk89q.worldedit.CuboidClipboard;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.world.DataException;
+import com.sk89q.worldedit.world.block.BlockState;
+import com.sk89q.worldedit.world.registry.LegacyMapper;
 
 import java.io.DataInputStream;
 import java.io.File;
@@ -181,12 +183,13 @@ public class MCEditSchematicFormat extends SchematicFormat {
                 for (int z = 0; z < length; ++z) {
                     int index = y * width * length + z * width + x;
                     BlockVector pt = new BlockVector(x, y, z);
-                    BaseBlock block = getBlockForId(blocks[index], blockData[index]);
+                    BlockState state = LegacyMapper.getInstance().getBlockFromLegacy(blocks[index], blockData[index]);
 
                     if (tileEntitiesMap.containsKey(pt)) {
-                        block.setNbtData(new CompoundTag(tileEntitiesMap.get(pt)));
+                        clipboard.setBlock(pt, new BaseBlock(state, new CompoundTag(tileEntitiesMap.get(pt))));
+                    } else {
+                        clipboard.setBlock(pt, state);
                     }
-                    clipboard.setBlock(pt, block);
                 }
             }
         }
@@ -201,7 +204,7 @@ public class MCEditSchematicFormat extends SchematicFormat {
 
     @Override
     public void save(CuboidClipboard clipboard, File file) throws IOException, DataException {
-        throw new UnsupportedOperationException("Saving is deprecated");
+        throw new DataException("This clipboard format no longer supports saving.");
     }
 
     @Override

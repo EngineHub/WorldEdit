@@ -57,7 +57,7 @@ public enum ClipboardFormat {
 
         @Override
         public ClipboardWriter getWriter(OutputStream outputStream) throws IOException {
-            throw new UnsupportedOperationException("This clipboard format is deprecated.");
+            throw new IOException("This clipboard format no longer supports saving.");
         }
 
         @Override
@@ -85,7 +85,7 @@ public enum ClipboardFormat {
      *
      * @param aliases an array of aliases by which this format may be referred to
      */
-    private ClipboardFormat(String ... aliases) {
+    ClipboardFormat(String... aliases) {
         this.aliases = aliases;
     }
 
