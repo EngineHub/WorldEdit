@@ -20,10 +20,8 @@
 package com.sk89q.worldedit.blocks;
 
 import com.sk89q.jnbt.CompoundTag;
-import com.sk89q.worldedit.world.item.ItemType;
-import com.sk89q.worldedit.world.item.ItemTypes;
 import com.sk89q.worldedit.world.NbtValued;
-import com.sk89q.worldedit.world.registry.LegacyMapper;
+import com.sk89q.worldedit.world.item.ItemType;
 
 import javax.annotation.Nullable;
 
@@ -38,20 +36,6 @@ public class BaseItem implements NbtValued {
     private ItemType itemType;
     @Nullable
     private CompoundTag nbtData;
-
-    /**
-     * Construct the object.
-     *
-     * @param id ID of the item
-     */
-    @Deprecated
-    public BaseItem(int id) {
-        ItemType type = LegacyMapper.getInstance().getItemFromLegacy(id);
-        if (type == null) {
-            type = ItemTypes.AIR;
-        }
-        this.itemType = type;
-    }
 
     /**
      * Construct the object.
@@ -71,16 +55,6 @@ public class BaseItem implements NbtValued {
     public BaseItem(ItemType itemType, CompoundTag tag) {
         this.itemType = itemType;
         this.nbtData = tag;
-    }
-
-    /**
-     * Get the type of item.
-     * 
-     * @return the id
-     */
-    @Deprecated
-    public int getLegacyId() {
-        return this.itemType.getLegacyId();
     }
 
     /**

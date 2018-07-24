@@ -32,16 +32,6 @@ public class BaseItemStack extends BaseItem {
     private int amount = 1;
 
     /**
-     * Construct the object with default stack size of one, with data value of 0.
-     *
-     * @param id with data value of 0.
-     */
-    @Deprecated
-    public BaseItemStack(int id) {
-        super(id);
-    }
-
-    /**
      * Construct the object with default stack size of one, with damage value of 0.
      *
      * @param itemType The item type
@@ -53,36 +43,11 @@ public class BaseItemStack extends BaseItem {
     /**
      * Construct the object.
      *
-     * @param id type ID
-     * @param amount amount in the stack
-     */
-    @Deprecated
-    public BaseItemStack(int id, int amount) {
-        super(id);
-        this.amount = amount;
-    }
-
-    /**
-     * Construct the object.
-     *
      * @param itemType The item type
      * @param amount amount in the stack
      */
     public BaseItemStack(ItemType itemType, int amount) {
         super(itemType);
-        this.amount = amount;
-    }
-
-    /**
-     * Construct the object.
-     *
-     * @param id type ID
-     * @param amount amount in the stack
-     * @param data data value
-     */
-    @Deprecated
-    public BaseItemStack(int id, int amount, short data) {
-        super(id);
         this.amount = amount;
     }
 

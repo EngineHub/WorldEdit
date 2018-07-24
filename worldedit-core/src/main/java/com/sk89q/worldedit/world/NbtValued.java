@@ -36,7 +36,7 @@ public interface NbtValued {
      * 
      * @return true if there is NBT data
      */
-    public boolean hasNbtData();
+    boolean hasNbtData();
 
     /**
      * Get the object's NBT data (tile entity data). The returned tag, if

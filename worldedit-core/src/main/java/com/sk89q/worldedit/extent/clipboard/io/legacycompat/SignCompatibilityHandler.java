@@ -27,18 +27,19 @@ import com.google.gson.JsonSyntaxException;
 import com.sk89q.jnbt.StringTag;
 import com.sk89q.jnbt.Tag;
 import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.block.BlockTypes;
 
 import java.util.Map;
 
 public class SignCompatibilityHandler implements NBTCompatibilityHandler {
     @Override
-    public boolean isAffectedBlock(BaseBlock block) {
+    public boolean isAffectedBlock(BlockStateHolder block) {
         return block.getBlockType() == BlockTypes.SIGN || block.getBlockType() == BlockTypes.WALL_SIGN;
     }
 
     @Override
-    public void updateNBT(BaseBlock block, Map<String, Tag> values) {
+    public void updateNBT(BlockStateHolder block, Map<String, Tag> values) {
         for (int i = 0; i < 4; ++i) {
             String key = "Text" + (i + 1);
             Tag value = values.get(key);

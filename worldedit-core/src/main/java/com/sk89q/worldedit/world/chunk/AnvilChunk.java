@@ -29,15 +29,17 @@ import com.sk89q.jnbt.Tag;
 import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.blocks.TileEntityBlock;
 import com.sk89q.worldedit.world.DataException;
 import com.sk89q.worldedit.world.World;
+import com.sk89q.worldedit.world.block.BlockState;
+import com.sk89q.worldedit.world.registry.LegacyMapper;
 import com.sk89q.worldedit.world.storage.InvalidFormatException;
 
-import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.annotation.Nullable;
 
 public class AnvilChunk implements Chunk {
 
@@ -256,16 +258,11 @@ public class AnvilChunk implements Chunk {
     public BaseBlock getBlock(Vector position) throws DataException {
         int id = getBlockID(position);
         int data = getBlockData(position);
-        BaseBlock block;
 
-        block = new BaseBlock(id, data);
-
+        BlockState state = LegacyMapper.getInstance().getBlockFromLegacy(id, data);
         CompoundTag tileEntity = getBlockTileEntity(position);
-        if (tileEntity != null) {
-            ((TileEntityBlock) block).setNbtData(tileEntity);
-        }
 
-        return block;
+        return new BaseBlock(state, tileEntity);
     }
 
 }

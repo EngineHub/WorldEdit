@@ -52,8 +52,7 @@ import javax.annotation.Nullable;
 public class BaseBlock implements BlockStateHolder<BaseBlock>, TileEntityBlock {
 
     private BlockState blockState;
-    @Nullable
-    private CompoundTag nbtData;
+    @Nullable CompoundTag nbtData;
 
     /**
      * Construct a block with a state.

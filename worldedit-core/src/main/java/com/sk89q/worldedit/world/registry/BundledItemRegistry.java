@@ -20,6 +20,7 @@
 package com.sk89q.worldedit.world.registry;
 
 import com.sk89q.worldedit.blocks.BaseItem;
+import com.sk89q.worldedit.world.item.ItemType;
 import com.sk89q.worldedit.world.item.ItemTypes;
 
 import javax.annotation.Nullable;
@@ -33,6 +34,7 @@ public class BundledItemRegistry implements ItemRegistry {
     @Nullable
     @Override
     public BaseItem createFromId(String id) {
-        return new BaseItem(ItemTypes.get(id));
+        ItemType itemType = ItemTypes.get(id);
+        return itemType == null ? null : new BaseItem(itemType);
     }
 }

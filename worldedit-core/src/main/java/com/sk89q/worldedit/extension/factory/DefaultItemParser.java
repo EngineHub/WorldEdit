@@ -25,6 +25,8 @@ import com.sk89q.worldedit.extension.input.InputParseException;
 import com.sk89q.worldedit.extension.input.ParserContext;
 import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.internal.registry.InputParser;
+import com.sk89q.worldedit.world.item.ItemType;
+import com.sk89q.worldedit.world.registry.LegacyMapper;
 
 public class DefaultItemParser extends InputParser<BaseItem> {
 
@@ -34,8 +36,26 @@ public class DefaultItemParser extends InputParser<BaseItem> {
 
     @Override
     public BaseItem parseFromInput(String input, ParserContext context) throws InputParseException {
-        BaseItem item = WorldEdit.getInstance().getPlatformManager()
-                .queryCapability(Capability.GAME_HOOKS).getRegistries().getItemRegistry().createFromId(input);
+        BaseItem item = null;
+        // Legacy matcher
+        if (context.isTryingLegacy()) {
+            try {
+                String[] split = input.split(":");
+                ItemType type;
+                if (split.length == 1) {
+                    type = LegacyMapper.getInstance().getItemFromLegacy(Integer.parseInt(split[0]));
+                } else {
+                    type = LegacyMapper.getInstance().getItemFromLegacy(Integer.parseInt(split[0]), Integer.parseInt(split[1]));
+                }
+                item = new BaseItem(type);
+            } catch (NumberFormatException e) {
+            }
+        }
+
+        if (item == null) {
+            item = WorldEdit.getInstance().getPlatformManager()
+                    .queryCapability(Capability.GAME_HOOKS).getRegistries().getItemRegistry().createFromId(input);
+        }
 
         if (item == null) {
             throw new InputParseException("'" + input + "' did not match any item");

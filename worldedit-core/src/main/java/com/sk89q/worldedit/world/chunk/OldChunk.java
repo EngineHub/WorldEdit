@@ -28,9 +28,11 @@ import com.sk89q.jnbt.Tag;
 import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockTypes;
 import com.sk89q.worldedit.world.DataException;
 import com.sk89q.worldedit.world.World;
+import com.sk89q.worldedit.world.registry.LegacyMapper;
 import com.sk89q.worldedit.world.storage.InvalidFormatException;
 
 import java.util.HashMap;
@@ -178,14 +180,10 @@ public class OldChunk implements Chunk {
             throw new DataException("Chunk does not contain position " + position);
         }
 
-        BaseBlock block = new BaseBlock(id, dataVal);
-
+        BlockState state = LegacyMapper.getInstance().getBlockFromLegacy(id, dataVal);
         CompoundTag tileEntity = getBlockTileEntity(position);
-        if (tileEntity != null) {
-            block.setNbtData(tileEntity);
-        }
 
-        return block;
+        return new BaseBlock(state, tileEntity);
     }
 
 }

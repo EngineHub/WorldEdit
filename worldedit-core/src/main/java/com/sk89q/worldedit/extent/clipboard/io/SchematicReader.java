@@ -42,7 +42,9 @@ import com.sk89q.worldedit.extent.clipboard.io.legacycompat.SignCompatibilityHan
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.Location;
+import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.entity.EntityTypes;
+import com.sk89q.worldedit.world.registry.LegacyMapper;
 import com.sk89q.worldedit.world.storage.NBTConversions;
 
 import java.io.IOException;
@@ -196,7 +198,7 @@ public class SchematicReader implements ClipboardReader {
             }
 
             int index = y * width * length + z * width + x;
-            BaseBlock block = new BaseBlock(blocks[index], blockData[index]);
+            BlockState block = LegacyMapper.getInstance().getBlockFromLegacy(blocks[index], blockData[index]);
             for (NBTCompatibilityHandler handler : COMPATIBILITY_HANDLERS) {
                 if (handler.isAffectedBlock(block)) {
                     handler.updateNBT(block, values);
@@ -218,14 +220,14 @@ public class SchematicReader implements ClipboardReader {
                 for (int z = 0; z < length; ++z) {
                     int index = y * width * length + z * width + x;
                     BlockVector pt = new BlockVector(x, y, z);
-                    BaseBlock block = new BaseBlock(blocks[index], blockData[index]);
-
-                    if (tileEntitiesMap.containsKey(pt)) {
-                        block.setNbtData(new CompoundTag(tileEntitiesMap.get(pt)));
-                    }
+                    BlockState state = LegacyMapper.getInstance().getBlockFromLegacy(blocks[index], blockData[index]);
 
                     try {
-                        clipboard.setBlock(region.getMinimumPoint().add(pt), block);
+                        if (tileEntitiesMap.containsKey(pt)) {
+                            clipboard.setBlock(region.getMinimumPoint().add(pt), new BaseBlock(state, new CompoundTag(tileEntitiesMap.get(pt))));
+                        } else {
+                            clipboard.setBlock(region.getMinimumPoint().add(pt), state);
+                        }
                     } catch (WorldEditException e) {
                         switch (failedBlockSets) {
                             case 0:
