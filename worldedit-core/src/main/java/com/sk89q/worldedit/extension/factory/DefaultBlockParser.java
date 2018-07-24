@@ -253,7 +253,7 @@ class DefaultBlockParser extends InputParser<BlockStateHolder> {
                 blockStates = blockInHand.getStates();
             } else {
                 // Attempt to lookup a block from ID or name.
-                blockType = BlockTypes.get(typeString);
+                blockType = BlockTypes.get(typeString.toLowerCase());
 
                 if (blockType == null) {
                     throw new NoMatchException("Does not match a valid block type: '" + input + "'");

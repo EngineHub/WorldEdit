@@ -54,7 +54,7 @@ public class DefaultItemParser extends InputParser<BaseItem> {
 
         if (item == null) {
             item = WorldEdit.getInstance().getPlatformManager()
-                    .queryCapability(Capability.GAME_HOOKS).getRegistries().getItemRegistry().createFromId(input);
+                    .queryCapability(Capability.GAME_HOOKS).getRegistries().getItemRegistry().createFromId(input.toLowerCase());
         }
 
         if (item == null) {
