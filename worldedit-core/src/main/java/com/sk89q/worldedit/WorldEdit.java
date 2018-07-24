@@ -22,10 +22,10 @@ package com.sk89q.worldedit;
 import static com.sk89q.worldedit.event.platform.Interaction.HIT;
 import static com.sk89q.worldedit.event.platform.Interaction.OPEN;
 
-import com.sk89q.worldedit.CuboidClipboard.FlipDirection;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BaseItem;
-import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.event.platform.BlockInteractEvent;
 import com.sk89q.worldedit.event.platform.InputType;
@@ -51,6 +51,7 @@ import com.sk89q.worldedit.util.io.file.FilenameException;
 import com.sk89q.worldedit.util.io.file.FilenameResolutionException;
 import com.sk89q.worldedit.util.io.file.InvalidFilenameException;
 import com.sk89q.worldedit.util.logging.WorldEditPrefixHandler;
+import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.registry.BundledBlockData;
 import com.sk89q.worldedit.world.registry.BundledItemData;
 import com.sk89q.worldedit.world.registry.LegacyMapper;
@@ -61,6 +62,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -253,15 +256,8 @@ public class WorldEdit {
                 throw new FileSelectionAbortedException("No file selected");
             }
         } else {
-            if (defaultExt != null && filename.lastIndexOf('.') == -1) {
-                filename += "." + defaultExt;
-            }
-
-            if (!filename.matches("^[A-Za-z0-9_\\- \\./\\\\'\\$@~!%\\^\\*\\(\\)\\[\\]\\+\\{\\},\\?]+\\.[A-Za-z0-9]+$")) {
-                throw new InvalidFilenameException(filename, "Invalid characters or extension missing");
-            }
-
-            f = new File(dir, filename);
+            List<String> exts = extensions == null ? ImmutableList.of(defaultExt) : Lists.asList(defaultExt, extensions);
+            return getSafeFileWithExtensions(dir, filename,  exts, isSave);
         }
 
         try {
@@ -278,6 +274,39 @@ public class WorldEdit {
             throw new FilenameResolutionException(filename,
                     "Failed to resolve path");
         }
+    }
+
+    private File getSafeFileWithExtensions(File dir, String filename, List<String> exts, boolean isSave) throws InvalidFilenameException {
+        if (isSave) {
+            // First is default, only use that.
+            if (exts.size() != 1) {
+                exts = exts.subList(0, 1);
+            }
+        }
+        File result = null;
+        for (Iterator<String> iter = exts.iterator(); iter.hasNext() && (result == null || !result.exists());) {
+            result = getSafeFileWithExtension(dir, filename, iter.next());
+        }
+        if (result == null) {
+            throw new InvalidFilenameException(filename, "Invalid characters or extension missing");
+        }
+        return result;
+    }
+
+    private File getSafeFileWithExtension(File dir, String filename, String extension) {
+        if (extension != null && filename.lastIndexOf('.') == -1) {
+            filename += "." + extension;
+        }
+
+        if (!checkFilename(filename)) {
+            return null;
+        }
+
+        return new File(dir, filename);
+    }
+
+    private boolean checkFilename(String filename) {
+        return filename.matches("^[A-Za-z0-9_\\- \\./\\\\'\\$@~!%\\^\\*\\(\\)\\[\\]\\+\\{\\},\\?]+\\.[A-Za-z0-9]+$");
     }
 
     /**
@@ -429,47 +458,6 @@ public class WorldEdit {
             throw new UnknownDirectionException(dirStr);
         }
         return dir;
-    }
-
-    /**
-     * Get diagonal direction vector for a player's direction. May return
-     * null if a direction could not be found.
-     *
-     * @param player the player
-     * @param dirStr the direction string
-     * @return a direction vector
-     * @throws UnknownDirectionException thrown if the direction is not known
-     */
-    public Vector getDiagonalDirection(Player player, String dirStr) throws UnknownDirectionException {
-        return getPlayerDirection(player, dirStr.toLowerCase()).vector();
-    }
-
-    /**
-     * Get the flip direction for a player's direction.
-     *
-     * @param player the player
-     * @param dirStr the direction string
-     * @return a direction vector
-     * @throws UnknownDirectionException thrown if the direction is not known
-     */
-    public FlipDirection getFlipDirection(Player player, String dirStr) throws UnknownDirectionException {
-        final PlayerDirection dir = getPlayerDirection(player, dirStr);
-        switch (dir) {
-        case WEST:
-        case EAST:
-            return FlipDirection.WEST_EAST;
-
-        case NORTH:
-        case SOUTH:
-            return FlipDirection.NORTH_SOUTH;
-
-        case UP:
-        case DOWN:
-            return FlipDirection.UP_DOWN;
-
-        default:
-            throw new UnknownDirectionException(dir.name());
-        }
     }
 
     /**

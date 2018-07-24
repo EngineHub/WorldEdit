@@ -35,6 +35,7 @@ import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extent.clipboard.BlockArrayClipboard;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormat;
+import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormats;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardReader;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardWriter;
 import com.sk89q.worldedit.function.operation.Operations;
@@ -44,7 +45,6 @@ import com.sk89q.worldedit.util.command.binding.Switch;
 import com.sk89q.worldedit.util.command.parametric.Optional;
 import com.sk89q.worldedit.util.io.Closer;
 import com.sk89q.worldedit.util.io.file.FilenameException;
-import com.sk89q.worldedit.world.registry.Registries;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -93,14 +93,17 @@ public class SchematicCommands {
         LocalConfiguration config = worldEdit.getConfiguration();
 
         File dir = worldEdit.getWorkingDirectoryFile(config.saveDir);
-        File f = worldEdit.getSafeOpenFile(player, dir, filename, "schematic", "schematic");
+        File f = worldEdit.getSafeOpenFile(player, dir, filename, "schematic", ClipboardFormats.getFileExtensionArray());
 
         if (!f.exists()) {
             player.printError("Schematic " + filename + " does not exist!");
             return;
         }
 
-        ClipboardFormat format = ClipboardFormat.findByAlias(formatName);
+        ClipboardFormat format = ClipboardFormats.findByFile(f);
+        if (format == null) {
+            format = ClipboardFormats.findByAlias(formatName);
+        }
         if (format == null) {
             player.printError("Unknown schematic format: " + formatName);
             return;
@@ -109,7 +112,7 @@ public class SchematicCommands {
         try (Closer closer = Closer.create()) {
             FileInputStream fis = closer.register(new FileInputStream(f));
             BufferedInputStream bis = closer.register(new BufferedInputStream(fis));
-            ClipboardReader reader = format.getReader(bis);
+            ClipboardReader reader = closer.register(format.getReader(bis));
 
             Clipboard clipboard = reader.read();
             session.setClipboard(new ClipboardHolder(clipboard));
@@ -134,13 +137,14 @@ public class SchematicCommands {
         LocalConfiguration config = worldEdit.getConfiguration();
 
         File dir = worldEdit.getWorkingDirectoryFile(config.saveDir);
-        File f = worldEdit.getSafeSaveFile(player, dir, filename, "schematic", "schematic");
 
-        ClipboardFormat format = ClipboardFormat.findByAlias(formatName);
+        ClipboardFormat format = ClipboardFormats.findByAlias(formatName);
         if (format == null) {
             player.printError("Unknown schematic format: " + formatName);
             return;
         }
+
+        File f = worldEdit.getSafeSaveFile(player, dir, filename, format.getPrimaryFileExtension());
 
         ClipboardHolder holder = session.getClipboard();
         Clipboard clipboard = holder.getClipboard();
@@ -218,9 +222,9 @@ public class SchematicCommands {
         actor.print("Available clipboard formats (Name: Lookup names)");
         StringBuilder builder;
         boolean first = true;
-        for (ClipboardFormat format : ClipboardFormat.values()) {
+        for (ClipboardFormat format : ClipboardFormats.getAll()) {
             builder = new StringBuilder();
-            builder.append(format.name()).append(": ");
+            builder.append(format.getName()).append(": ");
             for (String lookupName : format.getAliases()) {
                 if (!first) {
                     builder.append(", ");
@@ -325,10 +329,10 @@ public class SchematicCommands {
             StringBuilder build = new StringBuilder();
 
             build.append("\u00a72");
-            ClipboardFormat format = ClipboardFormat.findByFile(file);
+            ClipboardFormat format = ClipboardFormats.findByFile(file);
             boolean inRoot = file.getParentFile().getName().equals(prefix);
             build.append(inRoot ? file.getName() : file.getPath().split(Pattern.quote(prefix + File.separator))[1])
-                    .append(": ").append(format == null ? "Unknown" : format.name());
+                    .append(": ").append(format == null ? "Unknown" : format.getName());
             result.add(build.toString());
         }
         return result;

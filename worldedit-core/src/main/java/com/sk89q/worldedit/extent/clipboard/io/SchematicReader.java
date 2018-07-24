@@ -297,4 +297,8 @@ public class SchematicReader implements ClipboardReader {
         return expected.cast(test);
     }
 
+    @Override
+    public void close() throws IOException {
+        inputStream.close();
+    }
 }
