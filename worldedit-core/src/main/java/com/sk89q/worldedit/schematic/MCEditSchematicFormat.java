@@ -35,6 +35,7 @@ import com.sk89q.worldedit.CuboidClipboard;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.data.DataException;
+import com.sk89q.worldedit.extent.clipboard.io.SupportedClipboardFormat;
 
 import java.io.DataInputStream;
 import java.io.File;
@@ -50,6 +51,10 @@ import java.util.Map.Entry;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
+/**
+ * @deprecated Use {@link SupportedClipboardFormat#SCHEMATIC} instead.
+ */
+@Deprecated
 public class MCEditSchematicFormat extends SchematicFormat {
 
     private static final int MAX_SIZE = Short.MAX_VALUE - Short.MIN_VALUE;

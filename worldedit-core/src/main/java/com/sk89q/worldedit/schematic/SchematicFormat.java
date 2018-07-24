@@ -22,16 +22,26 @@ package com.sk89q.worldedit.schematic;
 import com.sk89q.worldedit.CuboidClipboard;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.data.DataException;
+import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormat;
+import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormats;
+import com.sk89q.worldedit.extent.clipboard.io.SupportedClipboardFormat;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
+/**
+ * @deprecated Use {@link ClipboardFormat} and {@link ClipboardFormats} instead.
+ */
+@Deprecated
 public abstract class SchematicFormat {
 
     private static final Map<String, SchematicFormat> SCHEMATIC_FORMATS = new HashMap<String, SchematicFormat>();
 
     // Built-in schematic formats
+    /**
+     * @deprecated Use {@link SupportedClipboardFormat#SCHEMATIC} instead.
+     */
     public static final SchematicFormat MCEDIT = new MCEditSchematicFormat();
 
     public static Set<SchematicFormat> getFormats() {

@@ -79,11 +79,10 @@ public final class ListTag extends Tag {
      */
     @Nullable
     public Tag getIfExists(int index) {
-        try {
-            return value.get(index);
-        } catch (NoSuchElementException e) {
+        if (index >= value.size()) {
             return null;
         }
+        return value.get(index);
     }
 
     /**
