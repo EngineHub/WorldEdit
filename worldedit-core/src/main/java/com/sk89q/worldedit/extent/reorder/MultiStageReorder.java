@@ -26,19 +26,26 @@ import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BlockType;
 import com.sk89q.worldedit.blocks.Blocks;
-import com.sk89q.worldedit.world.block.BlockCategories;
-import com.sk89q.worldedit.world.block.BlockState;
-import com.sk89q.worldedit.world.block.BlockStateHolder;
-import com.sk89q.worldedit.world.block.BlockTypes;
 import com.sk89q.worldedit.extent.AbstractDelegateExtent;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.function.operation.BlockMapEntryPlacer;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.OperationQueue;
 import com.sk89q.worldedit.function.operation.RunContext;
+import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.util.collection.TupleArrayList;
+import com.sk89q.worldedit.world.block.BlockCategories;
+import com.sk89q.worldedit.world.block.BlockState;
+import com.sk89q.worldedit.world.block.BlockStateHolder;
+import com.sk89q.worldedit.world.block.BlockTypes;
 
-import java.util.*;
+import java.util.Deque;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Re-orders blocks into several stages.
@@ -151,16 +158,16 @@ public class MultiStageReorder extends AbstractDelegateExtent implements Reorder
                     assert (blockTypes.containsKey(current));
 
                     final BlockStateHolder blockStateHolder = blockTypes.get(current);
-//                    final int data = baseBlock.getData();
 
                     if (BlockCategories.DOORS.contains(blockStateHolder.getBlockType())) {
-// TODO                            if ((data & 0x8) == 0) {
-//                                // Deal with lower door halves being attached to the floor AND the upper half
-//                                BlockVector upperBlock = current.add(0, 1, 0).toBlockVector();
-//                                if (blocks.contains(upperBlock) && !walked.contains(upperBlock)) {
-//                                    walked.addFirst(upperBlock);
-//                                }
-//                            }
+                        Property<Object> halfProperty = blockStateHolder.getBlockType().getProperty("half");
+                        if (blockStateHolder.getState(halfProperty).equals("lower")) {
+                            // Deal with lower door halves being attached to the floor AND the upper half
+                            BlockVector upperBlock = current.add(0, 1, 0).toBlockVector();
+                            if (blocks.contains(upperBlock) && !walked.contains(upperBlock)) {
+                                walked.addFirst(upperBlock);
+                            }
+                        }
                     } else if (BlockCategories.RAILS.contains(blockStateHolder.getBlockType())) {
                         BlockVector lowerBlock = current.add(0, -1, 0).toBlockVector();
                         if (blocks.contains(lowerBlock) && !walked.contains(lowerBlock)) {

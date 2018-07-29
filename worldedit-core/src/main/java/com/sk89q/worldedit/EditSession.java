@@ -27,11 +27,6 @@ import static com.sk89q.worldedit.regions.Regions.minimumBlockY;
 
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.LazyBlock;
-import com.sk89q.worldedit.world.block.BlockCategories;
-import com.sk89q.worldedit.world.block.BlockState;
-import com.sk89q.worldedit.world.block.BlockStateHolder;
-import com.sk89q.worldedit.world.block.BlockType;
-import com.sk89q.worldedit.world.block.BlockTypes;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.event.extent.EditSessionEvent;
@@ -108,6 +103,11 @@ import com.sk89q.worldedit.util.eventbus.EventBus;
 import com.sk89q.worldedit.world.NullWorld;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.biome.BaseBiome;
+import com.sk89q.worldedit.world.block.BlockCategories;
+import com.sk89q.worldedit.world.block.BlockState;
+import com.sk89q.worldedit.world.block.BlockStateHolder;
+import com.sk89q.worldedit.world.block.BlockType;
+import com.sk89q.worldedit.world.block.BlockTypes;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -1137,35 +1137,28 @@ public class EditSession implements Extent {
      *
      * @param origin the original position
      * @param radius the radius to fix
-     * @param moving the block ID of the moving liquid
-     * @param stationary the block ID of the stationary liquid
+     * @param fluid the type of the fluid
      * @return number of blocks affected
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
-    public int fixLiquid(Vector origin, double radius, BlockType moving, BlockType stationary) throws MaxChangedBlocksException {
+    public int fixLiquid(Vector origin, double radius, BlockType fluid) throws MaxChangedBlocksException {
         checkNotNull(origin);
         checkArgument(radius >= 0, "radius >= 0 required");
 
         // Our origins can only be liquids
-        BlockMask liquidMask = new BlockMask(
-                this,
-                moving.getDefaultState(),
-                stationary.getDefaultState());
+        BlockMask liquidMask = new BlockMask(this, new BlockState(fluid, new HashMap<>()));
 
         // But we will also visit air blocks
-        MaskIntersection blockMask =
-                new MaskUnion(liquidMask,
-                        new BlockMask(
-                                this,
-                                BlockTypes.AIR.getDefaultState()));
+        MaskIntersection blockMask = new MaskUnion(liquidMask, new BlockMask(this, BlockTypes.AIR.getDefaultState()));
 
         // There are boundaries that the routine needs to stay in
         MaskIntersection mask = new MaskIntersection(
                 new BoundedHeightMask(0, Math.min(origin.getBlockY(), getWorld().getMaxY())),
                 new RegionMask(new EllipsoidRegion(null, origin, new Vector(radius, radius, radius))),
-                blockMask);
+                blockMask
+        );
 
-        BlockReplace replace = new BlockReplace(this, new BlockPattern(stationary.getDefaultState()));
+        BlockReplace replace = new BlockReplace(this, new BlockPattern(fluid.getDefaultState()));
         NonRisingVisitor visitor = new NonRisingVisitor(mask, replace);
 
         // Around the origin in a 3x3 block
