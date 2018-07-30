@@ -19,8 +19,10 @@
 
 package com.sk89q.worldedit;
 
-import org.junit.*;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import org.junit.Test;
 
 public class VectorTest {
     @Test

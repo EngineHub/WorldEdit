@@ -22,10 +22,10 @@ package com.sk89q.worldedit.forge;
 import com.sk89q.worldedit.world.biome.BaseBiome;
 import com.sk89q.worldedit.world.biome.BiomeData;
 import com.sk89q.worldedit.world.registry.BiomeRegistry;
+import net.minecraft.world.biome.Biome;
 
 import java.util.ArrayList;
 import java.util.List;
-import net.minecraft.world.biome.Biome;
 
 /**
  * Provides access to biome data in Forge.

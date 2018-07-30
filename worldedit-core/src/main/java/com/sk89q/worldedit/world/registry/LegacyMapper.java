@@ -27,11 +27,11 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.extension.input.ParserContext;
+import com.sk89q.worldedit.util.gson.VectorAdapter;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.item.ItemType;
 import com.sk89q.worldedit.world.item.ItemTypes;
-import com.sk89q.worldedit.extension.input.ParserContext;
-import com.sk89q.worldedit.util.gson.VectorAdapter;
 
 import java.io.IOException;
 import java.net.URL;

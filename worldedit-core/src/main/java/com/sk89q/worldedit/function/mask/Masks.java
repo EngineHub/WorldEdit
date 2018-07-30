@@ -19,11 +19,12 @@
 
 package com.sk89q.worldedit.function.mask;
 
-import com.sk89q.worldedit.*;
+import static com.google.common.base.Preconditions.checkNotNull;
+
+import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.Vector2D;
 
 import javax.annotation.Nullable;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Various utility functions related to {@link Mask} and {@link Mask2D}.

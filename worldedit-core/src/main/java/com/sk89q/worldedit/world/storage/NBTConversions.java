@@ -19,11 +19,11 @@
 
 package com.sk89q.worldedit.world.storage;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.sk89q.jnbt.ListTag;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.util.Location;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Utility methods for working with NBT data used in Minecraft.

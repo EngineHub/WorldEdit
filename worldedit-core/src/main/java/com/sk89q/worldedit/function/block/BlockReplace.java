@@ -19,13 +19,13 @@
 
 package com.sk89q.worldedit.function.block;
 
-import com.sk89q.worldedit.extent.Extent;
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.function.RegionFunction;
 import com.sk89q.worldedit.function.pattern.Pattern;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Replaces blocks with a given pattern.

@@ -19,14 +19,20 @@
 
 package com.sk89q.worldedit.scripting;
 
-import com.sk89q.worldedit.*;
-import com.sk89q.worldedit.world.block.BlockStateHolder;
+import com.sk89q.worldedit.DisallowedItemException;
+import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.LocalConfiguration;
+import com.sk89q.worldedit.LocalSession;
+import com.sk89q.worldedit.UnknownItemException;
+import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.command.InsufficientArgumentsException;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.input.ParserContext;
 import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.util.io.file.FilenameException;
+import com.sk89q.worldedit.world.block.BlockStateHolder;
 
 import java.io.File;
 import java.util.ArrayList;

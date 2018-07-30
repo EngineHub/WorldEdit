@@ -28,8 +28,9 @@ import com.sk89q.worldedit.util.command.parametric.BindingHelper;
 import com.sk89q.worldedit.util.command.parametric.BindingMatch;
 import com.sk89q.worldedit.util.command.parametric.ParameterException;
 
-import javax.annotation.Nullable;
 import java.lang.annotation.Annotation;
+
+import javax.annotation.Nullable;
 
 /**
  * Handles basic Java types such as {@link String}s, {@link Byte}s, etc.

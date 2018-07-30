@@ -22,11 +22,12 @@ package com.sk89q.worldedit.extent;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
-import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.regions.Region;
+import com.sk89q.worldedit.util.Location;
+
+import java.util.List;
 
 import javax.annotation.Nullable;
-import java.util.List;
 
 /**
  * A world, portion of a world, clipboard, or other object that can have blocks

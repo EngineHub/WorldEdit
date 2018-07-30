@@ -19,11 +19,11 @@
 
 package com.sk89q.worldedit.util.logging;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Date;
 import java.util.logging.Formatter;
 import java.util.logging.LogRecord;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 
 /**
  * A standard logging format for WorldEdit.

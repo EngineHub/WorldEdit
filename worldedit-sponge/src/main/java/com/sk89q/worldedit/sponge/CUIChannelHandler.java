@@ -23,7 +23,11 @@ import com.sk89q.worldedit.LocalSession;
 import org.spongepowered.api.Platform;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.network.*;
+import org.spongepowered.api.network.ChannelBinding;
+import org.spongepowered.api.network.ChannelBuf;
+import org.spongepowered.api.network.PlayerConnection;
+import org.spongepowered.api.network.RawDataListener;
+import org.spongepowered.api.network.RemoteConnection;
 
 import java.nio.charset.StandardCharsets;
 

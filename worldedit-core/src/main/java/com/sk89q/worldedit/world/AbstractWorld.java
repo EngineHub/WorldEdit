@@ -24,17 +24,15 @@ import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.blocks.BaseItemStack;
-import com.sk89q.worldedit.world.block.BlockState;
-import com.sk89q.worldedit.world.block.BlockStateHolder;
-import com.sk89q.worldedit.world.block.BlockType;
-import com.sk89q.worldedit.world.block.BlockTypes;
 import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.function.mask.BlockMask;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.util.Direction;
+import com.sk89q.worldedit.world.block.BlockStateHolder;
+import com.sk89q.worldedit.world.block.BlockType;
+import com.sk89q.worldedit.world.block.BlockTypes;
 
-import java.util.HashMap;
 import java.util.PriorityQueue;
 
 import javax.annotation.Nullable;
@@ -65,8 +63,8 @@ public abstract class AbstractWorld implements World {
     @Override
     public Mask createLiquidMask() {
         return new BlockMask(this,
-                new BlockState(BlockTypes.LAVA, new HashMap<>()),
-                new BlockState(BlockTypes.WATER, new HashMap<>()));
+                BlockTypes.LAVA.getDefaultState().toFuzzy(),
+                BlockTypes.WATER.getDefaultState().toFuzzy());
     }
 
     @Override

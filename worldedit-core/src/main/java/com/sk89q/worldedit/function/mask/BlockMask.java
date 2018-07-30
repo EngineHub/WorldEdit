@@ -19,17 +19,18 @@
 
 package com.sk89q.worldedit.function.mask;
 
-import com.sk89q.worldedit.world.block.BlockStateHolder;
-import com.sk89q.worldedit.extent.Extent;
-import com.sk89q.worldedit.Vector;
+import static com.google.common.base.Preconditions.checkNotNull;
 
-import javax.annotation.Nullable;
+import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.extent.Extent;
+import com.sk89q.worldedit.world.block.BlockStateHolder;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import javax.annotation.Nullable;
 
 /**
  * A mask that checks whether blocks at the given positions are matched by

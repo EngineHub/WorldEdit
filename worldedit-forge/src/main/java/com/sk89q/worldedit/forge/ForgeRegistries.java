@@ -20,8 +20,8 @@
 package com.sk89q.worldedit.forge;
 
 import com.sk89q.worldedit.world.registry.BiomeRegistry;
-import com.sk89q.worldedit.world.registry.ItemRegistry;
 import com.sk89q.worldedit.world.registry.BundledRegistries;
+import com.sk89q.worldedit.world.registry.ItemRegistry;
 
 /**
  * World data for the Forge platform.

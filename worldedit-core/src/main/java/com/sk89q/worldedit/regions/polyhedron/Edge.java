@@ -19,9 +19,9 @@
 
 package com.sk89q.worldedit.regions.polyhedron;
 
-import com.sk89q.worldedit.Vector;
-
 import static com.google.common.base.Preconditions.checkNotNull;
+
+import com.sk89q.worldedit.Vector;
 
 public class Edge {
 

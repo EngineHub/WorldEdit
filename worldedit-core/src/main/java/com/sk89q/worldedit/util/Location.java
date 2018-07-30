@@ -19,10 +19,10 @@
 
 package com.sk89q.worldedit.util;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.extent.Extent;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Represents a location in a world with has a direction.

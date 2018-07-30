@@ -20,9 +20,9 @@
 package com.sk89q.worldedit.util;
 
 import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.world.block.BlockTypes;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.world.World;
+import com.sk89q.worldedit.world.block.BlockTypes;
 
 /**
  * This class uses an inefficient method to figure out what block a player
@@ -102,7 +102,7 @@ public class TargetBlock {
         boolean searchForLastBlock = true;
         Location lastBlock = null;
         while (getNextBlock() != null) {
-            if (world.getLazyBlock(getCurrentBlock().toVector()).getBlockType() == BlockTypes.AIR) {
+            if (world.getBlock(getCurrentBlock().toVector()).getBlockType() == BlockTypes.AIR) {
                 if (searchForLastBlock) {
                     lastBlock = getCurrentBlock();
                     if (lastBlock.getBlockY() <= 0 || lastBlock.getBlockY() >= world.getMaxY()) {
@@ -124,7 +124,7 @@ public class TargetBlock {
      * @return Block
      */
     public Location getTargetBlock() {
-        while (getNextBlock() != null && world.getLazyBlock(getCurrentBlock().toVector()).getBlockType() == BlockTypes.AIR) ;
+        while (getNextBlock() != null && world.getBlock(getCurrentBlock().toVector()).getBlockType() == BlockTypes.AIR) ;
         return getCurrentBlock();
     }
 

@@ -19,21 +19,29 @@
 
 package com.sk89q.worldedit.regions.selector;
 
-import com.sk89q.worldedit.*;
+import static com.google.common.base.Preconditions.checkNotNull;
+
+import com.sk89q.worldedit.BlockVector;
+import com.sk89q.worldedit.IncompleteRegionException;
+import com.sk89q.worldedit.LocalSession;
+import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.Vector2D;
 import com.sk89q.worldedit.extension.platform.Actor;
-import com.sk89q.worldedit.internal.cui.*;
+import com.sk89q.worldedit.internal.cui.CUIRegion;
+import com.sk89q.worldedit.internal.cui.SelectionCylinderEvent;
+import com.sk89q.worldedit.internal.cui.SelectionMinMaxEvent;
+import com.sk89q.worldedit.internal.cui.SelectionPointEvent;
 import com.sk89q.worldedit.regions.CylinderRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.RegionSelector;
 import com.sk89q.worldedit.regions.selector.limit.SelectorLimits;
 import com.sk89q.worldedit.world.World;
 
-import javax.annotation.Nullable;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import javax.annotation.Nullable;
 
 /**
  * Creates a {@code CylinderRegionSelector} from a user's selections.

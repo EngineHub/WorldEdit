@@ -31,7 +31,6 @@ import com.sk89q.worldedit.world.DataException;
 import com.sk89q.worldedit.world.chunk.Chunk;
 import com.sk89q.worldedit.world.storage.ChunkStore;
 import com.sk89q.worldedit.world.storage.MissingChunkException;
-import com.sk89q.worldedit.world.storage.MissingWorldException;
 
 import java.io.IOException;
 import java.util.ArrayList;

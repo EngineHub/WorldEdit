@@ -27,7 +27,6 @@ import com.google.common.collect.Table;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.registry.state.Property;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -37,7 +36,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * An immutable class that represents the state a block can be in.

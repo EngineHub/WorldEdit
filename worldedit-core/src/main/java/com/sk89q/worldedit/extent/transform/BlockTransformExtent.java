@@ -24,7 +24,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.blocks.LazyBlock;
 import com.sk89q.worldedit.extent.AbstractDelegateExtent;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.math.transform.Transform;
@@ -80,11 +79,6 @@ public class BlockTransformExtent extends AbstractDelegateExtent {
     @Override
     public BlockState getBlock(Vector position) {
         return transformBlock(super.getBlock(position), false);
-    }
-
-    @Override
-    public LazyBlock getLazyBlock(Vector position) {
-        return transformBlock(super.getLazyBlock(position), false);
     }
 
     @Override

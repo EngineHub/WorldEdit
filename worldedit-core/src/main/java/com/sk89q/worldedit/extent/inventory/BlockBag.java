@@ -19,9 +19,9 @@
 
 package com.sk89q.worldedit.extent.inventory;
 
+import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockTypes;
-import com.sk89q.worldedit.util.Location;
 
 /**
  * Represents a source to get blocks from and store removed ones.

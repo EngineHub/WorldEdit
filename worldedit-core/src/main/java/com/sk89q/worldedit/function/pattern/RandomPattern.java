@@ -19,14 +19,14 @@
 
 package com.sk89q.worldedit.function.pattern;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Uses a random pattern of a weighted list of patterns.

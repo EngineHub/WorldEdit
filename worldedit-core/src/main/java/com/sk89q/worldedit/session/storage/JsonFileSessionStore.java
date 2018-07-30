@@ -19,6 +19,8 @@
 
 package com.sk89q.worldedit.session.storage;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonIOException;
@@ -37,8 +39,6 @@ import java.io.IOException;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Stores sessions as JSON files in a directory.

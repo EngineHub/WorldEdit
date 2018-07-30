@@ -20,7 +20,6 @@
  package com.sk89q.worldedit.forge.net;
 
 import com.sk89q.worldedit.forge.ForgeWorldEdit;
-
 import io.netty.buffer.ByteBuf;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;

@@ -19,11 +19,11 @@
 
 package com.sk89q.worldedit.function.pattern;
 
-import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.world.block.BlockStateHolder;
-import com.sk89q.worldedit.extent.clipboard.Clipboard;
-
 import static com.google.common.base.Preconditions.checkNotNull;
+
+import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.extent.clipboard.Clipboard;
+import com.sk89q.worldedit.world.block.BlockStateHolder;
 
 /**
  * A pattern that reads from {@link Clipboard}.

@@ -19,6 +19,8 @@
 
 package com.sk89q.worldedit.util.io;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Throwables;
 
@@ -30,8 +32,6 @@ import java.util.Deque;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.ZipFile;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class Closer implements Closeable {
 

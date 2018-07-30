@@ -32,10 +32,6 @@ import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.blocks.BaseItemStack;
-import com.sk89q.worldedit.blocks.LazyBlock;
-import com.sk89q.worldedit.world.block.BlockState;
-import com.sk89q.worldedit.world.block.BlockStateHolder;
-import com.sk89q.worldedit.world.item.ItemTypes;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.internal.Constants;
@@ -46,6 +42,9 @@ import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.TreeGenerator.TreeType;
 import com.sk89q.worldedit.world.AbstractWorld;
 import com.sk89q.worldedit.world.biome.BaseBiome;
+import com.sk89q.worldedit.world.block.BlockState;
+import com.sk89q.worldedit.world.block.BlockStateHolder;
+import com.sk89q.worldedit.world.item.ItemTypes;
 import com.sk89q.worldedit.world.registry.LegacyMapper;
 import com.sk89q.worldedit.world.weather.WeatherType;
 import net.minecraft.block.Block;
@@ -379,11 +378,6 @@ public class ForgeWorld extends AbstractWorld {
         IBlockState state = world.getBlockState(pos);
 
         return LegacyMapper.getInstance().getBlockFromLegacy(Block.getIdFromBlock(state.getBlock()), state.getBlock().getMetaFromState(state));
-    }
-
-    @Override
-    public LazyBlock getLazyBlock(Vector position) {
-        return new LazyBlock(getBlock(position), this, position);
     }
 
     @Override

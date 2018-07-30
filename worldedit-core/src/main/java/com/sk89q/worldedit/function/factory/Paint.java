@@ -19,6 +19,12 @@
 
 package com.sk89q.worldedit.function.factory;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.sk89q.worldedit.regions.Regions.asFlatRegion;
+import static com.sk89q.worldedit.regions.Regions.maximumBlockY;
+import static com.sk89q.worldedit.regions.Regions.minimumBlockY;
+import static com.sk89q.worldedit.util.GuavaUtil.firstNonNull;
+
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.extent.NullExtent;
 import com.sk89q.worldedit.function.Contextual;
@@ -32,10 +38,6 @@ import com.sk89q.worldedit.function.visitor.LayerVisitor;
 import com.sk89q.worldedit.math.noise.RandomNoise;
 import com.sk89q.worldedit.regions.NullRegion;
 import com.sk89q.worldedit.regions.Region;
-
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.sk89q.worldedit.regions.Regions.*;
-import static com.sk89q.worldedit.util.GuavaUtil.firstNonNull;
 
 public class Paint implements Contextual<Operation> {
 

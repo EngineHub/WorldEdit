@@ -26,7 +26,6 @@ import static com.sk89q.worldedit.regions.Regions.maximumBlockY;
 import static com.sk89q.worldedit.regions.Regions.minimumBlockY;
 
 import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.blocks.LazyBlock;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.event.extent.EditSessionEvent;
@@ -397,11 +396,6 @@ public class EditSession implements Extent {
     @Override
     public boolean setBiome(Vector2D position, BaseBiome biome) {
         return bypassNone.setBiome(position, biome);
-    }
-
-    @Override
-    public LazyBlock getLazyBlock(Vector position) {
-        return world.getLazyBlock(position);
     }
 
     @Override
@@ -1146,7 +1140,7 @@ public class EditSession implements Extent {
         checkArgument(radius >= 0, "radius >= 0 required");
 
         // Our origins can only be liquids
-        BlockMask liquidMask = new BlockMask(this, new BlockState(fluid, new HashMap<>()));
+        BlockMask liquidMask = new BlockMask(this, fluid.getDefaultState().toFuzzy());
 
         // But we will also visit air blocks
         MaskIntersection blockMask = new MaskUnion(liquidMask, new BlockMask(this, BlockTypes.AIR.getDefaultState()));
@@ -1508,7 +1502,7 @@ public class EditSession implements Extent {
                     // Snow should not cover these blocks
                     if (id.getMaterial().isTranslucent()) {
                         // Add snow on leaves
-                        if (BlockCategories.LEAVES.contains(id)) {
+                        if (!BlockCategories.LEAVES.contains(id)) {
                             break;
                         }
                     }
@@ -1678,7 +1672,7 @@ public class EditSession implements Extent {
                     for (int z = minZ; z <= maxZ; ++z) {
                         Vector pt = new Vector(x, y, z);
 
-                        BlockType type = getLazyBlock(pt).getBlockType();
+                        BlockType type = getBlock(pt).getBlockType();
 
                         if (map.containsKey(type)) {
                             map.get(type).increment();
@@ -1692,7 +1686,7 @@ public class EditSession implements Extent {
             }
         } else {
             for (Vector pt : region) {
-                BlockType type = getLazyBlock(pt).getBlockType();
+                BlockType type = getBlock(pt).getBlockType();
 
                 if (map.containsKey(type)) {
                     map.get(type).increment();

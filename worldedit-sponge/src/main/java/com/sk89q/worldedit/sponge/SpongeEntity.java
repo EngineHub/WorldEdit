@@ -19,6 +19,8 @@
 
 package com.sk89q.worldedit.sponge;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.flowpowered.math.vector.Vector3d;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
@@ -28,10 +30,9 @@ import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.NullWorld;
 import org.spongepowered.api.world.World;
 
-import javax.annotation.Nullable;
 import java.lang.ref.WeakReference;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import javax.annotation.Nullable;
 
 class SpongeEntity implements Entity {
 

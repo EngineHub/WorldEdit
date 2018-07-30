@@ -22,7 +22,6 @@ package com.sk89q.worldedit.sponge;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandCallable;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.service.context.Contextual;
 import org.spongepowered.api.service.permission.PermissionDescription;
 import org.spongepowered.api.service.permission.PermissionService;
 import org.spongepowered.api.service.permission.SubjectReference;

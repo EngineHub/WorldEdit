@@ -22,11 +22,11 @@ package com.sk89q.worldedit.function.generator;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.function.RegionFunction;
+import com.sk89q.worldedit.util.TreeGenerator;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.block.BlockTypes;
-import com.sk89q.worldedit.function.RegionFunction;
-import com.sk89q.worldedit.util.TreeGenerator;
 
 /**
  * Generates forests by searching for the ground starting from the given upper Y
@@ -53,10 +53,10 @@ public class ForestGenerator implements RegionFunction {
         BlockStateHolder block = editSession.getBlock(position);
         BlockType t = block.getBlockType();
 
-        if (t == BlockTypes.GRASS || t == BlockTypes.DIRT) {
+        if (t == BlockTypes.GRASS_BLOCK || t == BlockTypes.DIRT) {
             treeType.generate(editSession, position.add(0, 1, 0));
             return true;
-        } else if (t == BlockTypes.TALL_GRASS || t == BlockTypes.DEAD_BUSH || t == BlockTypes.POPPY || t == BlockTypes.DANDELION) { // TODO: This list needs to be moved
+        } else if (t == BlockTypes.GRASS || t == BlockTypes.DEAD_BUSH || t == BlockTypes.POPPY || t == BlockTypes.DANDELION) { // TODO: This list needs to be moved
             editSession.setBlock(position, BlockTypes.AIR.getDefaultState());
             treeType.generate(editSession, position);
             return true;

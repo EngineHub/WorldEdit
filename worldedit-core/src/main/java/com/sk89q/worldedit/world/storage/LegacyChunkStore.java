@@ -22,7 +22,7 @@ package com.sk89q.worldedit.world.storage;
 import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.jnbt.NBTInputStream;
 import com.sk89q.jnbt.Tag;
-import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.Vector2D;
 import com.sk89q.worldedit.world.DataException;
 import com.sk89q.worldedit.world.World;
 

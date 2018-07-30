@@ -24,16 +24,16 @@ import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.world.block.BlockCategories;
-import com.sk89q.worldedit.world.block.BlockState;
-import com.sk89q.worldedit.world.block.BlockType;
-import com.sk89q.worldedit.world.block.BlockTypes;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.World;
+import com.sk89q.worldedit.world.block.BlockCategories;
+import com.sk89q.worldedit.world.block.BlockState;
+import com.sk89q.worldedit.world.block.BlockType;
+import com.sk89q.worldedit.world.block.BlockTypes;
 
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -44,7 +44,6 @@ import java.util.Set;
  * to anything else)
  */
 public class FloatingTreeRemover implements BlockTool {
-    private static final BlockState AIR = BlockTypes.AIR.getDefaultState();
     private int rangeSq;
 
     public FloatingTreeRemover() {
@@ -89,7 +88,7 @@ public class FloatingTreeRemover implements BlockTool {
             for (Vector blockVector : blockSet) {
                 final BlockState otherState = editSession.getBlock(blockVector);
                 if (isTreeBlock(otherState.getBlockType())) {
-                    editSession.setBlock(blockVector, AIR);
+                    editSession.setBlock(blockVector, BlockTypes.AIR.getDefaultState());
                 }
             }
         } catch (MaxChangedBlocksException e) {

@@ -19,14 +19,14 @@
 
 package com.sk89q.worldedit.extent.validation;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.extent.AbstractDelegateExtent;
 import com.sk89q.worldedit.extent.Extent;
-
-import static com.google.common.base.Preconditions.checkArgument;
+import com.sk89q.worldedit.world.block.BlockStateHolder;
 
 /**
  * Limits the number of blocks that can be changed before a

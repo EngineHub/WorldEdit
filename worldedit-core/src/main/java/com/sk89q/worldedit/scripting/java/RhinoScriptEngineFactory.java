@@ -22,6 +22,7 @@ package com.sk89q.worldedit.scripting.java;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineFactory;
 

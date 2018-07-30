@@ -29,7 +29,6 @@ import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BaseItemStack;
-import com.sk89q.worldedit.blocks.LazyBlock;
 import com.sk89q.worldedit.bukkit.adapter.BukkitImplAdapter;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.history.change.BlockChange;
@@ -416,11 +415,6 @@ public class BukkitWorld extends AbstractWorld {
             bukkitBlock.setBlockData(BukkitAdapter.adapt(block), notifyAndLight);
             return true;
         }
-    }
-
-    @Override
-    public LazyBlock getLazyBlock(Vector position) {
-        return new LazyBlock(getBlock(position), this, position);
     }
 
     @Override

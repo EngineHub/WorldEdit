@@ -23,7 +23,6 @@ import com.sk89q.worldedit.blocks.BlockMaterial;
 import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.world.block.BlockType;
 
-import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Nullable;

@@ -19,9 +19,9 @@
 
 package com.sk89q.worldedit.function.mask;
 
-import com.sk89q.worldedit.Vector2D;
-
 import static com.google.common.base.Preconditions.checkNotNull;
+
+import com.sk89q.worldedit.Vector2D;
 
 /**
  * Checks whether another mask tests true for a position that is offset

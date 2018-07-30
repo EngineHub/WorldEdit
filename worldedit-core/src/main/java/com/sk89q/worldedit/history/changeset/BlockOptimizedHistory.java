@@ -19,19 +19,19 @@
 
 package com.sk89q.worldedit.history.changeset;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Map.Entry;
+
 import com.google.common.base.Function;
 import com.google.common.collect.Iterators;
 import com.sk89q.worldedit.BlockVector;
-import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.history.change.BlockChange;
 import com.sk89q.worldedit.history.change.Change;
 import com.sk89q.worldedit.util.collection.TupleArrayList;
+import com.sk89q.worldedit.world.block.BlockStateHolder;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-
-import static com.google.common.base.Preconditions.checkNotNull;
-import static java.util.Map.Entry;
 
 /**
  * An extension of {@link ArrayListHistory} that stores {@link BlockChange}s

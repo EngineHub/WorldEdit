@@ -19,9 +19,9 @@
 
 package com.sk89q.worldedit.util.eventbus;
 
-import java.lang.reflect.Method;
-
 import static com.google.common.base.Preconditions.checkNotNull;
+
+import java.lang.reflect.Method;
 
 /**
  * Invokes a {@link Method} to dispatch an event.

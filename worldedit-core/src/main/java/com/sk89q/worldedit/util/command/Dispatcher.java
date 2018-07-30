@@ -19,9 +19,10 @@
 
 package com.sk89q.worldedit.util.command;
 
-import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Set;
+
+import javax.annotation.Nullable;
 
 /**
  * Executes a command based on user input.

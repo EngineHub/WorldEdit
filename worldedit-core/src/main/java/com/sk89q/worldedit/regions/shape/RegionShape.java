@@ -20,8 +20,8 @@
 package com.sk89q.worldedit.regions.shape;
 
 import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.regions.Region;
+import com.sk89q.worldedit.world.block.BlockStateHolder;
 
 /**
  * Generates solid and hollow shapes according to materials returned by the

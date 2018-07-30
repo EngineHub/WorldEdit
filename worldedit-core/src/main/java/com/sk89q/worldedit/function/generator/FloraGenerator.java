@@ -22,12 +22,12 @@ package com.sk89q.worldedit.function.generator;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.world.block.BlockStateHolder;
-import com.sk89q.worldedit.world.block.BlockTypes;
 import com.sk89q.worldedit.function.RegionFunction;
 import com.sk89q.worldedit.function.pattern.BlockPattern;
 import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.function.pattern.RandomPattern;
+import com.sk89q.worldedit.world.block.BlockStateHolder;
+import com.sk89q.worldedit.world.block.BlockTypes;
 
 /**
  * Generates flora (which may include tall grass, flowers, etc.).
@@ -106,7 +106,7 @@ public class FloraGenerator implements RegionFunction {
     public boolean apply(Vector position) throws WorldEditException {
         BlockStateHolder block = editSession.getBlock(position);
 
-        if (block.getBlockType() == BlockTypes.GRASS) {
+        if (block.getBlockType() == BlockTypes.GRASS_BLOCK) {
             editSession.setBlock(position.add(0, 1, 0), temperatePattern.apply(position));
             return true;
         } else if (block.getBlockType() == BlockTypes.SAND) {

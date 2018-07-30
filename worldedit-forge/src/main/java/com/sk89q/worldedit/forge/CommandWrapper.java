@@ -20,15 +20,16 @@
 package com.sk89q.worldedit.forge;
 
 import com.sk89q.worldedit.util.command.CommandMapping;
-
-import java.util.Arrays;
-import java.util.List;
-import javax.annotation.Nullable;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
+
+import java.util.Arrays;
+import java.util.List;
+
+import javax.annotation.Nullable;
 
 public class CommandWrapper extends CommandBase {
     private CommandMapping command;

@@ -20,7 +20,6 @@
 package com.sk89q.worldedit.extent.clipboard.io;
 
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
-import com.sk89q.worldedit.world.registry.Registries;
 
 import java.io.Closeable;
 import java.io.IOException;

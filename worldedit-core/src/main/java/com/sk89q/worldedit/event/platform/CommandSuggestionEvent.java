@@ -19,13 +19,13 @@
 
 package com.sk89q.worldedit.event.platform;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.sk89q.worldedit.event.Event;
 import com.sk89q.worldedit.extension.platform.Actor;
 
 import java.util.Collections;
 import java.util.List;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Posted when suggestions for auto-completion are requested for command input.

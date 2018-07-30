@@ -19,19 +19,20 @@
 
 package com.sk89q.worldedit.bukkit;
 
-import com.sk89q.worldedit.session.SessionKey;
-import com.sk89q.worldedit.util.auth.AuthorizationException;
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.internal.cui.CUIEvent;
+import com.sk89q.worldedit.session.SessionKey;
+import com.sk89q.worldedit.util.auth.AuthorizationException;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import javax.annotation.Nullable;
 import java.io.File;
 import java.util.UUID;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
+import javax.annotation.Nullable;
 
 public class BukkitCommandSender implements Actor {
 

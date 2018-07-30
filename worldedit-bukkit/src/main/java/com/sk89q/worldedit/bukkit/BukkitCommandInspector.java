@@ -19,6 +19,8 @@
 
 package com.sk89q.worldedit.bukkit;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.sk89q.bukkit.util.CommandInspector;
 import com.sk89q.minecraft.util.commands.CommandLocals;
 import com.sk89q.worldedit.extension.platform.Actor;
@@ -29,8 +31,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
 import java.util.logging.Logger;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 class BukkitCommandInspector implements CommandInspector {
 

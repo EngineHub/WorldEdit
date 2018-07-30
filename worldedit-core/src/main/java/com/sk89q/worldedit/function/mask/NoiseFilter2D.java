@@ -19,11 +19,11 @@
 
 package com.sk89q.worldedit.function.mask;
 
-import com.sk89q.worldedit.Vector2D;
-import com.sk89q.worldedit.math.noise.NoiseGenerator;
-
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
+
+import com.sk89q.worldedit.Vector2D;
+import com.sk89q.worldedit.math.noise.NoiseGenerator;
 
 /**
  * A mask that uses a noise generator and returns true whenever the noise

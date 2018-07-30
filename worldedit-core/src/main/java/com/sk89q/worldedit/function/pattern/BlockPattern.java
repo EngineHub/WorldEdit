@@ -19,11 +19,11 @@
 
 package com.sk89q.worldedit.function.pattern;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * A pattern that returns the same {@link BaseBlock} each time.

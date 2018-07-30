@@ -34,8 +34,6 @@ import com.sk89q.worldedit.Vector2D;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseItemStack;
-import com.sk89q.worldedit.world.block.BlockStateHolder;
-import com.sk89q.worldedit.world.item.ItemTypes;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.input.ParserContext;
 import com.sk89q.worldedit.extension.platform.permission.ActorSelectorLimits;
@@ -59,6 +57,9 @@ import com.sk89q.worldedit.util.formatting.Style;
 import com.sk89q.worldedit.util.formatting.StyledFragment;
 import com.sk89q.worldedit.util.formatting.component.CommandListBox;
 import com.sk89q.worldedit.world.World;
+import com.sk89q.worldedit.world.block.BlockStateHolder;
+import com.sk89q.worldedit.world.block.BlockType;
+import com.sk89q.worldedit.world.item.ItemTypes;
 import com.sk89q.worldedit.world.storage.ChunkStore;
 
 import java.util.ArrayList;
@@ -651,7 +652,7 @@ public class SelectionCommands {
         help =
             "Gets the distribution of blocks in the selection.\n" +
             "The -c flag gets the distribution of your clipboard.\n" +
-            "The -d flag separates blocks by data",
+            "The -d flag separates blocks by state",
         flags = "cd",
         min = 0,
         max = 0
@@ -660,32 +661,50 @@ public class SelectionCommands {
     public void distr(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException, CommandException {
 
         int size;
-        List<Countable<BlockStateHolder>> distributionData;
+        boolean useData = args.hasFlag('d');
+        List<Countable<BlockType>> distribution = null;
+        List<Countable<BlockStateHolder>> distributionData = null;
 
         if (args.hasFlag('c')) {
             // TODO: Update for new clipboard
             throw new CommandException("Needs to be re-written again");
         } else {
-            distributionData = editSession.getBlockDistributionWithData(session.getSelection(player.getWorld()));
+            if (useData) {
+                distributionData = editSession.getBlockDistributionWithData(session.getSelection(player.getWorld()));
+            } else {
+                distribution = editSession.getBlockDistribution(session.getSelection(player.getWorld()));
+            }
             size = session.getSelection(player.getWorld()).getArea();
         }
 
-        if (distributionData.size() <= 0) {  // *Should* always be false
+        if ((useData && distributionData.size() <= 0) || (!useData && distribution.size() <= 0)) {  // *Should* always be false
             player.printError("No blocks counted.");
             return;
         }
 
         player.print("# total blocks: " + size);
 
-        for (Countable<BlockStateHolder> c : distributionData) {
-            String name = c.getID().getBlockType().getName();
-            String str = String.format("%-7s (%.3f%%) %s #%s%s",
-                    String.valueOf(c.getAmount()),
-                    c.getAmount() / (double) size * 100,
-                    name,
-                    c.getID().getBlockType().getId(),
-                    c.getID().getStates());
-            player.print(str);
+        if (useData) {
+            for (Countable<BlockStateHolder> c : distributionData) {
+                String name = c.getID().getBlockType().getName();
+                String str = String.format("%-7s (%.3f%%) %s #%s%s",
+                        String.valueOf(c.getAmount()),
+                        c.getAmount() / (double) size * 100,
+                        name,
+                        c.getID().getBlockType().getId(),
+                        c.getID().getStates());
+                player.print(str);
+            }
+        } else {
+            for (Countable<BlockType> c : distribution) {
+                String name = c.getID().getName();
+                String str = String.format("%-7s (%.3f%%) %s #%s",
+                        String.valueOf(c.getAmount()),
+                        c.getAmount() / (double) size * 100,
+                        name,
+                        c.getID().getId());
+                player.print(str);
+            }
         }
     }
 

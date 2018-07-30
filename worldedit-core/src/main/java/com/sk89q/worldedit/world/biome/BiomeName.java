@@ -19,12 +19,12 @@
 
 package com.sk89q.worldedit.world.biome;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.google.common.base.Function;
 import com.sk89q.worldedit.world.registry.BiomeRegistry;
 
 import javax.annotation.Nullable;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Returns the name of a biome using a given {@code BiomeRegistry}.

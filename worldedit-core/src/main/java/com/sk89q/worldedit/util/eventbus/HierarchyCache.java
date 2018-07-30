@@ -23,7 +23,11 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.sk89q.worldedit.internal.annotation.RequiresNewerGuava;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.WeakHashMap;
 
 /**
  * Holds a cache of class hierarchy.

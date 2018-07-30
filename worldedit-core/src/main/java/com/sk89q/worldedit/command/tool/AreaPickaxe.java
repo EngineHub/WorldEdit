@@ -24,20 +24,18 @@ import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.world.block.BlockState;
-import com.sk89q.worldedit.world.block.BlockType;
-import com.sk89q.worldedit.world.block.BlockTypes;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.world.World;
+import com.sk89q.worldedit.world.block.BlockType;
+import com.sk89q.worldedit.world.block.BlockTypes;
 
 /**
  * A super pickaxe mode that will remove blocks in an area.
  */
 public class AreaPickaxe implements BlockTool {
 
-    private static final BlockState air = BlockTypes.AIR.getDefaultState();
     private int range;
 
     public AreaPickaxe(int range) {
@@ -78,7 +76,7 @@ public class AreaPickaxe implements BlockTool {
 
                         ((World) clicked.getExtent()).queueBlockBreakEffect(server, pos, initialType, clicked.toVector().distanceSq(pos));
 
-                        editSession.setBlock(pos, air);
+                        editSession.setBlock(pos, BlockTypes.AIR.getDefaultState());
                     }
                 }
             }

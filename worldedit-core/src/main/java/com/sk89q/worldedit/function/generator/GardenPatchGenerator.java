@@ -163,7 +163,7 @@ public class GardenPatchGenerator implements RegionFunction {
             position = position.add(0, 1, 0);
         }
 
-        if (editSession.getBlock(position.add(0, -1, 0)).getBlockType() != BlockTypes.GRASS) {
+        if (editSession.getBlock(position.add(0, -1, 0)).getBlockType() != BlockTypes.GRASS_BLOCK) {
             return false;
         }
 
@@ -187,7 +187,7 @@ public class GardenPatchGenerator implements RegionFunction {
      * @return a pumpkin pattern
      */
     public static Pattern getPumpkinPattern() {
-        return new BlockPattern(BlockTypes.CARVED_PUMPKIN.getDefaultState());
+        return new BlockPattern(BlockTypes.PUMPKIN.getDefaultState());
     }
 
     /**
