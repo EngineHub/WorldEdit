@@ -754,7 +754,8 @@ public class Vector implements Comparable<Vector> {
      * @return a new {@code BlockVector}
      */
     public BlockVector toBlockVector() {
-        return new BlockVector(this);
+        return toBlockPoint();
+//        return new BlockVector(this); TODO Look into this further.
     }
 
     /**
