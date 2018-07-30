@@ -21,6 +21,7 @@ package com.sk89q.worldedit.extent;
 
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
@@ -59,7 +60,7 @@ public class ChangeSetExtent extends AbstractDelegateExtent {
 
     @Override
     public boolean setBlock(Vector location, BlockStateHolder block) throws WorldEditException {
-        BlockStateHolder previous = getBlock(location);
+        BaseBlock previous = getFullBlock(location);
         changeSet.add(new BlockChange(location.toBlockVector(), previous, block));
         return super.setBlock(location, block);
     }

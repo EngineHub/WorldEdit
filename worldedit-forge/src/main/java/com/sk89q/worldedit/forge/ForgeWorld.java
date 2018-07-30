@@ -305,7 +305,7 @@ public class ForgeWorld extends AbstractWorld {
         ForgeWorld from = new ForgeWorld(freshWorld);
         try {
             for (BlockVector vec : region) {
-                editSession.setBlock(vec, from.getBlock(vec));
+                editSession.setBlock(vec, from.getFullBlock(vec));
             }
         } catch (MaxChangedBlocksException e) {
             throw new RuntimeException(e);

@@ -65,7 +65,7 @@ public class BlockArrayClipboard implements Clipboard {
         this.origin = region.getMinimumPoint();
 
         Vector dimensions = getDimensions();
-        blocks = new BaseBlock[dimensions.getBlockX()][dimensions.getBlockY()][dimensions.getBlockZ()];
+        blocks = new BlockStateHolder[dimensions.getBlockX()][dimensions.getBlockY()][dimensions.getBlockZ()];
     }
 
     @Override
@@ -146,10 +146,10 @@ public class BlockArrayClipboard implements Clipboard {
             Vector v = position.subtract(region.getMinimumPoint());
             BlockStateHolder block = blocks[v.getBlockX()][v.getBlockY()][v.getBlockZ()];
             if (block != null) {
-                if (block instanceof BlockState) {
-                    return new BaseBlock((BlockState) block);
-                } else if (block instanceof BaseBlock) {
+                if (block instanceof BaseBlock) {
                     return (BaseBlock) block;
+                } else {
+                    return new BaseBlock(block.toImmutableState());
                 }
             }
         }

@@ -19,6 +19,10 @@
 
 package com.sk89q.worldedit.function.operation;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
+
+import com.google.common.collect.Lists;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.entity.Entity;
@@ -37,11 +41,7 @@ import com.sk89q.worldedit.math.transform.Identity;
 import com.sk89q.worldedit.math.transform.Transform;
 import com.sk89q.worldedit.regions.Region;
 
-import java.util.Iterator;
 import java.util.List;
-
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Makes a copy of a portion of one extent to another extent or another point.
@@ -257,16 +257,11 @@ public class ForwardExtentCopy implements Operation {
             if (copyingEntities) {
                 ExtentEntityCopy entityCopy = new ExtentEntityCopy(from, destination, to, currentTransform);
                 entityCopy.setRemoving(removingEntities);
-                List<? extends Entity> entities = source.getEntities(region);
-                // Switch to entities.removeIf after Java 8 cutoff.
-                Iterator<? extends Entity> entityIterator = entities.iterator();
-                while (entityIterator.hasNext()) {
-                    EntityProperties type = entityIterator.next().getFacet(EntityProperties.class);
-
-                    if (type != null && !type.isPasteable()) {
-                        entityIterator.remove();
-                    }
-                }
+                List<? extends Entity> entities = Lists.newArrayList(source.getEntities(region));
+                entities.removeIf(entity -> {
+                    EntityProperties properties = entity.getFacet(EntityProperties.class);
+                    return properties != null && !properties.isPasteable();
+                });
                 EntityVisitor entityVisitor = new EntityVisitor(entities.iterator(), entityCopy);
                 return new DelegateOperation(this, new OperationQueue(blockVisitor, entityVisitor));
             } else {

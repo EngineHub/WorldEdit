@@ -50,7 +50,7 @@ public class ClipboardPattern extends AbstractPattern {
         int yp = Math.abs(position.getBlockY()) % size.getBlockY();
         int zp = Math.abs(position.getBlockZ()) % size.getBlockZ();
 
-        return clipboard.getBlock(clipboard.getMinimumPoint().add(new Vector(xp, yp, zp)));
+        return clipboard.getFullBlock(clipboard.getMinimumPoint().add(new Vector(xp, yp, zp)));
     }
 
 }
