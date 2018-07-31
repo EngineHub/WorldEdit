@@ -43,6 +43,7 @@ import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.block.BlockState;
+import com.sk89q.worldedit.world.entity.EntityType;
 import com.sk89q.worldedit.world.entity.EntityTypes;
 import com.sk89q.worldedit.world.registry.LegacyMapper;
 import com.sk89q.worldedit.world.storage.NBTConversions;
@@ -199,9 +200,11 @@ public class SchematicReader implements ClipboardReader {
 
             int index = y * width * length + z * width + x;
             BlockState block = LegacyMapper.getInstance().getBlockFromLegacy(blocks[index], blockData[index]);
-            for (NBTCompatibilityHandler handler : COMPATIBILITY_HANDLERS) {
-                if (handler.isAffectedBlock(block)) {
-                    handler.updateNBT(block, values);
+            if (block != null) {
+                for (NBTCompatibilityHandler handler : COMPATIBILITY_HANDLERS) {
+                    if (handler.isAffectedBlock(block)) {
+                        handler.updateNBT(block, values);
+                    }
                 }
             }
 
@@ -223,10 +226,14 @@ public class SchematicReader implements ClipboardReader {
                     BlockState state = LegacyMapper.getInstance().getBlockFromLegacy(blocks[index], blockData[index]);
 
                     try {
-                        if (tileEntitiesMap.containsKey(pt)) {
-                            clipboard.setBlock(region.getMinimumPoint().add(pt), new BaseBlock(state, new CompoundTag(tileEntitiesMap.get(pt))));
+                        if (state != null) {
+                            if (tileEntitiesMap.containsKey(pt)) {
+                                clipboard.setBlock(region.getMinimumPoint().add(pt), new BaseBlock(state, new CompoundTag(tileEntitiesMap.get(pt))));
+                            } else {
+                                clipboard.setBlock(region.getMinimumPoint().add(pt), state);
+                            }
                         } else {
-                            clipboard.setBlock(region.getMinimumPoint().add(pt), state);
+                            log.warning("Unknown block when pasting schematic: " + blocks[index] + ":" + blockData[index] + ". Please report this issue.");
                         }
                     } catch (WorldEditException e) {
                         switch (failedBlockSets) {
@@ -259,8 +266,13 @@ public class SchematicReader implements ClipboardReader {
                     Location location = NBTConversions.toLocation(clipboard, compound.getListTag("Pos"), compound.getListTag("Rotation"));
 
                     if (!id.isEmpty()) {
-                        BaseEntity state = new BaseEntity(EntityTypes.get(id), compound);
-                        clipboard.createEntity(location, state);
+                        EntityType entityType = EntityTypes.get(id.toLowerCase());
+                        if (entityType != null) {
+                            BaseEntity state = new BaseEntity(entityType, compound);
+                            clipboard.createEntity(location, state);
+                        } else {
+                            log.warning("Unknown entity when pasting schematic: " + id.toLowerCase());
+                        }
                     }
                 }
             }
