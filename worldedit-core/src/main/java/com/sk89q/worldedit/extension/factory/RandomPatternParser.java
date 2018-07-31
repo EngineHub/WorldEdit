@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.extension.factory;
 
+import com.sk89q.util.StringUtil;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.extension.input.InputParseException;
 import com.sk89q.worldedit.extension.input.ParserContext;
@@ -39,7 +40,8 @@ class RandomPatternParser extends InputParser<Pattern> {
         BlockFactory blockRegistry = worldEdit.getBlockFactory();
         RandomPattern randomPattern = new RandomPattern();
 
-        for (String token : input.split(",")) {
+        String[] splits = input.split(",");
+        for (String token : StringUtil.parseListInQuotes(splits, ',', '[', ']')) {
             BlockStateHolder block;
 
             double chance;

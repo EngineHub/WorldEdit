@@ -48,8 +48,6 @@ import com.sk89q.worldedit.world.registry.LegacyMapper;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Parses block input strings.
@@ -98,7 +96,6 @@ class DefaultBlockParser extends InputParser<BlockStateHolder> {
         }
     }
 
-    private static Pattern blockStatePattern = Pattern.compile("([a-z:_]+)(?:\\[([a-zA-Z0-9=, _]+)])?", Pattern.CASE_INSENSITIVE);
     private static String[] EMPTY_STRING_ARRAY = new String[]{};
 
     /**
@@ -210,14 +207,21 @@ class DefaultBlockParser extends InputParser<BlockStateHolder> {
         }
 
         if (state == null) {
-            Matcher matcher = blockStatePattern.matcher(blockAndExtraData[0]); // TODO Move away from regex because it's hella slow
-            if (!matcher.matches() || matcher.groupCount() < 2 || matcher.groupCount() > 3) {
+            String typeString;
+            String stateString = null;
+            int stateStart = blockAndExtraData[0].indexOf('[');
+            if (stateStart == -1) {
+                typeString = blockAndExtraData[0];
+            } else {
+                typeString = blockAndExtraData[0].substring(0, stateStart);
+                stateString = blockAndExtraData[0].substring(stateStart + 1, blockAndExtraData[0].length() - 1);
+            }
+            if (typeString == null || typeString.isEmpty()) {
                 throw new InputParseException("Invalid format");
             }
-            String typeString = matcher.group(1);
             String[] stateProperties = EMPTY_STRING_ARRAY;
-            if (matcher.groupCount() >= 2 && matcher.group(2) != null) {
-                stateProperties = matcher.group(2).split(",");
+            if (stateString != null) {
+                stateProperties = stateString.split(",");
             }
 
             if ("hand".equalsIgnoreCase(typeString)) {

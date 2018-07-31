@@ -19,8 +19,8 @@
 
 package com.sk89q.worldedit.world.registry;
 
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import com.google.common.io.Resources;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -48,8 +48,10 @@ public class LegacyMapper {
     private static final Logger log = Logger.getLogger(LegacyMapper.class.getCanonicalName());
     private static LegacyMapper INSTANCE;
 
-    private BiMap<String, BlockState> blockMap = HashBiMap.create();
-    private BiMap<String, ItemType> itemMap = HashBiMap.create();
+    private Multimap<String, BlockState> stringToBlockMap = HashMultimap.create();
+    private Multimap<BlockState, String> blockToStringMap = HashMultimap.create();
+    private Multimap<String, ItemType> stringToItemMap = HashMultimap.create();
+    private Multimap<ItemType, String> itemToStringMap = HashMultimap.create();
 
     /**
      * Create a new instance.
@@ -85,58 +87,63 @@ public class LegacyMapper {
 
         for (Map.Entry<String, String> blockEntry : dataFile.blocks.entrySet()) {
             try {
-                blockMap.put(blockEntry.getKey(),
-                        (BlockState) WorldEdit.getInstance().getBlockFactory().parseFromInput(blockEntry.getValue(), parserContext));
+                String id = blockEntry.getKey();
+                BlockState state = WorldEdit.getInstance().getBlockFactory().parseFromInput(blockEntry.getValue(), parserContext).toImmutableState();
+                blockToStringMap.put(state, id);
+                stringToBlockMap.put(id, state);
             } catch (Exception e) {
-                log.fine("Unknown block: " + blockEntry.getValue());
+                log.warning("Unknown block: " + blockEntry.getValue());
             }
         }
 
         for (Map.Entry<String, String> itemEntry : dataFile.items.entrySet()) {
             try {
-                itemMap.put(itemEntry.getKey(), ItemTypes.get(itemEntry.getValue()));
+                String id = itemEntry.getKey();
+                ItemType type = ItemTypes.get(itemEntry.getValue());
+                itemToStringMap.put(type, id);
+                stringToItemMap.put(id, type);
             } catch (Exception e) {
-                log.fine("Unknown item: " + itemEntry.getValue());
+                log.warning("Unknown item: " + itemEntry.getValue());
             }
         }
     }
 
     @Nullable
     public ItemType getItemFromLegacy(int legacyId) {
-        return itemMap.get(legacyId + ":0");
+        return getItemFromLegacy(legacyId, 0);
     }
 
     @Nullable
     public ItemType getItemFromLegacy(int legacyId, int data) {
-        return itemMap.get(legacyId + ":" + data);
+        return stringToItemMap.get(legacyId + ":" + data).stream().findFirst().orElse(null);
     }
 
     @Nullable
     public int[] getLegacyFromItem(ItemType itemType) {
-        if (!itemMap.inverse().containsKey(itemType)) {
+        if (!itemToStringMap.containsKey(itemType)) {
             return null;
         } else {
-            String value = itemMap.inverse().get(itemType);
+            String value = itemToStringMap.get(itemType).stream().findFirst().get();
             return Arrays.stream(value.split(":")).mapToInt(Integer::parseInt).toArray();
         }
     }
 
     @Nullable
     public BlockState getBlockFromLegacy(int legacyId) {
-        return blockMap.get(legacyId + ":0");
+        return getBlockFromLegacy(legacyId, 0);
     }
 
     @Nullable
     public BlockState getBlockFromLegacy(int legacyId, int data) {
-        return blockMap.get(legacyId + ":" + data);
+        return stringToBlockMap.get(legacyId + ":" + data).stream().findFirst().orElse(null);
     }
 
     @Nullable
     public int[] getLegacyFromBlock(BlockState blockState) {
-        if (!blockMap.inverse().containsKey(blockState)) {
+        if (!blockToStringMap.containsKey(blockState)) {
             return null;
         } else {
-            String value = blockMap.inverse().get(blockState);
+            String value = blockToStringMap.get(blockState).stream().findFirst().get();
             return Arrays.stream(value.split(":")).mapToInt(Integer::parseInt).toArray();
         }
     }

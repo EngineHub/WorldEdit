@@ -19,7 +19,9 @@
 
 package com.sk89q.util;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -300,5 +302,25 @@ public final class StringUtil {
         }
 
         return type;
+    }
+
+    public static List<String> parseListInQuotes(String[] input, char delimiter, char quoteOpen, char quoteClose) {
+        List<String> parsableBlocks = new ArrayList<>();
+        StringBuilder buffer = new StringBuilder();
+        for (String split : input) {
+            if (split.indexOf(quoteOpen) != -1 && split.indexOf(quoteClose) == -1) {
+                buffer.append(split).append(delimiter);
+            } else if (split.indexOf(quoteClose) != -1 && split.indexOf(quoteOpen) == -1) {
+                buffer.append(split);
+                parsableBlocks.add(buffer.toString());
+                buffer = new StringBuilder();
+            } else if (buffer.length() == 0) {
+                parsableBlocks.add(split);
+            } else {
+                buffer.append(split).append(delimiter);
+            }
+        }
+
+        return parsableBlocks;
     }
 }
