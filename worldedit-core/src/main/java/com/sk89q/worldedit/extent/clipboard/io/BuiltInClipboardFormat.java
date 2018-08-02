@@ -20,16 +20,18 @@
 package com.sk89q.worldedit.extent.clipboard.io;
 
 import com.google.common.collect.ImmutableSet;
-import com.sk89q.jnbt.NBTConstants;
+import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.jnbt.NBTInputStream;
 import com.sk89q.jnbt.NBTOutputStream;
+import com.sk89q.jnbt.NamedTag;
+import com.sk89q.jnbt.Tag;
 
-import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Map;
 import java.util.Set;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
@@ -62,24 +64,22 @@ public enum BuiltInClipboardFormat implements ClipboardFormat {
 
         @Override
         public boolean isFormat(File file) {
-            try (DataInputStream str = new DataInputStream(new GZIPInputStream(new FileInputStream(file)))) {
-                if ((str.readByte() & 0xFF) != NBTConstants.TYPE_COMPOUND) {
+            try (NBTInputStream str = new NBTInputStream(new GZIPInputStream(new FileInputStream(file)))) {
+                NamedTag rootTag = str.readNamedTag();
+                if (!rootTag.getName().equals("Schematic")) {
                     return false;
                 }
-                byte[] nameBytes = new byte[str.readShort() & 0xFFFF];
-                str.readFully(nameBytes);
-                String name = new String(nameBytes, NBTConstants.CHARSET);
-                if (!name.equals("Schematic")) {
+                CompoundTag schematicTag = (CompoundTag) rootTag.getTag();
+
+                // Check
+                Map<String, Tag> schematic = schematicTag.getValue();
+                if (!schematic.containsKey("Blocks")) {
                     return false;
                 }
-                str.readByte(); // Ignore
-                nameBytes = new byte[str.readShort() & 0xFFFF];
-                str.readFully(nameBytes);
-                name = new String(nameBytes, NBTConstants.CHARSET);
-                return !name.equals("Version");
             } catch (IOException e) {
                 return false;
             }
+            return true;
         }
     },
     SPONGE_SCHEMATIC("sponge", "schem") {
@@ -103,26 +103,23 @@ public enum BuiltInClipboardFormat implements ClipboardFormat {
 
         @Override
         public boolean isFormat(File file) {
-            try (DataInputStream str = new DataInputStream(new GZIPInputStream(new FileInputStream(file)))) {
-                if ((str.readByte() & 0xFF) != NBTConstants.TYPE_COMPOUND) {
+            try (NBTInputStream str = new NBTInputStream(new GZIPInputStream(new FileInputStream(file)))) {
+                NamedTag rootTag = str.readNamedTag();
+                if (!rootTag.getName().equals("Schematic")) {
                     return false;
                 }
-                byte[] nameBytes = new byte[str.readShort() & 0xFFFF];
-                str.readFully(nameBytes);
-                String name = new String(nameBytes, NBTConstants.CHARSET);
-                if (!name.equals("Schematic")) {
+                CompoundTag schematicTag = (CompoundTag) rootTag.getTag();
+
+                // Check
+                Map<String, Tag> schematic = schematicTag.getValue();
+                if (!schematic.containsKey("Version")) {
                     return false;
                 }
-                if ((str.readByte() & 0xFF) != NBTConstants.TYPE_INT) {
-                    return false;
-                }
-                nameBytes = new byte[str.readShort() & 0xFFFF];
-                str.readFully(nameBytes);
-                name = new String(nameBytes, NBTConstants.CHARSET);
-                return name.equals("Version");
             } catch (IOException e) {
                 return false;
             }
+
+            return true;
         }
     };
 

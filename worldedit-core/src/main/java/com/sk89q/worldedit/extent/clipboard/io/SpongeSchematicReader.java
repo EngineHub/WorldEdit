@@ -119,7 +119,7 @@ public class SpongeSchematicReader extends NBTSchematicReader {
             int originZ = requireTag(metadata, "WEOriginZ", IntTag.class).getValue();
             Vector min = new Vector(originX, originY, originZ);
             origin = min.subtract(offset);
-            region = new CuboidRegion(min, min.add(width, height, length).subtract(Vector.ONE));
+            region = new CuboidRegion(origin, origin.add(width, height, length).subtract(Vector.ONE));
         } else {
             origin = Vector.ZERO.subtract(offset);
             region = new CuboidRegion(origin, origin.add(width, height, length).subtract(Vector.ONE));
@@ -134,6 +134,9 @@ public class SpongeSchematicReader extends NBTSchematicReader {
         Map<Integer, BlockState> palette = new HashMap<>();
 
         ParserContext parserContext = new ParserContext();
+        parserContext.setRestricted(false);
+        parserContext.setTryLegacy(false);
+        parserContext.setPreferringWildcard(false);
 
         for (String palettePart : paletteObject.keySet()) {
             int id = requireTag(paletteObject, palettePart, IntTag.class).getValue();
@@ -186,9 +189,9 @@ public class SpongeSchematicReader extends NBTSchematicReader {
                 i++;
             }
             // index = (y * length + z) * width + x
-            int y = index / (width * length);
-            int z = (index % (width * length)) / width;
-            int x = (index % (width * length)) % width;
+            int y = origin.getBlockY() + index / (width * length);
+            int z = origin.getBlockZ() + (index % (width * length)) / width;
+            int x = origin.getBlockX() + (index % (width * length)) % width;
             BlockState state = palette.get(value);
             BlockVector pt = new BlockVector(x, y, z);
             try {
