@@ -112,18 +112,6 @@ public class BaseBlock implements BlockStateHolder<BaseBlock>, TileEntityBlock {
     }
 
     /**
-     * Get the block's data value.
-     *
-     * Broken - do not use
-     *
-     * @return data value (0-15)
-     */
-    @Deprecated
-    public int getData() {
-        return 0;
-    }
-
-    /**
      * Gets a map of state to statevalue
      *
      * @return The state map

@@ -22,6 +22,7 @@ package com.sk89q.worldedit.extent.clipboard.io;
 import com.google.common.collect.ImmutableSet;
 import com.sk89q.jnbt.NBTConstants;
 import com.sk89q.jnbt.NBTInputStream;
+import com.sk89q.jnbt.NBTOutputStream;
 
 import java.io.DataInputStream;
 import java.io.File;
@@ -31,6 +32,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Set;
 import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 /**
  * A collection of supported clipboard formats.
@@ -38,7 +40,7 @@ import java.util.zip.GZIPInputStream;
 public enum BuiltInClipboardFormat implements ClipboardFormat {
 
     /**
-     * The Schematic format used by many software.
+     * The Schematic format used by MCEdit.
      */
     MCEDIT_SCHEMATIC("mcedit", "mce", "schematic") {
 
@@ -50,7 +52,7 @@ public enum BuiltInClipboardFormat implements ClipboardFormat {
         @Override
         public ClipboardReader getReader(InputStream inputStream) throws IOException {
             NBTInputStream nbtStream = new NBTInputStream(new GZIPInputStream(inputStream));
-            return new SchematicReader(nbtStream);
+            return new MCEditSchematicReader(nbtStream);
         }
 
         @Override
@@ -60,25 +62,66 @@ public enum BuiltInClipboardFormat implements ClipboardFormat {
 
         @Override
         public boolean isFormat(File file) {
-            DataInputStream str = null;
-            try {
-                str = new DataInputStream(new GZIPInputStream(new FileInputStream(file)));
+            try (DataInputStream str = new DataInputStream(new GZIPInputStream(new FileInputStream(file)))) {
                 if ((str.readByte() & 0xFF) != NBTConstants.TYPE_COMPOUND) {
                     return false;
                 }
                 byte[] nameBytes = new byte[str.readShort() & 0xFFFF];
                 str.readFully(nameBytes);
                 String name = new String(nameBytes, NBTConstants.CHARSET);
-                return name.equals("Schematic");
+                if (!name.equals("Schematic")) {
+                    return false;
+                }
+                str.readByte(); // Ignore
+                nameBytes = new byte[str.readShort() & 0xFFFF];
+                str.readFully(nameBytes);
+                name = new String(nameBytes, NBTConstants.CHARSET);
+                return !name.equals("Version");
             } catch (IOException e) {
                 return false;
-            } finally {
-                if (str != null) {
-                    try {
-                        str.close();
-                    } catch (IOException ignored) {
-                    }
+            }
+        }
+    },
+    SPONGE_SCHEMATIC("sponge", "schem") {
+
+        @Override
+        public String getPrimaryFileExtension() {
+            return "schem";
+        }
+
+        @Override
+        public ClipboardReader getReader(InputStream inputStream) throws IOException {
+            NBTInputStream nbtStream = new NBTInputStream(new GZIPInputStream(inputStream));
+            return new SpongeSchematicReader(nbtStream);
+        }
+
+        @Override
+        public ClipboardWriter getWriter(OutputStream outputStream) throws IOException {
+            NBTOutputStream nbtStream = new NBTOutputStream(new GZIPOutputStream(outputStream));
+            return new SpongeSchematicWriter(nbtStream);
+        }
+
+        @Override
+        public boolean isFormat(File file) {
+            try (DataInputStream str = new DataInputStream(new GZIPInputStream(new FileInputStream(file)))) {
+                if ((str.readByte() & 0xFF) != NBTConstants.TYPE_COMPOUND) {
+                    return false;
                 }
+                byte[] nameBytes = new byte[str.readShort() & 0xFFFF];
+                str.readFully(nameBytes);
+                String name = new String(nameBytes, NBTConstants.CHARSET);
+                if (!name.equals("Schematic")) {
+                    return false;
+                }
+                if ((str.readByte() & 0xFF) != NBTConstants.TYPE_INT) {
+                    return false;
+                }
+                nameBytes = new byte[str.readShort() & 0xFFFF];
+                str.readFully(nameBytes);
+                name = new String(nameBytes, NBTConstants.CHARSET);
+                return name.equals("Version");
+            } catch (IOException e) {
+                return false;
             }
         }
     };

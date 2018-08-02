@@ -23,7 +23,6 @@ import com.sk89q.worldedit.registry.NamespacedRegistry;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.block.BlockTypes;
 import com.sk89q.worldedit.world.registry.BundledItemData;
-import com.sk89q.worldedit.world.registry.LegacyMapper;
 
 import javax.annotation.Nullable;
 
@@ -77,23 +76,6 @@ public class ItemType {
     @Nullable
     public BlockType getBlockType() {
         return BlockTypes.get(this.id);
-    }
-
-    /**
-     * Gets the legacy ID. Needed for legacy reasons.
-     *
-     * DO NOT USE THIS.
-     *
-     * @return legacy id or 0, if unknown
-     */
-    @Deprecated
-    public int getLegacyId() {
-        int ids[] = LegacyMapper.getInstance().getLegacyFromItem(this);
-        if (ids != null) {
-            return ids[0];
-        } else {
-            return 0;
-        }
     }
 
     @Override

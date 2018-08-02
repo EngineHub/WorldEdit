@@ -56,20 +56,19 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.annotation.Nullable;
-
 /**
- * Reads schematic files based that are compatible with MCEdit and other editors.
+ * Reads schematic files that are compatible with MCEdit and other editors.
  */
-public class SchematicReader implements ClipboardReader {
+public class MCEditSchematicReader extends NBTSchematicReader {
 
     private static final List<NBTCompatibilityHandler> COMPATIBILITY_HANDLERS = new ArrayList<>();
 
     static {
         COMPATIBILITY_HANDLERS.add(new SignCompatibilityHandler());
+        // TODO Add a handler for skulls, flower pots, note blocks, etc.
     }
 
-    private static final Logger log = Logger.getLogger(SchematicReader.class.getCanonicalName());
+    private static final Logger log = Logger.getLogger(MCEditSchematicReader.class.getCanonicalName());
     private final NBTInputStream inputStream;
 
     /**
@@ -77,7 +76,7 @@ public class SchematicReader implements ClipboardReader {
      *
      * @param inputStream the input stream to read from
      */
-    public SchematicReader(NBTInputStream inputStream) {
+    public MCEditSchematicReader(NBTInputStream inputStream) {
         checkNotNull(inputStream);
         this.inputStream = inputStream;
     }
@@ -280,35 +279,6 @@ public class SchematicReader implements ClipboardReader {
         }
 
         return clipboard;
-    }
-
-    private static <T extends Tag> T requireTag(Map<String, Tag> items, String key, Class<T> expected) throws IOException {
-        if (!items.containsKey(key)) {
-            throw new IOException("Schematic file is missing a \"" + key + "\" tag");
-        }
-
-        Tag tag = items.get(key);
-        if (!expected.isInstance(tag)) {
-            throw new IOException(key + " tag is not of tag type " + expected.getName());
-        }
-
-        return expected.cast(tag);
-    }
-
-    @Nullable
-    private static <T extends Tag> T getTag(CompoundTag tag, Class<T> expected, String key) {
-        Map<String, Tag> items = tag.getValue();
-
-        if (!items.containsKey(key)) {
-            return null;
-        }
-
-        Tag test = items.get(key);
-        if (!expected.isInstance(test)) {
-            return null;
-        }
-
-        return expected.cast(test);
     }
 
     @Override
