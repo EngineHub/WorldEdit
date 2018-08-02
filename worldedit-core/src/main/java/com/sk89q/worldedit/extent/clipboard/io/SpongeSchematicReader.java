@@ -169,14 +169,14 @@ public class SpongeSchematicReader extends NBTSchematicReader {
         int index = 0;
         int i = 0;
         int value = 0;
-        int varint_length = 0;
+        int varintLength = 0;
         while (i < blocks.length) {
             value = 0;
-            varint_length = 0;
+            varintLength = 0;
 
             while (true) {
-                value |= (blocks[i] & 127) << (varint_length++ * 7);
-                if (varint_length > 5) {
+                value |= (blocks[i] & 127) << (varintLength++ * 7);
+                if (varintLength > 5) {
                     throw new RuntimeException("VarInt too big (probably corrupted data)");
                 }
                 if ((blocks[i] & 128) != 128) {
