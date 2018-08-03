@@ -49,6 +49,7 @@ import com.sk89q.worldedit.util.command.parametric.ParameterException;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.biome.BaseBiome;
 import com.sk89q.worldedit.world.biome.Biomes;
+import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.registry.BiomeRegistry;
 
@@ -168,7 +169,7 @@ public class WorldEditBinding extends BindingHelper {
      * @throws ParameterException on error
      * @throws WorldEditException on error
      */
-    @BindingMatch(type = BaseBlock.class,
+    @BindingMatch(type = {BaseBlock.class, BlockState.class, BlockStateHolder.class},
                   behavior = BindingBehavior.CONSUMES,
                   consumedCount = 1)
     public BlockStateHolder getBaseBlock(ArgumentStack context) throws ParameterException, WorldEditException {

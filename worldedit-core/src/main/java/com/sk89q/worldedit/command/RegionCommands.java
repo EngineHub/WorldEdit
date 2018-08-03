@@ -62,6 +62,7 @@ import com.sk89q.worldedit.util.command.binding.Range;
 import com.sk89q.worldedit.util.command.binding.Switch;
 import com.sk89q.worldedit.util.command.binding.Text;
 import com.sk89q.worldedit.util.command.parametric.Optional;
+import com.sk89q.worldedit.world.block.BlockStateHolder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -275,7 +276,7 @@ public class RegionCommands {
                      @Selection Region region,
                      @Optional("1") @Range(min = 1) int count,
                      @Optional(Direction.AIM) @Direction Vector direction,
-                     @Optional("air") BaseBlock replace,
+                     @Optional("air") BlockStateHolder replace,
                      @Switch('s') boolean moveSelection) throws WorldEditException {
 
         int affected = editSession.moveRegion(region, direction, count, true, replace);
