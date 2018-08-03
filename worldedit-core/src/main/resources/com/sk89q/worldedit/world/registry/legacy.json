@@ -1052,6 +1052,8 @@
     "155:0": "minecraft:quartz_block",
     "155:1": "minecraft:chiseled_quartz_block",
     "155:2": "minecraft:quartz_pillar[axis=y]",
+    "155:3": "minecraft:quartz_pillar[axis=x]",
+    "155:4": "minecraft:quartz_pillar[axis=z]",
     "155:6": "minecraft:quartz_pillar[axis=x]",
     "155:10": "minecraft:quartz_pillar[axis=z]",
     "156:0": "minecraft:quartz_stairs[half=bottom,shape=outer_right,facing=east]",
