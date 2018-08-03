@@ -30,6 +30,7 @@ import com.sk89q.jnbt.NBTOutputStream;
 import com.sk89q.jnbt.ShortTag;
 import com.sk89q.jnbt.StringTag;
 import com.sk89q.jnbt.Tag;
+import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
@@ -119,40 +120,48 @@ public class SpongeSchematicWriter implements ClipboardWriter {
 
         ByteArrayOutputStream buffer = new ByteArrayOutputStream(width * height * length);
 
-        for (Vector point : region) {
-            BaseBlock block = clipboard.getFullBlock(point);
-            if (block.getNbtData() != null) {
-                Map<String, Tag> values = new HashMap<>();
-                for (Map.Entry<String, Tag> entry : block.getNbtData().getValue().entrySet()) {
-                    values.put(entry.getKey(), entry.getValue());
+        for (int y = 0; y < height; y++) {
+            int y0 = min.getBlockY() + y;
+            for (int z = 0; z < length; z++) {
+                int z0 = min.getBlockZ() + z;
+                for (int x = 0; x < width; x++) {
+                    int x0 = min.getBlockX() + x;
+                    BlockVector point = new BlockVector(x0, y0, z0);
+                    BaseBlock block = clipboard.getFullBlock(point);
+                    if (block.getNbtData() != null) {
+                        Map<String, Tag> values = new HashMap<>();
+                        for (Map.Entry<String, Tag> entry : block.getNbtData().getValue().entrySet()) {
+                            values.put(entry.getKey(), entry.getValue());
+                        }
+
+                        values.put("Id", new StringTag(block.getNbtId()));
+                        values.put("Pos", new IntArrayTag(new int[]{
+                                point.getBlockX(),
+                                point.getBlockY(),
+                                point.getBlockZ()
+                        }));
+
+                        CompoundTag tileEntityTag = new CompoundTag(values);
+                        tileEntities.add(tileEntityTag);
+                    }
+
+                    String blockKey = block.toImmutableState().getAsString();
+                    int blockId;
+                    if (palette.containsKey(blockKey)) {
+                        blockId = palette.get(blockKey);
+                    } else {
+                        blockId = paletteMax;
+                        palette.put(blockKey, blockId);
+                        paletteMax++;
+                    }
+
+                    while ((blockId & -128) != 0) {
+                        buffer.write(blockId & 127 | 128);
+                        blockId >>>= 7;
+                    }
+                    buffer.write(blockId);
                 }
-
-                values.put("Id", new StringTag(block.getNbtId()));
-                values.put("Pos", new IntArrayTag(new int[]{
-                        point.getBlockX(),
-                        point.getBlockY(),
-                        point.getBlockZ()
-                }));
-
-                CompoundTag tileEntityTag = new CompoundTag(values);
-                tileEntities.add(tileEntityTag);
             }
-
-            String blockKey = block.toImmutableState().getAsString();
-            int blockId;
-            if (palette.containsKey(blockKey)) {
-                blockId = palette.get(blockKey);
-            } else {
-                blockId = paletteMax;
-                palette.put(blockKey, blockId);
-                paletteMax ++;
-            }
-
-            while ((blockId & -128) != 0) {
-                buffer.write(blockId & 127 | 128);
-                blockId >>>= 7;
-            }
-            buffer.write(blockId);
         }
 
         schematic.put("PaletteMax", new IntTag(paletteMax));

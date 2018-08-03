@@ -159,7 +159,7 @@ public class SpongeSchematicReader extends NBTSchematicReader {
                     .collect(Collectors.toList());
 
             for (Map<String, Tag> tileEntity : tileEntityTags) {
-                int[] pos = requireTag(schematic, "Pos", IntArrayTag.class).getValue();
+                int[] pos = requireTag(tileEntity, "Pos", IntArrayTag.class).getValue();
                 tileEntitiesMap.put(new BlockVector(pos[0], pos[1], pos[2]), tileEntity);
             }
         } catch (Exception e) {
