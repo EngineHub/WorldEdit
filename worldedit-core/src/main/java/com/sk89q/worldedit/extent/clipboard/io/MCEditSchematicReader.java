@@ -261,7 +261,7 @@ public class MCEditSchematicReader extends NBTSchematicReader {
             for (Tag tag : entityTags) {
                 if (tag instanceof CompoundTag) {
                     CompoundTag compound = (CompoundTag) tag;
-                    String id = compound.getString("id");
+                    String id = convertEntityId(compound.getString("id"));
                     Location location = NBTConversions.toLocation(clipboard, compound.getListTag("Pos"), compound.getListTag("Rotation"));
 
                     if (!id.isEmpty()) {
@@ -279,6 +279,36 @@ public class MCEditSchematicReader extends NBTSchematicReader {
         }
 
         return clipboard;
+    }
+
+    private String convertEntityId(String id) {
+        switch(id) {
+            case "xp_orb":
+                return "experience_orb";
+            case "xp_bottle":
+                return "experience_bottle";
+            case "eye_of_ender_signal":
+                return "eye_of_ender";
+            case "ender_crystal":
+                return "end_crystal";
+            case "fireworks_rocket":
+                return "firework_rocket";
+            case "commandblock_minecart":
+                return "command_block_minecart";
+            case "snowman":
+                return "snow_golem";
+            case "villager_golem":
+                return "iron_golem";
+            case "evocation_fangs":
+                return "evoker_fangs";
+            case "evocation_illager":
+                return "evoker";
+            case "vindication_illager":
+                return "vindicator";
+            case "illusion_illager":
+                return "illusioner";
+        }
+        return id;
     }
 
     @Override
