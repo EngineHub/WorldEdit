@@ -50,7 +50,7 @@ public class BlockState implements BlockStateHolder<BlockState> {
     // Neighbouring state table.
     private Table<Property<?>, Object, BlockState> states;
 
-    BlockState(BlockType blockType) {
+    private BlockState(BlockType blockType) {
         this.blockType = blockType;
         this.values = new LinkedHashMap<>();
         this.fuzzy = false;
@@ -62,13 +62,13 @@ public class BlockState implements BlockStateHolder<BlockState> {
      * @param blockType The block type
      * @param values The block state values
      */
-    public BlockState(BlockType blockType, Map<Property<?>, Object> values) {
+    private BlockState(BlockType blockType, Map<Property<?>, Object> values) {
         this.blockType = blockType;
         this.values = values;
         this.fuzzy = true;
     }
 
-    public static Map<Map<Property<?>, Object>, BlockState> generateStateMap(BlockType blockType) {
+    static Map<Map<Property<?>, Object>, BlockState> generateStateMap(BlockType blockType) {
         Map<Map<Property<?>, Object>, BlockState> stateMap = new LinkedHashMap<>();
         List<? extends Property> properties = blockType.getProperties();
 
@@ -105,7 +105,7 @@ public class BlockState implements BlockStateHolder<BlockState> {
         return stateMap;
     }
 
-    public void populate(Map<Map<Property<?>, Object>, BlockState> stateMap) {
+    private void populate(Map<Map<Property<?>, Object>, BlockState> stateMap) {
         final Table<Property<?>, Object, BlockState> states = HashBasedTable.create();
 
         for(final Map.Entry<Property<?>, Object> entry : this.values.entrySet()) {

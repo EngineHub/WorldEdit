@@ -41,6 +41,7 @@ import com.sk89q.worldedit.world.item.ItemTypes;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.data.BlockData;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
@@ -104,6 +105,26 @@ public class BukkitAdapter {
     public static World adapt(org.bukkit.World world) {
         checkNotNull(world);
         return new BukkitWorld(world);
+    }
+
+    /**
+     * Create a WorldEdit Player from a Bukkit Player.
+     *
+     * @param player The Bukkit player
+     * @return The WorldEdit player
+     */
+    public static BukkitPlayer adapt(Player player) {
+        return WorldEditPlugin.getInstance().wrapPlayer(player);
+    }
+
+    /**
+     * Create a Bukkit Player from a WorldEdit Player.
+     *
+     * @param player The WorldEdit player
+     * @return The Bukkit player
+     */
+    public static Player adapt(com.sk89q.worldedit.entity.Player player) {
+        return ((BukkitPlayer) player).getPlayer();
     }
 
     /**

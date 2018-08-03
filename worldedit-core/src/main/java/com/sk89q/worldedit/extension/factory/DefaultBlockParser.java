@@ -268,7 +268,10 @@ class DefaultBlockParser extends InputParser<BlockStateHolder> {
                 // No wildcards allowed => eliminate them. (Start with default state)
                 state = blockType.getDefaultState();
             } else {
-                state = new BlockState(blockType, blockStates);
+                state = blockType.getDefaultState().toFuzzy();
+                for (Map.Entry<Property<?>, Object> blockState : blockStates.entrySet()) {
+                    state = state.with((Property) blockState.getKey(), blockState.getValue());
+                }
             }
 
             state = applyProperties(state, stateProperties);
