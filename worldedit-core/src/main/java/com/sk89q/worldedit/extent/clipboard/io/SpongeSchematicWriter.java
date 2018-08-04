@@ -97,9 +97,9 @@ public class SpongeSchematicWriter implements ClipboardWriter {
         schematic.put("Version", new IntTag(1));
 
         Map<String, Tag> metadata = new HashMap<>();
-        metadata.put("WEOriginX", new IntTag(min.getBlockX()));
-        metadata.put("WEOriginY", new IntTag(min.getBlockY()));
-        metadata.put("WEOriginZ", new IntTag(min.getBlockZ()));
+        metadata.put("WEOffsetX", new IntTag(offset.getBlockX()));
+        metadata.put("WEOffsetY", new IntTag(offset.getBlockY()));
+        metadata.put("WEOffsetZ", new IntTag(offset.getBlockZ()));
 
         schematic.put("Metadata", new CompoundTag(metadata));
 
@@ -107,10 +107,11 @@ public class SpongeSchematicWriter implements ClipboardWriter {
         schematic.put("Height", new ShortTag((short) height));
         schematic.put("Length", new ShortTag((short) length));
 
+        // The Sponge format Offset refers to the 'min' points location in the world. That's our 'Origin'
         schematic.put("Offset", new IntArrayTag(new int[]{
-                offset.getBlockX(),
-                offset.getBlockY(),
-                offset.getBlockZ(),
+                min.getBlockX(),
+                min.getBlockY(),
+                min.getBlockZ(),
         }));
 
         int paletteMax = 0;
@@ -136,9 +137,9 @@ public class SpongeSchematicWriter implements ClipboardWriter {
 
                         values.put("Id", new StringTag(block.getNbtId()));
                         values.put("Pos", new IntArrayTag(new int[]{
-                                point.getBlockX(),
-                                point.getBlockY(),
-                                point.getBlockZ()
+                                x,
+                                y,
+                                z
                         }));
 
                         CompoundTag tileEntityTag = new CompoundTag(values);

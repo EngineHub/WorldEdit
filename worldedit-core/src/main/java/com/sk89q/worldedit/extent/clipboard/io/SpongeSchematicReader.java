@@ -110,18 +110,18 @@ public class SpongeSchematicReader extends NBTSchematicReader {
             throw new IOException("Invalid offset specified in schematic.");
         }
 
-        Vector offset = new Vector(offsetParts[0], offsetParts[1], offsetParts[2]);
+        Vector min = new Vector(offsetParts[0], offsetParts[1], offsetParts[2]);
 
-        if (metadata.containsKey("WEOriginX")) {
+        if (metadata.containsKey("WEOffsetX")) {
             // We appear to have WorldEdit Metadata
-            int originX = requireTag(metadata, "WEOriginX", IntTag.class).getValue();
-            int originY = requireTag(metadata, "WEOriginY", IntTag.class).getValue();
-            int originZ = requireTag(metadata, "WEOriginZ", IntTag.class).getValue();
-            Vector min = new Vector(originX, originY, originZ);
+            int offsetX = requireTag(metadata, "WEOffsetX", IntTag.class).getValue();
+            int offsetY = requireTag(metadata, "WEOffsetY", IntTag.class).getValue();
+            int offsetZ = requireTag(metadata, "WEOffsetZ", IntTag.class).getValue();
+            Vector offset = new Vector(offsetX, offsetY, offsetZ);
             origin = min.subtract(offset);
             region = new CuboidRegion(origin, origin.add(width, height, length).subtract(Vector.ONE));
         } else {
-            origin = Vector.ZERO.subtract(offset);
+            origin = min;
             region = new CuboidRegion(origin, origin.add(width, height, length).subtract(Vector.ONE));
         }
 
@@ -160,7 +160,7 @@ public class SpongeSchematicReader extends NBTSchematicReader {
 
             for (Map<String, Tag> tileEntity : tileEntityTags) {
                 int[] pos = requireTag(tileEntity, "Pos", IntArrayTag.class).getValue();
-                tileEntitiesMap.put(new BlockVector(pos[0], pos[1], pos[2]), tileEntity);
+                tileEntitiesMap.put(origin.add(new BlockVector(pos[0], pos[1], pos[2])).toBlockVector(), tileEntity);
             }
         } catch (Exception e) {
             throw new IOException("Failed to load Tile Entities: " + e.getMessage());

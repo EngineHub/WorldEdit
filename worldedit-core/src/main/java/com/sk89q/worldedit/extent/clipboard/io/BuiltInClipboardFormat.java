@@ -73,7 +73,7 @@ public enum BuiltInClipboardFormat implements ClipboardFormat {
 
                 // Check
                 Map<String, Tag> schematic = schematicTag.getValue();
-                if (!schematic.containsKey("Blocks")) {
+                if (!schematic.containsKey("Materials")) {
                     return false;
                 }
             } catch (IOException e) {
