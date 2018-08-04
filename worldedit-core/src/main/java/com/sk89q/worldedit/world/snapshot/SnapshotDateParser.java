@@ -19,9 +19,10 @@
 
 package com.sk89q.worldedit.world.snapshot;
 
-import javax.annotation.Nullable;
 import java.io.File;
 import java.util.Calendar;
+
+import javax.annotation.Nullable;
 
 /**
  * A name parser attempts to make sense of a filename for a snapshot.

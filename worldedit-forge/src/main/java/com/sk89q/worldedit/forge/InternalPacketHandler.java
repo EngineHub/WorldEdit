@@ -19,13 +19,12 @@
 
 package com.sk89q.worldedit.forge;
 
-import java.nio.charset.Charset;
-
 import com.sk89q.worldedit.forge.net.LeftClickAirEventMessage;
-
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.relauncher.Side;
+
+import java.nio.charset.Charset;
 
 public class InternalPacketHandler {
     public static final Charset UTF_8_CHARSET = Charset.forName("UTF-8");

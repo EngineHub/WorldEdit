@@ -19,20 +19,22 @@
 
 package com.sk89q.worldedit.forge;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
-import com.sk89q.worldedit.entity.metadata.EntityType;
+import com.sk89q.worldedit.entity.metadata.EntityProperties;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.NullWorld;
+import com.sk89q.worldedit.world.entity.EntityTypes;
 import net.minecraft.entity.EntityList;
 import net.minecraft.nbt.NBTTagCompound;
 
-import javax.annotation.Nullable;
 import java.lang.ref.WeakReference;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import javax.annotation.Nullable;
 
 class ForgeEntity implements Entity {
 
@@ -40,7 +42,7 @@ class ForgeEntity implements Entity {
 
     ForgeEntity(net.minecraft.entity.Entity entity) {
         checkNotNull(entity);
-        this.entityRef = new WeakReference<net.minecraft.entity.Entity>(entity);
+        this.entityRef = new WeakReference<>(entity);
     }
 
     @Override
@@ -51,7 +53,7 @@ class ForgeEntity implements Entity {
             if (id != null) {
                 NBTTagCompound tag = new NBTTagCompound();
                 entity.writeToNBT(tag);
-                return new BaseEntity(id, NBTConverter.fromNative(tag));
+                return new BaseEntity(EntityTypes.get(id), NBTConverter.fromNative(tag));
             } else {
                 return null;
             }
@@ -99,8 +101,8 @@ class ForgeEntity implements Entity {
     public <T> T getFacet(Class<? extends T> cls) {
         net.minecraft.entity.Entity entity = entityRef.get();
         if (entity != null) {
-            if (EntityType.class.isAssignableFrom(cls)) {
-                return (T) new ForgeEntityType(entity);
+            if (EntityProperties.class.isAssignableFrom(cls)) {
+                return (T) new ForgeEntityProperties(entity);
             } else {
                 return null;
             }

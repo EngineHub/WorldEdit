@@ -42,7 +42,7 @@ public abstract class ExceptionConverterHelper implements ExceptionConverter {
 
     @SuppressWarnings("unchecked")
     public ExceptionConverterHelper() {
-        List<ExceptionHandler> handlers = new ArrayList<ExceptionHandler>();
+        List<ExceptionHandler> handlers = new ArrayList<>();
         
         for (Method method : this.getClass().getMethods()) {
             if (method.getAnnotation(ExceptionMatch.class) == null) {
@@ -76,9 +76,7 @@ public abstract class ExceptionConverterHelper implements ExceptionConverter {
                         throw (CommandException) e.getCause();
                     }
                     throw new WrappedCommandException(e);
-                } catch (IllegalArgumentException e) {
-                    throw new WrappedCommandException(e);
-                } catch (IllegalAccessException e) {
+                } catch (IllegalArgumentException | IllegalAccessException e) {
                     throw new WrappedCommandException(e);
                 }
             }

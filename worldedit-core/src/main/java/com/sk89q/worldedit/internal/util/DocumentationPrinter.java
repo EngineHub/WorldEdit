@@ -22,7 +22,20 @@ package com.sk89q.worldedit.internal.util;
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.minecraft.util.commands.NestedCommand;
-import com.sk89q.worldedit.command.*;
+import com.sk89q.worldedit.command.BiomeCommands;
+import com.sk89q.worldedit.command.ChunkCommands;
+import com.sk89q.worldedit.command.ClipboardCommands;
+import com.sk89q.worldedit.command.GeneralCommands;
+import com.sk89q.worldedit.command.GenerationCommands;
+import com.sk89q.worldedit.command.HistoryCommands;
+import com.sk89q.worldedit.command.NavigationCommands;
+import com.sk89q.worldedit.command.RegionCommands;
+import com.sk89q.worldedit.command.ScriptingCommands;
+import com.sk89q.worldedit.command.SelectionCommands;
+import com.sk89q.worldedit.command.SnapshotUtilCommands;
+import com.sk89q.worldedit.command.ToolCommands;
+import com.sk89q.worldedit.command.ToolUtilCommands;
+import com.sk89q.worldedit.command.UtilityCommands;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -59,7 +72,7 @@ public final class DocumentationPrinter {
     }
 
     private static List<Class<?>> getCommandClasses(File dir) {
-        List<Class<?>> classes = new ArrayList<Class<?>>();
+        List<Class<?>> classes = new ArrayList<>();
 
         classes.add(BiomeCommands.class);
         classes.add(ChunkCommands.class);
@@ -100,15 +113,9 @@ public final class DocumentationPrinter {
 
     private static void writePermissionsWikiTable(List<Class<?>> commandClasses)
             throws IOException {
-        FileOutputStream stream = null;
-        try {
-            stream = new FileOutputStream("wiki_permissions.txt");
+        try (FileOutputStream stream = new FileOutputStream("wiki_permissions.txt")) {
             PrintStream print = new PrintStream(stream);
             writePermissionsWikiTable(print, commandClasses, "/");
-        } finally {
-            if (stream != null) {
-                stream.close();
-            }
         }
     }
 
@@ -180,15 +187,9 @@ public final class DocumentationPrinter {
 
     private static void writeBukkitYAML()
             throws IOException {
-        FileOutputStream stream = null;
-        try {
-            stream = new FileOutputStream("plugin.yml");
+        try (FileOutputStream stream = new FileOutputStream("plugin.yml")) {
             PrintStream print = new PrintStream(stream);
             writeBukkitYAML(print);
-        } finally {
-            if (stream != null) {
-                stream.close();
-            }
         }
     }
 

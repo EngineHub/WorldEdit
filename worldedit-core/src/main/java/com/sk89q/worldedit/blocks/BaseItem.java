@@ -19,8 +19,11 @@
 
 package com.sk89q.worldedit.blocks;
 
-import java.util.HashMap;
-import java.util.Map;
+import com.sk89q.jnbt.CompoundTag;
+import com.sk89q.worldedit.world.NbtValued;
+import com.sk89q.worldedit.world.item.ItemType;
+
+import javax.annotation.Nullable;
 
 /**
  * Represents an item, without an amount value. See {@link BaseItemStack}
@@ -28,95 +31,63 @@ import java.util.Map;
  *
  * <p>This class may be removed in the future.</p>
  */
-public class BaseItem {
+public class BaseItem implements NbtValued {
     
-    private int id;
-    private short data;
-    private final Map<Integer, Integer> enchantments = new HashMap<Integer, Integer>();
+    private ItemType itemType;
+    @Nullable
+    private CompoundTag nbtData;
 
     /**
      * Construct the object.
      *
-     * @param id ID of the item
+     * @param itemType Type of the item
      */
-    public BaseItem(int id) {
-        this.id = id;
-        this.data = 0;
+    public BaseItem(ItemType itemType) {
+        this.itemType = itemType;
     }
 
     /**
      * Construct the object.
      *
-     * @param id ID of the item
-     * @param data data value of the item
+     * @param itemType Type of the item
+     * @param tag NBT Compound tag
      */
-    public BaseItem(int id, short data) {
-        this.id = id;
-        this.data = data;
+    public BaseItem(ItemType itemType, CompoundTag tag) {
+        this.itemType = itemType;
+        this.nbtData = tag;
     }
 
     /**
      * Get the type of item.
-     * 
-     * @return the id
+     *
+     * @return the type
      */
-    public int getType() {
-        return id;
+    public ItemType getType() {
+        return this.itemType;
     }
 
     /**
-     * Get the type of item.
-     * 
-     * @param id the id to set
+     * Set the type of the item.
+     *
+     * @param itemType The type to set
      */
-    public void setType(int id) {
-        this.id = id;
+    public void setType(ItemType itemType) {
+        this.itemType = itemType;
     }
 
-    /**
-     * Get the damage value.
-     * 
-     * @return the damage
-     */
-    @Deprecated
-    public short getDamage() {
-        return data;
+    @Override
+    public boolean hasNbtData() {
+        return this.nbtData != null;
     }
 
-    /**
-     * Get the data value.
-     * 
-     * @return the data
-     */
-    public short getData() {
-        return data;
+    @Nullable
+    @Override
+    public CompoundTag getNbtData() {
+        return this.nbtData;
     }
 
-    /**
-     * Set the data value.
-     * 
-     * @param data the damage to set
-     */
-    @Deprecated
-    public void setDamage(short data) {
-        this.data = data;
-    }
-
-    /**
-     * Set the data value.
-     * 
-     * @param data the damage to set
-     */
-    public void setData(short data) {
-        this.data = data;
-    }
-
-    /**
-     * Get the map of enchantments.
-     * 
-     * @return map of enchantments
-     */
-    public Map<Integer, Integer> getEnchantments() {
-        return enchantments;
+    @Override
+    public void setNbtData(@Nullable CompoundTag nbtData) {
+        this.nbtData = nbtData;
     }
 }

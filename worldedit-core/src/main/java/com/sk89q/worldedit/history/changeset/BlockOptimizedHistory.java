@@ -19,19 +19,19 @@
 
 package com.sk89q.worldedit.history.changeset;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Map.Entry;
+
 import com.google.common.base.Function;
 import com.google.common.collect.Iterators;
 import com.sk89q.worldedit.BlockVector;
-import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.history.change.BlockChange;
 import com.sk89q.worldedit.history.change.Change;
 import com.sk89q.worldedit.util.collection.TupleArrayList;
+import com.sk89q.worldedit.world.block.BlockStateHolder;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-
-import static com.google.common.base.Preconditions.checkNotNull;
-import static java.util.Map.Entry;
 
 /**
  * An extension of {@link ArrayListHistory} that stores {@link BlockChange}s
@@ -43,8 +43,8 @@ import static java.util.Map.Entry;
  */
 public class BlockOptimizedHistory extends ArrayListHistory {
 
-    private final TupleArrayList<BlockVector, BaseBlock> previous = new TupleArrayList<BlockVector, BaseBlock>();
-    private final TupleArrayList<BlockVector, BaseBlock> current = new TupleArrayList<BlockVector, BaseBlock>();
+    private final TupleArrayList<BlockVector, BlockStateHolder> previous = new TupleArrayList<>();
+    private final TupleArrayList<BlockVector, BlockStateHolder> current = new TupleArrayList<>();
 
     @Override
     public void add(Change change) {
@@ -85,13 +85,8 @@ public class BlockOptimizedHistory extends ArrayListHistory {
      *
      * @return a function
      */
-    private Function<Entry<BlockVector, BaseBlock>, Change> createTransform() {
-        return new Function<Entry<BlockVector, BaseBlock>, Change>() {
-            @Override
-            public Change apply(Entry<BlockVector, BaseBlock> entry) {
-                return new BlockChange(entry.getKey(), entry.getValue(), entry.getValue());
-            }
-        };
+    private Function<Entry<BlockVector, BlockStateHolder>, Change> createTransform() {
+        return entry -> new BlockChange(entry.getKey(), entry.getValue(), entry.getValue());
     }
 
 }

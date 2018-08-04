@@ -19,12 +19,12 @@
 
 package com.sk89q.jnbt;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Helps create list tags.
@@ -42,7 +42,7 @@ public class ListTagBuilder {
     ListTagBuilder(Class<? extends Tag> type) {
         checkNotNull(type);
         this.type = type;
-        this.entries = new ArrayList<Tag>();
+        this.entries = new ArrayList<>();
     }
 
     /**
@@ -80,7 +80,7 @@ public class ListTagBuilder {
      * @return the new list tag
      */
     public ListTag build() {
-        return new ListTag(type, new ArrayList<Tag>(entries));
+        return new ListTag(type, new ArrayList<>(entries));
     }
 
     /**

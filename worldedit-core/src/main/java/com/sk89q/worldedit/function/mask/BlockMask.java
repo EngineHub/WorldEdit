@@ -19,17 +19,18 @@
 
 package com.sk89q.worldedit.function.mask;
 
-import com.sk89q.worldedit.extent.Extent;
-import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.blocks.BaseBlock;
+import static com.google.common.base.Preconditions.checkNotNull;
 
-import javax.annotation.Nullable;
+import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.extent.Extent;
+import com.sk89q.worldedit.world.block.BlockStateHolder;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import javax.annotation.Nullable;
 
 /**
  * A mask that checks whether blocks at the given positions are matched by
@@ -40,7 +41,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class BlockMask extends AbstractExtentMask {
 
-    private final Set<BaseBlock> blocks = new HashSet<BaseBlock>();
+    private final Set<BlockStateHolder> blocks = new HashSet<>();
 
     /**
      * Create a new block mask.
@@ -48,7 +49,7 @@ public class BlockMask extends AbstractExtentMask {
      * @param extent the extent
      * @param blocks a list of blocks to match
      */
-    public BlockMask(Extent extent, Collection<BaseBlock> blocks) {
+    public BlockMask(Extent extent, Collection<BlockStateHolder> blocks) {
         super(extent);
         checkNotNull(blocks);
         this.blocks.addAll(blocks);
@@ -60,7 +61,7 @@ public class BlockMask extends AbstractExtentMask {
      * @param extent the extent
      * @param block an array of blocks to match
      */
-    public BlockMask(Extent extent, BaseBlock... block) {
+    public BlockMask(Extent extent, BlockStateHolder... block) {
         this(extent, Arrays.asList(checkNotNull(block)));
     }
 
@@ -69,7 +70,7 @@ public class BlockMask extends AbstractExtentMask {
      *
      * @param blocks a list of blocks
      */
-    public void add(Collection<BaseBlock> blocks) {
+    public void add(Collection<BlockStateHolder> blocks) {
         checkNotNull(blocks);
         this.blocks.addAll(blocks);
     }
@@ -79,7 +80,7 @@ public class BlockMask extends AbstractExtentMask {
      *
      * @param block an array of blocks
      */
-    public void add(BaseBlock... block) {
+    public void add(BlockStateHolder... block) {
         add(Arrays.asList(checkNotNull(block)));
     }
 
@@ -88,14 +89,20 @@ public class BlockMask extends AbstractExtentMask {
      *
      * @return a list of blocks
      */
-    public Collection<BaseBlock> getBlocks() {
+    public Collection<BlockStateHolder> getBlocks() {
         return blocks;
     }
 
     @Override
     public boolean test(Vector vector) {
-        BaseBlock block = getExtent().getBlock(vector);
-        return blocks.contains(block) || blocks.contains(new BaseBlock(block.getType(), -1));
+        BlockStateHolder block = getExtent().getBlock(vector);
+        for (BlockStateHolder testBlock : blocks) {
+            if (testBlock.equalsFuzzy(block)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     @Nullable

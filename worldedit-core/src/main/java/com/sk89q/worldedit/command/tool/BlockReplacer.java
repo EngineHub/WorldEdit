@@ -19,23 +19,25 @@
 
 package com.sk89q.worldedit.command.tool;
 
-import com.sk89q.worldedit.*;
-import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.blocks.BlockType;
+import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.LocalConfiguration;
+import com.sk89q.worldedit.LocalSession;
+import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
-import com.sk89q.worldedit.world.World;
+import com.sk89q.worldedit.world.block.BlockStateHolder;
+import com.sk89q.worldedit.world.block.BlockType;
 
 /**
  * A mode that replaces one block.
  */
 public class BlockReplacer implements DoubleActionBlockTool {
 
-    private BaseBlock targetBlock;
+    private BlockStateHolder targetBlock;
 
-    public BlockReplacer(BaseBlock targetBlock) {
+    public BlockReplacer(BlockStateHolder targetBlock) {
         this.targetBlock = targetBlock;
     }
 
@@ -66,10 +68,9 @@ public class BlockReplacer implements DoubleActionBlockTool {
 
     @Override
     public boolean actSecondary(Platform server, LocalConfiguration config, Player player, LocalSession session, com.sk89q.worldedit.util.Location clicked) {
-        World world = (World) clicked.getExtent();
         EditSession editSession = session.createEditSession(player);
         targetBlock = (editSession).getBlock(clicked.toVector());
-        BlockType type = BlockType.fromID(targetBlock.getType());
+        BlockType type = targetBlock.getBlockType();
 
         if (type != null) {
             player.print("Replacer tool switched to: " + type.getName());

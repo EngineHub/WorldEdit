@@ -19,10 +19,10 @@
 
 package com.sk89q.worldedit.util;
 
-import com.google.common.base.Function;
-import com.google.common.base.Optional;
-
 import static com.google.common.base.Preconditions.checkNotNull;
+
+import java.util.Optional;
+import java.util.function.Function;
 
 /**
  * Returns the best choice given a weighting function and a target weight.
@@ -60,12 +60,10 @@ public class WeightedChoice<T> {
     public void consider(T object) {
         checkNotNull(object);
         Number value = checkNotNull(function.apply(object));
-        if (value != null) {
-            double distance = Math.abs(target - value.doubleValue());
-            if (current == null || distance <= best) {
-                best = distance;
-                current = object;
-            }
+        double distance = Math.abs(target - value.doubleValue());
+        if (current == null || distance <= best) {
+            best = distance;
+            current = object;
         }
     }
 
@@ -76,9 +74,9 @@ public class WeightedChoice<T> {
      */
     public Optional<Choice<T>> getChoice() {
         if (current != null) {
-            return Optional.of(new Choice<T>(current, best));
+            return Optional.of(new Choice<>(current, best));
         } else {
-            return Optional.absent();
+            return Optional.empty();
         }
     }
 

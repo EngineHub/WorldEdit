@@ -20,7 +20,7 @@
 package com.sk89q.wepif;
 
 public interface PermissionsResolver extends PermissionsProvider {
-    public void load();
+    void load();
 
-    public String getDetectionMessage();
+    String getDetectionMessage();
 }

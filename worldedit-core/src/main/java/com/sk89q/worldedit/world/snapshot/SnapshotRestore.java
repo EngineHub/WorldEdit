@@ -31,7 +31,6 @@ import com.sk89q.worldedit.world.DataException;
 import com.sk89q.worldedit.world.chunk.Chunk;
 import com.sk89q.worldedit.world.storage.ChunkStore;
 import com.sk89q.worldedit.world.storage.MissingChunkException;
-import com.sk89q.worldedit.world.storage.MissingWorldException;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -44,7 +43,7 @@ import java.util.Map;
  */
 public class SnapshotRestore {
 
-    private final Map<BlockVector2D, ArrayList<Vector>> neededChunks = new LinkedHashMap<BlockVector2D, ArrayList<Vector>>();
+    private final Map<BlockVector2D, ArrayList<Vector>> neededChunks = new LinkedHashMap<>();
     private final ChunkStore chunkStore;
     private final EditSession editSession;
     private ArrayList<Vector2D> missingChunks;
@@ -111,7 +110,7 @@ public class SnapshotRestore {
 
         // Unidentified chunk
         if (!neededChunks.containsKey(chunkPos)) {
-            neededChunks.put(chunkPos, new ArrayList<Vector>());
+            neededChunks.put(chunkPos, new ArrayList<>());
         }
 
         neededChunks.get(chunkPos).add(pos);
@@ -133,8 +132,8 @@ public class SnapshotRestore {
      */
     public void restore() throws MaxChangedBlocksException {
 
-        missingChunks = new ArrayList<Vector2D>();
-        errorChunks = new ArrayList<Vector2D>();
+        missingChunks = new ArrayList<>();
+        errorChunks = new ArrayList<>();
 
         // Now let's start restoring!
         for (Map.Entry<BlockVector2D, ArrayList<Vector>> entry : neededChunks.entrySet()) {
@@ -156,15 +155,9 @@ public class SnapshotRestore {
                 }
             } catch (MissingChunkException me) {
                 missingChunks.add(chunkPos);
-            } catch (MissingWorldException me) {
+            } catch (IOException | DataException me) {
                 errorChunks.add(chunkPos);
                 lastErrorMessage = me.getMessage();
-            } catch (DataException de) {
-                errorChunks.add(chunkPos);
-                lastErrorMessage = de.getMessage();
-            } catch (IOException ioe) {
-                errorChunks.add(chunkPos);
-                lastErrorMessage = ioe.getMessage();
             }
         }
     }

@@ -19,6 +19,8 @@
 
 package com.sk89q.worldedit.function.block;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.jnbt.CompoundTagBuilder;
 import com.sk89q.worldedit.Vector;
@@ -30,8 +32,6 @@ import com.sk89q.worldedit.internal.helper.MCDirections;
 import com.sk89q.worldedit.math.transform.Transform;
 import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.util.Direction.Flag;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Copies blocks from one extent to another.
@@ -68,7 +68,7 @@ public class ExtentBlockCopy implements RegionFunction {
 
     @Override
     public boolean apply(Vector position) throws WorldEditException {
-        BaseBlock block = source.getBlock(position);
+        BaseBlock block = source.getFullBlock(position);
         Vector orig = position.subtract(from);
         Vector transformed = transform.apply(orig);
 
@@ -104,7 +104,7 @@ public class ExtentBlockCopy implements RegionFunction {
 
                         builder.putByte("Rot", (byte) MCDirections.toRotation(newDirection));
 
-                        return new BaseBlock(state.getId(), state.getData(), builder.build());
+                        return new BaseBlock(state.toImmutableState(), builder.build());
                     }
                 }
             }

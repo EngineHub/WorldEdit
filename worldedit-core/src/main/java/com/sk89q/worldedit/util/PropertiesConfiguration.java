@@ -24,6 +24,7 @@ package com.sk89q.worldedit.util;
 import com.sk89q.util.StringUtil;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
+import com.sk89q.worldedit.world.registry.LegacyMapper;
 import com.sk89q.worldedit.world.snapshot.SnapshotRepository;
 
 import java.io.File;
@@ -33,6 +34,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
@@ -63,26 +65,17 @@ public class PropertiesConfiguration extends LocalConfiguration {
 
     @Override
     public void load() {
-        InputStream stream = null;
-        try {
-            stream = new FileInputStream(path);
+        try (InputStream stream = new FileInputStream(path)) {
             properties.load(stream);
         } catch (FileNotFoundException ignored) {
         } catch (IOException e) {
             log.log(Level.WARNING, "Failed to read configuration", e);
-        } finally {
-            if (stream != null) {
-                try {
-                    stream.close();
-                } catch (IOException ignored) {
-                }
-            }
         }
 
         loadExtra();
 
         profile = getBool("profile", profile);
-        disallowedBlocks = getIntSet("disallowed-blocks", defaultDisallowedBlocks);
+        disallowedBlocks = getStringSet("disallowed-blocks", defaultDisallowedBlocks);
         defaultChangeLimit = getInt("default-max-changed-blocks", defaultChangeLimit);
         maxChangeLimit = getInt("max-changed-blocks", maxChangeLimit);
         defaultMaxPolygonalPoints = getInt("default-max-polygon-points", defaultMaxPolygonalPoints);
@@ -97,14 +90,22 @@ public class PropertiesConfiguration extends LocalConfiguration {
         logFile = getString("log-file", logFile);
         logFormat = getString("log-format", logFormat);
         registerHelp = getBool("register-help", registerHelp);
-        wandItem = getInt("wand-item", wandItem);
+        wandItem = getString("wand-item", wandItem);
+        try {
+            wandItem = LegacyMapper.getInstance().getItemFromLegacy(Integer.parseInt(wandItem)).getId();
+        } catch (Throwable e) {
+        }
         superPickaxeDrop = getBool("super-pickaxe-drop-items", superPickaxeDrop);
         superPickaxeManyDrop = getBool("super-pickaxe-many-drop-items", superPickaxeManyDrop);
         noDoubleSlash = getBool("no-double-slash", noDoubleSlash);
         useInventory = getBool("use-inventory", useInventory);
         useInventoryOverride = getBool("use-inventory-override", useInventoryOverride);
         useInventoryCreativeOverride = getBool("use-inventory-creative-override", useInventoryCreativeOverride);
-        navigationWand = getInt("nav-wand-item", navigationWand);
+        navigationWand = getString("nav-wand-item", navigationWand);
+        try {
+            navigationWand = LegacyMapper.getInstance().getItemFromLegacy(Integer.parseInt(navigationWand)).getId();
+        } catch (Throwable e) {
+        }
         navigationWandMaxDistance = getInt("nav-wand-distance", navigationWandMaxDistance);
         navigationUseGlass = getBool("nav-use-glass", navigationUseGlass);
         scriptTimeout = getInt("scripting-timeout", scriptTimeout);
@@ -121,22 +122,11 @@ public class PropertiesConfiguration extends LocalConfiguration {
             snapshotRepo = new SnapshotRepository(snapshotsDir);
         }
 
-        OutputStream output = null;
         path.getParentFile().mkdirs();
-        try {
-            output = new FileOutputStream(path);
+        try (OutputStream output = new FileOutputStream(path)) {
             properties.store(output, "Don't put comments; they get removed");
-        } catch (FileNotFoundException e) {
-            log.log(Level.WARNING, "Failed to write configuration", e);
         } catch (IOException e) {
             log.log(Level.WARNING, "Failed to write configuration", e);
-        } finally {
-            if (output != null) {
-                try {
-                    output.close();
-                } catch (IOException ignored) {
-                }
-            }
         }
     }
 
@@ -239,17 +229,43 @@ public class PropertiesConfiguration extends LocalConfiguration {
         String val = properties.getProperty(key);
         if (val == null) {
             properties.setProperty(key, StringUtil.joinString(def, ",", 0));
-            Set<Integer> set = new HashSet<Integer>();
+            Set<Integer> set = new HashSet<>();
             for (int i : def) {
                 set.add(i);
             }
             return set;
         } else {
-            Set<Integer> set = new HashSet<Integer>();
+            Set<Integer> set = new HashSet<>();
             String[] parts = val.split(",");
             for (String part : parts) {
                 try {
                     int v = Integer.parseInt(part.trim());
+                    set.add(v);
+                } catch (NumberFormatException ignored) {
+                }
+            }
+            return set;
+        }
+    }
+
+    /**
+     * Get a String set.
+     *
+     * @param key the key
+     * @param def the default value
+     * @return the value
+     */
+    protected Set<String> getStringSet(String key, String[] def) {
+        String val = properties.getProperty(key);
+        if (val == null) {
+            properties.setProperty(key, StringUtil.joinString(def, ",", 0));
+            return new HashSet<>(Arrays.asList(def));
+        } else {
+            Set<String> set = new HashSet<>();
+            String[] parts = val.split(",");
+            for (String part : parts) {
+                try {
+                    String v = part.trim();
                     set.add(v);
                 } catch (NumberFormatException ignored) {
                 }

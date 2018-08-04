@@ -19,6 +19,7 @@
 package com.sk89q.worldedit.forge;
 
 import com.sk89q.worldedit.blocks.BaseItem;
+import com.sk89q.worldedit.world.item.ItemTypes;
 import com.sk89q.worldedit.world.registry.ItemRegistry;
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
@@ -31,17 +32,7 @@ public class ForgeItemRegistry implements ItemRegistry {
     public BaseItem createFromId(String id) {
         Item match = Item.REGISTRY.getObject(new ResourceLocation(id));
         if (match != null) {
-            return new BaseItem(Item.REGISTRY.getIDForObject(match), (short) 0);
-        } else {
-            return null;
-        }
-    }
-
-    @Nullable
-    @Override
-    public BaseItem createFromId(int id) {
-        if (Item.REGISTRY.getObjectById(id) != null) {
-            return new BaseItem(id, (short) 0);
+            return new BaseItem(ItemTypes.get(id));
         } else {
             return null;
         }

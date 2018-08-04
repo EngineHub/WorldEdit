@@ -19,6 +19,8 @@
 
 package com.sk89q.worldedit.command.composition;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.sk89q.minecraft.util.commands.CommandException;
@@ -40,8 +42,6 @@ import com.sk89q.worldedit.util.command.composition.CommandExecutor;
 import com.sk89q.worldedit.util.command.composition.SimpleCommand;
 
 import java.util.List;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 public class SelectionCommand extends SimpleCommand<Operation> {
 

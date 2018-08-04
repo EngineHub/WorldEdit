@@ -25,9 +25,10 @@ import com.sk89q.worldedit.world.registry.BiomeRegistry;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.world.biome.BiomeType;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.annotation.Nullable;
 
 /**
  * Provides access to biome data in Sponge.

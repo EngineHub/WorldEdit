@@ -30,6 +30,9 @@ import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.world.DataException;
 import com.sk89q.worldedit.world.World;
+import com.sk89q.worldedit.world.block.BlockState;
+import com.sk89q.worldedit.world.block.BlockTypes;
+import com.sk89q.worldedit.world.registry.LegacyMapper;
 import com.sk89q.worldedit.world.storage.InvalidFormatException;
 
 import java.util.HashMap;
@@ -76,43 +79,6 @@ public class OldChunk implements Chunk {
         }
     }
 
-    @Override
-    public int getBlockID(Vector position) throws DataException {
-        if(position.getBlockY() >= 128) return 0;
-        
-        int x = position.getBlockX() - rootX * 16;
-        int y = position.getBlockY();
-        int z = position.getBlockZ() - rootZ * 16;
-        int index = y + (z * 128 + (x * 128 * 16));
-        try {
-            return blocks[index];
-        } catch (IndexOutOfBoundsException e) {
-            throw new DataException("Chunk does not contain position " + position);
-        }
-    }
-
-    @Override
-    public int getBlockData(Vector position) throws DataException {
-        if(position.getBlockY() >= 128) return 0;
-        
-        int x = position.getBlockX() - rootX * 16;
-        int y = position.getBlockY();
-        int z = position.getBlockZ() - rootZ * 16;
-        int index = y + (z * 128 + (x * 128 * 16));
-        boolean shift = index % 2 == 0;
-        index /= 2;
-
-        try {
-            if (!shift) {
-                return (data[index] & 0xF0) >> 4;
-            } else {
-                return data[index] & 0xF;
-            }
-        } catch (IndexOutOfBoundsException e) {
-            throw new DataException("Chunk does not contain position " + position);
-        }
-    }
-
     /**
      * Used to load the tile entities.
      *
@@ -123,7 +89,7 @@ public class OldChunk implements Chunk {
                 rootTag.getValue(), "TileEntities", ListTag.class)
                 .getValue();
 
-        tileEntities = new HashMap<BlockVector, Map<String, Tag>>();
+        tileEntities = new HashMap<>();
 
         for (Tag tag : tags) {
             if (!(tag instanceof CompoundTag)) {
@@ -136,21 +102,25 @@ public class OldChunk implements Chunk {
             int y = 0;
             int z = 0;
 
-            Map<String, Tag> values = new HashMap<String, Tag>();
+            Map<String, Tag> values = new HashMap<>();
 
             for (Map.Entry<String, Tag> entry : t.getValue().entrySet()) {
-                if (entry.getKey().equals("x")) {
-                    if (entry.getValue() instanceof IntTag) {
-                        x = ((IntTag) entry.getValue()).getValue();
-                    }
-                } else if (entry.getKey().equals("y")) {
-                    if (entry.getValue() instanceof IntTag) {
-                        y = ((IntTag) entry.getValue()).getValue();
-                    }
-                } else if (entry.getKey().equals("z")) {
-                    if (entry.getValue() instanceof IntTag) {
-                        z = ((IntTag) entry.getValue()).getValue();
-                    }
+                switch (entry.getKey()) {
+                    case "x":
+                        if (entry.getValue() instanceof IntTag) {
+                            x = ((IntTag) entry.getValue()).getValue();
+                        }
+                        break;
+                    case "y":
+                        if (entry.getValue() instanceof IntTag) {
+                            y = ((IntTag) entry.getValue()).getValue();
+                        }
+                        break;
+                    case "z":
+                        if (entry.getValue() instanceof IntTag) {
+                            z = ((IntTag) entry.getValue()).getValue();
+                        }
+                        break;
                 }
 
                 values.put(entry.getKey(), entry.getValue());
@@ -184,32 +154,36 @@ public class OldChunk implements Chunk {
 
     @Override
     public BaseBlock getBlock(Vector position) throws DataException {
-        int id = getBlockID(position);
-        int data = getBlockData(position);
-        BaseBlock block;
+        if(position.getBlockY() >= 128) new BaseBlock(BlockTypes.AIR);
+        int id, dataVal;
 
-        /*if (id == BlockID.WALL_SIGN || id == BlockID.SIGN_POST) {
-            block = new SignBlock(id, data);
-        } else if (id == BlockID.CHEST) {
-            block = new ChestBlock(data);
-        } else if (id == BlockID.FURNACE || id == BlockID.BURNING_FURNACE) {
-            block = new FurnaceBlock(id, data);
-        } else if (id == BlockID.DISPENSER) {
-            block = new DispenserBlock(data);
-        } else if (id == BlockID.MOB_SPAWNER) {
-            block = new MobSpawnerBlock(data);
-        } else if (id == BlockID.NOTE_BLOCK) {
-            block = new NoteBlock(data);
-        } else {*/
-            block = new BaseBlock(id, data);
-        //}
-
-        CompoundTag tileEntity = getBlockTileEntity(position);
-        if (tileEntity != null) {
-            block.setNbtData(tileEntity);
+        int x = position.getBlockX() - rootX * 16;
+        int y = position.getBlockY();
+        int z = position.getBlockZ() - rootZ * 16;
+        int index = y + (z * 128 + (x * 128 * 16));
+        try {
+            id = blocks[index];
+        } catch (IndexOutOfBoundsException e) {
+            throw new DataException("Chunk does not contain position " + position);
         }
 
-        return block;
+        boolean shift = index % 2 == 0;
+        index /= 2;
+
+        try {
+            if (!shift) {
+                dataVal = (data[index] & 0xF0) >> 4;
+            } else {
+                dataVal = data[index] & 0xF;
+            }
+        } catch (IndexOutOfBoundsException e) {
+            throw new DataException("Chunk does not contain position " + position);
+        }
+
+        BlockState state = LegacyMapper.getInstance().getBlockFromLegacy(id, dataVal);
+        CompoundTag tileEntity = getBlockTileEntity(position);
+
+        return new BaseBlock(state, tileEntity);
     }
 
 }

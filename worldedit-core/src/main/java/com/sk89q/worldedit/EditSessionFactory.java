@@ -19,13 +19,13 @@
 
 package com.sk89q.worldedit;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.event.extent.EditSessionEvent;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
 import com.sk89q.worldedit.util.eventbus.EventBus;
 import com.sk89q.worldedit.world.World;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Creates new {@link EditSession}s. To get an instance of this factory,
@@ -131,66 +131,6 @@ public class EditSessionFactory {
         // new(er) Extent framework.
 
         throw new RuntimeException("Method needs to be implemented");
-    }
-
-    // ------------------------------------------------------------------------
-    // Methods being deprecated
-    // ------------------------------------------------------------------------
-
-    /**
-     * Construct an edit session.
-     *
-     * @param world the world
-     * @param maxBlocks the maximum number of blocks that can be changed, or -1 to use no limit
-     * @return an instance
-     * @deprecated We are replacing {@link LocalWorld} with {@link World}, so use {@link #getEditSession(World, int)} instead
-     */
-    @Deprecated
-    public EditSession getEditSession(LocalWorld world, int maxBlocks) {
-        return getEditSession((World) world, maxBlocks);
-    }
-
-    /**
-     * Construct an edit session.
-     *
-     * @param world the world
-     * @param maxBlocks the maximum number of blocks that can be changed, or -1 to use no limit
-     * @param player the player that the {@link EditSession} is for
-     * @return an instance
-     * @deprecated We are replacing {@link LocalWorld} with {@link World}, so use {@link #getEditSession(World, int, Player)} instead
-     */
-    @Deprecated
-    public EditSession getEditSession(LocalWorld world, int maxBlocks, LocalPlayer player) {
-        return getEditSession((World) world, maxBlocks, player);
-    }
-
-    /**
-     * Construct an edit session.
-     *
-     * @param world the world
-     * @param maxBlocks the maximum number of blocks that can be changed, or -1 to use no limit
-     * @param blockBag an optional {@link BlockBag} to use, otherwise null
-     * @return an instance
-     * @deprecated We are replacing {@link LocalWorld} with {@link World}, so use {@link #getEditSession(World, int, BlockBag)} instead
-     */
-    @Deprecated
-    public EditSession getEditSession(LocalWorld world, int maxBlocks, BlockBag blockBag) {
-        return getEditSession((World) world, maxBlocks, blockBag);
-    }
-
-    /**
-     * Construct an edit session.
-     *
-     * @param world the world
-     * @param maxBlocks the maximum number of blocks that can be changed, or -1 to use no limit
-     * @param blockBag an optional {@link BlockBag} to use, otherwise null
-     * @param player the player that the {@link EditSession} is for
-     * @return an instance
-     * @deprecated We are replacing {@link LocalWorld} with {@link World}, so use {@link #getEditSession(World, int, BlockBag, Player)} instead
-     */
-    @Deprecated
-    public EditSession getEditSession(LocalWorld world, int maxBlocks, BlockBag blockBag, LocalPlayer player) {
-        return getEditSession((World) world, maxBlocks, blockBag, player);
     }
 
     /**

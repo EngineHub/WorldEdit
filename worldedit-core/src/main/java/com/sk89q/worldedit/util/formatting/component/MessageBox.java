@@ -19,11 +19,11 @@
 
 package com.sk89q.worldedit.util.formatting.component;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.sk89q.worldedit.util.formatting.ColorCodeBuilder;
 import com.sk89q.worldedit.util.formatting.Style;
 import com.sk89q.worldedit.util.formatting.StyledFragment;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Makes for a box with a border above and below.

@@ -19,14 +19,14 @@
 
 package com.sk89q.worldedit.math.convolution;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.regions.Region;
-
-import static com.google.common.base.Preconditions.checkNotNull;
+import com.sk89q.worldedit.world.block.BlockState;
+import com.sk89q.worldedit.world.block.BlockTypes;
 
 /**
  * Allows applications of Kernels onto the region's height map.
@@ -44,22 +44,11 @@ public class HeightMap {
 
     /**
      * Constructs the HeightMap
-     * 
+     *
      * @param session an edit session
      * @param region the region
      */
     public HeightMap(EditSession session, Region region) {
-        this(session, region, false);
-    }
-
-    /**
-     * Constructs the HeightMap
-     *
-     * @param session an edit session
-     * @param region the region
-     * @param naturalOnly ignore non-natural blocks
-     */
-    public HeightMap(EditSession session, Region region, boolean naturalOnly) {
         checkNotNull(session);
         checkNotNull(region);
 
@@ -78,7 +67,7 @@ public class HeightMap {
         data = new int[width * height];
         for (int z = 0; z < height; ++z) {
             for (int x = 0; x < width; ++x) {
-                data[z * width + x] = session.getHighestTerrainBlock(x + minX, z + minZ, minY, maxY, naturalOnly);
+                data[z * width + x] = session.getHighestTerrainBlock(x + minX, z + minZ, minY, maxY);
             }
         }
     }
@@ -122,7 +111,7 @@ public class HeightMap {
         int originZ = minY.getBlockZ();
 
         int maxY = region.getMaximumPoint().getBlockY();
-        BaseBlock fillerAir = new BaseBlock(BlockID.AIR);
+        BlockState fillerAir = BlockTypes.AIR.getDefaultState();
 
         int blocksChanged = 0;
 
@@ -145,11 +134,10 @@ public class HeightMap {
                 // Depending on growing or shrinking we need to start at the bottom or top
                 if (newHeight > curHeight) {
                     // Set the top block of the column to be the same type (this might go wrong with rounding)
-                    BaseBlock existing = session.getBlock(new Vector(xr, curHeight, zr));
+                    BlockState existing = session.getBlock(new Vector(xr, curHeight, zr));
 
                     // Skip water/lava
-                    if (existing.getType() != BlockID.WATER && existing.getType() != BlockID.STATIONARY_WATER
-                            && existing.getType() != BlockID.LAVA && existing.getType() != BlockID.STATIONARY_LAVA) {
+                    if (existing.getBlockType() != BlockTypes.WATER && existing.getBlockType() != BlockTypes.LAVA) {
                         session.setBlock(new Vector(xr, newHeight, zr), existing);
                         ++blocksChanged;
 

@@ -19,14 +19,15 @@
 
 package com.sk89q.worldedit.extent.validation;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.extent.AbstractDelegateExtent;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.world.World;
-
-import static com.google.common.base.Preconditions.checkNotNull;
+import com.sk89q.worldedit.world.block.BlockStateHolder;
+import com.sk89q.worldedit.world.block.BlockType;
 
 /**
  * Validates set data to prevent creating invalid blocks and such.
@@ -48,28 +49,19 @@ public class DataValidatorExtent extends AbstractDelegateExtent {
     }
 
     @Override
-    public boolean setBlock(Vector location, BaseBlock block) throws WorldEditException {
+    public boolean setBlock(Vector location, BlockStateHolder block) throws WorldEditException {
         final int y = location.getBlockY();
-        final int type = block.getType();
+        final BlockType type = block.getBlockType();
         if (y < 0 || y > world.getMaxY()) {
             return false;
         }
 
         // No invalid blocks
-        if (!world.isValidBlockType(type)) {
+        if (type == null) {
             return false;
-        }
-
-        if (block.getData() < 0) {
-            throw new SevereValidationException("Cannot set a data value that is less than 0");
         }
 
         return super.setBlock(location, block);
     }
 
-    private static class SevereValidationException extends WorldEditException {
-        private SevereValidationException(String message) {
-            super(message);
-        }
-    }
 }

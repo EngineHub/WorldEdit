@@ -20,12 +20,9 @@
 package com.sk89q.worldedit.command.util;
 
 import com.sk89q.minecraft.util.commands.CommandContext;
-import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.entity.Entity;
-import com.sk89q.worldedit.entity.metadata.EntityType;
+import com.sk89q.worldedit.entity.metadata.EntityProperties;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.function.EntityFunction;
-import com.sk89q.worldedit.world.registry.EntityRegistry;
 
 /**
  * The implementation of /butcher.
@@ -80,63 +77,60 @@ public class CreatureButcher {
         or(Flags.WITH_LIGHTNING, args.hasFlag('l'), "worldedit.butcher.lightning");
     }
 
-    public EntityFunction createFunction(final EntityRegistry entityRegistry) {
-        return new EntityFunction() {
-            @Override
-            public boolean apply(Entity entity) throws WorldEditException {
-                boolean killPets = (flags & Flags.PETS) != 0;
-                boolean killNPCs = (flags & Flags.NPCS) != 0;
-                boolean killAnimals = (flags & Flags.ANIMALS) != 0;
-                boolean killGolems = (flags & Flags.GOLEMS) != 0;
-                boolean killAmbient = (flags & Flags.AMBIENT) != 0;
-                boolean killTagged = (flags & Flags.TAGGED) != 0;
-                boolean killArmorStands = (flags & Flags.ARMOR_STAND) != 0;
+    public EntityFunction createFunction() {
+        return entity -> {
+            boolean killPets = (flags & Flags.PETS) != 0;
+            boolean killNPCs = (flags & Flags.NPCS) != 0;
+            boolean killAnimals = (flags & Flags.ANIMALS) != 0;
+            boolean killGolems = (flags & Flags.GOLEMS) != 0;
+            boolean killAmbient = (flags & Flags.AMBIENT) != 0;
+            boolean killTagged = (flags & Flags.TAGGED) != 0;
+            boolean killArmorStands = (flags & Flags.ARMOR_STAND) != 0;
 
-                EntityType type = entity.getFacet(EntityType.class);
+            EntityProperties type = entity.getFacet(EntityProperties.class);
 
-                if (type == null) {
-                    return false;
-                }
-
-                if (type.isPlayerDerived()) {
-                    return false;
-                }
-
-                if (!type.isLiving()) {
-                    return false;
-                }
-
-                if (!killAnimals && type.isAnimal()) {
-                    return false;
-                }
-
-                if (!killPets && type.isTamed()) {
-                    return false;
-                }
-
-                if (!killGolems && type.isGolem()) {
-                    return false;
-                }
-
-                if (!killNPCs && type.isNPC()) {
-                    return false;
-                }
-
-                if (!killAmbient && type.isAmbient()) {
-                    return false;
-                }
-
-                if (!killTagged && type.isTagged()) {
-                    return false;
-                }
-
-                if (!killArmorStands && type.isArmorStand()) {
-                    return false;
-                }
-
-                entity.remove();
-                return true;
+            if (type == null) {
+                return false;
             }
+
+            if (type.isPlayerDerived()) {
+                return false;
+            }
+
+            if (!type.isLiving()) {
+                return false;
+            }
+
+            if (!killAnimals && type.isAnimal()) {
+                return false;
+            }
+
+            if (!killPets && type.isTamed()) {
+                return false;
+            }
+
+            if (!killGolems && type.isGolem()) {
+                return false;
+            }
+
+            if (!killNPCs && type.isNPC()) {
+                return false;
+            }
+
+            if (!killAmbient && type.isAmbient()) {
+                return false;
+            }
+
+            if (!killTagged && type.isTagged()) {
+                return false;
+            }
+
+            if (!killArmorStands && type.isArmorStand()) {
+                return false;
+            }
+
+            entity.remove();
+            return true;
         };
     }
 

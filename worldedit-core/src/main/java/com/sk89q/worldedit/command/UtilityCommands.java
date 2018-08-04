@@ -19,6 +19,8 @@
 
 package com.sk89q.worldedit.command;
 
+import static com.sk89q.minecraft.util.commands.Logging.LogMode.PLACEMENT;
+
 import com.google.common.base.Joiner;
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
@@ -31,22 +33,22 @@ import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.command.util.CreatureButcher;
 import com.sk89q.worldedit.command.util.EntityRemover;
 import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.entity.Player;
+import com.sk89q.worldedit.extension.input.ParserContext;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.extension.platform.CommandManager;
 import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.function.operation.Operations;
+import com.sk89q.worldedit.function.pattern.BlockPattern;
+import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.function.visitor.EntityVisitor;
 import com.sk89q.worldedit.internal.expression.Expression;
 import com.sk89q.worldedit.internal.expression.ExpressionException;
 import com.sk89q.worldedit.internal.expression.runtime.EvaluationException;
-import com.sk89q.worldedit.patterns.Pattern;
-import com.sk89q.worldedit.patterns.SingleBlockPattern;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.CylinderRegion;
 import com.sk89q.worldedit.regions.Region;
@@ -62,13 +64,12 @@ import com.sk89q.worldedit.util.formatting.component.Code;
 import com.sk89q.worldedit.util.formatting.component.CommandListBox;
 import com.sk89q.worldedit.util.formatting.component.CommandUsageBox;
 import com.sk89q.worldedit.world.World;
+import com.sk89q.worldedit.world.block.BlockStateHolder;
+import com.sk89q.worldedit.world.block.BlockTypes;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-
-import static com.sk89q.minecraft.util.commands.Logging.LogMode.PLACEMENT;
 
 /**
  * Utility commands.
@@ -92,20 +93,18 @@ public class UtilityCommands {
     @Logging(PLACEMENT)
     public void fill(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
 
-        Pattern pattern = we.getBlockPattern(player, args.getString(0));
+        ParserContext context = new ParserContext();
+        context.setActor(player);
+        context.setWorld(player.getWorld());
+        context.setSession(session);
+        Pattern pattern = we.getPatternFactory().parseFromInput(args.getString(0), context);
+
         double radius = Math.max(1, args.getDouble(1));
         we.checkMaxRadius(radius);
         int depth = args.argsLength() > 2 ? Math.max(1, args.getInteger(2)) : 1;
 
         Vector pos = session.getPlacementPosition(player);
-        int affected = 0;
-        if (pattern instanceof SingleBlockPattern) {
-            affected = editSession.fillXZ(pos,
-                    ((SingleBlockPattern) pattern).getBlock(),
-                    radius, depth, false);
-        } else {
-            affected = editSession.fillXZ(pos, pattern, radius, depth, false);
-        }
+        int affected = editSession.fillXZ(pos, pattern, radius, depth, false);
         player.print(affected + " block(s) have been created.");
     }
 
@@ -120,17 +119,20 @@ public class UtilityCommands {
     @Logging(PLACEMENT)
     public void fillr(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
 
-        Pattern pattern = we.getBlockPattern(player, args.getString(0));
+        ParserContext context = new ParserContext();
+        context.setActor(player);
+        context.setWorld(player.getWorld());
+        context.setSession(session);
+        Pattern pattern = we.getPatternFactory().parseFromInput(args.getString(0), context);
+
         double radius = Math.max(1, args.getDouble(1));
         we.checkMaxRadius(radius);
         int depth = args.argsLength() > 2 ? Math.max(1, args.getInteger(2)) : Integer.MAX_VALUE;
 
         Vector pos = session.getPlacementPosition(player);
         int affected = 0;
-        if (pattern instanceof SingleBlockPattern) {
-            affected = editSession.fillXZ(pos,
-                    ((SingleBlockPattern) pattern).getBlock(),
-                    radius, depth, true);
+        if (pattern instanceof BlockPattern) {
+            affected = editSession.fillXZ(pos, ((BlockPattern) pattern).getBlock(), radius, depth, true);
         } else {
             affected = editSession.fillXZ(pos, pattern, radius, depth, true);
         }
@@ -168,8 +170,7 @@ public class UtilityCommands {
 
         double radius = Math.max(0, args.getDouble(0));
         we.checkMaxRadius(radius);
-        int affected = editSession.fixLiquid(
-                session.getPlacementPosition(player), radius, 10, 11);
+        int affected = editSession.fixLiquid(session.getPlacementPosition(player), radius, BlockTypes.LAVA);
         player.print(affected + " block(s) have been changed.");
     }
 
@@ -186,8 +187,7 @@ public class UtilityCommands {
 
         double radius = Math.max(0, args.getDouble(0));
         we.checkMaxRadius(radius);
-        int affected = editSession.fixLiquid(
-                session.getPlacementPosition(player), radius, 8, 9);
+        int affected = editSession.fixLiquid(session.getPlacementPosition(player), radius, BlockTypes.WATER);
         player.print(affected + " block(s) have been changed.");
     }
 
@@ -243,11 +243,18 @@ public class UtilityCommands {
     @Logging(PLACEMENT)
     public void removeNear(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
 
-        BaseBlock block = we.getBlock(player, args.getString(0), true);
+        ParserContext context = new ParserContext();
+        context.setActor(player);
+        context.setWorld(player.getWorld());
+        context.setSession(session);
+        context.setRestricted(false);
+        context.setPreferringWildcard(false);
+
+        BlockStateHolder block = we.getBlockFactory().parseFromInput(args.getString(0), context);
         int size = Math.max(1, args.getInteger(1, 50));
         we.checkMaxRadius(size);
 
-        int affected = editSession.removeNear(session.getPlacementPosition(player), block.getType(), size);
+        int affected = editSession.removeNear(session.getPlacementPosition(player), block.getBlockType(), size);
         player.print(affected + " block(s) have been removed.");
     }
 
@@ -265,14 +272,22 @@ public class UtilityCommands {
         
         int size = Math.max(1, args.getInteger(0));
         int affected;
-        Set<BaseBlock> from;
+        Set<BlockStateHolder> from;
         Pattern to;
+
+        ParserContext context = new ParserContext();
+        context.setActor(player);
+        context.setWorld(player.getWorld());
+        context.setSession(session);
+        context.setRestricted(false);
+        context.setPreferringWildcard(!args.hasFlag('f'));
+
         if (args.argsLength() == 2) {
             from = null;
-            to = we.getBlockPattern(player, args.getString(1));
+            to = we.getPatternFactory().parseFromInput(args.getString(1), context);
         } else {
-            from = we.getBlocks(player, args.getString(1), true, !args.hasFlag('f'));
-            to = we.getBlockPattern(player, args.getString(2));
+            from = we.getBlockFactory().parseFromListInput(args.getString(1), context);
+            to = we.getPatternFactory().parseFromInput(args.getString(2), context);
         }
 
         Vector base = session.getPlacementPosition(player);
@@ -280,8 +295,8 @@ public class UtilityCommands {
         Vector max = base.add(size, size, size);
         Region region = new CuboidRegion(player.getWorld(), min, max);
 
-        if (to instanceof SingleBlockPattern) {
-            affected = editSession.replaceBlocks(region, from, ((SingleBlockPattern) to).getBlock());
+        if (to instanceof BlockPattern) {
+            affected = editSession.replaceBlocks(region, from, ((BlockPattern) to).getBlock());
         } else {
             affected = editSession.replaceBlocks(region, from, to);
         }
@@ -359,7 +374,7 @@ public class UtilityCommands {
                 : defaultRadius;
         we.checkMaxRadius(size);
 
-        int affected = editSession.removeNear(session.getPlacementPosition(player), 51, size);
+        int affected = editSession.removeNear(session.getPlacementPosition(player), BlockTypes.FIRE, size);
         player.print(affected + " block(s) have been removed.");
     }
 
@@ -411,7 +426,7 @@ public class UtilityCommands {
         CreatureButcher flags = new CreatureButcher(actor);
         flags.fromCommand(args);
 
-        List<EntityVisitor> visitors = new ArrayList<EntityVisitor>();
+        List<EntityVisitor> visitors = new ArrayList<>();
         LocalSession session = null;
         EditSession editSession = null;
 
@@ -426,12 +441,12 @@ public class UtilityCommands {
             } else {
                 entities = editSession.getEntities();
             }
-            visitors.add(new EntityVisitor(entities.iterator(), flags.createFunction(editSession.getWorld().getWorldData().getEntityRegistry())));
+            visitors.add(new EntityVisitor(entities.iterator(), flags.createFunction()));
         } else {
             Platform platform = we.getPlatformManager().queryCapability(Capability.WORLD_EDITING);
             for (World world : platform.getWorlds()) {
                 List<? extends Entity> entities = world.getEntities();
-                visitors.add(new EntityVisitor(entities.iterator(), flags.createFunction(world.getWorldData().getEntityRegistry())));
+                visitors.add(new EntityVisitor(entities.iterator(), flags.createFunction()));
             }
         }
 
@@ -471,7 +486,7 @@ public class UtilityCommands {
         EntityRemover remover = new EntityRemover();
         remover.fromString(typeStr);
 
-        List<EntityVisitor> visitors = new ArrayList<EntityVisitor>();
+        List<EntityVisitor> visitors = new ArrayList<>();
         LocalSession session = null;
         EditSession editSession = null;
 
@@ -486,12 +501,12 @@ public class UtilityCommands {
             } else {
                 entities = editSession.getEntities();
             }
-            visitors.add(new EntityVisitor(entities.iterator(), remover.createFunction(editSession.getWorld().getWorldData().getEntityRegistry())));
+            visitors.add(new EntityVisitor(entities.iterator(), remover.createFunction()));
         } else {
             Platform platform = we.getPlatformManager().queryCapability(Capability.WORLD_EDITING);
             for (World world : platform.getWorlds()) {
                 List<? extends Entity> entities = world.getEntities();
-                visitors.add(new EntityVisitor(entities.iterator(), remover.createFunction(world.getWorldData().getEntityRegistry())));
+                visitors.add(new EntityVisitor(entities.iterator(), remover.createFunction()));
             }
         }
 
@@ -591,7 +606,7 @@ public class UtilityCommands {
         }
 
         boolean isRootLevel = true;
-        List<String> visited = new ArrayList<String>();
+        List<String> visited = new ArrayList<>();
 
         // Drill down to the command
         for (int i = 0; i < effectiveLength; i++) {
@@ -631,8 +646,8 @@ public class UtilityCommands {
             Dispatcher dispatcher = (Dispatcher) callable;
 
             // Get a list of aliases
-            List<CommandMapping> aliases = new ArrayList<CommandMapping>(dispatcher.getCommands());
-            Collections.sort(aliases, new PrimaryAliasComparator(CommandManager.COMMAND_CLEAN_PATTERN));
+            List<CommandMapping> aliases = new ArrayList<>(dispatcher.getCommands());
+            aliases.sort(new PrimaryAliasComparator(CommandManager.COMMAND_CLEAN_PATTERN));
 
             // Calculate pagination
             int offset = perPage * page;

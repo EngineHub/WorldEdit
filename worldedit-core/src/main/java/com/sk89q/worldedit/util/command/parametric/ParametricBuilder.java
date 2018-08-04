@@ -19,6 +19,8 @@
 
 package com.sk89q.worldedit.util.command.parametric;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.google.common.collect.ImmutableBiMap.Builder;
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
@@ -43,8 +45,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 /**
  * Creates commands using annotations placed on methods and individual parameters of
  * such methods.
@@ -54,9 +54,9 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class ParametricBuilder {
 
-    private final Map<Type, Binding> bindings = new HashMap<Type, Binding>();
+    private final Map<Type, Binding> bindings = new HashMap<>();
     private final Paranamer paranamer = new CachingParanamer();
-    private final List<InvokeListener> invokeListeners = new ArrayList<InvokeListener>();
+    private final List<InvokeListener> invokeListeners = new ArrayList<>();
     private Authorizer authorizer = new NullAuthorizer();
     private CommandCompleter defaultCompleter = new NullCompleter();
     

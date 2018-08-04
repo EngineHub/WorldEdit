@@ -19,21 +19,23 @@
 
 package com.sk89q.worldedit.extension.platform;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.WorldVector;
+import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
 import com.sk89q.worldedit.internal.cui.CUIEvent;
 import com.sk89q.worldedit.session.SessionKey;
+import com.sk89q.worldedit.util.HandSide;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.World;
-
-import javax.annotation.Nullable;
+import com.sk89q.worldedit.world.gamemode.GameMode;
 
 import java.util.UUID;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import javax.annotation.Nullable;
 
 class PlayerProxy extends AbstractPlayerActor {
 
@@ -59,13 +61,13 @@ class PlayerProxy extends AbstractPlayerActor {
     }
 
     @Override
-    public int getItemInHand() {
-        return basePlayer.getItemInHand();
+    public BaseItemStack getItemInHand(HandSide handSide) {
+        return basePlayer.getItemInHand(handSide);
     }
 
     @Override
-    public void giveItem(int type, int amount) {
-        basePlayer.giveItem(type, amount);
+    public void giveItem(BaseItemStack itemStack) {
+        basePlayer.giveItem(itemStack);
     }
 
     @Override
@@ -86,21 +88,6 @@ class PlayerProxy extends AbstractPlayerActor {
     @Override
     public Location getLocation() {
         return basePlayer.getLocation();
-    }
-
-    @Override
-    public WorldVector getPosition() {
-        return basePlayer.getPosition();
-    }
-
-    @Override
-    public double getPitch() {
-        return basePlayer.getPitch();
-    }
-
-    @Override
-    public double getYaw() {
-        return basePlayer.getYaw();
     }
 
     @Override
@@ -157,5 +144,15 @@ class PlayerProxy extends AbstractPlayerActor {
     @Override
     public SessionKey getSessionKey() {
         return basePlayer.getSessionKey();
+    }
+
+    @Override
+    public GameMode getGameMode() {
+        return basePlayer.getGameMode();
+    }
+
+    @Override
+    public void setGameMode(GameMode gameMode) {
+        basePlayer.setGameMode(gameMode);
     }
 }

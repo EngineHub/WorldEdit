@@ -21,20 +21,24 @@ package com.sk89q.worldedit.extent.inventory;
 
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.extent.AbstractDelegateExtent;
 import com.sk89q.worldedit.extent.Extent;
+import com.sk89q.worldedit.world.block.BlockState;
+import com.sk89q.worldedit.world.block.BlockStateHolder;
+import com.sk89q.worldedit.world.block.BlockType;
+import com.sk89q.worldedit.world.block.BlockTypes;
 
-import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.annotation.Nullable;
 
 /**
  * Applies a {@link BlockBag} to operations.
  */
 public class BlockBagExtent extends AbstractDelegateExtent {
 
-    private Map<Integer, Integer> missingBlocks = new HashMap<Integer, Integer>();
+    private Map<BlockType, Integer> missingBlocks = new HashMap<>();
     private BlockBag blockBag;
 
     /**
@@ -72,37 +76,35 @@ public class BlockBagExtent extends AbstractDelegateExtent {
      *
      * @return a map of missing blocks
      */
-    public Map<Integer, Integer> popMissing() {
-        Map<Integer, Integer> missingBlocks = this.missingBlocks;
-        this.missingBlocks = new HashMap<Integer, Integer>();
+    public Map<BlockType, Integer> popMissing() {
+        Map<BlockType, Integer> missingBlocks = this.missingBlocks;
+        this.missingBlocks = new HashMap<>();
         return missingBlocks;
     }
 
     @Override
-    public boolean setBlock(Vector position, BaseBlock block) throws WorldEditException {
+    public boolean setBlock(Vector position, BlockStateHolder block) throws WorldEditException {
         if (blockBag != null) {
-            BaseBlock lazyBlock = getExtent().getLazyBlock(position);
-            int existing = lazyBlock.getType();
-            final int type = block.getType();
+            BlockState existing = getExtent().getBlock(position);
 
-            if (type > 0) {
+            if (block.getBlockType() != BlockTypes.AIR) {
                 try {
-                    blockBag.fetchPlacedBlock(type, 0);
+                    blockBag.fetchPlacedBlock(block.toImmutableState());
                 } catch (UnplaceableBlockException e) {
                     return false;
                 } catch (BlockBagException e) {
-                    if (!missingBlocks.containsKey(type)) {
-                        missingBlocks.put(type, 1);
+                    if (!missingBlocks.containsKey(block.getBlockType())) {
+                        missingBlocks.put(block.getBlockType(), 1);
                     } else {
-                        missingBlocks.put(type, missingBlocks.get(type) + 1);
+                        missingBlocks.put(block.getBlockType(), missingBlocks.get(block.getBlockType()) + 1);
                     }
                     return false;
                 }
             }
 
-            if (existing > 0) {
+            if (existing.getBlockType() != BlockTypes.AIR) {
                 try {
-                    blockBag.storeDroppedBlock(existing, lazyBlock.getData());
+                    blockBag.storeDroppedBlock(existing);
                 } catch (BlockBagException ignored) {
                 }
             }

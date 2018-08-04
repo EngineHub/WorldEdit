@@ -19,28 +19,30 @@
 
 package com.sk89q.worldedit.extent.inventory;
 
+import com.sk89q.worldedit.world.block.BlockType;
+
 /**
  * Thrown when the target inventory of a block bag is full.
  */
 public class OutOfSpaceException extends BlockBagException {
 
-    private int id;
+    private BlockType type;
 
     /**
      * Construct the object.
      *
-     * @param id the ID of the block
+     * @param type the type of the block
      */
-    public OutOfSpaceException(int id) {
-        this.id = id;
+    public OutOfSpaceException(BlockType type) {
+        this.type = type;
     }
 
     /**
-     * Get the ID of the block
+     * Get the type of the block
      *
-     * @return the id
+     * @return the type
      */
-    public int getID() {
-        return id;
+    public BlockType getType() {
+        return this.type;
     }
 }

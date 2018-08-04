@@ -23,12 +23,12 @@ import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.function.RegionFunction;
 import com.sk89q.worldedit.function.pattern.BlockPattern;
 import com.sk89q.worldedit.function.pattern.Pattern;
-import com.sk89q.worldedit.function.pattern.RandomPattern;
+import com.sk89q.worldedit.world.block.BlockState;
+import com.sk89q.worldedit.world.block.BlockStateHolder;
+import com.sk89q.worldedit.world.block.BlockTypes;
 
 import java.util.Random;
 
@@ -86,25 +86,25 @@ public class GardenPatchGenerator implements RegionFunction {
      */
     private void placeVine(Vector basePos, Vector pos) throws MaxChangedBlocksException {
         if (pos.distance(basePos) > 4) return;
-        if (editSession.getBlockType(pos) != 0) return;
+        if (editSession.getBlock(pos).getBlockType() != BlockTypes.AIR) return;
 
         for (int i = -1; i > -3; --i) {
             Vector testPos = pos.add(0, i, 0);
-            if (editSession.getBlockType(testPos) == BlockID.AIR) {
+            if (editSession.getBlock(testPos).getBlockType() == BlockTypes.AIR) {
                 pos = testPos;
             } else {
                 break;
             }
         }
 
-        editSession.setBlockIfAir(pos, new BaseBlock(BlockID.LEAVES));
+        setBlockIfAir(editSession, pos, BlockTypes.OAK_LEAVES.getDefaultState());
         affected++;
 
         int t = random.nextInt(4);
         int h = random.nextInt(3) - 1;
         Vector p;
 
-        BaseBlock log = new BaseBlock(BlockID.LOG);
+        BlockState log = BlockTypes.OAK_LOG.getDefaultState();
 
         switch (t) {
             case 0:
@@ -112,10 +112,10 @@ public class GardenPatchGenerator implements RegionFunction {
                     placeVine(basePos, pos.add(1, 0, 0));
                 }
                 if (random.nextBoolean()) {
-                    editSession.setBlockIfAir(pos.add(1, h, -1), log);
+                    setBlockIfAir(editSession, pos.add(1, h, -1), log);
                     affected++;
                 }
-                editSession.setBlockIfAir(p = pos.add(0, 0, -1), plant.apply(p));
+                setBlockIfAir(editSession, p = pos.add(0, 0, -1), plant.apply(p));
                 affected++;
                 break;
 
@@ -124,10 +124,10 @@ public class GardenPatchGenerator implements RegionFunction {
                     placeVine(basePos, pos.add(0, 0, 1));
                 }
                 if (random.nextBoolean()) {
-                    editSession.setBlockIfAir(pos.add(1, h, 0), log);
+                    setBlockIfAir(editSession, pos.add(1, h, 0), log);
                     affected++;
                 }
-                editSession.setBlockIfAir(p = pos.add(1, 0, 1), plant.apply(p));
+                setBlockIfAir(editSession, p = pos.add(1, 0, 1), plant.apply(p));
                 affected++;
                 break;
 
@@ -136,10 +136,10 @@ public class GardenPatchGenerator implements RegionFunction {
                     placeVine(basePos, pos.add(0, 0, -1));
                 }
                 if (random.nextBoolean()) {
-                    editSession.setBlockIfAir(pos.add(-1, h, 0), log);
+                    setBlockIfAir(editSession, pos.add(-1, h, 0), log);
                     affected++;
                 }
-                editSession.setBlockIfAir(p = pos.add(-1, 0, 1), plant.apply(p));
+                setBlockIfAir(editSession, p = pos.add(-1, 0, 1), plant.apply(p));
                 affected++;
                 break;
 
@@ -148,10 +148,10 @@ public class GardenPatchGenerator implements RegionFunction {
                     placeVine(basePos, pos.add(-1, 0, 0));
                 }
                 if (random.nextBoolean()) {
-                    editSession.setBlockIfAir(pos.add(-1, h, -1), log);
+                    setBlockIfAir(editSession, pos.add(-1, h, -1), log);
                     affected++;
                 }
-                editSession.setBlockIfAir(p = pos.add(-1, 0, -1), plant.apply(p));
+                setBlockIfAir(editSession, p = pos.add(-1, 0, -1), plant.apply(p));
                 affected++;
                 break;
         }
@@ -159,17 +159,19 @@ public class GardenPatchGenerator implements RegionFunction {
 
     @Override
     public boolean apply(Vector position) throws WorldEditException {
-        if (editSession.getBlock(position).getType() != BlockID.AIR) {
+        if (editSession.getBlock(position).getBlockType() != BlockTypes.AIR) {
             position = position.add(0, 1, 0);
         }
 
-        if (editSession.getBlock(position.add(0, -1, 0)).getType() != BlockID.GRASS) {
+        if (editSession.getBlock(position.add(0, -1, 0)).getBlockType() != BlockTypes.GRASS_BLOCK) {
             return false;
         }
 
-        BaseBlock leavesBlock = new BaseBlock(BlockID.LEAVES);
+        BlockState leavesBlock = BlockTypes.OAK_LEAVES.getDefaultState();
 
-        editSession.setBlockIfAir(position, leavesBlock);
+        if (editSession.getBlock(position).getBlockType() == BlockTypes.AIR) {
+            editSession.setBlock(position, leavesBlock);
+        }
 
         placeVine(position, position.add(0, 0, 1));
         placeVine(position, position.add(0, 0, -1));
@@ -185,11 +187,19 @@ public class GardenPatchGenerator implements RegionFunction {
      * @return a pumpkin pattern
      */
     public static Pattern getPumpkinPattern() {
-        RandomPattern pattern = new RandomPattern();
-        for (int i = 0; i < 4; i++) {
-            pattern.add(new BlockPattern(new BaseBlock(BlockID.PUMPKIN, i)), 100);
-        }
-        return pattern;
+        return new BlockPattern(BlockTypes.PUMPKIN.getDefaultState());
+    }
+
+    /**
+     * Set a block only if there's no block already there.
+     *
+     * @param position the position
+     * @param block the block to set
+     * @return if block was changed
+     * @throws MaxChangedBlocksException thrown if too many blocks are changed
+     */
+    private static boolean setBlockIfAir(EditSession session, Vector position, BlockStateHolder block) throws MaxChangedBlocksException {
+        return session.getBlock(position).getBlockType() == BlockTypes.AIR && session.setBlock(position, block);
     }
 
     /**
@@ -198,6 +208,6 @@ public class GardenPatchGenerator implements RegionFunction {
      * @return a melon pattern
      */
     public static Pattern getMelonPattern() {
-        return new BlockPattern(new BaseBlock(BlockID.MELON_BLOCK));
+        return new BlockPattern(BlockTypes.MELON.getDefaultState());
     }
 }

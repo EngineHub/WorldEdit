@@ -26,13 +26,17 @@ import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.function.operation.Operation;
-import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.regions.Region;
+import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.biome.BaseBiome;
+import com.sk89q.worldedit.world.block.BlockState;
+import com.sk89q.worldedit.world.block.BlockStateHolder;
+import com.sk89q.worldedit.world.block.BlockTypes;
 
-import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
+
+import javax.annotation.Nullable;
 
 /**
  * An extent that returns air blocks for all blocks and does not
@@ -69,13 +73,13 @@ public class NullExtent implements Extent {
     }
 
     @Override
-    public BaseBlock getBlock(Vector position) {
-        return new BaseBlock(0);
+    public BlockState getBlock(Vector position) {
+        return BlockTypes.AIR.getDefaultState();
     }
 
     @Override
-    public BaseBlock getLazyBlock(Vector position) {
-        return new BaseBlock(0);
+    public BaseBlock getFullBlock(Vector position) {
+        return new BaseBlock(getBlock(position));
     }
 
     @Nullable
@@ -85,7 +89,7 @@ public class NullExtent implements Extent {
     }
 
     @Override
-    public boolean setBlock(Vector position, BaseBlock block) throws WorldEditException {
+    public boolean setBlock(Vector position, BlockStateHolder block) throws WorldEditException {
         return false;
     }
 

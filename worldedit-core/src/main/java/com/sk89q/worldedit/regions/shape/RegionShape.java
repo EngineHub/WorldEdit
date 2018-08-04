@@ -20,8 +20,8 @@
 package com.sk89q.worldedit.regions.shape;
 
 import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.regions.Region;
+import com.sk89q.worldedit.world.block.BlockStateHolder;
 
 /**
  * Generates solid and hollow shapes according to materials returned by the
@@ -34,7 +34,7 @@ public class RegionShape extends ArbitraryShape {
     }
 
     @Override
-    protected BaseBlock getMaterial(int x, int y, int z, BaseBlock defaultMaterial) {
+    protected BlockStateHolder getMaterial(int x, int y, int z, BlockStateHolder defaultMaterial) {
         if (!this.extent.contains(new Vector(x, y, z))) {
             return null;
         }

@@ -19,7 +19,8 @@
 
 package com.sk89q.worldedit.util.eventbus;
 
-import com.google.common.base.Supplier;
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
 import com.google.common.collect.SetMultimap;
@@ -27,11 +28,16 @@ import com.google.common.eventbus.DeadEvent;
 import com.sk89q.worldedit.internal.annotation.RequiresNewerGuava;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Dispatches events to listeners, and provides ways for listeners to register
@@ -50,13 +56,7 @@ public class EventBus {
     private final Logger logger = Logger.getLogger(EventBus.class.getCanonicalName());
 
     private final SetMultimap<Class<?>, EventHandler> handlersByType =
-            Multimaps.newSetMultimap(new HashMap<Class<?>, Collection<EventHandler>>(),
-                    new Supplier<Set<EventHandler>>() {
-                        @Override
-                        public Set<EventHandler> get() {
-                            return newHandlerSet();
-                        }
-                    });
+            Multimaps.newSetMultimap(new HashMap<>(), this::newHandlerSet);
 
     /**
      * Strategy for finding handler methods in registered objects.  Currently,
@@ -153,7 +153,7 @@ public class EventBus {
      * @param event  event to post.
      */
     public void post(Object event) {
-        List<EventHandler> dispatching = new ArrayList<EventHandler>();
+        List<EventHandler> dispatching = new ArrayList<>();
 
         synchronized (this) {
             Set<Class<?>> dispatchTypes = flattenHierarchy(event.getClass());
@@ -211,7 +211,7 @@ public class EventBus {
      * @return a new, mutable set for handlers.
      */
     protected synchronized Set<EventHandler> newHandlerSet() {
-        return new HashSet<EventHandler>();
+        return new HashSet<>();
     }
 
     /**

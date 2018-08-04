@@ -28,13 +28,17 @@ import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.bukkit.plugin.Plugin;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 public class TestOfflinePermissible implements OfflinePlayer, Permissible {
     private boolean op;
     private UUID randomUuid = UUID.randomUUID();
     
-    private final Map<String, Boolean> assignedPermissions = new HashMap<String, Boolean>();
+    private final Map<String, Boolean> assignedPermissions = new HashMap<>();
 
     @Override
     public boolean isOp() {
@@ -101,7 +105,7 @@ public class TestOfflinePermissible implements OfflinePlayer, Permissible {
 
     @Override
     public Set<PermissionAttachmentInfo> getEffectivePermissions() {
-        Set<PermissionAttachmentInfo> ret = new HashSet<PermissionAttachmentInfo>();
+        Set<PermissionAttachmentInfo> ret = new HashSet<>();
         for (Map.Entry<String, Boolean> entry : assignedPermissions.entrySet()) {
             ret.add(new PermissionAttachmentInfo(this, entry.getKey(), null, entry.getValue()));
         }
@@ -138,11 +142,6 @@ public class TestOfflinePermissible implements OfflinePlayer, Permissible {
 
     @Override
     public boolean isBanned() {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public void setBanned(boolean b) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

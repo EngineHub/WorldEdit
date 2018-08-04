@@ -22,6 +22,7 @@ package com.sk89q.worldedit.scripting.java;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineFactory;
 
@@ -31,7 +32,7 @@ public class RhinoScriptEngineFactory implements ScriptEngineFactory {
     private static List<String> extensions;
 
     static {
-        names = new ArrayList<String>(5);
+        names = new ArrayList<>(5);
         names.add("ECMAScript");
         names.add("ecmascript");
         names.add("JavaScript");
@@ -39,14 +40,14 @@ public class RhinoScriptEngineFactory implements ScriptEngineFactory {
         names.add("js");
         names = Collections.unmodifiableList(names);
 
-        mimeTypes = new ArrayList<String>(4);
+        mimeTypes = new ArrayList<>(4);
         mimeTypes.add("application/ecmascript");
         mimeTypes.add("text/ecmascript");
         mimeTypes.add("application/javascript");
         mimeTypes.add("text/javascript");
         mimeTypes = Collections.unmodifiableList(mimeTypes);
 
-        extensions = new ArrayList<String>(2);
+        extensions = new ArrayList<>(2);
         extensions.add("emcascript");
         extensions.add("js");
         extensions = Collections.unmodifiableList(extensions);
@@ -116,20 +117,21 @@ public class RhinoScriptEngineFactory implements ScriptEngineFactory {
 
     @Override
     public Object getParameter(String key) {
-        if (key.equals(ScriptEngine.ENGINE)) {
-            return getEngineName();
-        } else if (key.equals(ScriptEngine.ENGINE_VERSION)) {
-            return getEngineVersion();
-        } else if (key.equals(ScriptEngine.NAME)) {
-            return getEngineName();
-        } else if (key.equals(ScriptEngine.LANGUAGE)) {
-            return getLanguageName();
-        } else if (key.equals(ScriptEngine.LANGUAGE_VERSION)) {
-            return getLanguageVersion();
-        } else if (key.equals("THREADING")) {
-            return "MULTITHREADED";
-        } else {
-            throw new IllegalArgumentException("Invalid key");
+        switch (key) {
+            case ScriptEngine.ENGINE:
+                return getEngineName();
+            case ScriptEngine.ENGINE_VERSION:
+                return getEngineVersion();
+            case ScriptEngine.NAME:
+                return getEngineName();
+            case ScriptEngine.LANGUAGE:
+                return getLanguageName();
+            case ScriptEngine.LANGUAGE_VERSION:
+                return getLanguageVersion();
+            case "THREADING":
+                return "MULTITHREADED";
+            default:
+                throw new IllegalArgumentException("Invalid key");
         }
     }
 

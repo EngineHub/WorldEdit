@@ -26,19 +26,21 @@ import com.sk89q.worldedit.Vector2D;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BaseItemStack;
-import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.TreeGenerator.TreeType;
 import com.sk89q.worldedit.world.biome.BaseBiome;
-import com.sk89q.worldedit.world.registry.LegacyWorldData;
-import com.sk89q.worldedit.world.registry.WorldData;
+import com.sk89q.worldedit.world.block.BlockState;
+import com.sk89q.worldedit.world.block.BlockStateHolder;
+import com.sk89q.worldedit.world.block.BlockTypes;
+import com.sk89q.worldedit.world.weather.WeatherType;
 
-import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
+
+import javax.annotation.Nullable;
 
 /**
  * A null implementation of {@link World} that drops all changes and
@@ -57,7 +59,7 @@ public class NullWorld extends AbstractWorld {
     }
 
     @Override
-    public boolean setBlock(Vector position, BaseBlock block, boolean notifyAndLight) throws WorldEditException {
+    public boolean setBlock(Vector position, BlockStateHolder block, boolean notifyAndLight) throws WorldEditException {
         return false;
     }
 
@@ -86,6 +88,10 @@ public class NullWorld extends AbstractWorld {
     }
 
     @Override
+    public void simulateBlockMine(Vector position) {
+    }
+
+    @Override
     public boolean regenerate(Region region, EditSession editSession) {
         return false;
     }
@@ -96,18 +102,31 @@ public class NullWorld extends AbstractWorld {
     }
 
     @Override
-    public WorldData getWorldData() {
-        return LegacyWorldData.getInstance();
+    public WeatherType getWeather() {
+        return null;
     }
 
     @Override
-    public BaseBlock getBlock(Vector position) {
-        return new BaseBlock(BlockID.AIR);
+    public long getRemainingWeatherDuration() {
+        return 0;
     }
 
     @Override
-    public BaseBlock getLazyBlock(Vector position) {
-        return new BaseBlock(BlockID.AIR);
+    public void setWeather(WeatherType weatherType) {
+    }
+
+    @Override
+    public void setWeather(WeatherType weatherType, long duration) {
+    }
+
+    @Override
+    public BlockState getBlock(Vector position) {
+        return BlockTypes.AIR.getDefaultState();
+    }
+
+    @Override
+    public BaseBlock getFullBlock(Vector position) {
+        return new BaseBlock(getBlock(position));
     }
 
     @Override

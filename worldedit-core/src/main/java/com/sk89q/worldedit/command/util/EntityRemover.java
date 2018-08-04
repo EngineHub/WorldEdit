@@ -19,17 +19,15 @@
 
 package com.sk89q.worldedit.command.util;
 
-import com.sk89q.minecraft.util.commands.CommandException;
-import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.entity.Entity;
-import com.sk89q.worldedit.entity.metadata.EntityType;
-import com.sk89q.worldedit.function.EntityFunction;
-import com.sk89q.worldedit.world.registry.EntityRegistry;
+import static com.google.common.base.Preconditions.checkNotNull;
 
-import javax.annotation.Nullable;
+import com.sk89q.minecraft.util.commands.CommandException;
+import com.sk89q.worldedit.entity.metadata.EntityProperties;
+import com.sk89q.worldedit.function.EntityFunction;
+
 import java.util.regex.Pattern;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import javax.annotation.Nullable;
 
 /**
  * The implementation of /remove.
@@ -39,7 +37,7 @@ public class EntityRemover {
     public enum Type {
         ALL("all") {
             @Override
-            boolean matches(EntityType type) {
+            boolean matches(EntityProperties type) {
                 for (Type value : values()) {
                     if (value != this && value.matches(type)) {
                         return true;
@@ -50,55 +48,55 @@ public class EntityRemover {
         },
         PROJECTILES("projectiles?|arrows?") {
             @Override
-            boolean matches(EntityType type) {
+            boolean matches(EntityProperties type) {
                 return type.isProjectile();
             }
         },
         ITEMS("items?|drops?") {
             @Override
-            boolean matches(EntityType type) {
+            boolean matches(EntityProperties type) {
                 return type.isItem();
             }
         },
         FALLING_BLOCKS("falling(blocks?|sand|gravel)") {
             @Override
-            boolean matches(EntityType type) {
+            boolean matches(EntityProperties type) {
                 return type.isFallingBlock();
             }
         },
         PAINTINGS("paintings?|art") {
             @Override
-            boolean matches(EntityType type) {
+            boolean matches(EntityProperties type) {
                 return type.isPainting();
             }
         },
         ITEM_FRAMES("(item)frames?") {
             @Override
-            boolean matches(EntityType type) {
+            boolean matches(EntityProperties type) {
                 return type.isItemFrame();
             }
         },
         BOATS("boats?") {
             @Override
-            boolean matches(EntityType type) {
+            boolean matches(EntityProperties type) {
                 return type.isBoat();
             }
         },
         MINECARTS("(mine)?carts?") {
             @Override
-            boolean matches(EntityType type) {
+            boolean matches(EntityProperties type) {
                 return type.isMinecart();
             }
         },
         TNT("tnt") {
             @Override
-            boolean matches(EntityType type) {
+            boolean matches(EntityProperties type) {
                 return type.isTNT();
             }
         },
         XP_ORBS("xp") {
             @Override
-            boolean matches(EntityType type) {
+            boolean matches(EntityProperties type) {
                 return type.isExperienceOrb();
             }
         };
@@ -113,7 +111,7 @@ public class EntityRemover {
             return pattern.matcher(str).matches();
         }
 
-        abstract boolean matches(EntityType type);
+        abstract boolean matches(EntityProperties type);
 
         @Nullable
         public static Type findByPattern(String str) {
@@ -138,22 +136,19 @@ public class EntityRemover {
         }
     }
 
-    public EntityFunction createFunction(final EntityRegistry entityRegistry) {
+    public EntityFunction createFunction() {
         final Type type = this.type;
-        checkNotNull("type can't be null", type);
-        return new EntityFunction() {
-            @Override
-            public boolean apply(Entity entity) throws WorldEditException {
-                EntityType registryType = entity.getFacet(EntityType.class);
-                if (registryType != null) {
-                    if (type.matches(registryType)) {
-                        entity.remove();
-                        return true;
-                    }
+        checkNotNull(type, "type can't be null");
+        return entity -> {
+            EntityProperties registryType = entity.getFacet(EntityProperties.class);
+            if (registryType != null) {
+                if (type.matches(registryType)) {
+                    entity.remove();
+                    return true;
                 }
-
-                return false;
             }
+
+            return false;
         };
     }
 

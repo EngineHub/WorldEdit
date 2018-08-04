@@ -19,12 +19,12 @@
 
 package com.sk89q.worldedit.bukkit;
 
-import com.sk89q.worldedit.blocks.BlockID;
-import org.bukkit.BlockChangeDelegate;
 import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.MaxChangedBlocksException;
-import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.world.block.BlockTypes;
+import org.bukkit.BlockChangeDelegate;
+import org.bukkit.block.data.BlockData;
 
 /**
  * Proxy class to catch calls to set blocks.
@@ -38,36 +38,18 @@ public class EditSessionBlockChangeDelegate implements BlockChangeDelegate {
     }
 
     @Override
-    public boolean setRawTypeId(int x, int y, int z, int typeId) {
+    public boolean setBlockData(int x, int y, int z, BlockData blockData) {
         try {
-            return editSession.setBlock(new Vector(x, y, z), new BaseBlock(typeId));
-        } catch (MaxChangedBlocksException ex) {
+            editSession.setBlock(new Vector(x, y, z), BukkitAdapter.adapt(blockData));
+        } catch (MaxChangedBlocksException e) {
             return false;
         }
+        return true;
     }
 
     @Override
-    public boolean setRawTypeIdAndData(int x, int y, int z, int typeId, int data) {
-        try {
-            return editSession.setBlock(new Vector(x, y, z), new BaseBlock(typeId, data));
-        } catch (MaxChangedBlocksException ex) {
-            return false;
-        }
-    }
-
-    @Override
-    public boolean setTypeId(int x, int y, int z, int typeId) {
-        return setRawTypeId(x, y, z, typeId);
-    }
-
-    @Override
-    public boolean setTypeIdAndData(int x, int y, int z, int typeId, int data) {
-        return setRawTypeIdAndData(x, y, z, typeId, data);
-    }
-
-    @Override
-    public int getTypeId(int x, int y, int z) {
-        return editSession.getBlockType(new Vector(x, y, z));
+    public BlockData getBlockData(int x, int y, int z) {
+        return BukkitAdapter.adapt(editSession.getBlock(new Vector(x, y, z)));
     }
 
     @Override
@@ -77,7 +59,7 @@ public class EditSessionBlockChangeDelegate implements BlockChangeDelegate {
 
     @Override
     public boolean isEmpty(int x, int y, int z) {
-        return editSession.getBlockType(new Vector(x, y, z)) == BlockID.AIR;
+        return editSession.getBlock(new Vector(x, y, z)).getBlockType() == BlockTypes.AIR;
     }
 
 }

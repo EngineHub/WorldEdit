@@ -19,10 +19,18 @@
 
 package com.sk89q.worldedit.command;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.sk89q.minecraft.util.commands.Logging.LogMode.PLACEMENT;
+import static com.sk89q.minecraft.util.commands.Logging.LogMode.REGION;
+
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.minecraft.util.commands.Logging;
-import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.LocalSession;
+import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extent.clipboard.BlockArrayClipboard;
@@ -42,10 +50,6 @@ import com.sk89q.worldedit.regions.selector.CuboidRegionSelector;
 import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.util.command.binding.Switch;
 import com.sk89q.worldedit.util.command.parametric.Optional;
-
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.sk89q.minecraft.util.commands.Logging.LogMode.PLACEMENT;
-import static com.sk89q.minecraft.util.commands.Logging.LogMode.REGION;
 
 /**
  * Clipboard commands.
@@ -89,7 +93,7 @@ public class ClipboardCommands {
             copy.setSourceMask(mask);
         }
         Operations.completeLegacy(copy);
-        session.setClipboard(new ClipboardHolder(clipboard, editSession.getWorld().getWorldData()));
+        session.setClipboard(new ClipboardHolder(clipboard));
 
         player.print(region.getArea() + " block(s) were copied.");
     }
@@ -122,7 +126,7 @@ public class ClipboardCommands {
             copy.setSourceMask(mask);
         }
         Operations.completeLegacy(copy);
-        session.setClipboard(new ClipboardHolder(clipboard, editSession.getWorld().getWorldData()));
+        session.setClipboard(new ClipboardHolder(clipboard));
 
         player.print(region.getArea() + " block(s) were copied.");
     }
@@ -153,7 +157,7 @@ public class ClipboardCommands {
 
         Vector to = atOrigin ? clipboard.getOrigin() : session.getPlacementPosition(player);
         Operation operation = holder
-                .createPaste(editSession, editSession.getWorld().getWorldData())
+                .createPaste(editSession)
                 .to(to)
                 .ignoreAirBlocks(ignoreAirBlocks)
                 .build();

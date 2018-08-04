@@ -21,18 +21,16 @@ package com.sk89q.worldedit.forge;
 
 import com.sk89q.util.StringUtil;
 import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.WorldVector;
+import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.extension.platform.AbstractPlayerActor;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
-import com.sk89q.worldedit.internal.LocalWorldAdapter;
 import com.sk89q.worldedit.internal.cui.CUIEvent;
 import com.sk89q.worldedit.session.SessionKey;
+import com.sk89q.worldedit.util.HandSide;
 import com.sk89q.worldedit.util.Location;
-
+import com.sk89q.worldedit.world.item.ItemTypes;
 import io.netty.buffer.Unpooled;
-import java.util.UUID;
-import javax.annotation.Nullable;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -41,6 +39,11 @@ import net.minecraft.network.play.server.SPacketCustomPayload;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
+
+import java.util.UUID;
+
+import javax.annotation.Nullable;
 
 public class ForgePlayer extends AbstractPlayerActor {
 
@@ -57,9 +60,9 @@ public class ForgePlayer extends AbstractPlayerActor {
     }
 
     @Override
-    public int getItemInHand() {
-        ItemStack is = this.player.getHeldItem(EnumHand.MAIN_HAND);
-        return is == null ? 0 : Item.getIdFromItem(is.getItem());
+    public BaseItemStack getItemInHand(HandSide handSide) {
+        ItemStack is = this.player.getHeldItem(handSide == HandSide.MAIN_HAND ? EnumHand.MAIN_HAND : EnumHand.OFF_HAND);
+        return new BaseItemStack(ItemTypes.get(ForgeRegistries.ITEMS.getKey(is.getItem()).toString()));
     }
 
     @Override
@@ -82,30 +85,15 @@ public class ForgePlayer extends AbstractPlayerActor {
                 this.player.rotationPitch);
     }
 
-    @SuppressWarnings("deprecation")
-    @Override
-    public WorldVector getPosition() {
-        return new WorldVector(LocalWorldAdapter.adapt(ForgeWorldEdit.inst.getWorld(this.player.world)), this.player.posX, this.player.posY, this.player.posZ);
-    }
-
     @Override
     public com.sk89q.worldedit.world.World getWorld() {
         return ForgeWorldEdit.inst.getWorld(this.player.world);
     }
 
     @Override
-    public double getPitch() {
-        return this.player.rotationPitch;
-    }
-
-    @Override
-    public double getYaw() {
-        return this.player.rotationYaw;
-    }
-
-    @Override
-    public void giveItem(int type, int amt) {
-        this.player.inventory.addItemStackToInventory(new ItemStack(Item.getItemById(type), amt, 0));
+    public void giveItem(BaseItemStack itemStack) {
+        this.player.inventory.addItemStackToInventory(
+                new ItemStack(Item.getByNameOrId(itemStack.getType().getId()), itemStack.getAmount(), 0));
     }
 
     @Override

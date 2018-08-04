@@ -19,9 +19,9 @@
 
 package com.sk89q.worldedit.function.mask;
 
-import com.sk89q.worldedit.extent.Extent;
-
 import static com.google.common.base.Preconditions.checkNotNull;
+
+import com.sk89q.worldedit.extent.Extent;
 
 /**
  * An abstract implementation of {@link Mask} that takes uses an {@link Extent}.

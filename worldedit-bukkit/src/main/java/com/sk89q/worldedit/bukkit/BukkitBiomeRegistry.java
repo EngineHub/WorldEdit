@@ -25,10 +25,11 @@ import com.sk89q.worldedit.world.biome.BiomeData;
 import com.sk89q.worldedit.world.registry.BiomeRegistry;
 import org.bukkit.block.Biome;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import javax.annotation.Nullable;
 
 /**
  * A biome registry for Bukkit.
@@ -48,7 +49,7 @@ class BukkitBiomeRegistry implements BiomeRegistry {
     public List<BaseBiome> getBiomes() {
         BukkitImplAdapter adapter = WorldEditPlugin.getInstance().getBukkitImplAdapter();
         if (adapter != null) {
-            List<BaseBiome> biomes = new ArrayList<BaseBiome>();
+            List<BaseBiome> biomes = new ArrayList<>();
             for (Biome biome : Biome.values()) {
                 int biomeId = adapter.getBiomeId(biome);
                 biomes.add(new BaseBiome(biomeId));
@@ -65,12 +66,7 @@ class BukkitBiomeRegistry implements BiomeRegistry {
         BukkitImplAdapter adapter = WorldEditPlugin.getInstance().getBukkitImplAdapter();
         if (adapter != null) {
             final Biome bukkitBiome = adapter.getBiome(biome.getId());
-            return new BiomeData() {
-                @Override
-                public String getName() {
-                    return bukkitBiome.name();
-                }
-            };
+            return bukkitBiome::name;
         } else {
             return null;
         }

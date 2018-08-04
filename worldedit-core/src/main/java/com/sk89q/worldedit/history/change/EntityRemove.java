@@ -19,13 +19,13 @@
 
 package com.sk89q.worldedit.history.change;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.history.UndoContext;
 import com.sk89q.worldedit.util.Location;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Tracks the removal of an entity.

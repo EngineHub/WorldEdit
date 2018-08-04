@@ -19,24 +19,27 @@
 
 package com.sk89q.worldedit.bukkit;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.sk89q.worldedit.BlockVector2D;
 import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.Vector2D;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BaseItemStack;
-import com.sk89q.worldedit.blocks.LazyBlock;
 import com.sk89q.worldedit.bukkit.adapter.BukkitImplAdapter;
 import com.sk89q.worldedit.entity.BaseEntity;
+import com.sk89q.worldedit.history.change.BlockChange;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.TreeGenerator;
+import com.sk89q.worldedit.world.AbstractWorld;
 import com.sk89q.worldedit.world.biome.BaseBiome;
-import com.sk89q.worldedit.world.registry.WorldData;
+import com.sk89q.worldedit.world.block.BlockStateHolder;
+import com.sk89q.worldedit.world.weather.WeatherType;
+import com.sk89q.worldedit.world.weather.WeatherTypes;
 import org.bukkit.Effect;
-import org.bukkit.Material;
 import org.bukkit.TreeType;
 import org.bukkit.World;
 import org.bukkit.block.Biome;
@@ -46,9 +49,7 @@ import org.bukkit.block.Chest;
 import org.bukkit.entity.Entity;
 import org.bukkit.inventory.DoubleChestInventory;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
 
-import javax.annotation.Nullable;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.EnumMap;
@@ -58,13 +59,13 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import javax.annotation.Nullable;
 
-public class BukkitWorld extends LocalWorld {
+public class BukkitWorld extends AbstractWorld {
 
     private static final Logger logger = WorldEdit.logger;
 
-    private static final Map<Integer, Effect> effects = new HashMap<Integer, Effect>();
+    private static final Map<Integer, Effect> effects = new HashMap<>();
     static {
         for (Effect effect : Effect.values()) {
             effects.put(effect.getId(), effect);
@@ -78,9 +79,8 @@ public class BukkitWorld extends LocalWorld {
      *
      * @param world the world
      */
-    @SuppressWarnings("unchecked")
     public BukkitWorld(World world) {
-        this.worldRef = new WeakReference<World>(world);
+        this.worldRef = new WeakReference<>(world);
     }
 
     @Override
@@ -88,9 +88,9 @@ public class BukkitWorld extends LocalWorld {
         World world = getWorld();
 
         List<Entity> ents = world.getEntities();
-        List<com.sk89q.worldedit.entity.Entity> entities = new ArrayList<com.sk89q.worldedit.entity.Entity>();
+        List<com.sk89q.worldedit.entity.Entity> entities = new ArrayList<>();
         for (Entity ent : ents) {
-            if (region.contains(BukkitUtil.toVector(ent.getLocation()))) {
+            if (region.contains(BukkitAdapter.asVector(ent.getLocation()))) {
                 entities.add(BukkitAdapter.adapt(ent));
             }
         }
@@ -99,7 +99,7 @@ public class BukkitWorld extends LocalWorld {
 
     @Override
     public List<com.sk89q.worldedit.entity.Entity> getEntities() {
-        List<com.sk89q.worldedit.entity.Entity> list = new ArrayList<com.sk89q.worldedit.entity.Entity>();
+        List<com.sk89q.worldedit.entity.Entity> list = new ArrayList<>();
         for (Entity entity : getWorld().getEntities()) {
             list.add(BukkitAdapter.adapt(entity));
         }
@@ -156,7 +156,7 @@ public class BukkitWorld extends LocalWorld {
 
     @Override
     public boolean regenerate(Region region, EditSession editSession) {
-        BaseBlock[] history = new BaseBlock[16 * 16 * (getMaxY() + 1)];
+        BlockStateHolder[] history = new BlockStateHolder[16 * 16 * (getMaxY() + 1)];
 
         for (Vector2D chunk : region.getChunks()) {
             Vector min = new Vector(chunk.getBlockX() * 16, 0, chunk.getBlockZ() * 16);
@@ -167,7 +167,7 @@ public class BukkitWorld extends LocalWorld {
                     for (int z = 0; z < 16; ++z) {
                         Vector pt = min.add(x, y, z);
                         int index = y * 16 * 16 + z * 16 + x;
-                        history[index] = editSession.getBlock(pt);
+                        history[index] = editSession.getFullBlock(pt);
                     }
                 }
             }
@@ -189,8 +189,7 @@ public class BukkitWorld extends LocalWorld {
                         if (!region.contains(pt)) {
                             editSession.smartSetBlock(pt, history[index]);
                         } else { // Otherwise fool with history
-                            editSession.rememberChange(pt, history[index],
-                                    editSession.rawGetBlock(pt));
+                            editSession.getChangeSet().add(new BlockChange(pt.toBlockVector(), history[index], editSession.getFullBlock(pt)));
                         }
                     }
                 }
@@ -248,41 +247,11 @@ public class BukkitWorld extends LocalWorld {
         return true;
     }
 
-    @Override
-    @Deprecated
-    public boolean generateTree(EditSession editSession, Vector pt) {
-        return generateTree(TreeGenerator.TreeType.TREE, editSession, pt);
-    }
-
-    @Override
-    @Deprecated
-    public boolean generateBigTree(EditSession editSession, Vector pt) {
-        return generateTree(TreeGenerator.TreeType.BIG_TREE, editSession, pt);
-    }
-
-    @Override
-    @Deprecated
-    public boolean generateBirchTree(EditSession editSession, Vector pt) {
-        return generateTree(TreeGenerator.TreeType.BIRCH, editSession, pt);
-    }
-
-    @Override
-    @Deprecated
-    public boolean generateRedwoodTree(EditSession editSession, Vector pt) {
-        return generateTree(TreeGenerator.TreeType.REDWOOD, editSession, pt);
-    }
-
-    @Override
-    @Deprecated
-    public boolean generateTallRedwoodTree(EditSession editSession, Vector pt) {
-        return generateTree(TreeGenerator.TreeType.TALL_REDWOOD, editSession, pt);
-    }
-
     /**
      * An EnumMap that stores which WorldEdit TreeTypes apply to which Bukkit TreeTypes
      */
     private static final EnumMap<TreeGenerator.TreeType, TreeType> treeTypeMapping =
-            new EnumMap<TreeGenerator.TreeType, TreeType>(TreeGenerator.TreeType.class);
+            new EnumMap<>(TreeGenerator.TreeType.class);
 
     static {
         for (TreeGenerator.TreeType type : TreeGenerator.TreeType.values()) {
@@ -316,22 +285,14 @@ public class BukkitWorld extends LocalWorld {
     public boolean generateTree(TreeGenerator.TreeType type, EditSession editSession, Vector pt) {
         World world = getWorld();
         TreeType bukkitType = toBukkitTreeType(type);
-        return type != null && world.generateTree(BukkitUtil.toLocation(world, pt), bukkitType,
+        return type != null && world.generateTree(BukkitAdapter.adapt(world, pt), bukkitType,
                 new EditSessionBlockChangeDelegate(editSession));
     }
 
     @Override
     public void dropItem(Vector pt, BaseItemStack item) {
         World world = getWorld();
-        ItemStack bukkitItem = new ItemStack(item.getType(), item.getAmount(),
-                item.getData());
-        world.dropItemNaturally(BukkitUtil.toLocation(world, pt), bukkitItem);
-    }
-
-    @SuppressWarnings("deprecation")
-    @Override
-    public boolean isValidBlockType(int type) {
-        return Material.getMaterial(type) != null && Material.getMaterial(type).isBlock();
+        world.dropItemNaturally(BukkitAdapter.adapt(world, pt), BukkitAdapter.adapt(item));
     }
 
     @Override
@@ -383,14 +344,54 @@ public class BukkitWorld extends LocalWorld {
             return false;
         }
 
-        world.playEffect(BukkitUtil.toLocation(world, position), effect, data);
+        world.playEffect(BukkitAdapter.adapt(world, position), effect, data);
 
         return true;
     }
 
     @Override
-    public WorldData getWorldData() {
-        return BukkitWorldData.getInstance();
+    public WeatherType getWeather() {
+        if (getWorld().isThundering()) {
+            return WeatherTypes.THUNDER_STORM;
+        } else if (getWorld().hasStorm()) {
+            return WeatherTypes.RAIN;
+        }
+
+        return WeatherTypes.CLEAR;
+    }
+
+    @Override
+    public long getRemainingWeatherDuration() {
+        return getWorld().getWeatherDuration();
+    }
+
+    @Override
+    public void setWeather(WeatherType weatherType) {
+        if (weatherType == WeatherTypes.THUNDER_STORM) {
+            getWorld().setThundering(true);
+        } else if (weatherType == WeatherTypes.RAIN) {
+            getWorld().setStorm(true);
+        } else {
+            getWorld().setStorm(false);
+            getWorld().setThundering(false);
+        }
+    }
+
+    @Override
+    public void setWeather(WeatherType weatherType, long duration) {
+        // Who named these methods...
+        if (weatherType == WeatherTypes.THUNDER_STORM) {
+            getWorld().setThundering(true);
+            getWorld().setThunderDuration((int) duration);
+            getWorld().setWeatherDuration((int) duration);
+        } else if (weatherType == WeatherTypes.RAIN) {
+            getWorld().setStorm(true);
+            getWorld().setWeatherDuration((int) duration);
+        } else {
+            getWorld().setStorm(false);
+            getWorld().setThundering(false);
+            getWorld().setWeatherDuration((int) duration);
+        }
     }
 
     @Override
@@ -399,33 +400,31 @@ public class BukkitWorld extends LocalWorld {
     }
 
     @Override
-    public BaseBlock getBlock(Vector position) {
-        BukkitImplAdapter adapter = WorldEditPlugin.getInstance().getBukkitImplAdapter();
-        if (adapter != null) {
-            return adapter.getBlock(BukkitAdapter.adapt(getWorld(), position));
-        } else {
-            Block bukkitBlock = getWorld().getBlockAt(position.getBlockX(), position.getBlockY(), position.getBlockZ());
-            return new BaseBlock(bukkitBlock.getTypeId(), bukkitBlock.getData());
-        }
+    public com.sk89q.worldedit.world.block.BlockState getBlock(Vector position) {
+        Block bukkitBlock = getWorld().getBlockAt(position.getBlockX(), position.getBlockY(), position.getBlockZ());
+        return BukkitAdapter.adapt(bukkitBlock.getBlockData());
     }
 
     @Override
-    public boolean setBlock(Vector position, BaseBlock block, boolean notifyAndLight) throws WorldEditException {
+    public boolean setBlock(Vector position, BlockStateHolder block, boolean notifyAndLight) throws WorldEditException {
         BukkitImplAdapter adapter = WorldEditPlugin.getInstance().getBukkitImplAdapter();
         if (adapter != null) {
             return adapter.setBlock(BukkitAdapter.adapt(getWorld(), position), block, notifyAndLight);
         } else {
             Block bukkitBlock = getWorld().getBlockAt(position.getBlockX(), position.getBlockY(), position.getBlockZ());
-            return bukkitBlock.setTypeIdAndData(block.getType(), (byte) block.getData(), notifyAndLight);
+            bukkitBlock.setBlockData(BukkitAdapter.adapt(block), notifyAndLight);
+            return true;
         }
     }
 
-    @SuppressWarnings("deprecation")
     @Override
-    public BaseBlock getLazyBlock(Vector position) {
-        World world = getWorld();
-        Block bukkitBlock = world.getBlockAt(position.getBlockX(), position.getBlockY(), position.getBlockZ());
-        return new LazyBlock(bukkitBlock.getTypeId(), bukkitBlock.getData(), this, position);
+    public BaseBlock getFullBlock(Vector position) {
+        BukkitImplAdapter adapter = WorldEditPlugin.getInstance().getBukkitImplAdapter();
+        if (adapter != null) {
+            return adapter.getBlock(BukkitAdapter.adapt(getWorld(), position));
+        } else {
+            return new BaseBlock(getBlock(position));
+        }
     }
 
     @Override
@@ -449,13 +448,5 @@ public class BukkitWorld extends LocalWorld {
         } else {
             return false;
         }
-    }
-
-    /**
-     * @deprecated Use {@link #setBlock(Vector, BaseBlock, boolean)}
-     */
-    @Deprecated
-    public boolean setBlock(Vector pt, com.sk89q.worldedit.foundation.Block block, boolean notifyAdjacent) throws WorldEditException {
-        return setBlock(pt, (BaseBlock) block, notifyAdjacent);
     }
 }

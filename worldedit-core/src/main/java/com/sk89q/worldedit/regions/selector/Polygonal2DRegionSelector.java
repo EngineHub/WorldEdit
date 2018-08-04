@@ -19,8 +19,13 @@
 
 package com.sk89q.worldedit.regions.selector;
 
-import com.google.common.base.Optional;
-import com.sk89q.worldedit.*;
+import static com.google.common.base.Preconditions.checkNotNull;
+
+import com.sk89q.worldedit.BlockVector;
+import com.sk89q.worldedit.BlockVector2D;
+import com.sk89q.worldedit.IncompleteRegionException;
+import com.sk89q.worldedit.LocalSession;
+import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.internal.cui.CUIRegion;
 import com.sk89q.worldedit.internal.cui.SelectionMinMaxEvent;
@@ -32,16 +37,16 @@ import com.sk89q.worldedit.regions.RegionSelector;
 import com.sk89q.worldedit.regions.selector.limit.SelectorLimits;
 import com.sk89q.worldedit.world.World;
 
-import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import javax.annotation.Nullable;
 
 /**
  * Creates a {@code Polygonal2DRegion} from a user's selections.
  */
-public class Polygonal2DRegionSelector extends com.sk89q.worldedit.regions.Polygonal2DRegionSelector implements RegionSelector, CUIRegion {
+public class Polygonal2DRegionSelector implements RegionSelector, CUIRegion {
 
     private transient BlockVector pos1;
     private transient Polygonal2DRegion region;
@@ -91,14 +96,6 @@ public class Polygonal2DRegionSelector extends com.sk89q.worldedit.regions.Polyg
             pos1 = points.get(0).toVector(minY).toBlockVector();
             region = new Polygonal2DRegion(oldRegion.getWorld(), points, minY, maxY);
         }
-    }
-
-    /**
-     * @deprecated cast {@code world} to {@link World}
-     */
-    @Deprecated
-    public Polygonal2DRegionSelector(@Nullable LocalWorld world, List<BlockVector2D> points, int minY, int maxY) {
-        this((World) world, points, minY, maxY);
     }
 
     /**
@@ -248,7 +245,6 @@ public class Polygonal2DRegionSelector extends com.sk89q.worldedit.regions.Polyg
      *
      * @return the number of points
      */
-    @Override
     public int getPointCount() {
         return region.getPoints().size();
     }

@@ -19,22 +19,26 @@
 
 package com.sk89q.worldedit.command.tool;
 
-import com.sk89q.worldedit.*;
-import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.blocks.BlockID;
+import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.LocalConfiguration;
+import com.sk89q.worldedit.LocalSession;
+import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Platform;
+import com.sk89q.worldedit.util.Location;
+import com.sk89q.worldedit.world.block.BlockStateHolder;
+import com.sk89q.worldedit.world.block.BlockTypes;
 
 /**
  * A tool that can place (or remove) blocks at a distance.
  */
 public class LongRangeBuildTool extends BrushTool implements DoubleActionTraceTool {
 
-    BaseBlock primary;
-    BaseBlock secondary;
+    private BlockStateHolder primary;
+    private BlockStateHolder secondary;
 
-    public LongRangeBuildTool(BaseBlock primary, BaseBlock secondary) {
+    public LongRangeBuildTool(BlockStateHolder primary, BlockStateHolder secondary) {
         super("worldedit.tool.lrbuild");
         this.primary = primary;
         this.secondary = secondary;
@@ -47,14 +51,14 @@ public class LongRangeBuildTool extends BrushTool implements DoubleActionTraceTo
 
     @Override
     public boolean actSecondary(Platform server, LocalConfiguration config, Player player, LocalSession session) {
-        WorldVectorFace pos = getTargetFace(player);
+        Location pos = getTargetFace(player);
         if (pos == null) return false;
         EditSession eS = session.createEditSession(player);
         try {
-            if (secondary.getType() == BlockID.AIR) {
-                eS.setBlock(pos, secondary);
+            if (secondary.getBlockType() == BlockTypes.AIR) {
+                eS.setBlock(pos.toVector(), secondary);
             } else {
-                eS.setBlock(pos.getFaceVector(), secondary);
+                eS.setBlock(pos.getDirection(), secondary);
             }
             return true;
         } catch (MaxChangedBlocksException e) {
@@ -66,14 +70,14 @@ public class LongRangeBuildTool extends BrushTool implements DoubleActionTraceTo
 
     @Override
     public boolean actPrimary(Platform server, LocalConfiguration config, Player player, LocalSession session) {
-        WorldVectorFace pos = getTargetFace(player);
+        Location pos = getTargetFace(player);
         if (pos == null) return false;
         EditSession eS = session.createEditSession(player);
         try {
-            if (primary.getType() == BlockID.AIR) {
-                eS.setBlock(pos, primary);
+            if (primary.getBlockType() == BlockTypes.AIR) {
+                eS.setBlock(pos.toVector(), primary);
             } else {
-                eS.setBlock(pos.getFaceVector(), primary);
+                eS.setBlock(pos.getDirection(), primary);
             }
             return true;
         } catch (MaxChangedBlocksException e) {
@@ -82,9 +86,8 @@ public class LongRangeBuildTool extends BrushTool implements DoubleActionTraceTo
         return false;
     }
 
-    public WorldVectorFace getTargetFace(Player player) {
-        WorldVectorFace target = null;
-        target = player.getBlockTraceFace(getRange(), true);
+    public Location getTargetFace(Player player) {
+        Location target = player.getBlockTraceFace(getRange(), true);
 
         if (target == null) {
             player.printError("No block in sight!");

@@ -19,11 +19,11 @@
 
 package com.sk89q.worldedit.util.command;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.sk89q.minecraft.util.commands.CommandException;
 
 import javax.annotation.Nullable;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Thrown when a command is not used properly.

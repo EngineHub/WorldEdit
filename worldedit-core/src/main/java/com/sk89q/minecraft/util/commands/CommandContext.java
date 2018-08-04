@@ -34,8 +34,8 @@ public class CommandContext {
 
     protected final List<Integer> originalArgIndices;
     protected final String[] originalArgs;
-    protected final Set<Character> booleanFlags = new HashSet<Character>();
-    protected final Map<Character, String> valueFlags = new HashMap<Character, String>();
+    protected final Set<Character> booleanFlags = new HashSet<>();
+    protected final Map<Character, String> valueFlags = new HashMap<>();
     protected final SuggestionContext suggestionContext;
     protected final CommandLocals locals;
 
@@ -103,8 +103,8 @@ public class CommandContext {
         SuggestionContext suggestionContext = SuggestionContext.hangingValue();
 
         // Eliminate empty args and combine multiword args first
-        List<Integer> argIndexList = new ArrayList<Integer>(args.length);
-        List<String> argList = new ArrayList<String>(args.length);
+        List<Integer> argIndexList = new ArrayList<>(args.length);
+        List<String> argList = new ArrayList<>(args.length);
         for (int i = 1; i < args.length; ++i) {
             isHanging = false;
             
@@ -152,8 +152,8 @@ public class CommandContext {
 
         // Then flags
 
-        this.originalArgIndices = new ArrayList<Integer>(argIndexList.size());
-        this.parsedArgs = new ArrayList<String>(argList.size());
+        this.originalArgIndices = new ArrayList<>(argIndexList.size());
+        this.parsedArgs = new ArrayList<>(argList.size());
 
         if (parseFlags) {
             for (int nextArg = 0; nextArg < argList.size(); ) {

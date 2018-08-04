@@ -19,9 +19,9 @@
 
 package com.sk89q.worldedit.util;
 
-import javax.annotation.Nullable;
-
 import static com.google.common.base.Preconditions.checkNotNull;
+
+import javax.annotation.Nullable;
 
 /**
  * Helper methods for enums.

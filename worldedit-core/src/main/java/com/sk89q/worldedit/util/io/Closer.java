@@ -19,6 +19,8 @@
 
 package com.sk89q.worldedit.util.io;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Throwables;
 
@@ -30,8 +32,6 @@ import java.util.Deque;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.ZipFile;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class Closer implements Closeable {
 
@@ -55,8 +55,8 @@ public final class Closer implements Closeable {
     final Suppressor suppressor;
 
     // only need space for 2 elements in most cases, so try to use the smallest array possible
-    private final Deque<Closeable> stack = new ArrayDeque<Closeable>(4);
-    private final Deque<ZipFile> zipStack = new ArrayDeque<ZipFile>(4);
+    private final Deque<Closeable> stack = new ArrayDeque<>(4);
+    private final Deque<ZipFile> zipStack = new ArrayDeque<>(4);
     private Throwable thrown;
 
     @VisibleForTesting Closer(Suppressor suppressor) {

@@ -19,7 +19,7 @@
 
 package com.sk89q.worldedit.regions.selector.limit;
 
-import com.google.common.base.Optional;
+import java.util.Optional;
 
 /**
  * Defines limits for selections.

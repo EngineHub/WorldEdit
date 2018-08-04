@@ -19,12 +19,12 @@
 
 package com.sk89q.worldedit.util;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.world.World;
 import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
 
 /**
  * Tests {@link Location}.

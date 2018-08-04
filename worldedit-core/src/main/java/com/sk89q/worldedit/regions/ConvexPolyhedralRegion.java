@@ -19,13 +19,13 @@
 
 package com.sk89q.worldedit.regions;
 
-import com.sk89q.worldedit.LocalWorld;
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.regions.polyhedron.Edge;
 import com.sk89q.worldedit.regions.polyhedron.Triangle;
 import com.sk89q.worldedit.world.World;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -33,24 +33,24 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import javax.annotation.Nullable;
 
 public class ConvexPolyhedralRegion extends AbstractRegion {
 
     /**
      * Vertices that are contained in the convex hull.
      */
-    private final Set<Vector> vertices = new LinkedHashSet<Vector>();
+    private final Set<Vector> vertices = new LinkedHashSet<>();
 
     /**
      * Triangles that form the convex hull.
      */
-    private final List<Triangle> triangles = new ArrayList<Triangle>();
+    private final List<Triangle> triangles = new ArrayList<>();
 
     /**
      * Vertices that are coplanar to the first 3 vertices.
      */
-    private final Set<Vector> vertexBacklog = new LinkedHashSet<Vector>();
+    private final Set<Vector> vertexBacklog = new LinkedHashSet<>();
 
     /**
      * Minimum point of the axis-aligned bounding box.
@@ -78,14 +78,6 @@ public class ConvexPolyhedralRegion extends AbstractRegion {
      * @param world the world
      */
     public ConvexPolyhedralRegion(@Nullable World world) {
-        super(world);
-    }
-
-    /**
-     * @deprecated cast {@code world} to {@link World}
-     */
-    @Deprecated
-    public ConvexPolyhedralRegion(LocalWorld world) {
         super(world);
     }
 
@@ -174,7 +166,7 @@ public class ConvexPolyhedralRegion extends AbstractRegion {
         }
 
         // Look for triangles that face the vertex and remove them
-        final Set<Edge> borderEdges = new LinkedHashSet<Edge>();
+        final Set<Edge> borderEdges = new LinkedHashSet<>();
         for (Iterator<Triangle> it = triangles.iterator(); it.hasNext(); ) {
             final Triangle triangle = it.next();
 
@@ -207,7 +199,7 @@ public class ConvexPolyhedralRegion extends AbstractRegion {
             vertices.remove(vertex);
 
             // Clone, clear and work through the backlog
-            final List<Vector> vertexBacklog2 = new ArrayList<Vector>(vertexBacklog);
+            final List<Vector> vertexBacklog2 = new ArrayList<>(vertexBacklog);
             vertexBacklog.clear();
             for (Vector vertex2 : vertexBacklog2) {
                 addVertex(vertex2);
@@ -269,7 +261,7 @@ public class ConvexPolyhedralRegion extends AbstractRegion {
     }
 
     private static void shiftCollection(Collection<Vector> collection, Vector change) {
-        final List<Vector> tmp = new ArrayList<Vector>(collection);
+        final List<Vector> tmp = new ArrayList<>(collection);
         collection.clear();
         for (Vector vertex : tmp) {
             collection.add(change.add(vertex));
@@ -323,7 +315,7 @@ public class ConvexPolyhedralRegion extends AbstractRegion {
             return vertices;
         }
 
-        final List<Vector> ret = new ArrayList<Vector>(vertices);
+        final List<Vector> ret = new ArrayList<>(vertices);
         ret.addAll(vertexBacklog);
 
         return ret;

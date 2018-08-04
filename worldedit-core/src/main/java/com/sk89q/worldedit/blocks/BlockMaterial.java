@@ -25,13 +25,6 @@ package com.sk89q.worldedit.blocks;
 public interface BlockMaterial {
 
     /**
-     * Get whether this block is rendered like a normal block.
-     *
-     * @return the value of the test
-     */
-    boolean isRenderedAsNormalBlock();
-
-    /**
      * Get whether this block is a full sized cube.
      *
      * @return the value of the test
@@ -88,27 +81,6 @@ public interface BlockMaterial {
     float getSlipperiness();
 
     /**
-     * Get whether this block blocks grass from growing.
-     *
-     * @return whether this block blocks grass
-     */
-    boolean isGrassBlocking();
-
-    /**
-     * Get the ambient occlusion light value.
-     *
-     * @return the ambient occlusion light value
-     */
-    float getAmbientOcclusionLightValue();
-
-    /**
-     * Get the opacity of this block for light to pass through.
-     *
-     * @return the opacity
-     */
-    int getLightOpacity();
-
-    /**
      * Get the light value for this block.
      *
      * @return the light value
@@ -130,25 +102,11 @@ public interface BlockMaterial {
     boolean isUnpushable();
 
     /**
-     * Get whether this block can be used in adventure mode.
-     *
-     * @return true if the block can be used in adventure mode
-     */
-    boolean isAdventureModeExempt();
-
-    /**
      * Get whether this block is ticked randomly.
      *
      * @return true if this block is ticked randomly
      */
     boolean isTicksRandomly();
-
-    /**
-     * Gets whether this block uses a neighbor's light value.
-     *
-     * @return true if this block does
-     */
-    boolean isUsingNeighborLight();
 
     /**
      * Get whether this block prevents movement.
@@ -180,4 +138,17 @@ public interface BlockMaterial {
      */
     boolean isReplacedDuringPlacement();
 
+    /**
+     * Get whether this block is translucent.
+     *
+     * @return true if the block is translucent
+     */
+    boolean isTranslucent();
+
+    /**
+     * Gets whether the block has a container (Item container)
+     *
+     * @return If it has a container
+     */
+    boolean hasContainer();
 }

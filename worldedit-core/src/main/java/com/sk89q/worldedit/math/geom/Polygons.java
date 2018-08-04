@@ -50,7 +50,7 @@ public final class Polygons {
             nPoints = maxPoints - 1;
         }
 
-        final List<BlockVector2D> points = new ArrayList<BlockVector2D>(nPoints);
+        final List<BlockVector2D> points = new ArrayList<>(nPoints);
         for (int i = 0; i < nPoints; ++i) {
             double angle = i * (2.0 * Math.PI) / nPoints;
             final Vector2D pos = new Vector2D(Math.cos(angle), Math.sin(angle));

@@ -19,6 +19,8 @@
 
 package com.sk89q.worldedit.internal.command;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.sk89q.minecraft.util.commands.CommandException;
 import com.sk89q.minecraft.util.commands.CommandLocals;
 import com.sk89q.worldedit.extension.platform.Actor;
@@ -32,8 +34,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Provides the names of connected users as suggestions.
@@ -56,7 +56,7 @@ public class UserCommandCompleter implements CommandCompleter {
     public List<String> getSuggestions(String arguments, CommandLocals locals) throws CommandException {
         Platform platform = platformManager.queryCapability(Capability.USER_COMMANDS);
         if (platform instanceof MultiUserPlatform) {
-            List<String> suggestions = new ArrayList<String>();
+            List<String> suggestions = new ArrayList<>();
             Collection<Actor> users = ((MultiUserPlatform) platform).getConnectedUsers();
             for (Actor user : users) {
                 if (user.getName().toLowerCase().startsWith(arguments.toLowerCase().trim())) {

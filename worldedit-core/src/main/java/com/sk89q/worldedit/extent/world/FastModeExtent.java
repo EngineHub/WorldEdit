@@ -19,20 +19,20 @@
 
 package com.sk89q.worldedit.extent.world;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.sk89q.worldedit.BlockVector2D;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.extent.AbstractDelegateExtent;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.RunContext;
 import com.sk89q.worldedit.world.World;
+import com.sk89q.worldedit.world.block.BlockStateHolder;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Implements "fast mode" which may skip physics, lighting, etc.
@@ -40,7 +40,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class FastModeExtent extends AbstractDelegateExtent {
 
     private final World world;
-    private final Set<BlockVector2D> dirtyChunks = new HashSet<BlockVector2D>();
+    private final Set<BlockVector2D> dirtyChunks = new HashSet<>();
     private boolean enabled = true;
 
     /**
@@ -84,7 +84,7 @@ public class FastModeExtent extends AbstractDelegateExtent {
     }
 
     @Override
-    public boolean setBlock(Vector location, BaseBlock block) throws WorldEditException {
+    public boolean setBlock(Vector location, BlockStateHolder block) throws WorldEditException {
         if (enabled) {
             dirtyChunks.add(new BlockVector2D(location.getBlockX() >> 4, location.getBlockZ() >> 4));
             return world.setBlock(location, block, false);

@@ -25,21 +25,22 @@ import com.google.common.collect.Maps;
 import com.sk89q.minecraft.util.commands.CommandException;
 import com.sk89q.minecraft.util.commands.CommandLocals;
 import com.sk89q.worldedit.util.command.argument.CommandArgs;
-import com.sk89q.worldedit.util.command.composition.FlagParser.FlagData;
 import com.sk89q.worldedit.util.command.argument.MissingArgumentException;
+import com.sk89q.worldedit.util.command.composition.FlagParser.FlagData;
 
-import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import javax.annotation.Nullable;
 
 public class FlagParser implements CommandExecutor<FlagData> {
 
     private final Map<Character, CommandExecutor<?>> flags = Maps.newHashMap();
 
     public <T> Flag<T> registerFlag(char flag, CommandExecutor<T> executor) {
-        Flag<T> ret = new Flag<T>(flag);
+        Flag<T> ret = new Flag<>(flag);
         flags.put(flag, executor);
         return ret;
     }

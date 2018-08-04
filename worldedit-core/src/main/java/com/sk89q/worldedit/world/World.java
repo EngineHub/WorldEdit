@@ -24,7 +24,6 @@ import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.extension.platform.Platform;
@@ -33,8 +32,9 @@ import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.util.TreeGenerator;
-import com.sk89q.worldedit.util.TreeGenerator.TreeType;
-import com.sk89q.worldedit.world.registry.WorldData;
+import com.sk89q.worldedit.world.block.BlockStateHolder;
+import com.sk89q.worldedit.world.block.BlockType;
+import com.sk89q.worldedit.world.weather.WeatherType;
 
 /**
  * Represents a world (dimension).
@@ -56,23 +56,6 @@ public interface World extends Extent {
     int getMaxY();
 
     /**
-     * Checks whether the given block ID is a valid block ID.
-     *
-     * @param id the block ID
-     * @return true if the block ID is a valid one
-     */
-    boolean isValidBlockType(int id);
-
-    /**
-     * Checks whether the given block ID uses data values for differentiating
-     * types of blocks.
-     *
-     * @param id the block ID
-     * @return true if the block uses data values
-     */
-    boolean usesBlockData(int id);
-
-    /**
      * Create a mask that matches all liquids.
      *
      * <p>Implementations should override this so that custom liquids
@@ -92,19 +75,7 @@ public interface World extends Extent {
     boolean useItem(Vector position, BaseItem item, Direction face);
 
     /**
-     * @deprecated Use {@link #getLazyBlock(Vector)}
-     */
-    @Deprecated
-    int getBlockType(Vector pt);
-
-    /**
-     * @deprecated Use {@link #getLazyBlock(Vector)}
-     */
-    @Deprecated
-    int getBlockData(Vector pt);
-
-    /**
-     * Similar to {@link Extent#setBlock(Vector, BaseBlock)} but a
+     * Similar to {@link Extent#setBlock(Vector, BlockStateHolder)} but a
      * {@code notifyAndLight} parameter indicates whether adjacent blocks
      * should be notified that changes have been made and lighting operations
      * should be executed.
@@ -121,25 +92,7 @@ public interface World extends Extent {
      * @param notifyAndLight true to to notify and light
      * @return true if the block was successfully set (return value may not be accurate)
      */
-    boolean setBlock(Vector position, BaseBlock block, boolean notifyAndLight) throws WorldEditException;
-
-    /**
-     * @deprecated Use {@link #setBlock(Vector, BaseBlock)}
-     */
-    @Deprecated
-    boolean setBlockType(Vector position, int type);
-
-    /**
-     * @deprecated Use {@link #setBlock(Vector, BaseBlock)}
-     */
-    @Deprecated
-    void setBlockData(Vector position, int data);
-
-    /**
-     * @deprecated Use {@link #setBlock(Vector, BaseBlock)}
-     */
-    @Deprecated
-    boolean setTypeIdAndData(Vector position, int type, int data);
+    boolean setBlock(Vector position, BlockStateHolder block, boolean notifyAndLight) throws WorldEditException;
 
     /**
      * Get the light level at the given block.
@@ -203,36 +156,6 @@ public interface World extends Extent {
     boolean generateTree(TreeGenerator.TreeType type, EditSession editSession, Vector position) throws MaxChangedBlocksException;
 
     /**
-     * @deprecated Use {@link #generateTree(TreeType, EditSession, Vector)}
-     */
-    @Deprecated
-    boolean generateTree(EditSession editSession, Vector position) throws MaxChangedBlocksException;
-
-    /**
-     * @deprecated Use {@link #generateTree(TreeType, EditSession, Vector)}
-     */
-    @Deprecated
-    boolean generateBigTree(EditSession editSession, Vector position) throws MaxChangedBlocksException;
-
-    /**
-     * @deprecated Use {@link #generateTree(TreeType, EditSession, Vector)}
-     */
-    @Deprecated
-    boolean generateBirchTree(EditSession editSession, Vector position) throws MaxChangedBlocksException;
-
-    /**
-     * @deprecated Use {@link #generateTree(TreeType, EditSession, Vector)}
-     */
-    @Deprecated
-    boolean generateRedwoodTree(EditSession editSession, Vector position) throws MaxChangedBlocksException;
-
-    /**
-     * @deprecated Use {@link #generateTree(TreeType, EditSession, Vector)}
-     */
-    @Deprecated
-    boolean generateTallRedwoodTree(EditSession editSession, Vector position) throws MaxChangedBlocksException;
-
-    /**
      * Load the chunk at the given position if it isn't loaded.
      *
      * @param position the position
@@ -242,7 +165,7 @@ public interface World extends Extent {
     /**
      * Fix the given chunks after fast mode was used.
      *
-     * <p>Fast mode makes calls to {@link #setBlock(Vector, BaseBlock, boolean)}
+     * <p>Fast mode makes calls to {@link #setBlock(Vector, BlockStateHolder, boolean)}
      * with {@code false} for the {@code notifyAndLight} parameter, which
      * may causes lighting errors to accumulate. Use of this method, if
      * it is implemented by the underlying world, corrects those lighting
@@ -274,18 +197,40 @@ public interface World extends Extent {
      *
      * @param server the server
      * @param position the position
-     * @param blockId the block ID
+     * @param blockType the block type
      * @param priority the priority
      * @return true if the effect was played
      */
-    boolean queueBlockBreakEffect(Platform server, Vector position, int blockId, double priority);
+    boolean queueBlockBreakEffect(Platform server, Vector position, BlockType blockType, double priority);
 
     /**
-     * Get the data for blocks and so on for this world.
+     * Gets the weather type of the world.
      *
-     * @return the world data
+     * @return The weather
      */
-    WorldData getWorldData();
+    WeatherType getWeather();
+
+    /**
+     * Gets the remaining weather duration.
+     *
+     * @return The weather duration
+     */
+    long getRemainingWeatherDuration();
+
+    /**
+     * Sets the weather type of the world.
+     *
+     * @param weatherType The weather type
+     */
+    void setWeather(WeatherType weatherType);
+
+    /**
+     * Sets the weather type of the world.
+     *
+     * @param weatherType The weather type
+     * @param duration The duration of the weather
+     */
+    void setWeather(WeatherType weatherType, long duration);
 
     @Override
     boolean equals(Object other);

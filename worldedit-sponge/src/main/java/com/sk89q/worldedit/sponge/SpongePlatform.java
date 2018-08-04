@@ -20,26 +20,35 @@
 package com.sk89q.worldedit.sponge;
 
 import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.blocks.BlockType;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.event.platform.CommandEvent;
 import com.sk89q.worldedit.event.platform.CommandSuggestionEvent;
-import com.sk89q.worldedit.extension.platform.*;
+import com.sk89q.worldedit.extension.platform.AbstractPlatform;
+import com.sk89q.worldedit.extension.platform.Actor;
+import com.sk89q.worldedit.extension.platform.Capability;
+import com.sk89q.worldedit.extension.platform.MultiUserPlatform;
+import com.sk89q.worldedit.extension.platform.Preference;
 import com.sk89q.worldedit.sponge.config.SpongeConfiguration;
 import com.sk89q.worldedit.util.command.CommandMapping;
 import com.sk89q.worldedit.util.command.Dispatcher;
 import com.sk89q.worldedit.world.World;
+import com.sk89q.worldedit.world.registry.Registries;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.EntityType;
-import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.world.Location;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.EnumMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
 import javax.annotation.Nullable;
-import java.util.*;
 
 class SpongePlatform extends AbstractPlatform implements MultiUserPlatform {
 
@@ -55,16 +64,8 @@ class SpongePlatform extends AbstractPlatform implements MultiUserPlatform {
     }
 
     @Override
-    public int resolveItem(String name) {
-        if (name == null) return 0;
-
-        Optional<org.spongepowered.api.block.BlockType> optBlock = Sponge.getRegistry().getType(org.spongepowered.api.block.BlockType.class, name);
-        if (optBlock.isPresent()) {
-            return optBlock.map(blockType -> SpongeWorldEdit.inst().getAdapter().resolve(blockType)).orElse(0);
-        } else {
-            Optional<ItemType> optType = Sponge.getRegistry().getType(ItemType.class, name);
-            return optType.map(itemType -> SpongeWorldEdit.inst().getAdapter().resolve(itemType)).orElse(0);
-        }
+    public Registries getRegistries() {
+        return SpongeRegistries.getInstance();
     }
 
     @Override

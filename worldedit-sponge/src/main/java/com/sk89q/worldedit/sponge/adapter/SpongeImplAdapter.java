@@ -25,9 +25,7 @@ import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.sponge.SpongeWorld;
 import com.sk89q.worldedit.util.Location;
-import org.spongepowered.api.block.BlockType;
 import org.spongepowered.api.entity.Entity;
-import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.world.World;
 import org.spongepowered.api.world.biome.BiomeType;
@@ -38,32 +36,12 @@ import org.spongepowered.api.world.biome.BiomeType;
 public interface SpongeImplAdapter {
 
     /**
-     * Resolves the numerical ID from this {@link ItemType}
-     *
-     * @param type The itemtype
-     * @return The numerical ID
-     */
-    int resolve(ItemType type);
-
-    /**
-     * Resolves the numerical ID from this {@link BlockType}
-     *
-     * @param type The blocktype
-     * @return The numerical ID
-     */
-    int resolve(BlockType type);
-
-    /**
      * Resolves the numerical ID from this {@link BiomeType}
      *
      * @param type The biometype
      * @return The numerical ID
      */
     int resolve(BiomeType type);
-
-    ItemType resolveItem(int intID);
-
-    BlockType resolveBlock(int intID);
 
     BiomeType resolveBiome(int intID);
 

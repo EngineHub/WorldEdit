@@ -19,6 +19,8 @@
 
 package com.sk89q.worldedit.function.operation;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.google.common.collect.Lists;
 import com.sk89q.worldedit.WorldEditException;
 
@@ -27,15 +29,13 @@ import java.util.Collection;
 import java.util.Deque;
 import java.util.List;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 /**
  * Executes multiple queues in order.
  */
 public class OperationQueue implements Operation {
 
     private final List<Operation> operations = Lists.newArrayList();
-    private final Deque<Operation> queue = new ArrayDeque<Operation>();
+    private final Deque<Operation> queue = new ArrayDeque<>();
     private Operation current;
 
     /**

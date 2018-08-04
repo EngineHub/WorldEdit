@@ -28,8 +28,8 @@ import java.util.List;
  */
 public class SimpleDescription implements Description {
     
-    private List<Parameter> parameters = new ArrayList<Parameter>();
-    private List<String> permissions = new ArrayList<String>();
+    private List<Parameter> parameters = new ArrayList<>();
+    private List<String> permissions = new ArrayList<>();
     private String description;
     private String help;
     private String overrideUsage;

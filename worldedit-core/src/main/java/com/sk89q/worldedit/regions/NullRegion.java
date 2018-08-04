@@ -19,11 +19,17 @@
 
 package com.sk89q.worldedit.regions;
 
-import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.BlockVector;
+import com.sk89q.worldedit.BlockVector2D;
 import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.Vector2D;
 import com.sk89q.worldedit.world.World;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Set;
 
 /**
  * A region that contains no points.
@@ -105,11 +111,6 @@ public class NullRegion implements Region {
     @Override
     public void setWorld(World world) {
         this.world = world;
-    }
-
-    @Override
-    public void setWorld(LocalWorld world) {
-        setWorld((World) world);
     }
 
     @Override

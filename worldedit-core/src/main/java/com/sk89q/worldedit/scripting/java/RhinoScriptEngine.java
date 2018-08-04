@@ -19,6 +19,14 @@
 
 package com.sk89q.worldedit.scripting.java;
 
+import com.sk89q.worldedit.scripting.RhinoContextFactory;
+import org.mozilla.javascript.Context;
+import org.mozilla.javascript.ImporterTopLevel;
+import org.mozilla.javascript.JavaScriptException;
+import org.mozilla.javascript.RhinoException;
+import org.mozilla.javascript.Scriptable;
+import org.mozilla.javascript.ScriptableObject;
+
 import java.io.IOException;
 import java.io.Reader;
 
@@ -29,14 +37,6 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineFactory;
 import javax.script.ScriptException;
 import javax.script.SimpleBindings;
-
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.ImporterTopLevel;
-import org.mozilla.javascript.JavaScriptException;
-import org.mozilla.javascript.RhinoException;
-import org.mozilla.javascript.Scriptable;
-import org.mozilla.javascript.ScriptableObject;
-import com.sk89q.worldedit.scripting.RhinoContextFactory;
 
 public class RhinoScriptEngine extends AbstractScriptEngine {
     private ScriptEngineFactory factory;

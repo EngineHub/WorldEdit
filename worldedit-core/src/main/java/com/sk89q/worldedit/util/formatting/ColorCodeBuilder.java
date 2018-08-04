@@ -21,6 +21,7 @@ package com.sk89q.worldedit.util.formatting;
 
 import com.google.common.base.Joiner;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -125,11 +126,8 @@ public class ColorCodeBuilder {
             return builder.toString();
         } else if (!resetFrom.hasEqualFormatting(resetTo) || 
                 (resetFrom.getColor() != null && resetTo.getColor() == null)) {
-            StringBuilder builder = new StringBuilder();
             // Have to set reset code and add back all the formatting codes
-            builder.append(Style.RESET);
-            builder.append(getCode(resetTo));
-            return builder.toString();
+            return String.valueOf(Style.RESET) + getCode(resetTo);
         } else {
             if (resetFrom.getColor() != resetTo.getColor()) {
                 return String.valueOf(resetTo.getColor());
@@ -162,7 +160,7 @@ public class ColorCodeBuilder {
         char[] rawChars = (rawString + ' ').toCharArray(); // add a trailing space to trigger pagination
         StringBuilder word = new StringBuilder();
         StringBuilder line = new StringBuilder();
-        List<String> lines = new LinkedList<String>();
+        List<String> lines = new LinkedList<>();
         int lineColorChars = 0;
 
         for (int i = 0; i < rawChars.length; i++) {
@@ -183,9 +181,7 @@ public class ColorCodeBuilder {
                     if ((transformed = transform(wordStr)) != null) {
                         line.append(transformed);
                     } else {
-                        for (String partialWord : word.toString().split("(?<=\\G.{" + lineLength + "})")) {
-                            lines.add(partialWord);
-                        }
+                        lines.addAll(Arrays.asList(word.toString().split("(?<=\\G.{" + lineLength + "})")));
                     }
                 } else if (line.length() + word.length() - lineColorChars == lineLength) { // Line exactly the correct length...newline
                     line.append(' ');

@@ -94,7 +94,7 @@ public class TreeGeneratorParser implements CommandExecutor<Contextual<ForestGen
 
         @Override
         public ForestGenerator createFromContext(EditContext input) {
-            return new ForestGenerator((EditSession) input.getDestination(), new TreeGenerator(type));
+            return new ForestGenerator((EditSession) input.getDestination(), type);
         }
 
         @Override

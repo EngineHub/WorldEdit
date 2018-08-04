@@ -48,7 +48,7 @@ public class ClipboardBrush implements Brush {
         Vector centerOffset = region.getCenter().subtract(clipboard.getOrigin());
 
         Operation operation = holder
-                .createPaste(editSession, editSession.getWorld().getWorldData())
+                .createPaste(editSession)
                 .to(usingOrigin ? position : position.subtract(centerOffset))
                 .ignoreAirBlocks(ignoreAirBlocks)
                 .build();

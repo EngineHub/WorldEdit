@@ -30,12 +30,7 @@ import javax.annotation.Nullable;
  */
 public final class Request {
 
-    private static final ThreadLocal<Request> threadLocal =
-            new ThreadLocal<Request>() {
-                @Override protected Request initialValue() {
-                    return new Request();
-                }
-            };
+    private static final ThreadLocal<Request> threadLocal = ThreadLocal.withInitial(Request::new);
 
     private @Nullable World world;
     private @Nullable LocalSession session;

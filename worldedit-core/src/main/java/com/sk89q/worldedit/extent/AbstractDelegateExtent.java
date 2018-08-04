@@ -19,6 +19,8 @@
 
 package com.sk89q.worldedit.extent;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.Vector2D;
 import com.sk89q.worldedit.WorldEditException;
@@ -27,15 +29,15 @@ import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.OperationQueue;
-import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.regions.Region;
+import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.biome.BaseBiome;
-
-import javax.annotation.Nullable;
+import com.sk89q.worldedit.world.block.BlockState;
+import com.sk89q.worldedit.world.block.BlockStateHolder;
 
 import java.util.List;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import javax.annotation.Nullable;
 
 /**
  * A base class for {@link Extent}s that merely passes extents onto another.
@@ -64,17 +66,17 @@ public abstract class AbstractDelegateExtent implements Extent {
     }
 
     @Override
-    public BaseBlock getBlock(Vector position) {
+    public BlockState getBlock(Vector position) {
         return extent.getBlock(position);
     }
 
     @Override
-    public BaseBlock getLazyBlock(Vector position) {
-        return extent.getLazyBlock(position);
+    public BaseBlock getFullBlock(Vector position) {
+        return extent.getFullBlock(position);
     }
 
     @Override
-    public boolean setBlock(Vector location, BaseBlock block) throws WorldEditException {
+    public boolean setBlock(Vector location, BlockStateHolder block) throws WorldEditException {
         return extent.setBlock(location, block);
     }
 

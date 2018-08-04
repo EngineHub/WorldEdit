@@ -21,10 +21,11 @@ package com.sk89q.worldedit.function.mask;
 
 import com.sk89q.worldedit.Vector;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
+import javax.annotation.Nullable;
 
 /**
  * Combines several masks and requires that one or more masks return true
@@ -67,7 +68,7 @@ public class MaskUnion extends MaskIntersection {
     @Nullable
     @Override
     public Mask2D toMask2D() {
-        List<Mask2D> mask2dList = new ArrayList<Mask2D>();
+        List<Mask2D> mask2dList = new ArrayList<>();
         for (Mask mask : getMasks()) {
             Mask2D mask2d = mask.toMask2D();
             if (mask2d != null) {

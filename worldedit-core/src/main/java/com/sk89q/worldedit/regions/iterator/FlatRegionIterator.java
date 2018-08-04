@@ -19,13 +19,13 @@
 
 package com.sk89q.worldedit.regions.iterator;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.Vector2D;
 import com.sk89q.worldedit.regions.Region;
 
 import java.util.Iterator;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 public class FlatRegionIterator implements Iterator<Vector2D>  {
 

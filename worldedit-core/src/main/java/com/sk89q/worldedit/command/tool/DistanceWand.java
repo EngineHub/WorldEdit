@@ -19,12 +19,14 @@
 
 package com.sk89q.worldedit.command.tool;
 
-import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.LocalConfiguration;
+import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.extension.platform.permission.ActorSelectorLimits;
 import com.sk89q.worldedit.regions.RegionSelector;
+import com.sk89q.worldedit.util.Location;
 
 /**
  * A wand that can be used at a distance.
@@ -43,12 +45,12 @@ public class DistanceWand extends BrushTool implements DoubleActionTraceTool {
     @Override
     public boolean actSecondary(Platform server, LocalConfiguration config, Player player, LocalSession session) {
         if (session.isToolControlEnabled() && player.hasPermission("worldedit.selection.pos")) {
-            WorldVector target = getTarget(player);
+            Location target = getTarget(player);
             if (target == null) return true;
 
             RegionSelector selector = session.getRegionSelector(player.getWorld());
-            if (selector.selectPrimary(target, ActorSelectorLimits.forActor(player))) {
-                selector.explainPrimarySelection(player, session, target);
+            if (selector.selectPrimary(target.toVector(), ActorSelectorLimits.forActor(player))) {
+                selector.explainPrimarySelection(player, session, target.toVector());
             }
             return true;
 
@@ -60,12 +62,12 @@ public class DistanceWand extends BrushTool implements DoubleActionTraceTool {
     @Override
     public boolean actPrimary(Platform server, LocalConfiguration config, Player player, LocalSession session) {
         if (session.isToolControlEnabled() && player.hasPermission("worldedit.selection.pos")) {
-            WorldVector target = getTarget(player);
+            Location target = getTarget(player);
             if (target == null) return true;
 
             RegionSelector selector = session.getRegionSelector(player.getWorld());
-            if (selector.selectSecondary(target, ActorSelectorLimits.forActor(player))) {
-                selector.explainSecondarySelection(player, session, target);
+            if (selector.selectSecondary(target.toVector(), ActorSelectorLimits.forActor(player))) {
+                selector.explainSecondarySelection(player, session, target.toVector());
             }
             return true;
 
@@ -73,8 +75,8 @@ public class DistanceWand extends BrushTool implements DoubleActionTraceTool {
         return false;
     }
 
-    public WorldVector getTarget(Player player) {
-        WorldVector target = null;
+    public Location getTarget(Player player) {
+        Location target;
         if (this.range > -1) {
             target = player.getBlockTrace(getRange(), true);
         } else {

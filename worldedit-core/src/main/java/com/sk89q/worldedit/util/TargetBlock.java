@@ -19,11 +19,10 @@
 
 package com.sk89q.worldedit.util;
 
-import com.sk89q.worldedit.*;
-import com.sk89q.worldedit.blocks.BlockID;
-import com.sk89q.worldedit.blocks.BlockType;
+import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.entity.Player;
-import com.sk89q.worldedit.internal.LocalWorldAdapter;
+import com.sk89q.worldedit.world.World;
+import com.sk89q.worldedit.world.block.BlockTypes;
 
 /**
  * This class uses an inefficient method to figure out what block a player
@@ -34,7 +33,7 @@ import com.sk89q.worldedit.internal.LocalWorldAdapter;
  */
 public class TargetBlock {
 
-    private LocalWorld world;
+    private World world;
     private int maxDistance;
     private double checkDistance, curDistance;
     private Vector targetPos = new Vector();
@@ -47,33 +46,22 @@ public class TargetBlock {
      * 
      * @param player player to work with
      */
-    public TargetBlock(LocalPlayer player) {
-        this.world = LocalWorldAdapter.adapt(player.getWorld());
-        this.setValues(player.getPosition(), player.getYaw(), player.getPitch(),
+    public TargetBlock(Player player) {
+        this.world = player.getWorld();
+        this.setValues(player.getLocation().toVector(), player.getLocation().getYaw(), player.getLocation().getPitch(),
                 300, 1.65, 0.2);
     }
 
     /**
      * Constructor requiring a player, max distance and a checking distance
      *
-     * @param player LocalPlayer to work with
-     * @param maxDistance how far it checks for blocks
-     * @param checkDistance how often to check for blocks, the smaller the more precise
-     */
-    public TargetBlock(LocalPlayer player, int maxDistance, double checkDistance) {
-        this((Player) player, maxDistance, checkDistance);
-    }
-
-    /**
-     * Constructor requiring a player, max distance and a checking distance
-     *
-     * @param player LocalPlayer to work with
+     * @param player Player to work with
      * @param maxDistance how far it checks for blocks
      * @param checkDistance how often to check for blocks, the smaller the more precise
      */
     public TargetBlock(Player player, int maxDistance, double checkDistance) {
-        this.world = LocalWorldAdapter.adapt(player.getWorld());
-        this.setValues(player.getPosition(), player.getYaw(), player.getPitch(), maxDistance, 1.65, checkDistance);
+        this.world = player.getWorld();
+        this.setValues(player.getLocation().toVector(), player.getLocation().getYaw(), player.getLocation().getPitch(), maxDistance, 1.65, checkDistance);
     }
 
     /**
@@ -86,8 +74,7 @@ public class TargetBlock {
      * @param viewHeight where the view is positioned in y-axis
      * @param checkDistance how often to check for blocks, the smaller the more precise
      */
-    private void setValues(Vector loc, double xRotation, double yRotation,
-            int maxDistance, double viewHeight, double checkDistance) {
+    private void setValues(Vector loc, double xRotation, double yRotation, int maxDistance, double viewHeight, double checkDistance) {
         this.maxDistance = maxDistance;
         this.checkDistance = checkDistance;
         this.curDistance = 0;
@@ -111,11 +98,11 @@ public class TargetBlock {
      * 
      * @return Block
      */
-    public BlockWorldVector getAnyTargetBlock() {
+    public Location getAnyTargetBlock() {
         boolean searchForLastBlock = true;
-        BlockWorldVector lastBlock = null;
+        Location lastBlock = null;
         while (getNextBlock() != null) {
-            if (world.getBlockType(getCurrentBlock()) == BlockID.AIR) {
+            if (world.getBlock(getCurrentBlock().toVector()).getBlockType() == BlockTypes.AIR) {
                 if (searchForLastBlock) {
                     lastBlock = getCurrentBlock();
                     if (lastBlock.getBlockY() <= 0 || lastBlock.getBlockY() >= world.getMaxY()) {
@@ -126,7 +113,7 @@ public class TargetBlock {
                 break;
             }
         }
-        BlockWorldVector currentBlock = getCurrentBlock();
+        Location currentBlock = getCurrentBlock();
         return (currentBlock != null ? currentBlock : lastBlock);
     }
 
@@ -136,8 +123,8 @@ public class TargetBlock {
      * 
      * @return Block
      */
-    public BlockWorldVector getTargetBlock() {
-        while (getNextBlock() != null && world.getBlockType(getCurrentBlock()) == 0) ;
+    public Location getTargetBlock() {
+        while (getNextBlock() != null && world.getBlock(getCurrentBlock().toVector()).getBlockType() == BlockTypes.AIR) ;
         return getCurrentBlock();
     }
 
@@ -147,8 +134,8 @@ public class TargetBlock {
      * 
      * @return Block
      */
-    public BlockWorldVector getSolidTargetBlock() {
-        while (getNextBlock() != null && BlockType.canPassThrough(world.getBlock(getCurrentBlock()))) ;
+    public Location getSolidTargetBlock() {
+        while (getNextBlock() != null && !world.getBlock(getCurrentBlock().toVector()).getBlockType().getMaterial().isMovementBlocker()) ;
         return getCurrentBlock();
     }
 
@@ -157,7 +144,7 @@ public class TargetBlock {
      * 
      * @return next block position
      */
-    public BlockWorldVector getNextBlock() {
+    public Location getNextBlock() {
         prevPos = targetPos;
         do {
             curDistance += checkDistance;
@@ -175,7 +162,7 @@ public class TargetBlock {
             return null;
         }
 
-        return new BlockWorldVector(world, targetPos);
+        return new Location(world, targetPos);
     }
 
     /**
@@ -183,11 +170,11 @@ public class TargetBlock {
      * 
      * @return block position
      */
-    public BlockWorldVector getCurrentBlock() {
+    public Location getCurrentBlock() {
         if (curDistance > maxDistance) {
             return null;
         } else {
-            return new BlockWorldVector(world, targetPos);
+            return new Location(world, targetPos);
         }
     }
 
@@ -196,18 +183,18 @@ public class TargetBlock {
      * 
      * @return block position
      */
-    public BlockWorldVector getPreviousBlock() {
-        return new BlockWorldVector(world, prevPos);
+    public Location getPreviousBlock() {
+        return new Location(world, prevPos);
     }
 
-    public WorldVectorFace getAnyTargetBlockFace() {
+    public Location getAnyTargetBlockFace() {
         getAnyTargetBlock();
-        return WorldVectorFace.getWorldVectorFace(world, getCurrentBlock(), getPreviousBlock());
+        return getCurrentBlock().setDirection(getCurrentBlock().toVector().subtract(getPreviousBlock().toVector()));
     }
 
-    public WorldVectorFace getTargetBlockFace() {
+    public Location getTargetBlockFace() {
         getAnyTargetBlock();
-        return WorldVectorFace.getWorldVectorFace(world, getCurrentBlock(), getPreviousBlock());
+        return getCurrentBlock().setDirection(getCurrentBlock().toVector().subtract(getPreviousBlock().toVector()));
     }
 
 }

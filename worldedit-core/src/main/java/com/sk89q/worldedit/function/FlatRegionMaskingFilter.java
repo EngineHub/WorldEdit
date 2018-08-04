@@ -19,11 +19,11 @@
 
 package com.sk89q.worldedit.function;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.sk89q.worldedit.Vector2D;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.function.mask.Mask2D;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Passes calls to {@link #apply(com.sk89q.worldedit.Vector2D)} to the

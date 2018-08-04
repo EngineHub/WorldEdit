@@ -19,10 +19,10 @@
 
 package com.sk89q.jnbt;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.util.HashMap;
 import java.util.Map;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Helps create compound tags.
@@ -35,7 +35,7 @@ public class CompoundTagBuilder {
      * Create a new instance.
      */
     CompoundTagBuilder() {
-        this.entries = new HashMap<String, Tag>();
+        this.entries = new HashMap<>();
     }
 
     /**
@@ -189,7 +189,7 @@ public class CompoundTagBuilder {
      * @return the new compound tag
      */
     public CompoundTag build() {
-        return new CompoundTag(new HashMap<String, Tag>(entries));
+        return new CompoundTag(new HashMap<>(entries));
     }
 
     /**

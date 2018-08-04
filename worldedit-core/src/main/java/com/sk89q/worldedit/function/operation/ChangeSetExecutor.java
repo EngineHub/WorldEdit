@@ -19,15 +19,15 @@
 
 package com.sk89q.worldedit.function.operation;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.history.UndoContext;
 import com.sk89q.worldedit.history.change.Change;
 import com.sk89q.worldedit.history.changeset.ChangeSet;
-import com.sk89q.worldedit.history.UndoContext;
 
 import java.util.Iterator;
 import java.util.List;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Performs an undo or redo from a given {@link ChangeSet}.

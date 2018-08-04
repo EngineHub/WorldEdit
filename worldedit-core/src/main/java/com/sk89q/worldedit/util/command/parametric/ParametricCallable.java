@@ -20,15 +20,30 @@
 package com.sk89q.worldedit.util.command.parametric;
 
 import com.google.common.primitives.Chars;
-import com.sk89q.minecraft.util.commands.*;
-import com.sk89q.worldedit.util.command.*;
+import com.sk89q.minecraft.util.commands.Command;
+import com.sk89q.minecraft.util.commands.CommandContext;
+import com.sk89q.minecraft.util.commands.CommandException;
+import com.sk89q.minecraft.util.commands.CommandLocals;
+import com.sk89q.minecraft.util.commands.CommandPermissions;
+import com.sk89q.minecraft.util.commands.CommandPermissionsException;
+import com.sk89q.minecraft.util.commands.WrappedCommandException;
+import com.sk89q.worldedit.util.command.CommandCallable;
+import com.sk89q.worldedit.util.command.InvalidUsageException;
+import com.sk89q.worldedit.util.command.MissingParameterException;
+import com.sk89q.worldedit.util.command.Parameter;
+import com.sk89q.worldedit.util.command.SimpleDescription;
+import com.sk89q.worldedit.util.command.UnconsumedParameterException;
 import com.sk89q.worldedit.util.command.binding.Switch;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * The implementation of a {@link CommandCallable} for the {@link ParametricBuilder}.
@@ -39,9 +54,9 @@ class ParametricCallable implements CommandCallable {
     private final Object object;
     private final Method method;
     private final ParameterData[] parameters;
-    private final Set<Character> valueFlags = new HashSet<Character>();
+    private final Set<Character> valueFlags = new HashSet<>();
     private final boolean anyFlags;
-    private final Set<Character> legacyFlags = new HashSet<Character>();
+    private final Set<Character> legacyFlags = new HashSet<>();
     private final SimpleDescription description = new SimpleDescription();
     private final CommandPermissions commandPermissions;
 
@@ -63,7 +78,7 @@ class ParametricCallable implements CommandCallable {
         String[] names = builder.getParanamer().lookupParameterNames(method, false);
         Type[] types = method.getGenericParameterTypes();
         parameters = new ParameterData[types.length];
-        List<Parameter> userParameters = new ArrayList<Parameter>();
+        List<Parameter> userParameters = new ArrayList<>();
         
         // This helps keep tracks of @Nullables that appear in the middle of a list
         // of parameters
@@ -186,7 +201,7 @@ class ParametricCallable implements CommandCallable {
 
         try {
             // preProcess handlers
-            List<InvokeHandler> handlers = new ArrayList<InvokeHandler>();
+            List<InvokeHandler> handlers = new ArrayList<>();
             for (InvokeListener listener : builder.getInvokeListeners()) {
                 InvokeHandler handler = listener.createInvokeHandler();
                 handlers.add(handler);
@@ -422,7 +437,7 @@ class ParametricCallable implements CommandCallable {
 
                 if (!found) {
                     if (unusedFlags == null) {
-                        unusedFlags = new HashSet<Character>();
+                        unusedFlags = new HashSet<>();
                     }
                     unusedFlags.add(flag);
                 }

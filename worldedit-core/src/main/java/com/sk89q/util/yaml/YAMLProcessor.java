@@ -24,14 +24,22 @@ import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.SafeConstructor;
 import org.yaml.snakeyaml.emitter.ScalarAnalysis;
-import org.yaml.snakeyaml.nodes.Node;
 import org.yaml.snakeyaml.nodes.Tag;
 import org.yaml.snakeyaml.reader.UnicodeReader;
-import org.yaml.snakeyaml.representer.Represent;
 import org.yaml.snakeyaml.representer.Representer;
 
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Map.Entry;
 
 /**
@@ -76,10 +84,10 @@ public class YAMLProcessor extends YAMLNode {
      * Comments support based on ZerothAngel's AnnotatedYAMLConfiguration
      * Comments are only supported with YAMLFormat.EXTENDED
      */
-    private final Map<String, String> comments = new HashMap<String, String>();
+    private final Map<String, String> comments = new HashMap<>();
 
     public YAMLProcessor(File file, boolean writeDefaults, YAMLFormat format) {
-        super(new LinkedHashMap<String, Object>(), writeDefaults);
+        super(new LinkedHashMap<>(), writeDefaults);
         this.format = format;
 
         DumperOptions options = new FancyDumperOptions();
@@ -103,21 +111,13 @@ public class YAMLProcessor extends YAMLNode {
      * @throws java.io.IOException on load error
      */
     public void load() throws IOException {
-        InputStream stream = null;
 
-        try {
-            stream = getInputStream();
-            if (stream == null) throw new IOException("Stream is null!");
+        try (InputStream stream = getInputStream()) {
+            if (stream == null)
+                throw new IOException("Stream is null!");
             read(yaml.load(new UnicodeReader(stream)));
         } catch (YAMLProcessorException e) {
-            root = new LinkedHashMap<String, Object>();
-        } finally {
-            try {
-                if (stream != null) {
-                    stream.close();
-                }
-            } catch (IOException ignored) {
-            }
+            root = new LinkedHashMap<>();
         }
     }
 
@@ -167,18 +167,15 @@ public class YAMLProcessor extends YAMLNode {
      * @return true if it was successful
      */
     public boolean save() {
-        OutputStream stream = null;
 
         File parent = file.getParentFile();
-
         if (parent != null) {
             parent.mkdirs();
         }
-
-        try {
-            stream = getOutputStream();
-            if (stream == null) return false;
-            OutputStreamWriter writer = new OutputStreamWriter(stream, "UTF-8");
+        try (OutputStream stream = getOutputStream()) {
+            if (stream == null)
+                return false;
+            OutputStreamWriter writer = new OutputStreamWriter(stream, StandardCharsets.UTF_8);
             if (header != null) {
                 writer.append(header);
                 writer.append(LINE_BREAK);
@@ -187,7 +184,7 @@ public class YAMLProcessor extends YAMLNode {
                 yaml.dump(root, writer);
             } else {
                 // Iterate over each root-level property and dump
-                for (Entry<String, Object> entry : root.entrySet()) {
+                for (Entry<String, Object> entry: root.entrySet()) {
                     // Output comment, if present
                     String comment = comments.get(entry.getKey());
                     if (comment != null) {
@@ -202,12 +199,6 @@ public class YAMLProcessor extends YAMLNode {
             }
             return true;
         } catch (IOException ignored) {
-        } finally {
-            try {
-                if (stream != null) {
-                    stream.close();
-                }
-            } catch (IOException ignored) {}
         }
 
         return false;
@@ -217,9 +208,9 @@ public class YAMLProcessor extends YAMLNode {
     private void read(Object input) throws YAMLProcessorException {
         try {
             if (null == input) {
-                root = new LinkedHashMap<String, Object>();
+                root = new LinkedHashMap<>();
             } else {
-                root = new LinkedHashMap<String, Object>((Map<String, Object>) input);
+                root = new LinkedHashMap<>((Map<String, Object>) input);
             }
         } catch (ClassCastException e) {
             throw new YAMLProcessorException("Root document must be an key-value structure");
@@ -302,7 +293,7 @@ public class YAMLProcessor extends YAMLNode {
      * @return a node
      */
     public static YAMLNode getEmptyNode(boolean writeDefaults) {
-        return new YAMLNode(new LinkedHashMap<String, Object>(), writeDefaults);
+        return new YAMLNode(new LinkedHashMap<>(), writeDefaults);
     }
 
     // This will be included in snakeyaml 1.10, but until then we have to do it manually.
@@ -321,12 +312,7 @@ public class YAMLProcessor extends YAMLNode {
 
     private static class FancyRepresenter extends Representer {
         private FancyRepresenter() {
-            this.nullRepresenter = new Represent() {
-                @Override
-                public Node representData(Object o) {
-                    return representScalar(Tag.NULL, "");
-                }
-            };
+            this.nullRepresenter = o -> representScalar(Tag.NULL, "");
         }
     }
 

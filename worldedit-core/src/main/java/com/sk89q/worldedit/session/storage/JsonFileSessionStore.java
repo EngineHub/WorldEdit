@@ -19,6 +19,8 @@
 
 package com.sk89q.worldedit.session.storage;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonIOException;
@@ -37,8 +39,6 @@ import java.io.IOException;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Stores sessions as JSON files in a directory.
@@ -85,8 +85,7 @@ public class JsonFileSessionStore implements SessionStore {
     @Override
     public LocalSession load(UUID id) throws IOException {
         File file = getPath(id);
-        Closer closer = Closer.create();
-        try {
+        try (Closer closer = Closer.create()) {
             FileReader fr = closer.register(new FileReader(file));
             BufferedReader br = closer.register(new BufferedReader(fr));
             return gson.fromJson(br, LocalSession.class);
@@ -94,11 +93,6 @@ public class JsonFileSessionStore implements SessionStore {
             throw new IOException(e);
         } catch (FileNotFoundException e) {
             return new LocalSession();
-        } finally {
-            try {
-                closer.close();
-            } catch (IOException ignored) {
-            }
         }
     }
 
@@ -106,19 +100,13 @@ public class JsonFileSessionStore implements SessionStore {
     public void save(UUID id, LocalSession session) throws IOException {
         File finalFile = getPath(id);
         File tempFile = new File(finalFile.getParentFile(), finalFile.getName() + ".tmp");
-        Closer closer = Closer.create();
 
-        try {
+        try (Closer closer = Closer.create()) {
             FileWriter fr = closer.register(new FileWriter(tempFile));
             BufferedWriter bw = closer.register(new BufferedWriter(fr));
             gson.toJson(session, bw);
         } catch (JsonIOException e) {
             throw new IOException(e);
-        } finally {
-            try {
-                closer.close();
-            } catch (IOException ignored) {
-            }
         }
 
         if (finalFile.exists()) {

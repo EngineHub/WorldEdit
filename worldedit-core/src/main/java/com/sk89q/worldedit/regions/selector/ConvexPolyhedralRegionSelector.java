@@ -19,7 +19,8 @@
 
 package com.sk89q.worldedit.regions.selector;
 
-import com.google.common.base.Optional;
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.BlockVector2D;
 import com.sk89q.worldedit.IncompleteRegionException;
@@ -36,19 +37,19 @@ import com.sk89q.worldedit.regions.polyhedron.Triangle;
 import com.sk89q.worldedit.regions.selector.limit.SelectorLimits;
 import com.sk89q.worldedit.world.World;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import javax.annotation.Nullable;
 
 /**
  * Creates a {@code ConvexPolyhedralRegion} from a user's selections.
  */
-public class ConvexPolyhedralRegionSelector extends com.sk89q.worldedit.regions.ConvexPolyhedralRegionSelector implements RegionSelector, CUIRegion {
+public class ConvexPolyhedralRegionSelector implements RegionSelector, CUIRegion {
 
     private final transient ConvexPolyhedralRegion region;
     private transient BlockVector pos1;
@@ -96,7 +97,7 @@ public class ConvexPolyhedralRegionSelector extends com.sk89q.worldedit.regions.
 
             region = new ConvexPolyhedralRegion(oldRegion.getWorld());
 
-            for (final BlockVector2D pt : new ArrayList<BlockVector2D>(oldRegion.polygonize(Integer.MAX_VALUE))) {
+            for (final BlockVector2D pt : new ArrayList<>(oldRegion.polygonize(Integer.MAX_VALUE))) {
                 region.addVertex(pt.toVector(minY));
                 region.addVertex(pt.toVector(maxY));
             }
@@ -183,7 +184,7 @@ public class ConvexPolyhedralRegionSelector extends com.sk89q.worldedit.regions.
 
     @Override
     public List<String> getInformationLines() {
-        List<String> ret = new ArrayList<String>();
+        List<String> ret = new ArrayList<>();
 
         ret.add("Vertices: "+region.getVertices().size());
         ret.add("Triangles: "+region.getTriangles().size());
@@ -239,7 +240,7 @@ public class ConvexPolyhedralRegionSelector extends com.sk89q.worldedit.regions.
         Collection<Vector> vertices = region.getVertices();
         Collection<Triangle> triangles = region.getTriangles();
 
-        Map<Vector, Integer> vertexIds = new HashMap<Vector, Integer>(vertices.size());
+        Map<Vector, Integer> vertexIds = new HashMap<>(vertices.size());
         int lastVertexId = -1;
         for (Vector vertex : vertices) {
             vertexIds.put(vertex, ++lastVertexId);

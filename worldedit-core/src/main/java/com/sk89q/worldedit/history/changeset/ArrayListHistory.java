@@ -19,6 +19,8 @@
 
 package com.sk89q.worldedit.history.changeset;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.google.common.collect.Lists;
 import com.sk89q.worldedit.history.change.Change;
 
@@ -26,14 +28,12 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 /**
  * Stores all {@link Change}s in an {@link ArrayList}.
  */
 public class ArrayListHistory implements ChangeSet {
 
-    private final List<Change> changes = new ArrayList<Change>();
+    private final List<Change> changes = new ArrayList<>();
 
     @Override
     public void add(Change change) {

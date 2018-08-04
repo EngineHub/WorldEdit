@@ -19,6 +19,8 @@
 
 package com.sk89q.worldedit.function.entity;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.jnbt.CompoundTagBuilder;
 import com.sk89q.worldedit.Vector;
@@ -32,8 +34,6 @@ import com.sk89q.worldedit.math.transform.Transform;
 import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.util.Direction.Flag;
 import com.sk89q.worldedit.util.Location;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Copies entities provided to the function to the provided destination
@@ -167,7 +167,7 @@ public class ExtentEntityCopy implements EntityFunction {
                     }
                 }
 
-                return new BaseEntity(state.getTypeId(), builder.build());
+                return new BaseEntity(state.getType(), builder.build());
             }
         }
 

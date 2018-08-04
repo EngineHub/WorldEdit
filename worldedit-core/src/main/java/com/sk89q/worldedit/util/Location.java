@@ -19,10 +19,10 @@
 
 package com.sk89q.worldedit.util;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.extent.Extent;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Represents a location in a world with has a direction.
@@ -218,6 +218,15 @@ public class Location {
     }
 
     /**
+     * Get the direction as a {@link Direction}.
+     *
+     * @return The direction
+     */
+    public Direction getDirectionEnum() {
+        return Direction.findClosest(getDirection(), Direction.Flag.ALL);
+    }
+
+    /**
      * Create a clone of this object with the given direction.
      *
      * @param direction the new direction
@@ -354,6 +363,16 @@ public class Location {
      */
     public Location setZ(int z) {
         return new Location(extent, position.setZ(z), yaw, pitch);
+    }
+
+    /**
+     * Return a copy of this object with the position set to the given value.
+     *
+     * @param position The new position
+     * @return a new immutable instance
+     */
+    public Location setPosition(Vector position) {
+        return new Location(extent, position, yaw, pitch);
     }
 
     @Override

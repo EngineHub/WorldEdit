@@ -23,11 +23,12 @@ import com.sk89q.worldedit.BlockVector2D;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.Vector2D;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.annotation.Nullable;
 
 /**
  * Represents a configuration node.
@@ -111,7 +112,7 @@ public class YAMLNode {
      */
     private Object prepareSerialization(Object value) {
         if (value instanceof Vector) {
-            Map<String, Double> out = new LinkedHashMap<String, Double>();
+            Map<String, Double> out = new LinkedHashMap<>();
             Vector vec = (Vector) value;
             out.put("x", vec.getX());
             out.put("y", vec.getY());
@@ -169,7 +170,7 @@ public class YAMLNode {
      * @return a node for the path
      */
     public YAMLNode addNode(String path) {
-        Map<String, Object> map = new LinkedHashMap<String, Object>();
+        Map<String, Object> map = new LinkedHashMap<>();
         YAMLNode node = new YAMLNode(map, writeDefaults);
         setProperty(path, map);
         return node;
@@ -398,12 +399,12 @@ public class YAMLNode {
      */
     @SuppressWarnings("unchecked")
     public List<String> getKeys(String path) {
-        if (path == null) return new ArrayList<String>(root.keySet());
+        if (path == null) return new ArrayList<>(root.keySet());
         Object o = getProperty(path);
         if (o == null) {
             return null;
         } else if (o instanceof Map) {
-            return new ArrayList<String>(((Map<String, Object>) o).keySet());
+            return new ArrayList<>(((Map<String, Object>) o).keySet());
         } else {
             return null;
         }
@@ -444,10 +445,10 @@ public class YAMLNode {
         List<Object> raw = getList(path);
         if (raw == null) {
             if (writeDefaults && def != null) setProperty(path, def);
-            return def != null ? def : new ArrayList<String>();
+            return def != null ? def : new ArrayList<>();
         }
 
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         for (Object o : raw) {
             if (o == null) {
                 continue;
@@ -474,10 +475,10 @@ public class YAMLNode {
         List<Object> raw = getList(path);
         if (raw == null) {
             if (writeDefaults && def != null) setProperty(path, def);
-            return def != null ? def : new ArrayList<Integer>();
+            return def != null ? def : new ArrayList<>();
         }
 
-        List<Integer> list = new ArrayList<Integer>();
+        List<Integer> list = new ArrayList<>();
         for (Object o : raw) {
             Integer i = castInt(o);
             if (i != null) {
@@ -503,10 +504,10 @@ public class YAMLNode {
         List<Object> raw = getList(path);
         if (raw == null) {
             if (writeDefaults && def != null) setProperty(path, def);
-            return def != null ? def : new ArrayList<Double>();
+            return def != null ? def : new ArrayList<>();
         }
 
-        List<Double> list = new ArrayList<Double>();
+        List<Double> list = new ArrayList<>();
         for (Object o : raw) {
             Double i = castDouble(o);
             if (i != null) {
@@ -532,10 +533,10 @@ public class YAMLNode {
         List<Object> raw = getList(path);
         if (raw == null) {
             if (writeDefaults && def != null) setProperty(path, def);
-            return def != null ? def : new ArrayList<Boolean>();
+            return def != null ? def : new ArrayList<>();
         }
 
-        List<Boolean> list = new ArrayList<Boolean>();
+        List<Boolean> list = new ArrayList<>();
         for (Object o : raw) {
             Boolean tetsu = castBoolean(o);
             if (tetsu != null) {
@@ -559,7 +560,7 @@ public class YAMLNode {
      */
     public List<Vector> getVectorList(String path, List<Vector> def) {
         List<YAMLNode> raw = getNodeList(path, null);
-        List<Vector> list = new ArrayList<Vector>();
+        List<Vector> list = new ArrayList<>();
 
         for (YAMLNode o : raw) {
             Double x = o.getDouble("x");
@@ -590,7 +591,7 @@ public class YAMLNode {
     public List<Vector2D> getVector2dList(String path, List<Vector2D> def) {
 
         List<YAMLNode> raw = getNodeList(path, null);
-        List<Vector2D> list = new ArrayList<Vector2D>();
+        List<Vector2D> list = new ArrayList<>();
 
         for (YAMLNode o : raw) {
             Double x = o.getDouble("x");
@@ -620,7 +621,7 @@ public class YAMLNode {
     public List<BlockVector2D> getBlockVector2dList(String path, List<BlockVector2D> def) {
 
         List<YAMLNode> raw = getNodeList(path, null);
-        List<BlockVector2D> list = new ArrayList<BlockVector2D>();
+        List<BlockVector2D> list = new ArrayList<>();
 
         for (YAMLNode o : raw) {
             Double x = o.getDouble("x");
@@ -652,10 +653,10 @@ public class YAMLNode {
         List<Object> raw = getList(path);
         if (raw == null) {
             if (writeDefaults && def != null) setProperty(path, def);
-            return def != null ? def : new ArrayList<YAMLNode>();
+            return def != null ? def : new ArrayList<>();
         }
 
-        List<YAMLNode> list = new ArrayList<YAMLNode>();
+        List<YAMLNode> list = new ArrayList<>();
         for (Object o : raw) {
             if (o instanceof Map) {
                 list.add(new YAMLNode((Map<String, Object>) o, writeDefaults));
@@ -698,7 +699,7 @@ public class YAMLNode {
             return null;
         } else if (o instanceof Map) {
             Map<String, YAMLNode> nodes =
-                    new LinkedHashMap<String, YAMLNode>();
+                    new LinkedHashMap<>();
 
             for (Map.Entry<String, Object> entry : ((Map<String, Object>) o).entrySet()) {
                 if (entry.getValue() instanceof Map) {

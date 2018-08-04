@@ -22,10 +22,9 @@
 package com.sk89q.worldedit.bukkit;
 
 import com.sk89q.util.StringUtil;
-import com.sk89q.worldedit.LocalPlayer;
 import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.WorldVector;
-import com.sk89q.worldedit.internal.LocalWorldAdapter;
+import com.sk89q.worldedit.entity.Player;
+import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.World;
 import org.bukkit.block.Block;
 import org.bukkit.event.Event.Result;
@@ -67,7 +66,7 @@ public class WorldEditListener implements Listener {
         }
 
         // this will automatically refresh their session, we don't have to do anything
-        WorldEdit.getInstance().getSession(plugin.wrapPlayer(event.getPlayer()));
+        WorldEdit.getInstance().getSessionManager().get(plugin.wrapPlayer(event.getPlayer()));
     }
 
     /**
@@ -120,18 +119,17 @@ public class WorldEditListener implements Listener {
                 return; // TODO api needs to be able to get either hand depending on event
                 // for now just ignore all off hand interacts
             }
-        } catch (NoSuchMethodError ignored) {
-        } catch (NoSuchFieldError ignored) {
+        } catch (NoSuchMethodError | NoSuchFieldError ignored) {
         }
 
-        final LocalPlayer player = plugin.wrapPlayer(event.getPlayer());
+        final Player player = plugin.wrapPlayer(event.getPlayer());
         final World world = player.getWorld();
         final WorldEdit we = plugin.getWorldEdit();
 
         Action action = event.getAction();
         if (action == Action.LEFT_CLICK_BLOCK) {
             final Block clickedBlock = event.getClickedBlock();
-            final WorldVector pos = new WorldVector(LocalWorldAdapter.adapt(world), clickedBlock.getX(), clickedBlock.getY(), clickedBlock.getZ());
+            final Location pos = new Location(world, clickedBlock.getX(), clickedBlock.getY(), clickedBlock.getZ());
 
             if (we.handleBlockLeftClick(player, pos)) {
                 event.setCancelled(true);
@@ -150,8 +148,7 @@ public class WorldEditListener implements Listener {
 
         } else if (action == Action.RIGHT_CLICK_BLOCK) {
             final Block clickedBlock = event.getClickedBlock();
-            final WorldVector pos = new WorldVector(LocalWorldAdapter.adapt(world), clickedBlock.getX(),
-                    clickedBlock.getY(), clickedBlock.getZ());
+            final Location pos = new Location(world, clickedBlock.getX(), clickedBlock.getY(), clickedBlock.getZ());
 
             if (we.handleBlockRightClick(player, pos)) {
                 event.setCancelled(true);

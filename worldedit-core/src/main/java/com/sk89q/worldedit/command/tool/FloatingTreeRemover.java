@@ -19,14 +19,21 @@
 
 package com.sk89q.worldedit.command.tool;
 
-import com.sk89q.worldedit.*;
-import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.blocks.BlockID;
+import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.LocalConfiguration;
+import com.sk89q.worldedit.LocalSession;
+import com.sk89q.worldedit.MaxChangedBlocksException;
+import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Platform;
+import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.World;
+import com.sk89q.worldedit.world.block.BlockCategories;
+import com.sk89q.worldedit.world.block.BlockState;
+import com.sk89q.worldedit.world.block.BlockType;
+import com.sk89q.worldedit.world.block.BlockTypes;
 
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -37,7 +44,6 @@ import java.util.Set;
  * to anything else)
  */
 public class FloatingTreeRemover implements BlockTool {
-    private static final BaseBlock AIR = new BaseBlock(BlockID.AIR);
     private int rangeSq;
 
     public FloatingTreeRemover() {
@@ -49,23 +55,23 @@ public class FloatingTreeRemover implements BlockTool {
         return player.hasPermission("worldedit.tool.deltree");
     }
 
+    private boolean isTreeBlock(BlockType type) {
+        return BlockCategories.LEAVES.contains(type)
+                || BlockCategories.LOGS.contains(type)
+                || type == BlockTypes.RED_MUSHROOM_BLOCK
+                || type == BlockTypes.BROWN_MUSHROOM_BLOCK
+                || type == BlockTypes.MUSHROOM_STEM
+                || type == BlockTypes.VINE;
+    }
+
     @Override
     public boolean actPrimary(Platform server, LocalConfiguration config,
             Player player, LocalSession session, Location clicked) {
 
         final World world = (World) clicked.getExtent();
+        final BlockState state = world.getBlock(clicked.toVector());
 
-        switch (world.getBlockType(clicked.toVector())) {
-        case BlockID.LOG:
-        case BlockID.LOG2:
-        case BlockID.LEAVES:
-        case BlockID.LEAVES2:
-        case BlockID.BROWN_MUSHROOM_CAP:
-        case BlockID.RED_MUSHROOM_CAP:
-        case BlockID.VINE:
-            break;
-
-        default:
+        if (!isTreeBlock(state.getBlockType())) {
             player.printError("That's not a tree.");
             return true;
         }
@@ -80,16 +86,9 @@ public class FloatingTreeRemover implements BlockTool {
             }
 
             for (Vector blockVector : blockSet) {
-                final int typeId = editSession.getBlock(blockVector).getType();
-                switch (typeId) {
-                case BlockID.LOG:
-                case BlockID.LOG2:
-                case BlockID.LEAVES:
-                case BlockID.LEAVES2:
-                case BlockID.BROWN_MUSHROOM_CAP:
-                case BlockID.RED_MUSHROOM_CAP:
-                case BlockID.VINE:
-                    editSession.setBlock(blockVector, AIR);
+                final BlockState otherState = editSession.getBlock(blockVector);
+                if (isTreeBlock(otherState.getBlockType())) {
+                    editSession.setBlock(blockVector, BlockTypes.AIR.getDefaultState());
                 }
             }
         } catch (MaxChangedBlocksException e) {
@@ -101,13 +100,13 @@ public class FloatingTreeRemover implements BlockTool {
         return true;
     }
 
-    Vector[] recurseDirections = {
-        PlayerDirection.NORTH.vector(),
-        PlayerDirection.EAST.vector(),
-        PlayerDirection.SOUTH.vector(),
-        PlayerDirection.WEST.vector(),
-        PlayerDirection.UP.vector(),
-        PlayerDirection.DOWN.vector(),
+    private Vector[] recurseDirections = {
+            Direction.NORTH.toVector(),
+            Direction.EAST.toVector(),
+            Direction.SOUTH.toVector(),
+            Direction.WEST.toVector(),
+            Direction.UP.toVector(),
+            Direction.DOWN.toVector(),
     };
 
     /**
@@ -118,8 +117,8 @@ public class FloatingTreeRemover implements BlockTool {
      * @return a set containing all blocks in the tree/shroom or null if this is not a floating tree/shroom.
      */
     private Set<Vector> bfs(World world, Vector origin) throws MaxChangedBlocksException {
-        final Set<Vector> visited = new HashSet<Vector>();
-        final LinkedList<Vector> queue = new LinkedList<Vector>();
+        final Set<Vector> visited = new HashSet<>();
+        final LinkedList<Vector> queue = new LinkedList<>();
 
         queue.addLast(origin);
         visited.add(origin);
@@ -134,39 +133,24 @@ public class FloatingTreeRemover implements BlockTool {
                 }
 
                 if (visited.add(next)) {
-                    switch (world.getBlockType(next)) {
-                    case BlockID.AIR:
-                    case BlockID.SNOW:
-                        // we hit air or snow => stop walking this route
+                    BlockState state = world.getBlock(next);
+                    if (state.getBlockType() == BlockTypes.AIR || state.getBlockType() == BlockTypes.SNOW) {
                         continue;
-
-                    case BlockID.LOG:
-                    case BlockID.LOG2:
-                    case BlockID.LEAVES:
-                    case BlockID.LEAVES2:
-                    case BlockID.BROWN_MUSHROOM_CAP:
-                    case BlockID.RED_MUSHROOM_CAP:
-                    case BlockID.VINE:
-                        // queue next point
+                    }
+                    if (isTreeBlock(state.getBlockType())) {
                         queue.addLast(next);
-                        break;
-
-                    default:
+                    } else {
                         // we hit something solid - evaluate where we came from
-                        final int curId = world.getBlockType(current);
-                        if (curId == BlockID.LEAVES || curId == BlockID.LEAVES2
-                                || curId == BlockID.VINE) {
-                            // leaves touching a wall/the ground => stop walking this route
-                            continue;
-                        } else {
+                        final BlockType currentType = world.getBlock(current).getBlockType();
+                        if (!BlockCategories.LEAVES.contains(currentType) && currentType != BlockTypes.VINE) {
                             // log/shroom touching a wall/the ground => this is not a floating tree, bail out
                             return null;
                         }
-                    } // switch
-                } // if
-            } // for
-        } // while
+                    }
+                }
+            }
+        }
 
         return visited;
-    } // bfs
+    }
 }

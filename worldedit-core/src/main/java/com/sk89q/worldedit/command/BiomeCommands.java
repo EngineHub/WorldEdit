@@ -19,6 +19,9 @@
 
 package com.sk89q.worldedit.command;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.sk89q.minecraft.util.commands.Logging.LogMode.REGION;
+
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
@@ -30,6 +33,7 @@ import com.sk89q.worldedit.Vector2D;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.entity.Player;
+import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.function.FlatRegionFunction;
 import com.sk89q.worldedit.function.FlatRegionMaskingFilter;
 import com.sk89q.worldedit.function.biome.BiomeReplace;
@@ -41,6 +45,7 @@ import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.FlatRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.Regions;
+import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.command.binding.Switch;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.biome.BaseBiome;
@@ -50,9 +55,6 @@ import com.sk89q.worldedit.world.registry.BiomeRegistry;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.sk89q.minecraft.util.commands.Logging.LogMode.REGION;
 
 /**
  * Implements biome-related commands such as "/biomelist".
@@ -90,7 +92,8 @@ public class BiomeCommands {
             offset = (page - 1) * 19;
         }
 
-        BiomeRegistry biomeRegistry = player.getWorld().getWorldData().getBiomeRegistry();
+        BiomeRegistry biomeRegistry = WorldEdit.getInstance().getPlatformManager()
+                .queryCapability(Capability.GAME_HOOKS).getRegistries().getBiomeRegistry();
         List<BaseBiome> biomes = biomeRegistry.getBiomes();
         int totalPages = biomes.size() / 19 + 1;
         player.print("Available Biomes (page " + page + "/" + totalPages + ") :");
@@ -124,23 +127,24 @@ public class BiomeCommands {
     )
     @CommandPermissions("worldedit.biome.info")
     public void biomeInfo(Player player, LocalSession session, CommandContext args) throws WorldEditException {
-        BiomeRegistry biomeRegistry = player.getWorld().getWorldData().getBiomeRegistry();
-        Set<BaseBiome> biomes = new HashSet<BaseBiome>();
+        BiomeRegistry biomeRegistry = WorldEdit.getInstance().getPlatformManager()
+                .queryCapability(Capability.GAME_HOOKS).getRegistries().getBiomeRegistry();
+        Set<BaseBiome> biomes = new HashSet<>();
         String qualifier;
 
         if (args.hasFlag('t')) {
-            Vector blockPosition = player.getBlockTrace(300);
+            Location blockPosition = player.getBlockTrace(300);
             if (blockPosition == null) {
                 player.printError("No block in sight!");
                 return;
             }
 
-            BaseBiome biome = player.getWorld().getBiome(blockPosition.toVector2D());
+            BaseBiome biome = player.getWorld().getBiome(blockPosition.toVector().toVector2D());
             biomes.add(biome);
 
             qualifier = "at line of sight point";
         } else if (args.hasFlag('p')) {
-            BaseBiome biome = player.getWorld().getBiome(player.getPosition().toVector2D());
+            BaseBiome biome = player.getWorld().getBiome(player.getLocation().toVector().toVector2D());
             biomes.add(biome);
 
             qualifier = "at your position";
@@ -191,7 +195,7 @@ public class BiomeCommands {
         Mask2D mask2d = mask != null ? mask.toMask2D() : null;
 
         if (atPosition) {
-            region = new CuboidRegion(player.getPosition(), player.getPosition());
+            region = new CuboidRegion(player.getLocation().toVector(), player.getLocation().toVector());
         } else {
             region = session.getSelection(world);
         }

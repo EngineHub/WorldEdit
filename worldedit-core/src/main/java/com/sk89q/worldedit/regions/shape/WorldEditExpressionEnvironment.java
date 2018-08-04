@@ -48,32 +48,32 @@ public class WorldEditExpressionEnvironment implements ExpressionEnvironment {
 
     @Override
     public int getBlockType(double x, double y, double z) {
-        return editSession.getBlockType(toWorld(x, y, z));
+        return editSession.getBlock(toWorld(x, y, z)).getBlockType().getLegacyId();
     }
 
     @Override
     public int getBlockData(double x, double y, double z) {
-        return editSession.getBlockData(toWorld(x, y, z));
+        return 0;
     }
 
     @Override
     public int getBlockTypeAbs(double x, double y, double z) {
-        return editSession.getBlockType(new Vector(x, y, z));
+        return editSession.getBlock(toWorld(x, y, z)).getBlockType().getLegacyId();
     }
 
     @Override
     public int getBlockDataAbs(double x, double y, double z) {
-        return editSession.getBlockData(new Vector(x, y, z));
+        return 0;
     }
 
     @Override
     public int getBlockTypeRel(double x, double y, double z) {
-        return editSession.getBlockType(toWorldRel(x, y, z));
+        return editSession.getBlock(toWorld(x, y, z)).getBlockType().getLegacyId();
     }
 
     @Override
     public int getBlockDataRel(double x, double y, double z) {
-        return editSession.getBlockData(toWorldRel(x, y, z));
+        return 0;
     }
 
     public void setCurrentBlock(Vector current) {

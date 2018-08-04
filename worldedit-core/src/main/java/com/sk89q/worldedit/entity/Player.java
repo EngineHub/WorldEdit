@@ -22,12 +22,14 @@ package com.sk89q.worldedit.entity;
 import com.sk89q.worldedit.PlayerDirection;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.WorldVector;
-import com.sk89q.worldedit.WorldVectorFace;
 import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
+import com.sk89q.worldedit.util.HandSide;
+import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.World;
+import com.sk89q.worldedit.world.gamemode.GameMode;
 
 /**
  * Represents a player
@@ -57,26 +59,25 @@ public interface Player extends Entity, Actor {
     PlayerDirection getCardinalDirection(int yawOffset);
 
     /**
-     * Get the ID of the item that the player is holding.
+     * Get the item that the player is holding.
      *
-     * @return the item id of the item the player is holding
+     * @return the item the player is holding
      */
-    int getItemInHand();
+    BaseItemStack getItemInHand(HandSide handSide);
 
     /**
      * Get the Block that the player is holding.
      *
      * @return the item id of the item the player is holding
      */
-    BaseBlock getBlockInHand() throws WorldEditException;
+    BaseBlock getBlockInHand(HandSide handSide) throws WorldEditException;
 
     /**
      * Gives the player an item.
      *
-     * @param type The item id of the item to be given to the player
-     * @param amount How many items in the stack
+     * @param itemStack The item to give
      */
-    void giveItem(int type, int amount);
+    void giveItem(BaseItemStack itemStack);
 
     /**
      * Get this actor's block bag.
@@ -86,11 +87,18 @@ public interface Player extends Entity, Actor {
     BlockBag getInventoryBlockBag();
 
     /**
-     * Return whether this actor has creative mode.
+     * Return this actor's game mode.
      *
-     * @return true if creative mode is enabled
+     * @return the game mode
      */
-    boolean hasCreativeMode();
+    GameMode getGameMode();
+
+    /**
+     * Sets the player to the given game mode.
+     *
+     * @param gameMode The game mode
+     */
+    void setGameMode(GameMode gameMode);
 
     /**
      * Find a position for the actor to stand that is not inside a block.
@@ -100,14 +108,14 @@ public interface Player extends Entity, Actor {
      *
      * @param searchPos search position
      */
-    void findFreePosition(WorldVector searchPos);
+    void findFreePosition(Location searchPos);
 
     /**
      * Set the actor on the ground.
      *
      * @param searchPos The location to start searching from
      */
-    void setOnGround(WorldVector searchPos);
+    void setOnGround(Location searchPos);
 
     /**
      * Find a position for the player to stand that is not inside a block.
@@ -179,14 +187,14 @@ public interface Player extends Entity, Actor {
      *
      * @return point
      */
-    WorldVector getBlockIn();
+    Location getBlockIn();
 
     /**
      * Get the point of the block that is being stood upon.
      *
      * @return point
      */
-    WorldVector getBlockOn();
+    Location getBlockOn();
 
     /**
      * Get the point of the block being looked at. May return null.
@@ -196,7 +204,7 @@ public interface Player extends Entity, Actor {
      * @param useLastBlock try to return the last valid air block found
      * @return point
      */
-    WorldVector getBlockTrace(int range, boolean useLastBlock);
+    Location getBlockTrace(int range, boolean useLastBlock);
 
     /**
      * Get the face that the player is looking at.
@@ -205,7 +213,7 @@ public interface Player extends Entity, Actor {
      * @param useLastBlock try to return the last valid air block found
      * @return a face
      */
-    WorldVectorFace getBlockTraceFace(int range, boolean useLastBlock);
+    Location getBlockTraceFace(int range, boolean useLastBlock);
 
     /**
      * Get the point of the block being looked at. May return null.
@@ -213,7 +221,7 @@ public interface Player extends Entity, Actor {
      * @param range How far to checks for blocks
      * @return point
      */
-    WorldVector getBlockTrace(int range);
+    Location getBlockTrace(int range);
 
     /**
      * Get the point of the block being looked at. May return null.
@@ -221,7 +229,7 @@ public interface Player extends Entity, Actor {
      * @param range How far to checks for blocks
      * @return point
      */
-    WorldVector getSolidBlockTrace(int range);
+    Location getSolidBlockTrace(int range);
 
     /**
      * Get the player's cardinal direction (N, W, NW, etc.). May return null.
@@ -229,35 +237,6 @@ public interface Player extends Entity, Actor {
      * @return the direction
      */
     PlayerDirection getCardinalDirection();
-
-    /**
-     * Get the actor's position.
-     *
-     * <p>If the actor has no permission, then a dummy location is returned.</p>
-     *
-     * @return the actor's position
-     * @deprecated use {@link #getLocation()}
-     */
-    @Deprecated
-    WorldVector getPosition();
-
-    /**
-     * Get the player's view pitch in degrees.
-     *
-     * @return pitch
-     * @deprecated use {@link #getLocation()}
-     */
-    @Deprecated
-    double getPitch();
-
-    /**
-     * Get the player's view yaw in degrees.
-     *
-     * @return yaw
-     * @deprecated use {@link #getLocation()}
-     */
-    @Deprecated
-    double getYaw();
 
     /**
      * Pass through the wall that you are looking at.

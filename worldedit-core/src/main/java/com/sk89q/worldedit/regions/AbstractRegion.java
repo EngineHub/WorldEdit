@@ -19,13 +19,19 @@
 
 package com.sk89q.worldedit.regions;
 
-import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.BlockVector;
+import com.sk89q.worldedit.BlockVector2D;
 import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.Vector2D;
 import com.sk89q.worldedit.regions.iterator.RegionIterator;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.storage.ChunkStore;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 public abstract class AbstractRegion implements Region {
 
@@ -53,11 +59,6 @@ public abstract class AbstractRegion implements Region {
     @Override
     public World getWorld() {
         return world;
-    }
-
-    @Override
-    public void setWorld(LocalWorld world) {
-        setWorld((World) world);
     }
 
     @Override
@@ -89,7 +90,7 @@ public abstract class AbstractRegion implements Region {
         final BlockVector min = getMinimumPoint().toBlockVector();
         final BlockVector max = getMaximumPoint().toBlockVector();
 
-        final List<BlockVector2D> points = new ArrayList<BlockVector2D>(4);
+        final List<BlockVector2D> points = new ArrayList<>(4);
 
         points.add(new BlockVector2D(min.getX(), min.getZ()));
         points.add(new BlockVector2D(min.getX(), max.getZ()));
@@ -160,7 +161,7 @@ public abstract class AbstractRegion implements Region {
      */
     @Override
     public Set<Vector2D> getChunks() {
-        final Set<Vector2D> chunks = new HashSet<Vector2D>();
+        final Set<Vector2D> chunks = new HashSet<>();
 
         final Vector min = getMinimumPoint();
         final Vector max = getMaximumPoint();
@@ -185,7 +186,7 @@ public abstract class AbstractRegion implements Region {
 
     @Override
     public Set<Vector> getChunkCubes() {
-        final Set<Vector> chunks = new HashSet<Vector>();
+        final Set<Vector> chunks = new HashSet<>();
 
         final Vector min = getMinimumPoint();
         final Vector max = getMaximumPoint();

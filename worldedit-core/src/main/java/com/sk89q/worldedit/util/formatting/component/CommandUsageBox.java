@@ -19,6 +19,8 @@
 
 package com.sk89q.worldedit.util.formatting.component;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.sk89q.minecraft.util.commands.CommandLocals;
 import com.sk89q.worldedit.extension.platform.CommandManager;
 import com.sk89q.worldedit.util.command.CommandCallable;
@@ -28,12 +30,10 @@ import com.sk89q.worldedit.util.command.Dispatcher;
 import com.sk89q.worldedit.util.command.PrimaryAliasComparator;
 import com.sk89q.worldedit.util.formatting.StyledFragment;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import javax.annotation.Nullable;
 
 /**
  * A box to describe usage of a command.
@@ -71,8 +71,8 @@ public class CommandUsageBox extends StyledFragment {
         CommandListBox box = new CommandListBox("Subcommands");
         String prefix = !commandString.isEmpty() ? commandString + " " : "";
 
-        List<CommandMapping> list = new ArrayList<CommandMapping>(dispatcher.getCommands());
-        Collections.sort(list, new PrimaryAliasComparator(CommandManager.COMMAND_CLEAN_PATTERN));
+        List<CommandMapping> list = new ArrayList<>(dispatcher.getCommands());
+        list.sort(new PrimaryAliasComparator(CommandManager.COMMAND_CLEAN_PATTERN));
 
         for (CommandMapping mapping : list) {
             if (locals == null || mapping.getCallable().testPermission(locals)) {

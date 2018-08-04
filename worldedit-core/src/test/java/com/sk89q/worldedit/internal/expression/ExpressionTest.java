@@ -19,16 +19,16 @@
 
 package com.sk89q.worldedit.internal.expression;
 
+import static java.lang.Math.atan2;
+import static java.lang.Math.sin;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
 import com.sk89q.worldedit.internal.expression.lexer.LexerException;
 import com.sk89q.worldedit.internal.expression.parser.ParserException;
 import com.sk89q.worldedit.internal.expression.runtime.EvaluationException;
 import com.sk89q.worldedit.internal.expression.runtime.ExpressionEnvironment;
 import org.junit.Test;
-
-import static java.lang.Math.atan2;
-import static java.lang.Math.sin;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 
 public class ExpressionTest {
     @Test

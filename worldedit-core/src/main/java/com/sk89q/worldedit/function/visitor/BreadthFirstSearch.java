@@ -19,16 +19,22 @@
 
 package com.sk89q.worldedit.function.visitor;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.RegionFunction;
+import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.RunContext;
 
-import java.util.*;
-
-import static com.google.common.base.Preconditions.checkNotNull;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Queue;
+import java.util.Set;
 
 /**
  * Performs a breadth-first search starting from points added with
@@ -44,9 +50,9 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public abstract class BreadthFirstSearch implements Operation {
 
     private final RegionFunction function;
-    private final Queue<BlockVector> queue = new ArrayDeque<BlockVector>();
-    private final Set<BlockVector> visited = new HashSet<BlockVector>();
-    private final List<Vector> directions = new ArrayList<Vector>();
+    private final Queue<BlockVector> queue = new ArrayDeque<>();
+    private final Set<BlockVector> visited = new HashSet<>();
+    private final List<Vector> directions = new ArrayList<>();
     private int affected = 0;
 
     /**

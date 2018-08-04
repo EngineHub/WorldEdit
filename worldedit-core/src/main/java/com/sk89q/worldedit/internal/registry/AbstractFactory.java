@@ -19,15 +19,15 @@
 
 package com.sk89q.worldedit.internal.registry;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.extension.input.ParserContext;
 import com.sk89q.worldedit.extension.input.InputParseException;
 import com.sk89q.worldedit.extension.input.NoMatchException;
+import com.sk89q.worldedit.extension.input.ParserContext;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * An abstract implementation of a factory for internal usage.
@@ -38,7 +38,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public abstract class AbstractFactory<E> {
 
     protected final WorldEdit worldEdit;
-    protected final List<InputParser<E>> parsers = new ArrayList<InputParser<E>>();
+    protected final List<InputParser<E>> parsers = new ArrayList<>();
 
     /**
      * Create a new factory.

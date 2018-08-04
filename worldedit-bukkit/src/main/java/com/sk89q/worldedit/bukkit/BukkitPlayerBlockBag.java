@@ -19,14 +19,16 @@
 
 package com.sk89q.worldedit.bukkit;
 
-import com.sk89q.worldedit.WorldVector;
+import com.sk89q.worldedit.blocks.BaseItemStack;
+import com.sk89q.worldedit.extent.inventory.BlockBag;
+import com.sk89q.worldedit.extent.inventory.BlockBagException;
+import com.sk89q.worldedit.extent.inventory.OutOfBlocksException;
+import com.sk89q.worldedit.extent.inventory.OutOfSpaceException;
+import com.sk89q.worldedit.util.Location;
+import com.sk89q.worldedit.world.block.BlockState;
+import com.sk89q.worldedit.world.block.BlockTypes;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import com.sk89q.worldedit.extent.inventory.*;
-import com.sk89q.worldedit.blocks.BaseItem;
-import com.sk89q.worldedit.blocks.BaseItemStack;
-import com.sk89q.worldedit.blocks.BlockID;
-import com.sk89q.worldedit.blocks.ItemType;
 
 public class BukkitPlayerBlockBag extends BlockBag {
 
@@ -61,14 +63,8 @@ public class BukkitPlayerBlockBag extends BlockBag {
     }
 
     @Override
-    public void fetchItem(BaseItem item) throws BlockBagException {
-        final int id = item.getType();
-        final int damage = item.getData();
-        int amount = (item instanceof BaseItemStack) ? ((BaseItemStack) item).getAmount() : 1;
-        assert(amount == 1);
-        boolean usesDamageValue = ItemType.usesDamageValue(id);
-
-        if (id == BlockID.AIR) {
+    public void fetchBlock(BlockState blockState) throws BlockBagException {
+        if (blockState.getBlockType() == BlockTypes.AIR) {
             throw new IllegalArgumentException("Can't fetch air block");
         }
 
@@ -83,13 +79,8 @@ public class BukkitPlayerBlockBag extends BlockBag {
                 continue;
             }
 
-            if (bukkitItem.getTypeId() != id) {
+            if (!BukkitAdapter.equals(blockState.getBlockType(), bukkitItem.getType())) {
                 // Type id doesn't fit
-                continue;
-            }
-
-            if (usesDamageValue && bukkitItem.getDurability() != damage) {
-                // Damage value doesn't fit.
                 continue;
             }
 
@@ -116,15 +107,12 @@ public class BukkitPlayerBlockBag extends BlockBag {
     }
 
     @Override
-    public void storeItem(BaseItem item) throws BlockBagException {
-        final int id = item.getType();
-        final int damage = item.getData();
-        int amount = (item instanceof BaseItemStack) ? ((BaseItemStack) item).getAmount() : 1;
-        assert(amount <= 64);
-        boolean usesDamageValue = ItemType.usesDamageValue(id);
-
-        if (id == BlockID.AIR) {
+    public void storeBlock(BlockState blockState, int amount) throws BlockBagException {
+        if (blockState.getBlockType() == BlockTypes.AIR) {
             throw new IllegalArgumentException("Can't store air block");
+        }
+        if (!blockState.getBlockType().hasItemType()) {
+            throw new IllegalArgumentException("This block cannot be stored");
         }
 
         loadInventory();
@@ -144,13 +132,8 @@ public class BukkitPlayerBlockBag extends BlockBag {
                 continue;
             }
 
-            if (bukkitItem.getTypeId() != id) {
+            if (!BukkitAdapter.equals(blockState.getBlockType(), bukkitItem.getType())) {
                 // Type id doesn't fit
-                continue;
-            }
-
-            if (usesDamageValue && bukkitItem.getDurability() != damage) {
-                // Damage value doesn't fit.
                 continue;
             }
 
@@ -175,11 +158,11 @@ public class BukkitPlayerBlockBag extends BlockBag {
         }
 
         if (freeSlot > -1) {
-            items[freeSlot] = new ItemStack(id, amount);
+            items[freeSlot] = BukkitAdapter.adapt(new BaseItemStack(blockState.getBlockType().getItemType(), amount));
             return;
         }
 
-        throw new OutOfSpaceException(id);
+        throw new OutOfSpaceException(blockState.getBlockType());
     }
 
     @Override
@@ -191,11 +174,11 @@ public class BukkitPlayerBlockBag extends BlockBag {
     }
 
     @Override
-    public void addSourcePosition(WorldVector pos) {
+    public void addSourcePosition(Location pos) {
     }
 
     @Override
-    public void addSingleSourcePosition(WorldVector pos) {
+    public void addSingleSourcePosition(Location pos) {
     }
 
 }

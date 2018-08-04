@@ -102,7 +102,7 @@ public class Lexer {
         )
     );
 
-    private static final Set<Character> characterTokens = new HashSet<Character>();
+    private static final Set<Character> characterTokens = new HashSet<>();
     static {
         characterTokens.add(',');
         characterTokens.add('(');
@@ -114,13 +114,14 @@ public class Lexer {
         characterTokens.add(':');
     }
 
-    private static final Set<String> keywords = new HashSet<String>(Arrays.asList("if", "else", "while", "do", "for", "break", "continue", "return", "switch", "case", "default"));
+    private static final Set<String> keywords =
+            new HashSet<>(Arrays.asList("if", "else", "while", "do", "for", "break", "continue", "return", "switch", "case", "default"));
 
     private static final Pattern numberPattern = Pattern.compile("^([0-9]*(?:\\.[0-9]+)?(?:[eE][+-]?[0-9]+)?)");
     private static final Pattern identifierPattern = Pattern.compile("^([A-Za-z][0-9A-Za-z_]*)");
 
     private List<Token> tokenize() throws LexerException {
-        List<Token> tokens = new ArrayList<Token>();
+        List<Token> tokens = new ArrayList<>();
 
         do {
             skipWhitespace();
@@ -189,7 +190,7 @@ public class Lexer {
 
     public class DecisionTree {
         private final String tokenName;
-        private final Map<Character, DecisionTree> subTrees = new HashMap<Character, Lexer.DecisionTree>();
+        private final Map<Character, DecisionTree> subTrees = new HashMap<>();
 
         private DecisionTree(String tokenName, Object... args) {
             this.tokenName = tokenName;

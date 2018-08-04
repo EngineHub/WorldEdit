@@ -20,32 +20,34 @@
 package com.sk89q.worldedit.bukkit;
 
 import com.sk89q.util.StringUtil;
-import com.sk89q.worldedit.LocalPlayer;
-import com.sk89q.worldedit.LocalWorld;
-import com.sk89q.worldedit.ServerInterface;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.WorldVector;
 import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.entity.BaseEntity;
+import com.sk89q.worldedit.extension.platform.AbstractPlayerActor;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
 import com.sk89q.worldedit.internal.cui.CUIEvent;
 import com.sk89q.worldedit.session.SessionKey;
+import com.sk89q.worldedit.util.HandSide;
+import com.sk89q.worldedit.world.World;
+import com.sk89q.worldedit.world.gamemode.GameMode;
+import com.sk89q.worldedit.world.gamemode.GameModes;
 import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import javax.annotation.Nullable;
 import java.util.UUID;
 
-public class BukkitPlayer extends LocalPlayer {
+import javax.annotation.Nullable;
+
+public class BukkitPlayer extends AbstractPlayerActor {
 
     private Player player;
     private WorldEditPlugin plugin;
 
-    public BukkitPlayer(WorldEditPlugin plugin, ServerInterface server, Player player) {
+    public BukkitPlayer(WorldEditPlugin plugin, Player player) {
         this.plugin = plugin;
         this.player = player;
     }
@@ -56,15 +58,19 @@ public class BukkitPlayer extends LocalPlayer {
     }
 
     @Override
-    public int getItemInHand() {
-        ItemStack itemStack = player.getItemInHand();
-        return itemStack != null ? itemStack.getTypeId() : 0;
+    public BaseItemStack getItemInHand(HandSide handSide) {
+        ItemStack itemStack = handSide == HandSide.MAIN_HAND
+                ? player.getInventory().getItemInMainHand()
+                : player.getInventory().getItemInOffHand();
+        return BukkitAdapter.adapt(itemStack);
     }
 
     @Override
-    public BaseBlock getBlockInHand() throws WorldEditException {
-        ItemStack itemStack = player.getItemInHand();
-        return BukkitUtil.toBlock(getWorld(), itemStack);
+    public BaseBlock getBlockInHand(HandSide handSide) throws WorldEditException {
+        ItemStack itemStack = handSide == HandSide.MAIN_HAND
+                ? player.getInventory().getItemInMainHand()
+                : player.getInventory().getItemInOffHand();
+        return new BaseBlock(BukkitAdapter.asBlockState(itemStack));
     }
 
     @Override
@@ -73,25 +79,8 @@ public class BukkitPlayer extends LocalPlayer {
     }
 
     @Override
-    public WorldVector getPosition() {
-        Location loc = player.getLocation();
-        return new WorldVector(BukkitUtil.getLocalWorld(loc.getWorld()),
-                loc.getX(), loc.getY(), loc.getZ());
-    }
-
-    @Override
-    public double getPitch() {
-        return player.getLocation().getPitch();
-    }
-
-    @Override
-    public double getYaw() {
-        return player.getLocation().getYaw();
-    }
-
-    @Override
-    public void giveItem(int type, int amt) {
-        player.getInventory().addItem(new ItemStack(type, amt));
+    public void giveItem(BaseItemStack itemStack) {
+        player.getInventory().addItem(BukkitAdapter.adapt(itemStack));
     }
 
     @Override
@@ -139,6 +128,16 @@ public class BukkitPlayer extends LocalPlayer {
     }
 
     @Override
+    public GameMode getGameMode() {
+        return GameModes.get(player.getGameMode().name().toLowerCase());
+    }
+
+    @Override
+    public void setGameMode(GameMode gameMode) {
+        player.setGameMode(org.bukkit.GameMode.valueOf(gameMode.getId().toUpperCase()));
+    }
+
+    @Override
     public boolean hasPermission(String perm) {
         return (!plugin.getLocalConfiguration().noOpPermissions && player.isOp())
                 || plugin.getPermissionsResolver().hasPermission(
@@ -146,8 +145,8 @@ public class BukkitPlayer extends LocalPlayer {
     }
 
     @Override
-    public LocalWorld getWorld() {
-        return BukkitUtil.getLocalWorld(player.getWorld());
+    public World getWorld() {
+        return BukkitAdapter.adapt(player.getWorld());
     }
 
     @Override
@@ -162,11 +161,6 @@ public class BukkitPlayer extends LocalPlayer {
 
     public Player getPlayer() {
         return player;
-    }
-
-    @Override
-    public boolean hasCreativeMode() {
-        return player.getGameMode() == GameMode.CREATIVE;
     }
 
     @Override
@@ -188,7 +182,7 @@ public class BukkitPlayer extends LocalPlayer {
     @Override
     public com.sk89q.worldedit.util.Location getLocation() {
         Location nativeLocation = player.getLocation();
-        Vector position = BukkitUtil.toVector(nativeLocation);
+        Vector position = BukkitAdapter.asVector(nativeLocation);
         return new com.sk89q.worldedit.util.Location(
                 getWorld(),
                 position,
@@ -235,7 +229,7 @@ public class BukkitPlayer extends LocalPlayer {
             // CopyOnWrite list for the list of players, but the Bukkit
             // specification doesn't require thread safety (though the
             // spec is extremely incomplete)
-            return Bukkit.getServer().getPlayerExact(name) != null;
+            return Bukkit.getServer().getPlayer(uuid) != null;
         }
 
         @Override

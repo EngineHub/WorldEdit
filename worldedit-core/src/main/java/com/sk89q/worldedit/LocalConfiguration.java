@@ -19,9 +19,10 @@
 
 package com.sk89q.worldedit;
 
-import com.sk89q.worldedit.blocks.BlockID;
-import com.sk89q.worldedit.blocks.ItemID;
 import com.sk89q.worldedit.util.logging.LogFormat;
+import com.sk89q.worldedit.world.block.BlockTypes;
+import com.sk89q.worldedit.world.item.ItemTypes;
+import com.sk89q.worldedit.world.registry.LegacyMapper;
 import com.sk89q.worldedit.world.snapshot.SnapshotRepository;
 
 import java.io.File;
@@ -33,53 +34,73 @@ import java.util.Set;
  */
 public abstract class LocalConfiguration {
 
-    protected static final int[] defaultDisallowedBlocks = new int[] {
-                // dangerous stuff (physics/drops items)
-                BlockID.SAPLING,
-                BlockID.BED,
-                BlockID.POWERED_RAIL,
-                BlockID.DETECTOR_RAIL,
-                BlockID.LONG_GRASS,
-                BlockID.DEAD_BUSH,
-                BlockID.PISTON_EXTENSION,
-                BlockID.PISTON_MOVING_PIECE,
-                BlockID.YELLOW_FLOWER,
-                BlockID.RED_FLOWER,
-                BlockID.BROWN_MUSHROOM,
-                BlockID.RED_MUSHROOM,
-                BlockID.TNT,
-                BlockID.TORCH,
-                BlockID.FIRE,
-                BlockID.REDSTONE_WIRE,
-                BlockID.CROPS,
-                BlockID.MINECART_TRACKS,
-                BlockID.LEVER,
-                BlockID.REDSTONE_TORCH_OFF,
-                BlockID.REDSTONE_TORCH_ON,
-                BlockID.REDSTONE_REPEATER_OFF,
-                BlockID.REDSTONE_REPEATER_ON,
-                BlockID.STONE_BUTTON,
-                BlockID.CACTUS,
-                BlockID.REED,
-                // ores and stuff
-                BlockID.BEDROCK,
-                BlockID.GOLD_ORE,
-                BlockID.IRON_ORE,
-                BlockID.COAL_ORE,
-                BlockID.DIAMOND_ORE,
-
-                // @TODO rethink what should be disallowed by default
-                // Gold and iron can be legitimately obtained, but were set to disallowed by
-                // default. Diamond and coal can't be legitimately obtained. Sponges,
-                // portals, snow, and locked chests also can't, but are allowed. None of
-                // these blocks poses any immediate threat. Most of the blocks (in the first
-                // section) are disallowed because people will accidentally set a huge area
-                // of them, triggering physics and a million item drops, lagging the server.
-                // Doors also have this effect, but are not disallowed.
-            };
+    protected static final String[] defaultDisallowedBlocks = new String[] {
+            // dangerous stuff (physics/drops items)
+            BlockTypes.OAK_SAPLING.getId(),
+            BlockTypes.JUNGLE_SAPLING.getId(),
+            BlockTypes.DARK_OAK_SAPLING.getId(),
+            BlockTypes.SPRUCE_SAPLING.getId(),
+            BlockTypes.BIRCH_SAPLING.getId(),
+            BlockTypes.ACACIA_SAPLING.getId(),
+            BlockTypes.BLACK_BED.getId(),
+            BlockTypes.BLUE_BED.getId(),
+            BlockTypes.BROWN_BED.getId(),
+            BlockTypes.CYAN_BED.getId(),
+            BlockTypes.GRAY_BED.getId(),
+            BlockTypes.GREEN_BED.getId(),
+            BlockTypes.LIGHT_BLUE_BED.getId(),
+            BlockTypes.LIGHT_GRAY_BED.getId(),
+            BlockTypes.LIME_BED.getId(),
+            BlockTypes.MAGENTA_BED.getId(),
+            BlockTypes.ORANGE_BED.getId(),
+            BlockTypes.PINK_BED.getId(),
+            BlockTypes.PURPLE_BED.getId(),
+            BlockTypes.RED_BED.getId(),
+            BlockTypes.WHITE_BED.getId(),
+            BlockTypes.YELLOW_BED.getId(),
+            BlockTypes.POWERED_RAIL.getId(),
+            BlockTypes.DETECTOR_RAIL.getId(),
+            BlockTypes.GRASS.getId(),
+            BlockTypes.DEAD_BUSH.getId(),
+            BlockTypes.MOVING_PISTON.getId(),
+            BlockTypes.PISTON_HEAD.getId(),
+            BlockTypes.SUNFLOWER.getId(),
+            BlockTypes.ROSE_BUSH.getId(),
+            BlockTypes.DANDELION.getId(),
+            BlockTypes.POPPY.getId(),
+            BlockTypes.BROWN_MUSHROOM.getId(),
+            BlockTypes.RED_MUSHROOM.getId(),
+            BlockTypes.TNT.getId(),
+            BlockTypes.TORCH.getId(),
+            BlockTypes.FIRE.getId(),
+            BlockTypes.REDSTONE_WIRE.getId(),
+            BlockTypes.WHEAT.getId(),
+            BlockTypes.POTATOES.getId(),
+            BlockTypes.CARROTS.getId(),
+            BlockTypes.MELON_STEM.getId(),
+            BlockTypes.PUMPKIN_STEM.getId(),
+            BlockTypes.BEETROOTS.getId(),
+            BlockTypes.RAIL.getId(),
+            BlockTypes.LEVER.getId(),
+            BlockTypes.REDSTONE_TORCH.getId(),
+            BlockTypes.REDSTONE_WALL_TORCH.getId(),
+            BlockTypes.REPEATER.getId(),
+            BlockTypes.COMPARATOR.getId(),
+            BlockTypes.STONE_BUTTON.getId(),
+            BlockTypes.BIRCH_BUTTON.getId(),
+            BlockTypes.ACACIA_BUTTON.getId(),
+            BlockTypes.DARK_OAK_BUTTON.getId(),
+            BlockTypes.JUNGLE_BUTTON.getId(),
+            BlockTypes.OAK_BUTTON.getId(),
+            BlockTypes.SPRUCE_BUTTON.getId(),
+            BlockTypes.CACTUS.getId(),
+            BlockTypes.SUGAR_CANE.getId(),
+            // ores and stuff
+            BlockTypes.BEDROCK.getId(),
+    };
 
     public boolean profile = false;
-    public Set<Integer> disallowedBlocks = new HashSet<Integer>();
+    public Set<String> disallowedBlocks = new HashSet<>();
     public int defaultChangeLimit = -1;
     public int maxChangeLimit = -1;
     public int defaultMaxPolygonalPoints = -1;
@@ -95,7 +116,7 @@ public abstract class LocalConfiguration {
     public String logFile = "";
     public String logFormat = LogFormat.DEFAULT_FORMAT;
     public boolean registerHelp = true; // what is the point of this, it's not even used
-    public int wandItem = ItemID.WOOD_AXE;
+    public String wandItem = ItemTypes.WOODEN_AXE.getId();
     public boolean superPickaxeDrop = true;
     public boolean superPickaxeManyDrop = true;
     public boolean noDoubleSlash = false;
@@ -103,10 +124,10 @@ public abstract class LocalConfiguration {
     public boolean useInventoryOverride = false;
     public boolean useInventoryCreativeOverride = false;
     public boolean navigationUseGlass = true;
-    public int navigationWand = ItemID.COMPASS;
+    public String navigationWand = ItemTypes.COMPASS.getId();
     public int navigationWandMaxDistance = 50;
     public int scriptTimeout = 3000;
-    public Set<Integer> allowedDataCycleBlocks = new HashSet<Integer>();
+    public Set<String> allowedDataCycleBlocks = new HashSet<>();
     public String saveDir = "schematics";
     public String scriptsDir = "craftscripts";
     public boolean showHelpInfo = true;
@@ -126,6 +147,25 @@ public abstract class LocalConfiguration {
      */
     public File getWorkingDirectory() {
         return new File(".");
+    }
+
+    public String convertLegacyItem(String legacy) {
+        String item = legacy;
+        try {
+            String[] splitter = item.split(":", 2);
+            int id = 0;
+            byte data = 0;
+            if (splitter.length == 1) {
+                id = Integer.parseInt(item);
+            } else {
+                id = Integer.parseInt(splitter[0]);
+                data = Byte.parseByte(splitter[1]);
+            }
+            item = LegacyMapper.getInstance().getItemFromLegacy(id, data).getId();
+        } catch (Throwable e) {
+        }
+
+        return item;
     }
 
 }

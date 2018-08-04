@@ -19,12 +19,13 @@
 
 package com.sk89q.worldedit.entity;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.worldedit.world.NbtValued;
+import com.sk89q.worldedit.world.entity.EntityType;
 
 import javax.annotation.Nullable;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Represents a mutable "snapshot" of an entity.
@@ -41,27 +42,27 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class BaseEntity implements NbtValued {
 
-    private String id;
+    private EntityType type;
     private CompoundTag nbtData;
 
     /**
      * Create a new base entity.
      *
-     * @param id the entity type ID
+     * @param type the entity type
      * @param nbtData NBT data
      */
-    public BaseEntity(String id, CompoundTag nbtData) {
-        setTypeId(id);
+    public BaseEntity(EntityType type, CompoundTag nbtData) {
+        this(type);
         setNbtData(nbtData);
     }
 
     /**
      * Create a new base entity with no NBT data.
      *
-     * @param id the entity type ID
+     * @param type the entity type
      */
-    public BaseEntity(String id) {
-        setTypeId(id);
+    public BaseEntity(EntityType type) {
+        this.type = type;
     }
 
     /**
@@ -71,7 +72,7 @@ public class BaseEntity implements NbtValued {
      */
     public BaseEntity(BaseEntity other) {
         checkNotNull(other);
-        setTypeId(other.getTypeId());
+        this.type = other.getType();
         setNbtData(other.getNbtData());
     }
 
@@ -92,22 +93,12 @@ public class BaseEntity implements NbtValued {
     }
 
     /**
-     * Get the entity that determines the type of entity.
+     * Get the type of entity.
      *
-     * @return the entity ID
+     * @return the entity type
      */
-    public String getTypeId() {
-        return id;
-    }
-
-    /**
-     * Set the entity ID that determines the type of entity.
-     *
-     * @param id the id
-     */
-    public void setTypeId(String id) {
-        checkNotNull(id);
-        this.id = id;
+    public EntityType getType() {
+        return this.type;
     }
 
 }

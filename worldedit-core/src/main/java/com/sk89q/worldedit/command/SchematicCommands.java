@@ -19,6 +19,8 @@
 
 package com.sk89q.worldedit.command;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandException;
@@ -33,6 +35,7 @@ import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extent.clipboard.BlockArrayClipboard;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormat;
+import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormats;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardReader;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardWriter;
 import com.sk89q.worldedit.function.operation.Operations;
@@ -42,7 +45,6 @@ import com.sk89q.worldedit.util.command.binding.Switch;
 import com.sk89q.worldedit.util.command.parametric.Optional;
 import com.sk89q.worldedit.util.io.Closer;
 import com.sk89q.worldedit.util.io.file.FilenameException;
-import com.sk89q.worldedit.world.registry.WorldData;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -52,13 +54,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Commands that work with schematic files.
@@ -94,39 +93,35 @@ public class SchematicCommands {
         LocalConfiguration config = worldEdit.getConfiguration();
 
         File dir = worldEdit.getWorkingDirectoryFile(config.saveDir);
-        File f = worldEdit.getSafeOpenFile(player, dir, filename, "schematic", "schematic");
+        File f = worldEdit.getSafeOpenFile(player, dir, filename, "schematic", ClipboardFormats.getFileExtensionArray());
 
         if (!f.exists()) {
             player.printError("Schematic " + filename + " does not exist!");
             return;
         }
 
-        ClipboardFormat format = ClipboardFormat.findByAlias(formatName);
+        ClipboardFormat format = ClipboardFormats.findByFile(f);
+        if (format == null) {
+            format = ClipboardFormats.findByAlias(formatName);
+        }
         if (format == null) {
             player.printError("Unknown schematic format: " + formatName);
             return;
         }
 
-        Closer closer = Closer.create();
-        try {
+        try (Closer closer = Closer.create()) {
             FileInputStream fis = closer.register(new FileInputStream(f));
             BufferedInputStream bis = closer.register(new BufferedInputStream(fis));
-            ClipboardReader reader = format.getReader(bis);
+            ClipboardReader reader = closer.register(format.getReader(bis));
 
-            WorldData worldData = player.getWorld().getWorldData();
-            Clipboard clipboard = reader.read(player.getWorld().getWorldData());
-            session.setClipboard(new ClipboardHolder(clipboard, worldData));
+            Clipboard clipboard = reader.read();
+            session.setClipboard(new ClipboardHolder(clipboard));
 
             log.info(player.getName() + " loaded " + f.getCanonicalPath());
             player.print(filename + " loaded. Paste it with //paste");
         } catch (IOException e) {
             player.printError("Schematic could not read or it does not exist: " + e.getMessage());
             log.log(Level.WARNING, "Failed to load a saved clipboard", e);
-        } finally {
-            try {
-                closer.close();
-            } catch (IOException ignored) {
-            }
         }
     }
 
@@ -138,17 +133,18 @@ public class SchematicCommands {
     )
     @Deprecated
     @CommandPermissions({ "worldedit.clipboard.save", "worldedit.schematic.save" })
-    public void save(Player player, LocalSession session, @Optional("schematic") String formatName, String filename) throws CommandException, WorldEditException {
+    public void save(Player player, LocalSession session, @Optional("sponge") String formatName, String filename) throws CommandException, WorldEditException {
         LocalConfiguration config = worldEdit.getConfiguration();
 
         File dir = worldEdit.getWorkingDirectoryFile(config.saveDir);
-        File f = worldEdit.getSafeSaveFile(player, dir, filename, "schematic", "schematic");
 
-        ClipboardFormat format = ClipboardFormat.findByAlias(formatName);
+        ClipboardFormat format = ClipboardFormats.findByAlias(formatName);
         if (format == null) {
             player.printError("Unknown schematic format: " + formatName);
             return;
         }
+
+        File f = worldEdit.getSafeSaveFile(player, dir, filename, format.getPrimaryFileExtension());
 
         ClipboardHolder holder = session.getClipboard();
         Clipboard clipboard = holder.getClipboard();
@@ -157,7 +153,7 @@ public class SchematicCommands {
 
         // If we have a transform, bake it into the copy
         if (!transform.isIdentity()) {
-            FlattenedClipboardTransform result = FlattenedClipboardTransform.transform(clipboard, transform, holder.getWorldData());
+            FlattenedClipboardTransform result = FlattenedClipboardTransform.transform(clipboard, transform);
             target = new BlockArrayClipboard(result.getTransformedRegion());
             target.setOrigin(clipboard.getOrigin());
             Operations.completeLegacy(result.copyTo(target));
@@ -165,8 +161,7 @@ public class SchematicCommands {
             target = clipboard;
         }
 
-        Closer closer = Closer.create();
-        try {
+        try (Closer closer = Closer.create()) {
             // Create parent directories
             File parent = f.getParentFile();
             if (parent != null && !parent.exists()) {
@@ -178,17 +173,12 @@ public class SchematicCommands {
             FileOutputStream fos = closer.register(new FileOutputStream(f));
             BufferedOutputStream bos = closer.register(new BufferedOutputStream(fos));
             ClipboardWriter writer = closer.register(format.getWriter(bos));
-            writer.write(target, holder.getWorldData());
+            writer.write(target);
             log.info(player.getName() + " saved " + f.getCanonicalPath());
             player.print(filename + " saved.");
         } catch (IOException e) {
             player.printError("Schematic could not written: " + e.getMessage());
             log.log(Level.WARNING, "Failed to write a saved clipboard", e);
-        } finally {
-            try {
-                closer.close();
-            } catch (IOException ignored) {
-            }
         }
     }
 
@@ -232,9 +222,9 @@ public class SchematicCommands {
         actor.print("Available clipboard formats (Name: Lookup names)");
         StringBuilder builder;
         boolean first = true;
-        for (ClipboardFormat format : ClipboardFormat.values()) {
+        for (ClipboardFormat format : ClipboardFormats.getAll()) {
             builder = new StringBuilder();
-            builder.append(format.name()).append(": ");
+            builder.append(format.getName()).append(": ");
             for (String lookupName : format.getAliases()) {
                 if (!first) {
                     builder.append(", ");
@@ -283,24 +273,21 @@ public class SchematicCommands {
 
         final int sortType = args.hasFlag('d') ? -1 : args.hasFlag('n') ? 1 : 0;
         // cleanup file list
-        Arrays.sort(files, new Comparator<File>(){
-            @Override
-            public int compare(File f1, File f2) {
-                // http://stackoverflow.com/questions/203030/best-way-to-list-files-in-java-sorted-by-date-modified
-                int res;
-                if (sortType == 0) { // use name by default
-                    int p = f1.getParent().compareTo(f2.getParent());
-                    if (p == 0) { // same parent, compare names
-                        res = f1.getName().compareTo(f2.getName());
-                    } else { // different parent, sort by that
-                        res = p;
-                    }
-                } else {
-                    res = Long.valueOf(f1.lastModified()).compareTo(f2.lastModified()); // use date if there is a flag
-                    if (sortType == 1) res = -res; // flip date for newest first instead of oldest first
+        Arrays.sort(files, (f1, f2) -> {
+            // http://stackoverflow.com/questions/203030/best-way-to-list-files-in-java-sorted-by-date-modified
+            int res;
+            if (sortType == 0) { // use name by default
+                int p = f1.getParent().compareTo(f2.getParent());
+                if (p == 0) { // same parent, compare names
+                    res = f1.getName().compareTo(f2.getName());
+                } else { // different parent, sort by that
+                    res = p;
                 }
-                return res;
+            } else {
+                res = Long.compare(f1.lastModified(), f2.lastModified()); // use date if there is a flag
+                if (sortType == 1) res = -res; // flip date for newest first instead of oldest first
             }
+            return res;
         });
 
         List<String> schematics = listFiles(worldEdit.getConfiguration().saveDir, files);
@@ -322,7 +309,7 @@ public class SchematicCommands {
     private List<File> allFiles(File root) {
         File[] files = root.listFiles();
         if (files == null) return null;
-        List<File> fileList = new ArrayList<File>();
+        List<File> fileList = new ArrayList<>();
         for (File f : files) {
             if (f.isDirectory()) {
                 List<File> subFiles = allFiles(f);
@@ -337,15 +324,15 @@ public class SchematicCommands {
 
     private List<String> listFiles(String prefix, File[] files) {
         if (prefix == null) prefix = "";
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
         for (File file : files) {
             StringBuilder build = new StringBuilder();
 
             build.append("\u00a72");
-            ClipboardFormat format = ClipboardFormat.findByFile(file);
+            ClipboardFormat format = ClipboardFormats.findByFile(file);
             boolean inRoot = file.getParentFile().getName().equals(prefix);
             build.append(inRoot ? file.getName() : file.getPath().split(Pattern.quote(prefix + File.separator))[1])
-                    .append(": ").append(format == null ? "Unknown" : format.name());
+                    .append(": ").append(format == null ? "Unknown" : format.getName());
             result.add(build.toString());
         }
         return result;

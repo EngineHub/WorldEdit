@@ -20,7 +20,6 @@
 package com.sk89q.worldedit.extent.clipboard.io;
 
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
-import com.sk89q.worldedit.world.registry.WorldData;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -36,9 +35,8 @@ public interface ClipboardWriter extends Closeable {
      * Writes a clipboard.
      *
      * @param clipboard the clipboard
-     * @param data the world data instance
      * @throws IOException thrown on I/O error
      */
-    void write(Clipboard clipboard, WorldData data) throws IOException;
+    void write(Clipboard clipboard) throws IOException;
 
 }

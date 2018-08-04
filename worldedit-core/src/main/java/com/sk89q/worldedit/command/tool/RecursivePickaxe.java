@@ -19,13 +19,18 @@
 
 package com.sk89q.worldedit.command.tool;
 
-import com.sk89q.worldedit.*;
-import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.blocks.BlockID;
+import com.sk89q.worldedit.BlockVector;
+import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.LocalConfiguration;
+import com.sk89q.worldedit.LocalSession;
+import com.sk89q.worldedit.MaxChangedBlocksException;
+import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.world.World;
+import com.sk89q.worldedit.world.block.BlockType;
+import com.sk89q.worldedit.world.block.BlockTypes;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -36,7 +41,6 @@ import java.util.Set;
  */
 public class RecursivePickaxe implements BlockTool {
 
-    private static final BaseBlock air = new BaseBlock(0);
     private double range;
 
     public RecursivePickaxe(double range) {
@@ -52,13 +56,13 @@ public class RecursivePickaxe implements BlockTool {
     public boolean actPrimary(Platform server, LocalConfiguration config, Player player, LocalSession session, com.sk89q.worldedit.util.Location clicked) {
         World world = (World) clicked.getExtent();
 
-        int initialType = world.getBlockType(clicked.toVector());
+        BlockType initialType = world.getBlock(clicked.toVector()).getBlockType();
 
-        if (initialType == BlockID.AIR) {
+        if (initialType == BlockTypes.AIR) {
             return true;
         }
 
-        if (initialType == BlockID.BEDROCK && !player.canDestroyBedrock()) {
+        if (initialType == BlockTypes.BEDROCK && !player.canDestroyBedrock()) {
             return true;
         }
 
@@ -67,7 +71,7 @@ public class RecursivePickaxe implements BlockTool {
 
         try {
             recurse(server, editSession, world, clicked.toVector().toBlockVector(),
-                    clicked.toVector(), range, initialType, new HashSet<BlockVector>());
+                    clicked.toVector(), range, initialType, new HashSet<>());
         } catch (MaxChangedBlocksException e) {
             player.printError("Max blocks change limit reached.");
         } finally {
@@ -79,7 +83,7 @@ public class RecursivePickaxe implements BlockTool {
     }
 
     private static void recurse(Platform server, EditSession editSession, World world, BlockVector pos,
-            Vector origin, double size, int initialType, Set<BlockVector> visited) throws MaxChangedBlocksException {
+            Vector origin, double size, BlockType initialType, Set<BlockVector> visited) throws MaxChangedBlocksException {
 
         final double distanceSq = origin.distanceSq(pos);
         if (distanceSq > size*size || visited.contains(pos)) {
@@ -88,13 +92,13 @@ public class RecursivePickaxe implements BlockTool {
 
         visited.add(pos);
 
-        if (editSession.getBlock(pos).getType() != initialType) {
+        if (editSession.getBlock(pos).getBlockType() != initialType) {
             return;
         }
 
         world.queueBlockBreakEffect(server, pos, initialType, distanceSq);
 
-        editSession.setBlock(pos, air);
+        editSession.setBlock(pos, BlockTypes.AIR.getDefaultState());
 
         recurse(server, editSession, world, pos.add(1, 0, 0).toBlockVector(),
                 origin, size, initialType, visited);

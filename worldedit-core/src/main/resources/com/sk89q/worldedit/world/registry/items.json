@@ -1,0 +1,3142 @@
+[
+  {
+    "id": "minecraft:acacia_boat",
+    "localizedName": "Acacia Boat"
+  },
+  {
+    "id": "minecraft:acacia_button",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:acacia_door",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:acacia_fence",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:acacia_fence_gate",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:acacia_leaves",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:acacia_log",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:acacia_planks",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:acacia_pressure_plate",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:acacia_sapling",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:acacia_slab",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:acacia_stairs",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:acacia_trapdoor",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:acacia_wood",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:activator_rail",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:air",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:allium",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:andesite",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:anvil",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:apple",
+    "localizedName": "Apple"
+  },
+  {
+    "id": "minecraft:armor_stand",
+    "localizedName": "Armor Stand"
+  },
+  {
+    "id": "minecraft:arrow",
+    "localizedName": "Arrow"
+  },
+  {
+    "id": "minecraft:azure_bluet",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:baked_potato",
+    "localizedName": "Baked Potato"
+  },
+  {
+    "id": "minecraft:barrier",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:bat_spawn_egg",
+    "localizedName": "Bat Spawn Egg"
+  },
+  {
+    "id": "minecraft:beacon",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:bedrock",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:beef",
+    "localizedName": "Raw Beef"
+  },
+  {
+    "id": "minecraft:beetroot",
+    "localizedName": "Beetroot"
+  },
+  {
+    "id": "minecraft:beetroot_seeds",
+    "localizedName": "Beetroot Seeds"
+  },
+  {
+    "id": "minecraft:beetroot_soup",
+    "localizedName": "Beetroot Soup"
+  },
+  {
+    "id": "minecraft:birch_boat",
+    "localizedName": "Birch Boat"
+  },
+  {
+    "id": "minecraft:birch_button",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:birch_door",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:birch_fence",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:birch_fence_gate",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:birch_leaves",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:birch_log",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:birch_planks",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:birch_pressure_plate",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:birch_sapling",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:birch_slab",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:birch_stairs",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:birch_trapdoor",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:birch_wood",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:black_banner",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:black_bed",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:black_carpet",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:black_concrete",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:black_concrete_powder",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:black_glazed_terracotta",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:black_shulker_box",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:black_stained_glass",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:black_stained_glass_pane",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:black_terracotta",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:black_wool",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:blaze_powder",
+    "localizedName": "Blaze Powder"
+  },
+  {
+    "id": "minecraft:blaze_rod",
+    "localizedName": "Blaze Rod"
+  },
+  {
+    "id": "minecraft:blaze_spawn_egg",
+    "localizedName": "Blaze Spawn Egg"
+  },
+  {
+    "id": "minecraft:blue_banner",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:blue_bed",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:blue_carpet",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:blue_concrete",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:blue_concrete_powder",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:blue_glazed_terracotta",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:blue_ice",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:blue_orchid",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:blue_shulker_box",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:blue_stained_glass",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:blue_stained_glass_pane",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:blue_terracotta",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:blue_wool",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:bone",
+    "localizedName": "Bone"
+  },
+  {
+    "id": "minecraft:bone_block",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:bone_meal",
+    "localizedName": "Bone Meal"
+  },
+  {
+    "id": "minecraft:book",
+    "localizedName": "Book"
+  },
+  {
+    "id": "minecraft:bookshelf",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:bow",
+    "localizedName": "Bow"
+  },
+  {
+    "id": "minecraft:bowl",
+    "localizedName": "Bowl"
+  },
+  {
+    "id": "minecraft:brain_coral",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:brain_coral_block",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:brain_coral_fan",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:bread",
+    "localizedName": "Bread"
+  },
+  {
+    "id": "minecraft:brewing_stand",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:brick",
+    "localizedName": "Brick"
+  },
+  {
+    "id": "minecraft:brick_slab",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:brick_stairs",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:bricks",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:brown_banner",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:brown_bed",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:brown_carpet",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:brown_concrete",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:brown_concrete_powder",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:brown_glazed_terracotta",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:brown_mushroom",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:brown_mushroom_block",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:brown_shulker_box",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:brown_stained_glass",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:brown_stained_glass_pane",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:brown_terracotta",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:brown_wool",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:bubble_coral",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:bubble_coral_block",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:bubble_coral_fan",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:bucket",
+    "localizedName": "Bucket"
+  },
+  {
+    "id": "minecraft:cactus",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:cactus_green",
+    "localizedName": "Cactus Green"
+  },
+  {
+    "id": "minecraft:cake",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:carrot",
+    "localizedName": "Carrot"
+  },
+  {
+    "id": "minecraft:carrot_on_a_stick",
+    "localizedName": "Carrot on a Stick"
+  },
+  {
+    "id": "minecraft:carved_pumpkin",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:cauldron",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:cave_spider_spawn_egg",
+    "localizedName": "Cave Spider Spawn Egg"
+  },
+  {
+    "id": "minecraft:chain_command_block",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:chainmail_boots",
+    "localizedName": "Chainmail Boots"
+  },
+  {
+    "id": "minecraft:chainmail_chestplate",
+    "localizedName": "Chainmail Chestplate"
+  },
+  {
+    "id": "minecraft:chainmail_helmet",
+    "localizedName": "Chainmail Helmet"
+  },
+  {
+    "id": "minecraft:chainmail_leggings",
+    "localizedName": "Chainmail Leggings"
+  },
+  {
+    "id": "minecraft:charcoal",
+    "localizedName": "Charcoal"
+  },
+  {
+    "id": "minecraft:chest",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:chest_minecart",
+    "localizedName": "Minecart with Chest"
+  },
+  {
+    "id": "minecraft:chicken",
+    "localizedName": "Raw Chicken"
+  },
+  {
+    "id": "minecraft:chicken_spawn_egg",
+    "localizedName": "Chicken Spawn Egg"
+  },
+  {
+    "id": "minecraft:chipped_anvil",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:chiseled_quartz_block",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:chiseled_red_sandstone",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:chiseled_sandstone",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:chiseled_stone_bricks",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:chorus_flower",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:chorus_fruit",
+    "localizedName": "Chorus Fruit"
+  },
+  {
+    "id": "minecraft:chorus_plant",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:clay",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:clay_ball",
+    "localizedName": "Clay"
+  },
+  {
+    "id": "minecraft:clock",
+    "localizedName": "Clock"
+  },
+  {
+    "id": "minecraft:coal",
+    "localizedName": "Coal"
+  },
+  {
+    "id": "minecraft:coal_block",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:coal_ore",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:coarse_dirt",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:cobblestone",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:cobblestone_slab",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:cobblestone_stairs",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:cobblestone_wall",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:cobweb",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:cocoa_beans",
+    "localizedName": "Cocoa Beans"
+  },
+  {
+    "id": "minecraft:cod",
+    "localizedName": "Raw Cod"
+  },
+  {
+    "id": "minecraft:cod_bucket",
+    "localizedName": "Bucket of Cod"
+  },
+  {
+    "id": "minecraft:cod_spawn_egg",
+    "localizedName": "Cod Spawn Egg"
+  },
+  {
+    "id": "minecraft:command_block",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:command_block_minecart",
+    "localizedName": "Minecart with Command Block"
+  },
+  {
+    "id": "minecraft:comparator",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:compass",
+    "localizedName": "Compass"
+  },
+  {
+    "id": "minecraft:conduit",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:cooked_beef",
+    "localizedName": "Steak"
+  },
+  {
+    "id": "minecraft:cooked_chicken",
+    "localizedName": "Cooked Chicken"
+  },
+  {
+    "id": "minecraft:cooked_cod",
+    "localizedName": "Cooked Cod"
+  },
+  {
+    "id": "minecraft:cooked_mutton",
+    "localizedName": "Cooked Mutton"
+  },
+  {
+    "id": "minecraft:cooked_porkchop",
+    "localizedName": "Cooked Porkchop"
+  },
+  {
+    "id": "minecraft:cooked_rabbit",
+    "localizedName": "Cooked Rabbit"
+  },
+  {
+    "id": "minecraft:cooked_salmon",
+    "localizedName": "Cooked Salmon"
+  },
+  {
+    "id": "minecraft:cookie",
+    "localizedName": "Cookie"
+  },
+  {
+    "id": "minecraft:cow_spawn_egg",
+    "localizedName": "Cow Spawn Egg"
+  },
+  {
+    "id": "minecraft:cracked_stone_bricks",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:crafting_table",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:creeper_head",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:creeper_spawn_egg",
+    "localizedName": "Creeper Spawn Egg"
+  },
+  {
+    "id": "minecraft:cut_red_sandstone",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:cut_sandstone",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:cyan_banner",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:cyan_bed",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:cyan_carpet",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:cyan_concrete",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:cyan_concrete_powder",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:cyan_dye",
+    "localizedName": "Cyan Dye"
+  },
+  {
+    "id": "minecraft:cyan_glazed_terracotta",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:cyan_shulker_box",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:cyan_stained_glass",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:cyan_stained_glass_pane",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:cyan_terracotta",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:cyan_wool",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:damaged_anvil",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:dandelion",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:dandelion_yellow",
+    "localizedName": "Dandelion Yellow"
+  },
+  {
+    "id": "minecraft:dark_oak_boat",
+    "localizedName": "Dark Oak Boat"
+  },
+  {
+    "id": "minecraft:dark_oak_button",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:dark_oak_door",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:dark_oak_fence",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:dark_oak_fence_gate",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:dark_oak_leaves",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:dark_oak_log",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:dark_oak_planks",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:dark_oak_pressure_plate",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:dark_oak_sapling",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:dark_oak_slab",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:dark_oak_stairs",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:dark_oak_trapdoor",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:dark_oak_wood",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:dark_prismarine",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:dark_prismarine_slab",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:dark_prismarine_stairs",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:daylight_detector",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:dead_brain_coral_block",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:dead_brain_coral_fan",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:dead_bubble_coral_block",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:dead_bubble_coral_fan",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:dead_bush",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:dead_fire_coral_block",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:dead_fire_coral_fan",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:dead_horn_coral_block",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:dead_horn_coral_fan",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:dead_tube_coral_block",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:dead_tube_coral_fan",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:debug_stick",
+    "localizedName": "Debug Stick"
+  },
+  {
+    "id": "minecraft:detector_rail",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:diamond",
+    "localizedName": "Diamond"
+  },
+  {
+    "id": "minecraft:diamond_axe",
+    "localizedName": "Diamond Axe"
+  },
+  {
+    "id": "minecraft:diamond_block",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:diamond_boots",
+    "localizedName": "Diamond Boots"
+  },
+  {
+    "id": "minecraft:diamond_chestplate",
+    "localizedName": "Diamond Chestplate"
+  },
+  {
+    "id": "minecraft:diamond_helmet",
+    "localizedName": "Diamond Helmet"
+  },
+  {
+    "id": "minecraft:diamond_hoe",
+    "localizedName": "Diamond Hoe"
+  },
+  {
+    "id": "minecraft:diamond_horse_armor",
+    "localizedName": "Diamond Horse Armor"
+  },
+  {
+    "id": "minecraft:diamond_leggings",
+    "localizedName": "Diamond Leggings"
+  },
+  {
+    "id": "minecraft:diamond_ore",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:diamond_pickaxe",
+    "localizedName": "Diamond Pickaxe"
+  },
+  {
+    "id": "minecraft:diamond_shovel",
+    "localizedName": "Diamond Shovel"
+  },
+  {
+    "id": "minecraft:diamond_sword",
+    "localizedName": "Diamond Sword"
+  },
+  {
+    "id": "minecraft:diorite",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:dirt",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:dispenser",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:dolphin_spawn_egg",
+    "localizedName": "Dolphin Spawn Egg"
+  },
+  {
+    "id": "minecraft:donkey_spawn_egg",
+    "localizedName": "Donkey Spawn Egg"
+  },
+  {
+    "id": "minecraft:dragon_breath",
+    "localizedName": "Dragon\u0027s Breath"
+  },
+  {
+    "id": "minecraft:dragon_egg",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:dragon_head",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:dried_kelp",
+    "localizedName": "Dried Kelp"
+  },
+  {
+    "id": "minecraft:dried_kelp_block",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:dropper",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:drowned_spawn_egg",
+    "localizedName": "Drowned Spawn Egg"
+  },
+  {
+    "id": "minecraft:egg",
+    "localizedName": "Egg"
+  },
+  {
+    "id": "minecraft:elder_guardian_spawn_egg",
+    "localizedName": "Elder Guardian Spawn Egg"
+  },
+  {
+    "id": "minecraft:elytra",
+    "localizedName": "Elytra"
+  },
+  {
+    "id": "minecraft:emerald",
+    "localizedName": "Emerald"
+  },
+  {
+    "id": "minecraft:emerald_block",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:emerald_ore",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:enchanted_book",
+    "localizedName": "Enchanted Book"
+  },
+  {
+    "id": "minecraft:enchanted_golden_apple",
+    "localizedName": "Enchanted Golden Apple"
+  },
+  {
+    "id": "minecraft:enchanting_table",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:end_crystal",
+    "localizedName": "End Crystal"
+  },
+  {
+    "id": "minecraft:end_portal_frame",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:end_rod",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:end_stone",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:end_stone_bricks",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:ender_chest",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:ender_eye",
+    "localizedName": "Eye of Ender"
+  },
+  {
+    "id": "minecraft:ender_pearl",
+    "localizedName": "Ender Pearl"
+  },
+  {
+    "id": "minecraft:enderman_spawn_egg",
+    "localizedName": "Enderman Spawn Egg"
+  },
+  {
+    "id": "minecraft:endermite_spawn_egg",
+    "localizedName": "Endermite Spawn Egg"
+  },
+  {
+    "id": "minecraft:evoker_spawn_egg",
+    "localizedName": "Evoker Spawn Egg"
+  },
+  {
+    "id": "minecraft:experience_bottle",
+    "localizedName": "Bottle o\u0027 Enchanting"
+  },
+  {
+    "id": "minecraft:farmland",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:feather",
+    "localizedName": "Feather"
+  },
+  {
+    "id": "minecraft:fermented_spider_eye",
+    "localizedName": "Fermented Spider Eye"
+  },
+  {
+    "id": "minecraft:fern",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:filled_map",
+    "localizedName": "Map"
+  },
+  {
+    "id": "minecraft:fire_charge",
+    "localizedName": "Fire Charge"
+  },
+  {
+    "id": "minecraft:fire_coral",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:fire_coral_block",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:fire_coral_fan",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:firework_rocket",
+    "localizedName": "Firework Rocket"
+  },
+  {
+    "id": "minecraft:firework_star",
+    "localizedName": "Firework Star"
+  },
+  {
+    "id": "minecraft:fishing_rod",
+    "localizedName": "Fishing Rod"
+  },
+  {
+    "id": "minecraft:flint",
+    "localizedName": "Flint"
+  },
+  {
+    "id": "minecraft:flint_and_steel",
+    "localizedName": "Flint and Steel"
+  },
+  {
+    "id": "minecraft:flower_pot",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:furnace",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:furnace_minecart",
+    "localizedName": "Minecart with Furnace"
+  },
+  {
+    "id": "minecraft:ghast_spawn_egg",
+    "localizedName": "Ghast Spawn Egg"
+  },
+  {
+    "id": "minecraft:ghast_tear",
+    "localizedName": "Ghast Tear"
+  },
+  {
+    "id": "minecraft:glass",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:glass_bottle",
+    "localizedName": "Glass Bottle"
+  },
+  {
+    "id": "minecraft:glass_pane",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:glistering_melon_slice",
+    "localizedName": "Glistering Melon Slice"
+  },
+  {
+    "id": "minecraft:glowstone",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:glowstone_dust",
+    "localizedName": "Glowstone Dust"
+  },
+  {
+    "id": "minecraft:gold_block",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:gold_ingot",
+    "localizedName": "Gold Ingot"
+  },
+  {
+    "id": "minecraft:gold_nugget",
+    "localizedName": "Gold Nugget"
+  },
+  {
+    "id": "minecraft:gold_ore",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:golden_apple",
+    "localizedName": "Golden Apple"
+  },
+  {
+    "id": "minecraft:golden_axe",
+    "localizedName": "Golden Axe"
+  },
+  {
+    "id": "minecraft:golden_boots",
+    "localizedName": "Golden Boots"
+  },
+  {
+    "id": "minecraft:golden_carrot",
+    "localizedName": "Golden Carrot"
+  },
+  {
+    "id": "minecraft:golden_chestplate",
+    "localizedName": "Golden Chestplate"
+  },
+  {
+    "id": "minecraft:golden_helmet",
+    "localizedName": "Golden Helmet"
+  },
+  {
+    "id": "minecraft:golden_hoe",
+    "localizedName": "Golden Hoe"
+  },
+  {
+    "id": "minecraft:golden_horse_armor",
+    "localizedName": "Golden Horse Armor"
+  },
+  {
+    "id": "minecraft:golden_leggings",
+    "localizedName": "Golden Leggings"
+  },
+  {
+    "id": "minecraft:golden_pickaxe",
+    "localizedName": "Golden Pickaxe"
+  },
+  {
+    "id": "minecraft:golden_shovel",
+    "localizedName": "Golden Shovel"
+  },
+  {
+    "id": "minecraft:golden_sword",
+    "localizedName": "Golden Sword"
+  },
+  {
+    "id": "minecraft:granite",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:grass",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:grass_block",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:grass_path",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:gravel",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:gray_banner",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:gray_bed",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:gray_carpet",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:gray_concrete",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:gray_concrete_powder",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:gray_dye",
+    "localizedName": "Gray Dye"
+  },
+  {
+    "id": "minecraft:gray_glazed_terracotta",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:gray_shulker_box",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:gray_stained_glass",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:gray_stained_glass_pane",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:gray_terracotta",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:gray_wool",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:green_banner",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:green_bed",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:green_carpet",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:green_concrete",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:green_concrete_powder",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:green_glazed_terracotta",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:green_shulker_box",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:green_stained_glass",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:green_stained_glass_pane",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:green_terracotta",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:green_wool",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:guardian_spawn_egg",
+    "localizedName": "Guardian Spawn Egg"
+  },
+  {
+    "id": "minecraft:gunpowder",
+    "localizedName": "Gunpowder"
+  },
+  {
+    "id": "minecraft:hay_block",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:heart_of_the_sea",
+    "localizedName": "Heart of the Sea"
+  },
+  {
+    "id": "minecraft:heavy_weighted_pressure_plate",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:hopper",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:hopper_minecart",
+    "localizedName": "Minecart with Hopper"
+  },
+  {
+    "id": "minecraft:horn_coral",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:horn_coral_block",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:horn_coral_fan",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:horse_spawn_egg",
+    "localizedName": "Horse Spawn Egg"
+  },
+  {
+    "id": "minecraft:husk_spawn_egg",
+    "localizedName": "Husk Spawn Egg"
+  },
+  {
+    "id": "minecraft:ice",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:infested_chiseled_stone_bricks",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:infested_cobblestone",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:infested_cracked_stone_bricks",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:infested_mossy_stone_bricks",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:infested_stone",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:infested_stone_bricks",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:ink_sac",
+    "localizedName": "Ink Sac"
+  },
+  {
+    "id": "minecraft:iron_axe",
+    "localizedName": "Iron Axe"
+  },
+  {
+    "id": "minecraft:iron_bars",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:iron_block",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:iron_boots",
+    "localizedName": "Iron Boots"
+  },
+  {
+    "id": "minecraft:iron_chestplate",
+    "localizedName": "Iron Chestplate"
+  },
+  {
+    "id": "minecraft:iron_door",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:iron_helmet",
+    "localizedName": "Iron Helmet"
+  },
+  {
+    "id": "minecraft:iron_hoe",
+    "localizedName": "Iron Hoe"
+  },
+  {
+    "id": "minecraft:iron_horse_armor",
+    "localizedName": "Iron Horse Armor"
+  },
+  {
+    "id": "minecraft:iron_ingot",
+    "localizedName": "Iron Ingot"
+  },
+  {
+    "id": "minecraft:iron_leggings",
+    "localizedName": "Iron Leggings"
+  },
+  {
+    "id": "minecraft:iron_nugget",
+    "localizedName": "Iron Nugget"
+  },
+  {
+    "id": "minecraft:iron_ore",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:iron_pickaxe",
+    "localizedName": "Iron Pickaxe"
+  },
+  {
+    "id": "minecraft:iron_shovel",
+    "localizedName": "Iron Shovel"
+  },
+  {
+    "id": "minecraft:iron_sword",
+    "localizedName": "Iron Sword"
+  },
+  {
+    "id": "minecraft:iron_trapdoor",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:item_frame",
+    "localizedName": "Item Frame"
+  },
+  {
+    "id": "minecraft:jack_o_lantern",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:jukebox",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:jungle_boat",
+    "localizedName": "Jungle Boat"
+  },
+  {
+    "id": "minecraft:jungle_button",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:jungle_door",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:jungle_fence",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:jungle_fence_gate",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:jungle_leaves",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:jungle_log",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:jungle_planks",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:jungle_pressure_plate",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:jungle_sapling",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:jungle_slab",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:jungle_stairs",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:jungle_trapdoor",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:jungle_wood",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:kelp",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:knowledge_book",
+    "localizedName": "Knowledge Book"
+  },
+  {
+    "id": "minecraft:ladder",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:lapis_block",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:lapis_lazuli",
+    "localizedName": "Lapis Lazuli"
+  },
+  {
+    "id": "minecraft:lapis_ore",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:large_fern",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:lava_bucket",
+    "localizedName": "Lava Bucket"
+  },
+  {
+    "id": "minecraft:lead",
+    "localizedName": "Lead"
+  },
+  {
+    "id": "minecraft:leather",
+    "localizedName": "Leather"
+  },
+  {
+    "id": "minecraft:leather_boots",
+    "localizedName": "Leather Boots"
+  },
+  {
+    "id": "minecraft:leather_chestplate",
+    "localizedName": "Leather Tunic"
+  },
+  {
+    "id": "minecraft:leather_helmet",
+    "localizedName": "Leather Cap"
+  },
+  {
+    "id": "minecraft:leather_leggings",
+    "localizedName": "Leather Pants"
+  },
+  {
+    "id": "minecraft:lever",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:light_blue_banner",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:light_blue_bed",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:light_blue_carpet",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:light_blue_concrete",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:light_blue_concrete_powder",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:light_blue_dye",
+    "localizedName": "Light Blue Dye"
+  },
+  {
+    "id": "minecraft:light_blue_glazed_terracotta",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:light_blue_shulker_box",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:light_blue_stained_glass",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:light_blue_stained_glass_pane",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:light_blue_terracotta",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:light_blue_wool",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:light_gray_banner",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:light_gray_bed",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:light_gray_carpet",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:light_gray_concrete",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:light_gray_concrete_powder",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:light_gray_dye",
+    "localizedName": "Light Gray Dye"
+  },
+  {
+    "id": "minecraft:light_gray_glazed_terracotta",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:light_gray_shulker_box",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:light_gray_stained_glass",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:light_gray_stained_glass_pane",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:light_gray_terracotta",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:light_gray_wool",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:light_weighted_pressure_plate",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:lilac",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:lily_pad",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:lime_banner",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:lime_bed",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:lime_carpet",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:lime_concrete",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:lime_concrete_powder",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:lime_dye",
+    "localizedName": "Lime Dye"
+  },
+  {
+    "id": "minecraft:lime_glazed_terracotta",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:lime_shulker_box",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:lime_stained_glass",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:lime_stained_glass_pane",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:lime_terracotta",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:lime_wool",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:lingering_potion",
+    "localizedName": "Lingering Potion"
+  },
+  {
+    "id": "minecraft:llama_spawn_egg",
+    "localizedName": "Llama Spawn Egg"
+  },
+  {
+    "id": "minecraft:magenta_banner",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:magenta_bed",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:magenta_carpet",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:magenta_concrete",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:magenta_concrete_powder",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:magenta_dye",
+    "localizedName": "Magenta Dye"
+  },
+  {
+    "id": "minecraft:magenta_glazed_terracotta",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:magenta_shulker_box",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:magenta_stained_glass",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:magenta_stained_glass_pane",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:magenta_terracotta",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:magenta_wool",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:magma_block",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:magma_cream",
+    "localizedName": "Magma Cream"
+  },
+  {
+    "id": "minecraft:magma_cube_spawn_egg",
+    "localizedName": "Magma Cube Spawn Egg"
+  },
+  {
+    "id": "minecraft:map",
+    "localizedName": "Empty Map"
+  },
+  {
+    "id": "minecraft:melon",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:melon_seeds",
+    "localizedName": "Melon Seeds"
+  },
+  {
+    "id": "minecraft:melon_slice",
+    "localizedName": "Melon Slice"
+  },
+  {
+    "id": "minecraft:milk_bucket",
+    "localizedName": "Milk Bucket"
+  },
+  {
+    "id": "minecraft:minecart",
+    "localizedName": "Minecart"
+  },
+  {
+    "id": "minecraft:mooshroom_spawn_egg",
+    "localizedName": "Mooshroom Spawn Egg"
+  },
+  {
+    "id": "minecraft:mossy_cobblestone",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:mossy_cobblestone_wall",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:mossy_stone_bricks",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:mule_spawn_egg",
+    "localizedName": "Mule Spawn Egg"
+  },
+  {
+    "id": "minecraft:mushroom_stem",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:mushroom_stew",
+    "localizedName": "Mushroom Stew"
+  },
+  {
+    "id": "minecraft:music_disc_11",
+    "localizedName": "Music Disc"
+  },
+  {
+    "id": "minecraft:music_disc_13",
+    "localizedName": "Music Disc"
+  },
+  {
+    "id": "minecraft:music_disc_blocks",
+    "localizedName": "Music Disc"
+  },
+  {
+    "id": "minecraft:music_disc_cat",
+    "localizedName": "Music Disc"
+  },
+  {
+    "id": "minecraft:music_disc_chirp",
+    "localizedName": "Music Disc"
+  },
+  {
+    "id": "minecraft:music_disc_far",
+    "localizedName": "Music Disc"
+  },
+  {
+    "id": "minecraft:music_disc_mall",
+    "localizedName": "Music Disc"
+  },
+  {
+    "id": "minecraft:music_disc_mellohi",
+    "localizedName": "Music Disc"
+  },
+  {
+    "id": "minecraft:music_disc_stal",
+    "localizedName": "Music Disc"
+  },
+  {
+    "id": "minecraft:music_disc_strad",
+    "localizedName": "Music Disc"
+  },
+  {
+    "id": "minecraft:music_disc_wait",
+    "localizedName": "Music Disc"
+  },
+  {
+    "id": "minecraft:music_disc_ward",
+    "localizedName": "Music Disc"
+  },
+  {
+    "id": "minecraft:mutton",
+    "localizedName": "Raw Mutton"
+  },
+  {
+    "id": "minecraft:mycelium",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:name_tag",
+    "localizedName": "Name Tag"
+  },
+  {
+    "id": "minecraft:nautilus_shell",
+    "localizedName": "Nautilus Shell"
+  },
+  {
+    "id": "minecraft:nether_brick",
+    "localizedName": "Nether Brick"
+  },
+  {
+    "id": "minecraft:nether_brick_fence",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:nether_brick_slab",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:nether_brick_stairs",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:nether_bricks",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:nether_quartz_ore",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:nether_star",
+    "localizedName": "Nether Star"
+  },
+  {
+    "id": "minecraft:nether_wart",
+    "localizedName": "Nether Wart"
+  },
+  {
+    "id": "minecraft:nether_wart_block",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:netherrack",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:note_block",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:oak_boat",
+    "localizedName": "Oak Boat"
+  },
+  {
+    "id": "minecraft:oak_button",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:oak_door",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:oak_fence",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:oak_fence_gate",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:oak_leaves",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:oak_log",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:oak_planks",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:oak_pressure_plate",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:oak_sapling",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:oak_slab",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:oak_stairs",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:oak_trapdoor",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:oak_wood",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:observer",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:obsidian",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:ocelot_spawn_egg",
+    "localizedName": "Ocelot Spawn Egg"
+  },
+  {
+    "id": "minecraft:orange_banner",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:orange_bed",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:orange_carpet",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:orange_concrete",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:orange_concrete_powder",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:orange_dye",
+    "localizedName": "Orange Dye"
+  },
+  {
+    "id": "minecraft:orange_glazed_terracotta",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:orange_shulker_box",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:orange_stained_glass",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:orange_stained_glass_pane",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:orange_terracotta",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:orange_tulip",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:orange_wool",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:oxeye_daisy",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:packed_ice",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:painting",
+    "localizedName": "Painting"
+  },
+  {
+    "id": "minecraft:paper",
+    "localizedName": "Paper"
+  },
+  {
+    "id": "minecraft:parrot_spawn_egg",
+    "localizedName": "Parrot Spawn Egg"
+  },
+  {
+    "id": "minecraft:peony",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:petrified_oak_slab",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:phantom_membrane",
+    "localizedName": "Phantom Membrane"
+  },
+  {
+    "id": "minecraft:phantom_spawn_egg",
+    "localizedName": "Phantom Spawn Egg"
+  },
+  {
+    "id": "minecraft:pig_spawn_egg",
+    "localizedName": "Pig Spawn Egg"
+  },
+  {
+    "id": "minecraft:pink_banner",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:pink_bed",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:pink_carpet",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:pink_concrete",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:pink_concrete_powder",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:pink_dye",
+    "localizedName": "Pink Dye"
+  },
+  {
+    "id": "minecraft:pink_glazed_terracotta",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:pink_shulker_box",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:pink_stained_glass",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:pink_stained_glass_pane",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:pink_terracotta",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:pink_tulip",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:pink_wool",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:piston",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:player_head",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:podzol",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:poisonous_potato",
+    "localizedName": "Poisonous Potato"
+  },
+  {
+    "id": "minecraft:polar_bear_spawn_egg",
+    "localizedName": "Polar Bear Spawn Egg"
+  },
+  {
+    "id": "minecraft:polished_andesite",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:polished_diorite",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:polished_granite",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:popped_chorus_fruit",
+    "localizedName": "Popped Chorus Fruit"
+  },
+  {
+    "id": "minecraft:poppy",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:porkchop",
+    "localizedName": "Raw Porkchop"
+  },
+  {
+    "id": "minecraft:potato",
+    "localizedName": "Potato"
+  },
+  {
+    "id": "minecraft:potion",
+    "localizedName": "Potion"
+  },
+  {
+    "id": "minecraft:powered_rail",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:prismarine",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:prismarine_brick_slab",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:prismarine_brick_stairs",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:prismarine_bricks",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:prismarine_crystals",
+    "localizedName": "Prismarine Crystals"
+  },
+  {
+    "id": "minecraft:prismarine_shard",
+    "localizedName": "Prismarine Shard"
+  },
+  {
+    "id": "minecraft:prismarine_slab",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:prismarine_stairs",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:pufferfish",
+    "localizedName": "Pufferfish"
+  },
+  {
+    "id": "minecraft:pufferfish_bucket",
+    "localizedName": "Bucket of Pufferfish"
+  },
+  {
+    "id": "minecraft:pufferfish_spawn_egg",
+    "localizedName": "Pufferfish Spawn Egg"
+  },
+  {
+    "id": "minecraft:pumpkin",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:pumpkin_pie",
+    "localizedName": "Pumpkin Pie"
+  },
+  {
+    "id": "minecraft:pumpkin_seeds",
+    "localizedName": "Pumpkin Seeds"
+  },
+  {
+    "id": "minecraft:purple_banner",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:purple_bed",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:purple_carpet",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:purple_concrete",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:purple_concrete_powder",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:purple_dye",
+    "localizedName": "Purple Dye"
+  },
+  {
+    "id": "minecraft:purple_glazed_terracotta",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:purple_shulker_box",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:purple_stained_glass",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:purple_stained_glass_pane",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:purple_terracotta",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:purple_wool",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:purpur_block",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:purpur_pillar",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:purpur_slab",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:purpur_stairs",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:quartz",
+    "localizedName": "Nether Quartz"
+  },
+  {
+    "id": "minecraft:quartz_block",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:quartz_pillar",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:quartz_slab",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:quartz_stairs",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:rabbit",
+    "localizedName": "Raw Rabbit"
+  },
+  {
+    "id": "minecraft:rabbit_foot",
+    "localizedName": "Rabbit\u0027s Foot"
+  },
+  {
+    "id": "minecraft:rabbit_hide",
+    "localizedName": "Rabbit Hide"
+  },
+  {
+    "id": "minecraft:rabbit_spawn_egg",
+    "localizedName": "Rabbit Spawn Egg"
+  },
+  {
+    "id": "minecraft:rabbit_stew",
+    "localizedName": "Rabbit Stew"
+  },
+  {
+    "id": "minecraft:rail",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:red_banner",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:red_bed",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:red_carpet",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:red_concrete",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:red_concrete_powder",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:red_glazed_terracotta",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:red_mushroom",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:red_mushroom_block",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:red_nether_bricks",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:red_sand",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:red_sandstone",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:red_sandstone_slab",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:red_sandstone_stairs",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:red_shulker_box",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:red_stained_glass",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:red_stained_glass_pane",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:red_terracotta",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:red_tulip",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:red_wool",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:redstone",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:redstone_block",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:redstone_lamp",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:redstone_ore",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:redstone_torch",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:repeater",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:repeating_command_block",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:rose_bush",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:rose_red",
+    "localizedName": "Rose Red"
+  },
+  {
+    "id": "minecraft:rotten_flesh",
+    "localizedName": "Rotten Flesh"
+  },
+  {
+    "id": "minecraft:saddle",
+    "localizedName": "Saddle"
+  },
+  {
+    "id": "minecraft:salmon",
+    "localizedName": "Raw Salmon"
+  },
+  {
+    "id": "minecraft:salmon_bucket",
+    "localizedName": "Bucket of Salmon"
+  },
+  {
+    "id": "minecraft:salmon_spawn_egg",
+    "localizedName": "Salmon Spawn Egg"
+  },
+  {
+    "id": "minecraft:sand",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:sandstone",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:sandstone_slab",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:sandstone_stairs",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:scute",
+    "localizedName": "Scute"
+  },
+  {
+    "id": "minecraft:sea_lantern",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:sea_pickle",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:seagrass",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:shears",
+    "localizedName": "Shears"
+  },
+  {
+    "id": "minecraft:sheep_spawn_egg",
+    "localizedName": "Sheep Spawn Egg"
+  },
+  {
+    "id": "minecraft:shield",
+    "localizedName": "Shield"
+  },
+  {
+    "id": "minecraft:shulker_box",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:shulker_shell",
+    "localizedName": "Shulker Shell"
+  },
+  {
+    "id": "minecraft:shulker_spawn_egg",
+    "localizedName": "Shulker Spawn Egg"
+  },
+  {
+    "id": "minecraft:sign",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:silverfish_spawn_egg",
+    "localizedName": "Silverfish Spawn Egg"
+  },
+  {
+    "id": "minecraft:skeleton_horse_spawn_egg",
+    "localizedName": "Skeleton Horse Spawn Egg"
+  },
+  {
+    "id": "minecraft:skeleton_skull",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:skeleton_spawn_egg",
+    "localizedName": "Skeleton Spawn Egg"
+  },
+  {
+    "id": "minecraft:slime_ball",
+    "localizedName": "Slimeball"
+  },
+  {
+    "id": "minecraft:slime_block",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:slime_spawn_egg",
+    "localizedName": "Slime Spawn Egg"
+  },
+  {
+    "id": "minecraft:smooth_quartz",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:smooth_red_sandstone",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:smooth_sandstone",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:smooth_stone",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:snow",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:snow_block",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:snowball",
+    "localizedName": "Snowball"
+  },
+  {
+    "id": "minecraft:soul_sand",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:spawner",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:spectral_arrow",
+    "localizedName": "Spectral Arrow"
+  },
+  {
+    "id": "minecraft:spider_eye",
+    "localizedName": "Spider Eye"
+  },
+  {
+    "id": "minecraft:spider_spawn_egg",
+    "localizedName": "Spider Spawn Egg"
+  },
+  {
+    "id": "minecraft:splash_potion",
+    "localizedName": "Splash Potion"
+  },
+  {
+    "id": "minecraft:sponge",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:spruce_boat",
+    "localizedName": "Spruce Boat"
+  },
+  {
+    "id": "minecraft:spruce_button",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:spruce_door",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:spruce_fence",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:spruce_fence_gate",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:spruce_leaves",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:spruce_log",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:spruce_planks",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:spruce_pressure_plate",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:spruce_sapling",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:spruce_slab",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:spruce_stairs",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:spruce_trapdoor",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:spruce_wood",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:squid_spawn_egg",
+    "localizedName": "Squid Spawn Egg"
+  },
+  {
+    "id": "minecraft:stick",
+    "localizedName": "Stick"
+  },
+  {
+    "id": "minecraft:sticky_piston",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:stone",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:stone_axe",
+    "localizedName": "Stone Axe"
+  },
+  {
+    "id": "minecraft:stone_brick_slab",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:stone_brick_stairs",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:stone_bricks",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:stone_button",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:stone_hoe",
+    "localizedName": "Stone Hoe"
+  },
+  {
+    "id": "minecraft:stone_pickaxe",
+    "localizedName": "Stone Pickaxe"
+  },
+  {
+    "id": "minecraft:stone_pressure_plate",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:stone_shovel",
+    "localizedName": "Stone Shovel"
+  },
+  {
+    "id": "minecraft:stone_slab",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:stone_sword",
+    "localizedName": "Stone Sword"
+  },
+  {
+    "id": "minecraft:stray_spawn_egg",
+    "localizedName": "Stray Spawn Egg"
+  },
+  {
+    "id": "minecraft:string",
+    "localizedName": "String"
+  },
+  {
+    "id": "minecraft:stripped_acacia_log",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:stripped_acacia_wood",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:stripped_birch_log",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:stripped_birch_wood",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:stripped_dark_oak_log",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:stripped_dark_oak_wood",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:stripped_jungle_log",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:stripped_jungle_wood",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:stripped_oak_log",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:stripped_oak_wood",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:stripped_spruce_log",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:stripped_spruce_wood",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:structure_block",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:structure_void",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:sugar",
+    "localizedName": "Sugar"
+  },
+  {
+    "id": "minecraft:sugar_cane",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:sunflower",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:tall_grass",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:terracotta",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:tipped_arrow",
+    "localizedName": "Tipped Arrow"
+  },
+  {
+    "id": "minecraft:tnt",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:tnt_minecart",
+    "localizedName": "Minecart with TNT"
+  },
+  {
+    "id": "minecraft:torch",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:totem_of_undying",
+    "localizedName": "Totem of Undying"
+  },
+  {
+    "id": "minecraft:trapped_chest",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:trident",
+    "localizedName": "Trident"
+  },
+  {
+    "id": "minecraft:tripwire_hook",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:tropical_fish",
+    "localizedName": "Tropical Fish"
+  },
+  {
+    "id": "minecraft:tropical_fish_bucket",
+    "localizedName": "Bucket of Tropical Fish"
+  },
+  {
+    "id": "minecraft:tropical_fish_spawn_egg",
+    "localizedName": "Tropical Fish Spawn Egg"
+  },
+  {
+    "id": "minecraft:tube_coral",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:tube_coral_block",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:tube_coral_fan",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:turtle_egg",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:turtle_helmet",
+    "localizedName": "Turtle Shell"
+  },
+  {
+    "id": "minecraft:turtle_spawn_egg",
+    "localizedName": "Turtle Spawn Egg"
+  },
+  {
+    "id": "minecraft:vex_spawn_egg",
+    "localizedName": "Vex Spawn Egg"
+  },
+  {
+    "id": "minecraft:villager_spawn_egg",
+    "localizedName": "Villager Spawn Egg"
+  },
+  {
+    "id": "minecraft:vindicator_spawn_egg",
+    "localizedName": "Vindicator Spawn Egg"
+  },
+  {
+    "id": "minecraft:vine",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:water_bucket",
+    "localizedName": "Water Bucket"
+  },
+  {
+    "id": "minecraft:wet_sponge",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:wheat",
+    "localizedName": "Wheat"
+  },
+  {
+    "id": "minecraft:wheat_seeds",
+    "localizedName": "Wheat Seeds"
+  },
+  {
+    "id": "minecraft:white_banner",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:white_bed",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:white_carpet",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:white_concrete",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:white_concrete_powder",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:white_glazed_terracotta",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:white_shulker_box",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:white_stained_glass",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:white_stained_glass_pane",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:white_terracotta",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:white_tulip",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:white_wool",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:witch_spawn_egg",
+    "localizedName": "Witch Spawn Egg"
+  },
+  {
+    "id": "minecraft:wither_skeleton_skull",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:wither_skeleton_spawn_egg",
+    "localizedName": "Wither Skeleton Spawn Egg"
+  },
+  {
+    "id": "minecraft:wolf_spawn_egg",
+    "localizedName": "Wolf Spawn Egg"
+  },
+  {
+    "id": "minecraft:wooden_axe",
+    "localizedName": "Wooden Axe"
+  },
+  {
+    "id": "minecraft:wooden_hoe",
+    "localizedName": "Wooden Hoe"
+  },
+  {
+    "id": "minecraft:wooden_pickaxe",
+    "localizedName": "Wooden Pickaxe"
+  },
+  {
+    "id": "minecraft:wooden_shovel",
+    "localizedName": "Wooden Shovel"
+  },
+  {
+    "id": "minecraft:wooden_sword",
+    "localizedName": "Wooden Sword"
+  },
+  {
+    "id": "minecraft:writable_book",
+    "localizedName": "Book and Quill"
+  },
+  {
+    "id": "minecraft:written_book",
+    "localizedName": "Written Book"
+  },
+  {
+    "id": "minecraft:yellow_banner",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:yellow_bed",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:yellow_carpet",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:yellow_concrete",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:yellow_concrete_powder",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:yellow_glazed_terracotta",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:yellow_shulker_box",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:yellow_stained_glass",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:yellow_stained_glass_pane",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:yellow_terracotta",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:yellow_wool",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:zombie_head",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:zombie_horse_spawn_egg",
+    "localizedName": "Zombie Horse Spawn Egg"
+  },
+  {
+    "id": "minecraft:zombie_pigman_spawn_egg",
+    "localizedName": "Zombie Pigman Spawn Egg"
+  },
+  {
+    "id": "minecraft:zombie_spawn_egg",
+    "localizedName": "Zombie Spawn Egg"
+  },
+  {
+    "id": "minecraft:zombie_villager_spawn_egg",
+    "localizedName": "Zombie Villager Spawn Egg"
+  }
+]

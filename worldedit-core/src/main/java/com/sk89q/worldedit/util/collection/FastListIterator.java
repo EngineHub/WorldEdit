@@ -19,12 +19,12 @@
 
 package com.sk89q.worldedit.util.collection;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
-
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * A fast iterator for lists that uses an internal index integer
@@ -93,7 +93,7 @@ public class FastListIterator<E> implements Iterator<E> {
      * @return an iterator
      */
     public static <E> Iterator<E> forwardIterator(List<E> list) {
-        return new FastListIterator<E>(list, 0, list.size(), 1);
+        return new FastListIterator<>(list, 0, list.size(), 1);
     }
 
     /**
@@ -105,9 +105,9 @@ public class FastListIterator<E> implements Iterator<E> {
      */
     public static <E> Iterator<E> reverseIterator(List<E> list) {
         if (!list.isEmpty()) {
-            return new FastListIterator<E>(list, list.size() - 1, list.size(), -1);
+            return new FastListIterator<>(list, list.size() - 1, list.size(), -1);
         } else {
-            return new FastListIterator<E>(list, 0, 0, -1);
+            return new FastListIterator<>(list, 0, 0, -1);
         }
     }
 

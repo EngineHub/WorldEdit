@@ -19,7 +19,12 @@
 
 package com.sk89q.worldedit.regions.selector;
 
-import com.sk89q.worldedit.*;
+import static com.google.common.base.Preconditions.checkNotNull;
+
+import com.sk89q.worldedit.BlockVector;
+import com.sk89q.worldedit.IncompleteRegionException;
+import com.sk89q.worldedit.LocalSession;
+import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.internal.cui.CUIRegion;
 import com.sk89q.worldedit.internal.cui.SelectionPointEvent;
@@ -29,16 +34,15 @@ import com.sk89q.worldedit.regions.RegionSelector;
 import com.sk89q.worldedit.regions.selector.limit.SelectorLimits;
 import com.sk89q.worldedit.world.World;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import javax.annotation.Nullable;
 
 /**
  * Creates a {@code CuboidRegion} from a user's selections.
  */
-public class CuboidRegionSelector extends com.sk89q.worldedit.regions.CuboidRegionSelector implements RegionSelector, CUIRegion {
+public class CuboidRegionSelector implements RegionSelector, CUIRegion {
 
     protected transient BlockVector position1;
     protected transient BlockVector position2;
@@ -234,7 +238,7 @@ public class CuboidRegionSelector extends com.sk89q.worldedit.regions.CuboidRegi
 
     @Override
     public List<String> getInformationLines() {
-        final List<String> lines = new ArrayList<String>();
+        final List<String> lines = new ArrayList<>();
 
         if (position1 != null) {
             lines.add("Position 1: " + position1);

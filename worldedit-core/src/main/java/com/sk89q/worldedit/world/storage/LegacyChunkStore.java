@@ -22,7 +22,7 @@ package com.sk89q.worldedit.world.storage;
 import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.jnbt.NBTInputStream;
 import com.sk89q.jnbt.Tag;
-import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.Vector2D;
 import com.sk89q.worldedit.world.DataException;
 import com.sk89q.worldedit.world.World;
 
@@ -80,11 +80,9 @@ public abstract class LegacyChunkStore extends ChunkStore {
                 + "." + Integer.toString(z, 36) + ".dat";
 
         InputStream stream = getInputStream(folder1, folder2, filename);
-        NBTInputStream nbt = new NBTInputStream(
-                new GZIPInputStream(stream));
         Tag tag;
 
-        try {
+        try (NBTInputStream nbt = new NBTInputStream(new GZIPInputStream(stream))) {
             tag = nbt.readNamedTag().getTag();
             if (!(tag instanceof CompoundTag)) {
                 throw new ChunkStoreException("CompoundTag expected for chunk; got "
@@ -112,8 +110,6 @@ public abstract class LegacyChunkStore extends ChunkStore {
             }
 
             return rootTag;
-        } finally {
-            nbt.close();
         }
     }
 

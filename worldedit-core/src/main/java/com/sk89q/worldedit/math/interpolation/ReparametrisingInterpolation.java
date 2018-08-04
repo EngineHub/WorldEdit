@@ -21,14 +21,14 @@
 
 package com.sk89q.worldedit.math.interpolation;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.sk89q.worldedit.Vector;
 
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 import java.util.logging.Logger;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Reparametrises another interpolation function by arc length.
@@ -42,7 +42,7 @@ public class ReparametrisingInterpolation implements Interpolation {
 
     private final Interpolation baseInterpolation;
     private double totalArcLength;
-    private final TreeMap<Double, Double> cache = new TreeMap<Double, Double>();
+    private final TreeMap<Double, Double> cache = new TreeMap<>();
 
     public ReparametrisingInterpolation(Interpolation baseInterpolation) {
         checkNotNull(baseInterpolation);

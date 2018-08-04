@@ -21,13 +21,13 @@ package com.sk89q.worldedit.regions;
 
 import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.BlockVector2D;
-import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.Vector2D;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.storage.ChunkStore;
-import java.util.Set;
+
 import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Represents an ellipsoid region.
@@ -52,11 +52,6 @@ public class EllipsoidRegion extends AbstractRegion {
      */
     public EllipsoidRegion(Vector pos1, Vector pos2) {
         this(null, pos1, pos2);
-    }
-
-    @Deprecated
-    public EllipsoidRegion(LocalWorld world, Vector center, Vector radius) {
-        this((World) world, center, radius);
     }
 
     /**
@@ -183,7 +178,7 @@ public class EllipsoidRegion extends AbstractRegion {
 
     @Override
     public Set<Vector2D> getChunks() {
-        final Set<Vector2D> chunks = new HashSet<Vector2D>();
+        final Set<Vector2D> chunks = new HashSet<>();
 
         final Vector min = getMinimumPoint();
         final Vector max = getMaximumPoint();

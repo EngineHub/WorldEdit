@@ -19,14 +19,14 @@
 
 package com.sk89q.worldedit.function.pattern;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.world.block.BlockStateHolder;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Uses a random pattern of a weighted list of patterns.
@@ -34,7 +34,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class RandomPattern extends AbstractPattern {
 
     private final Random random = new Random();
-    private List<Chance> patterns = new ArrayList<Chance>();
+    private List<Chance> patterns = new ArrayList<>();
     private double max = 0;
 
     /**
@@ -53,7 +53,7 @@ public class RandomPattern extends AbstractPattern {
     }
 
     @Override
-    public BaseBlock apply(Vector position) {
+    public BlockStateHolder apply(Vector position) {
         double r = random.nextDouble();
         double offset = 0;
 

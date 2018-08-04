@@ -19,18 +19,19 @@
 
 package com.sk89q.worldedit.world.biome;
 
-import com.google.common.base.Function;
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.google.common.base.Functions;
-import com.google.common.base.Optional;
 import com.sk89q.worldedit.util.WeightedChoice;
 import com.sk89q.worldedit.util.WeightedChoice.Choice;
 import com.sk89q.worldedit.util.function.LevenshteinDistance;
 import com.sk89q.worldedit.world.registry.BiomeRegistry;
 
-import javax.annotation.Nullable;
 import java.util.Collection;
+import java.util.Optional;
+import java.util.function.Function;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import javax.annotation.Nullable;
 
 /**
  * Utility methods related to biomes.
@@ -55,7 +56,7 @@ public final class Biomes {
         checkNotNull(registry);
 
         Function<String, ? extends Number> compare = new LevenshteinDistance(name, false, LevenshteinDistance.STANDARD_CHARS);
-        WeightedChoice<BaseBiome> chooser = new WeightedChoice<BaseBiome>(Functions.compose(compare, new BiomeName(registry)), 0);
+        WeightedChoice<BaseBiome> chooser = new WeightedChoice<>(Functions.compose(compare::apply, new BiomeName(registry)), 0);
         for (BaseBiome biome : biomes) {
             chooser.consider(biome);
         }

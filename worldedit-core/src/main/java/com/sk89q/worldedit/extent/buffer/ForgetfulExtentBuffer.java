@@ -19,11 +19,11 @@
 
 package com.sk89q.worldedit.extent.buffer;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.extent.AbstractDelegateExtent;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.function.mask.Mask;
@@ -32,12 +32,12 @@ import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.regions.AbstractRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.RegionOperationException;
+import com.sk89q.worldedit.world.block.BlockStateHolder;
+import com.sk89q.worldedit.world.block.BlockTypes;
 
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Buffers changes to an {@link Extent} and allows later retrieval for
@@ -48,9 +48,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class ForgetfulExtentBuffer extends AbstractDelegateExtent implements Pattern {
 
-    private static final BaseBlock AIR = new BaseBlock(BlockID.AIR);
-
-    private final Map<BlockVector, BaseBlock> buffer = new LinkedHashMap<BlockVector, BaseBlock>();
+    private final Map<BlockVector, BlockStateHolder> buffer = new LinkedHashMap<>();
     private final Mask mask;
     private Vector min = null;
     private Vector max = null;
@@ -79,7 +77,7 @@ public class ForgetfulExtentBuffer extends AbstractDelegateExtent implements Pat
     }
 
     @Override
-    public boolean setBlock(Vector location, BaseBlock block) throws WorldEditException {
+    public boolean setBlock(Vector location, BlockStateHolder block) throws WorldEditException {
         // Update minimum
         if (min == null) {
             min = location;
@@ -104,12 +102,12 @@ public class ForgetfulExtentBuffer extends AbstractDelegateExtent implements Pat
     }
 
     @Override
-    public BaseBlock apply(Vector pos) {
-        BaseBlock block = buffer.get(pos.toBlockVector());
+    public BlockStateHolder apply(Vector pos) {
+        BlockStateHolder block = buffer.get(pos.toBlockVector());
         if (block != null) {
             return block;
         } else {
-            return AIR;
+            return BlockTypes.AIR.getDefaultState();
         }
     }
 

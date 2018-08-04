@@ -23,7 +23,6 @@ package com.sk89q.worldedit.world.snapshot;
 
 import com.sk89q.worldedit.world.storage.MissingWorldException;
 
-import javax.annotation.Nullable;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
@@ -31,13 +30,15 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 /**
  * A repository contains zero or more snapshots.
  */
 public class SnapshotRepository {
 
     protected File dir;
-    protected List<SnapshotDateParser> dateParsers = new ArrayList<SnapshotDateParser>();
+    protected List<SnapshotDateParser> dateParsers = new ArrayList<>();
 
     /**
      * Create a new instance of a repository.
@@ -71,19 +72,16 @@ public class SnapshotRepository {
      * @return a list of snapshots
      */
     public List<Snapshot> getSnapshots(boolean newestFirst, String worldName) throws MissingWorldException {
-        FilenameFilter filter = new FilenameFilter() {
-            @Override
-            public boolean accept(File dir, String name) {
-                File f = new File(dir, name);
-                return isValidSnapshot(f);
-            }
+        FilenameFilter filter = (dir, name) -> {
+            File f = new File(dir, name);
+            return isValidSnapshot(f);
         };
 
         File[] snapshotFiles = dir.listFiles();
         if (snapshotFiles == null) {
             throw new MissingWorldException(worldName);
         }
-        List<Snapshot> list = new ArrayList<Snapshot>(snapshotFiles.length);
+        List<Snapshot> list = new ArrayList<>(snapshotFiles.length);
 
         for (File file : snapshotFiles) {
             if (isValidSnapshot(file)) {
@@ -102,7 +100,7 @@ public class SnapshotRepository {
         }
 
         if (newestFirst) {
-            Collections.sort(list, Collections.reverseOrder());
+            list.sort(Collections.reverseOrder());
         } else {
             Collections.sort(list);
         }

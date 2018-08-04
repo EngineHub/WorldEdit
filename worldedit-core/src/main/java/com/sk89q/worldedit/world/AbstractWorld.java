@@ -20,31 +20,29 @@
 package com.sk89q.worldedit.world;
 
 import com.sk89q.worldedit.BlockVector2D;
-import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.blocks.BaseItemStack;
-import com.sk89q.worldedit.blocks.BlockID;
-import com.sk89q.worldedit.blocks.BlockType;
 import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.function.mask.BlockMask;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.util.Direction;
-import com.sk89q.worldedit.util.TreeGenerator.TreeType;
+import com.sk89q.worldedit.world.block.BlockStateHolder;
+import com.sk89q.worldedit.world.block.BlockType;
+import com.sk89q.worldedit.world.block.BlockTypes;
+
+import java.util.PriorityQueue;
 
 import javax.annotation.Nullable;
-import java.util.PriorityQueue;
 
 /**
  * An abstract implementation of {@link World}.
  */
 public abstract class AbstractWorld implements World {
 
-    private final PriorityQueue<QueuedEffect> effectQueue = new PriorityQueue<QueuedEffect>();
+    private final PriorityQueue<QueuedEffect> effectQueue = new PriorityQueue<>();
     private int taskId = -1;
 
     @Override
@@ -53,33 +51,7 @@ public abstract class AbstractWorld implements World {
     }
 
     @Override
-    public final boolean setBlockType(Vector position, int type) {
-        try {
-            return setBlock(position, new BaseBlock(type));
-        } catch (WorldEditException ignored) {
-            return false;
-        }
-    }
-
-    @Override
-    public final void setBlockData(Vector position, int data) {
-        try {
-            setBlock(position, new BaseBlock(getLazyBlock(position).getType(), data));
-        } catch (WorldEditException ignored) {
-        }
-    }
-
-    @Override
-    public final boolean setTypeIdAndData(Vector position, int type, int data) {
-        try {
-            return setBlock(position, new BaseBlock(type, data));
-        } catch (WorldEditException ignored) {
-            return false;
-        }
-    }
-
-    @Override
-    public final boolean setBlock(Vector pt, BaseBlock block) throws WorldEditException {
+    public final boolean setBlock(Vector pt, BlockStateHolder block) throws WorldEditException {
         return setBlock(pt, block, true);
     }
 
@@ -89,33 +61,10 @@ public abstract class AbstractWorld implements World {
     }
 
     @Override
-    public boolean isValidBlockType(int type) {
-        return BlockType.fromID(type) != null;
-    }
-
-    @Override
-    public boolean usesBlockData(int type) {
-        // We future proof here by assuming all unknown blocks use data
-        return BlockType.usesData(type) || BlockType.fromID(type) == null;
-    }
-
-    @Override
     public Mask createLiquidMask() {
         return new BlockMask(this,
-                new BaseBlock(BlockID.STATIONARY_LAVA, -1),
-                new BaseBlock(BlockID.LAVA, -1),
-                new BaseBlock(BlockID.STATIONARY_WATER, -1),
-                new BaseBlock(BlockID.WATER, -1));
-    }
-
-    @Override
-    public int getBlockType(Vector pt) {
-        return getLazyBlock(pt).getType();
-    }
-
-    @Override
-    public int getBlockData(Vector pt) {
-        return getLazyBlock(pt).getData();
+                BlockTypes.LAVA.getDefaultState().toFuzzy(),
+                BlockTypes.WATER.getDefaultState().toFuzzy());
     }
 
     @Override
@@ -123,52 +72,6 @@ public abstract class AbstractWorld implements World {
         for (int i = 0; i < times; ++i) {
             dropItem(pt, item);
         }
-    }
-
-    @Override
-    public void simulateBlockMine(Vector pt) {
-        BaseBlock block = getLazyBlock(pt);
-        BaseItemStack stack = BlockType.getBlockDrop(block.getId(), (short) block.getData());
-
-        if (stack != null) {
-            final int amount = stack.getAmount();
-            if (amount > 1) {
-                dropItem(pt, new BaseItemStack(stack.getType(), 1, stack.getData()), amount);
-            } else {
-                dropItem(pt, stack, amount);
-            }
-        }
-
-        try {
-            setBlock(pt, new BaseBlock(BlockID.AIR));
-        } catch (WorldEditException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Override
-    public boolean generateTree(EditSession editSession, Vector pt) throws MaxChangedBlocksException {
-        return generateTree(TreeType.TREE, editSession, pt);
-    }
-
-    @Override
-    public boolean generateBigTree(EditSession editSession, Vector pt) throws MaxChangedBlocksException {
-        return generateTree(TreeType.BIG_TREE, editSession, pt);
-    }
-
-    @Override
-    public boolean generateBirchTree(EditSession editSession, Vector pt) throws MaxChangedBlocksException {
-        return generateTree(TreeType.BIRCH, editSession, pt);
-    }
-
-    @Override
-    public boolean generateRedwoodTree(EditSession editSession, Vector pt) throws MaxChangedBlocksException {
-        return generateTree(TreeType.REDWOOD, editSession, pt);
-    }
-
-    @Override
-    public boolean generateTallRedwoodTree(EditSession editSession, Vector pt) throws MaxChangedBlocksException {
-        return generateTree(TreeType.TALL_REDWOOD, editSession, pt);
     }
 
     @Override
@@ -188,19 +91,15 @@ public abstract class AbstractWorld implements World {
         return false;
     }
 
-    @SuppressWarnings("deprecation")
     @Override
-    public boolean queueBlockBreakEffect(Platform server, Vector position, int blockId, double priority) {
+    public boolean queueBlockBreakEffect(Platform server, Vector position, BlockType blockType, double priority) {
         if (taskId == -1) {
-            taskId = server.schedule(0, 1, new Runnable() {
-                @Override
-                public void run() {
-                    int max = Math.max(1, Math.min(30, effectQueue.size() / 3));
-                    for (int i = 0; i < max; ++i) {
-                        if (effectQueue.isEmpty()) return;
+            taskId = server.schedule(0, 1, () -> {
+                int max = Math.max(1, Math.min(30, effectQueue.size() / 3));
+                for (int i = 0; i < max; ++i) {
+                    if (effectQueue.isEmpty()) return;
 
-                        effectQueue.poll().play();
-                    }
+                    effectQueue.poll().play();
                 }
             });
         }
@@ -209,7 +108,7 @@ public abstract class AbstractWorld implements World {
             return false;
         }
 
-        effectQueue.offer(new QueuedEffect(position, blockId, priority));
+        effectQueue.offer(new QueuedEffect(position, blockType, priority));
 
         return true;
     }
@@ -231,17 +130,17 @@ public abstract class AbstractWorld implements World {
 
     private class QueuedEffect implements Comparable<QueuedEffect> {
         private final Vector position;
-        private final int blockId;
+        private final BlockType blockType;
         private final double priority;
 
-        private QueuedEffect(Vector position, int blockId, double priority) {
+        private QueuedEffect(Vector position, BlockType blockType, double priority) {
             this.position = position;
-            this.blockId = blockId;
+            this.blockType = blockType;
             this.priority = priority;
         }
 
         public void play() {
-            playEffect(position, 2001, blockId);
+            playEffect(position, 2001, blockType.getLegacyId());
         }
 
         @Override

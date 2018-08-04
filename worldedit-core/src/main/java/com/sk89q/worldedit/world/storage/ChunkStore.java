@@ -30,13 +30,14 @@ import com.sk89q.worldedit.world.chunk.AnvilChunk;
 import com.sk89q.worldedit.world.chunk.Chunk;
 import com.sk89q.worldedit.world.chunk.OldChunk;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.util.Map;
 
 /**
  * Represents chunk storage mechanisms.
  */
-public abstract class ChunkStore {
+public abstract class ChunkStore implements Closeable {
 
     /**
      * >> to chunk
@@ -86,11 +87,6 @@ public abstract class ChunkStore {
         return new OldChunk(world, tag);
     }
 
-    /**
-     * Close resources.
-     *
-     * @throws IOException on I/O error
-     */
     public void close() throws IOException {
     }
 

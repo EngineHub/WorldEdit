@@ -19,10 +19,22 @@
 
 package com.sk89q.worldedit.command;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.sk89q.minecraft.util.commands.Logging.LogMode.ALL;
+import static com.sk89q.minecraft.util.commands.Logging.LogMode.ORIENTATION_REGION;
+import static com.sk89q.minecraft.util.commands.Logging.LogMode.REGION;
+import static com.sk89q.worldedit.regions.Regions.asFlatRegion;
+import static com.sk89q.worldedit.regions.Regions.maximumBlockY;
+import static com.sk89q.worldedit.regions.Regions.minimumBlockY;
+
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.minecraft.util.commands.Logging;
-import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.LocalSession;
+import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.function.GroundFunction;
@@ -33,7 +45,6 @@ import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.function.mask.NoiseFilter2D;
 import com.sk89q.worldedit.function.operation.Operations;
 import com.sk89q.worldedit.function.pattern.Pattern;
-import com.sk89q.worldedit.function.pattern.Patterns;
 import com.sk89q.worldedit.function.visitor.LayerVisitor;
 import com.sk89q.worldedit.internal.annotation.Direction;
 import com.sk89q.worldedit.internal.annotation.Selection;
@@ -46,19 +57,15 @@ import com.sk89q.worldedit.regions.ConvexPolyhedralRegion;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.RegionOperationException;
-import com.sk89q.worldedit.util.TreeGenerator;
 import com.sk89q.worldedit.util.TreeGenerator.TreeType;
 import com.sk89q.worldedit.util.command.binding.Range;
 import com.sk89q.worldedit.util.command.binding.Switch;
 import com.sk89q.worldedit.util.command.binding.Text;
 import com.sk89q.worldedit.util.command.parametric.Optional;
+import com.sk89q.worldedit.world.block.BlockStateHolder;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.sk89q.minecraft.util.commands.Logging.LogMode.*;
-import static com.sk89q.worldedit.regions.Regions.*;
 
 /**
  * Commands that operate on regions.
@@ -106,7 +113,7 @@ public class RegionCommands {
         CuboidRegion cuboidregion = (CuboidRegion) region;
         Vector pos1 = cuboidregion.getPos1();
         Vector pos2 = cuboidregion.getPos2();
-        int blocksChanged = editSession.drawLine(Patterns.wrap(pattern), pos1, pos2, thickness, !shell);
+        int blocksChanged = editSession.drawLine(pattern, pos1, pos2, thickness, !shell);
 
         player.print(blocksChanged + " block(s) have been changed.");
     }
@@ -137,9 +144,9 @@ public class RegionCommands {
         }
 
         ConvexPolyhedralRegion cpregion = (ConvexPolyhedralRegion) region;
-        List<Vector> vectors = new ArrayList<Vector>(cpregion.getVertices());
+        List<Vector> vectors = new ArrayList<>(cpregion.getVertices());
 
-        int blocksChanged = editSession.drawSpline(Patterns.wrap(pattern), vectors, 0, 0, 0, 10, thickness, !shell);
+        int blocksChanged = editSession.drawSpline(pattern, vectors, 0, 0, 0, 10, thickness, !shell);
 
         player.print(blocksChanged + " block(s) have been changed.");
     }
@@ -158,7 +165,7 @@ public class RegionCommands {
         if (from == null) {
             from = new ExistingBlockMask(editSession);
         }
-        int affected = editSession.replaceBlocks(region, from, Patterns.wrap(to));
+        int affected = editSession.replaceBlocks(region, from, to);
         player.print(affected + " block(s) have been replaced.");
     }
 
@@ -172,7 +179,7 @@ public class RegionCommands {
     @CommandPermissions("worldedit.region.overlay")
     @Logging(REGION)
     public void overlay(Player player, EditSession editSession, @Selection Region region, Pattern pattern) throws WorldEditException {
-        int affected = editSession.overlayCuboidBlocks(region, Patterns.wrap(pattern));
+        int affected = editSession.overlayCuboidBlocks(region, pattern);
         player.print(affected + " block(s) have been overlaid.");
     }
 
@@ -186,7 +193,7 @@ public class RegionCommands {
     @Logging(REGION)
     @CommandPermissions("worldedit.region.center")
     public void center(Player player, EditSession editSession, @Selection Region region, Pattern pattern) throws WorldEditException {
-        int affected = editSession.center(region, Patterns.wrap(pattern));
+        int affected = editSession.center(region, pattern);
         player.print("Center set ("+ affected + " blocks changed)");
     }
 
@@ -214,7 +221,7 @@ public class RegionCommands {
     @CommandPermissions("worldedit.region.walls")
     @Logging(REGION)
     public void walls(Player player, EditSession editSession, @Selection Region region, Pattern pattern) throws WorldEditException {
-        int affected = editSession.makeCuboidWalls(region, Patterns.wrap(pattern));
+        int affected = editSession.makeCuboidWalls(region, pattern);
         player.print(affected + " block(s) have been changed.");
     }
 
@@ -228,25 +235,23 @@ public class RegionCommands {
     @CommandPermissions("worldedit.region.faces")
     @Logging(REGION)
     public void faces(Player player, EditSession editSession, @Selection Region region, Pattern pattern) throws WorldEditException {
-        int affected = editSession.makeCuboidFaces(region, Patterns.wrap(pattern));
+        int affected = editSession.makeCuboidFaces(region, pattern);
         player.print(affected + " block(s) have been changed.");
     }
 
     @Command(
         aliases = { "/smooth" },
         usage = "[iterations]",
-        flags = "n",
         desc = "Smooth the elevation in the selection",
         help =
-            "Smooths the elevation in the selection.\n" +
-            "The -n flag makes it only consider naturally occuring blocks.",
+            "Smooths the elevation in the selection.",
         min = 0,
         max = 1
     )
     @CommandPermissions("worldedit.region.smooth")
     @Logging(REGION)
-    public void smooth(Player player, EditSession editSession, @Selection Region region, @Optional("1") int iterations, @Switch('n') boolean affectNatural) throws WorldEditException {
-        HeightMap heightMap = new HeightMap(editSession, region, affectNatural);
+    public void smooth(Player player, EditSession editSession, @Selection Region region, @Optional("1") int iterations) throws WorldEditException {
+        HeightMap heightMap = new HeightMap(editSession, region);
         HeightMapFilter filter = new HeightMapFilter(new GaussianKernel(5, 1.0));
         int affected = heightMap.applyFilter(filter, iterations);
         player.print("Terrain's height map smoothed. " + affected + " block(s) changed.");
@@ -271,7 +276,7 @@ public class RegionCommands {
                      @Selection Region region,
                      @Optional("1") @Range(min = 1) int count,
                      @Optional(Direction.AIM) @Direction Vector direction,
-                     @Optional("air") BaseBlock replace,
+                     @Optional("air") BlockStateHolder replace,
                      @Switch('s') boolean moveSelection) throws WorldEditException {
 
         int affected = editSession.moveRegion(region, direction, count, true, replace);
@@ -422,7 +427,7 @@ public class RegionCommands {
                        @Optional("0") @Range(min = 0) int thickness,
                        @Optional("air") Pattern pattern) throws WorldEditException {
 
-        int affected = editSession.hollowOutRegion(region, thickness, Patterns.wrap(pattern));
+        int affected = editSession.hollowOutRegion(region, thickness, pattern);
         player.print(affected + " block(s) have been changed.");
     }
 
@@ -438,7 +443,7 @@ public class RegionCommands {
     public void forest(Player player, EditSession editSession, @Selection Region region, @Optional("tree") TreeType type,
                        @Optional("5") @Range(min = 0, max = 100) double density) throws WorldEditException {
         density = density / 100;
-        ForestGenerator generator = new ForestGenerator(editSession, new TreeGenerator(type));
+        ForestGenerator generator = new ForestGenerator(editSession, type);
         GroundFunction ground = new GroundFunction(new ExistingBlockMask(editSession), generator);
         LayerVisitor visitor = new LayerVisitor(asFlatRegion(region), minimumBlockY(region), maximumBlockY(region), ground);
         visitor.setMask(new NoiseFilter2D(new RandomNoise(), density));

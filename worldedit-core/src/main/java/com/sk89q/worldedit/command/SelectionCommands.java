@@ -19,7 +19,9 @@
 
 package com.sk89q.worldedit.command;
 
-import com.google.common.base.Optional;
+import static com.sk89q.minecraft.util.commands.Logging.LogMode.POSITION;
+import static com.sk89q.minecraft.util.commands.Logging.LogMode.REGION;
+
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandException;
@@ -31,9 +33,9 @@ import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.Vector2D;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.blocks.BlockType;
+import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.entity.Player;
+import com.sk89q.worldedit.extension.input.ParserContext;
 import com.sk89q.worldedit.extension.platform.permission.ActorSelectorLimits;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.regions.Region;
@@ -49,19 +51,21 @@ import com.sk89q.worldedit.regions.selector.RegionSelectorType;
 import com.sk89q.worldedit.regions.selector.SphereRegionSelector;
 import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.util.Countable;
+import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.formatting.ColorCodeBuilder;
 import com.sk89q.worldedit.util.formatting.Style;
 import com.sk89q.worldedit.util.formatting.StyledFragment;
 import com.sk89q.worldedit.util.formatting.component.CommandListBox;
 import com.sk89q.worldedit.world.World;
+import com.sk89q.worldedit.world.block.BlockStateHolder;
+import com.sk89q.worldedit.world.block.BlockType;
+import com.sk89q.worldedit.world.item.ItemTypes;
 import com.sk89q.worldedit.world.storage.ChunkStore;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
-
-import static com.sk89q.minecraft.util.commands.Logging.LogMode.POSITION;
-import static com.sk89q.minecraft.util.commands.Logging.LogMode.REGION;
 
 /**
  * Selection commands.
@@ -85,12 +89,12 @@ public class SelectionCommands {
     @CommandPermissions("worldedit.selection.pos")
     public void pos1(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
 
-        Vector pos;
+        Location pos;
 
         if (args.argsLength() == 1) {
             if (args.getString(0).matches("-?\\d+,-?\\d+,-?\\d+")) {
                 String[] coords = args.getString(0).split(",");
-                pos = new Vector(Integer.parseInt(coords[0]), Integer.parseInt(coords[1]), Integer.parseInt(coords[2]));
+                pos = new Location(player.getWorld(), Integer.parseInt(coords[0]), Integer.parseInt(coords[1]), Integer.parseInt(coords[2]));
             } else {
                 player.printError("Invalid coordinates " + args.getString(0));
                 return;
@@ -99,13 +103,13 @@ public class SelectionCommands {
             pos = player.getBlockIn();
         }
 
-        if (!session.getRegionSelector(player.getWorld()).selectPrimary(pos, ActorSelectorLimits.forActor(player))) {
+        if (!session.getRegionSelector(player.getWorld()).selectPrimary(pos.toVector(), ActorSelectorLimits.forActor(player))) {
             player.printError("Position already set.");
             return;
         }
 
         session.getRegionSelector(player.getWorld())
-                .explainPrimarySelection(player, session, pos);
+                .explainPrimarySelection(player, session, pos.toVector());
     }
 
     @Command(
@@ -119,11 +123,11 @@ public class SelectionCommands {
     @CommandPermissions("worldedit.selection.pos")
     public void pos2(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
 
-        Vector pos;
+        Location pos;
         if (args.argsLength() == 1) {
             if (args.getString(0).matches("-?\\d+,-?\\d+,-?\\d+")) {
                 String[] coords = args.getString(0).split(",");
-                pos = new Vector(Integer.parseInt(coords[0]),
+                pos = new Location(player.getWorld(), Integer.parseInt(coords[0]),
                         Integer.parseInt(coords[1]),
                         Integer.parseInt(coords[2]));
             } else {
@@ -134,13 +138,13 @@ public class SelectionCommands {
             pos = player.getBlockIn();
         }
 
-        if (!session.getRegionSelector(player.getWorld()).selectSecondary(pos, ActorSelectorLimits.forActor(player))) {
+        if (!session.getRegionSelector(player.getWorld()).selectSecondary(pos.toVector(), ActorSelectorLimits.forActor(player))) {
             player.printError("Position already set.");
             return;
         }
 
         session.getRegionSelector(player.getWorld())
-                .explainSecondarySelection(player, session, pos);
+                .explainSecondarySelection(player, session, pos.toVector());
     }
 
     @Command(
@@ -152,17 +156,17 @@ public class SelectionCommands {
     )
     @CommandPermissions("worldedit.selection.hpos")
     public void hpos1(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
-        
-        Vector pos = player.getBlockTrace(300);
+
+        Location pos = player.getBlockTrace(300);
 
         if (pos != null) {
-            if (!session.getRegionSelector(player.getWorld()).selectPrimary(pos, ActorSelectorLimits.forActor(player))) {
+            if (!session.getRegionSelector(player.getWorld()).selectPrimary(pos.toVector(), ActorSelectorLimits.forActor(player))) {
                 player.printError("Position already set.");
                 return;
             }
 
             session.getRegionSelector(player.getWorld())
-                    .explainPrimarySelection(player, session, pos);
+                    .explainPrimarySelection(player, session, pos.toVector());
         } else {
             player.printError("No block in sight!");
         }
@@ -177,17 +181,17 @@ public class SelectionCommands {
     )
     @CommandPermissions("worldedit.selection.hpos")
     public void hpos2(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
-        
-        Vector pos = player.getBlockTrace(300);
+
+        Location pos = player.getBlockTrace(300);
 
         if (pos != null) {
-            if (!session.getRegionSelector(player.getWorld()).selectSecondary(pos, ActorSelectorLimits.forActor(player))) {
+            if (!session.getRegionSelector(player.getWorld()).selectSecondary(pos.toVector(), ActorSelectorLimits.forActor(player))) {
                 player.printError("Position already set.");
                 return;
             }
 
             session.getRegionSelector(player.getWorld())
-                    .explainSecondarySelection(player, session, pos);
+                    .explainSecondarySelection(player, session, pos.toVector());
         } else {
             player.printError("No block in sight!");
         }
@@ -241,7 +245,7 @@ public class SelectionCommands {
                 min2D = (args.hasFlag('c')) ? pos : ChunkStore.toChunk(pos.toVector());
             } else {
                 // use player loc
-                min2D = ChunkStore.toChunk(player.getBlockIn());
+                min2D = ChunkStore.toChunk(player.getBlockIn().toVector());
             }
 
             min = new Vector(min2D.getBlockX() * 16, 0, min2D.getBlockZ() * 16);
@@ -275,7 +279,7 @@ public class SelectionCommands {
     @CommandPermissions("worldedit.wand")
     public void wand(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
 
-        player.giveItem(we.getConfiguration().wandItem, 1);
+        player.giveItem(new BaseItemStack(ItemTypes.get(we.getConfiguration().wandItem), 1));
         player.print("Left click: select pos #1; Right click: select pos #2");
     }
 
@@ -331,7 +335,7 @@ public class SelectionCommands {
             return;
         }
 
-        List<Vector> dirs = new ArrayList<Vector>();
+        List<Vector> dirs = new ArrayList<>();
         int change = args.getInteger(0);
         int reverseChange = 0;
 
@@ -404,7 +408,7 @@ public class SelectionCommands {
     @CommandPermissions("worldedit.selection.contract")
     public void contract(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
 
-        List<Vector> dirs = new ArrayList<Vector>();
+        List<Vector> dirs = new ArrayList<>();
         int change = args.getInteger(0);
         int reverseChange = 0;
 
@@ -479,7 +483,7 @@ public class SelectionCommands {
     @CommandPermissions("worldedit.selection.shift")
     public void shift(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
 
-        List<Vector> dirs = new ArrayList<Vector>();
+        List<Vector> dirs = new ArrayList<>();
         int change = args.getInteger(0);
         if (args.argsLength() == 2) {
             if (args.getString(1).contains(",")) {
@@ -557,7 +561,7 @@ public class SelectionCommands {
     }
 
     private Vector[] getChangesForEachDir(CommandContext args) {
-        List<Vector> changes = new ArrayList<Vector>(6);
+        List<Vector> changes = new ArrayList<>(6);
         int change = args.getInteger(0);
 
         if (!args.hasFlag('h')) {
@@ -623,26 +627,22 @@ public class SelectionCommands {
         aliases = { "/count" },
         usage = "<block>",
         desc = "Counts the number of a certain type of block",
-        flags = "d",
         min = 1,
         max = 1
     )
     @CommandPermissions("worldedit.analysis.count")
     public void count(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
 
-        boolean useData = args.hasFlag('d');
-        if (args.getString(0).contains(":")) {
-            useData = true; //override d flag, if they specified data they want it
-        }
-        if (useData) {
-            Set<BaseBlock> searchBlocks = we.getBlocks(player, args.getString(0), true);
-            int count = editSession.countBlocks(session.getSelection(player.getWorld()), searchBlocks);
-            player.print("Counted: " + count);
-        } else {
-            Set<Integer> searchIDs = we.getBlockIDs(player, args.getString(0), true);
-            int count = editSession.countBlock(session.getSelection(player.getWorld()), searchIDs);
-            player.print("Counted: " + count);
-        }
+        ParserContext context = new ParserContext();
+        context.setActor(player);
+        context.setExtent(player.getExtent());
+        context.setWorld(player.getWorld());
+        context.setSession(session);
+        context.setRestricted(false);
+
+        Set<BlockStateHolder> searchBlocks = we.getBlockFactory().parseFromListInput(args.getString(0), context);
+        int count = editSession.countBlocks(session.getSelection(player.getWorld()), searchBlocks);
+        player.print("Counted: " + count);
     }
 
     @Command(
@@ -652,7 +652,7 @@ public class SelectionCommands {
         help =
             "Gets the distribution of blocks in the selection.\n" +
             "The -c flag gets the distribution of your clipboard.\n" +
-            "The -d flag separates blocks by data",
+            "The -d flag separates blocks by state",
         flags = "cd",
         min = 0,
         max = 0
@@ -662,8 +662,8 @@ public class SelectionCommands {
 
         int size;
         boolean useData = args.hasFlag('d');
-        List<Countable<Integer>> distribution = null;
-        List<Countable<BaseBlock>> distributionData = null;
+        List<Countable<BlockType>> distribution = null;
+        List<Countable<BlockStateHolder>> distributionData = null;
 
         if (args.hasFlag('c')) {
             // TODO: Update for new clipboard
@@ -677,8 +677,7 @@ public class SelectionCommands {
             size = session.getSelection(player.getWorld()).getArea();
         }
 
-        if ((useData && distributionData.size() <= 0)
-                || (!useData && distribution.size() <= 0)) {  // *Should* always be false
+        if ((useData && distributionData.size() <= 0) || (!useData && distribution.size() <= 0)) {  // *Should* always be false
             player.printError("No blocks counted.");
             return;
         }
@@ -686,22 +685,24 @@ public class SelectionCommands {
         player.print("# total blocks: " + size);
 
         if (useData) {
-            for (Countable<BaseBlock> c : distributionData) {
-                String name = BlockType.fromID(c.getID().getId()).getName();
-                String str = String.format("%-7s (%.3f%%) %s #%d:%d",
+            for (Countable<BlockStateHolder> c : distributionData) {
+                String name = c.getID().getBlockType().getName();
+                String str = String.format("%-7s (%.3f%%) %s #%s%s",
                         String.valueOf(c.getAmount()),
                         c.getAmount() / (double) size * 100,
-                        name == null ? "Unknown" : name,
-                        c.getID().getType(), c.getID().getData());
+                        name,
+                        c.getID().getBlockType().getId(),
+                        c.getID().getStates());
                 player.print(str);
             }
         } else {
-            for (Countable<Integer> c : distribution) {
-                BlockType block = BlockType.fromID(c.getID());
-                String str = String.format("%-7s (%.3f%%) %s #%d",
+            for (Countable<BlockType> c : distribution) {
+                String name = c.getID().getName();
+                String str = String.format("%-7s (%.3f%%) %s #%s",
                         String.valueOf(c.getAmount()),
                         c.getAmount() / (double) size * 100,
-                        block == null ? "Unknown" : block.getName(), c.getID());
+                        name,
+                        c.getID().getId());
                 player.print(str);
             }
         }
@@ -738,9 +739,7 @@ public class SelectionCommands {
             selector = new Polygonal2DRegionSelector(oldSelector);
             player.print("2D polygon selector: Left/right click to add a point.");
             Optional<Integer> limit = ActorSelectorLimits.forActor(player).getPolygonVertexLimit();
-            if (limit.isPresent()) {
-                player.print(limit.get() + " points maximum.");
-            }
+            limit.ifPresent(integer -> player.print(integer + " points maximum."));
         } else if (typeName.equalsIgnoreCase("ellipsoid")) {
             selector = new EllipsoidRegionSelector(oldSelector);
             player.print("Ellipsoid selector: left click=center, right click to extend");
@@ -754,9 +753,7 @@ public class SelectionCommands {
             selector = new ConvexPolyhedralRegionSelector(oldSelector);
             player.print("Convex polyhedral selector: Left click=First vertex, right click to add more.");
             Optional<Integer> limit = ActorSelectorLimits.forActor(player).getPolyhedronVertexLimit();
-            if (limit.isPresent()) {
-                player.print(limit.get() + " points maximum.");
-            }
+            limit.ifPresent(integer -> player.print(integer + " points maximum."));
         } else {
             CommandListBox box = new CommandListBox("Selection modes");
             StyledFragment contents = box.getContents();

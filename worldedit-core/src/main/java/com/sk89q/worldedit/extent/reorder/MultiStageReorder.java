@@ -24,27 +24,37 @@ import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.PlayerDirection;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.blocks.BlockType;
+import com.sk89q.worldedit.blocks.Blocks;
 import com.sk89q.worldedit.extent.AbstractDelegateExtent;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.function.operation.BlockMapEntryPlacer;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.OperationQueue;
 import com.sk89q.worldedit.function.operation.RunContext;
+import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.util.collection.TupleArrayList;
+import com.sk89q.worldedit.world.block.BlockCategories;
+import com.sk89q.worldedit.world.block.BlockState;
+import com.sk89q.worldedit.world.block.BlockStateHolder;
+import com.sk89q.worldedit.world.block.BlockTypes;
 
-import java.util.*;
+import java.util.Deque;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Re-orders blocks into several stages.
  */
 public class MultiStageReorder extends AbstractDelegateExtent implements ReorderingExtent {
 
-    private TupleArrayList<BlockVector, BaseBlock> stage1 = new TupleArrayList<BlockVector, BaseBlock>();
-    private TupleArrayList<BlockVector, BaseBlock> stage2 = new TupleArrayList<BlockVector, BaseBlock>();
-    private TupleArrayList<BlockVector, BaseBlock> stage3 = new TupleArrayList<BlockVector, BaseBlock>();
+    private TupleArrayList<BlockVector, BlockStateHolder> stage1 = new TupleArrayList<>();
+    private TupleArrayList<BlockVector, BlockStateHolder> stage2 = new TupleArrayList<>();
+    private TupleArrayList<BlockVector, BlockStateHolder> stage3 = new TupleArrayList<>();
     private boolean enabled;
 
     /**
@@ -86,28 +96,28 @@ public class MultiStageReorder extends AbstractDelegateExtent implements Reorder
     }
 
     @Override
-    public boolean setBlock(Vector location, BaseBlock block) throws WorldEditException {
-        BaseBlock lazyBlock = getLazyBlock(location);
+    public boolean setBlock(Vector location, BlockStateHolder block) throws WorldEditException {
+        BlockState existing = getBlock(location);
 
         if (!enabled) {
             return super.setBlock(location, block);
         }
 
-        if (BlockType.shouldPlaceLast(block.getType())) {
+        if (Blocks.shouldPlaceLast(block.getBlockType())) {
             // Place torches, etc. last
             stage2.put(location.toBlockVector(), block);
-            return !(lazyBlock.getType() == block.getType() && lazyBlock.getData() == block.getData());
-        } else if (BlockType.shouldPlaceFinal(block.getType())) {
+            return !existing.equalsFuzzy(block);
+        } else if (Blocks.shouldPlaceFinal(block.getBlockType())) {
             // Place signs, reed, etc even later
             stage3.put(location.toBlockVector(), block);
-            return !(lazyBlock.getType() == block.getType() && lazyBlock.getData() == block.getData());
-        } else if (BlockType.shouldPlaceLast(lazyBlock.getType())) {
+            return !existing.equalsFuzzy(block);
+        } else if (Blocks.shouldPlaceLast(existing.getBlockType())) {
             // Destroy torches, etc. first
-            super.setBlock(location, new BaseBlock(BlockID.AIR));
+            super.setBlock(location, BlockTypes.AIR.getDefaultState());
             return super.setBlock(location, block);
         } else {
             stage1.put(location.toBlockVector(), block);
-            return !(lazyBlock.getType() == block.getType() && lazyBlock.getData() == block.getData());
+            return !existing.equalsFuzzy(block);
         }
     }
 
@@ -126,9 +136,9 @@ public class MultiStageReorder extends AbstractDelegateExtent implements Reorder
         public Operation resume(RunContext run) throws WorldEditException {
             Extent extent = getExtent();
 
-            final Set<BlockVector> blocks = new HashSet<BlockVector>();
-            final Map<BlockVector, BaseBlock> blockTypes = new HashMap<BlockVector, BaseBlock>();
-            for (Map.Entry<BlockVector, BaseBlock> entry : stage3) {
+            final Set<BlockVector> blocks = new HashSet<>();
+            final Map<BlockVector, BlockStateHolder> blockTypes = new HashMap<>();
+            for (Map.Entry<BlockVector, BlockStateHolder> entry : stage3) {
                 final BlockVector pt = entry.getKey();
                 blocks.add(pt);
                 blockTypes.put(pt, entry.getValue());
@@ -140,49 +150,32 @@ public class MultiStageReorder extends AbstractDelegateExtent implements Reorder
                     continue;
                 }
 
-                final Deque<BlockVector> walked = new LinkedList<BlockVector>();
+                final Deque<BlockVector> walked = new LinkedList<>();
 
                 while (true) {
                     walked.addFirst(current);
 
                     assert (blockTypes.containsKey(current));
 
-                    final BaseBlock baseBlock = blockTypes.get(current);
+                    final BlockStateHolder blockStateHolder = blockTypes.get(current);
 
-                    final int type = baseBlock.getType();
-                    final int data = baseBlock.getData();
-
-                    switch (type) {
-                        case BlockID.WOODEN_DOOR:
-                        case BlockID.ACACIA_DOOR:
-                        case BlockID.BIRCH_DOOR:
-                        case BlockID.JUNGLE_DOOR:
-                        case BlockID.DARK_OAK_DOOR:
-                        case BlockID.SPRUCE_DOOR:
-                        case BlockID.IRON_DOOR:
-                            if ((data & 0x8) == 0) {
-                                // Deal with lower door halves being attached to the floor AND the upper half
-                                BlockVector upperBlock = current.add(0, 1, 0).toBlockVector();
-                                if (blocks.contains(upperBlock) && !walked.contains(upperBlock)) {
-                                    walked.addFirst(upperBlock);
-                                }
+                    if (BlockCategories.DOORS.contains(blockStateHolder.getBlockType())) {
+                        Property<Object> halfProperty = blockStateHolder.getBlockType().getProperty("half");
+                        if (blockStateHolder.getState(halfProperty).equals("lower")) {
+                            // Deal with lower door halves being attached to the floor AND the upper half
+                            BlockVector upperBlock = current.add(0, 1, 0).toBlockVector();
+                            if (blocks.contains(upperBlock) && !walked.contains(upperBlock)) {
+                                walked.addFirst(upperBlock);
                             }
-                            break;
-
-                        case BlockID.MINECART_TRACKS:
-                        case BlockID.POWERED_RAIL:
-                        case BlockID.DETECTOR_RAIL:
-                        case BlockID.ACTIVATOR_RAIL:
-                            // Here, rails are hardcoded to be attached to the block below them.
-                            // They're also attached to the block they're ascending towards via BlockType.getAttachment.
-                            BlockVector lowerBlock = current.add(0, -1, 0).toBlockVector();
-                            if (blocks.contains(lowerBlock) && !walked.contains(lowerBlock)) {
-                                walked.addFirst(lowerBlock);
-                            }
-                            break;
+                        }
+                    } else if (BlockCategories.RAILS.contains(blockStateHolder.getBlockType())) {
+                        BlockVector lowerBlock = current.add(0, -1, 0).toBlockVector();
+                        if (blocks.contains(lowerBlock) && !walked.contains(lowerBlock)) {
+                            walked.addFirst(lowerBlock);
+                        }
                     }
 
-                    final PlayerDirection attachment = BlockType.getAttachment(type, data);
+                    final PlayerDirection attachment = BlockType.getAttachment(blockStateHolder.getBlockType().getLegacyId(), 0); // TODO
                     if (attachment == null) {
                         // Block is not attached to anything => we can place it
                         break;

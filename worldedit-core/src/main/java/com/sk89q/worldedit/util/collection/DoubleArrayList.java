@@ -19,11 +19,11 @@
 
 package com.sk89q.worldedit.util.collection;
 
-import java.util.List;
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.Iterator;
+import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
 import java.util.NoSuchElementException;
 
 /**
@@ -33,8 +33,8 @@ import java.util.NoSuchElementException;
  */
 public class DoubleArrayList<A, B> implements Iterable<Map.Entry<A, B>> {
 
-    private List<A> listA = new ArrayList<A>();
-    private List<B> listB = new ArrayList<B>();
+    private List<A> listA = new ArrayList<>();
+    private List<B> listB = new ArrayList<>();
     private boolean isReversed = false;
 
     /**
@@ -81,11 +81,11 @@ public class DoubleArrayList<A, B> implements Iterable<Map.Entry<A, B>> {
      */
     public Iterator<Map.Entry<A, B>> iterator(boolean reversed) {
         if (reversed) {
-            return new ReverseEntryIterator<Map.Entry<A, B>>(
+            return new ReverseEntryIterator<>(
                     listA.listIterator(listA.size()),
                     listB.listIterator(listB.size()));
         } else {
-            return new ForwardEntryIterator<Map.Entry<A, B>>(
+            return new ForwardEntryIterator<>(
                     listA.iterator(),
                     listB.iterator());
         }

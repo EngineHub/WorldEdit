@@ -20,19 +20,19 @@
 package com.sk89q.worldedit.function.pattern;
 
 import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.world.block.BlockStateHolder;
 
 /**
- * Returns a {@link BaseBlock} for a given position.
+ * Returns a {@link BlockStateHolder} for a given position.
  */
 public interface Pattern {
 
     /**
-     * Return a {@link BaseBlock} for the given position.
+     * Return a {@link BlockStateHolder} for the given position.
      *
      * @param position the position
      * @return a block
      */
-    BaseBlock apply(Vector position);
+    BlockStateHolder apply(Vector position);
 
 }

@@ -19,11 +19,17 @@
 
 package com.sk89q.worldedit.command;
 
+import static com.sk89q.minecraft.util.commands.Logging.LogMode.REGION;
+
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.minecraft.util.commands.Logging;
-import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.LocalConfiguration;
+import com.sk89q.worldedit.LocalSession;
+import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.world.DataException;
@@ -36,8 +42,6 @@ import com.sk89q.worldedit.world.storage.MissingWorldException;
 import java.io.File;
 import java.io.IOException;
 import java.util.logging.Logger;
-
-import static com.sk89q.minecraft.util.commands.Logging.LogMode.REGION;
 
 public class SnapshotUtilCommands {
 
@@ -115,10 +119,7 @@ public class SnapshotUtilCommands {
         try {
             chunkStore = snapshot.getChunkStore();
             player.print("Snapshot '" + snapshot.getName() + "' loaded; now restoring...");
-        } catch (DataException e) {
-            player.printError("Failed to load snapshot: " + e.getMessage());
-            return;
-        } catch (IOException e) {
+        } catch (DataException | IOException e) {
             player.printError("Failed to load snapshot: " + e.getMessage());
             return;
         }

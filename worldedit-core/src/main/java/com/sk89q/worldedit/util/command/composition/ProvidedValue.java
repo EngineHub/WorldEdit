@@ -63,7 +63,7 @@ public class ProvidedValue<T> implements CommandExecutor<T> {
     }
 
     public static <T> ProvidedValue<T> create(T value, String description) {
-        return new ProvidedValue<T>(value, description);
+        return new ProvidedValue<>(value, description);
     }
 
 }

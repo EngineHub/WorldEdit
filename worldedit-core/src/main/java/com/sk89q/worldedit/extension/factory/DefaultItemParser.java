@@ -23,7 +23,10 @@ import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.extension.input.InputParseException;
 import com.sk89q.worldedit.extension.input.ParserContext;
+import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.internal.registry.InputParser;
+import com.sk89q.worldedit.world.item.ItemType;
+import com.sk89q.worldedit.world.registry.LegacyMapper;
 
 public class DefaultItemParser extends InputParser<BaseItem> {
 
@@ -33,46 +36,30 @@ public class DefaultItemParser extends InputParser<BaseItem> {
 
     @Override
     public BaseItem parseFromInput(String input, ParserContext context) throws InputParseException {
-        String[] tokens = input.split(":", 3);
-        BaseItem item;
-        short meta = 0;
-
-        try {
-            int id = Integer.parseInt(tokens[0]);
-
-            // Parse metadata
-            if (tokens.length == 2) {
-                try {
-                    meta = Short.parseShort(tokens[1]);
-                } catch (NumberFormatException ignored) {
-                    throw new InputParseException("Expected '" + tokens[1] + "' to be a metadata value but it's not a number");
+        BaseItem item = null;
+        // Legacy matcher
+        if (context.isTryingLegacy()) {
+            try {
+                String[] split = input.split(":");
+                ItemType type;
+                if (split.length == 1) {
+                    type = LegacyMapper.getInstance().getItemFromLegacy(Integer.parseInt(split[0]));
+                } else {
+                    type = LegacyMapper.getInstance().getItemFromLegacy(Integer.parseInt(split[0]), Integer.parseInt(split[1]));
                 }
+                item = new BaseItem(type);
+            } catch (NumberFormatException e) {
             }
+        }
 
-            item = context.requireWorld().getWorldData().getItemRegistry().createFromId(id);
-        } catch (NumberFormatException e) {
-            if (input.length() < 2) {
-                throw new InputParseException("'" + input + "' isn't a known item name format");
-            }
-
-            String name = tokens[0] + ":" + tokens[1];
-
-            // Parse metadata
-            if (tokens.length == 3) {
-                try {
-                    meta = Short.parseShort(tokens[2]);
-                } catch (NumberFormatException ignored) {
-                    throw new InputParseException("Expected '" + tokens[2] + "' to be a metadata value but it's not a number");
-                }
-            }
-
-            item = context.requireWorld().getWorldData().getItemRegistry().createFromId(name);
+        if (item == null) {
+            item = WorldEdit.getInstance().getPlatformManager()
+                    .queryCapability(Capability.GAME_HOOKS).getRegistries().getItemRegistry().createFromId(input.toLowerCase());
         }
 
         if (item == null) {
             throw new InputParseException("'" + input + "' did not match any item");
         } else {
-            item.setData(meta);
             return item;
         }
     }

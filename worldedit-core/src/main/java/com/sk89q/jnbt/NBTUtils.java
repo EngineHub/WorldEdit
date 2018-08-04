@@ -19,12 +19,12 @@
 
 package com.sk89q.jnbt;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.world.storage.InvalidFormatException;
 
 import java.util.Map;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * A class which contains NBT-related utility methods.

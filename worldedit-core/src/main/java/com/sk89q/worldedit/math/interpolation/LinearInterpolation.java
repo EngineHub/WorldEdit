@@ -21,11 +21,11 @@
 
 package com.sk89q.worldedit.math.interpolation;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.sk89q.worldedit.Vector;
 
 import java.util.List;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Simple linear interpolation. Mainly used for testing.

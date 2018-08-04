@@ -19,13 +19,20 @@
 
 package com.sk89q.worldedit.scripting;
 
-import com.sk89q.worldedit.*;
-import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.DisallowedItemException;
+import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.LocalConfiguration;
+import com.sk89q.worldedit.LocalSession;
+import com.sk89q.worldedit.UnknownItemException;
+import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.command.InsufficientArgumentsException;
 import com.sk89q.worldedit.entity.Player;
+import com.sk89q.worldedit.extension.input.ParserContext;
 import com.sk89q.worldedit.extension.platform.Platform;
-import com.sk89q.worldedit.patterns.Pattern;
+import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.util.io.file.FilenameException;
+import com.sk89q.worldedit.world.block.BlockStateHolder;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -36,10 +43,9 @@ import java.util.Set;
 /**
  * The context given to scripts.
  */
-@SuppressWarnings("deprecation")
 public class CraftScriptContext extends CraftScriptEnvironment {
 
-    private List<EditSession> editSessions = new ArrayList<EditSession>();
+    private List<EditSession> editSessions = new ArrayList<>();
     private String[] args;
 
     public CraftScriptContext(WorldEdit controller,
@@ -143,7 +149,7 @@ public class CraftScriptContext extends CraftScriptEnvironment {
     }
 
     /**
-     * Get an item ID from an item name or an item ID number.
+     * Get an item from an item name or an item ID number.
      *
      * @param input input to parse
      * @param allAllowed true to ignore blacklists
@@ -151,8 +157,15 @@ public class CraftScriptContext extends CraftScriptEnvironment {
      * @throws UnknownItemException
      * @throws DisallowedItemException
      */
-    public BaseBlock getBlock(String input, boolean allAllowed) throws WorldEditException {
-        return controller.getBlock(player, input, allAllowed);
+    public BlockStateHolder getBlock(String input, boolean allAllowed) throws WorldEditException {
+        ParserContext context = new ParserContext();
+        context.setActor(player);
+        context.setWorld(player.getWorld());
+        context.setSession(session);
+        context.setRestricted(!allAllowed);
+        context.setPreferringWildcard(false);
+
+        return controller.getBlockFactory().parseFromListInput(input, context).stream().findFirst().orElse(null);
     }
 
     /**
@@ -163,8 +176,8 @@ public class CraftScriptContext extends CraftScriptEnvironment {
      * @throws UnknownItemException
      * @throws DisallowedItemException
      */
-    public BaseBlock getBlock(String id) throws WorldEditException {
-        return controller.getBlock(player, id, false);
+    public BlockStateHolder getBlock(String id) throws WorldEditException {
+        return getBlock(id, false);
     }
 
     /**
@@ -176,7 +189,11 @@ public class CraftScriptContext extends CraftScriptEnvironment {
      * @throws DisallowedItemException 
      */
     public Pattern getBlockPattern(String list) throws WorldEditException {
-        return controller.getBlockPattern(player, list);
+        ParserContext context = new ParserContext();
+        context.setActor(player);
+        context.setWorld(player.getWorld());
+        context.setSession(session);
+        return controller.getPatternFactory().parseFromInput(list, context);
     }
 
     /**
@@ -188,27 +205,13 @@ public class CraftScriptContext extends CraftScriptEnvironment {
      * @throws UnknownItemException 
      * @throws DisallowedItemException 
      */
-    public Set<Integer> getBlockIDs(String list, boolean allBlocksAllowed) throws WorldEditException {
-        return controller.getBlockIDs(player, list, allBlocksAllowed);
-    }
-
-    /**
-     * Gets the path to a file. This method will check to see if the filename
-     * has valid characters and has an extension. It also prevents directory
-     * traversal exploits by checking the root directory and the file directory.
-     * On success, a {@code java.io.File} object will be returned.
-     * 
-     * <p>Use this method if you need to read a file from a directory.</p>
-     * 
-     * @param folder sub-directory to look in
-     * @param filename filename (user-submitted)
-     * @return a file
-     * @throws FilenameException
-     */
-    @Deprecated
-    public File getSafeFile(String folder, String filename) throws FilenameException {
-        File dir = controller.getWorkingDirectoryFile(folder);
-        return controller.getSafeOpenFile(player, dir, filename, null, (String[]) null);
+    public Set<BlockStateHolder> getBlocks(String list, boolean allBlocksAllowed) throws WorldEditException {
+        ParserContext context = new ParserContext();
+        context.setActor(player);
+        context.setWorld(player.getWorld());
+        context.setSession(session);
+        context.setRestricted(!allBlocksAllowed);
+        return controller.getBlockFactory().parseFromListInput(list, context);
     }
 
     /**

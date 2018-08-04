@@ -19,17 +19,23 @@
 
 package com.sk89q.worldedit.command.tool;
 
+import com.google.common.collect.Lists;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
-import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.blocks.BlockData;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Platform;
+import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.World;
+import com.sk89q.worldedit.world.block.BlockState;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * A mode that cycles the data values of supported blocks.
@@ -41,34 +47,55 @@ public class BlockDataCyler implements DoubleActionBlockTool {
         return player.hasPermission("worldedit.tool.data-cycler");
     }
 
+    private Map<UUID, Property<?>> selectedProperties = new HashMap<>();
+
     private boolean handleCycle(Platform server, LocalConfiguration config,
             Player player, LocalSession session, Location clicked, boolean forward) {
 
         World world = (World) clicked.getExtent();
 
-        int type = world.getBlockType(clicked.toVector());
-        int data = world.getBlockData(clicked.toVector());
+        BlockState block = world.getBlock(clicked.toVector());
 
         if (!config.allowedDataCycleBlocks.isEmpty()
                 && !player.hasPermission("worldedit.override.data-cycler")
-                && !config.allowedDataCycleBlocks.contains(type)) {
+                && !config.allowedDataCycleBlocks.contains(block.getBlockType().getId())) {
             player.printError("You are not permitted to cycle the data value of that block.");
             return true;
         }
 
-        int increment = forward ? 1 : -1;
-        BaseBlock block = new BaseBlock(type, BlockData.cycle(type, data, increment));
-        EditSession editSession = session.createEditSession(player);
-
-        if (block.getData() < 0) {
+        if (block.getStates().keySet().isEmpty()) {
             player.printError("That block's data cannot be cycled!");
         } else {
-            try {
-                editSession.setBlock(clicked.toVector(), block);
-            } catch (MaxChangedBlocksException e) {
-                player.printError("Max blocks change limit reached.");
-            } finally {
-                session.remember(editSession);
+            Property currentProperty = selectedProperties.get(player.getUniqueId());
+
+            if (currentProperty == null || (forward && block.getState(currentProperty) == null)) {
+                currentProperty = block.getStates().keySet().stream().findFirst().get();
+                selectedProperties.put(player.getUniqueId(), currentProperty);
+            }
+
+            if (forward) {
+                block.getState(currentProperty);
+                int index = currentProperty.getValues().indexOf(block.getState(currentProperty));
+                index = (index + 1) % currentProperty.getValues().size();
+                BlockState newBlock = block.with(currentProperty, currentProperty.getValues().get(index));
+
+                EditSession editSession = session.createEditSession(player);
+
+                try {
+                    editSession.setBlock(clicked.toVector(), newBlock);
+                    player.print("Value of " + currentProperty.getName() + " is now " + currentProperty.getValues().get(index).toString());
+                } catch (MaxChangedBlocksException e) {
+                    player.printError("Max blocks change limit reached.");
+                } finally {
+                    session.remember(editSession);
+                }
+            } else {
+                List<Property<?>> properties = Lists.newArrayList(block.getStates().keySet());
+                int index = properties.indexOf(currentProperty);
+                index = (index + 1) % properties.size();
+                currentProperty = properties.get(index);
+                selectedProperties.put(player.getUniqueId(), currentProperty);
+                player.print("Now cycling " + currentProperty.getName());
             }
         }
 

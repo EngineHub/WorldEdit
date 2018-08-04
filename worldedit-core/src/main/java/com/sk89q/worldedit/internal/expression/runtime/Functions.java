@@ -123,7 +123,7 @@ public final class Functions {
         throw new NoSuchMethodException(); // TODO: return null (check for side-effects first)
     }
 
-    private static final Map<String, List<Overload>> functions = new HashMap<String, List<Overload>>();
+    private static final Map<String, List<Overload>> functions = new HashMap<>();
     static {
         for (Method method : Functions.class.getMethods()) {
             try {
@@ -138,10 +138,7 @@ public final class Functions {
 
         Overload overload = new Overload(method);
 
-        List<Overload> overloads = functions.get(methodName);
-        if (overloads == null) {
-            functions.put(methodName, overloads = new ArrayList<Overload>());
-        }
+        List<Overload> overloads = functions.computeIfAbsent(methodName, k -> new ArrayList<>());
 
         overloads.add(overload);
     }
@@ -279,8 +276,8 @@ public final class Functions {
     }
 
 
-    private static final Map<Integer, double[]> gmegabuf = new HashMap<Integer, double[]>();
-    private final Map<Integer, double[]> megabuf = new HashMap<Integer, double[]>();
+    private static final Map<Integer, double[]> gmegabuf = new HashMap<>();
+    private final Map<Integer, double[]> megabuf = new HashMap<>();
 
     public Map<Integer, double[]> getMegabuf() {
         return megabuf;
@@ -383,12 +380,7 @@ public final class Functions {
         return random.nextInt((int) Math.floor(max.getValue()));
     }
 
-    private static final ThreadLocal<PerlinNoise> localPerlin = new ThreadLocal<PerlinNoise>() {
-        @Override
-        protected PerlinNoise initialValue() {
-            return new PerlinNoise();
-        }
-    };
+    private static final ThreadLocal<PerlinNoise> localPerlin = ThreadLocal.withInitial(PerlinNoise::new);
 
     public static double perlin(RValue seed, RValue x, RValue y, RValue z, RValue frequency, RValue octaves, RValue persistence) throws EvaluationException {
         PerlinNoise perlin = localPerlin.get();
@@ -403,12 +395,7 @@ public final class Functions {
         return perlin.noise(new Vector(x.getValue(), y.getValue(), z.getValue()));
     }
 
-    private static final ThreadLocal<VoronoiNoise> localVoronoi = new ThreadLocal<VoronoiNoise>() {
-        @Override
-        protected VoronoiNoise initialValue() {
-            return new VoronoiNoise();
-        }
-    };
+    private static final ThreadLocal<VoronoiNoise> localVoronoi = ThreadLocal.withInitial(VoronoiNoise::new);
 
     public static double voronoi(RValue seed, RValue x, RValue y, RValue z, RValue frequency) throws EvaluationException {
         VoronoiNoise voronoi = localVoronoi.get();
@@ -421,12 +408,7 @@ public final class Functions {
         return voronoi.noise(new Vector(x.getValue(), y.getValue(), z.getValue()));
     }
 
-    private static final ThreadLocal<RidgedMultiFractalNoise> localRidgedMulti = new ThreadLocal<RidgedMultiFractalNoise>() {
-        @Override
-        protected RidgedMultiFractalNoise initialValue() {
-            return new RidgedMultiFractalNoise();
-        }
-    };
+    private static final ThreadLocal<RidgedMultiFractalNoise> localRidgedMulti = ThreadLocal.withInitial(RidgedMultiFractalNoise::new);
 
     public static double ridgedmulti(RValue seed, RValue x, RValue y, RValue z, RValue frequency, RValue octaves) throws EvaluationException {
         RidgedMultiFractalNoise ridgedMulti = localRidgedMulti.get();

@@ -19,16 +19,19 @@
 
 package com.sk89q.worldedit.regions;
 
-import com.sk89q.worldedit.*;
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
+
+import com.sk89q.worldedit.BlockVector;
+import com.sk89q.worldedit.BlockVector2D;
+import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.Vector2D;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.storage.ChunkStore;
 
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
-
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * An axis-aligned cuboid. It can be defined using two corners of the cuboid.
@@ -46,14 +49,6 @@ public class CuboidRegion extends AbstractRegion implements FlatRegion {
      */
     public CuboidRegion(Vector pos1, Vector pos2) {
         this(null, pos1, pos2);
-    }
-
-    /**
-     * @deprecated cast {@code world} to {@link World}
-     */
-    @Deprecated
-    public CuboidRegion(LocalWorld world, Vector pos1, Vector pos2) {
-        this((World) world, pos1, pos2);
     }
 
     /**
@@ -295,7 +290,7 @@ public class CuboidRegion extends AbstractRegion implements FlatRegion {
 
     @Override
     public Set<Vector2D> getChunks() {
-        Set<Vector2D> chunks = new HashSet<Vector2D>();
+        Set<Vector2D> chunks = new HashSet<>();
 
         Vector min = getMinimumPoint();
         Vector max = getMaximumPoint();
@@ -311,7 +306,7 @@ public class CuboidRegion extends AbstractRegion implements FlatRegion {
 
     @Override
     public Set<Vector> getChunkCubes() {
-        Set<Vector> chunks = new HashSet<Vector>();
+        Set<Vector> chunks = new HashSet<>();
 
         Vector min = getMinimumPoint();
         Vector max = getMaximumPoint();
@@ -380,38 +375,33 @@ public class CuboidRegion extends AbstractRegion implements FlatRegion {
 
     @Override
     public Iterable<Vector2D> asFlatRegion() {
-        return new Iterable<Vector2D>() {
+        return () -> new Iterator<Vector2D>() {
+            private Vector min = getMinimumPoint();
+            private Vector max = getMaximumPoint();
+            private int nextX = min.getBlockX();
+            private int nextZ = min.getBlockZ();
+
             @Override
-            public Iterator<Vector2D> iterator() {
-                return new Iterator<Vector2D>() {
-                    private Vector min = getMinimumPoint();
-                    private Vector max = getMaximumPoint();
-                    private int nextX = min.getBlockX();
-                    private int nextZ = min.getBlockZ();
+            public boolean hasNext() {
+                return (nextX != Integer.MIN_VALUE);
+            }
 
-                    @Override
-                    public boolean hasNext() {
-                        return (nextX != Integer.MIN_VALUE);
+            @Override
+            public Vector2D next() {
+                if (!hasNext()) throw new java.util.NoSuchElementException();
+                Vector2D answer = new Vector2D(nextX, nextZ);
+                if (++nextX > max.getBlockX()) {
+                    nextX = min.getBlockX();
+                    if (++nextZ > max.getBlockZ()) {
+                        nextX = Integer.MIN_VALUE;
                     }
+                }
+                return answer;
+            }
 
-                    @Override
-                    public Vector2D next() {
-                        if (!hasNext()) throw new java.util.NoSuchElementException();
-                        Vector2D answer = new Vector2D(nextX, nextZ);
-                        if (++nextX > max.getBlockX()) {
-                            nextX = min.getBlockX();
-                            if (++nextZ > max.getBlockZ()) {
-                                nextX = Integer.MIN_VALUE;
-                            }
-                        }
-                        return answer;
-                    }
-
-                    @Override
-                    public void remove() {
-                        throw new UnsupportedOperationException();
-                    }
-                };
+            @Override
+            public void remove() {
+                throw new UnsupportedOperationException();
             }
         };
     }

@@ -19,6 +19,7 @@
 
 package com.sk89q.wepif;
 
+import com.nijikokun.bukkit.Permissions.Permissions;
 import com.sk89q.util.yaml.YAMLProcessor;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -27,7 +28,6 @@ import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
-import com.nijikokun.bukkit.Permissions.Permissions;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -50,7 +50,7 @@ public class NijiPermissionsResolver implements PermissionsResolver {
         Plugin plugin = pluginManager.getPlugin("Permissions");
 
         // Check if plugin is loaded and has Permissions interface
-        if (plugin == null || !(plugin instanceof Permissions)) {
+        if (!(plugin instanceof Permissions)) {
             return null;
         }
 

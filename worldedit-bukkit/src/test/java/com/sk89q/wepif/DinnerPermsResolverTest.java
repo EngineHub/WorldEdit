@@ -19,13 +19,15 @@
 
 package com.sk89q.wepif;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import org.bukkit.Server;
 import org.bukkit.plugin.PluginManager;
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
-import static org.mockito.Mockito.*;
 
 public class DinnerPermsResolverTest {
     private DinnerPermsResolver resolver;

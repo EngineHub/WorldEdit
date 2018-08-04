@@ -32,6 +32,7 @@ import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.input.NoMatchException;
 import com.sk89q.worldedit.extension.input.ParserContext;
 import com.sk89q.worldedit.extension.platform.Actor;
+import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.function.pattern.Pattern;
@@ -48,6 +49,8 @@ import com.sk89q.worldedit.util.command.parametric.ParameterException;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.biome.BaseBiome;
 import com.sk89q.worldedit.world.biome.Biomes;
+import com.sk89q.worldedit.world.block.BlockState;
+import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.registry.BiomeRegistry;
 
 import java.util.Arrays;
@@ -166,10 +169,10 @@ public class WorldEditBinding extends BindingHelper {
      * @throws ParameterException on error
      * @throws WorldEditException on error
      */
-    @BindingMatch(type = BaseBlock.class,
+    @BindingMatch(type = {BaseBlock.class, BlockState.class, BlockStateHolder.class},
                   behavior = BindingBehavior.CONSUMES,
                   consumedCount = 1)
-    public BaseBlock getBaseBlock(ArgumentStack context) throws ParameterException, WorldEditException {
+    public BlockStateHolder getBaseBlock(ArgumentStack context) throws ParameterException, WorldEditException {
         Actor actor = context.getContext().getLocals().get(Actor.class);
         ParserContext parserContext = new ParserContext();
         parserContext.setActor(context.getContext().getLocals().get(Actor.class));
@@ -317,7 +320,8 @@ public class WorldEditBinding extends BindingHelper {
                 throw new ParameterException("An entity is required.");
             }
 
-            BiomeRegistry biomeRegistry = world.getWorldData().getBiomeRegistry();
+            BiomeRegistry biomeRegistry = WorldEdit.getInstance().getPlatformManager()
+                    .queryCapability(Capability.GAME_HOOKS).getRegistries().getBiomeRegistry();
             List<BaseBiome> knownBiomes = biomeRegistry.getBiomes();
             BaseBiome biome = Biomes.findBiomeByName(knownBiomes, input, biomeRegistry);
             if (biome != null) {

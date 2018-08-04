@@ -27,7 +27,7 @@ import java.util.List;
  */
 public class StyledFragment extends Fragment {
     
-    private final List<Fragment> children = new ArrayList<Fragment>();
+    private final List<Fragment> children = new ArrayList<>();
     private StyleSet style;
     private Fragment lastText;
     

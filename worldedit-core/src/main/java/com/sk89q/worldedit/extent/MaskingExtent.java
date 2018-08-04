@@ -19,12 +19,12 @@
 
 package com.sk89q.worldedit.extent;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.function.mask.Mask;
-
-import static com.google.common.base.Preconditions.checkNotNull;
+import com.sk89q.worldedit.world.block.BlockStateHolder;
 
 /**
  * Requires that all mutating methods pass a given {@link Mask}.
@@ -65,7 +65,7 @@ public class MaskingExtent extends AbstractDelegateExtent {
     }
 
     @Override
-    public boolean setBlock(Vector location, BaseBlock block) throws WorldEditException {
+    public boolean setBlock(Vector location, BlockStateHolder block) throws WorldEditException {
         return mask.test(location) && super.setBlock(location, block);
     }
 

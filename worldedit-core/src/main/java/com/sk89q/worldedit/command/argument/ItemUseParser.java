@@ -68,7 +68,7 @@ public class ItemUseParser extends SimpleCommand<Contextual<RegionFunction>> {
 
         @Override
         public String toString() {
-            return "application of the item " + item.getType() + ":" + item.getData();
+            return "application of the item " + item.getType() + ":" + item.getNbtData();
         }
     }
 

@@ -19,19 +19,20 @@
 
 package com.sk89q.worldedit.sponge;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.flowpowered.math.vector.Vector3d;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
-import com.sk89q.worldedit.entity.metadata.EntityType;
+import com.sk89q.worldedit.entity.metadata.EntityProperties;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.NullWorld;
 import org.spongepowered.api.world.World;
 
-import javax.annotation.Nullable;
 import java.lang.ref.WeakReference;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import javax.annotation.Nullable;
 
 class SpongeEntity implements Entity {
 
@@ -90,8 +91,8 @@ class SpongeEntity implements Entity {
     public <T> T getFacet(Class<? extends T> cls) {
         org.spongepowered.api.entity.Entity entity = entityRef.get();
         if (entity != null) {
-            if (EntityType.class.isAssignableFrom(cls)) {
-                return (T) new SpongeEntityType(entity);
+            if (EntityProperties.class.isAssignableFrom(cls)) {
+                return (T) new SpongeEntityProperties(entity);
             } else {
                 return null;
             }

@@ -20,8 +20,8 @@
 package com.sk89q.worldedit.util.command.parametric;
 
 import com.sk89q.minecraft.util.commands.CommandContext;
-import com.sk89q.worldedit.util.command.MissingParameterException;
 import com.sk89q.util.StringUtil;
+import com.sk89q.worldedit.util.command.MissingParameterException;
 
 /**
  * A virtual scope that does not actually read from the underlying 

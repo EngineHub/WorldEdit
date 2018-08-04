@@ -19,16 +19,16 @@
 
 package com.sk89q.worldedit.extent.world;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.blocks.BlockID;
-import com.sk89q.worldedit.blocks.BlockType;
 import com.sk89q.worldedit.extent.AbstractDelegateExtent;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.world.World;
-
-import static com.google.common.base.Preconditions.checkNotNull;
+import com.sk89q.worldedit.world.block.BlockStateHolder;
+import com.sk89q.worldedit.world.block.BlockType;
+import com.sk89q.worldedit.world.block.BlockTypes;
 
 /**
  * Handles various quirks when setting blocks, such as ice turning
@@ -51,14 +51,13 @@ public class BlockQuirkExtent extends AbstractDelegateExtent {
     }
 
     @Override
-    public boolean setBlock(Vector position, BaseBlock block) throws WorldEditException {
-        BaseBlock lazyBlock = getExtent().getLazyBlock(position);
-        int existing = lazyBlock.getType();
+    public boolean setBlock(Vector position, BlockStateHolder block) throws WorldEditException {
+        BlockType existing = getExtent().getBlock(position).getBlockType();
 
-        if (BlockType.isContainerBlock(existing)) {
+        if (existing.getMaterial().hasContainer()) {
             world.clearContainerBlockContents(position); // Clear the container block so that it doesn't drop items
-        } else if (existing == BlockID.ICE) {
-            world.setBlock(position, new BaseBlock(BlockID.AIR)); // Ice turns until water so this has to be done first
+        } else if (existing == BlockTypes.ICE) {
+            world.setBlock(position, BlockTypes.AIR.getDefaultState()); // Ice turns until water so this has to be done first
         }
 
         return super.setBlock(position, block);

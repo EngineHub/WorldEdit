@@ -19,6 +19,8 @@
 
 package com.sk89q.worldedit.session;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
@@ -27,9 +29,6 @@ import com.sk89q.worldedit.function.mask.ExistingBlockMask;
 import com.sk89q.worldedit.function.operation.ForwardExtentCopy;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.math.transform.Transform;
-import com.sk89q.worldedit.world.registry.WorldData;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Builds an operation to paste the contents of a clipboard.
@@ -37,10 +36,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class PasteBuilder {
 
     private final Clipboard clipboard;
-    private final WorldData worldData;
     private final Transform transform;
     private final Extent targetExtent;
-    private final WorldData targetWorldData;
 
     private Vector to = new Vector();
     private boolean ignoreAirBlocks;
@@ -50,17 +47,13 @@ public class PasteBuilder {
      *
      * @param holder the clipboard holder
      * @param targetExtent an extent
-     * @param targetWorldData world data of the target
      */
-    PasteBuilder(ClipboardHolder holder, Extent targetExtent, WorldData targetWorldData) {
+    PasteBuilder(ClipboardHolder holder, Extent targetExtent) {
         checkNotNull(holder);
         checkNotNull(targetExtent);
-        checkNotNull(targetWorldData);
         this.clipboard = holder.getClipboard();
-        this.worldData = holder.getWorldData();
         this.transform = holder.getTransform();
         this.targetExtent = targetExtent;
-        this.targetWorldData = targetWorldData;
     }
 
     /**
@@ -90,7 +83,7 @@ public class PasteBuilder {
      * @return the operation
      */
     public Operation build() {
-        BlockTransformExtent extent = new BlockTransformExtent(clipboard, transform, targetWorldData.getBlockRegistry());
+        BlockTransformExtent extent = new BlockTransformExtent(clipboard, transform);
         ForwardExtentCopy copy = new ForwardExtentCopy(extent, clipboard.getRegion(), clipboard.getOrigin(), targetExtent, to);
         copy.setTransform(transform);
         if (ignoreAirBlocks) {

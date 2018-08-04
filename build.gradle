@@ -35,7 +35,7 @@ buildscript {
 
 allprojects {
     group = 'com.sk89q.worldedit'
-    version = '6.1.10-SNAPSHOT'
+    version = '7.0.0-SNAPSHOT'
 }
 
 if (!project.hasProperty("artifactory_contextUrl")) ext.artifactory_contextUrl = "http://localhost"
@@ -87,8 +87,8 @@ subprojects {
 
     ext.internalVersion = version + ";" + gitCommitHash
 
-    sourceCompatibility = 1.7
-    targetCompatibility = 1.7
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
 
     checkstyle.configFile = new File(rootProject.projectDir, "config/checkstyle/checkstyle.xml")
     checkstyle.toolVersion = '7.6.1'

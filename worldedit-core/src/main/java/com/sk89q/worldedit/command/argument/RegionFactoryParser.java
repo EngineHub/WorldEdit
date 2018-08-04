@@ -40,14 +40,17 @@ public class RegionFactoryParser implements CommandExecutor<RegionFactory> {
         try {
             String type = args.next();
 
-            if (type.equals("cuboid")) {
-                return new CuboidRegionFactory();
-            } else if (type.equals("sphere")) {
-                return new SphereRegionFactory();
-            } else if (type.equals("cyl") || type.equals("cylinder")) {
-                return new CylinderRegionFactory(1); // TODO: Adjustable height
-            } else {
-                throw new CommandException("Unknown shape type: " + type + " (try one of " + getUsage() + ")");
+            switch (type) {
+                case "cuboid":
+                    return new CuboidRegionFactory();
+                case "sphere":
+                    return new SphereRegionFactory();
+                case "cyl":
+                case "cylinder":
+                    return new CylinderRegionFactory(1); // TODO: Adjustable height
+
+                default:
+                    throw new CommandException("Unknown shape type: " + type + " (try one of " + getUsage() + ")");
             }
         } catch (MissingArgumentException e) {
             throw new CommandException("Missing shape type (try one of " + getUsage() + ")");

@@ -27,8 +27,9 @@ import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.regions.selector.limit.SelectorLimits;
 import com.sk89q.worldedit.world.World;
 
-import javax.annotation.Nullable;
 import java.util.List;
+
+import javax.annotation.Nullable;
 
 /**
  * Region selectors create {@link Region}s from a series of "selected points."

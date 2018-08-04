@@ -19,13 +19,16 @@
 
 package com.sk89q.worldedit.command;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
-import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.LocalSession;
+import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.entity.Player;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Commands to undo, redo, and clear history.
@@ -60,7 +63,7 @@ public class HistoryCommands {
                 undone = session.undo(session.getBlockBag(player), player);
             } else {
                 player.checkPermission("worldedit.history.undo.other");
-                LocalSession sess = worldEdit.getSession(args.getString(1));
+                LocalSession sess = worldEdit.getSessionManager().findByName(args.getString(1));
                 if (sess == null) {
                     player.printError("Unable to find session for " + args.getString(1));
                     break;
@@ -95,7 +98,7 @@ public class HistoryCommands {
                 redone = session.redo(session.getBlockBag(player), player);
             } else {
                 player.checkPermission("worldedit.history.redo.other");
-                LocalSession sess = worldEdit.getSession(args.getString(1));
+                LocalSession sess = worldEdit.getSessionManager().findByName(args.getString(1));
                 if (sess == null) {
                     player.printError("Unable to find session for " + args.getString(1));
                     break;

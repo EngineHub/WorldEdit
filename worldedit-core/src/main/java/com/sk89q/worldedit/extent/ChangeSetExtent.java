@@ -19,6 +19,8 @@
 
 package com.sk89q.worldedit.extent;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
@@ -30,13 +32,12 @@ import com.sk89q.worldedit.history.change.EntityRemove;
 import com.sk89q.worldedit.history.changeset.ChangeSet;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.Location;
-
-import javax.annotation.Nullable;
+import com.sk89q.worldedit.world.block.BlockStateHolder;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import javax.annotation.Nullable;
 
 /**
  * Stores changes to a {@link ChangeSet}.
@@ -58,8 +59,8 @@ public class ChangeSetExtent extends AbstractDelegateExtent {
     }
 
     @Override
-    public boolean setBlock(Vector location, BaseBlock block) throws WorldEditException {
-        BaseBlock previous = getBlock(location);
+    public boolean setBlock(Vector location, BlockStateHolder block) throws WorldEditException {
+        BaseBlock previous = getFullBlock(location);
         changeSet.add(new BlockChange(location.toBlockVector(), previous, block));
         return super.setBlock(location, block);
     }
@@ -85,7 +86,7 @@ public class ChangeSetExtent extends AbstractDelegateExtent {
     }
 
     private List<? extends Entity> wrapEntities(List<? extends Entity> entities) {
-        List<Entity> newList = new ArrayList<Entity>(entities.size());
+        List<Entity> newList = new ArrayList<>(entities.size());
         for (Entity entity : entities) {
             newList.add(new TrackedEntity(entity));
         }
