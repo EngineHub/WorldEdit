@@ -129,6 +129,9 @@ public final class NBTOutputStream implements Closeable {
         case NBTConstants.TYPE_INT_ARRAY:
             writeIntArrayTagPayload((IntArrayTag) tag);
             break;
+        case NBTConstants.TYPE_LONG_ARRAY:
+            writeLongArrayTagPayload((LongArrayTag) tag);
+            break;
         default:
             throw new IOException("Invalid tag type: " + type + ".");
         }
@@ -284,6 +287,14 @@ public final class NBTOutputStream implements Closeable {
         for (int aData : data) {
             os.writeInt(aData);
         } 
+    }
+
+    private void writeLongArrayTagPayload(LongArrayTag tag) throws IOException {
+        long[] data = tag.getValue();
+        os.writeInt(data.length);
+        for (long aData : data) {
+            os.writeLong(aData);
+        }
     }
 
     @Override

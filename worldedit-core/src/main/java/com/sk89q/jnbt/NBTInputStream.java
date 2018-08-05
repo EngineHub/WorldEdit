@@ -158,6 +158,13 @@ public final class NBTInputStream implements Closeable {
                 data[i] = is.readInt();
             }
             return new IntArrayTag(data);
+        case NBTConstants.TYPE_LONG_ARRAY:
+            length = is.readInt();
+            long[] longData = new long[length];
+            for (int i = 0; i < length; i++) {
+                longData[i] = is.readLong();
+            }
+            return new LongArrayTag(longData);
         default:
             throw new IOException("Invalid tag type: " + type + ".");
         }

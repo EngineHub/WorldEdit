@@ -202,6 +202,12 @@ public class SpongeSchematicReader extends NBTSchematicReader {
                             handler.updateNBT(state, values);
                         }
                     }
+                    values.put("x", new IntTag(pt.getBlockX()));
+                    values.put("y", new IntTag(pt.getBlockY()));
+                    values.put("z", new IntTag(pt.getBlockZ()));
+                    values.put("id", values.get("Id"));
+                    values.remove("Id");
+                    values.remove("Pos");
                     clipboard.setBlock(pt, new BaseBlock(state, new CompoundTag(values)));
                 } else {
                     clipboard.setBlock(pt, state);

@@ -89,7 +89,7 @@ public class SchematicCommands {
     )
     @Deprecated
     @CommandPermissions({ "worldedit.clipboard.load", "worldedit.schematic.load" })
-    public void load(Player player, LocalSession session, @Optional("schematic") String formatName, String filename) throws FilenameException {
+    public void load(Player player, LocalSession session, @Optional("sponge") String formatName, String filename) throws FilenameException {
         LocalConfiguration config = worldEdit.getConfiguration();
 
         File dir = worldEdit.getWorkingDirectoryFile(config.saveDir);

@@ -135,6 +135,18 @@ public class CompoundTagBuilder {
 
     /**
      * Put the given key and value into the compound tag as a
+     * {@code LongArrayTag}.
+     *
+     * @param key they key
+     * @param value the value
+     * @return this object
+     */
+    public CompoundTagBuilder putLongArray(String key, long[] value) {
+        return put(key, new LongArrayTag(value));
+    }
+
+    /**
+     * Put the given key and value into the compound tag as a
      * {@code LongTag}.
      *
      * @param key they key

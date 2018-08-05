@@ -318,6 +318,24 @@ public final class CompoundTag extends Tag {
     }
 
     /**
+     * Get a {@code long[]} named with the given key.
+     *
+     * <p>If the key does not exist or its value is not an long array tag,
+     * then an empty array will be returned.</p>
+     *
+     * @param key the key
+     * @return an int array
+     */
+    public long[] getLongArray(String key) {
+        Tag tag = value.get(key);
+        if (tag instanceof LongArrayTag) {
+            return ((LongArrayTag) tag).getValue();
+        } else {
+            return new long[0];
+        }
+    }
+
+    /**
      * Get a long named with the given key.
      *
      * <p>If the key does not exist or its value is not a long tag,

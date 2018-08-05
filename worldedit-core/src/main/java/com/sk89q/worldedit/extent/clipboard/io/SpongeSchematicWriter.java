@@ -117,7 +117,7 @@ public class SpongeSchematicWriter implements ClipboardWriter {
         int paletteMax = 0;
         Map<String, Integer> palette = new HashMap<>();
 
-        List<Tag> tileEntities = new ArrayList<>();
+        List<CompoundTag> tileEntities = new ArrayList<>();
 
         ByteArrayOutputStream buffer = new ByteArrayOutputStream(width * height * length);
 
@@ -135,6 +135,13 @@ public class SpongeSchematicWriter implements ClipboardWriter {
                             values.put(entry.getKey(), entry.getValue());
                         }
 
+                        values.remove("id"); // Remove 'id' if it exists. We want 'Id'
+
+                        // Positions are kept in NBT, we don't want that.
+                        values.remove("x");
+                        values.remove("y");
+                        values.remove("z");
+
                         values.put("Id", new StringTag(block.getNbtId()));
                         values.put("Pos", new IntArrayTag(new int[]{
                                 x,
@@ -142,8 +149,7 @@ public class SpongeSchematicWriter implements ClipboardWriter {
                                 z
                         }));
 
-                        CompoundTag tileEntityTag = new CompoundTag(values);
-                        tileEntities.add(tileEntityTag);
+                        tileEntities.add(new CompoundTag(values));
                     }
 
                     String blockKey = block.toImmutableState().getAsString();

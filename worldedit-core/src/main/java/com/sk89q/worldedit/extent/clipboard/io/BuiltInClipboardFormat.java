@@ -76,7 +76,7 @@ public enum BuiltInClipboardFormat implements ClipboardFormat {
                 if (!schematic.containsKey("Materials")) {
                     return false;
                 }
-            } catch (IOException e) {
+            } catch (Exception e) {
                 return false;
             }
             return true;
@@ -115,7 +115,7 @@ public enum BuiltInClipboardFormat implements ClipboardFormat {
                 if (!schematic.containsKey("Version")) {
                     return false;
                 }
-            } catch (IOException e) {
+            } catch (Exception e) {
                 return false;
             }
 
