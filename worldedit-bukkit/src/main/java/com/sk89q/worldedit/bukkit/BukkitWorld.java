@@ -111,10 +111,19 @@ public class BukkitWorld extends AbstractWorld {
     public com.sk89q.worldedit.entity.Entity createEntity(com.sk89q.worldedit.util.Location location, BaseEntity entity) {
         BukkitImplAdapter adapter = WorldEditPlugin.getInstance().getBukkitImplAdapter();
         if (adapter != null) {
-            Entity createdEntity = adapter.createEntity(BukkitAdapter.adapt(getWorld(), location), entity);
-            if (createdEntity != null) {
-                return new BukkitEntity(createdEntity);
-            } else {
+            try {
+                Entity createdEntity = adapter.createEntity(BukkitAdapter.adapt(getWorld(), location), entity);
+                if (createdEntity != null) {
+                    return new BukkitEntity(createdEntity);
+                } else {
+                    return null;
+                }
+            } catch (Exception e) {
+                logger.warning("Corrupt entity found when creating: " + entity.getType().getId());
+                if (entity.getNbtData() != null) {
+                    logger.warning(entity.getNbtData().toString());
+                }
+                e.printStackTrace();
                 return null;
             }
         } else {
