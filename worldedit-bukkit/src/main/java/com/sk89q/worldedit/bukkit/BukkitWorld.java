@@ -418,7 +418,18 @@ public class BukkitWorld extends AbstractWorld {
     public boolean setBlock(Vector position, BlockStateHolder block, boolean notifyAndLight) throws WorldEditException {
         BukkitImplAdapter adapter = WorldEditPlugin.getInstance().getBukkitImplAdapter();
         if (adapter != null) {
-            return adapter.setBlock(BukkitAdapter.adapt(getWorld(), position), block, notifyAndLight);
+            try {
+                return adapter.setBlock(BukkitAdapter.adapt(getWorld(), position), block, notifyAndLight);
+            } catch (Exception e) {
+                if (block instanceof BaseBlock && ((BaseBlock) block).getNbtData() != null) {
+                    logger.warning("Tried to set a corrupt tile entity at " + position.toString());
+                    logger.warning(((BaseBlock) block).getNbtData().toString());
+                }
+                e.printStackTrace();
+                Block bukkitBlock = getWorld().getBlockAt(position.getBlockX(), position.getBlockY(), position.getBlockZ());
+                bukkitBlock.setBlockData(BukkitAdapter.adapt(block), notifyAndLight);
+                return true;
+            }
         } else {
             Block bukkitBlock = getWorld().getBlockAt(position.getBlockX(), position.getBlockY(), position.getBlockZ());
             bukkitBlock.setBlockData(BukkitAdapter.adapt(block), notifyAndLight);
