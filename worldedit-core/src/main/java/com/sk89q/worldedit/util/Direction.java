@@ -53,7 +53,7 @@ public enum Direction {
     private final Vector direction;
     private final int flags;
 
-    private Direction(Vector vector, int flags) {
+    Direction(Vector vector, int flags) {
         this.direction = vector.normalize();
         this.flags = flags;
     }

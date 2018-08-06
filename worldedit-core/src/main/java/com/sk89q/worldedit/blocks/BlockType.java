@@ -19,10 +19,7 @@
 
 package com.sk89q.worldedit.blocks;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import com.sk89q.worldedit.PlayerDirection;
-import com.sk89q.worldedit.world.block.BlockStateHolder;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -36,95 +33,6 @@ import java.util.Map;
 public enum BlockType {
 
     ;
-
-    /**
-     * HashSet for centralTopLimit.
-     */
-    private static final Map<Integer, Double> centralTopLimit = new HashMap<>();
-    static {
-        centralTopLimit.put(BlockID.BED, 0.5625);
-        centralTopLimit.put(BlockID.BREWING_STAND, 0.875);
-        centralTopLimit.put(BlockID.CAKE_BLOCK, 0.4375);
-        for (int data = 6; data < 16; ++data) {
-            centralTopLimit.put(-16*BlockID.CAKE_BLOCK-data, 0.0);
-        }
-        centralTopLimit.put(BlockID.CAULDRON, 0.3125);
-        centralTopLimit.put(BlockID.COCOA_PLANT, 0.750);
-        centralTopLimit.put(BlockID.ENCHANTMENT_TABLE, 0.75);
-        for (int data = 0; data < 16; ++data) {
-            if ((data & 4) != 0) {
-                centralTopLimit.put(-16*BlockID.END_PORTAL_FRAME-data, 1.0);
-            } else {
-                centralTopLimit.put(-16*BlockID.END_PORTAL_FRAME-data, 0.8125);
-            }
-            centralTopLimit.put(-16*BlockID.HEAD-data, 0.75);
-        }
-        // Heads on the floor are lower
-        centralTopLimit.put(-16*BlockID.HEAD-1, 0.5);
-        centralTopLimit.put(-16*BlockID.HEAD-9, 0.5);
-        centralTopLimit.put(BlockID.FENCE, 1.5);
-        for (int data = 0; data < 8; ++data) {
-            centralTopLimit.put(-16*BlockID.STEP-data, 0.5);
-            centralTopLimit.put(-16*BlockID.WOODEN_STEP-data, 0.5);
-            centralTopLimit.put(-16*BlockID.STEP2-data, 0.5);
-            centralTopLimit.put(-16*BlockID.SNOW-data, 0.125*data);
-            centralTopLimit.put(-16*BlockID.SNOW-(data+8), 0.125*data);
-        }
-        centralTopLimit.put(BlockID.LILY_PAD, 0.015625);
-        centralTopLimit.put(BlockID.REDSTONE_REPEATER_ON, .125);
-        centralTopLimit.put(BlockID.REDSTONE_REPEATER_OFF, .125);
-        for (int data = 0; data < 4; ++data) {
-            centralTopLimit.put(-16*BlockID.TRAP_DOOR-(data+ 0), 0.1875); // closed lower trap doors
-            centralTopLimit.put(-16*BlockID.TRAP_DOOR-(data+ 4), 0.0); // opened lower trap doors
-            centralTopLimit.put(-16*BlockID.TRAP_DOOR-(data+ 8), 1.0); // closed upper trap doors
-            centralTopLimit.put(-16*BlockID.TRAP_DOOR-(data+12), 0.0); // opened upper trap doors
-
-            centralTopLimit.put(-16*BlockID.FENCE_GATE-(data+ 0), 1.5);
-            centralTopLimit.put(-16*BlockID.FENCE_GATE-(data+ 4), 0.0);
-            centralTopLimit.put(-16*BlockID.FENCE_GATE-(data+ 8), 1.5);
-            centralTopLimit.put(-16*BlockID.FENCE_GATE-(data+12), 0.0);
-        }
-        centralTopLimit.put(BlockID.SLOW_SAND, 0.875);
-        centralTopLimit.put(BlockID.COBBLESTONE_WALL, 1.5);
-        centralTopLimit.put(BlockID.FLOWER_POT, 0.375);
-        centralTopLimit.put(BlockID.COMPARATOR_OFF, .125);
-        centralTopLimit.put(BlockID.COMPARATOR_ON, .125);
-        centralTopLimit.put(BlockID.DAYLIGHT_SENSOR, 0.375);
-        centralTopLimit.put(BlockID.HOPPER, 0.625);
-
-        // Some default values to be used if no data value is given
-        centralTopLimit.put(BlockID.HEAD, 0.75);
-        centralTopLimit.put(BlockID.TRAP_DOOR, 1.0);
-        centralTopLimit.put(BlockID.FENCE_GATE, 1.5);
-    }
-
-    /**
-     * Returns the y offset a player falls to when falling onto the top of a block at xp+0.5/zp+0.5.
-     *
-     * @param id the block ID
-     * @param data the block data value
-     * @return the y offset
-     */
-    public static double centralTopLimit(int id, int data) {
-        if (centralTopLimit.containsKey(-16*id-data))
-            return centralTopLimit.get(-16*id-data);
-
-        if (centralTopLimit.containsKey(id))
-            return centralTopLimit.get(id);
-
-        return 1;
-    }
-
-    /**
-     * Returns the y offset a player falls to when falling onto the top of a block at xp+0.5/zp+0.5.
-     *
-     * @param block the block
-     * @return the y offset
-     */
-    public static double centralTopLimit(BlockStateHolder block) {
-        checkNotNull(block);
-        return centralTopLimit(block.getBlockType().getLegacyId(), 0);
-    }
 
     private static final Map<Integer, PlayerDirection> dataAttachments = new HashMap<>();
     private static final Map<Integer, PlayerDirection> nonDataAttachments = new HashMap<>();

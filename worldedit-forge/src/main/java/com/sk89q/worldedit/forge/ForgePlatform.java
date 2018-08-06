@@ -85,7 +85,7 @@ class ForgePlatform extends AbstractPlatform implements MultiUserPlatform {
     @Override
     public List<? extends com.sk89q.worldedit.world.World> getWorlds() {
         WorldServer[] worlds = DimensionManager.getWorlds();
-        List<com.sk89q.worldedit.world.World> ret = new ArrayList<com.sk89q.worldedit.world.World>(worlds.length);
+        List<com.sk89q.worldedit.world.World> ret = new ArrayList<>(worlds.length);
         for (WorldServer world : worlds) {
             ret.add(new ForgeWorld(world));
         }
@@ -164,7 +164,7 @@ class ForgePlatform extends AbstractPlatform implements MultiUserPlatform {
 
     @Override
     public Map<Capability, Preference> getCapabilities() {
-        Map<Capability, Preference> capabilities = new EnumMap<Capability, Preference>(Capability.class);
+        Map<Capability, Preference> capabilities = new EnumMap<>(Capability.class);
         capabilities.put(Capability.CONFIGURATION, Preference.PREFER_OTHERS);
         capabilities.put(Capability.WORLDEDIT_CUI, Preference.NORMAL);
         capabilities.put(Capability.GAME_HOOKS, Preference.NORMAL);
@@ -176,7 +176,7 @@ class ForgePlatform extends AbstractPlatform implements MultiUserPlatform {
 
     @Override
     public Collection<Actor> getConnectedUsers() {
-        List<Actor> users = new ArrayList<Actor>();
+        List<Actor> users = new ArrayList<>();
         PlayerList scm = server.getPlayerList();
         for (EntityPlayerMP entity : scm.getPlayers()) {
             if (entity != null) {

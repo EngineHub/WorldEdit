@@ -107,6 +107,7 @@ import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.block.BlockTypes;
+import com.sk89q.worldedit.world.registry.LegacyMapper;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -1785,7 +1786,7 @@ public class EditSession implements Extent {
                         return null;
                     }
 
-                    return new BaseBlock((int) typeVariable.getValue(), (int) dataVariable.getValue());
+                    return LegacyMapper.getInstance().getBlockFromLegacy((int) typeVariable.getValue(), (int) dataVariable.getValue());
                 } catch (Exception e) {
                     log.log(Level.WARNING, "Failed to create shape", e);
                     return null;

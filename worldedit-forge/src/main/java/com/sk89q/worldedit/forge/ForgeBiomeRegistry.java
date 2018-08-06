@@ -39,7 +39,7 @@ class ForgeBiomeRegistry implements BiomeRegistry {
 
     @Override
     public List<BaseBiome> getBiomes() {
-        List<BaseBiome> list = new ArrayList<BaseBiome>();
+        List<BaseBiome> list = new ArrayList<>();
         for (Biome biome : Biome.REGISTRY) {
             list.add(new BaseBiome(Biome.getIdForBiome(biome)));
         }

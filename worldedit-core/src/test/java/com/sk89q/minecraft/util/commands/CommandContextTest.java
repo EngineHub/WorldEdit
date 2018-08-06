@@ -42,7 +42,7 @@ public class CommandContextTest {
     @Before
     public void setUpTest() {
         try {
-            firstCommand = new CommandContext(firstCmdString, new HashSet<Character>(Arrays.asList('o', 'w')));
+            firstCommand = new CommandContext(firstCmdString, new HashSet<>(Arrays.asList('o', 'w')));
         } catch (CommandException e) {
             log.log(Level.WARNING, "Error", e);
             fail("Unexpected exception when creating CommandContext");
@@ -52,7 +52,7 @@ public class CommandContextTest {
     @Test(expected = CommandException.class)
     public void testInvalidFlags() throws CommandException {
         final String failingCommand = "herpderp -opw testers";
-        new CommandContext(failingCommand, new HashSet<Character>(Arrays.asList('o', 'w')));
+        new CommandContext(failingCommand, new HashSet<>(Arrays.asList('o', 'w')));
     }
 
     @Test

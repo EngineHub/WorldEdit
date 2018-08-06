@@ -84,25 +84,6 @@ public class BaseBlock implements BlockStateHolder<BaseBlock>, TileEntityBlock {
     }
 
     /**
-     * Construct a block with the given ID and data value.
-     *
-     * @param id ID value
-     * @param data data value
-     */
-    @Deprecated
-    public BaseBlock(int id, int data) {
-        try {
-            this.blockState = LegacyMapper.getInstance().getBlockFromLegacy(id, data);
-            if (this.blockState == null) {
-                this.blockState = BlockTypes.AIR.getDefaultState();
-            }
-        } catch (Exception e) {
-            System.out.println(id);
-            e.printStackTrace();
-        }
-    }
-
-    /**
      * Create a clone of another block.
      *
      * @param other the other block

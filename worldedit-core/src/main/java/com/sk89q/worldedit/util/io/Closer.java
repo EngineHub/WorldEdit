@@ -102,7 +102,8 @@ public final class Closer implements Closeable {
     public RuntimeException rethrow(Throwable e) throws IOException {
         thrown = e;
         Throwables.propagateIfPossible(e, IOException.class);
-        throw Throwables.propagate(e);
+        Throwables.throwIfUnchecked(e);
+        throw new RuntimeException(e);
     }
 
     /**
@@ -124,7 +125,8 @@ public final class Closer implements Closeable {
         thrown = e;
         Throwables.propagateIfPossible(e, IOException.class);
         Throwables.propagateIfPossible(e, declaredType);
-        throw Throwables.propagate(e);
+        Throwables.throwIfUnchecked(e);
+        throw new RuntimeException(e);
     }
 
     /**
@@ -147,7 +149,8 @@ public final class Closer implements Closeable {
         thrown = e;
         Throwables.propagateIfPossible(e, IOException.class);
         Throwables.propagateIfPossible(e, declaredType1, declaredType2);
-        throw Throwables.propagate(e);
+        Throwables.throwIfUnchecked(e);
+        throw new RuntimeException(e);
     }
 
     /**
