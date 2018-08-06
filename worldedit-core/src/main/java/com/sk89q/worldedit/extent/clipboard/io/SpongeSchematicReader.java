@@ -21,6 +21,7 @@ package com.sk89q.worldedit.extent.clipboard.io;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import com.google.common.collect.Maps;
 import com.sk89q.jnbt.ByteArrayTag;
 import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.jnbt.IntArrayTag;
@@ -196,7 +197,7 @@ public class SpongeSchematicReader extends NBTSchematicReader {
             BlockVector pt = new BlockVector(x, y, z);
             try {
                 if (tileEntitiesMap.containsKey(pt)) {
-                    Map<String, Tag> values = tileEntitiesMap.get(pt);
+                    Map<String, Tag> values = Maps.newHashMap(tileEntitiesMap.get(pt));
                     for (NBTCompatibilityHandler handler : COMPATIBILITY_HANDLERS) {
                         if (handler.isAffectedBlock(state)) {
                             handler.updateNBT(state, values);
