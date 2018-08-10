@@ -743,7 +743,7 @@ public class EditSession implements Extent {
      * @return number of blocks affected
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
-    public int setBlocks(Region region, BaseBlock block) throws MaxChangedBlocksException {
+    public int setBlocks(Region region, BlockStateHolder block) throws MaxChangedBlocksException {
         return setBlocks(region, new BlockPattern(block));
     }
 
