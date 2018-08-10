@@ -22,7 +22,7 @@ package com.sk89q.worldedit.extension.platform;
 import com.sk89q.worldedit.PlayerDirection;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.internal.cui.CUIEvent;
@@ -367,9 +367,9 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
     public BaseBlock getBlockInHand(HandSide handSide) throws WorldEditException {
         final ItemType typeId = getItemInHand(handSide).getType();
         if (typeId.hasBlockType()) {
-            return new BaseBlock(typeId.getBlockType());
+            return typeId.getBlockType().getDefaultState().toBaseBlock();
         } else {
-            return new BaseBlock(BlockTypes.AIR);
+            return BlockTypes.AIR.getDefaultState().toBaseBlock();
         }
     }
 

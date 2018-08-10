@@ -22,7 +22,7 @@ package com.sk89q.worldedit.extent;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.Vector2D;
 import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.function.operation.Operation;
@@ -79,7 +79,7 @@ public class NullExtent implements Extent {
 
     @Override
     public BaseBlock getFullBlock(Vector position) {
-        return new BaseBlock(getBlock(position));
+        return getBlock(position).toBaseBlock();
     }
 
     @Nullable

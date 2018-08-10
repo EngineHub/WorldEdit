@@ -19,7 +19,7 @@
 
 package com.sk89q.worldedit.forge;
 
-import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.blocks.TileEntityBlock;
 import com.sk89q.worldedit.world.block.BlockState;
 import net.minecraft.nbt.NBTTagCompound;

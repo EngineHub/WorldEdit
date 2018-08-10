@@ -24,7 +24,7 @@ import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.Vector2D;
 import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
@@ -126,7 +126,7 @@ public class NullWorld extends AbstractWorld {
 
     @Override
     public BaseBlock getFullBlock(Vector position) {
-        return new BaseBlock(getBlock(position));
+        return getBlock(position).toBaseBlock();
     }
 
     @Override

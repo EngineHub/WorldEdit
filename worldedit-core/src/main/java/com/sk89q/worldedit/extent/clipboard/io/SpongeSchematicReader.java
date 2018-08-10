@@ -35,7 +35,7 @@ import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.extension.input.InputParseException;
 import com.sk89q.worldedit.extension.input.ParserContext;
 import com.sk89q.worldedit.extent.clipboard.BlockArrayClipboard;
@@ -209,7 +209,7 @@ public class SpongeSchematicReader extends NBTSchematicReader {
                     values.put("id", values.get("Id"));
                     values.remove("Id");
                     values.remove("Pos");
-                    clipboard.setBlock(pt, new BaseBlock(state, new CompoundTag(values)));
+                    clipboard.setBlock(pt, state.toBaseBlock(new CompoundTag(values)));
                 } else {
                     clipboard.setBlock(pt, state);
                 }

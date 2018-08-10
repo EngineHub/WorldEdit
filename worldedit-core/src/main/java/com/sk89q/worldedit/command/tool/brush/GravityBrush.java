@@ -22,7 +22,6 @@ package com.sk89q.worldedit.command.tool.brush;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.block.BlockTypes;
@@ -41,7 +40,6 @@ public class GravityBrush implements Brush {
 
     @Override
     public void build(EditSession editSession, Vector position, Pattern pattern, double size) throws MaxChangedBlocksException {
-        final BaseBlock air = new BaseBlock(BlockTypes.AIR);
         final double startY = fullHeight ? editSession.getWorld().getMaxY() : position.getBlockY() + size;
         for (double x = position.getBlockX() + size; x > position.getBlockX() - size; --x) {
             for (double z = position.getBlockZ() + size; z > position.getBlockZ() - size; --z) {
@@ -52,7 +50,7 @@ public class GravityBrush implements Brush {
                     final BlockStateHolder block = editSession.getBlock(pt);
                     if (block.getBlockType() != BlockTypes.AIR) {
                         blockTypes.add(block);
-                        editSession.setBlock(pt, air);
+                        editSession.setBlock(pt, BlockTypes.AIR.getDefaultState());
                     }
                 }
                 Vector pt = new Vector(x, y, z);

@@ -17,7 +17,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.blocks;
+package com.sk89q.worldedit.world.registry;
 
 /**
  * Describes the material for a block.

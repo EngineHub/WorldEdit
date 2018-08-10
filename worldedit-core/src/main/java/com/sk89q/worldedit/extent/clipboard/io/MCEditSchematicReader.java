@@ -33,7 +33,7 @@ import com.sk89q.jnbt.Tag;
 import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.extent.clipboard.BlockArrayClipboard;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
@@ -227,7 +227,7 @@ public class MCEditSchematicReader extends NBTSchematicReader {
                     try {
                         if (state != null) {
                             if (tileEntitiesMap.containsKey(pt)) {
-                                clipboard.setBlock(region.getMinimumPoint().add(pt), new BaseBlock(state, new CompoundTag(tileEntitiesMap.get(pt))));
+                                clipboard.setBlock(region.getMinimumPoint().add(pt), state.toBaseBlock(new CompoundTag(tileEntitiesMap.get(pt))));
                             } else {
                                 clipboard.setBlock(region.getMinimumPoint().add(pt), state);
                             }

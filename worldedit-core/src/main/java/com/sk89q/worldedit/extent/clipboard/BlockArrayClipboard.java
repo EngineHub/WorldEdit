@@ -24,7 +24,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.Vector2D;
 import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.function.operation.Operation;
@@ -141,15 +141,11 @@ public class BlockArrayClipboard implements Clipboard {
             Vector v = position.subtract(region.getMinimumPoint());
             BlockStateHolder block = blocks[v.getBlockX()][v.getBlockY()][v.getBlockZ()];
             if (block != null) {
-                if (block instanceof BaseBlock) {
-                    return (BaseBlock) block;
-                } else {
-                    return new BaseBlock(block.toImmutableState());
-                }
+                return block.toBaseBlock();
             }
         }
 
-        return new BaseBlock(BlockTypes.AIR);
+        return BlockTypes.AIR.getDefaultState().toBaseBlock();
     }
 
     @Override

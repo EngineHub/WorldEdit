@@ -24,6 +24,7 @@ import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Table;
+import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.registry.state.Property;
 
@@ -47,12 +48,15 @@ public class BlockState implements BlockStateHolder<BlockState> {
     private final Map<Property<?>, Object> values;
     private final boolean fuzzy;
 
+    private BaseBlock emptyBaseBlock;
+
     // Neighbouring state table.
     private Table<Property<?>, Object, BlockState> states;
 
     private BlockState(BlockType blockType) {
         this.blockType = blockType;
         this.values = new LinkedHashMap<>();
+        this.emptyBaseBlock = new BaseBlock(this);
         this.fuzzy = false;
     }
 
@@ -195,6 +199,22 @@ public class BlockState implements BlockStateHolder<BlockState> {
     @Override
     public BlockState toImmutableState() {
         return this;
+    }
+
+    @Override
+    public BaseBlock toBaseBlock() {
+        if (this.fuzzy) {
+            throw new IllegalArgumentException("Can't create a BaseBlock from a fuzzy BlockState!");
+        }
+        return this.emptyBaseBlock;
+    }
+
+    @Override
+    public BaseBlock toBaseBlock(CompoundTag compoundTag) {
+        if (compoundTag == null) {
+            return toBaseBlock();
+        }
+        return new BaseBlock(this, compoundTag);
     }
 
     /**

@@ -27,7 +27,7 @@ import com.sk89q.jnbt.NBTUtils;
 import com.sk89q.jnbt.Tag;
 import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.DataException;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BlockState;
@@ -154,7 +154,7 @@ public class OldChunk implements Chunk {
 
     @Override
     public BaseBlock getBlock(Vector position) throws DataException {
-        if(position.getBlockY() >= 128) new BaseBlock(BlockTypes.AIR);
+        if(position.getBlockY() >= 128) BlockTypes.AIR.getDefaultState().toBaseBlock();
         int id, dataVal;
 
         int x = position.getBlockX() - rootX * 16;
@@ -183,7 +183,7 @@ public class OldChunk implements Chunk {
         BlockState state = LegacyMapper.getInstance().getBlockFromLegacy(id, dataVal);
         CompoundTag tileEntity = getBlockTileEntity(position);
 
-        return new BaseBlock(state, tileEntity);
+        return state.toBaseBlock(tileEntity);
     }
 
 }

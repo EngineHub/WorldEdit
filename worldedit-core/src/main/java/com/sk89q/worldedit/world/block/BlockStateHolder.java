@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.world.block;
 
+import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.worldedit.registry.state.Property;
 
 import java.util.Map;
@@ -66,11 +67,26 @@ public interface BlockStateHolder<T extends BlockStateHolder> {
     boolean equalsFuzzy(BlockStateHolder o);
 
     /**
-     * Returns an immutable BlockState from this BlockStateHolder.
+     * Returns an immutable {@link BlockState} from this BlockStateHolder.
      *
      * @return A BlockState
      */
     BlockState toImmutableState();
+
+    /**
+     * Gets a {@link BaseBlock} from this BlockStateHolder.
+     *
+     * @return The BaseBlock
+     */
+    BaseBlock toBaseBlock();
+
+    /**
+     * Gets a {@link BaseBlock} from this BlockStateHolder.
+     *
+     * @param compoundTag The NBT Data to apply
+     * @return The BaseBlock
+     */
+    BaseBlock toBaseBlock(CompoundTag compoundTag);
 
     default String getAsString() {
         if (getStates().isEmpty()) {

@@ -19,8 +19,6 @@
 
 package com.sk89q.worldedit.world.registry;
 
-import com.sk89q.worldedit.blocks.BlockMaterial;
-
 import javax.annotation.Nullable;
 
 public class PassthroughBlockMaterial implements BlockMaterial {

@@ -25,7 +25,7 @@ import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.jnbt.CompoundTagBuilder;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.function.RegionFunction;
 import com.sk89q.worldedit.internal.helper.MCDirections;
@@ -104,7 +104,7 @@ public class ExtentBlockCopy implements RegionFunction {
 
                         builder.putByte("Rot", (byte) MCDirections.toRotation(newDirection));
 
-                        return new BaseBlock(state.toImmutableState(), builder.build());
+                        return state.toBaseBlock(builder.build());
                     }
                 }
             }

@@ -29,7 +29,7 @@ import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.Vector2D;
 import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.entity.BaseEntity;
@@ -388,7 +388,7 @@ public class ForgeWorld extends AbstractWorld {
         if (tile != null) {
             return new TileEntityBaseBlock(getBlock(position), tile);
         } else {
-            return new BaseBlock(getBlock(position));
+            return getBlock(position).toBaseBlock();
         }
     }
 
@@ -405,7 +405,7 @@ public class ForgeWorld extends AbstractWorld {
             ForgeWorld other = ((ForgeWorld) o);
             World otherWorld = other.worldRef.get();
             World thisWorld = worldRef.get();
-            return otherWorld != null && thisWorld != null && otherWorld.equals(thisWorld);
+            return otherWorld != null && otherWorld.equals(thisWorld);
         } else if (o instanceof com.sk89q.worldedit.world.World) {
             return ((com.sk89q.worldedit.world.World) o).getName().equals(getName());
         } else {

@@ -22,7 +22,7 @@ package com.sk89q.worldedit.world.block;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.blocks.BlockMaterial;
+import com.sk89q.worldedit.world.registry.BlockMaterial;
 import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.registry.NamespacedRegistry;
 import com.sk89q.worldedit.registry.state.Property;
