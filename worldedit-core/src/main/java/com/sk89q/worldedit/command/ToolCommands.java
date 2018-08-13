@@ -37,11 +37,10 @@ import com.sk89q.worldedit.command.tool.LongRangeBuildTool;
 import com.sk89q.worldedit.command.tool.QueryTool;
 import com.sk89q.worldedit.command.tool.TreePlanter;
 import com.sk89q.worldedit.entity.Player;
-import com.sk89q.worldedit.extension.input.ParserContext;
+import com.sk89q.worldedit.function.pattern.BlockPattern;
 import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.util.HandSide;
 import com.sk89q.worldedit.util.TreeGenerator;
-import com.sk89q.worldedit.world.block.BlockStateHolder;
 
 public class ToolCommands {
     private final WorldEdit we;
@@ -111,18 +110,9 @@ public class ToolCommands {
         max = 1
     )
     @CommandPermissions("worldedit.tool.replacer")
-    public void repl(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
-
-        ParserContext context = new ParserContext();
-        context.setActor(player);
-        context.setWorld(player.getWorld());
-        context.setSession(session);
-        context.setRestricted(true);
-        context.setPreferringWildcard(false);
-
-        BlockStateHolder targetBlock = we.getBlockFactory().parseFromInput(args.getString(0), context);
+    public void repl(Player player, LocalSession session, Pattern pattern) throws WorldEditException {
         BaseItemStack itemStack = player.getItemInHand(HandSide.MAIN_HAND);
-        session.setTool(itemStack.getType(), new BlockReplacer(targetBlock));
+        session.setTool(itemStack.getType(), new BlockReplacer(pattern));
         player.print("Block replacer tool bound to " + itemStack.getType().getName() + ".");
     }
 
@@ -149,21 +139,14 @@ public class ToolCommands {
         max = 2
     )
     @CommandPermissions("worldedit.tool.flood-fill")
-    public void floodFill(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
+    public void floodFill(Player player, LocalSession session, Pattern pattern, int range) throws WorldEditException {
 
         LocalConfiguration config = we.getConfiguration();
-        int range = args.getInteger(1);
 
         if (range > config.maxSuperPickaxeSize) {
             player.printError("Maximum range: " + config.maxSuperPickaxeSize);
             return;
         }
-
-        ParserContext context = new ParserContext();
-        context.setActor(player);
-        context.setWorld(player.getWorld());
-        context.setSession(session);
-        Pattern pattern = we.getPatternFactory().parseFromInput(args.getString(0), context);
 
         BaseItemStack itemStack = player.getItemInHand(HandSide.MAIN_HAND);
         session.setTool(itemStack.getType(), new FloodFillTool(range, pattern));
@@ -209,23 +192,20 @@ public class ToolCommands {
             max = 2
     )
     @CommandPermissions("worldedit.tool.lrbuild")
-    public void longrangebuildtool(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
-
-        ParserContext context = new ParserContext();
-        context.setActor(player);
-        context.setWorld(player.getWorld());
-        context.setSession(session);
-        context.setRestricted(true);
-        context.setPreferringWildcard(false);
-
-        BlockStateHolder secondary = we.getBlockFactory().parseFromInput(args.getString(0), context);
-        BlockStateHolder primary = we.getBlockFactory().parseFromInput(args.getString(1), context);
-
+    public void longrangebuildtool(Player player, LocalSession session, Pattern secondary, Pattern primary) throws WorldEditException {
         BaseItemStack itemStack = player.getItemInHand(HandSide.MAIN_HAND);
 
         session.setTool(itemStack.getType(), new LongRangeBuildTool(primary, secondary));
         player.print("Long-range building tool bound to " + itemStack.getType().getName() + ".");
-        player.print("Left-click set to " + secondary.getBlockType().getName() + "; right-click set to "
-                + primary.getBlockType().getName() + ".");
+        String primaryName = "pattern";
+        String secondaryName = "pattern";
+        if (primary instanceof BlockPattern) {
+            primaryName = ((BlockPattern) primary).getBlock().getBlockType().getName();
+        }
+        if (secondary instanceof BlockPattern) {
+            secondaryName = ((BlockPattern) secondary).getBlock().getBlockType().getName();
+        }
+        player.print("Left-click set to " + secondaryName + "; right-click set to "
+                + primaryName + ".");
     }
 }

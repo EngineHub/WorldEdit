@@ -79,6 +79,11 @@ public class ItemType {
     }
 
     @Override
+    public String toString() {
+        return getId();
+    }
+
+    @Override
     public int hashCode() {
         return this.id.hashCode();
     }

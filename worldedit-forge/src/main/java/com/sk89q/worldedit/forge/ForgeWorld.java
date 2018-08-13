@@ -386,7 +386,7 @@ public class ForgeWorld extends AbstractWorld {
         TileEntity tile = getWorld().getTileEntity(pos);
 
         if (tile != null) {
-            return new TileEntityBaseBlock(getBlock(position), tile);
+            return getBlock(position).toBaseBlock(NBTConverter.fromNative(TileEntityUtils.copyNbtData(tile)));
         } else {
             return getBlock(position).toBaseBlock();
         }

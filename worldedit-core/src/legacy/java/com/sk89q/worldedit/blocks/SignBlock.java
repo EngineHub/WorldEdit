@@ -32,7 +32,7 @@ import java.util.Map;
 /**
  * Represents a sign block.
  */
-public class SignBlock extends BaseBlock implements TileEntityBlock {
+public class SignBlock extends BaseBlock {
 
     private String[] text;
 

@@ -23,22 +23,24 @@ import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
+import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
+import com.sk89q.worldedit.function.pattern.BlockPattern;
+import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
-import com.sk89q.worldedit.world.block.BlockType;
 
 /**
  * A mode that replaces one block.
  */
 public class BlockReplacer implements DoubleActionBlockTool {
 
-    private BlockStateHolder targetBlock;
+    private Pattern pattern;
 
-    public BlockReplacer(BlockStateHolder targetBlock) {
-        this.targetBlock = targetBlock;
+    public BlockReplacer(Pattern pattern) {
+        this.pattern = pattern;
     }
 
     @Override
@@ -53,7 +55,8 @@ public class BlockReplacer implements DoubleActionBlockTool {
         EditSession editSession = session.createEditSession(player);
 
         try {
-            editSession.setBlock(clicked.toVector(), targetBlock);
+            Vector position = clicked.toVector();
+            editSession.setBlock(position, pattern.apply(position));
         } catch (MaxChangedBlocksException ignored) {
         } finally {
             if (bag != null) {
@@ -69,11 +72,11 @@ public class BlockReplacer implements DoubleActionBlockTool {
     @Override
     public boolean actSecondary(Platform server, LocalConfiguration config, Player player, LocalSession session, com.sk89q.worldedit.util.Location clicked) {
         EditSession editSession = session.createEditSession(player);
-        targetBlock = (editSession).getBlock(clicked.toVector());
-        BlockType type = targetBlock.getBlockType();
+        BlockStateHolder targetBlock = editSession.getBlock(clicked.toVector());
 
-        if (type != null) {
-            player.print("Replacer tool switched to: " + type.getName());
+        if (targetBlock != null) {
+            pattern = new BlockPattern(targetBlock);
+            player.print("Replacer tool switched to: " + targetBlock.getBlockType().getName());
         }
 
         return true;

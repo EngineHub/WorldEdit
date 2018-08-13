@@ -31,7 +31,7 @@ import java.util.Map;
 /**
  * A skull block.
  */
-public class SkullBlock extends BaseBlock implements TileEntityBlock {
+public class SkullBlock extends BaseBlock {
 
     private String owner = ""; // notchian
 

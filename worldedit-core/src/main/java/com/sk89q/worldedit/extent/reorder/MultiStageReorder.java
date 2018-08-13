@@ -21,10 +21,8 @@ package com.sk89q.worldedit.extent.reorder;
 
 import com.google.common.collect.Iterators;
 import com.sk89q.worldedit.BlockVector;
-import com.sk89q.worldedit.PlayerDirection;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.blocks.BlockType;
 import com.sk89q.worldedit.blocks.Blocks;
 import com.sk89q.worldedit.extent.AbstractDelegateExtent;
 import com.sk89q.worldedit.extent.Extent;
@@ -175,19 +173,18 @@ public class MultiStageReorder extends AbstractDelegateExtent implements Reorder
                         }
                     }
 
-                    final PlayerDirection attachment = BlockType.getAttachment(blockStateHolder.getBlockType().getLegacyId(), 0); // TODO
-                    if (attachment == null) {
+                    if (!blockStateHolder.getBlockType().getMaterial().isFragileWhenPushed()) {
                         // Block is not attached to anything => we can place it
                         break;
                     }
 
-                    current = current.add(attachment.vector()).toBlockVector();
-
-                    if (!blocks.contains(current)) {
-                        // We ran outside the remaining set => assume we can place blocks on this
-                        break;
-                    }
-
+//                    current = current.add(attachment.vector()).toBlockVector();
+//
+//                    if (!blocks.contains(current)) {
+//                        // We ran outside the remaining set => assume we can place blocks on this
+//                        break;
+//                    }
+//
                     if (walked.contains(current)) {
                         // Cycle detected => This will most likely go wrong, but there's nothing we can do about it.
                         break;

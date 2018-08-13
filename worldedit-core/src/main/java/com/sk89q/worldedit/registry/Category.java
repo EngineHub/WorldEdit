@@ -59,4 +59,9 @@ public abstract class Category<T> {
         this.set.clear();
         this.empty = true;
     }
+
+    @Override
+    public String toString() {
+        return getId();
+    }
 }

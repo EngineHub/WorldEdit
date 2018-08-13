@@ -35,7 +35,7 @@ import java.util.Map;
 /**
  * A mob spawner block.
  */
-public class MobSpawnerBlock extends BaseBlock implements TileEntityBlock {
+public class MobSpawnerBlock extends BaseBlock {
 
     private String mobType;
     private short delay;

@@ -51,29 +51,9 @@ public abstract class BlockBag {
     public void fetchPlacedBlock(BlockState blockState) throws BlockBagException {
         try {
             // Blocks that can't be fetched...
-//            TODO switch (id) {
-//            case BlockID.BEDROCK:
-//            case BlockID.GOLD_ORE:
-//            case BlockID.IRON_ORE:
-//            case BlockID.COAL_ORE:
-//            case BlockID.DIAMOND_ORE:
-//            case BlockID.TNT:
-//            case BlockID.MOB_SPAWNER:
-//            case BlockID.CROPS:
-//            case BlockID.REDSTONE_ORE:
-//            case BlockID.GLOWING_REDSTONE_ORE:
-//            case BlockID.SNOW:
-//            case BlockID.LIGHTSTONE:
-//            case BlockID.PORTAL:
-//                throw new UnplaceableBlockException();
-//
-//            case BlockID.WATER:
-//            case BlockID.STATIONARY_WATER:
-//            case BlockID.LAVA:
-//            case BlockID.STATIONARY_LAVA:
-//                // Override liquids
-//                return;
-//            }
+            if (blockState.getBlockType().getMaterial().isReplacedDuringPlacement()) {
+                return;
+            }
             fetchBlock(blockState);
         } catch (OutOfBlocksException e) {
             BlockState placed = blockState;// TODO BlockType.getBlockBagItem(id, data);

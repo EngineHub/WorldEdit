@@ -140,4 +140,9 @@ final class TileEntityUtils {
         return genericTE;
     }
 
+    public static NBTTagCompound copyNbtData(TileEntity tile) {
+        NBTTagCompound tag = new NBTTagCompound();
+        tile.writeToNBT(tag);
+        return tag;
+    }
 }

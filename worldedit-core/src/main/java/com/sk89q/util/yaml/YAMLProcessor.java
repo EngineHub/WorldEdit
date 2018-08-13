@@ -23,7 +23,6 @@ import com.sk89q.util.StringUtil;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.SafeConstructor;
-import org.yaml.snakeyaml.emitter.ScalarAnalysis;
 import org.yaml.snakeyaml.nodes.Tag;
 import org.yaml.snakeyaml.reader.UnicodeReader;
 import org.yaml.snakeyaml.representer.Representer;
@@ -90,7 +89,7 @@ public class YAMLProcessor extends YAMLNode {
         super(new LinkedHashMap<>(), writeDefaults);
         this.format = format;
 
-        DumperOptions options = new FancyDumperOptions();
+        DumperOptions options = new DumperOptions();
         options.setIndent(4);
         options.setDefaultFlowStyle(format.getStyle());
         Representer representer = new FancyRepresenter();
@@ -294,20 +293,6 @@ public class YAMLProcessor extends YAMLNode {
      */
     public static YAMLNode getEmptyNode(boolean writeDefaults) {
         return new YAMLNode(new LinkedHashMap<>(), writeDefaults);
-    }
-
-    // This will be included in snakeyaml 1.10, but until then we have to do it manually.
-    private class FancyDumperOptions extends DumperOptions {
-        @Override
-        public DumperOptions.ScalarStyle calculateScalarStyle(ScalarAnalysis analysis,
-                                                              DumperOptions.ScalarStyle style) {
-            if (format == YAMLFormat.EXTENDED
-                    && (analysis.scalar.contains("\n") || analysis.scalar.contains("\r"))) {
-                return ScalarStyle.LITERAL;
-            } else {
-                return super.calculateScalarStyle(analysis, style);
-            }
-        }
     }
 
     private static class FancyRepresenter extends Representer {
