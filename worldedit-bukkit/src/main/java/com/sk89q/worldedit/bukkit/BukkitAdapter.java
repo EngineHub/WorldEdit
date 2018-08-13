@@ -34,6 +34,8 @@ import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.block.BlockTypes;
+import com.sk89q.worldedit.world.entity.EntityType;
+import com.sk89q.worldedit.world.entity.EntityTypes;
 import com.sk89q.worldedit.world.gamemode.GameMode;
 import com.sk89q.worldedit.world.gamemode.GameModes;
 import com.sk89q.worldedit.world.item.ItemType;
@@ -244,7 +246,7 @@ public class BukkitAdapter {
         if (!itemType.getId().startsWith("minecraft:")) {
             throw new IllegalArgumentException("Bukkit only supports Minecraft items");
         }
-        return Material.getMaterial(itemType.getId().replace("minecraft:", "").toUpperCase());
+        return Material.getMaterial(itemType.getId().substring(10).toUpperCase());
     }
 
     /**
@@ -258,7 +260,7 @@ public class BukkitAdapter {
         if (!blockType.getId().startsWith("minecraft:")) {
             throw new IllegalArgumentException("Bukkit only supports Minecraft blocks");
         }
-        return Material.getMaterial(blockType.getId().replace("minecraft:", "").toUpperCase());
+        return Material.getMaterial(blockType.getId().substring(10).toUpperCase());
     }
 
     /**
@@ -270,6 +272,23 @@ public class BukkitAdapter {
     public static GameMode adapt(org.bukkit.GameMode gameMode) {
         checkNotNull(gameMode);
         return GameModes.get(gameMode.name().toLowerCase());
+    }
+
+    /**
+     * Create a WorldEdit EntityType from a Bukkit one.
+     *
+     * @param entityType Bukkit EntityType
+     * @return WorldEdit EntityType
+     */
+    public static EntityType adapt(org.bukkit.entity.EntityType entityType) {
+        return EntityTypes.get(entityType.getName().toLowerCase());
+    }
+
+    public static org.bukkit.entity.EntityType adapt(EntityType entityType) {
+        if (!entityType.getId().startsWith("minecraft:")) {
+            throw new IllegalArgumentException("Bukkit only supports vanilla entities");
+        }
+        return org.bukkit.entity.EntityType.fromName(entityType.getId().substring(10).toLowerCase());
     }
 
     /**
