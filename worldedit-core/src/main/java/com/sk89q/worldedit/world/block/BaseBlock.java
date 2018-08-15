@@ -34,18 +34,13 @@ import java.util.Objects;
 import javax.annotation.Nullable;
 
 /**
- * Represents a mutable "snapshot" of a block.
+ * Represents a "snapshot" of a block with NBT Data.
  *
  * <p>An instance of this block contains all the information needed to
  * accurately reproduce the block, provided that the instance was
  * made correctly. In some implementations, it may not be possible to get a
  * snapshot of blocks correctly, so, for example, the NBT data for a block
  * may be missing.</p>
- *
- * <p>A peculiar detail of this class is that it accepts {@code -1} as a
- * valid data value. This is due to legacy reasons: WorldEdit uses -1
- * as a "wildcard" block value, even though a {@link Mask} would be
- * more appropriate.</p>
  */
 public class BaseBlock implements BlockStateHolder<BaseBlock>, TileEntityBlock {
 
@@ -74,15 +69,6 @@ public class BaseBlock implements BlockStateHolder<BaseBlock>, TileEntityBlock {
     }
 
     /**
-     * Create a clone of another block.
-     *
-     * @param other the other block
-     */
-    public BaseBlock(BaseBlock other) {
-        this(other.toImmutableState(), other.getNbtData());
-    }
-
-    /**
      * Gets a map of state to statevalue
      *
      * @return The state map
@@ -99,7 +85,7 @@ public class BaseBlock implements BlockStateHolder<BaseBlock>, TileEntityBlock {
 
     @Override
     public <V> BaseBlock with(Property<V> property, V value) {
-        return new BaseBlock(this.blockState.with(property, value), getNbtData());
+        return this.blockState.with(property, value).toBaseBlock(getNbtData());
     }
 
     /**
