@@ -1446,7 +1446,7 @@ public class EditSession implements Extent {
                         if (setBlock(pt, air)) {
                             ++affected;
                         }
-                    } else if (id == BlockTypes.AIR) {
+                    } else if (id.getMaterial().isAir()) {
                         continue;
                     }
 
@@ -1488,7 +1488,7 @@ public class EditSession implements Extent {
                     Vector pt = new Vector(x, y, z);
                     BlockType id = getBlock(pt).getBlockType();
 
-                    if (id == BlockTypes.AIR) {
+                    if (id.getMaterial().isAir()) {
                         continue;
                     }
 
@@ -1619,7 +1619,7 @@ public class EditSession implements Extent {
             for (int z = basePosition.getBlockZ() - size; z <= basePosition.getBlockZ()
                     + size; ++z) {
                 // Don't want to be in the ground
-                if (getBlock(new Vector(x, basePosition.getBlockY(), z)).getBlockType() != BlockTypes.AIR) {
+                if (!getBlock(new Vector(x, basePosition.getBlockY(), z)).getBlockType().getMaterial().isAir()) {
                     continue;
                 }
                 // The gods don't want a tree here
@@ -1636,7 +1636,7 @@ public class EditSession implements Extent {
                         break;
                     } else if (t == BlockTypes.SNOW) {
                         setBlock(new Vector(x, y, z), BlockTypes.AIR.getDefaultState());
-                    } else if (t != BlockTypes.AIR) { // Trees won't grow on this!
+                    } else if (!t.getMaterial().isAir()) { // Trees won't grow on this!
                         break;
                     }
                 }

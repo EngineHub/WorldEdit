@@ -25,6 +25,13 @@ package com.sk89q.worldedit.world.registry;
 public interface BlockMaterial {
 
     /**
+     * Gets if this block is a type of air.
+     *
+     * @return If it's air
+     */
+    boolean isAir();
+
+    /**
      * Get whether this block is a full sized cube.
      *
      * @return the value of the test

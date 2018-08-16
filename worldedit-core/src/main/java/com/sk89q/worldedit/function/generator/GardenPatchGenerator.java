@@ -86,11 +86,11 @@ public class GardenPatchGenerator implements RegionFunction {
      */
     private void placeVine(Vector basePos, Vector pos) throws MaxChangedBlocksException {
         if (pos.distance(basePos) > 4) return;
-        if (editSession.getBlock(pos).getBlockType() != BlockTypes.AIR) return;
+        if (!editSession.getBlock(pos).getBlockType().getMaterial().isAir()) return;
 
         for (int i = -1; i > -3; --i) {
             Vector testPos = pos.add(0, i, 0);
-            if (editSession.getBlock(testPos).getBlockType() == BlockTypes.AIR) {
+            if (editSession.getBlock(testPos).getBlockType().getMaterial().isAir()) {
                 pos = testPos;
             } else {
                 break;
@@ -159,7 +159,7 @@ public class GardenPatchGenerator implements RegionFunction {
 
     @Override
     public boolean apply(Vector position) throws WorldEditException {
-        if (editSession.getBlock(position).getBlockType() != BlockTypes.AIR) {
+        if (!editSession.getBlock(position).getBlockType().getMaterial().isAir()) {
             position = position.add(0, 1, 0);
         }
 
@@ -169,7 +169,7 @@ public class GardenPatchGenerator implements RegionFunction {
 
         BlockState leavesBlock = BlockTypes.OAK_LEAVES.getDefaultState();
 
-        if (editSession.getBlock(position).getBlockType() == BlockTypes.AIR) {
+        if (editSession.getBlock(position).getBlockType().getMaterial().isAir()) {
             editSession.setBlock(position, leavesBlock);
         }
 
@@ -199,7 +199,7 @@ public class GardenPatchGenerator implements RegionFunction {
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
     private static boolean setBlockIfAir(EditSession session, Vector position, BlockStateHolder block) throws MaxChangedBlocksException {
-        return session.getBlock(position).getBlockType() == BlockTypes.AIR && session.setBlock(position, block);
+        return session.getBlock(position).getBlockType().getMaterial().isAir() && session.setBlock(position, block);
     }
 
     /**

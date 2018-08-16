@@ -134,7 +134,7 @@ public class FloatingTreeRemover implements BlockTool {
 
                 if (visited.add(next)) {
                     BlockState state = world.getBlock(next);
-                    if (state.getBlockType() == BlockTypes.AIR || state.getBlockType() == BlockTypes.SNOW) {
+                    if (state.getBlockType().getMaterial().isAir() || state.getBlockType() == BlockTypes.SNOW) {
                         continue;
                     }
                     if (isTreeBlock(state.getBlockType())) {

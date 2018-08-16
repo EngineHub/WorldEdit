@@ -59,7 +59,7 @@ public class EditSessionBlockChangeDelegate implements BlockChangeDelegate {
 
     @Override
     public boolean isEmpty(int x, int y, int z) {
-        return editSession.getBlock(new Vector(x, y, z)).getBlockType() == BlockTypes.AIR;
+        return editSession.getBlock(new Vector(x, y, z)).getBlockType().getMaterial().isAir();
     }
 
 }

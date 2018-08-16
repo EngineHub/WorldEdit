@@ -54,7 +54,7 @@ public class AreaPickaxe implements BlockTool {
         int oz = clicked.getBlockZ();
         BlockType initialType = clicked.getExtent().getBlock(clicked.toVector()).getBlockType();
 
-        if (initialType == BlockTypes.AIR) {
+        if (initialType.getMaterial().isAir()) {
             return true;
         }
 

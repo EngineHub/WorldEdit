@@ -61,7 +61,7 @@ public class FloodFillTool implements BlockTool {
 
         BlockType initialType = world.getBlock(clicked.toVector()).getBlockType();
 
-        if (initialType == BlockTypes.AIR) {
+        if (initialType.getMaterial().isAir()) {
             return true;
         }
 

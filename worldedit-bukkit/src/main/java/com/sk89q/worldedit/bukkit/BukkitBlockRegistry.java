@@ -61,6 +61,11 @@ public class BukkitBlockRegistry extends BundledBlockRegistry {
         }
 
         @Override
+        public boolean isAir() {
+            return material == Material.AIR || material == Material.CAVE_AIR || material == Material.VOID_AIR;
+        }
+
+        @Override
         public boolean isSolid() {
             return material.isSolid();
         }

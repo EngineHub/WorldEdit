@@ -264,6 +264,6 @@ public class TreeGenerator {
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
     private static boolean setBlockIfAir(EditSession session, Vector position, BlockStateHolder block) throws MaxChangedBlocksException {
-        return session.getBlock(position).getBlockType() == BlockTypes.AIR && session.setBlock(position, block);
+        return session.getBlock(position).getBlockType().getMaterial().isAir() && session.setBlock(position, block);
     }
 }

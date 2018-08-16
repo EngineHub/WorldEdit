@@ -30,6 +30,15 @@ public class PassthroughBlockMaterial implements BlockMaterial {
     }
 
     @Override
+    public boolean isAir() {
+        if (blockMaterial == null) {
+            return false;
+        } else {
+            return blockMaterial.isAir();
+        }
+    }
+
+    @Override
     public boolean isFullCube() {
         if (blockMaterial == null) {
             return true;

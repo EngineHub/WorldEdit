@@ -48,7 +48,7 @@ public class GravityBrush implements Brush {
                 for (; y > position.getBlockY() - size; --y) {
                     final Vector pt = new Vector(x, y, z);
                     final BlockStateHolder block = editSession.getBlock(pt);
-                    if (block.getBlockType() != BlockTypes.AIR) {
+                    if (!block.getBlockType().getMaterial().isAir()) {
                         blockTypes.add(block);
                         editSession.setBlock(pt, BlockTypes.AIR.getDefaultState());
                     }
@@ -56,7 +56,7 @@ public class GravityBrush implements Brush {
                 Vector pt = new Vector(x, y, z);
                 Collections.reverse(blockTypes);
                 for (int i = 0; i < blockTypes.size();) {
-                    if (editSession.getBlock(pt).getBlockType() == BlockTypes.AIR) {
+                    if (editSession.getBlock(pt).getBlockType().getMaterial().isAir()) {
                         editSession.setBlock(pt, blockTypes.get(i++));
                     }
                     pt = pt.add(0, 1, 0);
