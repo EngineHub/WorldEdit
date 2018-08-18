@@ -324,9 +324,9 @@ public class CuboidRegion extends AbstractRegion implements FlatRegion {
 
     @Override
     public boolean contains(Vector position) {
-        double x = position.getX();
-        double y = position.getY();
-        double z = position.getZ();
+        int x = position.getBlockX();
+        int y = position.getBlockY();
+        int z = position.getBlockZ();
 
         Vector min = getMinimumPoint();
         Vector max = getMaximumPoint();
