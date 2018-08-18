@@ -636,6 +636,10 @@ public class LocalSession {
             return; // This is for players only.
         }
 
+        if (!config.serverSideCUI) {
+            return; // Disabled in config.
+        }
+
         Player player = (Player) actor;
 
         if (!useServerCUI || hasCUISupport) {

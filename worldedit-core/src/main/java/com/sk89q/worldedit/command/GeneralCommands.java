@@ -31,6 +31,7 @@ import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.entity.Player;
+import com.sk89q.worldedit.extension.input.DisallowedUsageException;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.util.command.parametric.Optional;
@@ -124,6 +125,9 @@ public class GeneralCommands {
     @CommandPermissions("worldedit.drawsel")
     public void drawSelection(Player player, LocalSession session, CommandContext args) throws WorldEditException {
 
+        if (!WorldEdit.getInstance().getConfiguration().serverSideCUI) {
+            throw new DisallowedUsageException("This functionality is disabled in the configuration!");
+        }
         String newState = args.getString(0, null);
         if (session.shouldUseServerCUI()) {
             if ("on".equals(newState)) {

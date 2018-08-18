@@ -134,6 +134,7 @@ public abstract class LocalConfiguration {
     public int butcherDefaultRadius = -1;
     public int butcherMaxRadius = -1;
     public boolean allowSymlinks = false;
+    public boolean serverSideCUI = true;
 
     /**
      * Load the configuration.

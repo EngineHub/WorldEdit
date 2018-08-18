@@ -112,6 +112,7 @@ public class YAMLConfiguration extends LocalConfiguration {
         SessionManager.EXPIRATION_GRACE = config.getInt("history.expiration", 10) * 60 * 1000;
 
         showHelpInfo = config.getBoolean("show-help-on-first-use", true);
+        serverSideCUI = config.getBoolean("server-side-cui", true);
 
         String snapshotsDir = config.getString("snapshots.directory", "");
         if (!snapshotsDir.isEmpty()) {
