@@ -127,10 +127,10 @@ public class ServerCUIHandler {
         posY -= y;
         posZ -= z;
 
-//        if (Math.abs(posX) > 32 || Math.abs(posY) > 32 || Math.abs(posZ) > 32) {
-//            // Structure blocks have a limit
-//            return null;
-//        }
+        if (Math.abs(posX) > 32 || Math.abs(posY) > 32 || Math.abs(posZ) > 32) {
+            // Structure blocks have a limit
+            return null;
+        }
 
         structureTag.put("name", new StringTag("worldedit:" + player.getName()));
         structureTag.put("author", new StringTag(player.getName()));
