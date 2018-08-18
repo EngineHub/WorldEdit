@@ -618,6 +618,14 @@ public class LocalSession {
     public void tellVersion(Actor player) {
     }
 
+    public boolean shouldUseServerCUI() {
+        return this.useServerCUI;
+    }
+
+    public void setUseServerCUI(boolean useServerCUI) {
+        this.useServerCUI = useServerCUI;
+    }
+
     /**
      * Update server-side WorldEdit CUI.
      *
@@ -628,11 +636,15 @@ public class LocalSession {
             return; // This is for players only.
         }
 
+        Player player = (Player) actor;
+
         if (!useServerCUI || hasCUISupport) {
+            if (cuiTemporaryBlock != null) {
+                player.sendFakeBlock(cuiTemporaryBlock, null);
+                cuiTemporaryBlock = null;
+            }
             return; // If it's not enabled, ignore this.
         }
-
-        Player player = (Player) actor;
 
         // Remove the old block.
         if (cuiTemporaryBlock != null) {

@@ -115,6 +115,38 @@ public class GeneralCommands {
     }
 
     @Command(
+            aliases = { "/drawsel" },
+            usage = "[on|off]",
+            desc = "Toggle drawing the current selection",
+            min = 0,
+            max = 1
+    )
+    @CommandPermissions("worldedit.drawsel")
+    public void drawSelection(Player player, LocalSession session, CommandContext args) throws WorldEditException {
+
+        String newState = args.getString(0, null);
+        if (session.shouldUseServerCUI()) {
+            if ("on".equals(newState)) {
+                player.printError("Server CUI already enabled.");
+                return;
+            }
+
+            session.setUseServerCUI(false);
+            session.updateServerCUI(player);
+            player.print("Server CUI disabled.");
+        } else {
+            if ("off".equals(newState)) {
+                player.printError("Server CUI already disabled.");
+                return;
+            }
+
+            session.setUseServerCUI(true);
+            session.updateServerCUI(player);
+            player.print("Server CUI enabled. This only supports cuboid regions, with a maximum size of 32x32x32.");
+        }
+    }
+
+    @Command(
         aliases = { "/gmask", "gmask" },
         usage = "[mask]",
         desc = "Set the global mask",
