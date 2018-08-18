@@ -497,4 +497,8 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
         return false;
     }
 
+    @Override
+    public void sendFakeBlock(Vector pos, BlockStateHolder block) {
+
+    }
 }

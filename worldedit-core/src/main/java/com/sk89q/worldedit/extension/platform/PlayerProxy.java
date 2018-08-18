@@ -31,6 +31,7 @@ import com.sk89q.worldedit.session.SessionKey;
 import com.sk89q.worldedit.util.HandSide;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.World;
+import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.gamemode.GameMode;
 
 import java.util.UUID;
@@ -154,5 +155,10 @@ class PlayerProxy extends AbstractPlayerActor {
     @Override
     public void setGameMode(GameMode gameMode) {
         basePlayer.setGameMode(gameMode);
+    }
+
+    @Override
+    public void sendFakeBlock(Vector pos, BlockStateHolder block) {
+        basePlayer.sendFakeBlock(pos, block);
     }
 }

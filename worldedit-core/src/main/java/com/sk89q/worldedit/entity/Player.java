@@ -29,7 +29,10 @@ import com.sk89q.worldedit.extent.inventory.BlockBag;
 import com.sk89q.worldedit.util.HandSide;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.World;
+import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.gamemode.GameMode;
+
+import javax.annotation.Nullable;
 
 /**
  * Represents a player
@@ -262,4 +265,15 @@ public interface Player extends Entity, Actor {
      */
     void setPosition(Vector pos);
 
+    /**
+     * Sends a fake block to the client.
+     *
+     * <p>
+     *     This block isn't real.
+     * </p>
+     *
+     * @param pos The position of the block
+     * @param block The block to send, null to reset
+     */
+    void sendFakeBlock(Vector pos, @Nullable BlockStateHolder block);
 }

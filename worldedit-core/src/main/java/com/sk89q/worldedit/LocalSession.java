@@ -48,7 +48,6 @@ import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.session.request.Request;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BaseBlock;
-import com.sk89q.worldedit.world.block.BlockTypes;
 import com.sk89q.worldedit.world.item.ItemType;
 import com.sk89q.worldedit.world.item.ItemTypes;
 import com.sk89q.worldedit.world.snapshot.Snapshot;
@@ -637,12 +636,7 @@ public class LocalSession {
 
         // Remove the old block.
         if (cuiTemporaryBlock != null) {
-            // TODO Tell server to reset fake block.
-            try {
-                createEditSession(player).setBlock(cuiTemporaryBlock, BlockTypes.AIR.getDefaultState());
-            } catch (MaxChangedBlocksException e) {
-                e.printStackTrace();
-            }
+            player.sendFakeBlock(cuiTemporaryBlock, null);
             cuiTemporaryBlock = null;
         }
 
@@ -656,12 +650,7 @@ public class LocalSession {
                     ((IntTag) tags.get("z")).getValue()
             );
 
-            // TODO Send temporary block at that pos to the player.
-            try {
-                createEditSession(player).setBlock(cuiTemporaryBlock, block);
-            } catch (MaxChangedBlocksException e) {
-                e.printStackTrace();
-            }
+            player.sendFakeBlock(cuiTemporaryBlock, block);
         }
     }
 
