@@ -624,6 +624,7 @@ public class LocalSession {
 
     public void setUseServerCUI(boolean useServerCUI) {
         this.useServerCUI = useServerCUI;
+        setDirty();
     }
 
     /**
