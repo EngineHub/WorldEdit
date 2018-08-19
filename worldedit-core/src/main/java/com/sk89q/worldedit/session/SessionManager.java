@@ -267,10 +267,47 @@ public class SessionManager {
     }
 
     /**
+     * Called to unload this session manager.
+     */
+    public synchronized void unload() {
+        clear();
+    }
+
+    /**
      * Remove all sessions.
      */
     public synchronized void clear() {
+        saveChangedSessions();
         sessions.clear();
+    }
+
+    private synchronized void saveChangedSessions() {
+        long now = System.currentTimeMillis();
+        Iterator<SessionHolder> it = sessions.values().iterator();
+        Map<SessionKey, LocalSession> saveQueue = new HashMap<>();
+
+        while (it.hasNext()) {
+            SessionHolder stored = it.next();
+            if (stored.key.isActive()) {
+                stored.lastActive = now;
+
+                if (stored.session.compareAndResetDirty()) {
+                    saveQueue.put(stored.key, stored.session);
+                }
+            } else {
+                if (now - stored.lastActive > EXPIRATION_GRACE) {
+                    if (stored.session.compareAndResetDirty()) {
+                        saveQueue.put(stored.key, stored.session);
+                    }
+
+                    it.remove();
+                }
+            }
+        }
+
+        if (!saveQueue.isEmpty()) {
+            commit(saveQueue);
+        }
     }
 
     @Subscribe
@@ -302,32 +339,7 @@ public class SessionManager {
         @Override
         public void run() {
             synchronized (SessionManager.this) {
-                long now = System.currentTimeMillis();
-                Iterator<SessionHolder> it = sessions.values().iterator();
-                Map<SessionKey, LocalSession> saveQueue = new HashMap<>();
-
-                while (it.hasNext()) {
-                    SessionHolder stored = it.next();
-                    if (stored.key.isActive()) {
-                        stored.lastActive = now;
-
-                        if (stored.session.compareAndResetDirty()) {
-                            saveQueue.put(stored.key, stored.session);
-                        }
-                    } else {
-                        if (now - stored.lastActive > EXPIRATION_GRACE) {
-                            if (stored.session.compareAndResetDirty()) {
-                                saveQueue.put(stored.key, stored.session);
-                            }
-
-                            it.remove();
-                        }
-                    }
-                }
-
-                if (!saveQueue.isEmpty()) {
-                    commit(saveQueue);
-                }
+                saveChangedSessions();
             }
         }
     }
