@@ -113,4 +113,12 @@ public interface BukkitImplAdapter {
      * @param nbtData The NBT Data
      */
     void sendFakeNBT(Player player, Vector pos, CompoundTag nbtData);
+
+    /**
+     * Make the client think it has operator status.
+     * This does not give them any operator capabilities.
+     *
+     * @param player The player
+     */
+    void sendFakeOP(Player player);
 }

@@ -33,6 +33,7 @@ import com.sk89q.worldedit.session.SessionKey;
 import com.sk89q.worldedit.util.HandSide;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
+import com.sk89q.worldedit.world.block.BlockTypes;
 import com.sk89q.worldedit.world.gamemode.GameMode;
 import com.sk89q.worldedit.world.gamemode.GameModes;
 import org.bukkit.Bukkit;
@@ -252,6 +253,9 @@ public class BukkitPlayer extends AbstractPlayerActor {
                 BukkitImplAdapter adapter = WorldEditPlugin.getInstance().getBukkitImplAdapter();
                 if (adapter != null) {
                     adapter.sendFakeNBT(player, pos, ((BaseBlock) block).getNbtData());
+                    if (block.getBlockType() == BlockTypes.STRUCTURE_BLOCK) {
+                        adapter.sendFakeOP(player);
+                    }
                 }
             }
         }
