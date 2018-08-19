@@ -22,8 +22,10 @@ package com.sk89q.worldedit.bukkit;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.google.common.base.Function;
+import com.sk89q.worldedit.NotABlockException;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.extension.input.InputParseException;
@@ -360,12 +362,12 @@ public class BukkitAdapter {
      * @param itemStack The Bukkit ItemStack
      * @return The WorldEdit BlockState
      */
-    public static BlockState asBlockState(ItemStack itemStack) {
+    public static BlockState asBlockState(ItemStack itemStack) throws WorldEditException {
         checkNotNull(itemStack);
         if (itemStack.getType().isBlock()) {
             return adapt(itemStack.getType().createBlockData());
         } else {
-            return BlockTypes.AIR.getDefaultState();
+            throw new NotABlockException();
         }
     }
 

@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.extension.platform;
 
+import com.sk89q.worldedit.NotABlockException;
 import com.sk89q.worldedit.PlayerDirection;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
@@ -370,7 +371,7 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
         if (typeId.hasBlockType()) {
             return typeId.getBlockType().getDefaultState().toBaseBlock();
         } else {
-            return BlockTypes.AIR.getDefaultState().toBaseBlock();
+            throw new NotABlockException();
         }
     }
 
