@@ -30,7 +30,9 @@ import org.spongepowered.api.entity.hanging.ItemFrame;
 import org.spongepowered.api.entity.hanging.Painting;
 import org.spongepowered.api.entity.living.*;
 import org.spongepowered.api.entity.living.animal.Animal;
+import org.spongepowered.api.entity.living.complex.ComplexLivingPart;
 import org.spongepowered.api.entity.living.golem.Golem;
+import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.projectile.Projectile;
 import org.spongepowered.api.entity.vehicle.Boat;
 import org.spongepowered.api.entity.vehicle.minecart.Minecart;
@@ -138,5 +140,10 @@ public class SpongeEntityType implements EntityType {
     @Override
     public boolean isArmorStand() {
         return entity instanceof ArmorStand;
+    }
+
+    @Override
+    public boolean isPasteable() {
+        return !(entity instanceof Player || entity instanceof ComplexLivingPart);
     }
 }

@@ -8,6 +8,7 @@ buildscript {
 }
 
 plugins {
+    id 'signing'
     id 'org.spongepowered.plugin' version '0.8.1'
 }
 
@@ -41,4 +42,9 @@ shadowJar {
 
 artifacts {
     archives shadowJar
+}
+
+signing {
+    required false
+    sign shadowJar
 }

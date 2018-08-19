@@ -1678,7 +1678,10 @@ public class EditSession implements Extent {
 
                     // Snow should not cover these blocks
                     if (BlockType.isTranslucent(id)) {
-                        break;
+                        // Add snow on leaves
+                        if (id != BlockID.LEAVES && id != BlockID.LEAVES2) {
+                            break;
+                        }
                     }
 
                     // Too high?

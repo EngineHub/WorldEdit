@@ -24,6 +24,7 @@ import com.sk89q.worldedit.util.Enums;
 import org.bukkit.entity.Ambient;
 import org.bukkit.entity.Animals;
 import org.bukkit.entity.Boat;
+import org.bukkit.entity.ComplexEntityPart;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.ExperienceOrb;
 import org.bukkit.entity.FallingBlock;
@@ -34,6 +35,7 @@ import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Painting;
+import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.entity.TNTPrimed;
 import org.bukkit.entity.Tameable;
@@ -142,5 +144,10 @@ class BukkitEntityType implements EntityType {
     @Override
     public boolean isArmorStand() {
         return entity.getType() == armorStandType;
+    }
+
+    @Override
+    public boolean isPasteable() {
+        return !(entity instanceof Player || entity instanceof ComplexEntityPart);
     }
 }

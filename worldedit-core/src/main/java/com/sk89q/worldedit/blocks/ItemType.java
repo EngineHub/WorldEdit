@@ -757,6 +757,8 @@ public enum ItemType {
         usesDamageValue.add(BlockID.QUARTZ_BLOCK);
         usesDamageValue.add(BlockID.STAINED_CLAY);
         usesDamageValue.add(BlockID.CARPET);
+        usesDamageValue.add(BlockID.CONCRETE);
+        usesDamageValue.add(BlockID.CONCRETE_POWDER);
 
         usesDamageValue.add(ItemID.COAL);
         usesDamageValue.add(ItemID.INK_SACK);
@@ -767,6 +769,7 @@ public enum ItemType {
         usesDamageValue.add(ItemID.GOLD_APPLE);
         usesDamageValue.add(ItemID.RAW_FISH);
         usesDamageValue.add(ItemID.COOKED_FISH);
+        usesDamageValue.add(ItemID.BED_ITEM);
         usesDamageValue.add(ItemID.BANNER);
     }
 

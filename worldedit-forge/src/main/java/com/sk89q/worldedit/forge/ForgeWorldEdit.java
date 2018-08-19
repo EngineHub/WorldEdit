@@ -28,8 +28,8 @@ import com.sk89q.worldedit.WorldVector;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.event.platform.PlatformReadyEvent;
 import com.sk89q.worldedit.extension.platform.Platform;
+import com.sk89q.worldedit.forge.net.LeftClickAirEventMessage;
 import com.sk89q.worldedit.internal.LocalWorldAdapter;
-import com.sk89q.worldedit.util.Java8Detector;
 
 import java.io.File;
 import java.util.Map;
@@ -40,6 +40,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.CommandEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent.LeftClickEmpty;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
@@ -61,10 +62,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 @Mod(modid = ForgeWorldEdit.MOD_ID, name = "WorldEdit", version = "%VERSION%", acceptableRemoteVersions = "*")
 public class ForgeWorldEdit {
-    
-    static {
-        Java8Detector.notifyIfNot8();
-    }
 
     public static Logger logger;
     public static final String MOD_ID = "worldedit";
@@ -99,6 +96,7 @@ public class ForgeWorldEdit {
     public void init(FMLInitializationEvent event) {
         MinecraftForge.EVENT_BUS.register(this);
         WECUIPacketHandler.init();
+        InternalPacketHandler.init();
         proxy.registerHandlers();
     }
 
@@ -157,6 +155,12 @@ public class ForgeWorldEdit {
         if (!platform.isHookingEvents())
             return; // We have to be told to catch these events
 
+        if (event.getWorld().isRemote && event instanceof LeftClickEmpty) {
+            // catch LCE, pass it to server
+            InternalPacketHandler.CHANNEL.sendToServer(new LeftClickAirEventMessage());
+            return;
+        }
+        
         boolean isLeftDeny = event instanceof PlayerInteractEvent.LeftClickBlock
                 && ((PlayerInteractEvent.LeftClickBlock) event)
                         .getUseItem() == Result.DENY;
@@ -172,7 +176,12 @@ public class ForgeWorldEdit {
         ForgePlayer player = wrap((EntityPlayerMP) event.getEntityPlayer());
         ForgeWorld world = getWorld(event.getEntityPlayer().world);
 
-        if (event instanceof PlayerInteractEvent.LeftClickBlock) {
+        if (event instanceof PlayerInteractEvent.LeftClickEmpty) {
+            if (we.handleArmSwing(player)) {
+                // this event cannot be canceled
+                // event.setCanceled(true);
+            }
+        } else if (event instanceof PlayerInteractEvent.LeftClickBlock) {
             @SuppressWarnings("deprecation")
             WorldVector pos = new WorldVector(LocalWorldAdapter.adapt(world),
                     event.getPos().getX(), event.getPos().getY(), event.getPos().getZ());

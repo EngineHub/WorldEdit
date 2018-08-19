@@ -36,7 +36,7 @@ final class ForgeAdapter {
     }
 
     public static Vector adapt(Vec3d vector) {
-        return new Vector(vector.xCoord, vector.yCoord, vector.zCoord);
+        return new Vector(vector.x, vector.y, vector.z);
     }
 
     public static Vector adapt(BlockPos pos) {

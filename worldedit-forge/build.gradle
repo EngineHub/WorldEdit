@@ -7,17 +7,21 @@ buildscript {
     }
 
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.2-SNAPSHOT'
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
     }
 }
 
 apply plugin: 'net.minecraftforge.gradle.forge'
 
+
 dependencies {
     compile project(':worldedit-core')
-    compile 'org.spongepowered:spongeapi:3.1.0-SNAPSHOT'
+    compile 'org.spongepowered:spongeapi:6.0.0-SNAPSHOT'
     testCompile group: 'org.mockito', name: 'mockito-core', version: '1.9.0-rc1'
 }
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
 
 repositories {
     maven {
@@ -26,11 +30,11 @@ repositories {
     }
 }
 
-ext.forgeVersion = "13.20.0.2237"
+ext.forgeVersion = "14.22.0.2456"
 
 minecraft {
-    version = "1.11.2-${project.forgeVersion}"
-    mappings = "snapshot_20170221"
+    version = "1.12.1-${project.forgeVersion}"
+    mappings = "snapshot_20170815"
     runDir = 'run'
 
     replaceIn "com/sk89q/worldedit/forge/ForgeWorldEdit.java"

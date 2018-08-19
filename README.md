@@ -1,17 +1,15 @@
 ![WorldEdit](http://static.sk89q.com/readme/worldedit.png)
 =========
 
-WorldEdit is an easy-to-use in-game world editor for Minecraft, supporting both
-single player and multiplayer, that lets you:
+WorldEdit is Minecraft mod that turns Minecraft into an in-game map editor (sorta, kinda).
 
-* Change thousands of blocks in an area at once by selecting regions.
-* Use over 100 functions to modify the world or remove problems.
-* Remove large chunks of land as you wish.
-* Sculpt the world and build mountains with brushes.
-* Fix annoyances such as broken water, missing snow, raging fires, and more.
+* Make awesome stuff with half the time OR make ***quadriply** awesome* creations with the same time :sparkles:
+* Get lost in hundreds of options and functions that even we've forgotten existed
+* Utilize Photoshop-like tools like "selection areas" and "brushes"
+* Making fjords and other natural wonders with weird names
+* Also: fix grief, broken water, missing snow, raging fires, and other :poop:
 
-WorldEdit is open source and is available under the GNU Lesser General Public
-License v3.
+WorldEdit is open source!, so if you've just learned how to make a button blink, I probably recommend picking up a book on CS algorithms. The project is licensed using the GNU Lesser General Public License license, v3.
 
 Compiling
 ---------

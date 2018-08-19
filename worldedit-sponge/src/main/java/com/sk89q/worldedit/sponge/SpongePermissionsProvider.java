@@ -25,6 +25,7 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.service.context.Contextual;
 import org.spongepowered.api.service.permission.PermissionDescription;
 import org.spongepowered.api.service.permission.PermissionService;
+import org.spongepowered.api.service.permission.SubjectReference;
 
 import java.util.stream.Collectors;
 
@@ -36,15 +37,14 @@ public class SpongePermissionsProvider {
 
     public void registerPermission(CommandCallable command, String permission) {
         Sponge.getGame().getServiceManager().getRegistration(PermissionService.class).ifPresent((permissionService -> {
-            PermissionDescription.Builder permissionBuilder = permissionService.getProvider().newDescriptionBuilder(SpongeWorldEdit.inst()).get();
+            PermissionDescription.Builder permissionBuilder = permissionService.getProvider().newDescriptionBuilder(SpongeWorldEdit.inst());
             permissionBuilder.id(permission).register();
         }));
     }
 
     public String[] getGroups(Player player) {
-        PermissionService permissionService = Sponge.getGame().getServiceManager().getRegistration(PermissionService.class).get().getProvider();
         return player.getParents().stream()
-                .filter(subject -> subject.getContainingCollection().equals(permissionService.getGroupSubjects()))
-                .map(Contextual::getIdentifier).collect(Collectors.toList()).toArray(new String[0]);
+                .map(SubjectReference::getSubjectIdentifier)
+                .collect(Collectors.toList()).toArray(new String[0]);
     }
 }
