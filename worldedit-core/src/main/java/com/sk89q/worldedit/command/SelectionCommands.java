@@ -662,49 +662,40 @@ public class SelectionCommands {
 
         int size;
         boolean useData = args.hasFlag('d');
-        List<Countable<BlockType>> distribution = null;
-        List<Countable<BlockStateHolder>> distributionData = null;
+        List<Countable<BlockStateHolder>> distribution;
 
         if (args.hasFlag('c')) {
             // TODO: Update for new clipboard
             throw new CommandException("Needs to be re-written again");
         } else {
-            if (useData) {
-                distributionData = editSession.getBlockDistributionWithData(session.getSelection(player.getWorld()));
-            } else {
-                distribution = editSession.getBlockDistribution(session.getSelection(player.getWorld()));
-            }
+            distribution = editSession.getBlockDistribution(session.getSelection(player.getWorld()), !useData);
             size = session.getSelection(player.getWorld()).getArea();
         }
 
-        if ((useData && distributionData.size() <= 0) || (!useData && distribution.size() <= 0)) {  // *Should* always be false
+        if (distribution.isEmpty()) {  // *Should* always be false
             player.printError("No blocks counted.");
             return;
         }
 
         player.print("# total blocks: " + size);
 
-        if (useData) {
-            for (Countable<BlockStateHolder> c : distributionData) {
-                String name = c.getID().getBlockType().getName();
-                String str = String.format("%-7s (%.3f%%) %s #%s%s",
+        for (Countable<BlockStateHolder> c : distribution) {
+            String name = c.getID().getBlockType().getName();
+            String str;
+            if (useData) {
+                str = String.format("%-7s (%.3f%%) %s #%s",
                         String.valueOf(c.getAmount()),
                         c.getAmount() / (double) size * 100,
                         name,
-                        c.getID().getBlockType().getId(),
-                        c.getID().getStates());
-                player.print(str);
-            }
-        } else {
-            for (Countable<BlockType> c : distribution) {
-                String name = c.getID().getName();
-                String str = String.format("%-7s (%.3f%%) %s #%s",
+                        c.getID().getAsString());
+            } else {
+                str = String.format("%-7s (%.3f%%) %s #%s",
                         String.valueOf(c.getAmount()),
                         c.getAmount() / (double) size * 100,
                         name,
-                        c.getID().getId());
-                player.print(str);
+                        c.getID().getBlockType().getId());
             }
+            player.print(str);
         }
     }
 

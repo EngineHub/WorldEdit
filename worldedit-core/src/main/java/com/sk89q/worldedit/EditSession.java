@@ -25,6 +25,8 @@ import static com.sk89q.worldedit.regions.Regions.asFlatRegion;
 import static com.sk89q.worldedit.regions.Regions.maximumBlockY;
 import static com.sk89q.worldedit.regions.Regions.minimumBlockY;
 
+import com.sk89q.worldedit.function.block.BlockDistributionCounter;
+import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.event.extent.EditSessionEvent;
@@ -1652,115 +1654,11 @@ public class EditSession implements Extent {
      * @param region a region
      * @return the results
      */
-    public List<Countable<BlockType>> getBlockDistribution(Region region) {
-        List<Countable<BlockType>> distribution = new ArrayList<>();
-        Map<BlockType, Countable<BlockType>> map = new HashMap<>();
-
-        if (region instanceof CuboidRegion) {
-            // Doing this for speed
-            Vector min = region.getMinimumPoint();
-            Vector max = region.getMaximumPoint();
-
-            int minX = min.getBlockX();
-            int minY = min.getBlockY();
-            int minZ = min.getBlockZ();
-            int maxX = max.getBlockX();
-            int maxY = max.getBlockY();
-            int maxZ = max.getBlockZ();
-
-            for (int x = minX; x <= maxX; ++x) {
-                for (int y = minY; y <= maxY; ++y) {
-                    for (int z = minZ; z <= maxZ; ++z) {
-                        Vector pt = new Vector(x, y, z);
-
-                        BlockType type = getBlock(pt).getBlockType();
-
-                        if (map.containsKey(type)) {
-                            map.get(type).increment();
-                        } else {
-                            Countable<BlockType> c = new Countable<>(type, 1);
-                            map.put(type, c);
-                            distribution.add(c);
-                        }
-                    }
-                }
-            }
-        } else {
-            for (Vector pt : region) {
-                BlockType type = getBlock(pt).getBlockType();
-
-                if (map.containsKey(type)) {
-                    map.get(type).increment();
-                } else {
-                    Countable<BlockType> c = new Countable<>(type, 1);
-                    map.put(type, c);
-                }
-            }
-        }
-
-        Collections.sort(distribution);
-        // Collections.reverse(distribution);
-
-        return distribution;
-    }
-
-    /**
-     * Get the block distribution (with data values) inside a region.
-     *
-     * @param region a region
-     * @return the results
-     */
-    // TODO reduce code duplication - probably during ops-redux
-    public List<Countable<BlockStateHolder>> getBlockDistributionWithData(Region region) {
-        List<Countable<BlockStateHolder>> distribution = new ArrayList<>();
-        Map<BlockStateHolder, Countable<BlockStateHolder>> map = new HashMap<>();
-
-        if (region instanceof CuboidRegion) {
-            // Doing this for speed
-            Vector min = region.getMinimumPoint();
-            Vector max = region.getMaximumPoint();
-
-            int minX = min.getBlockX();
-            int minY = min.getBlockY();
-            int minZ = min.getBlockZ();
-            int maxX = max.getBlockX();
-            int maxY = max.getBlockY();
-            int maxZ = max.getBlockZ();
-
-            for (int x = minX; x <= maxX; ++x) {
-                for (int y = minY; y <= maxY; ++y) {
-                    for (int z = minZ; z <= maxZ; ++z) {
-                        Vector pt = new Vector(x, y, z);
-
-                        BlockStateHolder blk = getBlock(pt);
-
-                        if (map.containsKey(blk)) {
-                            map.get(blk).increment();
-                        } else {
-                            Countable<BlockStateHolder> c = new Countable<>(blk, 1);
-                            map.put(blk, c);
-                            distribution.add(c);
-                        }
-                    }
-                }
-            }
-        } else {
-            for (Vector pt : region) {
-                BlockStateHolder blk = getBlock(pt);
-
-                if (map.containsKey(blk)) {
-                    map.get(blk).increment();
-                } else {
-                    Countable<BlockStateHolder> c = new Countable<>(blk, 1);
-                    map.put(blk, c);
-                }
-            }
-        }
-
-        Collections.sort(distribution);
-        // Collections.reverse(distribution);
-
-        return distribution;
+    public List<Countable<BlockStateHolder>> getBlockDistribution(Region region, boolean fuzzy) {
+        BlockDistributionCounter count = new BlockDistributionCounter(this, fuzzy);
+        RegionVisitor visitor = new RegionVisitor(region, count);
+        Operations.completeBlindly(visitor);
+        return count.getDistribution();
     }
 
     public int makeShape(final Region region, final Vector zero, final Vector unit, final Pattern pattern, final String expressionString, final boolean hollow) throws ExpressionException, MaxChangedBlocksException {
