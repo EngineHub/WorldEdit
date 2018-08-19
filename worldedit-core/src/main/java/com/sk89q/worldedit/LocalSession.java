@@ -96,7 +96,7 @@ public class LocalSession {
     // Saved properties
     private String lastScript;
     private RegionSelectorType defaultSelector;
-    private boolean useServerCUI = true; // Save this to not annoy players.
+    private boolean useServerCUI = false; // Save this to not annoy players.
 
     /**
      * Construct the object.
