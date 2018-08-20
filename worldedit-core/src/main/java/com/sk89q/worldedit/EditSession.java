@@ -25,7 +25,6 @@ import static com.sk89q.worldedit.regions.Regions.asFlatRegion;
 import static com.sk89q.worldedit.regions.Regions.maximumBlockY;
 import static com.sk89q.worldedit.regions.Regions.minimumBlockY;
 
-import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.event.extent.EditSessionEvent;
@@ -51,9 +50,9 @@ import com.sk89q.worldedit.function.block.Counter;
 import com.sk89q.worldedit.function.block.Naturalizer;
 import com.sk89q.worldedit.function.generator.GardenPatchGenerator;
 import com.sk89q.worldedit.function.mask.BlockMask;
+import com.sk89q.worldedit.function.mask.BlockTypeMask;
 import com.sk89q.worldedit.function.mask.BoundedHeightMask;
 import com.sk89q.worldedit.function.mask.ExistingBlockMask;
-import com.sk89q.worldedit.function.mask.FuzzyBlockMask;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.function.mask.MaskIntersection;
 import com.sk89q.worldedit.function.mask.MaskUnion;
@@ -102,6 +101,7 @@ import com.sk89q.worldedit.util.eventbus.EventBus;
 import com.sk89q.worldedit.world.NullWorld;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.biome.BaseBiome;
+import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockCategories;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
@@ -601,7 +601,7 @@ public class EditSession implements Extent {
      * @return the number of blocks that matched the pattern
      */
     public int countBlocks(Region region, Set<BlockStateHolder> searchBlocks) {
-        FuzzyBlockMask mask = new FuzzyBlockMask(this, searchBlocks);
+        BlockMask mask = new BlockMask(this, searchBlocks);
         Counter count = new Counter();
         RegionMaskingFilter filter = new RegionMaskingFilter(mask, count);
         RegionVisitor visitor = new RegionVisitor(region, filter);
@@ -725,7 +725,7 @@ public class EditSession implements Extent {
         checkNotNull(position);
         checkArgument(apothem >= 1, "apothem >= 1");
 
-        Mask mask = new FuzzyBlockMask(this, blockType.getDefaultState().toFuzzy());
+        Mask mask = new BlockTypeMask(this, blockType);
         Vector adjustment = new Vector(1, 1, 1).multiply(apothem - 1);
         Region region = new CuboidRegion(
                 getWorld(), // Causes clamping of Y range
@@ -790,7 +790,7 @@ public class EditSession implements Extent {
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
     public int replaceBlocks(Region region, Set<BlockStateHolder> filter, Pattern pattern) throws MaxChangedBlocksException {
-        Mask mask = filter == null ? new ExistingBlockMask(this) : new FuzzyBlockMask(this, filter);
+        Mask mask = filter == null ? new ExistingBlockMask(this) : new BlockMask(this, filter);
         return replaceBlocks(region, mask, pattern);
     }
 
@@ -1141,10 +1141,10 @@ public class EditSession implements Extent {
         checkArgument(radius >= 0, "radius >= 0 required");
 
         // Our origins can only be liquids
-        BlockMask liquidMask = new BlockMask(this, fluid.getDefaultState().toFuzzy());
+        Mask liquidMask = new BlockTypeMask(this, fluid);
 
         // But we will also visit air blocks
-        MaskIntersection blockMask = new MaskUnion(liquidMask, new BlockMask(this, BlockTypes.AIR.getDefaultState()));
+        MaskIntersection blockMask = new MaskUnion(liquidMask, Masks.negate(new ExistingBlockMask(this)));
 
         // There are boundaries that the routine needs to stay in
         MaskIntersection mask = new MaskIntersection(

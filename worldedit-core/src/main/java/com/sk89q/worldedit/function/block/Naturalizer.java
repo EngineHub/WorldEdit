@@ -21,12 +21,11 @@ package com.sk89q.worldedit.function.block;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import com.google.common.collect.Sets;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.function.LayerFunction;
-import com.sk89q.worldedit.function.mask.BlockMask;
+import com.sk89q.worldedit.function.mask.BlockTypeMask;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.world.block.BlockTypes;
 
@@ -49,11 +48,7 @@ public class Naturalizer implements LayerFunction {
     public Naturalizer(EditSession editSession) {
         checkNotNull(editSession);
         this.editSession = editSession;
-        this.mask = new BlockMask(editSession, Sets.newHashSet(
-                BlockTypes.GRASS_BLOCK.getDefaultState(),
-                BlockTypes.DIRT.getDefaultState(),
-                BlockTypes.STONE.getDefaultState()
-        ));
+        this.mask = new BlockTypeMask(editSession, BlockTypes.GRASS_BLOCK, BlockTypes.DIRT, BlockTypes.STONE);
     }
 
     /**
