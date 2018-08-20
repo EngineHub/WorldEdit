@@ -30,6 +30,7 @@ import com.sk89q.worldedit.internal.cui.CUIEvent;
 import com.sk89q.worldedit.session.SessionKey;
 import com.sk89q.worldedit.util.HandSide;
 import com.sk89q.worldedit.util.Location;
+import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.gamemode.GameMode;
 import com.sk89q.worldedit.world.gamemode.GameModes;
 import com.sk89q.worldedit.world.item.ItemTypes;
@@ -181,6 +182,23 @@ public class SpongePlayer extends AbstractPlayerActor {
     public void setGameMode(GameMode gameMode) {
         player.getGameModeData().type().set(Sponge.getRegistry().getType(org.spongepowered.api.entity.living.player.gamemode.GameMode.class,
                 gameMode.getId()).get());
+    }
+
+    @Override
+    public void sendFakeBlock(Vector pos, BlockStateHolder block) {
+        org.spongepowered.api.world.Location<World> loc = player.getWorld().getLocation(pos.getX(), pos.getY(), pos.getZ());
+        if (block == null) {
+            player.sendBlockChange(loc.getBlockPosition(), loc.getBlock());
+        } else {
+            // TODO
+//            player.sendBlockChange(loc, BukkitAdapter.adapt(block));
+//            if (block instanceof BaseBlock && ((BaseBlock) block).hasNbtData()) {
+//                BukkitImplAdapter adapter = WorldEditPlugin.getInstance().getBukkitImplAdapter();
+//                if (adapter != null) {
+//                    adapter.sendFakeNBT(player, pos, ((BaseBlock) block).getNbtData());
+//                }
+//            }
+        }
     }
 
     @Override

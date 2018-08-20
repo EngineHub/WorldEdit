@@ -29,6 +29,8 @@ import com.sk89q.worldedit.internal.cui.CUIEvent;
 import com.sk89q.worldedit.session.SessionKey;
 import com.sk89q.worldedit.util.HandSide;
 import com.sk89q.worldedit.util.Location;
+import com.sk89q.worldedit.world.block.BaseBlock;
+import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.item.ItemTypes;
 import io.netty.buffer.Unpooled;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -36,7 +38,9 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.server.SPacketCustomPayload;
+import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
@@ -162,6 +166,24 @@ public class ForgePlayer extends AbstractPlayerActor {
     @Override
     public <T> T getFacet(Class<? extends T> cls) {
         return null;
+    }
+
+    @Override
+    public void sendFakeBlock(Vector pos, BlockStateHolder block) {
+        BlockPos loc = new BlockPos(pos.getBlockX(), pos.getBlockY(), pos.getBlockZ());
+        if (block == null) {
+            // TODO
+//            player.sendBlockChange(loc, player.getWorld().getBlockAt(loc).getBlockData());
+        } else {
+            // TODO
+//            player.sendBlockChange(loc, BukkitAdapter.adapt(block));
+            if (block instanceof BaseBlock && ((BaseBlock) block).hasNbtData()) {
+                player.connection.sendPacket(new SPacketUpdateTileEntity(
+                        new BlockPos(pos.getBlockX(), pos.getBlockY(), pos.getBlockZ()), 7,
+                        NBTConverter.toNative(((BaseBlock) block).getNbtData()))
+                );
+            }
+        }
     }
 
     @Override

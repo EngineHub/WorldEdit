@@ -147,7 +147,9 @@ public class SpongeWorldEdit {
 
     @Listener
     public void serverStopping(GameStoppingServerEvent event) {
-        WorldEdit.getInstance().getPlatformManager().unregister(platform);
+        WorldEdit worldEdit = WorldEdit.getInstance();
+        worldEdit.getSessionManager().unload();
+        worldEdit.getPlatformManager().unregister(platform);
     }
 
     @Listener

@@ -120,6 +120,7 @@ public class ConfigurateConfiguration extends LocalConfiguration {
         SessionManager.EXPIRATION_GRACE = node.getNode("history", "expiration").getInt(10) * 60 * 1000;
 
         showHelpInfo = node.getNode("show-help-on-first-use").getBoolean(true);
+        serverSideCUI = node.getNode("server-side-cui").getBoolean(true);
 
         String snapshotsDir = node.getNode("snapshots", "directory").getString("");
         if (!snapshotsDir.isEmpty()) {

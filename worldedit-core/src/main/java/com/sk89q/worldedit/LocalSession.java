@@ -25,6 +25,8 @@ import com.sk89q.jchronic.Chronic;
 import com.sk89q.jchronic.Options;
 import com.sk89q.jchronic.utils.Span;
 import com.sk89q.jchronic.utils.Time;
+import com.sk89q.jnbt.IntTag;
+import com.sk89q.jnbt.Tag;
 import com.sk89q.worldedit.command.tool.BlockTool;
 import com.sk89q.worldedit.command.tool.BrushTool;
 import com.sk89q.worldedit.command.tool.InvalidToolBindException;
@@ -37,6 +39,7 @@ import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.internal.cui.CUIEvent;
 import com.sk89q.worldedit.internal.cui.CUIRegion;
 import com.sk89q.worldedit.internal.cui.SelectionShapeEvent;
+import com.sk89q.worldedit.internal.cui.ServerCUIHandler;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.RegionSelector;
 import com.sk89q.worldedit.regions.selector.CuboidRegionSelector;
@@ -44,6 +47,7 @@ import com.sk89q.worldedit.regions.selector.RegionSelectorType;
 import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.session.request.Request;
 import com.sk89q.worldedit.world.World;
+import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.item.ItemType;
 import com.sk89q.worldedit.world.item.ItemTypes;
 import com.sk89q.worldedit.world.snapshot.Snapshot;
@@ -87,10 +91,12 @@ public class LocalSession {
     private transient boolean fastMode = false;
     private transient Mask mask;
     private transient TimeZone timezone = TimeZone.getDefault();
+    private transient Vector cuiTemporaryBlock;
 
     // Saved properties
     private String lastScript;
     private RegionSelectorType defaultSelector;
+    private boolean useServerCUI = false; // Save this to not annoy players.
 
     /**
      * Construct the object.
@@ -612,6 +618,59 @@ public class LocalSession {
     public void tellVersion(Actor player) {
     }
 
+    public boolean shouldUseServerCUI() {
+        return this.useServerCUI;
+    }
+
+    public void setUseServerCUI(boolean useServerCUI) {
+        this.useServerCUI = useServerCUI;
+        setDirty();
+    }
+
+    /**
+     * Update server-side WorldEdit CUI.
+     *
+     * @param actor The player
+     */
+    public void updateServerCUI(Actor actor) {
+        if (!actor.isPlayer()) {
+            return; // This is for players only.
+        }
+
+        if (!config.serverSideCUI) {
+            return; // Disabled in config.
+        }
+
+        Player player = (Player) actor;
+
+        if (!useServerCUI || hasCUISupport) {
+            if (cuiTemporaryBlock != null) {
+                player.sendFakeBlock(cuiTemporaryBlock, null);
+                cuiTemporaryBlock = null;
+            }
+            return; // If it's not enabled, ignore this.
+        }
+
+        // Remove the old block.
+        if (cuiTemporaryBlock != null) {
+            player.sendFakeBlock(cuiTemporaryBlock, null);
+            cuiTemporaryBlock = null;
+        }
+
+        BaseBlock block = ServerCUIHandler.createStructureBlock(player);
+        if (block != null) {
+            // If it's null, we don't need to do anything. The old was already removed.
+            Map<String, Tag> tags = block.getNbtData().getValue();
+            cuiTemporaryBlock = new Vector(
+                    ((IntTag) tags.get("x")).getValue(),
+                    ((IntTag) tags.get("y")).getValue(),
+                    ((IntTag) tags.get("z")).getValue()
+            );
+
+            player.sendFakeBlock(cuiTemporaryBlock, block);
+        }
+    }
+
     /**
      * Dispatch a CUI event but only if the actor has CUI support.
      *
@@ -624,6 +683,8 @@ public class LocalSession {
 
         if (hasCUISupport) {
             actor.dispatchCUIEvent(event);
+        } else if (useServerCUI) {
+            updateServerCUI(actor);
         }
     }
 
@@ -647,6 +708,9 @@ public class LocalSession {
         checkNotNull(actor);
 
         if (!hasCUISupport) {
+            if (useServerCUI) {
+                updateServerCUI(actor);
+            }
             return;
         }
 

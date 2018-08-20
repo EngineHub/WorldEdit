@@ -114,6 +114,7 @@ public class PropertiesConfiguration extends LocalConfiguration {
         butcherDefaultRadius = getInt("butcher-default-radius", butcherDefaultRadius);
         butcherMaxRadius = getInt("butcher-max-radius", butcherMaxRadius);
         allowSymlinks = getBool("allow-symbolic-links", allowSymlinks);
+        serverSideCUI = getBool("server-side-cui", serverSideCUI);
 
         LocalSession.MAX_HISTORY_SIZE = Math.max(15, getInt("history-size", 15));
 

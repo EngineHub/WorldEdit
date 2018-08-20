@@ -150,7 +150,7 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
     @Override
     public void onDisable() {
         WorldEdit worldEdit = WorldEdit.getInstance();
-        worldEdit.getSessionManager().clear();
+        worldEdit.getSessionManager().unload();
         worldEdit.getPlatformManager().unregister(server);
         if (config != null) {
             config.unload();

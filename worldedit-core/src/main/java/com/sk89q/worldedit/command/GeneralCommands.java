@@ -31,6 +31,7 @@ import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.entity.Player;
+import com.sk89q.worldedit.extension.input.DisallowedUsageException;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.util.command.parametric.Optional;
@@ -111,6 +112,41 @@ public class GeneralCommands {
 
             session.setFastMode(true);
             player.print("Fast mode enabled. Lighting in the affected chunks may be wrong and/or you may need to rejoin to see changes.");
+        }
+    }
+
+    @Command(
+            aliases = { "/drawsel" },
+            usage = "[on|off]",
+            desc = "Toggle drawing the current selection",
+            min = 0,
+            max = 1
+    )
+    @CommandPermissions("worldedit.drawsel")
+    public void drawSelection(Player player, LocalSession session, CommandContext args) throws WorldEditException {
+
+        if (!WorldEdit.getInstance().getConfiguration().serverSideCUI) {
+            throw new DisallowedUsageException("This functionality is disabled in the configuration!");
+        }
+        String newState = args.getString(0, null);
+        if (session.shouldUseServerCUI()) {
+            if ("on".equals(newState)) {
+                player.printError("Server CUI already enabled.");
+                return;
+            }
+
+            session.setUseServerCUI(false);
+            session.updateServerCUI(player);
+            player.print("Server CUI disabled.");
+        } else {
+            if ("off".equals(newState)) {
+                player.printError("Server CUI already disabled.");
+                return;
+            }
+
+            session.setUseServerCUI(true);
+            session.updateServerCUI(player);
+            player.print("Server CUI enabled. This only supports cuboid regions, with a maximum size of 32x32x32.");
         }
     }
 
