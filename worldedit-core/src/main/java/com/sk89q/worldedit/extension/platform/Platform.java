@@ -97,6 +97,13 @@ public interface Platform {
     @Nullable World matchWorld(World world);
 
     /**
+     * Gets a command sender for the console.
+     *
+     * @return The console command sender
+     */
+    Actor getConsoleCommandSender();
+
+    /**
      * Register the commands contained within the given command dispatcher.
      *
      * @param dispatcher the dispatcher

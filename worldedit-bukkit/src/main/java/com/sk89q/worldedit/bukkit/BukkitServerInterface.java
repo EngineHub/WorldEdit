@@ -116,6 +116,11 @@ public class BukkitServerInterface implements MultiUserPlatform {
     }
 
     @Override
+    public Actor getConsoleCommandSender() {
+        return plugin.wrapCommandSender(Bukkit.getConsoleSender());
+    }
+
+    @Override
     public void registerCommands(Dispatcher dispatcher) {
         List<CommandInfo> toRegister = new ArrayList<>();
         BukkitCommandInspector inspector = new BukkitCommandInspector(plugin, dispatcher);

@@ -120,6 +120,11 @@ class ForgePlatform extends AbstractPlatform implements MultiUserPlatform {
     }
 
     @Override
+    public Actor getConsoleCommandSender() {
+        return null; // TODO
+    }
+
+    @Override
     public void registerCommands(Dispatcher dispatcher) {
         if (server == null) return;
         ServerCommandManager mcMan = (ServerCommandManager) server.getCommandManager();

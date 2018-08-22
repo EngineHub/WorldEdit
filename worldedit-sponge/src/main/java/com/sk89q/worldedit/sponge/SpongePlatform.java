@@ -122,6 +122,11 @@ class SpongePlatform extends AbstractPlatform implements MultiUserPlatform {
     }
 
     @Override
+    public Actor getConsoleCommandSender() {
+        return mod.wrapCommandSource(Sponge.getServer().getConsole());
+    }
+
+    @Override
     public void registerCommands(Dispatcher dispatcher) {
         for (CommandMapping command : dispatcher.getCommands()) {
             CommandAdapter adapter = new CommandAdapter(command) {

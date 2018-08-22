@@ -257,6 +257,15 @@ public class SessionManager {
     }
 
     /**
+     * Update the queues held inside this session manager.
+     */
+    public synchronized void tickQueues() {
+        for (Map.Entry<UUID, SessionHolder> sessionEntry : sessions.entrySet()) {
+            sessionEntry.getValue().session.runQueue(null);
+        }
+    }
+
+    /**
      * Remove the session for the given owner if one exists.
      *
      * @param owner the owner
@@ -288,7 +297,7 @@ public class SessionManager {
 
         while (it.hasNext()) {
             SessionHolder stored = it.next();
-            if (stored.key.isActive()) {
+            if (stored.key.isActive() || stored.session.isRunningOperations()) {
                 stored.lastActive = now;
 
                 if (stored.session.compareAndResetDirty()) {

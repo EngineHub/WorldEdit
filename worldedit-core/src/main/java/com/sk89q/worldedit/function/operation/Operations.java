@@ -19,8 +19,15 @@
 
 package com.sk89q.worldedit.function.operation;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.sk89q.worldedit.MaxChangedBlocksException;
+import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.extension.platform.Actor;
+import com.sk89q.worldedit.extension.platform.Capability;
+
+import javax.annotation.Nullable;
 
 /**
  * Operation helper methods.
@@ -30,6 +37,8 @@ public final class Operations {
     private Operations() {
     }
 
+    private static RunContext BASIC_CONTEXT = new RunContext();
+
     /**
      * Complete a given operation synchronously until it completes.
      *
@@ -38,7 +47,7 @@ public final class Operations {
      */
     public static void complete(Operation op) throws WorldEditException {
         while (op != null) {
-            op = op.resume(new RunContext());
+            op = op.resume(BASIC_CONTEXT);
         }
     }
 
@@ -52,7 +61,7 @@ public final class Operations {
     public static void completeLegacy(Operation op) throws MaxChangedBlocksException {
         while (op != null) {
             try {
-                op = op.resume(new RunContext());
+                op = op.resume(BASIC_CONTEXT);
             } catch (MaxChangedBlocksException e) {
                 throw e;
             } catch (WorldEditException e) {
@@ -63,19 +72,35 @@ public final class Operations {
 
     /**
      * Complete a given operation synchronously until it completes. Re-throw all
-     * {@link com.sk89q.worldedit.WorldEditException} exceptions as
-     * {@link java.lang.RuntimeException}s.
+     * {@link WorldEditException} exceptions as
+     * {@link RuntimeException}s.
      *
      * @param op operation to execute
      */
     public static void completeBlindly(Operation op) {
         while (op != null) {
             try {
-                op = op.resume(new RunContext());
+                op = op.resume(BASIC_CONTEXT);
             } catch (WorldEditException e) {
                 throw new RuntimeException(e);
             }
         }
+    }
+
+    /**
+     * Complete a given operation in a queue until it completes.
+     *
+     * @param op operation to execute
+     * @param actor The actor to complete this with, or null for console
+     */
+    public static void completeQueued(Operation op, @Nullable Actor actor) {
+        checkNotNull(op);
+
+        if (actor == null) {
+            actor = WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.USER_COMMANDS).getConsoleCommandSender();
+        }
+
+        WorldEdit.getInstance().getSessionManager().get(actor).enqeueOperation(actor, op);
     }
 
 }
