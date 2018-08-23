@@ -22,9 +22,9 @@ package com.sk89q.worldedit.bukkit;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.sk89q.worldedit.entity.metadata.EntityProperties;
-import com.sk89q.worldedit.util.Enums;
 import org.bukkit.entity.Ambient;
 import org.bukkit.entity.Animals;
+import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Boat;
 import org.bukkit.entity.ComplexEntityPart;
 import org.bukkit.entity.Entity;
@@ -45,9 +45,6 @@ import org.bukkit.entity.Villager;
 import org.bukkit.entity.minecart.ExplosiveMinecart;
 
 class BukkitEntityProperties implements EntityProperties {
-
-    private static final org.bukkit.entity.EntityType armorStandType =
-            Enums.findByValue(org.bukkit.entity.EntityType.class, "ARMOR_STAND");
 
     private final Entity entity;
 
@@ -143,7 +140,7 @@ class BukkitEntityProperties implements EntityProperties {
 
     @Override
     public boolean isArmorStand() {
-        return entity.getType() == armorStandType;
+        return entity instanceof ArmorStand;
     }
 
     @Override
