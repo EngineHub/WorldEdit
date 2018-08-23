@@ -49,11 +49,13 @@ public class BukkitServerInterface implements MultiUserPlatform {
     public WorldEditPlugin plugin;
     private CommandRegistration dynamicCommands;
     private boolean hookingEvents;
+    private Actor consoleSender;
 
     public BukkitServerInterface(WorldEditPlugin plugin, Server server) {
         this.plugin = plugin;
         this.server = server;
         dynamicCommands = new CommandRegistration(plugin);
+        this.consoleSender = plugin.wrapCommandSender(server.getConsoleSender());
     }
 
     boolean isHookingEvents() {
@@ -117,7 +119,7 @@ public class BukkitServerInterface implements MultiUserPlatform {
 
     @Override
     public Actor getConsoleCommandSender() {
-        return plugin.wrapCommandSender(Bukkit.getConsoleSender());
+        return consoleSender;
     }
 
     @Override

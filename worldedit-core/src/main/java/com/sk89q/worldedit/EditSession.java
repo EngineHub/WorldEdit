@@ -28,6 +28,7 @@ import static com.sk89q.worldedit.regions.Regions.minimumBlockY;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.event.extent.EditSessionEvent;
+import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extent.ChangeSetExtent;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.extent.MaskingExtent;
@@ -60,6 +61,7 @@ import com.sk89q.worldedit.function.mask.MaskUnion;
 import com.sk89q.worldedit.function.mask.Masks;
 import com.sk89q.worldedit.function.mask.NoiseFilter2D;
 import com.sk89q.worldedit.function.mask.RegionMask;
+import com.sk89q.worldedit.function.operation.AffectedFutureOperation;
 import com.sk89q.worldedit.function.operation.ChangeSetExecutor;
 import com.sk89q.worldedit.function.operation.ForwardExtentCopy;
 import com.sk89q.worldedit.function.operation.Operation;
@@ -116,6 +118,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -1097,12 +1100,12 @@ public class EditSession implements Extent {
     /**
      * Drain nearby pools of water or lava.
      *
+     * @param actor The actor to run this action with, if applicable
      * @param origin the origin to drain from, which will search a 3x3 area
      * @param radius the radius of the removal, where a value should be 0 or greater
      * @return number of blocks affected
-     * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
-    public int drainArea(Vector origin, double radius) throws MaxChangedBlocksException {
+    public CompletableFuture<Integer> drainArea(@Nullable Actor actor, Vector origin, double radius) {
         checkNotNull(origin);
         checkArgument(radius >= 0, "radius >= 0 required");
 
@@ -1121,9 +1124,11 @@ public class EditSession implements Extent {
             }
         }
 
-        Operations.completeLegacy(visitor);
+        CompletableFuture<Integer> future = new CompletableFuture<>();
 
-        return visitor.getAffected();
+        Operations.completeQueued(new AffectedFutureOperation(visitor, future), actor, this);
+
+        return future;
     }
 
     /**

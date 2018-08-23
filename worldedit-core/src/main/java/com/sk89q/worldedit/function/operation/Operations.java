@@ -21,6 +21,7 @@ package com.sk89q.worldedit.function.operation;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
@@ -90,17 +91,36 @@ public final class Operations {
     /**
      * Complete a given operation in a queue until it completes.
      *
+     * <p>
+     *     Uses default
+     * </p>
+     *
+     * @param op operation to execute
+     */
+    public static void completeQueued(Operation op) {
+        completeQueued(op, null, null);
+    }
+
+    /**
+     * Complete a given operation in a queue until it completes.
+     *
      * @param op operation to execute
      * @param actor The actor to complete this with, or null for console
+     * @param editSession The edit session
      */
-    public static void completeQueued(Operation op, @Nullable Actor actor) {
+    public static void completeQueued(Operation op, @Nullable Actor actor, @Nullable EditSession editSession) {
         checkNotNull(op);
 
         if (actor == null) {
             actor = WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.USER_COMMANDS).getConsoleCommandSender();
         }
 
-        WorldEdit.getInstance().getSessionManager().get(actor).enqeueOperation(actor, op);
+        actor.print("Added operation to queue.");
+        Operation operation = op;
+        if (editSession != null) {
+            operation = new OperationQueue(op, new FlushOperation(actor, editSession));
+        }
+        WorldEdit.getInstance().getOperationQueue(actor).offer(operation);
     }
 
 }

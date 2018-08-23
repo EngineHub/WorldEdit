@@ -34,9 +34,10 @@ import java.util.List;
  */
 public class OperationQueue implements Operation {
 
-    private final List<Operation> operations = Lists.newArrayList();
+    private final List<Operation> finishedOperations = Lists.newArrayList();
     private final Deque<Operation> queue = new ArrayDeque<>();
     private Operation current;
+    private boolean paused;
 
     /**
      * Create a new queue containing no operations.
@@ -54,7 +55,6 @@ public class OperationQueue implements Operation {
         for (Operation operation : operations) {
             offer(operation);
         }
-        this.operations.addAll(operations);
     }
 
     /**
@@ -81,11 +81,15 @@ public class OperationQueue implements Operation {
 
     @Override
     public Operation resume(RunContext run) throws WorldEditException {
+        if (isPaused()) {
+            return this; // Don't tick paused ones.
+        }
         if (current == null && !queue.isEmpty()) {
             current = queue.poll();
         }
 
         if (current != null) {
+            finishedOperations.add(current); // Add to the list of finished operations.
             current = current.resume(run);
 
             if (current == null) {
@@ -106,9 +110,28 @@ public class OperationQueue implements Operation {
 
     @Override
     public void addStatusMessages(List<String> messages) {
-        for (Operation operation : operations) {
+        for (Operation operation : finishedOperations) {
             operation.addStatusMessages(messages);
         }
+        // We've grabbed the status messages, remove them now.
+        finishedOperations.clear();
     }
 
+    /**
+     * Checks whether this queue is paused.
+     *
+     * @return If it's paused
+     */
+    public boolean isPaused() {
+        return this.paused;
+    }
+
+    /**
+     * Set whether this queue is paused.
+     *
+     * @param paused If it should be paused
+     */
+    public void setPaused(boolean paused) {
+        this.paused = paused;
+    }
 }

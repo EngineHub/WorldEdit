@@ -38,6 +38,8 @@ import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.extension.platform.PlatformManager;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
+import com.sk89q.worldedit.function.operation.OperationQueue;
+import com.sk89q.worldedit.function.operation.RunContext;
 import com.sk89q.worldedit.scripting.CraftScriptContext;
 import com.sk89q.worldedit.scripting.CraftScriptEngine;
 import com.sk89q.worldedit.scripting.RhinoCraftScriptEngine;
@@ -65,6 +67,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.WeakHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -99,6 +102,8 @@ public class WorldEdit {
     private final ItemFactory itemFactory = new ItemFactory(this);
     private final MaskFactory maskFactory = new MaskFactory(this);
     private final PatternFactory patternFactory = new PatternFactory(this);
+
+    private final Map<Actor, OperationQueue> operationQueues = new WeakHashMap<>();
 
     static {
         WorldEditPrefixHandler.register("com.sk89q.worldedit");
@@ -307,6 +312,28 @@ public class WorldEdit {
 
     private boolean checkFilename(String filename) {
         return filename.matches("^[A-Za-z0-9_\\- \\./\\\\'\\$@~!%\\^\\*\\(\\)\\[\\]\\+\\{\\},\\?]+\\.[A-Za-z0-9]+$");
+    }
+
+    /**
+     * Gets an {@link OperationQueue} for the given actor.
+     *
+     * @param actor The actor
+     */
+    public OperationQueue getOperationQueue(Actor actor) {
+        return operationQueues.computeIfAbsent(actor, x -> new OperationQueue());
+    }
+
+    /**
+     * Tick all of the operation queues
+     */
+    public void tickOperationQueues() {
+        for (Map.Entry<Actor, OperationQueue> queueEntry : operationQueues.entrySet()) {
+            try {
+                queueEntry.getValue().resume(new RunContext());
+            } catch (WorldEditException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     /**

@@ -36,8 +36,6 @@ import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
 import com.sk89q.worldedit.function.mask.Mask;
-import com.sk89q.worldedit.function.operation.Operation;
-import com.sk89q.worldedit.function.operation.RunContext;
 import com.sk89q.worldedit.internal.cui.CUIEvent;
 import com.sk89q.worldedit.internal.cui.CUIRegion;
 import com.sk89q.worldedit.internal.cui.SelectionShapeEvent;
@@ -94,8 +92,6 @@ public class LocalSession {
     private transient Mask mask;
     private transient TimeZone timezone = TimeZone.getDefault();
     private transient Vector cuiTemporaryBlock;
-    private transient LinkedList<Operation> operationQueue = new LinkedList<>();
-    private transient boolean operationQueuePaused = false;
 
     // Saved properties
     private String lastScript;
@@ -896,47 +892,5 @@ public class LocalSession {
      */
     public void setMask(Mask mask) {
         this.mask = mask;
-    }
-
-    /**
-     * Add a {@link Operation} to the queue.
-     *
-     * @param actor The actor, if present
-     * @param operation The operation
-     */
-    public void enqeueOperation(@Nullable Actor actor, Operation operation) {
-        checkNotNull(operation);
-        operationQueue.addLast(operation);
-        if (actor != null) {
-            actor.print("Queued Operation");
-        }
-    }
-
-    /**
-     * Run the next item in the operation queue.
-     *
-     * @param actor The actor for feedback, if present
-     */
-    public void runQueue(@Nullable Actor actor) {
-        if (isRunningOperations()) {
-            Operation op = operationQueue.poll();
-            try {
-                op = op.resume(new RunContext());
-                if (op != null) {
-                    operationQueue.addFirst(op);
-                }
-            } catch (WorldEditException e) {
-                throw new RuntimeException(e);
-            }
-        }
-    }
-
-    /**
-     * Checks if the operation queue is running
-     *
-     * @return If the session is performing a queue
-     */
-    public boolean isRunningOperations() {
-        return !operationQueuePaused && !operationQueue.isEmpty();
     }
 }

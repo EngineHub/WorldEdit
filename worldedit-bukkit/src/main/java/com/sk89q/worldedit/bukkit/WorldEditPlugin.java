@@ -111,7 +111,7 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
         // Setup the BukkitImplementationTester.
         BukkitImplementationTester.getImplementation();
 
-        Bukkit.getScheduler().runTaskTimer(this, () -> WorldEdit.getInstance().getSessionManager().tickQueues(), 1, 1);
+        Bukkit.getScheduler().runTaskTimer(this, () -> WorldEdit.getInstance().tickOperationQueues(), 1, 1);
 
         // Enable metrics
         new Metrics(this);

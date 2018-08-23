@@ -273,12 +273,11 @@ public class WorldEditBinding extends BindingHelper {
      * @param context the context
      * @return a pattern
      * @throws ParameterException on error
-     * @throws WorldEditException on error
      */
     @BindingMatch(type = TreeType.class,
             behavior = BindingBehavior.CONSUMES,
             consumedCount = 1)
-    public TreeType getTreeType(ArgumentStack context) throws ParameterException, WorldEditException {
+    public TreeType getTreeType(ArgumentStack context) throws ParameterException {
         String input = context.next();
         if (input != null) {
             TreeType type = TreeGenerator.lookup(input);
@@ -299,27 +298,13 @@ public class WorldEditBinding extends BindingHelper {
      * @param context the context
      * @return a pattern
      * @throws ParameterException on error
-     * @throws WorldEditException on error
      */
     @BindingMatch(type = BaseBiome.class,
                   behavior = BindingBehavior.CONSUMES,
                   consumedCount = 1)
-    public BaseBiome getBiomeType(ArgumentStack context) throws ParameterException, WorldEditException {
+    public BaseBiome getBiomeType(ArgumentStack context) throws ParameterException {
         String input = context.next();
         if (input != null) {
-            Actor actor = context.getContext().getLocals().get(Actor.class);
-            World world;
-            if (actor instanceof Entity) {
-                Extent extent = ((Entity) actor).getExtent();
-                if (extent instanceof World) {
-                    world = (World) extent;
-                } else {
-                    throw new ParameterException("A world is required.");
-                }
-            } else {
-                throw new ParameterException("An entity is required.");
-            }
-
             BiomeRegistry biomeRegistry = WorldEdit.getInstance().getPlatformManager()
                     .queryCapability(Capability.GAME_HOOKS).getRegistries().getBiomeRegistry();
             List<BaseBiome> knownBiomes = biomeRegistry.getBiomes();
