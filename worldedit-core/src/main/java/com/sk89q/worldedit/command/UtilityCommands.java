@@ -104,8 +104,8 @@ public class UtilityCommands {
         int depth = args.argsLength() > 2 ? Math.max(1, args.getInteger(2)) : 1;
 
         Vector pos = session.getPlacementPosition(player);
-        int affected = editSession.fillXZ(pos, pattern, radius, depth, false);
-        player.print(affected + " block(s) have been created.");
+        editSession.fillXZ(player, pos, pattern, radius, depth, false)
+                .withConsumer(affected -> player.print(affected + " block(s) have been created."));
     }
 
     @Command(
@@ -130,13 +130,8 @@ public class UtilityCommands {
         int depth = args.argsLength() > 2 ? Math.max(1, args.getInteger(2)) : Integer.MAX_VALUE;
 
         Vector pos = session.getPlacementPosition(player);
-        int affected = 0;
-        if (pattern instanceof BlockPattern) {
-            affected = editSession.fillXZ(pos, ((BlockPattern) pattern).getBlock(), radius, depth, true);
-        } else {
-            affected = editSession.fillXZ(pos, pattern, radius, depth, true);
-        }
-        player.print(affected + " block(s) have been created.");
+        editSession.fillXZ(player, pos, pattern, radius, depth, true)
+                .withConsumer(affected -> player.print(affected + " block(s) have been created."));
     }
 
     @Command(
@@ -170,8 +165,8 @@ public class UtilityCommands {
 
         double radius = Math.max(0, args.getDouble(0));
         we.checkMaxRadius(radius);
-        int affected = editSession.fixLiquid(session.getPlacementPosition(player), radius, BlockTypes.LAVA);
-        player.print(affected + " block(s) have been changed.");
+        editSession.fixLiquid(player, session.getPlacementPosition(player), radius, BlockTypes.LAVA)
+                .withConsumer(affected -> player.print(affected + " block(s) have been changed."));
     }
 
     @Command(
@@ -187,8 +182,8 @@ public class UtilityCommands {
 
         double radius = Math.max(0, args.getDouble(0));
         we.checkMaxRadius(radius);
-        int affected = editSession.fixLiquid(session.getPlacementPosition(player), radius, BlockTypes.WATER);
-        player.print(affected + " block(s) have been changed.");
+        editSession.fixLiquid(player, session.getPlacementPosition(player), radius, BlockTypes.WATER)
+                .withConsumer(affected -> player.print(affected + " block(s) have been changed."));
     }
 
     @Command(

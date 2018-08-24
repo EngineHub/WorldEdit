@@ -22,6 +22,7 @@ package com.sk89q.worldedit.function.task;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.RunContext;
 
@@ -111,6 +112,19 @@ public class Task<T> {
     public Task<T> withStatusConsumer(Consumer<String> statusConsumer) {
         checkNotNull(statusConsumer);
         this.statusConsumer = statusConsumer;
+        return this;
+    }
+
+    /**
+     * Adds exception and status consumers to this actor.
+     *
+     * @param actor The actor
+     * @return The task, for chaining
+     */
+    public Task<T> addActorConsumers(Actor actor) {
+        checkNotNull(actor);
+        onExcept(e -> actor.printError(e.getMessage()));
+        withStatusConsumer(actor::print);
         return this;
     }
 

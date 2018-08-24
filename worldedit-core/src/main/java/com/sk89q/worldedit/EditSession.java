@@ -613,30 +613,30 @@ public class EditSession implements Extent {
     /**
      * Fills an area recursively in the X/Z directions.
      *
+     * @param actor the actor, if present
      * @param origin the location to start from
      * @param block the block to fill with
      * @param radius the radius of the spherical area to fill
      * @param depth the maximum depth, starting from the origin
      * @param recursive whether a breadth-first search should be performed
      * @return number of blocks affected
-     * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
-    public int fillXZ(Vector origin, BlockStateHolder block, double radius, int depth, boolean recursive) throws MaxChangedBlocksException {
-        return fillXZ(origin, new BlockPattern(block), radius, depth, recursive);
+    public Task<Integer> fillXZ(@Nullable Actor actor, Vector origin, BlockStateHolder block, double radius, int depth, boolean recursive) {
+        return fillXZ(actor, origin, new BlockPattern(block), radius, depth, recursive);
     }
 
     /**
      * Fills an area recursively in the X/Z directions.
      *
+     * @param actor the actor, if present
      * @param origin the origin to start the fill from
      * @param pattern the pattern to fill with
      * @param radius the radius of the spherical area to fill, with 0 as the smallest radius
      * @param depth the maximum depth, starting from the origin, with 1 as the smallest depth
      * @param recursive whether a breadth-first search should be performed
      * @return number of blocks affected
-     * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
-    public int fillXZ(Vector origin, Pattern pattern, double radius, int depth, boolean recursive) throws MaxChangedBlocksException {
+    public Task<Integer> fillXZ(@Nullable Actor actor, Vector origin, Pattern pattern, double radius, int depth, boolean recursive) {
         checkNotNull(origin);
         checkNotNull(pattern);
         checkArgument(radius >= 0, "radius >= 0");
@@ -664,9 +664,14 @@ public class EditSession implements Extent {
         visitor.visit(origin);
 
         // Execute
-        Operations.completeLegacy(visitor);
+        Task<Integer> task = Operations.<Integer>completeQueued(visitor, actor, this)
+                .withSupplier(visitor::getAffected);
 
-        return visitor.getAffected();
+        if (actor != null) {
+            task.addActorConsumers(actor);
+        }
+
+        return task;
     }
 
     /**
@@ -1127,8 +1132,7 @@ public class EditSession implements Extent {
                 .withSupplier(visitor::getAffected);
 
         if (actor != null) {
-            task.withStatusConsumer(actor::print);
-            task.onExcept(e -> actor.printError(e.getMessage()));
+            task.addActorConsumers(actor);
         }
 
         return task;
@@ -1137,13 +1141,14 @@ public class EditSession implements Extent {
     /**
      * Fix liquids so that they turn into stationary blocks and extend outward.
      *
+     * @param actor the actor, if present
      * @param origin the original position
      * @param radius the radius to fix
      * @param fluid the type of the fluid
      * @return number of blocks affected
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
-    public int fixLiquid(Vector origin, double radius, BlockType fluid) throws MaxChangedBlocksException {
+    public Task<Integer> fixLiquid(@Nullable Actor actor, Vector origin, double radius, BlockType fluid) throws MaxChangedBlocksException {
         checkNotNull(origin);
         checkArgument(radius >= 0, "radius >= 0 required");
 
@@ -1170,9 +1175,14 @@ public class EditSession implements Extent {
             }
         }
 
-        Operations.completeLegacy(visitor);
+        Task<Integer> task = Operations.<Integer>completeQueued(visitor, actor, this)
+                .withSupplier(visitor::getAffected);
 
-        return visitor.getAffected();
+        if (actor != null) {
+            task.addActorConsumers(actor);
+        }
+
+        return task;
     }
 
     /**
@@ -1656,14 +1666,23 @@ public class EditSession implements Extent {
     /**
      * Get the block distribution inside a region.
      *
+     * @param actor the actor, if present
      * @param region a region
+     * @param fuzzy If it should ignore states
      * @return the results
      */
-    public List<Countable<BlockStateHolder>> getBlockDistribution(Region region, boolean fuzzy) {
+    public Task<List<Countable<BlockStateHolder>>> getBlockDistribution(@Nullable Actor actor, Region region, boolean fuzzy) {
         BlockDistributionCounter count = new BlockDistributionCounter(this, fuzzy);
         RegionVisitor visitor = new RegionVisitor(region, count);
-        Operations.completeBlindly(visitor);
-        return count.getDistribution();
+
+        Task<List<Countable<BlockStateHolder>>> task = Operations.<List<Countable<BlockStateHolder>>>completeQueued(visitor, actor, this)
+                .withSupplier(count::getDistribution);
+
+        if (actor != null) {
+            task.addActorConsumers(actor);
+        }
+
+        return task;
     }
 
     public int makeShape(final Region region, final Vector zero, final Vector unit, final Pattern pattern, final String expressionString, final boolean hollow) throws ExpressionException, MaxChangedBlocksException {

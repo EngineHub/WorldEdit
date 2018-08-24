@@ -58,7 +58,6 @@ import com.sk89q.worldedit.util.formatting.StyledFragment;
 import com.sk89q.worldedit.util.formatting.component.CommandListBox;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
-import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.item.ItemTypes;
 import com.sk89q.worldedit.world.storage.ChunkStore;
 
@@ -662,40 +661,40 @@ public class SelectionCommands {
 
         int size;
         boolean useData = args.hasFlag('d');
-        List<Countable<BlockStateHolder>> distribution;
 
         if (args.hasFlag('c')) {
             // TODO: Update for new clipboard
             throw new CommandException("Needs to be re-written again");
         } else {
-            distribution = editSession.getBlockDistribution(session.getSelection(player.getWorld()), !useData);
             size = session.getSelection(player.getWorld()).getArea();
-        }
+            editSession.getBlockDistribution(player, session.getSelection(player.getWorld()), !useData)
+                .withConsumer(distribution -> {
+                    if (distribution.isEmpty()) {  // *Should* always be false
+                        player.printError("No blocks counted.");
+                        return;
+                    }
 
-        if (distribution.isEmpty()) {  // *Should* always be false
-            player.printError("No blocks counted.");
-            return;
-        }
+                    player.print("# total blocks: " + size);
 
-        player.print("# total blocks: " + size);
-
-        for (Countable<BlockStateHolder> c : distribution) {
-            String name = c.getID().getBlockType().getName();
-            String str;
-            if (useData) {
-                str = String.format("%-7s (%.3f%%) %s #%s",
-                        String.valueOf(c.getAmount()),
-                        c.getAmount() / (double) size * 100,
-                        name,
-                        c.getID().getAsString());
-            } else {
-                str = String.format("%-7s (%.3f%%) %s #%s",
-                        String.valueOf(c.getAmount()),
-                        c.getAmount() / (double) size * 100,
-                        name,
-                        c.getID().getBlockType().getId());
-            }
-            player.print(str);
+                    for (Countable<BlockStateHolder> c : distribution) {
+                        String name = c.getID().getBlockType().getName();
+                        String str;
+                        if (useData) {
+                            str = String.format("%-7s (%.3f%%) %s #%s",
+                                    String.valueOf(c.getAmount()),
+                                    c.getAmount() / (double) size * 100,
+                                    name,
+                                    c.getID().getAsString());
+                        } else {
+                            str = String.format("%-7s (%.3f%%) %s #%s",
+                                    String.valueOf(c.getAmount()),
+                                    c.getAmount() / (double) size * 100,
+                                    name,
+                                    c.getID().getBlockType().getId());
+                        }
+                        player.print(str);
+                    }
+                });
         }
     }
 
