@@ -162,6 +162,11 @@ public abstract class SpongeWorld extends AbstractWorld {
     }
 
     @Override
+    public boolean notifyAndLightBlock(Vector position) throws WorldEditException {
+        return false;
+    }
+
+    @Override
     public boolean regenerate(Region region, EditSession editSession) {
         return false;
     }

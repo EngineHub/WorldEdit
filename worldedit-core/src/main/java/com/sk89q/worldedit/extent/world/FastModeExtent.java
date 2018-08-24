@@ -30,8 +30,10 @@ import com.sk89q.worldedit.function.operation.RunContext;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 
+import java.util.ArrayDeque;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Queue;
 import java.util.Set;
 
 /**
@@ -40,8 +42,9 @@ import java.util.Set;
 public class FastModeExtent extends AbstractDelegateExtent {
 
     private final World world;
+    private final Queue<Vector> positions = new ArrayDeque<>();
     private final Set<BlockVector2D> dirtyChunks = new HashSet<>();
-    private boolean enabled = true;
+    private boolean enabled;
 
     /**
      * Create a new instance with fast mode enabled.
@@ -85,33 +88,47 @@ public class FastModeExtent extends AbstractDelegateExtent {
 
     @Override
     public boolean setBlock(Vector location, BlockStateHolder block) throws WorldEditException {
-        if (enabled) {
-            dirtyChunks.add(new BlockVector2D(location.getBlockX() >> 4, location.getBlockZ() >> 4));
-            return world.setBlock(location, block, false);
-        } else {
-            return world.setBlock(location, block, true);
+        dirtyChunks.add(new BlockVector2D(location.getBlockX() >> 4, location.getBlockZ() >> 4));
+        if (world.setBlock(location, block, false)) {
+            if (!enabled) {
+                positions.offer(location);
+            }
+            return true;
         }
+        return false;
     }
 
     @Override
     protected Operation commitBefore() {
-        return new Operation() {
-            @Override
-            public Operation resume(RunContext run) throws WorldEditException {
-                if (!dirtyChunks.isEmpty()) {
-                    world.fixAfterFastMode(dirtyChunks);
-                }
-                return null;
-            }
-
-            @Override
-            public void cancel() {
-            }
-
-            @Override
-            public void addStatusMessages(List<String> messages) {
-            }
-        };
+        return new CommitOperation();
     }
 
+    private class CommitOperation implements Operation {
+        @Override
+        public Operation resume(RunContext run) throws WorldEditException {
+            if (!enabled) {
+                if (!dirtyChunks.isEmpty()) {
+                    world.fixAfterFastMode(dirtyChunks);
+                    dirtyChunks.clear();
+                }
+
+                while (run.shouldContinue() && !positions.isEmpty()) {
+                    Vector position = positions.poll(); // Remove from queue
+                    world.notifyAndLightBlock(position);
+                }
+
+                return !positions.isEmpty() ? this : null;
+            }
+
+            return null;
+        }
+
+        @Override
+        public void cancel() {
+        }
+
+        @Override
+        public void addStatusMessages(List<String> messages) {
+        }
+    }
 }

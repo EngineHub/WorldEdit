@@ -237,6 +237,11 @@ public class ForgeWorld extends AbstractWorld {
     }
 
     @Override
+    public boolean notifyAndLightBlock(Vector position) throws WorldEditException {
+        return false;
+    }
+
+    @Override
     public int getBlockLightLevel(Vector position) {
         checkNotNull(position);
         return getWorld().getLight(new BlockPos(position.getBlockX(), position.getBlockY(), position.getBlockZ()));

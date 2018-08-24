@@ -167,7 +167,7 @@ public abstract class BreadthFirstSearch implements AffectingOperation {
             if (function.apply(position)) {
                 affected++;
 
-                if (System.currentTimeMillis() - startTime > 50) { // 20TPS 1 tick time.
+                if (affected % 100 == 0 && System.currentTimeMillis() - startTime > 50) { // 20TPS 1 tick time.
                     return this;
                 }
             }

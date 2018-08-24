@@ -159,6 +159,11 @@ public class BukkitWorld extends AbstractWorld {
     }
 
     @Override
+    public boolean notifyAndLightBlock(Vector position) throws WorldEditException {
+        return false;
+    }
+
+    @Override
     public int getBlockLightLevel(Vector pt) {
         return getWorld().getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ()).getLightLevel();
     }

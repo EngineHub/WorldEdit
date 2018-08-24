@@ -19,7 +19,6 @@
 
 package com.sk89q.worldedit.extent.reorder;
 
-import com.google.common.collect.Iterators;
 import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
@@ -37,6 +36,7 @@ import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.block.BlockTypes;
 
+import java.util.ArrayList;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -50,10 +50,20 @@ import java.util.Set;
  */
 public class MultiStageReorder extends AbstractDelegateExtent implements ReorderingExtent {
 
-    private TupleArrayList<BlockVector, BlockStateHolder> stage1 = new TupleArrayList<>();
-    private TupleArrayList<BlockVector, BlockStateHolder> stage2 = new TupleArrayList<>();
-    private TupleArrayList<BlockVector, BlockStateHolder> stage3 = new TupleArrayList<>();
+    private static final int STAGE_COUNT = 4;
+
+    private final List<TupleArrayList<BlockVector, BlockStateHolder>> stages = new ArrayList<>();
+
     private boolean enabled;
+
+    /**
+     * Create a new instance when the re-ordering is enabled.
+     *
+     * @param extent the extent
+     */
+    public MultiStageReorder(Extent extent) {
+        this(extent, true);
+    }
 
     /**
      * Create a new instance.
@@ -64,15 +74,10 @@ public class MultiStageReorder extends AbstractDelegateExtent implements Reorder
     public MultiStageReorder(Extent extent, boolean enabled) {
         super(extent);
         this.enabled = enabled;
-    }
 
-    /**
-     * Create a new instance when the re-ordering is enabled.
-     *
-     * @param extent the extent
-     */
-    public MultiStageReorder(Extent extent) {
-        this(extent, true);
+        for (int i = 0; i < STAGE_COUNT; ++i) {
+            stages.add(new TupleArrayList<>());
+        }
     }
 
     /**
@@ -93,56 +98,68 @@ public class MultiStageReorder extends AbstractDelegateExtent implements Reorder
         this.enabled = enabled;
     }
 
+    public int getPlacementPriority(BlockStateHolder block) {
+        if (Blocks.shouldPlaceLate(block.getBlockType())) {
+            return 1;
+        } else if (Blocks.shouldPlaceLast(block.getBlockType())) {
+            // Place torches, etc. last
+            return 2;
+        } else if (Blocks.shouldPlaceFinal(block.getBlockType())) {
+            // Place signs, reed, etc even later
+            return 3;
+        } else {
+            return 0;
+        }
+    }
+
     @Override
     public boolean setBlock(Vector location, BlockStateHolder block) throws WorldEditException {
-        BlockState existing = getBlock(location);
-
         if (!enabled) {
             return super.setBlock(location, block);
         }
 
-        if (Blocks.shouldPlaceLast(block.getBlockType())) {
-            // Place torches, etc. last
-            stage2.put(location.toBlockVector(), block);
-            return !existing.equalsFuzzy(block);
-        } else if (Blocks.shouldPlaceFinal(block.getBlockType())) {
-            // Place signs, reed, etc even later
-            stage3.put(location.toBlockVector(), block);
-            return !existing.equalsFuzzy(block);
-        } else if (Blocks.shouldPlaceLast(existing.getBlockType())) {
+        BlockState existing = getBlock(location);
+
+        int priority = getPlacementPriority(block);
+        int srcPriority = getPlacementPriority(block);
+        // Destroy torches, water, stand, etc. first
+        if (srcPriority == 1 || srcPriority == 2) {
             // Destroy torches, etc. first
             super.setBlock(location, BlockTypes.AIR.getDefaultState());
             return super.setBlock(location, block);
-        } else {
-            stage1.put(location.toBlockVector(), block);
-            return !existing.equalsFuzzy(block);
         }
+
+        stages.get(priority).put(location.toBlockPoint(), block);
+        return !existing.equalsFuzzy(block);
     }
 
     @Override
     public Operation commitBefore() {
-        return new OperationQueue(
-                new BlockMapEntryPlacer(
-                        getExtent(),
-                        Iterators.concat(stage1.iterator(), stage2.iterator())),
-                new Stage3Committer());
+        List<Operation> operations = new ArrayList<>();
+        for (int i = 0; i < stages.size() - 1; ++i) {
+            operations.add(new BlockMapEntryPlacer(getExtent(), stages.get(i).iterator()));
+        }
+        operations.add(new FinalStageCommitter());
+        return new OperationQueue(operations);
     }
 
-    private class Stage3Committer implements Operation {
+    private class FinalStageCommitter implements Operation {
+        private Extent extent = getExtent();
 
-        @Override
-        public Operation resume(RunContext run) throws WorldEditException {
-            Extent extent = getExtent();
+        private final Set<BlockVector> blocks = new HashSet<>();
+        private final Map<BlockVector, BlockStateHolder> blockTypes = new HashMap<>();
 
-            final Set<BlockVector> blocks = new HashSet<>();
-            final Map<BlockVector, BlockStateHolder> blockTypes = new HashMap<>();
-            for (Map.Entry<BlockVector, BlockStateHolder> entry : stage3) {
+        public FinalStageCommitter() {
+            for (Map.Entry<BlockVector, BlockStateHolder> entry : stages.get(stages.size() - 1)) {
                 final BlockVector pt = entry.getKey();
                 blocks.add(pt);
                 blockTypes.put(pt, entry.getValue());
             }
+        }
 
-            while (!blocks.isEmpty()) {
+        @Override
+        public Operation resume(RunContext run) throws WorldEditException {
+            while (run.shouldContinue() && !blocks.isEmpty()) {
                 BlockVector current = blocks.iterator().next();
                 if (!blocks.contains(current)) {
                     continue;
@@ -197,11 +214,14 @@ public class MultiStageReorder extends AbstractDelegateExtent implements Reorder
                 }
             }
 
-            stage1.clear();
-            stage2.clear();
-            stage3.clear();
+            if (blocks.isEmpty()) {
+                for (TupleArrayList<BlockVector, BlockStateHolder> stage : stages) {
+                    stage.clear();
+                }
+                return null;
+            }
 
-            return null;
+            return this;
         }
 
         @Override

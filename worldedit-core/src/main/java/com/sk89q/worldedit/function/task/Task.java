@@ -97,7 +97,7 @@ public class Task<T> {
         return this;
     }
 
-    public Task<T> onExcept(Consumer<WorldEditException> exceptionConsumer) {
+    public Task<T> withExceptionConsumer(Consumer<WorldEditException> exceptionConsumer) {
         checkNotNull(exceptionConsumer);
         this.exceptionConsumer = exceptionConsumer;
         return this;
@@ -123,10 +123,21 @@ public class Task<T> {
      */
     public Task<T> addActorConsumers(Actor actor) {
         checkNotNull(actor);
-        onExcept(e -> actor.printError(e.getMessage()));
+        withExceptionConsumer(e -> actor.printError(e.getMessage()));
         withStatusConsumer(actor::print);
         return this;
     }
+
+    private void notifyStatusConsumer() {
+        if (statusConsumer != null && current != null) {
+            statusMessageList.clear();
+            current.addStatusMessages(statusMessageList);
+            for (String message : statusMessageList) {
+                statusConsumer.accept(message);
+            }
+        }
+    }
+
 
     /**
      * Resume the task with a given context.
@@ -137,17 +148,11 @@ public class Task<T> {
     public boolean resumeTask(RunContext run) {
         if (current == null && !queue.isEmpty()) {
             current = queue.poll();
+
+            notifyStatusConsumer();
         }
 
         if (current != null) {
-            if (statusConsumer != null) {
-                statusMessageList.clear();
-                current.addStatusMessages(statusMessageList);
-                for (String message : statusMessageList) {
-                    statusConsumer.accept(message);
-                }
-            }
-
             try {
                 current = current.resume(run);
             } catch (WorldEditException e) {
@@ -159,6 +164,8 @@ public class Task<T> {
 
             if (current == null) {
                 current = queue.poll();
+
+                notifyStatusConsumer();
             }
         }
 
