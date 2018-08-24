@@ -152,8 +152,8 @@ public class UtilityCommands {
 
         double radius = Math.max(0, args.getDouble(0));
         we.checkMaxRadius(radius);
-        editSession.drainArea(player, session.getPlacementPosition(player), radius).thenAccept(
-                affected -> player.print(affected + " block(s) have been changed.")
+        editSession.drainArea(player, session.getPlacementPosition(player), radius)
+                .withConsumer(affected -> player.print(affected + " block(s) have been changed.")
         );
     }
 

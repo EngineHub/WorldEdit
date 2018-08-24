@@ -61,7 +61,6 @@ import com.sk89q.worldedit.function.mask.MaskUnion;
 import com.sk89q.worldedit.function.mask.Masks;
 import com.sk89q.worldedit.function.mask.NoiseFilter2D;
 import com.sk89q.worldedit.function.mask.RegionMask;
-import com.sk89q.worldedit.function.operation.AffectedFutureOperation;
 import com.sk89q.worldedit.function.operation.ChangeSetExecutor;
 import com.sk89q.worldedit.function.operation.ForwardExtentCopy;
 import com.sk89q.worldedit.function.operation.Operation;
@@ -69,6 +68,7 @@ import com.sk89q.worldedit.function.operation.OperationQueue;
 import com.sk89q.worldedit.function.operation.Operations;
 import com.sk89q.worldedit.function.pattern.BlockPattern;
 import com.sk89q.worldedit.function.pattern.Pattern;
+import com.sk89q.worldedit.function.task.Task;
 import com.sk89q.worldedit.function.util.RegionOffset;
 import com.sk89q.worldedit.function.visitor.DownwardVisitor;
 import com.sk89q.worldedit.function.visitor.LayerVisitor;
@@ -118,7 +118,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -1105,7 +1104,7 @@ public class EditSession implements Extent {
      * @param radius the radius of the removal, where a value should be 0 or greater
      * @return number of blocks affected
      */
-    public CompletableFuture<Integer> drainArea(@Nullable Actor actor, Vector origin, double radius) {
+    public Task<Integer> drainArea(@Nullable Actor actor, Vector origin, double radius) {
         checkNotNull(origin);
         checkArgument(radius >= 0, "radius >= 0 required");
 
@@ -1124,11 +1123,15 @@ public class EditSession implements Extent {
             }
         }
 
-        CompletableFuture<Integer> future = new CompletableFuture<>();
+        Task<Integer> task = Operations.<Integer>completeQueued(visitor, actor, this)
+                .withSupplier(visitor::getAffected);
 
-        Operations.completeQueued(new AffectedFutureOperation(visitor, future), actor, this);
+        if (actor != null) {
+            task.withStatusConsumer(actor::print);
+            task.onExcept(e -> actor.printError(e.getMessage()));
+        }
 
-        return future;
+        return task;
     }
 
     /**

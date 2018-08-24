@@ -37,11 +37,8 @@ import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
-<<<<<<< HEAD
 import org.bstats.bukkit.Metrics;
-=======
 import org.bukkit.Bukkit;
->>>>>>> ed313f21... Added first trial of a queued operation system
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
@@ -111,7 +108,7 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
         // Setup the BukkitImplementationTester.
         BukkitImplementationTester.getImplementation();
 
-        Bukkit.getScheduler().runTaskTimer(this, () -> WorldEdit.getInstance().tickOperationQueues(), 1, 1);
+        Bukkit.getScheduler().runTaskTimer(this, () -> WorldEdit.getInstance().getTaskManager().tickTaskQueues(), 1, 1);
 
         // Enable metrics
         new Metrics(this);

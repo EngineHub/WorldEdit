@@ -61,6 +61,8 @@ import com.sk89q.worldedit.event.platform.CommandEvent;
 import com.sk89q.worldedit.event.platform.CommandSuggestionEvent;
 import com.sk89q.worldedit.function.factory.Deform;
 import com.sk89q.worldedit.function.factory.Deform.Mode;
+import com.sk89q.worldedit.function.operation.FlushOperation;
+import com.sk89q.worldedit.function.operation.Operations;
 import com.sk89q.worldedit.internal.command.ActorAuthorizer;
 import com.sk89q.worldedit.internal.command.CommandLoggingHandler;
 import com.sk89q.worldedit.internal.command.UserCommandCompleter;
@@ -315,8 +317,7 @@ public final class CommandManager {
             EditSession editSession = locals.get(EditSession.class);
 
             if (editSession != null) {
-                session.remember(editSession);
-                editSession.flushQueue();
+                Operations.completeBlindly(new FlushOperation(actor, editSession));
 
                 if (config.profile) {
                     long time = System.currentTimeMillis() - start;
@@ -330,8 +331,6 @@ public final class CommandManager {
                         actor.printDebug((time / 1000.0) + "s elapsed.");
                     }
                 }
-
-                worldEdit.flushBlockBag(actor, editSession);
             }
         }
 

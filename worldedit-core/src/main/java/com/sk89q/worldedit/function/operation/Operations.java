@@ -27,6 +27,7 @@ import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Capability;
+import com.sk89q.worldedit.function.task.Task;
 
 import javax.annotation.Nullable;
 
@@ -107,8 +108,9 @@ public final class Operations {
      * @param op operation to execute
      * @param actor The actor to complete this with, or null for console
      * @param editSession The edit session
+     * @return The task that this creates
      */
-    public static void completeQueued(Operation op, @Nullable Actor actor, @Nullable EditSession editSession) {
+    public static <T> Task<T> completeQueued(Operation op, @Nullable Actor actor, @Nullable EditSession editSession) {
         checkNotNull(op);
 
         if (actor == null) {
@@ -120,7 +122,10 @@ public final class Operations {
         if (editSession != null) {
             operation = new OperationQueue(op, new FlushOperation(actor, editSession));
         }
-        WorldEdit.getInstance().getOperationQueue(actor).offer(operation);
+
+        Task<T> task = new Task<>(operation);
+        WorldEdit.getInstance().getTaskManager().getTaskQueue(actor).offer(task);
+        return task;
     }
 
 }

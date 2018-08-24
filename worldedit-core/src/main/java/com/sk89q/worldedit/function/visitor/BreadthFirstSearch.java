@@ -161,14 +161,13 @@ public abstract class BreadthFirstSearch implements AffectingOperation {
     public Operation resume(RunContext run) throws WorldEditException {
         Vector position;
 
-        int counter = 0;
-        
+        long startTime = System.currentTimeMillis();
+
         while ((position = queue.poll()) != null) {
             if (function.apply(position)) {
                 affected++;
-                counter ++;
 
-                if (counter > 100) {
+                if (System.currentTimeMillis() - startTime > 50) { // 20TPS 1 tick time.
                     return this;
                 }
             }
