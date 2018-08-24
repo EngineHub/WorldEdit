@@ -72,6 +72,17 @@ public class TaskQueue {
         queue.offer(task);
     }
 
+    /**
+     * Add a new task to the queue, performed next.
+     *
+     * @param task the task
+     */
+    public void offerNext(Task task) {
+        checkNotNull(task);
+        queue.offerFirst(task);
+    }
+
+
     public Task resume(RunContext run) {
         if (paused) {
             return current;

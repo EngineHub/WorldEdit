@@ -29,6 +29,7 @@ import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.entity.Player;
+import com.sk89q.worldedit.function.task.Task;
 
 /**
  * Commands to undo, redo, and clear history.
@@ -55,10 +56,10 @@ public class HistoryCommands {
         max = 2
     )
     @CommandPermissions("worldedit.history.undo")
-    public void undo(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
+    public void undo(Player player, LocalSession session, CommandContext args) throws WorldEditException {
         int times = Math.max(1, args.getInteger(0, 1));
         for (int i = 0; i < times; ++i) {
-            EditSession undone;
+            Task<EditSession> undone;
             if (args.argsLength() < 2) {
                 undone = session.undo(session.getBlockBag(player), player);
             } else {
@@ -71,8 +72,7 @@ public class HistoryCommands {
                 undone = sess.undo(session.getBlockBag(player), player);
             }
             if (undone != null) {
-                player.print("Undo successful.");
-                worldEdit.flushBlockBag(player, undone);
+                undone.withConsumer(undoneSession -> player.print("Undo successful."));
             } else {
                 player.printError("Nothing left to undo.");
                 break;
@@ -88,12 +88,12 @@ public class HistoryCommands {
         max = 2
     )
     @CommandPermissions("worldedit.history.redo")
-    public void redo(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
+    public void redo(Player player, LocalSession session, CommandContext args) throws WorldEditException {
         
         int times = Math.max(1, args.getInteger(0, 1));
 
         for (int i = 0; i < times; ++i) {
-            EditSession redone;
+            Task<EditSession> redone;
             if (args.argsLength() < 2) {
                 redone = session.redo(session.getBlockBag(player), player);
             } else {
@@ -106,8 +106,7 @@ public class HistoryCommands {
                 redone = sess.redo(session.getBlockBag(player), player);
             }
             if (redone != null) {
-                player.print("Redo successful.");
-                worldEdit.flushBlockBag(player, redone);
+                redone.withConsumer(redoneSession -> player.print("Redo successful."));
             } else {
                 player.printError("Nothing left to redo.");
             }

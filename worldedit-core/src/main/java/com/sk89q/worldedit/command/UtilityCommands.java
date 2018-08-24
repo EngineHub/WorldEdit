@@ -455,7 +455,7 @@ public class UtilityCommands {
 
         if (editSession != null) {
             session.remember(editSession);
-            editSession.flushQueue();
+            editSession.flushQueue(actor);
         }
     }
 
@@ -515,7 +515,7 @@ public class UtilityCommands {
 
         if (editSession != null) {
             session.remember(editSession);
-            editSession.flushQueue();
+            editSession.flushQueue(actor);
         }
     }
 

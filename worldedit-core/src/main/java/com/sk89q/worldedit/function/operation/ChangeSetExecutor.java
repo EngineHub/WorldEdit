@@ -64,6 +64,9 @@ public class ChangeSetExecutor implements Operation {
 
     @Override
     public Operation resume(RunContext run) throws WorldEditException {
+        long start = System.currentTimeMillis();
+        int count = 0;
+
         while (iterator.hasNext()) {
             Change change = iterator.next();
             if (type == Type.UNDO) {
@@ -71,9 +74,15 @@ public class ChangeSetExecutor implements Operation {
             } else {
                 change.redo(context);
             }
+
+            count ++;
+
+            if (count % 100 == 0 && System.currentTimeMillis() - start > 50) {
+                break;
+            }
         }
 
-        return null;
+        return iterator.hasNext() ? this : null;
     }
 
     @Override

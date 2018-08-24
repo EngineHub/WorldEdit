@@ -288,7 +288,7 @@ public class EditSession implements Extent {
      */
     public void disableQueue() {
         if (isQueueEnabled()) {
-            flushQueue();
+            flushQueue(null);
         }
         reorderExtent.setEnabled(true);
     }
@@ -532,25 +532,27 @@ public class EditSession implements Extent {
     /**
      * Restores all blocks to their initial state.
      *
+     * @param actor The actor, if present
      * @param editSession a new {@link EditSession} to perform the undo in
+     * @return The undo task
      */
-    public void undo(EditSession editSession) {
+    public Task<EditSession> undo(@Nullable Actor actor, EditSession editSession) {
         UndoContext context = new UndoContext();
         context.setExtent(editSession.bypassHistory);
-        Operations.completeBlindly(ChangeSetExecutor.createUndo(changeSet, context));
-        editSession.flushQueue();
+        return Operations.<EditSession>completeQueued(ChangeSetExecutor.createUndo(changeSet, context), actor, editSession).withSupplier(() -> editSession);
     }
 
     /**
      * Sets to new state.
      *
+     * @param actor The actor, if present
      * @param editSession a new {@link EditSession} to perform the redo in
+     * @return The redo task
      */
-    public void redo(EditSession editSession) {
+    public Task<EditSession> redo(@Nullable Actor actor, EditSession editSession) {
         UndoContext context = new UndoContext();
         context.setExtent(editSession.bypassHistory);
-        Operations.completeBlindly(ChangeSetExecutor.createRedo(changeSet, context));
-        editSession.flushQueue();
+        return Operations.<EditSession>completeQueued(ChangeSetExecutor.createRedo(changeSet, context), actor, editSession).withSupplier(() -> editSession);
     }
 
     /**
@@ -585,8 +587,10 @@ public class EditSession implements Extent {
     /**
      * Finish off the queue.
      */
-    public void flushQueue() {
-        Operations.completeBlindly(commit());
+    public Task<Void> flushQueue(Actor actor) {
+        Task<Void> task = new Task<>(commit());
+        WorldEdit.getInstance().getTaskManager().getTaskQueue(actor).offerNext(task);
+        return task;
     }
 
     @Override

@@ -41,7 +41,7 @@ public class FlushOperation implements Operation {
     public Operation resume(RunContext run) throws WorldEditException {
         LocalSession session = WorldEdit.getInstance().getSessionManager().get(actor);
         session.remember(editSession);
-        editSession.flushQueue();
+        editSession.flushQueue(actor);
 
         WorldEdit.getInstance().flushBlockBag(actor, editSession);
 

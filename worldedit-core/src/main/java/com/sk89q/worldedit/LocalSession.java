@@ -36,6 +36,7 @@ import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
 import com.sk89q.worldedit.function.mask.Mask;
+import com.sk89q.worldedit.function.task.Task;
 import com.sk89q.worldedit.internal.cui.CUIEvent;
 import com.sk89q.worldedit.internal.cui.CUIRegion;
 import com.sk89q.worldedit.internal.cui.SelectionShapeEvent;
@@ -219,7 +220,7 @@ public class LocalSession {
      * @param player the player
      * @return whether anything was undone
      */
-    public EditSession undo(@Nullable BlockBag newBlockBag, Player player) {
+    public Task<EditSession> undo(@Nullable BlockBag newBlockBag, Player player) {
         checkNotNull(player);
         --historyPointer;
         if (historyPointer >= 0) {
@@ -228,8 +229,9 @@ public class LocalSession {
                     .getEditSession(editSession.getWorld(), -1, newBlockBag, player);
             newEditSession.enableQueue();
             newEditSession.setFastMode(fastMode);
-            editSession.undo(newEditSession);
-            return editSession;
+            Task<EditSession> task = editSession.undo(player, newEditSession);
+            task.addActorConsumers(player);
+            return task;
         } else {
             historyPointer = 0;
             return null;
@@ -243,7 +245,7 @@ public class LocalSession {
      * @param player the player
      * @return whether anything was redone
      */
-    public EditSession redo(@Nullable BlockBag newBlockBag, Player player) {
+    public Task<EditSession> redo(@Nullable BlockBag newBlockBag, Player player) {
         checkNotNull(player);
         if (historyPointer < history.size()) {
             EditSession editSession = history.get(historyPointer);
@@ -251,9 +253,10 @@ public class LocalSession {
                     .getEditSession(editSession.getWorld(), -1, newBlockBag, player);
             newEditSession.enableQueue();
             newEditSession.setFastMode(fastMode);
-            editSession.redo(newEditSession);
+            Task<EditSession> task = editSession.redo(player, newEditSession);
+            task.addActorConsumers(player);
             ++historyPointer;
-            return editSession;
+            return task;
         }
 
         return null;
