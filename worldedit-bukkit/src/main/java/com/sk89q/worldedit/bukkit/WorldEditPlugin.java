@@ -82,11 +82,10 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
 
         WorldEdit worldEdit = WorldEdit.getInstance();
 
-        loadAdapter(); // Need an adapter to work with special blocks with NBT data
-
         // Setup platform
         server = new BukkitServerInterface(this, getServer());
         worldEdit.getPlatformManager().register(server);
+        loadAdapter(); // Need an adapter to work with special blocks with NBT data
         worldEdit.loadMappings();
 
         loadConfig(); // Load configuration
