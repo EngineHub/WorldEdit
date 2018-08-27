@@ -104,7 +104,7 @@ public class SessionManager {
         checkNotNull(name);
         for (SessionHolder holder : sessions.values()) {
             String test = holder.key.getName();
-            if (test != null && name.equals(test)) {
+            if (name.equals(test)) {
                 return holder.session;
             }
         }

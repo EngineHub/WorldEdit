@@ -31,7 +31,7 @@ import java.lang.annotation.RetentionPolicy;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Logging {
 
-    public enum LogMode {
+    enum LogMode {
         /**
          * Player position
          */

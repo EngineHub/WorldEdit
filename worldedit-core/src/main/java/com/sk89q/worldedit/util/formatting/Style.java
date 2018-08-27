@@ -136,11 +136,11 @@ public enum Style {
     private final static Map<Integer, Style> BY_ID = Maps.newHashMap();
     private final static Map<Character, Style> BY_CHAR = Maps.newHashMap();
 
-    private Style(char code, int intCode) {
+    Style(char code, int intCode) {
         this(code, intCode, false);
     }
 
-    private Style(char code, int intCode, boolean isFormat) {
+    Style(char code, int intCode, boolean isFormat) {
         this.code = code;
         this.intCode = intCode;
         this.isFormat = isFormat;
@@ -183,7 +183,7 @@ public enum Style {
      * Gets the color represented by the specified color code
      *
      * @param code Code to check
-     * @return Associative {@link org.bukkit.ChatColor} with the given code, or null if it doesn't exist
+     * @return Associative Style with the given code, or null if it doesn't exist
      */
     public static Style getByChar(char code) {
         return BY_CHAR.get(code);
@@ -193,7 +193,7 @@ public enum Style {
      * Gets the color represented by the specified color code
      *
      * @param code Code to check
-     * @return Associative {@link org.bukkit.ChatColor} with the given code, or null if it doesn't exist
+     * @return Associative Style with the given code, or null if it doesn't exist
      */
     public static Style getByChar(String code) {
         checkNotNull(code);

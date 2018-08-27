@@ -151,7 +151,7 @@ public class YAMLNode {
                 return;
             }
 
-            if (o == null || !(o instanceof Map)) {
+            if (!(o instanceof Map)) {
                 // This will override existing configuration data!
                 o = new LinkedHashMap<String, Object>();
                 node.put(parts[i], o);

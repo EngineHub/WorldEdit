@@ -34,6 +34,6 @@ import java.lang.annotation.Target;
 @Target(ElementType.PARAMETER)
 public @interface Direction {
     
-    public static final String AIM = "me";
+    String AIM = "me";
 
 }

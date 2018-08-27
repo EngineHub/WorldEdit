@@ -87,7 +87,7 @@ public class TrueZipMcRegionChunkStore extends McRegionChunkStore {
     protected InputStream getInputStream(String name, String worldName) throws IOException, DataException {
         // Detect subfolder for the world's files
         if (folder != null) {
-            if (!folder.equals("")) {
+            if (!folder.isEmpty()) {
                 name = folder + "/" + name;
             }
         } else {
@@ -100,7 +100,7 @@ public class TrueZipMcRegionChunkStore extends McRegionChunkStore {
                 if (worldPattern.matcher(worldName).matches()) {
                     // Check for file
                     if (pattern.matcher(testEntry.getName()).matches()) {
-                        folder = testEntry.getName().substring(0, testEntry.getName().lastIndexOf("/"));
+                        folder = testEntry.getName().substring(0, testEntry.getName().lastIndexOf('/'));
                         name = folder + "/" + name;
                         break;
                     }

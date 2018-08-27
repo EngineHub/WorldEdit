@@ -34,6 +34,6 @@ public interface RegionFunction {
      * @return true if something was changed
      * @throws WorldEditException thrown on an error
      */
-    public boolean apply(Vector position) throws WorldEditException;
+    boolean apply(Vector position) throws WorldEditException;
 
 }

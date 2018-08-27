@@ -120,7 +120,7 @@ public class YAMLConfiguration extends LocalConfiguration {
         }
 
         String type = config.getString("shell-save-type", "").trim();
-        shellSaveType = type.equals("") ? null : type;
+        shellSaveType = type.isEmpty() ? null : type;
 
     }
 

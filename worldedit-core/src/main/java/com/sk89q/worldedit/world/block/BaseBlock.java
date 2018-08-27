@@ -25,7 +25,6 @@ import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.jnbt.StringTag;
 import com.sk89q.jnbt.Tag;
 import com.sk89q.worldedit.blocks.TileEntityBlock;
-import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.registry.state.Property;
 
 import java.util.Map;

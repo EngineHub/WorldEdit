@@ -27,12 +27,12 @@ import com.sk89q.worldedit.internal.expression.parser.ParserException;
  */
 public interface LValue extends RValue {
 
-    public double assign(double value) throws EvaluationException;
+    double assign(double value) throws EvaluationException;
 
     @Override
-    public LValue optimize() throws EvaluationException;
+    LValue optimize() throws EvaluationException;
 
     @Override
-    public LValue bindVariables(Expression expression, boolean preferLValue) throws ParserException;
+    LValue bindVariables(Expression expression, boolean preferLValue) throws ParserException;
 
 }

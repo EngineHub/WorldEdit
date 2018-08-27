@@ -34,6 +34,6 @@ public interface Tool {
      * @param actor the actor
      * @return true if use is permitted
      */
-    public boolean canUse(Actor actor);
+    boolean canUse(Actor actor);
 
 }

@@ -26,5 +26,5 @@ import com.sk89q.worldedit.extension.platform.Platform;
 
 public interface TraceTool extends Tool {
 
-    public boolean actPrimary(Platform server, LocalConfiguration config, Player player, LocalSession session);
+    boolean actPrimary(Platform server, LocalConfiguration config, Player player, LocalSession session);
 }

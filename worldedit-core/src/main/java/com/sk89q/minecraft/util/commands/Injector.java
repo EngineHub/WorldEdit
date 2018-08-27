@@ -35,6 +35,6 @@ public interface Injector {
      * @throws InstantiationException thrown on injection fault
      * @throws InvocationTargetException thrown on injection fault
      */
-    public Object getInstance(Class<?> cls) throws InvocationTargetException, IllegalAccessException, InstantiationException;
+    Object getInstance(Class<?> cls) throws InvocationTargetException, IllegalAccessException, InstantiationException;
 
 }

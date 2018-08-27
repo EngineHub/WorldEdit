@@ -200,7 +200,7 @@ public class Snapshot implements Comparable<Snapshot> {
     public int compareTo(Snapshot o) {
         if (o.date == null || date == null) {
             // Remove the folder from the name
-            int i = name.indexOf("/"), j = o.name.indexOf("/");
+            int i = name.indexOf('/'), j = o.name.indexOf('/');
             return name.substring((i > 0 ? 0 : i)).compareTo(o.name.substring((j > 0 ? 0 : j)));
         } else {
             return date.compareTo(o.date);

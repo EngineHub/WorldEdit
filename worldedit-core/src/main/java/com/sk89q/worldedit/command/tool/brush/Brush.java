@@ -38,6 +38,6 @@ public interface Brush {
      * @param size the size of the brush
      * @throws MaxChangedBlocksException 
      */
-    public void build(EditSession editSession, Vector position, Pattern pattern, double size) throws MaxChangedBlocksException;
+    void build(EditSession editSession, Vector position, Pattern pattern, double size) throws MaxChangedBlocksException;
 
 }

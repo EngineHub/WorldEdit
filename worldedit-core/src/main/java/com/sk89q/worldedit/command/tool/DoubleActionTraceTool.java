@@ -29,6 +29,6 @@ import com.sk89q.worldedit.extension.platform.Platform;
  */
 public interface DoubleActionTraceTool extends TraceTool {
 
-    public boolean actSecondary(Platform server, LocalConfiguration config, Player player, LocalSession session);
+    boolean actSecondary(Platform server, LocalConfiguration config, Player player, LocalSession session);
 
 }

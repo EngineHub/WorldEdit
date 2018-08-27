@@ -61,6 +61,6 @@ public interface Parameter {
      * 
      * @return a default value, or null if none is set
      */
-    public String[] getDefaultValue();
+    String[] getDefaultValue();
 
 }

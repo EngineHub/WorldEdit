@@ -481,10 +481,10 @@ public class WorldEdit {
             int size = missingBlocks.size();
             int i = 0;
 
-            for (BlockType id : missingBlocks.keySet()) {
-                str.append(id.getName());
+            for (Map.Entry<BlockType, Integer> blockTypeIntegerEntry : missingBlocks.entrySet()) {
+                str.append((blockTypeIntegerEntry.getKey()).getName());
 
-                str.append(" [Amt: ").append(missingBlocks.get(id)).append("]");
+                str.append(" [Amt: ").append(blockTypeIntegerEntry.getValue()).append("]");
 
                 ++i;
 
@@ -559,7 +559,7 @@ public class WorldEdit {
         Request.reset();
 
         String filename = f.getPath();
-        int index = filename.lastIndexOf(".");
+        int index = filename.lastIndexOf('.');
         String ext = filename.substring(index + 1);
 
         if (!ext.equalsIgnoreCase("js")) {

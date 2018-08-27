@@ -27,5 +27,5 @@ import com.sk89q.worldedit.util.Location;
 
 public interface BlockTool extends Tool {
 
-    public boolean actPrimary(Platform server, LocalConfiguration config, Player player, LocalSession session, Location clicked);
+    boolean actPrimary(Platform server, LocalConfiguration config, Player player, LocalSession session, Location clicked);
 }

@@ -44,14 +44,14 @@ public interface RegionSelector {
      * @return a world, which may be null
      */
     @Nullable
-    public World getWorld();
+    World getWorld();
 
     /**
      * Set the world for the region selector.
      *
      * @param world the world, which may be null
      */
-    public void setWorld(@Nullable World world);
+    void setWorld(@Nullable World world);
 
     /**
      * Called when the first point is selected.
@@ -59,7 +59,7 @@ public interface RegionSelector {
      * @param position the position
      * @return true if something changed
      */
-    public boolean selectPrimary(Vector position, SelectorLimits limits);
+    boolean selectPrimary(Vector position, SelectorLimits limits);
 
     /**
      * Called when the second point is selected.
@@ -67,7 +67,7 @@ public interface RegionSelector {
      * @param position the position
      * @return true if something changed
      */
-    public boolean selectSecondary(Vector position, SelectorLimits limits);
+    boolean selectSecondary(Vector position, SelectorLimits limits);
 
     /**
      * Tell the player information about his/her primary selection.
@@ -76,7 +76,7 @@ public interface RegionSelector {
      * @param session the session
      * @param position position
      */
-    public void explainPrimarySelection(Actor actor, LocalSession session, Vector position);
+    void explainPrimarySelection(Actor actor, LocalSession session, Vector position);
 
     /**
      * Tell the player information about his/her secondary selection.
@@ -85,7 +85,7 @@ public interface RegionSelector {
      * @param session the session
      * @param position position
      */
-    public void explainSecondarySelection(Actor actor, LocalSession session, Vector position);
+    void explainSecondarySelection(Actor actor, LocalSession session, Vector position);
 
     /**
      * The the player information about the region's changes. This may resend
@@ -94,7 +94,7 @@ public interface RegionSelector {
      * @param actor the actor
      * @param session the session
      */
-    public void explainRegionAdjust(Actor actor, LocalSession session);
+    void explainRegionAdjust(Actor actor, LocalSession session);
 
     /**
      * Get the primary position.
@@ -102,7 +102,7 @@ public interface RegionSelector {
      * @return the primary position
      * @throws IncompleteRegionException thrown if a region has not been fully defined
      */
-    public BlockVector getPrimaryPosition() throws IncompleteRegionException;
+    BlockVector getPrimaryPosition() throws IncompleteRegionException;
 
     /**
      * Get the selection.
@@ -110,51 +110,51 @@ public interface RegionSelector {
      * @return the created region
      * @throws IncompleteRegionException thrown if a region has not been fully defined
      */
-    public Region getRegion() throws IncompleteRegionException;
+    Region getRegion() throws IncompleteRegionException;
 
     /**
      * Get the region even if it's not fully defined.
      * 
      * @return an incomplete region object that is incomplete
      */
-    public Region getIncompleteRegion();
+    Region getIncompleteRegion();
 
     /**
      * Returns whether the region has been fully defined.
      * 
      * @return true if a selection is available
      */
-    public boolean isDefined();
+    boolean isDefined();
 
     /**
      * Get the number of blocks inside the region.
      * 
      * @return number of blocks, or -1 if undefined
      */
-    public int getArea();
+    int getArea();
 
     /**
      * Update the selector with changes to the region.
      */
-    public void learnChanges();
+    void learnChanges();
 
     /**
      * Clear the selection.
      */
-    public void clear();
+    void clear();
 
     /**
      * Get a lowercase name of this region selector type.
      * 
      * @return a lower case name of the type
      */
-    public String getTypeName();
+    String getTypeName();
 
     /**
      * Get lines of information about the selection.
      * 
      * @return a list of lines describing the region
      */
-    public List<String> getInformationLines();
+    List<String> getInformationLines();
 
 }

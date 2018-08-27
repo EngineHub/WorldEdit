@@ -28,19 +28,19 @@ public interface FlatRegion extends Region {
      *
      * @return the Y value
      */
-    public int getMinimumY();
+    int getMinimumY();
 
     /**
      * Gets the maximum Y value
      *
      * @return the Y value
      */
-    public int getMaximumY();
+    int getMaximumY();
 
     /**
      * Get this region as an iterable flat region.
      *
      * @return a flat region iterable
      */
-    public Iterable<Vector2D> asFlatRegion();
+    Iterable<Vector2D> asFlatRegion();
 }

@@ -36,6 +36,6 @@ public interface SnapshotDateParser {
      * @return date or null
      */
     @Nullable
-    public Calendar detectDate(File file);
+    Calendar detectDate(File file);
 
 }

@@ -160,13 +160,13 @@ public final class DocumentationPrinter {
 
                 stream.print(" || ");
 
-                if (cmd.flags() != null && !cmd.flags().equals("")) {
+                if (cmd.flags() != null && !cmd.flags().isEmpty()) {
                     stream.print(cmd.flags());
                 }
 
                 stream.print(" || ");
 
-                if (cmd.desc() != null && !cmd.desc().equals("")) {
+                if (cmd.desc() != null && !cmd.desc().isEmpty()) {
                     stream.print(cmd.desc());
                 }
 

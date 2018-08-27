@@ -55,7 +55,7 @@ public enum MobType {
 
     private final String name;
 
-    private MobType(String name) {
+    MobType(String name) {
         this.name = name;
     }
 

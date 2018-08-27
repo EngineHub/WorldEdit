@@ -30,6 +30,6 @@ import com.sk89q.worldedit.util.Location;
  */
 public interface DoubleActionBlockTool extends BlockTool {
 
-    public boolean actSecondary(Platform server, LocalConfiguration config, Player player, LocalSession session, Location clicked);
+    boolean actSecondary(Platform server, LocalConfiguration config, Player player, LocalSession session, Location clicked);
 
 }

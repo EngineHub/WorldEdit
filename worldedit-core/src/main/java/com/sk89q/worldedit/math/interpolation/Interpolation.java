@@ -36,7 +36,7 @@ public interface Interpolation {
      *
      * @param nodes the nodes
      */
-    public void setNodes(List<Node> nodes);
+    void setNodes(List<Node> nodes);
 
     /**
      * Gets the result of f(position)
@@ -44,7 +44,7 @@ public interface Interpolation {
      * @param position the position to interpolate
      * @return the result
      */
-    public Vector getPosition(double position);
+    Vector getPosition(double position);
 
     /**
      * Gets the result of f'(position).
@@ -52,7 +52,7 @@ public interface Interpolation {
      * @param position the position to interpolate
      * @return the result
      */
-    public Vector get1stDerivative(double position);
+    Vector get1stDerivative(double position);
 
     /**
      * Gets the result of &int;<sub>a</sub><sup style="position: relative; left: -1ex">b</sup>|f'(t)| dt.<br />

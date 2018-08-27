@@ -36,6 +36,6 @@ public interface FlatRegionFunction {
      * @return true if something was changed
      * @throws WorldEditException thrown on an error
      */
-    public boolean apply(Vector2D position) throws WorldEditException;
+    boolean apply(Vector2D position) throws WorldEditException;
 
 }

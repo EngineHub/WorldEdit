@@ -36,7 +36,7 @@ public enum RegionSelectorType {
 
     private final Class<? extends RegionSelector> selectorClass;
 
-    private RegionSelectorType(Class<? extends RegionSelector> selectorClass) {
+    RegionSelectorType(Class<? extends RegionSelector> selectorClass) {
         this.selectorClass = selectorClass;
     }
 

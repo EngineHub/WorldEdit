@@ -34,6 +34,6 @@ public interface EntityFunction {
      * @return true if something was changed
      * @throws WorldEditException thrown on an error
      */
-    public boolean apply(Entity entity) throws WorldEditException;
+    boolean apply(Entity entity) throws WorldEditException;
 
 }
