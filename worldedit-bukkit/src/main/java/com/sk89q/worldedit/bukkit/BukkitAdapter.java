@@ -345,6 +345,8 @@ public class BukkitAdapter {
         });
     }
 
+    private static Map<String, BlockData> blockDataCache = new HashMap<>();
+
     /**
      * Create a Bukkit BlockData from a WorldEdit BlockStateHolder
      *
@@ -353,7 +355,13 @@ public class BukkitAdapter {
      */
     public static BlockData adapt(BlockStateHolder block) {
         checkNotNull(block);
-        return Bukkit.createBlockData(block.getAsString());
+        return blockDataCache.computeIfAbsent(block.getAsString(), new Function<String, BlockData>() {
+            @Nullable
+            @Override
+            public BlockData apply(@Nullable String input) {
+                return Bukkit.createBlockData(block.getAsString());
+            }
+        }).clone();
     }
 
     /**
