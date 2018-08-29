@@ -31,6 +31,7 @@ public class FlushOperation implements Operation {
 
     private Actor actor;
     private EditSession editSession;
+    private boolean hasFlushed = false;
 
     public FlushOperation(Actor actor, EditSession editSession) {
         this.actor = actor;
@@ -39,9 +40,14 @@ public class FlushOperation implements Operation {
 
     @Override
     public Operation resume(RunContext run) throws WorldEditException {
-        LocalSession session = WorldEdit.getInstance().getSessionManager().get(actor);
-        session.remember(editSession);
-        editSession.flushQueue(actor);
+        if (!hasFlushed) {
+            hasFlushed = true;
+
+            LocalSession session = WorldEdit.getInstance().getSessionManager().get(actor);
+            session.remember(editSession);
+
+            return new DelegateOperation(this, editSession.commit());
+        }
 
         WorldEdit.getInstance().flushBlockBag(actor, editSession);
 

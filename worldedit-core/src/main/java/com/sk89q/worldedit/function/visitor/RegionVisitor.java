@@ -54,14 +54,9 @@ public class RegionVisitor implements Operation {
 
     @Override
     public Operation resume(RunContext run) throws WorldEditException {
-        long start = System.currentTimeMillis();
-
         while (run.shouldContinue() && iterator.hasNext()) {
             if (function.apply(iterator.next())) {
                 ++affected;
-            }
-            if (affected % 100 == 0 && System.currentTimeMillis() - start > 50) { // Time of a tick.
-                break;
             }
         }
 

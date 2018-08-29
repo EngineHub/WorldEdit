@@ -119,7 +119,7 @@ public final class Operations {
 
         actor.print("Added operation to queue.");
         Operation operation = op;
-        if (editSession != null) {
+        if (editSession != null && !(op instanceof FlushOperation)) {
             operation = new OperationQueue(op, new FlushOperation(actor, editSession));
         }
 

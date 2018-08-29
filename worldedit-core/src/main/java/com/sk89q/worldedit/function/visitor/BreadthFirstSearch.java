@@ -165,15 +165,9 @@ public abstract class BreadthFirstSearch implements Operation {
     public Operation resume(RunContext run) throws WorldEditException {
         Vector position;
 
-        long startTime = System.currentTimeMillis();
-
         while ((position = queue.poll()) != null) {
             if (function.apply(position)) {
                 affected++;
-
-                if (affected % 100 == 0 && System.currentTimeMillis() - startTime > 50) { // 20TPS 1 tick time.
-                    return this;
-                }
             }
 
             for (Vector dir : directions) {
