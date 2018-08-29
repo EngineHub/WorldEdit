@@ -25,7 +25,6 @@ import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.function.RegionFunction;
-import com.sk89q.worldedit.function.operation.AffectingOperation;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.RunContext;
 
@@ -48,7 +47,7 @@ import java.util.Set;
  * functionality that starts at certain points and extends outward from
  * those points.</p>
  */
-public abstract class BreadthFirstSearch implements AffectingOperation {
+public abstract class BreadthFirstSearch implements Operation {
 
     private final RegionFunction function;
     private final Queue<BlockVector> queue = new ArrayDeque<>();
@@ -153,6 +152,11 @@ public abstract class BreadthFirstSearch implements AffectingOperation {
      */
     protected abstract boolean isVisitable(Vector from, Vector to);
 
+    /**
+     * Get the number of affected objects.
+     *
+     * @return the number of affected
+     */
     public int getAffected() {
         return affected;
     }

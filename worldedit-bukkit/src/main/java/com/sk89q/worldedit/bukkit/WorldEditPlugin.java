@@ -290,8 +290,9 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
         com.sk89q.worldedit.entity.Player wePlayer = wrapPlayer(player);
         LocalSession session = WorldEdit.getInstance().getSessionManager().get(wePlayer);
 
-        editSession.flushQueue(wePlayer);
         session.remember(editSession);
+        editSession.flushQueue(wePlayer);
+
         WorldEdit.getInstance().flushBlockBag(wePlayer, editSession);
     }
 

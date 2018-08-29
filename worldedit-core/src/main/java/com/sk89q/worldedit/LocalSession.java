@@ -229,9 +229,7 @@ public class LocalSession {
                     .getEditSession(editSession.getWorld(), -1, newBlockBag, player);
             newEditSession.enableQueue();
             newEditSession.setFastMode(fastMode);
-            Task<EditSession> task = editSession.undo(player, newEditSession);
-            task.addActorConsumers(player);
-            return task;
+            return editSession.undo(player, newEditSession);
         } else {
             historyPointer = 0;
             return null;
@@ -254,7 +252,6 @@ public class LocalSession {
             newEditSession.enableQueue();
             newEditSession.setFastMode(fastMode);
             Task<EditSession> task = editSession.redo(player, newEditSession);
-            task.addActorConsumers(player);
             ++historyPointer;
             return task;
         }

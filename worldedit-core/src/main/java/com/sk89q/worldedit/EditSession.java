@@ -539,7 +539,11 @@ public class EditSession implements Extent {
     public Task<EditSession> undo(@Nullable Actor actor, EditSession editSession) {
         UndoContext context = new UndoContext();
         context.setExtent(editSession.bypassHistory);
-        return Operations.<EditSession>completeQueued(ChangeSetExecutor.createUndo(changeSet, context), actor, editSession).withSupplier(() -> editSession);
+        Task<EditSession> task = Operations.<EditSession>completeQueued(ChangeSetExecutor.createUndo(changeSet, context), actor, editSession).withSupplier(() -> editSession);
+        if (actor != null) {
+            task.addActorConsumers(actor);
+        }
+        return task;
     }
 
     /**
@@ -552,7 +556,11 @@ public class EditSession implements Extent {
     public Task<EditSession> redo(@Nullable Actor actor, EditSession editSession) {
         UndoContext context = new UndoContext();
         context.setExtent(editSession.bypassHistory);
-        return Operations.<EditSession>completeQueued(ChangeSetExecutor.createRedo(changeSet, context), actor, editSession).withSupplier(() -> editSession);
+        Task<EditSession> task = Operations.<EditSession>completeQueued(ChangeSetExecutor.createRedo(changeSet, context), actor, editSession).withSupplier(() -> editSession);
+        if (actor != null) {
+            task.addActorConsumers(actor);
+        }
+        return task;
     }
 
     /**
@@ -587,9 +595,12 @@ public class EditSession implements Extent {
     /**
      * Finish off the queue.
      */
-    public Task<Void> flushQueue(Actor actor) {
-        Task<Void> task = new Task<>(commit());
+    public Task<EditSession> flushQueue(Actor actor) {
+        Task<EditSession> task = new Task<EditSession>(commit()).withSupplier(() -> this);
         WorldEdit.getInstance().getTaskManager().getTaskQueue(actor).offerNext(task);
+        if (actor != null) {
+            task.addActorConsumers(actor);
+        }
         return task;
     }
 
