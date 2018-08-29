@@ -24,11 +24,12 @@ import com.sk89q.worldedit.function.operation.OperationQueue;
 import com.sk89q.worldedit.function.operation.RunContext;
 
 import java.util.Map;
+import java.util.UUID;
 import java.util.WeakHashMap;
 
 public class TaskManager {
 
-    private final Map<Actor, TaskQueue> taskQueues = new WeakHashMap<>();
+    private final Map<UUID, TaskQueue> taskQueues = new WeakHashMap<>();
 
     public TaskManager() {
     }
@@ -39,15 +40,15 @@ public class TaskManager {
      * @param actor The actor
      */
     public TaskQueue getTaskQueue(Actor actor) {
-        return taskQueues.computeIfAbsent(actor, x -> new TaskQueue());
+        return taskQueues.computeIfAbsent(actor.getUniqueId(), x -> new TaskQueue());
     }
 
     /**
      * Tick all of the task queues
      */
     public void tickTaskQueues() {
-        for (Map.Entry<Actor, TaskQueue> queueEntry : taskQueues.entrySet()) {
-            queueEntry.getValue().resume(new RunContext());
+        for (TaskQueue queue : taskQueues.values()) {
+            queue.resume(new RunContext());
         }
     }
 }
