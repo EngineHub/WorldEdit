@@ -24,7 +24,6 @@ import static com.sk89q.worldedit.event.platform.Interaction.OPEN;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.event.platform.BlockInteractEvent;
@@ -51,6 +50,7 @@ import com.sk89q.worldedit.util.io.file.FilenameException;
 import com.sk89q.worldedit.util.io.file.FilenameResolutionException;
 import com.sk89q.worldedit.util.io.file.InvalidFilenameException;
 import com.sk89q.worldedit.util.logging.WorldEditPrefixHandler;
+import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.registry.BundledBlockData;
 import com.sk89q.worldedit.world.registry.BundledItemData;
@@ -144,7 +144,7 @@ public class WorldEdit {
     }
 
     /**
-     * Get the block factory from which new {@link BaseBlock}s can be
+     * Get the block factory from which new {@link BlockStateHolder}s can be
      * constructed.
      *
      * @return the block factory

@@ -220,7 +220,7 @@ public class RegionCommands {
     @CommandPermissions("worldedit.region.walls")
     @Logging(REGION)
     public void walls(Player player, EditSession editSession, @Selection Region region, Pattern pattern) throws WorldEditException {
-        int affected = editSession.makeCuboidWalls(region, pattern);
+        int affected = editSession.makeWalls(region, pattern);
         player.print(affected + " block(s) have been changed.");
     }
 

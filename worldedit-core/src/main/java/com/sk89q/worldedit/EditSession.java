@@ -847,7 +847,7 @@ public class EditSession implements Extent {
      * @return number of blocks affected
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
-    public int makeCuboidFaces(Region region, BaseBlock block) throws MaxChangedBlocksException {
+    public int makeCuboidFaces(Region region, BlockStateHolder block) throws MaxChangedBlocksException {
         return makeCuboidFaces(region, new BlockPattern(block));
     }
 
@@ -899,7 +899,7 @@ public class EditSession implements Extent {
      * @return number of blocks affected
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
-    public int makeCuboidWalls(Region region, BaseBlock block) throws MaxChangedBlocksException {
+    public int makeCuboidWalls(Region region, BlockStateHolder block) throws MaxChangedBlocksException {
         return makeCuboidWalls(region, new BlockPattern(block));
     }
 
@@ -964,7 +964,7 @@ public class EditSession implements Extent {
      * @return number of blocks affected
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
-    public int overlayCuboidBlocks(Region region, BaseBlock block) throws MaxChangedBlocksException {
+    public int overlayCuboidBlocks(Region region, BlockStateHolder block) throws MaxChangedBlocksException {
         checkNotNull(block);
 
         return overlayCuboidBlocks(region, new BlockPattern(block));
@@ -1091,7 +1091,7 @@ public class EditSession implements Extent {
      * @return number of blocks moved
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
-    public int moveCuboidRegion(Region region, Vector dir, int distance, boolean copyAir, BaseBlock replacement) throws MaxChangedBlocksException {
+    public int moveCuboidRegion(Region region, Vector dir, int distance, boolean copyAir, BlockStateHolder replacement) throws MaxChangedBlocksException {
         return moveRegion(region, dir, distance, copyAir, replacement);
     }
 
