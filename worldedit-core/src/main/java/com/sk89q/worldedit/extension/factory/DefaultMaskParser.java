@@ -28,6 +28,7 @@ import com.sk89q.worldedit.extension.input.ParserContext;
 import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.function.mask.BiomeMask2D;
+import com.sk89q.worldedit.function.mask.BlockCategoryMask;
 import com.sk89q.worldedit.function.mask.BlockMask;
 import com.sk89q.worldedit.function.mask.ExistingBlockMask;
 import com.sk89q.worldedit.function.mask.ExpressionMask;
@@ -47,6 +48,8 @@ import com.sk89q.worldedit.session.request.Request;
 import com.sk89q.worldedit.session.request.RequestSelection;
 import com.sk89q.worldedit.world.biome.BaseBiome;
 import com.sk89q.worldedit.world.biome.Biomes;
+import com.sk89q.worldedit.world.block.BlockCategories;
+import com.sk89q.worldedit.world.block.BlockCategory;
 import com.sk89q.worldedit.world.registry.BiomeRegistry;
 
 import java.util.ArrayList;
@@ -111,8 +114,16 @@ class DefaultMaskParser extends InputParser<Mask> {
                     } catch (IncompleteRegionException e) {
                         throw new InputParseException("Please make a selection first.");
                     }
+                } else if (component.startsWith("##")) {
+                    // This means it's a tag mask.
+                    BlockCategory category = BlockCategories.get(component.substring(2).toLowerCase());
+                    if (category == null) {
+                        throw new NoMatchException("Unrecognised tag '" + component.substring(2) + '\'');
+                    } else {
+                        return new BlockCategoryMask(extent, category);
+                    }
                 } else {
-                    throw new NoMatchException("Unrecognized mask '" + component + "'");
+                    throw new NoMatchException("Unrecognized mask '" + component + '\'');
                 }
 
             case '>':
@@ -135,7 +146,7 @@ class DefaultMaskParser extends InputParser<Mask> {
                 for (String biomeName : biomesList) {
                     BaseBiome biome = Biomes.findBiomeByName(knownBiomes, biomeName, biomeRegistry);
                     if (biome == null) {
-                        throw new InputParseException("Unknown biome '" + biomeName + "'");
+                        throw new InputParseException("Unknown biome '" + biomeName + '\'');
                     }
                     biomes.add(biome);
                 }
