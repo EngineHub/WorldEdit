@@ -89,27 +89,7 @@ public abstract class LegacyChunkStore extends ChunkStore {
                         + tag.getClass().getName());
             }
 
-            Map<String, Tag> children = ((CompoundTag) tag).getValue();
-            CompoundTag rootTag = null;
-
-            // Find Level tag
-            for (Map.Entry<String, Tag> entry : children.entrySet()) {
-                if (entry.getKey().equals("Level")) {
-                    if (entry.getValue() instanceof CompoundTag) {
-                        rootTag = (CompoundTag) entry.getValue();
-                        break;
-                    } else {
-                        throw new ChunkStoreException("CompoundTag expected for 'Level'; got "
-                                + entry.getValue().getClass().getName());
-                    }
-                }
-            }
-
-            if (rootTag == null) {
-                throw new ChunkStoreException("Missing root 'Level' tag");
-            }
-
-            return rootTag;
+            return (CompoundTag) tag;
         }
     }
 
