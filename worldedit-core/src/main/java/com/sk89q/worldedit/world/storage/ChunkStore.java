@@ -27,6 +27,7 @@ import com.sk89q.worldedit.Vector2D;
 import com.sk89q.worldedit.world.DataException;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.chunk.AnvilChunk;
+import com.sk89q.worldedit.world.chunk.AnvilChunk13;
 import com.sk89q.worldedit.world.chunk.Chunk;
 import com.sk89q.worldedit.world.chunk.OldChunk;
 
@@ -38,6 +39,11 @@ import java.util.Map;
  * Represents chunk storage mechanisms.
  */
 public abstract class ChunkStore implements Closeable {
+
+    /**
+     * The DataVersion for Minecraft 1.13
+     */
+    public static final int DATA_VERSION_MC_1_13 = 1519;
 
     /**
      * >> to chunk
@@ -78,7 +84,32 @@ public abstract class ChunkStore implements Closeable {
      * @throws IOException thrown on I/O error
      */
     public Chunk getChunk(Vector2D position, World world) throws DataException, IOException {
-        CompoundTag tag = getChunkTag(position, world);
+        CompoundTag rootTag = getChunkTag(position, world);
+
+        Map<String, Tag> children = rootTag.getValue();
+        CompoundTag tag = null;
+
+        // Find Level tag
+        for (Map.Entry<String, Tag> entry : children.entrySet()) {
+            if (entry.getKey().equals("Level")) {
+                if (entry.getValue() instanceof CompoundTag) {
+                    tag = (CompoundTag) entry.getValue();
+                    break;
+                } else {
+                    throw new ChunkStoreException("CompoundTag expected for 'Level'; got " + entry.getValue().getClass().getName());
+                }
+            }
+        }
+
+        if (tag == null) {
+            throw new ChunkStoreException("Missing root 'Level' tag");
+        }
+
+        int dataVersion = rootTag.getInt("DataVersion");
+        if (dataVersion >= DATA_VERSION_MC_1_13) {
+            return new AnvilChunk13(tag);
+        }
+
         Map<String, Tag> tags = tag.getValue();
         if (tags.containsKey("Sections")) {
             return new AnvilChunk(world, tag);
