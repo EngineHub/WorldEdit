@@ -168,6 +168,10 @@ public class BlockState implements BlockStateHolder<BlockState> {
 
     @Override
     public boolean equalsFuzzy(BlockStateHolder o) {
+        if (this == o) {
+            // Added a reference equality check for
+            return true;
+        }
         if (!getBlockType().equals(o.getBlockType())) {
             return false;
         }

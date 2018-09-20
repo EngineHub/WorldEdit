@@ -26,8 +26,6 @@ import org.spongepowered.api.service.permission.PermissionDescription;
 import org.spongepowered.api.service.permission.PermissionService;
 import org.spongepowered.api.service.permission.SubjectReference;
 
-import java.util.stream.Collectors;
-
 public class SpongePermissionsProvider {
 
     public boolean hasPermission(Player player, String permission) {
@@ -44,6 +42,6 @@ public class SpongePermissionsProvider {
     public String[] getGroups(Player player) {
         return player.getParents().stream()
                 .map(SubjectReference::getSubjectIdentifier)
-                .collect(Collectors.toList()).toArray(new String[0]);
+                .toArray(String[]::new);
     }
 }

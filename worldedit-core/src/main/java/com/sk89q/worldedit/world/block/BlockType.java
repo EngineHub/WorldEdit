@@ -22,12 +22,12 @@ package com.sk89q.worldedit.world.block;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.world.registry.BlockMaterial;
 import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.registry.NamespacedRegistry;
 import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.world.item.ItemType;
 import com.sk89q.worldedit.world.item.ItemTypes;
+import com.sk89q.worldedit.world.registry.BlockMaterial;
 import com.sk89q.worldedit.world.registry.BundledBlockData;
 import com.sk89q.worldedit.world.registry.LegacyMapper;
 
@@ -46,6 +46,7 @@ public class BlockType {
     private BlockState defaultState;
     private Map<String, ? extends Property> properties;
     private BlockMaterial blockMaterial;
+    private Map<Map<Property<?>, Object>, BlockState> blockStatesMap;
 
     public BlockType(String id) {
         this(id, null);
@@ -57,7 +58,8 @@ public class BlockType {
             id = "minecraft:" + id;
         }
         this.id = id;
-        this.defaultState = new ArrayList<>(BlockState.generateStateMap(this).values()).get(0);
+        this.blockStatesMap = BlockState.generateStateMap(this);
+        this.defaultState = new ArrayList<>(this.blockStatesMap.values()).get(0);
         if (values != null) {
             this.defaultState = values.apply(this.defaultState);
         }
@@ -125,6 +127,15 @@ public class BlockType {
      */
     public BlockState getDefaultState() {
         return this.defaultState;
+    }
+
+    /**
+     * Gets a list of all possible states for this BlockType.
+     *
+     * @return All possible states
+     */
+    public List<BlockState> getAllStates() {
+        return ImmutableList.copyOf(this.blockStatesMap.values());
     }
 
     /**
