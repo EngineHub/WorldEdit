@@ -38,6 +38,7 @@
 
     <subpackage name="bukkit">
       <allow pkg="org.bukkit"/>
+      <allow pkg="org.bstats.bukkit"/>
       <allow pkg="net.minecraft.server"/>
     </subpackage>
 
@@ -58,6 +59,7 @@
       <allow pkg="com.flowpowered.math" />
       <allow pkg="org.spongepowered.api" />
       <allow pkg="org.slf4j" />
+      <allow pkg="org.bstats.sponge"/>
       <allow pkg="ninja.leaping.configurate" />
     </subpackage>
   </subpackage>

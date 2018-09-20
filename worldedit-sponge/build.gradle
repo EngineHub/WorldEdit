@@ -12,9 +12,14 @@ plugins {
     id 'org.spongepowered.plugin' version '0.8.1'
 }
 
+repositories {
+    maven { url "http://repo.bstats.org/content/repositories/releases/" }
+}
+
 dependencies {
     compile project(':worldedit-core')
     compile 'org.spongepowered:spongeapi:7.0.0-SNAPSHOT'
+    compile 'org.bstats:bstats-sponge:1.2'
     testCompile group: 'org.mockito', name: 'mockito-core', version:'1.9.0-rc1'
 }
 
@@ -37,6 +42,9 @@ jar {
 shadowJar {
     dependencies {
         include(dependency(':worldedit-core'))
+        relocate ("org.bstats", "com.sk89q.worldedit.sponge.bstats") {
+            include(dependency("org.bstats:bstats-sponge:1.2"))
+        }
     }
 }
 
