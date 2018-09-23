@@ -28,8 +28,8 @@ buildscript {
 
     dependencies {
         classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.3'
-        classpath 'org.jfrog.buildinfo:build-info-extractor-gradle:4.3.0'
-        classpath 'org.ajoberstar:gradle-git:1.5.1'
+        classpath 'org.jfrog.buildinfo:build-info-extractor-gradle:4.7.5'
+        classpath 'org.ajoberstar:gradle-git:1.7.2'
     }
 }
 

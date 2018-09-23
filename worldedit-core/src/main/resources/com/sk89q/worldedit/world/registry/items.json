@@ -804,11 +804,19 @@
     "localizedName": "Air"
   },
   {
+    "id": "minecraft:dead_brain_coral",
+    "localizedName": "Air"
+  },
+  {
     "id": "minecraft:dead_brain_coral_block",
     "localizedName": "Air"
   },
   {
     "id": "minecraft:dead_brain_coral_fan",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:dead_bubble_coral",
     "localizedName": "Air"
   },
   {
@@ -824,6 +832,10 @@
     "localizedName": "Air"
   },
   {
+    "id": "minecraft:dead_fire_coral",
+    "localizedName": "Air"
+  },
+  {
     "id": "minecraft:dead_fire_coral_block",
     "localizedName": "Air"
   },
@@ -832,11 +844,19 @@
     "localizedName": "Air"
   },
   {
+    "id": "minecraft:dead_horn_coral",
+    "localizedName": "Air"
+  },
+  {
     "id": "minecraft:dead_horn_coral_block",
     "localizedName": "Air"
   },
   {
     "id": "minecraft:dead_horn_coral_fan",
+    "localizedName": "Air"
+  },
+  {
+    "id": "minecraft:dead_tube_coral",
     "localizedName": "Air"
   },
   {
@@ -1749,7 +1769,7 @@
   },
   {
     "id": "minecraft:lingering_potion",
-    "localizedName": "Lingering Potion"
+    "localizedName": "Lingering Water Bottle"
   },
   {
     "id": "minecraft:llama_spawn_egg",
@@ -2237,7 +2257,7 @@
   },
   {
     "id": "minecraft:potion",
-    "localizedName": "Potion"
+    "localizedName": "Water Bottle"
   },
   {
     "id": "minecraft:powered_rail",
@@ -2677,7 +2697,7 @@
   },
   {
     "id": "minecraft:splash_potion",
-    "localizedName": "Splash Potion"
+    "localizedName": "Splash Water Bottle"
   },
   {
     "id": "minecraft:sponge",
@@ -2885,7 +2905,7 @@
   },
   {
     "id": "minecraft:tipped_arrow",
-    "localizedName": "Tipped Arrow"
+    "localizedName": "Arrow of Poison"
   },
   {
     "id": "minecraft:tnt",

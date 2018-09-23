@@ -3950,6 +3950,31 @@
     }
   },
   {
+    "id": "minecraft:dead_brain_coral",
+    "localizedName": "Dead Brain Coral",
+    "material": {
+      "powerSource": false,
+      "lightValue": 0,
+      "hardness": 0.0,
+      "resistance": 0.0,
+      "ticksRandomly": false,
+      "fullCube": false,
+      "slipperiness": 0.6,
+      "liquid": false,
+      "solid": true,
+      "movementBlocker": true,
+      "burnable": false,
+      "opaque": true,
+      "replacedDuringPlacement": false,
+      "toolRequired": true,
+      "fragileWhenPushed": false,
+      "unpushable": false,
+      "mapColor": "#707070",
+      "isTranslucent": false,
+      "hasContainer": false
+    }
+  },
+  {
     "id": "minecraft:dead_brain_coral_block",
     "localizedName": "Dead Brain Coral Block",
     "material": {
@@ -4002,6 +4027,31 @@
   {
     "id": "minecraft:dead_brain_coral_wall_fan",
     "localizedName": "Dead Brain Coral Wall Fan",
+    "material": {
+      "powerSource": false,
+      "lightValue": 0,
+      "hardness": 0.0,
+      "resistance": 0.0,
+      "ticksRandomly": false,
+      "fullCube": false,
+      "slipperiness": 0.6,
+      "liquid": false,
+      "solid": true,
+      "movementBlocker": true,
+      "burnable": false,
+      "opaque": true,
+      "replacedDuringPlacement": false,
+      "toolRequired": true,
+      "fragileWhenPushed": false,
+      "unpushable": false,
+      "mapColor": "#707070",
+      "isTranslucent": false,
+      "hasContainer": false
+    }
+  },
+  {
+    "id": "minecraft:dead_bubble_coral",
+    "localizedName": "Dead Bubble Coral",
     "material": {
       "powerSource": false,
       "lightValue": 0,
@@ -4125,6 +4175,31 @@
     }
   },
   {
+    "id": "minecraft:dead_fire_coral",
+    "localizedName": "Dead Fire Coral",
+    "material": {
+      "powerSource": false,
+      "lightValue": 0,
+      "hardness": 0.0,
+      "resistance": 0.0,
+      "ticksRandomly": false,
+      "fullCube": false,
+      "slipperiness": 0.6,
+      "liquid": false,
+      "solid": true,
+      "movementBlocker": true,
+      "burnable": false,
+      "opaque": true,
+      "replacedDuringPlacement": false,
+      "toolRequired": true,
+      "fragileWhenPushed": false,
+      "unpushable": false,
+      "mapColor": "#707070",
+      "isTranslucent": false,
+      "hasContainer": false
+    }
+  },
+  {
     "id": "minecraft:dead_fire_coral_block",
     "localizedName": "Dead Fire Coral Block",
     "material": {
@@ -4200,6 +4275,31 @@
     }
   },
   {
+    "id": "minecraft:dead_horn_coral",
+    "localizedName": "Dead Horn Coral",
+    "material": {
+      "powerSource": false,
+      "lightValue": 0,
+      "hardness": 0.0,
+      "resistance": 0.0,
+      "ticksRandomly": false,
+      "fullCube": false,
+      "slipperiness": 0.6,
+      "liquid": false,
+      "solid": true,
+      "movementBlocker": true,
+      "burnable": false,
+      "opaque": true,
+      "replacedDuringPlacement": false,
+      "toolRequired": true,
+      "fragileWhenPushed": false,
+      "unpushable": false,
+      "mapColor": "#707070",
+      "isTranslucent": false,
+      "hasContainer": false
+    }
+  },
+  {
     "id": "minecraft:dead_horn_coral_block",
     "localizedName": "Dead Horn Coral Block",
     "material": {
@@ -4252,6 +4352,31 @@
   {
     "id": "minecraft:dead_horn_coral_wall_fan",
     "localizedName": "Dead Horn Coral Wall Fan",
+    "material": {
+      "powerSource": false,
+      "lightValue": 0,
+      "hardness": 0.0,
+      "resistance": 0.0,
+      "ticksRandomly": false,
+      "fullCube": false,
+      "slipperiness": 0.6,
+      "liquid": false,
+      "solid": true,
+      "movementBlocker": true,
+      "burnable": false,
+      "opaque": true,
+      "replacedDuringPlacement": false,
+      "toolRequired": true,
+      "fragileWhenPushed": false,
+      "unpushable": false,
+      "mapColor": "#707070",
+      "isTranslucent": false,
+      "hasContainer": false
+    }
+  },
+  {
+    "id": "minecraft:dead_tube_coral",
+    "localizedName": "Dead Tube Coral",
     "material": {
       "powerSource": false,
       "lightValue": 0,
@@ -6995,7 +7120,7 @@
       "fragileWhenPushed": true,
       "unpushable": false,
       "mapColor": "#ff0000",
-      "isTranslucent": true,
+      "isTranslucent": false,
       "hasContainer": false
     }
   },
@@ -14045,7 +14170,7 @@
       "fragileWhenPushed": true,
       "unpushable": false,
       "mapColor": "#4040ff",
-      "isTranslucent": true,
+      "isTranslucent": false,
       "hasContainer": false
     }
   },
