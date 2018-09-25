@@ -27,7 +27,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.3'
+        classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.4'
         classpath 'org.jfrog.buildinfo:build-info-extractor-gradle:4.7.5'
         classpath 'org.ajoberstar:gradle-git:1.7.2'
     }
