@@ -104,7 +104,7 @@ public class SimpleDispatcher implements Dispatcher {
     @Override
     public Object call(String arguments, CommandLocals locals, String[] parentCommands) throws CommandException {
         // We have permission for this command if we have permissions for subcommands
-        if (!testPermission(locals)) {
+        if (parentCommands.length != 0 && !testPermission(locals)) {
             throw new CommandPermissionsException();
         }
 

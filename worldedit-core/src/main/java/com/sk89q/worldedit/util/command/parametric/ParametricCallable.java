@@ -182,7 +182,7 @@ class ParametricCallable implements CommandCallable {
     @Override
     public Object call(String stringArguments, CommandLocals locals, String[] parentCommands) throws CommandException {
         // Test permission
-        if (!testPermission(locals)) {
+        if (parentCommands.length != 0 && !testPermission(locals)) {
             throw new CommandPermissionsException();
         }
 
