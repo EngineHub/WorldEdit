@@ -28,6 +28,7 @@ Links
 -----
 
 * [Visit our website](http://www.enginehub.org/)
+* [Discord](https://discord.gg/wvneRVm)
 * [IRC channel](http://skq.me/irc/irc.esper.net/sk89q/) (#sk89q on irc.esper.net)
 * [Issue tracker](http://youtrack.sk89q.com/issues/WORLDEDIT)
 * [Continuous integration](http://builds.enginehub.org) [![Build Status](https://travis-ci.org/sk89q/WorldEdit.svg?branch=master)](https://travis-ci.org/sk89q/WorldEdit)
