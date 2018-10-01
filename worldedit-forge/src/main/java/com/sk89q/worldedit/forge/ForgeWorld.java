@@ -24,6 +24,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import com.google.common.io.Files;
 import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.worldedit.BlockVector;
+import com.sk89q.worldedit.BlockVector2D;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.Vector;
@@ -47,6 +48,8 @@ import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.item.ItemTypes;
 import com.sk89q.worldedit.world.registry.LegacyMapper;
 import com.sk89q.worldedit.world.weather.WeatherType;
+import com.sk89q.worldedit.world.weather.WeatherTypes;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLeaves;
 import net.minecraft.block.BlockOldLeaf;
@@ -86,6 +89,7 @@ import net.minecraft.world.gen.feature.WorldGenTaiga1;
 import net.minecraft.world.gen.feature.WorldGenTaiga2;
 import net.minecraft.world.gen.feature.WorldGenTrees;
 import net.minecraft.world.gen.feature.WorldGenerator;
+import net.minecraft.world.storage.WorldInfo;
 import net.minecraftforge.common.DimensionManager;
 
 import java.io.File;
@@ -93,7 +97,6 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.UUID;
 
 import javax.annotation.Nullable;
 
@@ -352,24 +355,74 @@ public class ForgeWorld extends AbstractWorld {
     }
 
     @Override
+    public void checkLoadedChunk(Vector pt) {
+        getWorld().getChunkFromBlockCoords(ForgeAdapter.toBlockPos(pt));
+    }
+
+    @Override
+    public void fixAfterFastMode(Iterable<BlockVector2D> chunks) {
+        fixLighting(chunks);
+    }
+
+    @Override
+    public void fixLighting(Iterable<BlockVector2D> chunks) {
+        World world = getWorld();
+        for (BlockVector2D chunk : chunks) {
+            world.getChunkFromChunkCoords(chunk.getBlockX(), chunk.getBlockZ()).resetRelightChecks();
+        }
+    }
+
+    @Override
+    public boolean playEffect(Vector position, int type, int data) {
+        getWorld().playEvent(type, ForgeAdapter.toBlockPos(position), data);
+        return true;
+    }
+
+    @Override
     public WeatherType getWeather() {
-        // TODO Weather implementation
-        return null;
+        WorldInfo info = getWorld().getWorldInfo();
+        if (info.isThundering()) {
+            return WeatherTypes.THUNDER_STORM;
+        }
+        if (info.isRaining()) {
+            return WeatherTypes.RAIN;
+        }
+        return WeatherTypes.CLEAR;
     }
 
     @Override
     public long getRemainingWeatherDuration() {
-        return 0;
+        WorldInfo info = getWorld().getWorldInfo();
+        if (info.isThundering()) {
+            return info.getThunderTime();
+        }
+        if (info.isRaining()) {
+            return info.getRainTime();
+        }
+        return info.getCleanWeatherTime();
     }
 
     @Override
     public void setWeather(WeatherType weatherType) {
-
+        setWeather(weatherType, 0);
     }
 
     @Override
     public void setWeather(WeatherType weatherType, long duration) {
-
+        WorldInfo info = getWorld().getWorldInfo();
+        if (WeatherTypes.THUNDER_STORM.equals(weatherType)) {
+            info.setCleanWeatherTime(0);
+            info.setThundering(true);
+            info.setThunderTime((int) duration);
+        } else if (WeatherTypes.RAIN.equals(weatherType)) {
+            info.setCleanWeatherTime(0);
+            info.setRaining(true);
+            info.setRainTime((int) duration);
+        } else if (WeatherTypes.CLEAR.equals(weatherType)) {
+            info.setRaining(false);
+            info.setThundering(false);
+            info.setCleanWeatherTime((int) duration);
+        }
     }
 
     @Override
