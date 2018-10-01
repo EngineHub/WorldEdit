@@ -98,7 +98,7 @@ public interface BukkitImplAdapter {
     Entity createEntity(Location location, BaseEntity state);
 
     /**
-     * Get a map of string -> properties
+     * Get a map of {@code string -> property}.
      *
      * @param blockType The block type
      * @return The properties map
