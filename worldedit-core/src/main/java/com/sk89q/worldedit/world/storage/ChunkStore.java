@@ -46,8 +46,8 @@ public abstract class ChunkStore implements Closeable {
     public static final int DATA_VERSION_MC_1_13 = 1519;
 
     /**
-     * >> to chunk
-     * << from chunk
+     * {@code >>} - to chunk
+     * {@code <<} - from chunk
      */
     public static final int CHUNK_SHIFTS = 4;
 

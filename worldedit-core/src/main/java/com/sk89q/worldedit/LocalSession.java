@@ -526,7 +526,7 @@ public class LocalSession {
      * Get the tool assigned to the item.
      *
      * @param item the item type
-     * @return the tool, which may be {@link null}
+     * @return the tool, which may be {@code null}
      */
     @Nullable
     public Tool getTool(ItemType item) {
