@@ -136,7 +136,7 @@ files:
 history:
     size: 15
     expiration: 10
-    
+
 calculation:
     timeout: 100
 

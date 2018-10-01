@@ -181,20 +181,20 @@ public class Expression {
     }
 
     private void pushInstance() {
-        Stack<Expression> foo = instance.get();
-        if (foo == null) {
-            instance.set(foo = new Stack<>());
+        Stack<Expression> threadLocalExprStack = instance.get();
+        if (threadLocalExprStack == null) {
+            instance.set(threadLocalExprStack = new Stack<>());
         }
 
-        foo.push(this);
+        threadLocalExprStack.push(this);
     }
 
     private void popInstance() {
-        Stack<Expression> foo = instance.get();
+        Stack<Expression> threadLocalExprStack = instance.get();
 
-        foo.pop();
+        threadLocalExprStack.pop();
 
-        if (foo.isEmpty()) {
+        if (threadLocalExprStack.isEmpty()) {
             instance.set(null);
         }
     }

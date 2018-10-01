@@ -22,13 +22,16 @@ package com.sk89q.worldedit.internal.expression;
 import static java.lang.Math.atan2;
 import static java.lang.Math.sin;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 
+import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.event.platform.PlatformReadyEvent;
+import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.internal.expression.lexer.LexerException;
 import com.sk89q.worldedit.internal.expression.parser.ParserException;
 import com.sk89q.worldedit.internal.expression.runtime.EvaluationException;
@@ -37,8 +40,13 @@ import com.sk89q.worldedit.internal.expression.runtime.ExpressionEnvironment;
 public class ExpressionTest {
     @Before
     public void setup() {
-        WorldEdit.getInstance().getPlatformManager().register(new ExpressionPlatform());
-        WorldEdit.getInstance().getPlatformManager().handlePlatformReady(new PlatformReadyEvent());
+        Platform mockPlat = Mockito.mock(Platform.class);
+        Mockito.when(mockPlat.getConfiguration()).thenReturn(new LocalConfiguration() {
+            @Override
+            public void load() {
+            }
+        });
+        WorldEdit.getInstance().getPlatformManager().register(mockPlat);
     }
 
     @Test
@@ -170,6 +178,16 @@ public class ExpressionTest {
         assertEquals(1, simpleEval("!query(3,4,5,3,2)"), 0);
         assertEquals(1, simpleEval("!queryAbs(3,4,5,10,40)"), 0);
         assertEquals(1, simpleEval("!queryRel(3,4,5,100,200)"), 0);
+    }
+
+    @Test
+    public void testTimeout() throws Exception {
+        try {
+            simpleEval("for(i=0;i<256;i++){for(j=0;j<256;j++){for(k=0;k<256;k++){for(l=0;l<256;l++){ln(pi)}}}}");
+            fail("Loop was not stopped.");
+        } catch (EvaluationException e) {
+            assertTrue(e.getMessage().contains("Calculations exceeded time limit"));
+        }
     }
 
     private double simpleEval(String expressionString) throws ExpressionException {
