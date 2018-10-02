@@ -1,4 +1,4 @@
-// $Id$
+﻿// $Id$
 /*
  * Maze generator CraftScript for WorldEdit
  * Copyright (C) 2010, 2011 sk89q <http://www.sk89q.com>
@@ -23,19 +23,19 @@ importPackage(Packages.com.sk89q.worldedit.blocks);
 usage = "<block> [width] [length] [height] [size] [thickness] flags\n";
 usage += "\n";
 usage += "Maze Flags:\n";
-usage += " i adds an entry and an exit\n";
-usage += " y places the entry and the exit randomly\n";
-usage += " f adds a floor\n";
-usage += " c adds a ceiling\n";
-usage += " e places air blocks\n";
-usage += " a places air blocks only\n";
-usage += " v creates a vertical maze\n";
+usage += "• i adds an entry and an exit\n";
+usage += "• y places the entry and the exit randomly\n";
+usage += "• f adds a floor\n";
+usage += "• c adds a ceiling\n";
+usage += "• e places air blocks\n";
+usage += "• a places air blocks only\n";
+usage += "• v creates a vertical maze\n";
 usage += "\n";
 usage += "Solver Flags:\n";
-usage += " s enables the maze solver\n";
-usage += " g places glass if wrong or unvisited\n";
-usage += " r places red wool if wrong\n";
-usage += " b places blue wool if unvisited";
+usage += "• s enables the maze solver\n";
+usage += "• g places glass if wrong or unvisited\n";
+usage += "• r places red wool if wrong\n";
+usage += "• b places blue wool if unvisited";
 
 context.checkArgs(1, -1, usage);
 
