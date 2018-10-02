@@ -23,19 +23,19 @@ importPackage(Packages.com.sk89q.worldedit.blocks);
 usage = "<block> [width] [length] [height] [size] [thickness] flags\n";
 usage += "\n";
 usage += "Maze Flags:\n";
-usage += "â€¢ i adds an entry and an exit\n";
-usage += "â€¢ y places the entry and the exit randomly\n";
-usage += "â€¢ f adds a floor\n";
-usage += "â€¢ c adds a ceiling\n";
-usage += "â€¢ e places air blocks\n";
-usage += "â€¢ a places air blocks only\n";
-usage += "â€¢ v creates a vertical maze\n";
+usage += "• i adds an entry and an exit\n";
+usage += "• y places the entry and the exit randomly\n";
+usage += "• f adds a floor\n";
+usage += "• c adds a ceiling\n";
+usage += "• e places air blocks\n";
+usage += "• a places air blocks only\n";
+usage += "• v creates a vertical maze\n";
 usage += "\n";
 usage += "Solver Flags:\n";
-usage += "â€¢ s enables the maze solver\n";
-usage += "â€¢ g places glass if wrong or unvisited\n";
-usage += "â€¢ r places red wool if wrong\n";
-usage += "â€¢ b places blue wool if unvisited";
+usage += "• s enables the maze solver\n";
+usage += "• g places glass if wrong or unvisited\n";
+usage += "• r places red wool if wrong\n";
+usage += "• b places blue wool if unvisited";
 
 context.checkArgs(1, -1, usage);
 
@@ -115,16 +115,20 @@ function shuffle(arr) {
     }
 }
 
+function add(loc, x, y, z) {
+	return loc.setPosition(new Vector(loc.getX() + x, loc.getY() + y, loc.getZ() + z));
+}
+
 if (f || c) {
     for (z = 1; z <= wa; z++) for (y = -wa; y <= l * (s + wa) - 1; y++) for (x = -wa; x <= w * (s + wa) - 1; x++) {
         if (f) {
-            if (!v) sess.setBlock(origin.add(x, -z, y), block);
-            else sess.setBlock(origin.add(x, y, +z), block);
+            if (!v) sess.setBlock(add(origin, x, -z, y).toVector(), block);
+            else sess.setBlock(add(origin, x, y, +z).toVector(), block);
         }
 
         if (c) {
-            if (!v) sess.setBlock(origin.add(x, z - 1 + h, y), block);
-            else sess.setBlock(origin.add(x, y, -z + 1 - h), block);
+            if (!v) sess.setBlock(add(origin, x, z - 1 + h, y).toVector(), block);
+            else sess.setBlock(add(origin, x, y, -z + 1 - h).toVector(), block);
         }
     }
 }
@@ -202,42 +206,42 @@ for (y = 0; y <= l; y++) for (x = 0; x <= w; x++) {
     if (!noWallLeft[cell] && cell != id(x, l)) {
         if (!ao) {
             for (z = 0; z < h; z++) for (yi = 0; yi < s; yi++) for (xi = 1; xi <= wa; xi++) {
-                if (!v) sess.setBlock(origin.add(x * (s + wa) - xi, z, y * (s + wa) + yi), block);
-                else sess.setBlock(origin.add(x * (s + wa) - xi, y * (s + wa) + yi, -z), block);
+                if (!v) sess.setBlock(add(origin, x * (s + wa) - xi, z, y * (s + wa) + yi).toVector(), block);
+                else sess.setBlock(add(origin, x * (s + wa) - xi, y * (s + wa) + yi, -z).toVector(), block);
             }
         }
     } else if (e && cell != id(x, l)) {
         for (z = 0; z < h; z++) for (yi = 0; yi < s; yi++) for (xi = 1; xi <= wa; xi++) {
-            if (!v) sess.setBlock(origin.add(x * (s + wa) - xi, z, y * (s + wa) + yi), BaseBlock(0));
-            else sess.setBlock(origin.add(x * (s + wa) - xi, y * (s + wa) + yi, -z), BaseBlock(0));
+            if (!v) sess.setBlock(add(origin, x * (s + wa) - xi, z, y * (s + wa) + yi).toVector(), BaseBlock(0));
+            else sess.setBlock(add(origin, x * (s + wa) - xi, y * (s + wa) + yi, -z).toVector(), BaseBlock(0));
         }
     }
 
     if (!noWallAbove[cell] && cell != id(w, y)) {
         if (!ao) {
             for (z = 0; z < h; z++) for (yi = 1; yi <= wa; yi++) for (xi = 0; xi < s; xi++) {
-                if (!v) sess.setBlock(origin.add(x * (s + wa) + xi, z, y * (s + wa) - yi), block);
-                else sess.setBlock(origin.add(x * (s + wa) + xi, y * (s + wa) - yi, -z), block);
+                if (!v) sess.setBlock(add(origin, x * (s + wa) + xi, z, y * (s + wa) - yi).toVector(), block);
+                else sess.setBlock(add(origin, x * (s + wa) + xi, y * (s + wa) - yi, -z).toVector(), block);
             }
         }
     } else if (e && cell != id(w, y)) {
         for (z = 0; z < h; z++) for (yi = 1; yi <= wa; yi++) for (xi = 0; xi < s; xi++) {
-            if (!v) sess.setBlock(origin.add(x * (s + wa) + xi, z, y * (s + wa) - yi), BaseBlock(0));
-            else sess.setBlock(origin.add(x * (s + wa) + xi, y * (s + wa) - yi, -z), BaseBlock(0));
+            if (!v) sess.setBlock(add(origin, x * (s + wa) + xi, z, y * (s + wa) - yi).toVector(), BaseBlock(0));
+            else sess.setBlock(add(origin, x * (s + wa) + xi, y * (s + wa) - yi, -z).toVector(), BaseBlock(0));
         }
     }
 
     if (!ao) {
         for (z = 0; z < h; z++) for (yi = 1; yi <= wa; yi++) for (xi = 1; xi <= wa; xi++) {
-            if (!v) sess.setBlock(origin.add(x * (s + wa) - xi, z, y * (s + wa) - yi), block);
-            else sess.setBlock(origin.add(x * (s + wa) - xi, y * (s + wa) - yi, -z), block);
+            if (!v) sess.setBlock(add(origin, x * (s + wa) - xi, z, y * (s + wa) - yi).toVector(), block);
+            else sess.setBlock(add(origin, x * (s + wa) - xi, y * (s + wa) - yi, -z).toVector(), block);
         }
     }
 
     if (e && cell != id(x, l) && cell != id(w, y)) {
         for (z = 0; z < h; z++) for (yi = 0; yi < s; yi++) for (xi = 0; xi < s; xi++) {
-            if (!v) sess.setBlock(origin.add(x * (s + wa) + xi, z, y * (s + wa) + yi), BaseBlock(0));
-            else sess.setBlock(origin.add(x * (s + wa) + xi, y * (s + wa) + yi, -z), BaseBlock(0));
+            if (!v) sess.setBlock(add(origin, x * (s + wa) + xi, z, y * (s + wa) + yi).toVector(), BaseBlock(0));
+            else sess.setBlock(add(origin, x * (s + wa) + xi, y * (s + wa) + yi, -z).toVector(), BaseBlock(0));
         }
     }
 }
@@ -281,51 +285,51 @@ if (so) {
 
         if (visited[cell] && !wrong[cell]) {
             for (yi = 0; yi < s; yi++) for (xi = 0; xi < s; xi++) {
-                if (!v) sess.setBlock(origin.add(x * (s + wa) + xi, -1, y * (s + wa) + yi), BaseBlock(35, 5));
-                else sess.setBlock(origin.add(x * (s + wa) + xi, y * (s + wa) + yi, +1), BaseBlock(35, 5));
+                if (!v) sess.setBlock(origin, add(x * (s + wa) + xi, -1, y * (s + wa) + yi).toVector(), BaseBlock(35, 5));
+                else sess.setBlock(add(origin, x * (s + wa) + xi, y * (s + wa) + yi, +1).toVector(), BaseBlock(35, 5));
             }
         }
 
         if ((visited[cell] && !wrong[cell] && visited[id(x - 1, y)] && !wrong[id(x - 1, y)] && noWallLeft[cell]) || cell == start || id(x - 1, y) == end) {
             for (xi = 1; xi <= wa; xi++) for (yi = 0; yi < s; yi++) {
-                if (!v) sess.setBlock(origin.add(x * (s + wa) - xi, -1, y * (s + wa) + yi), BaseBlock(35, 5));
-                else sess.setBlock(origin.add(x * (s + wa) - xi, y * (s + wa) + yi, +1), BaseBlock(35, 5));
+                if (!v) sess.setBlock(add(origin, x * (s + wa) - xi, -1, y * (s + wa) + yi).toVector(), BaseBlock(35, 5));
+                else sess.setBlock(add(origin, x * (s + wa) - xi, y * (s + wa) + yi, +1).toVector(), BaseBlock(35, 5));
             }
         }
 
         if (visited[cell] && !wrong[cell] && visited[id(x, y - 1)] && !wrong[id(x, y - 1)] && noWallAbove[cell]) {
             for (xi = 0; xi < s; xi++) for (yi = 1; yi <= wa; yi++) {
-                if (!v) sess.setBlock(origin.add(x * (s + wa) + xi, -1, y * (s + wa) - yi), BaseBlock(35, 5));
-                else sess.setBlock(origin.add(x * (s + wa) + xi, y * (s + wa) - yi, +1), BaseBlock(35, 5));
+                if (!v) sess.setBlock(add(origin, x * (s + wa) + xi, -1, y * (s + wa) - yi).toVector(), BaseBlock(35, 5));
+                else sess.setBlock(add(origin, x * (s + wa) + xi, y * (s + wa) - yi, +1).toVector(), BaseBlock(35, 5));
             }
         }
 
         if (g) {
             if (visited[cell] && !wrong[cell] && (!visited[id(x - 1, y)] || wrong[id(x - 1, y)]) && noWallLeft[cell] && cell != start) {
                 for (z = 0; z < h; z++) for (xi = 1; xi <= wa; xi++) for (yi = 0; yi < s; yi++) {
-                    if (!v) sess.setBlock(origin.add(x * (s + wa) - xi, z, y * (s + wa) + yi), BaseBlock(20));
-                    else sess.setBlock(origin.add(x * (s + wa) - xi, y * (s + wa) + yi, -z), BaseBlock(20));
+                    if (!v) sess.setBlock(add(origin, x * (s + wa) - xi, z, y * (s + wa) + yi).toVector(), BaseBlock(20));
+                    else sess.setBlock(add(origin, x * (s + wa) - xi, y * (s + wa) + yi, -z).toVector(), BaseBlock(20));
                 }
             }
 
             if ((!visited[cell] || wrong[cell]) && visited[id(x - 1, y)] && !wrong[id(x - 1, y)] && noWallLeft[cell] && id(x - 1, y) != end) {
                 for (z = 0; z < h; z++) for (xi = 1; xi <= wa; xi++) for (yi = 0; yi < s; yi++) {
-                    if (!v) sess.setBlock(origin.add(x * (s + wa) - xi, z, y * (s + wa) + yi), BaseBlock(20));
-                    else sess.setBlock(origin.add(x * (s + wa) - xi, y * (s + wa) + yi, -z), BaseBlock(20));
+                    if (!v) sess.setBlock(add(origin, x * (s + wa) - xi, z, y * (s + wa) + yi).toVector(), BaseBlock(20));
+                    else sess.setBlock(add(origin, x * (s + wa) - xi, y * (s + wa) + yi, -z).toVector(), BaseBlock(20));
                 }
             }
 
             if (visited[cell] && !wrong[cell] && (!visited[id(x, y - 1)] || wrong[id(x, y - 1)]) && noWallAbove[cell]) {
                 for (z = 0; z < h; z++) for (xi = 0; xi < s; xi++) for (yi = 1; yi <= wa; yi++) {
-                    if (!v) sess.setBlock(origin.add(x * (s + wa) + xi, z, y * (s + wa) - yi), BaseBlock(20));
-                    else sess.setBlock(origin.add(x * (s + wa) + xi, y * (s + wa) - yi, -z), BaseBlock(20));
+                    if (!v) sess.setBlock(add(origin, x * (s + wa) + xi, z, y * (s + wa) - yi).toVector(), BaseBlock(20));
+                    else sess.setBlock(add(origin, x * (s + wa) + xi, y * (s + wa) - yi, -z).toVector(), BaseBlock(20));
                 }
             }
 
             if ((!visited[cell] || wrong[cell]) && visited[id(x, y - 1)] && !wrong[id(x, y - 1)] && noWallAbove[cell]) {
                 for (z = 0; z < h; z++) for (xi = 0; xi < s; xi++) for (yi = 1; yi <= wa; yi++) {
-                    if (!v) sess.setBlock(origin.add(x * (s + wa) + xi, z, y * (s + wa) - yi), BaseBlock(20));
-                    else sess.setBlock(origin.add(x * (s + wa) + xi, y * (s + wa) - yi, -z), BaseBlock(20));
+                    if (!v) sess.setBlock(add(origin, x * (s + wa) + xi, z, y * (s + wa) - yi).toVector(), BaseBlock(20));
+                    else sess.setBlock(add(origin, x * (s + wa) + xi, y * (s + wa) - yi, -z).toVector(), BaseBlock(20));
                 }
             }
         }
@@ -333,22 +337,22 @@ if (so) {
         if (re) {
             if (wrong[cell]) {
                 for (yi = 0; yi < s; yi++) for (xi = 0; xi < s; xi++) {
-                    if (!v) sess.setBlock(origin.add(x * (s + wa) + xi, -1, y * (s + wa) + yi), BaseBlock(35, 14));
-                    else sess.setBlock(origin.add(x * (s + wa) + xi, y * (s + wa) + yi, +1), BaseBlock(35, 14));
+                    if (!v) sess.setBlock(add(origin, x * (s + wa) + xi, -1, y * (s + wa) + yi).toVector(), BaseBlock(35, 14));
+                    else sess.setBlock(add(origin, x * (s + wa) + xi, y * (s + wa) + yi, +1).toVector(), BaseBlock(35, 14));
                 }
             }
 
             if ((wrong[cell] || wrong[id(x - 1, y)]) && noWallLeft[cell]) {
                 for (xi = 1; xi <= wa; xi++) for (yi = 0; yi < s; yi++) {
-                    if (!v) sess.setBlock(origin.add(x * (s + wa) - xi, -1, y * (s + wa) + yi), BaseBlock(35, 14));
-                    else sess.setBlock(origin.add(x * (s + wa) - xi, y * (s + wa) + yi, +1), BaseBlock(35, 14));
+                    if (!v) sess.setBlock(add(origin, x * (s + wa) - xi, -1, y * (s + wa) + yi).toVector(), BaseBlock(35, 14));
+                    else sess.setBlock(add(origin, x * (s + wa) - xi, y * (s + wa) + yi, +1).toVector(), BaseBlock(35, 14));
                 }
             }
 
             if ((wrong[cell] || wrong[id(x, y - 1)]) && noWallAbove[cell]) {
                 for (xi = 0; xi < s; xi++) for (yi = 1; yi <= wa; yi++) {
-                    if (!v) sess.setBlock(origin.add(x * (s + wa) + xi, -1, y * (s + wa) - yi), BaseBlock(35, 14));
-                    else sess.setBlock(origin.add(x * (s + wa) + xi, y * (s + wa) - yi, +1), BaseBlock(35, 14));
+                    if (!v) sess.setBlock(add(origin, x * (s + wa) + xi, -1, y * (s + wa) - yi).toVector(), BaseBlock(35, 14));
+                    else sess.setBlock(add(origin, x * (s + wa) + xi, y * (s + wa) - yi, +1).toVector(), BaseBlock(35, 14));
                 }
             }
         }
@@ -356,22 +360,22 @@ if (so) {
         if (bl) {
             if (!visited[cell] && y < l && x < w) {
                 for (yi = 0; yi < s; yi++) for (xi = 0; xi < s; xi++) {
-                    if (!v) sess.setBlock(origin.add(x * (s + wa) + xi, -1, y * (s + wa) + yi), BaseBlock(35, 11));
-                    else sess.setBlock(origin.add(x * (s + wa) + xi, y * (s + wa) + yi, +1), BaseBlock(35, 11));
+                    if (!v) sess.setBlock(add(origin, x * (s + wa) + xi, -1, y * (s + wa) + yi).toVector(), BaseBlock(35, 11));
+                    else sess.setBlock(add(origin, x * (s + wa) + xi, y * (s + wa) + yi, +1).toVector(), BaseBlock(35, 11));
                 }
             }
 
             if ((!visited[cell] || !visited[id(x - 1, y)]) && noWallLeft[cell] && x > 0 && x < w) {
                 for (xi = 1; xi <= wa; xi++) for (yi = 0; yi < s; yi++) {
-                    if (!v) sess.setBlock(origin.add(x * (s + wa) - xi, -1, y * (s + wa) + yi), BaseBlock(35, 11));
-                    else sess.setBlock(origin.add(x * (s + wa) - xi, y * (s + wa) + yi, +1), BaseBlock(35, 11));
+                    if (!v) sess.setBlock(add(origin, x * (s + wa) - xi, -1, y * (s + wa) + yi).toVector(), BaseBlock(35, 11));
+                    else sess.setBlock(add(origin, x * (s + wa) - xi, y * (s + wa) + yi, +1).toVector(), BaseBlock(35, 11));
                 }
             }
 
             if ((!visited[cell] || !visited[id(x, y - 1)]) && noWallAbove[cell]) {
                 for (xi = 0; xi < s; xi++) for (yi = 1; yi <= wa; yi++) {
-                    if (!v) sess.setBlock(origin.add(x * (s + wa) + xi, -1, y * (s + wa) - yi), BaseBlock(35, 11));
-                    else sess.setBlock(origin.add(x * (s + wa) + xi, y * (s + wa) - yi, +1), BaseBlock(35, 11));
+                    if (!v) sess.setBlock(add(origin, x * (s + wa) + xi, -1, y * (s + wa) - yi).toVector(), BaseBlock(35, 11));
+                    else sess.setBlock(add(origin, x * (s + wa) + xi, y * (s + wa) - yi, +1).toVector(), BaseBlock(35, 11));
                 }
             }
         }
