@@ -36,6 +36,7 @@ import com.sk89q.worldedit.extent.buffer.ForgetfulExtentBuffer;
 import com.sk89q.worldedit.extent.cache.LastAccessExtentCache;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
 import com.sk89q.worldedit.extent.inventory.BlockBagExtent;
+import com.sk89q.worldedit.extent.reorder.ChunkBatchingExtent;
 import com.sk89q.worldedit.extent.reorder.MultiStageReorder;
 import com.sk89q.worldedit.extent.validation.BlockChangeLimiter;
 import com.sk89q.worldedit.extent.validation.DataValidatorExtent;
@@ -151,6 +152,7 @@ public class EditSession implements Extent {
 
     private @Nullable FastModeExtent fastModeExtent;
     private final SurvivalModeExtent survivalExtent;
+    private @Nullable ChunkBatchingExtent chunkBatchingExtent;
     private @Nullable ChunkLoadingExtent chunkLoadingExtent;
     private @Nullable LastAccessExtentCache cacheExtent;
     private @Nullable BlockQuirkExtent quirkExtent;
@@ -190,6 +192,7 @@ public class EditSession implements Extent {
             extent = fastModeExtent = new FastModeExtent(world, false);
             extent = survivalExtent = new SurvivalModeExtent(extent, world);
             extent = quirkExtent = new BlockQuirkExtent(extent, world);
+            extent = chunkBatchingExtent = new ChunkBatchingExtent(extent);
             extent = chunkLoadingExtent = new ChunkLoadingExtent(extent, world);
             extent = cacheExtent = new LastAccessExtentCache(extent);
             extent = wrapExtent(extent, eventBus, event, Stage.BEFORE_CHANGE);
@@ -227,6 +230,16 @@ public class EditSession implements Extent {
         event.setExtent(extent);
         eventBus.post(event);
         return event.getExtent();
+    }
+
+    /**
+     * Turns on specific features for a normal WorldEdit session, such as
+     * {@link #enableQueue() queuing} and {@link #setBatchingChunks(boolean)
+     * chunk batching}.
+     */
+    public void enableStandardMode() {
+        enableQueue();
+        setBatchingChunks(true);
     }
 
     /**
@@ -376,6 +389,23 @@ public class EditSession implements Extent {
      */
     public Map<BlockType, Integer> popMissingBlocks() {
         return blockBagExtent.popMissing();
+    }
+
+    public boolean isBatchingChunks() {
+        return chunkBatchingExtent != null && chunkBatchingExtent.isEnabled();
+    }
+
+    public void setBatchingChunks(boolean batchingChunks) {
+        if (chunkBatchingExtent == null) {
+            if (batchingChunks) {
+                throw new UnsupportedOperationException("Chunk batching not supported by this session.");
+            }
+            return;
+        }
+        if (!batchingChunks) {
+            flushQueue();
+        }
+        chunkBatchingExtent.setEnabled(batchingChunks);
     }
 
     /**

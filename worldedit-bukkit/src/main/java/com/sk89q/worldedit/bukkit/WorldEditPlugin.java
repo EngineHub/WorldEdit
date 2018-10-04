@@ -272,7 +272,7 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
 
         EditSession editSession = WorldEdit.getInstance().getEditSessionFactory()
                 .getEditSession(wePlayer.getWorld(), session.getBlockChangeLimit(), blockBag, wePlayer);
-        editSession.enableQueue();
+        editSession.enableStandardMode();
 
         return editSession;
     }

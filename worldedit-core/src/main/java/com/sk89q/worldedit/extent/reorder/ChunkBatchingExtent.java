@@ -54,13 +54,30 @@ public class ChunkBatchingExtent extends AbstractDelegateExtent {
                     .thenComparing(Vector2D.COMPARING_GRID_ARRANGEMENT);
 
     private final SortedMap<BlockVector2D, LocatedBlockList> batches = new TreeMap<>(REGION_OPTIMIZED_SORT);
+    private boolean enabled;
 
-    protected ChunkBatchingExtent(Extent extent) {
+    public ChunkBatchingExtent(Extent extent) {
+        this(extent, true);
+    }
+
+    public ChunkBatchingExtent(Extent extent, boolean enabled) {
         super(extent);
+        this.enabled = enabled;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 
     @Override
     public boolean setBlock(Vector location, BlockStateHolder block) throws WorldEditException {
+        if (!enabled) {
+            return getExtent().setBlock(location, block);
+        }
         BlockVector2D chunkPos = new BlockVector2D(location.getBlockX() >> 4, location.getBlockZ() >> 4);
         batches.computeIfAbsent(chunkPos, k -> new LocatedBlockList()).add(location, block);
         return true;
@@ -68,6 +85,9 @@ public class ChunkBatchingExtent extends AbstractDelegateExtent {
 
     @Override
     protected Operation commitBefore() {
+        if (!enabled) {
+            return null;
+        }
         return new Operation() {
 
             private final Iterator<LocatedBlockList> batchIterator = batches.values().iterator();
@@ -78,6 +98,7 @@ public class ChunkBatchingExtent extends AbstractDelegateExtent {
                     return null;
                 }
                 new SetLocatedBlocks(getExtent(), batchIterator.next()).resume(run);
+                batchIterator.remove();
                 return this;
             }
 
