@@ -20,15 +20,13 @@
 package com.sk89q.worldedit.history.changeset;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static java.util.Map.Entry;
 
-import com.google.common.base.Function;
 import com.google.common.collect.Iterators;
 import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.history.change.BlockChange;
 import com.sk89q.worldedit.history.change.Change;
-import com.sk89q.worldedit.util.collection.TupleArrayList;
-import com.sk89q.worldedit.world.block.BlockStateHolder;
+import com.sk89q.worldedit.util.LocatedBlock;
+import com.sk89q.worldedit.util.collection.LocatedBlockList;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -43,8 +41,12 @@ import java.util.Iterator;
  */
 public class BlockOptimizedHistory extends ArrayListHistory {
 
-    private final TupleArrayList<BlockVector, BlockStateHolder> previous = new TupleArrayList<>();
-    private final TupleArrayList<BlockVector, BlockStateHolder> current = new TupleArrayList<>();
+    private static Change createChange(LocatedBlock block) {
+        return new BlockChange(block.getLocation().toBlockPoint(), block.getBlock(), block.getBlock());
+    }
+
+    private final LocatedBlockList previous = new LocatedBlockList();
+    private final LocatedBlockList current = new LocatedBlockList();
 
     @Override
     public void add(Change change) {
@@ -53,8 +55,8 @@ public class BlockOptimizedHistory extends ArrayListHistory {
         if (change instanceof BlockChange) {
             BlockChange blockChange = (BlockChange) change;
             BlockVector position = blockChange.getPosition();
-            previous.put(position, blockChange.getPrevious());
-            current.put(position, blockChange.getCurrent());
+            previous.add(position, blockChange.getPrevious());
+            current.add(position, blockChange.getCurrent());
         } else {
             super.add(change);
         }
@@ -64,29 +66,19 @@ public class BlockOptimizedHistory extends ArrayListHistory {
     public Iterator<Change> forwardIterator() {
         return Iterators.concat(
                 super.forwardIterator(),
-                Iterators.transform(current.iterator(), createTransform()));
+                Iterators.transform(current.iterator(), BlockOptimizedHistory::createChange));
     }
 
     @Override
     public Iterator<Change> backwardIterator() {
         return Iterators.concat(
                 super.backwardIterator(),
-                Iterators.transform(previous.iterator(true), createTransform()));
+                Iterators.transform(previous.reverseIterator(), BlockOptimizedHistory::createChange));
     }
 
     @Override
     public int size() {
         return super.size() + previous.size();
-    }
-
-    /**
-     * Create a function that transforms each entry from the double array lists' iterator
-     * into an {@link Change}.
-     *
-     * @return a function
-     */
-    private Function<Entry<BlockVector, BlockStateHolder>, Change> createTransform() {
-        return entry -> new BlockChange(entry.getKey(), entry.getValue(), entry.getValue());
     }
 
 }
