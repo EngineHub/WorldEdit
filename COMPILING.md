@@ -1,7 +1,7 @@
 Compiling
 =========
 
-You can compile WorldEdit as long as you have the [Java Development Kit (JDK)](http://www.oracle.com/technetwork/java/javase/downloads/index-jsp-138363.html) for Java 7 or newer.
+You can compile WorldEdit as long as you have the [Java Development Kit (JDK)](http://www.oracle.com/technetwork/java/javase/downloads/index-jsp-138363.html) for Java 8 or newer.
 You only need one version of the JDK installed.
 
 The build process uses Gradle, which you do *not* need to download. WorldEdit is a multi-module project with four modules:

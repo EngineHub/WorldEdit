@@ -1,3 +1,14 @@
+7.0-beta-1
+- Added support for 1.13.
+- Removed support for all prior versions.
+- Added a basic server-only GUI for editing. //drawsel to enable/disable. Requires creative.
+- Added a tag mask, ##minecraft:tag_name.
+- Added Sponge Schematic Format to replace MCEdit Schematics.
+- Added a compatibility layer for old schematics.
+- Rewrote the block parser, now uses official Minecraft format, minecraft:snow[layers=7]
+- Removed deprecated code.
+- Many more major changes!
+
 6.1
 - Added support for Spigot for MC 1.8.3 to 1.8.6.
 - Added rotation values to lit redstone torches.
@@ -228,7 +239,7 @@ Thanks for the contributions from aumgn
 - Removed chat-based WECUI protocol (now replaced with packet 250).
 
 Thank you for the contributions from Ammar Askar (ammaraskar), aumgn,
-Jim Nordbø (Silentspy), snaxson, Socolin, and Zhuowei Zhang (zhuowei).
+Jim Nordbï¿½ (Silentspy), snaxson, Socolin, and Zhuowei Zhang (zhuowei).
 
 5.3:
 - Made #region mask keep the region selected when the pask was added, and
