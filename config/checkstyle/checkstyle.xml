@@ -53,11 +53,4 @@
     <module name="ParameterName"/>
     <!-- <module name="TypeName"/> Unlikely that we would miss this in a PR -->
   </module>
-
-  <!-- Require the header, something that many people forget and we hate to fix -->
-  <!-- You should configure the header in your IDE -->
-  <module name="Header">
-    <property name="headerFile" value="${basedir}/config/checkstyle/header.txt"/>
-    <property name="fileExtensions" value="java"/>
-  </module>
 </module>
