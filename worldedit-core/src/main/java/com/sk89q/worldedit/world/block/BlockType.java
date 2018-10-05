@@ -169,6 +169,17 @@ public class BlockType {
     }
 
     /**
+     * Gets a state of this BlockType with the given properties.
+     *
+     * @return The state, if it exists
+     */
+    public BlockState getState(Map<Property<?>, Object> key) {
+        BlockState state = getBlockStatesMap().get(key);
+        checkArgument(state != null, "%s has no state for %s", this, key);
+        return state;
+    }
+
+    /**
      * Gets whether this block type has an item representation.
      *
      * @return If it has an item

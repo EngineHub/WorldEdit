@@ -30,7 +30,6 @@ import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.Vector2D;
 import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.entity.BaseEntity;
@@ -38,15 +37,17 @@ import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.internal.Constants;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
+import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.TreeGenerator.TreeType;
 import com.sk89q.worldedit.world.AbstractWorld;
 import com.sk89q.worldedit.world.biome.BaseBiome;
+import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
+import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.item.ItemTypes;
-import com.sk89q.worldedit.world.registry.LegacyMapper;
 import com.sk89q.worldedit.world.weather.WeatherType;
 import com.sk89q.worldedit.world.weather.WeatherTypes;
 
@@ -55,6 +56,10 @@ import net.minecraft.block.BlockLeaves;
 import net.minecraft.block.BlockOldLeaf;
 import net.minecraft.block.BlockOldLog;
 import net.minecraft.block.BlockPlanks;
+import net.minecraft.block.properties.IProperty;
+import net.minecraft.block.properties.PropertyDirection;
+import net.minecraft.block.properties.PropertyEnum;
+import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.item.EntityItem;
@@ -66,7 +71,9 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumActionResult;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.IStringSerializable;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -95,8 +102,11 @@ import net.minecraftforge.common.DimensionManager;
 import java.io.File;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
+import java.util.TreeMap;
 
 import javax.annotation.Nullable;
 
@@ -173,7 +183,11 @@ public class ForgeWorld extends AbstractWorld {
         Chunk chunk = world.getChunkFromChunkCoords(x >> 4, z >> 4);
         BlockPos pos = new BlockPos(x, y, z);
         IBlockState old = chunk.getBlockState(pos);
-        IBlockState newState = Block.getBlockById(block.getBlockType().getLegacyId()).getDefaultState(); // TODO .getStateFromMeta(block.getData());
+        Block mcBlock = Block.getBlockFromName(block.getBlockType().getId());
+        IBlockState newState = mcBlock.getDefaultState();
+        @SuppressWarnings("unchecked")
+        Map<Property<?>, Object> states = block.getStates();
+        newState = applyProperties(mcBlock.getBlockState(), newState, states);
         IBlockState successState = chunk.setBlockState(pos, newState);
         boolean successful = successState != null;
 
@@ -197,6 +211,29 @@ public class ForgeWorld extends AbstractWorld {
         }
 
         return successful;
+    }
+
+    // Can't get the "Object" to be right for withProperty w/o this
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    private IBlockState applyProperties(BlockStateContainer stateContainer, IBlockState newState, Map<Property<?>, Object> states) {
+        for (Map.Entry<Property<?>, Object> state : states.entrySet()) {
+
+            IProperty property = stateContainer.getProperty(state.getKey().getName());
+            Comparable value = (Comparable) state.getValue();
+            // we may need to adapt this value, depending on the source prop
+            if (property instanceof PropertyDirection) {
+                Direction dir = (Direction) value;
+                value = ForgeAdapter.adapt(dir);
+            } else if (property instanceof PropertyEnum) {
+                String enumName = (String) value;
+                value = ((PropertyEnum<?>) property).parseValue((String) value).or(() -> {
+                    throw new IllegalStateException("Enum property " + property.getName() + " does not contain " + enumName);
+                });
+            }
+
+            newState = newState.withProperty(property, value);
+        }
+        return newState;
     }
 
     @Override
@@ -429,9 +466,24 @@ public class ForgeWorld extends AbstractWorld {
     public BlockState getBlock(Vector position) {
         World world = getWorld();
         BlockPos pos = new BlockPos(position.getBlockX(), position.getBlockY(), position.getBlockZ());
-        IBlockState state = world.getBlockState(pos);
+        IBlockState mcState = world.getBlockState(pos);
 
-        return LegacyMapper.getInstance().getBlockFromLegacy(Block.getIdFromBlock(state.getBlock()), state.getBlock().getMetaFromState(state));
+        BlockType blockType = BlockType.REGISTRY.get(Block.REGISTRY.getNameForObject(mcState.getBlock()).toString());
+        return blockType.getState(adaptProperties(blockType, mcState.getProperties()));
+    }
+
+    private Map<Property<?>, Object> adaptProperties(BlockType block, Map<IProperty<?>, Comparable<?>> mcProps) {
+        Map<Property<?>, Object> props = new TreeMap<>(Comparator.comparing(Property::getName));
+        for (Map.Entry<IProperty<?>, Comparable<?>> prop : mcProps.entrySet()) {
+            Object value = prop.getValue();
+            if (prop.getKey() instanceof PropertyDirection) {
+                value = ForgeAdapter.adaptEnumFacing((EnumFacing) value);
+            } else if (prop.getKey() instanceof PropertyEnum) {
+                value = ((IStringSerializable) value).getName();
+            }
+            props.put(block.getProperty(prop.getKey().getName()), value);
+        }
+        return props;
     }
 
     @Override

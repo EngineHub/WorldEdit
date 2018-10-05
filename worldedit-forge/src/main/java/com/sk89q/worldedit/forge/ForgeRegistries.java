@@ -20,6 +20,7 @@
 package com.sk89q.worldedit.forge;
 
 import com.sk89q.worldedit.world.registry.BiomeRegistry;
+import com.sk89q.worldedit.world.registry.BlockRegistry;
 import com.sk89q.worldedit.world.registry.BundledRegistries;
 import com.sk89q.worldedit.world.registry.ItemRegistry;
 
@@ -29,8 +30,14 @@ import com.sk89q.worldedit.world.registry.ItemRegistry;
 class ForgeRegistries extends BundledRegistries {
 
     private static final ForgeRegistries INSTANCE = new ForgeRegistries();
+    private final BlockRegistry blockRegistry = new ForgeBlockRegistry();
     private final BiomeRegistry biomeRegistry = new ForgeBiomeRegistry();
     private final ItemRegistry itemRegistry = new ForgeItemRegistry();
+
+    @Override
+    public BlockRegistry getBlockRegistry() {
+        return blockRegistry;
+    }
 
     @Override
     public BiomeRegistry getBiomeRegistry() {

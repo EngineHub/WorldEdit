@@ -38,6 +38,7 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.CommandEvent;
@@ -125,12 +126,18 @@ public class ForgeWorldEdit {
             this.provider = new ForgePermissionsProvider.VanillaPermissionsProvider(platform);
         }
 
-        for (Block block : Block.REGISTRY) {
-            BlockTypes.register(new BlockType(Block.REGISTRY.getNameForObject(block).toString()));
+        for (ResourceLocation name : Block.REGISTRY.getKeys()) {
+            String nameStr = name.toString();
+            if (!BlockType.REGISTRY.keySet().contains(nameStr)) {
+                BlockTypes.register(new BlockType(nameStr));
+            }
         }
 
-        for (Item item : Item.REGISTRY) {
-            ItemTypes.register(new ItemType(Item.REGISTRY.getNameForObject(item).toString()));
+        for (ResourceLocation name : Item.REGISTRY.getKeys()) {
+            String nameStr = name.toString();
+            if (!ItemType.REGISTRY.keySet().contains(nameStr)) {
+                ItemTypes.register(new ItemType(nameStr));
+            }
         }
     }
 
