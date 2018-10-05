@@ -86,16 +86,6 @@ public class BlockType {
         return updateField(blockStatesMap, () -> BlockState.generateStateMap(this));
     }
 
-    private BlockState getDefaultStateMemoized() {
-        return updateField(defaultState, () -> {
-            BlockState defaultState = new ArrayList<>(getBlockStatesMap().values()).get(0);
-            if (values != null) {
-                defaultState = values.apply(defaultState);
-            }
-            return defaultState;
-        });
-    }
-
     /**
      * Gets the ID of this block.
      *
@@ -156,7 +146,13 @@ public class BlockType {
      * @return The default state
      */
     public BlockState getDefaultState() {
-        return getDefaultStateMemoized();
+        return updateField(defaultState, () -> {
+            BlockState defaultState = new ArrayList<>(getBlockStatesMap().values()).get(0);
+            if (values != null) {
+                defaultState = values.apply(defaultState);
+            }
+            return defaultState;
+        });
     }
 
     /**
