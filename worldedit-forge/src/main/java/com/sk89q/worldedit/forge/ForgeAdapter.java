@@ -19,12 +19,26 @@
 
 package com.sk89q.worldedit.forge;
 
+import com.google.common.collect.ImmutableList;
 import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.registry.state.BooleanProperty;
+import com.sk89q.worldedit.registry.state.DirectionalProperty;
+import com.sk89q.worldedit.registry.state.EnumProperty;
+import com.sk89q.worldedit.registry.state.IntegerProperty;
+import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.world.World;
+
+import net.minecraft.block.properties.IProperty;
+import net.minecraft.block.properties.PropertyBool;
+import net.minecraft.block.properties.PropertyDirection;
+import net.minecraft.block.properties.PropertyEnum;
+import net.minecraft.block.properties.PropertyInteger;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+
+import java.util.stream.Collectors;
 
 final class ForgeAdapter {
 
@@ -60,8 +74,41 @@ final class ForgeAdapter {
         }
     }
 
+    public static Direction adaptEnumFacing(EnumFacing face) {
+        switch (face) {
+            case NORTH: return Direction.NORTH;
+            case SOUTH: return Direction.SOUTH;
+            case WEST: return Direction.WEST;
+            case EAST: return Direction.EAST;
+            case DOWN: return Direction.DOWN;
+            case UP:
+            default:
+                return Direction.UP;
+        }
+    }
+
     public static BlockPos toBlockPos(Vector vector) {
         return new BlockPos(vector.getBlockX(), vector.getBlockY(), vector.getBlockZ());
+    }
+
+    public static Property<?> adaptProperty(IProperty<?> property) {
+        if (property instanceof PropertyBool) {
+            return new BooleanProperty(property.getName(), ImmutableList.copyOf(((PropertyBool) property).getAllowedValues()));
+        }
+        if (property instanceof PropertyInteger) {
+            return new IntegerProperty(property.getName(), ImmutableList.copyOf(((PropertyInteger) property).getAllowedValues()));
+        }
+        if (property instanceof PropertyDirection) {
+            return new DirectionalProperty(property.getName(), ((PropertyDirection) property).getAllowedValues().stream()
+                    .map(ForgeAdapter::adaptEnumFacing)
+                    .collect(Collectors.toList()));
+        }
+        if (property instanceof PropertyEnum) {
+            return new EnumProperty(property.getName(), ((PropertyEnum<?>) property).getAllowedValues().stream()
+                    .map(e -> e.getName())
+                    .collect(Collectors.toList()));
+        }
+        return new IPropertyAdapter<>(property);
     }
 
 }

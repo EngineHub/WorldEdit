@@ -19,6 +19,8 @@
 
 package com.sk89q.worldedit.world.block;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.sk89q.worldedit.WorldEdit;
@@ -34,7 +36,9 @@ import com.sk89q.worldedit.world.registry.LegacyMapper;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 import javax.annotation.Nullable;
 
@@ -42,11 +46,12 @@ public class BlockType {
 
     public static final NamespacedRegistry<BlockType> REGISTRY = new NamespacedRegistry<>("block type");
 
-    private String id;
-    private BlockState defaultState;
-    private Map<String, ? extends Property> properties;
-    private BlockMaterial blockMaterial;
-    private Map<Map<Property<?>, Object>, BlockState> blockStatesMap;
+    private final String id;
+    private final Function<BlockState, BlockState> values;
+    private final AtomicReference<BlockState> defaultState = new AtomicReference<>();
+    private final AtomicReference<Map<String, ? extends Property>> properties = new AtomicReference<>();
+    private final AtomicReference<BlockMaterial> blockMaterial = new AtomicReference<>();
+    private final AtomicReference<Map<Map<Property<?>, Object>, BlockState>> blockStatesMap = new AtomicReference<>();
 
     public BlockType(String id) {
         this(id, null);
@@ -58,11 +63,27 @@ public class BlockType {
             id = "minecraft:" + id;
         }
         this.id = id;
-        this.blockStatesMap = BlockState.generateStateMap(this);
-        this.defaultState = new ArrayList<>(this.blockStatesMap.values()).get(0);
-        if (values != null) {
-            this.defaultState = values.apply(this.defaultState);
+        this.values = values;
+    }
+
+    private <T> T updateField(AtomicReference<T> field, Supplier<T> value) {
+        T result = field.get();
+        if (result == null) {
+            // swap in new value, if someone doesn't beat us
+            T update = value.get();
+            if (field.compareAndSet(null, update)) {
+                // use ours
+                result = update;
+            } else {
+                // update to real value
+                result = field.get();
+            }
         }
+        return result;
+    }
+
+    private Map<Map<Property<?>, Object>, BlockState> getBlockStatesMap() {
+        return updateField(blockStatesMap, () -> BlockState.generateStateMap(this));
     }
 
     /**
@@ -94,11 +115,8 @@ public class BlockType {
      * @return The properties map
      */
     public Map<String, ? extends Property> getPropertyMap() {
-        if (properties == null) {
-            properties = ImmutableMap.copyOf(WorldEdit.getInstance().getPlatformManager()
-                    .queryCapability(Capability.GAME_HOOKS).getRegistries().getBlockRegistry().getProperties(this));
-        }
-        return this.properties;
+        return updateField(properties, () -> ImmutableMap.copyOf(WorldEdit.getInstance().getPlatformManager()
+                .queryCapability(Capability.GAME_HOOKS).getRegistries().getBlockRegistry().getProperties(this)));
     }
 
     /**
@@ -117,7 +135,9 @@ public class BlockType {
      * @return The property
      */
     public <V> Property<V> getProperty(String name) {
-        return getPropertyMap().get(name);
+        Property<V> property = getPropertyMap().get(name);
+        checkArgument(property != null, "%s has no property named %s", this, name);
+        return property;
     }
 
     /**
@@ -126,7 +146,13 @@ public class BlockType {
      * @return The default state
      */
     public BlockState getDefaultState() {
-        return this.defaultState;
+        return updateField(defaultState, () -> {
+            BlockState defaultState = new ArrayList<>(getBlockStatesMap().values()).get(0);
+            if (values != null) {
+                defaultState = values.apply(defaultState);
+            }
+            return defaultState;
+        });
     }
 
     /**
@@ -135,7 +161,18 @@ public class BlockType {
      * @return All possible states
      */
     public List<BlockState> getAllStates() {
-        return ImmutableList.copyOf(this.blockStatesMap.values());
+        return ImmutableList.copyOf(getBlockStatesMap().values());
+    }
+
+    /**
+     * Gets a state of this BlockType with the given properties.
+     *
+     * @return The state, if it exists
+     */
+    public BlockState getState(Map<Property<?>, Object> key) {
+        BlockState state = getBlockStatesMap().get(key);
+        checkArgument(state != null, "%s has no state for %s", this, key);
+        return state;
     }
 
     /**
@@ -163,10 +200,8 @@ public class BlockType {
      * @return The material
      */
     public BlockMaterial getMaterial() {
-        if (this.blockMaterial == null) {
-            this.blockMaterial = WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.GAME_HOOKS).getRegistries().getBlockRegistry().getMaterial(this);
-        }
-        return this.blockMaterial;
+        return updateField(blockMaterial, () -> WorldEdit.getInstance().getPlatformManager()
+                .queryCapability(Capability.GAME_HOOKS).getRegistries().getBlockRegistry().getMaterial(this));
     }
 
     /**

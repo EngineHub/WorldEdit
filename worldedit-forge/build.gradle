@@ -13,6 +13,11 @@ buildscript {
 
 apply plugin: 'net.minecraftforge.gradle.forge'
 
+configurations.all {
+	resolutionStrategy {
+		force 'org.ow2.asm:asm:5.2'
+	}
+}
 
 dependencies {
     compile project(':worldedit-core')

@@ -17,48 +17,48 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.registry.state;
+package com.sk89q.worldedit.forge;
 
-import static com.google.common.base.Preconditions.checkState;
+import static com.google.common.base.Preconditions.checkArgument;
+
+import com.google.common.base.Optional;
+import com.google.common.collect.ImmutableList;
+import com.sk89q.worldedit.registry.state.Property;
+
+import net.minecraft.block.properties.IProperty;
 
 import java.util.List;
 
-public abstract class AbstractProperty<T> implements Property<T> {
+class IPropertyAdapter<T extends Comparable<T>> implements Property<T> {
 
-    private String name;
-    private List<T> values;
+    private final IProperty<T> property;
+    private final List<T> values;
 
-    public AbstractProperty(final String name, final List<T> values) {
-        this.name = name;
-        this.values = values;
-    }
-
-    @Override
-    public List<T> getValues() {
-        return this.values;
+    public IPropertyAdapter(IProperty<T> property) {
+        this.property = property;
+        this.values = ImmutableList.copyOf(property.getAllowedValues());
     }
 
     @Override
     public String getName() {
-        return this.name;
-    }
-
-    /**
-     * Internal method for name setting post-deserialise. Do not use.
-     */
-    public void setName(final String name) {
-        checkState(this.name == null, "name already set");
-        this.name = name;
+        return property.getName();
     }
 
     @Override
-    public String toString() {
-        return getClass().getSimpleName() + "{name=" + name + "}";
+    public List<T> getValues() {
+        return values;
+    }
+
+    @Override
+    public T getValueFor(String string) throws IllegalArgumentException {
+        Optional<T> val = property.parseValue(string);
+        checkArgument(val.isPresent(), "%s has no value for %s", getName(), string);
+        return val.get();
     }
 
     @Override
     public int hashCode() {
-        return name.hashCode();
+        return getName().hashCode();
     }
 
     @Override
@@ -66,6 +66,7 @@ public abstract class AbstractProperty<T> implements Property<T> {
         if (!(obj instanceof Property)) {
             return false;
         }
-        return getName().equals(((Property) obj).getName());
+        return getName().equals(((Property<?>) obj).getName());
     }
+
 }
