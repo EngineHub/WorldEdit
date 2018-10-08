@@ -21,6 +21,7 @@ package com.sk89q.worldedit.extent.transform;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import com.google.common.collect.Sets;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.world.block.BaseBlock;
@@ -32,6 +33,11 @@ import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
+
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 
@@ -105,6 +111,8 @@ public class BlockTransformExtent extends AbstractDelegateExtent {
         return transform(block, transform, block);
     }
 
+    private static final Set<String> directionNames = Sets.newHashSet("north", "south", "east", "west");
+
     /**
      * Transform the given block using the given transform.
      *
@@ -117,7 +125,9 @@ public class BlockTransformExtent extends AbstractDelegateExtent {
         checkNotNull(block);
         checkNotNull(transform);
 
-        for (Property property : block.getBlockType().getProperties()) {
+        List<? extends Property> properties = block.getBlockType().getProperties();
+
+        for (Property property : properties) {
             if (property instanceof DirectionalProperty) {
                 Direction value = (Direction) block.getState(property);
                 if (value != null) {
@@ -126,6 +136,24 @@ public class BlockTransformExtent extends AbstractDelegateExtent {
                         changedBlock = (T) changedBlock.with(property, Direction.findClosest(newValue, Direction.Flag.ALL));
                     }
                 }
+            }
+        }
+
+        List<String> directionalProperties = properties.stream()
+                .filter(prop -> directionNames.contains(prop.getName()))
+                .filter(prop -> ((Boolean) block.getState(prop)))
+                .map(Property::getName)
+                .map(String::toUpperCase)
+                .map(Direction::valueOf)
+                .map(dir -> Direction.findClosest(transform.apply(dir.toVector()), Direction.Flag.CARDINAL))
+                .filter(Objects::nonNull)
+                .map(Direction::name)
+                .map(String::toLowerCase)
+                .collect(Collectors.toList());
+
+        if (directionalProperties.size() > 0) {
+            for (String directionName : directionNames) {
+                changedBlock = (T) changedBlock.with(block.getBlockType().getProperty(directionName), directionalProperties.contains(directionName));
             }
         }
 
