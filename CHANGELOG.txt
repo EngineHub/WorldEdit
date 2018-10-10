@@ -7,7 +7,7 @@
 - Added a compatibility layer for old schematics.
 - Rewrote the block parser, now uses official Minecraft format, minecraft:snow[layers=7]
 - Removed deprecated code.
-- Many more major changes!
+- Many more major changes! (Read this blog post for more details https://blog.me4502.com/updating-worldedit-to-minecraft-113.html)
 
 6.1
 - Added support for Spigot for MC 1.8.3 to 1.8.6.
