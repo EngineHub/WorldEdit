@@ -192,7 +192,6 @@ public class EditSession implements Extent {
             extent = fastModeExtent = new FastModeExtent(world, false);
             extent = survivalExtent = new SurvivalModeExtent(extent, world);
             extent = quirkExtent = new BlockQuirkExtent(extent, world);
-            extent = chunkBatchingExtent = new ChunkBatchingExtent(extent);
             extent = chunkLoadingExtent = new ChunkLoadingExtent(extent, world);
             extent = cacheExtent = new LastAccessExtentCache(extent);
             extent = wrapExtent(extent, eventBus, event, Stage.BEFORE_CHANGE);
@@ -201,6 +200,7 @@ public class EditSession implements Extent {
 
             // This extent can be skipped by calling rawSetBlock()
             extent = reorderExtent = new MultiStageReorder(extent, false);
+            extent = chunkBatchingExtent = new ChunkBatchingExtent(extent);
             extent = wrapExtent(extent, eventBus, event, Stage.BEFORE_REORDER);
 
             // These extents can be skipped by calling smartSetBlock()

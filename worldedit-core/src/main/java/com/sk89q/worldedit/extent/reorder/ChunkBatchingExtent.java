@@ -90,10 +90,14 @@ public class ChunkBatchingExtent extends AbstractDelegateExtent {
         }
         return new Operation() {
 
-            private final Iterator<LocatedBlockList> batchIterator = batches.values().iterator();
+            // we get modified between create/resume -- only create this on resume to prevent CME
+            private Iterator<LocatedBlockList> batchIterator;
 
             @Override
             public Operation resume(RunContext run) throws WorldEditException {
+                if (batchIterator == null) {
+                    batchIterator = batches.values().iterator();
+                }
                 if (!batchIterator.hasNext()) {
                     return null;
                 }
