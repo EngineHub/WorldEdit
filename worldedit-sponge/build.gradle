@@ -53,4 +53,5 @@ artifacts {
 signing {
     required false
     sign shadowJar
+    artifactoryPublish.skip = true
 }
