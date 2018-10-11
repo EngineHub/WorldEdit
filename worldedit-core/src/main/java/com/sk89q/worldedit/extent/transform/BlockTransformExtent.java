@@ -24,6 +24,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import com.google.common.collect.Sets;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.registry.state.BooleanProperty;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.extent.AbstractDelegateExtent;
 import com.sk89q.worldedit.extent.Extent;
@@ -140,8 +141,10 @@ public class BlockTransformExtent extends AbstractDelegateExtent {
         }
 
         List<String> directionalProperties = properties.stream()
+                .filter(prop -> prop instanceof BooleanProperty)
                 .filter(prop -> directionNames.contains(prop.getName()))
-                .filter(prop -> ((Boolean) block.getState(prop)))
+                .map(prop -> (BooleanProperty) prop)
+                .filter(block::getState)
                 .map(Property::getName)
                 .map(String::toUpperCase)
                 .map(Direction::valueOf)
