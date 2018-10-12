@@ -105,6 +105,8 @@ public class YAMLConfiguration extends LocalConfiguration {
         scriptTimeout = config.getInt("scripting.timeout", scriptTimeout);
         scriptsDir = config.getString("scripting.dir", scriptsDir);
 
+        calculationTimeout = config.getInt("calculation.timeout", calculationTimeout);
+
         saveDir = config.getString("saving.dir", saveDir);
 
         allowSymlinks = config.getBoolean("files.allow-symbolic-links", false);

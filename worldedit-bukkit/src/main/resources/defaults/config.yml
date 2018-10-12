@@ -137,6 +137,9 @@ history:
     size: 15
     expiration: 10
 
+calculation:
+    timeout: 100
+
 wand-item: minecraft:wooden_axe
 shell-save-type:
 no-double-slash: false
