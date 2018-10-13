@@ -17,7 +17,6 @@
 #
 
 limits:
-    allow-extra-data-values: false
     max-blocks-changed:
         default: -1
         maximum: -1
