@@ -37,12 +37,4 @@ public interface CategoryRegistry<T> {
     Set<T> getCategorisedByName(String category);
 
     Set<T> getAll(final Category<T> category);
-
-    /**
-     * Gets a list of categories given to a value.
-     *
-     * @param categorised The value
-     * @return A set of categories
-     */
-    Set<String> getCategories(T categorised);
 }

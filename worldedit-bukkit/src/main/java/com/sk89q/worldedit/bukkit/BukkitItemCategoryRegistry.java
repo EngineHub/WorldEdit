@@ -17,23 +17,36 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.world.registry;
+package com.sk89q.worldedit.bukkit;
 
 import com.sk89q.worldedit.registry.Category;
 import com.sk89q.worldedit.world.item.ItemType;
+import com.sk89q.worldedit.world.registry.ItemCategoryRegistry;
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
+import org.bukkit.Tag;
 
-import java.util.Collections;
 import java.util.Set;
+import java.util.stream.Collectors;
 
-public class NullItemCategoryRegistry implements ItemCategoryRegistry {
+public class BukkitItemCategoryRegistry implements ItemCategoryRegistry {
 
-    @Override
-    public Set<ItemType> getCategorisedByName(String category) {
-        return Collections.emptySet();
+    private Set<ItemType> getFromBukkitTag(Tag<Material> tag) {
+        return tag.getValues().stream().map(BukkitAdapter::asItemType).collect(Collectors.toSet());
     }
 
     @Override
-    public Set<ItemType> getAll(final Category<ItemType> category) {
-        return Collections.emptySet();
+    public Set<ItemType> getCategorisedByName(String category) {
+        String[] split = category.split(":");
+        String namespace = split.length > 1 ? split[0] : "minecraft";
+        String key =  split.length > 1 ? split[1] : category;
+        Tag<Material> tag = Bukkit.getTag(Tag.REGISTRY_ITEMS, new NamespacedKey(namespace, key), Material.class);
+        return getFromBukkitTag(tag);
+    }
+
+    @Override
+    public Set<ItemType> getAll(Category<ItemType> category) {
+        return getCategorisedByName(category.getId());
     }
 }
