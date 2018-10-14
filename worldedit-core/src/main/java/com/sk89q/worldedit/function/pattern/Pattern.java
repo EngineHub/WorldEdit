@@ -19,7 +19,7 @@
 
 package com.sk89q.worldedit.function.pattern;
 
-import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 
 /**
@@ -33,6 +33,6 @@ public interface Pattern {
      * @param position the position
      * @return a block
      */
-    BlockStateHolder apply(Vector position);
+    BlockStateHolder apply(BlockVector3 position);
 
 }

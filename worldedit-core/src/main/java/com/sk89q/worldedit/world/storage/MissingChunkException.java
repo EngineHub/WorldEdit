@@ -19,20 +19,20 @@
 
 package com.sk89q.worldedit.world.storage;
 
-import com.sk89q.worldedit.Vector2D;
+import com.sk89q.worldedit.math.Vector2;
 
 /**
  * Thrown if a chunk is missing.
  */
 public class MissingChunkException extends ChunkStoreException {
 
-    private Vector2D position;
+    private Vector2 position;
 
     public MissingChunkException() {
         super();
     }
 
-    public MissingChunkException(Vector2D position) {
+    public MissingChunkException(Vector2 position) {
         super();
         this.position = position;
     }
@@ -42,7 +42,7 @@ public class MissingChunkException extends ChunkStoreException {
      *
      * @return a chunk position
      */
-    public Vector2D getChunkPosition() {
+    public Vector2 getChunkPosition() {
         return position;
     }
 

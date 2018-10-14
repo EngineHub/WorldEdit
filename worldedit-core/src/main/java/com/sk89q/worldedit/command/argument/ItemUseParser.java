@@ -22,12 +22,12 @@ package com.sk89q.worldedit.command.argument;
 import com.sk89q.minecraft.util.commands.CommandException;
 import com.sk89q.minecraft.util.commands.CommandLocals;
 import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.function.Contextual;
 import com.sk89q.worldedit.function.EditContext;
 import com.sk89q.worldedit.function.RegionFunction;
+import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.util.command.argument.CommandArgs;
 import com.sk89q.worldedit.util.command.composition.SimpleCommand;
@@ -82,7 +82,7 @@ public class ItemUseParser extends SimpleCommand<Contextual<RegionFunction>> {
         }
 
         @Override
-        public boolean apply(Vector position) throws WorldEditException {
+        public boolean apply(BlockVector3 position) throws WorldEditException {
             return world.useItem(position, item, Direction.UP);
         }
     }

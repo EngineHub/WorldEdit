@@ -19,11 +19,10 @@
 
 package com.sk89q.worldedit.regions;
 
-import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.IncompleteRegionException;
 import com.sk89q.worldedit.LocalSession;
-import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.extension.platform.Actor;
+import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.selector.limit.SelectorLimits;
 import com.sk89q.worldedit.world.World;
 
@@ -59,7 +58,7 @@ public interface RegionSelector {
      * @param position the position
      * @return true if something changed
      */
-    boolean selectPrimary(Vector position, SelectorLimits limits);
+    boolean selectPrimary(BlockVector3 position, SelectorLimits limits);
 
     /**
      * Called when the second point is selected.
@@ -67,7 +66,7 @@ public interface RegionSelector {
      * @param position the position
      * @return true if something changed
      */
-    boolean selectSecondary(Vector position, SelectorLimits limits);
+    boolean selectSecondary(BlockVector3 position, SelectorLimits limits);
 
     /**
      * Tell the player information about his/her primary selection.
@@ -76,7 +75,7 @@ public interface RegionSelector {
      * @param session the session
      * @param position position
      */
-    void explainPrimarySelection(Actor actor, LocalSession session, Vector position);
+    void explainPrimarySelection(Actor actor, LocalSession session, BlockVector3 position);
 
     /**
      * Tell the player information about his/her secondary selection.
@@ -85,7 +84,7 @@ public interface RegionSelector {
      * @param session the session
      * @param position position
      */
-    void explainSecondarySelection(Actor actor, LocalSession session, Vector position);
+    void explainSecondarySelection(Actor actor, LocalSession session, BlockVector3 position);
 
     /**
      * The the player information about the region's changes. This may resend
@@ -102,7 +101,7 @@ public interface RegionSelector {
      * @return the primary position
      * @throws IncompleteRegionException thrown if a region has not been fully defined
      */
-    BlockVector getPrimaryPosition() throws IncompleteRegionException;
+    BlockVector3 getPrimaryPosition() throws IncompleteRegionException;
 
     /**
      * Get the selection.

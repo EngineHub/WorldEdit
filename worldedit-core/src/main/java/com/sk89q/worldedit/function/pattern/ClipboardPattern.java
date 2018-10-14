@@ -21,8 +21,8 @@ package com.sk89q.worldedit.function.pattern;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
+import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 
 /**
@@ -31,7 +31,7 @@ import com.sk89q.worldedit.world.block.BlockStateHolder;
 public class ClipboardPattern extends AbstractPattern {
 
     private final Clipboard clipboard;
-    private final Vector size;
+    private final BlockVector3 size;
 
     /**
      * Create a new clipboard pattern.
@@ -45,12 +45,12 @@ public class ClipboardPattern extends AbstractPattern {
     }
 
     @Override
-    public BlockStateHolder apply(Vector position) {
+    public BlockStateHolder apply(BlockVector3 position) {
         int xp = Math.abs(position.getBlockX()) % size.getBlockX();
         int yp = Math.abs(position.getBlockY()) % size.getBlockY();
         int zp = Math.abs(position.getBlockZ()) % size.getBlockZ();
 
-        return clipboard.getFullBlock(clipboard.getMinimumPoint().add(new Vector(xp, yp, zp)));
+        return clipboard.getFullBlock(clipboard.getMinimumPoint().add(xp, yp, zp));
     }
 
 }

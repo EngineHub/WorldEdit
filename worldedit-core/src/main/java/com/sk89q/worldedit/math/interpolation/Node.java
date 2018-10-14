@@ -21,7 +21,7 @@
 
 package com.sk89q.worldedit.math.interpolation;
 
-import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.math.Vector3;
 
 /**
  * Represents a node for interpolation.
@@ -31,14 +31,14 @@ import com.sk89q.worldedit.Vector;
  */
 public class Node {
 
-    private Vector position;
+    private Vector3 position;
 
     private double tension;
     private double bias;
     private double continuity;
 
     public Node() {
-        this(new Vector(0, 0, 0));
+        this(new Vector3(0, 0, 0));
     }
 
     public Node(Node other) {
@@ -49,16 +49,16 @@ public class Node {
         this.continuity = other.continuity;
     }
 
-    public Node(Vector position) {
+    public Node(Vector3 position) {
         this.position = position;
     }
 
 
-    public Vector getPosition() {
+    public Vector3 getPosition() {
         return position;
     }
 
-    public void setPosition(Vector position) {
+    public void setPosition(Vector3 position) {
         this.position = position;
     }
 

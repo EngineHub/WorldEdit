@@ -60,7 +60,7 @@ public class DeformCommand extends SimpleCommand<Contextual<? extends Operation>
             Player player = (Player) locals.get(Actor.class);
             LocalSession session = WorldEdit.getInstance().getSessionManager().get(locals.get(Actor.class));
             try {
-                deform.setOffset(session.getPlacementPosition(player));
+                deform.setOffset(session.getPlacementPosition(player).toVector3());
             } catch (IncompleteRegionException e) {
                 throw new WrappedCommandException(e);
             }

@@ -19,7 +19,7 @@
 
 package com.sk89q.worldedit.math.transform;
 
-import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.math.Vector3;
 
 /**
  * Makes no transformation to given vectors.
@@ -32,7 +32,7 @@ public class Identity implements Transform {
     }
 
     @Override
-    public Vector apply(Vector vector) {
+    public Vector3 apply(Vector3 vector) {
         return vector;
     }
 

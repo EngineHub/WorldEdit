@@ -21,7 +21,7 @@ package com.sk89q.worldedit.math.transform;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.math.Vector3;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -66,7 +66,7 @@ public class CombinedTransform implements Transform {
     }
 
     @Override
-    public Vector apply(Vector vector) {
+    public Vector3 apply(Vector3 vector) {
         for (Transform transform : transforms) {
             vector = transform.apply(vector);
         }

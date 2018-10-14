@@ -19,7 +19,7 @@
 
 package com.sk89q.worldedit.function.mask;
 
-import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.math.BlockVector3;
 
 import javax.annotation.Nullable;
 
@@ -34,7 +34,7 @@ public interface Mask {
      * @param vector the vector to test
      * @return true if the criteria is met
      */
-    boolean test(Vector vector);
+    boolean test(BlockVector3 vector);
 
     /**
      * Get the 2D version of this mask if one exists.

@@ -20,9 +20,9 @@
 package com.sk89q.worldedit.bukkit.adapter;
 
 import com.sk89q.jnbt.CompoundTag;
-import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.entity.BaseEntity;
+import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.block.BlockType;
@@ -112,7 +112,7 @@ public interface BukkitImplAdapter {
      * @param pos The position
      * @param nbtData The NBT Data
      */
-    void sendFakeNBT(Player player, Vector pos, CompoundTag nbtData);
+    void sendFakeNBT(Player player, BlockVector3 pos, CompoundTag nbtData);
 
     /**
      * Make the client think it has operator status.

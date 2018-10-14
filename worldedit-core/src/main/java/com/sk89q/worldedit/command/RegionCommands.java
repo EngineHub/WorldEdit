@@ -32,7 +32,6 @@ import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.minecraft.util.commands.Logging;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalSession;
-import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.entity.Player;
@@ -48,6 +47,8 @@ import com.sk89q.worldedit.function.visitor.LayerVisitor;
 import com.sk89q.worldedit.internal.annotation.Direction;
 import com.sk89q.worldedit.internal.annotation.Selection;
 import com.sk89q.worldedit.internal.expression.ExpressionException;
+import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.math.convolution.GaussianKernel;
 import com.sk89q.worldedit.math.convolution.HeightMap;
 import com.sk89q.worldedit.math.convolution.HeightMapFilter;
@@ -110,8 +111,8 @@ public class RegionCommands {
         }
 
         CuboidRegion cuboidregion = (CuboidRegion) region;
-        Vector pos1 = cuboidregion.getPos1();
-        Vector pos2 = cuboidregion.getPos2();
+        BlockVector3 pos1 = cuboidregion.getPos1();
+        BlockVector3 pos2 = cuboidregion.getPos2();
         int blocksChanged = editSession.drawLine(pattern, pos1, pos2, thickness, !shell);
 
         player.print(blocksChanged + " block(s) have been changed.");
@@ -143,7 +144,7 @@ public class RegionCommands {
         }
 
         ConvexPolyhedralRegion cpregion = (ConvexPolyhedralRegion) region;
-        List<Vector> vectors = new ArrayList<>(cpregion.getVertices());
+        List<BlockVector3> vectors = new ArrayList<>(cpregion.getVertices());
 
         int blocksChanged = editSession.drawSpline(pattern, vectors, 0, 0, 0, 10, thickness, !shell);
 
@@ -274,7 +275,7 @@ public class RegionCommands {
     public void move(Player player, EditSession editSession, LocalSession session,
                      @Selection Region region,
                      @Optional("1") @Range(min = 1) int count,
-                     @Optional(Direction.AIM) @Direction Vector direction,
+                     @Optional(Direction.AIM) @Direction BlockVector3 direction,
                      @Optional("air") BlockStateHolder replace,
                      @Switch('s') boolean moveSelection) throws WorldEditException {
 
@@ -312,16 +313,16 @@ public class RegionCommands {
     public void stack(Player player, EditSession editSession, LocalSession session,
                       @Selection Region region,
                       @Optional("1") @Range(min = 1) int count,
-                      @Optional(Direction.AIM) @Direction Vector direction,
+                      @Optional(Direction.AIM) @Direction BlockVector3 direction,
                       @Switch('s') boolean moveSelection,
                       @Switch('a') boolean ignoreAirBlocks) throws WorldEditException {
         int affected = editSession.stackCuboidRegion(region, direction, count, !ignoreAirBlocks);
 
         if (moveSelection) {
             try {
-                final Vector size = region.getMaximumPoint().subtract(region.getMinimumPoint());
+                final BlockVector3 size = region.getMaximumPoint().subtract(region.getMinimumPoint());
 
-                final Vector shiftVector = direction.multiply(count * (Math.abs(direction.dot(size)) + 1));
+                final BlockVector3 shiftVector = direction.toVector3().multiply(count * (Math.abs(direction.dot(size)) + 1)).toBlockPoint();
                 region.shift(shiftVector);
 
                 session.getRegionSelector(player.getWorld()).learnChanges();
@@ -378,25 +379,25 @@ public class RegionCommands {
                        @Text String expression,
                        @Switch('r') boolean useRawCoords,
                        @Switch('o') boolean offset) throws WorldEditException {
-        final Vector zero;
-        Vector unit;
+        final Vector3 zero;
+        Vector3 unit;
 
         if (useRawCoords) {
-            zero = Vector.ZERO;
-            unit = Vector.ONE;
+            zero = Vector3.ZERO;
+            unit = Vector3.ONE;
         } else if (offset) {
-            zero = session.getPlacementPosition(player);
-            unit = Vector.ONE;
+            zero = session.getPlacementPosition(player).toVector3();
+            unit = Vector3.ONE;
         } else {
-            final Vector min = region.getMinimumPoint();
-            final Vector max = region.getMaximumPoint();
+            final Vector3 min = region.getMinimumPoint().toVector3();
+            final Vector3 max = region.getMaximumPoint().toVector3();
 
-            zero = max.add(min).multiply(0.5);
+            zero = max.add(min).divide(2);
             unit = max.subtract(zero);
 
-            if (unit.getX() == 0) unit = unit.setX(1.0);
-            if (unit.getY() == 0) unit = unit.setY(1.0);
-            if (unit.getZ() == 0) unit = unit.setZ(1.0);
+            if (unit.getX() == 0) unit = unit.withX(1.0);
+            if (unit.getY() == 0) unit = unit.withY(1.0);
+            if (unit.getZ() == 0) unit = unit.withZ(1.0);
         }
 
         try {

@@ -55,7 +55,7 @@
 
 package com.sk89q.worldedit.world.storage;
 
-import com.sk89q.worldedit.Vector2D;
+import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.util.io.ForwardSeekableInputStream;
 import com.sk89q.worldedit.world.DataException;
 
@@ -120,7 +120,7 @@ public class McRegionReader {
      * @throws IOException
      * @throws DataException
      */
-    public synchronized InputStream getChunkInputStream(Vector2D position) throws IOException, DataException {
+    public synchronized InputStream getChunkInputStream(BlockVector2 position) throws IOException, DataException {
         int x = position.getBlockX() & 31;
         int z = position.getBlockZ() & 31;
 

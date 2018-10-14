@@ -19,10 +19,9 @@
 
 package com.sk89q.worldedit.regions;
 
-import com.sk89q.worldedit.BlockVector;
-import com.sk89q.worldedit.BlockVector2D;
-import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.Vector2D;
+import com.sk89q.worldedit.math.BlockVector2;
+import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.storage.ChunkStore;
 
@@ -37,12 +36,12 @@ public class EllipsoidRegion extends AbstractRegion {
     /**
      * Stores the center.
      */
-    private Vector center;
+    private BlockVector3 center;
 
     /**
      * Stores the radii plus 0.5 on each axis.
      */
-    private Vector radius;
+    private Vector3 radius;
 
     /**
      * Construct a new instance of this ellipsoid region.
@@ -50,7 +49,7 @@ public class EllipsoidRegion extends AbstractRegion {
      * @param pos1 the first position
      * @param pos2 the second position
      */
-    public EllipsoidRegion(Vector pos1, Vector pos2) {
+    public EllipsoidRegion(BlockVector3 pos1, Vector3 pos2) {
         this(null, pos1, pos2);
     }
 
@@ -61,7 +60,7 @@ public class EllipsoidRegion extends AbstractRegion {
      * @param center the center
      * @param radius the radius
      */
-    public EllipsoidRegion(World world, Vector center, Vector radius) {
+    public EllipsoidRegion(World world, BlockVector3 center, Vector3 radius) {
         super(world);
         this.center = center;
         setRadius(radius);
@@ -72,13 +71,13 @@ public class EllipsoidRegion extends AbstractRegion {
     }
 
     @Override
-    public Vector getMinimumPoint() {
-        return center.subtract(getRadius());
+    public BlockVector3 getMinimumPoint() {
+        return center.toVector3().subtract(getRadius()).toBlockPoint();
     }
 
     @Override
-    public Vector getMaximumPoint() {
-        return center.add(getRadius());
+    public BlockVector3 getMaximumPoint() {
+        return center.toVector3().add(getRadius()).toBlockPoint();
     }
 
     @Override
@@ -101,8 +100,8 @@ public class EllipsoidRegion extends AbstractRegion {
         return (int) (2 * radius.getZ());
     }
 
-    private Vector calculateDiff(Vector... changes) throws RegionOperationException {
-        Vector diff = new Vector().add(changes);
+    private BlockVector3 calculateDiff(BlockVector3... changes) throws RegionOperationException {
+        BlockVector3 diff = BlockVector3.ZERO.add(changes);
 
         if ((diff.getBlockX() & 1) + (diff.getBlockY() & 1) + (diff.getBlockZ() & 1) != 0) {
             throw new RegionOperationException(
@@ -112,30 +111,30 @@ public class EllipsoidRegion extends AbstractRegion {
         return diff.divide(2).floor();
     }
 
-    private Vector calculateChanges(Vector... changes) {
-        Vector total = new Vector();
-        for (Vector change : changes) {
-            total = total.add(change.positive());
+    private Vector3 calculateChanges(BlockVector3... changes) {
+        Vector3 total = Vector3.ZERO;
+        for (BlockVector3 change : changes) {
+            total = total.add(change.abs().toVector3());
         }
 
         return total.divide(2).floor();
     }
 
     @Override
-    public void expand(Vector... changes) throws RegionOperationException {
+    public void expand(BlockVector3... changes) throws RegionOperationException {
         center = center.add(calculateDiff(changes));
         radius = radius.add(calculateChanges(changes));
     }
 
     @Override
-    public void contract(Vector... changes) throws RegionOperationException {
+    public void contract(BlockVector3... changes) throws RegionOperationException {
         center = center.subtract(calculateDiff(changes));
-        Vector newRadius = radius.subtract(calculateChanges(changes));
-        radius = Vector.getMaximum(new Vector(1.5, 1.5, 1.5), newRadius);
+        Vector3 newRadius = radius.subtract(calculateChanges(changes));
+        radius = new Vector3(1.5, 1.5, 1.5).getMaximum(newRadius);
     }
 
     @Override
-    public void shift(Vector change) throws RegionOperationException {
+    public void shift(BlockVector3 change) throws RegionOperationException {
         center = center.add(change);
     }
 
@@ -145,8 +144,8 @@ public class EllipsoidRegion extends AbstractRegion {
      * @return center
      */
     @Override
-    public Vector getCenter() {
-        return center;
+    public Vector3 getCenter() {
+        return center.toVector3();
     }
 
     /**
@@ -154,7 +153,7 @@ public class EllipsoidRegion extends AbstractRegion {
      *
      * @param center the center
      */
-    public void setCenter(Vector center) {
+    public void setCenter(BlockVector3 center) {
         this.center = center;
     }
 
@@ -163,7 +162,7 @@ public class EllipsoidRegion extends AbstractRegion {
      *
      * @return radii
      */
-    public Vector getRadius() {
+    public Vector3 getRadius() {
         return radius.subtract(0.5, 0.5, 0.5);
     }
 
@@ -172,25 +171,25 @@ public class EllipsoidRegion extends AbstractRegion {
      *
      * @param radius the radius
      */
-    public void setRadius(Vector radius) {
+    public void setRadius(Vector3 radius) {
         this.radius = radius.add(0.5, 0.5, 0.5);
     }
 
     @Override
-    public Set<Vector2D> getChunks() {
-        final Set<Vector2D> chunks = new HashSet<>();
+    public Set<BlockVector2> getChunks() {
+        final Set<BlockVector2> chunks = new HashSet<>();
 
-        final Vector min = getMinimumPoint();
-        final Vector max = getMaximumPoint();
-        final int centerY = getCenter().getBlockY();
+        final BlockVector3 min = getMinimumPoint();
+        final BlockVector3 max = getMaximumPoint();
+        final int centerY = center.getBlockY();
 
         for (int x = min.getBlockX(); x <= max.getBlockX(); ++x) {
             for (int z = min.getBlockZ(); z <= max.getBlockZ(); ++z) {
-                if (!contains(new BlockVector(x, centerY, z))) {
+                if (!contains(new BlockVector3(x, centerY, z))) {
                     continue;
                 }
 
-                chunks.add(new BlockVector2D(
+                chunks.add(new BlockVector2(
                     x >> ChunkStore.CHUNK_SHIFTS,
                     z >> ChunkStore.CHUNK_SHIFTS
                 ));
@@ -201,8 +200,8 @@ public class EllipsoidRegion extends AbstractRegion {
     }
 
     @Override
-    public boolean contains(Vector position) {
-        return position.subtract(center).divide(radius).lengthSq() <= 1;
+    public boolean contains(BlockVector3 position) {
+        return position.subtract(center).toVector3().divide(radius).lengthSq() <= 1;
     }
 
     /**
@@ -216,8 +215,8 @@ public class EllipsoidRegion extends AbstractRegion {
         return center + " - " + getRadius();
     }
 
-    public void extendRadius(Vector minRadius) {
-        setRadius(Vector.getMaximum(minRadius, getRadius()));
+    public void extendRadius(Vector3 minRadius) {
+        setRadius(minRadius.getMaximum(getRadius()));
     }
 
     @Override

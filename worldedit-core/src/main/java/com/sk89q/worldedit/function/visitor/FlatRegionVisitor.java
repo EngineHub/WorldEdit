@@ -21,11 +21,11 @@ package com.sk89q.worldedit.function.visitor;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import com.sk89q.worldedit.Vector2D;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.function.FlatRegionFunction;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.RunContext;
+import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.regions.FlatRegion;
 
 import java.util.List;
@@ -64,7 +64,7 @@ public class FlatRegionVisitor implements Operation {
 
     @Override
     public Operation resume(RunContext run) throws WorldEditException {
-        for (Vector2D pt : flatRegion.asFlatRegion()) {
+        for (BlockVector2 pt : flatRegion.asFlatRegion()) {
             if (function.apply(pt)) {
                 affected++;
             }

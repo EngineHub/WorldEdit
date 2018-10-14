@@ -21,12 +21,12 @@ package com.sk89q.worldedit.function;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import com.sk89q.worldedit.Vector2D;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.function.mask.Mask2D;
+import com.sk89q.worldedit.math.BlockVector2;
 
 /**
- * Passes calls to {@link #apply(com.sk89q.worldedit.Vector2D)} to the
+ * Passes calls to {@link #apply(BlockVector2)} to the
  * delegate {@link com.sk89q.worldedit.function.FlatRegionFunction} if they
  * match the given mask.
  */
@@ -50,7 +50,7 @@ public class FlatRegionMaskingFilter implements FlatRegionFunction {
     }
 
     @Override
-    public boolean apply(Vector2D position) throws WorldEditException {
+    public boolean apply(BlockVector2 position) throws WorldEditException {
         return mask.test(position) && function.apply(position);
     }
 

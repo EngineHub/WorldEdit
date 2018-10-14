@@ -53,7 +53,7 @@ public class TreePlanter implements BlockTool {
                 boolean successful = false;
 
                 for (int i = 0; i < 10; i++) {
-                    if (treeType.generate(editSession, clicked.toVector().add(0, 1, 0))) {
+                    if (treeType.generate(editSession, clicked.toVector().add(0, 1, 0).toBlockPoint())) {
                         successful = true;
                         break;
                     }

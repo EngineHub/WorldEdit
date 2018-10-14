@@ -27,6 +27,7 @@ import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.function.pattern.Pattern;
+import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 
@@ -55,11 +56,12 @@ public class LongRangeBuildTool extends BrushTool implements DoubleActionTraceTo
         if (pos == null) return false;
         try (EditSession eS = session.createEditSession(player)) {
             eS.disableBuffering();
-            BlockStateHolder applied = secondary.apply(pos.toVector());
+            BlockVector3 blockPoint = pos.toVector().toBlockPoint();
+            BlockStateHolder applied = secondary.apply(blockPoint);
             if (applied.getBlockType().getMaterial().isAir()) {
-                eS.setBlock(pos.toVector(), secondary);
+                eS.setBlock(blockPoint, secondary);
             } else {
-                eS.setBlock(pos.getDirection(), secondary);
+                eS.setBlock(pos.getDirection().toBlockPoint(), secondary);
             }
             return true;
         } catch (MaxChangedBlocksException e) {
@@ -75,11 +77,12 @@ public class LongRangeBuildTool extends BrushTool implements DoubleActionTraceTo
         if (pos == null) return false;
         try (EditSession eS = session.createEditSession(player)) {
             eS.disableBuffering();
-            BlockStateHolder applied = primary.apply(pos.toVector());
+            BlockVector3 blockPoint = pos.toVector().toBlockPoint();
+            BlockStateHolder applied = primary.apply(blockPoint);
             if (applied.getBlockType().getMaterial().isAir()) {
-                eS.setBlock(pos.toVector(), primary);
+                eS.setBlock(blockPoint, primary);
             } else {
-                eS.setBlock(pos.getDirection(), primary);
+                eS.setBlock(pos.getDirection().toBlockPoint(), primary);
             }
             return true;
         } catch (MaxChangedBlocksException e) {

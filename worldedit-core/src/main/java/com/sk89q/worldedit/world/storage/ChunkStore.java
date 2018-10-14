@@ -21,9 +21,8 @@ package com.sk89q.worldedit.world.storage;
 
 import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.jnbt.Tag;
-import com.sk89q.worldedit.BlockVector2D;
-import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.Vector2D;
+import com.sk89q.worldedit.math.BlockVector2;
+import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.world.DataException;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.chunk.AnvilChunk;
@@ -57,11 +56,8 @@ public abstract class ChunkStore implements Closeable {
      * @param position the position
      * @return chunk coordinates
      */
-    public static BlockVector2D toChunk(Vector position) {
-        int chunkX = (int) Math.floor(position.getBlockX() / 16.0);
-        int chunkZ = (int) Math.floor(position.getBlockZ() / 16.0);
-
-        return new BlockVector2D(chunkX, chunkZ);
+    public static BlockVector2 toChunk(BlockVector3 position) {
+        return new BlockVector2(position.getX() >> CHUNK_SHIFTS, position.getZ() >> CHUNK_SHIFTS);
     }
 
     /**
@@ -72,7 +68,7 @@ public abstract class ChunkStore implements Closeable {
      * @throws DataException thrown on data error
      * @throws IOException thrown on I/O error
      */
-    public abstract CompoundTag getChunkTag(Vector2D position, World world) throws DataException, IOException;
+    public abstract CompoundTag getChunkTag(BlockVector2 position, World world) throws DataException, IOException;
 
     /**
      * Get a chunk at a location.
@@ -83,7 +79,7 @@ public abstract class ChunkStore implements Closeable {
      * @throws DataException thrown on data error
      * @throws IOException thrown on I/O error
      */
-    public Chunk getChunk(Vector2D position, World world) throws DataException, IOException {
+    public Chunk getChunk(BlockVector2 position, World world) throws DataException, IOException {
         CompoundTag rootTag = getChunkTag(position, world);
 
         Map<String, Tag> children = rootTag.getValue();

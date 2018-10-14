@@ -23,10 +23,10 @@ import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
-import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Platform;
+import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.block.BlockTypes;
@@ -52,7 +52,7 @@ public class AreaPickaxe implements BlockTool {
         int ox = clicked.getBlockX();
         int oy = clicked.getBlockY();
         int oz = clicked.getBlockZ();
-        BlockType initialType = clicked.getExtent().getBlock(clicked.toVector()).getBlockType();
+        BlockType initialType = clicked.getExtent().getBlock(clicked.toVector().toBlockPoint()).getBlockType();
 
         if (initialType.getMaterial().isAir()) {
             return true;
@@ -69,12 +69,12 @@ public class AreaPickaxe implements BlockTool {
                 for (int x = ox - range; x <= ox + range; ++x) {
                     for (int y = oy - range; y <= oy + range; ++y) {
                         for (int z = oz - range; z <= oz + range; ++z) {
-                            Vector pos = new Vector(x, y, z);
+                            BlockVector3 pos = new BlockVector3(x, y, z);
                             if (editSession.getBlock(pos).getBlockType() != initialType) {
                                 continue;
                             }
 
-                            ((World) clicked.getExtent()).queueBlockBreakEffect(server, pos, initialType, clicked.toVector().distanceSq(pos));
+                            ((World) clicked.getExtent()).queueBlockBreakEffect(server, pos, initialType, clicked.toVector().toBlockPoint().distanceSq(pos));
 
                             editSession.setBlock(pos, BlockTypes.AIR.getDefaultState());
                         }

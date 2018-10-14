@@ -21,9 +21,9 @@ package com.sk89q.worldedit.function;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.function.mask.Mask;
+import com.sk89q.worldedit.math.BlockVector3;
 
 /**
  * Applies a {@link RegionFunction} to the first ground block.
@@ -76,12 +76,12 @@ public class GroundFunction implements LayerFunction {
     }
 
     @Override
-    public boolean isGround(Vector position) {
+    public boolean isGround(BlockVector3 position) {
         return mask.test(position);
     }
 
     @Override
-    public boolean apply(Vector position, int depth) throws WorldEditException {
+    public boolean apply(BlockVector3 position, int depth) throws WorldEditException {
         if (depth == 0) {
             if (function.apply(position)) {
                 affected++;

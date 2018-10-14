@@ -30,7 +30,6 @@ import com.sk89q.minecraft.util.commands.Logging;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
-import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.command.util.CreatureButcher;
@@ -49,6 +48,7 @@ import com.sk89q.worldedit.function.visitor.EntityVisitor;
 import com.sk89q.worldedit.internal.expression.Expression;
 import com.sk89q.worldedit.internal.expression.ExpressionException;
 import com.sk89q.worldedit.internal.expression.runtime.EvaluationException;
+import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.CylinderRegion;
 import com.sk89q.worldedit.regions.Region;
@@ -103,7 +103,7 @@ public class UtilityCommands {
         we.checkMaxRadius(radius);
         int depth = args.argsLength() > 2 ? Math.max(1, args.getInteger(2)) : 1;
 
-        Vector pos = session.getPlacementPosition(player);
+        BlockVector3 pos = session.getPlacementPosition(player);
         int affected = editSession.fillXZ(pos, pattern, radius, depth, false);
         player.print(affected + " block(s) have been created.");
     }
@@ -129,7 +129,7 @@ public class UtilityCommands {
         we.checkMaxRadius(radius);
         int depth = args.argsLength() > 2 ? Math.max(1, args.getInteger(2)) : Integer.MAX_VALUE;
 
-        Vector pos = session.getPlacementPosition(player);
+        BlockVector3 pos = session.getPlacementPosition(player);
         int affected = 0;
         if (pattern instanceof BlockPattern) {
             affected = editSession.fillXZ(pos, ((BlockPattern) pattern).getBlock(), radius, depth, true);
@@ -290,9 +290,9 @@ public class UtilityCommands {
             to = we.getPatternFactory().parseFromInput(args.getString(2), context);
         }
 
-        Vector base = session.getPlacementPosition(player);
-        Vector min = base.subtract(size, size, size);
-        Vector max = base.add(size, size, size);
+        BlockVector3 base = session.getPlacementPosition(player);
+        BlockVector3 min = base.subtract(size, size, size);
+        BlockVector3 max = base.add(size, size, size);
         Region region = new CuboidRegion(player.getWorld(), min, max);
 
         if (to instanceof BlockPattern) {
@@ -432,7 +432,7 @@ public class UtilityCommands {
 
         if (player != null) {
             session = we.getSessionManager().get(player);
-            Vector center = session.getPlacementPosition(player);
+            BlockVector3 center = session.getPlacementPosition(player);
             editSession = session.createEditSession(player);
             List<? extends Entity> entities;
             if (radius >= 0) {
@@ -492,7 +492,7 @@ public class UtilityCommands {
 
         if (player != null) {
             session = we.getSessionManager().get(player);
-            Vector center = session.getPlacementPosition(player);
+            BlockVector3 center = session.getPlacementPosition(player);
             editSession = session.createEditSession(player);
             List<? extends Entity> entities;
             if (radius >= 0) {

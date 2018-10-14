@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit;
 
+import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.util.Direction;
 
 /**
@@ -28,26 +29,26 @@ import com.sk89q.worldedit.util.Direction;
  */
 public enum PlayerDirection {
 
-    NORTH(new Vector(0, 0, -1), true),
-    NORTH_EAST((new Vector(1, 0, -1)).normalize(), false),
-    EAST(new Vector(1, 0, 0), true),
-    SOUTH_EAST((new Vector(1, 0, 1)).normalize(), false),
-    SOUTH(new Vector(0, 0, 1), true),
-    SOUTH_WEST((new Vector(-1, 0, 1)).normalize(), false),
-    WEST(new Vector(-1, 0, 0), true),
-    NORTH_WEST((new Vector(-1, 0, -1)).normalize(), false),
-    UP(new Vector(0, 1, 0), true),
-    DOWN(new Vector(0, -1, 0), true);
+    NORTH(new Vector3(0, 0, -1), true),
+    NORTH_EAST((new Vector3(1, 0, -1)).normalize(), false),
+    EAST(new Vector3(1, 0, 0), true),
+    SOUTH_EAST((new Vector3(1, 0, 1)).normalize(), false),
+    SOUTH(new Vector3(0, 0, 1), true),
+    SOUTH_WEST((new Vector3(-1, 0, 1)).normalize(), false),
+    WEST(new Vector3(-1, 0, 0), true),
+    NORTH_WEST((new Vector3(-1, 0, -1)).normalize(), false),
+    UP(new Vector3(0, 1, 0), true),
+    DOWN(new Vector3(0, -1, 0), true);
 
-    private final Vector dir;
+    private final Vector3 dir;
     private final boolean isOrthogonal;
 
-    PlayerDirection(Vector vec, boolean isOrthogonal) {
+    PlayerDirection(Vector3 vec, boolean isOrthogonal) {
         this.dir = vec;
         this.isOrthogonal = isOrthogonal;
     }
 
-    public Vector vector() {
+    public Vector3 vector() {
         return dir;
     }
 

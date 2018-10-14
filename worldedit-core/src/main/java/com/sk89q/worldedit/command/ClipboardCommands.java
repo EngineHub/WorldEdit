@@ -28,7 +28,6 @@ import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.minecraft.util.commands.Logging;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalSession;
-import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.entity.Player;
@@ -42,6 +41,8 @@ import com.sk89q.worldedit.function.operation.Operations;
 import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.internal.annotation.Direction;
 import com.sk89q.worldedit.internal.annotation.Selection;
+import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.math.transform.AffineTransform;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.RegionSelector;
@@ -154,7 +155,7 @@ public class ClipboardCommands {
         Clipboard clipboard = holder.getClipboard();
         Region region = clipboard.getRegion();
 
-        Vector to = atOrigin ? clipboard.getOrigin() : session.getPlacementPosition(player);
+        BlockVector3 to = atOrigin ? clipboard.getOrigin() : session.getPlacementPosition(player);
         Operation operation = holder
                 .createPaste(editSession)
                 .to(to)
@@ -163,10 +164,10 @@ public class ClipboardCommands {
         Operations.completeLegacy(operation);
 
         if (selectPasted) {
-            Vector clipboardOffset = clipboard.getRegion().getMinimumPoint().subtract(clipboard.getOrigin());
-            Vector realTo = to.add(holder.getTransform().apply(clipboardOffset));
-            Vector max = realTo.add(holder.getTransform().apply(region.getMaximumPoint().subtract(region.getMinimumPoint())));
-            RegionSelector selector = new CuboidRegionSelector(player.getWorld(), realTo, max);
+            BlockVector3 clipboardOffset = clipboard.getRegion().getMinimumPoint().subtract(clipboard.getOrigin());
+            Vector3 realTo = to.toVector3().add(holder.getTransform().apply(clipboardOffset.toVector3()));
+            Vector3 max = realTo.add(holder.getTransform().apply(region.getMaximumPoint().subtract(region.getMinimumPoint()).toVector3()));
+            RegionSelector selector = new CuboidRegionSelector(player.getWorld(), realTo.toBlockPoint(), max.toBlockPoint());
             session.setRegionSelector(player.getWorld(), selector);
             selector.learnChanges();
             selector.explainRegionAdjust(player, session);
@@ -211,11 +212,10 @@ public class ClipboardCommands {
     )
     @CommandPermissions("worldedit.clipboard.flip")
     public void flip(Player player, LocalSession session, EditSession editSession,
-                     @Optional(Direction.AIM) @Direction Vector direction) throws WorldEditException {
+                     @Optional(Direction.AIM) @Direction BlockVector3 direction) throws WorldEditException {
         ClipboardHolder holder = session.getClipboard();
-        Clipboard clipboard = holder.getClipboard();
         AffineTransform transform = new AffineTransform();
-        transform = transform.scale(direction.positive().multiply(-2).add(1, 1, 1));
+        transform = transform.scale(direction.abs().multiply(-2).add(1, 1, 1).toVector3());
         holder.setTransform(holder.getTransform().combine(transform));
         player.print("The clipboard copy has been flipped.");
     }

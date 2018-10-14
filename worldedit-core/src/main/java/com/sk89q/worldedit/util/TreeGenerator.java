@@ -22,7 +22,7 @@ package com.sk89q.worldedit.util;
 import com.google.common.collect.Sets;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
-import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.block.BlockTypes;
@@ -49,7 +49,7 @@ public class TreeGenerator {
         MEGA_REDWOOD("Large spruce tree", "largespruce", "megaredwood"),
         RANDOM_REDWOOD("Random spruce tree", "randspruce", "randredwood", "randomredwood", "anyredwood") {
             @Override
-            public boolean generate(EditSession editSession, Vector pos) throws MaxChangedBlocksException {
+            public boolean generate(EditSession editSession, BlockVector3 pos) throws MaxChangedBlocksException {
                 TreeType[] choices = { REDWOOD, TALL_REDWOOD, MEGA_REDWOOD };
                 return choices[TreeGenerator.RANDOM.nextInt(choices.length)].generate(editSession, pos);
             }
@@ -58,7 +58,7 @@ public class TreeGenerator {
         TALL_BIRCH("Tall birch tree", "tallbirch"),
         RANDOM_BIRCH("Random birch tree", "randbirch", "randombirch") {
             @Override
-            public boolean generate(EditSession editSession, Vector pos) throws MaxChangedBlocksException {
+            public boolean generate(EditSession editSession, BlockVector3 pos) throws MaxChangedBlocksException {
                 TreeType[] choices = { BIRCH, TALL_BIRCH };
                 return choices[TreeGenerator.RANDOM.nextInt(choices.length)].generate(editSession, pos);
             }
@@ -67,13 +67,13 @@ public class TreeGenerator {
         SMALL_JUNGLE("Small jungle tree", "shortjungle", "smalljungle"),
         SHORT_JUNGLE("Short jungle tree") {
             @Override
-            public boolean generate(EditSession editSession, Vector pos) throws MaxChangedBlocksException {
+            public boolean generate(EditSession editSession, BlockVector3 pos) throws MaxChangedBlocksException {
                 return SMALL_JUNGLE.generate(editSession, pos);
             }
         },
         RANDOM_JUNGLE("Random jungle tree", "randjungle", "randomjungle") {
             @Override
-            public boolean generate(EditSession editSession, Vector pos) throws MaxChangedBlocksException {
+            public boolean generate(EditSession editSession, BlockVector3 pos) throws MaxChangedBlocksException {
                 TreeType[] choices = { JUNGLE, SMALL_JUNGLE };
                 return choices[TreeGenerator.RANDOM.nextInt(choices.length)].generate(editSession, pos);
             }
@@ -83,7 +83,7 @@ public class TreeGenerator {
         BROWN_MUSHROOM("Brown mushroom", "brownmushroom", "browngiantmushroom"),
         RANDOM_MUSHROOM("Random mushroom", "randmushroom", "randommushroom") {
             @Override
-            public boolean generate(EditSession editSession, Vector pos) throws MaxChangedBlocksException {
+            public boolean generate(EditSession editSession, BlockVector3 pos) throws MaxChangedBlocksException {
                 TreeType[] choices = { RED_MUSHROOM, BROWN_MUSHROOM };
                 return choices[TreeGenerator.RANDOM.nextInt(choices.length)].generate(editSession, pos);
             }
@@ -93,14 +93,14 @@ public class TreeGenerator {
         DARK_OAK("Dark oak tree", "darkoak"),
         PINE("Pine tree", "pine") {
             @Override
-            public boolean generate(EditSession editSession, Vector pos) throws MaxChangedBlocksException {
+            public boolean generate(EditSession editSession, BlockVector3 pos) throws MaxChangedBlocksException {
                 makePineTree(editSession, pos);
                 return true;
             }
         },
         RANDOM("Random tree", "rand", "random") {
             @Override
-            public boolean generate(EditSession editSession, Vector pos) throws MaxChangedBlocksException {
+            public boolean generate(EditSession editSession, BlockVector3 pos) throws MaxChangedBlocksException {
                 TreeType[] choices = TreeType.values();
                 return choices[TreeGenerator.RANDOM.nextInt(choices.length)].generate(editSession, pos);
             }
@@ -139,7 +139,7 @@ public class TreeGenerator {
             return Collections.unmodifiableSet(primaryAliases);
         }
 
-        public boolean generate(EditSession editSession, Vector pos) throws MaxChangedBlocksException {
+        public boolean generate(EditSession editSession, BlockVector3 pos) throws MaxChangedBlocksException {
             return editSession.getWorld().generateTree(this, editSession, pos);
         }
 
@@ -174,7 +174,7 @@ public class TreeGenerator {
      *
      * @param basePosition the base position
      */
-    private static void makePineTree(EditSession editSession, Vector basePosition)
+    private static void makePineTree(EditSession editSession, BlockVector3 basePosition)
             throws MaxChangedBlocksException {
         int trunkHeight = (int) Math.floor(Math.random() * 2) + 3;
         int height = (int) Math.floor(Math.random() * 5) + 8;
@@ -250,7 +250,7 @@ public class TreeGenerator {
      * @return whether a block was changed
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
-    private static boolean setChanceBlockIfAir(EditSession session, Vector position, BlockStateHolder block, double probability)
+    private static boolean setChanceBlockIfAir(EditSession session, BlockVector3 position, BlockStateHolder block, double probability)
             throws MaxChangedBlocksException {
         return Math.random() <= probability && setBlockIfAir(session, position, block);
     }
@@ -263,7 +263,7 @@ public class TreeGenerator {
      * @return if block was changed
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
-    private static boolean setBlockIfAir(EditSession session, Vector position, BlockStateHolder block) throws MaxChangedBlocksException {
+    private static boolean setBlockIfAir(EditSession session, BlockVector3 position, BlockStateHolder block) throws MaxChangedBlocksException {
         return session.getBlock(position).getBlockType().getMaterial().isAir() && session.setBlock(position, block);
     }
 }

@@ -21,12 +21,11 @@ package com.sk89q.worldedit.function.visitor;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import com.sk89q.worldedit.BlockVector;
-import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.function.RegionFunction;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.RunContext;
+import com.sk89q.worldedit.math.BlockVector3;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -38,9 +37,9 @@ import java.util.Set;
 
 /**
  * Performs a breadth-first search starting from points added with
- * {@link #visit(com.sk89q.worldedit.Vector)}. The search continues
+ * {@link #visit(BlockVector3)}. The search continues
  * to a certain adjacent point provided that the method
- * {@link #isVisitable(com.sk89q.worldedit.Vector, com.sk89q.worldedit.Vector)}
+ * {@link #isVisitable(BlockVector3, BlockVector3)}
  * returns true for that point.
  *
  * <p>As an abstract implementation, this class can be used to implement
@@ -50,9 +49,9 @@ import java.util.Set;
 public abstract class BreadthFirstSearch implements Operation {
 
     private final RegionFunction function;
-    private final Queue<BlockVector> queue = new ArrayDeque<>();
-    private final Set<BlockVector> visited = new HashSet<>();
-    private final List<Vector> directions = new ArrayList<>();
+    private final Queue<BlockVector3> queue = new ArrayDeque<>();
+    private final Set<BlockVector3> visited = new HashSet<>();
+    private final List<BlockVector3> directions = new ArrayList<>();
     private int affected = 0;
 
     /**
@@ -69,16 +68,16 @@ public abstract class BreadthFirstSearch implements Operation {
     /**
      * Get the list of directions will be visited.
      *
-     * <p>Directions are {@link com.sk89q.worldedit.Vector}s that determine
+     * <p>Directions are {@link BlockVector3}s that determine
      * what adjacent points area available. Vectors should not be
      * unit vectors. An example of a valid direction is
-     * {@code new Vector(1, 0, 1)}.</p>
+     * {@code new BlockVector3(1, 0, 1)}.</p>
      *
      * <p>The list of directions can be cleared.</p>
      *
      * @return the list of directions
      */
-    protected Collection<Vector> getDirections() {
+    protected Collection<BlockVector3> getDirections() {
         return directions;
     }
 
@@ -86,29 +85,29 @@ public abstract class BreadthFirstSearch implements Operation {
      * Add the directions along the axes as directions to visit.
      */
     protected void addAxes() {
-        directions.add(new Vector(0, -1, 0));
-        directions.add(new Vector(0, 1, 0));
-        directions.add(new Vector(-1, 0, 0));
-        directions.add(new Vector(1, 0, 0));
-        directions.add(new Vector(0, 0, -1));
-        directions.add(new Vector(0, 0, 1));
+        directions.add(new BlockVector3(0, -1, 0));
+        directions.add(new BlockVector3(0, 1, 0));
+        directions.add(new BlockVector3(-1, 0, 0));
+        directions.add(new BlockVector3(1, 0, 0));
+        directions.add(new BlockVector3(0, 0, -1));
+        directions.add(new BlockVector3(0, 0, 1));
     }
 
     /**
      * Add the diagonal directions as directions to visit.
      */
     protected void addDiagonal() {
-        directions.add(new Vector(1, 0, 1));
-        directions.add(new Vector(-1, 0, -1));
-        directions.add(new Vector(1, 0, -1));
-        directions.add(new Vector(-1, 0, 1));
+        directions.add(new BlockVector3(1, 0, 1));
+        directions.add(new BlockVector3(-1, 0, -1));
+        directions.add(new BlockVector3(1, 0, -1));
+        directions.add(new BlockVector3(-1, 0, 1));
     }
 
     /**
      * Add the given location to the list of locations to visit, provided
      * that it has not been visited. The position passed to this method
      * will still be visited even if it fails
-     * {@link #isVisitable(com.sk89q.worldedit.Vector, com.sk89q.worldedit.Vector)}.
+     * {@link #isVisitable(BlockVector3, BlockVector3)}.
      *
      * <p>This method should be used before the search begins, because if
      * the position <em>does</em> fail the test, and the search has already
@@ -118,8 +117,8 @@ public abstract class BreadthFirstSearch implements Operation {
      *
      * @param position the position
      */
-    public void visit(Vector position) {
-        BlockVector blockVector = position.toBlockVector();
+    public void visit(BlockVector3 position) {
+        BlockVector3 blockVector = position;
         if (!visited.contains(blockVector)) {
             queue.add(blockVector);
             visited.add(blockVector);
@@ -132,8 +131,8 @@ public abstract class BreadthFirstSearch implements Operation {
      * @param from the origin block
      * @param to the block under question
      */
-    private void visit(Vector from, Vector to) {
-        BlockVector blockVector = to.toBlockVector();
+    private void visit(BlockVector3 from, BlockVector3 to) {
+        BlockVector3 blockVector = to;
         if (!visited.contains(blockVector)) {
             visited.add(blockVector);
             if (isVisitable(from, to)) {
@@ -150,7 +149,7 @@ public abstract class BreadthFirstSearch implements Operation {
      * @param to the block under question
      * @return true if the 'to' block should be visited
      */
-    protected abstract boolean isVisitable(Vector from, Vector to);
+    protected abstract boolean isVisitable(BlockVector3 from, BlockVector3 to);
 
     /**
      * Get the number of affected objects.
@@ -163,14 +162,14 @@ public abstract class BreadthFirstSearch implements Operation {
 
     @Override
     public Operation resume(RunContext run) throws WorldEditException {
-        Vector position;
+        BlockVector3 position;
         
         while ((position = queue.poll()) != null) {
             if (function.apply(position)) {
                 affected++;
             }
 
-            for (Vector dir : directions) {
+            for (BlockVector3 dir : directions) {
                 visit(position, position.add(dir));
             }
         }

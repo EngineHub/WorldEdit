@@ -20,15 +20,16 @@
 package com.sk89q.worldedit.entity;
 
 import com.sk89q.worldedit.PlayerDirection;
-import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
+import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.util.HandSide;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.World;
+import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.gamemode.GameMode;
 
@@ -256,14 +257,14 @@ public interface Player extends Entity, Actor {
      * @param pitch the pitch (up/down) of the player's view in degrees
      * @param yaw the yaw (left/right) of the player's view in degrees
      */
-    void setPosition(Vector pos, float pitch, float yaw);
+    void setPosition(Vector3 pos, float pitch, float yaw);
 
     /**
      * Move the player.
      *
      * @param pos where to move them
      */
-    void setPosition(Vector pos);
+    void setPosition(Vector3 pos);
 
     /**
      * Sends a fake block to the client.
@@ -275,5 +276,5 @@ public interface Player extends Entity, Actor {
      * @param pos The position of the block
      * @param block The block to send, null to reset
      */
-    void sendFakeBlock(Vector pos, @Nullable BlockStateHolder block);
+    void sendFakeBlock(BlockVector3 pos, @Nullable BlockStateHolder block);
 }

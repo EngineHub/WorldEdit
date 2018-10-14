@@ -21,7 +21,8 @@ package com.sk89q.worldedit.forge;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.math.BlockVector3;
+
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagInt;
 import net.minecraft.tileentity.TileEntity;
@@ -47,7 +48,7 @@ final class TileEntityUtils {
      * @param position the position
      * @return a tag compound
      */
-    private static NBTTagCompound updateForSet(NBTTagCompound tag, Vector position) {
+    private static NBTTagCompound updateForSet(NBTTagCompound tag, BlockVector3 position) {
         checkNotNull(tag);
         checkNotNull(position);
 
@@ -66,7 +67,7 @@ final class TileEntityUtils {
      * @param clazz the tile entity class
      * @param tag the tag for the tile entity (may be null to not set NBT data)
      */
-    static void setTileEntity(World world, Vector position, Class<? extends TileEntity> clazz, @Nullable NBTTagCompound tag) {
+    static void setTileEntity(World world, BlockVector3 position, Class<? extends TileEntity> clazz, @Nullable NBTTagCompound tag) {
         checkNotNull(world);
         checkNotNull(position);
         checkNotNull(clazz);
@@ -94,7 +95,7 @@ final class TileEntityUtils {
      * @param position the position
      * @param tag the tag for the tile entity (may be null to do nothing)
      */
-    static void setTileEntity(World world, Vector position, @Nullable NBTTagCompound tag) {
+    static void setTileEntity(World world, BlockVector3 position, @Nullable NBTTagCompound tag) {
         if (tag != null) {
             updateForSet(tag, position);
             TileEntity tileEntity = TileEntity.create(world, tag);
@@ -113,7 +114,7 @@ final class TileEntityUtils {
      * @return a tile entity (may be null if it failed)
      */
     @Nullable
-    static TileEntity constructTileEntity(World world, Vector position, Class<? extends TileEntity> clazz) {
+    static TileEntity constructTileEntity(World world, BlockVector3 position, Class<? extends TileEntity> clazz) {
         Constructor<? extends TileEntity> baseConstructor;
         try {
             baseConstructor = clazz.getConstructor(); // creates "blank" TE

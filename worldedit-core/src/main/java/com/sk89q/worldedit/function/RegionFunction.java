@@ -19,8 +19,8 @@
 
 package com.sk89q.worldedit.function;
 
-import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.math.BlockVector3;
 
 /**
  * Performs a function on points in a region.
@@ -34,6 +34,6 @@ public interface RegionFunction {
      * @return true if something was changed
      * @throws WorldEditException thrown on an error
      */
-    boolean apply(Vector position) throws WorldEditException;
+    boolean apply(BlockVector3 position) throws WorldEditException;
 
 }

@@ -19,7 +19,6 @@
 
 package com.sk89q.worldedit.extension.factory;
 
-import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.IncompleteRegionException;
 import com.sk89q.worldedit.NotABlockException;
 import com.sk89q.worldedit.WorldEdit;
@@ -37,6 +36,7 @@ import com.sk89q.worldedit.extension.input.ParserContext;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.internal.registry.InputParser;
+import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.util.HandSide;
 import com.sk89q.worldedit.world.World;
@@ -245,7 +245,7 @@ class DefaultBlockParser extends InputParser<BlockStateHolder> {
             } else if ("pos1".equalsIgnoreCase(typeString)) {
                 // Get the block type from the "primary position"
                 final World world = context.requireWorld();
-                final BlockVector primaryPosition;
+                final BlockVector3 primaryPosition;
                 try {
                     primaryPosition = context.requireSession().getRegionSelector(world).getPrimaryPosition();
                 } catch (IncompleteRegionException e) {

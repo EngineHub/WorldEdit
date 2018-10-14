@@ -19,16 +19,17 @@
 
 package com.sk89q.worldedit.world;
 
-import com.sk89q.worldedit.BlockVector2D;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
-import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.function.mask.Mask;
+import com.sk89q.worldedit.math.BlockVector2;
+import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.util.TreeGenerator;
@@ -72,10 +73,10 @@ public interface World extends Extent {
      * @param face The face
      * @return Whether it succeeded
      */
-    boolean useItem(Vector position, BaseItem item, Direction face);
+    boolean useItem(BlockVector3 position, BaseItem item, Direction face);
 
     /**
-     * Similar to {@link Extent#setBlock(Vector, BlockStateHolder)} but a
+     * Similar to {@link Extent#setBlock(BlockVector3, BlockStateHolder)} but a
      * {@code notifyAndLight} parameter indicates whether adjacent blocks
      * should be notified that changes have been made and lighting operations
      * should be executed.
@@ -92,7 +93,7 @@ public interface World extends Extent {
      * @param notifyAndLight true to to notify and light
      * @return true if the block was successfully set (return value may not be accurate)
      */
-    boolean setBlock(Vector position, BlockStateHolder block, boolean notifyAndLight) throws WorldEditException;
+    boolean setBlock(BlockVector3 position, BlockStateHolder block, boolean notifyAndLight) throws WorldEditException;
 
     /**
      * Get the light level at the given block.
@@ -100,7 +101,7 @@ public interface World extends Extent {
      * @param position the position
      * @return the light level (0-15)
      */
-    int getBlockLightLevel(Vector position);
+    int getBlockLightLevel(BlockVector3 position);
 
     /**
      * Clear a chest's contents.
@@ -108,7 +109,7 @@ public interface World extends Extent {
      * @param position the position
      * @return true if the container was cleared
      */
-    boolean clearContainerBlockContents(Vector position);
+    boolean clearContainerBlockContents(BlockVector3 position);
 
     /**
      * Drop an item at the given position.
@@ -117,23 +118,23 @@ public interface World extends Extent {
      * @param item the item to drop
      * @param count the number of individual stacks to drop (number of item entities)
      */
-    void dropItem(Vector position, BaseItemStack item, int count);
+    void dropItem(Vector3 position, BaseItemStack item, int count);
 
     /**
      * Drop one stack of the item at the given position.
      *
      * @param position the position
      * @param item the item to drop
-     * @see #dropItem(Vector, BaseItemStack, int) shortcut method to specify the number of stacks
+     * @see #dropItem(Vector3, BaseItemStack, int) shortcut method to specify the number of stacks
      */
-    void dropItem(Vector position, BaseItemStack item);
+    void dropItem(Vector3 position, BaseItemStack item);
 
     /**
      * Simulate a block being mined at the given position.
      *
      * @param position the position
      */
-    void simulateBlockMine(Vector position);
+    void simulateBlockMine(BlockVector3 position);
 
     /**
      * Regenerate an area.
@@ -153,19 +154,19 @@ public interface World extends Extent {
      * @return true if generation was successful
      * @throws MaxChangedBlocksException thrown if too many blocks were changed
      */
-    boolean generateTree(TreeGenerator.TreeType type, EditSession editSession, Vector position) throws MaxChangedBlocksException;
+    boolean generateTree(TreeGenerator.TreeType type, EditSession editSession, BlockVector3 position) throws MaxChangedBlocksException;
 
     /**
      * Load the chunk at the given position if it isn't loaded.
      *
      * @param position the position
      */
-    void checkLoadedChunk(Vector position);
+    void checkLoadedChunk(BlockVector3 position);
 
     /**
      * Fix the given chunks after fast mode was used.
      *
-     * <p>Fast mode makes calls to {@link #setBlock(Vector, BlockStateHolder, boolean)}
+     * <p>Fast mode makes calls to {@link #setBlock(BlockVector3, BlockStateHolder, boolean)}
      * with {@code false} for the {@code notifyAndLight} parameter, which
      * may causes lighting errors to accumulate. Use of this method, if
      * it is implemented by the underlying world, corrects those lighting
@@ -173,14 +174,14 @@ public interface World extends Extent {
      *
      * @param chunks a list of chunk coordinates to fix
      */
-    void fixAfterFastMode(Iterable<BlockVector2D> chunks);
+    void fixAfterFastMode(Iterable<BlockVector2> chunks);
 
     /**
      * Relight the given chunks if possible.
      *
      * @param chunks a list of chunk coordinates to fix
      */
-    void fixLighting(Iterable<BlockVector2D> chunks);
+    void fixLighting(Iterable<BlockVector2> chunks);
 
     /**
      * Play the given effect.
@@ -190,7 +191,7 @@ public interface World extends Extent {
      * @param data the effect data
      * @return true if the effect was played
      */
-    boolean playEffect(Vector position, int type, int data);
+    boolean playEffect(Vector3 position, int type, int data);
 
     /**
      * Queue a block break effect.
@@ -201,7 +202,7 @@ public interface World extends Extent {
      * @param priority the priority
      * @return true if the effect was played
      */
-    boolean queueBlockBreakEffect(Platform server, Vector position, BlockType blockType, double priority);
+    boolean queueBlockBreakEffect(Platform server, BlockVector3 position, BlockType blockType, double priority);
 
     /**
      * Gets the weather type of the world.

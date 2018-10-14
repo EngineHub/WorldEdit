@@ -26,9 +26,9 @@ import com.sk89q.jnbt.StringTag;
 import com.sk89q.jnbt.Tag;
 import com.sk89q.worldedit.IncompleteRegionException;
 import com.sk89q.worldedit.LocalSession;
-import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.entity.Player;
+import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.RegionSelector;
 import com.sk89q.worldedit.regions.selector.CuboidRegionSelector;
@@ -85,7 +85,7 @@ public class ServerCUIHandler {
                 }
             } else {
                 CuboidRegion region = ((CuboidRegionSelector) regionSelector).getIncompleteRegion();
-                Vector point;
+                BlockVector3 point;
                 if (region.getPos1() != null) {
                     point = region.getPos1();
                 } else if (region.getPos2() != null) {

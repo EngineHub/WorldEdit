@@ -22,9 +22,9 @@ package com.sk89q.worldedit.history.changeset;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.google.common.collect.Iterators;
-import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.history.change.BlockChange;
 import com.sk89q.worldedit.history.change.Change;
+import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.util.LocatedBlock;
 import com.sk89q.worldedit.util.collection.LocatedBlockList;
 
@@ -42,7 +42,7 @@ import java.util.Iterator;
 public class BlockOptimizedHistory extends ArrayListHistory {
 
     private static Change createChange(LocatedBlock block) {
-        return new BlockChange(block.getLocation().toBlockPoint(), block.getBlock(), block.getBlock());
+        return new BlockChange(block.getLocation(), block.getBlock(), block.getBlock());
     }
 
     private final LocatedBlockList previous = new LocatedBlockList();
@@ -54,7 +54,7 @@ public class BlockOptimizedHistory extends ArrayListHistory {
 
         if (change instanceof BlockChange) {
             BlockChange blockChange = (BlockChange) change;
-            BlockVector position = blockChange.getPosition();
+            BlockVector3 position = blockChange.getPosition();
             previous.add(position, blockChange.getPrevious());
             current.add(position, blockChange.getCurrent());
         } else {
@@ -80,5 +80,4 @@ public class BlockOptimizedHistory extends ArrayListHistory {
     public int size() {
         return super.size() + previous.size();
     }
-
 }

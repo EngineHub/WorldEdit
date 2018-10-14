@@ -19,10 +19,9 @@
 
 package com.sk89q.worldedit.regions;
 
-import com.sk89q.worldedit.BlockVector;
-import com.sk89q.worldedit.BlockVector2D;
-import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.Vector2D;
+import com.sk89q.worldedit.math.BlockVector2;
+import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.world.World;
 
 import java.util.Collections;
@@ -39,18 +38,18 @@ public class NullRegion implements Region {
     private World world;
 
     @Override
-    public Vector getMinimumPoint() {
-        return new Vector(0, 0, 0);
+    public BlockVector3 getMinimumPoint() {
+        return BlockVector3.ZERO;
     }
 
     @Override
-    public Vector getMaximumPoint() {
-        return new Vector(0, 0, 0);
+    public BlockVector3 getMaximumPoint() {
+        return BlockVector3.ZERO;
     }
 
     @Override
-    public Vector getCenter() {
-        return new Vector(0, 0, 0);
+    public Vector3 getCenter() {
+        return Vector3.ZERO;
     }
 
     @Override
@@ -74,32 +73,32 @@ public class NullRegion implements Region {
     }
 
     @Override
-    public void expand(Vector... changes) throws RegionOperationException {
+    public void expand(BlockVector3... changes) throws RegionOperationException {
         throw new RegionOperationException("Cannot change NullRegion");
     }
 
     @Override
-    public void contract(Vector... changes) throws RegionOperationException {
+    public void contract(BlockVector3... changes) throws RegionOperationException {
         throw new RegionOperationException("Cannot change NullRegion");
     }
 
     @Override
-    public void shift(Vector change) throws RegionOperationException {
+    public void shift(BlockVector3 change) throws RegionOperationException {
         throw new RegionOperationException("Cannot change NullRegion");
     }
 
     @Override
-    public boolean contains(Vector position) {
+    public boolean contains(BlockVector3 position) {
         return false;
     }
 
     @Override
-    public Set<Vector2D> getChunks() {
+    public Set<BlockVector2> getChunks() {
         return Collections.emptySet();
     }
 
     @Override
-    public Set<Vector> getChunkCubes() {
+    public Set<BlockVector3> getChunkCubes() {
         return Collections.emptySet();
     }
 
@@ -119,26 +118,21 @@ public class NullRegion implements Region {
     }
 
     @Override
-    public List<BlockVector2D> polygonize(int maxPoints) {
+    public List<BlockVector2> polygonize(int maxPoints) {
         return Collections.emptyList();
     }
 
     @Override
-    public Iterator<BlockVector> iterator() {
-        return new Iterator<BlockVector>() {
+    public Iterator<BlockVector3> iterator() {
+        return new Iterator<BlockVector3>() {
             @Override
             public boolean hasNext() {
                 return false;
             }
 
             @Override
-            public BlockVector next() {
+            public BlockVector3 next() {
                 throw new NoSuchElementException();
-            }
-
-            @Override
-            public void remove() {
-                throw new UnsupportedOperationException("Cannot remove");
             }
         };
     }

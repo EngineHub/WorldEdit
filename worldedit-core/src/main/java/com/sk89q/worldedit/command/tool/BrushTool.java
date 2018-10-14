@@ -189,7 +189,7 @@ public class BrushTool implements TraceTool {
             }
 
             try {
-                brush.build(editSession, target.toVector(), material, size);
+                brush.build(editSession, target.toVector().toBlockPoint(), material, size);
             } catch (MaxChangedBlocksException e) {
                 player.printError("Max blocks change limit reached.");
             } finally {

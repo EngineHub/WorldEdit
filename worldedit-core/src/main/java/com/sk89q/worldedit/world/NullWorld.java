@@ -21,12 +21,13 @@ package com.sk89q.worldedit.world;
 
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
-import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.Vector2D;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
+import com.sk89q.worldedit.math.BlockVector2;
+import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.TreeGenerator.TreeType;
@@ -59,36 +60,36 @@ public class NullWorld extends AbstractWorld {
     }
 
     @Override
-    public boolean setBlock(Vector position, BlockStateHolder block, boolean notifyAndLight) throws WorldEditException {
+    public boolean setBlock(BlockVector3 position, BlockStateHolder block, boolean notifyAndLight) throws WorldEditException {
         return false;
     }
 
     @Override
-    public int getBlockLightLevel(Vector position) {
+    public int getBlockLightLevel(BlockVector3 position) {
         return 0;
     }
 
     @Override
-    public boolean clearContainerBlockContents(Vector position) {
+    public boolean clearContainerBlockContents(BlockVector3 position) {
         return false;
     }
 
     @Override
-    public BaseBiome getBiome(Vector2D position) {
+    public BaseBiome getBiome(BlockVector2 position) {
         return null;
     }
 
     @Override
-    public boolean setBiome(Vector2D position, BaseBiome biome) {
+    public boolean setBiome(BlockVector2 position, BaseBiome biome) {
         return false;
     }
 
     @Override
-    public void dropItem(Vector position, BaseItemStack item) {
+    public void dropItem(Vector3 position, BaseItemStack item) {
     }
 
     @Override
-    public void simulateBlockMine(Vector position) {
+    public void simulateBlockMine(BlockVector3 position) {
     }
 
     @Override
@@ -97,7 +98,7 @@ public class NullWorld extends AbstractWorld {
     }
 
     @Override
-    public boolean generateTree(TreeType type, EditSession editSession, Vector position) throws MaxChangedBlocksException {
+    public boolean generateTree(TreeType type, EditSession editSession, BlockVector3 position) throws MaxChangedBlocksException {
         return false;
     }
 
@@ -120,12 +121,12 @@ public class NullWorld extends AbstractWorld {
     }
 
     @Override
-    public BlockState getBlock(Vector position) {
+    public BlockState getBlock(BlockVector3 position) {
         return BlockTypes.AIR.getDefaultState();
     }
 
     @Override
-    public BaseBlock getFullBlock(Vector position) {
+    public BaseBlock getFullBlock(BlockVector3 position) {
         return getBlock(position).toBaseBlock();
     }
 

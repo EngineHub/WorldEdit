@@ -21,19 +21,18 @@ package com.sk89q.worldedit.regions.iterator;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import com.sk89q.worldedit.BlockVector;
-import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.Region;
 
 import java.util.Iterator;
 
-public class RegionIterator implements Iterator<BlockVector> {
+public class RegionIterator implements Iterator<BlockVector3> {
 
     private final Region region;
     private final int maxX;
     private final int maxY;
     private final int maxZ;
-    private final Vector min;
+    private final BlockVector3 min;
     private int nextX;
     private int nextY;
     private int nextZ;
@@ -43,7 +42,7 @@ public class RegionIterator implements Iterator<BlockVector> {
 
         this.region = region;
 
-        Vector max = region.getMaximumPoint();
+        BlockVector3 max = region.getMaximumPoint();
         this.maxX = max.getBlockX();
         this.maxY = max.getBlockY();
         this.maxZ = max.getBlockZ();
@@ -62,16 +61,16 @@ public class RegionIterator implements Iterator<BlockVector> {
     }
 
     private void forward() {
-        while (hasNext() && !region.contains(new BlockVector(nextX, nextY, nextZ))) {
+        while (hasNext() && !region.contains(new BlockVector3(nextX, nextY, nextZ))) {
             forwardOne();
         }
     }
 
     @Override
-    public BlockVector next() {
+    public BlockVector3 next() {
         if (!hasNext()) throw new java.util.NoSuchElementException();
 
-        BlockVector answer = new BlockVector(nextX, nextY, nextZ);
+        BlockVector3 answer = new BlockVector3(nextX, nextY, nextZ);
 
         forwardOne();
         forward();

@@ -29,13 +29,14 @@ import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.minecraft.util.commands.Logging;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalSession;
-import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.internal.annotation.Selection;
 import com.sk89q.worldedit.internal.expression.ExpressionException;
+import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.TreeGenerator.TreeType;
 import com.sk89q.worldedit.util.command.binding.Range;
@@ -116,7 +117,7 @@ public class GenerationCommands {
         worldEdit.checkMaxRadius(radiusZ);
         worldEdit.checkMaxRadius(height);
 
-        Vector pos = session.getPlacementPosition(player);
+        BlockVector3 pos = session.getPlacementPosition(player);
         int affected = editSession.makeCylinder(pos, pattern, radiusX, radiusZ, height, !hollow);
         player.print(affected + " block(s) have been created.");
     }
@@ -177,9 +178,9 @@ public class GenerationCommands {
         worldEdit.checkMaxRadius(radiusY);
         worldEdit.checkMaxRadius(radiusZ);
 
-        Vector pos = session.getPlacementPosition(player);
+        BlockVector3 pos = session.getPlacementPosition(player);
         if (raised) {
-            pos = pos.add(0, radiusY, 0);
+            pos = pos.add(0, (int) radiusY, 0);
         }
 
         int affected = editSession.makeSphere(pos, pattern, radiusX, radiusY, radiusZ, !hollow);
@@ -240,7 +241,7 @@ public class GenerationCommands {
     @CommandPermissions("worldedit.generation.pyramid")
     @Logging(PLACEMENT)
     public void pyramid(Player player, LocalSession session, EditSession editSession, Pattern pattern, @Range(min = 1) int size, @Switch('h') boolean hollow) throws WorldEditException {
-        Vector pos = session.getPlacementPosition(player);
+        BlockVector3 pos = session.getPlacementPosition(player);
         worldEdit.checkMaxRadius(size);
         int affected = editSession.makePyramid(pos, pattern, size, !hollow);
         player.findFreePosition();
@@ -277,31 +278,31 @@ public class GenerationCommands {
                          @Switch('o') boolean offset,
                          @Switch('c') boolean offsetCenter) throws WorldEditException {
 
-        final Vector zero;
-        Vector unit;
+        final Vector3 zero;
+        Vector3 unit;
 
         if (useRawCoords) {
-            zero = Vector.ZERO;
-            unit = Vector.ONE;
+            zero = Vector3.ZERO;
+            unit = Vector3.ONE;
         } else if (offset) {
-            zero = session.getPlacementPosition(player);
-            unit = Vector.ONE;
+            zero = session.getPlacementPosition(player).toVector3();
+            unit = Vector3.ONE;
         } else if (offsetCenter) {
-            final Vector min = region.getMinimumPoint();
-            final Vector max = region.getMaximumPoint();
+            final Vector3 min = region.getMinimumPoint().toVector3();
+            final Vector3 max = region.getMaximumPoint().toVector3();
 
             zero = max.add(min).multiply(0.5);
-            unit = Vector.ONE;
+            unit = Vector3.ONE;
         } else {
-            final Vector min = region.getMinimumPoint();
-            final Vector max = region.getMaximumPoint();
+            final Vector3 min = region.getMinimumPoint().toVector3();
+            final Vector3 max = region.getMaximumPoint().toVector3();
 
             zero = max.add(min).multiply(0.5);
             unit = max.subtract(zero);
 
-            if (unit.getX() == 0) unit = unit.setX(1.0);
-            if (unit.getY() == 0) unit = unit.setY(1.0);
-            if (unit.getZ() == 0) unit = unit.setZ(1.0);
+            if (unit.getX() == 0) unit = unit.withX(1.0);
+            if (unit.getY() == 0) unit = unit.withY(1.0);
+            if (unit.getZ() == 0) unit = unit.withZ(1.0);
         }
 
         try {
@@ -342,31 +343,31 @@ public class GenerationCommands {
                               @Switch('r') boolean useRawCoords,
                               @Switch('o') boolean offset,
                               @Switch('c') boolean offsetCenter) throws WorldEditException {
-        final Vector zero;
-        Vector unit;
+        final Vector3 zero;
+        Vector3 unit;
 
         if (useRawCoords) {
-            zero = Vector.ZERO;
-            unit = Vector.ONE;
+            zero = Vector3.ZERO;
+            unit = Vector3.ONE;
         } else if (offset) {
-            zero = session.getPlacementPosition(player);
-            unit = Vector.ONE;
+            zero = session.getPlacementPosition(player).toVector3();
+            unit = Vector3.ONE;
         } else if (offsetCenter) {
-            final Vector min = region.getMinimumPoint();
-            final Vector max = region.getMaximumPoint();
+            final Vector3 min = region.getMinimumPoint().toVector3();
+            final Vector3 max = region.getMaximumPoint().toVector3();
 
             zero = max.add(min).multiply(0.5);
-            unit = Vector.ONE;
+            unit = Vector3.ONE;
         } else {
-            final Vector min = region.getMinimumPoint();
-            final Vector max = region.getMaximumPoint();
+            final Vector3 min = region.getMinimumPoint().toVector3();
+            final Vector3 max = region.getMaximumPoint().toVector3();
 
             zero = max.add(min).multiply(0.5);
             unit = max.subtract(zero);
 
-            if (unit.getX() == 0) unit = unit.setX(1.0);
-            if (unit.getY() == 0) unit = unit.setY(1.0);
-            if (unit.getZ() == 0) unit = unit.setZ(1.0);
+            if (unit.getX() == 0) unit = unit.withX(1.0);
+            if (unit.getY() == 0) unit = unit.withY(1.0);
+            if (unit.getZ() == 0) unit = unit.withZ(1.0);
         }
 
         try {

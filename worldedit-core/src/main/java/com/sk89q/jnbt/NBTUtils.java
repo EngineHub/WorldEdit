@@ -21,7 +21,7 @@ package com.sk89q.jnbt;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.world.storage.InvalidFormatException;
 
 import java.util.Map;
@@ -167,9 +167,9 @@ public final class NBTUtils {
      * @param listTag the list tag
      * @return a vector
      */
-    public static Vector toVector(ListTag listTag) {
+    public static Vector3 toVector(ListTag listTag) {
         checkNotNull(listTag);
-        return new Vector(listTag.asDouble(0), listTag.asDouble(1), listTag.asDouble(2));
+        return new Vector3(listTag.asDouble(0), listTag.asDouble(1), listTag.asDouble(2));
     }
 
     /**

@@ -22,16 +22,17 @@ package com.sk89q.worldedit.extent.transform;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.google.common.collect.Sets;
-import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.registry.state.BooleanProperty;
-import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.extent.AbstractDelegateExtent;
 import com.sk89q.worldedit.extent.Extent;
+import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.math.transform.Transform;
+import com.sk89q.worldedit.registry.state.BooleanProperty;
 import com.sk89q.worldedit.registry.state.DirectionalProperty;
 import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.util.Direction;
+import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 
@@ -84,17 +85,17 @@ public class BlockTransformExtent extends AbstractDelegateExtent {
     }
 
     @Override
-    public BlockState getBlock(Vector position) {
+    public BlockState getBlock(BlockVector3 position) {
         return transformBlock(super.getBlock(position), false);
     }
 
     @Override
-    public BaseBlock getFullBlock(Vector position) {
+    public BaseBlock getFullBlock(BlockVector3 position) {
         return transformBlock(super.getFullBlock(position), false);
     }
 
     @Override
-    public boolean setBlock(Vector location, BlockStateHolder block) throws WorldEditException {
+    public boolean setBlock(BlockVector3 location, BlockStateHolder block) throws WorldEditException {
         return super.setBlock(location, transformBlock(block, true));
     }
 
@@ -132,7 +133,7 @@ public class BlockTransformExtent extends AbstractDelegateExtent {
             if (property instanceof DirectionalProperty) {
                 Direction value = (Direction) block.getState(property);
                 if (value != null) {
-                    Vector newValue = getNewStateValue((DirectionalProperty) property, transform, value.toVector());
+                    Vector3 newValue = getNewStateValue((DirectionalProperty) property, transform, value.toVector());
                     if (newValue != null) {
                         changedBlock = (T) changedBlock.with(property, Direction.findClosest(newValue, Direction.Flag.ALL));
                     }
@@ -171,9 +172,9 @@ public class BlockTransformExtent extends AbstractDelegateExtent {
      * @return a new state or null if none could be found
      */
     @Nullable
-    private static Vector getNewStateValue(DirectionalProperty state, Transform transform, Vector oldDirection) {
-        Vector newDirection = transform.apply(oldDirection).subtract(transform.apply(Vector.ZERO)).normalize();
-        Vector newValue = null;
+    private static Vector3 getNewStateValue(DirectionalProperty state, Transform transform, Vector3 oldDirection) {
+        Vector3 newDirection = transform.apply(oldDirection).subtract(transform.apply(Vector3.ZERO)).normalize();
+        Vector3 newValue = null;
         double closest = -2;
         boolean found = false;
 

@@ -28,8 +28,6 @@ import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.minecraft.util.commands.Logging;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalSession;
-import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.Vector2D;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.entity.Player;
@@ -41,6 +39,8 @@ import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.function.mask.Mask2D;
 import com.sk89q.worldedit.function.operation.Operations;
 import com.sk89q.worldedit.function.visitor.FlatRegionVisitor;
+import com.sk89q.worldedit.math.BlockVector2;
+import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.FlatRegion;
 import com.sk89q.worldedit.regions.Region;
@@ -139,12 +139,12 @@ public class BiomeCommands {
                 return;
             }
 
-            BaseBiome biome = player.getWorld().getBiome(blockPosition.toVector().toVector2D());
+            BaseBiome biome = player.getWorld().getBiome(blockPosition.toVector().toBlockPoint().toBlockVector2());
             biomes.add(biome);
 
             qualifier = "at line of sight point";
         } else if (args.hasFlag('p')) {
-            BaseBiome biome = player.getWorld().getBiome(player.getLocation().toVector().toVector2D());
+            BaseBiome biome = player.getWorld().getBiome(player.getLocation().toVector().toBlockPoint().toBlockVector2());
             biomes.add(biome);
 
             qualifier = "at your position";
@@ -153,12 +153,12 @@ public class BiomeCommands {
             Region region = session.getSelection(world);
 
             if (region instanceof FlatRegion) {
-                for (Vector2D pt : ((FlatRegion) region).asFlatRegion()) {
+                for (BlockVector2 pt : ((FlatRegion) region).asFlatRegion()) {
                     biomes.add(world.getBiome(pt));
                 }
             } else {
-                for (Vector pt : region) {
-                    biomes.add(world.getBiome(pt.toVector2D()));
+                for (BlockVector3 pt : region) {
+                    biomes.add(world.getBiome(pt.toBlockVector2()));
                 }
             }
 
@@ -195,7 +195,7 @@ public class BiomeCommands {
         Mask2D mask2d = mask != null ? mask.toMask2D() : null;
 
         if (atPosition) {
-            region = new CuboidRegion(player.getLocation().toVector(), player.getLocation().toVector());
+            region = new CuboidRegion(player.getLocation().toVector().toBlockPoint(), player.getLocation().toVector().toBlockPoint());
         } else {
             region = session.getSelection(world);
         }

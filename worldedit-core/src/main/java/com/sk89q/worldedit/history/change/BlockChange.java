@@ -21,10 +21,10 @@ package com.sk89q.worldedit.history.change;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.history.UndoContext;
+import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 
 /**
@@ -36,7 +36,7 @@ import com.sk89q.worldedit.world.block.BlockStateHolder;
  */
 public class BlockChange implements Change {
 
-    private final BlockVector position;
+    private final BlockVector3 position;
     private final BlockStateHolder previous;
     private final BlockStateHolder current;
 
@@ -47,7 +47,7 @@ public class BlockChange implements Change {
      * @param previous the previous block
      * @param current the current block
      */
-    public BlockChange(BlockVector position, BlockStateHolder previous, BlockStateHolder current) {
+    public BlockChange(BlockVector3 position, BlockStateHolder previous, BlockStateHolder current) {
         checkNotNull(position);
         checkNotNull(previous);
         checkNotNull(current);
@@ -61,7 +61,7 @@ public class BlockChange implements Change {
      *
      * @return the position
      */
-    public BlockVector getPosition() {
+    public BlockVector3 getPosition() {
         return position;
     }
 

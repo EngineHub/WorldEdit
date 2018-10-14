@@ -19,15 +19,14 @@
 
 package com.sk89q.worldedit.command.tool;
 
-import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
-import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Platform;
+import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.block.BlockTypes;
@@ -56,7 +55,8 @@ public class RecursivePickaxe implements BlockTool {
     public boolean actPrimary(Platform server, LocalConfiguration config, Player player, LocalSession session, com.sk89q.worldedit.util.Location clicked) {
         World world = (World) clicked.getExtent();
 
-        BlockType initialType = world.getBlock(clicked.toVector()).getBlockType();
+        BlockVector3 origin = clicked.toVector().toBlockPoint();
+        BlockType initialType = world.getBlock(origin).getBlockType();
 
         if (initialType.getMaterial().isAir()) {
             return true;
@@ -70,8 +70,8 @@ public class RecursivePickaxe implements BlockTool {
             editSession.getSurvivalExtent().setToolUse(config.superPickaxeManyDrop);
 
             try {
-                recurse(server, editSession, world, clicked.toVector().toBlockVector(),
-                        clicked.toVector(), range, initialType, new HashSet<>());
+                recurse(server, editSession, world, clicked.toVector().toBlockPoint(),
+                        clicked.toVector().toBlockPoint(), range, initialType, new HashSet<>());
             } catch (MaxChangedBlocksException e) {
                 player.printError("Max blocks change limit reached.");
             } finally {
@@ -82,8 +82,8 @@ public class RecursivePickaxe implements BlockTool {
         return true;
     }
 
-    private static void recurse(Platform server, EditSession editSession, World world, BlockVector pos,
-            Vector origin, double size, BlockType initialType, Set<BlockVector> visited) throws MaxChangedBlocksException {
+    private static void recurse(Platform server, EditSession editSession, World world, BlockVector3 pos,
+            BlockVector3 origin, double size, BlockType initialType, Set<BlockVector3> visited) throws MaxChangedBlocksException {
 
         final double distanceSq = origin.distanceSq(pos);
         if (distanceSq > size*size || visited.contains(pos)) {
@@ -100,17 +100,17 @@ public class RecursivePickaxe implements BlockTool {
 
         editSession.setBlock(pos, BlockTypes.AIR.getDefaultState());
 
-        recurse(server, editSession, world, pos.add(1, 0, 0).toBlockVector(),
+        recurse(server, editSession, world, pos.add(1, 0, 0),
                 origin, size, initialType, visited);
-        recurse(server, editSession, world, pos.add(-1, 0, 0).toBlockVector(),
+        recurse(server, editSession, world, pos.add(-1, 0, 0),
                 origin, size, initialType, visited);
-        recurse(server, editSession, world, pos.add(0, 0, 1).toBlockVector(),
+        recurse(server, editSession, world, pos.add(0, 0, 1),
                 origin, size, initialType, visited);
-        recurse(server, editSession, world, pos.add(0, 0, -1).toBlockVector(),
+        recurse(server, editSession, world, pos.add(0, 0, -1),
                 origin, size, initialType, visited);
-        recurse(server, editSession, world, pos.add(0, 1, 0).toBlockVector(),
+        recurse(server, editSession, world, pos.add(0, 1, 0),
                 origin, size, initialType, visited);
-        recurse(server, editSession, world, pos.add(0, -1, 0).toBlockVector(),
+        recurse(server, editSession, world, pos.add(0, -1, 0),
                 origin, size, initialType, visited);
     }
 

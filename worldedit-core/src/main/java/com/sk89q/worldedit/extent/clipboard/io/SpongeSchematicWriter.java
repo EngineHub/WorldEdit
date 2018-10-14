@@ -30,11 +30,10 @@ import com.sk89q.jnbt.NBTOutputStream;
 import com.sk89q.jnbt.ShortTag;
 import com.sk89q.jnbt.StringTag;
 import com.sk89q.jnbt.Tag;
-import com.sk89q.worldedit.BlockVector;
-import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
+import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.Region;
+import com.sk89q.worldedit.world.block.BaseBlock;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -76,9 +75,9 @@ public class SpongeSchematicWriter implements ClipboardWriter {
      */
     private Map<String, Tag> write1(Clipboard clipboard) throws IOException {
         Region region = clipboard.getRegion();
-        Vector origin = clipboard.getOrigin();
-        Vector min = region.getMinimumPoint();
-        Vector offset = min.subtract(origin);
+        BlockVector3 origin = clipboard.getOrigin();
+        BlockVector3 min = region.getMinimumPoint();
+        BlockVector3 offset = min.subtract(origin);
         int width = region.getWidth();
         int height = region.getHeight();
         int length = region.getLength();
@@ -127,7 +126,7 @@ public class SpongeSchematicWriter implements ClipboardWriter {
                 int z0 = min.getBlockZ() + z;
                 for (int x = 0; x < width; x++) {
                     int x0 = min.getBlockX() + x;
-                    BlockVector point = new BlockVector(x0, y0, z0);
+                    BlockVector3 point = new BlockVector3(x0, y0, z0);
                     BaseBlock block = clipboard.getFullBlock(point);
                     if (block.getNbtData() != null) {
                         Map<String, Tag> values = new HashMap<>();

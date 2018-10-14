@@ -21,9 +21,9 @@ package com.sk89q.worldedit.regions;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import com.sk89q.worldedit.BlockVector;
-import com.sk89q.worldedit.BlockVector2D;
-import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.math.BlockVector2;
+import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.math.transform.Identity;
 import com.sk89q.worldedit.math.transform.Transform;
 import com.sk89q.worldedit.world.World;
@@ -98,17 +98,17 @@ public class TransformRegion extends AbstractRegion {
     }
 
     @Override
-    public Vector getMinimumPoint() {
-        return transform.apply(region.getMinimumPoint());
+    public BlockVector3 getMinimumPoint() {
+        return transform.apply(region.getMinimumPoint().toVector3()).toBlockPoint();
     }
 
     @Override
-    public Vector getMaximumPoint() {
-        return transform.apply(region.getMaximumPoint());
+    public BlockVector3 getMaximumPoint() {
+        return transform.apply(region.getMaximumPoint().toVector3()).toBlockPoint();
     }
 
     @Override
-    public Vector getCenter() {
+    public Vector3 getCenter() {
         return transform.apply(region.getCenter());
     }
 
@@ -133,50 +133,50 @@ public class TransformRegion extends AbstractRegion {
     }
 
     @Override
-    public void expand(Vector... changes) throws RegionOperationException {
+    public void expand(BlockVector3... changes) throws RegionOperationException {
         throw new RegionOperationException("Can't expand a TransformedRegion");
     }
 
     @Override
-    public void contract(Vector... changes) throws RegionOperationException {
+    public void contract(BlockVector3... changes) throws RegionOperationException {
         throw new RegionOperationException("Can't contract a TransformedRegion");
     }
 
     @Override
-    public void shift(Vector change) throws RegionOperationException {
+    public void shift(BlockVector3 change) throws RegionOperationException {
         throw new RegionOperationException("Can't change a TransformedRegion");
     }
 
     @Override
-    public boolean contains(Vector position) {
-        return region.contains(transform.inverse().apply(position));
+    public boolean contains(BlockVector3 position) {
+        return region.contains(transform.inverse().apply(position.toVector3()).toBlockPoint());
     }
 
     @Override
-    public List<BlockVector2D> polygonize(int maxPoints) {
-        List<BlockVector2D> origPoints = region.polygonize(maxPoints);
-        List<BlockVector2D> transformedPoints = new ArrayList<>();
-        for (BlockVector2D vector : origPoints) {
-            transformedPoints.add(transform.apply(vector.toVector(0)).toVector2D().toBlockVector2D());
+    public List<BlockVector2> polygonize(int maxPoints) {
+        List<BlockVector2> origPoints = region.polygonize(maxPoints);
+        List<BlockVector2> transformedPoints = new ArrayList<>();
+        for (BlockVector2 vector : origPoints) {
+            transformedPoints.add(transform.apply(vector.toVector3(0)).toVector2().toBlockPoint());
         }
         return transformedPoints;
     }
 
     @Override
-    public Iterator<BlockVector> iterator() {
-        final Iterator<BlockVector> it = region.iterator();
+    public Iterator<BlockVector3> iterator() {
+        final Iterator<BlockVector3> it = region.iterator();
 
-        return new Iterator<BlockVector>() {
+        return new Iterator<BlockVector3>() {
             @Override
             public boolean hasNext() {
                 return it.hasNext();
             }
 
             @Override
-            public BlockVector next() {
-                BlockVector next = it.next();
+            public BlockVector3 next() {
+                BlockVector3 next = it.next();
                 if (next != null) {
-                    return transform.apply(next).toBlockVector();
+                    return transform.apply(next.toVector3()).toBlockPoint();
                 } else {
                     return null;
                 }

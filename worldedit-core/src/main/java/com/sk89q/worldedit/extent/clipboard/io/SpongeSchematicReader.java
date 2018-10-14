@@ -31,8 +31,6 @@ import com.sk89q.jnbt.NBTInputStream;
 import com.sk89q.jnbt.NamedTag;
 import com.sk89q.jnbt.ShortTag;
 import com.sk89q.jnbt.Tag;
-import com.sk89q.worldedit.BlockVector;
-import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.extension.input.InputParseException;
@@ -40,6 +38,7 @@ import com.sk89q.worldedit.extension.input.ParserContext;
 import com.sk89q.worldedit.extent.clipboard.BlockArrayClipboard;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.extent.clipboard.io.legacycompat.NBTCompatibilityHandler;
+import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.world.block.BlockState;
@@ -96,7 +95,7 @@ public class SpongeSchematicReader extends NBTSchematicReader {
     }
 
     private Clipboard readVersion1(Map<String, Tag> schematic) throws IOException {
-        Vector origin;
+        BlockVector3 origin;
         Region region;
 
         Map<String, Tag> metadata = requireTag(schematic, "Metadata", CompoundTag.class).getValue();
@@ -110,19 +109,19 @@ public class SpongeSchematicReader extends NBTSchematicReader {
             throw new IOException("Invalid offset specified in schematic.");
         }
 
-        Vector min = new Vector(offsetParts[0], offsetParts[1], offsetParts[2]);
+        BlockVector3 min = new BlockVector3(offsetParts[0], offsetParts[1], offsetParts[2]);
 
         if (metadata.containsKey("WEOffsetX")) {
             // We appear to have WorldEdit Metadata
             int offsetX = requireTag(metadata, "WEOffsetX", IntTag.class).getValue();
             int offsetY = requireTag(metadata, "WEOffsetY", IntTag.class).getValue();
             int offsetZ = requireTag(metadata, "WEOffsetZ", IntTag.class).getValue();
-            Vector offset = new Vector(offsetX, offsetY, offsetZ);
+            BlockVector3 offset = new BlockVector3(offsetX, offsetY, offsetZ);
             origin = min.subtract(offset);
-            region = new CuboidRegion(min, min.add(width, height, length).subtract(Vector.ONE));
+            region = new CuboidRegion(min, min.add(width, height, length).subtract(BlockVector3.ONE));
         } else {
             origin = min;
-            region = new CuboidRegion(origin, origin.add(width, height, length).subtract(Vector.ONE));
+            region = new CuboidRegion(origin, origin.add(width, height, length).subtract(BlockVector3.ONE));
         }
 
         int paletteMax = requireTag(schematic, "PaletteMax", IntTag.class).getValue();
@@ -151,7 +150,7 @@ public class SpongeSchematicReader extends NBTSchematicReader {
 
         byte[] blocks = requireTag(schematic, "BlockData", ByteArrayTag.class).getValue();
 
-        Map<BlockVector, Map<String, Tag>> tileEntitiesMap = new HashMap<>();
+        Map<BlockVector3, Map<String, Tag>> tileEntitiesMap = new HashMap<>();
         try {
             List<Map<String, Tag>> tileEntityTags = requireTag(schematic, "TileEntities", ListTag.class).getValue().stream()
                     .map(tag -> (CompoundTag) tag)
@@ -160,7 +159,7 @@ public class SpongeSchematicReader extends NBTSchematicReader {
 
             for (Map<String, Tag> tileEntity : tileEntityTags) {
                 int[] pos = requireTag(tileEntity, "Pos", IntArrayTag.class).getValue();
-                tileEntitiesMap.put(new BlockVector(pos[0], pos[1], pos[2]).toBlockVector(), tileEntity);
+                tileEntitiesMap.put(new BlockVector3(pos[0], pos[1], pos[2]), tileEntity);
             }
         } catch (Exception e) {
             throw new IOException("Failed to load Tile Entities: " + e.getMessage());
@@ -193,7 +192,7 @@ public class SpongeSchematicReader extends NBTSchematicReader {
             int z = (index % (width * length)) / width;
             int x = (index % (width * length)) % width;
             BlockState state = palette.get(value);
-            BlockVector pt = new BlockVector(x, y, z);
+            BlockVector3 pt = new BlockVector3(x, y, z);
             try {
                 if (tileEntitiesMap.containsKey(pt)) {
                     Map<String, Tag> values = Maps.newHashMap(tileEntitiesMap.get(pt));

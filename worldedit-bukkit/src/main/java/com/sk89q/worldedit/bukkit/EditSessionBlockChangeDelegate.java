@@ -21,8 +21,8 @@ package com.sk89q.worldedit.bukkit;
 
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
-import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.world.block.BlockTypes;
+import com.sk89q.worldedit.math.BlockVector3;
+
 import org.bukkit.BlockChangeDelegate;
 import org.bukkit.block.data.BlockData;
 
@@ -40,7 +40,7 @@ public class EditSessionBlockChangeDelegate implements BlockChangeDelegate {
     @Override
     public boolean setBlockData(int x, int y, int z, BlockData blockData) {
         try {
-            editSession.setBlock(new Vector(x, y, z), BukkitAdapter.adapt(blockData));
+            editSession.setBlock(new BlockVector3(x, y, z), BukkitAdapter.adapt(blockData));
         } catch (MaxChangedBlocksException e) {
             return false;
         }
@@ -49,7 +49,7 @@ public class EditSessionBlockChangeDelegate implements BlockChangeDelegate {
 
     @Override
     public BlockData getBlockData(int x, int y, int z) {
-        return BukkitAdapter.adapt(editSession.getBlock(new Vector(x, y, z)));
+        return BukkitAdapter.adapt(editSession.getBlock(new BlockVector3(x, y, z)));
     }
 
     @Override
@@ -59,7 +59,7 @@ public class EditSessionBlockChangeDelegate implements BlockChangeDelegate {
 
     @Override
     public boolean isEmpty(int x, int y, int z) {
-        return editSession.getBlock(new Vector(x, y, z)).getBlockType().getMaterial().isAir();
+        return editSession.getBlock(new BlockVector3(x, y, z)).getBlockType().getMaterial().isAir();
     }
 
 }

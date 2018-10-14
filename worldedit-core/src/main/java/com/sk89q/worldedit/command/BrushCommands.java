@@ -27,7 +27,6 @@ import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
-import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.command.tool.BrushTool;
@@ -45,6 +44,7 @@ import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.function.mask.BlockTypeMask;
 import com.sk89q.worldedit.function.pattern.BlockPattern;
 import com.sk89q.worldedit.function.pattern.Pattern;
+import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.util.HandSide;
 import com.sk89q.worldedit.util.command.binding.Switch;
@@ -143,7 +143,7 @@ public class BrushCommands {
         ClipboardHolder holder = session.getClipboard();
         Clipboard clipboard = holder.getClipboard();
 
-        Vector size = clipboard.getDimensions();
+        BlockVector3 size = clipboard.getDimensions();
 
         worldEdit.checkMaxBrushRadius(size.getBlockX());
         worldEdit.checkMaxBrushRadius(size.getBlockY());

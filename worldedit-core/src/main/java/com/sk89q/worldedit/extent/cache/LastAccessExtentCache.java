@@ -19,15 +19,15 @@
 
 package com.sk89q.worldedit.extent.cache;
 
-import com.sk89q.worldedit.BlockVector;
-import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.extent.AbstractDelegateExtent;
 import com.sk89q.worldedit.extent.Extent;
+import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.world.block.BlockState;
 
 /**
  * Returns the same cached {@link BlockState} for repeated calls to
- * {@link #getBlock(Vector)} with the same position.
+ * {@link #getBlock(BlockVector3)} with the same position.
  */
 public class LastAccessExtentCache extends AbstractDelegateExtent {
 
@@ -43,23 +43,22 @@ public class LastAccessExtentCache extends AbstractDelegateExtent {
     }
 
     @Override
-    public BlockState getBlock(Vector position) {
-        BlockVector blockVector = position.toBlockVector();
+    public BlockState getBlock(BlockVector3 position) {
         CachedBlock lastBlock = this.lastBlock;
-        if (lastBlock != null && lastBlock.position.equals(blockVector)) {
+        if (lastBlock != null && lastBlock.position.equals(position)) {
             return lastBlock.block;
         } else {
             BlockState block = super.getBlock(position);
-            this.lastBlock = new CachedBlock(blockVector, block);
+            this.lastBlock = new CachedBlock(position, block);
             return block;
         }
     }
 
     private static class CachedBlock {
-        private final BlockVector position;
+        private final BlockVector3 position;
         private final BlockState block;
 
-        private CachedBlock(BlockVector position, BlockState block) {
+        private CachedBlock(BlockVector3 position, BlockState block) {
             this.position = position;
             this.block = block;
         }

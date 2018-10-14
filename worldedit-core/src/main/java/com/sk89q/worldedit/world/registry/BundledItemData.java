@@ -23,7 +23,7 @@ import com.google.common.io.Resources;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.util.gson.VectorAdapter;
 
 import java.io.IOException;
@@ -73,7 +73,7 @@ public class BundledItemData {
      */
     private void loadFromResource() throws IOException {
         GsonBuilder gsonBuilder = new GsonBuilder();
-        gsonBuilder.registerTypeAdapter(Vector.class, new VectorAdapter());
+        gsonBuilder.registerTypeAdapter(Vector3.class, new VectorAdapter());
         Gson gson = gsonBuilder.create();
         URL url = BundledItemData.class.getResource("items.json");
         if (url == null) {

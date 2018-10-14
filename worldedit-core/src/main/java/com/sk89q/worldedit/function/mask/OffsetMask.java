@@ -21,7 +21,7 @@ package com.sk89q.worldedit.function.mask;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.math.BlockVector3;
 
 import javax.annotation.Nullable;
 
@@ -32,7 +32,7 @@ import javax.annotation.Nullable;
 public class OffsetMask extends AbstractMask {
 
     private Mask mask;
-    private Vector offset;
+    private BlockVector3 offset;
 
     /**
      * Create a new instance.
@@ -40,7 +40,7 @@ public class OffsetMask extends AbstractMask {
      * @param mask the mask
      * @param offset the offset
      */
-    public OffsetMask(Mask mask, Vector offset) {
+    public OffsetMask(Mask mask, BlockVector3 offset) {
         checkNotNull(mask);
         checkNotNull(offset);
         this.mask = mask;
@@ -71,7 +71,7 @@ public class OffsetMask extends AbstractMask {
      *
      * @return the offset
      */
-    public Vector getOffset() {
+    public BlockVector3 getOffset() {
         return offset;
     }
 
@@ -80,13 +80,13 @@ public class OffsetMask extends AbstractMask {
      *
      * @param offset the offset
      */
-    public void setOffset(Vector offset) {
+    public void setOffset(BlockVector3 offset) {
         checkNotNull(offset);
         this.offset = offset;
     }
 
     @Override
-    public boolean test(Vector vector) {
+    public boolean test(BlockVector3 vector) {
         return getMask().test(vector.add(offset));
     }
 
@@ -95,7 +95,7 @@ public class OffsetMask extends AbstractMask {
     public Mask2D toMask2D() {
         Mask2D childMask = getMask().toMask2D();
         if (childMask != null) {
-            return new OffsetMask2D(childMask, getOffset().toVector2D());
+            return new OffsetMask2D(childMask, getOffset().toBlockVector2());
         } else {
             return null;
         }

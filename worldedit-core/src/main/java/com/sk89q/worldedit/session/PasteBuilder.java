@@ -21,13 +21,13 @@ package com.sk89q.worldedit.session;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.extent.transform.BlockTransformExtent;
 import com.sk89q.worldedit.function.mask.ExistingBlockMask;
 import com.sk89q.worldedit.function.operation.ForwardExtentCopy;
 import com.sk89q.worldedit.function.operation.Operation;
+import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.transform.Transform;
 
 /**
@@ -39,7 +39,7 @@ public class PasteBuilder {
     private final Transform transform;
     private final Extent targetExtent;
 
-    private Vector to = new Vector();
+    private BlockVector3 to = BlockVector3.ZERO;
     private boolean ignoreAirBlocks;
 
     /**
@@ -62,7 +62,7 @@ public class PasteBuilder {
      * @param to the target location
      * @return this builder instance
      */
-    public PasteBuilder to(Vector to) {
+    public PasteBuilder to(BlockVector3 to) {
         this.to = to;
         return this;
     }

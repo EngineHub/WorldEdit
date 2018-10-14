@@ -21,11 +21,11 @@ package com.sk89q.worldedit.function.generator;
 
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
-import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.function.RegionFunction;
 import com.sk89q.worldedit.function.pattern.BlockPattern;
 import com.sk89q.worldedit.function.pattern.Pattern;
+import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.block.BlockTypes;
@@ -84,12 +84,12 @@ public class GardenPatchGenerator implements RegionFunction {
      * @param basePos the base position
      * @param pos the vine position
      */
-    private void placeVine(Vector basePos, Vector pos) throws MaxChangedBlocksException {
+    private void placeVine(BlockVector3 basePos, BlockVector3 pos) throws MaxChangedBlocksException {
         if (pos.distance(basePos) > 4) return;
         if (!editSession.getBlock(pos).getBlockType().getMaterial().isAir()) return;
 
         for (int i = -1; i > -3; --i) {
-            Vector testPos = pos.add(0, i, 0);
+            BlockVector3 testPos = pos.add(0, i, 0);
             if (editSession.getBlock(testPos).getBlockType().getMaterial().isAir()) {
                 pos = testPos;
             } else {
@@ -102,7 +102,7 @@ public class GardenPatchGenerator implements RegionFunction {
 
         int t = random.nextInt(4);
         int h = random.nextInt(3) - 1;
-        Vector p;
+        BlockVector3 p;
 
         BlockState log = BlockTypes.OAK_LOG.getDefaultState();
 
@@ -158,7 +158,7 @@ public class GardenPatchGenerator implements RegionFunction {
     }
 
     @Override
-    public boolean apply(Vector position) throws WorldEditException {
+    public boolean apply(BlockVector3 position) throws WorldEditException {
         if (!editSession.getBlock(position).getBlockType().getMaterial().isAir()) {
             position = position.add(0, 1, 0);
         }
@@ -198,7 +198,7 @@ public class GardenPatchGenerator implements RegionFunction {
      * @return if block was changed
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
-    private static boolean setBlockIfAir(EditSession session, Vector position, BlockStateHolder block) throws MaxChangedBlocksException {
+    private static boolean setBlockIfAir(EditSession session, BlockVector3 position, BlockStateHolder block) throws MaxChangedBlocksException {
         return session.getBlock(position).getBlockType().getMaterial().isAir() && session.setBlock(position, block);
     }
 

@@ -21,16 +21,15 @@ package com.sk89q.worldedit.regions.selector;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import com.sk89q.worldedit.BlockVector;
-import com.sk89q.worldedit.BlockVector2D;
 import com.sk89q.worldedit.IncompleteRegionException;
 import com.sk89q.worldedit.LocalSession;
-import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.internal.cui.CUIRegion;
 import com.sk89q.worldedit.internal.cui.SelectionMinMaxEvent;
 import com.sk89q.worldedit.internal.cui.SelectionPoint2DEvent;
 import com.sk89q.worldedit.internal.cui.SelectionShapeEvent;
+import com.sk89q.worldedit.math.BlockVector2;
+import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.Polygonal2DRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.RegionSelector;
@@ -48,7 +47,7 @@ import javax.annotation.Nullable;
  */
 public class Polygonal2DRegionSelector implements RegionSelector, CUIRegion {
 
-    private transient BlockVector pos1;
+    private transient BlockVector3 pos1;
     private transient Polygonal2DRegion region;
 
     /**
@@ -91,9 +90,9 @@ public class Polygonal2DRegionSelector implements RegionSelector, CUIRegion {
             final int minY = oldRegion.getMinimumPoint().getBlockY();
             final int maxY = oldRegion.getMaximumPoint().getBlockY();
 
-            List<BlockVector2D> points = oldRegion.polygonize(Integer.MAX_VALUE);
+            List<BlockVector2> points = oldRegion.polygonize(Integer.MAX_VALUE);
 
-            pos1 = points.get(0).toVector(minY).toBlockVector();
+            pos1 = points.get(0).toBlockVector3(minY);
             region = new Polygonal2DRegion(oldRegion.getWorld(), points, minY, maxY);
         }
     }
@@ -106,11 +105,11 @@ public class Polygonal2DRegionSelector implements RegionSelector, CUIRegion {
      * @param minY the minimum Y
      * @param maxY the maximum Y
      */
-    public Polygonal2DRegionSelector(@Nullable World world, List<BlockVector2D> points, int minY, int maxY) {
+    public Polygonal2DRegionSelector(@Nullable World world, List<BlockVector2> points, int minY, int maxY) {
         checkNotNull(points);
         
-        final BlockVector2D pos2D = points.get(0);
-        pos1 = new BlockVector(pos2D.getX(), minY, pos2D.getZ());
+        final BlockVector2 pos2D = points.get(0);
+        pos1 = new BlockVector3(pos2D.getX(), minY, pos2D.getZ());
         region = new Polygonal2DRegion(world, points, minY, maxY);
     }
 
@@ -126,12 +125,12 @@ public class Polygonal2DRegionSelector implements RegionSelector, CUIRegion {
     }
 
     @Override
-    public boolean selectPrimary(Vector position, SelectorLimits limits) {
+    public boolean selectPrimary(BlockVector3 position, SelectorLimits limits) {
         if (position.equals(pos1)) {
             return false;
         }
 
-        pos1 = position.toBlockVector();
+        pos1 = position;
         region = new Polygonal2DRegion(region.getWorld());
         region.addPoint(position);
         region.expandY(position.getBlockY());
@@ -140,11 +139,11 @@ public class Polygonal2DRegionSelector implements RegionSelector, CUIRegion {
     }
 
     @Override
-    public boolean selectSecondary(Vector position, SelectorLimits limits) {
+    public boolean selectSecondary(BlockVector3 position, SelectorLimits limits) {
         if (region.size() > 0) {
-            final List<BlockVector2D> points = region.getPoints();
+            final List<BlockVector2> points = region.getPoints();
 
-            final BlockVector2D lastPoint = points.get(region.size() - 1);
+            final BlockVector2 lastPoint = points.get(region.size() - 1);
             if (lastPoint.getBlockX() == position.getBlockX() && lastPoint.getBlockZ() == position.getBlockZ()) {
                 return false;
             }
@@ -163,7 +162,7 @@ public class Polygonal2DRegionSelector implements RegionSelector, CUIRegion {
     }
 
     @Override
-    public void explainPrimarySelection(Actor player, LocalSession session, Vector pos) {
+    public void explainPrimarySelection(Actor player, LocalSession session, BlockVector3 pos) {
         player.print("Starting a new polygon at " + pos + ".");
 
         session.dispatchCUIEvent(player, new SelectionShapeEvent(getTypeID()));
@@ -172,7 +171,7 @@ public class Polygonal2DRegionSelector implements RegionSelector, CUIRegion {
     }
 
     @Override
-    public void explainSecondarySelection(Actor player, LocalSession session, Vector pos) {
+    public void explainSecondarySelection(Actor player, LocalSession session, BlockVector3 pos) {
         player.print("Added point #" + region.size() + " at " + pos + ".");
 
         session.dispatchCUIEvent(player, new SelectionPoint2DEvent(region.size() - 1, pos, getArea()));
@@ -186,7 +185,7 @@ public class Polygonal2DRegionSelector implements RegionSelector, CUIRegion {
     }
 
     @Override
-    public BlockVector getPrimaryPosition() throws IncompleteRegionException {
+    public BlockVector3 getPrimaryPosition() throws IncompleteRegionException {
         if (pos1 == null) {
             throw new IncompleteRegionException();
         }
@@ -215,8 +214,8 @@ public class Polygonal2DRegionSelector implements RegionSelector, CUIRegion {
 
     @Override
     public void learnChanges() {
-        BlockVector2D pt = region.getPoints().get(0);
-        pos1 = new BlockVector(pt.getBlockX(), region.getMinimumPoint().getBlockY(), pt.getBlockZ());
+        BlockVector2 pt = region.getPoints().get(0);
+        pos1 = new BlockVector3(pt.getBlockX(), region.getMinimumPoint().getBlockY(), pt.getBlockZ());
     }
 
     @Override
@@ -251,7 +250,7 @@ public class Polygonal2DRegionSelector implements RegionSelector, CUIRegion {
 
     @Override
     public void describeCUI(LocalSession session, Actor player) {
-        final List<BlockVector2D> points = region.getPoints();
+        final List<BlockVector2> points = region.getPoints();
         for (int id = 0; id < points.size(); id++) {
             session.dispatchCUIEvent(player, new SelectionPoint2DEvent(id, points.get(id), getArea()));
         }

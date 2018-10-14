@@ -21,10 +21,10 @@ package com.sk89q.worldedit.function.biome;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import com.sk89q.worldedit.Vector2D;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.function.FlatRegionFunction;
+import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.world.biome.BaseBiome;
 
 /**
@@ -49,7 +49,7 @@ public class BiomeReplace implements FlatRegionFunction {
     }
 
     @Override
-    public boolean apply(Vector2D position) throws WorldEditException {
+    public boolean apply(BlockVector2 position) throws WorldEditException {
         return extent.setBiome(position, biome);
     }
 

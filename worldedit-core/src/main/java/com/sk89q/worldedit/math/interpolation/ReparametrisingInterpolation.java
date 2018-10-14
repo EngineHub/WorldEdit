@@ -23,7 +23,7 @@ package com.sk89q.worldedit.math.interpolation;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.math.Vector3;
 
 import java.util.List;
 import java.util.Map.Entry;
@@ -65,7 +65,7 @@ public class ReparametrisingInterpolation implements Interpolation {
     }
 
     @Override
-    public Vector getPosition(double position) {
+    public Vector3 getPosition(double position) {
         if (position > 1)
             return null;
 
@@ -73,7 +73,7 @@ public class ReparametrisingInterpolation implements Interpolation {
     }
 
     @Override
-    public Vector get1stDerivative(double position) {
+    public Vector3 get1stDerivative(double position) {
         if (position > 1)
             return null;
 

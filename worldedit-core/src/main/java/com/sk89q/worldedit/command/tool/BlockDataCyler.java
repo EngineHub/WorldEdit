@@ -27,6 +27,7 @@ import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Platform;
+import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.World;
@@ -54,7 +55,8 @@ public class BlockDataCyler implements DoubleActionBlockTool {
 
         World world = (World) clicked.getExtent();
 
-        BlockState block = world.getBlock(clicked.toVector());
+        BlockVector3 blockPoint = clicked.toVector().toBlockPoint();
+        BlockState block = world.getBlock(blockPoint);
 
         if (!config.allowedDataCycleBlocks.isEmpty()
                 && !player.hasPermission("worldedit.override.data-cycler")
@@ -83,7 +85,7 @@ public class BlockDataCyler implements DoubleActionBlockTool {
                     editSession.disableBuffering();
 
                     try {
-                        editSession.setBlock(clicked.toVector(), newBlock);
+                        editSession.setBlock(blockPoint, newBlock);
                         player.print("Value of " + currentProperty.getName() + " is now " + currentProperty.getValues().get(index).toString());
                     } catch (MaxChangedBlocksException e) {
                         player.printError("Max blocks change limit reached.");
