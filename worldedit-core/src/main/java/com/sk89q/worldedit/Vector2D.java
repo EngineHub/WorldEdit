@@ -19,12 +19,37 @@
 
 package com.sk89q.worldedit;
 
+import com.google.common.collect.ComparisonChain;
 import com.sk89q.worldedit.math.transform.AffineTransform;
+
+import java.util.Comparator;
 
 /**
  * An immutable 2-dimensional vector.
  */
 public class Vector2D {
+
+    /**
+     * A comparator for Vector2Ds that orders the vectors by rows, with x as the
+     * column and z as the row.
+     *
+     * For example, if x is the horizontal axis and z is the vertical axis, it
+     * sorts like so:
+     *
+     * <pre>
+     * 0123
+     * 4567
+     * 90ab
+     * cdef
+     * </pre>
+     */
+    public static final Comparator<Vector2D> COMPARING_GRID_ARRANGEMENT = (a, b) -> {
+        return ComparisonChain.start()
+                .compare(a.getBlockZ(), b.getBlockZ())
+                .compare(a.getBlockX(), b.getBlockX())
+                .result();
+    };
+
     public static final Vector2D ZERO = new Vector2D(0, 0);
     public static final Vector2D UNIT_X = new Vector2D(1, 0);
     public static final Vector2D UNIT_Z = new Vector2D(0, 1);

@@ -21,45 +21,27 @@ package com.sk89q.worldedit.function.operation;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.extent.Extent;
-import com.sk89q.worldedit.world.block.BlockStateHolder;
+import com.sk89q.worldedit.util.LocatedBlock;
 
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
-/**
- * Sets block from an iterator of {@link Map.Entry} containing a
- * {@link BlockVector} as the key and a {@link BaseBlock} as the value.
- */
-public class BlockMapEntryPlacer implements Operation {
+public class SetLocatedBlocks implements Operation {
 
     private final Extent extent;
-    private final Iterator<Map.Entry<BlockVector, BlockStateHolder>> iterator;
+    private final Iterable<LocatedBlock> blocks;
 
-    /**
-     * Create a new instance.
-     *
-     * @param extent the extent to set the blocks on
-     * @param iterator the iterator
-     */
-    public BlockMapEntryPlacer(Extent extent, Iterator<Map.Entry<BlockVector, BlockStateHolder>> iterator) {
-        checkNotNull(extent);
-        checkNotNull(iterator);
-        this.extent = extent;
-        this.iterator = iterator;
+    public SetLocatedBlocks(Extent extent, Iterable<LocatedBlock> blocks) {
+        this.extent = checkNotNull(extent);
+        this.blocks = checkNotNull(blocks);
     }
 
     @Override
     public Operation resume(RunContext run) throws WorldEditException {
-        while (iterator.hasNext()) {
-            Map.Entry<BlockVector, BlockStateHolder> entry = iterator.next();
-            extent.setBlock(entry.getKey(), entry.getValue());
+        for (LocatedBlock block : blocks) {
+            extent.setBlock(block.getLocation(), block.getBlock());
         }
-
         return null;
     }
 

@@ -103,7 +103,7 @@ public class WorldEditBinding extends BindingHelper {
         Player sender = getPlayer(context);
         LocalSession session = worldEdit.getSessionManager().get(sender);
         EditSession editSession = session.createEditSession(sender);
-        editSession.enableQueue();
+        editSession.enableStandardMode();
         context.getContext().getLocals().put(EditSession.class, editSession);
         session.tellVersion(sender); 
         return editSession;
