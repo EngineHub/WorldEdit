@@ -29,9 +29,12 @@ import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
+import com.sk89q.worldedit.world.block.BlockTypes;
 
+import java.util.ArrayDeque;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Queue;
 import java.util.Set;
 
 /**
@@ -40,8 +43,10 @@ import java.util.Set;
 public class FastModeExtent extends AbstractDelegateExtent {
 
     private final World world;
+    private final Queue<BlockVector3> positions = new ArrayDeque<>();
     private final Set<BlockVector2> dirtyChunks = new HashSet<>();
     private boolean enabled = true;
+    private boolean postEditSimulation;
 
     /**
      * Create a new instance with fast mode enabled.
@@ -63,6 +68,9 @@ public class FastModeExtent extends AbstractDelegateExtent {
         checkNotNull(world);
         this.world = world;
         this.enabled = enabled;
+        if (enabled) {
+            this.postEditSimulation = true;
+        }
     }
 
     /**
@@ -83,11 +91,27 @@ public class FastModeExtent extends AbstractDelegateExtent {
         this.enabled = enabled;
     }
 
+    public boolean isPostEditSimulationEnabled() {
+        return postEditSimulation;
+    }
+
+    public void setPostEditSimulationEnabled(boolean enabled) {
+        this.postEditSimulation = enabled;
+    }
+
     @Override
     public boolean setBlock(BlockVector3 location, BlockStateHolder block) throws WorldEditException {
         if (enabled) {
             dirtyChunks.add(BlockVector2.at(location.getBlockX() >> 4, location.getBlockZ() >> 4));
-            return world.setBlock(location, block, false);
+
+            if (world.setBlock(location, block, false)) {
+                if (postEditSimulation) {
+                    positions.offer(location);
+                }
+                return true;
+            }
+
+            return false;
         } else {
             return world.setBlock(location, block, true);
         }
@@ -101,6 +125,16 @@ public class FastModeExtent extends AbstractDelegateExtent {
                 if (!dirtyChunks.isEmpty()) {
                     world.fixAfterFastMode(dirtyChunks);
                 }
+
+                if (postEditSimulation) {
+                    while (run.shouldContinue() && !positions.isEmpty()) {
+                        BlockVector3 position = positions.poll(); // Remove from queue
+                        world.notifyAndLightBlock(position, BlockTypes.AIR.getDefaultState());
+                    }
+
+                    return !positions.isEmpty() ? this : null;
+                }
+
                 return null;
             }
 

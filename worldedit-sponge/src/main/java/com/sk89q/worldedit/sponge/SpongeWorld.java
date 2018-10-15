@@ -41,7 +41,6 @@ import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.item.ItemTypes;
 import com.sk89q.worldedit.world.weather.WeatherType;
 import com.sk89q.worldedit.world.weather.WeatherTypes;
-
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockSnapshot;
 import org.spongepowered.api.block.BlockState;
@@ -161,6 +160,12 @@ public abstract class SpongeWorld extends AbstractWorld {
         }
 
         return true;
+    }
+
+    @Override
+    public boolean notifyAndLightBlock(BlockVector3 position, com.sk89q.worldedit.world.block.BlockState previousType) throws WorldEditException {
+        // TODO Move this to adapter
+        return false;
     }
 
     @Override

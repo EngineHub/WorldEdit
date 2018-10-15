@@ -42,6 +42,7 @@ public interface ChangeSet {
      * @return whether or not the ChangeSet is set to record changes
      */
     boolean isRecordingChanges();
+
     /**
      * Tell the change set whether to record changes or not.
      *

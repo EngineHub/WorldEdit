@@ -170,6 +170,8 @@ public class EditSession implements Extent, AutoCloseable {
     private final Extent bypassHistory;
     private final Extent bypassNone;
 
+    private final boolean useFastModeCorrections;
+
     private Mask oldMask;
 
     /**
@@ -187,12 +189,13 @@ public class EditSession implements Extent, AutoCloseable {
         checkNotNull(event);
 
         this.world = world;
+        this.useFastModeCorrections = false;
 
         if (world != null) {
             Extent extent;
 
             // These extents are ALWAYS used
-            extent = fastModeExtent = new FastModeExtent(world, false);
+            extent = fastModeExtent = new FastModeExtent(world, useFastModeCorrections);
             extent = survivalExtent = new SurvivalModeExtent(extent, world);
             extent = quirkExtent = new BlockQuirkExtent(extent, world);
             extent = chunkLoadingExtent = new ChunkLoadingExtent(extent, world);
@@ -299,14 +302,16 @@ public class EditSession implements Extent, AutoCloseable {
      * @return whether the queue is enabled
      */
     public boolean isQueueEnabled() {
-        return reorderExtent.isEnabled();
+        return !useFastModeCorrections && reorderExtent.isEnabled();
     }
 
     /**
      * Queue certain types of block for better reproduction of those blocks.
      */
     public void enableQueue() {
-        reorderExtent.setEnabled(true);
+        if (!useFastModeCorrections) {
+            reorderExtent.setEnabled(true);
+        }
     }
 
     /**
@@ -361,7 +366,14 @@ public class EditSession implements Extent, AutoCloseable {
      */
     public void setFastMode(boolean enabled) {
         if (fastModeExtent != null) {
-            fastModeExtent.setEnabled(enabled);
+            // If fast mode corrections are enabled, we're using fast mode for
+            // multipass support. Thus, we do not actually ever turn the fast mode
+            // extent off, we instead toggle post edit simulation
+            if (useFastModeCorrections) {
+                fastModeExtent.setPostEditSimulationEnabled(!enabled);
+            } else {
+                fastModeExtent.setEnabled(enabled);
+            }
         }
     }
 
