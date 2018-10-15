@@ -19,7 +19,6 @@
 
 package com.sk89q.worldedit.extent.reorder;
 
-import com.google.common.collect.Iterables;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.Blocks;
 import com.sk89q.worldedit.extent.AbstractDelegateExtent;
@@ -37,6 +36,7 @@ import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.block.BlockTypes;
 
+import java.util.ArrayList;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -50,10 +50,20 @@ import java.util.Set;
  */
 public class MultiStageReorder extends AbstractDelegateExtent implements ReorderingExtent {
 
-    private LocatedBlockList stage1 = new LocatedBlockList();
-    private LocatedBlockList stage2 = new LocatedBlockList();
-    private LocatedBlockList stage3 = new LocatedBlockList();
+    private static final int STAGE_COUNT = 4;
+
+    private List<LocatedBlockList> stages = new ArrayList<>();
+
     private boolean enabled;
+
+    /**
+     * Create a new instance when the re-ordering is enabled.
+     *
+     * @param extent the extent
+     */
+    public MultiStageReorder(Extent extent) {
+        this(extent, true);
+    }
 
     /**
      * Create a new instance.
@@ -64,15 +74,10 @@ public class MultiStageReorder extends AbstractDelegateExtent implements Reorder
     public MultiStageReorder(Extent extent, boolean enabled) {
         super(extent);
         this.enabled = enabled;
-    }
 
-    /**
-     * Create a new instance when the re-ordering is enabled.
-     *
-     * @param extent the extent
-     */
-    public MultiStageReorder(Extent extent) {
-        this(extent, true);
+        for (int i = 0; i < STAGE_COUNT; ++i) {
+            stages.add(new LocatedBlockList());
+        }
     }
 
     /**
@@ -94,58 +99,76 @@ public class MultiStageReorder extends AbstractDelegateExtent implements Reorder
     }
 
     public boolean commitRequired() {
-        return stage1.size() > 0 || stage2.size() > 0 || stage3.size() > 0;
+        return stages.stream().anyMatch(stage -> stage.size() > 0);
+    }
+
+    /**
+     * Gets the stage priority of the block.
+     *
+     * @param block The block
+     * @return The priority
+     */
+    public int getPlacementPriority(BlockStateHolder block) {
+        if (Blocks.shouldPlaceLate(block.getBlockType())) {
+            return 1;
+        } else if (Blocks.shouldPlaceLast(block.getBlockType())) {
+            // Place torches, etc. last
+            return 2;
+        } else if (Blocks.shouldPlaceFinal(block.getBlockType())) {
+            // Place signs, reed, etc even later
+            return 3;
+        } else {
+            return 0;
+        }
     }
 
     @Override
     public boolean setBlock(BlockVector3 location, BlockStateHolder block) throws WorldEditException {
-        BlockState existing = getBlock(location);
-
         if (!enabled) {
             return super.setBlock(location, block);
         }
 
-        if (Blocks.shouldPlaceLast(block.getBlockType())) {
-            // Place torches, etc. last
-            stage2.add(location, block);
-            return !existing.equalsFuzzy(block);
-        } else if (Blocks.shouldPlaceFinal(block.getBlockType())) {
-            // Place signs, reed, etc even later
-            stage3.add(location, block);
-            return !existing.equalsFuzzy(block);
-        } else if (Blocks.shouldPlaceLast(existing.getBlockType())) {
+        BlockState existing = getBlock(location);
+        int priority = getPlacementPriority(block);
+        int srcPriority = getPlacementPriority(existing);
+
+        if (srcPriority == 1 || srcPriority == 2) {
             // Destroy torches, etc. first
             super.setBlock(location, BlockTypes.AIR.getDefaultState());
             return super.setBlock(location, block);
-        } else {
-            stage1.add(location, block);
-            return !existing.equalsFuzzy(block);
         }
+
+        stages.get(priority).add(location, block);
+        return !existing.equalsFuzzy(block);
     }
 
     @Override
     public Operation commitBefore() {
-        return new OperationQueue(
-                new SetLocatedBlocks(
-                        getExtent(),
-                        Iterables.concat(stage1, stage2)),
-                new Stage3Committer());
+        List<Operation> operations = new ArrayList<>();
+        for (int i = 0; i < stages.size() - 1; ++i) {
+            operations.add(new SetLocatedBlocks(getExtent(), stages.get(i)));
+        }
+
+        operations.add(new FinalStageCommitter());
+        return new OperationQueue(operations);
     }
 
-    private class Stage3Committer implements Operation {
+    private class FinalStageCommitter implements Operation {
+        private Extent extent = getExtent();
 
-        @Override
-        public Operation resume(RunContext run) throws WorldEditException {
-            Extent extent = getExtent();
+        private final Set<BlockVector3> blocks = new HashSet<>();
+        private final Map<BlockVector3, BlockStateHolder> blockTypes = new HashMap<>();
 
-            final Set<BlockVector3> blocks = new HashSet<>();
-            final Map<BlockVector3, BlockStateHolder> blockTypes = new HashMap<>();
-            for (LocatedBlock entry : stage3) {
+        public FinalStageCommitter() {
+            for (LocatedBlock entry : stages.get(stages.size() - 1)) {
                 final BlockVector3 pt = entry.getLocation();
                 blocks.add(pt);
                 blockTypes.put(pt, entry.getBlock());
             }
+        }
 
+        @Override
+        public Operation resume(RunContext run) throws WorldEditException {
             while (!blocks.isEmpty()) {
                 BlockVector3 current = blocks.iterator().next();
                 if (!blocks.contains(current)) {
@@ -201,11 +224,14 @@ public class MultiStageReorder extends AbstractDelegateExtent implements Reorder
                 }
             }
 
-            stage1.clear();
-            stage2.clear();
-            stage3.clear();
+            if (blocks.isEmpty()) {
+                for (LocatedBlockList stage : stages) {
+                    stage.clear();
+                }
+                return null;
+            }
 
-            return null;
+            return this;
         }
 
         @Override
