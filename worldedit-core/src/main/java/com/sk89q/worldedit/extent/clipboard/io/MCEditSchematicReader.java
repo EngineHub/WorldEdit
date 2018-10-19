@@ -116,12 +116,12 @@ public class MCEditSchematicReader extends NBTSchematicReader {
             int originX = requireTag(schematic, "WEOriginX", IntTag.class).getValue();
             int originY = requireTag(schematic, "WEOriginY", IntTag.class).getValue();
             int originZ = requireTag(schematic, "WEOriginZ", IntTag.class).getValue();
-            BlockVector3 min = new BlockVector3(originX, originY, originZ);
+            BlockVector3 min = BlockVector3.at(originX, originY, originZ);
 
             int offsetX = requireTag(schematic, "WEOffsetX", IntTag.class).getValue();
             int offsetY = requireTag(schematic, "WEOffsetY", IntTag.class).getValue();
             int offsetZ = requireTag(schematic, "WEOffsetZ", IntTag.class).getValue();
-            BlockVector3 offset = new BlockVector3(offsetX, offsetY, offsetZ);
+            BlockVector3 offset = BlockVector3.at(offsetX, offsetY, offsetZ);
 
             origin = min.subtract(offset);
             region = new CuboidRegion(min, min.add(width, height, length).subtract(BlockVector3.ONE));
@@ -205,7 +205,7 @@ public class MCEditSchematicReader extends NBTSchematicReader {
                 }
             }
 
-            BlockVector3 vec = new BlockVector3(x, y, z);
+            BlockVector3 vec = BlockVector3.at(x, y, z);
             tileEntitiesMap.put(vec, values);
         }
 
@@ -219,7 +219,7 @@ public class MCEditSchematicReader extends NBTSchematicReader {
             for (int y = 0; y < height; ++y) {
                 for (int z = 0; z < length; ++z) {
                     int index = y * width * length + z * width + x;
-                    BlockVector3 pt = new BlockVector3(x, y, z);
+                    BlockVector3 pt = BlockVector3.at(x, y, z);
                     BlockState state = LegacyMapper.getInstance().getBlockFromLegacy(blocks[index], blockData[index]);
 
                     try {

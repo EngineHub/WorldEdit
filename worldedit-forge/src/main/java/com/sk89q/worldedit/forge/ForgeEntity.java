@@ -66,7 +66,7 @@ class ForgeEntity implements Entity {
     public Location getLocation() {
         net.minecraft.entity.Entity entity = entityRef.get();
         if (entity != null) {
-            Vector3 position = new Vector3(entity.posX, entity.posY, entity.posZ);
+            Vector3 position = Vector3.at(entity.posX, entity.posY, entity.posZ);
             float yaw = entity.rotationYaw;
             float pitch = entity.rotationPitch;
 

@@ -61,7 +61,7 @@ public class Location {
      * @param z the Z coordinate
      */
     public Location(Extent extent, double x, double y, double z) {
-        this(extent, new Vector3(x, y, z), Vector3.ZERO);
+        this(extent, Vector3.at(x, y, z), Vector3.ZERO);
     }
 
     /**
@@ -86,7 +86,7 @@ public class Location {
      * @param direction the direction vector
      */
     public Location(Extent extent, double x, double y, double z, Vector3 direction) {
-        this(extent, new Vector3(x, y, z), direction);
+        this(extent, Vector3.at(x, y, z), direction);
     }
 
     /**
@@ -101,7 +101,7 @@ public class Location {
      * @param pitch the pitch, in degrees
      */
     public Location(Extent extent, double x, double y, double z, float yaw, float pitch) {
-        this(extent, new Vector3(x, y, z), yaw, pitch);
+        this(extent, Vector3.at(x, y, z), yaw, pitch);
     }
 
     /**
@@ -211,7 +211,7 @@ public class Location {
         double yaw = Math.toRadians(this.getYaw());
         double pitch = Math.toRadians(this.getPitch());
         double xz = Math.cos(pitch);
-        return new Vector3(
+        return Vector3.at(
                 -xz * Math.sin(yaw),
                 -Math.sin(pitch),
                 xz * Math.cos(yaw));

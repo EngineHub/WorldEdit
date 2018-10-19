@@ -169,7 +169,7 @@ public class BukkitWorld extends AbstractWorld {
         BlockStateHolder[] history = new BlockStateHolder[16 * 16 * (getMaxY() + 1)];
 
         for (BlockVector2 chunk : region.getChunks()) {
-            BlockVector3 min = new BlockVector3(chunk.getBlockX() * 16, 0, chunk.getBlockZ() * 16);
+            BlockVector3 min = BlockVector3.at(chunk.getBlockX() * 16, 0, chunk.getBlockZ() * 16);
 
             // First save all the blocks inside
             for (int x = 0; x < 16; ++x) {

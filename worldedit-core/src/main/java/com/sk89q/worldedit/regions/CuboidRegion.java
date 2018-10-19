@@ -292,7 +292,7 @@ public class CuboidRegion extends AbstractRegion implements FlatRegion {
 
         for (int x = min.getBlockX() >> ChunkStore.CHUNK_SHIFTS; x <= max.getBlockX() >> ChunkStore.CHUNK_SHIFTS; ++x) {
             for (int z = min.getBlockZ() >> ChunkStore.CHUNK_SHIFTS; z <= max.getBlockZ() >> ChunkStore.CHUNK_SHIFTS; ++z) {
-                chunks.add(new BlockVector2(x, z));
+                chunks.add(BlockVector2.at(x, z));
             }
         }
 
@@ -309,7 +309,7 @@ public class CuboidRegion extends AbstractRegion implements FlatRegion {
         for (int x = min.getBlockX() >> ChunkStore.CHUNK_SHIFTS; x <= max.getBlockX() >> ChunkStore.CHUNK_SHIFTS; ++x) {
             for (int z = min.getBlockZ() >> ChunkStore.CHUNK_SHIFTS; z <= max.getBlockZ() >> ChunkStore.CHUNK_SHIFTS; ++z) {
                 for (int y = min.getBlockY() >> ChunkStore.CHUNK_SHIFTS; y <= max.getBlockY() >> ChunkStore.CHUNK_SHIFTS; ++y) {
-                    chunks.add(new BlockVector3(x, y, z));
+                    chunks.add(BlockVector3.at(x, y, z));
                 }
             }
         }
@@ -342,7 +342,7 @@ public class CuboidRegion extends AbstractRegion implements FlatRegion {
             @Override
             public BlockVector3 next() {
                 if (!hasNext()) throw new NoSuchElementException();
-                BlockVector3 answer = new BlockVector3(nextX, nextY, nextZ);
+                BlockVector3 answer = BlockVector3.at(nextX, nextY, nextZ);
                 if (++nextX > max.getBlockX()) {
                     nextX = min.getBlockX();
                     if (++nextY > max.getBlockY()) {
@@ -373,7 +373,7 @@ public class CuboidRegion extends AbstractRegion implements FlatRegion {
             @Override
             public BlockVector2 next() {
                 if (!hasNext()) throw new NoSuchElementException();
-                BlockVector2 answer = new BlockVector2(nextX, nextZ);
+                BlockVector2 answer = BlockVector2.at(nextX, nextZ);
                 if (++nextX > max.getBlockX()) {
                     nextX = min.getBlockX();
                     if (++nextZ > max.getBlockZ()) {

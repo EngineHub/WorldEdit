@@ -65,7 +65,7 @@ public class FlatRegionIterator implements Iterator<BlockVector2>  {
     }
 
     private void forward() {
-        while (hasNext() && !region.contains(new BlockVector3(nextX, y, nextZ))) {
+        while (hasNext() && !region.contains(BlockVector3.at(nextX, y, nextZ))) {
             forwardOne();
         }
     }
@@ -76,7 +76,7 @@ public class FlatRegionIterator implements Iterator<BlockVector2>  {
             throw new NoSuchElementException();
         }
 
-        BlockVector2 answer = new BlockVector2(nextX, nextZ);
+        BlockVector2 answer = BlockVector2.at(nextX, nextZ);
 
         forwardOne();
         forward();

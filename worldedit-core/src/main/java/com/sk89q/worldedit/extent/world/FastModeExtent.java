@@ -86,7 +86,7 @@ public class FastModeExtent extends AbstractDelegateExtent {
     @Override
     public boolean setBlock(BlockVector3 location, BlockStateHolder block) throws WorldEditException {
         if (enabled) {
-            dirtyChunks.add(new BlockVector2(location.getBlockX() >> 4, location.getBlockZ() >> 4));
+            dirtyChunks.add(BlockVector2.at(location.getBlockX() >> 4, location.getBlockZ() >> 4));
             return world.setBlock(location, block, false);
         } else {
             return world.setBlock(location, block, true);

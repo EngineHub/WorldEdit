@@ -249,7 +249,7 @@ public abstract class SpongeWorld extends AbstractWorld {
         List<Entity> entities = new ArrayList<>();
         for (org.spongepowered.api.entity.Entity entity : getWorld().getEntities()) {
             org.spongepowered.api.world.Location<World> loc = entity.getLocation();
-            if (region.contains(new BlockVector3(loc.getX(), loc.getY(), loc.getZ()))) {
+            if (region.contains(BlockVector3.at(loc.getX(), loc.getY(), loc.getZ()))) {
                 entities.add(new SpongeEntity(entity));
             }
         }

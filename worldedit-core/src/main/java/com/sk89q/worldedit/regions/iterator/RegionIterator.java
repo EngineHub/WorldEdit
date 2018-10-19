@@ -61,7 +61,7 @@ public class RegionIterator implements Iterator<BlockVector3> {
     }
 
     private void forward() {
-        while (hasNext() && !region.contains(new BlockVector3(nextX, nextY, nextZ))) {
+        while (hasNext() && !region.contains(BlockVector3.at(nextX, nextY, nextZ))) {
             forwardOne();
         }
     }
@@ -70,7 +70,7 @@ public class RegionIterator implements Iterator<BlockVector3> {
     public BlockVector3 next() {
         if (!hasNext()) throw new java.util.NoSuchElementException();
 
-        BlockVector3 answer = new BlockVector3(nextX, nextY, nextZ);
+        BlockVector3 answer = BlockVector3.at(nextX, nextY, nextZ);
 
         forwardOne();
         forward();

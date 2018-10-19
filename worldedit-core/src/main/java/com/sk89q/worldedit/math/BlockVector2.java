@@ -55,6 +55,26 @@ public final class BlockVector2 {
                 .result();
     };
 
+    public static BlockVector2 at(double x, double z) {
+        return at((int) Math.floor(x), (int) Math.floor(z));
+    }
+
+    public static BlockVector2 at(int x, int z) {
+        switch (x) {
+            case 0:
+                if (z == 0) {
+                    return ZERO;
+                }
+                break;
+            case 1:
+                if (z == 1) {
+                    return ONE;
+                }
+                break;
+        }
+        return new BlockVector2(x, z);
+    }
+
     private final int x, z;
 
     /**
@@ -63,17 +83,7 @@ public final class BlockVector2 {
      * @param x the X coordinate
      * @param z the Z coordinate
      */
-    public BlockVector2(double x, double z) {
-        this((int) Math.floor(x), (int) Math.floor(z));
-    }
-
-    /**
-     * Construct an instance.
-     *
-     * @param x the X coordinate
-     * @param z the Z coordinate
-     */
-    public BlockVector2(int x, int z) {
+    private BlockVector2(int x, int z) {
         this.x = x;
         this.z = z;
     }
@@ -103,7 +113,7 @@ public final class BlockVector2 {
      * @return a new vector
      */
     public BlockVector2 withX(int x) {
-        return new BlockVector2(x, z);
+        return BlockVector2.at(x, z);
     }
 
     /**
@@ -131,7 +141,7 @@ public final class BlockVector2 {
      * @return a new vector
      */
     public BlockVector2 withZ(int z) {
-        return new BlockVector2(x, z);
+        return BlockVector2.at(x, z);
     }
 
     /**
@@ -152,7 +162,7 @@ public final class BlockVector2 {
      * @return a new vector
      */
     public BlockVector2 add(int x, int z) {
-        return new BlockVector2(this.x + x, this.z + z);
+        return BlockVector2.at(this.x + x, this.z + z);
     }
 
     /**
@@ -170,7 +180,7 @@ public final class BlockVector2 {
             newZ += other.z;
         }
 
-        return new BlockVector2(newX, newZ);
+        return BlockVector2.at(newX, newZ);
     }
 
     /**
@@ -193,7 +203,7 @@ public final class BlockVector2 {
      * @return a new vector
      */
     public BlockVector2 subtract(int x, int z) {
-        return new BlockVector2(this.x - x, this.z - z);
+        return BlockVector2.at(this.x - x, this.z - z);
     }
 
     /**
@@ -211,7 +221,7 @@ public final class BlockVector2 {
             newZ -= other.z;
         }
 
-        return new BlockVector2(newX, newZ);
+        return BlockVector2.at(newX, newZ);
     }
 
     /**
@@ -232,7 +242,7 @@ public final class BlockVector2 {
      * @return a new vector
      */
     public BlockVector2 multiply(int x, int z) {
-        return new BlockVector2(this.x * x, this.z * z);
+        return BlockVector2.at(this.x * x, this.z * z);
     }
 
     /**
@@ -249,7 +259,7 @@ public final class BlockVector2 {
             newZ *= other.z;
         }
 
-        return new BlockVector2(newX, newZ);
+        return BlockVector2.at(newX, newZ);
     }
 
     /**
@@ -280,7 +290,7 @@ public final class BlockVector2 {
      * @return a new vector
      */
     public BlockVector2 divide(int x, int z) {
-        return new BlockVector2(this.x / x, this.z / z);
+        return BlockVector2.at(this.x / x, this.z / z);
     }
 
     /**
@@ -343,7 +353,7 @@ public final class BlockVector2 {
         double len = length();
         double x = this.x / len;
         double z = this.z / len;
-        return new BlockVector2(x, z);
+        return BlockVector2.at(x, z);
     }
 
     /**
@@ -407,7 +417,7 @@ public final class BlockVector2 {
      * @return a new vector
      */
     public BlockVector2 abs() {
-        return new BlockVector2(Math.abs(x), Math.abs(z));
+        return BlockVector2.at(Math.abs(x), Math.abs(z));
     }
 
     /**
@@ -429,7 +439,7 @@ public final class BlockVector2 {
         double sin = Math.sin(angle);
         double x2 = x * cos - z * sin;
         double z2 = x * sin + z * cos;
-        return new BlockVector2(
+        return BlockVector2.at(
                 x2 + aboutX + translateX,
                 z2 + aboutZ + translateZ);
     }
@@ -461,7 +471,7 @@ public final class BlockVector2 {
     }
 
     public Vector2 toVector2() {
-        return new Vector2(x, z);
+        return Vector2.at(x, z);
     }
 
     /**
@@ -480,7 +490,7 @@ public final class BlockVector2 {
      * @return a new vector
      */
     public Vector3 toVector3(double y) {
-        return new Vector3(x, y, z);
+        return Vector3.at(x, y, z);
     }
 
     /**
@@ -499,7 +509,7 @@ public final class BlockVector2 {
      * @return a new vector
      */
     public BlockVector3 toBlockVector3(int y) {
-        return new BlockVector3(x, y, z);
+        return BlockVector3.at(x, y, z);
     }
 
     @Override

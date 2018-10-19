@@ -29,27 +29,27 @@ import javax.annotation.Nullable;
  */
 public enum Direction {
 
-    NORTH(new Vector3(0, 0, -1), Flag.CARDINAL),
-    EAST(new Vector3(1, 0, 0), Flag.CARDINAL),
-    SOUTH(new Vector3(0, 0, 1), Flag.CARDINAL),
-    WEST(new Vector3(-1, 0, 0), Flag.CARDINAL),
+    NORTH(Vector3.at(0, 0, -1), Flag.CARDINAL),
+    EAST(Vector3.at(1, 0, 0), Flag.CARDINAL),
+    SOUTH(Vector3.at(0, 0, 1), Flag.CARDINAL),
+    WEST(Vector3.at(-1, 0, 0), Flag.CARDINAL),
 
-    UP(new Vector3(0, 1, 0), Flag.UPRIGHT),
-    DOWN(new Vector3(0, -1, 0), Flag.UPRIGHT),
+    UP(Vector3.at(0, 1, 0), Flag.UPRIGHT),
+    DOWN(Vector3.at(0, -1, 0), Flag.UPRIGHT),
 
-    NORTHEAST(new Vector3(1, 0, -1), Flag.ORDINAL),
-    NORTHWEST(new Vector3(-1, 0, -1), Flag.ORDINAL),
-    SOUTHEAST(new Vector3(1, 0, 1), Flag.ORDINAL),
-    SOUTHWEST(new Vector3(-1, 0, 1), Flag.ORDINAL),
+    NORTHEAST(Vector3.at(1, 0, -1), Flag.ORDINAL),
+    NORTHWEST(Vector3.at(-1, 0, -1), Flag.ORDINAL),
+    SOUTHEAST(Vector3.at(1, 0, 1), Flag.ORDINAL),
+    SOUTHWEST(Vector3.at(-1, 0, 1), Flag.ORDINAL),
 
-    WEST_NORTHWEST(new Vector3(-Math.cos(Math.PI / 8), 0, -Math.sin(Math.PI / 8)), Flag.SECONDARY_ORDINAL),
-    WEST_SOUTHWEST(new Vector3(-Math.cos(Math.PI / 8), 0, Math.sin(Math.PI / 8)), Flag.SECONDARY_ORDINAL),
-    NORTH_NORTHWEST(new Vector3(-Math.sin(Math.PI / 8), 0, -Math.cos(Math.PI / 8)), Flag.SECONDARY_ORDINAL),
-    NORTH_NORTHEAST(new Vector3(Math.sin(Math.PI / 8), 0, -Math.cos(Math.PI / 8)), Flag.SECONDARY_ORDINAL),
-    EAST_NORTHEAST(new Vector3(Math.cos(Math.PI / 8), 0, -Math.sin(Math.PI / 8)), Flag.SECONDARY_ORDINAL),
-    EAST_SOUTHEAST(new Vector3(Math.cos(Math.PI / 8), 0, Math.sin(Math.PI / 8)), Flag.SECONDARY_ORDINAL),
-    SOUTH_SOUTHEAST(new Vector3(Math.sin(Math.PI / 8), 0, Math.cos(Math.PI / 8)), Flag.SECONDARY_ORDINAL),
-    SOUTH_SOUTHWEST(new Vector3(-Math.sin(Math.PI / 8), 0, Math.cos(Math.PI / 8)), Flag.SECONDARY_ORDINAL);
+    WEST_NORTHWEST(Vector3.at(-Math.cos(Math.PI / 8), 0, -Math.sin(Math.PI / 8)), Flag.SECONDARY_ORDINAL),
+    WEST_SOUTHWEST(Vector3.at(-Math.cos(Math.PI / 8), 0, Math.sin(Math.PI / 8)), Flag.SECONDARY_ORDINAL),
+    NORTH_NORTHWEST(Vector3.at(-Math.sin(Math.PI / 8), 0, -Math.cos(Math.PI / 8)), Flag.SECONDARY_ORDINAL),
+    NORTH_NORTHEAST(Vector3.at(Math.sin(Math.PI / 8), 0, -Math.cos(Math.PI / 8)), Flag.SECONDARY_ORDINAL),
+    EAST_NORTHEAST(Vector3.at(Math.cos(Math.PI / 8), 0, -Math.sin(Math.PI / 8)), Flag.SECONDARY_ORDINAL),
+    EAST_SOUTHEAST(Vector3.at(Math.cos(Math.PI / 8), 0, Math.sin(Math.PI / 8)), Flag.SECONDARY_ORDINAL),
+    SOUTH_SOUTHEAST(Vector3.at(Math.sin(Math.PI / 8), 0, Math.cos(Math.PI / 8)), Flag.SECONDARY_ORDINAL),
+    SOUTH_SOUTHWEST(Vector3.at(-Math.sin(Math.PI / 8), 0, Math.cos(Math.PI / 8)), Flag.SECONDARY_ORDINAL);
 
     private final Vector3 direction;
     private final int flags;

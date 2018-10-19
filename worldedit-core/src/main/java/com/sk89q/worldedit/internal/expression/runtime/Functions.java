@@ -392,7 +392,7 @@ public final class Functions {
         } catch (IllegalArgumentException e) {
             throw new EvaluationException(0, "Perlin noise error: " + e.getMessage());
         }
-        return perlin.noise(new Vector3(x.getValue(), y.getValue(), z.getValue()));
+        return perlin.noise(Vector3.at(x.getValue(), y.getValue(), z.getValue()));
     }
 
     private static final ThreadLocal<VoronoiNoise> localVoronoi = ThreadLocal.withInitial(VoronoiNoise::new);
@@ -405,7 +405,7 @@ public final class Functions {
         } catch (IllegalArgumentException e) {
             throw new EvaluationException(0, "Voronoi error: " + e.getMessage());
         }
-        return voronoi.noise(new Vector3(x.getValue(), y.getValue(), z.getValue()));
+        return voronoi.noise(Vector3.at(x.getValue(), y.getValue(), z.getValue()));
     }
 
     private static final ThreadLocal<RidgedMultiFractalNoise> localRidgedMulti = ThreadLocal.withInitial(RidgedMultiFractalNoise::new);
@@ -419,7 +419,7 @@ public final class Functions {
         } catch (IllegalArgumentException e) {
             throw new EvaluationException(0, "Ridged multi error: " + e.getMessage());
         }
-        return ridgedMulti.noise(new Vector3(x.getValue(), y.getValue(), z.getValue()));
+        return ridgedMulti.noise(Vector3.at(x.getValue(), y.getValue(), z.getValue()));
     }
 
     private static double queryInternal(RValue type, RValue data, double typeId, double dataValue) throws EvaluationException {

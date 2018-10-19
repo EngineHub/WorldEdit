@@ -25,11 +25,28 @@ import com.sk89q.worldedit.math.transform.AffineTransform;
  * An immutable 2-dimensional vector.
  */
 public final class Vector2 {
-    
+
     public static final Vector2 ZERO = new Vector2(0, 0);
     public static final Vector2 UNIT_X = new Vector2(1, 0);
     public static final Vector2 UNIT_Z = new Vector2(0, 1);
     public static final Vector2 ONE = new Vector2(1, 1);
+
+    public static Vector2 at(double x, double z) {
+        int xTrunc = (int) x;
+        switch (xTrunc) {
+            case 0:
+                if (x == 0 && z == 0) {
+                    return ZERO;
+                }
+                break;
+            case 1:
+                if (x == 1 && z == 1) {
+                    return ONE;
+                }
+                break;
+        }
+        return new Vector2(x, z);
+    }
 
     private final double x, z;
 
@@ -39,19 +56,9 @@ public final class Vector2 {
      * @param x the X coordinate
      * @param z the Z coordinate
      */
-    public Vector2(double x, double z) {
+    private Vector2(double x, double z) {
         this.x = x;
         this.z = z;
-    }
-
-    /**
-     * Copy another vector.
-     *
-     * @param other the other vector
-     */
-    public Vector2(Vector2 other) {
-        this.x = other.x;
-        this.z = other.z;
     }
 
     /**
@@ -70,7 +77,7 @@ public final class Vector2 {
      * @return a new vector
      */
     public Vector2 withX(double x) {
-        return new Vector2(x, z);
+        return Vector2.at(x, z);
     }
 
     /**
@@ -89,7 +96,7 @@ public final class Vector2 {
      * @return a new vector
      */
     public Vector2 withZ(double z) {
-        return new Vector2(x, z);
+        return Vector2.at(x, z);
     }
 
     /**
@@ -110,7 +117,7 @@ public final class Vector2 {
      * @return a new vector
      */
     public Vector2 add(double x, double z) {
-        return new Vector2(this.x + x, this.z + z);
+        return Vector2.at(this.x + x, this.z + z);
     }
 
     /**
@@ -128,7 +135,7 @@ public final class Vector2 {
             newZ += other.z;
         }
 
-        return new Vector2(newX, newZ);
+        return Vector2.at(newX, newZ);
     }
 
     /**
@@ -151,7 +158,7 @@ public final class Vector2 {
      * @return a new vector
      */
     public Vector2 subtract(double x, double z) {
-        return new Vector2(this.x - x, this.z - z);
+        return Vector2.at(this.x - x, this.z - z);
     }
 
     /**
@@ -169,7 +176,7 @@ public final class Vector2 {
             newZ -= other.z;
         }
 
-        return new Vector2(newX, newZ);
+        return Vector2.at(newX, newZ);
     }
 
     /**
@@ -190,7 +197,7 @@ public final class Vector2 {
      * @return a new vector
      */
     public Vector2 multiply(double x, double z) {
-        return new Vector2(this.x * x, this.z * z);
+        return Vector2.at(this.x * x, this.z * z);
     }
 
     /**
@@ -207,7 +214,7 @@ public final class Vector2 {
             newZ *= other.z;
         }
 
-        return new Vector2(newX, newZ);
+        return Vector2.at(newX, newZ);
     }
 
     /**
@@ -238,7 +245,7 @@ public final class Vector2 {
      * @return a new vector
      */
     public Vector2 divide(double x, double z) {
-        return new Vector2(this.x / x, this.z / z);
+        return Vector2.at(this.x / x, this.z / z);
     }
 
     /**
@@ -329,7 +336,7 @@ public final class Vector2 {
      * @return a new vector
      */
     public Vector2 floor() {
-        return new Vector2(Math.floor(x), Math.floor(z));
+        return Vector2.at(Math.floor(x), Math.floor(z));
     }
 
     /**
@@ -338,7 +345,7 @@ public final class Vector2 {
      * @return a new vector
      */
     public Vector2 ceil() {
-        return new Vector2(Math.ceil(x), Math.ceil(z));
+        return Vector2.at(Math.ceil(x), Math.ceil(z));
     }
 
     /**
@@ -349,7 +356,7 @@ public final class Vector2 {
      * @return a new vector
      */
     public Vector2 round() {
-        return new Vector2(Math.floor(x + 0.5), Math.floor(z + 0.5));
+        return Vector2.at(Math.floor(x + 0.5), Math.floor(z + 0.5));
     }
 
     /**
@@ -359,7 +366,7 @@ public final class Vector2 {
      * @return a new vector
      */
     public Vector2 abs() {
-        return new Vector2(Math.abs(x), Math.abs(z));
+        return Vector2.at(Math.abs(x), Math.abs(z));
     }
 
     /**
@@ -413,7 +420,7 @@ public final class Vector2 {
     }
     
     public static BlockVector2 toBlockPoint(double x, double z) {
-        return new BlockVector2(x, z);
+        return BlockVector2.at(x, z);
     }
 
     /**
@@ -441,7 +448,7 @@ public final class Vector2 {
      * @return a new vector
      */
     public Vector3 toVector3(double y) {
-        return new Vector3(x, y, z);
+        return Vector3.at(x, y, z);
     }
 
     @Override

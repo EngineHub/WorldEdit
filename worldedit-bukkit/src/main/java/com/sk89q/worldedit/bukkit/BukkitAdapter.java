@@ -240,7 +240,7 @@ public class BukkitAdapter {
      */
     public static Vector3 asVector(org.bukkit.Location location) {
         checkNotNull(location);
-        return new Vector3(location.getX(), location.getY(), location.getZ());
+        return Vector3.at(location.getX(), location.getY(), location.getZ());
     }
 
     /**
@@ -251,7 +251,7 @@ public class BukkitAdapter {
      */
     public static BlockVector3 asBlockVector(org.bukkit.Location location) {
         checkNotNull(location);
-        return new BlockVector3(location.getX(), location.getY(), location.getZ());
+        return BlockVector3.at(location.getX(), location.getY(), location.getZ());
     }
 
     /**

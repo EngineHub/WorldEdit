@@ -256,7 +256,7 @@ public class CylinderRegion extends AbstractRegion implements FlatRegion {
     public void contract(BlockVector3... changes) throws RegionOperationException {
         center = center.subtract(calculateDiff2D(changes));
         Vector2 newRadius = radius.subtract(calculateChanges2D(changes).toVector2());
-        radius = new Vector2(1.5, 1.5).getMaximum(newRadius);
+        radius = Vector2.at(1.5, 1.5).getMaximum(newRadius);
         for (BlockVector3 change : changes) {
             int height = maxY - minY;
             int changeY = change.getBlockY();
@@ -358,7 +358,7 @@ public class CylinderRegion extends AbstractRegion implements FlatRegion {
     public static CylinderRegion createRadius(Extent extent, BlockVector3 center, double radius) {
         checkNotNull(extent);
         checkNotNull(center);
-        Vector2 radiusVec = new Vector2(radius, radius);
+        Vector2 radiusVec = Vector2.at(radius, radius);
         int minY = extent.getMinimumPoint().getBlockY();
         int maxY = extent.getMaximumPoint().getBlockY();
         return new CylinderRegion(center, radiusVec, minY, maxY);

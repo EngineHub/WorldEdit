@@ -169,7 +169,7 @@ public final class NBTUtils {
      */
     public static Vector3 toVector(ListTag listTag) {
         checkNotNull(listTag);
-        return new Vector3(listTag.asDouble(0), listTag.asDouble(1), listTag.asDouble(2));
+        return Vector3.at(listTag.asDouble(0), listTag.asDouble(1), listTag.asDouble(2));
     }
 
     /**

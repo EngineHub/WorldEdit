@@ -175,7 +175,7 @@ public class BukkitPlayer extends AbstractPlayerActor {
             return;
         }
 
-        setPosition(new Vector3(x + 0.5, y, z + 0.5));
+        setPosition(Vector3.at(x + 0.5, y, z + 0.5));
         player.setFlying(true);
     }
 

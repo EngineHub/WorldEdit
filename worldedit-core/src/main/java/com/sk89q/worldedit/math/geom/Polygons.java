@@ -53,7 +53,7 @@ public final class Polygons {
         final List<BlockVector2> points = new ArrayList<>(nPoints);
         for (int i = 0; i < nPoints; ++i) {
             double angle = i * (2.0 * Math.PI) / nPoints;
-            final Vector2 pos = new Vector2(Math.cos(angle), Math.sin(angle));
+            final Vector2 pos = Vector2.at(Math.cos(angle), Math.sin(angle));
             final BlockVector2 blockVector2D = pos.multiply(radius).toBlockPoint().add(center);
             points.add(blockVector2D);
         }

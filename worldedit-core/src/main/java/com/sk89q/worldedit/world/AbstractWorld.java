@@ -114,12 +114,12 @@ public abstract class AbstractWorld implements World {
 
     @Override
     public BlockVector3 getMinimumPoint() {
-        return new BlockVector3(-30000000, 0, -30000000);
+        return BlockVector3.at(-30000000, 0, -30000000);
     }
 
     @Override
     public BlockVector3 getMaximumPoint() {
-        return new BlockVector3(30000000, 255, 30000000);
+        return BlockVector3.at(30000000, 255, 30000000);
     }
 
     @Override

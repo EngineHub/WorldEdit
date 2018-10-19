@@ -91,10 +91,10 @@ public abstract class AbstractRegion implements Region {
 
         final List<BlockVector2> points = new ArrayList<>(4);
 
-        points.add(new BlockVector2(min.getX(), min.getZ()));
-        points.add(new BlockVector2(min.getX(), max.getZ()));
-        points.add(new BlockVector2(max.getX(), max.getZ()));
-        points.add(new BlockVector2(max.getX(), min.getZ()));
+        points.add(BlockVector2.at(min.getX(), min.getZ()));
+        points.add(BlockVector2.at(min.getX(), max.getZ()));
+        points.add(BlockVector2.at(max.getX(), max.getZ()));
+        points.add(BlockVector2.at(max.getX(), min.getZ()));
 
         return points;
     }
@@ -169,11 +169,11 @@ public abstract class AbstractRegion implements Region {
 
         for (int x = min.getBlockX(); x <= max.getBlockX(); ++x) {
             for (int z = min.getBlockZ(); z <= max.getBlockZ(); ++z) {
-                if (!contains(new BlockVector3(x, minY, z))) {
+                if (!contains(BlockVector3.at(x, minY, z))) {
                     continue;
                 }
 
-                chunks.add(new BlockVector2(
+                chunks.add(BlockVector2.at(
                     x >> ChunkStore.CHUNK_SHIFTS,
                     z >> ChunkStore.CHUNK_SHIFTS
                 ));
@@ -193,11 +193,11 @@ public abstract class AbstractRegion implements Region {
         for (int x = min.getBlockX(); x <= max.getBlockX(); ++x) {
             for (int y = min.getBlockY(); y <= max.getBlockY(); ++y) {
                 for (int z = min.getBlockZ(); z <= max.getBlockZ(); ++z) {
-                    if (!contains(new BlockVector3(x, y, z))) {
+                    if (!contains(BlockVector3.at(x, y, z))) {
                         continue;
                     }
 
-                    chunks.add(new BlockVector3(
+                    chunks.add(BlockVector3.at(
                         x >> ChunkStore.CHUNK_SHIFTS,
                         y >> ChunkStore.CHUNK_SHIFTS,
                         z >> ChunkStore.CHUNK_SHIFTS

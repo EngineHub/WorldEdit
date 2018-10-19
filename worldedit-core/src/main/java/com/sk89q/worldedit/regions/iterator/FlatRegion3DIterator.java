@@ -68,7 +68,7 @@ public class FlatRegion3DIterator implements Iterator<BlockVector3> {
             throw new NoSuchElementException();
         }
 
-        BlockVector3 current = new BlockVector3(next2D.getBlockX(), nextY, next2D.getBlockZ());
+        BlockVector3 current = BlockVector3.at(next2D.getBlockX(), nextY, next2D.getBlockZ());
         if (nextY < maxY) {
             nextY++;
         } else if (flatIterator.hasNext()) {

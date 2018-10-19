@@ -77,7 +77,7 @@ public class ChunkBatchingExtent extends AbstractDelegateExtent {
         if (!enabled) {
             return getExtent().setBlock(location, block);
         }
-        BlockVector2 chunkPos = new BlockVector2(location.getBlockX() >> 4, location.getBlockZ() >> 4);
+        BlockVector2 chunkPos = BlockVector2.at(location.getBlockX() >> 4, location.getBlockZ() >> 4);
         batches.computeIfAbsent(chunkPos, k -> new LocatedBlockList()).add(location, block);
         return true;
     }

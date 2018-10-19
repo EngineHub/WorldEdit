@@ -35,7 +35,7 @@ public class RegionShape extends ArbitraryShape {
 
     @Override
     protected BlockStateHolder getMaterial(int x, int y, int z, BlockStateHolder defaultMaterial) {
-        if (!this.extent.contains(new BlockVector3(x, y, z))) {
+        if (!this.extent.contains(BlockVector3.at(x, y, z))) {
             return null;
         }
 

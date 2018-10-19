@@ -59,7 +59,7 @@ public class SphereRegionSelector extends EllipsoidRegionSelector {
         super(oldSelector);
         final Vector3 radius = region.getRadius();
         final double radiusScalar = Math.max(Math.max(radius.getX(), radius.getY()), radius.getZ());
-        region.setRadius(new Vector3(radiusScalar, radiusScalar, radiusScalar));
+        region.setRadius(Vector3.at(radiusScalar, radiusScalar, radiusScalar));
     }
 
     /**
@@ -70,7 +70,7 @@ public class SphereRegionSelector extends EllipsoidRegionSelector {
      * @param radius the radius
      */
     public SphereRegionSelector(@Nullable World world, BlockVector3 center, int radius) {
-        super(world, center, new Vector3(radius, radius, radius));
+        super(world, center, Vector3.at(radius, radius, radius));
     }
 
     @Override
@@ -80,7 +80,7 @@ public class SphereRegionSelector extends EllipsoidRegionSelector {
         }
 
         final double radiusScalar = Math.ceil(position.toVector3().distance(region.getCenter()));
-        region.setRadius(new Vector3(radiusScalar, radiusScalar, radiusScalar));
+        region.setRadius(Vector3.at(radiusScalar, radiusScalar, radiusScalar));
 
         return true;
     }

@@ -109,14 +109,14 @@ public class SpongeSchematicReader extends NBTSchematicReader {
             throw new IOException("Invalid offset specified in schematic.");
         }
 
-        BlockVector3 min = new BlockVector3(offsetParts[0], offsetParts[1], offsetParts[2]);
+        BlockVector3 min = BlockVector3.at(offsetParts[0], offsetParts[1], offsetParts[2]);
 
         if (metadata.containsKey("WEOffsetX")) {
             // We appear to have WorldEdit Metadata
             int offsetX = requireTag(metadata, "WEOffsetX", IntTag.class).getValue();
             int offsetY = requireTag(metadata, "WEOffsetY", IntTag.class).getValue();
             int offsetZ = requireTag(metadata, "WEOffsetZ", IntTag.class).getValue();
-            BlockVector3 offset = new BlockVector3(offsetX, offsetY, offsetZ);
+            BlockVector3 offset = BlockVector3.at(offsetX, offsetY, offsetZ);
             origin = min.subtract(offset);
             region = new CuboidRegion(min, min.add(width, height, length).subtract(BlockVector3.ONE));
         } else {
@@ -159,7 +159,7 @@ public class SpongeSchematicReader extends NBTSchematicReader {
 
             for (Map<String, Tag> tileEntity : tileEntityTags) {
                 int[] pos = requireTag(tileEntity, "Pos", IntArrayTag.class).getValue();
-                tileEntitiesMap.put(new BlockVector3(pos[0], pos[1], pos[2]), tileEntity);
+                tileEntitiesMap.put(BlockVector3.at(pos[0], pos[1], pos[2]), tileEntity);
             }
         } catch (Exception e) {
             throw new IOException("Failed to load Tile Entities: " + e.getMessage());
@@ -192,7 +192,7 @@ public class SpongeSchematicReader extends NBTSchematicReader {
             int z = (index % (width * length)) / width;
             int x = (index % (width * length)) % width;
             BlockState state = palette.get(value);
-            BlockVector3 pt = new BlockVector3(x, y, z);
+            BlockVector3 pt = BlockVector3.at(x, y, z);
             try {
                 if (tileEntitiesMap.containsKey(pt)) {
                     Map<String, Tag> values = Maps.newHashMap(tileEntitiesMap.get(pt));

@@ -662,7 +662,7 @@ public class LocalSession {
         if (block != null) {
             // If it's null, we don't need to do anything. The old was already removed.
             Map<String, Tag> tags = block.getNbtData().getValue();
-            cuiTemporaryBlock = new BlockVector3(
+            cuiTemporaryBlock = BlockVector3.at(
                     ((IntTag) tags.get("x")).getValue(),
                     ((IntTag) tags.get("y")).getValue(),
                     ((IntTag) tags.get("z")).getValue()

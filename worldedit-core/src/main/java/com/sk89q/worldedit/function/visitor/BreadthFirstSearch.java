@@ -71,7 +71,7 @@ public abstract class BreadthFirstSearch implements Operation {
      * <p>Directions are {@link BlockVector3}s that determine
      * what adjacent points area available. Vectors should not be
      * unit vectors. An example of a valid direction is
-     * {@code new BlockVector3(1, 0, 1)}.</p>
+     * {@code BlockVector3.at(1, 0, 1)}.</p>
      *
      * <p>The list of directions can be cleared.</p>
      *
@@ -85,22 +85,22 @@ public abstract class BreadthFirstSearch implements Operation {
      * Add the directions along the axes as directions to visit.
      */
     protected void addAxes() {
-        directions.add(new BlockVector3(0, -1, 0));
-        directions.add(new BlockVector3(0, 1, 0));
-        directions.add(new BlockVector3(-1, 0, 0));
-        directions.add(new BlockVector3(1, 0, 0));
-        directions.add(new BlockVector3(0, 0, -1));
-        directions.add(new BlockVector3(0, 0, 1));
+        directions.add(BlockVector3.at(0, -1, 0));
+        directions.add(BlockVector3.at(0, 1, 0));
+        directions.add(BlockVector3.at(-1, 0, 0));
+        directions.add(BlockVector3.at(1, 0, 0));
+        directions.add(BlockVector3.at(0, 0, -1));
+        directions.add(BlockVector3.at(0, 0, 1));
     }
 
     /**
      * Add the diagonal directions as directions to visit.
      */
     protected void addDiagonal() {
-        directions.add(new BlockVector3(1, 0, 1));
-        directions.add(new BlockVector3(-1, 0, -1));
-        directions.add(new BlockVector3(1, 0, -1));
-        directions.add(new BlockVector3(-1, 0, 1));
+        directions.add(BlockVector3.at(1, 0, 1));
+        directions.add(BlockVector3.at(-1, 0, -1));
+        directions.add(BlockVector3.at(1, 0, -1));
+        directions.add(BlockVector3.at(-1, 0, 1));
     }
 
     /**

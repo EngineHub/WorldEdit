@@ -44,6 +44,6 @@ public class VectorAdapter implements JsonDeserializer<Vector3> {
         double y = jsonArray.get(1).getAsDouble();
         double z = jsonArray.get(2).getAsDouble();
 
-        return new Vector3(x, y, z);
+        return Vector3.at(x, y, z);
     }
 }

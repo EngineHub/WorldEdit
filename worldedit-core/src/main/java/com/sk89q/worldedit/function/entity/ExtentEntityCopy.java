@@ -135,7 +135,7 @@ public class ExtentEntityCopy implements EntityFunction {
             boolean hasFacing = tag.containsKey("Facing");
 
             if (hasTilePosition) {
-                Vector3 tilePosition = new Vector3(tag.asInt("TileX"), tag.asInt("TileY"), tag.asInt("TileZ"));
+                Vector3 tilePosition = Vector3.at(tag.asInt("TileX"), tag.asInt("TileY"), tag.asInt("TileZ"));
                 BlockVector3 newTilePosition = transform.apply(tilePosition.subtract(from)).add(to).toBlockPoint();
 
                 CompoundTagBuilder builder = tag.createBuilder()

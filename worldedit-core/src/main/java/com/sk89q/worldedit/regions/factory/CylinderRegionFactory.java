@@ -34,7 +34,7 @@ public class CylinderRegionFactory implements RegionFactory {
 
     @Override
     public Region createCenteredAt(BlockVector3 position, double size) {
-        return new CylinderRegion(position, new Vector2(size, size), position.getBlockY() - (int) (height / 2), position.getBlockY() + (int) (height / 2));
+        return new CylinderRegion(position, Vector2.at(size, size), position.getBlockY() - (int) (height / 2), position.getBlockY() + (int) (height / 2));
     }
 
 }

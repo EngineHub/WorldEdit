@@ -83,7 +83,7 @@ public class TargetBlock {
 
         double h = (checkDistance * Math.cos(Math.toRadians(yRotation)));
 
-        offset = new Vector3((h * Math.cos(Math.toRadians(xRotation))),
+        offset = Vector3.at((h * Math.cos(Math.toRadians(xRotation))),
                             (checkDistance * Math.sin(Math.toRadians(yRotation))),
                             (h * Math.sin(Math.toRadians(xRotation))));
 

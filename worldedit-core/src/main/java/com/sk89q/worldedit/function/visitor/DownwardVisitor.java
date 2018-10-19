@@ -53,11 +53,11 @@ public class DownwardVisitor extends RecursiveVisitor {
 
         Collection<BlockVector3> directions = getDirections();
         directions.clear();
-        directions.add(new BlockVector3(1, 0, 0));
-        directions.add(new BlockVector3(-1, 0, 0));
-        directions.add(new BlockVector3(0, 0, 1));
-        directions.add(new BlockVector3(0, 0, -1));
-        directions.add(new BlockVector3(0, -1, 0));
+        directions.add(BlockVector3.at(1, 0, 0));
+        directions.add(BlockVector3.at(-1, 0, 0));
+        directions.add(BlockVector3.at(0, 0, 1));
+        directions.add(BlockVector3.at(0, 0, -1));
+        directions.add(BlockVector3.at(0, -1, 0));
     }
 
     @Override

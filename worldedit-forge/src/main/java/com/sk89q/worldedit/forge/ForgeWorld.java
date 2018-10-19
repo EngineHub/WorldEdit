@@ -522,7 +522,7 @@ public class ForgeWorld extends AbstractWorld {
     public List<? extends Entity> getEntities(Region region) {
         List<Entity> entities = new ArrayList<>();
         for (net.minecraft.entity.Entity entity : getWorld().loadedEntityList) {
-            if (region.contains(new BlockVector3(entity.posX, entity.posY, entity.posZ))) {
+            if (region.contains(BlockVector3.at(entity.posX, entity.posY, entity.posZ))) {
                 entities.add(new ForgeEntity(entity));
             }
         }

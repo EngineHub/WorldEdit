@@ -126,7 +126,7 @@ public class SpongeSchematicWriter implements ClipboardWriter {
                 int z0 = min.getBlockZ() + z;
                 for (int x = 0; x < width; x++) {
                     int x0 = min.getBlockX() + x;
-                    BlockVector3 point = new BlockVector3(x0, y0, z0);
+                    BlockVector3 point = BlockVector3.at(x0, y0, z0);
                     BaseBlock block = clipboard.getFullBlock(point);
                     if (block.getNbtData() != null) {
                         Map<String, Tag> values = new HashMap<>();

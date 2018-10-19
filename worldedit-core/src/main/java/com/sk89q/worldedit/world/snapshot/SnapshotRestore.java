@@ -80,7 +80,7 @@ public class SnapshotRestore {
         for (int x = min.getBlockX(); x <= max.getBlockX(); ++x) {
             for (int y = min.getBlockY(); y <= max.getBlockY(); ++y) {
                 for (int z = min.getBlockZ(); z <= max.getBlockZ(); ++z) {
-                    BlockVector3 pos = new BlockVector3(x, y, z);
+                    BlockVector3 pos = BlockVector3.at(x, y, z);
                     checkAndAddBlock(pos);
                 }
             }

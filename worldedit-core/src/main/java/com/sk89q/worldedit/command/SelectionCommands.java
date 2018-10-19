@@ -224,8 +224,8 @@ public class SelectionCommands {
             final BlockVector2 min2D = ChunkStore.toChunk(region.getMinimumPoint());
             final BlockVector2 max2D = ChunkStore.toChunk(region.getMaximumPoint());
 
-            min = new BlockVector3(min2D.getBlockX() * 16, 0, min2D.getBlockZ() * 16);
-            max = new BlockVector3(max2D.getBlockX() * 16 + 15, world.getMaxY(), max2D.getBlockZ() * 16 + 15);
+            min = BlockVector3.at(min2D.getBlockX() * 16, 0, min2D.getBlockZ() * 16);
+            max = BlockVector3.at(max2D.getBlockX() * 16 + 15, world.getMaxY(), max2D.getBlockZ() * 16 + 15);
 
             player.print("Chunks selected: ("
                     + min2D.getBlockX() + ", " + min2D.getBlockZ() + ") - ("
@@ -240,14 +240,14 @@ public class SelectionCommands {
                 }
                 int x = Integer.parseInt(coords[0]);
                 int z = Integer.parseInt(coords[1]);
-                BlockVector2 pos = new BlockVector2(x, z);
+                BlockVector2 pos = BlockVector2.at(x, z);
                 min2D = (args.hasFlag('c')) ? pos : ChunkStore.toChunk(pos.toBlockVector3());
             } else {
                 // use player loc
                 min2D = ChunkStore.toChunk(player.getBlockIn().toVector().toBlockPoint());
             }
 
-            min = new BlockVector3(min2D.getBlockX() * 16, 0, min2D.getBlockZ() * 16);
+            min = BlockVector3.at(min2D.getBlockX() * 16, 0, min2D.getBlockZ() * 16);
             max = min.add(15, world.getMaxY(), 15);
 
             player.print("Chunk selected: "
@@ -320,8 +320,8 @@ public class SelectionCommands {
             try {
                 int oldSize = region.getArea();
                 region.expand(
-                        new BlockVector3(0, (player.getWorld().getMaxY() + 1), 0),
-                        new BlockVector3(0, -(player.getWorld().getMaxY() + 1), 0));
+                        BlockVector3.at(0, (player.getWorld().getMaxY() + 1), 0),
+                        BlockVector3.at(0, -(player.getWorld().getMaxY() + 1), 0));
                 session.getRegionSelector(player.getWorld()).learnChanges();
                 int newSize = region.getArea();
                 session.getRegionSelector(player.getWorld()).explainRegionAdjust(player, session);
@@ -564,15 +564,15 @@ public class SelectionCommands {
         int change = args.getInteger(0);
 
         if (!args.hasFlag('h')) {
-            changes.add((new BlockVector3(0, 1, 0)).multiply(change));
-            changes.add((new BlockVector3(0, -1, 0)).multiply(change));
+            changes.add((BlockVector3.at(0, 1, 0)).multiply(change));
+            changes.add((BlockVector3.at(0, -1, 0)).multiply(change));
         }
 
         if (!args.hasFlag('v')) {
-            changes.add((new BlockVector3(1, 0, 0)).multiply(change));
-            changes.add((new BlockVector3(-1, 0, 0)).multiply(change));
-            changes.add((new BlockVector3(0, 0, 1)).multiply(change));
-            changes.add((new BlockVector3(0, 0, -1)).multiply(change));
+            changes.add((BlockVector3.at(1, 0, 0)).multiply(change));
+            changes.add((BlockVector3.at(-1, 0, 0)).multiply(change));
+            changes.add((BlockVector3.at(0, 0, 1)).multiply(change));
+            changes.add((BlockVector3.at(0, 0, -1)).multiply(change));
         }
 
         return changes.toArray(new BlockVector3[0]);

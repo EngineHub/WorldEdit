@@ -21,7 +21,6 @@ package com.sk89q.worldedit.regions;
 
 import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.math.BlockVector3;
-import com.sk89q.worldedit.math.Vector2;
 import com.sk89q.worldedit.regions.iterator.FlatRegion3DIterator;
 import com.sk89q.worldedit.regions.iterator.FlatRegionIterator;
 import com.sk89q.worldedit.world.World;
@@ -131,8 +130,8 @@ public class Polygonal2DRegion extends AbstractRegion implements FlatRegion {
         minY = Math.min(Math.max(0, minY), world == null ? 255 : world.getMaxY());
         maxY = Math.min(Math.max(0, maxY), world == null ? 255 : world.getMaxY());
 
-        min = new BlockVector2(minX, minZ);
-        max = new BlockVector2(maxX, maxZ);
+        min = BlockVector2.at(minX, minZ);
+        max = BlockVector2.at(maxX, maxZ);
     }
 
     /**
@@ -151,7 +150,7 @@ public class Polygonal2DRegion extends AbstractRegion implements FlatRegion {
      * @param position the position
      */
     public void addPoint(BlockVector3 position) {
-        points.add(new BlockVector2(position.getBlockX(), position.getBlockZ()));
+        points.add(BlockVector2.at(position.getBlockX(), position.getBlockZ()));
         recalculate();
     }
 
@@ -267,7 +266,7 @@ public class Polygonal2DRegion extends AbstractRegion implements FlatRegion {
 
         for (int i = 0; i < points.size(); ++i) {
             BlockVector2 point = points.get(i);
-            points.set(i, new BlockVector2(point.getX() + changeX, point.getZ() + changeZ));
+            points.set(i, BlockVector2.at(point.getX() + changeX, point.getZ() + changeZ));
         }
 
         minY += changeY;

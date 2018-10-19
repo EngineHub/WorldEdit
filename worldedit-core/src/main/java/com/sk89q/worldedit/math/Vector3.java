@@ -37,6 +37,25 @@ public final class Vector3 {
     public static final Vector3 UNIT_Z = new Vector3(0, 0, 1);
     public static final Vector3 ONE = new Vector3(1, 1, 1);
 
+    public static Vector3 at(double x, double y, double z) {
+        // switch for efficiency on typical cases
+        // in MC y is rarely 0/1 on selections
+        int yTrunc = (int) y;
+        switch (yTrunc) {
+            case 0:
+                if (x == 0 && y == 0 && z == 0) {
+                    return ZERO;
+                }
+                break;
+            case 1:
+                if (x == 1 && y == 1 && z == 1) {
+                    return ONE;
+                }
+                break;
+        }
+        return new Vector3(x, y, z);
+    }
+
     // thread-safe initialization idiom
     private static final class YzxOrderComparator {
         private static final Comparator<Vector3> YZX_ORDER = (a, b) -> {
@@ -67,21 +86,10 @@ public final class Vector3 {
      * @param y the Y coordinate
      * @param z the Z coordinate
      */
-    public Vector3(double x, double y, double z) {
+    private Vector3(double x, double y, double z) {
         this.x = x;
         this.y = y;
         this.z = z;
-    }
-
-    /**
-     * Copy another vector.
-     *
-     * @param other another vector to make a copy of
-     */
-    public Vector3(Vector3 other) {
-        this.x = other.x;
-        this.y = other.y;
-        this.z = other.z;
     }
 
     /**
@@ -100,7 +108,7 @@ public final class Vector3 {
      * @return a new vector
      */
     public Vector3 withX(double x) {
-        return new Vector3(x, y, z);
+        return Vector3.at(x, y, z);
     }
 
     /**
@@ -119,7 +127,7 @@ public final class Vector3 {
      * @return a new vector
      */
     public Vector3 withY(double y) {
-        return new Vector3(x, y, z);
+        return Vector3.at(x, y, z);
     }
 
     /**
@@ -138,7 +146,7 @@ public final class Vector3 {
      * @return a new vector
      */
     public Vector3 withZ(double z) {
-        return new Vector3(x, y, z);
+        return Vector3.at(x, y, z);
     }
 
     /**
@@ -160,7 +168,7 @@ public final class Vector3 {
      * @return a new vector
      */
     public Vector3 add(double x, double y, double z) {
-        return new Vector3(this.x + x, this.y + y, this.z + z);
+        return Vector3.at(this.x + x, this.y + y, this.z + z);
     }
 
     /**
@@ -179,7 +187,7 @@ public final class Vector3 {
             newZ += other.z;
         }
 
-        return new Vector3(newX, newY, newZ);
+        return Vector3.at(newX, newY, newZ);
     }
 
     /**
@@ -203,7 +211,7 @@ public final class Vector3 {
      * @return a new vector
      */
     public Vector3 subtract(double x, double y, double z) {
-        return new Vector3(this.x - x, this.y - y, this.z - z);
+        return Vector3.at(this.x - x, this.y - y, this.z - z);
     }
 
     /**
@@ -222,7 +230,7 @@ public final class Vector3 {
             newZ -= other.z;
         }
 
-        return new Vector3(newX, newY, newZ);
+        return Vector3.at(newX, newY, newZ);
     }
 
     /**
@@ -244,7 +252,7 @@ public final class Vector3 {
      * @return a new vector
      */
     public Vector3 multiply(double x, double y, double z) {
-        return new Vector3(this.x * x, this.y * y, this.z * z);
+        return Vector3.at(this.x * x, this.y * y, this.z * z);
     }
 
     /**
@@ -262,7 +270,7 @@ public final class Vector3 {
             newZ *= other.z;
         }
 
-        return new Vector3(newX, newY, newZ);
+        return Vector3.at(newX, newY, newZ);
     }
 
     /**
@@ -294,7 +302,7 @@ public final class Vector3 {
      * @return a new vector
      */
     public Vector3 divide(double x, double y, double z) {
-        return new Vector3(this.x / x, this.y / y, this.z / z);
+        return Vector3.at(this.x / x, this.y / y, this.z / z);
     }
 
     /**
@@ -403,10 +411,10 @@ public final class Vector3 {
     public Vector3 clampY(int min, int max) {
         checkArgument(min <= max, "minimum cannot be greater than maximum");
         if (y < min) {
-            return new Vector3(x, min, z);
+            return Vector3.at(x, min, z);
         }
         if (y > max) {
-            return new Vector3(x, max, z);
+            return Vector3.at(x, max, z);
         }
         return this;
     }
@@ -417,7 +425,7 @@ public final class Vector3 {
      * @return a new vector
      */
     public Vector3 floor() {
-        return new Vector3(Math.floor(x), Math.floor(y), Math.floor(z));
+        return Vector3.at(Math.floor(x), Math.floor(y), Math.floor(z));
     }
 
     /**
@@ -426,7 +434,7 @@ public final class Vector3 {
      * @return a new vector
      */
     public Vector3 ceil() {
-        return new Vector3(Math.ceil(x), Math.ceil(y), Math.ceil(z));
+        return Vector3.at(Math.ceil(x), Math.ceil(y), Math.ceil(z));
     }
 
     /**
@@ -437,7 +445,7 @@ public final class Vector3 {
      * @return a new vector
      */
     public Vector3 round() {
-        return new Vector3(Math.floor(x + 0.5), Math.floor(y + 0.5), Math.floor(z + 0.5));
+        return Vector3.at(Math.floor(x + 0.5), Math.floor(y + 0.5), Math.floor(z + 0.5));
     }
 
     /**
@@ -447,7 +455,7 @@ public final class Vector3 {
      * @return a new vector
      */
     public Vector3 abs() {
-        return new Vector3(Math.abs(x), Math.abs(y), Math.abs(z));
+        return Vector3.at(Math.abs(x), Math.abs(y), Math.abs(z));
     }
 
     /**
@@ -548,7 +556,7 @@ public final class Vector3 {
      * @return a new {@code BlockVector}
      */
     public static BlockVector3 toBlockPoint(double x, double y, double z) {
-        return new BlockVector3(x, y, z);
+        return BlockVector3.at(x, y, z);
     }
 
     /**
@@ -566,7 +574,7 @@ public final class Vector3 {
      * @return a new {@link Vector2}
      */
     public Vector2 toVector2() {
-        return new Vector2(x, z);
+        return Vector2.at(x, z);
     }
 
     @Override

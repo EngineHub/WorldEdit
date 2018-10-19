@@ -482,7 +482,7 @@ public class EditSession implements Extent, AutoCloseable {
      */
     public int getHighestTerrainBlock(int x, int z, int minY, int maxY) {
         for (int y = maxY; y >= minY; --y) {
-            BlockVector3 pt = new BlockVector3(x, y, z);
+            BlockVector3 pt = BlockVector3.at(x, y, z);
             BlockState block = getBlock(pt);
             if (block.getBlockType().getMaterial().isMovementBlocker()) {
                 return y;
@@ -713,7 +713,7 @@ public class EditSession implements Extent, AutoCloseable {
         checkArgument(depth >= 1, "depth >= 1");
 
         MaskIntersection mask = new MaskIntersection(
-                new RegionMask(new EllipsoidRegion(null, origin, new Vector3(radius, radius, radius))),
+                new RegionMask(new EllipsoidRegion(null, origin, Vector3.at(radius, radius, radius))),
                 new BoundedHeightMask(
                         Math.max(origin.getBlockY() - depth + 1, 0),
                         Math.min(getWorld().getMaxY(), origin.getBlockY())),
@@ -904,8 +904,8 @@ public class EditSession implements Extent, AutoCloseable {
         Vector3 center = region.getCenter();
         Region centerRegion = new CuboidRegion(
                 getWorld(), // Causes clamping of Y range
-                new BlockVector3(((int) center.getX()), ((int) center.getY()), ((int) center.getZ())),
-                new BlockVector3(MathUtils.roundHalfUp(center.getX()),
+                BlockVector3.at(((int) center.getX()), ((int) center.getY()), ((int) center.getZ())),
+                BlockVector3.at(MathUtils.roundHalfUp(center.getX()),
                             center.getY(), MathUtils.roundHalfUp(center.getZ())));
         return setBlocks(centerRegion, pattern);
     }
@@ -1055,7 +1055,7 @@ public class EditSession implements Extent, AutoCloseable {
         checkNotNull(pattern);
 
         BlockReplace replace = new BlockReplace(this, pattern);
-        RegionOffset offset = new RegionOffset(new BlockVector3(0, 1, 0), replace);
+        RegionOffset offset = new RegionOffset(BlockVector3.at(0, 1, 0), replace);
         GroundFunction ground = new GroundFunction(new ExistingBlockMask(this), offset);
         LayerVisitor visitor = new LayerVisitor(asFlatRegion(region), minimumBlockY(region), maximumBlockY(region), ground);
         Operations.completeLegacy(visitor);
@@ -1180,7 +1180,7 @@ public class EditSession implements Extent, AutoCloseable {
 
         MaskIntersection mask = new MaskIntersection(
                 new BoundedHeightMask(0, getWorld().getMaxY()),
-                new RegionMask(new EllipsoidRegion(null, origin, new Vector3(radius, radius, radius))),
+                new RegionMask(new EllipsoidRegion(null, origin, Vector3.at(radius, radius, radius))),
                 getWorld().createLiquidMask());
 
         BlockReplace replace = new BlockReplace(this, new BlockPattern(BlockTypes.AIR.getDefaultState()));
@@ -1220,7 +1220,7 @@ public class EditSession implements Extent, AutoCloseable {
         // There are boundaries that the routine needs to stay in
         MaskIntersection mask = new MaskIntersection(
                 new BoundedHeightMask(0, Math.min(origin.getBlockY(), getWorld().getMaxY())),
-                new RegionMask(new EllipsoidRegion(null, origin, new Vector3(radius, radius, radius))),
+                new RegionMask(new EllipsoidRegion(null, origin, Vector3.at(radius, radius, radius))),
                 blockMask
         );
 
@@ -1501,12 +1501,12 @@ public class EditSession implements Extent, AutoCloseable {
         int ceilRadius = (int) Math.ceil(radius);
         for (int x = ox - ceilRadius; x <= ox + ceilRadius; ++x) {
             for (int z = oz - ceilRadius; z <= oz + ceilRadius; ++z) {
-                if ((new BlockVector3(x, oy, z)).distanceSq(position) > radiusSq) {
+                if ((BlockVector3.at(x, oy, z)).distanceSq(position) > radiusSq) {
                     continue;
                 }
 
                 for (int y = world.getMaxY(); y >= 1; --y) {
-                    BlockVector3 pt = new BlockVector3(x, y, z);
+                    BlockVector3 pt = BlockVector3.at(x, y, z);
                     BlockType id = getBlock(pt).getBlockType();
 
                     if (id == BlockTypes.ICE) {
@@ -1551,12 +1551,12 @@ public class EditSession implements Extent, AutoCloseable {
         int ceilRadius = (int) Math.ceil(radius);
         for (int x = ox - ceilRadius; x <= ox + ceilRadius; ++x) {
             for (int z = oz - ceilRadius; z <= oz + ceilRadius; ++z) {
-                if ((new BlockVector3(x, oy, z)).distanceSq(position) > radiusSq) {
+                if ((BlockVector3.at(x, oy, z)).distanceSq(position) > radiusSq) {
                     continue;
                 }
 
                 for (int y = world.getMaxY(); y >= 1; --y) {
-                    BlockVector3 pt = new BlockVector3(x, y, z);
+                    BlockVector3 pt = BlockVector3.at(x, y, z);
                     BlockType id = getBlock(pt).getBlockType();
 
                     if (id.getMaterial().isAir()) {
@@ -1619,12 +1619,12 @@ public class EditSession implements Extent, AutoCloseable {
         final int ceilRadius = (int) Math.ceil(radius);
         for (int x = ox - ceilRadius; x <= ox + ceilRadius; ++x) {
             for (int z = oz - ceilRadius; z <= oz + ceilRadius; ++z) {
-                if ((new BlockVector3(x, oy, z)).distanceSq(position) > radiusSq) {
+                if ((BlockVector3.at(x, oy, z)).distanceSq(position) > radiusSq) {
                     continue;
                 }
 
                 for (int y = world.getMaxY(); y >= 1; --y) {
-                    final BlockVector3 pt = new BlockVector3(x, y, z);
+                    final BlockVector3 pt = BlockVector3.at(x, y, z);
                     final BlockState block = getBlock(pt);
 
                     if (block.getBlockType() == BlockTypes.DIRT ||
@@ -1690,7 +1690,7 @@ public class EditSession implements Extent, AutoCloseable {
             for (int z = basePosition.getBlockZ() - size; z <= basePosition.getBlockZ()
                     + size; ++z) {
                 // Don't want to be in the ground
-                if (!getBlock(new BlockVector3(x, basePosition.getBlockY(), z)).getBlockType().getMaterial().isAir()) {
+                if (!getBlock(BlockVector3.at(x, basePosition.getBlockY(), z)).getBlockType().getMaterial().isAir()) {
                     continue;
                 }
                 // The gods don't want a tree here
@@ -1700,13 +1700,13 @@ public class EditSession implements Extent, AutoCloseable {
 
                 for (int y = basePosition.getBlockY(); y >= basePosition.getBlockY() - 10; --y) {
                     // Check if we hit the ground
-                    BlockType t = getBlock(new BlockVector3(x, y, z)).getBlockType();
+                    BlockType t = getBlock(BlockVector3.at(x, y, z)).getBlockType();
                     if (t == BlockTypes.GRASS_BLOCK || t == BlockTypes.DIRT) {
-                        treeType.generate(this, new BlockVector3(x, y + 1, z));
+                        treeType.generate(this, BlockVector3.at(x, y + 1, z));
                         ++affected;
                         break;
                     } else if (t == BlockTypes.SNOW) {
-                        setBlock(new BlockVector3(x, y, z), BlockTypes.AIR.getDefaultState());
+                        setBlock(BlockVector3.at(x, y, z), BlockTypes.AIR.getDefaultState());
                     } else if (!t.getMaterial().isAir()) { // Trees won't grow on this!
                         break;
                     }
@@ -1743,7 +1743,7 @@ public class EditSession implements Extent, AutoCloseable {
         final ArbitraryShape shape = new ArbitraryShape(region) {
             @Override
             protected BlockStateHolder getMaterial(int x, int y, int z, BlockStateHolder defaultMaterial) {
-                final Vector3 current = new Vector3(x, y, z);
+                final Vector3 current = Vector3.at(x, y, z);
                 environment.setCurrentBlock(current);
                 final Vector3 scaled = current.subtract(zero).divide(unit);
 
@@ -1834,22 +1834,22 @@ public class EditSession implements Extent, AutoCloseable {
 
         for (int x = minX; x <= maxX; ++x) {
             for (int y = minY; y <= maxY; ++y) {
-                recurseHollow(region, new BlockVector3(x, y, minZ), outside);
-                recurseHollow(region, new BlockVector3(x, y, maxZ), outside);
+                recurseHollow(region, BlockVector3.at(x, y, minZ), outside);
+                recurseHollow(region, BlockVector3.at(x, y, maxZ), outside);
             }
         }
 
         for (int y = minY; y <= maxY; ++y) {
             for (int z = minZ; z <= maxZ; ++z) {
-                recurseHollow(region, new BlockVector3(minX, y, z), outside);
-                recurseHollow(region, new BlockVector3(maxX, y, z), outside);
+                recurseHollow(region, BlockVector3.at(minX, y, z), outside);
+                recurseHollow(region, BlockVector3.at(maxX, y, z), outside);
             }
         }
 
         for (int z = minZ; z <= maxZ; ++z) {
             for (int x = minX; x <= maxX; ++x) {
-                recurseHollow(region, new BlockVector3(x, minY, z), outside);
-                recurseHollow(region, new BlockVector3(x, maxY, z), outside);
+                recurseHollow(region, BlockVector3.at(x, minY, z), outside);
+                recurseHollow(region, BlockVector3.at(x, maxY, z), outside);
             }
         }
 
@@ -1910,7 +1910,7 @@ public class EditSession implements Extent, AutoCloseable {
         int dx = Math.abs(x2 - x1), dy = Math.abs(y2 - y1), dz = Math.abs(z2 - z1);
 
         if (dx + dy + dz == 0) {
-            vset.add(new BlockVector3(tipx, tipy, tipz));
+            vset.add(BlockVector3.at(tipx, tipy, tipz));
             notdrawn = false;
         }
 
@@ -1920,7 +1920,7 @@ public class EditSession implements Extent, AutoCloseable {
                 tipy = (int) Math.round(y1 + domstep * ((double) dy) / ((double) dx) * (y2 - y1 > 0 ? 1 : -1));
                 tipz = (int) Math.round(z1 + domstep * ((double) dz) / ((double) dx) * (z2 - z1 > 0 ? 1 : -1));
 
-                vset.add(new BlockVector3(tipx, tipy, tipz));
+                vset.add(BlockVector3.at(tipx, tipy, tipz));
             }
             notdrawn = false;
         }
@@ -1931,7 +1931,7 @@ public class EditSession implements Extent, AutoCloseable {
                 tipx = (int) Math.round(x1 + domstep * ((double) dx) / ((double) dy) * (x2 - x1 > 0 ? 1 : -1));
                 tipz = (int) Math.round(z1 + domstep * ((double) dz) / ((double) dy) * (z2 - z1 > 0 ? 1 : -1));
 
-                vset.add(new BlockVector3(tipx, tipy, tipz));
+                vset.add(BlockVector3.at(tipx, tipy, tipz));
             }
             notdrawn = false;
         }
@@ -1942,7 +1942,7 @@ public class EditSession implements Extent, AutoCloseable {
                 tipy = (int) Math.round(y1 + domstep * ((double) dy) / ((double) dz) * (y2-y1>0 ? 1 : -1));
                 tipx = (int) Math.round(x1 + domstep * ((double) dx) / ((double) dz) * (x2-x1>0 ? 1 : -1));
 
-                vset.add(new BlockVector3(tipx, tipy, tipz));
+                vset.add(BlockVector3.at(tipx, tipy, tipz));
             }
             notdrawn = false;
         }
@@ -2019,7 +2019,7 @@ public class EditSession implements Extent, AutoCloseable {
                 for (int loopy = tipy - ceilrad; loopy <= tipy + ceilrad; loopy++) {
                     for (int loopz = tipz - ceilrad; loopz <= tipz + ceilrad; loopz++) {
                         if (hypot(loopx - tipx, loopy - tipy, loopz - tipz) <= radius) {
-                            returnset.add(new BlockVector3(loopx, loopy, loopz));
+                            returnset.add(BlockVector3.at(loopx, loopy, loopz));
                         }
                     }
                 }
@@ -2032,12 +2032,12 @@ public class EditSession implements Extent, AutoCloseable {
         Set<BlockVector3> returnset = new HashSet<>();
         for (BlockVector3 v : vset) {
             double x = v.getX(), y = v.getY(), z = v.getZ();
-            if (!(vset.contains(new BlockVector3(x + 1, y, z)) &&
-                    vset.contains(new BlockVector3(x - 1, y, z)) &&
-                    vset.contains(new BlockVector3(x, y + 1, z)) &&
-                    vset.contains(new BlockVector3(x, y - 1, z)) &&
-                    vset.contains(new BlockVector3(x, y, z + 1)) &&
-                    vset.contains(new BlockVector3(x, y, z - 1)))) {
+            if (!(vset.contains(BlockVector3.at(x + 1, y, z)) &&
+                    vset.contains(BlockVector3.at(x - 1, y, z)) &&
+                    vset.contains(BlockVector3.at(x, y + 1, z)) &&
+                    vset.contains(BlockVector3.at(x, y - 1, z)) &&
+                    vset.contains(BlockVector3.at(x, y, z + 1)) &&
+                    vset.contains(BlockVector3.at(x, y, z - 1)))) {
                 returnset.add(v);
             }
         }
@@ -2083,7 +2083,7 @@ public class EditSession implements Extent, AutoCloseable {
         final ArbitraryBiomeShape shape = new ArbitraryBiomeShape(region) {
             @Override
             protected BaseBiome getBiome(int x, int z, BaseBiome defaultBiomeType) {
-                final Vector2 current = new Vector2(x, z);
+                final Vector2 current = Vector2.at(x, z);
                 environment.setCurrentBlock(current.toVector3(0));
                 final Vector2 scaled = current.subtract(zero2D).divide(unit2D);
 

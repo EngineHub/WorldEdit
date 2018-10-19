@@ -57,7 +57,7 @@ public abstract class ChunkStore implements Closeable {
      * @return chunk coordinates
      */
     public static BlockVector2 toChunk(BlockVector3 position) {
-        return new BlockVector2(position.getX() >> CHUNK_SHIFTS, position.getZ() >> CHUNK_SHIFTS);
+        return BlockVector2.at(position.getX() >> CHUNK_SHIFTS, position.getZ() >> CHUNK_SHIFTS);
     }
 
     /**

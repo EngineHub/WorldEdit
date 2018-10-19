@@ -135,7 +135,7 @@ class DefaultMaskParser extends InputParser<Mask> {
                 } else {
                     submask = new ExistingBlockMask(extent);
                 }
-                OffsetMask offsetMask = new OffsetMask(submask, new BlockVector3(0, firstChar == '>' ? -1 : 1, 0));
+                OffsetMask offsetMask = new OffsetMask(submask, BlockVector3.at(0, firstChar == '>' ? -1 : 1, 0));
                 return new MaskIntersection(offsetMask, Masks.negate(submask));
 
             case '$':

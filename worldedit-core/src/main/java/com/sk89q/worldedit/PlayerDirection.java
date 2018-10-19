@@ -29,16 +29,16 @@ import com.sk89q.worldedit.util.Direction;
  */
 public enum PlayerDirection {
 
-    NORTH(new Vector3(0, 0, -1), true),
-    NORTH_EAST((new Vector3(1, 0, -1)).normalize(), false),
-    EAST(new Vector3(1, 0, 0), true),
-    SOUTH_EAST((new Vector3(1, 0, 1)).normalize(), false),
-    SOUTH(new Vector3(0, 0, 1), true),
-    SOUTH_WEST((new Vector3(-1, 0, 1)).normalize(), false),
-    WEST(new Vector3(-1, 0, 0), true),
-    NORTH_WEST((new Vector3(-1, 0, -1)).normalize(), false),
-    UP(new Vector3(0, 1, 0), true),
-    DOWN(new Vector3(0, -1, 0), true);
+    NORTH(Vector3.at(0, 0, -1), true),
+    NORTH_EAST((Vector3.at(1, 0, -1)).normalize(), false),
+    EAST(Vector3.at(1, 0, 0), true),
+    SOUTH_EAST((Vector3.at(1, 0, 1)).normalize(), false),
+    SOUTH(Vector3.at(0, 0, 1), true),
+    SOUTH_WEST((Vector3.at(-1, 0, 1)).normalize(), false),
+    WEST(Vector3.at(-1, 0, 0), true),
+    NORTH_WEST((Vector3.at(-1, 0, -1)).normalize(), false),
+    UP(Vector3.at(0, 1, 0), true),
+    DOWN(Vector3.at(0, -1, 0), true);
 
     private final Vector3 dir;
     private final boolean isOrthogonal;

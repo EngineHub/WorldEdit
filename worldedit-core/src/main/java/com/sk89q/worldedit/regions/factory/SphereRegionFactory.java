@@ -28,7 +28,7 @@ public class SphereRegionFactory implements RegionFactory {
 
     @Override
     public Region createCenteredAt(BlockVector3 position, double size) {
-        return new EllipsoidRegion(position, new Vector3(size, size, size));
+        return new EllipsoidRegion(position, Vector3.at(size, size, size));
     }
 
 }

@@ -200,7 +200,7 @@ public class AnvilChunk13 implements Chunk {
                 values.put(entry.getKey(), entry.getValue());
             }
 
-            BlockVector3 vec = new BlockVector3(x, y, z);
+            BlockVector3 vec = BlockVector3.at(x, y, z);
             tileEntities.put(vec, values);
         }
     }

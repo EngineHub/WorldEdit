@@ -115,8 +115,8 @@ public class ExtendingCuboidRegionSelector extends CuboidRegionSelector {
 
         final BlockVector3 o1 = position1;
         final BlockVector3 o2 = position2;
-        position1 = new BlockVector3(x1, y1, z1);
-        position2 = new BlockVector3(x2, y2, z2);
+        position1 = BlockVector3.at(x1, y1, z1);
+        position2 = BlockVector3.at(x2, y2, z2);
         region.setPos1(position1);
         region.setPos2(position2);
 
