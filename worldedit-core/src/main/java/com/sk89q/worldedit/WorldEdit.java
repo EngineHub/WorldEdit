@@ -628,7 +628,7 @@ public class WorldEdit {
             logger.log(Level.WARNING, "Failed to execute script", e);
         } finally {
             for (EditSession editSession : scriptContext.getEditSessions()) {
-                editSession.flushQueue();
+                editSession.flushSession();
                 session.remember(editSession);
             }
         }

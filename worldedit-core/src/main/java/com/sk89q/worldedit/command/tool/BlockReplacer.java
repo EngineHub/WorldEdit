@@ -53,16 +53,17 @@ public class BlockReplacer implements DoubleActionBlockTool {
         BlockBag bag = session.getBlockBag(player);
 
         EditSession editSession = session.createEditSession(player);
+        editSession.disableBuffering();
 
         try {
             Vector position = clicked.toVector();
             editSession.setBlock(position, pattern.apply(position));
         } catch (MaxChangedBlocksException ignored) {
         } finally {
+            session.remember(editSession);
             if (bag != null) {
                 bag.flushChanges();
             }
-            session.remember(editSession);
         }
 
         return true;

@@ -298,13 +298,13 @@ public class EditSession implements Extent {
     }
 
     /**
-     * Disable the queue. This will flush the queue.
+     * Disable the queue. This will {@linkplain #flushSession() flush the session}.
      */
     public void disableQueue() {
         if (isQueueEnabled()) {
-            flushQueue();
+            flushSession();
         }
-        reorderExtent.setEnabled(true);
+        reorderExtent.setEnabled(false);
     }
 
     /**
@@ -393,10 +393,21 @@ public class EditSession implements Extent {
         return blockBagExtent.popMissing();
     }
 
+    /**
+     * Returns chunk batching status.
+     *
+     * @return whether chunk batching is enabled
+     */
     public boolean isBatchingChunks() {
         return chunkBatchingExtent != null && chunkBatchingExtent.isEnabled();
     }
 
+    /**
+     * Enable or disable chunk batching. Disabling will
+     * {@linkplain #flushSession() flush the session}.
+     *
+     * @param batchingChunks {@code true} to enable, {@code false} to disable
+     */
     public void setBatchingChunks(boolean batchingChunks) {
         if (chunkBatchingExtent == null) {
             if (batchingChunks) {
@@ -405,9 +416,21 @@ public class EditSession implements Extent {
             return;
         }
         if (!batchingChunks) {
-            flushQueue();
+            flushSession();
         }
         chunkBatchingExtent.setEnabled(batchingChunks);
+    }
+
+    /**
+     * Disable all buffering extents.
+     *
+     * @see #disableQueue()
+     * @see #setBatchingChunks(boolean)
+     */
+    public void disableBuffering() {
+        // We optimize here to avoid double calls to flushSession.
+        reorderExtent.setEnabled(false);
+        setBatchingChunks(false);
     }
 
     /**
@@ -569,7 +592,7 @@ public class EditSession implements Extent {
         UndoContext context = new UndoContext();
         context.setExtent(editSession.bypassHistory);
         Operations.completeBlindly(ChangeSetExecutor.createUndo(changeSet, context));
-        editSession.flushQueue();
+        editSession.flushSession();
     }
 
     /**
@@ -581,7 +604,7 @@ public class EditSession implements Extent {
         UndoContext context = new UndoContext();
         context.setExtent(editSession.bypassHistory);
         Operations.completeBlindly(ChangeSetExecutor.createRedo(changeSet, context));
-        editSession.flushQueue();
+        editSession.flushSession();
     }
 
     /**
@@ -614,9 +637,10 @@ public class EditSession implements Extent {
     }
 
     /**
-     * Finish off the queue.
+     * Communicate to the EditSession that all block changes are complete,
+     * and that it should apply them to the world.
      */
-    public void flushQueue() {
+    public void flushSession() {
         Operations.completeBlindly(commit());
     }
 

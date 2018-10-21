@@ -193,10 +193,11 @@ public class BrushTool implements TraceTool {
         } catch (MaxChangedBlocksException e) {
             player.printError("Max blocks change limit reached.");
         } finally {
+            session.remember(editSession);
+            editSession.flushSession();
             if (bag != null) {
                 bag.flushChanges();
             }
-            session.remember(editSession);
         }
 
         return true;

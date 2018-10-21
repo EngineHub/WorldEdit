@@ -460,7 +460,7 @@ public class UtilityCommands {
 
         if (editSession != null) {
             session.remember(editSession);
-            editSession.flushQueue();
+            editSession.flushSession();
         }
     }
 
@@ -520,7 +520,7 @@ public class UtilityCommands {
 
         if (editSession != null) {
             session.remember(editSession);
-            editSession.flushQueue();
+            editSession.flushSession();
         }
     }
 
