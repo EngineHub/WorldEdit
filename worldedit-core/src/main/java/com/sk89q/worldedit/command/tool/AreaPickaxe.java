@@ -62,29 +62,29 @@ public class AreaPickaxe implements BlockTool {
             return true;
         }
 
-        EditSession editSession = session.createEditSession(player);
-        editSession.getSurvivalExtent().setToolUse(config.superPickaxeManyDrop);
+        try (EditSession editSession = session.createEditSession(player)) {
+            editSession.getSurvivalExtent().setToolUse(config.superPickaxeManyDrop);
 
-        try {
-            for (int x = ox - range; x <= ox + range; ++x) {
-                for (int y = oy - range; y <= oy + range; ++y) {
-                    for (int z = oz - range; z <= oz + range; ++z) {
-                        Vector pos = new Vector(x, y, z);
-                        if (editSession.getBlock(pos).getBlockType() != initialType) {
-                            continue;
+            try {
+                for (int x = ox - range; x <= ox + range; ++x) {
+                    for (int y = oy - range; y <= oy + range; ++y) {
+                        for (int z = oz - range; z <= oz + range; ++z) {
+                            Vector pos = new Vector(x, y, z);
+                            if (editSession.getBlock(pos).getBlockType() != initialType) {
+                                continue;
+                            }
+
+                            ((World) clicked.getExtent()).queueBlockBreakEffect(server, pos, initialType, clicked.toVector().distanceSq(pos));
+
+                            editSession.setBlock(pos, BlockTypes.AIR.getDefaultState());
                         }
-
-                        ((World) clicked.getExtent()).queueBlockBreakEffect(server, pos, initialType, clicked.toVector().distanceSq(pos));
-
-                        editSession.setBlock(pos, BlockTypes.AIR.getDefaultState());
                     }
                 }
+            } catch (MaxChangedBlocksException e) {
+                player.printError("Max blocks change limit reached.");
+            } finally {
+                session.remember(editSession);
             }
-        } catch (MaxChangedBlocksException e) {
-            player.printError("Max blocks change limit reached.");
-        } finally {
-            editSession.flushQueue();
-            session.remember(editSession);
         }
 
         return true;

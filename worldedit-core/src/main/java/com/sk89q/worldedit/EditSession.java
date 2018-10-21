@@ -134,7 +134,7 @@ import javax.annotation.Nullable;
  * using the {@link ChangeSetExtent}.</p>
  */
 @SuppressWarnings({"FieldCanBeLocal"})
-public class EditSession implements Extent {
+public class EditSession implements Extent, AutoCloseable {
 
     private static final Logger log = Logger.getLogger(EditSession.class.getCanonicalName());
 
@@ -298,13 +298,13 @@ public class EditSession implements Extent {
     }
 
     /**
-     * Disable the queue. This will flush the queue.
+     * Disable the queue. This will {@linkplain #flushSession() flush the session}.
      */
     public void disableQueue() {
         if (isQueueEnabled()) {
-            flushQueue();
+            flushSession();
         }
-        reorderExtent.setEnabled(true);
+        reorderExtent.setEnabled(false);
     }
 
     /**
@@ -393,10 +393,21 @@ public class EditSession implements Extent {
         return blockBagExtent.popMissing();
     }
 
+    /**
+     * Returns chunk batching status.
+     *
+     * @return whether chunk batching is enabled
+     */
     public boolean isBatchingChunks() {
         return chunkBatchingExtent != null && chunkBatchingExtent.isEnabled();
     }
 
+    /**
+     * Enable or disable chunk batching. Disabling will
+     * {@linkplain #flushSession() flush the session}.
+     *
+     * @param batchingChunks {@code true} to enable, {@code false} to disable
+     */
     public void setBatchingChunks(boolean batchingChunks) {
         if (chunkBatchingExtent == null) {
             if (batchingChunks) {
@@ -404,10 +415,28 @@ public class EditSession implements Extent {
             }
             return;
         }
-        if (!batchingChunks) {
-            flushQueue();
+        if (!batchingChunks && isBatchingChunks()) {
+            flushSession();
         }
         chunkBatchingExtent.setEnabled(batchingChunks);
+    }
+
+    /**
+     * Disable all buffering extents.
+     *
+     * @see #disableQueue()
+     * @see #setBatchingChunks(boolean)
+     */
+    public void disableBuffering() {
+        // We optimize here to avoid repeated calls to flushSession.
+        boolean needsFlush = isQueueEnabled() || isBatchingChunks();
+        if (needsFlush) {
+            flushSession();
+        }
+        reorderExtent.setEnabled(false);
+        if (chunkBatchingExtent != null) {
+            chunkBatchingExtent.setEnabled(false);
+        }
     }
 
     /**
@@ -569,7 +598,7 @@ public class EditSession implements Extent {
         UndoContext context = new UndoContext();
         context.setExtent(editSession.bypassHistory);
         Operations.completeBlindly(ChangeSetExecutor.createUndo(changeSet, context));
-        editSession.flushQueue();
+        editSession.flushSession();
     }
 
     /**
@@ -581,7 +610,7 @@ public class EditSession implements Extent {
         UndoContext context = new UndoContext();
         context.setExtent(editSession.bypassHistory);
         Operations.completeBlindly(ChangeSetExecutor.createRedo(changeSet, context));
-        editSession.flushQueue();
+        editSession.flushSession();
     }
 
     /**
@@ -614,9 +643,18 @@ public class EditSession implements Extent {
     }
 
     /**
-     * Finish off the queue.
+     * Closing an EditSession {@linkplain #flushSession() flushes its buffers}.
      */
-    public void flushQueue() {
+    @Override
+    public void close() {
+        flushSession();
+    }
+
+    /**
+     * Communicate to the EditSession that all block changes are complete,
+     * and that it should apply them to the world.
+     */
+    public void flushSession() {
         Operations.completeBlindly(commit());
     }
 

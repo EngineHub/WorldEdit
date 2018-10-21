@@ -172,31 +172,33 @@ public class BrushTool implements TraceTool {
 
         BlockBag bag = session.getBlockBag(player);
 
-        EditSession editSession = session.createEditSession(player);
-        Request.request().setEditSession(editSession);
-        if (mask != null) {
-            Mask existingMask = editSession.getMask();
+        try (EditSession editSession = session.createEditSession(player)) {
+            Request.request().setEditSession(editSession);
+            if (mask != null) {
+                Mask existingMask = editSession.getMask();
 
-            if (existingMask == null) {
-                editSession.setMask(mask);
-            } else if (existingMask instanceof MaskIntersection) {
-                ((MaskIntersection) existingMask).add(mask);
-            } else {
-                MaskIntersection newMask = new MaskIntersection(existingMask);
-                newMask.add(mask);
-                editSession.setMask(newMask);
+                if (existingMask == null) {
+                    editSession.setMask(mask);
+                } else if (existingMask instanceof MaskIntersection) {
+                    ((MaskIntersection) existingMask).add(mask);
+                } else {
+                    MaskIntersection newMask = new MaskIntersection(existingMask);
+                    newMask.add(mask);
+                    editSession.setMask(newMask);
+                }
             }
-        }
 
-        try {
-            brush.build(editSession, target.toVector(), material, size);
-        } catch (MaxChangedBlocksException e) {
-            player.printError("Max blocks change limit reached.");
+            try {
+                brush.build(editSession, target.toVector(), material, size);
+            } catch (MaxChangedBlocksException e) {
+                player.printError("Max blocks change limit reached.");
+            } finally {
+                session.remember(editSession);
+            }
         } finally {
             if (bag != null) {
                 bag.flushChanges();
             }
-            session.remember(editSession);
         }
 
         return true;

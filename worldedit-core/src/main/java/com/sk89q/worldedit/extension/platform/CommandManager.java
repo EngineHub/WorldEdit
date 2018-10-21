@@ -316,7 +316,7 @@ public final class CommandManager {
 
             if (editSession != null) {
                 session.remember(editSession);
-                editSession.flushQueue();
+                editSession.flushSession();
 
                 if (config.profile) {
                     long time = System.currentTimeMillis() - start;
