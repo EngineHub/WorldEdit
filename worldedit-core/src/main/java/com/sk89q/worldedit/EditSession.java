@@ -134,7 +134,7 @@ import javax.annotation.Nullable;
  * using the {@link ChangeSetExtent}.</p>
  */
 @SuppressWarnings({"FieldCanBeLocal"})
-public class EditSession implements Extent {
+public class EditSession implements Extent, AutoCloseable {
 
     private static final Logger log = Logger.getLogger(EditSession.class.getCanonicalName());
 
@@ -634,6 +634,14 @@ public class EditSession implements Extent {
     @Override
     public List<? extends Entity> getEntities() {
         return bypassNone.getEntities();
+    }
+
+    /**
+     * Closing an EditSession {@linkplain #flushSession() flushes its buffers}.
+     */
+    @Override
+    public void close() {
+        flushSession();
     }
 
     /**
