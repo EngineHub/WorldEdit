@@ -415,7 +415,7 @@ public class EditSession implements Extent, AutoCloseable {
             }
             return;
         }
-        if (!batchingChunks) {
+        if (!batchingChunks && isBatchingChunks()) {
             flushSession();
         }
         chunkBatchingExtent.setEnabled(batchingChunks);
@@ -428,9 +428,15 @@ public class EditSession implements Extent, AutoCloseable {
      * @see #setBatchingChunks(boolean)
      */
     public void disableBuffering() {
-        // We optimize here to avoid double calls to flushSession.
+        // We optimize here to avoid repeated calls to flushSession.
+        boolean needsFlush = isQueueEnabled() || isBatchingChunks();
+        if (needsFlush) {
+            flushSession();
+        }
         reorderExtent.setEnabled(false);
-        setBatchingChunks(false);
+        if (chunkBatchingExtent != null) {
+            chunkBatchingExtent.setEnabled(false);
+        }
     }
 
     /**
