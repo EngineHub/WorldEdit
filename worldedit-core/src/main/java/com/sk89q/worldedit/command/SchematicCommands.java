@@ -34,6 +34,7 @@ import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extent.clipboard.BlockArrayClipboard;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
+import com.sk89q.worldedit.extent.clipboard.io.BuiltInClipboardFormat;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormat;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormats;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardReader;
@@ -92,7 +93,7 @@ public class SchematicCommands {
         LocalConfiguration config = worldEdit.getConfiguration();
 
         File dir = worldEdit.getWorkingDirectoryFile(config.saveDir);
-        File f = worldEdit.getSafeOpenFile(player, dir, filename, "schematic", ClipboardFormats.getFileExtensionArray());
+        File f = worldEdit.getSafeOpenFile(player, dir, filename, BuiltInClipboardFormat.SPONGE_SCHEMATIC.getPrimaryFileExtension(), ClipboardFormats.getFileExtensionArray());
 
         if (!f.exists()) {
             player.printError("Schematic " + filename + " does not exist!");

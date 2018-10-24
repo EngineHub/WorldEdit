@@ -38,6 +38,8 @@ import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.extension.platform.PlatformManager;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
+import com.sk89q.worldedit.function.mask.Mask;
+import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.scripting.CraftScriptContext;
 import com.sk89q.worldedit.scripting.CraftScriptEngine;
 import com.sk89q.worldedit.scripting.RhinoCraftScriptEngine;
@@ -68,6 +70,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.annotation.Nullable;
 import javax.script.ScriptException;
 
 /**
@@ -164,7 +167,7 @@ public class WorldEdit {
     }
 
     /**
-     * Get the mask factory from which new {@link com.sk89q.worldedit.function.mask.Mask}s
+     * Get the mask factory from which new {@link Mask}s
      * can be constructed.
      *
      * @return the mask factory
@@ -174,7 +177,7 @@ public class WorldEdit {
     }
 
     /**
-     * Get the pattern factory from which new {@link com.sk89q.worldedit.function.pattern.Pattern}s
+     * Get the pattern factory from which new {@link Pattern}s
      * can be constructed.
      *
      * @return the pattern factory
@@ -240,12 +243,12 @@ public class WorldEdit {
      * @return a file
      * @throws FilenameException thrown if the filename is invalid
      */
-    private File getSafeFile(Player player, File dir, String filename, String defaultExt, String[] extensions, boolean isSave) throws FilenameException {
+    private File getSafeFile(@Nullable Player player, File dir, String filename, String defaultExt, String[] extensions, boolean isSave) throws FilenameException {
         if (extensions != null && (extensions.length == 1 && extensions[0] == null)) extensions = null;
 
         File f;
 
-        if (filename.equals("#")) {
+        if (filename.equals("#") && player != null) {
             if (isSave) {
                 f = player.openFileSaveDialog(extensions);
             } else {
