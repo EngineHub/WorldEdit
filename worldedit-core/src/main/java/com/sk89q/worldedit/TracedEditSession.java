@@ -36,6 +36,7 @@ public class TracedEditSession extends EditSession {
 
     @Override
     protected void finalize() throws Throwable {
+        super.finalize();
         if (!isQueueEnabled() && !isBatchingChunks()) {
             return;
         }
