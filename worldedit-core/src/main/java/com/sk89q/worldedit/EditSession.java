@@ -234,6 +234,16 @@ public class EditSession implements Extent, AutoCloseable {
         return event.getExtent();
     }
 
+    // pkg private for TracedEditSession only
+
+    ChunkBatchingExtent getChunkBatchingExtent() {
+        return chunkBatchingExtent;
+    }
+
+    MultiStageReorder getReorderExtent() {
+        return reorderExtent;
+    }
+
     /**
      * Turns on specific features for a normal WorldEdit session, such as
      * {@link #enableQueue() queuing} and {@link #setBatchingChunks(boolean)

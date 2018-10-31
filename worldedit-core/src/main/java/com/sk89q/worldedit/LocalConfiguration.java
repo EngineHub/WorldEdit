@@ -100,6 +100,7 @@ public abstract class LocalConfiguration {
     };
 
     public boolean profile = false;
+    public boolean traceUnflushedSessions = false;
     public Set<String> disallowedBlocks = new HashSet<>();
     public int defaultChangeLimit = -1;
     public int maxChangeLimit = -1;

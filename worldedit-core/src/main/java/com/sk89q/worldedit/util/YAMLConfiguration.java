@@ -54,6 +54,7 @@ public class YAMLConfiguration extends LocalConfiguration {
         }
 
         profile = config.getBoolean("debug", profile);
+        traceUnflushedSessions = config.getBoolean("debugging.trace-unflushed-sessions", traceUnflushedSessions);
         wandItem = convertLegacyItem(config.getString("wand-item", wandItem));
 
         defaultChangeLimit = Math.max(-1, config.getInt(

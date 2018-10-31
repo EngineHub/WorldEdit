@@ -152,21 +152,24 @@ public class EditSessionFactory {
 
         @Override
         public EditSession getEditSession(World world, int maxBlocks) {
-            return new EditSession(eventBus, world, maxBlocks, null, new EditSessionEvent(world, null, maxBlocks, null));
+            return getEditSession(world, maxBlocks, null, null);
         }
 
         @Override
         public EditSession getEditSession(World world, int maxBlocks, Player player) {
-            return new EditSession(eventBus, world, maxBlocks, null, new EditSessionEvent(world, player, maxBlocks, null));
+            return getEditSession(world, maxBlocks, null, player);
         }
 
         @Override
         public EditSession getEditSession(World world, int maxBlocks, BlockBag blockBag) {
-            return new EditSession(eventBus, world, maxBlocks, blockBag, new EditSessionEvent(world, null, maxBlocks, null));
+            return getEditSession(world, maxBlocks, blockBag, null);
         }
 
         @Override
         public EditSession getEditSession(World world, int maxBlocks, BlockBag blockBag, Player player) {
+            if (WorldEdit.getInstance().getConfiguration().traceUnflushedSessions) {
+                return new TracedEditSession(eventBus, world, maxBlocks, blockBag, new EditSessionEvent(world, player, maxBlocks, null));
+            }
             return new EditSession(eventBus, world, maxBlocks, blockBag, new EditSessionEvent(world, player, maxBlocks, null));
         }
 

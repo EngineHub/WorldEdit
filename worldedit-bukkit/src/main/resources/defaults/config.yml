@@ -139,6 +139,9 @@ history:
 calculation:
     timeout: 100
 
+debugging:
+    trace-unflushed-sessions: false
+
 wand-item: minecraft:wooden_axe
 shell-save-type:
 no-double-slash: false

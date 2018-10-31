@@ -73,6 +73,10 @@ public class ChunkBatchingExtent extends AbstractDelegateExtent {
         this.enabled = enabled;
     }
 
+    public boolean commitRequired() {
+        return batches.size() > 0;
+    }
+
     @Override
     public boolean setBlock(Vector location, BlockStateHolder block) throws WorldEditException {
         if (!enabled) {
