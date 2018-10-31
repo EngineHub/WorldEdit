@@ -79,15 +79,17 @@ public class BlockDataCyler implements DoubleActionBlockTool {
                 index = (index + 1) % currentProperty.getValues().size();
                 BlockState newBlock = block.with(currentProperty, currentProperty.getValues().get(index));
 
-                EditSession editSession = session.createEditSession(player);
+                try (EditSession editSession = session.createEditSession(player)) {
+                    editSession.disableBuffering();
 
-                try {
-                    editSession.setBlock(clicked.toVector(), newBlock);
-                    player.print("Value of " + currentProperty.getName() + " is now " + currentProperty.getValues().get(index).toString());
-                } catch (MaxChangedBlocksException e) {
-                    player.printError("Max blocks change limit reached.");
-                } finally {
-                    session.remember(editSession);
+                    try {
+                        editSession.setBlock(clicked.toVector(), newBlock);
+                        player.print("Value of " + currentProperty.getName() + " is now " + currentProperty.getValues().get(index).toString());
+                    } catch (MaxChangedBlocksException e) {
+                        player.printError("Max blocks change limit reached.");
+                    } finally {
+                        session.remember(editSession);
+                    }
                 }
             } else {
                 List<Property<?>> properties = Lists.newArrayList(block.getStates().keySet());

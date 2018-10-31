@@ -69,15 +69,15 @@ public class FloodFillTool implements BlockTool {
             return true;
         }
 
-        EditSession editSession = session.createEditSession(player);
-
-        try {
-            recurse(editSession, clicked.toVector().toBlockVector(),
-                    clicked.toVector(), range, initialType, new HashSet<>());
-        } catch (MaxChangedBlocksException e) {
-            player.printError("Max blocks change limit reached.");
-        } finally {
-            session.remember(editSession);
+        try (EditSession editSession = session.createEditSession(player)) {
+            try {
+                recurse(editSession, clicked.toVector().toBlockVector(),
+                        clicked.toVector(), range, initialType, new HashSet<>());
+            } catch (MaxChangedBlocksException e) {
+                player.printError("Max blocks change limit reached.");
+            } finally {
+                session.remember(editSession);
+            }
         }
 
         return true;

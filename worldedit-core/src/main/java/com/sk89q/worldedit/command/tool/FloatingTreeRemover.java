@@ -76,25 +76,25 @@ public class FloatingTreeRemover implements BlockTool {
             return true;
         }
 
-        final EditSession editSession = session.createEditSession(player);
-
-        try {
-            final Set<Vector> blockSet = bfs(world, clicked.toVector());
-            if (blockSet == null) {
-                player.printError("That's not a floating tree.");
-                return true;
-            }
-
-            for (Vector blockVector : blockSet) {
-                final BlockState otherState = editSession.getBlock(blockVector);
-                if (isTreeBlock(otherState.getBlockType())) {
-                    editSession.setBlock(blockVector, BlockTypes.AIR.getDefaultState());
+        try (EditSession editSession = session.createEditSession(player)) {
+            try {
+                final Set<Vector> blockSet = bfs(world, clicked.toVector());
+                if (blockSet == null) {
+                    player.printError("That's not a floating tree.");
+                    return true;
                 }
+
+                for (Vector blockVector : blockSet) {
+                    final BlockState otherState = editSession.getBlock(blockVector);
+                    if (isTreeBlock(otherState.getBlockType())) {
+                        editSession.setBlock(blockVector, BlockTypes.AIR.getDefaultState());
+                    }
+                }
+            } catch (MaxChangedBlocksException e) {
+                player.printError("Max blocks change limit reached.");
+            } finally {
+                session.remember(editSession);
             }
-        } catch (MaxChangedBlocksException e) {
-            player.printError("Max blocks change limit reached.");
-        } finally {
-            session.remember(editSession);
         }
 
         return true;

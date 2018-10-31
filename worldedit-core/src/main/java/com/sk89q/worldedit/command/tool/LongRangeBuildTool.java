@@ -53,8 +53,8 @@ public class LongRangeBuildTool extends BrushTool implements DoubleActionTraceTo
     public boolean actSecondary(Platform server, LocalConfiguration config, Player player, LocalSession session) {
         Location pos = getTargetFace(player);
         if (pos == null) return false;
-        EditSession eS = session.createEditSession(player);
-        try {
+        try (EditSession eS = session.createEditSession(player)) {
+            eS.disableBuffering();
             BlockStateHolder applied = secondary.apply(pos.toVector());
             if (applied.getBlockType().getMaterial().isAir()) {
                 eS.setBlock(pos.toVector(), secondary);
@@ -73,8 +73,8 @@ public class LongRangeBuildTool extends BrushTool implements DoubleActionTraceTo
     public boolean actPrimary(Platform server, LocalConfiguration config, Player player, LocalSession session) {
         Location pos = getTargetFace(player);
         if (pos == null) return false;
-        EditSession eS = session.createEditSession(player);
-        try {
+        try (EditSession eS = session.createEditSession(player)) {
+            eS.disableBuffering();
             BlockStateHolder applied = primary.apply(pos.toVector());
             if (applied.getBlockType().getMaterial().isAir()) {
                 eS.setBlock(pos.toVector(), primary);
