@@ -104,7 +104,6 @@ import com.sk89q.worldedit.util.eventbus.EventBus;
 import com.sk89q.worldedit.world.NullWorld;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.biome.BaseBiome;
-import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockCategories;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
@@ -113,8 +112,6 @@ import com.sk89q.worldedit.world.block.BlockTypes;
 import com.sk89q.worldedit.world.registry.LegacyMapper;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -234,14 +231,15 @@ public class EditSession implements Extent, AutoCloseable {
         return event.getExtent();
     }
 
-    // pkg private for TracedEditSession only
-
-    ChunkBatchingExtent getChunkBatchingExtent() {
-        return chunkBatchingExtent;
-    }
-
-    MultiStageReorder getReorderExtent() {
-        return reorderExtent;
+    // pkg private for TracedEditSession only, may later become public API
+    boolean commitRequired() {
+        if (isQueueEnabled() && reorderExtent.commitRequired()) {
+            return true;
+        }
+        if (isBatchingChunks() && chunkBatchingExtent.commitRequired()) {
+            return true;
+        }
+        return false;
     }
 
     /**

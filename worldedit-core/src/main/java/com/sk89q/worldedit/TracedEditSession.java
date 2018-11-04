@@ -37,11 +37,8 @@ public class TracedEditSession extends EditSession {
     @Override
     protected void finalize() throws Throwable {
         super.finalize();
-        if (!isQueueEnabled() && !isBatchingChunks()) {
-            return;
-        }
 
-        if (getChunkBatchingExtent().commitRequired() || getReorderExtent().commitRequired()) {
+        if (commitRequired()) {
             WorldEdit.logger.warning("####### LEFTOVER BUFFER BLOCKS DETECTED #######");
             WorldEdit.logger.warning("This means that some code did not flush their EditSession.");
             WorldEdit.logger.log(Level.WARNING, "Here is a stacktrace from the creation of this EditSession:", stacktrace);
