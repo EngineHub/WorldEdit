@@ -93,6 +93,10 @@ public class MultiStageReorder extends AbstractDelegateExtent implements Reorder
         this.enabled = enabled;
     }
 
+    public boolean commitRequired() {
+        return stage1.size() > 0 || stage2.size() > 0 || stage3.size() > 0;
+    }
+
     @Override
     public boolean setBlock(BlockVector3 location, BlockStateHolder block) throws WorldEditException {
         BlockState existing = getBlock(location);

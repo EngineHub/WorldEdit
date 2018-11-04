@@ -75,6 +75,7 @@ public class PropertiesConfiguration extends LocalConfiguration {
         loadExtra();
 
         profile = getBool("profile", profile);
+        traceUnflushedSessions = getBool("trace-unflushed-sessions", traceUnflushedSessions);
         disallowedBlocks = getStringSet("disallowed-blocks", defaultDisallowedBlocks);
         defaultChangeLimit = getInt("default-max-changed-blocks", defaultChangeLimit);
         maxChangeLimit = getInt("max-changed-blocks", maxChangeLimit);

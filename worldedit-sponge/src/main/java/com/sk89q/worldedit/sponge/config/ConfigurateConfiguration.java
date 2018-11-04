@@ -58,6 +58,7 @@ public class ConfigurateConfiguration extends LocalConfiguration {
         }
 
         profile = node.getNode("debug").getBoolean(profile);
+        traceUnflushedSessions = node.getNode("debugging", "trace-unflushed-sessions").getBoolean(traceUnflushedSessions);
         wandItem = node.getNode("wand-item").getString(wandItem);
         try {
             wandItem = LegacyMapper.getInstance().getItemFromLegacy(Integer.parseInt(wandItem)).getId();
