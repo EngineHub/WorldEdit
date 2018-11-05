@@ -20,6 +20,7 @@
 package com.sk89q.util.yaml;
 
 import com.sk89q.worldedit.math.BlockVector2;
+import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.Vector2;
 import com.sk89q.worldedit.math.Vector3;
 
@@ -117,6 +118,25 @@ public class YAMLNode {
             out.put("x", vec.getX());
             out.put("y", vec.getY());
             out.put("z", vec.getZ());
+            return out;
+        } else if (value instanceof BlockVector3) {
+            Map<String, Integer> out = new LinkedHashMap<>();
+            BlockVector3 vec = (BlockVector3) value;
+            out.put("x", vec.getBlockX());
+            out.put("y", vec.getBlockY());
+            out.put("z", vec.getBlockZ());
+            return out;
+        } else if (value instanceof Vector2) {
+            Map<String, Double> out = new LinkedHashMap<>();
+            Vector2 vec = (Vector2) value;
+            out.put("x", vec.getX());
+            out.put("z", vec.getZ());
+            return out;
+        } else if (value instanceof BlockVector2) {
+            Map<String, Integer> out = new LinkedHashMap<>();
+            BlockVector2 vec = (BlockVector2) value;
+            out.put("x", vec.getBlockX());
+            out.put("z", vec.getBlockZ());
             return out;
         }
 
