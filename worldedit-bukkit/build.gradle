@@ -4,7 +4,7 @@ apply plugin: 'maven'
 
 repositories {
     maven { url "https://hub.spigotmc.org/nexus/content/groups/public" }
-    maven { url "https://jitpack.io" }
+    maven { url "https://repo.codemc.org/repository/maven-public" }
     maven { url 'https://papermc.io/repo/repository/maven-public/' }
 }
 
@@ -12,7 +12,7 @@ dependencies {
     compile project(':worldedit-core')
     compile 'com.sk89q:dummypermscompat:1.8'
     compile 'org.bukkit:bukkit:1.13-R0.1-SNAPSHOT' // zzz
-    compile 'org.bstats.bStats-Metrics:bstats-bukkit:1.3'
+    compile 'org.bstats:bstats-bukkit:1.4'
     compile "io.papermc:paperlib:1.0.1"
     testCompile 'org.mockito:mockito-core:1.9.0-rc1'
 }
@@ -39,7 +39,7 @@ shadowJar {
     dependencies {
         include(dependency(':worldedit-core'))
         relocate ("org.bstats", "com.sk89q.worldedit.bukkit.bstats") {
-            include(dependency("org.bstats.bStats-Metrics:bstats-bukkit:1.3"))
+            include(dependency("org.bstats:bstats-bukkit:1.4"))
         }
         relocate ("io.papermc.lib", "com.sk89q.worldedit.bukkit.paperlib") {
             include(dependency("io.papermc:paperlib:1.0.1"))
