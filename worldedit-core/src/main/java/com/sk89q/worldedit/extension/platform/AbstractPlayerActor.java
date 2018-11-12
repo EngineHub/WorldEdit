@@ -20,13 +20,13 @@
 package com.sk89q.worldedit.extension.platform;
 
 import com.sk89q.worldedit.NotABlockException;
-import com.sk89q.worldedit.PlayerDirection;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.internal.cui.CUIEvent;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.Vector3;
+import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.util.HandSide;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.TargetBlock;
@@ -61,25 +61,25 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
      * @param rot yaw
      * @return the direction
      */
-    private static PlayerDirection getDirection(double rot) {
+    private static Direction getDirection(double rot) {
         if (0 <= rot && rot < 22.5) {
-            return PlayerDirection.SOUTH;
+            return Direction.SOUTH;
         } else if (22.5 <= rot && rot < 67.5) {
-            return PlayerDirection.SOUTH_WEST;
+            return Direction.SOUTHWEST;
         } else if (67.5 <= rot && rot < 112.5) {
-            return PlayerDirection.WEST;
+            return Direction.WEST;
         } else if (112.5 <= rot && rot < 157.5) {
-            return PlayerDirection.NORTH_WEST;
+            return Direction.NORTHWEST;
         } else if (157.5 <= rot && rot < 202.5) {
-            return PlayerDirection.NORTH;
+            return Direction.NORTH;
         } else if (202.5 <= rot && rot < 247.5) {
-            return PlayerDirection.NORTH_EAST;
+            return Direction.NORTHEAST;
         } else if (247.5 <= rot && rot < 292.5) {
-            return PlayerDirection.EAST;
+            return Direction.EAST;
         } else if (292.5 <= rot && rot < 337.5) {
-            return PlayerDirection.SOUTH_EAST;
+            return Direction.SOUTHEAST;
         } else if (337.5 <= rot && rot < 360.0) {
-            return PlayerDirection.SOUTH;
+            return Direction.SOUTH;
         } else {
             return null;
         }
@@ -345,17 +345,17 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
     }
 
     @Override
-    public PlayerDirection getCardinalDirection() {
+    public Direction getCardinalDirection() {
         return getCardinalDirection(0);
     }
 
     @Override
-    public PlayerDirection getCardinalDirection(int yawOffset) {
+    public Direction getCardinalDirection(int yawOffset) {
         if (getLocation().getPitch() > 67.5) {
-            return PlayerDirection.DOWN;
+            return Direction.DOWN;
         }
         if (getLocation().getPitch() < -67.5) {
-            return PlayerDirection.UP;
+            return Direction.UP;
         }
 
         // From hey0's code

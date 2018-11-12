@@ -275,7 +275,7 @@ public class RegionCommands {
     public void move(Player player, EditSession editSession, LocalSession session,
                      @Selection Region region,
                      @Optional("1") @Range(min = 1) int count,
-                     @Optional(Direction.AIM) @Direction BlockVector3 direction,
+                     @Optional(Direction.AIM) @Direction(includeDiagonals = true) BlockVector3 direction,
                      @Optional("air") BlockStateHolder replace,
                      @Switch('s') boolean moveSelection) throws WorldEditException {
 
@@ -313,7 +313,7 @@ public class RegionCommands {
     public void stack(Player player, EditSession editSession, LocalSession session,
                       @Selection Region region,
                       @Optional("1") @Range(min = 1) int count,
-                      @Optional(Direction.AIM) @Direction BlockVector3 direction,
+                      @Optional(Direction.AIM) @Direction(includeDiagonals = true) BlockVector3 direction,
                       @Switch('s') boolean moveSelection,
                       @Switch('a') boolean ignoreAirBlocks) throws WorldEditException {
         int affected = editSession.stackCuboidRegion(region, direction, count, !ignoreAirBlocks);

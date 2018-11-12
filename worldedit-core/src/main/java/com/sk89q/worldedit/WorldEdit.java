@@ -46,6 +46,7 @@ import com.sk89q.worldedit.scripting.CraftScriptEngine;
 import com.sk89q.worldedit.scripting.RhinoCraftScriptEngine;
 import com.sk89q.worldedit.session.SessionManager;
 import com.sk89q.worldedit.session.request.Request;
+import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.eventbus.EventBus;
 import com.sk89q.worldedit.util.io.file.FileSelectionAbortedException;
@@ -374,20 +375,34 @@ public class WorldEdit {
     public BlockVector3 getDirection(Player player, String dirStr) throws UnknownDirectionException {
         dirStr = dirStr.toLowerCase();
 
-        final PlayerDirection dir = getPlayerDirection(player, dirStr);
+        final Direction dir = getPlayerDirection(player, dirStr);
 
-        switch (dir) {
-        case WEST:
-        case EAST:
-        case SOUTH:
-        case NORTH:
-        case UP:
-        case DOWN:
-            return dir.vector().toBlockPoint();
-
-        default:
+        if (dir.isUpright() || dir.isCardinal()) {
+            return dir.toBlockVector();
+        } else {
             throw new UnknownDirectionException(dir.name());
         }
+    }
+
+    /**
+     * Get the direction vector for a player's direction. May return
+     * null if a direction could not be found.
+     *
+     * @param player the player
+     * @param dirStr the direction string
+     * @return a direction vector
+     * @throws UnknownDirectionException thrown if the direction is not known
+     */
+    public BlockVector3 getDiagonalDirection(Player player, String dirStr) throws UnknownDirectionException {
+        dirStr = dirStr.toLowerCase();
+
+        final Direction dir = getPlayerDirection(player, dirStr);
+
+        if (dir.isCardinal() || dir.isOrdinal() || dir.isUpright()) {
+            return dir.toBlockVector();
+        }
+
+        throw new UnknownDirectionException(dir.name());
     }
 
     /**
@@ -399,46 +414,46 @@ public class WorldEdit {
      * @return a direction enum value
      * @throws UnknownDirectionException thrown if the direction is not known
      */
-    private PlayerDirection getPlayerDirection(Player player, String dirStr) throws UnknownDirectionException {
-        final PlayerDirection dir;
+    private Direction getPlayerDirection(Player player, String dirStr) throws UnknownDirectionException {
+        final Direction dir;
 
         switch (dirStr.charAt(0)) {
         case 'w':
-            dir = PlayerDirection.WEST;
+            dir = Direction.WEST;
             break;
 
         case 'e':
-            dir = PlayerDirection.EAST;
+            dir = Direction.EAST;
             break;
 
         case 's':
             if (dirStr.indexOf('w') > 0) {
-                return PlayerDirection.SOUTH_WEST;
+                return Direction.SOUTHWEST;
             }
 
             if (dirStr.indexOf('e') > 0) {
-                return PlayerDirection.SOUTH_EAST;
+                return Direction.SOUTHEAST;
             }
-            dir = PlayerDirection.SOUTH;
+            dir = Direction.SOUTH;
             break;
 
         case 'n':
             if (dirStr.indexOf('w') > 0) {
-                return PlayerDirection.NORTH_WEST;
+                return Direction.NORTHWEST;
             }
 
             if (dirStr.indexOf('e') > 0) {
-                return PlayerDirection.NORTH_EAST;
+                return Direction.NORTHEAST;
             }
-            dir = PlayerDirection.NORTH;
+            dir = Direction.NORTH;
             break;
 
         case 'u':
-            dir = PlayerDirection.UP;
+            dir = Direction.UP;
             break;
 
         case 'd':
-            dir = PlayerDirection.DOWN;
+            dir = Direction.DOWN;
             break;
 
         case 'm': // me
