@@ -31,10 +31,9 @@ import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.block.BlockTypes;
 
-import java.util.ArrayDeque;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Queue;
 import java.util.Set;
 
 /**
@@ -43,7 +42,7 @@ import java.util.Set;
 public class FastModeExtent extends AbstractDelegateExtent {
 
     private final World world;
-    private final Queue<BlockVector3> positions = new ArrayDeque<>();
+    private final Set<BlockVector3> positions = new HashSet<>();
     private final Set<BlockVector2> dirtyChunks = new HashSet<>();
     private boolean enabled = true;
     private boolean postEditSimulation;
@@ -106,7 +105,7 @@ public class FastModeExtent extends AbstractDelegateExtent {
 
             if (world.setBlock(location, block, false)) {
                 if (postEditSimulation) {
-                    positions.offer(location);
+                    positions.add(location);
                 }
                 return true;
             }
@@ -115,6 +114,10 @@ public class FastModeExtent extends AbstractDelegateExtent {
         } else {
             return world.setBlock(location, block, true);
         }
+    }
+
+    public boolean commitRequired() {
+        return !dirtyChunks.isEmpty() || !positions.isEmpty();
     }
 
     @Override
@@ -127,9 +130,11 @@ public class FastModeExtent extends AbstractDelegateExtent {
                 }
 
                 if (postEditSimulation) {
-                    while (run.shouldContinue() && !positions.isEmpty()) {
-                        BlockVector3 position = positions.poll(); // Remove from queue
+                    Iterator<BlockVector3> positionIterator = positions.iterator();
+                    while (run.shouldContinue() && positionIterator.hasNext()) {
+                        BlockVector3 position = positionIterator.next();
                         world.notifyAndLightBlock(position, BlockTypes.AIR.getDefaultState());
+                        positionIterator.remove();
                     }
 
                     return !positions.isEmpty() ? this : null;

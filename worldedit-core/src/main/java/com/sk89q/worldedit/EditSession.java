@@ -246,6 +246,9 @@ public class EditSession implements Extent, AutoCloseable {
         if (isBatchingChunks() && chunkBatchingExtent.commitRequired()) {
             return true;
         }
+        if (hasFastMode() && fastModeExtent.commitRequired()) {
+            return true;
+        }
         return false;
     }
 
