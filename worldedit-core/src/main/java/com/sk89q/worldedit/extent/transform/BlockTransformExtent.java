@@ -30,6 +30,7 @@ import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.math.transform.Transform;
 import com.sk89q.worldedit.registry.state.BooleanProperty;
 import com.sk89q.worldedit.registry.state.DirectionalProperty;
+import com.sk89q.worldedit.registry.state.EnumProperty;
 import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.world.block.BaseBlock;
@@ -48,8 +49,6 @@ import javax.annotation.Nullable;
  * given transform.
  */
 public class BlockTransformExtent extends AbstractDelegateExtent {
-
-    private static final double RIGHT_ANGLE = Math.toRadians(90);
 
     private final Transform transform;
 
@@ -129,13 +128,46 @@ public class BlockTransformExtent extends AbstractDelegateExtent {
 
         List<? extends Property> properties = block.getBlockType().getProperties();
 
-        for (Property property : properties) {
+        for (Property<?> property : properties) {
             if (property instanceof DirectionalProperty) {
                 Direction value = (Direction) block.getState(property);
                 if (value != null) {
-                    Vector3 newValue = getNewStateValue((DirectionalProperty) property, transform, value.toVector());
+                    Vector3 newValue = getNewStateValue((List<Direction>) property.getValues(), transform, value.toVector());
                     if (newValue != null) {
                         changedBlock = (T) changedBlock.with(property, Direction.findClosest(newValue, Direction.Flag.ALL));
+                    }
+                }
+            } else if (property instanceof EnumProperty) {
+                if (property.getName().equals("axis")) {
+                    // We have an axis - this is something we can do the rotations to :sunglasses:
+                    Direction value = null;
+                    switch ((String) block.getState(property)) {
+                        case "x":
+                            value = Direction.EAST;
+                            break;
+                        case "y":
+                            value = Direction.UP;
+                            break;
+                        case "z":
+                            value = Direction.NORTH;
+                            break;
+                    }
+                    if (value != null) {
+                        Vector3 newValue = getNewStateValue(Direction.valuesOf(Direction.Flag.UPRIGHT | Direction.Flag.CARDINAL), transform, value.toVector());
+                        if (newValue != null) {
+                            String axis = null;
+                            Direction newDir = Direction.findClosest(newValue, Direction.Flag.UPRIGHT | Direction.Flag.CARDINAL);
+                            if (newDir == Direction.NORTH || newDir == Direction.SOUTH) {
+                                axis = "z";
+                            } else if (newDir == Direction.EAST || newDir == Direction.WEST) {
+                                axis = "x";
+                            } else if (newDir == Direction.UP || newDir == Direction.DOWN) {
+                                axis = "y";
+                            }
+                            if (axis != null) {
+                                changedBlock = (T) changedBlock.with(property, axis);
+                            }
+                        }
                     }
                 }
             }
@@ -166,19 +198,19 @@ public class BlockTransformExtent extends AbstractDelegateExtent {
     /**
      * Get the new value with the transformed direction.
      *
-     * @param state the state
+     * @param allowedStates the allowed states
      * @param transform the transform
      * @param oldDirection the old direction to transform
      * @return a new state or null if none could be found
      */
     @Nullable
-    private static Vector3 getNewStateValue(DirectionalProperty state, Transform transform, Vector3 oldDirection) {
+    private static Vector3 getNewStateValue(List<Direction> allowedStates, Transform transform, Vector3 oldDirection) {
         Vector3 newDirection = transform.apply(oldDirection).subtract(transform.apply(Vector3.ZERO)).normalize();
         Vector3 newValue = null;
         double closest = -2;
         boolean found = false;
 
-        for (Direction v : state.getValues()) {
+        for (Direction v : allowedStates) {
             double dot = v.toVector().normalize().dot(newDirection);
             if (dot >= closest) {
                 closest = dot;

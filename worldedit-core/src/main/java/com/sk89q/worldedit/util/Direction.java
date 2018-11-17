@@ -22,6 +22,9 @@ package com.sk89q.worldedit.util;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.Vector3;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.annotation.Nullable;
 
 /**
@@ -148,6 +151,23 @@ public enum Direction {
         }
 
         return closest;
+    }
+
+    /**
+     * Gets all directions with the given flags.
+     *
+     * @param flags The flags
+     * @return The directions that fit the flags
+     */
+    public static List<Direction> valuesOf(int flags) {
+        List<Direction> directions = new ArrayList<>();
+        for (Direction direction : values()) {
+            if ((~flags & direction.flags) == 0) {
+                directions.add(direction);
+            }
+        }
+
+        return directions;
     }
 
     /**
