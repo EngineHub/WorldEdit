@@ -33,7 +33,7 @@ public class LeftClickAirEventMessage implements IMessage {
 
         @Override
         public IMessage onMessage(LeftClickAirEventMessage message, final MessageContext ctx) {
-            ctx.getServerHandler().player.mcServer.addScheduledTask(new Runnable() {
+            ctx.getServerHandler().player.server.addScheduledTask(new Runnable() {
 
                 @Override
                 public void run() {

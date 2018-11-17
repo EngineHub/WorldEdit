@@ -164,7 +164,7 @@ public class ForgeWorld extends AbstractWorld {
         int z = position.getBlockZ();
 
         // First set the block
-        Chunk chunk = world.getChunkFromChunkCoords(x >> 4, z >> 4);
+        Chunk chunk = world.getChunk(x >> 4, z >> 4);
         BlockPos pos = new BlockPos(x, y, z);
         IBlockState old = chunk.getBlockState(pos);
         @SuppressWarnings("deprecation")
@@ -226,7 +226,7 @@ public class ForgeWorld extends AbstractWorld {
         checkNotNull(position);
         checkNotNull(biome);
 
-        Chunk chunk = getWorld().getChunkFromBlockCoords(new BlockPos(position.getBlockX(), 0, position.getBlockZ()));
+        Chunk chunk = getWorld().getChunk(new BlockPos(position.getBlockX(), 0, position.getBlockZ()));
         if ((chunk != null) && (chunk.isLoaded())) {
             chunk.getBiomeArray()[((position.getBlockZ() & 0xF) << 4 | position.getBlockX() & 0xF)] = (byte) biome.getId();
             return true;
@@ -284,7 +284,7 @@ public class ForgeWorld extends AbstractWorld {
         // We need to also pull one more chunk in every direction
         CuboidRegion expandedPreGen = new CuboidRegion(region.getMinimumPoint().subtract(16, 0, 16), region.getMaximumPoint().add(16, 0, 16));
         for (Vector2D chunk : expandedPreGen.getChunks()) {
-            freshWorld.getChunkFromChunkCoords(chunk.getBlockX(), chunk.getBlockZ());
+            freshWorld.getChunk(chunk.getBlockX(), chunk.getBlockZ());
         }
         
         ForgeWorld from = new ForgeWorld(freshWorld);

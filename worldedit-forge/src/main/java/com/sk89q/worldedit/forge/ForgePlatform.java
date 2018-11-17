@@ -79,14 +79,14 @@ class ForgePlatform extends AbstractPlatform implements MultiUserPlatform {
 
         for (Item item : Item.REGISTRY) {
             if (item == null) continue;
-            if (item.getUnlocalizedName() == null) continue;
-            if (item.getUnlocalizedName().startsWith("item.")) {
-                if (item.getUnlocalizedName().equalsIgnoreCase("item." + name)) return Item.getIdFromItem(item);
+            if (item.getTranslationKey() == null) continue;
+            if (item.getTranslationKey().startsWith("item.")) {
+                if (item.getTranslationKey().equalsIgnoreCase("item." + name)) return Item.getIdFromItem(item);
             }
-            if (item.getUnlocalizedName().startsWith("tile.")) {
-                if (item.getUnlocalizedName().equalsIgnoreCase("tile." + name)) return Item.getIdFromItem(item);
+            if (item.getTranslationKey().startsWith("tile.")) {
+                if (item.getTranslationKey().equalsIgnoreCase("tile." + name)) return Item.getIdFromItem(item);
             }
-            if (item.getUnlocalizedName().equalsIgnoreCase(name)) return Item.getIdFromItem(item);
+            if (item.getTranslationKey().equalsIgnoreCase(name)) return Item.getIdFromItem(item);
         }
         return -1;
     }
