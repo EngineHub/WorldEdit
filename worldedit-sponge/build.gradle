@@ -8,7 +8,6 @@ buildscript {
 }
 
 plugins {
-    id 'signing'
     id 'org.spongepowered.plugin' version '0.9.0'
 }
 
@@ -50,8 +49,12 @@ artifacts {
     archives shadowJar
 }
 
-signing {
-    required false
-    sign shadowJar
-    artifactoryPublish.skip = true
+if (project.hasProperty("signing")) {
+    apply plugin: 'signing'
+
+    signing {
+        sign shadowJar
+    }
+
+    build.dependsOn('signShadowJar')
 }
