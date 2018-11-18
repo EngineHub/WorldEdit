@@ -1,17 +1,17 @@
 buildscript {
     repositories {
+        mavenLocal()
         mavenCentral()
         maven { url = "http://files.minecraftforge.net/maven" }
-        maven { url = "https://oss.sonatype.org/content/repositories/snapshots/" }
         jcenter()
     }
 
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.+', changing: true
     }
 }
 
-apply plugin: 'net.minecraftforge.gradle.forge'
+apply plugin: 'net.minecraftforge.gradle'
 
 configurations.all {
 	resolutionStrategy {
@@ -19,40 +19,35 @@ configurations.all {
 	}
 }
 
+def minecraftVersion = "1.13"
+def forgeVersion = "24.0.16-1.13-pre"
+
 dependencies {
     compile project(':worldedit-core')
-    compile 'org.spongepowered:spongeapi:6.0.0-SNAPSHOT'
+
+    minecraft "net.minecraftforge.test:forge:${minecraftVersion}-${forgeVersion}"
+
     testCompile group: 'org.mockito', name: 'mockito-core', version: '1.9.0-rc1'
 }
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
-repositories {
-    maven {
-        name = "Sponge"
-        url = "https://repo.spongepowered.org/maven"
-    }
-}
-
-ext.forgeVersion = "14.22.0.2456"
-
 minecraft {
-    version = "1.12.1-${project.forgeVersion}"
-    mappings = "snapshot_20170815"
-    runDir = 'run'
+    mappings channel: 'snapshot', version: '20181117'
+//    runDir = 'run'
 
-    replaceIn "com/sk89q/worldedit/forge/ForgeWorldEdit.java"
-    replace "%VERSION%", project.version
+//    replaceIn "com/sk89q/worldedit/forge/ForgeWorldEdit.java"
+//    replace "%VERSION%", project.version
 }
 
-project.archivesBaseName = "${project.archivesBaseName}-mc${minecraft.version}"
+project.archivesBaseName = "${project.archivesBaseName}-mc${minecraftVersion}"
 
 processResources {
     from (sourceSets.main.resources.srcDirs) {
         expand 'version': project.version,
-                'mcVersion': project.minecraft.version,
-                'forgeVersion': project.forgeVersion,
+                'mcVersion': minecraftVersion,
+                'forgeVersion': forgeVersion,
                 'internalVersion': project.internalVersion
         include 'mcmod.info'
     }
@@ -76,11 +71,11 @@ shadowJar {
     }
 }
 
-reobf {
-    shadowJar {
-        mappingType = 'SEARGE'
-    }
-}
+//reobf {
+//    shadowJar {
+//        mappingType = 'SEARGE'
+//    }
+//}
 
 task deobfJar(type: Jar) {
     from sourceSets.main.output
