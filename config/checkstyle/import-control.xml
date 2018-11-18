@@ -30,6 +30,7 @@
     <allow pkg="com.nijiko"/>
     <allow pkg="com.nijikokun"/>
     <allow pkg="ru.tehkode"/>
+    <allow pkg="net.milkbowl"/>
   </subpackage>
 
   <subpackage name="worldedit">
