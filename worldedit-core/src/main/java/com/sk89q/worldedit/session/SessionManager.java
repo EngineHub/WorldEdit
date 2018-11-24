@@ -156,10 +156,9 @@ public class SessionManager {
             session.setConfiguration(config);
             session.setBlockChangeLimit(config.defaultChangeLimit);
 
-            // Remember the session if the session is still active
-            if (sessionKey.isActive()) {
-                sessions.put(getKey(owner), new SessionHolder(sessionKey, session));
-            }
+            // Remember the session regardless of if it's currently active or not.
+            // And have the SessionTracker FLUSH inactive sessions.
+            sessions.put(getKey(owner), new SessionHolder(sessionKey, session));
         }
 
         // Set the limit on the number of blocks that an operation can
