@@ -90,7 +90,7 @@ public class VaultResolver implements PermissionsResolver {
 
     @Override
     public boolean hasPermission(String worldName, OfflinePlayer player, String permission) {
-        return hasPermission(worldName, player.getName(), permission);
+        return perms.playerHas(worldName, player, permission);
     }
 
     @Override
