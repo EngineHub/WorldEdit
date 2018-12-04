@@ -93,6 +93,7 @@ public class LocalSession {
     private transient Mask mask;
     private transient TimeZone timezone = TimeZone.getDefault();
     private transient BlockVector3 cuiTemporaryBlock;
+    private transient EditSession.ReorderMode reorderMode = EditSession.ReorderMode.MULTI_STAGE;
 
     // Saved properties
     private String lastScript;
@@ -875,6 +876,24 @@ public class LocalSession {
      */
     public void setFastMode(boolean fastMode) {
         this.fastMode = fastMode;
+    }
+
+    /**
+     * Gets the reorder mode of the session.
+     *
+     * @return The reorder mode
+     */
+    public EditSession.ReorderMode getReorderMode() {
+        return reorderMode;
+    }
+
+    /**
+     * Sets the reorder mode of the session.
+     *
+     * @param reorderMode The reorder mode
+     */
+    public void setReorderMode(EditSession.ReorderMode reorderMode) {
+        this.reorderMode = reorderMode;
     }
 
     /**

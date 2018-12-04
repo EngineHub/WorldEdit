@@ -116,6 +116,30 @@ public class GeneralCommands {
     }
 
     @Command(
+            aliases = { "/reorder" },
+            usage = "[multi|fast|none]",
+            desc = "Sets the reorder mode of WorldEdit",
+            min = 0,
+            max = 1
+    )
+    @CommandPermissions("worldedit.reorder")
+    public void reorderMode(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
+        String newState = args.getString(0, null);
+        if (newState == null) {
+            player.print("The reorder mode is " + session.getReorderMode().getName());
+        } else {
+            EditSession.ReorderMode reorderMode = EditSession.ReorderMode.getFromName(newState);
+            if (reorderMode == null) {
+                player.printError("Unknown reorder mode!");
+                return;
+            }
+
+            session.setReorderMode(reorderMode);
+            player.print("The reorder mode is now " + session.getReorderMode().getName());
+        }
+    }
+
+    @Command(
             aliases = { "/drawsel" },
             usage = "[on|off]",
             desc = "Toggle drawing the current selection",

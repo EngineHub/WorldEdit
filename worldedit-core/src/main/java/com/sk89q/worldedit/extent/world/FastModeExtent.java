@@ -67,9 +67,6 @@ public class FastModeExtent extends AbstractDelegateExtent {
         checkNotNull(world);
         this.world = world;
         this.enabled = enabled;
-        if (enabled) {
-            this.postEditSimulation = true;
-        }
     }
 
     /**
@@ -100,11 +97,11 @@ public class FastModeExtent extends AbstractDelegateExtent {
 
     @Override
     public boolean setBlock(BlockVector3 location, BlockStateHolder block) throws WorldEditException {
-        if (enabled) {
+        if (enabled || postEditSimulation) {
             dirtyChunks.add(BlockVector2.at(location.getBlockX() >> 4, location.getBlockZ() >> 4));
 
             if (world.setBlock(location, block, false)) {
-                if (postEditSimulation) {
+                if (!enabled && postEditSimulation) {
                     positions.add(location);
                 }
                 return true;
@@ -129,7 +126,7 @@ public class FastModeExtent extends AbstractDelegateExtent {
                     world.fixAfterFastMode(dirtyChunks);
                 }
 
-                if (postEditSimulation) {
+                if (!enabled && postEditSimulation) {
                     Iterator<BlockVector3> positionIterator = positions.iterator();
                     while (run.shouldContinue() && positionIterator.hasNext()) {
                         BlockVector3 position = positionIterator.next();

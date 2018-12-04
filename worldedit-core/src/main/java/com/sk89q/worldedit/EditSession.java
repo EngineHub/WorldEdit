@@ -149,6 +149,38 @@ public class EditSession implements Extent, AutoCloseable {
         BEFORE_CHANGE
     }
 
+    /**
+     * Reorder mode for {@link EditSession#setReorderMode(ReorderMode)}.
+     *
+     * MULTI_STAGE = Multi stage reorder, may not be great with mods.
+     * FAST = Use the fast mode. Good for mods.
+     * NONE = Place blocks without worrying about placement order.
+     */
+    public enum ReorderMode {
+        MULTI_STAGE("multi"),
+        FAST("fast"),
+        NONE("none");
+
+        private String name;
+
+        ReorderMode(String name) {
+            this.name = name;
+        }
+
+        public String getName() {
+            return this.name;
+        }
+
+        public static ReorderMode getFromName(String name) {
+            for (ReorderMode mode : values()) {
+                if (mode.getName().equalsIgnoreCase(name)) {
+                    return mode;
+                }
+            }
+            return null;
+        }
+    }
+
     @SuppressWarnings("ProtectedField")
     protected final World world;
     private final ChangeSet changeSet = new BlockOptimizedHistory();
@@ -170,7 +202,7 @@ public class EditSession implements Extent, AutoCloseable {
     private final Extent bypassHistory;
     private final Extent bypassNone;
 
-    private final boolean useFastModeCorrections;
+    private ReorderMode reorderMode = ReorderMode.MULTI_STAGE;
 
     private Mask oldMask;
 
@@ -189,13 +221,12 @@ public class EditSession implements Extent, AutoCloseable {
         checkNotNull(event);
 
         this.world = world;
-        this.useFastModeCorrections = false;
 
         if (world != null) {
             Extent extent;
 
             // These extents are ALWAYS used
-            extent = fastModeExtent = new FastModeExtent(world, useFastModeCorrections);
+            extent = fastModeExtent = new FastModeExtent(world, false);
             extent = survivalExtent = new SurvivalModeExtent(extent, world);
             extent = quirkExtent = new BlockQuirkExtent(extent, world);
             extent = chunkLoadingExtent = new ChunkLoadingExtent(extent, world);
@@ -240,13 +271,13 @@ public class EditSession implements Extent, AutoCloseable {
 
     // pkg private for TracedEditSession only, may later become public API
     boolean commitRequired() {
-        if (isQueueEnabled() && reorderExtent.commitRequired()) {
+        if (reorderExtent.commitRequired()) {
             return true;
         }
         if (isBatchingChunks() && chunkBatchingExtent.commitRequired()) {
             return true;
         }
-        if (hasFastMode() && fastModeExtent.commitRequired()) {
+        if (fastModeExtent != null && fastModeExtent.commitRequired()) {
             return true;
         }
         return false;
@@ -254,12 +285,58 @@ public class EditSession implements Extent, AutoCloseable {
 
     /**
      * Turns on specific features for a normal WorldEdit session, such as
-     * {@link #enableQueue() queuing} and {@link #setBatchingChunks(boolean)
+     * {@link #setReorderMode(ReorderMode)} reordering} and {@link #setBatchingChunks(boolean)
      * chunk batching}.
      */
     public void enableStandardMode() {
-        enableQueue();
+        setReorderMode(ReorderMode.MULTI_STAGE);
         setBatchingChunks(true);
+    }
+
+    /**
+     * Sets the {@link ReorderMode} of this EditSession.
+     *
+     * @param reorderMode The reorder mode
+     */
+    public void setReorderMode(ReorderMode reorderMode) {
+        if (reorderMode == ReorderMode.FAST && fastModeExtent == null) {
+            throw new IllegalArgumentException("An EditSession without a fast mode tried to use it for reordering!");
+        }
+        if (reorderMode == ReorderMode.MULTI_STAGE && reorderExtent == null) {
+            throw new IllegalArgumentException("An EditSession without a reorder extent tried to use it for reordering!");
+        }
+        this.reorderMode = reorderMode;
+        switch (reorderMode) {
+            case MULTI_STAGE:
+                if (fastModeExtent != null) {
+                    fastModeExtent.setPostEditSimulationEnabled(false);
+                }
+                reorderExtent.setEnabled(true);
+                break;
+            case FAST:
+                fastModeExtent.setPostEditSimulationEnabled(true);
+                if (reorderExtent != null) {
+                    reorderExtent.setEnabled(false);
+                }
+                break;
+            case NONE:
+                if (fastModeExtent != null) {
+                    fastModeExtent.setPostEditSimulationEnabled(false);
+                }
+                if (reorderExtent != null) {
+                    reorderExtent.setEnabled(false);
+                }
+                break;
+        }
+    }
+
+    /**
+     * Get the reorder mode.
+     *
+     * @return the reorder mode
+     */
+    public ReorderMode getReorderMode() {
+        return reorderMode;
     }
 
     /**
@@ -305,26 +382,31 @@ public class EditSession implements Extent, AutoCloseable {
      * @return whether the queue is enabled
      */
     public boolean isQueueEnabled() {
-        return !useFastModeCorrections && reorderExtent.isEnabled();
+        return reorderMode == ReorderMode.MULTI_STAGE && reorderExtent.isEnabled();
     }
 
     /**
      * Queue certain types of block for better reproduction of those blocks.
+     *
+     * Uses {@link ReorderMode#MULTI_STAGE}
+     * @deprecated Use {@link EditSession#setReorderMode(ReorderMode)} with MULTI_STAGE instead.
      */
+    @Deprecated
     public void enableQueue() {
-        if (!useFastModeCorrections) {
-            reorderExtent.setEnabled(true);
-        }
+        setReorderMode(ReorderMode.MULTI_STAGE);
     }
 
     /**
      * Disable the queue. This will {@linkplain #flushSession() flush the session}.
+     *
+     * @deprecated Use {@link EditSession#setReorderMode(ReorderMode)} with another mode instead.
      */
+    @Deprecated
     public void disableQueue() {
         if (isQueueEnabled()) {
             flushSession();
         }
-        reorderExtent.setEnabled(false);
+        setReorderMode(ReorderMode.NONE);
     }
 
     /**
@@ -369,14 +451,7 @@ public class EditSession implements Extent, AutoCloseable {
      */
     public void setFastMode(boolean enabled) {
         if (fastModeExtent != null) {
-            // If fast mode corrections are enabled, we're using fast mode for
-            // multipass support. Thus, we do not actually ever turn the fast mode
-            // extent off, we instead toggle post edit simulation
-            if (useFastModeCorrections) {
-                fastModeExtent.setPostEditSimulationEnabled(!enabled);
-            } else {
-                fastModeExtent.setEnabled(enabled);
-            }
+            fastModeExtent.setEnabled(enabled);
         }
     }
 
@@ -451,16 +526,15 @@ public class EditSession implements Extent, AutoCloseable {
     /**
      * Disable all buffering extents.
      *
-     * @see #disableQueue()
+     * @see #setReorderMode(ReorderMode)
      * @see #setBatchingChunks(boolean)
      */
     public void disableBuffering() {
         // We optimize here to avoid repeated calls to flushSession.
-        boolean needsFlush = isQueueEnabled() || isBatchingChunks();
-        if (needsFlush) {
+        if (commitRequired()) {
             flushSession();
         }
-        reorderExtent.setEnabled(false);
+        setReorderMode(ReorderMode.NONE);
         if (chunkBatchingExtent != null) {
             chunkBatchingExtent.setEnabled(false);
         }

@@ -99,7 +99,7 @@ public class MultiStageReorder extends AbstractDelegateExtent implements Reorder
     }
 
     public boolean commitRequired() {
-        return stages.stream().anyMatch(stage -> stage.size() > 0);
+        return enabled && stages.stream().anyMatch(stage -> stage.size() > 0);
     }
 
     /**
