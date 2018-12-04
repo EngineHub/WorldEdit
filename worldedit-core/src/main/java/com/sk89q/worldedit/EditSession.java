@@ -271,10 +271,10 @@ public class EditSession implements Extent, AutoCloseable {
 
     // pkg private for TracedEditSession only, may later become public API
     boolean commitRequired() {
-        if (reorderExtent.commitRequired()) {
+        if (reorderExtent != null && reorderExtent.commitRequired()) {
             return true;
         }
-        if (isBatchingChunks() && chunkBatchingExtent.commitRequired()) {
+        if (chunkBatchingExtent != null && chunkBatchingExtent.commitRequired()) {
             return true;
         }
         if (fastModeExtent != null && fastModeExtent.commitRequired()) {
@@ -294,7 +294,7 @@ public class EditSession implements Extent, AutoCloseable {
     }
 
     /**
-     * Sets the {@link ReorderMode} of this EditSession.
+     * Sets the {@link ReorderMode} of this EditSession, and flushes the session.
      *
      * @param reorderMode The reorder mode
      */
@@ -305,6 +305,8 @@ public class EditSession implements Extent, AutoCloseable {
         if (reorderMode == ReorderMode.MULTI_STAGE && reorderExtent == null) {
             throw new IllegalArgumentException("An EditSession without a reorder extent tried to use it for reordering!");
         }
+        flushSession();
+
         this.reorderMode = reorderMode;
         switch (reorderMode) {
             case MULTI_STAGE:
