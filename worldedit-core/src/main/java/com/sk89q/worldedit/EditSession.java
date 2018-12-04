@@ -202,7 +202,7 @@ public class EditSession implements Extent, AutoCloseable {
     private final Extent bypassHistory;
     private final Extent bypassNone;
 
-    private ReorderMode reorderMode = ReorderMode.MULTI_STAGE;
+    private ReorderMode reorderMode = ReorderMode.FAST;
 
     private Mask oldMask;
 

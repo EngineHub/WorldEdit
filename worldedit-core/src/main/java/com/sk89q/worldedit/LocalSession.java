@@ -93,7 +93,7 @@ public class LocalSession {
     private transient Mask mask;
     private transient TimeZone timezone = TimeZone.getDefault();
     private transient BlockVector3 cuiTemporaryBlock;
-    private transient EditSession.ReorderMode reorderMode = EditSession.ReorderMode.MULTI_STAGE;
+    private transient EditSession.ReorderMode reorderMode = EditSession.ReorderMode.FAST;
 
     // Saved properties
     private String lastScript;
