@@ -23,9 +23,11 @@ import com.sk89q.worldedit.world.biome.BaseBiome;
 import com.sk89q.worldedit.world.biome.BiomeData;
 import com.sk89q.worldedit.world.registry.BiomeRegistry;
 
+import net.minecraft.world.biome.Biome;
+
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
-import net.minecraft.world.biome.Biome;
 
 /**
  * Provides access to biome data in Forge.
@@ -55,6 +57,23 @@ class ForgeBiomeRegistry implements BiomeRegistry {
      * Cached biome data information.
      */
     private static class ForgeBiomeData implements BiomeData {
+
+        private static final Field biomeNameField;
+        static {
+            Field field;
+            try {
+                field = Biome.class.getDeclaredField("biomeName");
+            } catch (NoSuchFieldException e) {
+                // in live environment, try again:
+                try {
+                    field = Biome.class.getDeclaredField("field_185412_a");
+                } catch (NoSuchFieldException e1) {
+                    throw new IllegalStateException("Cannot find biomeName field!", e1);
+                }
+            }
+            field.setAccessible(true);
+            biomeNameField = field;
+        }
         private final Biome biome;
 
         /**
@@ -68,7 +87,11 @@ class ForgeBiomeRegistry implements BiomeRegistry {
 
         @Override
         public String getName() {
-            return biome.getBiomeName();
+            try {
+                return (String) biomeNameField.get(biome);
+            } catch (IllegalArgumentException | IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
