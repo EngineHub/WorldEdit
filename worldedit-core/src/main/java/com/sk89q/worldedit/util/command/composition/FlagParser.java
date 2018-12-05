@@ -183,7 +183,6 @@ public class FlagParser implements CommandExecutor<FlagData> {
             return (T) data.get(flag);
         }
 
-        @SuppressWarnings("unchecked")
         public T get(FlagData data, T fallback) {
             T value = get(data);
             if (value == null) {

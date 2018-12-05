@@ -21,10 +21,13 @@
 
 package com.sk89q.worldedit.bukkit;
 
+import com.sk89q.minecraft.util.commands.CommandLocals;
 import com.sk89q.util.StringUtil;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.entity.Player;
+import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.util.Location;
+import com.sk89q.worldedit.util.command.CommandMapping;
 import com.sk89q.worldedit.world.World;
 import org.bukkit.block.Block;
 import org.bukkit.event.Event.Result;
@@ -33,9 +36,13 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.bukkit.event.player.PlayerCommandSendEvent;
 import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
+
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Handles all events thrown in relation to a Player
@@ -97,6 +104,17 @@ public class WorldEditListener implements Listener {
                 event.setCancelled(true);
             }
         }
+    }
+
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    public void onPlayerCommand(PlayerCommandSendEvent event) {
+        CommandLocals locals = new CommandLocals();
+        locals.put(Actor.class, plugin.wrapCommandSender(event.getPlayer()));
+        Set<String> toRemove = plugin.getWorldEdit().getPlatformManager().getCommandManager().getDispatcher().getCommands().stream()
+                .filter(commandMapping -> !commandMapping.getCallable().testPermission(locals))
+                .map(CommandMapping::getPrimaryAlias)
+                .collect(Collectors.toSet());
+        event.getCommands().removeIf(toRemove::contains);
     }
 
     /**
