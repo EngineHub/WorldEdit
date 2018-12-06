@@ -86,25 +86,27 @@ public class BlockBagExtent extends AbstractDelegateExtent {
         if (blockBag != null) {
             BlockState existing = getExtent().getBlock(position);
 
-            if (!block.getBlockType().getMaterial().isAir()) {
-                try {
-                    blockBag.fetchPlacedBlock(block.toImmutableState());
-                } catch (UnplaceableBlockException e) {
-                    return false;
-                } catch (BlockBagException e) {
-                    if (!missingBlocks.containsKey(block.getBlockType())) {
-                        missingBlocks.put(block.getBlockType(), 1);
-                    } else {
-                        missingBlocks.put(block.getBlockType(), missingBlocks.get(block.getBlockType()) + 1);
+            if (!block.getBlockType().equals(existing.getBlockType())) {
+                if (!block.getBlockType().getMaterial().isAir()) {
+                    try {
+                        blockBag.fetchPlacedBlock(block.toImmutableState());
+                    } catch (UnplaceableBlockException e) {
+                        return false;
+                    } catch (BlockBagException e) {
+                        if (!missingBlocks.containsKey(block.getBlockType())) {
+                            missingBlocks.put(block.getBlockType(), 1);
+                        } else {
+                            missingBlocks.put(block.getBlockType(), missingBlocks.get(block.getBlockType()) + 1);
+                        }
+                        return false;
                     }
-                    return false;
                 }
-            }
 
-            if (!existing.getBlockType().getMaterial().isAir()) {
-                try {
-                    blockBag.storeDroppedBlock(existing);
-                } catch (BlockBagException ignored) {
+                if (!existing.getBlockType().getMaterial().isAir()) {
+                    try {
+                        blockBag.storeDroppedBlock(existing);
+                    } catch (BlockBagException ignored) {
+                    }
                 }
             }
         }
