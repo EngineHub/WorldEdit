@@ -93,7 +93,7 @@ public class LocalSession {
     private transient Mask mask;
     private transient TimeZone timezone = TimeZone.getDefault();
     private transient BlockVector3 cuiTemporaryBlock;
-    private transient EditSession.ReorderMode reorderMode = EditSession.ReorderMode.FAST;
+    private transient EditSession.ReorderMode reorderMode = EditSession.ReorderMode.MULTI_STAGE;
 
     // Saved properties
     private String lastScript;
@@ -226,12 +226,13 @@ public class LocalSession {
         --historyPointer;
         if (historyPointer >= 0) {
             EditSession editSession = history.get(historyPointer);
-            EditSession newEditSession = WorldEdit.getInstance().getEditSessionFactory()
-                    .getEditSession(editSession.getWorld(), -1, newBlockBag, player);
-            newEditSession.enableStandardMode();
-            newEditSession.setReorderMode(reorderMode);
-            newEditSession.setFastMode(fastMode);
-            editSession.undo(newEditSession);
+            try (EditSession newEditSession = WorldEdit.getInstance().getEditSessionFactory()
+                    .getEditSession(editSession.getWorld(), -1, newBlockBag, player)) {
+                newEditSession.enableStandardMode();
+                newEditSession.setReorderMode(reorderMode);
+                newEditSession.setFastMode(fastMode);
+                editSession.undo(newEditSession);
+            }
             return editSession;
         } else {
             historyPointer = 0;
@@ -250,12 +251,13 @@ public class LocalSession {
         checkNotNull(player);
         if (historyPointer < history.size()) {
             EditSession editSession = history.get(historyPointer);
-            EditSession newEditSession = WorldEdit.getInstance().getEditSessionFactory()
-                    .getEditSession(editSession.getWorld(), -1, newBlockBag, player);
-            newEditSession.enableStandardMode();
-            newEditSession.setReorderMode(reorderMode);
-            newEditSession.setFastMode(fastMode);
-            editSession.redo(newEditSession);
+            try (EditSession newEditSession = WorldEdit.getInstance().getEditSessionFactory()
+                    .getEditSession(editSession.getWorld(), -1, newBlockBag, player)) {
+                newEditSession.enableStandardMode();
+                newEditSession.setReorderMode(reorderMode);
+                newEditSession.setFastMode(fastMode);
+                editSession.redo(newEditSession);
+            }
             ++historyPointer;
             return editSession;
         }
