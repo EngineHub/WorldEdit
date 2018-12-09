@@ -386,7 +386,9 @@ public class EditSession implements Extent, AutoCloseable {
      * Returns queue status.
      *
      * @return whether the queue is enabled
+     * @deprecated Use {@link EditSession#getReorderMode()} with MULTI_STAGE instead.
      */
+    @Deprecated
     public boolean isQueueEnabled() {
         return reorderMode == ReorderMode.MULTI_STAGE && reorderExtent.isEnabled();
     }

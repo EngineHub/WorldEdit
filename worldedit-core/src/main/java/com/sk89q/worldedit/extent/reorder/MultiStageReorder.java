@@ -199,7 +199,7 @@ public class MultiStageReorder extends AbstractDelegateExtent implements Reorder
     }
 
     public boolean commitRequired() {
-        return enabled && stages.values().stream().anyMatch(stage -> stage.size() > 0);
+        return enabled;
     }
 
     /**
@@ -248,7 +248,7 @@ public class MultiStageReorder extends AbstractDelegateExtent implements Reorder
 
     @Override
     public Operation commitBefore() {
-        if (!enabled) {
+        if (!commitRequired()) {
             return null;
         }
         List<Operation> operations = new ArrayList<>();

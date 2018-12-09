@@ -114,12 +114,12 @@ public class FastModeExtent extends AbstractDelegateExtent {
     }
 
     public boolean commitRequired() {
-        return (enabled && !dirtyChunks.isEmpty()) || (postEditSimulation && !positions.isEmpty());
+        return enabled || postEditSimulation;
     }
 
     @Override
     protected Operation commitBefore() {
-        if (!enabled && !postEditSimulation) {
+        if (!commitRequired()) {
             return null;
         }
         return new Operation() {

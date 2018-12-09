@@ -73,7 +73,7 @@ public class ChunkBatchingExtent extends AbstractDelegateExtent {
     }
 
     public boolean commitRequired() {
-        return enabled && batches.size() > 0;
+        return enabled;
     }
 
     @Override
@@ -88,7 +88,7 @@ public class ChunkBatchingExtent extends AbstractDelegateExtent {
 
     @Override
     protected Operation commitBefore() {
-        if (!enabled) {
+        if (!commitRequired()) {
             return null;
         }
         return new Operation() {
