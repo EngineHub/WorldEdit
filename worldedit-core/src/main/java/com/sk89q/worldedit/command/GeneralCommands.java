@@ -126,16 +126,17 @@ public class GeneralCommands {
     public void reorderMode(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
         String newState = args.getString(0, null);
         if (newState == null) {
-            player.print("The reorder mode is " + session.getReorderMode().getName());
+            player.print("The reorder mode is " + session.getReorderMode().getDisplayName());
         } else {
-            EditSession.ReorderMode reorderMode = EditSession.ReorderMode.getFromName(newState);
-            if (reorderMode == null) {
+            java.util.Optional<EditSession.ReorderMode> reorderModeOptional = EditSession.ReorderMode.getFromDisplayName(newState);
+            if (!reorderModeOptional.isPresent()) {
                 player.printError("Unknown reorder mode!");
                 return;
             }
 
+            EditSession.ReorderMode reorderMode = reorderModeOptional.get();
             session.setReorderMode(reorderMode);
-            player.print("The reorder mode is now " + session.getReorderMode().getName());
+            player.print("The reorder mode is now " + session.getReorderMode().getDisplayName());
         }
     }
 

@@ -229,6 +229,7 @@ public class LocalSession {
             EditSession newEditSession = WorldEdit.getInstance().getEditSessionFactory()
                     .getEditSession(editSession.getWorld(), -1, newBlockBag, player);
             newEditSession.enableStandardMode();
+            newEditSession.setReorderMode(reorderMode);
             newEditSession.setFastMode(fastMode);
             editSession.undo(newEditSession);
             return editSession;
@@ -252,6 +253,7 @@ public class LocalSession {
             EditSession newEditSession = WorldEdit.getInstance().getEditSessionFactory()
                     .getEditSession(editSession.getWorld(), -1, newBlockBag, player);
             newEditSession.enableStandardMode();
+            newEditSession.setReorderMode(reorderMode);
             newEditSession.setFastMode(fastMode);
             editSession.redo(newEditSession);
             ++historyPointer;
@@ -854,6 +856,7 @@ public class LocalSession {
                 .getEditSession(player.isPlayer() ? player.getWorld() : null,
                         getBlockChangeLimit(), blockBag, player);
         editSession.setFastMode(fastMode);
+        editSession.setReorderMode(reorderMode);
         Request.request().setEditSession(editSession);
         editSession.setMask(mask);
 

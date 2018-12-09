@@ -120,6 +120,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -161,23 +162,23 @@ public class EditSession implements Extent, AutoCloseable {
         FAST("fast"),
         NONE("none");
 
-        private String name;
+        private String displayName;
 
-        ReorderMode(String name) {
-            this.name = name;
+        ReorderMode(String displayName) {
+            this.displayName = displayName;
         }
 
-        public String getName() {
-            return this.name;
+        public String getDisplayName() {
+            return this.displayName;
         }
 
-        public static ReorderMode getFromName(String name) {
+        public static Optional<ReorderMode> getFromDisplayName(String name) {
             for (ReorderMode mode : values()) {
-                if (mode.getName().equalsIgnoreCase(name)) {
-                    return mode;
+                if (mode.getDisplayName().equalsIgnoreCase(name)) {
+                    return Optional.of(mode);
                 }
             }
-            return null;
+            return Optional.empty();
         }
     }
 
@@ -202,7 +203,7 @@ public class EditSession implements Extent, AutoCloseable {
     private final Extent bypassHistory;
     private final Extent bypassNone;
 
-    private ReorderMode reorderMode = ReorderMode.FAST;
+    private ReorderMode reorderMode = ReorderMode.MULTI_STAGE;
 
     private Mask oldMask;
 
@@ -260,6 +261,8 @@ public class EditSession implements Extent, AutoCloseable {
             this.bypassHistory = extent;
             this.bypassNone = extent;
         }
+
+        setReorderMode(this.reorderMode);
     }
 
     private Extent wrapExtent(Extent extent, EventBus eventBus, EditSessionEvent event, Stage stage) {
@@ -285,11 +288,10 @@ public class EditSession implements Extent, AutoCloseable {
 
     /**
      * Turns on specific features for a normal WorldEdit session, such as
-     * {@link #setReorderMode(ReorderMode)} reordering} and {@link #setBatchingChunks(boolean)
+     * {@link #setBatchingChunks(boolean)
      * chunk batching}.
      */
     public void enableStandardMode() {
-        setReorderMode(ReorderMode.MULTI_STAGE);
         setBatchingChunks(true);
     }
 
@@ -305,7 +307,9 @@ public class EditSession implements Extent, AutoCloseable {
         if (reorderMode == ReorderMode.MULTI_STAGE && reorderExtent == null) {
             throw new IllegalArgumentException("An EditSession without a reorder extent tried to use it for reordering!");
         }
-        flushSession();
+        if (commitRequired()) {
+            flushSession();
+        }
 
         this.reorderMode = reorderMode;
         switch (reorderMode) {
