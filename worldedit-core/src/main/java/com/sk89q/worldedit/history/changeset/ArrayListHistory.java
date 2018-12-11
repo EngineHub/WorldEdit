@@ -35,10 +35,24 @@ public class ArrayListHistory implements ChangeSet {
 
     private final List<Change> changes = new ArrayList<>();
 
+    private boolean recordChanges = true;
+
     @Override
     public void add(Change change) {
         checkNotNull(change);
-        changes.add(change);
+        if (recordChanges) {
+            changes.add(change);
+        }
+    }
+
+    @Override
+    public boolean isRecordingChanges() {
+        return recordChanges;
+    }
+
+    @Override
+    public void setRecordChanges(boolean recordChanges) {
+        this.recordChanges = recordChanges;
     }
 
     @Override

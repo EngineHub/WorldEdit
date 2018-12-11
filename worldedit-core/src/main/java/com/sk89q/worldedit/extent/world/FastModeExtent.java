@@ -29,8 +29,10 @@ import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
+import com.sk89q.worldedit.world.block.BlockTypes;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -40,8 +42,10 @@ import java.util.Set;
 public class FastModeExtent extends AbstractDelegateExtent {
 
     private final World world;
+    private final Set<BlockVector3> positions = new HashSet<>();
     private final Set<BlockVector2> dirtyChunks = new HashSet<>();
     private boolean enabled = true;
+    private boolean postEditSimulation;
 
     /**
      * Create a new instance with fast mode enabled.
@@ -83,24 +87,59 @@ public class FastModeExtent extends AbstractDelegateExtent {
         this.enabled = enabled;
     }
 
+    public boolean isPostEditSimulationEnabled() {
+        return postEditSimulation;
+    }
+
+    public void setPostEditSimulationEnabled(boolean enabled) {
+        this.postEditSimulation = enabled;
+    }
+
     @Override
     public boolean setBlock(BlockVector3 location, BlockStateHolder block) throws WorldEditException {
-        if (enabled) {
+        if (enabled || postEditSimulation) {
             dirtyChunks.add(BlockVector2.at(location.getBlockX() >> 4, location.getBlockZ() >> 4));
-            return world.setBlock(location, block, false);
+
+            if (world.setBlock(location, block, false)) {
+                if (!enabled && postEditSimulation) {
+                    positions.add(location);
+                }
+                return true;
+            }
+
+            return false;
         } else {
             return world.setBlock(location, block, true);
         }
     }
 
+    public boolean commitRequired() {
+        return enabled || postEditSimulation;
+    }
+
     @Override
     protected Operation commitBefore() {
+        if (!commitRequired()) {
+            return null;
+        }
         return new Operation() {
             @Override
             public Operation resume(RunContext run) throws WorldEditException {
                 if (!dirtyChunks.isEmpty()) {
                     world.fixAfterFastMode(dirtyChunks);
                 }
+
+                if (!enabled && postEditSimulation) {
+                    Iterator<BlockVector3> positionIterator = positions.iterator();
+                    while (run.shouldContinue() && positionIterator.hasNext()) {
+                        BlockVector3 position = positionIterator.next();
+                        world.notifyAndLightBlock(position, BlockTypes.AIR.getDefaultState());
+                        positionIterator.remove();
+                    }
+
+                    return !positions.isEmpty() ? this : null;
+                }
+
                 return null;
             }
 
