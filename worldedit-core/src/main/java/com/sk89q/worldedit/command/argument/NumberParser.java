@@ -62,7 +62,7 @@ public class NumberParser implements CommandExecutor<Number> {
     @Override
     public List<String> getSuggestions(CommandArgs args, CommandLocals locals) throws MissingArgumentException {
         String value = args.next();
-        return value.isEmpty() && defaultSuggestion != null ? Lists.newArrayList(defaultSuggestion) : Collections.<String>emptyList();
+        return value.isEmpty() && defaultSuggestion != null ? Lists.newArrayList(defaultSuggestion) : Collections.emptyList();
     }
 
     @Override

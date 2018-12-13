@@ -35,7 +35,7 @@ import com.sk89q.worldedit.world.World;
 
 public class ItemUseParser extends SimpleCommand<Contextual<RegionFunction>> {
 
-    private final ItemParser itemParser = addParameter(new ItemParser("item", "minecraft:dye:15"));
+    private final ItemParser itemParser = addParameter(new ItemParser("item", "minecraft:bone_meal"));
 
     @Override
     public Contextual<RegionFunction> call(CommandArgs args, CommandLocals locals) throws CommandException {

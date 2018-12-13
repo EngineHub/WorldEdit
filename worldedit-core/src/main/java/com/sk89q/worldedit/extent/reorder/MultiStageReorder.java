@@ -24,11 +24,8 @@ import com.sk89q.worldedit.extent.AbstractDelegateExtent;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.OperationQueue;
-import com.sk89q.worldedit.function.operation.RunContext;
 import com.sk89q.worldedit.function.operation.SetLocatedBlocks;
 import com.sk89q.worldedit.math.BlockVector3;
-import com.sk89q.worldedit.registry.state.Property;
-import com.sk89q.worldedit.util.LocatedBlock;
 import com.sk89q.worldedit.util.collection.LocatedBlockList;
 import com.sk89q.worldedit.world.block.BlockCategories;
 import com.sk89q.worldedit.world.block.BlockState;
@@ -37,20 +34,16 @@ import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.block.BlockTypes;
 
 import java.util.ArrayList;
-import java.util.Deque;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Re-orders blocks into several stages.
  */
 public class MultiStageReorder extends AbstractDelegateExtent implements ReorderingExtent {
 
-    private static Map<BlockType, PlacementPriority> priorityMap = new HashMap<>();
+    private static final Map<BlockType, PlacementPriority> priorityMap = new HashMap<>();
 
     static {
         // Late
@@ -129,7 +122,8 @@ public class MultiStageReorder extends AbstractDelegateExtent implements Reorder
         priorityMap.put(BlockTypes.OAK_TRAPDOOR, PlacementPriority.LAST);
         priorityMap.put(BlockTypes.SPRUCE_TRAPDOOR, PlacementPriority.LAST);
         priorityMap.put(BlockTypes.DAYLIGHT_DETECTOR, PlacementPriority.LAST);
-        
+        priorityMap.put(BlockTypes.CAKE, PlacementPriority.LAST);
+
         // Final
         BlockCategories.DOORS.getAll().forEach(type -> priorityMap.put(type, PlacementPriority.FINAL));
         BlockCategories.BANNERS.getAll().forEach(type -> priorityMap.put(type, PlacementPriority.FINAL));
@@ -137,7 +131,6 @@ public class MultiStageReorder extends AbstractDelegateExtent implements Reorder
         priorityMap.put(BlockTypes.WALL_SIGN, PlacementPriority.FINAL);
         priorityMap.put(BlockTypes.CACTUS, PlacementPriority.FINAL);
         priorityMap.put(BlockTypes.SUGAR_CANE, PlacementPriority.FINAL);
-        priorityMap.put(BlockTypes.CAKE, PlacementPriority.FINAL);
         priorityMap.put(BlockTypes.PISTON_HEAD, PlacementPriority.FINAL);
         priorityMap.put(BlockTypes.MOVING_PISTON, PlacementPriority.FINAL);
     }
@@ -253,97 +246,9 @@ public class MultiStageReorder extends AbstractDelegateExtent implements Reorder
         }
         List<Operation> operations = new ArrayList<>();
         for (PlacementPriority priority : PlacementPriority.values()) {
-            if (priority != PlacementPriority.FINAL) {
-                operations.add(new SetLocatedBlocks(getExtent(), stages.get(priority)));
-            }
+            operations.add(new SetLocatedBlocks(getExtent(), stages.get(priority)));
         }
 
-        operations.add(new FinalStageCommitter());
         return new OperationQueue(operations);
     }
-
-    private class FinalStageCommitter implements Operation {
-        private Extent extent = getExtent();
-
-        private final Set<BlockVector3> blocks = new HashSet<>();
-        private final Map<BlockVector3, BlockStateHolder> blockTypes = new HashMap<>();
-
-        public FinalStageCommitter() {
-            for (LocatedBlock entry : stages.get(PlacementPriority.FINAL)) {
-                final BlockVector3 pt = entry.getLocation();
-                blocks.add(pt);
-                blockTypes.put(pt, entry.getBlock());
-            }
-        }
-
-        @Override
-        public Operation resume(RunContext run) throws WorldEditException {
-            while (!blocks.isEmpty()) {
-                BlockVector3 current = blocks.iterator().next();
-
-                final Deque<BlockVector3> walked = new LinkedList<>();
-
-                while (true) {
-                    walked.addFirst(current);
-
-                    assert (blockTypes.containsKey(current));
-
-                    final BlockStateHolder blockStateHolder = blockTypes.get(current);
-
-                    if (BlockCategories.DOORS.contains(blockStateHolder.getBlockType())) {
-                        Property<Object> halfProperty = blockStateHolder.getBlockType().getProperty("half");
-                        if (blockStateHolder.getState(halfProperty).equals("lower")) {
-                            // Deal with lower door halves being attached to the floor AND the upper half
-                            BlockVector3 upperBlock = current.add(0, 1, 0);
-                            if (blocks.contains(upperBlock) && !walked.contains(upperBlock)) {
-                                walked.addFirst(upperBlock);
-                            }
-                        }
-                    } else if (BlockCategories.RAILS.contains(blockStateHolder.getBlockType())) {
-                        BlockVector3 lowerBlock = current.add(0, -1, 0);
-                        if (blocks.contains(lowerBlock) && !walked.contains(lowerBlock)) {
-                            walked.addFirst(lowerBlock);
-                        }
-                    }
-
-                    if (!blockStateHolder.getBlockType().getMaterial().isFragileWhenPushed()) {
-                        // Block is not attached to anything => we can place it
-                        break;
-                    }
-
-//                    current = current.add(attachment.vector()).toBlockVector();
-//
-//                    if (!blocks.contains(current)) {
-//                        // We ran outside the remaining set => assume we can place blocks on this
-//                        break;
-//                    }
-//
-                    if (walked.contains(current)) {
-                        // Cycle detected => This will most likely go wrong, but there's nothing we can do about it.
-                        break;
-                    }
-                }
-
-                for (BlockVector3 pt : walked) {
-                    extent.setBlock(pt, blockTypes.get(pt));
-                    blocks.remove(pt);
-                }
-            }
-
-            for (LocatedBlockList stage : stages.values()) {
-                stage.clear();
-            }
-            return null;
-        }
-
-        @Override
-        public void cancel() {
-        }
-
-        @Override
-        public void addStatusMessages(List<String> messages) {
-        }
-
-    }
-
 }
