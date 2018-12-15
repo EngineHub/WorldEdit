@@ -13,12 +13,6 @@ buildscript {
 
 apply plugin: 'net.minecraftforge.gradle'
 
-configurations.all {
-	resolutionStrategy {
-		force 'org.ow2.asm:asm:5.2'
-	}
-}
-
 def minecraftVersion = "1.13"
 def forgeVersion = "24.0.16-1.13-pre"
 
@@ -34,7 +28,7 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 minecraft {
-    mappings channel: 'snapshot', version: '20181117'
+    mappings channel: 'snapshot', version: '20181215'
 //    runDir = 'run'
 
 //    replaceIn "com/sk89q/worldedit/forge/ForgeWorldEdit.java"
