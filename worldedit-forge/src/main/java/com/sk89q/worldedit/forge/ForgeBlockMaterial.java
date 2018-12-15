@@ -63,12 +63,12 @@ public class ForgeBlockMaterial extends PassthroughBlockMaterial {
 
     @Override
     public boolean isFragileWhenPushed() {
-        return delegate.getMobilityFlag() == EnumPushReaction.DESTROY;
+        return delegate.getPushReaction() == EnumPushReaction.DESTROY;
     }
 
     @Override
     public boolean isUnpushable() {
-        return delegate.getMobilityFlag() == EnumPushReaction.BLOCK;
+        return delegate.getPushReaction() == EnumPushReaction.BLOCK;
     }
 
     @Override
@@ -78,7 +78,7 @@ public class ForgeBlockMaterial extends PassthroughBlockMaterial {
 
     @Override
     public boolean isBurnable() {
-        return delegate.getCanBurn();
+        return delegate.isFlammable();
     }
 
     @Override

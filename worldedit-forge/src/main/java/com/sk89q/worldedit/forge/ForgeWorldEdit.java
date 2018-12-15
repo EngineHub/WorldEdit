@@ -44,10 +44,10 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.CommandEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.LeftClickEmpty;
+import net.minecraftforge.eventbus.api.Event;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.Mod.EventHandler;
-import net.minecraftforge.fml.common.Mod.Instance;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
@@ -56,7 +56,8 @@ import net.minecraftforge.fml.common.event.FMLServerAboutToStartEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartedEvent;
 import net.minecraftforge.fml.common.event.FMLServerStoppingEvent;
 import net.minecraftforge.fml.common.eventhandler.Event.Result;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.javafmlmod.FMLModLoadingContext;
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
@@ -64,16 +65,15 @@ import java.io.File;
 /**
  * The Forge implementation of WorldEdit.
  */
-@Mod(modid = ForgeWorldEdit.MOD_ID, name = "WorldEdit", version = "%VERSION%", acceptableRemoteVersions = "*")
+@Mod(ForgeWorldEdit.MOD_ID)
 public class ForgeWorldEdit {
 
-    public static Logger logger;
+    private static final Logger LOGGER = LogManager.getLogger();
     public static final String MOD_ID = "worldedit";
     public static final String CUI_PLUGIN_CHANNEL = "worldedit:cui";
 
     private ForgePermissionsProvider provider;
 
-    @Instance(MOD_ID)
     public static ForgeWorldEdit inst;
 
     @SidedProxy(serverSide = "com.sk89q.worldedit.forge.CommonProxy", clientSide = "com.sk89q.worldedit.forge.ClientProxy")
@@ -83,36 +83,42 @@ public class ForgeWorldEdit {
     private ForgeConfiguration config;
     private File workingDir;
 
-    @EventHandler
+    public ForgeWorldEdit() {
+        inst = this;
+
+        FMLModLoadingContext.get().getModEventBus().addListener(this::preInit);
+        FMLModLoadingContext.get().getModEventBus().addListener(this::init);
+        FMLModLoadingContext.get().getModEventBus().addListener(this::postInit);
+        FMLModLoadingContext.get().getModEventBus().addListener(this::serverAboutToStart);
+        FMLModLoadingContext.get().getModEventBus().addListener(this::serverStopping);
+        FMLModLoadingContext.get().getModEventBus().addListener(this::serverStarted);
+
+        MinecraftForge.EVENT_BUS.register(ThreadSafeCache.getInstance());
+        MinecraftForge.EVENT_BUS.register(this);
+    }
+
     public void preInit(FMLPreInitializationEvent event) {
-        logger = event.getModLog();
         // Setup working directory
         workingDir = new File(event.getModConfigurationDirectory() + File.separator + "worldedit");
         workingDir.mkdir();
 
         config = new ForgeConfiguration(this);
         config.load();
-
-        MinecraftForge.EVENT_BUS.register(ThreadSafeCache.getInstance());
     }
 
-    @EventHandler
     public void init(FMLInitializationEvent event) {
-        MinecraftForge.EVENT_BUS.register(this);
         WECUIPacketHandler.init();
         InternalPacketHandler.init();
         proxy.registerHandlers();
     }
 
-    @EventHandler
     public void postInit(FMLPostInitializationEvent event) {
-        logger.info("WorldEdit for Forge (version " + getInternalVersion() + ") is loaded");
+        LOGGER.info("WorldEdit for Forge (version " + getInternalVersion() + ") is loaded");
     }
 
-    @EventHandler
     public void serverAboutToStart(FMLServerAboutToStartEvent event) {
         if (this.platform != null) {
-            logger.warn("FMLServerStartingEvent occurred when FMLServerStoppingEvent hasn't");
+            LOGGER.warn("FMLServerStartingEvent occurred when FMLServerStoppingEvent hasn't");
             WorldEdit.getInstance().getPlatformManager().unregister(platform);
         }
 
@@ -141,14 +147,12 @@ public class ForgeWorldEdit {
         }
     }
 
-    @EventHandler
     public void serverStopping(FMLServerStoppingEvent event) {
         WorldEdit worldEdit = WorldEdit.getInstance();
         worldEdit.getSessionManager().unload();
         worldEdit.getPlatformManager().unregister(platform);
     }
 
-    @EventHandler
     public void serverStarted(FMLServerStartedEvent event) {
         WorldEdit.getInstance().getEventBus().post(new PlatformReadyEvent());
     }
@@ -183,11 +187,11 @@ public class ForgeWorldEdit {
         
         boolean isLeftDeny = event instanceof PlayerInteractEvent.LeftClickBlock
                 && ((PlayerInteractEvent.LeftClickBlock) event)
-                        .getUseItem() == Result.DENY;
+                        .getUseItem() == Event.Result.DENY;
         boolean isRightDeny =
                 event instanceof PlayerInteractEvent.RightClickBlock
                         && ((PlayerInteractEvent.RightClickBlock) event)
-                                .getUseItem() == Result.DENY;
+                                .getUseItem() == Event.Result.DENY;
         if (isLeftDeny || isRightDeny || event.getEntity().world.isRemote) {
             return;
         }
@@ -233,7 +237,7 @@ public class ForgeWorldEdit {
         if (item.getNbtData() != null) {
             forgeCompound = NBTConverter.toNative(item.getNbtData());
         }
-        return new ItemStack(Item.getByNameOrId(item.getType().getId()), item.getAmount(), 0, forgeCompound);
+        return new ItemStack(Item.REGISTRY.get(new ResourceLocation(item.getType().getId())), item.getAmount(), 0, forgeCompound);
     }
 
     /**

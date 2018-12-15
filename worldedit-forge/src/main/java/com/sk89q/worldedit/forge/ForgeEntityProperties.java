@@ -136,7 +136,7 @@ public class ForgeEntityProperties implements EntityProperties {
 
     @Override
     public boolean isTagged() {
-        return entity instanceof EntityLiving && ((EntityLiving) entity).hasCustomName();
+        return entity.hasCustomName();
     }
 
     @Override
