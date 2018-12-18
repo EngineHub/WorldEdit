@@ -24,6 +24,7 @@ package com.sk89q.worldedit.util;
 import com.sk89q.util.StringUtil;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
+import com.sk89q.worldedit.util.report.Unreported;
 import com.sk89q.worldedit.world.registry.LegacyMapper;
 import com.sk89q.worldedit.world.snapshot.SnapshotRepository;
 
@@ -47,10 +48,10 @@ import java.util.logging.Logger;
  */
 public class PropertiesConfiguration extends LocalConfiguration {
 
-    private static final Logger log = Logger.getLogger(PropertiesConfiguration.class.getCanonicalName());
+    @Unreported private static final Logger log = Logger.getLogger(PropertiesConfiguration.class.getCanonicalName());
 
-    protected Properties properties;
-    protected File path;
+    @Unreported protected Properties properties;
+    @Unreported protected File path;
 
     /**
      * Construct the object. The configuration isn't loaded yet.

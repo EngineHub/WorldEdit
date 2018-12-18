@@ -34,8 +34,10 @@ public class ShallowObjectReport extends DataReport {
         super(title);
         checkNotNull(object, "object");
 
-        Class<?> type = object.getClass();
+        scanClass(object, object.getClass());
+    }
 
+    void scanClass(Object object, Class<?> type) {
         for (Field field : type.getDeclaredFields()) {
             if (Modifier.isStatic(field.getModifiers())) {
                 continue;
@@ -54,5 +56,4 @@ public class ShallowObjectReport extends DataReport {
             }
         }
     }
-
 }

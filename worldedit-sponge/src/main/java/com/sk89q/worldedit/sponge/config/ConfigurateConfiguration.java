@@ -23,6 +23,7 @@ import com.google.common.reflect.TypeToken;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.session.SessionManager;
+import com.sk89q.worldedit.util.report.Unreported;
 import com.sk89q.worldedit.world.registry.LegacyMapper;
 import com.sk89q.worldedit.world.snapshot.SnapshotRepository;
 import ninja.leaping.configurate.ConfigurationOptions;
@@ -36,10 +37,10 @@ import java.util.HashSet;
 
 public class ConfigurateConfiguration extends LocalConfiguration {
 
-    protected final ConfigurationLoader<CommentedConfigurationNode> config;
-    protected final Logger logger;
+    @Unreported protected final ConfigurationLoader<CommentedConfigurationNode> config;
+    @Unreported protected final Logger logger;
 
-    protected CommentedConfigurationNode node;
+    @Unreported protected CommentedConfigurationNode node;
 
     public ConfigurateConfiguration(ConfigurationLoader<CommentedConfigurationNode> config, Logger logger) {
         this.config = config;

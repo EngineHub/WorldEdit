@@ -21,6 +21,7 @@ package com.sk89q.worldedit.bukkit;
 
 import com.sk89q.util.yaml.YAMLProcessor;
 import com.sk89q.worldedit.util.YAMLConfiguration;
+import com.sk89q.worldedit.util.report.Unreported;
 
 import java.io.File;
 
@@ -30,7 +31,7 @@ import java.io.File;
 public class BukkitConfiguration extends YAMLConfiguration {
 
     public boolean noOpPermissions = false;
-    private final WorldEditPlugin plugin;
+    @Unreported private final WorldEditPlugin plugin;
 
     public BukkitConfiguration(YAMLProcessor config, WorldEditPlugin plugin) {
         super(config, plugin.getLogger());

@@ -54,6 +54,8 @@ import com.sk89q.worldedit.util.io.file.FilenameException;
 import com.sk89q.worldedit.util.io.file.FilenameResolutionException;
 import com.sk89q.worldedit.util.io.file.InvalidFilenameException;
 import com.sk89q.worldedit.util.logging.WorldEditPrefixHandler;
+import com.sk89q.worldedit.util.task.SimpleSupervisor;
+import com.sk89q.worldedit.util.task.Supervisor;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.registry.BundledBlockData;
@@ -99,6 +101,7 @@ public class WorldEdit {
     private final PlatformManager platformManager = new PlatformManager(this);
     private final EditSessionFactory editSessionFactory = new EditSessionFactory.EditSessionFactoryImpl(eventBus);
     private final SessionManager sessions = new SessionManager(this);
+    private final Supervisor supervisor = new SimpleSupervisor();
 
     private final BlockFactory blockFactory = new BlockFactory(this);
     private final ItemFactory itemFactory = new ItemFactory(this);
@@ -146,6 +149,15 @@ public class WorldEdit {
      */
     public EventBus getEventBus() {
         return eventBus;
+    }
+
+    /**
+     * Get the supervisor.
+     *
+     * @return the supervisor
+     */
+    public Supervisor getSupervisor() {
+        return supervisor;
     }
 
     /**

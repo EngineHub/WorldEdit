@@ -11,6 +11,7 @@ dependencies {
     compile 'com.thoughtworks.paranamer:paranamer:2.6'
     compile 'com.google.code.gson:gson:2.8.0'
     compile 'com.sk89q.lib:jlibnoise:1.0.0'
+    compile 'com.googlecode.json-simple:json-simple:1.1.1'
     //compile 'net.sf.trove4j:trove4j:3.0.3'
     testCompile 'org.mockito:mockito-core:1.9.0-rc1'
 }

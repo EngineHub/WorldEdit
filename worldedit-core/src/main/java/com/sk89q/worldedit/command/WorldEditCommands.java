@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.command;
 
+import com.google.common.io.Files;
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
@@ -32,7 +33,14 @@ import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.extension.platform.PlatformManager;
+import com.sk89q.worldedit.util.paste.ActorCallbackPaste;
+import com.sk89q.worldedit.util.report.ConfigReport;
+import com.sk89q.worldedit.util.report.ReportList;
+import com.sk89q.worldedit.util.report.SystemInfoReport;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.Charset;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -84,6 +92,28 @@ public class WorldEditCommands {
         we.getPlatformManager().queryCapability(Capability.CONFIGURATION).reload();
         we.getEventBus().post(new ConfigurationLoadEvent(we.getPlatformManager().queryCapability(Capability.CONFIGURATION).getConfiguration()));
         actor.print("Configuration reloaded!");
+    }
+
+    @Command(aliases = {"report"}, desc = "Writes a report on WorldEdit", flags = "p", max = 0)
+    @CommandPermissions({"worldedit.report"})
+    public void report(Actor actor, CommandContext args) throws WorldEditException {
+        ReportList report = new ReportList("Report");
+        report.add(new SystemInfoReport());
+        report.add(new ConfigReport());
+        String result = report.toString();
+
+        try {
+            File dest = new File(we.getWorkingDirectoryFile(we.getConfiguration().saveDir), "report.txt");
+            Files.write(result, dest, Charset.forName("UTF-8"));
+            actor.print("WorldEdit report written to " + dest.getAbsolutePath());
+        } catch (IOException e) {
+            actor.printError("Failed to write report: " + e.getMessage());
+        }
+
+        if (args.hasFlag('p')) {
+            actor.checkPermission("worldedit.report.pastebin");
+            ActorCallbackPaste.pastebin(we.getSupervisor(), actor, result, "WorldEdit report: %s.report");
+        }
     }
 
     @Command(
