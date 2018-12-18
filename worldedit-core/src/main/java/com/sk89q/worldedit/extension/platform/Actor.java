@@ -39,6 +39,15 @@ public interface Actor extends Identifiable, SessionOwner, Subject {
     String getName();
 
     /**
+     * Gets the display name of the actor. This can be a nickname, and is not guaranteed to be unique.
+     *
+     * @return The display name
+     */
+    default String getDisplayName() {
+        return getName();
+    }
+
+    /**
      * Print a message.
      *
      * @param msg The message text

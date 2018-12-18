@@ -84,6 +84,11 @@ public class BukkitPlayer extends AbstractPlayerActor {
     }
 
     @Override
+    public String getDisplayName() {
+        return player.getDisplayName();
+    }
+
+    @Override
     public void giveItem(BaseItemStack itemStack) {
         player.getInventory().addItem(BukkitAdapter.adapt(itemStack));
     }

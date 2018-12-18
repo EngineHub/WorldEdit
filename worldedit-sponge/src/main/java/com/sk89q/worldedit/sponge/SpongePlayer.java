@@ -35,7 +35,6 @@ import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.gamemode.GameMode;
 import com.sk89q.worldedit.world.gamemode.GameModes;
 import com.sk89q.worldedit.world.item.ItemTypes;
-
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.type.HandTypes;
 import org.spongepowered.api.entity.living.player.Player;
@@ -77,6 +76,11 @@ public class SpongePlayer extends AbstractPlayerActor {
     @Override
     public String getName() {
         return this.player.getName();
+    }
+
+    @Override
+    public String getDisplayName() {
+        return player.getDisplayNameData().displayName().getDirect().map(TextSerializers.LEGACY_FORMATTING_CODE::serialize).orElse(getName());
     }
 
     @Override
