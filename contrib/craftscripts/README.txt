@@ -2,7 +2,7 @@ CraftScripts are script files for WorldEdit that let you write world
 editing scripts with JavaScript easily.
 
 Example usage:
-/cs maze.js lightstone 10 10
+/cs maze.js glowstone 10 10
 
 You may or may not install these scripts -- it is optional. If you are, however,
 place the entire craftscripts/ folder into the respective directory for the platform

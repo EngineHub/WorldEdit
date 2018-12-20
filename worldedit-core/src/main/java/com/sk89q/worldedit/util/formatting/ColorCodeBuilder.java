@@ -127,7 +127,7 @@ public class ColorCodeBuilder {
         } else if (!resetFrom.hasEqualFormatting(resetTo) || 
                 (resetFrom.getColor() != null && resetTo.getColor() == null)) {
             // Have to set reset code and add back all the formatting codes
-            return String.valueOf(Style.RESET) + getCode(resetTo);
+            return Style.RESET + getCode(resetTo);
         } else {
             if (resetFrom.getColor() != resetTo.getColor()) {
                 return String.valueOf(resetTo.getColor());

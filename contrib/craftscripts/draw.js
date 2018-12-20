@@ -43,8 +43,26 @@ var clothColors = [
     makeColor(100, 60, 0), // Brown
     makeColor(48, 80, 0), // Cactus green
     makeColor(255, 0, 0), // Red
-    makeColor(0, 0, 0), // Black
-]
+    makeColor(0, 0, 0) // Black
+];
+var clothBlocks = [
+	context.getBlock("white_wool"),
+	context.getBlock("orange_wool"),
+	context.getBlock("magenta_wool"),
+	context.getBlock("light_blue_wool"),
+	context.getBlock("yellow_wool"),
+	context.getBlock("lime_wool"),
+	context.getBlock("pink_wool"),
+	context.getBlock("gray_wool"),
+	context.getBlock("light_gray_wool"),
+	context.getBlock("cyan_wool"),
+	context.getBlock("purple_wool"),
+	context.getBlock("blue_wool"),
+	context.getBlock("brown_wool"),
+	context.getBlock("green_wool"),
+	context.getBlock("red_wool"),
+	context.getBlock("black_wool")
+];
 var clothColorsOpt = [
 	makeColor(178, 178, 178), // White
 	makeColor(187, 102, 44), // Orange
@@ -61,8 +79,8 @@ var clothColorsOpt = [
 	makeColor(68, 41, 22), // Brown
 	makeColor(44, 61, 19), // Cactus green
 	makeColor(131, 36, 32), // Red
-	makeColor(21, 18, 18), // Black
-]
+	makeColor(21, 18, 18) // Black
+];
 var clothColorsOptHD = [
 	makeColor(168, 168, 168), // White
 	makeColor(143, 59, 0), // Orange 
@@ -79,8 +97,8 @@ var clothColorsOptHD = [
 	makeColor(52, 25, 0), // Brown
 	makeColor(10, 76, 10), // Cactus green
 	makeColor(127, 9, 9), // Red
-	makeColor(17, 17, 17), // Black
-]
+	makeColor(17, 17, 17) // Black
+];
 
 // http://stackoverflow.com/questions/2103368/color-logic-algorithm/2103608#2103608
 function colorDistance(c1, c2) {
@@ -90,7 +108,7 @@ function colorDistance(c1, c2) {
     var b = c1.getBlue() - c2.getBlue();
     var weightR = 2 + rmean/256;
     var weightG = 4.0;
-    var weightB = 2 + (255-rmean)/256
+    var weightB = 2 + (255-rmean)/256;
     return Math.sqrt(weightR*r*r + weightG*g*g + weightB*b*b);
 }
 
@@ -113,14 +131,14 @@ function findClosestWoolColor(col, clothColors) {
 
 context.checkArgs(1, 3, "<image> <orientation> <palette>");
 
-var f = context.getSafeFile("drawings", argv[1]);
+var f = context.getSafeOpenFile("drawings", argv[1], "png", ["png", "jpg", "jpeg", "bmp"]);
 var sess = context.remember();
-var upright = argv[2] == "v";
+var upright = argv[2] === "v";
 var colors = clothColors;
-if(argv[3] == "opt") {
+if(argv[3] === "opt") {
 	colors = clothColorsOpt;
 	player.print("Using optimized palette");
-} else if(argv[3] == "optHD") {
+} else if(argv[3] === "optHD") {
 	colors = clothColorsOptHD;
 	player.print("Using optimized HD palette");
 }
@@ -132,7 +150,7 @@ if (!f.exists()) {
     var width = img.getWidth();
     var height = img.getHeight();
 
-    var origin = player.getBlockIn();
+    var origin = player.getBlockIn().toVector().toBlockPoint();
 
     for (var x = 0; x < width; x++) {
         for (var y = 0; y < height; y++) {
@@ -141,9 +159,9 @@ if (!f.exists()) {
 			// Added this to enable the user to create images upright
             // rather than flat on the ground
 			if (!upright) {
-                sess.setBlock(origin.add(x, 0, y), new BaseBlock(35, data));
+                sess.setBlock(origin.add(x, 0, y), clothBlocks[data]);
 			} else {
-                sess.setBlock(origin.add(x, height - y, 0), new BaseBlock(35, data));
+                sess.setBlock(origin.add(x, height - y, 0), clothBlocks[data]);
 			}
         }
     }
