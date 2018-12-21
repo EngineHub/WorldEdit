@@ -24,6 +24,7 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.sk89q.worldedit.command.util.AsyncCommandHelper;
 import com.sk89q.worldedit.extension.platform.Actor;
+import com.sk89q.worldedit.util.command.parametric.ExceptionConverter;
 import com.sk89q.worldedit.util.task.Supervisor;
 
 import java.net.URL;
@@ -46,10 +47,10 @@ public class ActorCallbackPaste {
      * @param content The content
      * @param successMessage The message, formatted with {@link String#format(String, Object...)} on success
      */
-    public static void pastebin(Supervisor supervisor, final Actor sender, String content, final String successMessage) {
+    public static void pastebin(Supervisor supervisor, final Actor sender, String content, final String successMessage, final ExceptionConverter exceptionConverter) {
         ListenableFuture<URL> future = new EngineHubPaste().paste(content);
 
-        AsyncCommandHelper.wrap(future, supervisor, sender)
+        AsyncCommandHelper.wrap(future, supervisor, sender, exceptionConverter)
                 .registerWithSupervisor("Submitting content to a pastebin service...")
                 .sendMessageAfterDelay("(Please wait... sending output to pastebin...)");
 

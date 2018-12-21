@@ -112,7 +112,10 @@ public class WorldEditCommands {
 
         if (args.hasFlag('p')) {
             actor.checkPermission("worldedit.report.pastebin");
-            ActorCallbackPaste.pastebin(we.getSupervisor(), actor, result, "WorldEdit report: %s.report");
+            ActorCallbackPaste.pastebin(
+                    we.getSupervisor(), actor, result, "WorldEdit report: %s.report",
+                    WorldEdit.getInstance().getPlatformManager().getCommandManager().getExceptionConverter()
+            );
         }
     }
 

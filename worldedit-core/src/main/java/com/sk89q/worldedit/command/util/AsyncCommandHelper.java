@@ -24,6 +24,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.sk89q.worldedit.extension.platform.Actor;
+import com.sk89q.worldedit.util.command.parametric.ExceptionConverter;
 import com.sk89q.worldedit.util.task.FutureForwardingTask;
 import com.sk89q.worldedit.util.task.Supervisor;
 import com.sk89q.worldedit.world.World;
@@ -35,17 +36,20 @@ public class AsyncCommandHelper {
     private final ListenableFuture<?> future;
     private final Supervisor supervisor;
     private final Actor sender;
+    private final ExceptionConverter exceptionConverter;
     @Nullable
     private Object[] formatArgs;
 
-    private AsyncCommandHelper(ListenableFuture<?> future, Supervisor supervisor, Actor sender) {
+    private AsyncCommandHelper(ListenableFuture<?> future, Supervisor supervisor, Actor sender, ExceptionConverter exceptionConverter) {
         checkNotNull(future);
         checkNotNull(supervisor);
         checkNotNull(sender);
+        checkNotNull(exceptionConverter);
 
         this.future = future;
         this.supervisor = supervisor;
         this.sender = sender;
+        this.exceptionConverter = exceptionConverter;
     }
 
     public AsyncCommandHelper formatUsing(Object... args) {
@@ -78,6 +82,7 @@ public class AsyncCommandHelper {
         Futures.addCallback(
                 future,
                 new MessageFutureCallback.Builder(sender)
+                        .exceptionConverter(exceptionConverter)
                         .onSuccess(format(success))
                         .onFailure(format(failure))
                         .build());
@@ -89,6 +94,7 @@ public class AsyncCommandHelper {
         Futures.addCallback(
                 future,
                 new MessageFutureCallback.Builder(sender)
+                        .exceptionConverter(exceptionConverter)
                         .onFailure(format(failure))
                         .build());
         return this;
@@ -128,8 +134,8 @@ public class AsyncCommandHelper {
         return this;
     }
 
-    public static AsyncCommandHelper wrap(ListenableFuture<?> future, Supervisor supervisor, Actor sender) {
-        return new AsyncCommandHelper(future, supervisor, sender);
+    public static AsyncCommandHelper wrap(ListenableFuture<?> future, Supervisor supervisor, Actor sender, ExceptionConverter exceptionConverter) {
+        return new AsyncCommandHelper(future, supervisor, sender, exceptionConverter);
     }
 
 }
