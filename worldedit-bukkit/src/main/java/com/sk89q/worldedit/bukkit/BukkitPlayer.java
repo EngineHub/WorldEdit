@@ -200,6 +200,11 @@ public class BukkitPlayer extends AbstractPlayerActor {
                 nativeLocation.getPitch());
     }
 
+    @Override
+    public boolean setLocation(com.sk89q.worldedit.util.Location location) {
+        return player.teleport(BukkitAdapter.adapt(location));
+    }
+
     @Nullable
     @Override
     public <T> T getFacet(Class<? extends T> cls) {

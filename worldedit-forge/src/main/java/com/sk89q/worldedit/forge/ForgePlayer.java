@@ -93,6 +93,12 @@ public class ForgePlayer extends AbstractPlayerActor {
     }
 
     @Override
+    public boolean setLocation(Location location) {
+        // TODO
+        return false;
+    }
+
+    @Override
     public com.sk89q.worldedit.world.World getWorld() {
         return ForgeWorldEdit.inst.getWorld(this.player.world);
     }

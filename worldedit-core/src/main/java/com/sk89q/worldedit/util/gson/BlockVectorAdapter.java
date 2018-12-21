@@ -19,33 +19,28 @@
 
 package com.sk89q.worldedit.util.gson;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
 import com.sk89q.worldedit.math.BlockVector3;
-import com.sk89q.worldedit.math.Vector3;
 
-/**
- * Utility methods for Google's GSON library.
- */
-public final class GsonUtil {
+import java.lang.reflect.Type;
 
-    private GsonUtil() {
-    }
+public class BlockVectorAdapter implements JsonDeserializer<BlockVector3> {
 
-    /**
-     * Create a standard {@link GsonBuilder} for WorldEdit.
-     *
-     * @return a builder
-     */
-    public static GsonBuilder createBuilder() {
-        GsonBuilder gsonBuilder = new GsonBuilder();
-        gsonBuilder.registerTypeAdapter(Vector3.class, new VectorAdapter());
-        gsonBuilder.registerTypeAdapter(BlockVector3.class, new BlockVectorAdapter());
-        return gsonBuilder;
-    }
+    @Override
+    public BlockVector3 deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+        JsonArray jsonArray = json.getAsJsonArray();
+        if (jsonArray.size() != 3) {
+            throw new JsonParseException("Expected array of 3 length for BlockVector3");
+        }
 
-    private static final Gson gson = new Gson();
-    public static String stringValue(String s) {
-        return gson.toJson(s);
+        double x = jsonArray.get(0).getAsInt();
+        double y = jsonArray.get(1).getAsInt();
+        double z = jsonArray.get(2).getAsInt();
+
+        return BlockVector3.at(x, y, z);
     }
 }

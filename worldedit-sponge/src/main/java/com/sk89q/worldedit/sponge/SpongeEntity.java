@@ -67,6 +67,16 @@ class SpongeEntity implements Entity {
     }
 
     @Override
+    public boolean setLocation(Location location) {
+        org.spongepowered.api.entity.Entity entity = entityRef.get();
+        if (entity != null) {
+            return entity.setLocation(SpongeAdapter.adapt(location));
+        } else {
+            return false;
+        }
+    }
+
+    @Override
     public Extent getExtent() {
         org.spongepowered.api.entity.Entity entity = entityRef.get();
         if (entity != null) {

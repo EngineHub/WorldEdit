@@ -55,6 +55,14 @@ public interface Entity extends Faceted {
     Location getLocation();
 
     /**
+     * Sets the location of this entity.
+     *
+     * @param location the new location of the entity
+     * @return if the teleport worked
+     */
+    boolean setLocation(Location location);
+
+    /**
      * Get the extent that this entity is on.
      *
      * @return the extent

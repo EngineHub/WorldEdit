@@ -77,6 +77,12 @@ class ForgeEntity implements Entity {
     }
 
     @Override
+    public boolean setLocation(Location location) {
+        // TODO
+        return false;
+    }
+
+    @Override
     public Extent getExtent() {
         net.minecraft.entity.Entity entity = entityRef.get();
         if (entity != null) {

@@ -72,6 +72,16 @@ class BukkitEntity implements Entity {
     }
 
     @Override
+    public boolean setLocation(Location location) {
+        org.bukkit.entity.Entity entity = entityRef.get();
+        if (entity != null) {
+            return entity.teleport(BukkitAdapter.adapt(location));
+        } else {
+            return false;
+        }
+    }
+
+    @Override
     public BaseEntity getState() {
         org.bukkit.entity.Entity entity = entityRef.get();
         if (entity != null) {

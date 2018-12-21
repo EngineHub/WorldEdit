@@ -69,6 +69,11 @@ abstract class StoredEntity implements Entity {
     }
 
     @Override
+    public boolean setLocation(Location location) {
+        throw new IllegalArgumentException("StoredEntities are immutable");
+    }
+
+    @Override
     public Extent getExtent() {
         return location.getExtent();
     }

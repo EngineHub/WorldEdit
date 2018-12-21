@@ -111,6 +111,12 @@ public class ChangeSetExtent extends AbstractDelegateExtent {
         }
 
         @Override
+        public boolean setLocation(Location location) {
+            // TODO Add a changeset for this.
+            return entity.setLocation(location);
+        }
+
+        @Override
         public Extent getExtent() {
             return entity.getExtent();
         }

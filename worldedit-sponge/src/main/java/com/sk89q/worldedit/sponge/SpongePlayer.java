@@ -97,6 +97,11 @@ public class SpongePlayer extends AbstractPlayerActor {
     }
 
     @Override
+    public boolean setLocation(Location location) {
+        return player.setLocation(SpongeAdapter.adapt(location));
+    }
+
+    @Override
     public com.sk89q.worldedit.world.World getWorld() {
         return SpongeWorldEdit.inst().getAdapter().getWorld(player.getWorld());
     }
@@ -248,4 +253,7 @@ public class SpongePlayer extends AbstractPlayerActor {
 
     }
 
+    public Player getPlayer() {
+        return player;
+    }
 }

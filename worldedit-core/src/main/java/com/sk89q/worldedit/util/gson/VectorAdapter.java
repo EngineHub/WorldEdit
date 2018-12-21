@@ -29,7 +29,7 @@ import com.sk89q.worldedit.math.Vector3;
 import java.lang.reflect.Type;
 
 /**
- * Deserializes {@code Vector}s for GSON.
+ * Deserializes {@code Vector3}s for GSON.
  */
 public class VectorAdapter implements JsonDeserializer<Vector3> {
 
@@ -37,7 +37,7 @@ public class VectorAdapter implements JsonDeserializer<Vector3> {
     public Vector3 deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
         JsonArray jsonArray = json.getAsJsonArray();
         if (jsonArray.size() != 3) {
-            throw new JsonParseException("Expected array of 3 length for Vector");
+            throw new JsonParseException("Expected array of 3 length for Vector3");
         }
 
         double x = jsonArray.get(0).getAsDouble();
