@@ -246,6 +246,13 @@ public interface World extends Extent {
      */
     void setWeather(WeatherType weatherType, long duration);
 
+    /**
+     * Gets the spawn position of this world.
+     *
+     * @return The spawn position
+     */
+    BlockVector3 getSpawnPosition();
+
     @Override
     boolean equals(Object other);
 

@@ -405,6 +405,11 @@ public class BukkitWorld extends AbstractWorld {
     }
 
     @Override
+    public BlockVector3 getSpawnPosition() {
+        return BukkitAdapter.asBlockVector(getWorld().getSpawnLocation());
+    }
+
+    @Override
     public void simulateBlockMine(BlockVector3 pt) {
         getWorld().getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ()).breakNaturally();
     }

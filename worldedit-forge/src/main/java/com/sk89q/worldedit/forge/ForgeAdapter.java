@@ -54,8 +54,8 @@ final class ForgeAdapter {
         return Vector3.at(vector.x, vector.y, vector.z);
     }
 
-    public static Vector3 adapt(BlockPos pos) {
-        return Vector3.at(pos.getX(), pos.getY(), pos.getZ());
+    public static BlockVector3 adapt(BlockPos pos) {
+        return BlockVector3.at(pos.getX(), pos.getY(), pos.getZ());
     }
 
     public static Vec3d toVec3(BlockVector3 vector) {

@@ -320,6 +320,11 @@ public abstract class SpongeWorld extends AbstractWorld {
         getWorld().setWeather(Sponge.getRegistry().getType(Weather.class, weatherType.getId()).get(), duration);
     }
 
+    @Override
+    public BlockVector3 getSpawnPosition() {
+        return SpongeAdapter.asBlockVector(getWorld().getSpawnLocation());
+    }
+
     /**
      * Thrown when the reference to the world is lost.
      */

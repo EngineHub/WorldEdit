@@ -468,6 +468,11 @@ public class ForgeWorld extends AbstractWorld {
     }
 
     @Override
+    public BlockVector3 getSpawnPosition() {
+        return ForgeAdapter.adapt(getWorld().getSpawnPoint());
+    }
+
+    @Override
     public BlockState getBlock(BlockVector3 position) {
         World world = getWorld();
         BlockPos pos = new BlockPos(position.getBlockX(), position.getBlockY(), position.getBlockZ());

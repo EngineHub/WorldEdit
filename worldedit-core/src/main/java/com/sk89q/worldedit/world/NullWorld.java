@@ -126,6 +126,11 @@ public class NullWorld extends AbstractWorld {
     }
 
     @Override
+    public BlockVector3 getSpawnPosition() {
+        return BlockVector3.ZERO;
+    }
+
+    @Override
     public BlockState getBlock(BlockVector3 position) {
         return BlockTypes.AIR.getDefaultState();
     }
