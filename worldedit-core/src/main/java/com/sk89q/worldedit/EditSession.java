@@ -1222,11 +1222,11 @@ public class EditSession implements Extent, AutoCloseable {
      * @param dir the direction
      * @param distance the distance to move
      * @param copyAir true to copy air blocks
-     * @param replacement the replacement block to fill in after moving, or null to use air
+     * @param replacement the replacement pattern to fill in after moving, or null to use air
      * @return number of blocks moved
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
-    public int moveRegion(Region region, BlockVector3 dir, int distance, boolean copyAir, BlockStateHolder replacement) throws MaxChangedBlocksException {
+    public int moveRegion(Region region, BlockVector3 dir, int distance, boolean copyAir, Pattern replacement) throws MaxChangedBlocksException {
         checkNotNull(region);
         checkNotNull(dir);
         checkArgument(distance >= 1, "distance >= 1 required");
@@ -1235,7 +1235,7 @@ public class EditSession implements Extent, AutoCloseable {
 
         // Remove the original blocks
         com.sk89q.worldedit.function.pattern.Pattern pattern = replacement != null ?
-                new BlockPattern(replacement) :
+                replacement :
                 new BlockPattern(BlockTypes.AIR.getDefaultState());
         BlockReplace remove = new BlockReplace(this, pattern);
 
@@ -1266,11 +1266,11 @@ public class EditSession implements Extent, AutoCloseable {
      * @param dir the direction
      * @param distance the distance to move
      * @param copyAir true to copy air blocks
-     * @param replacement the replacement block to fill in after moving, or null to use air
+     * @param replacement the replacement pattern to fill in after moving, or null to use air
      * @return number of blocks moved
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
-    public int moveCuboidRegion(Region region, BlockVector3 dir, int distance, boolean copyAir, BlockStateHolder replacement) throws MaxChangedBlocksException {
+    public int moveCuboidRegion(Region region, BlockVector3 dir, int distance, boolean copyAir, Pattern replacement) throws MaxChangedBlocksException {
         return moveRegion(region, dir, distance, copyAir, replacement);
     }
 
