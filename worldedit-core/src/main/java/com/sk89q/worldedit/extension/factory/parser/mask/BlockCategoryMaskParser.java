@@ -38,18 +38,18 @@ public class BlockCategoryMaskParser extends InputParser<Mask> {
 
     @Override
     public Mask parseFromInput(String input, ParserContext context) throws InputParseException {
-        if (input.startsWith("##")) {
-            Extent extent = Request.request().getEditSession();
-
-            // This means it's a tag mask.
-            BlockCategory category = BlockCategories.get(input.substring(2).toLowerCase());
-            if (category == null) {
-                throw new InputParseException("Unrecognised tag '" + input.substring(2) + '\'');
-            } else {
-                return new BlockCategoryMask(extent, category);
-            }
+        if (!input.startsWith("##")) {
+            return null;
         }
 
-        return null;
+        Extent extent = Request.request().getEditSession();
+
+        // This means it's a tag mask.
+        BlockCategory category = BlockCategories.get(input.substring(2).toLowerCase());
+        if (category == null) {
+            throw new InputParseException("Unrecognised tag '" + input.substring(2) + '\'');
+        } else {
+            return new BlockCategoryMask(extent, category);
+        }
     }
 }

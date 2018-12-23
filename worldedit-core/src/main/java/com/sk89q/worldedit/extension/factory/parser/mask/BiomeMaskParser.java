@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.extension.factory.parser.mask;
 
+import com.google.common.base.Splitter;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.extension.input.InputParseException;
 import com.sk89q.worldedit.extension.input.ParserContext;
@@ -48,10 +49,9 @@ public class BiomeMaskParser extends InputParser<Mask> {
         }
 
         Set<BaseBiome> biomes = new HashSet<>();
-        String[] biomesList = input.substring(1).split(",");
         BiomeRegistry biomeRegistry = worldEdit.getPlatformManager().queryCapability(Capability.GAME_HOOKS).getRegistries().getBiomeRegistry();
         List<BaseBiome> knownBiomes = biomeRegistry.getBiomes();
-        for (String biomeName : biomesList) {
+        for (String biomeName : Splitter.on(",").split(input.substring(1))) {
             BaseBiome biome = Biomes.findBiomeByName(knownBiomes, biomeName, biomeRegistry);
             if (biome == null) {
                 throw new InputParseException("Unknown biome '" + biomeName + '\'');
