@@ -19,22 +19,10 @@
 
 package com.sk89q.worldedit.world.registry;
 
-import com.sk89q.worldedit.blocks.BaseItem;
-import com.sk89q.worldedit.world.item.ItemType;
-import com.sk89q.worldedit.world.item.ItemTypes;
-
-import javax.annotation.Nullable;
-
 /**
  * A item registry that uses {@link BundledItemRegistry} to serve information
  * about items.
  */
 public class BundledItemRegistry implements ItemRegistry {
 
-    @Nullable
-    @Override
-    public BaseItem createFromId(String id) {
-        ItemType itemType = ItemTypes.get(id);
-        return itemType == null ? null : new BaseItem(itemType);
-    }
 }
