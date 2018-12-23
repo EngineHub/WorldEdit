@@ -17,43 +17,32 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.extension.factory;
+package com.sk89q.worldedit.extension.factory.parser.mask;
 
-import com.sk89q.worldedit.IncompleteRegionException;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.extension.input.InputParseException;
-import com.sk89q.worldedit.extension.input.NoMatchException;
 import com.sk89q.worldedit.extension.input.ParserContext;
 import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.function.mask.BiomeMask2D;
-import com.sk89q.worldedit.function.mask.BlockCategoryMask;
 import com.sk89q.worldedit.function.mask.BlockMask;
 import com.sk89q.worldedit.function.mask.ExistingBlockMask;
 import com.sk89q.worldedit.function.mask.ExpressionMask;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.function.mask.MaskIntersection;
 import com.sk89q.worldedit.function.mask.Masks;
-import com.sk89q.worldedit.function.mask.NoiseFilter;
 import com.sk89q.worldedit.function.mask.OffsetMask;
-import com.sk89q.worldedit.function.mask.RegionMask;
-import com.sk89q.worldedit.function.mask.SolidBlockMask;
 import com.sk89q.worldedit.internal.expression.Expression;
 import com.sk89q.worldedit.internal.expression.ExpressionException;
 import com.sk89q.worldedit.internal.registry.InputParser;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.Vector3;
-import com.sk89q.worldedit.math.noise.RandomNoise;
 import com.sk89q.worldedit.regions.shape.WorldEditExpressionEnvironment;
 import com.sk89q.worldedit.session.request.Request;
-import com.sk89q.worldedit.session.request.RequestSelection;
 import com.sk89q.worldedit.world.biome.BaseBiome;
 import com.sk89q.worldedit.world.biome.Biomes;
-import com.sk89q.worldedit.world.block.BlockCategories;
-import com.sk89q.worldedit.world.block.BlockCategory;
 import com.sk89q.worldedit.world.registry.BiomeRegistry;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -61,77 +50,22 @@ import java.util.Set;
 /**
  * Parses mask input strings.
  */
-class DefaultMaskParser extends InputParser<Mask> {
+public class DefaultMaskParser extends InputParser<Mask> {
 
-    protected DefaultMaskParser(WorldEdit worldEdit) {
+    public DefaultMaskParser(WorldEdit worldEdit) {
         super(worldEdit);
     }
 
-    @Override
-    public Mask parseFromInput(String input, ParserContext context) throws InputParseException {
-        List<Mask> masks = new ArrayList<>();
-
-        for (String component : input.split(" ")) {
-            if (component.isEmpty()) {
-                continue;
-            }
-
-            Mask current = getBlockMaskComponent(masks, component, context);
-
-            masks.add(current);
-        }
-
-        switch (masks.size()) {
-            case 0:
-                return null;
-
-            case 1:
-                return masks.get(0);
-
-            default:
-                return new MaskIntersection(masks);
-        }
-    }
-
-    private Mask getBlockMaskComponent(List<Mask> masks, String component, ParserContext context) throws InputParseException {
+    public Mask parseFromInput(String component, ParserContext context) throws InputParseException {
         Extent extent = Request.request().getEditSession();
 
         final char firstChar = component.charAt(0);
         switch (firstChar) {
-            case '#':
-                if (component.equalsIgnoreCase("#existing")) {
-                    return new ExistingBlockMask(extent);
-                } else if (component.equalsIgnoreCase("#solid")) {
-                    return new SolidBlockMask(extent);
-                } else if (component.equalsIgnoreCase("#dregion")
-                        || component.equalsIgnoreCase("#dselection")
-                        || component.equalsIgnoreCase("#dsel")) {
-                    return new RegionMask(new RequestSelection());
-                } else if (component.equalsIgnoreCase("#selection")
-                        || component.equalsIgnoreCase("#region")
-                        || component.equalsIgnoreCase("#sel")) {
-                    try {
-                        return new RegionMask(context.requireSession().getSelection(context.requireWorld()).clone());
-                    } catch (IncompleteRegionException e) {
-                        throw new InputParseException("Please make a selection first.");
-                    }
-                } else if (component.startsWith("##")) {
-                    // This means it's a tag mask.
-                    BlockCategory category = BlockCategories.get(component.substring(2).toLowerCase());
-                    if (category == null) {
-                        throw new NoMatchException("Unrecognised tag '" + component.substring(2) + '\'');
-                    } else {
-                        return new BlockCategoryMask(extent, category);
-                    }
-                } else {
-                    throw new NoMatchException("Unrecognized mask '" + component + '\'');
-                }
-
             case '>':
             case '<':
                 Mask submask;
                 if (component.length() > 1) {
-                    submask = getBlockMaskComponent(masks, component.substring(1), context);
+                    submask = worldEdit.getMaskFactory().parseFromInput(component.substring(1), context);
                 } else {
                     submask = new ExistingBlockMask(extent);
                 }
@@ -141,8 +75,7 @@ class DefaultMaskParser extends InputParser<Mask> {
             case '$':
                 Set<BaseBiome> biomes = new HashSet<>();
                 String[] biomesList = component.substring(1).split(",");
-                BiomeRegistry biomeRegistry = WorldEdit.getInstance().getPlatformManager()
-                        .queryCapability(Capability.GAME_HOOKS).getRegistries().getBiomeRegistry();
+                BiomeRegistry biomeRegistry = worldEdit.getPlatformManager().queryCapability(Capability.GAME_HOOKS).getRegistries().getBiomeRegistry();
                 List<BaseBiome> knownBiomes = biomeRegistry.getBiomes();
                 for (String biomeName : biomesList) {
                     BaseBiome biome = Biomes.findBiomeByName(knownBiomes, biomeName, biomeRegistry);
@@ -154,10 +87,6 @@ class DefaultMaskParser extends InputParser<Mask> {
 
                 return Masks.asMask(new BiomeMask2D(context.requireExtent(), biomes));
 
-            case '%':
-                int i = Integer.parseInt(component.substring(1));
-                return new NoiseFilter(new RandomNoise(), ((double) i) / 100);
-
             case '=':
                 try {
                     Expression exp = Expression.compile(component.substring(1), "x", "y", "z");
@@ -167,11 +96,6 @@ class DefaultMaskParser extends InputParser<Mask> {
                     return new ExpressionMask(exp);
                 } catch (ExpressionException e) {
                     throw new InputParseException("Invalid expression: " + e.getMessage());
-                }
-
-            case '!':
-                if (component.length() > 1) {
-                    return Masks.negate(getBlockMaskComponent(masks, component.substring(1), context));
                 }
 
             default:

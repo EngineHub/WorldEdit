@@ -21,12 +21,14 @@ package com.sk89q.worldedit.internal.registry;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import com.google.common.collect.Lists;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.extension.input.InputParseException;
 import com.sk89q.worldedit.extension.input.NoMatchException;
 import com.sk89q.worldedit.extension.input.ParserContext;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -38,7 +40,7 @@ import java.util.List;
 public abstract class AbstractFactory<E> {
 
     protected final WorldEdit worldEdit;
-    protected final List<InputParser<E>> parsers = new ArrayList<>();
+    private final List<InputParser<E>> parsers = new ArrayList<>();
 
     /**
      * Create a new factory.
@@ -48,6 +50,17 @@ public abstract class AbstractFactory<E> {
     protected AbstractFactory(WorldEdit worldEdit) {
         checkNotNull(worldEdit);
         this.worldEdit = worldEdit;
+    }
+
+    /**
+     * Gets an immutable list of parsers.
+     *
+     * To add parsers, use the register method.
+     *
+     * @return the parsers
+     */
+    public List<InputParser<E>> getParsers() {
+        return Collections.unmodifiableList(parsers);
     }
 
     public E parseFromInput(String input, ParserContext context) throws InputParseException {
@@ -64,4 +77,14 @@ public abstract class AbstractFactory<E> {
         throw new NoMatchException("No match for '" + input + "'");
     }
 
+    /**
+     * Registers an InputParser to this factory
+     *
+     * @param inputParser The input parser
+     */
+    public void register(InputParser<E> inputParser) {
+        checkNotNull(inputParser);
+
+        parsers.add(inputParser);
+    }
 }

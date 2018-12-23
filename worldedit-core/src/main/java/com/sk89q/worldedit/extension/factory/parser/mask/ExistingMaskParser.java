@@ -17,37 +17,35 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.internal.registry;
+package com.sk89q.worldedit.extension.factory.parser.mask;
 
 import com.google.common.collect.Lists;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.extension.input.InputParseException;
 import com.sk89q.worldedit.extension.input.ParserContext;
+import com.sk89q.worldedit.extent.Extent;
+import com.sk89q.worldedit.function.mask.ExistingBlockMask;
+import com.sk89q.worldedit.function.mask.Mask;
+import com.sk89q.worldedit.internal.registry.SimpleInputParser;
+import com.sk89q.worldedit.session.request.Request;
 
 import java.util.List;
 
-/**
- * Input parser interface for {@link AbstractFactory}.
- *
- * @param <E> the element
- */
-@SuppressWarnings("ProtectedField")
-public abstract class InputParser<E> {
+public class ExistingMaskParser extends SimpleInputParser<Mask> {
 
-    protected final WorldEdit worldEdit;
-
-    public InputParser(WorldEdit worldEdit) {
-        this.worldEdit = worldEdit;
+    public ExistingMaskParser(WorldEdit worldEdit) {
+        super(worldEdit);
     }
 
-    public abstract E parseFromInput(String input, ParserContext context) throws InputParseException;
+    @Override
+    public List<String> getMatchedAliases() {
+        return Lists.newArrayList("#existing");
+    }
 
-    /**
-     * Gets a list of suggestions of input to this parser.
-     *
-     * @return a list of suggestions
-     */
-    public List<String> getSuggestions() {
-        return Lists.newArrayList();
+    @Override
+    public Mask parseFromSimpleInput(String input, ParserContext context) throws InputParseException {
+        Extent extent = Request.request().getEditSession();
+
+        return new ExistingBlockMask(extent);
     }
 }

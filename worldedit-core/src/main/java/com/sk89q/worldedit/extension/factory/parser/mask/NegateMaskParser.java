@@ -17,24 +17,31 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.extension.factory;
+package com.sk89q.worldedit.extension.factory.parser.mask;
 
 import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.blocks.BaseItem;
-import com.sk89q.worldedit.extension.factory.parser.DefaultItemParser;
-import com.sk89q.worldedit.internal.registry.AbstractFactory;
+import com.sk89q.worldedit.extension.input.InputParseException;
+import com.sk89q.worldedit.extension.input.ParserContext;
+import com.sk89q.worldedit.function.mask.Mask;
+import com.sk89q.worldedit.function.mask.Masks;
+import com.sk89q.worldedit.internal.registry.InputParser;
 
-public class ItemFactory extends AbstractFactory<BaseItem> {
+public class NegateMaskParser extends InputParser<Mask> {
 
-    /**
-     * Create a new instance.
-     *
-     * @param worldEdit the WorldEdit instance.
-     */
-    public ItemFactory(WorldEdit worldEdit) {
+    public NegateMaskParser(WorldEdit worldEdit) {
         super(worldEdit);
-
-        register(new DefaultItemParser(worldEdit));
     }
 
+    @Override
+    public Mask parseFromInput(String input, ParserContext context) throws InputParseException {
+        if (!input.startsWith("!")) {
+            return null;
+        }
+
+        if (input.length() > 1) {
+            return Masks.negate(worldEdit.getMaskFactory().parseFromInput(input.substring(1), context));
+        } else {
+            throw new InputParseException("Can't negate nothing!");
+        }
+    }
 }

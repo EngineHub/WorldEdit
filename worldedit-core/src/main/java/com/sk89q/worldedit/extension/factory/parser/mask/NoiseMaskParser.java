@@ -17,30 +17,29 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.extension.factory;
+package com.sk89q.worldedit.extension.factory.parser.mask;
 
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.extension.input.InputParseException;
 import com.sk89q.worldedit.extension.input.ParserContext;
-import com.sk89q.worldedit.function.pattern.BlockPattern;
-import com.sk89q.worldedit.function.pattern.Pattern;
+import com.sk89q.worldedit.function.mask.Mask;
+import com.sk89q.worldedit.function.mask.NoiseFilter;
 import com.sk89q.worldedit.internal.registry.InputParser;
+import com.sk89q.worldedit.math.noise.RandomNoise;
 
-class SingleBlockPatternParser extends InputParser<Pattern> {
+public class NoiseMaskParser extends InputParser<Mask> {
 
-    SingleBlockPatternParser(WorldEdit worldEdit) {
+    public NoiseMaskParser(WorldEdit worldEdit) {
         super(worldEdit);
     }
 
     @Override
-    public Pattern parseFromInput(String input, ParserContext context) throws InputParseException {
-        String[] items = input.split(",");
-
-        if (items.length == 1) {
-            return new BlockPattern(worldEdit.getBlockFactory().parseFromInput(items[0], context));
-        } else {
+    public Mask parseFromInput(String input, ParserContext context) throws InputParseException {
+        if (!input.startsWith("%")) {
             return null;
         }
-    }
 
+        int i = Integer.parseInt(input.substring(1));
+        return new NoiseFilter(new RandomNoise(), ((double) i) / 100);
+    }
 }

@@ -17,7 +17,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.extension.factory;
+package com.sk89q.worldedit.extension.factory.parser;
 
 import com.sk89q.worldedit.IncompleteRegionException;
 import com.sk89q.worldedit.NotABlockException;
@@ -52,9 +52,9 @@ import java.util.Map;
 /**
  * Parses block input strings.
  */
-class DefaultBlockParser extends InputParser<BlockStateHolder> {
+public class DefaultBlockParser extends InputParser<BlockStateHolder> {
 
-    protected DefaultBlockParser(WorldEdit worldEdit) {
+    public DefaultBlockParser(WorldEdit worldEdit) {
         super(worldEdit);
     }
 

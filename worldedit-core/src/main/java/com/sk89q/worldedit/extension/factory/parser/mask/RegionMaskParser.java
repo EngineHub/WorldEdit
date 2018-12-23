@@ -17,37 +17,36 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.internal.registry;
+package com.sk89q.worldedit.extension.factory.parser.mask;
 
 import com.google.common.collect.Lists;
+import com.sk89q.worldedit.IncompleteRegionException;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.extension.input.InputParseException;
 import com.sk89q.worldedit.extension.input.ParserContext;
+import com.sk89q.worldedit.function.mask.Mask;
+import com.sk89q.worldedit.function.mask.RegionMask;
+import com.sk89q.worldedit.internal.registry.SimpleInputParser;
 
 import java.util.List;
 
-/**
- * Input parser interface for {@link AbstractFactory}.
- *
- * @param <E> the element
- */
-@SuppressWarnings("ProtectedField")
-public abstract class InputParser<E> {
+public class RegionMaskParser extends SimpleInputParser<Mask> {
 
-    protected final WorldEdit worldEdit;
-
-    public InputParser(WorldEdit worldEdit) {
-        this.worldEdit = worldEdit;
+    public RegionMaskParser(WorldEdit worldEdit) {
+        super(worldEdit);
     }
 
-    public abstract E parseFromInput(String input, ParserContext context) throws InputParseException;
+    @Override
+    public List<String> getMatchedAliases() {
+        return Lists.newArrayList("#region", "#selection", "#sel");
+    }
 
-    /**
-     * Gets a list of suggestions of input to this parser.
-     *
-     * @return a list of suggestions
-     */
-    public List<String> getSuggestions() {
-        return Lists.newArrayList();
+    @Override
+    public Mask parseFromSimpleInput(String input, ParserContext context) throws InputParseException {
+        try {
+            return new RegionMask(context.requireSession().getSelection(context.requireWorld()).clone());
+        } catch (IncompleteRegionException e) {
+            throw new InputParseException("Please make a selection first.");
+        }
     }
 }

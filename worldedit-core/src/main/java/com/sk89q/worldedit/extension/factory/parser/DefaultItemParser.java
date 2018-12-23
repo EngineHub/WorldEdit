@@ -17,7 +17,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.extension.factory;
+package com.sk89q.worldedit.extension.factory.parser;
 
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.blocks.BaseItem;
@@ -30,7 +30,7 @@ import com.sk89q.worldedit.world.registry.LegacyMapper;
 
 public class DefaultItemParser extends InputParser<BaseItem> {
 
-    protected DefaultItemParser(WorldEdit worldEdit) {
+    public DefaultItemParser(WorldEdit worldEdit) {
         super(worldEdit);
     }
 
