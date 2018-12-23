@@ -19,8 +19,16 @@
 
 package com.sk89q.worldedit.forge;
 
-import com.sk89q.worldedit.world.registry.ItemRegistry;
+import com.sk89q.worldedit.world.item.ItemType;
+import com.sk89q.worldedit.world.registry.BundledItemRegistry;
 
-public class ForgeItemRegistry implements ItemRegistry {
+import javax.annotation.Nullable;
 
+public class ForgeItemRegistry extends BundledItemRegistry {
+
+    @Nullable
+    @Override
+    public String getName(ItemType itemType) {
+        return super.getName(itemType); // TODO
+    }
 }

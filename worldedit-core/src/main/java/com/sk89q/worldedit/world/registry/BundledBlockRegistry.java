@@ -35,6 +35,13 @@ public class BundledBlockRegistry implements BlockRegistry {
 
     @Nullable
     @Override
+    public String getName(BlockType blockType) {
+        BundledBlockData.BlockEntry blockEntry = BundledBlockData.getInstance().findById(blockType.getId());
+        return blockEntry != null ? blockEntry.localizedName : null;
+    }
+
+    @Nullable
+    @Override
     public BlockMaterial getMaterial(BlockType blockType) {
         return new PassthroughBlockMaterial(BundledBlockData.getInstance().getMaterialById(blockType.getId()));
     }

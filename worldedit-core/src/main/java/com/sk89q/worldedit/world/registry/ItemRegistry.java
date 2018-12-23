@@ -19,6 +19,19 @@
 
 package com.sk89q.worldedit.world.registry;
 
+import com.sk89q.worldedit.world.item.ItemType;
+
+import javax.annotation.Nullable;
+
 public interface ItemRegistry {
+
+    /**
+     * Gets the name for the given item.
+     *
+     * @param itemType the item
+     * @return The name, or null if it's unknown
+     */
+    @Nullable
+    String getName(ItemType itemType);
 
 }

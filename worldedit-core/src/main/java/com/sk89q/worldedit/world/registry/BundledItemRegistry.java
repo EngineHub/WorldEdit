@@ -19,10 +19,20 @@
 
 package com.sk89q.worldedit.world.registry;
 
+import com.sk89q.worldedit.world.item.ItemType;
+
+import javax.annotation.Nullable;
+
 /**
  * A item registry that uses {@link BundledItemRegistry} to serve information
  * about items.
  */
 public class BundledItemRegistry implements ItemRegistry {
 
+    @Nullable
+    @Override
+    public String getName(ItemType itemType) {
+        BundledItemData.ItemEntry itemEntry = BundledItemData.getInstance().findById(itemType.getId());
+        return itemEntry != null ? itemEntry.localizedName : null;
+    }
 }

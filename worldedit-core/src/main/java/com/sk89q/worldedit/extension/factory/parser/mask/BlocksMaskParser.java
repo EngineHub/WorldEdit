@@ -21,6 +21,7 @@ package com.sk89q.worldedit.extension.factory.parser.mask;
 
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.extension.input.InputParseException;
+import com.sk89q.worldedit.extension.input.NoMatchException;
 import com.sk89q.worldedit.extension.input.ParserContext;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.function.mask.BlockMask;
@@ -46,11 +47,15 @@ public class BlocksMaskParser extends InputParser<Mask> {
         ParserContext tempContext = new ParserContext(context);
         tempContext.setRestricted(false);
         tempContext.setPreferringWildcard(true);
-        Set<BlockStateHolder> holders = worldEdit.getBlockFactory().parseFromListInput(component, tempContext);
-        if (holders.isEmpty()) {
+        try {
+            Set<BlockStateHolder> holders = worldEdit.getBlockFactory().parseFromListInput(component, tempContext);
+            if (holders.isEmpty()) {
+                return null;
+            }
+            return new BlockMask(extent, holders);
+        } catch (NoMatchException e) {
             return null;
         }
-        return new BlockMask(extent, holders);
     }
 
 }

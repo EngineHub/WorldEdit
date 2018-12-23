@@ -27,15 +27,24 @@ import com.sk89q.worldedit.world.registry.BundledBlockRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
+import net.minecraft.util.ResourceLocation;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
+import javax.annotation.Nullable;
+
 public class ForgeBlockRegistry extends BundledBlockRegistry {
 
     private Map<Material, ForgeBlockMaterial> materialMap = new HashMap<>();
+
+    @Nullable
+    @Override
+    public String getName(BlockType blockType) {
+        return Block.REGISTRY.getObject(new ResourceLocation(blockType.getId())).getLocalizedName();
+    }
 
     @Override
     public BlockMaterial getMaterial(BlockType blockType) {
