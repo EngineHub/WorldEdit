@@ -34,7 +34,7 @@ import com.sk89q.worldedit.sponge.adapter.SpongeImplAdapter;
 import com.sk89q.worldedit.sponge.adapter.SpongeImplLoader;
 import com.sk89q.worldedit.sponge.config.SpongeConfiguration;
 import com.sk89q.worldedit.world.item.ItemTypes;
-import org.bstats.sponge.Metrics;
+import org.bstats.sponge.Metrics2;
 import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockSnapshot;
@@ -77,7 +77,7 @@ public class SpongeWorldEdit {
     private Logger logger;
 
     @Inject
-    private Metrics metrics;
+    private Metrics2 metrics;
 
     public static final String MOD_ID = "worldedit";
 
