@@ -17,7 +17,7 @@ repositories {
 
 dependencies {
     compile project(':worldedit-core')
-    compile 'org.spongepowered:spongeapi:7.0.0-SNAPSHOT'
+    compile 'org.spongepowered:spongeapi:7.1.0'
     compile 'org.bstats:bstats-sponge:1.4'
     testCompile group: 'org.mockito', name: 'mockito-core', version:'1.9.0-rc1'
 }
