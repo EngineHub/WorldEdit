@@ -58,22 +58,6 @@ class ForgeBiomeRegistry implements BiomeRegistry {
      */
     private static class ForgeBiomeData implements BiomeData {
 
-        private static final Field biomeNameField;
-        static {
-            Field field;
-            try {
-                field = Biome.class.getDeclaredField("biomeName");
-            } catch (NoSuchFieldException e) {
-                // in live environment, try again:
-                try {
-                    field = Biome.class.getDeclaredField("field_185412_a");
-                } catch (NoSuchFieldException e1) {
-                    throw new IllegalStateException("Cannot find biomeName field!", e1);
-                }
-            }
-            field.setAccessible(true);
-            biomeNameField = field;
-        }
         private final Biome biome;
 
         /**
@@ -87,11 +71,8 @@ class ForgeBiomeRegistry implements BiomeRegistry {
 
         @Override
         public String getName() {
-            try {
-                return (String) biomeNameField.get(biome);
-            } catch (IllegalArgumentException | IllegalAccessException e) {
-                throw new RuntimeException(e);
-            }
+            // Cannot use getBiomeName, currently Side.CLIENT in 1.12.2
+            return biome.biomeName;
         }
     }
 
