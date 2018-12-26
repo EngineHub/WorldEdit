@@ -17,20 +17,20 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.extension.factory;
+package com.sk89q.worldedit.extension.factory.parser;
 
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.extension.input.InputParseException;
 import com.sk89q.worldedit.extension.input.ParserContext;
-import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.internal.registry.InputParser;
 import com.sk89q.worldedit.world.item.ItemType;
+import com.sk89q.worldedit.world.item.ItemTypes;
 import com.sk89q.worldedit.world.registry.LegacyMapper;
 
 public class DefaultItemParser extends InputParser<BaseItem> {
 
-    protected DefaultItemParser(WorldEdit worldEdit) {
+    public DefaultItemParser(WorldEdit worldEdit) {
         super(worldEdit);
     }
 
@@ -53,8 +53,10 @@ public class DefaultItemParser extends InputParser<BaseItem> {
         }
 
         if (item == null) {
-            item = WorldEdit.getInstance().getPlatformManager()
-                    .queryCapability(Capability.GAME_HOOKS).getRegistries().getItemRegistry().createFromId(input.toLowerCase());
+            ItemType type = ItemTypes.get(input.toLowerCase());
+            if (type != null) {
+                item = new BaseItem(type);
+            }
         }
 
         if (item == null) {

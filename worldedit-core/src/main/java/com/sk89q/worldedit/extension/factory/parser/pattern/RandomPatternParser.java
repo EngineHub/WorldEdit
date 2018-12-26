@@ -17,10 +17,11 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.extension.factory;
+package com.sk89q.worldedit.extension.factory.parser.pattern;
 
 import com.sk89q.util.StringUtil;
 import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.extension.factory.BlockFactory;
 import com.sk89q.worldedit.extension.input.InputParseException;
 import com.sk89q.worldedit.extension.input.ParserContext;
 import com.sk89q.worldedit.function.pattern.BlockPattern;
@@ -29,9 +30,9 @@ import com.sk89q.worldedit.function.pattern.RandomPattern;
 import com.sk89q.worldedit.internal.registry.InputParser;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 
-class RandomPatternParser extends InputParser<Pattern> {
+public class RandomPatternParser extends InputParser<Pattern> {
 
-    RandomPatternParser(WorldEdit worldEdit) {
+    public RandomPatternParser(WorldEdit worldEdit) {
         super(worldEdit);
     }
 

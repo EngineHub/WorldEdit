@@ -19,10 +19,11 @@
 
 package com.sk89q.worldedit.world.item;
 
+import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.registry.NamespacedRegistry;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.block.BlockTypes;
-import com.sk89q.worldedit.world.registry.BundledItemData;
 
 import javax.annotation.Nullable;
 
@@ -50,11 +51,11 @@ public class ItemType {
      * @return The name, or ID
      */
     public String getName() {
-        BundledItemData.ItemEntry entry = BundledItemData.getInstance().findById(this.id);
-        if (entry == null) {
+        String name = WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.GAME_HOOKS).getRegistries().getItemRegistry().getName(this);
+        if (name == null) {
             return getId();
         } else {
-            return entry.localizedName;
+            return name;
         }
     }
 

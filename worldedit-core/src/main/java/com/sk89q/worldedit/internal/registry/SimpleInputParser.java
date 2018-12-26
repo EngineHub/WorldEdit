@@ -19,35 +19,53 @@
 
 package com.sk89q.worldedit.internal.registry;
 
+import com.google.common.collect.Lists;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.extension.input.InputParseException;
 import com.sk89q.worldedit.extension.input.ParserContext;
 
-import java.util.Collections;
 import java.util.List;
 
 /**
- * Input parser interface for {@link AbstractFactory}.
+ * An input parser that only performs a single function from aliases.
  *
  * @param <E> the element
  */
-@SuppressWarnings("ProtectedField")
-public abstract class InputParser<E> {
+public abstract class SimpleInputParser<E> extends InputParser<E> {
 
-    protected final WorldEdit worldEdit;
-
-    public InputParser(WorldEdit worldEdit) {
-        this.worldEdit = worldEdit;
+    public SimpleInputParser(WorldEdit worldEdit) {
+        super(worldEdit);
     }
 
-    public abstract E parseFromInput(String input, ParserContext context) throws InputParseException;
+    /**
+     * The strings this parser matches
+     *
+     * @return the matching aliases
+     */
+    public abstract List<String> getMatchedAliases();
+
+    @Override
+    public E parseFromInput(String input, ParserContext context) throws InputParseException {
+        if (!getMatchedAliases().contains(input)) {
+            return null;
+        }
+
+        return parseFromSimpleInput(input, context);
+    }
+
+    public abstract E parseFromSimpleInput(String input, ParserContext context) throws InputParseException;
 
     /**
-     * Gets a list of suggestions of input to this parser.
+     * Gets the primary name of this matcher
      *
-     * @return a list of suggestions
+     * @return the primary match
      */
+    public String getPrimaryMatcher() {
+        return getMatchedAliases().get(0);
+    }
+
+    @Override
     public List<String> getSuggestions() {
-        return Collections.emptyList();
+        return Lists.newArrayList(getPrimaryMatcher());
     }
 }

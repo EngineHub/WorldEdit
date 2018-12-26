@@ -17,37 +17,31 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.internal.registry;
+package com.sk89q.worldedit.extension.factory.parser.mask;
 
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.extension.input.InputParseException;
 import com.sk89q.worldedit.extension.input.ParserContext;
+import com.sk89q.worldedit.function.mask.Mask;
+import com.sk89q.worldedit.function.mask.Masks;
+import com.sk89q.worldedit.internal.registry.InputParser;
 
-import java.util.Collections;
-import java.util.List;
+public class NegateMaskParser extends InputParser<Mask> {
 
-/**
- * Input parser interface for {@link AbstractFactory}.
- *
- * @param <E> the element
- */
-@SuppressWarnings("ProtectedField")
-public abstract class InputParser<E> {
-
-    protected final WorldEdit worldEdit;
-
-    public InputParser(WorldEdit worldEdit) {
-        this.worldEdit = worldEdit;
+    public NegateMaskParser(WorldEdit worldEdit) {
+        super(worldEdit);
     }
 
-    public abstract E parseFromInput(String input, ParserContext context) throws InputParseException;
+    @Override
+    public Mask parseFromInput(String input, ParserContext context) throws InputParseException {
+        if (!input.startsWith("!")) {
+            return null;
+        }
 
-    /**
-     * Gets a list of suggestions of input to this parser.
-     *
-     * @return a list of suggestions
-     */
-    public List<String> getSuggestions() {
-        return Collections.emptyList();
+        if (input.length() > 1) {
+            return Masks.negate(worldEdit.getMaskFactory().parseFromInput(input.substring(1), context));
+        } else {
+            throw new InputParseException("Can't negate nothing!");
+        }
     }
 }
