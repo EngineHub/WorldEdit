@@ -51,15 +51,7 @@ import com.sk89q.worldedit.world.weather.WeatherType;
 import com.sk89q.worldedit.world.weather.WeatherTypes;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLeaves;
-import net.minecraft.block.BlockOldLeaf;
-import net.minecraft.block.BlockOldLog;
-import net.minecraft.block.BlockPlanks;
-import net.minecraft.block.properties.IProperty;
-import net.minecraft.block.properties.PropertyDirection;
-import net.minecraft.block.properties.PropertyEnum;
-import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.EntityList;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.init.Blocks;
 import net.minecraft.inventory.IInventory;
@@ -67,6 +59,9 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.state.DirectionProperty;
+import net.minecraft.state.EnumProperty;
+import net.minecraft.state.IProperty;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
@@ -77,6 +72,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.chunk.BlockStateContainer;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.chunk.storage.AnvilSaveHandler;
@@ -116,9 +112,9 @@ public class ForgeWorld extends AbstractWorld {
     private static final Random random = new Random();
     private static final int UPDATE = 1, NOTIFY = 2;
 
-    private static final IBlockState JUNGLE_LOG = Blocks.LOG.getDefaultState().withProperty(BlockOldLog.VARIANT, BlockPlanks.EnumType.JUNGLE);
-    private static final IBlockState JUNGLE_LEAF = Blocks.LEAVES.getDefaultState().withProperty(BlockOldLeaf.VARIANT, BlockPlanks.EnumType.JUNGLE).withProperty(BlockLeaves.CHECK_DECAY, Boolean.valueOf(false));
-    private static final IBlockState JUNGLE_SHRUB = Blocks.LEAVES.getDefaultState().withProperty(BlockOldLeaf.VARIANT, BlockPlanks.EnumType.OAK).withProperty(BlockLeaves.CHECK_DECAY, Boolean.valueOf(false));
+    private static final IBlockState JUNGLE_LOG = Blocks.JUNGLE_LOG.getDefaultState();
+    private static final IBlockState JUNGLE_LEAF = Blocks.JUNGLE_LEAVES.getDefaultState().with(BlockLeaves.PERSISTENT, Boolean.TRUE);
+    private static final IBlockState JUNGLE_SHRUB = Blocks.OAK_LEAVES.getDefaultState().with(BlockLeaves.PERSISTENT, Boolean.TRUE);
     
     private final WeakReference<World> worldRef;
 
@@ -178,7 +174,7 @@ public class ForgeWorld extends AbstractWorld {
         int z = position.getBlockZ();
 
         // First set the block
-        Chunk chunk = world.getChunkFromChunkCoords(x >> 4, z >> 4);
+        Chunk chunk = world.getChunk(x >> 4, z >> 4);
         BlockPos pos = new BlockPos(x, y, z);
         IBlockState old = chunk.getBlockState(pos);
         Block mcBlock = Block.getBlockFromName(block.getBlockType().getId());
@@ -224,17 +220,17 @@ public class ForgeWorld extends AbstractWorld {
             IProperty property = stateContainer.getProperty(state.getKey().getName());
             Comparable value = (Comparable) state.getValue();
             // we may need to adapt this value, depending on the source prop
-            if (property instanceof PropertyDirection) {
+            if (property instanceof DirectionProperty) {
                 Direction dir = (Direction) value;
                 value = ForgeAdapter.adapt(dir);
-            } else if (property instanceof PropertyEnum) {
+            } else if (property instanceof EnumProperty) {
                 String enumName = (String) value;
-                value = ((PropertyEnum<?>) property).parseValue((String) value).or(() -> {
+                value = ((EnumProperty<?>) property).parseValue((String) value).orElseGet(() -> {
                     throw new IllegalStateException("Enum property " + property.getName() + " does not contain " + enumName);
                 });
             }
 
-            newState = newState.withProperty(property, value);
+            newState = newState.with(property, value);
         }
         return newState;
     }
@@ -271,7 +267,7 @@ public class ForgeWorld extends AbstractWorld {
         checkNotNull(position);
         checkNotNull(biome);
 
-        Chunk chunk = getWorld().getChunkFromBlockCoords(new BlockPos(position.getBlockX(), 0, position.getBlockZ()));
+        Chunk chunk = getWorld().getChunk(new BlockPos(position.getBlockX(), 0, position.getBlockZ()));
         if (chunk.isLoaded()) {
             chunk.getBiomeArray()[((position.getBlockZ() & 0xF) << 4 | position.getBlockX() & 0xF)] = (byte) Biome.getIdForBiome(ForgeAdapter.adapt(biome));
             return true;
@@ -282,12 +278,12 @@ public class ForgeWorld extends AbstractWorld {
 
     @Override
     public boolean useItem(BlockVector3 position, BaseItem item, Direction face) {
-        Item nativeItem = Item.getByNameOrId(item.getType().getId());
+        Item nativeItem = Item.REGISTRY.get(new ResourceLocation(item.getType().getId()));
         ItemStack stack = null;
         if (item.getNbtData() == null) {
-            stack = new ItemStack(nativeItem, 1, 0);
+            stack = new ItemStack(nativeItem, 1);
         } else {
-            stack = new ItemStack(nativeItem, 1, 0, NBTConverter.toNative(item.getNbtData()));
+            stack = new ItemStack(nativeItem, 1, NBTConverter.toNative(item.getNbtData()));
         }
         World world = getWorld();
         EnumActionResult used = stack.onItemUse(new WorldEditFakePlayer((WorldServer) world), world, ForgeAdapter.toBlockPos(position),
@@ -333,16 +329,15 @@ public class ForgeWorld extends AbstractWorld {
         WorldServer originalWorld = (WorldServer) getWorld();
 
         MinecraftServer server = originalWorld.getMinecraftServer();
-        AnvilSaveHandler saveHandler = new AnvilSaveHandler(saveFolder,
-                originalWorld.getSaveHandler().getWorldDirectory().getName(), true, server.getDataFixer());
+        AnvilSaveHandler saveHandler = new AnvilSaveHandler(saveFolder, originalWorld.getSaveHandler().getWorldDirectory().getName(), true, server.getDataFixer());
         World freshWorld = new WorldServer(server, saveHandler, originalWorld.getWorldInfo(),
-                originalWorld.provider.getDimension(), originalWorld.profiler).init();
+                originalWorld.dimension.getId(), originalWorld.profiler).init();
 
         // Pre-gen all the chunks
         // We need to also pull one more chunk in every direction
         CuboidRegion expandedPreGen = new CuboidRegion(region.getMinimumPoint().subtract(16, 0, 16), region.getMaximumPoint().add(16, 0, 16));
         for (BlockVector2 chunk : expandedPreGen.getChunks()) {
-            freshWorld.getChunkFromChunkCoords(chunk.getBlockX(), chunk.getBlockZ());
+            freshWorld.getChunk(chunk.getBlockX(), chunk.getBlockZ());
         }
         
         ForgeWorld from = new ForgeWorld(freshWorld);
@@ -354,8 +349,8 @@ public class ForgeWorld extends AbstractWorld {
             throw new RuntimeException(e);
         } finally {
             saveFolder.delete();
-            DimensionManager.setWorld(originalWorld.provider.getDimension(), null, server);
-            DimensionManager.setWorld(originalWorld.provider.getDimension(), originalWorld, server);
+            DimensionManager.setWorld(originalWorld.dimension.getId(), null, server);
+            DimensionManager.setWorld(originalWorld.dimension.getId(), originalWorld, server);
         }
 
         return true;
@@ -396,7 +391,7 @@ public class ForgeWorld extends AbstractWorld {
 
     @Override
     public void checkLoadedChunk(BlockVector3 pt) {
-        getWorld().getChunkFromBlockCoords(ForgeAdapter.toBlockPos(pt));
+        getWorld().getChunk(ForgeAdapter.toBlockPos(pt));
     }
 
     @Override
@@ -408,7 +403,7 @@ public class ForgeWorld extends AbstractWorld {
     public void fixLighting(Iterable<BlockVector2> chunks) {
         World world = getWorld();
         for (BlockVector2 chunk : chunks) {
-            world.getChunkFromChunkCoords(chunk.getBlockX(), chunk.getBlockZ()).resetRelightChecks();
+            world.getChunk(chunk.getBlockX(), chunk.getBlockZ()).resetRelightChecks();
         }
     }
 
@@ -439,7 +434,7 @@ public class ForgeWorld extends AbstractWorld {
         if (info.isRaining()) {
             return info.getRainTime();
         }
-        return info.getCleanWeatherTime();
+        return info.getClearWeatherTime();
     }
 
     @Override
@@ -451,17 +446,17 @@ public class ForgeWorld extends AbstractWorld {
     public void setWeather(WeatherType weatherType, long duration) {
         WorldInfo info = getWorld().getWorldInfo();
         if (WeatherTypes.THUNDER_STORM.equals(weatherType)) {
-            info.setCleanWeatherTime(0);
+            info.setClearWeatherTime(0);
             info.setThundering(true);
             info.setThunderTime((int) duration);
         } else if (WeatherTypes.RAIN.equals(weatherType)) {
-            info.setCleanWeatherTime(0);
+            info.setClearWeatherTime(0);
             info.setRaining(true);
             info.setRainTime((int) duration);
         } else if (WeatherTypes.CLEAR.equals(weatherType)) {
             info.setRaining(false);
             info.setThundering(false);
-            info.setCleanWeatherTime((int) duration);
+            info.setClearWeatherTime((int) duration);
         }
     }
 
@@ -476,7 +471,7 @@ public class ForgeWorld extends AbstractWorld {
         BlockPos pos = new BlockPos(position.getBlockX(), position.getBlockY(), position.getBlockZ());
         IBlockState mcState = world.getBlockState(pos);
 
-        BlockType blockType = BlockType.REGISTRY.get(Block.REGISTRY.getNameForObject(mcState.getBlock()).toString());
+        BlockType blockType = BlockType.REGISTRY.get(Block.REGISTRY.getKey(mcState.getBlock()).toString());
         return blockType.getState(adaptProperties(blockType, mcState.getProperties()));
     }
 
@@ -484,9 +479,9 @@ public class ForgeWorld extends AbstractWorld {
         Map<Property<?>, Object> props = new TreeMap<>(Comparator.comparing(Property::getName));
         for (Map.Entry<IProperty<?>, Comparable<?>> prop : mcProps.entrySet()) {
             Object value = prop.getValue();
-            if (prop.getKey() instanceof PropertyDirection) {
+            if (prop.getKey() instanceof DirectionProperty) {
                 value = ForgeAdapter.adaptEnumFacing((EnumFacing) value);
-            } else if (prop.getKey() instanceof PropertyEnum) {
+            } else if (prop.getKey() instanceof EnumProperty) {
                 value = ((IStringSerializable) value).getName();
             }
             props.put(block.getProperty(prop.getKey().getName()), value);
@@ -559,7 +554,7 @@ public class ForgeWorld extends AbstractWorld {
                 for (String name : Constants.NO_COPY_ENTITY_NBT_FIELDS) {
                     tag.removeTag(name);
                 }
-                createdEntity.readFromNBT(tag);
+                createdEntity.read(tag);
             }
 
             createdEntity.setLocationAndAngles(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());

@@ -14,7 +14,7 @@ buildscript {
 apply plugin: 'net.minecraftforge.gradle'
 
 def minecraftVersion = "1.13"
-def forgeVersion = "24.0.32-1.13-pre"
+def forgeVersion = "24.0.44-1.13-pre"
 
 dependencies {
     compile project(':worldedit-core')
@@ -29,6 +29,8 @@ targetCompatibility = 1.8
 
 minecraft {
     mappings channel: 'snapshot', version: '20180921-1.13'
+
+    accessTransformer = file('worldedit_at.cfg')
 }
 
 project.archivesBaseName = "${project.archivesBaseName}-mc${minecraftVersion}"

@@ -33,12 +33,12 @@ import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.biome.BiomeTypes;
 import net.minecraft.block.properties.IProperty;
-import net.minecraft.block.properties.PropertyBool;
-import net.minecraft.block.properties.PropertyDirection;
-import net.minecraft.block.properties.PropertyEnum;
-import net.minecraft.block.properties.PropertyInteger;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.state.DirectionProperty;
+import net.minecraft.state.IProperty;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.IStringSerializable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.biome.Biome;
@@ -105,20 +105,20 @@ final class ForgeAdapter {
     }
 
     public static Property<?> adaptProperty(IProperty<?> property) {
-        if (property instanceof PropertyBool) {
-            return new BooleanProperty(property.getName(), ImmutableList.copyOf(((PropertyBool) property).getAllowedValues()));
+        if (property instanceof net.minecraft.state.BooleanProperty) {
+            return new BooleanProperty(property.getName(), ImmutableList.copyOf(((net.minecraft.state.BooleanProperty) property).getAllowedValues()));
         }
-        if (property instanceof PropertyInteger) {
-            return new IntegerProperty(property.getName(), ImmutableList.copyOf(((PropertyInteger) property).getAllowedValues()));
+        if (property instanceof net.minecraft.state.IntegerProperty) {
+            return new IntegerProperty(property.getName(), ImmutableList.copyOf(((net.minecraft.state.IntegerProperty) property).getAllowedValues()));
         }
-        if (property instanceof PropertyDirection) {
-            return new DirectionalProperty(property.getName(), ((PropertyDirection) property).getAllowedValues().stream()
+        if (property instanceof DirectionProperty) {
+            return new DirectionalProperty(property.getName(), ((DirectionProperty) property).getAllowedValues().stream()
                     .map(ForgeAdapter::adaptEnumFacing)
                     .collect(Collectors.toList()));
         }
-        if (property instanceof PropertyEnum) {
-            return new EnumProperty(property.getName(), ((PropertyEnum<?>) property).getAllowedValues().stream()
-                    .map(e -> e.getName())
+        if (property instanceof net.minecraft.state.EnumProperty) {
+            return new EnumProperty(property.getName(), ((net.minecraft.state.EnumProperty<?>) property).getAllowedValues().stream()
+                    .map(IStringSerializable::getName)
                     .collect(Collectors.toList()));
         }
         return new IPropertyAdapter<>(property);

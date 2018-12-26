@@ -41,10 +41,10 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.server.SPacketCustomPayload;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
 import java.util.UUID;
 
@@ -69,12 +69,12 @@ public class ForgePlayer extends AbstractPlayerActor {
     @Override
     public BaseItemStack getItemInHand(HandSide handSide) {
         ItemStack is = this.player.getHeldItem(handSide == HandSide.MAIN_HAND ? EnumHand.MAIN_HAND : EnumHand.OFF_HAND);
-        return new BaseItemStack(ItemTypes.get(ForgeRegistries.ITEMS.getKey(is.getItem()).toString()));
+        return new BaseItemStack(ItemTypes.get(Item.REGISTRY.getKey(is.getItem()).toString()));
     }
 
     @Override
     public String getName() {
-        return this.player.getName();
+        return this.player.getName().getFormattedText();
     }
 
     @Override
@@ -105,8 +105,7 @@ public class ForgePlayer extends AbstractPlayerActor {
 
     @Override
     public void giveItem(BaseItemStack itemStack) {
-        this.player.inventory.addItemStackToInventory(
-                new ItemStack(Item.getByNameOrId(itemStack.getType().getId()), itemStack.getAmount(), 0));
+        this.player.inventory.addItemStackToInventory(new ItemStack(Item.REGISTRY.get(new ResourceLocation(itemStack.getType().getId())), itemStack.getAmount(), null));
     }
 
     @Override
@@ -117,7 +116,7 @@ public class ForgePlayer extends AbstractPlayerActor {
             send = send + "|" + StringUtil.joinString(params, "|");
         }
         PacketBuffer buffer = new PacketBuffer(Unpooled.copiedBuffer(send.getBytes(WECUIPacketHandler.UTF_8_CHARSET)));
-        SPacketCustomPayload packet = new SPacketCustomPayload(ForgeWorldEdit.CUI_PLUGIN_CHANNEL, buffer);
+        SPacketCustomPayload packet = new SPacketCustomPayload(new ResourceLocation(ForgeWorldEdit.CUI_PLUGIN_CHANNEL), buffer);
         this.player.connection.sendPacket(packet);
     }
 
@@ -197,7 +196,7 @@ public class ForgePlayer extends AbstractPlayerActor {
 
     @Override
     public SessionKey getSessionKey() {
-        return new SessionKeyImpl(player.getUniqueID(), player.getName());
+        return new SessionKeyImpl(player.getUniqueID(), player.getName().getString());
     }
 
     private static class SessionKeyImpl implements SessionKey {

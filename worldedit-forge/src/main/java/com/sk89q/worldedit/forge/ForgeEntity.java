@@ -52,7 +52,7 @@ class ForgeEntity implements Entity {
             String id = EntityList.getEntityString(entity);
             if (id != null) {
                 NBTTagCompound tag = new NBTTagCompound();
-                entity.writeToNBT(tag);
+                entity.writeWithoutTypeId(tag);
                 return new BaseEntity(EntityTypes.get(id), NBTConverter.fromNative(tag));
             } else {
                 return null;
@@ -96,7 +96,7 @@ class ForgeEntity implements Entity {
     public boolean remove() {
         net.minecraft.entity.Entity entity = entityRef.get();
         if (entity != null) {
-            entity.setDead();
+            entity.remove();
         }
         return true;
     }

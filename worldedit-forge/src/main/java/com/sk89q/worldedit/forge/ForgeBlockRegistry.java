@@ -26,7 +26,7 @@ import com.sk89q.worldedit.world.registry.BundledBlockRegistry;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.IProperty;
+import net.minecraft.state.IProperty;
 import net.minecraft.util.ResourceLocation;
 
 import java.util.Collection;
@@ -43,7 +43,7 @@ public class ForgeBlockRegistry extends BundledBlockRegistry {
     @Nullable
     @Override
     public String getName(BlockType blockType) {
-        return Block.REGISTRY.getObject(new ResourceLocation(blockType.getId())).getLocalizedName();
+        return Block.REGISTRY.get(new ResourceLocation(blockType.getId())).getNameTextComponent().getFormattedText();
     }
 
     @Override
@@ -57,7 +57,7 @@ public class ForgeBlockRegistry extends BundledBlockRegistry {
         Map<String, Property<?>> map = new TreeMap<>();
         Collection<IProperty<?>> propertyKeys = Block.getBlockFromName(blockType.getId())
                 .getDefaultState()
-                .getPropertyKeys();
+                .getProperties();
         for (IProperty<?> key : propertyKeys) {
             map.put(key.getName(), ForgeAdapter.adaptProperty(key));
         }
