@@ -657,23 +657,25 @@ public class LocalSession {
             return; // If it's not enabled, ignore this.
         }
 
-        // Remove the old block.
-        if (cuiTemporaryBlock != null) {
-            player.sendFakeBlock(cuiTemporaryBlock, null);
-            cuiTemporaryBlock = null;
-        }
-
         BaseBlock block = ServerCUIHandler.createStructureBlock(player);
         if (block != null) {
             // If it's null, we don't need to do anything. The old was already removed.
             Map<String, Tag> tags = block.getNbtData().getValue();
-            cuiTemporaryBlock = BlockVector3.at(
+            BlockVector3 tempCuiTemporaryBlock = BlockVector3.at(
                     ((IntTag) tags.get("x")).getValue(),
                     ((IntTag) tags.get("y")).getValue(),
                     ((IntTag) tags.get("z")).getValue()
             );
-
+            if (cuiTemporaryBlock != null && !tempCuiTemporaryBlock.equals(cuiTemporaryBlock)) {
+                // Update the existing block if it's the same location
+                player.sendFakeBlock(cuiTemporaryBlock, null);
+            }
+            cuiTemporaryBlock = tempCuiTemporaryBlock;
             player.sendFakeBlock(cuiTemporaryBlock, block);
+        } else if (cuiTemporaryBlock != null) {
+            // Remove the old block
+            player.sendFakeBlock(cuiTemporaryBlock, null);
+            cuiTemporaryBlock = null;
         }
     }
 
@@ -713,10 +715,8 @@ public class LocalSession {
     public void dispatchCUISelection(Actor actor) {
         checkNotNull(actor);
 
-        if (!hasCUISupport) {
-            if (useServerCUI) {
-                updateServerCUI(actor);
-            }
+        if (!hasCUISupport && useServerCUI) {
+            updateServerCUI(actor);
             return;
         }
 
