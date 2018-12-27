@@ -85,7 +85,7 @@ public final class FileDialogUtil {
             if (index == -1 || index == path.length() - 1) {
                 return false;
             } else {
-                return exts.contains(path.indexOf(index + 1));
+                return exts.contains(path.substring(index + 1));
             }
         }
 
