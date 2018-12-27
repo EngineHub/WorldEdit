@@ -52,7 +52,7 @@ public abstract class AbstractWorld implements World {
     }
 
     @Override
-    public final boolean setBlock(BlockVector3 pt, BlockStateHolder block) throws WorldEditException {
+    public final <B extends BlockStateHolder<B>> boolean setBlock(BlockVector3 pt, B block) throws WorldEditException {
         return setBlock(pt, block, true);
     }
 
@@ -138,6 +138,7 @@ public abstract class AbstractWorld implements World {
             this.priority = priority;
         }
 
+        @SuppressWarnings("deprecation")
         public void play() {
             playEffect(position, 2001, blockType.getLegacyId());
         }

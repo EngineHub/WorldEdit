@@ -172,7 +172,7 @@ public class WorldEditBinding extends BindingHelper {
     @BindingMatch(type = {BaseBlock.class, BlockState.class, BlockStateHolder.class},
                   behavior = BindingBehavior.CONSUMES,
                   consumedCount = 1)
-    public BlockStateHolder getBaseBlock(ArgumentStack context) throws ParameterException, WorldEditException {
+    public BaseBlock getBaseBlock(ArgumentStack context) throws ParameterException, WorldEditException {
         Actor actor = context.getContext().getLocals().get(Actor.class);
         ParserContext parserContext = new ParserContext();
         parserContext.setActor(context.getContext().getLocals().get(Actor.class));
@@ -311,19 +311,6 @@ public class WorldEditBinding extends BindingHelper {
     public BaseBiome getBiomeType(ArgumentStack context) throws ParameterException, WorldEditException {
         String input = context.next();
         if (input != null) {
-            Actor actor = context.getContext().getLocals().get(Actor.class);
-            World world;
-            if (actor instanceof Entity) {
-                Extent extent = ((Entity) actor).getExtent();
-                if (extent instanceof World) {
-                    world = (World) extent;
-                } else {
-                    throw new ParameterException("A world is required.");
-                }
-            } else {
-                throw new ParameterException("An entity is required.");
-            }
-
             BiomeRegistry biomeRegistry = WorldEdit.getInstance().getPlatformManager()
                     .queryCapability(Capability.GAME_HOOKS).getRegistries().getBiomeRegistry();
             List<BaseBiome> knownBiomes = biomeRegistry.getBiomes();

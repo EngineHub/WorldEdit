@@ -55,6 +55,6 @@ public interface BlockRegistry {
      * @param blockType the block
      * @return a map of states where the key is the state's ID
      */
-    Map<String, ? extends Property> getProperties(BlockType blockType);
+    Map<String, ? extends Property<?>> getProperties(BlockType blockType);
 
 }

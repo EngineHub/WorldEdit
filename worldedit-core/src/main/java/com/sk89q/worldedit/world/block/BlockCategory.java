@@ -52,7 +52,7 @@ public class BlockCategory extends Category<BlockType> {
      * @param blockStateHolder The blockstateholder
      * @return If it's a part of this category
      */
-    public boolean contains(BlockStateHolder blockStateHolder) {
+    public <B extends BlockStateHolder<B>> boolean contains(B blockStateHolder) {
         return this.getAll().contains(blockStateHolder.getBlockType());
     }
 }

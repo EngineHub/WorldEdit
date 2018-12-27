@@ -30,7 +30,7 @@ import com.sk89q.worldedit.extent.inventory.BlockBag;
 import com.sk89q.worldedit.function.pattern.BlockPattern;
 import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.math.BlockVector3;
-import com.sk89q.worldedit.world.block.BlockStateHolder;
+import com.sk89q.worldedit.world.block.BlockState;
 
 /**
  * A mode that replaces one block.
@@ -73,7 +73,7 @@ public class BlockReplacer implements DoubleActionBlockTool {
 
     @Override
     public boolean actSecondary(Platform server, LocalConfiguration config, Player player, LocalSession session, com.sk89q.worldedit.util.Location clicked) {
-        BlockStateHolder targetBlock = player.getWorld().getBlock(clicked.toVector().toBlockPoint());
+        BlockState targetBlock = player.getWorld().getBlock(clicked.toVector().toBlockPoint());
 
         if (targetBlock != null) {
             pattern = new BlockPattern(targetBlock);

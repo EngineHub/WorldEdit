@@ -26,7 +26,7 @@ import com.sk89q.worldedit.function.pattern.BlockPattern;
 import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.function.pattern.RandomPattern;
 import com.sk89q.worldedit.math.BlockVector3;
-import com.sk89q.worldedit.world.block.BlockStateHolder;
+import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockTypes;
 
 /**
@@ -104,7 +104,7 @@ public class FloraGenerator implements RegionFunction {
 
     @Override
     public boolean apply(BlockVector3 position) throws WorldEditException {
-        BlockStateHolder block = editSession.getBlock(position);
+        BlockState block = editSession.getBlock(position);
 
         if (block.getBlockType() == BlockTypes.GRASS_BLOCK) {
             editSession.setBlock(position.add(0, 1, 0), temperatePattern.apply(position));

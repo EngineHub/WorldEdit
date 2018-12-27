@@ -74,11 +74,11 @@ public class BlockState implements BlockStateHolder<BlockState> {
 
     static Map<Map<Property<?>, Object>, BlockState> generateStateMap(BlockType blockType) {
         Map<Map<Property<?>, Object>, BlockState> stateMap = new LinkedHashMap<>();
-        List<? extends Property> properties = blockType.getProperties();
+        List<? extends Property<?>> properties = blockType.getProperties();
 
         if (!properties.isEmpty()) {
             List<List<Object>> separatedValues = Lists.newArrayList();
-            for (Property prop : properties) {
+            for (Property<?> prop : properties) {
                 List<Object> vals = Lists.newArrayList();
                 vals.addAll(prop.getValues());
                 separatedValues.add(vals);
@@ -113,7 +113,7 @@ public class BlockState implements BlockStateHolder<BlockState> {
         final Table<Property<?>, Object, BlockState> states = HashBasedTable.create();
 
         for(final Map.Entry<Property<?>, Object> entry : this.values.entrySet()) {
-            final Property property = entry.getKey();
+            final Property<Object> property = (Property<Object>) entry.getKey();
 
             property.getValues().forEach(value -> {
                 if(value != entry.getValue()) {
@@ -167,7 +167,7 @@ public class BlockState implements BlockStateHolder<BlockState> {
     }
 
     @Override
-    public boolean equalsFuzzy(BlockStateHolder o) {
+    public boolean equalsFuzzy(BlockStateHolder<?> o) {
         if (this == o) {
             // Added a reference equality check for
             return true;
@@ -176,19 +176,19 @@ public class BlockState implements BlockStateHolder<BlockState> {
             return false;
         }
 
-        Set<Property> differingProperties = new HashSet<>();
+        Set<Property<?>> differingProperties = new HashSet<>();
         for (Object state : o.getStates().keySet()) {
-            if (getState((Property) state) == null) {
-                differingProperties.add((Property) state);
+            if (getState((Property<?>) state) == null) {
+                differingProperties.add((Property<?>) state);
             }
         }
-        for (Property property : getStates().keySet()) {
+        for (Property<?> property : getStates().keySet()) {
             if (o.getState(property) == null) {
                 differingProperties.add(property);
             }
         }
 
-        for (Property property : getStates().keySet()) {
+        for (Property<?> property : getStates().keySet()) {
             if (differingProperties.contains(property)) {
                 continue;
             }

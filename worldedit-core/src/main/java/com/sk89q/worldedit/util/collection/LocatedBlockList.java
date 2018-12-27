@@ -51,8 +51,8 @@ public class LocatedBlockList implements Iterable<LocatedBlock> {
         list.add(setBlockCall);
     }
 
-    public void add(BlockVector3 location, BlockStateHolder block) {
-        add(new LocatedBlock(location, block));
+    public <B extends BlockStateHolder<B>> void add(BlockVector3 location, B block) {
+        add(new LocatedBlock(location, block.toBaseBlock()));
     }
 
     public int size() {

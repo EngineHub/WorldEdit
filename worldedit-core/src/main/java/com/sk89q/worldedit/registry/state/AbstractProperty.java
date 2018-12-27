@@ -66,6 +66,6 @@ public abstract class AbstractProperty<T> implements Property<T> {
         if (!(obj instanceof Property)) {
             return false;
         }
-        return getName().equals(((Property) obj).getName());
+        return getName().equals(((Property<?>) obj).getName());
     }
 }

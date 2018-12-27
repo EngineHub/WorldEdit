@@ -57,7 +57,8 @@ import com.sk89q.worldedit.util.formatting.Style;
 import com.sk89q.worldedit.util.formatting.StyledFragment;
 import com.sk89q.worldedit.util.formatting.component.CommandListBox;
 import com.sk89q.worldedit.world.World;
-import com.sk89q.worldedit.world.block.BlockStateHolder;
+import com.sk89q.worldedit.world.block.BaseBlock;
+import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.item.ItemTypes;
 import com.sk89q.worldedit.world.storage.ChunkStore;
 
@@ -638,7 +639,7 @@ public class SelectionCommands {
         context.setSession(session);
         context.setRestricted(false);
 
-        Set<BlockStateHolder> searchBlocks = we.getBlockFactory().parseFromListInput(args.getString(0), context);
+        Set<BaseBlock> searchBlocks = we.getBlockFactory().parseFromListInput(args.getString(0), context);
         int count = editSession.countBlocks(session.getSelection(player.getWorld()), searchBlocks);
         player.print("Counted: " + count);
     }
@@ -659,14 +660,14 @@ public class SelectionCommands {
     public void distr(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException, CommandException {
 
         int size;
-        boolean useData = args.hasFlag('d');
-        List<Countable<BlockStateHolder>> distribution;
+        boolean separateStates = args.hasFlag('d');
+        List<Countable<BlockState>> distribution;
 
         if (args.hasFlag('c')) {
             // TODO: Update for new clipboard
             throw new CommandException("Needs to be re-written again");
         } else {
-            distribution = editSession.getBlockDistribution(session.getSelection(player.getWorld()), !useData);
+            distribution = editSession.getBlockDistribution(session.getSelection(player.getWorld()), separateStates);
             size = session.getSelection(player.getWorld()).getArea();
         }
 
@@ -677,10 +678,10 @@ public class SelectionCommands {
 
         player.print("# total blocks: " + size);
 
-        for (Countable<BlockStateHolder> c : distribution) {
+        for (Countable<BlockState> c : distribution) {
             String name = c.getID().getBlockType().getName();
             String str;
-            if (useData) {
+            if (separateStates) {
                 str = String.format("%-7s (%.3f%%) %s #%s",
                         String.valueOf(c.getAmount()),
                         c.getAmount() / (double) size * 100,

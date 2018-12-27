@@ -29,8 +29,8 @@ import com.sk89q.jnbt.Tag;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.world.DataException;
+import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;
-import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.block.BlockTypes;
 import com.sk89q.worldedit.world.storage.InvalidFormatException;
@@ -229,7 +229,7 @@ public class AnvilChunk13 implements Chunk {
     }
 
     @Override
-    public BlockStateHolder getBlock(BlockVector3 position) throws DataException {
+    public BaseBlock getBlock(BlockVector3 position) throws DataException {
         int x = position.getX() - rootX * 16;
         int y = position.getY();
         int z = position.getZ() - rootZ * 16;
@@ -250,7 +250,7 @@ public class AnvilChunk13 implements Chunk {
             return state.toBaseBlock(tileEntity);
         }
 
-        return state;
+        return state.toBaseBlock();
     }
 
 }

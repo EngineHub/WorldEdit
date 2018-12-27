@@ -76,7 +76,7 @@ public abstract class AbstractDelegateExtent implements Extent {
     }
 
     @Override
-    public boolean setBlock(BlockVector3 location, BlockStateHolder block) throws WorldEditException {
+    public <T extends BlockStateHolder<T>> boolean setBlock(BlockVector3 location, T block) throws WorldEditException {
         return extent.setBlock(location, block);
     }
 

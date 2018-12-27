@@ -32,7 +32,7 @@ import com.sk89q.worldedit.extension.input.ParserContext;
 import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.util.io.file.FilenameException;
-import com.sk89q.worldedit.world.block.BlockStateHolder;
+import com.sk89q.worldedit.world.block.BaseBlock;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -157,7 +157,7 @@ public class CraftScriptContext extends CraftScriptEnvironment {
      * @throws UnknownItemException
      * @throws DisallowedItemException
      */
-    public BlockStateHolder getBlock(String input, boolean allAllowed) throws WorldEditException {
+    public BaseBlock getBlock(String input, boolean allAllowed) throws WorldEditException {
         ParserContext context = new ParserContext();
         context.setActor(player);
         context.setWorld(player.getWorld());
@@ -176,7 +176,7 @@ public class CraftScriptContext extends CraftScriptEnvironment {
      * @throws UnknownItemException
      * @throws DisallowedItemException
      */
-    public BlockStateHolder getBlock(String id) throws WorldEditException {
+    public BaseBlock getBlock(String id) throws WorldEditException {
         return getBlock(id, false);
     }
 
@@ -205,7 +205,7 @@ public class CraftScriptContext extends CraftScriptEnvironment {
      * @throws UnknownItemException 
      * @throws DisallowedItemException 
      */
-    public Set<BlockStateHolder> getBlocks(String list, boolean allBlocksAllowed) throws WorldEditException {
+    public Set<BaseBlock> getBlocks(String list, boolean allBlocksAllowed) throws WorldEditException {
         ParserContext context = new ParserContext();
         context.setActor(player);
         context.setWorld(player.getWorld());

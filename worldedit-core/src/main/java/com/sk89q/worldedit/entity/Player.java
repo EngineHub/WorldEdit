@@ -276,5 +276,5 @@ public interface Player extends Entity, Actor {
      * @param pos The position of the block
      * @param block The block to send, null to reset
      */
-    void sendFakeBlock(BlockVector3 pos, @Nullable BlockStateHolder block);
+    <B extends BlockStateHolder<B>> void sendFakeBlock(BlockVector3 pos, @Nullable B block);
 }

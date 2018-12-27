@@ -82,7 +82,7 @@ public class BlockBagExtent extends AbstractDelegateExtent {
     }
 
     @Override
-    public boolean setBlock(BlockVector3 position, BlockStateHolder block) throws WorldEditException {
+    public <B extends BlockStateHolder<B>> boolean setBlock(BlockVector3 position, B block) throws WorldEditException {
         if (blockBag != null) {
             BlockState existing = getExtent().getBlock(position);
 

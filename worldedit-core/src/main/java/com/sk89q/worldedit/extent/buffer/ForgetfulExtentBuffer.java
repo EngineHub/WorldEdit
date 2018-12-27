@@ -31,6 +31,7 @@ import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.AbstractRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.RegionOperationException;
+import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.block.BlockTypes;
 
@@ -47,7 +48,7 @@ import java.util.Map;
  */
 public class ForgetfulExtentBuffer extends AbstractDelegateExtent implements Pattern {
 
-    private final Map<BlockVector3, BlockStateHolder> buffer = new LinkedHashMap<>();
+    private final Map<BlockVector3, BaseBlock> buffer = new LinkedHashMap<>();
     private final Mask mask;
     private BlockVector3 min = null;
     private BlockVector3 max = null;
@@ -76,7 +77,7 @@ public class ForgetfulExtentBuffer extends AbstractDelegateExtent implements Pat
     }
 
     @Override
-    public boolean setBlock(BlockVector3 location, BlockStateHolder block) throws WorldEditException {
+    public <B extends BlockStateHolder<B>> boolean setBlock(BlockVector3 location, B block) throws WorldEditException {
         // Update minimum
         if (min == null) {
             min = location;
@@ -93,7 +94,7 @@ public class ForgetfulExtentBuffer extends AbstractDelegateExtent implements Pat
 
         BlockVector3 blockVector = location;
         if (mask.test(blockVector)) {
-            buffer.put(blockVector, block);
+            buffer.put(blockVector, block.toBaseBlock());
             return true;
         } else {
             return getExtent().setBlock(location, block);
@@ -101,12 +102,12 @@ public class ForgetfulExtentBuffer extends AbstractDelegateExtent implements Pat
     }
 
     @Override
-    public BlockStateHolder apply(BlockVector3 pos) {
-        BlockStateHolder block = buffer.get(pos);
+    public BaseBlock apply(BlockVector3 pos) {
+        BaseBlock block = buffer.get(pos);
         if (block != null) {
             return block;
         } else {
-            return BlockTypes.AIR.getDefaultState();
+            return BlockTypes.AIR.getDefaultState().toBaseBlock();
         }
     }
 

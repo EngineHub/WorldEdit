@@ -28,7 +28,7 @@ import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.world.World;
-import com.sk89q.worldedit.world.block.BlockStateHolder;
+import com.sk89q.worldedit.world.block.BaseBlock;
 
 /**
  * Looks up information about a block.
@@ -46,7 +46,7 @@ public class QueryTool implements BlockTool {
         World world = (World) clicked.getExtent();
         EditSession editSession = session.createEditSession(player);
         BlockVector3 blockPoint = clicked.toVector().toBlockPoint();
-        BlockStateHolder block = editSession.getFullBlock(blockPoint);
+        BaseBlock block = editSession.getFullBlock(blockPoint);
 
         player.print("\u00A79@" + clicked.toVector() + ": " + "\u00A7e"
                 + block.getBlockType().getName() + "\u00A77" + " ("

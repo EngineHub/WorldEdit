@@ -24,7 +24,7 @@ import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.function.RegionFunction;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.util.TreeGenerator;
-import com.sk89q.worldedit.world.block.BlockStateHolder;
+import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.block.BlockTypes;
 
@@ -50,7 +50,7 @@ public class ForestGenerator implements RegionFunction {
 
     @Override
     public boolean apply(BlockVector3 position) throws WorldEditException {
-        BlockStateHolder block = editSession.getBlock(position);
+        BlockState block = editSession.getBlock(position);
         BlockType t = block.getBlockType();
 
         if (t == BlockTypes.GRASS_BLOCK || t == BlockTypes.DIRT) {

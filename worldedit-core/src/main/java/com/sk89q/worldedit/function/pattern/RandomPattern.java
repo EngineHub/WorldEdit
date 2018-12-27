@@ -22,7 +22,7 @@ package com.sk89q.worldedit.function.pattern;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.sk89q.worldedit.math.BlockVector3;
-import com.sk89q.worldedit.world.block.BlockStateHolder;
+import com.sk89q.worldedit.world.block.BaseBlock;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,7 +53,7 @@ public class RandomPattern extends AbstractPattern {
     }
 
     @Override
-    public BlockStateHolder apply(BlockVector3 position) {
+    public BaseBlock apply(BlockVector3 position) {
         double r = random.nextDouble();
         double offset = 0;
 

@@ -48,7 +48,7 @@ public class BundledBlockRegistry implements BlockRegistry {
 
     @Nullable
     @Override
-    public Map<String, ? extends Property> getProperties(BlockType blockType) {
+    public Map<String, ? extends Property<?>> getProperties(BlockType blockType) {
         return Collections.emptyMap(); // Oof
     }
 

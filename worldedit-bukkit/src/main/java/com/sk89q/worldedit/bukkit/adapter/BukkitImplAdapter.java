@@ -77,7 +77,7 @@ public interface BukkitImplAdapter {
      * @param notifyAndLight notify and light if set
      * @return true if a block was likely changed
      */
-    boolean setBlock(Location location, BlockStateHolder state, boolean notifyAndLight);
+    boolean setBlock(Location location, BlockStateHolder<?> state, boolean notifyAndLight);
 
     /**
      * Notifies the simulation that the block at the given location has
@@ -113,7 +113,7 @@ public interface BukkitImplAdapter {
      * @param blockType The block type
      * @return The properties map
      */
-    Map<String, ? extends Property> getProperties(BlockType blockType);
+    Map<String, ? extends Property<?>> getProperties(BlockType blockType);
 
     /**
      * Send the given NBT data to the player.

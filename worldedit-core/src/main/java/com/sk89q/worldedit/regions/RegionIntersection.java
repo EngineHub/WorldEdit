@@ -131,7 +131,7 @@ public class RegionIntersection extends AbstractRegion {
         return false;
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings({"unchecked"})
     @Override
     public Iterator<BlockVector3> iterator() {
         Iterator<BlockVector3>[] iterators = (Iterator<BlockVector3>[]) new Iterator[regions.size()];

@@ -29,8 +29,8 @@ import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.world.DataException;
 import com.sk89q.worldedit.world.World;
+import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;
-import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.block.BlockTypes;
 import com.sk89q.worldedit.world.registry.LegacyMapper;
 import com.sk89q.worldedit.world.storage.InvalidFormatException;
@@ -153,7 +153,7 @@ public class OldChunk implements Chunk {
     }
 
     @Override
-    public BlockStateHolder getBlock(BlockVector3 position) throws DataException {
+    public BaseBlock getBlock(BlockVector3 position) throws DataException {
         if(position.getY() >= 128) return BlockTypes.VOID_AIR.getDefaultState().toBaseBlock();
         int id, dataVal;
 
@@ -183,7 +183,7 @@ public class OldChunk implements Chunk {
         BlockState state = LegacyMapper.getInstance().getBlockFromLegacy(id, dataVal);
         if (state == null) {
             WorldEdit.logger.warning("Unknown legacy block " + id + ":" + dataVal + " found when loading legacy anvil chunk.");
-            return BlockTypes.AIR.getDefaultState();
+            return BlockTypes.AIR.getDefaultState().toBaseBlock();
         }
 
         CompoundTag tileEntity = getBlockTileEntity(position);
@@ -192,7 +192,7 @@ public class OldChunk implements Chunk {
             return state.toBaseBlock(tileEntity);
         }
 
-        return state;
+        return state.toBaseBlock();
     }
 
 }

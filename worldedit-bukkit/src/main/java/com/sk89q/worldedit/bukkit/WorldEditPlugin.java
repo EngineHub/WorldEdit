@@ -37,6 +37,7 @@ import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
+
 import org.bstats.bukkit.Metrics;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -181,41 +182,27 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
     protected void createDefaultConfiguration(String name) {
         File actual = new File(getDataFolder(), name);
         if (!actual.exists()) {
-            InputStream input = null;
-            try {
-                JarFile file = new JarFile(getFile());
+            try (JarFile file = new JarFile(getFile())) {
                 ZipEntry copy = file.getEntry("defaults/" + name);
                 if (copy == null) throw new FileNotFoundException();
-                input = file.getInputStream(copy);
+                copyDefaultConfig(file.getInputStream(copy), actual, name);
             } catch (IOException e) {
                 getLogger().severe("Unable to read default configuration: " + name);
             }
-            if (input != null) {
-                FileOutputStream output = null;
+        }
+    }
 
-                try {
-                    output = new FileOutputStream(actual);
-                    byte[] buf = new byte[8192];
-                    int length;
-                    while ((length = input.read(buf)) > 0) {
-                        output.write(buf, 0, length);
-                    }
-
-                    getLogger().info("Default configuration file written: " + name);
-                } catch (IOException e) {
-                    getLogger().log(Level.WARNING, "Failed to write default config file", e);
-                } finally {
-                    try {
-                        input.close();
-                    } catch (IOException ignored) {}
-
-                    try {
-                        if (output != null) {
-                            output.close();
-                        }
-                    } catch (IOException ignored) {}
-                }
+    private void copyDefaultConfig(InputStream input, File actual, String name) {
+        try (FileOutputStream output = new FileOutputStream(actual)) {
+            byte[] buf = new byte[8192];
+            int length;
+            while ((length = input.read(buf)) > 0) {
+                output.write(buf, 0, length);
             }
+
+            getLogger().info("Default configuration file written: " + name);
+        } catch (IOException e) {
+            getLogger().log(Level.WARNING, "Failed to write default config file", e);
         }
     }
 

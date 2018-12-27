@@ -119,7 +119,7 @@ public class EllipsoidRegionSelector implements RegionSelector, CUIRegion {
 
     @Override
     public boolean selectPrimary(BlockVector3 position, SelectorLimits limits) {
-        if (position.equals(region.getCenter()) && region.getRadius().lengthSq() == 0) {
+        if (position.equals(region.getCenter().toBlockPoint()) && region.getRadius().lengthSq() == 0) {
             return false;
         }
 
