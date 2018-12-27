@@ -28,7 +28,7 @@ import com.sk89q.worldedit.function.mask.BlockMask;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.internal.registry.InputParser;
 import com.sk89q.worldedit.session.request.Request;
-import com.sk89q.worldedit.world.block.BlockStateHolder;
+import com.sk89q.worldedit.world.block.BaseBlock;
 
 import java.util.Set;
 
@@ -48,7 +48,7 @@ public class BlocksMaskParser extends InputParser<Mask> {
         tempContext.setRestricted(false);
         tempContext.setPreferringWildcard(true);
         try {
-            Set<BlockStateHolder> holders = worldEdit.getBlockFactory().parseFromListInput(component, tempContext);
+            Set<BaseBlock> holders = worldEdit.getBlockFactory().parseFromListInput(component, tempContext);
             if (holders.isEmpty()) {
                 return null;
             }

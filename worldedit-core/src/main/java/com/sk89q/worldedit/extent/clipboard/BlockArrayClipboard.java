@@ -49,7 +49,7 @@ public class BlockArrayClipboard implements Clipboard {
 
     private final Region region;
     private BlockVector3 origin;
-    private final BlockStateHolder[][][] blocks;
+    private final BaseBlock[][][] blocks;
     private final List<ClipboardEntity> entities = new ArrayList<>();
 
     /**
@@ -65,7 +65,7 @@ public class BlockArrayClipboard implements Clipboard {
         this.origin = region.getMinimumPoint();
 
         BlockVector3 dimensions = getDimensions();
-        blocks = new BlockStateHolder[dimensions.getBlockX()][dimensions.getBlockY()][dimensions.getBlockZ()];
+        blocks = new BaseBlock[dimensions.getBlockX()][dimensions.getBlockY()][dimensions.getBlockZ()];
     }
 
     @Override
@@ -126,7 +126,7 @@ public class BlockArrayClipboard implements Clipboard {
     public BlockState getBlock(BlockVector3 position) {
         if (region.contains(position)) {
             BlockVector3 v = position.subtract(region.getMinimumPoint());
-            BlockStateHolder block = blocks[v.getBlockX()][v.getBlockY()][v.getBlockZ()];
+            BaseBlock block = blocks[v.getBlockX()][v.getBlockY()][v.getBlockZ()];
             if (block != null) {
                 return block.toImmutableState();
             }
@@ -139,9 +139,9 @@ public class BlockArrayClipboard implements Clipboard {
     public BaseBlock getFullBlock(BlockVector3 position) {
         if (region.contains(position)) {
             BlockVector3 v = position.subtract(region.getMinimumPoint());
-            BlockStateHolder block = blocks[v.getBlockX()][v.getBlockY()][v.getBlockZ()];
+            BaseBlock block = blocks[v.getBlockX()][v.getBlockY()][v.getBlockZ()];
             if (block != null) {
-                return block.toBaseBlock();
+                return block;
             }
         }
 
@@ -149,10 +149,10 @@ public class BlockArrayClipboard implements Clipboard {
     }
 
     @Override
-    public boolean setBlock(BlockVector3 position, BlockStateHolder block) throws WorldEditException {
+    public <B extends BlockStateHolder<B>> boolean setBlock(BlockVector3 position, B block) throws WorldEditException {
         if (region.contains(position)) {
             BlockVector3 v = position.subtract(region.getMinimumPoint());
-            blocks[v.getBlockX()][v.getBlockY()][v.getBlockZ()] = block;
+            blocks[v.getBlockX()][v.getBlockY()][v.getBlockZ()] = block.toBaseBlock();
             return true;
         } else {
             return false;

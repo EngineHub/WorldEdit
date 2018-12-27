@@ -40,7 +40,6 @@ import com.sk89q.worldedit.util.command.parametric.Optional;
  */
 public class NavigationCommands {
 
-    @SuppressWarnings("unused")
     private final WorldEdit worldEdit;
 
     /**

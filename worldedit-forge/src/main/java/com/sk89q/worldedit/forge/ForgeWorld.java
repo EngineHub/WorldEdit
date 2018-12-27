@@ -169,7 +169,7 @@ public class ForgeWorld extends AbstractWorld {
     }
 
     @Override
-    public boolean setBlock(BlockVector3 position, BlockStateHolder block, boolean notifyAndLight) throws WorldEditException {
+    public <B extends BlockStateHolder<B>> boolean setBlock(BlockVector3 position, B block, boolean notifyAndLight) throws WorldEditException {
         checkNotNull(position);
         checkNotNull(block);
 
@@ -184,7 +184,6 @@ public class ForgeWorld extends AbstractWorld {
         IBlockState old = chunk.getBlockState(pos);
         Block mcBlock = Block.getBlockFromName(block.getBlockType().getId());
         IBlockState newState = mcBlock.getDefaultState();
-        @SuppressWarnings("unchecked")
         Map<Property<?>, Object> states = block.getStates();
         newState = applyProperties(mcBlock.getBlockState(), newState, states);
         IBlockState successState = chunk.setBlockState(pos, newState);

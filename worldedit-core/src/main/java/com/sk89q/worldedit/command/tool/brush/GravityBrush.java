@@ -23,7 +23,7 @@ import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.math.BlockVector3;
-import com.sk89q.worldedit.world.block.BlockStateHolder;
+import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockTypes;
 
 import java.util.ArrayList;
@@ -44,10 +44,10 @@ public class GravityBrush implements Brush {
         for (double x = position.getBlockX() + size; x > position.getBlockX() - size; --x) {
             for (double z = position.getBlockZ() + size; z > position.getBlockZ() - size; --z) {
                 double y = startY;
-                final List<BlockStateHolder> blockTypes = new ArrayList<>();
+                final List<BlockState> blockTypes = new ArrayList<>();
                 for (; y > position.getBlockY() - size; --y) {
                     final BlockVector3 pt = BlockVector3.at(x, y, z);
-                    final BlockStateHolder block = editSession.getBlock(pt);
+                    final BlockState block = editSession.getBlock(pt);
                     if (!block.getBlockType().getMaterial().isAir()) {
                         blockTypes.add(block);
                         editSession.setBlock(pt, BlockTypes.AIR.getDefaultState());

@@ -28,7 +28,7 @@ import com.sk89q.worldedit.function.pattern.BlockPattern;
 import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.function.pattern.RandomPattern;
 import com.sk89q.worldedit.internal.registry.InputParser;
-import com.sk89q.worldedit.world.block.BlockStateHolder;
+import com.sk89q.worldedit.world.block.BaseBlock;
 
 public class RandomPatternParser extends InputParser<Pattern> {
 
@@ -43,7 +43,7 @@ public class RandomPatternParser extends InputParser<Pattern> {
 
         String[] splits = input.split(",");
         for (String token : StringUtil.parseListInQuotes(splits, ',', '[', ']')) {
-            BlockStateHolder block;
+            BaseBlock block;
 
             double chance;
 

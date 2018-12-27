@@ -609,7 +609,7 @@ public class EditSession implements Extent, AutoCloseable {
      * @return whether the block changed
      * @throws WorldEditException thrown on a set error
      */
-    public boolean setBlock(BlockVector3 position, BlockStateHolder block, Stage stage) throws WorldEditException {
+    public <B extends BlockStateHolder<B>> boolean setBlock(BlockVector3 position, B block, Stage stage) throws WorldEditException {
         switch (stage) {
             case BEFORE_HISTORY:
                 return bypassNone.setBlock(position, block);
@@ -629,7 +629,7 @@ public class EditSession implements Extent, AutoCloseable {
      * @param block the block
      * @return whether the block changed
      */
-    public boolean rawSetBlock(BlockVector3 position, BlockStateHolder block) {
+    public <B extends BlockStateHolder<B>> boolean rawSetBlock(BlockVector3 position, B block) {
         try {
             return setBlock(position, block, Stage.BEFORE_CHANGE);
         } catch (WorldEditException e) {
@@ -644,7 +644,7 @@ public class EditSession implements Extent, AutoCloseable {
      * @param block the block
      * @return whether the block changed
      */
-    public boolean smartSetBlock(BlockVector3 position, BlockStateHolder block) {
+    public <B extends BlockStateHolder<B>> boolean smartSetBlock(BlockVector3 position, B block) {
         try {
             return setBlock(position, block, Stage.BEFORE_REORDER);
         } catch (WorldEditException e) {
@@ -653,7 +653,7 @@ public class EditSession implements Extent, AutoCloseable {
     }
 
     @Override
-    public boolean setBlock(BlockVector3 position, BlockStateHolder block) throws MaxChangedBlocksException {
+    public <B extends BlockStateHolder<B>> boolean setBlock(BlockVector3 position, B block) throws MaxChangedBlocksException {
         try {
             return setBlock(position, block, Stage.BEFORE_HISTORY);
         } catch (MaxChangedBlocksException e) {
@@ -779,7 +779,7 @@ public class EditSession implements Extent, AutoCloseable {
      * @param searchBlocks the list of blocks to search
      * @return the number of blocks that matched the pattern
      */
-    public int countBlocks(Region region, Set<BlockStateHolder> searchBlocks) {
+    public int countBlocks(Region region, Set<BaseBlock> searchBlocks) {
         BlockMask mask = new BlockMask(this, searchBlocks);
         Counter count = new Counter();
         RegionMaskingFilter filter = new RegionMaskingFilter(mask, count);
@@ -799,7 +799,7 @@ public class EditSession implements Extent, AutoCloseable {
      * @return number of blocks affected
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
-    public int fillXZ(BlockVector3 origin, BlockStateHolder block, double radius, int depth, boolean recursive) throws MaxChangedBlocksException {
+    public <B extends BlockStateHolder<B>> int fillXZ(BlockVector3 origin, B block, double radius, int depth, boolean recursive) throws MaxChangedBlocksException {
         return fillXZ(origin, new BlockPattern(block), radius, depth, recursive);
     }
 
@@ -922,7 +922,7 @@ public class EditSession implements Extent, AutoCloseable {
      * @return number of blocks affected
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
-    public int setBlocks(Region region, BlockStateHolder block) throws MaxChangedBlocksException {
+    public <B extends BlockStateHolder<B>> int setBlocks(Region region, B block) throws MaxChangedBlocksException {
         return setBlocks(region, new BlockPattern(block));
     }
 
@@ -954,7 +954,7 @@ public class EditSession implements Extent, AutoCloseable {
      * @return number of blocks affected
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
-    public int replaceBlocks(Region region, Set<BlockStateHolder> filter, BlockStateHolder replacement) throws MaxChangedBlocksException {
+    public <B extends BlockStateHolder<B>> int replaceBlocks(Region region, Set<BaseBlock> filter, B replacement) throws MaxChangedBlocksException {
         return replaceBlocks(region, filter, new BlockPattern(replacement));
     }
 
@@ -968,7 +968,7 @@ public class EditSession implements Extent, AutoCloseable {
      * @return number of blocks affected
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
-    public int replaceBlocks(Region region, Set<BlockStateHolder> filter, Pattern pattern) throws MaxChangedBlocksException {
+    public int replaceBlocks(Region region, Set<BaseBlock> filter, Pattern pattern) throws MaxChangedBlocksException {
         Mask mask = filter == null ? new ExistingBlockMask(this) : new BlockMask(this, filter);
         return replaceBlocks(region, mask, pattern);
     }
@@ -1026,7 +1026,7 @@ public class EditSession implements Extent, AutoCloseable {
      * @return number of blocks affected
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
-    public int makeCuboidFaces(Region region, BlockStateHolder block) throws MaxChangedBlocksException {
+    public <B extends BlockStateHolder<B>> int makeCuboidFaces(Region region, B block) throws MaxChangedBlocksException {
         return makeCuboidFaces(region, new BlockPattern(block));
     }
 
@@ -1078,7 +1078,7 @@ public class EditSession implements Extent, AutoCloseable {
      * @return number of blocks affected
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
-    public int makeCuboidWalls(Region region, BlockStateHolder block) throws MaxChangedBlocksException {
+    public <B extends BlockStateHolder<B>> int makeCuboidWalls(Region region, B block) throws MaxChangedBlocksException {
         return makeCuboidWalls(region, new BlockPattern(block));
     }
 
@@ -1121,7 +1121,7 @@ public class EditSession implements Extent, AutoCloseable {
             final int maxY = region.getMaximumPoint().getBlockY();
             final ArbitraryShape shape = new RegionShape(region) {
                 @Override
-                protected BlockStateHolder getMaterial(int x, int y, int z, BlockStateHolder defaultMaterial) {
+                protected BaseBlock getMaterial(int x, int y, int z, BaseBlock defaultMaterial) {
                     if (y > maxY || y < minY) {
                         // Put holes into the floor and ceiling by telling ArbitraryShape that the shape goes on outside the region
                         return defaultMaterial;
@@ -1143,7 +1143,7 @@ public class EditSession implements Extent, AutoCloseable {
      * @return number of blocks affected
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
-    public int overlayCuboidBlocks(Region region, BlockStateHolder block) throws MaxChangedBlocksException {
+    public <B extends BlockStateHolder<B>> int overlayCuboidBlocks(Region region, B block) throws MaxChangedBlocksException {
         checkNotNull(block);
 
         return overlayCuboidBlocks(region, new BlockPattern(block));
@@ -1831,8 +1831,8 @@ public class EditSession implements Extent, AutoCloseable {
      * @param region a region
      * @return the results
      */
-    public List<Countable<BlockStateHolder>> getBlockDistribution(Region region, boolean fuzzy) {
-        BlockDistributionCounter count = new BlockDistributionCounter(this, fuzzy);
+    public List<Countable<BlockState>> getBlockDistribution(Region region, boolean separateStates) {
+        BlockDistributionCounter count = new BlockDistributionCounter(this, separateStates);
         RegionVisitor visitor = new RegionVisitor(region, count);
         Operations.completeBlindly(visitor);
         return count.getDistribution();
@@ -1850,7 +1850,7 @@ public class EditSession implements Extent, AutoCloseable {
 
         final ArbitraryShape shape = new ArbitraryShape(region) {
             @Override
-            protected BlockStateHolder getMaterial(int x, int y, int z, BlockStateHolder defaultMaterial) {
+            protected BaseBlock getMaterial(int x, int y, int z, BaseBlock defaultMaterial) {
                 final Vector3 current = Vector3.at(x, y, z);
                 environment.setCurrentBlock(current);
                 final Vector3 scaled = current.subtract(zero).divide(unit);
@@ -1861,7 +1861,7 @@ public class EditSession implements Extent, AutoCloseable {
                         return null;
                     }
 
-                    return LegacyMapper.getInstance().getBlockFromLegacy((int) typeVariable.getValue(), (int) dataVariable.getValue());
+                    return LegacyMapper.getInstance().getBlockFromLegacy((int) typeVariable.getValue(), (int) dataVariable.getValue()).toBaseBlock();
                 } catch (Exception e) {
                     log.log(Level.WARNING, "Failed to create shape", e);
                     return null;

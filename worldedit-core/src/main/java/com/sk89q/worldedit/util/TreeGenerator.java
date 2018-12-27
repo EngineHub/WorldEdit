@@ -250,7 +250,7 @@ public class TreeGenerator {
      * @return whether a block was changed
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
-    private static boolean setChanceBlockIfAir(EditSession session, BlockVector3 position, BlockStateHolder block, double probability)
+    private static <B extends BlockStateHolder<B>> boolean setChanceBlockIfAir(EditSession session, BlockVector3 position, B block, double probability)
             throws MaxChangedBlocksException {
         return Math.random() <= probability && setBlockIfAir(session, position, block);
     }
@@ -263,7 +263,7 @@ public class TreeGenerator {
      * @return if block was changed
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
-    private static boolean setBlockIfAir(EditSession session, BlockVector3 position, BlockStateHolder block) throws MaxChangedBlocksException {
+    private static <B extends BlockStateHolder<B>> boolean setBlockIfAir(EditSession session, BlockVector3 position, B block) throws MaxChangedBlocksException {
         return session.getBlock(position).getBlockType().getMaterial().isAir() && session.setBlock(position, block);
     }
 }

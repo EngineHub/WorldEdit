@@ -51,7 +51,7 @@ public class BlockQuirkExtent extends AbstractDelegateExtent {
     }
 
     @Override
-    public boolean setBlock(BlockVector3 position, BlockStateHolder block) throws WorldEditException {
+    public <B extends BlockStateHolder<B>> boolean setBlock(BlockVector3 position, B block) throws WorldEditException {
         BlockType existing = getExtent().getBlock(position).getBlockType();
 
         if (existing.getMaterial().hasContainer()) {

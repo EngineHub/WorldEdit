@@ -27,6 +27,7 @@ import com.sk89q.worldedit.function.operation.OperationQueue;
 import com.sk89q.worldedit.function.operation.SetLocatedBlocks;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.util.collection.LocatedBlockList;
+import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockCategories;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
@@ -201,12 +202,12 @@ public class MultiStageReorder extends AbstractDelegateExtent implements Reorder
      * @param block The block
      * @return The priority
      */
-    private PlacementPriority getPlacementPriority(BlockStateHolder block) {
+    private <B extends BlockStateHolder<B>> PlacementPriority getPlacementPriority(B block) {
         return priorityMap.getOrDefault(block.getBlockType(), PlacementPriority.FIRST);
     }
 
     @Override
-    public boolean setBlock(BlockVector3 location, BlockStateHolder block) throws WorldEditException {
+    public <B extends BlockStateHolder<B>> boolean setBlock(BlockVector3 location, B block) throws WorldEditException {
         if (!enabled) {
             return super.setBlock(location, block);
         }
@@ -216,7 +217,7 @@ public class MultiStageReorder extends AbstractDelegateExtent implements Reorder
         PlacementPriority srcPriority = getPlacementPriority(existing);
 
         if (srcPriority != PlacementPriority.FIRST) {
-            BlockStateHolder replacement = block.getBlockType().getMaterial().isAir() ? block : BlockTypes.AIR.getDefaultState();
+            BaseBlock replacement = (block.getBlockType().getMaterial().isAir() ? block : BlockTypes.AIR.getDefaultState()).toBaseBlock();
 
             switch (srcPriority) {
                 case FINAL:

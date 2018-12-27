@@ -64,7 +64,7 @@ import com.sk89q.worldedit.util.formatting.component.Code;
 import com.sk89q.worldedit.util.formatting.component.CommandListBox;
 import com.sk89q.worldedit.util.formatting.component.CommandUsageBox;
 import com.sk89q.worldedit.world.World;
-import com.sk89q.worldedit.world.block.BlockStateHolder;
+import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockTypes;
 
 import java.util.ArrayList;
@@ -250,7 +250,7 @@ public class UtilityCommands {
         context.setRestricted(false);
         context.setPreferringWildcard(false);
 
-        BlockStateHolder block = we.getBlockFactory().parseFromInput(args.getString(0), context);
+        BaseBlock block = we.getBlockFactory().parseFromInput(args.getString(0), context);
         int size = Math.max(1, args.getInteger(1, 50));
         we.checkMaxRadius(size);
 
@@ -272,7 +272,7 @@ public class UtilityCommands {
         
         int size = Math.max(1, args.getInteger(0));
         int affected;
-        Set<BlockStateHolder> from;
+        Set<BaseBlock> from;
         Pattern to;
 
         ParserContext context = new ParserContext();

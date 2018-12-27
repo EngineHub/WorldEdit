@@ -50,7 +50,7 @@ public interface OutputExtent {
      * @return true if the block was successfully set (return value may not be accurate)
      * @throws WorldEditException thrown on an error
      */
-    boolean setBlock(BlockVector3 position, BlockStateHolder block) throws WorldEditException;
+    <T extends BlockStateHolder<T>> boolean setBlock(BlockVector3 position, T block) throws WorldEditException;
 
     /**
      * Set the biome.

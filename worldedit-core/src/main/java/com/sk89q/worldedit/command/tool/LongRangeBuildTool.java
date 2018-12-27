@@ -29,7 +29,7 @@ import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.util.Location;
-import com.sk89q.worldedit.world.block.BlockStateHolder;
+import com.sk89q.worldedit.world.block.BaseBlock;
 
 /**
  * A tool that can place (or remove) blocks at a distance.
@@ -57,7 +57,7 @@ public class LongRangeBuildTool extends BrushTool implements DoubleActionTraceTo
         try (EditSession eS = session.createEditSession(player)) {
             eS.disableBuffering();
             BlockVector3 blockPoint = pos.toVector().toBlockPoint();
-            BlockStateHolder applied = secondary.apply(blockPoint);
+            BaseBlock applied = secondary.apply(blockPoint);
             if (applied.getBlockType().getMaterial().isAir()) {
                 eS.setBlock(blockPoint, secondary);
             } else {
@@ -78,7 +78,7 @@ public class LongRangeBuildTool extends BrushTool implements DoubleActionTraceTo
         try (EditSession eS = session.createEditSession(player)) {
             eS.disableBuffering();
             BlockVector3 blockPoint = pos.toVector().toBlockPoint();
-            BlockStateHolder applied = primary.apply(blockPoint);
+            BaseBlock applied = primary.apply(blockPoint);
             if (applied.getBlockType().getMaterial().isAir()) {
                 eS.setBlock(blockPoint, primary);
             } else {

@@ -166,7 +166,7 @@ public class BukkitWorld extends AbstractWorld {
 
     @Override
     public boolean regenerate(Region region, EditSession editSession) {
-        BlockStateHolder[] history = new BlockStateHolder[16 * 16 * (getMaxY() + 1)];
+        BaseBlock[] history = new BaseBlock[16 * 16 * (getMaxY() + 1)];
 
         for (BlockVector2 chunk : region.getChunks()) {
             BlockVector3 min = BlockVector3.at(chunk.getBlockX() * 16, 0, chunk.getBlockZ() * 16);
@@ -421,7 +421,7 @@ public class BukkitWorld extends AbstractWorld {
     }
 
     @Override
-    public boolean setBlock(BlockVector3 position, BlockStateHolder block, boolean notifyAndLight) throws WorldEditException {
+    public <B extends BlockStateHolder<B>> boolean setBlock(BlockVector3 position, B block, boolean notifyAndLight) throws WorldEditException {
         BukkitImplAdapter adapter = WorldEditPlugin.getInstance().getBukkitImplAdapter();
         if (adapter != null) {
             try {

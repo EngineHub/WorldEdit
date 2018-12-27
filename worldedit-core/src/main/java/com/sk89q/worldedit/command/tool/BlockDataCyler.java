@@ -68,7 +68,7 @@ public class BlockDataCyler implements DoubleActionBlockTool {
         if (block.getStates().keySet().isEmpty()) {
             player.printError("That block's data cannot be cycled!");
         } else {
-            Property currentProperty = selectedProperties.get(player.getUniqueId());
+            Property<?> currentProperty = selectedProperties.get(player.getUniqueId());
 
             if (currentProperty == null || (forward && block.getState(currentProperty) == null)) {
                 currentProperty = block.getStates().keySet().stream().findFirst().get();
@@ -79,7 +79,9 @@ public class BlockDataCyler implements DoubleActionBlockTool {
                 block.getState(currentProperty);
                 int index = currentProperty.getValues().indexOf(block.getState(currentProperty));
                 index = (index + 1) % currentProperty.getValues().size();
-                BlockState newBlock = block.with(currentProperty, currentProperty.getValues().get(index));
+                @SuppressWarnings("unchecked")
+                Property<Object> objProp = (Property<Object>) currentProperty;
+                BlockState newBlock = block.with(objProp, currentProperty.getValues().get(index));
 
                 try (EditSession editSession = session.createEditSession(player)) {
                     editSession.disableBuffering();

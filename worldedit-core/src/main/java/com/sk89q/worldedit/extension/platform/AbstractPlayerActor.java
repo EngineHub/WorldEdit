@@ -170,7 +170,7 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
                 ++spots;
                 if (spots == 2) {
                     final BlockVector3 platform = BlockVector3.at(x, y - 2, z);
-                    final BlockStateHolder block = world.getBlock(platform);
+                    final BlockState block = world.getBlock(platform);
                     final com.sk89q.worldedit.world.block.BlockType type = block.getBlockType();
 
                     // Don't get put in lava!
@@ -212,7 +212,7 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
                 // stand upon
                 while (y >= 0) {
                     final BlockVector3 platform = BlockVector3.at(x, y, z);
-                    final BlockStateHolder block = world.getBlock(platform);
+                    final BlockState block = world.getBlock(platform);
                     final BlockType type = block.getBlockType();
 
                     // Don't want to end up in lava
@@ -500,7 +500,7 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
     }
 
     @Override
-    public void sendFakeBlock(BlockVector3 pos, BlockStateHolder block) {
+    public <B extends BlockStateHolder<B>> void sendFakeBlock(BlockVector3 pos, B block) {
 
     }
 }

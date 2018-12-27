@@ -25,7 +25,6 @@ import com.sk89q.worldedit.function.RegionFunction;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.util.Countable;
 import com.sk89q.worldedit.world.block.BlockState;
-import com.sk89q.worldedit.world.block.BlockStateHolder;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -36,27 +35,27 @@ import java.util.Map;
 public class BlockDistributionCounter implements RegionFunction {
 
     private Extent extent;
-    private boolean fuzzy;
+    private boolean separateStates;
 
-    private List<Countable<BlockStateHolder>> distribution = new ArrayList<>();
-    private Map<BlockStateHolder, Countable<BlockStateHolder>> map = new HashMap<>();
+    private List<Countable<BlockState>> distribution = new ArrayList<>();
+    private Map<BlockState, Countable<BlockState>> map = new HashMap<>();
 
-    public BlockDistributionCounter(Extent extent, boolean fuzzy) {
+    public BlockDistributionCounter(Extent extent, boolean separateStates) {
         this.extent = extent;
-        this.fuzzy = fuzzy;
+        this.separateStates = separateStates;
     }
 
     @Override
     public boolean apply(BlockVector3 position) throws WorldEditException {
-        BlockStateHolder blk = extent.getBlock(position);
-        if (fuzzy) {
-            blk = ((BlockState) blk).toFuzzy();
+        BlockState blk = extent.getBlock(position);
+        if (!separateStates) {
+            blk = blk.getBlockType().getDefaultState();
         }
 
         if (map.containsKey(blk)) {
             map.get(blk).increment();
         } else {
-            Countable<BlockStateHolder> c = new Countable<>(blk, 1);
+            Countable<BlockState> c = new Countable<>(blk, 1);
             map.put(blk, c);
             distribution.add(c);
         }
@@ -69,7 +68,7 @@ public class BlockDistributionCounter implements RegionFunction {
      *
      * @return The distribution
      */
-    public List<Countable<BlockStateHolder>> getDistribution() {
+    public List<Countable<BlockState>> getDistribution() {
         Collections.sort(distribution);
         Collections.reverse(distribution);
         return this.distribution;

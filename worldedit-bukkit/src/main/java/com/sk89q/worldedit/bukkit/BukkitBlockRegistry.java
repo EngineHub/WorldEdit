@@ -47,7 +47,7 @@ public class BukkitBlockRegistry extends BundledBlockRegistry {
 
     @Nullable
     @Override
-    public Map<String, ? extends Property> getProperties(BlockType blockType) {
+    public Map<String, ? extends Property<?>> getProperties(BlockType blockType) {
         if (WorldEditPlugin.getInstance().getBukkitImplAdapter() != null) {
             return WorldEditPlugin.getInstance().getBukkitImplAdapter().getProperties(blockType);
         }

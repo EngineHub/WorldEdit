@@ -79,7 +79,7 @@ public class BlockTransformExtent extends AbstractDelegateExtent {
      * @param reverse true to transform in the opposite direction
      * @return the same block
      */
-    private <T extends BlockStateHolder> T transformBlock(T block, boolean reverse) {
+    private <T extends BlockStateHolder<T>> T transformBlock(T block, boolean reverse) {
         return transform(block, reverse ? transform.inverse() : transform);
     }
 
@@ -94,22 +94,8 @@ public class BlockTransformExtent extends AbstractDelegateExtent {
     }
 
     @Override
-    public boolean setBlock(BlockVector3 location, BlockStateHolder block) throws WorldEditException {
+    public <B extends BlockStateHolder<B>> boolean setBlock(BlockVector3 location, B block) throws WorldEditException {
         return super.setBlock(location, transformBlock(block, true));
-    }
-
-
-    /**
-     * Transform the given block using the given transform.
-     *
-     * <p>The provided block is modified.</p>
-     *
-     * @param block the block
-     * @param transform the transform
-     * @return the same block
-     */
-    public static <T extends BlockStateHolder> T transform(T block, Transform transform) {
-        return transform(block, transform, block);
     }
 
     private static final Set<String> directionNames = Sets.newHashSet("north", "south", "east", "west");
@@ -117,27 +103,31 @@ public class BlockTransformExtent extends AbstractDelegateExtent {
     /**
      * Transform the given block using the given transform.
      *
+     * <p>The provided block is <em>not</em> modified.</p>
+     *
      * @param block the block
      * @param transform the transform
-     * @param changedBlock the block to change
-     * @return the changed block
+     * @return the same block
      */
-    private static <T extends BlockStateHolder> T transform(T block, Transform transform, T changedBlock) {
+    public static <B extends BlockStateHolder<B>> B transform(B block, Transform transform) {
         checkNotNull(block);
         checkNotNull(transform);
 
-        List<? extends Property> properties = block.getBlockType().getProperties();
+        B result = block;
+        List<? extends Property<?>> properties = block.getBlockType().getProperties();
 
         for (Property<?> property : properties) {
             if (property instanceof DirectionalProperty) {
+                DirectionalProperty dirProp = (DirectionalProperty) property;
                 Direction value = (Direction) block.getState(property);
                 if (value != null) {
-                    Vector3 newValue = getNewStateValue((List<Direction>) property.getValues(), transform, value.toVector());
+                    Vector3 newValue = getNewStateValue(dirProp.getValues(), transform, value.toVector());
                     if (newValue != null) {
-                        changedBlock = (T) changedBlock.with(property, Direction.findClosest(newValue, Direction.Flag.ALL));
+                        result = result.with(dirProp, Direction.findClosest(newValue, Direction.Flag.ALL));
                     }
                 }
             } else if (property instanceof EnumProperty) {
+                EnumProperty enumProp = (EnumProperty) property;
                 if (property.getName().equals("axis")) {
                     // We have an axis - this is something we can do the rotations to :sunglasses:
                     Direction value = null;
@@ -165,7 +155,7 @@ public class BlockTransformExtent extends AbstractDelegateExtent {
                                 axis = "y";
                             }
                             if (axis != null) {
-                                changedBlock = (T) changedBlock.with(property, axis);
+                                result = result.with(enumProp, axis);
                             }
                         }
                     }
@@ -188,11 +178,11 @@ public class BlockTransformExtent extends AbstractDelegateExtent {
 
         if (directionalProperties.size() > 0) {
             for (String directionName : directionNames) {
-                changedBlock = (T) changedBlock.with(block.getBlockType().getProperty(directionName), directionalProperties.contains(directionName));
+                result = result.with(block.getBlockType().getProperty(directionName), directionalProperties.contains(directionName));
             }
         }
 
-        return changedBlock;
+        return result;
     }
 
     /**

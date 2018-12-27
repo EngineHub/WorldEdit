@@ -25,7 +25,7 @@ import com.sk89q.worldedit.registry.state.Property;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public interface BlockStateHolder<T extends BlockStateHolder> {
+public interface BlockStateHolder<B extends BlockStateHolder<B>> {
 
     /**
      * Get the block type
@@ -41,7 +41,7 @@ public interface BlockStateHolder<T extends BlockStateHolder> {
      * @param value The value
      * @return The modified state, or same if could not be applied
      */
-    <V> T with(final Property<V> property, final V value);
+    <V> B with(final Property<V> property, final V value);
 
     /**
      * Gets the value at the given state
@@ -64,7 +64,7 @@ public interface BlockStateHolder<T extends BlockStateHolder> {
      * @param o other block
      * @return true if equal
      */
-    boolean equalsFuzzy(BlockStateHolder o);
+    boolean equalsFuzzy(BlockStateHolder<?> o);
 
     /**
      * Returns an immutable {@link BlockState} from this BlockStateHolder.

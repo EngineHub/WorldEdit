@@ -23,7 +23,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.math.BlockVector3;
-import com.sk89q.worldedit.world.block.BlockStateHolder;
+import com.sk89q.worldedit.world.block.BaseBlock;
 
 /**
  * A pattern that reads from {@link Clipboard}.
@@ -45,7 +45,7 @@ public class ClipboardPattern extends AbstractPattern {
     }
 
     @Override
-    public BlockStateHolder apply(BlockVector3 position) {
+    public BaseBlock apply(BlockVector3 position) {
         int xp = Math.abs(position.getBlockX()) % size.getBlockX();
         int yp = Math.abs(position.getBlockY()) % size.getBlockY();
         int zp = Math.abs(position.getBlockZ()) % size.getBlockZ();

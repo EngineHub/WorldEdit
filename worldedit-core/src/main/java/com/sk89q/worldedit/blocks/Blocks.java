@@ -38,9 +38,9 @@ public final class Blocks {
      * @param o the block
      * @return true if the collection contains the given block
      */
-    public static boolean containsFuzzy(Collection<? extends BlockStateHolder> collection, BlockStateHolder o) {
+    public static <B extends BlockStateHolder<B>> boolean containsFuzzy(Collection<? extends BlockStateHolder<?>> collection, B o) {
         // Allow masked data in the searchBlocks to match various types
-        for (BlockStateHolder b : collection) {
+        for (BlockStateHolder<?> b : collection) {
             if (b.equalsFuzzy(o)) {
                 return true;
             }

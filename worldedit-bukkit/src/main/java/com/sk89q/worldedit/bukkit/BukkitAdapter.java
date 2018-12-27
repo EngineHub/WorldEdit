@@ -381,7 +381,7 @@ public class BukkitAdapter {
      * @param block The WorldEdit BlockStateHolder
      * @return The Bukkit BlockData
      */
-    public static BlockData adapt(BlockStateHolder block) {
+    public static <B extends BlockStateHolder<B>> BlockData adapt(B block) {
         checkNotNull(block);
         return blockDataCache.computeIfAbsent(block.getAsString(), new Function<String, BlockData>() {
             @Nullable
