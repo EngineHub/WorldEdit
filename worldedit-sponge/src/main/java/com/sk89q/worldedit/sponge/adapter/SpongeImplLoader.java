@@ -85,7 +85,7 @@ public class SpongeImplLoader {
         Closer closer = Closer.create();
         JarFile jar = closer.register(new JarFile(file));
         try {
-            Enumeration entries = jar.entries();
+            Enumeration<JarEntry> entries = jar.entries();
             while (entries.hasMoreElements()) {
                 JarEntry jarEntry = (JarEntry) entries.nextElement();
 
