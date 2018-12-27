@@ -37,11 +37,16 @@ public class FuzzyBlockState extends BlockState {
         super(blockType);
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public BlockState toImmutableState() {
+    /**
+     * Gets a full BlockState from this fuzzy one, filling in
+     * properties with default values where necessary.
+     *
+     * @return The full BlockState
+     */
+    public BlockState getFullState() {
         BlockState state = getBlockType().getDefaultState();
         for (Map.Entry<Property<?>, Object> entry : getStates().entrySet()) {
+            //noinspection unchecked
             state = state.with((Property<Object>) entry.getKey(), entry.getValue());
         }
         return getBlockType().getDefaultState();
@@ -110,6 +115,9 @@ public class FuzzyBlockState extends BlockState {
          */
         public FuzzyBlockState build() {
             checkNotNull(internalState);
+            if (values.isEmpty()) {
+                return internalState.getBlockType().getFuzzyMatcher();
+            }
             FuzzyBlockState blockState = new FuzzyBlockState(internalState.getBlockType());
             for (Map.Entry<Property<?>, Object> entry : values.entrySet()) {
                 blockState.setState(entry.getKey(), entry.getValue());

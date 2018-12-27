@@ -48,6 +48,7 @@ public class BlockType {
     private final String id;
     private final Function<BlockState, BlockState> values;
     private final AtomicReference<BlockState> defaultState = new AtomicReference<>();
+    private final AtomicReference<FuzzyBlockState> emptyFuzzy = new AtomicReference<>();
     private final AtomicReference<Map<String, ? extends Property<?>>> properties = new AtomicReference<>();
     private final AtomicReference<BlockMaterial> blockMaterial = new AtomicReference<>();
     private final AtomicReference<Map<Map<Property<?>, Object>, BlockState>> blockStatesMap = new AtomicReference<>();
@@ -154,6 +155,10 @@ public class BlockType {
             }
             return defaultState;
         });
+    }
+
+    public FuzzyBlockState getFuzzyMatcher() {
+        return updateField(emptyFuzzy, () -> new FuzzyBlockState(this));
     }
 
     /**
