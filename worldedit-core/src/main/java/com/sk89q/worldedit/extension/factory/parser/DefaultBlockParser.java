@@ -43,6 +43,7 @@ import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.block.BlockTypes;
+import com.sk89q.worldedit.world.block.FuzzyBlockState;
 import com.sk89q.worldedit.world.registry.LegacyMapper;
 
 import java.util.HashMap;
@@ -268,12 +269,14 @@ public class DefaultBlockParser extends InputParser<BaseBlock> {
                 // No wildcards allowed => eliminate them. (Start with default state)
                 state = blockType.getDefaultState();
             } else {
-                state = blockType.getDefaultState().toFuzzy();
+                FuzzyBlockState.Builder fuzzyBuilder = FuzzyBlockState.builder();
+                fuzzyBuilder.type(blockType);
                 for (Map.Entry<Property<?>, Object> blockState : blockStates.entrySet()) {
                     @SuppressWarnings("unchecked")
                     Property<Object> objProp = (Property<Object>) blockState.getKey();
-                    state = state.with(objProp, blockState.getValue());
+                    fuzzyBuilder.withProperty(objProp, blockState.getValue());
                 }
+                state = fuzzyBuilder.build();
             }
 
             state = applyProperties(state, stateProperties);
