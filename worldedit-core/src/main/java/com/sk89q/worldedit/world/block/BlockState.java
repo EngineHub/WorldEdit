@@ -129,7 +129,8 @@ public class BlockState implements BlockStateHolder<BlockState> {
 
     @Override
     public <V> BlockState with(final Property<V> property, final V value) {
-        return states.row(property).getOrDefault(value, this);
+        BlockState result = states.get(property, value);
+        return result == null ? this : result;
     }
 
     @Override
