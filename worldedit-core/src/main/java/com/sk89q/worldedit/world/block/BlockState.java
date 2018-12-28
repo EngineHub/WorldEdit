@@ -30,7 +30,6 @@ import com.sk89q.worldedit.registry.state.Property;
 
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -46,30 +45,16 @@ public class BlockState implements BlockStateHolder<BlockState> {
 
     private final BlockType blockType;
     private final Map<Property<?>, Object> values;
-    private final boolean fuzzy;
 
     private BaseBlock emptyBaseBlock;
 
     // Neighbouring state table.
     private Table<Property<?>, Object, BlockState> states;
 
-    private BlockState(BlockType blockType) {
+    BlockState(BlockType blockType) {
         this.blockType = blockType;
         this.values = new LinkedHashMap<>();
         this.emptyBaseBlock = new BaseBlock(this);
-        this.fuzzy = false;
-    }
-
-    /**
-     * Creates a fuzzy BlockState. This can be used for partial matching.
-     *
-     * @param blockType The block type
-     * @param values The block state values
-     */
-    private BlockState(BlockType blockType, Map<Property<?>, Object> values) {
-        this.blockType = blockType;
-        this.values = values;
-        this.fuzzy = true;
     }
 
     static Map<Map<Property<?>, Object>, BlockState> generateStateMap(BlockType blockType) {
@@ -144,12 +129,7 @@ public class BlockState implements BlockStateHolder<BlockState> {
 
     @Override
     public <V> BlockState with(final Property<V> property, final V value) {
-        if (fuzzy) {
-            return setState(property, value);
-        } else {
-            BlockState result = states.get(property, value);
-            return result == null ? this : result;
-        }
+        return states.row(property).getOrDefault(value, this);
     }
 
     @Override
@@ -160,10 +140,6 @@ public class BlockState implements BlockStateHolder<BlockState> {
     @Override
     public Map<Property<?>, Object> getStates() {
         return Collections.unmodifiableMap(this.values);
-    }
-
-    public BlockState toFuzzy() {
-        return new BlockState(this.getBlockType(), new HashMap<>());
     }
 
     @Override
@@ -207,9 +183,6 @@ public class BlockState implements BlockStateHolder<BlockState> {
 
     @Override
     public BaseBlock toBaseBlock() {
-        if (this.fuzzy) {
-            throw new IllegalArgumentException("Can't create a BaseBlock from a fuzzy BlockState!");
-        }
         return this.emptyBaseBlock;
     }
 
@@ -230,7 +203,7 @@ public class BlockState implements BlockStateHolder<BlockState> {
      * @param value The value
      * @return The blockstate, for chaining
      */
-    private BlockState setState(final Property<?> property, final Object value) {
+    BlockState setState(final Property<?> property, final Object value) {
         this.values.put(property, value);
         return this;
     }
@@ -251,6 +224,6 @@ public class BlockState implements BlockStateHolder<BlockState> {
 
     @Override
     public int hashCode() {
-        return Objects.hash(blockType, values, fuzzy);
+        return Objects.hash(blockType, values);
     }
 }
