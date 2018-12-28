@@ -37,6 +37,13 @@ public class FuzzyBlockState extends BlockState {
         super(blockType);
     }
 
+    private FuzzyBlockState(BlockType blockType, Map<Property<?>, Object> values) {
+        this(blockType);
+        for (Map.Entry<Property<?>, Object> entry : values.entrySet()) {
+            setState(entry.getKey(), entry.getValue());
+        }
+    }
+
     /**
      * Gets a full BlockState from this fuzzy one, filling in
      * properties with default values where necessary.
@@ -46,8 +53,9 @@ public class FuzzyBlockState extends BlockState {
     public BlockState getFullState() {
         BlockState state = getBlockType().getDefaultState();
         for (Map.Entry<Property<?>, Object> entry : getStates().entrySet()) {
-            //noinspection unchecked
-            state = state.with((Property<Object>) entry.getKey(), entry.getValue());
+            @SuppressWarnings("unchecked")
+            Property<Object> objKey = (Property<Object>) entry.getKey();
+            state = state.with(objKey, entry.getValue());
         }
         return getBlockType().getDefaultState();
     }
@@ -65,7 +73,7 @@ public class FuzzyBlockState extends BlockState {
      * Builder for FuzzyBlockState
      */
     public static class Builder {
-        private BlockState internalState;
+        private BlockType type;
         private Map<Property<?>, Object> values = new HashMap<>();
 
         /**
@@ -76,7 +84,7 @@ public class FuzzyBlockState extends BlockState {
          */
         public Builder type(BlockType type) {
             checkNotNull(type);
-            internalState = type.getDefaultState();
+            this.type = type;
             return this;
         }
 
@@ -88,7 +96,7 @@ public class FuzzyBlockState extends BlockState {
          */
         public Builder type(BlockState state) {
             checkNotNull(state);
-            internalState = state;
+            this.type = state.getBlockType();
             return this;
         }
 
@@ -103,7 +111,8 @@ public class FuzzyBlockState extends BlockState {
         public <V> Builder withProperty(Property<V> property, V value) {
             checkNotNull(property);
             checkNotNull(value);
-            checkNotNull(internalState, "The type must be set before the properties!");
+            checkNotNull(type, "The type must be set before the properties!");
+            type.getProperty(property.getName()); // Verify the property is valid for this type
             values.put(property, value);
             return this;
         }
@@ -114,15 +123,11 @@ public class FuzzyBlockState extends BlockState {
          * @return The fuzzy BlockState
          */
         public FuzzyBlockState build() {
-            checkNotNull(internalState);
+            checkNotNull(type);
             if (values.isEmpty()) {
-                return internalState.getBlockType().getFuzzyMatcher();
+                return type.getFuzzyMatcher();
             }
-            FuzzyBlockState blockState = new FuzzyBlockState(internalState.getBlockType());
-            for (Map.Entry<Property<?>, Object> entry : values.entrySet()) {
-                blockState.setState(entry.getKey(), entry.getValue());
-            }
-            return blockState;
+            return new FuzzyBlockState(type, values);
         }
 
         /**
@@ -131,7 +136,7 @@ public class FuzzyBlockState extends BlockState {
          * @return The builder, for chaining
          */
         public Builder reset() {
-            this.internalState = null;
+            this.type = null;
             this.values.clear();
             return this;
         }
