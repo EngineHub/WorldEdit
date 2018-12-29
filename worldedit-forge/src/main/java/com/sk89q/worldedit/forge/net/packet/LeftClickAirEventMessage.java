@@ -17,34 +17,32 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.forge.net;
+package com.sk89q.worldedit.forge.net.packet;
 
 import com.sk89q.worldedit.forge.ForgeWorldEdit;
 import io.netty.buffer.ByteBuf;
+import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import net.minecraftforge.fml.network.NetworkEvent;
 
-public class LeftClickAirEventMessage implements IMessage {
+import java.util.function.Supplier;
 
-    public static final class Handler implements IMessageHandler<LeftClickAirEventMessage, IMessage> {
+public class LeftClickAirEventMessage {
 
-        @Override
-        public IMessage onMessage(LeftClickAirEventMessage message, final MessageContext ctx) {
-            ctx.getServerHandler().player.mcServer.addScheduledTask(
-                    () -> ForgeWorldEdit.inst.onPlayerInteract(new PlayerInteractEvent.LeftClickEmpty(ctx.getServerHandler().player)));
-            return null;
+    public static final class Handler {
+
+        public static void handle(final LeftClickAirEventMessage message, Supplier<NetworkEvent.Context> ctx) {
+            NetworkEvent.Context context = ctx.get();
+            context.enqueueWork(() -> ForgeWorldEdit.inst.onPlayerInteract(new PlayerInteractEvent.LeftClickEmpty(context.getSender())));
         }
 
     }
 
-    @Override
-    public void fromBytes(ByteBuf buf) {
+    public static LeftClickAirEventMessage decode(ByteBuf buf) {
+        return new LeftClickAirEventMessage();
     }
 
-    @Override
-    public void toBytes(ByteBuf buf) {
+    public static void encode(LeftClickAirEventMessage msg, PacketBuffer buf) {
     }
 
 }

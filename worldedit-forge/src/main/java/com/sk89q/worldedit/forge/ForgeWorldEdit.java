@@ -26,7 +26,9 @@ import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.event.platform.PlatformReadyEvent;
 import com.sk89q.worldedit.extension.platform.Platform;
-import com.sk89q.worldedit.forge.net.LeftClickAirEventMessage;
+import com.sk89q.worldedit.forge.net.handler.WECUIPacketHandler;
+import com.sk89q.worldedit.forge.net.packet.LeftClickAirEventMessage;
+import com.sk89q.worldedit.forge.net.handler.InternalPacketHandler;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.block.BlockTypes;
@@ -65,7 +67,7 @@ public class ForgeWorldEdit {
 
     private static final Logger LOGGER = LogManager.getLogger();
     public static final String MOD_ID = "worldedit";
-    public static final String CUI_PLUGIN_CHANNEL = "worldedit:cui";
+    public static final String CUI_PLUGIN_CHANNEL = "cui";
 
     private ForgePermissionsProvider provider;
 
@@ -176,7 +178,7 @@ public class ForgeWorldEdit {
 
         if (event.getWorld().isRemote && event instanceof LeftClickEmpty) {
             // catch LCE, pass it to server
-            InternalPacketHandler.CHANNEL.sendToServer(new LeftClickAirEventMessage());
+            InternalPacketHandler.HANDLER.sendToServer(new LeftClickAirEventMessage());
             return;
         }
         

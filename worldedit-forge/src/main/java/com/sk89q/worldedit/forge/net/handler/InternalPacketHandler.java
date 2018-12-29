@@ -17,25 +17,26 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.forge;
+package com.sk89q.worldedit.forge.net.handler;
 
-import com.sk89q.worldedit.forge.net.LeftClickAirEventMessage;
-import javafx.geometry.Side;
+import com.sk89q.worldedit.forge.ForgeWorldEdit;
+import com.sk89q.worldedit.forge.net.packet.LeftClickAirEventMessage;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.network.NetworkRegistry;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
 
-import java.nio.charset.Charset;
-
 public class InternalPacketHandler {
-    public static final Charset UTF_8_CHARSET = Charset.forName("UTF-8");
-    public static SimpleChannel CHANNEL;
+    private static final String PROTOCOL_VERSION = Integer.toString(1);
+    public static SimpleChannel HANDLER = NetworkRegistry.ChannelBuilder
+            .named(new ResourceLocation(ForgeWorldEdit.MOD_ID, "internal"))
+            .clientAcceptedVersions(PROTOCOL_VERSION::equals)
+            .serverAcceptedVersions(PROTOCOL_VERSION::equals)
+            .networkProtocolVersion(() -> PROTOCOL_VERSION)
+            .simpleChannel();
 
     public static void init() {
-         CHANNEL = NetworkRegistry.newSimpleChannel(new ResourceLocation(ForgeWorldEdit.MOD_ID, "worldedit"), () -> "1", check -> true, check -> true);
-         CHANNEL.registerMessage(LeftClickAirEventMessage.Handler.class, LeftClickAirEventMessage.class, 0, Side.SERVER);
-    }
+        int disc = 0;
 
-    private InternalPacketHandler() {
+        HANDLER.registerMessage(disc++, LeftClickAirEventMessage.class, LeftClickAirEventMessage::encode, LeftClickAirEventMessage::decode, LeftClickAirEventMessage.Handler::handle);
     }
 }
