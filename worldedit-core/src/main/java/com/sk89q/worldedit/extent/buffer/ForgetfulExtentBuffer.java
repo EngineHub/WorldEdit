@@ -92,9 +92,8 @@ public class ForgetfulExtentBuffer extends AbstractDelegateExtent implements Pat
             max = max.getMaximum(location);
         }
 
-        BlockVector3 blockVector = location;
-        if (mask.test(blockVector)) {
-            buffer.put(blockVector, block.toBaseBlock());
+        if (mask.test(location)) {
+            buffer.put(location, block.toBaseBlock());
             return true;
         } else {
             return getExtent().setBlock(location, block);
