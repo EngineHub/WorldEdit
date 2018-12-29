@@ -24,7 +24,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import com.google.common.base.Joiner;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.event.platform.PlatformReadyEvent;
 import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.forge.net.LeftClickAirEventMessage;
@@ -33,11 +32,7 @@ import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.block.BlockTypes;
 import com.sk89q.worldedit.world.item.ItemType;
 import com.sk89q.worldedit.world.item.ItemTypes;
-import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
@@ -46,17 +41,17 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.LeftClickEmpty;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Loader;
+import net.minecraftforge.fml.DistExecutor;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerAboutToStartEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartedEvent;
 import net.minecraftforge.fml.common.event.FMLServerStoppingEvent;
-import net.minecraftforge.fml.common.eventhandler.Event.Result;
 import net.minecraftforge.fml.javafmlmod.FMLModLoadingContext;
+import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -76,8 +71,7 @@ public class ForgeWorldEdit {
 
     public static ForgeWorldEdit inst;
 
-    @SidedProxy(serverSide = "com.sk89q.worldedit.forge.CommonProxy", clientSide = "com.sk89q.worldedit.forge.ClientProxy")
-    public static CommonProxy proxy;
+    public static CommonProxy proxy = DistExecutor.runForDist(() -> ClientProxy::new, () -> CommonProxy::new);
 
     private ForgePlatform platform;
     private ForgeConfiguration config;
@@ -126,20 +120,21 @@ public class ForgeWorldEdit {
 
         WorldEdit.getInstance().getPlatformManager().register(platform);
 
-        if (Loader.isModLoaded("sponge")) {
+        if (ModList.get().isLoaded("sponge")) {
             this.provider = new ForgePermissionsProvider.SpongePermissionsProvider();
         } else {
             this.provider = new ForgePermissionsProvider.VanillaPermissionsProvider(platform);
         }
 
-        for (ResourceLocation name : Block.REGISTRY.getKeys()) {
+        // TODO Setup states
+        for (ResourceLocation name : ForgeRegistries.BLOCKS.getKeys()) {
             String nameStr = name.toString();
             if (!BlockType.REGISTRY.keySet().contains(nameStr)) {
                 BlockType.REGISTRY.register(nameStr, new BlockType(nameStr));
             }
         }
 
-        for (ResourceLocation name : Item.REGISTRY.getKeys()) {
+        for (ResourceLocation name : ForgeRegistries.ITEMS.getKeys()) {
             String nameStr = name.toString();
             if (!ItemType.REGISTRY.keySet().contains(nameStr)) {
                 ItemType.REGISTRY.register(nameStr, new ItemType(nameStr));
@@ -230,14 +225,6 @@ public class ForgeWorldEdit {
                 event.setCanceled(true);
             }
         }
-    }
-
-    public static ItemStack toForgeItemStack(BaseItemStack item) {
-        NBTTagCompound forgeCompound = null;
-        if (item.getNbtData() != null) {
-            forgeCompound = NBTConverter.toNative(item.getNbtData());
-        }
-        return new ItemStack(Item.REGISTRY.get(new ResourceLocation(item.getType().getId())), item.getAmount(), 0, forgeCompound);
     }
 
     /**

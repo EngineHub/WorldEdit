@@ -25,12 +25,12 @@ import net.minecraft.client.settings.KeyBinding;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.gameevent.InputEvent.KeyInputEvent;
-import org.lwjgl.input.Keyboard;
+import org.lwjgl.glfw.GLFW;
 
 public class KeyHandler {
 
     private static Minecraft mc = Minecraft.getInstance();
-    private static KeyBinding mainKey = new KeyBinding("WorldEdit Reference", Keyboard.KEY_L, "WorldEdit");
+    private static KeyBinding mainKey = new KeyBinding("WorldEdit Reference", GLFW.GLFW_KEY_L, "WorldEdit");
 
     public KeyHandler() {
         ClientRegistry.registerKeyBinding(mainKey);

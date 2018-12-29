@@ -37,7 +37,7 @@ import net.minecraft.server.management.PlayerList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.DimensionManager;
-import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -55,7 +55,7 @@ class ForgePlatform extends AbstractPlatform implements MultiUserPlatform {
 
     ForgePlatform(ForgeWorldEdit mod) {
         this.mod = mod;
-        this.server = FMLCommonHandler.instance().getMinecraftServerInstance();
+        this.server = ServerLifecycleHooks.getCurrentServer();
     }
 
     boolean isHookingEvents() {

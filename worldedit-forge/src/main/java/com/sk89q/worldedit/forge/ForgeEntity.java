@@ -29,7 +29,6 @@ import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.NullWorld;
 import com.sk89q.worldedit.world.entity.EntityTypes;
-import net.minecraft.entity.EntityList;
 import net.minecraft.nbt.NBTTagCompound;
 
 import java.lang.ref.WeakReference;
@@ -49,7 +48,7 @@ class ForgeEntity implements Entity {
     public BaseEntity getState() {
         net.minecraft.entity.Entity entity = entityRef.get();
         if (entity != null) {
-            String id = EntityList.getEntityString(entity);
+            String id = entity.getType().getRegistryName().toString();
             if (id != null) {
                 NBTTagCompound tag = new NBTTagCompound();
                 entity.writeWithoutTypeId(tag);

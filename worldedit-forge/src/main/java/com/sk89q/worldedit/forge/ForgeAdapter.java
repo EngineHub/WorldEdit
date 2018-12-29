@@ -20,6 +20,8 @@
 package com.sk89q.worldedit.forge;
 
 import com.google.common.collect.ImmutableList;
+import com.sk89q.jnbt.CompoundTag;
+import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.registry.state.BooleanProperty;
@@ -35,13 +37,23 @@ import com.sk89q.worldedit.world.biome.BiomeTypes;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
+import com.sk89q.worldedit.world.block.BlockType;
+import com.sk89q.worldedit.world.block.BlockTypes;
+import com.sk89q.worldedit.world.item.ItemType;
+import com.sk89q.worldedit.world.item.ItemTypes;
+import net.minecraft.block.Block;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.state.DirectionProperty;
 import net.minecraft.state.IProperty;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.IStringSerializable;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.biome.Biome;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.stream.Collectors;
 
@@ -124,4 +136,32 @@ final class ForgeAdapter {
         return new IPropertyAdapter<>(property);
     }
 
+    public static Block adapt(BlockType blockType) {
+        return ForgeRegistries.BLOCKS.getValue(new ResourceLocation(blockType.getId()));
+    }
+
+    public static BlockType adapt(Block block) {
+        return BlockTypes.get(ForgeRegistries.BLOCKS.getKey(block).toString());
+    }
+
+    public static Item adapt(ItemType itemType) {
+        return ForgeRegistries.ITEMS.getValue(new ResourceLocation(itemType.getId()));
+    }
+
+    public static ItemType adapt(Item item) {
+        return ItemTypes.get(ForgeRegistries.ITEMS.getKey(item).toString());
+    }
+
+    public static ItemStack adapt(BaseItemStack baseItemStack) {
+        NBTTagCompound forgeCompound = null;
+        if (baseItemStack.getNbtData() != null) {
+            forgeCompound = NBTConverter.toNative(baseItemStack.getNbtData());
+        }
+        return new ItemStack(adapt(baseItemStack.getType()), baseItemStack.getAmount(), forgeCompound);
+    }
+
+    public static BaseItemStack adapt(ItemStack itemStack) {
+        CompoundTag tag = NBTConverter.fromNative(itemStack.serializeNBT());
+        return new BaseItemStack(adapt(itemStack.getItem()), tag, itemStack.getCount());
+    }
 }

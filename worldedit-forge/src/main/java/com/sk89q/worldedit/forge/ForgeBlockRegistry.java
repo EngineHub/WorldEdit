@@ -23,11 +23,9 @@ import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.registry.BlockMaterial;
 import com.sk89q.worldedit.world.registry.BundledBlockRegistry;
-
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.state.IProperty;
-import net.minecraft.util.ResourceLocation;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -43,19 +41,29 @@ public class ForgeBlockRegistry extends BundledBlockRegistry {
     @Nullable
     @Override
     public String getName(BlockType blockType) {
-        return Block.REGISTRY.get(new ResourceLocation(blockType.getId())).getNameTextComponent().getFormattedText();
+        Block block = ForgeAdapter.adapt(blockType);
+        if (block != null) {
+            return block.getNameTextComponent().getFormattedText();
+        } else {
+            return super.getName(blockType);
+        }
     }
 
     @Override
     public BlockMaterial getMaterial(BlockType blockType) {
-        return materialMap.computeIfAbsent(Block.getBlockFromName(blockType.getId()).getDefaultState().getMaterial(),
+        Block block = ForgeAdapter.adapt(blockType);
+        if (block == null) {
+            return super.getMaterial(blockType);
+        }
+        return materialMap.computeIfAbsent(block.getDefaultState().getMaterial(),
                 m -> new ForgeBlockMaterial(m, super.getMaterial(blockType)));
     }
 
     @Override
     public Map<String, ? extends Property<?>> getProperties(BlockType blockType) {
+        Block block = ForgeAdapter.adapt(blockType);
         Map<String, Property<?>> map = new TreeMap<>();
-        Collection<IProperty<?>> propertyKeys = Block.getBlockFromName(blockType.getId())
+        Collection<IProperty<?>> propertyKeys = block
                 .getDefaultState()
                 .getProperties();
         for (IProperty<?> key : propertyKeys) {
