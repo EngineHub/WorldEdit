@@ -167,7 +167,12 @@ public class PlatformManager {
             return platform;
         } else {
             if (preferences.isEmpty()) {
-                return platforms.get(0); // Use the first available if preferences have not been decided yet.
+                // Use the first available if preferences have not been decided yet.
+                if (platforms.isEmpty()) {
+                    // No platforms registered, this is being called too early!
+                    throw new NoCapablePlatformException("No platforms have been registered yet! Please wait until WorldEdit is initialized.");
+                }
+                return platforms.get(0);
             }
             throw new NoCapablePlatformException("No platform was found supporting " + capability.name());
         }
