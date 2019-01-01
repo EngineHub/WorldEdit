@@ -47,24 +47,9 @@ origin = player.getBlockIn().toVector().toBlockPoint();
 block = context.getBlock(argv[1]);
 airBlock = context.getBlock("air");
 glassBlock = context.getBlock("glass");
-clothBlocks = [
-    context.getBlock("white_wool"),
-    context.getBlock("orange_wool"),
-    context.getBlock("magenta_wool"),
-    context.getBlock("light_blue_wool"),
-    context.getBlock("yellow_wool"),
-    context.getBlock("lime_wool"),
-    context.getBlock("pink_wool"),
-    context.getBlock("gray_wool"),
-    context.getBlock("light_gray_wool"),
-    context.getBlock("cyan_wool"),
-    context.getBlock("purple_wool"),
-    context.getBlock("blue_wool"),
-    context.getBlock("brown_wool"),
-    context.getBlock("green_wool"),
-    context.getBlock("red_wool"),
-    context.getBlock("black_wool")
-];
+limeWoolBlock = context.getBlock("lime_wool");
+redWoolBlock = context.getBlock("red_wool");
+blueWoolBlock = context.getBlock("blue_wool");
 
 if (argv.length > 7) flags = String(argv[7]);
 else flags = false;
@@ -302,22 +287,22 @@ if (so) {
 
         if (visited[cell] && !wrong[cell]) {
             for (yi = 0; yi < s; yi++) for (xi = 0; xi < s; xi++) {
-                if (!v) sess.setBlock(origin.add(x * (s + wa) + xi, -1, y * (s + wa) + yi), clothBlocks[5]);
-                else sess.setBlock(origin.add(x * (s + wa) + xi, y * (s + wa) + yi, +1), clothBlocks[5]);
+                if (!v) sess.setBlock(origin.add(x * (s + wa) + xi, -1, y * (s + wa) + yi), limeWoolBlock);
+                else sess.setBlock(origin.add(x * (s + wa) + xi, y * (s + wa) + yi, +1), limeWoolBlock);
             }
         }
 
         if ((visited[cell] && !wrong[cell] && visited[id(x - 1, y)] && !wrong[id(x - 1, y)] && noWallLeft[cell]) || cell == start || id(x - 1, y) == end) {
             for (xi = 1; xi <= wa; xi++) for (yi = 0; yi < s; yi++) {
-                if (!v) sess.setBlock(origin.add(x * (s + wa) - xi, -1, y * (s + wa) + yi), clothBlocks[5]);
-                else sess.setBlock(origin.add(x * (s + wa) - xi, y * (s + wa) + yi, +1), clothBlocks[5]);
+                if (!v) sess.setBlock(origin.add(x * (s + wa) - xi, -1, y * (s + wa) + yi), limeWoolBlock);
+                else sess.setBlock(origin.add(x * (s + wa) - xi, y * (s + wa) + yi, +1), limeWoolBlock);
             }
         }
 
         if (visited[cell] && !wrong[cell] && visited[id(x, y - 1)] && !wrong[id(x, y - 1)] && noWallAbove[cell]) {
             for (xi = 0; xi < s; xi++) for (yi = 1; yi <= wa; yi++) {
-                if (!v) sess.setBlock(origin.add(x * (s + wa) + xi, -1, y * (s + wa) - yi), clothBlocks[5]);
-                else sess.setBlock(origin.add(x * (s + wa) + xi, y * (s + wa) - yi, +1), clothBlocks[5]);
+                if (!v) sess.setBlock(origin.add(x * (s + wa) + xi, -1, y * (s + wa) - yi), limeWoolBlock);
+                else sess.setBlock(origin.add(x * (s + wa) + xi, y * (s + wa) - yi, +1), limeWoolBlock);
             }
         }
 
@@ -354,22 +339,22 @@ if (so) {
         if (re) {
             if (wrong[cell]) {
                 for (yi = 0; yi < s; yi++) for (xi = 0; xi < s; xi++) {
-                    if (!v) sess.setBlock(origin.add(x * (s + wa) + xi, -1, y * (s + wa) + yi), clothBlocks[14]);
-                    else sess.setBlock(origin.add(x * (s + wa) + xi, y * (s + wa) + yi, +1), clothBlocks[14]);
+                    if (!v) sess.setBlock(origin.add(x * (s + wa) + xi, -1, y * (s + wa) + yi), redWoolBlock);
+                    else sess.setBlock(origin.add(x * (s + wa) + xi, y * (s + wa) + yi, +1), redWoolBlock);
                 }
             }
 
             if ((wrong[cell] || wrong[id(x - 1, y)]) && noWallLeft[cell]) {
                 for (xi = 1; xi <= wa; xi++) for (yi = 0; yi < s; yi++) {
-                    if (!v) sess.setBlock(origin.add(x * (s + wa) - xi, -1, y * (s + wa) + yi), clothBlocks[14]);
-                    else sess.setBlock(origin.add(x * (s + wa) - xi, y * (s + wa) + yi, +1), clothBlocks[14]);
+                    if (!v) sess.setBlock(origin.add(x * (s + wa) - xi, -1, y * (s + wa) + yi), redWoolBlock);
+                    else sess.setBlock(origin.add(x * (s + wa) - xi, y * (s + wa) + yi, +1), redWoolBlock);
                 }
             }
 
             if ((wrong[cell] || wrong[id(x, y - 1)]) && noWallAbove[cell]) {
                 for (xi = 0; xi < s; xi++) for (yi = 1; yi <= wa; yi++) {
-                    if (!v) sess.setBlock(origin.add(x * (s + wa) + xi, -1, y * (s + wa) - yi), clothBlocks[14]);
-                    else sess.setBlock(origin.add(x * (s + wa) + xi, y * (s + wa) - yi, +1), clothBlocks[14]);
+                    if (!v) sess.setBlock(origin.add(x * (s + wa) + xi, -1, y * (s + wa) - yi), redWoolBlock);
+                    else sess.setBlock(origin.add(x * (s + wa) + xi, y * (s + wa) - yi, +1), redWoolBlock);
                 }
             }
         }
@@ -377,22 +362,22 @@ if (so) {
         if (bl) {
             if (!visited[cell] && y < l && x < w) {
                 for (yi = 0; yi < s; yi++) for (xi = 0; xi < s; xi++) {
-                    if (!v) sess.setBlock(origin.add(x * (s + wa) + xi, -1, y * (s + wa) + yi), clothBlocks[11]);
-                    else sess.setBlock(origin.add(x * (s + wa) + xi, y * (s + wa) + yi, +1), clothBlocks[11]);
+                    if (!v) sess.setBlock(origin.add(x * (s + wa) + xi, -1, y * (s + wa) + yi), blueWoolBlock);
+                    else sess.setBlock(origin.add(x * (s + wa) + xi, y * (s + wa) + yi, +1), blueWoolBlock);
                 }
             }
 
             if ((!visited[cell] || !visited[id(x - 1, y)]) && noWallLeft[cell] && x > 0 && x < w) {
                 for (xi = 1; xi <= wa; xi++) for (yi = 0; yi < s; yi++) {
-                    if (!v) sess.setBlock(origin.add(x * (s + wa) - xi, -1, y * (s + wa) + yi), clothBlocks[11]);
-                    else sess.setBlock(origin.add(x * (s + wa) - xi, y * (s + wa) + yi, +1), clothBlocks[11]);
+                    if (!v) sess.setBlock(origin.add(x * (s + wa) - xi, -1, y * (s + wa) + yi), blueWoolBlock);
+                    else sess.setBlock(origin.add(x * (s + wa) - xi, y * (s + wa) + yi, +1), blueWoolBlock);
                 }
             }
 
             if ((!visited[cell] || !visited[id(x, y - 1)]) && noWallAbove[cell]) {
                 for (xi = 0; xi < s; xi++) for (yi = 1; yi <= wa; yi++) {
-                    if (!v) sess.setBlock(origin.add(x * (s + wa) + xi, -1, y * (s + wa) - yi), clothBlocks[11]);
-                    else sess.setBlock(origin.add(x * (s + wa) + xi, y * (s + wa) - yi, +1), clothBlocks[11]);
+                    if (!v) sess.setBlock(origin.add(x * (s + wa) + xi, -1, y * (s + wa) - yi), blueWoolBlock);
+                    else sess.setBlock(origin.add(x * (s + wa) + xi, y * (s + wa) - yi, +1), blueWoolBlock);
                 }
             }
         }
