@@ -170,7 +170,7 @@ public class ForgeWorld extends AbstractWorld {
         @SuppressWarnings("deprecation")
         IBlockState newState = Block.getBlockById(block.getId()).getStateFromMeta(block.getData());
         IBlockState successState = chunk.setBlockState(pos, newState);
-        boolean successful = successState != null;
+        boolean successful = successState != null || old == newState;
 
         // Create the TileEntity
         if (successful) {
