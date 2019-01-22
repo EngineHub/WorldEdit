@@ -31,6 +31,7 @@ import com.sk89q.worldedit.math.transform.Transform;
 import com.sk89q.worldedit.registry.state.BooleanProperty;
 import com.sk89q.worldedit.registry.state.DirectionalProperty;
 import com.sk89q.worldedit.registry.state.EnumProperty;
+import com.sk89q.worldedit.registry.state.IntegerProperty;
 import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.world.block.BaseBlock;
@@ -39,6 +40,8 @@ import com.sk89q.worldedit.world.block.BlockStateHolder;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.OptionalInt;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -156,6 +159,23 @@ public class BlockTransformExtent extends AbstractDelegateExtent {
                             }
                             if (axis != null) {
                                 result = result.with(enumProp, axis);
+                            }
+                        }
+                    }
+                }
+            } else if (property instanceof IntegerProperty) {
+                IntegerProperty intProp = (IntegerProperty) property;
+                if (property.getName().equals("rotation")) {
+                    if (intProp.getValues().size() == 16) {
+                        Optional<Direction> direction = Direction.fromRotationIndex(block.getState(intProp));
+                        int horizontalFlags = Direction.Flag.CARDINAL | Direction.Flag.ORDINAL | Direction.Flag.SECONDARY_ORDINAL;
+                        if (direction.isPresent()) {
+                            Vector3 vec = getNewStateValue(Direction.valuesOf(horizontalFlags), transform, direction.get().toVector());
+                            if (vec != null) {
+                                OptionalInt newRotation = Direction.findClosest(vec, horizontalFlags).toRotationIndex();
+                                if (newRotation.isPresent()) {
+                                    result = result.with(intProp, newRotation.getAsInt());
+                                }
                             }
                         }
                     }
