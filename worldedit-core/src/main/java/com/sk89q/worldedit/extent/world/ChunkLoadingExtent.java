@@ -62,7 +62,9 @@ public class ChunkLoadingExtent extends AbstractDelegateExtent {
 
     @Override
     public <B extends BlockStateHolder<B>> boolean setBlock(BlockVector3 location, B block) throws WorldEditException {
-        world.checkLoadedChunk(location);
+        if (enabled) {
+            world.checkLoadedChunk(location);
+        }
         return super.setBlock(location, block);
     }
 }
