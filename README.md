@@ -31,5 +31,5 @@ Links
 * [Discord](https://discord.gg/wvneRVm)
 * [IRC channel](http://skq.me/irc/irc.esper.net/sk89q/) (#sk89q on irc.esper.net)
 * [Issue tracker](http://youtrack.sk89q.com/issues/WORLDEDIT)
-* [Continuous integration](http://builds.enginehub.org) [![Build Status](https://travis-ci.org/sk89q/WorldEdit.svg?branch=master)](https://travis-ci.org/sk89q/WorldEdit)
+* [Continuous integration](http://builds.enginehub.org) [![Build Status](https://travis-ci.org/EngineHub/WorldEdit.svg?branch=master)](https://travis-ci.org/EngineHub/WorldEdit)
 * [End-user documentation](http://wiki.sk89q.com/wiki/WorldEdit)
