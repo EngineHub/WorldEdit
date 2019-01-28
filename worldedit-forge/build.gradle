@@ -14,7 +14,7 @@ buildscript {
 apply plugin: 'net.minecraftforge.gradle'
 
 def minecraftVersion = "1.13"
-def forgeVersion = "24.0.116-1.13-pre"
+def forgeVersion = "24.0.136-1.13-pre"
 
 dependencies {
     compile project(':worldedit-core')
@@ -29,6 +29,25 @@ targetCompatibility = 1.8
 
 minecraft {
     mappings channel: 'snapshot', version: '20180921-1.13'
+
+    runs {
+        client = {
+            // recommended logging data for a userdev environment
+            properties 'forge.logging.markers': 'SCAN,REGISTRIES,REGISTRYDUMP'
+            // recommended logging level for the console
+            properties 'forge.logging.console.level': 'debug'
+            workingDirectory project.file('run').canonicalPath
+            source sourceSets.main
+        }
+        server = {
+            // recommended logging data for a userdev environment
+            properties 'forge.logging.markers': 'SCAN,REGISTRIES,REGISTRYDUMP'
+            // recommended logging level for the console
+            properties 'forge.logging.console.level': 'debug'
+            workingDirectory project.file('run').canonicalPath
+            source sourceSets.main
+        }
+    }
 
     accessTransformer = file('worldedit_at.cfg')
 }
@@ -69,11 +88,13 @@ shadowJar {
     }
 }
 
-//reobf {
-//    shadowJar {
-//        mappingType = 'SEARGE'
-//    }
-//}
+afterEvaluate {
+    reobf {
+        shadowJar {
+            mappings = createMcpToSrg.output
+        }
+    }
+}
 
 task deobfJar(type: Jar) {
     from sourceSets.main.output
