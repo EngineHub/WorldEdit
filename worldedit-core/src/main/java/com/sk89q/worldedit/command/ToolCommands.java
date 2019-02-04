@@ -205,7 +205,7 @@ public class ToolCommands {
         if (secondary instanceof BlockPattern) {
             secondaryName = ((BlockPattern) secondary).getBlock().getBlockType().getName();
         }
-        player.print("Left-click set to " + secondaryName + "; right-click set to "
-                + primaryName + ".");
+        player.print("Left-click set to " + primaryName + "; right-click set to "
+                + secondaryName + ".");
     }
 }
