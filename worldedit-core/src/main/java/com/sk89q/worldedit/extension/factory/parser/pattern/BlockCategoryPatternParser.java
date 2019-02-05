@@ -26,6 +26,7 @@ import com.sk89q.worldedit.function.pattern.BlockPattern;
 import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.function.pattern.RandomPattern;
 import com.sk89q.worldedit.internal.registry.InputParser;
+import com.sk89q.worldedit.world.block.BlockCategories;
 import com.sk89q.worldedit.world.block.BlockCategory;
 import com.sk89q.worldedit.world.block.BlockType;
 
@@ -48,7 +49,7 @@ public class BlockCategoryPatternParser extends InputParser<Pattern> {
         if(!input.startsWith("##")) {
             return null;
         }
-        BlockCategory category = BlockCategory.REGISTRY.get(input.substring(2).toLowerCase());
+        BlockCategory category = BlockCategories.get(input.substring(2).toLowerCase());
         if (category == null) {
             throw new InputParseException("Unknown block tag: " + input.substring(2));
         }
