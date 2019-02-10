@@ -34,8 +34,36 @@ public abstract class ArbitraryShape {
 
     protected final Region extent;
 
+    private int cacheOffsetX;
+    private int cacheOffsetY;
+    private int cacheOffsetZ;
+    private int cacheSizeX;
+    private int cacheSizeY;
+    private int cacheSizeZ;
+
+    /**
+     * Cache entires:
+     * 0 = unknown
+     * -1 = outside
+     * 1 = inside
+     */
+    private final byte[] cache;
+
     public ArbitraryShape(Region extent) {
         this.extent = extent;
+
+        BlockVector3 min = extent.getMinimumPoint();
+        BlockVector3 max = extent.getMaximumPoint();
+
+        cacheOffsetX = min.getBlockX() - 1;
+        cacheOffsetY = min.getBlockY() - 1;
+        cacheOffsetZ = min.getBlockZ() - 1;
+
+        cacheSizeX = max.getX() - cacheOffsetX + 2;
+        cacheSizeY = max.getY() - cacheOffsetY + 2;
+        cacheSizeZ = max.getZ() - cacheOffsetZ + 2;
+
+        cache = new byte[cacheSizeX * cacheSizeY * cacheSizeZ];
     }
 
     protected Region getExtent() {
@@ -81,6 +109,40 @@ public abstract class ArbitraryShape {
 
             BaseBlock material = getMaterial(x, y, z, pattern.apply(position));
             if (material == null) {
+                final int index = (y - cacheOffsetY) + (z - cacheOffsetZ) * cacheSizeY + (x - cacheOffsetX) * cacheSizeY * cacheSizeZ;
+                cache[index] = -1;
+                continue;
+            }
+
+            boolean draw = false;
+            do {
+                if (!isInsideCached(x + 1, y, z, pattern)) {
+                    draw = true;
+                    break;
+                }
+                if (!isInsideCached(x - 1, y, z, pattern)) {
+                    draw = true;
+                    break;
+                }
+                if (!isInsideCached(x, y, z + 1, pattern)) {
+                    draw = true;
+                    break;
+                }
+                if (!isInsideCached(x, y, z - 1, pattern)) {
+                    draw = true;
+                    break;
+                }
+                if (!isInsideCached(x, y + 1, z, pattern)) {
+                    draw = true;
+                    break;
+                }
+                if (!isInsideCached(x, y - 1, z, pattern)) {
+                    draw = true;
+                    break;
+                }
+            } while (false);
+
+            if (!draw) {
                 continue;
             }
 
@@ -90,6 +152,29 @@ public abstract class ArbitraryShape {
         }
 
         return affected;
+    }
+
+    private boolean isInsideCached(int x, int y, int z, Pattern pattern) {
+        final int index = (y - cacheOffsetY) + (z - cacheOffsetZ) * cacheSizeY + (x - cacheOffsetX) * cacheSizeY * cacheSizeZ;
+
+        switch (cache[index]) {
+            case 0:
+                BaseBlock mat = getMaterial(x, y, z, pattern.apply(BlockVector3.at(x, y, z)));
+                if (mat == null) {
+                    cache[index] = -1;
+                    return false;
+                }
+                cache[index] = 1;
+                return true;
+
+            case -1:
+                // outside
+                return false;
+
+            default:
+                // inside
+                return true;
+        }
     }
 
 }
