@@ -19,19 +19,13 @@
 
 package com.sk89q.worldedit.function.pattern;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.math.BlockVector3;
-import com.sk89q.worldedit.world.block.BaseBlock;
 
 /**
  * A pattern that reads from {@link Clipboard}.
  */
-public class ClipboardPattern extends AbstractPattern {
-
-    private final Clipboard clipboard;
-    private final BlockVector3 size;
+public class ClipboardPattern extends RepeatingExtentPattern {
 
     /**
      * Create a new clipboard pattern.
@@ -39,18 +33,16 @@ public class ClipboardPattern extends AbstractPattern {
      * @param clipboard the clipboard
      */
     public ClipboardPattern(Clipboard clipboard) {
-        checkNotNull(clipboard);
-        this.clipboard = clipboard;
-        this.size = clipboard.getMaximumPoint().subtract(clipboard.getMinimumPoint()).add(1, 1, 1);
+        this(clipboard, BlockVector3.ZERO);
     }
 
-    @Override
-    public BaseBlock apply(BlockVector3 position) {
-        int xp = Math.abs(position.getBlockX()) % size.getBlockX();
-        int yp = Math.abs(position.getBlockY()) % size.getBlockY();
-        int zp = Math.abs(position.getBlockZ()) % size.getBlockZ();
-
-        return clipboard.getFullBlock(clipboard.getMinimumPoint().add(xp, yp, zp));
+    /**
+     * Create a new clipboard pattern.
+     *
+     * @param clipboard the clipboard
+     * @param offset the offset
+     */
+    public ClipboardPattern(Clipboard clipboard, BlockVector3 offset) {
+        super(clipboard, clipboard.getMinimumPoint(), offset);
     }
-
 }
