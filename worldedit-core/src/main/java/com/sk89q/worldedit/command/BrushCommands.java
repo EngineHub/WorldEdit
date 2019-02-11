@@ -130,6 +130,7 @@ public class BrushCommands {
     @Command(
         aliases = { "clipboard", "copy" },
         usage = "",
+        flags = "ap",
         desc = "Choose the clipboard brush",
         help =
             "Chooses the clipboard brush.\n" +
