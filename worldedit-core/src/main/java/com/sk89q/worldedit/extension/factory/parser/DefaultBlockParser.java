@@ -148,7 +148,9 @@ public class DefaultBlockParser extends InputParser<BaseBlock> {
         }
     }
 
-    private static BlockState applyProperties(BlockState state, String[] stateProperties) throws NoMatchException {
+    private static Map<Property<?>, Object> parseProperties(BlockType type, String[] stateProperties) throws NoMatchException {
+        Map<Property<?>, Object> blockStates = new HashMap<>();
+
         if (stateProperties.length > 0) { // Block data not yet detected
             // Parse the block data (optional)
             for (String parseableData : stateProperties) {
@@ -159,9 +161,12 @@ public class DefaultBlockParser extends InputParser<BaseBlock> {
                     }
 
                     @SuppressWarnings("unchecked")
-                    Property<Object> propertyKey = (Property<Object>) state.getBlockType().getPropertyMap().get(parts[0]);
+                    Property<Object> propertyKey = (Property<Object>) type.getPropertyMap().get(parts[0]);
                     if (propertyKey == null) {
-                        throw new NoMatchException("Unknown state " + parts[0] + " for block " + state.getBlockType().getName());
+                        throw new NoMatchException("Unknown property " + parts[0] + " for block " + type.getName());
+                    }
+                    if (blockStates.containsKey(propertyKey)) {
+                        throw new NoMatchException("Duplicate property " + parts[0]);
                     }
                     Object value;
                     try {
@@ -170,7 +175,7 @@ public class DefaultBlockParser extends InputParser<BaseBlock> {
                         throw new NoMatchException("Unknown value " + parts[1] + " for state " + parts[0]);
                     }
 
-                    state = state.with(propertyKey, value);
+                    blockStates.put(propertyKey, value);
                 } catch (NoMatchException e) {
                     throw e; // Pass-through
                 } catch (Exception e) {
@@ -180,7 +185,7 @@ public class DefaultBlockParser extends InputParser<BaseBlock> {
             }
         }
 
-        return state;
+        return blockStates;
     }
 
     private BaseBlock parseLogic(String input, ParserContext context) throws InputParseException {
@@ -265,9 +270,16 @@ public class DefaultBlockParser extends InputParser<BaseBlock> {
                 }
             }
 
+            blockStates.putAll(parseProperties(blockType, stateProperties));
+
             if (!context.isPreferringWildcard()) {
                 // No wildcards allowed => eliminate them. (Start with default state)
                 state = blockType.getDefaultState();
+                for (Map.Entry<Property<?>, Object> blockState : blockStates.entrySet()) {
+                    @SuppressWarnings("unchecked")
+                    Property<Object> objProp = (Property<Object>) blockState.getKey();
+                    state = state.with(objProp, blockState.getValue());
+                }
             } else {
                 FuzzyBlockState.Builder fuzzyBuilder = FuzzyBlockState.builder();
                 fuzzyBuilder.type(blockType);
@@ -278,8 +290,6 @@ public class DefaultBlockParser extends InputParser<BaseBlock> {
                 }
                 state = fuzzyBuilder.build();
             }
-
-            state = applyProperties(state, stateProperties);
         }
 
         // Check if the item is allowed
