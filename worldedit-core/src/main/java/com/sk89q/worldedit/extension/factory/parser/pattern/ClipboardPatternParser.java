@@ -28,31 +28,53 @@ import com.sk89q.worldedit.extension.input.ParserContext;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.function.pattern.ClipboardPattern;
 import com.sk89q.worldedit.function.pattern.Pattern;
-import com.sk89q.worldedit.internal.registry.SimpleInputParser;
+import com.sk89q.worldedit.internal.registry.InputParser;
+import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.session.ClipboardHolder;
 
 import java.util.List;
 
-public class ClipboardPatternParser extends SimpleInputParser<Pattern> {
+public class ClipboardPatternParser extends InputParser<Pattern> {
 
     public ClipboardPatternParser(WorldEdit worldEdit) {
         super(worldEdit);
     }
 
     @Override
-    public List<String> getMatchedAliases() {
+    public List<String> getSuggestions() {
         return Lists.newArrayList("#clipboard", "#copy");
     }
 
     @Override
-    public Pattern parseFromSimpleInput(String input, ParserContext context) throws InputParseException {
+    public Pattern parseFromInput(String input, ParserContext context) throws InputParseException {
+        if (!input.startsWith("#clipboard") && !input.startsWith("#copy")) {
+            return null;
+        }
         LocalSession session = context.requireSession();
+
+        int offsetPart;
+        BlockVector3 offset = BlockVector3.ZERO;
+        if ((offsetPart = input.indexOf('@')) >= 0) {
+            if (input.length() <= offsetPart + 1) {
+                throw new InputParseException("Clipboard offset coordinates not specified!");
+            }
+            String offsetString = input.substring(offsetPart + 1);
+            String[] offsetCoords = offsetString.split(",");
+            if (offsetCoords.length != 3) {
+                throw new InputParseException("Clipboard offset needs x,y,z coordinates.");
+            }
+            offset = BlockVector3.at(
+                        Integer.valueOf(offsetCoords[0]),
+                        Integer.valueOf(offsetCoords[1]),
+                        Integer.valueOf(offsetCoords[2])
+                    );
+        }
 
         if (session != null) {
             try {
                 ClipboardHolder holder = session.getClipboard();
                 Clipboard clipboard = holder.getClipboard();
-                return new ClipboardPattern(clipboard);
+                return new ClipboardPattern(clipboard, offset);
             } catch (EmptyClipboardException e) {
                 throw new InputParseException("To use #clipboard, please first copy something to your clipboard");
             }
