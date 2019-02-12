@@ -47,26 +47,22 @@ public class ClipboardPatternParser extends InputParser<Pattern> {
 
     @Override
     public Pattern parseFromInput(String input, ParserContext context) throws InputParseException {
-        if (!input.startsWith("#clipboard") && !input.startsWith("#copy")) {
+        String[] offsetParts = input.split("@", 2);
+        if (!offsetParts[0].equalsIgnoreCase("#clipboard") && !offsetParts[0].equalsIgnoreCase("#copy")) {
             return null;
         }
         LocalSession session = context.requireSession();
 
-        int offsetPart;
         BlockVector3 offset = BlockVector3.ZERO;
-        if ((offsetPart = input.indexOf('@')) >= 0) {
-            if (input.length() <= offsetPart + 1) {
-                throw new InputParseException("Clipboard offset coordinates not specified!");
-            }
-            String offsetString = input.substring(offsetPart + 1);
-            String[] offsetCoords = offsetString.split(",");
-            if (offsetCoords.length != 3) {
+        if (offsetParts.length == 2) {
+            String[] offsetSplit = offsetParts[1].split(",");
+            if (offsetSplit.length != 3) {
                 throw new InputParseException("Clipboard offset needs x,y,z coordinates.");
             }
             offset = BlockVector3.at(
-                        Integer.valueOf(offsetCoords[0]),
-                        Integer.valueOf(offsetCoords[1]),
-                        Integer.valueOf(offsetCoords[2])
+                        Integer.valueOf(offsetSplit[0]),
+                        Integer.valueOf(offsetSplit[1]),
+                        Integer.valueOf(offsetSplit[2])
                     );
         }
 
