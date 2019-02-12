@@ -32,8 +32,8 @@ public final class BlockCategories {
     public static final BlockCategory BIRCH_LOGS = register("minecraft:birch_logs");
     public static final BlockCategory BUTTONS = register("minecraft:buttons");
     public static final BlockCategory CARPETS = register("minecraft:carpets");
-    public static final BlockCategory CORAL = register("minecraft:coral");
-    public static final BlockCategory CORAL_PLANTS = register("minecraft:coral_plants");
+    public static final BlockCategory CORALS = register("minecraft:corals");
+    public static final BlockCategory CORAL_BLOCKS = register("minecraft:coral_blocks");
     public static final BlockCategory DARK_OAK_LOGS = register("minecraft:dark_oak_logs");
     public static final BlockCategory DOORS = register("minecraft:doors");
     public static final BlockCategory ENDERMAN_HOLDABLE = register("minecraft:enderman_holdable");

@@ -28,9 +28,11 @@ import com.sk89q.worldedit.function.pattern.RandomPattern;
 import com.sk89q.worldedit.internal.registry.InputParser;
 import com.sk89q.worldedit.world.block.BlockCategories;
 import com.sk89q.worldedit.world.block.BlockCategory;
+import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockType;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class BlockCategoryPatternParser extends InputParser<Pattern> {
@@ -46,17 +48,34 @@ public class BlockCategoryPatternParser extends InputParser<Pattern> {
 
     @Override
     public Pattern parseFromInput(String input, ParserContext context) throws InputParseException {
-        if(!input.startsWith("##")) {
+        if (!input.startsWith("##")) {
             return null;
         }
-        BlockCategory category = BlockCategories.get(input.substring(2).toLowerCase());
+        String tag = input.substring(2).toLowerCase();
+        boolean anyState = false;
+        if (tag.startsWith("*")) {
+            tag = tag.substring(1);
+            anyState = true;
+        }
+
+        BlockCategory category = BlockCategories.get(tag);
         if (category == null) {
-            throw new InputParseException("Unknown block tag: " + input.substring(2));
+            throw new InputParseException("Unknown block tag: " + tag);
         }
         RandomPattern randomPattern = new RandomPattern();
 
-        for (BlockType blockType : category.getAll()) {
-            randomPattern.add(new BlockPattern(blockType.getDefaultState()), 1.0 / category.getAll().size());
+        Set<BlockType> blocks = category.getAll();
+        if (blocks.isEmpty()) {
+            throw new InputParseException("Block tag " + category.getId() + " had no blocks!");
+        }
+
+        if (anyState) {
+            blocks.stream().flatMap(blockType -> blockType.getAllStates().stream()).forEach(state ->
+                randomPattern.add(new BlockPattern(state), 1.0));
+        } else {
+            for (BlockType blockType : blocks) {
+                randomPattern.add(new BlockPattern(blockType.getDefaultState()), 1.0);
+            }
         }
 
         return randomPattern;

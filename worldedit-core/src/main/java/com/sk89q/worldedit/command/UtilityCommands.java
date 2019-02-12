@@ -142,7 +142,10 @@ public class UtilityCommands {
     @Command(
         aliases = { "/drain" },
         usage = "<radius>",
+        flags = "w",
         desc = "Drain a pool",
+        help = "Removes all connected water sources.\n" +
+                "  If -w is specified, also makes waterlogged blocks non-waterlogged.",
         min = 1,
         max = 1
     )
@@ -151,9 +154,10 @@ public class UtilityCommands {
     public void drain(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
 
         double radius = Math.max(0, args.getDouble(0));
+        boolean waterlogged = args.hasFlag('w');
         we.checkMaxRadius(radius);
         int affected = editSession.drainArea(
-                session.getPlacementPosition(player), radius);
+                session.getPlacementPosition(player), radius, waterlogged);
         player.print(affected + " block(s) have been changed.");
     }
 
