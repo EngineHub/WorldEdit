@@ -28,10 +28,9 @@ import com.sk89q.worldedit.world.block.BaseBlock;
 /**
  * Returns the blocks from {@link Extent}, repeating when out of bounds.
  */
-public class RepeatingExtentPattern extends AbstractPattern {
+public class RepeatingExtentPattern extends AbstractExtentPattern {
 
     private final BlockVector3 size;
-    private Extent extent;
     private BlockVector3 origin;
     private BlockVector3 offset;
 
@@ -42,29 +41,10 @@ public class RepeatingExtentPattern extends AbstractPattern {
      * @param offset the offset
      */
     public RepeatingExtentPattern(Extent extent, BlockVector3 origin, BlockVector3 offset) {
-        setExtent(extent);
+        super(extent);
         setOrigin(origin);
         setOffset(offset);
         size = extent.getMaximumPoint().subtract(extent.getMinimumPoint()).add(1, 1, 1);
-    }
-
-    /**
-     * Get the extent.
-     *
-     * @return the extent
-     */
-    public Extent getExtent() {
-        return extent;
-    }
-
-    /**
-     * Set the extent.
-     *
-     * @param extent the extent
-     */
-    public void setExtent(Extent extent) {
-        checkNotNull(extent);
-        this.extent = extent;
     }
 
     /**
@@ -111,7 +91,7 @@ public class RepeatingExtentPattern extends AbstractPattern {
         int x = Math.abs(base.getBlockX()) % size.getBlockX();
         int y = Math.abs(base.getBlockY()) % size.getBlockY();
         int z = Math.abs(base.getBlockZ()) % size.getBlockZ();
-        return extent.getFullBlock(BlockVector3.at(x, y, z).add(origin));
+        return getExtent().getFullBlock(BlockVector3.at(x, y, z).add(origin));
     }
 
 }

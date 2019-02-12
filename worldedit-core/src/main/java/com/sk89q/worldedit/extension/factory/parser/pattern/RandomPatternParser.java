@@ -21,14 +21,13 @@ package com.sk89q.worldedit.extension.factory.parser.pattern;
 
 import com.sk89q.util.StringUtil;
 import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.extension.factory.BlockFactory;
 import com.sk89q.worldedit.extension.input.InputParseException;
 import com.sk89q.worldedit.extension.input.ParserContext;
-import com.sk89q.worldedit.function.pattern.BlockPattern;
 import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.function.pattern.RandomPattern;
 import com.sk89q.worldedit.internal.registry.InputParser;
-import com.sk89q.worldedit.world.block.BaseBlock;
+
+import java.util.List;
 
 public class RandomPatternParser extends InputParser<Pattern> {
 
@@ -38,14 +37,16 @@ public class RandomPatternParser extends InputParser<Pattern> {
 
     @Override
     public Pattern parseFromInput(String input, ParserContext context) throws InputParseException {
-        BlockFactory blockRegistry = worldEdit.getBlockFactory();
         RandomPattern randomPattern = new RandomPattern();
 
         String[] splits = input.split(",");
-        for (String token : StringUtil.parseListInQuotes(splits, ',', '[', ']')) {
-            BaseBlock block;
-
+        List<String> patterns = StringUtil.parseListInQuotes(splits, ',', '[', ']');
+        if (patterns.size() == 1) {
+            return null; // let a 'single'-pattern parser handle it
+        }
+        for (String token : patterns) {
             double chance;
+            Pattern innerPattern;
 
             // Parse special percentage syntax
             if (token.matches("[0-9]+(\\.[0-9]*)?%.*")) {
@@ -55,14 +56,14 @@ public class RandomPatternParser extends InputParser<Pattern> {
                     throw new InputParseException("Missing the type after the % symbol for '" + input + "'");
                 } else {
                     chance = Double.parseDouble(p[0]);
-                    block = blockRegistry.parseFromInput(p[1], context);
+                    innerPattern = worldEdit.getPatternFactory().parseFromInput(p[1], context);
                 }
             } else {
                 chance = 1;
-                block = blockRegistry.parseFromInput(token, context);
+                innerPattern = worldEdit.getPatternFactory().parseFromInput(token, context);
             }
 
-            randomPattern.add(new BlockPattern(block), chance);
+            randomPattern.add(innerPattern, chance);
         }
 
         return randomPattern;
