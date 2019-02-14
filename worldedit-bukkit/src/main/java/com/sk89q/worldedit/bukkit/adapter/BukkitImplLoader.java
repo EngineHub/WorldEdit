@@ -89,7 +89,7 @@ public class BukkitImplLoader {
         try {
             Enumeration<JarEntry> entries = jar.entries();
             while (entries.hasMoreElements()) {
-                JarEntry jarEntry = (JarEntry) entries.nextElement();
+                JarEntry jarEntry = entries.nextElement();
 
                 String className = jarEntry.getName().replaceAll("[/\\\\]+", ".");
 
@@ -153,6 +153,7 @@ public class BukkitImplLoader {
         for (String className : adapterCandidates) {
             try {
                 Class<?> cls = Class.forName(className);
+                if (cls.isSynthetic()) continue;
                 if (BukkitImplAdapter.class.isAssignableFrom(cls)) {
                     return (BukkitImplAdapter) cls.newInstance();
                 } else {
