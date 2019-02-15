@@ -23,9 +23,24 @@ package com.sk89q.worldedit.bukkit;
 
 import com.sk89q.util.StringUtil;
 import com.sk89q.worldedit.LocalPlayer;
+import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldVector;
+import com.sk89q.worldedit.command.tool.BrushTool;
+import com.sk89q.worldedit.command.tool.Tool;
 import com.sk89q.worldedit.internal.LocalWorldAdapter;
+import com.sk89q.worldedit.internal.cui.multi.CUIMultiRegion;
+import com.sk89q.worldedit.internal.cui.multi.ConvexPolyhedralCUIMultiRegion;
+import com.sk89q.worldedit.internal.cui.multi.CuboidCUIMultiRegion;
+import com.sk89q.worldedit.internal.cui.multi.CylinderCUIMultiRegion;
+import com.sk89q.worldedit.internal.cui.multi.EllipsoidCUIMultiRegion;
+import com.sk89q.worldedit.internal.cui.multi.Polygonal2DCUIMultiRegion;
+import com.sk89q.worldedit.regions.ConvexPolyhedralRegion;
+import com.sk89q.worldedit.regions.CuboidRegion;
+import com.sk89q.worldedit.regions.CylinderRegion;
+import com.sk89q.worldedit.regions.EllipsoidRegion;
+import com.sk89q.worldedit.regions.Polygonal2DRegion;
+import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.world.World;
 import org.bukkit.block.Block;
 import org.bukkit.event.Event.Result;
@@ -36,6 +51,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.EquipmentSlot;
 
 /**
@@ -98,6 +114,46 @@ public class WorldEditListener implements Listener {
                 event.setCancelled(true);
             }
         }
+    }
+
+    private CUIMultiRegion lastRegion;
+    @EventHandler(ignoreCancelled = true)
+    public void onPlayerMove(PlayerMoveEvent event) {
+        final LocalSession session = plugin.getSession(event.getPlayer());
+        if (!session.hasCUISupport() || session.getCUIVersion() < 4) return;
+        final LocalPlayer player = plugin.wrapPlayer(event.getPlayer());
+        Tool tool = session.getTool(event.getPlayer().getInventory().getItemInMainHand().getTypeId());
+        if (!(tool instanceof BrushTool)) {
+            if (lastRegion != null)
+                lastRegion.clearRegion(session, player);
+            return;
+        }
+        BrushTool brush = (BrushTool) tool;
+        int range = brush.getRange();
+        double size = brush.getSize();
+        final WorldVector trace = player.getBlockTrace(range, true);
+        Region bounds = brush.getBrush().getBounds(session.createEditSession(player), trace, size);
+        CUIMultiRegion region = null;
+        if (bounds instanceof CuboidRegion) {
+            region = new CuboidCUIMultiRegion((CuboidRegion) bounds, null, 2, true);
+        } else if (bounds instanceof CylinderRegion) {
+            region = new CylinderCUIMultiRegion((CylinderRegion) bounds, null, 2, true);
+        } else if (bounds instanceof EllipsoidRegion) {
+            region = new EllipsoidCUIMultiRegion((EllipsoidRegion) bounds, null, 2, true);
+        } else if (bounds instanceof Polygonal2DRegion) {
+            region = new Polygonal2DCUIMultiRegion((Polygonal2DRegion) bounds, null, 2, true);
+        } else if (bounds instanceof ConvexPolyhedralRegion) {
+            region = new ConvexPolyhedralCUIMultiRegion((ConvexPolyhedralRegion) bounds, null, 2, true);
+        }
+        if (region == null) {
+            region = new CuboidCUIMultiRegion(CuboidRegion.makeCuboid(bounds), null, 2, true);
+        }
+
+        if (lastRegion != null) {
+            lastRegion.clearRegion(session, player);
+        }
+        region.describeCUI(session, player);
+        lastRegion = region;
     }
 
     /**
