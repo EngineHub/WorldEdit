@@ -706,6 +706,23 @@ public class LocalSession {
     }
 
     /**
+     * Dispatch a CUI event to the client if they have CUI support.
+     * Ignores the server CUI.
+     *
+     * @param actor the actor
+     * @param event the event
+     * @param minVersion the minimum protocol version the client must have to receive this event
+     */
+    public void dispatchClientCUIEvent(Actor actor, CUIEvent event, int minVersion) {
+        checkNotNull(actor);
+        checkNotNull(event);
+
+        if (hasCUISupport && cuiVersion >= minVersion) {
+            actor.dispatchCUIEvent(event);
+        }
+    }
+
+    /**
      * Dispatch the initial setup CUI messages.
      *
      * @param actor the actor
