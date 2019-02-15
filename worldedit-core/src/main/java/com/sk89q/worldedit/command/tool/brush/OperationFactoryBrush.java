@@ -27,6 +27,7 @@ import com.sk89q.worldedit.function.EditContext;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.Operations;
 import com.sk89q.worldedit.function.pattern.Pattern;
+import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.factory.RegionFactory;
 
 public class OperationFactoryBrush implements Brush {
@@ -49,4 +50,8 @@ public class OperationFactoryBrush implements Brush {
         Operations.completeLegacy(operation);
     }
 
+    @Override
+    public Region getBounds(EditSession session, Vector position, double size) {
+        return regionFactory.createCenteredAt(position, size + 0.5D);
+    }
 }

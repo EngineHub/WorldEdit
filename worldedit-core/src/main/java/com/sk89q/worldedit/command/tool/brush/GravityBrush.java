@@ -25,6 +25,8 @@ import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.function.pattern.Pattern;
+import com.sk89q.worldedit.regions.CuboidRegion;
+import com.sk89q.worldedit.regions.Region;
 
 import java.util.*;
 
@@ -64,4 +66,9 @@ public class GravityBrush implements Brush {
         }
     }
 
+    @Override
+    public Region getBounds(EditSession session, Vector position, double size) {
+        final double startY = fullHeight ? session.getWorld().getMaxY() : position.getBlockY() + size;
+        return new CuboidRegion(position.subtract(size, size, size), position.add(size, 0, size).setY(startY));
+    }
 }

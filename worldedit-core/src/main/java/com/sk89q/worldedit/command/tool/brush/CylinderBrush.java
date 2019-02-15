@@ -22,11 +22,15 @@ package com.sk89q.worldedit.command.tool.brush;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.Vector2D;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
+import com.sk89q.worldedit.extent.NullExtent;
 import com.sk89q.worldedit.function.pattern.BlockPattern;
 import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.function.pattern.Patterns;
+import com.sk89q.worldedit.regions.CylinderRegion;
+import com.sk89q.worldedit.regions.Region;
 
 public class CylinderBrush implements Brush {
 
@@ -44,4 +48,9 @@ public class CylinderBrush implements Brush {
         editSession.makeCylinder(position, Patterns.wrap(pattern), size, size, height, true);
     }
 
+    @Override
+    public Region getBounds(EditSession session, Vector position, double size) {
+            return new CylinderRegion(position, new Vector2D(size + 0.5D, size + 0.5D),
+                    position.getBlockY(), position.getBlockY() + height - 1);
+    }
 }

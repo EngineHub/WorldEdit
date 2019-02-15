@@ -24,10 +24,13 @@ import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.command.util.CreatureButcher;
 import com.sk89q.worldedit.entity.Entity;
+import com.sk89q.worldedit.extent.NullExtent;
 import com.sk89q.worldedit.function.operation.Operations;
 import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.function.visitor.EntityVisitor;
 import com.sk89q.worldedit.regions.CylinderRegion;
+import com.sk89q.worldedit.regions.Region;
+import com.sk89q.worldedit.regions.RegionOperationException;
 
 import java.util.List;
 
@@ -46,4 +49,14 @@ public class ButcherBrush implements Brush {
         Operations.completeLegacy(new EntityVisitor(entities.iterator(), flags.createFunction(editSession.getWorld().getWorldData().getEntityRegistry())));
     }
 
+    @Override
+    public Region getBounds(EditSession session, Vector position, double size) {
+        CylinderRegion cyl = CylinderRegion.createRadius(session, position, size);
+        try {
+            cyl.contract(new Vector(0, -1, 0), new Vector(0, 1, 0));
+            return cyl;
+        } catch (RegionOperationException e) {
+        }
+        return cyl;
+    }
 }

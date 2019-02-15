@@ -27,6 +27,8 @@ import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.function.pattern.BlockPattern;
 import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.function.pattern.Patterns;
+import com.sk89q.worldedit.regions.EllipsoidRegion;
+import com.sk89q.worldedit.regions.Region;
 
 public class HollowSphereBrush implements Brush {
 
@@ -36,5 +38,10 @@ public class HollowSphereBrush implements Brush {
             pattern = new BlockPattern(new BaseBlock(BlockID.COBBLESTONE));
         }
         editSession.makeSphere(position, Patterns.wrap(pattern), size, size, size, false);
+    }
+
+    @Override
+    public Region getBounds(EditSession session, Vector position, double size) {
+        return new EllipsoidRegion(position, new Vector(size, size, size));
     }
 }

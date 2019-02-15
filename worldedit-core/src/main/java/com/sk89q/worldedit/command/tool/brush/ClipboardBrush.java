@@ -26,7 +26,9 @@ import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.Operations;
 import com.sk89q.worldedit.function.pattern.Pattern;
+import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
+import com.sk89q.worldedit.regions.RegionOperationException;
 import com.sk89q.worldedit.session.ClipboardHolder;
 
 public class ClipboardBrush implements Brush {
@@ -56,4 +58,17 @@ public class ClipboardBrush implements Brush {
         Operations.completeLegacy(operation);
     }
 
+    @Override
+    public Region getBounds(EditSession session, Vector position, double size) {
+        Clipboard clipboard = holder.getClipboard();
+        Region region = clipboard.getRegion();
+        Vector centerOffset = region.getCenter().subtract(clipboard.getOrigin());
+        try {
+            region.shift(usingOrigin ? position.subtract(region.getCenter()).add(centerOffset)
+                                     : position.subtract(region.getCenter()));
+            return region;
+        } catch (RegionOperationException e) {
+        }
+        return CuboidRegion.fromCenter(position, (int) size);
+    }
 }

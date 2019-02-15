@@ -23,6 +23,8 @@ import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.function.pattern.Pattern;
+import com.sk89q.worldedit.regions.CuboidRegion;
+import com.sk89q.worldedit.regions.Region;
 
 /**
  * A brush is a long-range build tool.
@@ -40,4 +42,15 @@ public interface Brush {
      */
     public void build(EditSession editSession, Vector position, Pattern pattern, double size) throws MaxChangedBlocksException;
 
+    /**
+     * Get the region that represents the area that would be affected if called at the given position.
+     *
+     * @param session the editsession to build in
+     * @param position the brush target
+     * @param size the brush size
+     * @return the bounds of the affected area
+     */
+    default public Region getBounds(EditSession session, Vector position, double size) {
+        return CuboidRegion.fromCenter(position, (int) Math.ceil(size));
+    }
 }

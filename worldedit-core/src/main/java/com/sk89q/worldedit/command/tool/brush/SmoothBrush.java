@@ -55,4 +55,8 @@ public class SmoothBrush implements Brush {
         heightMap.applyFilter(filter, iterations);
     }
 
+    @Override
+    public Region getBounds(EditSession session, Vector position, double size) {
+        return new CuboidRegion(position.subtract(size, size, size), position.add(size, size + 10, size));
+    }
 }
