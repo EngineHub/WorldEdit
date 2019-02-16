@@ -146,7 +146,7 @@ public class BlockState implements BlockStateHolder<BlockState> {
     @Override
     public boolean equalsFuzzy(BlockStateHolder<?> o) {
         if (this == o) {
-            // Added a reference equality check for
+            // Added a reference equality check for speediness
             return true;
         }
         if (!getBlockType().equals(o.getBlockType())) {
@@ -223,8 +223,13 @@ public class BlockState implements BlockStateHolder<BlockState> {
         return equalsFuzzy((BlockState) obj);
     }
 
+    private Integer hashCodeCache = null;
+
     @Override
     public int hashCode() {
-        return Objects.hash(blockType, values);
+        if (hashCodeCache == null) {
+            hashCodeCache = Objects.hash(blockType, values);
+        }
+        return hashCodeCache;
     }
 }
