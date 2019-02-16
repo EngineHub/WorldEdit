@@ -33,7 +33,7 @@ import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.Location;
-import com.sk89q.worldedit.world.biome.BaseBiome;
+import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 
@@ -69,9 +69,9 @@ public class ChangeSetExtent extends AbstractDelegateExtent {
     }
 
     @Override
-    public boolean setBiome(BlockVector2 position, BaseBiome biome) {
-        BaseBiome previous = getBiome(position);
-        changeSet.add(new BiomeChange(position, previous, new BaseBiome(biome)));
+    public boolean setBiome(BlockVector2 position, BiomeType biome) {
+        BiomeType previous = getBiome(position);
+        changeSet.add(new BiomeChange(position, previous, biome));
         return super.setBiome(position, biome);
     }
 

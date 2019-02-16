@@ -43,7 +43,7 @@ import com.sk89q.worldedit.util.command.binding.Range;
 import com.sk89q.worldedit.util.command.binding.Switch;
 import com.sk89q.worldedit.util.command.binding.Text;
 import com.sk89q.worldedit.util.command.parametric.Optional;
-import com.sk89q.worldedit.world.biome.BaseBiome;
+import com.sk89q.worldedit.world.biome.BiomeType;
 
 /**
  * Commands for the generation of shapes and other objects.
@@ -337,7 +337,7 @@ public class GenerationCommands {
     @Logging(ALL)
     public void generateBiome(Player player, LocalSession session, EditSession editSession,
                               @Selection Region region,
-                              BaseBiome target,
+                              BiomeType target,
                               @Text String expression,
                               @Switch('h') boolean hollow,
                               @Switch('r') boolean useRawCoords,

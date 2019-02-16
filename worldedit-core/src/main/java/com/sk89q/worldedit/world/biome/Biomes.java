@@ -50,17 +50,17 @@ public final class Biomes {
      * @return a biome or null
      */
     @Nullable
-    public static BaseBiome findBiomeByName(Collection<BaseBiome> biomes, String name, BiomeRegistry registry) {
+    public static BiomeType findBiomeByName(Collection<BiomeType> biomes, String name, BiomeRegistry registry) {
         checkNotNull(biomes);
         checkNotNull(name);
         checkNotNull(registry);
 
         Function<String, ? extends Number> compare = new LevenshteinDistance(name, false, LevenshteinDistance.STANDARD_CHARS);
-        WeightedChoice<BaseBiome> chooser = new WeightedChoice<>(Functions.compose(compare::apply, new BiomeName(registry)), 0);
-        for (BaseBiome biome : biomes) {
+        WeightedChoice<BiomeType> chooser = new WeightedChoice<>(Functions.compose(compare::apply, new BiomeName(registry)), 0);
+        for (BiomeType biome : biomes) {
             chooser.consider(biome);
         }
-        Optional<Choice<BaseBiome>> choice = chooser.getChoice();
+        Optional<Choice<BiomeType>> choice = chooser.getChoice();
         if (choice.isPresent() && choice.get().getScore() <= 1) {
             return choice.get().getValue();
         } else {

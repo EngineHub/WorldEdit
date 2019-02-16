@@ -27,7 +27,8 @@ import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.Location;
-import com.sk89q.worldedit.world.biome.BaseBiome;
+import com.sk89q.worldedit.world.biome.BiomeType;
+import com.sk89q.worldedit.world.biome.BiomeTypes;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
@@ -80,10 +81,9 @@ public class NullExtent implements Extent {
         return getBlock(position).toBaseBlock();
     }
 
-    @Nullable
     @Override
-    public BaseBiome getBiome(BlockVector2 position) {
-        return null;
+    public BiomeType getBiome(BlockVector2 position) {
+        return BiomeTypes.THE_VOID;
     }
 
     @Override
@@ -92,7 +92,7 @@ public class NullExtent implements Extent {
     }
 
     @Override
-    public boolean setBiome(BlockVector2 position, BaseBiome biome) {
+    public boolean setBiome(BlockVector2 position, BiomeType biome) {
         return false;
     }
 

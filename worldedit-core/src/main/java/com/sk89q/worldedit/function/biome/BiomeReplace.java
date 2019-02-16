@@ -25,7 +25,7 @@ import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.function.FlatRegionFunction;
 import com.sk89q.worldedit.math.BlockVector2;
-import com.sk89q.worldedit.world.biome.BaseBiome;
+import com.sk89q.worldedit.world.biome.BiomeType;
 
 /**
  * Replaces the biome at the locations that this function is applied to.
@@ -33,7 +33,7 @@ import com.sk89q.worldedit.world.biome.BaseBiome;
 public class BiomeReplace implements FlatRegionFunction {
 
     private final Extent extent;
-    private BaseBiome biome;
+    private BiomeType biome;
 
     /**
      * Create a new instance.
@@ -41,7 +41,7 @@ public class BiomeReplace implements FlatRegionFunction {
      * @param extent an extent
      * @param biome a biome
      */
-    public BiomeReplace(Extent extent, BaseBiome biome) {
+    public BiomeReplace(Extent extent, BiomeType biome) {
         checkNotNull(extent);
         checkNotNull(biome);
         this.extent = extent;

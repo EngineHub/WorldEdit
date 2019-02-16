@@ -46,7 +46,7 @@ import com.sk89q.worldedit.util.command.parametric.BindingHelper;
 import com.sk89q.worldedit.util.command.parametric.BindingMatch;
 import com.sk89q.worldedit.util.command.parametric.ParameterException;
 import com.sk89q.worldedit.world.World;
-import com.sk89q.worldedit.world.biome.BaseBiome;
+import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.biome.Biomes;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;
@@ -54,7 +54,7 @@ import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.registry.BiomeRegistry;
 
 import java.util.Arrays;
-import java.util.List;
+import java.util.Collection;
 
 /**
  * Binds standard WorldEdit classes such as {@link Player} and {@link LocalSession}.
@@ -298,23 +298,23 @@ public class WorldEditBinding extends BindingHelper {
     }
 
     /**
-     * Gets an {@link BaseBiome} from a {@link ArgumentStack}.
+     * Gets an {@link BiomeType} from a {@link ArgumentStack}.
      *
      * @param context the context
      * @return a pattern
      * @throws ParameterException on error
      * @throws WorldEditException on error
      */
-    @BindingMatch(type = BaseBiome.class,
+    @BindingMatch(type = BiomeType.class,
                   behavior = BindingBehavior.CONSUMES,
                   consumedCount = 1)
-    public BaseBiome getBiomeType(ArgumentStack context) throws ParameterException, WorldEditException {
+    public BiomeType getBiomeType(ArgumentStack context) throws ParameterException, WorldEditException {
         String input = context.next();
         if (input != null) {
             BiomeRegistry biomeRegistry = WorldEdit.getInstance().getPlatformManager()
                     .queryCapability(Capability.GAME_HOOKS).getRegistries().getBiomeRegistry();
-            List<BaseBiome> knownBiomes = biomeRegistry.getBiomes();
-            BaseBiome biome = Biomes.findBiomeByName(knownBiomes, input, biomeRegistry);
+            Collection<BiomeType> knownBiomes = BiomeType.REGISTRY.values();
+            BiomeType biome = Biomes.findBiomeByName(knownBiomes, input, biomeRegistry);
             if (biome != null) {
                 return biome;
             } else {

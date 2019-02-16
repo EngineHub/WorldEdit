@@ -17,28 +17,44 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.bukkit;
+package com.sk89q.worldedit.world.biome;
 
-import com.sk89q.worldedit.world.biome.BiomeData;
-import com.sk89q.worldedit.world.biome.BiomeType;
-import com.sk89q.worldedit.world.registry.BiomeRegistry;
-import org.bukkit.block.Biome;
-
-import javax.annotation.Nullable;
+import com.sk89q.worldedit.registry.NamespacedRegistry;
 
 /**
- * A biome registry for Bukkit.
+ * All the types of biomes in the game.
  */
-class BukkitBiomeRegistry implements BiomeRegistry {
+public class BiomeType {
 
-    BukkitBiomeRegistry() {
+    public static final NamespacedRegistry<BiomeType> REGISTRY = new NamespacedRegistry<>("biome type");
+
+    private String id;
+
+    public BiomeType(String id) {
+        this.id = id;
     }
 
-    @Nullable
+    /**
+     * Gets the ID of this biome.
+     *
+     * @return The id
+     */
+    public String getId() {
+        return this.id;
+    }
+
     @Override
-    public BiomeData getData(BiomeType biome) {
-        final Biome bukkitBiome = BukkitAdapter.adapt(biome);
-        return bukkitBiome == null ? null : bukkitBiome::name;
+    public String toString() {
+        return getId();
     }
 
+    @Override
+    public int hashCode() {
+        return this.id.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof BiomeType && this.id.equals(((BiomeType) obj).id);
+    }
 }
