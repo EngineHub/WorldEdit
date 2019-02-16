@@ -46,13 +46,11 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLServerAboutToStartEvent;
-import net.minecraftforge.fml.common.event.FMLServerStartedEvent;
-import net.minecraftforge.fml.common.event.FMLServerStoppingEvent;
-import net.minecraftforge.fml.javafmlmod.FMLModLoadingContext;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.event.server.FMLServerAboutToStartEvent;
+import net.minecraftforge.fml.event.server.FMLServerStartedEvent;
+import net.minecraftforge.fml.event.server.FMLServerStoppingEvent;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -82,33 +80,27 @@ public class ForgeWorldEdit {
     public ForgeWorldEdit() {
         inst = this;
 
-        FMLModLoadingContext.get().getModEventBus().addListener(this::preInit);
-        FMLModLoadingContext.get().getModEventBus().addListener(this::init);
-        FMLModLoadingContext.get().getModEventBus().addListener(this::postInit);
-        FMLModLoadingContext.get().getModEventBus().addListener(this::serverAboutToStart);
-        FMLModLoadingContext.get().getModEventBus().addListener(this::serverStopping);
-        FMLModLoadingContext.get().getModEventBus().addListener(this::serverStarted);
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::init);
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::serverAboutToStart);
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::serverStopping);
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::serverStarted);
 
         MinecraftForge.EVENT_BUS.register(ThreadSafeCache.getInstance());
         MinecraftForge.EVENT_BUS.register(this);
     }
 
-    public void preInit(FMLPreInitializationEvent event) {
+    public void init(FMLCommonSetupEvent event) {
         // Setup working directory
         workingDir = new File(event.getModConfigurationDirectory() + File.separator + "worldedit");
         workingDir.mkdir();
 
         config = new ForgeConfiguration(this);
         config.load();
-    }
 
-    public void init(FMLInitializationEvent event) {
         WECUIPacketHandler.init();
         InternalPacketHandler.init();
         proxy.registerHandlers();
-    }
 
-    public void postInit(FMLPostInitializationEvent event) {
         LOGGER.info("WorldEdit for Forge (version " + getInternalVersion() + ") is loaded");
     }
 
@@ -122,11 +114,11 @@ public class ForgeWorldEdit {
 
         WorldEdit.getInstance().getPlatformManager().register(platform);
 
-        if (ModList.get().isLoaded("sponge")) {
-            this.provider = new ForgePermissionsProvider.SpongePermissionsProvider();
-        } else {
-            this.provider = new ForgePermissionsProvider.VanillaPermissionsProvider(platform);
-        }
+//  TODO      if (ModList.get().isLoaded("sponge")) {
+//            this.provider = new ForgePermissionsProvider.SpongePermissionsProvider();
+//        } else {
+        this.provider = new ForgePermissionsProvider.VanillaPermissionsProvider(platform);
+//        }
 
         // TODO Setup states
         for (ResourceLocation name : ForgeRegistries.BLOCKS.getKeys()) {

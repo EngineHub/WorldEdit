@@ -22,9 +22,7 @@ package com.sk89q.worldedit.forge;
 import net.minecraft.command.ICommand;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.world.GameType;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
-import org.spongepowered.api.entity.living.player.Player;
 
 public interface ForgePermissionsProvider {
 
@@ -52,16 +50,17 @@ public interface ForgePermissionsProvider {
         public void registerPermission(ICommand command, String permission) {}
     }
 
-    class SpongePermissionsProvider implements ForgePermissionsProvider {
-
-        @Override
-        public boolean hasPermission(EntityPlayerMP player, String permission) {
-            return ((Player) player).hasPermission(permission);
-        }
-
-        @Override
-        public void registerPermission(ICommand command, String permission) {
-
-        }
-    }
+    // TODO Re-add when Sponge for 1.13 is out
+//    class SpongePermissionsProvider implements ForgePermissionsProvider {
+//
+//        @Override
+//        public boolean hasPermission(EntityPlayerMP player, String permission) {
+//            return ((Player) player).hasPermission(permission);
+//        }
+//
+//        @Override
+//        public void registerPermission(ICommand command, String permission) {
+//
+//        }
+//    }
 }
