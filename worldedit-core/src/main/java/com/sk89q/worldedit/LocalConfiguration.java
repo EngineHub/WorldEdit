@@ -31,7 +31,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-import java.util.function.IntFunction;
 
 /**
  * Represents WorldEdit's configuration.
@@ -141,7 +140,7 @@ public abstract class LocalConfiguration {
                 // ores and stuff
                 BlockTypes.BEDROCK
         );
-        return blockTypes.stream().filter(type -> !Objects.isNull(type)).map(BlockType::getId).toArray(String[]::new);
+        return blockTypes.stream().filter(Objects::nonNull).map(BlockType::getId).toArray(String[]::new);
     }
 
     /**
