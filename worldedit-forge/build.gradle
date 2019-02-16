@@ -13,13 +13,13 @@ buildscript {
 
 apply plugin: 'net.minecraftforge.gradle'
 
-def minecraftVersion = "1.13"
-def forgeVersion = "24.0.136-1.13-pre"
+def minecraftVersion = "1.13.2"
+def forgeVersion = "25.0.13"
 
 dependencies {
     compile project(':worldedit-core')
 
-    minecraft "net.minecraftforge.test:forge:${minecraftVersion}-${forgeVersion}"
+    minecraft "net.minecraftforge:forge:${minecraftVersion}-${forgeVersion}"
 
     testCompile group: 'org.mockito', name: 'mockito-core', version: '1.9.0-rc1'
 }
