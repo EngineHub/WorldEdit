@@ -42,7 +42,7 @@ public class BlockTransformExtentTest {
 
     @Before
     public void setUp() throws Exception {
-        BlockTypes.register(new BlockType("worldedit:test"));
+        BlockType.REGISTRY.register("worldedit:test", new BlockType("worldedit:test"));
     }
 
     @Test

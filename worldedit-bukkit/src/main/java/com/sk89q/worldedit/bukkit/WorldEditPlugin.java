@@ -33,12 +33,22 @@ import com.sk89q.worldedit.bukkit.adapter.BukkitImplLoader;
 import com.sk89q.worldedit.event.platform.CommandEvent;
 import com.sk89q.worldedit.event.platform.CommandSuggestionEvent;
 import com.sk89q.worldedit.event.platform.PlatformReadyEvent;
+import com.sk89q.worldedit.extension.input.InputParseException;
+import com.sk89q.worldedit.extension.input.ParserContext;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
-
+import com.sk89q.worldedit.registry.state.Property;
+import com.sk89q.worldedit.world.biome.BiomeType;
+import com.sk89q.worldedit.world.block.BlockState;
+import com.sk89q.worldedit.world.block.BlockType;
+import com.sk89q.worldedit.world.block.FuzzyBlockState;
+import com.sk89q.worldedit.world.entity.EntityType;
+import com.sk89q.worldedit.world.item.ItemType;
 import org.bstats.bukkit.Metrics;
+import org.bukkit.Material;
+import org.bukkit.block.Biome;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
@@ -51,6 +61,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Map;
 import java.util.jar.JarFile;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -88,6 +99,7 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
         server = new BukkitServerInterface(this, getServer());
         worldEdit.getPlatformManager().register(server);
         loadAdapter(); // Need an adapter to work with special blocks with NBT data
+        setupRegistries();
         worldEdit.loadMappings();
 
         loadConfig(); // Load configuration
@@ -107,6 +119,45 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
 
         // Enable metrics
         new Metrics(this);
+    }
+
+    public void setupRegistries() {
+        // Biome
+        for (Biome biome : Biome.values()) {
+            BiomeType.REGISTRY.register("minecraft:" + biome.name().toLowerCase(), new BiomeType("minecraft:" + biome.name().toLowerCase()));
+        }
+        // Block & Item
+        for (Material material : Material.values()) {
+            if (material.isBlock()) {
+                BlockType.REGISTRY.register(material.getKey().toString(), new BlockType(material.getKey().toString(), blockState -> {
+                    // TODO Use something way less hacky than this.
+                    ParserContext context = new ParserContext();
+                    context.setPreferringWildcard(true);
+                    context.setTryLegacy(false);
+                    context.setRestricted(false);
+                    try {
+                        FuzzyBlockState state = (FuzzyBlockState) WorldEdit.getInstance().getBlockFactory().parseFromInput(
+                                BukkitAdapter.adapt(blockState.getBlockType()).createBlockData().getAsString(), context
+                        ).toImmutableState();
+                        BlockState defaultState = blockState.getBlockType().getAllStates().get(0);
+                        for (Map.Entry<Property<?>, Object> propertyObjectEntry : state.getStates().entrySet()) {
+                            defaultState = defaultState.with((Property) propertyObjectEntry.getKey(), propertyObjectEntry.getValue());
+                        }
+                        return defaultState;
+                    } catch (InputParseException e) {
+                        e.printStackTrace();
+                        return blockState;
+                    }
+                }));
+            }
+            if (material.isItem()) {
+                ItemType.REGISTRY.register(material.getKey().toString(), new ItemType(material.getKey().toString()));
+            }
+        }
+        // Entity
+        for (org.bukkit.entity.EntityType entityType : org.bukkit.entity.EntityType.values()) {
+            EntityType.REGISTRY.register("minecraft:" + entityType.name().toLowerCase(), new EntityType("minecraft:" + entityType.name().toLowerCase()));
+        }
     }
 
     private void loadConfig() {

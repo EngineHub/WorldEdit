@@ -33,7 +33,6 @@ import com.sk89q.worldedit.sponge.adapter.AdapterLoadException;
 import com.sk89q.worldedit.sponge.adapter.SpongeImplAdapter;
 import com.sk89q.worldedit.sponge.adapter.SpongeImplLoader;
 import com.sk89q.worldedit.sponge.config.SpongeConfiguration;
-import com.sk89q.worldedit.world.item.ItemTypes;
 import org.bstats.sponge.Metrics2;
 import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
@@ -141,14 +140,14 @@ public class SpongeWorldEdit {
             // TODO Handle blockstate stuff
             String id = blockType.getId();
             if (!com.sk89q.worldedit.world.block.BlockType.REGISTRY.keySet().contains(id)) {
-                com.sk89q.worldedit.world.block.BlockTypes.register(new com.sk89q.worldedit.world.block.BlockType(id));
+                com.sk89q.worldedit.world.block.BlockType.REGISTRY.register(id, new com.sk89q.worldedit.world.block.BlockType(id));
             }
         }
 
         for (ItemType itemType : Sponge.getRegistry().getAllOf(ItemType.class)) {
             String id = itemType.getId();
             if (!com.sk89q.worldedit.world.item.ItemType.REGISTRY.keySet().contains(id)) {
-                ItemTypes.register(new com.sk89q.worldedit.world.item.ItemType(id));
+                com.sk89q.worldedit.world.item.ItemType.REGISTRY.register(id, new com.sk89q.worldedit.world.item.ItemType(id));
             }
         }
 

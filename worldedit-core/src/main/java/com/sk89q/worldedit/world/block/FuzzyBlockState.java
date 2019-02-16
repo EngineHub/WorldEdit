@@ -57,7 +57,12 @@ public class FuzzyBlockState extends BlockState {
             Property<Object> objKey = (Property<Object>) entry.getKey();
             state = state.with(objKey, entry.getValue());
         }
-        return getBlockType().getDefaultState();
+        return state;
+    }
+
+    @Override
+    public BlockState toImmutableState() {
+        return getFullState();
     }
 
     /**

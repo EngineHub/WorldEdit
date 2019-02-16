@@ -129,14 +129,14 @@ public class ForgeWorldEdit {
         for (ResourceLocation name : Block.REGISTRY.getKeys()) {
             String nameStr = name.toString();
             if (!BlockType.REGISTRY.keySet().contains(nameStr)) {
-                BlockTypes.register(new BlockType(nameStr));
+                BlockType.REGISTRY.register(nameStr, new BlockType(nameStr));
             }
         }
 
         for (ResourceLocation name : Item.REGISTRY.getKeys()) {
             String nameStr = name.toString();
             if (!ItemType.REGISTRY.keySet().contains(nameStr)) {
-                ItemTypes.register(new ItemType(nameStr));
+                ItemType.REGISTRY.register(nameStr, new ItemType(nameStr));
             }
         }
     }
