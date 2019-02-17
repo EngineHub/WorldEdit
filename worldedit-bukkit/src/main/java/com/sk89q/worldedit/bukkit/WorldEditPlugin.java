@@ -41,13 +41,17 @@ import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
 import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.world.biome.BiomeType;
+import com.sk89q.worldedit.world.block.BlockCategory;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.block.FuzzyBlockState;
 import com.sk89q.worldedit.world.entity.EntityType;
+import com.sk89q.worldedit.world.item.ItemCategory;
 import com.sk89q.worldedit.world.item.ItemType;
 import org.bstats.bukkit.Metrics;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.Tag;
 import org.bukkit.block.Biome;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -157,6 +161,17 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
         // Entity
         for (org.bukkit.entity.EntityType entityType : org.bukkit.entity.EntityType.values()) {
             EntityType.REGISTRY.register("minecraft:" + entityType.name().toLowerCase(), new EntityType("minecraft:" + entityType.name().toLowerCase()));
+        }
+        // Tags
+        try {
+            for (org.bukkit.Tag<Material> blockTag : Bukkit.getTags(Tag.REGISTRY_BLOCKS, Material.class)) {
+                BlockCategory.REGISTRY.register(blockTag.getKey().toString(), new BlockCategory(blockTag.getKey().toString()));
+            }
+            for (org.bukkit.Tag<Material> itemTag : Bukkit.getTags(Tag.REGISTRY_ITEMS, Material.class)) {
+                ItemCategory.REGISTRY.register(itemTag.getKey().toString(), new ItemCategory(itemTag.getKey().toString()));
+            }
+        } catch (NoSuchMethodError e) {
+            getLogger().warning("The version of Spigot/Paper you are using doesn't support Tags. The usage of tags with WorldEdit will not work until you update.");
         }
     }
 

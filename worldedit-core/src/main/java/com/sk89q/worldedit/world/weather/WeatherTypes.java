@@ -23,19 +23,18 @@ import javax.annotation.Nullable;
 
 public class WeatherTypes {
 
-    public static final WeatherType CLEAR = register("clear");
-    public static final WeatherType RAIN = register("rain");
-    public static final WeatherType THUNDER_STORM = register("thunder_storm");
+    static {
+        // This isn't really a proper registry - so inject these before they're obtained.
+        WeatherType.REGISTRY.register("clear", new WeatherType("clear"));
+        WeatherType.REGISTRY.register("rain", new WeatherType("rain"));
+        WeatherType.REGISTRY.register("thunder_storm", new WeatherType("thunder_storm"));
+    }
+
+    @Nullable public static final WeatherType CLEAR = get("clear");
+    @Nullable public static final WeatherType RAIN = get("rain");
+    @Nullable public static final WeatherType THUNDER_STORM = get("thunder_storm");
 
     private WeatherTypes() {
-    }
-
-    private static WeatherType register(final String id) {
-        return register(new WeatherType(id));
-    }
-
-    public static WeatherType register(final WeatherType weatherType) {
-        return WeatherType.REGISTRY.register(weatherType.getId(), weatherType);
     }
 
     public static @Nullable WeatherType get(final String id) {
