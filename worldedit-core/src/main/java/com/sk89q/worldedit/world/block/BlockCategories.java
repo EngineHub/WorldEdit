@@ -19,8 +19,6 @@
 
 package com.sk89q.worldedit.world.block;
 
-import javax.annotation.Nullable;
-
 /**
  * Stores a list of categories of Block Types.
  */
@@ -62,7 +60,11 @@ public final class BlockCategories {
     private BlockCategories() {
     }
 
-    public static @Nullable BlockCategory get(final String id) {
-        return BlockCategory.REGISTRY.get(id);
+    private static BlockCategory get(final String id) {
+        BlockCategory blockCategory = BlockCategory.REGISTRY.get(id);
+        if (blockCategory == null) {
+            return new BlockCategory(id);
+        }
+        return blockCategory;
     }
 }

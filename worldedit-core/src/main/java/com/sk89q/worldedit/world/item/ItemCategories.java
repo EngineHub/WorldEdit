@@ -19,8 +19,6 @@
 
 package com.sk89q.worldedit.world.item;
 
-import javax.annotation.Nullable;
-
 /**
  * Stores a list of categories of Item Types.
  */
@@ -60,7 +58,11 @@ public final class ItemCategories {
     private ItemCategories() {
     }
 
-    public static @Nullable ItemCategory get(final String id) {
-        return ItemCategory.REGISTRY.get(id);
+    private static ItemCategory get(final String id) {
+        ItemCategory itemCategory = ItemCategory.REGISTRY.get(id);
+        if (itemCategory == null) {
+            return new ItemCategory(id);
+        }
+        return itemCategory;
     }
 }
