@@ -35,7 +35,7 @@ import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.AbstractWorld;
-import com.sk89q.worldedit.world.biome.BaseBiome;
+import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.item.ItemTypes;
@@ -192,17 +192,17 @@ public abstract class SpongeWorld extends AbstractWorld {
     }
 
     @Override
-    public BaseBiome getBiome(BlockVector2 position) {
+    public BiomeType getBiome(BlockVector2 position) {
         checkNotNull(position);
-        return new BaseBiome(SpongeWorldEdit.inst().getAdapter().resolve(getWorld().getBiome(position.getBlockX(), 0, position.getBlockZ())));
+        return SpongeAdapter.adapt(getWorld().getBiome(position.getBlockX(), 0, position.getBlockZ()));
     }
 
     @Override
-    public boolean setBiome(BlockVector2 position, BaseBiome biome) {
+    public boolean setBiome(BlockVector2 position, BiomeType biome) {
         checkNotNull(position);
         checkNotNull(biome);
 
-        getWorld().setBiome(position.getBlockX(), 0, position.getBlockZ(), SpongeWorldEdit.inst().getAdapter().resolveBiome(biome.getId()));
+        getWorld().setBiome(position.getBlockX(), 0, position.getBlockZ(), SpongeAdapter.adapt(biome));
         return true;
     }
 

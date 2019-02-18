@@ -33,6 +33,8 @@ import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.World;
+import com.sk89q.worldedit.world.biome.BiomeType;
+import com.sk89q.worldedit.world.biome.BiomeTypes;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.block.BlockType;
@@ -43,9 +45,9 @@ import com.sk89q.worldedit.world.gamemode.GameMode;
 import com.sk89q.worldedit.world.gamemode.GameModes;
 import com.sk89q.worldedit.world.item.ItemType;
 import com.sk89q.worldedit.world.item.ItemTypes;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.block.Biome;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -305,6 +307,27 @@ public class BukkitAdapter {
     }
 
     /**
+     * Create a WorldEdit BiomeType from a Bukkit one.
+     *
+     * @param biome Bukkit Biome
+     * @return WorldEdit BiomeType
+     */
+    public static BiomeType adapt(Biome biome) {
+        return BiomeTypes.get(biome.name().toLowerCase());
+    }
+
+    public static Biome adapt(BiomeType biomeType) {
+        if (!biomeType.getId().startsWith("minecraft:")) {
+            throw new IllegalArgumentException("Bukkit only supports vanilla biomes");
+        }
+        try {
+            return Biome.valueOf(biomeType.getId().substring(10).toUpperCase());
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
+    }
+
+    /**
      * Create a WorldEdit EntityType from a Bukkit one.
      *
      * @param entityType Bukkit EntityType
@@ -318,7 +341,7 @@ public class BukkitAdapter {
         if (!entityType.getId().startsWith("minecraft:")) {
             throw new IllegalArgumentException("Bukkit only supports vanilla entities");
         }
-        return org.bukkit.entity.EntityType.fromName(entityType.getId().substring(10).toLowerCase());
+        return org.bukkit.entity.EntityType.fromName(entityType.getId().substring(10));
     }
 
     /**

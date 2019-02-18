@@ -34,16 +34,14 @@ import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.TreeGenerator;
 import com.sk89q.worldedit.world.AbstractWorld;
-import com.sk89q.worldedit.world.biome.BaseBiome;
+import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.weather.WeatherType;
 import com.sk89q.worldedit.world.weather.WeatherTypes;
-
 import org.bukkit.Effect;
 import org.bukkit.TreeType;
 import org.bukkit.World;
-import org.bukkit.block.Biome;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Chest;
@@ -465,25 +463,13 @@ public class BukkitWorld extends AbstractWorld {
     }
 
     @Override
-    public BaseBiome getBiome(BlockVector2 position) {
-        BukkitImplAdapter adapter = WorldEditPlugin.getInstance().getBukkitImplAdapter();
-        if (adapter != null) {
-            int id = adapter.getBiomeId(getWorld().getBiome(position.getBlockX(), position.getBlockZ()));
-            return new BaseBiome(id);
-        } else {
-            return new BaseBiome(0);
-        }
+    public BiomeType getBiome(BlockVector2 position) {
+        return BukkitAdapter.adapt(getWorld().getBiome(position.getBlockX(), position.getBlockZ()));
     }
 
     @Override
-    public boolean setBiome(BlockVector2 position, BaseBiome biome) {
-        BukkitImplAdapter adapter = WorldEditPlugin.getInstance().getBukkitImplAdapter();
-        if (adapter != null) {
-            Biome bukkitBiome = adapter.getBiome(biome.getId());
-            getWorld().setBiome(position.getBlockX(), position.getBlockZ(), bukkitBiome);
-            return true;
-        } else {
-            return false;
-        }
+    public boolean setBiome(BlockVector2 position, BiomeType biome) {
+        getWorld().setBiome(position.getBlockX(), position.getBlockZ(), BukkitAdapter.adapt(biome));
+        return true;
     }
 }

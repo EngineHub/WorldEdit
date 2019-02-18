@@ -29,7 +29,7 @@ import javax.annotation.Nullable;
 /**
  * Returns the name of a biome using a given {@code BiomeRegistry}.
  */
-class BiomeName implements Function<BaseBiome, String> {
+class BiomeName implements Function<BiomeType, String> {
 
     private final BiomeRegistry registry;
 
@@ -45,7 +45,7 @@ class BiomeName implements Function<BaseBiome, String> {
 
     @Nullable
     @Override
-    public String apply(BaseBiome input) {
+    public String apply(BiomeType input) {
         BiomeData data = registry.getData(input);
         if (data != null) {
             return data.getName();

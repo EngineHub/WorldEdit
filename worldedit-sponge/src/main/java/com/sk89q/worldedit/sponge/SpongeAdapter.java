@@ -26,6 +26,8 @@ import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.World;
+import com.sk89q.worldedit.world.biome.BiomeType;
+import com.sk89q.worldedit.world.biome.BiomeTypes;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 
@@ -101,6 +103,14 @@ public class SpongeAdapter {
                 throw new IllegalArgumentException("Can't find a Sponge world for " + world);
             }
         }
+    }
+
+    public static BiomeType adapt(org.spongepowered.api.world.biome.BiomeType biomeType) {
+        return BiomeTypes.get(biomeType.getId());
+    }
+
+    public static org.spongepowered.api.world.biome.BiomeType adapt(BiomeType biomeType) {
+        return Sponge.getRegistry().getType(org.spongepowered.api.world.biome.BiomeType.class, biomeType.getId()).orElse(null);
     }
 
     /**

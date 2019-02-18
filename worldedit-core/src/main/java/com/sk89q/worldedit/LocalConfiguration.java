@@ -19,85 +19,23 @@
 
 package com.sk89q.worldedit;
 
+import com.google.common.collect.Lists;
 import com.sk89q.worldedit.util.logging.LogFormat;
+import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.block.BlockTypes;
-import com.sk89q.worldedit.world.item.ItemTypes;
 import com.sk89q.worldedit.world.registry.LegacyMapper;
 import com.sk89q.worldedit.world.snapshot.SnapshotRepository;
 
 import java.io.File;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 /**
  * Represents WorldEdit's configuration.
  */
 public abstract class LocalConfiguration {
-
-    protected static final String[] defaultDisallowedBlocks = new String[] {
-            // dangerous stuff (physics/drops items)
-            BlockTypes.OAK_SAPLING.getId(),
-            BlockTypes.JUNGLE_SAPLING.getId(),
-            BlockTypes.DARK_OAK_SAPLING.getId(),
-            BlockTypes.SPRUCE_SAPLING.getId(),
-            BlockTypes.BIRCH_SAPLING.getId(),
-            BlockTypes.ACACIA_SAPLING.getId(),
-            BlockTypes.BLACK_BED.getId(),
-            BlockTypes.BLUE_BED.getId(),
-            BlockTypes.BROWN_BED.getId(),
-            BlockTypes.CYAN_BED.getId(),
-            BlockTypes.GRAY_BED.getId(),
-            BlockTypes.GREEN_BED.getId(),
-            BlockTypes.LIGHT_BLUE_BED.getId(),
-            BlockTypes.LIGHT_GRAY_BED.getId(),
-            BlockTypes.LIME_BED.getId(),
-            BlockTypes.MAGENTA_BED.getId(),
-            BlockTypes.ORANGE_BED.getId(),
-            BlockTypes.PINK_BED.getId(),
-            BlockTypes.PURPLE_BED.getId(),
-            BlockTypes.RED_BED.getId(),
-            BlockTypes.WHITE_BED.getId(),
-            BlockTypes.YELLOW_BED.getId(),
-            BlockTypes.POWERED_RAIL.getId(),
-            BlockTypes.DETECTOR_RAIL.getId(),
-            BlockTypes.GRASS.getId(),
-            BlockTypes.DEAD_BUSH.getId(),
-            BlockTypes.MOVING_PISTON.getId(),
-            BlockTypes.PISTON_HEAD.getId(),
-            BlockTypes.SUNFLOWER.getId(),
-            BlockTypes.ROSE_BUSH.getId(),
-            BlockTypes.DANDELION.getId(),
-            BlockTypes.POPPY.getId(),
-            BlockTypes.BROWN_MUSHROOM.getId(),
-            BlockTypes.RED_MUSHROOM.getId(),
-            BlockTypes.TNT.getId(),
-            BlockTypes.TORCH.getId(),
-            BlockTypes.FIRE.getId(),
-            BlockTypes.REDSTONE_WIRE.getId(),
-            BlockTypes.WHEAT.getId(),
-            BlockTypes.POTATOES.getId(),
-            BlockTypes.CARROTS.getId(),
-            BlockTypes.MELON_STEM.getId(),
-            BlockTypes.PUMPKIN_STEM.getId(),
-            BlockTypes.BEETROOTS.getId(),
-            BlockTypes.RAIL.getId(),
-            BlockTypes.LEVER.getId(),
-            BlockTypes.REDSTONE_TORCH.getId(),
-            BlockTypes.REDSTONE_WALL_TORCH.getId(),
-            BlockTypes.REPEATER.getId(),
-            BlockTypes.COMPARATOR.getId(),
-            BlockTypes.STONE_BUTTON.getId(),
-            BlockTypes.BIRCH_BUTTON.getId(),
-            BlockTypes.ACACIA_BUTTON.getId(),
-            BlockTypes.DARK_OAK_BUTTON.getId(),
-            BlockTypes.JUNGLE_BUTTON.getId(),
-            BlockTypes.OAK_BUTTON.getId(),
-            BlockTypes.SPRUCE_BUTTON.getId(),
-            BlockTypes.CACTUS.getId(),
-            BlockTypes.SUGAR_CANE.getId(),
-            // ores and stuff
-            BlockTypes.BEDROCK.getId(),
-    };
 
     public boolean profile = false;
     public boolean traceUnflushedSessions = false;
@@ -117,7 +55,7 @@ public abstract class LocalConfiguration {
     public String logFile = "";
     public String logFormat = LogFormat.DEFAULT_FORMAT;
     public boolean registerHelp = true; // what is the point of this, it's not even used
-    public String wandItem = ItemTypes.WOODEN_AXE.getId();
+    public String wandItem = "minecraft:wooden_axe";
     public boolean superPickaxeDrop = true;
     public boolean superPickaxeManyDrop = true;
     public boolean noDoubleSlash = false;
@@ -125,7 +63,7 @@ public abstract class LocalConfiguration {
     public boolean useInventoryOverride = false;
     public boolean useInventoryCreativeOverride = false;
     public boolean navigationUseGlass = true;
-    public String navigationWand = ItemTypes.COMPASS.getId();
+    public String navigationWand = "minecraft:compass";
     public int navigationWandMaxDistance = 50;
     public int scriptTimeout = 3000;
     public int calculationTimeout = 100;
@@ -137,6 +75,73 @@ public abstract class LocalConfiguration {
     public int butcherMaxRadius = -1;
     public boolean allowSymlinks = false;
     public boolean serverSideCUI = true;
+
+    protected String[] getDefaultDisallowedBlocks() {
+        List<BlockType> blockTypes = Lists.newArrayList(
+                BlockTypes.OAK_SAPLING,
+                BlockTypes.JUNGLE_SAPLING,
+                BlockTypes.DARK_OAK_SAPLING,
+                BlockTypes.SPRUCE_SAPLING,
+                BlockTypes.BIRCH_SAPLING,
+                BlockTypes.ACACIA_SAPLING,
+                BlockTypes.BLACK_BED,
+                BlockTypes.BLUE_BED,
+                BlockTypes.BROWN_BED,
+                BlockTypes.CYAN_BED,
+                BlockTypes.GRAY_BED,
+                BlockTypes.GREEN_BED,
+                BlockTypes.LIGHT_BLUE_BED,
+                BlockTypes.LIGHT_GRAY_BED,
+                BlockTypes.LIME_BED,
+                BlockTypes.MAGENTA_BED,
+                BlockTypes.ORANGE_BED,
+                BlockTypes.PINK_BED,
+                BlockTypes.PURPLE_BED,
+                BlockTypes.RED_BED,
+                BlockTypes.WHITE_BED,
+                BlockTypes.YELLOW_BED,
+                BlockTypes.POWERED_RAIL,
+                BlockTypes.DETECTOR_RAIL,
+                BlockTypes.GRASS,
+                BlockTypes.DEAD_BUSH,
+                BlockTypes.MOVING_PISTON,
+                BlockTypes.PISTON_HEAD,
+                BlockTypes.SUNFLOWER,
+                BlockTypes.ROSE_BUSH,
+                BlockTypes.DANDELION,
+                BlockTypes.POPPY,
+                BlockTypes.BROWN_MUSHROOM,
+                BlockTypes.RED_MUSHROOM,
+                BlockTypes.TNT,
+                BlockTypes.TORCH,
+                BlockTypes.FIRE,
+                BlockTypes.REDSTONE_WIRE,
+                BlockTypes.WHEAT,
+                BlockTypes.POTATOES,
+                BlockTypes.CARROTS,
+                BlockTypes.MELON_STEM,
+                BlockTypes.PUMPKIN_STEM,
+                BlockTypes.BEETROOTS,
+                BlockTypes.RAIL,
+                BlockTypes.LEVER,
+                BlockTypes.REDSTONE_TORCH,
+                BlockTypes.REDSTONE_WALL_TORCH,
+                BlockTypes.REPEATER,
+                BlockTypes.COMPARATOR,
+                BlockTypes.STONE_BUTTON,
+                BlockTypes.BIRCH_BUTTON,
+                BlockTypes.ACACIA_BUTTON,
+                BlockTypes.DARK_OAK_BUTTON,
+                BlockTypes.JUNGLE_BUTTON,
+                BlockTypes.OAK_BUTTON,
+                BlockTypes.SPRUCE_BUTTON,
+                BlockTypes.CACTUS,
+                BlockTypes.SUGAR_CANE,
+                // ores and stuff
+                BlockTypes.BEDROCK
+        );
+        return blockTypes.stream().filter(Objects::nonNull).map(BlockType::getId).toArray(String[]::new);
+    }
 
     /**
      * Load the configuration.

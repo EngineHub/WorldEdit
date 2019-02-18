@@ -36,16 +36,6 @@ import org.spongepowered.api.world.biome.BiomeType;
  */
 public interface SpongeImplAdapter {
 
-    /**
-     * Resolves the numerical ID from this {@link BiomeType}
-     *
-     * @param type The biometype
-     * @return The numerical ID
-     */
-    int resolve(BiomeType type);
-
-    BiomeType resolveBiome(int intID);
-
     BaseEntity createBaseEntity(Entity entity);
 
     ItemStack makeSpongeStack(BaseItemStack itemStack);

@@ -28,12 +28,12 @@ import com.sk89q.worldedit.function.mask.BiomeMask2D;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.function.mask.Masks;
 import com.sk89q.worldedit.internal.registry.InputParser;
-import com.sk89q.worldedit.world.biome.BaseBiome;
+import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.biome.Biomes;
 import com.sk89q.worldedit.world.registry.BiomeRegistry;
 
+import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 public class BiomeMaskParser extends InputParser<Mask> {
@@ -48,11 +48,11 @@ public class BiomeMaskParser extends InputParser<Mask> {
             return null;
         }
 
-        Set<BaseBiome> biomes = new HashSet<>();
+        Set<BiomeType> biomes = new HashSet<>();
         BiomeRegistry biomeRegistry = worldEdit.getPlatformManager().queryCapability(Capability.GAME_HOOKS).getRegistries().getBiomeRegistry();
-        List<BaseBiome> knownBiomes = biomeRegistry.getBiomes();
+        Collection<BiomeType> knownBiomes = BiomeType.REGISTRY.values();
         for (String biomeName : Splitter.on(",").split(input.substring(1))) {
-            BaseBiome biome = Biomes.findBiomeByName(knownBiomes, biomeName, biomeRegistry);
+            BiomeType biome = Biomes.findBiomeByName(knownBiomes, biomeName, biomeRegistry);
             if (biome == null) {
                 throw new InputParseException("Unknown biome '" + biomeName + '\'');
             }

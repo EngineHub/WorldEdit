@@ -12,7 +12,7 @@ repositories {
 dependencies {
     compile project(':worldedit-core')
     compile 'com.sk89q:dummypermscompat:1.8'
-    compile 'org.bukkit:bukkit:1.13-R0.1-SNAPSHOT' // zzz
+    compile 'org.bukkit:bukkit:1.13.2-R0.1-SNAPSHOT' // zzz
     compile 'org.bstats:bstats-bukkit:1.4'
     compile "io.papermc:paperlib:1.0.1"
     compileOnly "net.milkbowl.vault:VaultAPI:1.7"

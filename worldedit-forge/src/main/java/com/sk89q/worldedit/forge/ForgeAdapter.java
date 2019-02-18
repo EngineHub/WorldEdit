@@ -30,14 +30,18 @@ import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.world.World;
 
+import com.sk89q.worldedit.world.biome.BiomeType;
+import com.sk89q.worldedit.world.biome.BiomeTypes;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.properties.PropertyDirection;
 import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.properties.PropertyInteger;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.biome.Biome;
 
 import java.util.stream.Collectors;
 
@@ -48,6 +52,14 @@ final class ForgeAdapter {
 
     public static World adapt(net.minecraft.world.World world) {
         return new ForgeWorld(world);
+    }
+
+    public static Biome adapt(BiomeType biomeType) {
+        return Biome.REGISTRY.getObject(new ResourceLocation(biomeType.getId()));
+    }
+
+    public static BiomeType adapt(Biome biome) {
+        return BiomeTypes.get(biome.getRegistryName().toString());
     }
 
     public static Vector3 adapt(Vec3d vector) {

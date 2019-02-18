@@ -22,7 +22,7 @@ package com.sk89q.worldedit.extent;
 import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.math.BlockVector3;
-import com.sk89q.worldedit.world.biome.BaseBiome;
+import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;
 
@@ -64,6 +64,6 @@ public interface InputExtent {
      * @param position the (x, z) location to check the biome at
      * @return the biome at the location
      */
-    BaseBiome getBiome(BlockVector2 position);
+    BiomeType getBiome(BlockVector2 position);
 
 }

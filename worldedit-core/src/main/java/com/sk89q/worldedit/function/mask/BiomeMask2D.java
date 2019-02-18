@@ -23,7 +23,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.math.BlockVector2;
-import com.sk89q.worldedit.world.biome.BaseBiome;
+import com.sk89q.worldedit.world.biome.BiomeType;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -36,7 +36,7 @@ import java.util.Set;
 public class BiomeMask2D extends AbstractMask2D {
 
     private final Extent extent;
-    private final Set<BaseBiome> biomes = new HashSet<>();
+    private final Set<BiomeType> biomes = new HashSet<>();
 
     /**
      * Create a new biome mask.
@@ -44,7 +44,7 @@ public class BiomeMask2D extends AbstractMask2D {
      * @param extent the extent
      * @param biomes a list of biomes to match
      */
-    public BiomeMask2D(Extent extent, Collection<BaseBiome> biomes) {
+    public BiomeMask2D(Extent extent, Collection<BiomeType> biomes) {
         checkNotNull(extent);
         checkNotNull(biomes);
         this.extent = extent;
@@ -57,7 +57,7 @@ public class BiomeMask2D extends AbstractMask2D {
      * @param extent the extent
      * @param biome an array of biomes to match
      */
-    public BiomeMask2D(Extent extent, BaseBiome... biome) {
+    public BiomeMask2D(Extent extent, BiomeType... biome) {
         this(extent, Arrays.asList(checkNotNull(biome)));
     }
 
@@ -66,7 +66,7 @@ public class BiomeMask2D extends AbstractMask2D {
      *
      * @param biomes a list of biomes
      */
-    public void add(Collection<BaseBiome> biomes) {
+    public void add(Collection<BiomeType> biomes) {
         checkNotNull(biomes);
         this.biomes.addAll(biomes);
     }
@@ -76,7 +76,7 @@ public class BiomeMask2D extends AbstractMask2D {
      *
      * @param biome an array of biomes
      */
-    public void add(BaseBiome... biome) {
+    public void add(BiomeType... biome) {
         add(Arrays.asList(checkNotNull(biome)));
     }
 
@@ -85,13 +85,13 @@ public class BiomeMask2D extends AbstractMask2D {
      *
      * @return a list of biomes
      */
-    public Collection<BaseBiome> getBiomes() {
+    public Collection<BiomeType> getBiomes() {
         return biomes;
     }
 
     @Override
     public boolean test(BlockVector2 vector) {
-        BaseBiome biome = extent.getBiome(vector);
+        BiomeType biome = extent.getBiome(vector);
         return biomes.contains(biome);
     }
 

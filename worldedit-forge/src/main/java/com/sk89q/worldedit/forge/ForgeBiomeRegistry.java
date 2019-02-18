@@ -19,36 +19,20 @@
 
 package com.sk89q.worldedit.forge;
 
-import com.sk89q.worldedit.world.biome.BaseBiome;
 import com.sk89q.worldedit.world.biome.BiomeData;
+import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.registry.BiomeRegistry;
 import net.minecraft.world.biome.Biome;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Provides access to biome data in Forge.
  */
 class ForgeBiomeRegistry implements BiomeRegistry {
 
-    @Override
-    public BaseBiome createFromId(int id) {
-        return new BaseBiome(id);
-    }
 
     @Override
-    public List<BaseBiome> getBiomes() {
-        List<BaseBiome> list = new ArrayList<>();
-        for (Biome biome : Biome.REGISTRY) {
-            list.add(new BaseBiome(Biome.getIdForBiome(biome)));
-        }
-        return list;
-    }
-
-    @Override
-    public BiomeData getData(BaseBiome biome) {
-        return new ForgeBiomeData(Biome.getBiome(biome.getId()));
+    public BiomeData getData(BiomeType biome) {
+        return new ForgeBiomeData(ForgeAdapter.adapt(biome));
     }
 
     /**

@@ -48,12 +48,12 @@ import com.sk89q.worldedit.regions.Regions;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.command.binding.Switch;
 import com.sk89q.worldedit.world.World;
-import com.sk89q.worldedit.world.biome.BaseBiome;
 import com.sk89q.worldedit.world.biome.BiomeData;
+import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.registry.BiomeRegistry;
 
+import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -94,10 +94,10 @@ public class BiomeCommands {
 
         BiomeRegistry biomeRegistry = WorldEdit.getInstance().getPlatformManager()
                 .queryCapability(Capability.GAME_HOOKS).getRegistries().getBiomeRegistry();
-        List<BaseBiome> biomes = biomeRegistry.getBiomes();
+        Collection<BiomeType> biomes = BiomeType.REGISTRY.values();
         int totalPages = biomes.size() / 19 + 1;
         player.print("Available Biomes (page " + page + "/" + totalPages + ") :");
-        for (BaseBiome biome : biomes) {
+        for (BiomeType biome : biomes) {
             if (offset > 0) {
                 offset--;
             } else {
@@ -129,7 +129,7 @@ public class BiomeCommands {
     public void biomeInfo(Player player, LocalSession session, CommandContext args) throws WorldEditException {
         BiomeRegistry biomeRegistry = WorldEdit.getInstance().getPlatformManager()
                 .queryCapability(Capability.GAME_HOOKS).getRegistries().getBiomeRegistry();
-        Set<BaseBiome> biomes = new HashSet<>();
+        Set<BiomeType> biomes = new HashSet<>();
         String qualifier;
 
         if (args.hasFlag('t')) {
@@ -139,12 +139,12 @@ public class BiomeCommands {
                 return;
             }
 
-            BaseBiome biome = player.getWorld().getBiome(blockPosition.toVector().toBlockPoint().toBlockVector2());
+            BiomeType biome = player.getWorld().getBiome(blockPosition.toVector().toBlockPoint().toBlockVector2());
             biomes.add(biome);
 
             qualifier = "at line of sight point";
         } else if (args.hasFlag('p')) {
-            BaseBiome biome = player.getWorld().getBiome(player.getLocation().toVector().toBlockPoint().toBlockVector2());
+            BiomeType biome = player.getWorld().getBiome(player.getLocation().toVector().toBlockPoint().toBlockVector2());
             biomes.add(biome);
 
             qualifier = "at your position";
@@ -166,7 +166,7 @@ public class BiomeCommands {
         }
 
         player.print(biomes.size() != 1 ? "Biomes " + qualifier + ":" : "Biome " + qualifier + ":");
-        for (BaseBiome biome : biomes) {
+        for (BiomeType biome : biomes) {
             BiomeData data = biomeRegistry.getData(biome);
             if (data != null) {
                 player.print(" " + data.getName());
@@ -188,7 +188,7 @@ public class BiomeCommands {
     )
     @Logging(REGION)
     @CommandPermissions("worldedit.biome.set")
-    public void setBiome(Player player, LocalSession session, EditSession editSession, BaseBiome target, @Switch('p') boolean atPosition) throws WorldEditException {
+    public void setBiome(Player player, LocalSession session, EditSession editSession, BiomeType target, @Switch('p') boolean atPosition) throws WorldEditException {
         World world = player.getWorld();
         Region region;
         Mask mask = editSession.getMask();

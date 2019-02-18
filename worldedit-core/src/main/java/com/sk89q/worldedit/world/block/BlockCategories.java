@@ -26,48 +26,40 @@ import javax.annotation.Nullable;
  */
 public final class BlockCategories {
 
-    public static final BlockCategory ACACIA_LOGS = register("minecraft:acacia_logs");
-    public static final BlockCategory ANVIL = register("minecraft:anvil");
-    public static final BlockCategory BANNERS = register("minecraft:banners");
-    public static final BlockCategory BIRCH_LOGS = register("minecraft:birch_logs");
-    public static final BlockCategory BUTTONS = register("minecraft:buttons");
-    public static final BlockCategory CARPETS = register("minecraft:carpets");
-    public static final BlockCategory CORALS = register("minecraft:corals");
-    public static final BlockCategory CORAL_BLOCKS = register("minecraft:coral_blocks");
-    public static final BlockCategory DARK_OAK_LOGS = register("minecraft:dark_oak_logs");
-    public static final BlockCategory DOORS = register("minecraft:doors");
-    public static final BlockCategory ENDERMAN_HOLDABLE = register("minecraft:enderman_holdable");
-    public static final BlockCategory FLOWER_POTS = register("minecraft:flower_pots");
-    public static final BlockCategory ICE = register("minecraft:ice");
-    public static final BlockCategory JUNGLE_LOGS = register("minecraft:jungle_logs");
-    public static final BlockCategory LEAVES = register("minecraft:leaves");
-    public static final BlockCategory LOGS = register("minecraft:logs");
-    public static final BlockCategory OAK_LOGS = register("minecraft:oak_logs");
-    public static final BlockCategory PLANKS = register("minecraft:planks");
-    public static final BlockCategory RAILS = register("minecraft:rails");
-    public static final BlockCategory SAND = register("minecraft:sand");
-    public static final BlockCategory SAPLINGS = register("minecraft:saplings");
-    public static final BlockCategory SLABS = register("minecraft:slabs");
-    public static final BlockCategory SPRUCE_LOGS = register("minecraft:spruce_logs");
-    public static final BlockCategory STAIRS = register("minecraft:stairs");
-    public static final BlockCategory STONE_BRICKS = register("minecraft:stone_bricks");
-    public static final BlockCategory VALID_SPAWN = register("minecraft:valid_spawn");
-    public static final BlockCategory WOODEN_BUTTONS = register("minecraft:wooden_buttons");
-    public static final BlockCategory WOODEN_DOORS = register("minecraft:wooden_doors");
-    public static final BlockCategory WOODEN_PRESSURE_PLATES = register("minecraft:wooden_pressure_plates");
-    public static final BlockCategory WOODEN_SLABS = register("minecraft:wooden_slabs");
-    public static final BlockCategory WOODEN_STAIRS = register("minecraft:wooden_stairs");
-    public static final BlockCategory WOOL = register("minecraft:wool");
+    public static final BlockCategory ACACIA_LOGS = get("minecraft:acacia_logs");
+    public static final BlockCategory ANVIL = get("minecraft:anvil");
+    public static final BlockCategory BANNERS = get("minecraft:banners");
+    public static final BlockCategory BIRCH_LOGS = get("minecraft:birch_logs");
+    public static final BlockCategory BUTTONS = get("minecraft:buttons");
+    public static final BlockCategory CARPETS = get("minecraft:carpets");
+    public static final BlockCategory CORALS = get("minecraft:corals");
+    public static final BlockCategory CORAL_BLOCKS = get("minecraft:coral_blocks");
+    public static final BlockCategory DARK_OAK_LOGS = get("minecraft:dark_oak_logs");
+    public static final BlockCategory DOORS = get("minecraft:doors");
+    public static final BlockCategory ENDERMAN_HOLDABLE = get("minecraft:enderman_holdable");
+    public static final BlockCategory FLOWER_POTS = get("minecraft:flower_pots");
+    public static final BlockCategory ICE = get("minecraft:ice");
+    public static final BlockCategory JUNGLE_LOGS = get("minecraft:jungle_logs");
+    public static final BlockCategory LEAVES = get("minecraft:leaves");
+    public static final BlockCategory LOGS = get("minecraft:logs");
+    public static final BlockCategory OAK_LOGS = get("minecraft:oak_logs");
+    public static final BlockCategory PLANKS = get("minecraft:planks");
+    public static final BlockCategory RAILS = get("minecraft:rails");
+    public static final BlockCategory SAND = get("minecraft:sand");
+    public static final BlockCategory SAPLINGS = get("minecraft:saplings");
+    public static final BlockCategory SLABS = get("minecraft:slabs");
+    public static final BlockCategory SPRUCE_LOGS = get("minecraft:spruce_logs");
+    public static final BlockCategory STAIRS = get("minecraft:stairs");
+    public static final BlockCategory STONE_BRICKS = get("minecraft:stone_bricks");
+    public static final BlockCategory VALID_SPAWN = get("minecraft:valid_spawn");
+    public static final BlockCategory WOODEN_BUTTONS = get("minecraft:wooden_buttons");
+    public static final BlockCategory WOODEN_DOORS = get("minecraft:wooden_doors");
+    public static final BlockCategory WOODEN_PRESSURE_PLATES = get("minecraft:wooden_pressure_plates");
+    public static final BlockCategory WOODEN_SLABS = get("minecraft:wooden_slabs");
+    public static final BlockCategory WOODEN_STAIRS = get("minecraft:wooden_stairs");
+    public static final BlockCategory WOOL = get("minecraft:wool");
 
     private BlockCategories() {
-    }
-
-    private static BlockCategory register(final String id) {
-        return register(new BlockCategory(id));
-    }
-
-    public static BlockCategory register(final BlockCategory tag) {
-        return BlockCategory.REGISTRY.register(tag.getId(), tag);
     }
 
     public static @Nullable BlockCategory get(final String id) {
