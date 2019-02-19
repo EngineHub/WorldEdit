@@ -35,7 +35,6 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.management.PlayerList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.WorldServer;
-import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
 import java.util.ArrayList;
@@ -83,8 +82,8 @@ class ForgePlatform extends AbstractPlatform implements MultiUserPlatform {
 
     @Override
     public List<? extends com.sk89q.worldedit.world.World> getWorlds() {
-        WorldServer[] worlds = DimensionManager.getWorlds();
-        List<com.sk89q.worldedit.world.World> ret = new ArrayList<>(worlds.length);
+        Iterable<WorldServer> worlds = server.getWorlds();
+        List<com.sk89q.worldedit.world.World> ret = new ArrayList<>();
         for (WorldServer world : worlds) {
             ret.add(new ForgeWorld(world));
         }
@@ -108,7 +107,7 @@ class ForgePlatform extends AbstractPlatform implements MultiUserPlatform {
         if (world instanceof ForgeWorld) {
             return world;
         } else {
-            for (WorldServer ws : DimensionManager.getWorlds()) {
+            for (WorldServer ws : server.getWorlds()) {
                 if (ws.getWorldInfo().getWorldName().equals(world.getName())) {
                     return new ForgeWorld(ws);
                 }

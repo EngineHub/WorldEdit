@@ -33,7 +33,14 @@ public class GuiReferenceCard extends GuiScreen {
 
     @Override
     public void initGui() {
-        this.buttonList.add(this.closeButton = new GuiButton(0, (this.width - this.backgroundWidth + 100) / 2, (this.height + this.backgroundHeight - 60) / 2, this.backgroundWidth - 100, 20, "Close"));
+        this.closeButton = new GuiButton(0, (this.width - this.backgroundWidth + 100) / 2, (this.height + this.backgroundHeight - 60) / 2, this.backgroundWidth - 100, 20, "Close") {
+            @Override
+            public void onClick(double p_194829_1_, double p_194829_3_) {
+                super.onClick(p_194829_1_, p_194829_3_);
+
+                mc.player.closeScreen();
+            }
+        };
     }
 
     @Override
@@ -42,16 +49,9 @@ public class GuiReferenceCard extends GuiScreen {
         int y = (this.height - this.backgroundHeight) / 2 - this.closeButton.height;
 
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-        this.mc.renderEngine.bindTexture(new ResourceLocation(ForgeWorldEdit.MOD_ID, "textures/gui/reference.png"));
+        this.mc.textureManager.bindTexture(new ResourceLocation(ForgeWorldEdit.MOD_ID, "textures/gui/reference.png"));
         this.drawTexturedModalRect(x, y, 0, 0, this.backgroundWidth, this.backgroundHeight);
         super.render(mouseX, mouseY, par3);
-    }
-
-    @Override
-    protected void actionPerformed(GuiButton button) {
-        if (button.id == 0) {
-            this.mc.player.closeScreen();
-        }
     }
 
     @Override

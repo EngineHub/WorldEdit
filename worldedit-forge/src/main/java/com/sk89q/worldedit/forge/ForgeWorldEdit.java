@@ -47,6 +47,8 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent.LeftClickEmpty
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
+import net.minecraftforge.fml.ModContainer;
+import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.server.FMLServerAboutToStartEvent;
@@ -79,6 +81,8 @@ public class ForgeWorldEdit {
     private ForgeConfiguration config;
     private File workingDir;
 
+    private ModContainer container;
+
     public ForgeWorldEdit() {
         inst = this;
 
@@ -92,6 +96,8 @@ public class ForgeWorldEdit {
     }
 
     public void init(FMLCommonSetupEvent event) {
+        this.container = ModLoadingContext.get().getActiveContainer();
+
         // Setup working directory
         workingDir = new File(event.getModConfigurationDirectory() + File.separator + "worldedit");
         workingDir.mkdir();
@@ -299,7 +305,7 @@ public class ForgeWorldEdit {
      * @return a version string
      */
     String getInternalVersion() {
-        return ForgeWorldEdit.class.getAnnotation(Mod.class).version();
+        return container.getModInfo().getVersion().toString();
     }
 
     public void setPermissionsProvider(ForgePermissionsProvider provider) {
