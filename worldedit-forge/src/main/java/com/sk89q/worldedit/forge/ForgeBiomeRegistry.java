@@ -23,7 +23,6 @@ import com.sk89q.worldedit.world.biome.BiomeData;
 import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.registry.BiomeRegistry;
 import net.minecraft.world.biome.Biome;
-import net.minecraftforge.registries.ForgeRegistries;
 
 /**
  * Provides access to biome data in Forge.

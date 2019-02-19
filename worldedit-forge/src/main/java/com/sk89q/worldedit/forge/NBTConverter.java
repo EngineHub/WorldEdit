@@ -140,7 +140,7 @@ final class NBTConverter {
     public static NBTTagCompound toNative(CompoundTag tag) {
         NBTTagCompound compound = new NBTTagCompound();
         for (Entry<String, Tag> child : tag.getValue().entrySet()) {
-            compound.setTag(child.getKey(), toNative(child.getValue()));
+            compound.put(child.getKey(), toNative(child.getValue()));
         }
         return compound;
     }
@@ -245,7 +245,7 @@ final class NBTConverter {
         Set<String> tags = other.keySet();
         Map<String, Tag> map = new HashMap<>();
         for (String tagName : tags) {
-            map.put(tagName, fromNative(other.getTag(tagName)));
+            map.put(tagName, fromNative(other.get(tagName)));
         }
         return new CompoundTag(map);
     }

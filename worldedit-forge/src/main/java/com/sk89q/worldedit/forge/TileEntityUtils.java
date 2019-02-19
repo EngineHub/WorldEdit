@@ -52,9 +52,9 @@ final class TileEntityUtils {
         checkNotNull(tag);
         checkNotNull(position);
 
-        tag.setTag("x", new NBTTagInt(position.getBlockX()));
-        tag.setTag("y", new NBTTagInt(position.getBlockY()));
-        tag.setTag("z", new NBTTagInt(position.getBlockZ()));
+        tag.put("x", new NBTTagInt(position.getBlockX()));
+        tag.put("y", new NBTTagInt(position.getBlockY()));
+        tag.put("z", new NBTTagInt(position.getBlockZ()));
 
         return tag;
     }

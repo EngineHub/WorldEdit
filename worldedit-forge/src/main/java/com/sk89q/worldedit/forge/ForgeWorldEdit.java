@@ -26,15 +26,18 @@ import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.event.platform.PlatformReadyEvent;
 import com.sk89q.worldedit.extension.platform.Platform;
+import com.sk89q.worldedit.forge.net.handler.InternalPacketHandler;
 import com.sk89q.worldedit.forge.net.handler.WECUIPacketHandler;
 import com.sk89q.worldedit.forge.net.packet.LeftClickAirEventMessage;
-import com.sk89q.worldedit.forge.net.handler.InternalPacketHandler;
 import com.sk89q.worldedit.util.Location;
+import com.sk89q.worldedit.world.block.BlockCategory;
 import com.sk89q.worldedit.world.block.BlockType;
-import com.sk89q.worldedit.world.block.BlockTypes;
+import com.sk89q.worldedit.world.entity.EntityType;
+import com.sk89q.worldedit.world.item.ItemCategory;
 import com.sk89q.worldedit.world.item.ItemType;
-import com.sk89q.worldedit.world.item.ItemTypes;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
@@ -44,7 +47,6 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent.LeftClickEmpty
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.server.FMLServerAboutToStartEvent;
@@ -120,19 +122,29 @@ public class ForgeWorldEdit {
         this.provider = new ForgePermissionsProvider.VanillaPermissionsProvider(platform);
 //        }
 
-        // TODO Setup states
-        for (ResourceLocation name : ForgeRegistries.BLOCKS.getKeys()) {
-            String nameStr = name.toString();
-            if (!BlockType.REGISTRY.keySet().contains(nameStr)) {
-                BlockType.REGISTRY.register(nameStr, new BlockType(nameStr));
-            }
-        }
+        setupRegistries();
+    }
 
+    private void setupRegistries() {
+        // Blocks
+        for (ResourceLocation name : ForgeRegistries.BLOCKS.getKeys()) {
+            BlockType.REGISTRY.register(name.toString(), new BlockType(name.toString(),
+                    input -> ForgeAdapter.adapt(ForgeAdapter.adapt(input.getBlockType()).getDefaultState())));
+        }
+        // Items
         for (ResourceLocation name : ForgeRegistries.ITEMS.getKeys()) {
-            String nameStr = name.toString();
-            if (!ItemType.REGISTRY.keySet().contains(nameStr)) {
-                ItemType.REGISTRY.register(nameStr, new ItemType(nameStr));
-            }
+            ItemType.REGISTRY.register(name.toString(), new ItemType(name.toString()));
+        }
+        // Entities
+        for (ResourceLocation name : ForgeRegistries.ENTITIES.getKeys()) {
+            EntityType.REGISTRY.register(name.toString(), new EntityType(name.toString()));
+        }
+        // Tags
+        for (ResourceLocation name : BlockTags.getCollection().getRegisteredTags()) {
+            BlockCategory.REGISTRY.register(name.toString(), new BlockCategory(name.toString()));
+        }
+        for (ResourceLocation name : ItemTags.getCollection().getRegisteredTags()) {
+            ItemCategory.REGISTRY.register(name.toString(), new ItemCategory(name.toString()));
         }
     }
 

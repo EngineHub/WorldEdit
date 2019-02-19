@@ -31,22 +31,21 @@ import com.sk89q.worldedit.registry.state.IntegerProperty;
 import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.world.World;
-
 import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.biome.BiomeTypes;
-import net.minecraft.block.properties.IProperty;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ResourceLocation;
+import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.block.BlockTypes;
 import com.sk89q.worldedit.world.item.ItemType;
 import com.sk89q.worldedit.world.item.ItemTypes;
 import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.state.DirectionProperty;
 import net.minecraft.state.IProperty;
+import net.minecraft.state.StateContainer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.IStringSerializable;
 import net.minecraft.util.ResourceLocation;
@@ -55,6 +54,9 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.biome.Biome;
 import net.minecraftforge.registries.ForgeRegistries;
 
+import java.util.Comparator;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 final class ForgeAdapter {
@@ -67,7 +69,7 @@ final class ForgeAdapter {
     }
 
     public static Biome adapt(BiomeType biomeType) {
-        return Biome.REGISTRY.getObject(new ResourceLocation(biomeType.getId()));
+        return ForgeRegistries.BIOMES.getValue(new ResourceLocation(biomeType.getId()));
     }
 
     public static BiomeType adapt(Biome biome) {
@@ -134,6 +136,52 @@ final class ForgeAdapter {
                     .collect(Collectors.toList()));
         }
         return new IPropertyAdapter<>(property);
+    }
+
+    public static Map<Property<?>, Object> adaptProperties(BlockType block, Map<IProperty<?>, Comparable<?>> mcProps) {
+        Map<Property<?>, Object> props = new TreeMap<>(Comparator.comparing(Property::getName));
+        for (Map.Entry<IProperty<?>, Comparable<?>> prop : mcProps.entrySet()) {
+            Object value = prop.getValue();
+            if (prop.getKey() instanceof DirectionProperty) {
+                value = adaptEnumFacing((EnumFacing) value);
+            } else if (prop.getKey() instanceof net.minecraft.state.EnumProperty) {
+                value = ((IStringSerializable) value).getName();
+            }
+            props.put(block.getProperty(prop.getKey().getName()), value);
+        }
+        return props;
+    }
+
+    private static IBlockState applyProperties(StateContainer<Block, IBlockState> stateContainer, IBlockState newState, Map<Property<?>, Object> states) {
+        for (Map.Entry<Property<?>, Object> state : states.entrySet()) {
+            IProperty<?> property = stateContainer.getProperty(state.getKey().getName());
+            Comparable value = (Comparable) state.getValue();
+            // we may need to adapt this value, depending on the source prop
+            if (property instanceof DirectionProperty) {
+                Direction dir = (Direction) value;
+                value = ForgeAdapter.adapt(dir);
+            } else if (property instanceof net.minecraft.state.EnumProperty) {
+                String enumName = (String) value;
+                value = ((net.minecraft.state.EnumProperty<?>) property).parseValue((String) value).orElseGet(() -> {
+                    throw new IllegalStateException("Enum property " + property.getName() + " does not contain " + enumName);
+                });
+            }
+
+            newState = newState.with(property, value);
+        }
+        return newState;
+    }
+
+    public static IBlockState adapt(BlockState blockState) {
+        Block mcBlock = ForgeAdapter.adapt(blockState.getBlockType());
+        IBlockState newState = mcBlock.getDefaultState();
+        Map<Property<?>, Object> states = blockState.getStates();
+        return applyProperties(mcBlock.getStateContainer(), newState, states);
+    }
+
+    public static BlockState adapt(IBlockState blockState) {
+        BlockType blockType = adapt(blockState.getBlock());
+        return blockType.getState(ForgeAdapter.adaptProperties(blockType, blockState.getValues()));
     }
 
     public static Block adapt(BlockType blockType) {
