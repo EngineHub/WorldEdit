@@ -20,9 +20,11 @@
 package com.sk89q.worldedit.world.registry;
 
 import com.sk89q.worldedit.registry.state.Property;
+import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockType;
 
 import java.util.Map;
+import java.util.OptionalInt;
 
 import javax.annotation.Nullable;
 
@@ -56,5 +58,13 @@ public interface BlockRegistry {
      * @return a map of states where the key is the state's ID
      */
     Map<String, ? extends Property<?>> getProperties(BlockType blockType);
+
+    /**
+     * Retrieve the internal ID for a given state, if possible.
+     *
+     * @param state The block state
+     * @return the internal ID of the state
+     */
+    OptionalInt getInternalBlockStateId(BlockState state);
 
 }

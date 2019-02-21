@@ -38,6 +38,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Map;
+import java.util.OptionalInt;
 
 import javax.annotation.Nullable;
 
@@ -160,4 +161,15 @@ public interface BukkitImplAdapter {
      * @return the WorldEdit BaseItemStack
      */
     BaseItemStack adapt(ItemStack itemStack);
+
+
+    /**
+     * Retrieve the internal ID for a given state, if possible.
+     *
+     * @param state The block state
+     * @return the internal ID of the state
+     */
+    default OptionalInt getInternalBlockStateId(BlockState state) {
+        return OptionalInt.empty();
+    }
 }

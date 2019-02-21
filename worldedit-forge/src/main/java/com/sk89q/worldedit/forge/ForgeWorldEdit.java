@@ -175,6 +175,9 @@ public class ForgeWorldEdit {
                 ItemCategory.REGISTRY.register(name.toString(), new ItemCategory(name.toString()));
             }
         }
+
+        config = new ForgeConfiguration(this);
+        config.load();
     }
 
     @SubscribeEvent
