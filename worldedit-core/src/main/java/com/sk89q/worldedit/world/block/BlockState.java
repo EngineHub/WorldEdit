@@ -26,7 +26,10 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Table;
 import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.extension.platform.Capability;
+import com.sk89q.worldedit.internal.block.BlockStateIdAcess;
 import com.sk89q.worldedit.registry.state.Property;
+import com.sk89q.worldedit.world.registry.BlockRegistry;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -35,6 +38,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.OptionalInt;
 import java.util.Set;
 
 /**
@@ -42,9 +46,14 @@ import java.util.Set;
  */
 @SuppressWarnings("unchecked")
 public class BlockState implements BlockStateHolder<BlockState> {
+    
+    static {
+        BlockStateIdAcess.setBlockStateStateId(x -> x.internalId);
+    }
 
     private final BlockType blockType;
     private final Map<Property<?>, Object> values;
+    private OptionalInt internalId = OptionalInt.empty();
 
     private BaseBlock emptyBaseBlock;
 
@@ -56,8 +65,14 @@ public class BlockState implements BlockStateHolder<BlockState> {
         this.values = new LinkedHashMap<>();
         this.emptyBaseBlock = new BaseBlock(this);
     }
+    
+    BlockState initializeId(BlockRegistry registry) {
+        this.internalId = registry.getInternalBlockStateId(this);
+        return this;
+    }
 
     static Map<Map<Property<?>, Object>, BlockState> generateStateMap(BlockType blockType) {
+        BlockRegistry registry = WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.WORLD_EDITING).getRegistries().getBlockRegistry();
         Map<Map<Property<?>, Object>, BlockState> stateMap = new LinkedHashMap<>();
         List<? extends Property<?>> properties = blockType.getProperties();
 
@@ -71,7 +86,7 @@ public class BlockState implements BlockStateHolder<BlockState> {
             List<List<Object>> valueLists = Lists.cartesianProduct(separatedValues);
             for (List<Object> valueList : valueLists) {
                 Map<Property<?>, Object> valueMap = Maps.newTreeMap(Comparator.comparing(Property::getName));
-                BlockState stateMaker = new BlockState(blockType);
+                BlockState stateMaker = new BlockState(blockType).initializeId(registry);
                 for (int i = 0; i < valueList.size(); i++) {
                     Property<?> property = properties.get(i);
                     Object value = valueList.get(i);
@@ -84,7 +99,7 @@ public class BlockState implements BlockStateHolder<BlockState> {
 
         if (stateMap.isEmpty()) {
             // No properties.
-            stateMap.put(new LinkedHashMap<>(), new BlockState(blockType));
+            stateMap.put(new LinkedHashMap<>(), new BlockState(blockType).initializeId(registry));
         }
 
         for (BlockState state : stateMap.values()) {

@@ -20,10 +20,12 @@
 package com.sk89q.worldedit.world.registry;
 
 import com.sk89q.worldedit.registry.state.Property;
+import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockType;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.OptionalInt;
 
 import javax.annotation.Nullable;
 
@@ -50,6 +52,11 @@ public class BundledBlockRegistry implements BlockRegistry {
     @Override
     public Map<String, ? extends Property<?>> getProperties(BlockType blockType) {
         return Collections.emptyMap(); // Oof
+    }
+
+    @Override
+    public OptionalInt getInternalBlockStateId(BlockState state) {
+        return OptionalInt.empty();
     }
 
 }
