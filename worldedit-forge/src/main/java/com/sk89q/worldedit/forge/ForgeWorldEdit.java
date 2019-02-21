@@ -55,11 +55,16 @@ import net.minecraftforge.fml.event.server.FMLServerAboutToStartEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartedEvent;
 import net.minecraftforge.fml.event.server.FMLServerStoppingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fml.loading.FMLPaths;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 /**
  * The Forge implementation of WorldEdit.
@@ -79,7 +84,7 @@ public class ForgeWorldEdit {
 
     private ForgePlatform platform;
     private ForgeConfiguration config;
-    private File workingDir;
+    private Path workingDir;
 
     private ModContainer container;
 
@@ -99,8 +104,14 @@ public class ForgeWorldEdit {
         this.container = ModLoadingContext.get().getActiveContainer();
 
         // Setup working directory
-        workingDir = new File(event.getModConfigurationDirectory() + File.separator + "worldedit");
-        workingDir.mkdir();
+        workingDir = FMLPaths.CONFIGDIR.get().resolve("worldedit");
+        if (!Files.exists(workingDir)) {
+            try {
+                Files.createDirectory(workingDir);
+            } catch (IOException e) {
+                throw new UncheckedIOException(e);
+            }
+        }
 
         config = new ForgeConfiguration(this);
         config.load();
@@ -296,7 +307,7 @@ public class ForgeWorldEdit {
      * @return the working directory
      */
     public File getWorkingDir() {
-        return this.workingDir;
+        return this.workingDir.toFile();
     }
 
     /**
