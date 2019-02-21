@@ -32,6 +32,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 import java.util.Map;
+import java.util.OptionalInt;
 
 import javax.annotation.Nullable;
 
@@ -117,4 +118,14 @@ public interface BukkitImplAdapter {
      * @param player The player
      */
     void sendFakeOP(Player player);
+
+    /**
+     * Retrieve the internal ID for a given state, if possible.
+     *
+     * @param state The block state
+     * @return the internal ID of the state
+     */
+    default OptionalInt getInternalBlockStateId(BlockState state) {
+        return OptionalInt.empty();
+    }
 }

@@ -75,7 +75,7 @@ public class BundledItemData {
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.registerTypeAdapter(Vector3.class, new VectorAdapter());
         Gson gson = gsonBuilder.create();
-        URL url = ResourceLoader.getResource(BundledItemData.class,"items.json");
+        URL url = ResourceLoader.getResource(BundledItemData.class,"items.json");F
         if (url == null) {
             throw new IOException("Could not find items.json");
         }
