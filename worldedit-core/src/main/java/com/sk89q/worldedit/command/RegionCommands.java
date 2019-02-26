@@ -240,17 +240,19 @@ public class RegionCommands {
 
     @Command(
         aliases = { "/smooth" },
-        usage = "[iterations]",
+        usage = "[iterations] [filter]",
         desc = "Smooth the elevation in the selection",
         help =
-            "Smooths the elevation in the selection.",
+            "Smooths the elevation in the selection.\n" +
+            "Optionally, restricts the height map to a set of blocks specified with mask syntax.\n" +
+            "For example, '//smooth 1 grass_block,dirt,stone' would only smooth natural surface terrain.",
         min = 0,
-        max = 1
+        max = 2
     )
     @CommandPermissions("worldedit.region.smooth")
     @Logging(REGION)
-    public void smooth(Player player, EditSession editSession, @Selection Region region, @Optional("1") int iterations) throws WorldEditException {
-        HeightMap heightMap = new HeightMap(editSession, region);
+    public void smooth(Player player, EditSession editSession, @Selection Region region, @Optional("1") int iterations, @Optional Mask mask) throws WorldEditException {
+        HeightMap heightMap = new HeightMap(editSession, region, mask);
         HeightMapFilter filter = new HeightMapFilter(new GaussianKernel(5, 1.0));
         int affected = heightMap.applyFilter(filter, iterations);
         player.print("Terrain's height map smoothed. " + affected + " block(s) changed.");

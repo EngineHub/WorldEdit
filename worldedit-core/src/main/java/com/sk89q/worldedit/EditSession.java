@@ -592,10 +592,25 @@ public class EditSession implements Extent, AutoCloseable {
      * @return height of highest block found or 'minY'
      */
     public int getHighestTerrainBlock(int x, int z, int minY, int maxY) {
+        return getHighestTerrainBlock(x, z, minY, maxY, null);
+    }
+
+    /**
+     * Returns the highest solid 'terrain' block.
+     *
+     * @param x the X coordinate
+     * @param z the Z coordinate
+     * @param minY minimal height
+     * @param maxY maximal height
+     * @param filter a mask of blocks to consider, or null to consider any solid (movement-blocking) block
+     * @return height of highest block found or 'minY'
+     */
+    public int getHighestTerrainBlock(int x, int z, int minY, int maxY, Mask filter) {
         for (int y = maxY; y >= minY; --y) {
             BlockVector3 pt = BlockVector3.at(x, y, z);
-            BlockState block = getBlock(pt);
-            if (block.getBlockType().getMaterial().isMovementBlocker()) {
+            if (filter == null
+                    ? getBlock(pt).getBlockType().getMaterial().isMovementBlocker()
+                    : filter.test(pt)) {
                 return y;
             }
         }
