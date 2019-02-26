@@ -21,6 +21,7 @@ package com.sk89q.worldedit.command.tool.brush;
 
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
+import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.Vector3;
@@ -31,12 +32,20 @@ import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.Location;
 
+import javax.annotation.Nullable;
+
 public class SmoothBrush implements Brush {
 
+    private final Mask mask;
     private int iterations;
 
     public SmoothBrush(int iterations) {
+        this(iterations, null);
+    }
+
+    public SmoothBrush(int iterations, @Nullable Mask mask) {
         this.iterations = iterations;
+        this.mask = mask;
     }
 
     @Override
@@ -45,7 +54,7 @@ public class SmoothBrush implements Brush {
         Location min = new Location(editSession.getWorld(), posDouble.subtract(size, size, size));
         BlockVector3 max = posDouble.add(size, size + 10, size).toBlockPoint();
         Region region = new CuboidRegion(editSession.getWorld(), min.toVector().toBlockPoint(), max);
-        HeightMap heightMap = new HeightMap(editSession, region);
+        HeightMap heightMap = new HeightMap(editSession, region, mask);
         HeightMapFilter filter = new HeightMapFilter(new GaussianKernel(5, 1.0));
         heightMap.applyFilter(filter, iterations);
     }
