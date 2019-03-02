@@ -99,7 +99,7 @@ public class LayerVisitor implements Operation {
 
             // Abort if we are underground
             if (function.isGround(column.toBlockVector3(maxY + 1))) {
-                return null;
+                continue;
             }
 
             boolean found = false;
