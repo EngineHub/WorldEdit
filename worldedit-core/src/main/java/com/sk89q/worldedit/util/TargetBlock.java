@@ -189,11 +189,16 @@ public class TargetBlock {
 
     public Location getAnyTargetBlockFace() {
         getAnyTargetBlock();
-        return getCurrentBlock().setDirection(getCurrentBlock().toVector().subtract(getPreviousBlock().toVector()));
+        Location current = getCurrentBlock();
+        if (current != null)
+            return current.setDirection(current.toVector().subtract(getPreviousBlock().toVector()));
+        else
+            return new Location(world, targetPos.toVector3(), Float.NaN, Float.NaN);
     }
 
     public Location getTargetBlockFace() {
-        getAnyTargetBlock();
+        getTargetBlock();
+        if (getCurrentBlock() == null) return null;
         return getCurrentBlock().setDirection(getCurrentBlock().toVector().subtract(getPreviousBlock().toVector()));
     }
 
