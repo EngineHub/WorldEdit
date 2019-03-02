@@ -262,11 +262,12 @@ public class RegionCommands {
     @Command(
         aliases = { "/move" },
         usage = "[count] [direction] [leave-id]",
-        flags = "s",
+        flags = "sa",
         desc = "Move the contents of the selection",
         help =
             "Moves the contents of the selection.\n" +
             "The -s flag shifts the selection to the target location.\n" +
+            "The -a flag skips air blocks.\n" +
             "Optionally fills the old location with <leave-id>.",
         min = 0,
         max = 3
@@ -278,9 +279,10 @@ public class RegionCommands {
                      @Optional("1") @Range(min = 1) int count,
                      @Optional(Direction.AIM) @Direction(includeDiagonals = true) BlockVector3 direction,
                      @Optional("air") Pattern replace,
-                     @Switch('s') boolean moveSelection) throws WorldEditException {
+                     @Switch('s') boolean moveSelection,
+                     @Switch('a') boolean ignoreAirBlocks) throws WorldEditException {
 
-        int affected = editSession.moveRegion(region, direction, count, true, replace);
+        int affected = editSession.moveRegion(region, direction, count, !ignoreAirBlocks, replace);
 
         if (moveSelection) {
             try {

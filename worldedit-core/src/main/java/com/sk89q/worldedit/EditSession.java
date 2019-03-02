@@ -1252,7 +1252,7 @@ public class EditSession implements Extent, AutoCloseable {
         BlockVector3 to = region.getMinimumPoint();
 
         // Remove the original blocks
-        com.sk89q.worldedit.function.pattern.Pattern pattern = replacement != null ?
+        Pattern pattern = replacement != null ?
                 replacement :
                 new BlockPattern(BlockTypes.AIR.getDefaultState());
         BlockReplace remove = new BlockReplace(this, pattern);
