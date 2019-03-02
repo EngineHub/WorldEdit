@@ -1897,12 +1897,25 @@ public class EditSession implements Extent, AutoCloseable {
                 final Vector3 scaled = current.subtract(zero).divide(unit);
 
                 try {
-                    if (expression.evaluate(scaled.getX(), scaled.getY(), scaled.getZ(), defaultMaterial.getBlockType().getLegacyId(), 0) <= 0) {
-                        // TODO data
+                    int[] legacy = LegacyMapper.getInstance().getLegacyFromBlock(defaultMaterial.toImmutableState());
+                    int typeVar = 0;
+                    int dataVar = 0;
+                    if (legacy != null) {
+                        typeVar = legacy[0];
+                        if (legacy.length > 1) {
+                            dataVar = legacy[1];
+                        }
+                    }
+                    if (expression.evaluate(scaled.getX(), scaled.getY(), scaled.getZ(), typeVar, dataVar) <= 0) {
                         return null;
                     }
-
-                    return LegacyMapper.getInstance().getBlockFromLegacy((int) typeVariable.getValue(), (int) dataVariable.getValue()).toBaseBlock();
+                    int newType = (int) typeVariable.getValue();
+                    int newData = (int) dataVariable.getValue();
+                    if (newType != typeVar || newData != dataVar) {
+                        return LegacyMapper.getInstance().getBlockFromLegacy((int) typeVariable.getValue(), (int) dataVariable.getValue()).toBaseBlock();
+                    } else {
+                        return defaultMaterial;
+                    }
                 } catch (Exception e) {
                     log.log(Level.WARNING, "Failed to create shape", e);
                     return null;
