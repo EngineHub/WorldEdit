@@ -32,7 +32,16 @@ public class BundledItemRegistry implements ItemRegistry {
     @Nullable
     @Override
     public String getName(ItemType itemType) {
-        BundledItemData.ItemEntry itemEntry = BundledItemData.getInstance().findById(itemType.getId());
-        return itemEntry != null ? itemEntry.localizedName : null;
+        String id = itemType.getId();
+        BundledItemData.ItemEntry itemEntry = BundledItemData.getInstance().findById(id);
+        if (itemEntry != null) {
+            String localized = itemEntry.localizedName;
+            if (localized.equals("Air")) {
+                int c = id.indexOf(':');
+                return c < 0 ? id : id.substring(c + 1);
+            }
+            return localized;
+        }
+        return null;
     }
 }
