@@ -1942,7 +1942,7 @@ public class EditSession implements Extent, AutoCloseable {
                             dataVar = legacy[1];
                         }
                     }
-                    if (expression.evaluate(timeout, scaled.getX(), scaled.getY(), scaled.getZ(), typeVar, dataVar) <= 0) {
+                    if (expression.evaluate(new double[]{scaled.getX(), scaled.getY(), scaled.getZ(), typeVar, dataVar}, timeout) <= 0) {
                         return null;
                     }
                     int newType = (int) typeVariable.getValue();
@@ -1994,7 +1994,7 @@ public class EditSession implements Extent, AutoCloseable {
             final Vector3 scaled = position.toVector3().subtract(zero).divide(unit);
 
             // transform
-            expression.evaluate(timeout, scaled.getX(), scaled.getY(), scaled.getZ());
+            expression.evaluate(new double[]{scaled.getX(), scaled.getY(), scaled.getZ()}, timeout);
 
             final BlockVector3 sourcePosition = environment.toWorld(x.getValue(), y.getValue(), z.getValue());
 
@@ -2309,7 +2309,7 @@ public class EditSession implements Extent, AutoCloseable {
                 final Vector2 scaled = current.subtract(zero2D).divide(unit2D);
 
                 try {
-                    if (expression.evaluate(timeout, scaled.getX(), scaled.getZ()) <= 0) {
+                    if (expression.evaluate(new double[]{scaled.getX(), scaled.getZ()}, timeout) <= 0) {
                         return null;
                     }
 

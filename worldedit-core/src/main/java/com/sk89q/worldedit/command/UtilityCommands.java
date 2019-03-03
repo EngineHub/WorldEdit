@@ -544,7 +544,7 @@ public class UtilityCommands {
             Expression expression = Expression.compile(input);
             if (actor instanceof SessionOwner) {
                 actor.print("= " + expression.evaluate(
-                        WorldEdit.getInstance().getSessionManager().get((SessionOwner) actor).getTimeout()));
+                        new double[]{}, WorldEdit.getInstance().getSessionManager().get((SessionOwner) actor).getTimeout()));
             } else {
                 actor.print("= " + expression.evaluate());
             }

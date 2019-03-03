@@ -116,11 +116,15 @@ public class Expression {
         root = Parser.parse(tokens, this);
     }
 
-    public double evaluate(double... values) throws EvaluationException {
-        return evaluate(WorldEdit.getInstance().getConfiguration().calculationTimeout, values);
+    public double evaluate() throws EvaluationException {
+        return evaluate(new double[0]);
     }
 
-    public double evaluate(int timeout, double... values) throws EvaluationException {
+    public double evaluate(double... values) throws EvaluationException {
+        return evaluate(values, WorldEdit.getInstance().getConfiguration().calculationTimeout);
+    }
+
+    public double evaluate(double[] values, int timeout) throws EvaluationException {
         for (int i = 0; i < values.length; ++i) {
             final String variableName = variableNames[i];
             final RValue invokable = variables.get(variableName);

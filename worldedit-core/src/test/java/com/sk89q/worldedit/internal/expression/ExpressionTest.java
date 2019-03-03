@@ -64,7 +64,7 @@ public class ExpressionTest {
         assertEquals(atan2(3, 4), simpleEval("atan2(3, 4)"), 0);
 
         // check variables
-        assertEquals(8, compile("foo+bar", "foo", "bar").evaluate(5, 3), 0);
+        assertEquals(8, compile("foo+bar", "foo", "bar").evaluate(5D, 3D), 0);
     }
 
     @Test
@@ -123,7 +123,7 @@ public class ExpressionTest {
     @Test
     public void testAssign() throws ExpressionException {
         Expression foo = compile("{a=x} b=y; c=z", "x", "y", "z", "a", "b", "c");
-        foo.evaluate(2, 3, 5);
+        foo.evaluate(2D, 3D, 5D);
         assertEquals(2, foo.getVariable("a", false).getValue(), 0);
         assertEquals(3, foo.getVariable("b", false).getValue(), 0);
         assertEquals(5, foo.getVariable("c", false).getValue(), 0);
@@ -136,13 +136,13 @@ public class ExpressionTest {
 
         // test 'dangling else'
         final Expression expression1 = compile("if (1) if (0) x=4; else y=5;", "x", "y");
-        expression1.evaluate(1, 2);
+        expression1.evaluate(1D, 2D);
         assertEquals(1, expression1.getVariable("x", false).getValue(), 0);
         assertEquals(5, expression1.getVariable("y", false).getValue(), 0);
 
         // test if the if construct is correctly recognized as a statement
         final Expression expression2 = compile("if (0) if (1) x=5; y=4;", "x", "y");
-        expression2.evaluate(1, 2);
+        expression2.evaluate(1D, 2D);
         assertEquals(4, expression2.getVariable("y", false).getValue(), 0);
     }
 

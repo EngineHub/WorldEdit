@@ -60,7 +60,7 @@ public class ExpressionMask2D extends AbstractMask2D {
     @Override
     public boolean test(BlockVector2 vector) {
         try {
-            return expression.evaluate(vector.getX(), 0, vector.getZ()) > 0;
+            return expression.evaluate(new double[]{vector.getX(), 0, vector.getZ()}, timeout) > 0;
         } catch (EvaluationException e) {
             return false;
         }

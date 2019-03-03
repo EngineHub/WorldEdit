@@ -72,7 +72,7 @@ public class ExpressionMask extends AbstractMask {
             if (expression.getEnvironment() instanceof WorldEditExpressionEnvironment) {
                 ((WorldEditExpressionEnvironment) expression.getEnvironment()).setCurrentBlock(vector.toVector3());
             }
-            return expression.evaluate(timeout, vector.getX(), vector.getY(), vector.getZ()) > 0;
+            return expression.evaluate(new double[]{vector.getX(), vector.getY(), vector.getZ()}, timeout) > 0;
         } catch (EvaluationException e) {
             return false;
         }
