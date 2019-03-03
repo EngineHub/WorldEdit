@@ -306,7 +306,7 @@ public class GenerationCommands {
         }
 
         try {
-            final int affected = editSession.makeShape(region, zero, unit, pattern, expression, hollow);
+            final int affected = editSession.makeShape(region, zero, unit, pattern, expression, hollow, session.getTimeout());
             player.findFreePosition();
             player.print(affected + " block(s) have been created.");
         } catch (ExpressionException e) {
@@ -333,7 +333,7 @@ public class GenerationCommands {
         min = 2,
         max = -1
     )
-    @CommandPermissions({"worldedit.generation.shape", "worldedit.biome.set"})
+    @CommandPermissions("worldedit.generation.shape.biome")
     @Logging(ALL)
     public void generateBiome(Player player, LocalSession session, EditSession editSession,
                               @Selection Region region,
@@ -371,7 +371,7 @@ public class GenerationCommands {
         }
 
         try {
-            final int affected = editSession.makeBiomeShape(region, zero, unit, target, expression, hollow);
+            final int affected = editSession.makeBiomeShape(region, zero, unit, target, expression, hollow, session.getTimeout());
             player.findFreePosition();
             player.print("" + affected + " columns affected.");
         } catch (ExpressionException e) {

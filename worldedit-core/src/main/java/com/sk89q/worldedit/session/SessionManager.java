@@ -155,6 +155,7 @@ public class SessionManager {
 
             session.setConfiguration(config);
             session.setBlockChangeLimit(config.defaultChangeLimit);
+            session.setTimeout(config.calculationTimeout);
 
             // Remember the session regardless of if it's currently active or not.
             // And have the SessionTracker FLUSH inactive sessions.

@@ -404,7 +404,7 @@ public class RegionCommands {
         }
 
         try {
-            final int affected = editSession.deformRegion(region, zero, unit, expression);
+            final int affected = editSession.deformRegion(region, zero, unit, expression, session.getTimeout());
             player.findFreePosition();
             player.print(affected + " block(s) have been deformed.");
         } catch (ExpressionException e) {

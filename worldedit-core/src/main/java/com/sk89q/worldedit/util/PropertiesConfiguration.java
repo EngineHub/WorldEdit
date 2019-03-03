@@ -112,6 +112,7 @@ public class PropertiesConfiguration extends LocalConfiguration {
         navigationUseGlass = getBool("nav-use-glass", navigationUseGlass);
         scriptTimeout = getInt("scripting-timeout", scriptTimeout);
         calculationTimeout = getInt("calculation-timeout", calculationTimeout);
+        maxCalculationTimeout = getInt("max-calculation-timeout", maxCalculationTimeout);
         saveDir = getString("schematic-save-dir", saveDir);
         scriptsDir = getString("craftscript-dir", scriptsDir);
         butcherDefaultRadius = getInt("butcher-default-radius", butcherDefaultRadius);

@@ -67,6 +67,7 @@ public abstract class LocalConfiguration {
     public int navigationWandMaxDistance = 50;
     public int scriptTimeout = 3000;
     public int calculationTimeout = 100;
+    public int maxCalculationTimeout = 300;
     public Set<String> allowedDataCycleBlocks = new HashSet<>();
     public String saveDir = "schematics";
     public String scriptsDir = "craftscripts";

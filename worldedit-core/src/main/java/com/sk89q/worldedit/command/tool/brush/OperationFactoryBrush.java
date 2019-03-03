@@ -20,6 +20,7 @@
 package com.sk89q.worldedit.command.tool.brush;
 
 import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.function.Contextual;
 import com.sk89q.worldedit.function.EditContext;
@@ -33,10 +34,16 @@ public class OperationFactoryBrush implements Brush {
 
     private final Contextual<? extends Operation> operationFactory;
     private final RegionFactory regionFactory;
+    private final LocalSession session;
 
     public OperationFactoryBrush(Contextual<? extends Operation> operationFactory, RegionFactory regionFactory) {
+        this(operationFactory, regionFactory, null);
+    }
+
+    public OperationFactoryBrush(Contextual<? extends Operation> operationFactory, RegionFactory regionFactory, LocalSession session) {
         this.operationFactory = operationFactory;
         this.regionFactory = regionFactory;
+        this.session = session;
     }
 
     @Override
@@ -45,6 +52,7 @@ public class OperationFactoryBrush implements Brush {
         context.setDestination(editSession);
         context.setRegion(regionFactory.createCenteredAt(position, size));
         context.setFill(pattern);
+        context.setSession(session);
         Operation operation = operationFactory.createFromContext(context);
         Operations.completeLegacy(operation);
     }

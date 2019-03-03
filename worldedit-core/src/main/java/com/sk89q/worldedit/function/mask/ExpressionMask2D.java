@@ -21,6 +21,7 @@ package com.sk89q.worldedit.function.mask;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.internal.expression.Expression;
 import com.sk89q.worldedit.internal.expression.ExpressionException;
 import com.sk89q.worldedit.internal.expression.runtime.EvaluationException;
@@ -29,6 +30,7 @@ import com.sk89q.worldedit.math.BlockVector2;
 public class ExpressionMask2D extends AbstractMask2D {
 
     private final Expression expression;
+    private final int timeout;
 
     /**
      * Create a new instance.
@@ -37,8 +39,7 @@ public class ExpressionMask2D extends AbstractMask2D {
      * @throws ExpressionException thrown if there is an error with the expression
      */
     public ExpressionMask2D(String expression) throws ExpressionException {
-        checkNotNull(expression);
-        this.expression = Expression.compile(expression, "x", "z");
+        this(Expression.compile(checkNotNull(expression), "x", "z"));
     }
 
     /**
@@ -47,8 +48,13 @@ public class ExpressionMask2D extends AbstractMask2D {
      * @param expression the expression
      */
     public ExpressionMask2D(Expression expression) {
+        this(expression, WorldEdit.getInstance().getConfiguration().calculationTimeout);
+    }
+
+    public ExpressionMask2D(Expression expression, int timeout) {
         checkNotNull(expression);
         this.expression = expression;
+        this.timeout = timeout;
     }
 
     @Override

@@ -21,6 +21,7 @@ package com.sk89q.worldedit.function.mask;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.internal.expression.Expression;
 import com.sk89q.worldedit.internal.expression.ExpressionException;
 import com.sk89q.worldedit.internal.expression.runtime.EvaluationException;
@@ -38,6 +39,7 @@ import javax.annotation.Nullable;
 public class ExpressionMask extends AbstractMask {
 
     private final Expression expression;
+    private final int timeout;
 
     /**
      * Create a new instance.
@@ -46,8 +48,7 @@ public class ExpressionMask extends AbstractMask {
      * @throws ExpressionException thrown if there is an error with the expression
      */
     public ExpressionMask(String expression) throws ExpressionException {
-        checkNotNull(expression);
-        this.expression = Expression.compile(expression, "x", "y", "z");
+        this(Expression.compile(checkNotNull(expression), "x", "y", "z"));
     }
 
     /**
@@ -56,8 +57,13 @@ public class ExpressionMask extends AbstractMask {
      * @param expression the expression
      */
     public ExpressionMask(Expression expression) {
+        this(expression, WorldEdit.getInstance().getConfiguration().calculationTimeout);
+    }
+
+    public ExpressionMask(Expression expression, int timeout) {
         checkNotNull(expression);
         this.expression = expression;
+        this.timeout = timeout;
     }
 
     @Override
@@ -66,7 +72,7 @@ public class ExpressionMask extends AbstractMask {
             if (expression.getEnvironment() instanceof WorldEditExpressionEnvironment) {
                 ((WorldEditExpressionEnvironment) expression.getEnvironment()).setCurrentBlock(vector.toVector3());
             }
-            return expression.evaluate(vector.getX(), vector.getY(), vector.getZ()) > 0;
+            return expression.evaluate(timeout, vector.getX(), vector.getY(), vector.getZ()) > 0;
         } catch (EvaluationException e) {
             return false;
         }
@@ -75,7 +81,7 @@ public class ExpressionMask extends AbstractMask {
     @Nullable
     @Override
     public Mask2D toMask2D() {
-        return new ExpressionMask2D(expression);
+        return new ExpressionMask2D(expression, timeout);
     }
 
 }

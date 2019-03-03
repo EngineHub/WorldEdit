@@ -23,6 +23,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static com.sk89q.worldedit.util.GuavaUtil.firstNonNull;
 
 import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.LocalSession;
+import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.extent.NullExtent;
@@ -147,7 +149,9 @@ public class Deform implements Contextual<Operation> {
                 unit = Vector3.ONE;
         }
 
-        return new DeformOperation(context.getDestination(), region, zero, unit, expression);
+        LocalSession session = context.getSession();
+        return new DeformOperation(context.getDestination(), region, zero, unit, expression,
+                session == null ? WorldEdit.getInstance().getConfiguration().calculationTimeout : session.getTimeout());
     }
 
     private static final class DeformOperation implements Operation {
@@ -156,20 +160,22 @@ public class Deform implements Contextual<Operation> {
         private final Vector3 zero;
         private final Vector3 unit;
         private final String expression;
+        private final int timeout;
 
-        private DeformOperation(Extent destination, Region region, Vector3 zero, Vector3 unit, String expression) {
+        private DeformOperation(Extent destination, Region region, Vector3 zero, Vector3 unit, String expression, int timeout) {
             this.destination = destination;
             this.region = region;
             this.zero = zero;
             this.unit = unit;
             this.expression = expression;
+            this.timeout = timeout;
         }
 
         @Override
         public Operation resume(RunContext run) throws WorldEditException {
             try {
                 // TODO: Move deformation code
-                ((EditSession) destination).deformRegion(region, zero, unit, expression);
+                ((EditSession) destination).deformRegion(region, zero, unit, expression, timeout);
                 return null;
             } catch (ExpressionException e) {
                 throw new RuntimeException("Failed to execute expression", e); // TODO: Better exception to throw here?
