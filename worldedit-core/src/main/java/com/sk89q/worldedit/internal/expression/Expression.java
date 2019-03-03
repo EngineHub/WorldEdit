@@ -116,10 +116,6 @@ public class Expression {
         root = Parser.parse(tokens, this);
     }
 
-    public double evaluate() throws EvaluationException {
-        return evaluate(new double[0]);
-    }
-
     public double evaluate(double... values) throws EvaluationException {
         return evaluate(values, WorldEdit.getInstance().getConfiguration().calculationTimeout);
     }

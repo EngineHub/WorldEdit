@@ -162,24 +162,14 @@ public class SessionManager {
             sessions.put(getKey(owner), new SessionHolder(sessionKey, session));
         }
 
-        // Set the limit on the number of blocks that an operation can
-        // change at once, or don't if the owner has an override or there
-        // is no limit. There is also a default limit
-        int currentChangeLimit = session.getBlockChangeLimit();
-
-        if (!owner.hasPermission("worldedit.limit.unrestricted") && config.maxChangeLimit > -1) {
-            // If the default limit is infinite but there is a maximum
-            // limit, make sure to not have it be overridden
-            if (config.defaultChangeLimit < 0) {
-                if (currentChangeLimit < 0 || currentChangeLimit > config.maxChangeLimit) {
-                    session.setBlockChangeLimit(config.maxChangeLimit);
-                }
-            } else {
-                // Bound the change limit
-                int maxChangeLimit = config.maxChangeLimit;
-                if (currentChangeLimit == -1 || currentChangeLimit > maxChangeLimit) {
-                    session.setBlockChangeLimit(maxChangeLimit);
-                }
+        if (!owner.hasPermission("worldedit.limit.unrestricted")) {
+            if (shouldBoundLimit(config.defaultChangeLimit, config.maxChangeLimit, session.getBlockChangeLimit())) {
+                session.setBlockChangeLimit(config.maxChangeLimit);
+            }
+        }
+        if (!owner.hasPermission("worldedit.timeout.unrestricted")) {
+            if (shouldBoundLimit(config.calculationTimeout, config.maxCalculationTimeout, session.getTimeout())) {
+                session.setTimeout(config.maxCalculationTimeout);
             }
         }
 
@@ -191,6 +181,22 @@ public class SessionManager {
                 || (config.useInventoryCreativeOverride && (!(owner instanceof Player) || ((Player) owner).getGameMode() == GameModes.CREATIVE)))));
 
         return session;
+    }
+
+    private boolean shouldBoundLimit(int defaultLimit, int maxLimit, int currentLimit) {
+        // If the maximum isn't infinite, ensure the default isn't larger than it.
+        if (maxLimit > -1) {
+            if (defaultLimit < 0) {
+                if (currentLimit < 0 || currentLimit > maxLimit) {
+                    return true;
+                }
+            } else {
+                if (currentLimit == -1 || currentLimit > maxLimit) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /**
