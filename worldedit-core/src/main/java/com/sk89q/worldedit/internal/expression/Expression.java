@@ -153,8 +153,8 @@ public class Expression {
             throw new ExpressionTimeoutException("Calculations exceeded time limit.");
         } catch (ExecutionException e) {
             Throwable cause = e.getCause();
-            if (cause instanceof ReturnException) {
-                throw (ReturnException) cause;
+            if (cause instanceof EvaluationException) {
+                throw (EvaluationException) cause;
             }
             if (cause instanceof RuntimeException) {
                 throw (RuntimeException) cause;

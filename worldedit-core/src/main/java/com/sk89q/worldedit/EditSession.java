@@ -1917,6 +1917,7 @@ public class EditSession implements Extent, AutoCloseable {
                         final Pattern pattern, final String expressionString, final boolean hollow, final int timeout)
             throws ExpressionException, MaxChangedBlocksException {
         final Expression expression = Expression.compile(expressionString, "x", "y", "z", "type", "data");
+        expression.optimize();
 
         final RValue typeVariable = expression.getVariable("type", false);
         final RValue dataVariable = expression.getVariable("data", false);
@@ -1979,6 +1980,7 @@ public class EditSession implements Extent, AutoCloseable {
     public int deformRegion(final Region region, final Vector3 zero, final Vector3 unit, final String expressionString,
                             final int timeout) throws ExpressionException, MaxChangedBlocksException {
         final Expression expression = Expression.compile(expressionString, "x", "y", "z");
+        expression.optimize();
 
         final RValue x = expression.getVariable("x", false);
         final RValue y = expression.getVariable("y", false);
@@ -2295,6 +2297,7 @@ public class EditSession implements Extent, AutoCloseable {
         final Vector2 unit2D = unit.toVector2();
 
         final Expression expression = Expression.compile(expressionString, "x", "z");
+        expression.optimize();
 
         final EditSession editSession = this;
         final WorldEditExpressionEnvironment environment = new WorldEditExpressionEnvironment(editSession, unit, zero);

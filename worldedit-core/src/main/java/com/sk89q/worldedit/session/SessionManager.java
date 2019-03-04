@@ -162,15 +162,13 @@ public class SessionManager {
             sessions.put(getKey(owner), new SessionHolder(sessionKey, session));
         }
 
-        if (!owner.hasPermission("worldedit.limit.unrestricted")) {
-            if (shouldBoundLimit(config.defaultChangeLimit, config.maxChangeLimit, session.getBlockChangeLimit())) {
-                session.setBlockChangeLimit(config.maxChangeLimit);
-            }
+        if (shouldBoundLimit(owner.hasPermission("worldedit.limit.unrestricted"),
+                session.getBlockChangeLimit(), config.maxChangeLimit)) {
+            session.setBlockChangeLimit(config.maxChangeLimit);
         }
-        if (!owner.hasPermission("worldedit.timeout.unrestricted")) {
-            if (shouldBoundLimit(config.calculationTimeout, config.maxCalculationTimeout, session.getTimeout())) {
-                session.setTimeout(config.maxCalculationTimeout);
-            }
+        if (shouldBoundLimit(owner.hasPermission("worldedit.timeout.unrestricted"),
+                session.getTimeout(), config.maxCalculationTimeout)) {
+            session.setTimeout(config.maxCalculationTimeout);
         }
 
         // Have the session use inventory if it's enabled and the owner
@@ -183,18 +181,9 @@ public class SessionManager {
         return session;
     }
 
-    private boolean shouldBoundLimit(int defaultLimit, int maxLimit, int currentLimit) {
-        // If the maximum isn't infinite, ensure the default isn't larger than it.
-        if (maxLimit > -1) {
-            if (defaultLimit < 0) {
-                if (currentLimit < 0 || currentLimit > maxLimit) {
-                    return true;
-                }
-            } else {
-                if (currentLimit == -1 || currentLimit > maxLimit) {
-                    return true;
-                }
-            }
+    private boolean shouldBoundLimit(boolean mayBypass, int currentLimit, int maxLimit) {
+        if (!mayBypass && maxLimit > -1) { // if player can't bypass and max is finite
+            return currentLimit < 0 || currentLimit > maxLimit; // make sure current is finite and less than max
         }
         return false;
     }
