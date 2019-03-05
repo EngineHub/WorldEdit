@@ -36,26 +36,34 @@ import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.entity.EntityType;
 import com.sk89q.worldedit.world.item.ItemCategory;
 import com.sk89q.worldedit.world.item.ItemType;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.CommandEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.LeftClickEmpty;
 import net.minecraftforge.eventbus.api.Event;
+import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.ModContainer;
 import net.minecraftforge.fml.ModLoadingContext;
+import net.minecraftforge.fml.SidedProvider;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.event.server.FMLServerAboutToStartEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartedEvent;
 import net.minecraftforge.fml.event.server.FMLServerStoppingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fml.loading.FMLCommonLaunchHandler;
+import net.minecraftforge.fml.loading.FMLLoader;
 import net.minecraftforge.fml.loading.FMLPaths;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.logging.log4j.LogManager;
@@ -92,13 +100,15 @@ public class ForgeWorldEdit {
     public ForgeWorldEdit() {
         inst = this;
 
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::init);
+        IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
+        modBus.addListener(this::init);
+        modBus.addListener(this::load);
 
         MinecraftForge.EVENT_BUS.register(ThreadSafeCache.getInstance());
         MinecraftForge.EVENT_BUS.register(this);
     }
 
-    public void init(FMLCommonSetupEvent event) {
+    private void init(FMLCommonSetupEvent event) {
         this.container = ModLoadingContext.get().getActiveContainer();
 
         // Setup working directory
@@ -111,14 +121,19 @@ public class ForgeWorldEdit {
             }
         }
 
-        config = new ForgeConfiguration(this);
-        config.load();
-
         WECUIPacketHandler.init();
         InternalPacketHandler.init();
         proxy.registerHandlers();
 
         LOGGER.info("WorldEdit for Forge (version " + getInternalVersion() + ") is loaded");
+    }
+
+    private void load(FMLLoadCompleteEvent event) {
+        if (FMLLoader.getDist() == Dist.CLIENT) {
+            // we want to setup platform before we hit the main menu
+            // but this event is async -- so we must delay until the first game loop:
+            Minecraft.getInstance().addScheduledTask(this::setupPlatform);
+        }
     }
 
     @SubscribeEvent
@@ -128,6 +143,10 @@ public class ForgeWorldEdit {
             WorldEdit.getInstance().getPlatformManager().unregister(platform);
         }
 
+        setupPlatform();
+    }
+
+    private void setupPlatform() {
         this.platform = new ForgePlatform(this);
 
         WorldEdit.getInstance().getPlatformManager().register(platform);
@@ -139,28 +158,41 @@ public class ForgeWorldEdit {
 //        }
 
         setupRegistries();
+
+        config = new ForgeConfiguration(this);
+        config.load();
     }
 
     private void setupRegistries() {
         // Blocks
         for (ResourceLocation name : ForgeRegistries.BLOCKS.getKeys()) {
-            BlockType.REGISTRY.register(name.toString(), new BlockType(name.toString(),
+            if (BlockType.REGISTRY.get(name.toString()) == null) {
+                BlockType.REGISTRY.register(name.toString(), new BlockType(name.toString(),
                     input -> ForgeAdapter.adapt(ForgeAdapter.adapt(input.getBlockType()).getDefaultState())));
+            }
         }
         // Items
         for (ResourceLocation name : ForgeRegistries.ITEMS.getKeys()) {
-            ItemType.REGISTRY.register(name.toString(), new ItemType(name.toString()));
+            if (ItemType.REGISTRY.get(name.toString()) == null) {
+                ItemType.REGISTRY.register(name.toString(), new ItemType(name.toString()));
+            }
         }
         // Entities
         for (ResourceLocation name : ForgeRegistries.ENTITIES.getKeys()) {
-            EntityType.REGISTRY.register(name.toString(), new EntityType(name.toString()));
+            if (EntityType.REGISTRY.get(name.toString()) == null) {
+                EntityType.REGISTRY.register(name.toString(), new EntityType(name.toString()));
+            }
         }
         // Tags
         for (ResourceLocation name : BlockTags.getCollection().getRegisteredTags()) {
-            BlockCategory.REGISTRY.register(name.toString(), new BlockCategory(name.toString()));
+            if (BlockCategory.REGISTRY.get(name.toString()) == null) {
+                BlockCategory.REGISTRY.register(name.toString(), new BlockCategory(name.toString()));
+            }
         }
         for (ResourceLocation name : ItemTags.getCollection().getRegisteredTags()) {
-            ItemCategory.REGISTRY.register(name.toString(), new ItemCategory(name.toString()));
+            if (ItemCategory.REGISTRY.get(name.toString()) == null) {
+                ItemCategory.REGISTRY.register(name.toString(), new ItemCategory(name.toString()));
+            }
         }
     }
 

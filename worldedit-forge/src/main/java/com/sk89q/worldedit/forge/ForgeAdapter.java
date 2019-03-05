@@ -134,8 +134,10 @@ public final class ForgeAdapter {
                     .collect(Collectors.toList()));
         }
         if (property instanceof net.minecraft.state.EnumProperty) {
+            // Note: do not make x.getName a method reference.
+            // It will cause runtime bootstrap exceptions.
             return new EnumProperty(property.getName(), ((net.minecraft.state.EnumProperty<?>) property).getAllowedValues().stream()
-                    .map(IStringSerializable::getName)
+                    .map(x -> x.getName())
                     .collect(Collectors.toList()));
         }
         return new IPropertyAdapter<>(property);
