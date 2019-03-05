@@ -23,6 +23,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static com.sk89q.worldedit.forge.ForgeAdapter.adaptPlayer;
 
 import com.google.common.base.Joiner;
+import com.mojang.brigadier.ParseResults;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.event.platform.PlatformReadyEvent;
@@ -37,6 +39,7 @@ import com.sk89q.worldedit.world.entity.EntityType;
 import com.sk89q.worldedit.world.item.ItemCategory;
 import com.sk89q.worldedit.world.item.ItemType;
 import net.minecraft.client.Minecraft;
+import net.minecraft.command.CommandSource;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;
@@ -268,6 +271,26 @@ public class ForgeWorldEdit {
                 event.setCanceled(true);
             }
         }
+    }
+
+    @SubscribeEvent
+    public void onCommandEvent(CommandEvent event) throws CommandSyntaxException {
+        ParseResults<CommandSource> parseResults = event.getParseResults();
+        if (!(parseResults.getContext().getSource().getEntity() instanceof EntityPlayerMP)) {
+            return;
+        }
+        EntityPlayerMP player = parseResults.getContext().getSource().asPlayer();
+        if (player.world.isRemote()) {
+            return;
+        }
+        if (parseResults.getContext().getCommand() != CommandWrapper.FAKE_COMMAND) {
+            return;
+        }
+        event.setCanceled(true);
+        WorldEdit.getInstance().getEventBus().post(new com.sk89q.worldedit.event.platform.CommandEvent(
+            adaptPlayer(parseResults.getContext().getSource().asPlayer()),
+            parseResults.getReader().getString()
+        ));
     }
 
     /**

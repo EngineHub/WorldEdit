@@ -24,6 +24,8 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import com.sk89q.worldedit.WorldEdit;
@@ -114,18 +116,16 @@ public class CommandWrapper {
     }
 
     private static Command<CommandSource> commandFor(CommandMapping mapping) {
-        return ctx -> {
-            EntityPlayerMP player = ctx.getSource().asPlayer();
-            if (player.world.isRemote()) {
-                return 0;
-            }
-            WorldEdit.getInstance().getEventBus().post(new CommandEvent(
-                adaptPlayer(player),
-                ctx.getRange().get(ctx.getInput())
-            ));
-            return 1;
-        };
+        return FAKE_COMMAND;
     }
+
+    public static final Command<CommandSource> FAKE_COMMAND = ctx -> {
+        EntityPlayerMP player = ctx.getSource().asPlayer();
+        if (player.world.isRemote()) {
+            return 0;
+        }
+        return 1;
+    };
 
     private static Predicate<CommandSource> requirementsFor(CommandMapping mapping) {
         return ctx -> {
