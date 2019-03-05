@@ -550,10 +550,10 @@ public class UtilityCommands {
             }
         } catch (EvaluationException e) {
             actor.printError(String.format(
-                    "'%s' could not be parsed as a valid expression", input));
+                    "'%s' could not be evaluated (error: %s)", input, e.getMessage()));
         } catch (ExpressionException e) {
             actor.printError(String.format(
-                    "'%s' could not be evaluated (error: %s)", input, e.getMessage()));
+                    "'%s' could not be parsed as a valid expression", input));
         }
     }
 
