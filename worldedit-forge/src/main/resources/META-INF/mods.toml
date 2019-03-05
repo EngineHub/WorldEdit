@@ -15,7 +15,7 @@ authors="sk89q, wizjany, TomyLobo, kenzierocks, Me4502"
 # The modid of the mod
 modId="worldedit"
 # The version number of the mod - there's a few well known ${} variables useable here or just hardcode it
-version="${internalVersion}"
+version="${version}"
  # A display name for the mod
 displayName="WorldEdit"
 # The description text for the mod (multi line!)
@@ -23,11 +23,11 @@ description='''
 WorldEdit is an easy-to-use in-game world editor for Minecraft, supporting both single- and multi-player.
 '''
 [[dependencies.worldedit]]
-    modId="minecraft"
+    modId="forge"
     mandatory=true
-    versionRange="[1.13.2]"
+    versionRange="[${forge_version},)"
     ordering="NONE"
-    side="SERVER"
+    side="BOTH"
 [[dependencies.worldedit]]
     modId="sponge"
     mandatory=false

@@ -29,7 +29,7 @@ import com.sk89q.worldedit.util.command.CommandMapping;
 import com.sk89q.worldedit.util.command.Dispatcher;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.registry.Registries;
-import net.minecraft.command.ServerCommandManager;
+import net.minecraft.command.Commands;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.management.PlayerList;
@@ -37,13 +37,12 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.annotation.Nullable;
 
 class ForgePlatform extends AbstractPlatform implements MultiUserPlatform {
 
@@ -120,15 +119,13 @@ class ForgePlatform extends AbstractPlatform implements MultiUserPlatform {
     @Override
     public void registerCommands(Dispatcher dispatcher) {
         if (server == null) return;
-        ServerCommandManager mcMan = (ServerCommandManager) server.getCommandManager();
+        Commands mcMan = server.getCommandManager();
 
         for (final CommandMapping command : dispatcher.getCommands()) {
-            CommandWrapper wrapper = new CommandWrapper(command);
-            mcMan.registerCommand(wrapper);
+            CommandWrapper.register(mcMan.getDispatcher(), command);
             if (command.getDescription().getPermissions().size() > 0) {
-                ForgeWorldEdit.inst.getPermissionsProvider().registerPermission(wrapper, command.getDescription().getPermissions().get(0));
                 for (int i = 1; i < command.getDescription().getPermissions().size(); i++) {
-                    ForgeWorldEdit.inst.getPermissionsProvider().registerPermission(null, command.getDescription().getPermissions().get(i));
+                    ForgeWorldEdit.inst.getPermissionsProvider().registerPermission(command.getDescription().getPermissions().get(i));
                 }
             }
         }

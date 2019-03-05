@@ -14,7 +14,7 @@ buildscript {
 apply plugin: 'net.minecraftforge.gradle'
 
 def minecraftVersion = "1.13.2"
-def forgeVersion = "25.0.34"
+def forgeVersion = "25.0.70"
 
 dependencies {
     compile project(':worldedit-core')

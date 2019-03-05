@@ -20,6 +20,7 @@
 package com.sk89q.worldedit.forge;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.sk89q.worldedit.forge.ForgeAdapter.adaptPlayer;
 
 import com.google.common.base.Joiner;
 import com.sk89q.worldedit.LocalSession;
@@ -92,9 +93,6 @@ public class ForgeWorldEdit {
         inst = this;
 
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::init);
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::serverAboutToStart);
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::serverStopping);
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::serverStarted);
 
         MinecraftForge.EVENT_BUS.register(ThreadSafeCache.getInstance());
         MinecraftForge.EVENT_BUS.register(this);
@@ -123,6 +121,7 @@ public class ForgeWorldEdit {
         LOGGER.info("WorldEdit for Forge (version " + getInternalVersion() + ") is loaded");
     }
 
+    @SubscribeEvent
     public void serverAboutToStart(FMLServerAboutToStartEvent event) {
         if (this.platform != null) {
             LOGGER.warn("FMLServerStartingEvent occurred when FMLServerStoppingEvent hasn't");
@@ -165,27 +164,16 @@ public class ForgeWorldEdit {
         }
     }
 
+    @SubscribeEvent
     public void serverStopping(FMLServerStoppingEvent event) {
         WorldEdit worldEdit = WorldEdit.getInstance();
         worldEdit.getSessionManager().unload();
         worldEdit.getPlatformManager().unregister(platform);
     }
 
+    @SubscribeEvent
     public void serverStarted(FMLServerStartedEvent event) {
         WorldEdit.getInstance().getEventBus().post(new PlatformReadyEvent());
-    }
-
-    @SubscribeEvent
-    public void onCommandEvent(CommandEvent event) {
-        if ((event.getSender() instanceof EntityPlayerMP)) {
-            if (((EntityPlayerMP) event.getSender()).world.isRemote) return;
-            String[] split = new String[event.getParameters().length + 1];
-            System.arraycopy(event.getParameters(), 0, split, 1, event.getParameters().length);
-            split[0] = event.getCommand().getName();
-            com.sk89q.worldedit.event.platform.CommandEvent weEvent =
-                    new com.sk89q.worldedit.event.platform.CommandEvent(wrap((EntityPlayerMP) event.getSender()), Joiner.on(" ").join(split));
-            WorldEdit.getInstance().getEventBus().post(weEvent);
-        }
     }
 
     @SubscribeEvent
@@ -215,7 +203,7 @@ public class ForgeWorldEdit {
         }
 
         WorldEdit we = WorldEdit.getInstance();
-        ForgePlayer player = wrap((EntityPlayerMP) event.getEntityPlayer());
+        ForgePlayer player = adaptPlayer((EntityPlayerMP) event.getEntityPlayer());
         ForgeWorld world = getWorld(event.getEntityPlayer().world);
 
         if (event instanceof PlayerInteractEvent.LeftClickEmpty) {
@@ -260,17 +248,6 @@ public class ForgeWorldEdit {
     }
 
     /**
-     * Get the WorldEdit proxy for the given player.
-     *
-     * @param player the player
-     * @return the WorldEdit player
-     */
-    public ForgePlayer wrap(EntityPlayerMP player) {
-        checkNotNull(player);
-        return new ForgePlayer(player);
-    }
-
-    /**
      * Get the session for a player.
      *
      * @param player the player
@@ -278,7 +255,7 @@ public class ForgeWorldEdit {
      */
     public LocalSession getSession(EntityPlayerMP player) {
         checkNotNull(player);
-        return WorldEdit.getInstance().getSessionManager().get(wrap(player));
+        return WorldEdit.getInstance().getSessionManager().get(adaptPlayer(player));
     }
 
     /**

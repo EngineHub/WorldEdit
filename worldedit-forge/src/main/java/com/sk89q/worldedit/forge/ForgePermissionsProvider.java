@@ -19,7 +19,6 @@
 
 package com.sk89q.worldedit.forge;
 
-import net.minecraft.command.ICommand;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.world.GameType;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
@@ -28,7 +27,7 @@ public interface ForgePermissionsProvider {
 
     boolean hasPermission(EntityPlayerMP player, String permission);
 
-    void registerPermission(ICommand command, String permission);
+    void registerPermission(String permission);
 
     class VanillaPermissionsProvider implements ForgePermissionsProvider {
 
@@ -47,7 +46,7 @@ public interface ForgePermissionsProvider {
         }
 
         @Override
-        public void registerPermission(ICommand command, String permission) {}
+        public void registerPermission(String permission) {}
     }
 
     // TODO Re-add when Sponge for 1.13 is out

@@ -40,6 +40,7 @@ import com.sk89q.worldedit.world.item.ItemType;
 import com.sk89q.worldedit.world.item.ItemTypes;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -59,7 +60,9 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
-final class ForgeAdapter {
+import static com.google.common.base.Preconditions.checkNotNull;
+
+public final class ForgeAdapter {
 
     private ForgeAdapter() {
     }
@@ -154,7 +157,7 @@ final class ForgeAdapter {
 
     private static IBlockState applyProperties(StateContainer<Block, IBlockState> stateContainer, IBlockState newState, Map<Property<?>, Object> states) {
         for (Map.Entry<Property<?>, Object> state : states.entrySet()) {
-            IProperty<?> property = stateContainer.getProperty(state.getKey().getName());
+            IProperty property = stateContainer.getProperty(state.getKey().getName());
             Comparable value = (Comparable) state.getValue();
             // we may need to adapt this value, depending on the source prop
             if (property instanceof DirectionProperty) {
@@ -211,5 +214,16 @@ final class ForgeAdapter {
     public static BaseItemStack adapt(ItemStack itemStack) {
         CompoundTag tag = NBTConverter.fromNative(itemStack.serializeNBT());
         return new BaseItemStack(adapt(itemStack.getItem()), tag, itemStack.getCount());
+    }
+
+    /**
+     * Get the WorldEdit proxy for the given player.
+     *
+     * @param player the player
+     * @return the WorldEdit player
+     */
+    public static ForgePlayer adaptPlayer(EntityPlayerMP player) {
+        checkNotNull(player);
+        return new ForgePlayer(player);
     }
 }
