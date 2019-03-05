@@ -27,10 +27,13 @@ import com.sk89q.worldedit.internal.expression.ExpressionException;
 import com.sk89q.worldedit.internal.expression.runtime.EvaluationException;
 import com.sk89q.worldedit.math.BlockVector2;
 
+import javax.annotation.Nullable;
+import java.util.function.IntSupplier;
+
 public class ExpressionMask2D extends AbstractMask2D {
 
     private final Expression expression;
-    private final int timeout;
+    private final IntSupplier timeout;
 
     /**
      * Create a new instance.
@@ -48,10 +51,10 @@ public class ExpressionMask2D extends AbstractMask2D {
      * @param expression the expression
      */
     public ExpressionMask2D(Expression expression) {
-        this(expression, WorldEdit.getInstance().getConfiguration().calculationTimeout);
+        this(expression, null);
     }
 
-    public ExpressionMask2D(Expression expression, int timeout) {
+    public ExpressionMask2D(Expression expression, @Nullable IntSupplier timeout) {
         checkNotNull(expression);
         this.expression = expression;
         this.timeout = timeout;
@@ -60,7 +63,11 @@ public class ExpressionMask2D extends AbstractMask2D {
     @Override
     public boolean test(BlockVector2 vector) {
         try {
-            return expression.evaluate(new double[]{vector.getX(), 0, vector.getZ()}, timeout) > 0;
+            if (timeout != null) {
+                return expression.evaluate(vector.getX(), 0, vector.getZ()) > 0;
+            } else {
+                return expression.evaluate(new double[]{vector.getX(), 0, vector.getZ()}, timeout.getAsInt()) > 0;
+            }
         } catch (EvaluationException e) {
             return false;
         }

@@ -32,6 +32,8 @@ import com.sk89q.worldedit.regions.shape.WorldEditExpressionEnvironment;
 import com.sk89q.worldedit.session.SessionOwner;
 import com.sk89q.worldedit.session.request.Request;
 
+import java.util.function.IntSupplier;
+
 public class ExpressionMaskParser extends InputParser<Mask> {
 
     public ExpressionMaskParser(WorldEdit worldEdit) {
@@ -50,7 +52,8 @@ public class ExpressionMaskParser extends InputParser<Mask> {
                     Request.request().getEditSession(), Vector3.ONE, Vector3.ZERO);
             exp.setEnvironment(env);
             if (context.getActor() instanceof SessionOwner) {
-                int timeout = worldEdit.getSessionManager().get((SessionOwner) context.getActor()).getTimeout();
+                SessionOwner owner = (SessionOwner) context.getActor();
+                IntSupplier timeout = () -> WorldEdit.getInstance().getSessionManager().get(owner).getTimeout();
                 return new ExpressionMask(exp, timeout);
             }
             return new ExpressionMask(exp);
