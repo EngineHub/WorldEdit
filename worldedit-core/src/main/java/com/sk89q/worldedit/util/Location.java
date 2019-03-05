@@ -208,6 +208,9 @@ public class Location {
      * @return the direction vector
      */
     public Vector3 getDirection() {
+        if (Float.isNaN(getYaw()) && Float.isNaN(getPitch())) {
+            return Vector3.ZERO;
+        }
         double yaw = Math.toRadians(this.getYaw());
         double pitch = Math.toRadians(this.getPitch());
         double xz = Math.cos(pitch);

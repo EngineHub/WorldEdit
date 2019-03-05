@@ -275,6 +275,7 @@ public class UtilityCommands {
     public void replaceNear(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
         
         int size = Math.max(1, args.getInteger(0));
+        we.checkMaxRadius(size);
         int affected;
         Set<BaseBlock> from;
         Pattern to;
@@ -288,9 +289,11 @@ public class UtilityCommands {
 
         if (args.argsLength() == 2) {
             from = null;
+            context.setRestricted(true);
             to = we.getPatternFactory().parseFromInput(args.getString(1), context);
         } else {
             from = we.getBlockFactory().parseFromListInput(args.getString(1), context);
+            context.setRestricted(true);
             to = we.getPatternFactory().parseFromInput(args.getString(2), context);
         }
 
@@ -317,8 +320,8 @@ public class UtilityCommands {
     @CommandPermissions("worldedit.snow")
     @Logging(PLACEMENT)
     public void snow(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
-
         double size = args.argsLength() > 0 ? Math.max(1, args.getDouble(0)) : 10;
+        we.checkMaxRadius(size);
 
         int affected = editSession.simulateSnow(session.getPlacementPosition(player), size);
         player.print(affected + " surfaces covered. Let it snow~");
@@ -334,8 +337,8 @@ public class UtilityCommands {
     @CommandPermissions("worldedit.thaw")
     @Logging(PLACEMENT)
     public void thaw(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
-
         double size = args.argsLength() > 0 ? Math.max(1, args.getDouble(0)) : 10;
+        we.checkMaxRadius(size);
 
         int affected = editSession.thaw(session.getPlacementPosition(player), size);
         player.print(affected + " surfaces thawed.");
@@ -345,6 +348,7 @@ public class UtilityCommands {
         aliases = { "/green", "green" },
         usage = "[radius]",
         desc = "Greens the area",
+        help = "Converts dirt to grass blocks. -f also converts coarse dirt.",
         flags = "f",
         min = 0,
         max = 1
@@ -352,8 +356,8 @@ public class UtilityCommands {
     @CommandPermissions("worldedit.green")
     @Logging(PLACEMENT)
     public void green(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
-
         final double size = args.argsLength() > 0 ? Math.max(1, args.getDouble(0)) : 10;
+        we.checkMaxRadius(size);
         final boolean onlyNormalDirt = !args.hasFlag('f');
 
         final int affected = editSession.green(session.getPlacementPosition(player), size, onlyNormalDirt);

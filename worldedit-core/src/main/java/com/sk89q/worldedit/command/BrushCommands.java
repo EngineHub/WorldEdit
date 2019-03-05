@@ -42,6 +42,7 @@ import com.sk89q.worldedit.command.util.CreatureButcher;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.function.mask.BlockTypeMask;
+import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.function.pattern.BlockPattern;
 import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.math.BlockVector3;
@@ -146,9 +147,9 @@ public class BrushCommands {
 
         BlockVector3 size = clipboard.getDimensions();
 
-        worldEdit.checkMaxBrushRadius(size.getBlockX());
-        worldEdit.checkMaxBrushRadius(size.getBlockY());
-        worldEdit.checkMaxBrushRadius(size.getBlockZ());
+        worldEdit.checkMaxBrushRadius(size.getBlockX() / 2D - 1);
+        worldEdit.checkMaxBrushRadius(size.getBlockY() / 2D - 1);
+        worldEdit.checkMaxBrushRadius(size.getBlockZ() / 2D - 1);
 
         BrushTool tool = session.getBrushTool(player.getItemInHand(HandSide.MAIN_HAND).getType());
         tool.setBrush(new ClipboardBrush(holder, ignoreAir, usingOrigin), "worldedit.brush.clipboard");
@@ -158,24 +159,24 @@ public class BrushCommands {
 
     @Command(
         aliases = { "smooth" },
-        usage = "[size] [iterations]",
+        usage = "[size] [iterations] [filter]",
         desc = "Choose the terrain softener brush",
         help =
-            "Chooses the terrain softener brush.",
+            "Chooses the terrain softener brush. Optionally, specify a mask of blocks to be used for the heightmap.\n" +
+            "For example, '/brush smooth 2 4 grass_block,dirt,stone'.",
         min = 0,
-        max = 2
+        max = 3
     )
     @CommandPermissions("worldedit.brush.smooth")
     public void smoothBrush(Player player, LocalSession session, EditSession editSession,
-                            @Optional("2") double radius, @Optional("4") int iterations) throws WorldEditException {
-
+                            @Optional("2") double radius, @Optional("4") int iterations, @Optional Mask mask) throws WorldEditException {
         worldEdit.checkMaxBrushRadius(radius);
 
         BrushTool tool = session.getBrushTool(player.getItemInHand(HandSide.MAIN_HAND).getType());
         tool.setSize(radius);
-        tool.setBrush(new SmoothBrush(iterations), "worldedit.brush.smooth");
+        tool.setBrush(new SmoothBrush(iterations, mask), "worldedit.brush.smooth");
 
-        player.print(String.format("Smooth brush equipped (%.0f x %dx, using any block).", radius, iterations));
+        player.print(String.format("Smooth brush equipped (%.0f x %dx, using %s).", radius, iterations, mask == null ? "any block" : "filter"));
     }
 
     @Command(

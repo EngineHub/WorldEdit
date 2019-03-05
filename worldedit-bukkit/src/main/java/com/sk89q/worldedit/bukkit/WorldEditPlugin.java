@@ -132,7 +132,7 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
         }
         // Block & Item
         for (Material material : Material.values()) {
-            if (material.isBlock()) {
+            if (material.isBlock() && !material.isLegacy()) {
                 BlockType.REGISTRY.register(material.getKey().toString(), new BlockType(material.getKey().toString(), blockState -> {
                     // TODO Use something way less hacky than this.
                     ParserContext context = new ParserContext();
@@ -154,7 +154,7 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
                     }
                 }));
             }
-            if (material.isItem()) {
+            if (material.isItem() && !material.isLegacy()) {
                 ItemType.REGISTRY.register(material.getKey().toString(), new ItemType(material.getKey().toString()));
             }
         }

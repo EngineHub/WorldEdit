@@ -240,17 +240,19 @@ public class RegionCommands {
 
     @Command(
         aliases = { "/smooth" },
-        usage = "[iterations]",
+        usage = "[iterations] [filter]",
         desc = "Smooth the elevation in the selection",
         help =
-            "Smooths the elevation in the selection.",
+            "Smooths the elevation in the selection.\n" +
+            "Optionally, restricts the height map to a set of blocks specified with mask syntax.\n" +
+            "For example, '//smooth 1 grass_block,dirt,stone' would only smooth natural surface terrain.",
         min = 0,
-        max = 1
+        max = 2
     )
     @CommandPermissions("worldedit.region.smooth")
     @Logging(REGION)
-    public void smooth(Player player, EditSession editSession, @Selection Region region, @Optional("1") int iterations) throws WorldEditException {
-        HeightMap heightMap = new HeightMap(editSession, region);
+    public void smooth(Player player, EditSession editSession, @Selection Region region, @Optional("1") int iterations, @Optional Mask mask) throws WorldEditException {
+        HeightMap heightMap = new HeightMap(editSession, region, mask);
         HeightMapFilter filter = new HeightMapFilter(new GaussianKernel(5, 1.0));
         int affected = heightMap.applyFilter(filter, iterations);
         player.print("Terrain's height map smoothed. " + affected + " block(s) changed.");
@@ -260,11 +262,12 @@ public class RegionCommands {
     @Command(
         aliases = { "/move" },
         usage = "[count] [direction] [leave-id]",
-        flags = "s",
+        flags = "sa",
         desc = "Move the contents of the selection",
         help =
             "Moves the contents of the selection.\n" +
             "The -s flag shifts the selection to the target location.\n" +
+            "The -a flag skips air blocks.\n" +
             "Optionally fills the old location with <leave-id>.",
         min = 0,
         max = 3
@@ -276,9 +279,10 @@ public class RegionCommands {
                      @Optional("1") @Range(min = 1) int count,
                      @Optional(Direction.AIM) @Direction(includeDiagonals = true) BlockVector3 direction,
                      @Optional("air") Pattern replace,
-                     @Switch('s') boolean moveSelection) throws WorldEditException {
+                     @Switch('s') boolean moveSelection,
+                     @Switch('a') boolean ignoreAirBlocks) throws WorldEditException {
 
-        int affected = editSession.moveRegion(region, direction, count, true, replace);
+        int affected = editSession.moveRegion(region, direction, count, !ignoreAirBlocks, replace);
 
         if (moveSelection) {
             try {

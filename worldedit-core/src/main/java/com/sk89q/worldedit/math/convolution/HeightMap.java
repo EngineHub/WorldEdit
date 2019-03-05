@@ -23,10 +23,13 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
+import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockTypes;
+
+import javax.annotation.Nullable;
 
 /**
  * Allows applications of Kernels onto the region's height map.
@@ -48,7 +51,7 @@ public class HeightMap {
      * @param session an edit session
      * @param region the region
      */
-    public HeightMap(EditSession session, Region region) {
+    public HeightMap(EditSession session, Region region, @Nullable Mask mask) {
         checkNotNull(session);
         checkNotNull(region);
 
@@ -67,7 +70,7 @@ public class HeightMap {
         data = new int[width * height];
         for (int z = 0; z < height; ++z) {
             for (int x = 0; x < width; ++x) {
-                data[z * width + x] = session.getHighestTerrainBlock(x + minX, z + minZ, minY, maxY);
+                data[z * width + x] = session.getHighestTerrainBlock(x + minX, z + minZ, minY, maxY, mask);
             }
         }
     }

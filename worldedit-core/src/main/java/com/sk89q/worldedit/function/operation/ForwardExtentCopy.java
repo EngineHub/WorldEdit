@@ -248,9 +248,9 @@ public class ForwardExtentCopy implements Operation {
             }
 
             ExtentBlockCopy blockCopy = new ExtentBlockCopy(source, from, destination, to, currentTransform);
-            RegionMaskingFilter filter = new RegionMaskingFilter(sourceMask, blockCopy);
-            RegionFunction function = sourceFunction != null ? new CombinedRegionFunction(filter, sourceFunction) : filter;
-            RegionVisitor blockVisitor = new RegionVisitor(region, function);
+            RegionMaskingFilter filteredFunction = new RegionMaskingFilter(sourceMask,
+                    sourceFunction == null ? blockCopy : new CombinedRegionFunction(blockCopy, sourceFunction));
+            RegionVisitor blockVisitor = new RegionVisitor(region, filteredFunction);
 
             lastVisitor = blockVisitor;
 
