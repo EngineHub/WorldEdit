@@ -16,7 +16,6 @@ import com.sk89q.worldedit.extension.input.ParserContext;
 import com.sk89q.worldedit.extent.clipboard.BlockArrayClipboard;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.math.BlockVector3;
-import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.block.BaseBlock;
@@ -55,7 +54,10 @@ public class MinecraftStructureReader extends NBTSchematicReader {
     @Override
     public Clipboard read() throws IOException {
         NamedTag rootTag = inputStream.readNamedTag();
-        // MC structures are all unnamed, but this doesn't seem to be necessary
+
+        // MC structures are all unnamed, but this doesn't seem to be necessary?
+        // if (!rootTag.getName().isEmpty()) throw new IOException("bad format");
+
         CompoundTag structureTag = (CompoundTag) rootTag.getTag();
         Map<String, Tag> structure = structureTag.getValue();
         int version = requireTag(structure, "DataVersion", IntTag.class).getValue();
@@ -67,40 +69,11 @@ public class MinecraftStructureReader extends NBTSchematicReader {
         int height = ((IntTag) size.get(1)).getValue();
         int length = ((IntTag) size.get(2)).getValue();
 
-        // TODO support random (or non-random) palette from 'palettes' tag
-        List<CompoundTag> paletteObject = requireTag(structure, "palette", ListTag.class).getValue()
-                .stream().map(t -> ((CompoundTag) t)).collect(Collectors.toList());
-        Map<Integer, BlockState> palette = new HashMap<>();
-        ParserContext parserContext = new ParserContext();
-        parserContext.setRestricted(false);
-        parserContext.setTryLegacy(false);
-        parserContext.setPreferringWildcard(false);
+        if (structure.containsKey("palettes")) {
 
-        for (int i = 0; i < paletteObject.size(); i++) {
-            CompoundTag palettePart = paletteObject.get(i);
-            String blockName = palettePart.getString("Name");
-            if (blockName.isEmpty()) throw new IOException("Palette block name empty.");
-            StringBuilder stateBuilder = new StringBuilder(blockName);
-            Tag props = palettePart.getValue().getOrDefault("Properties", null);
-            if (props instanceof CompoundTag) {
-                CompoundTag properties = ((CompoundTag) props);
-                if (!properties.getValue().isEmpty())
-                {
-                    stateBuilder.append('[');
-                    stateBuilder.append(properties.getValue().entrySet().stream().map(e ->
-                            e.getKey() + "=" + (String) e.getValue().getValue()).collect(Collectors.joining(",")));
-                    stateBuilder.append(']');
-                }
-            }
-            BlockState state;
-            try {
-                state = WorldEdit.getInstance().getBlockFactory().parseFromInput(stateBuilder.toString(), parserContext).toImmutableState();
-            } catch (InputParseException e) {
-                throw new IOException("Invalid BlockState in structure: " + palettePart +
-                        ". Are you missing a mod or using a structure made in a newer version of Minecraft?");
-            }
-            palette.put(i, state);
         }
+        List<CompoundTag> paletteObject = (List<CompoundTag>) (List<?>) requireTag(structure, "palette", ListTag.class).getValue();
+        Map<Integer, BlockState> palette = readPalette(paletteObject);
 
         BlockArrayClipboard clipboard = new BlockArrayClipboard(
                 new CuboidRegion(BlockVector3.ZERO, BlockVector3.at(width, height, length).subtract(BlockVector3.ONE)));
@@ -111,7 +84,7 @@ public class MinecraftStructureReader extends NBTSchematicReader {
             BlockVector3 vec = BlockVector3.at(pos.getInt(0), pos.getInt(1), pos.getInt(2));
             int state = requireTag(block.getValue(), "state", IntTag.class).getValue();
             BlockState blockState = palette.get(state);
-            CompoundTag nbt = getTag(block, CompoundTag.class, "nbt");
+            CompoundTag nbt = getTag(block.getValue(), "nbt", CompoundTag.class);
             try {
                 if (nbt == null) {
                     clipboard.setBlock(vec, blockState);
@@ -121,6 +94,7 @@ public class MinecraftStructureReader extends NBTSchematicReader {
                     values.put("y", new IntTag(vec.getBlockY()));
                     values.put("z", new IntTag(vec.getBlockZ()));
                     BaseBlock baseBlock = blockState.toBaseBlock(nbt);
+                    clipboard.setBlock(vec, baseBlock);
                 }
             } catch (WorldEditException e) {
                 throw new IOException("Failed to load a block in the schematic");
@@ -141,12 +115,50 @@ public class MinecraftStructureReader extends NBTSchematicReader {
                     BaseEntity state = new BaseEntity(entityType, compound);
                     clipboard.createEntity(location, state);
                 } else {
-                    log.warning("Unknown entity when pasting schematic: " + id.toLowerCase());
+                    log.warning("Unknown entity when loading structure: " + id.toLowerCase());
                 }
             }
         }
 
         return clipboard;
+    }
+
+    private Map<Integer, BlockState> readPalette(List<CompoundTag> paletteTag) throws IOException {
+        Map<Integer, BlockState> palette = new HashMap<>();
+        ParserContext parserContext = new ParserContext();
+        parserContext.setRestricted(false);
+        parserContext.setTryLegacy(false);
+        parserContext.setPreferringWildcard(false);
+
+        for (int i = 0; i < paletteTag.size(); i++) {
+            CompoundTag palettePart = paletteTag.get(i);
+            String blockName = palettePart.getString("Name");
+            if (blockName.isEmpty()) {
+                throw new IOException("Palette block name empty.");
+            }
+            StringBuilder stateBuilder = new StringBuilder(blockName);
+            Tag props = palettePart.getValue().getOrDefault("Properties", null);
+            if (props instanceof CompoundTag) {
+                CompoundTag properties = ((CompoundTag) props);
+                if (!properties.getValue().isEmpty())
+                {
+                    stateBuilder.append('[');
+                    stateBuilder.append(properties.getValue().entrySet().stream().map(e ->
+                            e.getKey() + "=" + (String) e.getValue().getValue()).collect(Collectors.joining(",")));
+                    stateBuilder.append(']');
+                }
+            }
+            BlockState state;
+            String stateString = stateBuilder.toString();
+            try {
+                state = WorldEdit.getInstance().getBlockFactory().parseFromInput(stateString, parserContext).toImmutableState();
+            } catch (InputParseException e) {
+                throw new IOException("Invalid BlockState in structure: " + stateString +
+                        ". Are you missing a mod or using a structure made in a newer version of Minecraft?");
+            }
+            palette.put(i, state);
+        }
+        return palette;
     }
 
     @Override
