@@ -79,6 +79,7 @@ public class SelectionCommand extends SimpleCommand<Operation> {
                 EditContext editContext = new EditContext();
                 editContext.setDestination(locals.get(EditSession.class));
                 editContext.setRegion(selection);
+                editContext.setSession(session);
 
                 Operation operation = operationFactory.createFromContext(editContext);
                 Operations.completeBlindly(operation);

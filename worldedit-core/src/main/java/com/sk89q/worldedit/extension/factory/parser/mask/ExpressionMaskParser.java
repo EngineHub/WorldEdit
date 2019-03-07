@@ -29,7 +29,10 @@ import com.sk89q.worldedit.internal.expression.ExpressionException;
 import com.sk89q.worldedit.internal.registry.InputParser;
 import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.regions.shape.WorldEditExpressionEnvironment;
+import com.sk89q.worldedit.session.SessionOwner;
 import com.sk89q.worldedit.session.request.Request;
+
+import java.util.function.IntSupplier;
 
 public class ExpressionMaskParser extends InputParser<Mask> {
 
@@ -48,6 +51,11 @@ public class ExpressionMaskParser extends InputParser<Mask> {
             WorldEditExpressionEnvironment env = new WorldEditExpressionEnvironment(
                     Request.request().getEditSession(), Vector3.ONE, Vector3.ZERO);
             exp.setEnvironment(env);
+            if (context.getActor() instanceof SessionOwner) {
+                SessionOwner owner = (SessionOwner) context.getActor();
+                IntSupplier timeout = () -> WorldEdit.getInstance().getSessionManager().get(owner).getTimeout();
+                return new ExpressionMask(exp, timeout);
+            }
             return new ExpressionMask(exp);
         } catch (ExpressionException e) {
             throw new InputParseException("Invalid expression: " + e.getMessage());

@@ -108,6 +108,7 @@ public class YAMLConfiguration extends LocalConfiguration {
         scriptsDir = config.getString("scripting.dir", scriptsDir);
 
         calculationTimeout = config.getInt("calculation.timeout", calculationTimeout);
+        maxCalculationTimeout = config.getInt("calculation.max-timeout", maxCalculationTimeout);
 
         saveDir = config.getString("saving.dir", saveDir);
 

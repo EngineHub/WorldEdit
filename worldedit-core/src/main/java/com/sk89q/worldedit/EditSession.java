@@ -81,6 +81,7 @@ import com.sk89q.worldedit.history.changeset.BlockOptimizedHistory;
 import com.sk89q.worldedit.history.changeset.ChangeSet;
 import com.sk89q.worldedit.internal.expression.Expression;
 import com.sk89q.worldedit.internal.expression.ExpressionException;
+import com.sk89q.worldedit.internal.expression.runtime.ExpressionTimeoutException;
 import com.sk89q.worldedit.internal.expression.runtime.RValue;
 import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.math.BlockVector3;
@@ -1879,7 +1880,42 @@ public class EditSession implements Extent, AutoCloseable {
         return count.getDistribution();
     }
 
-    public int makeShape(final Region region, final Vector3 zero, final Vector3 unit, final Pattern pattern, final String expressionString, final boolean hollow) throws ExpressionException, MaxChangedBlocksException {
+    /**
+     * Generate a shape for the given expression.
+     *
+     * @param region the region to generate the shape in
+     * @param zero the coordinate origin for x/y/z variables
+     * @param unit the scale of the x/y/z/ variables
+     * @param pattern the default material to make the shape from
+     * @param expressionString the expression defining the shape
+     * @param hollow whether the shape should be hollow
+     * @return number of blocks changed
+     * @throws ExpressionException
+     * @throws MaxChangedBlocksException
+     */
+    public int makeShape(final Region region, final Vector3 zero, final Vector3 unit,
+                         final Pattern pattern, final String expressionString, final boolean hollow)
+            throws ExpressionException, MaxChangedBlocksException {
+        return makeShape(region, zero, unit, pattern, expressionString, hollow, WorldEdit.getInstance().getConfiguration().calculationTimeout);
+    }
+
+    /**
+     * Generate a shape for the given expression.
+     *
+     * @param region the region to generate the shape in
+     * @param zero the coordinate origin for x/y/z variables
+     * @param unit the scale of the x/y/z/ variables
+     * @param pattern the default material to make the shape from
+     * @param expressionString the expression defining the shape
+     * @param hollow whether the shape should be hollow
+     * @param timeout the time, in milliseconds, to wait for each expression evaluation before halting it. -1 to disable
+     * @return number of blocks changed
+     * @throws ExpressionException
+     * @throws MaxChangedBlocksException
+     */
+    public int makeShape(final Region region, final Vector3 zero, final Vector3 unit,
+                        final Pattern pattern, final String expressionString, final boolean hollow, final int timeout)
+            throws ExpressionException, MaxChangedBlocksException {
         final Expression expression = Expression.compile(expressionString, "x", "y", "z", "type", "data");
         expression.optimize();
 
@@ -1889,6 +1925,7 @@ public class EditSession implements Extent, AutoCloseable {
         final WorldEditExpressionEnvironment environment = new WorldEditExpressionEnvironment(this, unit, zero);
         expression.setEnvironment(environment);
 
+        final int[] timedOut = {0};
         final ArbitraryShape shape = new ArbitraryShape(region) {
             @Override
             protected BaseBlock getMaterial(int x, int y, int z, BaseBlock defaultMaterial) {
@@ -1906,27 +1943,42 @@ public class EditSession implements Extent, AutoCloseable {
                             dataVar = legacy[1];
                         }
                     }
-                    if (expression.evaluate(scaled.getX(), scaled.getY(), scaled.getZ(), typeVar, dataVar) <= 0) {
+                    if (expression.evaluate(new double[]{scaled.getX(), scaled.getY(), scaled.getZ(), typeVar, dataVar}, timeout) <= 0) {
                         return null;
                     }
                     int newType = (int) typeVariable.getValue();
                     int newData = (int) dataVariable.getValue();
                     if (newType != typeVar || newData != dataVar) {
-                        return LegacyMapper.getInstance().getBlockFromLegacy((int) typeVariable.getValue(), (int) dataVariable.getValue()).toBaseBlock();
+                        BlockState state = LegacyMapper.getInstance().getBlockFromLegacy(newType, newData);
+                        return state == null ? defaultMaterial : state.toBaseBlock();
                     } else {
                         return defaultMaterial;
                     }
+                } catch (ExpressionTimeoutException e) {
+                    timedOut[0] = timedOut[0] + 1;
+                    return null;
                 } catch (Exception e) {
                     log.log(Level.WARNING, "Failed to create shape", e);
                     return null;
                 }
             }
         };
-
-        return shape.generate(this, pattern, hollow);
+        int changed = shape.generate(this, pattern, hollow);
+        if (timedOut[0] > 0) {
+            throw new ExpressionTimeoutException(
+                    String.format("%d blocks changed. %d blocks took too long to evaluate (increase with //timeout).",
+                            changed, timedOut[0]));
+        }
+        return changed;
     }
 
-    public int deformRegion(final Region region, final Vector3 zero, final Vector3 unit, final String expressionString) throws ExpressionException, MaxChangedBlocksException {
+    public int deformRegion(final Region region, final Vector3 zero, final Vector3 unit, final String expressionString)
+            throws ExpressionException, MaxChangedBlocksException {
+        return deformRegion(region, zero, unit, expressionString, WorldEdit.getInstance().getConfiguration().calculationTimeout);
+    }
+
+    public int deformRegion(final Region region, final Vector3 zero, final Vector3 unit, final String expressionString,
+                            final int timeout) throws ExpressionException, MaxChangedBlocksException {
         final Expression expression = Expression.compile(expressionString, "x", "y", "z");
         expression.optimize();
 
@@ -1944,7 +1996,7 @@ public class EditSession implements Extent, AutoCloseable {
             final Vector3 scaled = position.toVector3().subtract(zero).divide(unit);
 
             // transform
-            expression.evaluate(scaled.getX(), scaled.getY(), scaled.getZ());
+            expression.evaluate(new double[]{scaled.getX(), scaled.getY(), scaled.getZ()}, timeout);
 
             final BlockVector3 sourcePosition = environment.toWorld(x.getValue(), y.getValue(), z.getValue());
 
@@ -2131,7 +2183,8 @@ public class EditSession implements Extent, AutoCloseable {
      * @return number of blocks affected
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
-    public int drawSpline(Pattern pattern, List<BlockVector3> nodevectors, double tension, double bias, double continuity, double quality, double radius, boolean filled)
+    public int drawSpline(Pattern pattern, List<BlockVector3> nodevectors, double tension, double bias,
+                          double continuity, double quality, double radius, boolean filled)
             throws MaxChangedBlocksException {
 
         Set<BlockVector3> vset = new HashSet<>();
@@ -2231,7 +2284,15 @@ public class EditSession implements Extent, AutoCloseable {
         }
     }
 
-    public int makeBiomeShape(final Region region, final Vector3 zero, final Vector3 unit, final BiomeType biomeType, final String expressionString, final boolean hollow) throws ExpressionException, MaxChangedBlocksException {
+    public int makeBiomeShape(final Region region, final Vector3 zero, final Vector3 unit, final BiomeType biomeType,
+                              final String expressionString, final boolean hollow)
+            throws ExpressionException, MaxChangedBlocksException {
+        return makeBiomeShape(region, zero, unit, biomeType, expressionString, hollow, WorldEdit.getInstance().getConfiguration().calculationTimeout);
+    }
+
+    public int makeBiomeShape(final Region region, final Vector3 zero, final Vector3 unit, final BiomeType biomeType,
+                              final String expressionString, final boolean hollow, final int timeout)
+            throws ExpressionException, MaxChangedBlocksException {
         final Vector2 zero2D = zero.toVector2();
         final Vector2 unit2D = unit.toVector2();
 
@@ -2242,6 +2303,7 @@ public class EditSession implements Extent, AutoCloseable {
         final WorldEditExpressionEnvironment environment = new WorldEditExpressionEnvironment(editSession, unit, zero);
         expression.setEnvironment(environment);
 
+        final int[] timedOut = {0};
         final ArbitraryBiomeShape shape = new ArbitraryBiomeShape(region) {
             @Override
             protected BiomeType getBiome(int x, int z, BiomeType defaultBiomeType) {
@@ -2250,20 +2312,28 @@ public class EditSession implements Extent, AutoCloseable {
                 final Vector2 scaled = current.subtract(zero2D).divide(unit2D);
 
                 try {
-                    if (expression.evaluate(scaled.getX(), scaled.getZ()) <= 0) {
+                    if (expression.evaluate(new double[]{scaled.getX(), scaled.getZ()}, timeout) <= 0) {
                         return null;
                     }
 
                     // TODO: Allow biome setting via a script variable (needs BiomeType<->int mapping)
                     return defaultBiomeType;
+                } catch (ExpressionTimeoutException e) {
+                    timedOut[0] = timedOut[0] + 1;
+                    return null;
                 } catch (Exception e) {
                     log.log(Level.WARNING, "Failed to create shape", e);
                     return null;
                 }
             }
         };
-
-        return shape.generate(this, biomeType, hollow);
+        int changed = shape.generate(this, biomeType, hollow);
+        if (timedOut[0] > 0) {
+            throw new ExpressionTimeoutException(
+                    String.format("%d blocks changed. %d blocks took too long to evaluate (increase time with //timeout)",
+                            changed, timedOut[0]));
+        }
+        return changed;
     }
 
     private static final BlockVector3[] recurseDirections = {

@@ -85,6 +85,7 @@ public class LocalSession {
     private transient BlockTool pickaxeMode = new SinglePickaxe();
     private transient Map<ItemType, Tool> tools = new HashMap<>();
     private transient int maxBlocksChanged = -1;
+    private transient int maxTimeoutTime;
     private transient boolean useInventory;
     private transient Snapshot snapshot;
     private transient boolean hasCUISupport = false;
@@ -413,6 +414,24 @@ public class LocalSession {
      */
     public void setBlockChangeLimit(int maxBlocksChanged) {
         this.maxBlocksChanged = maxBlocksChanged;
+    }
+
+    /**
+     * Get the maximum time allowed for certain executions to run before cancelling them, such as expressions.
+     *
+     * @return timeout time, in milliseconds
+     */
+    public int getTimeout() {
+        return maxTimeoutTime;
+    }
+
+    /**
+     * Set the maximum number of blocks that can be changed.
+     *
+     * @param timeout the time, in milliseconds, to limit certain executions to, or -1 to disable
+     */
+    public void setTimeout(int timeout) {
+        this.maxTimeoutTime = timeout;
     }
 
     /**

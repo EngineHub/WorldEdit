@@ -155,31 +155,20 @@ public class SessionManager {
 
             session.setConfiguration(config);
             session.setBlockChangeLimit(config.defaultChangeLimit);
+            session.setTimeout(config.calculationTimeout);
 
             // Remember the session regardless of if it's currently active or not.
             // And have the SessionTracker FLUSH inactive sessions.
             sessions.put(getKey(owner), new SessionHolder(sessionKey, session));
         }
 
-        // Set the limit on the number of blocks that an operation can
-        // change at once, or don't if the owner has an override or there
-        // is no limit. There is also a default limit
-        int currentChangeLimit = session.getBlockChangeLimit();
-
-        if (!owner.hasPermission("worldedit.limit.unrestricted") && config.maxChangeLimit > -1) {
-            // If the default limit is infinite but there is a maximum
-            // limit, make sure to not have it be overridden
-            if (config.defaultChangeLimit < 0) {
-                if (currentChangeLimit < 0 || currentChangeLimit > config.maxChangeLimit) {
-                    session.setBlockChangeLimit(config.maxChangeLimit);
-                }
-            } else {
-                // Bound the change limit
-                int maxChangeLimit = config.maxChangeLimit;
-                if (currentChangeLimit == -1 || currentChangeLimit > maxChangeLimit) {
-                    session.setBlockChangeLimit(maxChangeLimit);
-                }
-            }
+        if (shouldBoundLimit(owner.hasPermission("worldedit.limit.unrestricted"),
+                session.getBlockChangeLimit(), config.maxChangeLimit)) {
+            session.setBlockChangeLimit(config.maxChangeLimit);
+        }
+        if (shouldBoundLimit(owner.hasPermission("worldedit.timeout.unrestricted"),
+                session.getTimeout(), config.maxCalculationTimeout)) {
+            session.setTimeout(config.maxCalculationTimeout);
         }
 
         // Have the session use inventory if it's enabled and the owner
@@ -190,6 +179,13 @@ public class SessionManager {
                 || (config.useInventoryCreativeOverride && (!(owner instanceof Player) || ((Player) owner).getGameMode() == GameModes.CREATIVE)))));
 
         return session;
+    }
+
+    private boolean shouldBoundLimit(boolean mayBypass, int currentLimit, int maxLimit) {
+        if (!mayBypass && maxLimit > -1) { // if player can't bypass and max is finite
+            return currentLimit < 0 || currentLimit > maxLimit; // make sure current is finite and less than max
+        }
+        return false;
     }
 
     /**

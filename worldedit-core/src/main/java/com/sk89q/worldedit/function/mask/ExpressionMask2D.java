@@ -21,14 +21,19 @@ package com.sk89q.worldedit.function.mask;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.internal.expression.Expression;
 import com.sk89q.worldedit.internal.expression.ExpressionException;
 import com.sk89q.worldedit.internal.expression.runtime.EvaluationException;
 import com.sk89q.worldedit.math.BlockVector2;
 
+import javax.annotation.Nullable;
+import java.util.function.IntSupplier;
+
 public class ExpressionMask2D extends AbstractMask2D {
 
     private final Expression expression;
+    private final IntSupplier timeout;
 
     /**
      * Create a new instance.
@@ -37,8 +42,7 @@ public class ExpressionMask2D extends AbstractMask2D {
      * @throws ExpressionException thrown if there is an error with the expression
      */
     public ExpressionMask2D(String expression) throws ExpressionException {
-        checkNotNull(expression);
-        this.expression = Expression.compile(expression, "x", "z");
+        this(Expression.compile(checkNotNull(expression), "x", "z"));
     }
 
     /**
@@ -47,14 +51,23 @@ public class ExpressionMask2D extends AbstractMask2D {
      * @param expression the expression
      */
     public ExpressionMask2D(Expression expression) {
+        this(expression, null);
+    }
+
+    public ExpressionMask2D(Expression expression, @Nullable IntSupplier timeout) {
         checkNotNull(expression);
         this.expression = expression;
+        this.timeout = timeout;
     }
 
     @Override
     public boolean test(BlockVector2 vector) {
         try {
-            return expression.evaluate(vector.getX(), 0, vector.getZ()) > 0;
+            if (timeout != null) {
+                return expression.evaluate(vector.getX(), 0, vector.getZ()) > 0;
+            } else {
+                return expression.evaluate(new double[]{vector.getX(), 0, vector.getZ()}, timeout.getAsInt()) > 0;
+            }
         } catch (EvaluationException e) {
             return false;
         }

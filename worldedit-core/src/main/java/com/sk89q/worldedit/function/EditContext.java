@@ -21,6 +21,7 @@ package com.sk89q.worldedit.function;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.regions.Region;
@@ -32,6 +33,7 @@ public class EditContext {
     private Extent destination;
     @Nullable private Region region;
     @Nullable private Pattern fill;
+    @Nullable private LocalSession session;
 
     public Extent getDestination() {
         return destination;
@@ -60,4 +62,12 @@ public class EditContext {
         this.fill = fill;
     }
 
+    @Nullable
+    public LocalSession getSession() {
+        return session;
+    }
+
+    public void setSession(@Nullable LocalSession session) {
+        this.session = session;
+    }
 }

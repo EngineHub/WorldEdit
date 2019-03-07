@@ -52,6 +52,7 @@ import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.CylinderRegion;
 import com.sk89q.worldedit.regions.Region;
+import com.sk89q.worldedit.session.SessionOwner;
 import com.sk89q.worldedit.util.command.CommandCallable;
 import com.sk89q.worldedit.util.command.CommandMapping;
 import com.sk89q.worldedit.util.command.Dispatcher;
@@ -541,13 +542,18 @@ public class UtilityCommands {
     public void calc(Actor actor, @Text String input) throws CommandException {
         try {
             Expression expression = Expression.compile(input);
-            actor.print("= " + expression.evaluate());
+            if (actor instanceof SessionOwner) {
+                actor.print("= " + expression.evaluate(
+                        new double[]{}, WorldEdit.getInstance().getSessionManager().get((SessionOwner) actor).getTimeout()));
+            } else {
+                actor.print("= " + expression.evaluate());
+            }
         } catch (EvaluationException e) {
             actor.printError(String.format(
-                    "'%s' could not be parsed as a valid expression", input));
+                    "'%s' could not be evaluated (error: %s)", input, e.getMessage()));
         } catch (ExpressionException e) {
             actor.printError(String.format(
-                    "'%s' could not be evaluated (error: %s)", input, e.getMessage()));
+                    "'%s' could not be parsed as a valid expression", input));
         }
     }
 
