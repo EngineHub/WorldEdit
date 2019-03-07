@@ -101,7 +101,7 @@ public class GeneralCommands {
         int limit = args.argsLength() == 0 ? config.calculationTimeout : Math.max(-1, args.getInteger(0));
         if (!mayDisable && config.maxCalculationTimeout > -1) {
             if (limit > config.maxCalculationTimeout) {
-                player.printError("Your maximum allowable timeout is " + config.maxCalculationTimeout + ".");
+                player.printError("Your maximum allowable timeout is " + config.maxCalculationTimeout + " ms.");
                 return;
             }
         }
@@ -109,9 +109,9 @@ public class GeneralCommands {
         session.setTimeout(limit);
 
         if (limit != config.calculationTimeout) {
-            player.print("Timeout time set to " + limit + ". (Use //timeout to go back to the default.)");
+            player.print("Timeout time set to " + limit + " ms. (Use //timeout to go back to the default.)");
         } else {
-            player.print("Timeout time set to " + limit + ".");
+            player.print("Timeout time set to " + limit + " ms.");
         }
     }
 
