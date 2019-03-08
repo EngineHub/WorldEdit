@@ -36,6 +36,7 @@ import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extent.clipboard.BlockArrayClipboard;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
+import com.sk89q.worldedit.extent.clipboard.MultiClipboard;
 import com.sk89q.worldedit.extent.clipboard.io.BuiltInClipboardFormat;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormat;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormats;
@@ -86,12 +87,16 @@ public class SchematicCommands {
 
     @Command(
             aliases = { "load" },
+            flags = "a",
             usage = "[<format>] <filename>",
             desc = "Load a schematic into your clipboard",
-            min = 1, max = 2
+            help = "Load a schematic with the given filename and format into your clipboard.\n" +
+                    "  -a <name> will add the schematic to a multi-clipboard with the given name.",
+            min = 1, max = 3
     )
     @CommandPermissions({ "worldedit.clipboard.load", "worldedit.schematic.load" })
-    public void load(Player player, LocalSession session, @Optional("sponge") String formatName, String filename) throws FilenameException {
+    public void load(Player player, LocalSession session, @Optional("sponge") String formatName, String filename,
+                     @Switch('a') String multiName) throws FilenameException {
         LocalConfiguration config = worldEdit.getConfiguration();
 
         File dir = worldEdit.getWorkingDirectoryFile(config.saveDir);
@@ -117,7 +122,7 @@ public class SchematicCommands {
             ClipboardReader reader = closer.register(format.getReader(bis));
 
             Clipboard clipboard = reader.read();
-            session.setClipboard(new ClipboardHolder(clipboard));
+            session.setClipboard(ClipboardCommands.createHolderOrAddMulti(player, session, multiName, clipboard));
 
             log.info(player.getName() + " loaded " + f.getCanonicalPath());
             player.print(filename + " loaded. Paste it with //paste");
@@ -149,6 +154,13 @@ public class SchematicCommands {
 
         ClipboardHolder holder = session.getClipboard();
         Clipboard clipboard = holder.getClipboard();
+        if (clipboard instanceof MultiClipboard) {
+            MultiClipboard multi = ((MultiClipboard) clipboard);
+            clipboard = multi.getCurrentClipboard();
+            if (multi.getNames().size() > 1) {
+                player.printDebug("Note: you have multiple clipboards. Only the currently selected one will be saved.");
+            }
+        }
         Transform transform = holder.getTransform();
         Clipboard target;
 

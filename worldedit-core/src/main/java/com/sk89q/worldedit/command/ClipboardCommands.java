@@ -33,6 +33,7 @@ import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extent.clipboard.BlockArrayClipboard;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
+import com.sk89q.worldedit.extent.clipboard.MultiClipboard;
 import com.sk89q.worldedit.function.block.BlockReplace;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.function.operation.ForwardExtentCopy;
@@ -50,6 +51,8 @@ import com.sk89q.worldedit.regions.selector.CuboidRegionSelector;
 import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.util.command.binding.Switch;
 import com.sk89q.worldedit.util.command.parametric.Optional;
+
+import java.util.List;
 
 /**
  * Clipboard commands.
@@ -70,12 +73,13 @@ public class ClipboardCommands {
 
     @Command(
         aliases = { "/copy" },
-        flags = "em",
+        flags = "ema",
         desc = "Copy the selection to the clipboard",
         help = "Copy the selection to the clipboard\n" +
                 "Flags:\n" +
                 "  -e will also copy entities\n" +
-                "  -m sets a source mask so that excluded blocks become air\n" +
+                "  -m <mask> sets a source mask so that excluded blocks become air\n" +
+                "  -a <name> will add the clipboard to a multi-clipboard\n" +
                 "WARNING: Pasting entities cannot yet be undone!",
         min = 0,
         max = 0
@@ -83,9 +87,13 @@ public class ClipboardCommands {
     @CommandPermissions("worldedit.clipboard.copy")
     public void copy(Player player, LocalSession session, EditSession editSession,
                      @Selection Region region, @Switch('e') boolean copyEntities,
-                     @Switch('m') Mask mask) throws WorldEditException {
+                     @Switch('m') Mask mask, @Switch('a') String addMulti) throws WorldEditException {
 
         BlockArrayClipboard clipboard = new BlockArrayClipboard(region);
+
+        ClipboardHolder holder = createHolderOrAddMulti(player, session, addMulti, clipboard);
+        if (holder == null) return;
+
         clipboard.setOrigin(session.getPlacementPosition(player));
         ForwardExtentCopy copy = new ForwardExtentCopy(editSession, region, clipboard, region.getMinimumPoint());
         copy.setCopyingEntities(copyEntities);
@@ -93,20 +101,21 @@ public class ClipboardCommands {
             copy.setSourceMask(mask);
         }
         Operations.completeLegacy(copy);
-        session.setClipboard(new ClipboardHolder(clipboard));
+        session.setClipboard(holder);
 
         player.print(region.getArea() + " block(s) were copied.");
     }
 
     @Command(
         aliases = { "/cut" },
-        flags = "em",
+        flags = "ema",
         usage = "[leave-id]",
         desc = "Cut the selection to the clipboard",
         help = "Copy the selection to the clipboard\n" +
                 "Flags:\n" +
                 "  -e will also cut entities\n" +
-                "  -m sets a source mask so that excluded blocks become air\n" +
+                "  -m <mask> sets a source mask so that excluded blocks become air\n" +
+                "  -a <name> will add the clipboard to a multi-clipboard\n" +
                 "WARNING: Cutting and pasting entities cannot yet be undone!",
         max = 1
     )
@@ -114,9 +123,13 @@ public class ClipboardCommands {
     @Logging(REGION)
     public void cut(Player player, LocalSession session, EditSession editSession,
                     @Selection Region region, @Optional("air") Pattern leavePattern, @Switch('e') boolean copyEntities,
-                    @Switch('m') Mask mask) throws WorldEditException {
+                    @Switch('m') Mask mask, @Switch('a') String addMulti) throws WorldEditException {
 
         BlockArrayClipboard clipboard = new BlockArrayClipboard(region);
+
+        ClipboardHolder holder = createHolderOrAddMulti(player, session, addMulti, clipboard);
+        if (holder == null) return;
+
         clipboard.setOrigin(session.getPlacementPosition(player));
         ForwardExtentCopy copy = new ForwardExtentCopy(editSession, region, clipboard, region.getMinimumPoint());
         copy.setSourceFunction(new BlockReplace(editSession, leavePattern));
@@ -126,9 +139,54 @@ public class ClipboardCommands {
             copy.setSourceMask(mask);
         }
         Operations.completeLegacy(copy);
-        session.setClipboard(new ClipboardHolder(clipboard));
+
+        session.setClipboard(holder);
 
         player.print(region.getArea() + " block(s) were cut.");
+    }
+
+    static ClipboardHolder createHolderOrAddMulti(Player player, LocalSession session, String multiName, Clipboard clipboard) {
+        if (multiName == null || multiName.isEmpty()) {
+            return new ClipboardHolder(clipboard);
+        }
+        java.util.Optional<ClipboardHolder> holder = session.getClipboardOptional();
+        if (!holder.isPresent()) {
+            MultiClipboard multi = new MultiClipboard();
+            multi.addClipboard(multiName, clipboard);
+            return new ClipboardHolder(multi);
+        }
+        Clipboard existing = holder.get().getClipboard();
+        if (existing instanceof MultiClipboard) {
+            MultiClipboard existingMulti = (MultiClipboard) existing;
+            if (clipboard instanceof MultiClipboard) {
+                MultiClipboard multi = ((MultiClipboard) clipboard);
+                for (String name : multi.getNames()) {
+                    Clipboard clip = multi.getClipboard(name);
+                    addToMulti(player, name, clip, existingMulti, true);
+                }
+            } else {
+                if (!addToMulti(player, multiName, clipboard, existingMulti, false)) return null;
+            }
+            return holder.get();
+        } else {
+            MultiClipboard multi = new MultiClipboard();
+            multi.addClipboard(multiName, clipboard);
+            addToMulti(player, "existing", existing, multi, true);
+            return new ClipboardHolder(multi);
+        }
+    }
+
+    private static boolean addToMulti(Player player, String multiName, Clipboard clipboard, MultiClipboard existingMulti, boolean tryRename) {
+        int i = 0;
+        String baseName = multiName;
+        while (!existingMulti.addClipboard(multiName, clipboard)) {
+            if (!tryRename || i > 10) {
+                player.printError("Clipboard with name '" + baseName + "' already exists in multi-clipboard.");
+                return false;
+            }
+            multiName = baseName + "#" + i++;
+        }
+        return true;
     }
 
     @Command(
@@ -218,6 +276,40 @@ public class ClipboardCommands {
         transform = transform.scale(direction.abs().multiply(-2).add(1, 1, 1).toVector3());
         holder.setTransform(holder.getTransform().combine(transform));
         player.print("The clipboard copy has been flipped.");
+    }
+
+    @Command(
+        aliases = { "/selclip", "selectclipboard", "selclip" },
+        usage = "[name]",
+        desc = "Select a clipboard variant",
+        help = "If you have a multi-clipboard, selects one of the clipboard variants from it as your active clipboard.\n" +
+                "If you don't specify one, list the available clipboard variants in your current multi-clipboard.",
+        max = 1
+    )
+    @CommandPermissions("worldedit.clipboard.select")
+    public void selectClipboard(Player player, LocalSession session, @Optional String name) throws WorldEditException {
+        ClipboardHolder holder = session.getClipboard();
+        Clipboard clip = holder.getClipboard();
+        if (!(clip instanceof MultiClipboard)) {
+            player.printError("You don't currently have a multi-clipboard.");
+            return;
+        }
+        MultiClipboard multi = (MultiClipboard) clip;
+        List<String> names = multi.getNames();
+        if (name == null || name.isEmpty()) {
+            if (names.isEmpty()) {
+                player.printError("Multi-clipboard is empty.");
+                return;
+            }
+            player.print("Selected: '" + multi.getCurrentName() + "'. Available: " + String.join(", ", names));
+        } else {
+            if (names.contains(name)) {
+                multi.setCurrent(name);
+                player.print("Selected clipboard '" + name + "'.");
+            } else {
+                player.printError("That clipboard doesn't exist. Available: " + String.join(", ", names));
+            }
+        }
     }
 
     @Command(

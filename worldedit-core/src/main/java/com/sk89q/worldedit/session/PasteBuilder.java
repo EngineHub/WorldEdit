@@ -23,6 +23,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
+import com.sk89q.worldedit.extent.clipboard.MultiClipboard;
 import com.sk89q.worldedit.extent.transform.BlockTransformExtent;
 import com.sk89q.worldedit.function.mask.ExistingBlockMask;
 import com.sk89q.worldedit.function.operation.ForwardExtentCopy;
@@ -51,7 +52,12 @@ public class PasteBuilder {
     PasteBuilder(ClipboardHolder holder, Extent targetExtent) {
         checkNotNull(holder);
         checkNotNull(targetExtent);
-        this.clipboard = holder.getClipboard();
+        Clipboard clip = holder.getClipboard();
+        if (clip instanceof MultiClipboard) {
+            this.clipboard = ((MultiClipboard) clip).getCurrentClipboard();
+        } else {
+            this.clipboard = clip;
+        }
         this.transform = holder.getTransform();
         this.targetExtent = targetExtent;
     }

@@ -15,6 +15,7 @@ import com.sk89q.worldedit.extension.input.InputParseException;
 import com.sk89q.worldedit.extension.input.ParserContext;
 import com.sk89q.worldedit.extent.clipboard.BlockArrayClipboard;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
+import com.sk89q.worldedit.extent.clipboard.MultiClipboard;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.util.Location;
@@ -55,8 +56,10 @@ public class MinecraftStructureReader extends NBTSchematicReader {
     public Clipboard read() throws IOException {
         NamedTag rootTag = inputStream.readNamedTag();
 
-        // MC structures are all unnamed, but this doesn't seem to be necessary?
-        // if (!rootTag.getName().isEmpty()) throw new IOException("bad format");
+        // MC structures are all unnamed, but this doesn't seem to be necessary? might remove this later
+        if (!rootTag.getName().isEmpty()) {
+            throw new IOException("Root tag has name - are you sure this is a structure?");
+        }
 
         CompoundTag structureTag = (CompoundTag) rootTag.getTag();
         Map<String, Tag> structure = structureTag.getValue();
@@ -70,11 +73,26 @@ public class MinecraftStructureReader extends NBTSchematicReader {
         int length = ((IntTag) size.get(2)).getValue();
 
         if (structure.containsKey("palettes")) {
-
+            MultiClipboard multi = new MultiClipboard();
+            // this will correctly error if palettes is present but wrong type
+            List<ListTag> palettes = (List<ListTag>) (List<?>) requireTag(structure, "palettes", ListTag.class).getValue();
+            int paletteNum = 1;
+            for (ListTag paletteObject : palettes) {
+                Map<Integer, BlockState> palette = readPalette((List<CompoundTag>) (List<?>) paletteObject.getValue());
+                BlockArrayClipboard clipboard = getClipboardWithPalette(structure, palette, width, height, length);
+                multi.addClipboard(String.valueOf(paletteNum++), clipboard);
+            }
+            return multi;
         }
         List<CompoundTag> paletteObject = (List<CompoundTag>) (List<?>) requireTag(structure, "palette", ListTag.class).getValue();
         Map<Integer, BlockState> palette = readPalette(paletteObject);
+        BlockArrayClipboard clipboard = getClipboardWithPalette(structure, palette, width, height, length);
 
+        return clipboard;
+    }
+
+    private BlockArrayClipboard getClipboardWithPalette(Map<String, Tag> structure, Map<Integer, BlockState> palette,
+                                                        int width, int height, int length) throws IOException {
         BlockArrayClipboard clipboard = new BlockArrayClipboard(
                 new CuboidRegion(BlockVector3.ZERO, BlockVector3.at(width, height, length).subtract(BlockVector3.ONE)));
 
@@ -119,7 +137,6 @@ public class MinecraftStructureReader extends NBTSchematicReader {
                 }
             }
         }
-
         return clipboard;
     }
 

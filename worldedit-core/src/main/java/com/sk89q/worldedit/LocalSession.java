@@ -57,6 +57,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Optional;
 import java.util.TimeZone;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -367,6 +368,15 @@ public class LocalSession {
             throw new EmptyClipboardException();
         }
         return clipboard;
+    }
+
+    /**
+     * Gets the clipboard as an optional.
+     *
+     * @return an Optional containing the clipboard holder if it exists, or empty
+     */
+    public Optional<ClipboardHolder> getClipboardOptional() {
+        return Optional.of(clipboard);
     }
 
     /**
