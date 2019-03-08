@@ -21,6 +21,8 @@ package com.sk89q.worldedit.command;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import com.google.common.collect.Multimap;
+import com.google.common.io.Files;
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandException;
@@ -196,7 +198,7 @@ public class SchematicCommands {
         String filename = args.getString(0);
 
         File dir = worldEdit.getWorkingDirectoryFile(config.saveDir);
-        File f = worldEdit.getSafeSaveFile(player, dir, filename, "schematic", "schematic");
+        File f = worldEdit.getSafeOpenFile(player, dir, filename, "schematic", ClipboardFormats.getFileExtensionArray());
 
         if (!f.exists()) {
             player.printError("Schematic " + filename + " does not exist!");
@@ -209,6 +211,11 @@ public class SchematicCommands {
         }
 
         player.print(filename + " has been deleted.");
+        try {
+            log.info(player.getName() + " deleted " + f.getCanonicalPath());
+        } catch (IOException e) {
+            log.info(player.getName() + " deleted " + f.getAbsolutePath());
+        }
     }
 
     @Command(
@@ -245,7 +252,8 @@ public class SchematicCommands {
             help = "List all schematics in the schematics directory\n" +
                     " -d sorts by date, oldest first\n" +
                     " -n sorts by date, newest first\n" +
-                    " -p <page> prints the requested page\n"
+                    " -p <page> prints the requested page\n" +
+                    "Note: Format is not thoroughly verified until loading."
     )
     @CommandPermissions("worldedit.schematic.list")
     public void list(Actor actor, CommandContext args, @Switch('p') @Optional("1") int page) throws WorldEditException {
@@ -328,10 +336,13 @@ public class SchematicCommands {
             StringBuilder build = new StringBuilder();
 
             build.append("\u00a72");
-            ClipboardFormat format = ClipboardFormats.findByFile(file);
+            //ClipboardFormat format = ClipboardFormats.findByFile(file);
+            Multimap<String, ClipboardFormat> exts = ClipboardFormats.getFileExtensionMap();
+            ClipboardFormat format = exts.get(Files.getFileExtension(file.getName()))
+                    .stream().findFirst().orElse(null);
             boolean inRoot = file.getParentFile().getName().equals(prefix);
             build.append(inRoot ? file.getName() : file.getPath().split(Pattern.quote(prefix + File.separator))[1])
-                    .append(": ").append(format == null ? "Unknown" : format.getName());
+                    .append(": ").append(format == null ? "Unknown" : format.getName() + "*");
             result.add(build.toString());
         }
         return result;

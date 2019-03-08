@@ -67,6 +67,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -90,11 +91,11 @@ import javax.script.ScriptException;
  * method {@link WorldEdit#getInstance()}, which is shared among all
  * platforms within the same classloader hierarchy.</p>
  */
-public class WorldEdit {
+public final class WorldEdit {
 
     public static final Logger logger = Logger.getLogger(WorldEdit.class.getCanonicalName());
 
-    private final static WorldEdit instance = new WorldEdit();
+    private static final WorldEdit instance = new WorldEdit();
     private static String version;
 
     private final EventBus eventBus = new EventBus();
@@ -274,14 +275,15 @@ public class WorldEdit {
             }
         } else {
             List<String> exts = extensions == null ? ImmutableList.of(defaultExt) : Lists.asList(defaultExt, extensions);
-            return getSafeFileWithExtensions(dir, filename,  exts, isSave);
+            f = getSafeFileWithExtensions(dir, filename, exts, isSave);
         }
 
         try {
             String filePath = f.getCanonicalPath();
             String dirPath = dir.getCanonicalPath();
 
-            if (!filePath.substring(0, dirPath.length()).equals(dirPath) && !getConfiguration().allowSymlinks) {
+            if ((filePath.length() < dirPath.length() || !filePath.substring(0, dirPath.length()).equals(dirPath))
+                    && !getConfiguration().allowSymlinks) {
                 throw new FilenameResolutionException(filename,
                         "Path is outside allowable root");
             }
@@ -301,7 +303,7 @@ public class WorldEdit {
             }
         }
         File result = null;
-        for (Iterator<String> iter = exts.iterator(); iter.hasNext() && (result == null || !result.exists());) {
+        for (Iterator<String> iter = exts.iterator(); iter.hasNext() && (result == null || (!isSave && !result.exists()));) {
             result = getSafeFileWithExtension(dir, filename, iter.next());
         }
         if (result == null) {
@@ -311,8 +313,12 @@ public class WorldEdit {
     }
 
     private File getSafeFileWithExtension(File dir, String filename, String extension) {
-        if (extension != null && filename.lastIndexOf('.') == -1) {
-            filename += "." + extension;
+        if (extension != null) {
+            int dot = filename.lastIndexOf('.');
+            if (dot < 0 || !filename.substring(dot).equalsIgnoreCase(extension))
+            {
+                filename += "." + extension;
+            }
         }
 
         if (!checkFilename(filename)) {
@@ -618,7 +624,7 @@ public class WorldEdit {
             byte[] data = new byte[in.available()];
             in.readFully(data);
             in.close();
-            script = new String(data, 0, data.length, "utf-8");
+            script = new String(data, 0, data.length, StandardCharsets.UTF_8);
         } catch (IOException e) {
             player.printError("Script read error: " + e.getMessage());
             return;

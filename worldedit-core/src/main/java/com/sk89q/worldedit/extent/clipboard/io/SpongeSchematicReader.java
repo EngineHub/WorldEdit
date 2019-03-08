@@ -88,16 +88,16 @@ public class SpongeSchematicReader extends NBTSchematicReader {
         int version = requireTag(schematic, "Version", IntTag.class).getValue();
         switch (version) {
             case 1:
-                return readVersion1(schematic);
+                return readVersion1(schematicTag);
             default:
                 throw new IOException("This schematic version is currently not supported");
         }
     }
 
-    private Clipboard readVersion1(Map<String, Tag> schematic) throws IOException {
+    private Clipboard readVersion1(CompoundTag schematicTag) throws IOException {
         BlockVector3 origin;
         Region region;
-
+        Map<String, Tag> schematic = schematicTag.getValue();
         Map<String, Tag> metadata = requireTag(schematic, "Metadata", CompoundTag.class).getValue();
 
         int width = requireTag(schematic, "Width", ShortTag.class).getValue();
@@ -143,7 +143,7 @@ public class SpongeSchematicReader extends NBTSchematicReader {
             try {
                 state = WorldEdit.getInstance().getBlockFactory().parseFromInput(palettePart, parserContext).toImmutableState();
             } catch (InputParseException e) {
-                throw new IOException("Invalid BlockState in schematic: " + palettePart + ". Are you missing a mod of using a schematic made in a newer version of Minecraft?");
+                throw new IOException("Invalid BlockState in schematic: " + palettePart + ". Are you missing a mod or using a schematic made in a newer version of Minecraft?");
             }
             palette.put(id, state);
         }

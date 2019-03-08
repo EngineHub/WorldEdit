@@ -160,7 +160,10 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
         }
         // Entity
         for (org.bukkit.entity.EntityType entityType : org.bukkit.entity.EntityType.values()) {
-            EntityType.REGISTRY.register("minecraft:" + entityType.name().toLowerCase(), new EntityType("minecraft:" + entityType.name().toLowerCase()));
+            String mcid = entityType.getName();
+            if (mcid != null) {
+                EntityType.REGISTRY.register("minecraft:" + mcid.toLowerCase(), new EntityType("minecraft:" + mcid.toLowerCase()));
+            }
         }
         // Tags
         try {

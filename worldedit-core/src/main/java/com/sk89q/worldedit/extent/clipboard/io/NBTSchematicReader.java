@@ -46,9 +46,7 @@ public abstract class NBTSchematicReader implements ClipboardReader {
     }
 
     @Nullable
-    protected static <T extends Tag> T getTag(CompoundTag tag, Class<T> expected, String key) {
-        Map<String, Tag> items = tag.getValue();
-
+    protected static <T extends Tag> T getTag(Map<String, Tag> items, String key, Class<T> expected) {
         if (!items.containsKey(key)) {
             return null;
         }
