@@ -33,6 +33,7 @@ import com.sk89q.worldedit.forge.net.handler.InternalPacketHandler;
 import com.sk89q.worldedit.forge.net.handler.WECUIPacketHandler;
 import com.sk89q.worldedit.forge.net.packet.LeftClickAirEventMessage;
 import com.sk89q.worldedit.util.Location;
+import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.block.BlockCategory;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.entity.EntityType;
@@ -184,6 +185,12 @@ public class ForgeWorldEdit {
         for (ResourceLocation name : ForgeRegistries.ENTITIES.getKeys()) {
             if (EntityType.REGISTRY.get(name.toString()) == null) {
                 EntityType.REGISTRY.register(name.toString(), new EntityType(name.toString()));
+            }
+        }
+        // Biomes
+        for (ResourceLocation name : ForgeRegistries.BIOMES.getKeys()) {
+            if (BiomeType.REGISTRY.get(name.toString()) == null) {
+                BiomeType.REGISTRY.register(name.toString(), new BiomeType(name.toString()));
             }
         }
         // Tags
