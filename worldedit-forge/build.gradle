@@ -14,7 +14,7 @@ buildscript {
 apply plugin: 'net.minecraftforge.gradle'
 
 def minecraftVersion = "1.13.2"
-def forgeVersion = "25.0.70"
+def forgeVersion = "25.0.76"
 
 dependencies {
     compile project(':worldedit-core')
@@ -28,7 +28,7 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 minecraft {
-    mappings channel: 'snapshot', version: '20190217-1.13.1'
+    mappings channel: 'snapshot', version: '20190311-1.13.2'
 
     runs {
         client = {
