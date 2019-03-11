@@ -22,20 +22,20 @@ package com.sk89q.worldedit.forge.net.packet;
 import com.sk89q.worldedit.forge.ForgeWorldEdit;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent.LeftClickEmpty;
+import net.minecraftforge.fml.network.NetworkEvent.Context;
 
+import java.util.Objects;
 import java.util.function.Supplier;
 
+@SuppressWarnings({"NonFinalUtilityClass", "checkstyle:hideutilityclassconstructor"})
 public class LeftClickAirEventMessage {
 
     public static final class Handler {
-
-        public static void handle(final LeftClickAirEventMessage message, Supplier<NetworkEvent.Context> ctx) {
-            NetworkEvent.Context context = ctx.get();
-            context.enqueueWork(() -> ForgeWorldEdit.inst.onPlayerInteract(new PlayerInteractEvent.LeftClickEmpty(context.getSender())));
+        public static void handle(final LeftClickAirEventMessage message, Supplier<Context> ctx) {
+            Context context = ctx.get();
+            context.enqueueWork(() -> ForgeWorldEdit.inst.onPlayerInteract(new LeftClickEmpty(Objects.requireNonNull(context.getSender()))));
         }
-
     }
 
     public static LeftClickAirEventMessage decode(ByteBuf buf) {

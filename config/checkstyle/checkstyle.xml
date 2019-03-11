@@ -5,8 +5,9 @@
 <module name="Checker">
   <!-- Tabs are strictly banned -->
   <module name="FileTabCharacter"/>
-
+  <module name="SuppressWarningsFilter" />
   <module name="TreeWalker">
+    <module name="SuppressWarningsHolder" /> <!-- allows for @SuppressWarnings annotation -->
     <!-- Important basics -->
     <!-- <module name="PackageDeclaration"/> Unlikely that we would miss this in a PR -->
     <module name="OuterTypeFilename"/> <!-- TypeName -> TypeName.java -->

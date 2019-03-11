@@ -33,10 +33,11 @@ public class GuiReferenceCard extends GuiScreen {
 
     @Override
     public void initGui() {
-        this.closeButton = new GuiButton(0, (this.width - this.backgroundWidth + 100) / 2, (this.height + this.backgroundHeight - 60) / 2, this.backgroundWidth - 100, 20, "Close") {
+        this.closeButton = new GuiButton(0, (this.width - this.backgroundWidth + 100) / 2,
+                (this.height + this.backgroundHeight - 60) / 2, this.backgroundWidth - 100, 20, "Close") {
             @Override
-            public void onClick(double p_194829_1_, double p_194829_3_) {
-                super.onClick(p_194829_1_, p_194829_3_);
+            public void onClick(double mouseX, double mouseY) {
+                super.onClick(mouseX, mouseY);
 
                 mc.player.closeScreen();
             }

@@ -24,12 +24,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
-import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.event.platform.CommandEvent;
 import com.sk89q.worldedit.util.command.CommandMapping;
 import com.sk89q.worldedit.util.command.Parameter;
 import net.minecraft.command.CommandSource;
@@ -38,11 +33,12 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import java.util.LinkedList;
 import java.util.function.Predicate;
 
-import static com.sk89q.worldedit.forge.ForgeAdapter.adaptPlayer;
 import static net.minecraft.command.Commands.argument;
 import static net.minecraft.command.Commands.literal;
 
-public class CommandWrapper {
+public final class CommandWrapper {
+    private CommandWrapper() {
+    }
 
     public static void register(CommandDispatcher<CommandSource> dispatcher, CommandMapping command) {
         LiteralArgumentBuilder<CommandSource> base = literal(command.getPrimaryAlias());
