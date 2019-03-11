@@ -53,6 +53,7 @@
       <allow pkg="org.lwjgl"/>
       <allow pkg="io.netty.buffer"/>
       <allow pkg="org.spongepowered.api" />
+      <allow pkg="com.mojang.brigadier" />
     </subpackage>
 
     <subpackage name="sponge">

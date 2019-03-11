@@ -29,23 +29,20 @@ import com.sk89q.worldedit.util.command.CommandMapping;
 import com.sk89q.worldedit.util.command.Dispatcher;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.registry.Registries;
-import net.minecraft.command.ServerCommandManager;
-import net.minecraft.entity.EntityList;
+import net.minecraft.command.Commands;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.management.PlayerList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.WorldServer;
-import net.minecraftforge.common.DimensionManager;
-import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.annotation.Nullable;
 
 class ForgePlatform extends AbstractPlatform implements MultiUserPlatform {
 
@@ -55,7 +52,7 @@ class ForgePlatform extends AbstractPlatform implements MultiUserPlatform {
 
     ForgePlatform(ForgeWorldEdit mod) {
         this.mod = mod;
-        this.server = FMLCommonHandler.instance().getMinecraftServerInstance();
+        this.server = ServerLifecycleHooks.getCurrentServer();
     }
 
     boolean isHookingEvents() {
@@ -69,7 +66,7 @@ class ForgePlatform extends AbstractPlatform implements MultiUserPlatform {
 
     @Override
     public boolean isValidMobType(String type) {
-        return EntityList.isRegistered(new ResourceLocation(type));
+        return net.minecraftforge.registries.ForgeRegistries.ENTITIES.containsKey(new ResourceLocation(type));
     }
 
     @Override
@@ -84,8 +81,8 @@ class ForgePlatform extends AbstractPlatform implements MultiUserPlatform {
 
     @Override
     public List<? extends com.sk89q.worldedit.world.World> getWorlds() {
-        WorldServer[] worlds = DimensionManager.getWorlds();
-        List<com.sk89q.worldedit.world.World> ret = new ArrayList<>(worlds.length);
+        Iterable<WorldServer> worlds = server.getWorlds();
+        List<com.sk89q.worldedit.world.World> ret = new ArrayList<>();
         for (WorldServer world : worlds) {
             ret.add(new ForgeWorld(world));
         }
@@ -109,7 +106,7 @@ class ForgePlatform extends AbstractPlatform implements MultiUserPlatform {
         if (world instanceof ForgeWorld) {
             return world;
         } else {
-            for (WorldServer ws : DimensionManager.getWorlds()) {
+            for (WorldServer ws : server.getWorlds()) {
                 if (ws.getWorldInfo().getWorldName().equals(world.getName())) {
                     return new ForgeWorld(ws);
                 }
@@ -122,15 +119,13 @@ class ForgePlatform extends AbstractPlatform implements MultiUserPlatform {
     @Override
     public void registerCommands(Dispatcher dispatcher) {
         if (server == null) return;
-        ServerCommandManager mcMan = (ServerCommandManager) server.getCommandManager();
+        Commands mcMan = server.getCommandManager();
 
         for (final CommandMapping command : dispatcher.getCommands()) {
-            CommandWrapper wrapper = new CommandWrapper(command);
-            mcMan.registerCommand(wrapper);
+            CommandWrapper.register(mcMan.getDispatcher(), command);
             if (command.getDescription().getPermissions().size() > 0) {
-                ForgeWorldEdit.inst.getPermissionsProvider().registerPermission(wrapper, command.getDescription().getPermissions().get(0));
                 for (int i = 1; i < command.getDescription().getPermissions().size(); i++) {
-                    ForgeWorldEdit.inst.getPermissionsProvider().registerPermission(null, command.getDescription().getPermissions().get(i));
+                    ForgeWorldEdit.inst.getPermissionsProvider().registerPermission(command.getDescription().getPermissions().get(i));
                 }
             }
         }

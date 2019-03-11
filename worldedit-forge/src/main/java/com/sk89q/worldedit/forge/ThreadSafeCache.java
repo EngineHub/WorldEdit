@@ -21,9 +21,9 @@ package com.sk89q.worldedit.forge;
 
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
-import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
+import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -57,7 +57,7 @@ public class ThreadSafeCache {
         if (now - lastRefresh > REFRESH_DELAY) {
             Set<UUID> onlineIds = new HashSet<>();
             
-            MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
+            MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
             if (server == null || server.getPlayerList() == null) {
                 return;
             }

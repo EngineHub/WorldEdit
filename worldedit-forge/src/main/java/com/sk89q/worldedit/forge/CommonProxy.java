@@ -19,13 +19,22 @@
 
 package com.sk89q.worldedit.forge;
 
-import com.sk89q.worldedit.forge.gui.GuiHandler;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
+import com.sk89q.worldedit.forge.gui.GuiReferenceCard;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.ExtensionPoint;
+import net.minecraftforge.fml.ModLoadingContext;
 
 public class CommonProxy {
 
+    public static ResourceLocation REFERENCE_GUI = new ResourceLocation("worldedit", "resource_gui");
+
     public void registerHandlers() {
-        NetworkRegistry.INSTANCE.registerGuiHandler(ForgeWorldEdit.inst, new GuiHandler());
+        ModLoadingContext.get().registerExtensionPoint(ExtensionPoint.GUIFACTORY, () -> openContainer -> {
+            if (openContainer.getId().equals(REFERENCE_GUI)) {
+                return new GuiReferenceCard();
+            }
+            return null;
+        });
     }
 
 }

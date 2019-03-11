@@ -21,13 +21,12 @@ package com.sk89q.worldedit.forge;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
-import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
 import com.sk89q.worldedit.registry.state.Property;
-
-import net.minecraft.block.properties.IProperty;
+import net.minecraft.state.IProperty;
 
 import java.util.List;
+import java.util.Optional;
 
 class IPropertyAdapter<T extends Comparable<T>> implements Property<T> {
 

@@ -52,9 +52,9 @@ final class TileEntityUtils {
         checkNotNull(tag);
         checkNotNull(position);
 
-        tag.setTag("x", new NBTTagInt(position.getBlockX()));
-        tag.setTag("y", new NBTTagInt(position.getBlockY()));
-        tag.setTag("z", new NBTTagInt(position.getBlockZ()));
+        tag.put("x", new NBTTagInt(position.getBlockX()));
+        tag.put("y", new NBTTagInt(position.getBlockY()));
+        tag.put("z", new NBTTagInt(position.getBlockZ()));
 
         return tag;
     }
@@ -81,7 +81,7 @@ final class TileEntityUtils {
         if (tag != null) {
             // Set X, Y, Z
             updateForSet(tag, position);
-            tileEntity.readFromNBT(tag);
+            tileEntity.read(tag);
         }
 
         world.setTileEntity(new BlockPos(position.getBlockX(), position.getBlockY(), position.getBlockZ()), tileEntity);
@@ -98,7 +98,7 @@ final class TileEntityUtils {
     static void setTileEntity(World world, BlockVector3 position, @Nullable NBTTagCompound tag) {
         if (tag != null) {
             updateForSet(tag, position);
-            TileEntity tileEntity = TileEntity.create(world, tag);
+            TileEntity tileEntity = TileEntity.create(tag);
             if (tileEntity != null) {
                 world.setTileEntity(new BlockPos(position.getBlockX(), position.getBlockY(), position.getBlockZ()), tileEntity);
             }
@@ -143,7 +143,7 @@ final class TileEntityUtils {
 
     public static NBTTagCompound copyNbtData(TileEntity tile) {
         NBTTagCompound tag = new NBTTagCompound();
-        tile.writeToNBT(tag);
+        tile.write(tag);
         return tag;
     }
 }

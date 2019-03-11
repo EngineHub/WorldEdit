@@ -1,64 +1,76 @@
 buildscript {
     repositories {
+        mavenLocal()
         mavenCentral()
-        maven { url = "http://files.minecraftforge.net/maven" }
-        maven { url = "https://oss.sonatype.org/content/repositories/snapshots/" }
+        maven { url = "https://files.minecraftforge.net/maven" }
         jcenter()
     }
 
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.+', changing: true
     }
 }
 
-apply plugin: 'net.minecraftforge.gradle.forge'
+apply plugin: 'net.minecraftforge.gradle'
 
-configurations.all {
-	resolutionStrategy {
-		force 'org.ow2.asm:asm:5.2'
-	}
-}
+def minecraftVersion = "1.13.2"
+def forgeVersion = "25.0.76"
 
 dependencies {
     compile project(':worldedit-core')
-    compile 'org.spongepowered:spongeapi:6.0.0-SNAPSHOT'
+
+    minecraft "net.minecraftforge:forge:${minecraftVersion}-${forgeVersion}"
+
     testCompile group: 'org.mockito', name: 'mockito-core', version: '1.9.0-rc1'
 }
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
-repositories {
-    maven {
-        name = "Sponge"
-        url = "https://repo.spongepowered.org/maven"
-    }
-}
-
-ext.forgeVersion = "14.22.0.2456"
-
 minecraft {
-    version = "1.12.1-${project.forgeVersion}"
-    mappings = "snapshot_20170815"
-    runDir = 'run'
+    mappings channel: 'snapshot', version: '20190311-1.13.2'
 
-    replaceIn "com/sk89q/worldedit/forge/ForgeWorldEdit.java"
-    replace "%VERSION%", project.version
+    runs {
+        client = {
+            // recommended logging data for a userdev environment
+            properties 'forge.logging.markers': 'SCAN,REGISTRIES,REGISTRYDUMP'
+            // recommended logging level for the console
+            properties 'forge.logging.console.level': 'debug'
+            workingDirectory project.file('run').canonicalPath
+            source sourceSets.main
+        }
+        server = {
+            // recommended logging data for a userdev environment
+            properties 'forge.logging.markers': 'SCAN,REGISTRIES,REGISTRYDUMP'
+            // recommended logging level for the console
+            properties 'forge.logging.console.level': 'debug'
+            workingDirectory project.file('run').canonicalPath
+            source sourceSets.main
+        }
+    }
+
+    accessTransformer = file('worldedit_at.cfg')
 }
 
-project.archivesBaseName = "${project.archivesBaseName}-mc${minecraft.version}"
+project.archivesBaseName = "${project.archivesBaseName}-mc${minecraftVersion}"
 
 processResources {
-    from (sourceSets.main.resources.srcDirs) {
-        expand 'version': project.version,
-                'mcVersion': project.minecraft.version,
-                'forgeVersion': project.forgeVersion,
-                'internalVersion': project.internalVersion
-        include 'mcmod.info'
+    // this will ensure that this task is redone when the versions change.
+    inputs.property 'version', project.version
+    inputs.property 'mcversion', minecraftVersion
+    inputs.property 'internalVersion', internalVersion
+
+    // replace stuff in mcmod.info, nothing else
+    from(sourceSets.main.resources.srcDirs) {
+        include 'META_INF/mods.toml'
+
+        // replace version and mcversion
+        expand 'version':project.version, 'mcversion': minecraftVersion, 'internalVersion': internalVersion
     }
 
-    from (sourceSets.main.resources.srcDirs) {
-        exclude 'mcmod.info'
+    // copy everything else except the mcmod.info
+    from(sourceSets.main.resources.srcDirs) {
+        exclude 'META_INF/mods.toml'
     }
 }
 
@@ -76,9 +88,11 @@ shadowJar {
     }
 }
 
-reobf {
-    shadowJar {
-        mappingType = 'SEARGE'
+afterEvaluate {
+    reobf {
+        shadowJar {
+            mappings = createMcpToSrg.output
+        }
     }
 }
 

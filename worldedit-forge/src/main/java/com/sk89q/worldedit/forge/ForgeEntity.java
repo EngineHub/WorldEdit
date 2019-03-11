@@ -29,8 +29,8 @@ import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.NullWorld;
 import com.sk89q.worldedit.world.entity.EntityTypes;
-import net.minecraft.entity.EntityList;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.ResourceLocation;
 
 import java.lang.ref.WeakReference;
 
@@ -49,11 +49,11 @@ class ForgeEntity implements Entity {
     public BaseEntity getState() {
         net.minecraft.entity.Entity entity = entityRef.get();
         if (entity != null) {
-            String id = EntityList.getEntityString(entity);
+            ResourceLocation id = entity.getType().getRegistryName();
             if (id != null) {
                 NBTTagCompound tag = new NBTTagCompound();
-                entity.writeToNBT(tag);
-                return new BaseEntity(EntityTypes.get(id), NBTConverter.fromNative(tag));
+                entity.writeWithoutTypeId(tag);
+                return new BaseEntity(EntityTypes.get(id.toString()), NBTConverter.fromNative(tag));
             } else {
                 return null;
             }
@@ -96,7 +96,7 @@ class ForgeEntity implements Entity {
     public boolean remove() {
         net.minecraft.entity.Entity entity = entityRef.get();
         if (entity != null) {
-            entity.setDead();
+            entity.remove();
         }
         return true;
     }

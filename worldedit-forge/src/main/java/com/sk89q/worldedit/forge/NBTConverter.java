@@ -32,7 +32,7 @@ import com.sk89q.jnbt.LongTag;
 import com.sk89q.jnbt.ShortTag;
 import com.sk89q.jnbt.StringTag;
 import com.sk89q.jnbt.Tag;
-import net.minecraft.nbt.NBTBase;
+import net.minecraft.nbt.INBTBase;
 import net.minecraft.nbt.NBTTagByte;
 import net.minecraft.nbt.NBTTagByteArray;
 import net.minecraft.nbt.NBTTagCompound;
@@ -62,7 +62,7 @@ final class NBTConverter {
     private NBTConverter() {
     }
 
-    public static NBTBase toNative(Tag tag) {
+    public static INBTBase toNative(Tag tag) {
         if (tag instanceof IntArrayTag) {
             return toNative((IntArrayTag) tag);
 
@@ -111,7 +111,7 @@ final class NBTConverter {
             if (child instanceof EndTag) {
                 continue;
             }
-            list.appendTag(toNative(child));
+            list.add(toNative(child));
         }
         return list;
     }
@@ -140,7 +140,7 @@ final class NBTConverter {
     public static NBTTagCompound toNative(CompoundTag tag) {
         NBTTagCompound compound = new NBTTagCompound();
         for (Entry<String, Tag> child : tag.getValue().entrySet()) {
-            compound.setTag(child.getKey(), toNative(child.getValue()));
+            compound.put(child.getKey(), toNative(child.getValue()));
         }
         return compound;
     }
@@ -157,7 +157,7 @@ final class NBTConverter {
         return new NBTTagDouble(tag.getValue());
     }
 
-    public static Tag fromNative(NBTBase other) {
+    public static Tag fromNative(INBTBase other) {
         if (other instanceof NBTTagIntArray) {
             return fromNative((NBTTagIntArray) other);
 
@@ -207,9 +207,9 @@ final class NBTConverter {
         other = other.copy();
         List<Tag> list = new ArrayList<>();
         Class<? extends Tag> listClass = StringTag.class;
-        int tags = other.tagCount();
+        int tags = other.size();
         for (int i = 0; i < tags; i++) {
-            Tag child = fromNative(other.removeTag(0));
+            Tag child = fromNative(other.remove(0));
             list.add(child);
             listClass = child.getClass();
         }
@@ -242,10 +242,10 @@ final class NBTConverter {
     }
 
     public static CompoundTag fromNative(NBTTagCompound other) {
-        Set<String> tags = other.getKeySet();
+        Set<String> tags = other.keySet();
         Map<String, Tag> map = new HashMap<>();
         for (String tagName : tags) {
-            map.put(tagName, fromNative(other.getTag(tagName)));
+            map.put(tagName, fromNative(other.get(tagName)));
         }
         return new CompoundTag(map);
     }

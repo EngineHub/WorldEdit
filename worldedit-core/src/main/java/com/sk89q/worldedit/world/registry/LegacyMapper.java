@@ -43,6 +43,8 @@ import java.util.logging.Logger;
 
 import javax.annotation.Nullable;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 public class LegacyMapper {
 
     private static final Logger log = Logger.getLogger(LegacyMapper.class.getCanonicalName());
@@ -100,6 +102,7 @@ public class LegacyMapper {
             try {
                 String id = itemEntry.getKey();
                 ItemType type = ItemTypes.get(itemEntry.getValue());
+                checkNotNull(type);
                 itemToStringMap.put(type, id);
                 stringToItemMap.put(id, type);
             } catch (Exception e) {

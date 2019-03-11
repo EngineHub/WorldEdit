@@ -19,17 +19,15 @@
 
 package com.sk89q.worldedit.forge;
 
-import net.minecraft.command.ICommand;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.world.GameType;
-import net.minecraftforge.fml.common.FMLCommonHandler;
-import org.spongepowered.api.entity.living.player.Player;
+import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
 public interface ForgePermissionsProvider {
 
     boolean hasPermission(EntityPlayerMP player, String permission);
 
-    void registerPermission(ICommand command, String permission);
+    void registerPermission(String permission);
 
     class VanillaPermissionsProvider implements ForgePermissionsProvider {
 
@@ -43,24 +41,25 @@ public interface ForgePermissionsProvider {
         public boolean hasPermission(EntityPlayerMP player, String permission) {
             ForgeConfiguration configuration = platform.getConfiguration();
             return configuration.cheatMode ||
-                    FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().canSendCommands(player.getGameProfile()) ||
+                    ServerLifecycleHooks.getCurrentServer().getPlayerList().canSendCommands(player.getGameProfile()) ||
                     (configuration.creativeEnable && player.interactionManager.getGameType() == GameType.CREATIVE);
         }
 
         @Override
-        public void registerPermission(ICommand command, String permission) {}
+        public void registerPermission(String permission) {}
     }
 
-    class SpongePermissionsProvider implements ForgePermissionsProvider {
-
-        @Override
-        public boolean hasPermission(EntityPlayerMP player, String permission) {
-            return ((Player) player).hasPermission(permission);
-        }
-
-        @Override
-        public void registerPermission(ICommand command, String permission) {
-
-        }
-    }
+    // TODO Re-add when Sponge for 1.13 is out
+//    class SpongePermissionsProvider implements ForgePermissionsProvider {
+//
+//        @Override
+//        public boolean hasPermission(EntityPlayerMP player, String permission) {
+//            return ((Player) player).hasPermission(permission);
+//        }
+//
+//        @Override
+//        public void registerPermission(ICommand command, String permission) {
+//
+//        }
+//    }
 }

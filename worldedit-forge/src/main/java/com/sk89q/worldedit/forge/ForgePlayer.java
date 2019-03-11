@@ -24,6 +24,7 @@ import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.extension.platform.AbstractPlayerActor;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
+import com.sk89q.worldedit.forge.net.handler.WECUIPacketHandler;
 import com.sk89q.worldedit.internal.cui.CUIEvent;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.Vector3;
@@ -32,19 +33,17 @@ import com.sk89q.worldedit.util.HandSide;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
-import com.sk89q.worldedit.world.item.ItemTypes;
 
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.server.SPacketCustomPayload;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
 import java.util.UUID;
 
@@ -69,12 +68,12 @@ public class ForgePlayer extends AbstractPlayerActor {
     @Override
     public BaseItemStack getItemInHand(HandSide handSide) {
         ItemStack is = this.player.getHeldItem(handSide == HandSide.MAIN_HAND ? EnumHand.MAIN_HAND : EnumHand.OFF_HAND);
-        return new BaseItemStack(ItemTypes.get(ForgeRegistries.ITEMS.getKey(is.getItem()).toString()));
+        return ForgeAdapter.adapt(is);
     }
 
     @Override
     public String getName() {
-        return this.player.getName();
+        return this.player.getName().getFormattedText();
     }
 
     @Override
@@ -105,8 +104,7 @@ public class ForgePlayer extends AbstractPlayerActor {
 
     @Override
     public void giveItem(BaseItemStack itemStack) {
-        this.player.inventory.addItemStackToInventory(
-                new ItemStack(Item.getByNameOrId(itemStack.getType().getId()), itemStack.getAmount(), 0));
+        this.player.inventory.addItemStackToInventory(ForgeAdapter.adapt(itemStack));
     }
 
     @Override
@@ -117,7 +115,7 @@ public class ForgePlayer extends AbstractPlayerActor {
             send = send + "|" + StringUtil.joinString(params, "|");
         }
         PacketBuffer buffer = new PacketBuffer(Unpooled.copiedBuffer(send.getBytes(WECUIPacketHandler.UTF_8_CHARSET)));
-        SPacketCustomPayload packet = new SPacketCustomPayload(ForgeWorldEdit.CUI_PLUGIN_CHANNEL, buffer);
+        SPacketCustomPayload packet = new SPacketCustomPayload(new ResourceLocation(ForgeWorldEdit.CUI_PLUGIN_CHANNEL), buffer);
         this.player.connection.sendPacket(packet);
     }
 
@@ -197,7 +195,7 @@ public class ForgePlayer extends AbstractPlayerActor {
 
     @Override
     public SessionKey getSessionKey() {
-        return new SessionKeyImpl(player.getUniqueID(), player.getName());
+        return new SessionKeyImpl(player.getUniqueID(), player.getName().getString());
     }
 
     private static class SessionKeyImpl implements SessionKey {

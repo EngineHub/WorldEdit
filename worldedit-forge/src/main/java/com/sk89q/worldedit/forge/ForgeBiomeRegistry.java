@@ -29,7 +29,6 @@ import net.minecraft.world.biome.Biome;
  */
 class ForgeBiomeRegistry implements BiomeRegistry {
 
-
     @Override
     public BiomeData getData(BiomeType biome) {
         return new ForgeBiomeData(ForgeAdapter.adapt(biome));
@@ -52,7 +51,7 @@ class ForgeBiomeRegistry implements BiomeRegistry {
 
         @Override
         public String getName() {
-            return biome.getBiomeName();
+            return biome.getDisplayName().getString();
         }
     }
 

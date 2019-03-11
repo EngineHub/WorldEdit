@@ -1785,7 +1785,7 @@
     "48:0": "minecraft:mossy_cobblestone",
     "49:0": "minecraft:obsidian",
     "50:0": "minecraft:torch",
-    "52:0": "minecraft:mob_spawner",
+    "52:0": "minecraft:spawner",
     "53:0": "minecraft:oak_stairs",
     "54:0": "minecraft:chest",
     "56:0": "minecraft:diamond_ore",
