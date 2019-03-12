@@ -162,12 +162,10 @@ public class SessionManager {
             sessions.put(getKey(owner), new SessionHolder(sessionKey, session));
         }
 
-        if (shouldBoundLimit(owner.hasPermission("worldedit.limit.unrestricted"),
-                session.getBlockChangeLimit(), config.maxChangeLimit)) {
+        if (shouldBoundLimit(owner, "worldedit.limit.unrestricted", session.getBlockChangeLimit(), config.maxChangeLimit)) {
             session.setBlockChangeLimit(config.maxChangeLimit);
         }
-        if (shouldBoundLimit(owner.hasPermission("worldedit.timeout.unrestricted"),
-                session.getTimeout(), config.maxCalculationTimeout)) {
+        if (shouldBoundLimit(owner, "worldedit.timeout.unrestricted", session.getTimeout(), config.maxCalculationTimeout)) {
             session.setTimeout(config.maxCalculationTimeout);
         }
 
@@ -181,9 +179,10 @@ public class SessionManager {
         return session;
     }
 
-    private boolean shouldBoundLimit(boolean mayBypass, int currentLimit, int maxLimit) {
-        if (!mayBypass && maxLimit > -1) { // if player can't bypass and max is finite
-            return currentLimit < 0 || currentLimit > maxLimit; // make sure current is finite and less than max
+    private boolean shouldBoundLimit(SessionOwner owner, String permission, int currentLimit, int maxLimit) {
+        if (maxLimit > -1) { // if max is finite
+            return (currentLimit < 0 || currentLimit > maxLimit) // make sure current is finite and less than max
+                    && !owner.hasPermission(permission); // unless user has unlimited permission
         }
         return false;
     }

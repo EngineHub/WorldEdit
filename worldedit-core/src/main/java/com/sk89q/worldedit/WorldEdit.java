@@ -68,6 +68,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -279,19 +281,17 @@ public final class WorldEdit {
         }
 
         try {
-            String filePath = f.getCanonicalPath();
-            String dirPath = dir.getCanonicalPath();
+            Path filePath = Paths.get(f.toURI()).normalize();
+            Path dirPath = Paths.get(dir.toURI()).normalize();
 
-            if ((filePath.length() < dirPath.length() || !filePath.substring(0, dirPath.length()).equals(dirPath))
-                    && !getConfiguration().allowSymlinks) {
-                throw new FilenameResolutionException(filename,
-                        "Path is outside allowable root");
+            if (!filePath.startsWith(dirPath)
+                    || (!getConfiguration().allowSymlinks && !filePath.toRealPath().startsWith(dirPath))) {
+                throw new FilenameResolutionException(filename, "Path is outside allowable root");
             }
 
             return f;
         } catch (IOException e) {
-            throw new FilenameResolutionException(filename,
-                    "Failed to resolve path");
+            throw new FilenameResolutionException(filename, "Failed to resolve path");
         }
     }
 
