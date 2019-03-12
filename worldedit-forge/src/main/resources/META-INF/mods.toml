@@ -3,7 +3,7 @@ modLoader="javafml"
 # A version range to match for said mod loader - for regular FML @Mod it will be the minecraft version (without the 1.)
 loaderVersion="[24,)"
 # A URL to refer people to when problems occur with this mod
-issueTrackerURL="https://discord.gg/YKbmj7V"
+issueTrackerURL="https://discord.gg/enginehub"
 # A URL for the "homepage" for this mod, displayed in the mod UI
 displayURL="http://wiki.sk89q.com/wiki/WorldEdit/"
 # A file name (in the root of the mod JAR) containing a logo for display
@@ -25,7 +25,7 @@ WorldEdit is an easy-to-use in-game world editor for Minecraft, supporting both 
 [[dependencies.worldedit]]
     modId="forge"
     mandatory=true
-    versionRange="[${forge_version},)"
+    versionRange="[${forgeVersion},)"
     ordering="NONE"
     side="BOTH"
 [[dependencies.worldedit]]
