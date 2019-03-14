@@ -30,6 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.URL;
+import java.util.concurrent.ForkJoinPool;
 
 public class ActorCallbackPaste {
 
@@ -65,7 +66,7 @@ public class ActorCallbackPaste {
                 LOGGER.warn("Failed to submit pastebin", throwable);
                 sender.printError("Failed to submit to a pastebin. Please see console for the error.");
             }
-        });
+        }, ForkJoinPool.commonPool());
     }
 
 }

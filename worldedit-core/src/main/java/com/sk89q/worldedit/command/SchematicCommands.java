@@ -21,7 +21,6 @@ package com.sk89q.worldedit.command;
 
 import com.google.common.collect.Multimap;
 import com.google.common.io.Files;
-import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandException;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
@@ -41,10 +40,13 @@ import com.sk89q.worldedit.extent.clipboard.io.ClipboardWriter;
 import com.sk89q.worldedit.function.operation.Operations;
 import com.sk89q.worldedit.math.transform.Transform;
 import com.sk89q.worldedit.session.ClipboardHolder;
-import com.sk89q.worldedit.util.command.binding.Switch;
-import com.sk89q.worldedit.util.command.parametric.Optional;
 import com.sk89q.worldedit.util.io.Closer;
 import com.sk89q.worldedit.util.io.file.FilenameException;
+import org.enginehub.piston.annotation.Command;
+import org.enginehub.piston.annotation.CommandContainer;
+import org.enginehub.piston.annotation.param.Arg;
+import org.enginehub.piston.annotation.param.ArgFlag;
+import org.enginehub.piston.annotation.param.Switch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,6 +66,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * Commands that work with schematic files.
  */
+@CommandContainer
 public class SchematicCommands {
 
     /**
@@ -84,13 +87,13 @@ public class SchematicCommands {
     }
 
     @Command(
-            aliases = { "load" },
-            usage = "[<format>] <filename>",
-            desc = "Load a schematic into your clipboard",
-            min = 1, max = 2
+        name = "load",
+        desc = "Load a schematic into your clipboard"
     )
-    @CommandPermissions({ "worldedit.clipboard.load", "worldedit.schematic.load" })
-    public void load(Player player, LocalSession session, @Optional("sponge") String formatName, String filename) throws FilenameException {
+    @CommandPermissions({"worldedit.clipboard.load", "worldedit.schematic.load"})
+    public void load(Player player, LocalSession session,
+                     @Arg(desc = "File name.") String filename,
+                     @Arg(desc = "Format name.", def = "sponge") String formatName) throws FilenameException {
         LocalConfiguration config = worldEdit.getConfiguration();
 
         File dir = worldEdit.getWorkingDirectoryFile(config.saveDir);
@@ -127,16 +130,15 @@ public class SchematicCommands {
     }
 
     @Command(
-            aliases = { "save" },
-            flags = "f",
-            usage = "[<format>] <filename>",
-            desc = "Save a schematic into your clipboard",
-            help = "-f is required to overwrite an existing file",
-            min = 1, max = 2
+        name = "save",
+        desc = "Save a schematic into your clipboard"
     )
-    @CommandPermissions({ "worldedit.clipboard.save", "worldedit.schematic.save" })
-    public void save(Player player, LocalSession session, @Optional("sponge") String formatName,
-                     String filename, @Switch('f') boolean allowOverwrite) throws CommandException, WorldEditException {
+    @CommandPermissions({"worldedit.clipboard.save", "worldedit.schematic.save"})
+    public void save(Player player, LocalSession session,
+                     @Arg(desc = "File name.") String filename,
+                     @Arg(desc = "Format name.", def = "sponge") String formatName,
+                     @Switch(name = 'f', desc = "Overwrite an existing file.") boolean allowOverwrite
+        ) throws CommandException, WorldEditException {
         LocalConfiguration config = worldEdit.getConfiguration();
 
         File dir = worldEdit.getWorkingDirectoryFile(config.saveDir);
@@ -198,15 +200,13 @@ public class SchematicCommands {
     }
 
     @Command(
-            aliases = { "delete", "d" },
-            usage = "<filename>",
-            desc = "Delete a saved schematic",
-            help = "Delete a schematic from the schematic list",
-            min = 1,
-            max = 1
+        name = "delete",
+        aliases = {"d"},
+        desc = "Delete a saved schematic"
     )
     @CommandPermissions("worldedit.schematic.delete")
-    public void delete(Actor actor, String filename) throws WorldEditException {
+    public void delete(Actor actor,
+                       @Arg(desc = "File name.") String filename) throws WorldEditException {
         LocalConfiguration config = worldEdit.getConfiguration();
         File dir = worldEdit.getWorkingDirectoryFile(config.saveDir);
 
@@ -232,12 +232,12 @@ public class SchematicCommands {
     }
 
     @Command(
-            aliases = {"formats", "listformats", "f"},
-            desc = "List available formats",
-            max = 0
+        name = "formats",
+        aliases = {"listformats", "f"},
+        desc = "List available formats"
     )
     @CommandPermissions("worldedit.schematic.formats")
-    public void formats(Actor actor) throws WorldEditException {
+    public void formats(Actor actor) {
         actor.print("Available clipboard formats (Name: Lookup names)");
         StringBuilder builder;
         boolean first = true;
@@ -257,18 +257,14 @@ public class SchematicCommands {
     }
 
     @Command(
-            aliases = {"list", "all", "ls"},
-            desc = "List saved schematics",
-            max = 1,
-            flags = "dnp",
-            help = "List all schematics in the schematics directory\n" +
-                    " -d sorts by date, oldest first\n" +
-                    " -n sorts by date, newest first\n" +
-                    " -p <page> prints the requested page\n" +
-                    "Note: Format is not thoroughly verified until loading."
+        name = "list",
+        aliases = {"all", "ls"},
+        desc = "List saved schematics",
+        descFooter = "Note: Format is not fully verified until loading."
     )
     @CommandPermissions("worldedit.schematic.list")
-    public void list(Actor actor, CommandContext args, @Switch('p') @Optional("1") int page) throws WorldEditException {
+    public void list(Actor actor, CommandContext args,
+                     @ArgFlag(name = 'p', desc = "Page to view.", def = "1") int page) {
         File dir = worldEdit.getWorkingDirectoryFile(worldEdit.getConfiguration().saveDir);
         List<File> fileList = allFiles(dir);
 
@@ -315,7 +311,7 @@ public class SchematicCommands {
         actor.print("Available schematics (Filename: Format) [" + page + "/" + pageCount + "]:");
         StringBuilder build = new StringBuilder();
         int limit = Math.min(offset + SCHEMATICS_PER_PAGE, schematics.size());
-        for (int i = offset; i < limit;) {
+        for (int i = offset; i < limit; ) {
             build.append(schematics.get(i));
             if (++i != limit) {
                 build.append("\n");
@@ -351,10 +347,10 @@ public class SchematicCommands {
             //ClipboardFormat format = ClipboardFormats.findByFile(file);
             Multimap<String, ClipboardFormat> exts = ClipboardFormats.getFileExtensionMap();
             ClipboardFormat format = exts.get(Files.getFileExtension(file.getName()))
-                    .stream().findFirst().orElse(null);
+                .stream().findFirst().orElse(null);
             boolean inRoot = file.getParentFile().getName().equals(prefix);
             build.append(inRoot ? file.getName() : file.getPath().split(Pattern.quote(prefix + File.separator))[1])
-                    .append(": ").append(format == null ? "Unknown" : format.getName() + "*");
+                .append(": ").append(format == null ? "Unknown" : format.getName() + "*");
             result.add(build.toString());
         }
         return result;
