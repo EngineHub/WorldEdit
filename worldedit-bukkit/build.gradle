@@ -38,9 +38,10 @@ jar {
 
 shadowJar {
     dependencies {
+        relocate "org.slf4j", "com.sk89q.worldedit.slf4j"
         include(dependency(':worldedit-core'))
-        // Must not be relocated, for StaticLoggerBinder to work:
-        include(dependency("org.slf4j:slf4j-jdk14:1.7.26"))
+        include(dependency('org.slf4j:slf4j-api'))
+        include(dependency("org.slf4j:slf4j-jdk14"))
         relocate ("org.bstats", "com.sk89q.worldedit.bukkit.bstats") {
             include(dependency("org.bstats:bstats-bukkit:1.4"))
         }
