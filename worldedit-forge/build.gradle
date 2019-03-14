@@ -85,6 +85,7 @@ jar {
 shadowJar {
     dependencies {
         include(dependency(':worldedit-core'))
+        include(dependency("org.apache.logging.log4j:log4j-slf4j-impl:2.11.2"))
     }
 }
 
