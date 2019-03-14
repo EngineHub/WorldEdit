@@ -21,19 +21,14 @@ package com.sk89q.worldedit.forge;
 
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.arguments.StringArgumentType;
-import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import com.sk89q.worldedit.util.command.CommandMapping;
-import com.sk89q.worldedit.util.command.Parameter;
 import net.minecraft.command.CommandSource;
 import net.minecraft.entity.player.EntityPlayerMP;
 
-import java.util.LinkedList;
 import java.util.function.Predicate;
 
-import static net.minecraft.command.Commands.argument;
 import static net.minecraft.command.Commands.literal;
 
 public final class CommandWrapper {
@@ -41,78 +36,14 @@ public final class CommandWrapper {
     }
 
     public static void register(CommandDispatcher<CommandSource> dispatcher, CommandMapping command) {
-        LiteralArgumentBuilder<CommandSource> base = literal(command.getPrimaryAlias());
-        LinkedList<ArgumentBuilder<CommandSource, ?>> parameterStack = new LinkedList<>();
-        LinkedList<ArgumentBuilder<CommandSource, ?>> optionalParameterStack = new LinkedList<>();
-        boolean hasFlag = false;
-        for (Parameter parameter : command.getDescription().getParameters()) {
-            if (parameter.isValueFlag()) {
-                if (!hasFlag) {
-                    hasFlag = true;
-                    optionalParameterStack.push(argument("flags", StringArgumentType.string()));
-                }
-            } else if (parameter.isOptional()) {
-                optionalParameterStack.push(argument(parameter.getName(), StringArgumentType.string()));
-            } else {
-                parameterStack.push(argument(parameter.getName(), StringArgumentType.string()));
-            }
-        }
-
-        ArgumentBuilder<CommandSource, ?> argument = buildChildNodes(parameterStack, optionalParameterStack, command);
-        if (argument != null) {
-            base.then(argument);
-        } else {
-            base.executes(commandFor(command));
-        }
-        LiteralCommandNode<CommandSource> registered =
-            dispatcher.register(
-                base.requires(requirementsFor(command))
-            );
         for (String alias : command.getAllAliases()) {
-            dispatcher.register(
-                literal(alias).redirect(registered)
-            );
-        }
-    }
-
-    /**
-     * Make the appropriate {@code then()} and {@code execute()} calls to emulate required and
-     * optional parameters, given the argument orders.
-     *
-     * @param parameterStack required parameters
-     * @param optionalParameterStack optional parameters
-     * @return the node with all calls chained
-     */
-    private static ArgumentBuilder<CommandSource, ?> buildChildNodes(LinkedList<ArgumentBuilder<CommandSource, ?>> parameterStack,
-                                                                     LinkedList<ArgumentBuilder<CommandSource, ?>> optionalParameterStack,
-                                                                     CommandMapping mapping) {
-        ArgumentBuilder<CommandSource, ?> currentChild = null;
-        Command<CommandSource> command = commandFor(mapping);
-        while (!optionalParameterStack.isEmpty()) {
-            ArgumentBuilder<CommandSource, ?> next = optionalParameterStack.removeLast();
-            if (currentChild != null) {
-                next.then(currentChild.executes(command));
+            LiteralArgumentBuilder<CommandSource> base = literal(alias)
+                .executes(FAKE_COMMAND);
+            if (command.getDescription().getPermissions().size() > 0) {
+                base.requires(requirementsFor(command));
             }
-            currentChild = next;
+            dispatcher.register(base);
         }
-        boolean requiredExecute = false;
-        while (!parameterStack.isEmpty()) {
-            ArgumentBuilder<CommandSource, ?> next = parameterStack.removeLast();
-            if (currentChild != null) {
-                next.then(currentChild);
-            }
-            if (!requiredExecute) {
-                // first required parameter also gets execute
-                requiredExecute = true;
-                next.executes(command);
-            }
-            currentChild = next;
-        }
-        return currentChild;
-    }
-
-    private static Command<CommandSource> commandFor(CommandMapping mapping) {
-        return FAKE_COMMAND;
     }
 
     public static final Command<CommandSource> FAKE_COMMAND = ctx -> {
