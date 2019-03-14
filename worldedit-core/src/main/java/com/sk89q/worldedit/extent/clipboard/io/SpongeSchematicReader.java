@@ -19,8 +19,6 @@
 
 package com.sk89q.worldedit.extent.clipboard.io;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import com.google.common.collect.Maps;
 import com.sk89q.jnbt.ByteArrayTag;
 import com.sk89q.jnbt.CompoundTag;
@@ -42,14 +40,17 @@ import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.world.block.BlockState;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Reads schematic files using the Sponge Schematic Specification.
@@ -62,7 +63,7 @@ public class SpongeSchematicReader extends NBTSchematicReader {
         // If NBT Compat handlers are needed - add them here.
     }
 
-    private static final Logger log = Logger.getLogger(SpongeSchematicReader.class.getCanonicalName());
+    private static final Logger log = LoggerFactory.getLogger(SpongeSchematicReader.class);
     private final NBTInputStream inputStream;
 
     /**

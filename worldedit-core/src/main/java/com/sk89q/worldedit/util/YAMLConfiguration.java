@@ -26,11 +26,10 @@ import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.session.SessionManager;
 import com.sk89q.worldedit.util.report.Unreported;
 import com.sk89q.worldedit.world.snapshot.SnapshotRepository;
+import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.util.HashSet;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * A less simple implementation of {@link LocalConfiguration}
@@ -51,7 +50,7 @@ public class YAMLConfiguration extends LocalConfiguration {
         try {
             config.load();
         } catch (IOException e) {
-            logger.log(Level.WARNING, "Error loading WorldEdit configuration", e);
+            logger.warn("Error loading WorldEdit configuration", e);
         }
 
         profile = config.getBoolean("debug", profile);

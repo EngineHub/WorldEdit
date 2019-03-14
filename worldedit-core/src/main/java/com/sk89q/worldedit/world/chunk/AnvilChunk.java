@@ -36,11 +36,10 @@ import com.sk89q.worldedit.world.block.BlockTypes;
 import com.sk89q.worldedit.world.registry.LegacyMapper;
 import com.sk89q.worldedit.world.storage.InvalidFormatException;
 
+import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.annotation.Nullable;
 
 public class AnvilChunk implements Chunk {
 
@@ -259,7 +258,7 @@ public class AnvilChunk implements Chunk {
 
         BlockState state = LegacyMapper.getInstance().getBlockFromLegacy(id, data);
         if (state == null) {
-            WorldEdit.logger.warning("Unknown legacy block " + id + ":" + data + " found when loading legacy anvil chunk.");
+            WorldEdit.logger.warn("Unknown legacy block " + id + ":" + data + " found when loading legacy anvil chunk.");
             return BlockTypes.AIR.getDefaultState().toBaseBlock();
         }
         CompoundTag tileEntity = getBlockTileEntity(position);

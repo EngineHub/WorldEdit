@@ -27,6 +27,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.event.server.PluginEnableEvent;
 import org.bukkit.plugin.Plugin;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,8 +37,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class PermissionsResolverManager implements PermissionsResolver {
 
@@ -85,7 +85,7 @@ public class PermissionsResolverManager implements PermissionsResolver {
     private Server server;
     private PermissionsResolver permissionResolver;
     private YAMLProcessor config;
-    private Logger logger = Logger.getLogger(getClass().getCanonicalName());
+    private Logger logger = LoggerFactory.getLogger(getClass());
     private List<Class<? extends PermissionsResolver>> enabledResolvers = new ArrayList<>();
 
     @SuppressWarnings("unchecked")
@@ -119,7 +119,7 @@ public class PermissionsResolverManager implements PermissionsResolver {
                     break;
                 }
             } catch (Throwable e) {
-                logger.log(Level.WARNING, "Error in factory method for " + resolverClass.getSimpleName(), e);
+                logger.warn("Error in factory method for " + resolverClass.getSimpleName(), e);
                 continue;
             }
         }
@@ -195,14 +195,14 @@ public class PermissionsResolverManager implements PermissionsResolver {
             try {
                 file.createNewFile();
             } catch (IOException e) {
-                logger.log(Level.WARNING, "Failed to create new configuration file", e);
+                logger.warn("Failed to create new configuration file", e);
             }
         }
         config = new YAMLProcessor(file, false, YAMLFormat.EXTENDED);
         try {
             config.load();
         } catch (IOException e) {
-            logger.log(Level.WARNING, "Error loading WEPIF configuration", e);
+            logger.warn("Error loading WEPIF configuration", e);
         }
         List<String> keys = config.getKeys(null);
         config.setHeader(CONFIG_HEADER);
@@ -232,7 +232,7 @@ public class PermissionsResolverManager implements PermissionsResolver {
                 } catch (ClassNotFoundException e) {}
 
                 if (next == null || !PermissionsResolver.class.isAssignableFrom(next)) {
-                    logger.warning("WEPIF: Invalid or unknown class found in enabled resolvers: "
+                    logger.warn("WEPIF: Invalid or unknown class found in enabled resolvers: "
                             + nextName + ". Moving to disabled resolvers list.");
                     i.remove();
                     disabledResolvers.add(nextName);

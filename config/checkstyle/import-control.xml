@@ -15,6 +15,7 @@
   <allow pkg="com.google.gson"/>
   <allow pkg="net.royawesome.jlibnoise"/>
   <allow pkg="org.json.simple" />
+  <allow pkg="org.slf4j"/>
 
   <subpackage name="util.yaml">
     <allow pkg="org.yaml.snakeyaml"/>

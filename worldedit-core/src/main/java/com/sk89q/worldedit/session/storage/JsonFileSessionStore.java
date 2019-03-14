@@ -19,8 +19,6 @@
 
 package com.sk89q.worldedit.session.storage;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonIOException;
@@ -28,6 +26,8 @@ import com.google.gson.JsonParseException;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.util.gson.GsonUtil;
 import com.sk89q.worldedit.util.io.Closer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -37,8 +37,8 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.UUID;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Stores sessions as JSON files in a directory.
@@ -47,7 +47,7 @@ import java.util.logging.Logger;
  */
 public class JsonFileSessionStore implements SessionStore {
 
-    private static final Logger log = Logger.getLogger(JsonFileSessionStore.class.getCanonicalName());
+    private static final Logger log = LoggerFactory.getLogger(JsonFileSessionStore.class);
     private final Gson gson;
     private final File dir;
 
@@ -61,7 +61,7 @@ public class JsonFileSessionStore implements SessionStore {
 
         if (!dir.isDirectory()) {
             if (!dir.mkdirs()) {
-                log.log(Level.WARNING, "Failed to create directory '" + dir.getPath() + "' for sessions");
+                log.warn("Failed to create directory '" + dir.getPath() + "' for sessions");
             }
         }
 
@@ -111,12 +111,12 @@ public class JsonFileSessionStore implements SessionStore {
 
         if (finalFile.exists()) {
             if (!finalFile.delete()) {
-                log.log(Level.WARNING, "Failed to delete " + finalFile.getPath() + " so the .tmp file can replace it");
+                log.warn("Failed to delete " + finalFile.getPath() + " so the .tmp file can replace it");
             }
         }
 
         if (!tempFile.renameTo(finalFile)) {
-            log.log(Level.WARNING, "Failed to rename temporary session file to " + finalFile.getPath());
+            log.warn("Failed to rename temporary session file to " + finalFile.getPath());
         }
     }
 

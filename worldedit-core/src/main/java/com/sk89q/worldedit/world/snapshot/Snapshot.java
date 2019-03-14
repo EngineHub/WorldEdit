@@ -29,11 +29,12 @@ import com.sk89q.worldedit.world.storage.TrueZipLegacyChunkStore;
 import com.sk89q.worldedit.world.storage.TrueZipMcRegionChunkStore;
 import com.sk89q.worldedit.world.storage.ZippedLegacyChunkStore;
 import com.sk89q.worldedit.world.storage.ZippedMcRegionChunkStore;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Calendar;
-import java.util.logging.Logger;
 import java.util.zip.ZipFile;
 
 /**
@@ -41,7 +42,7 @@ import java.util.zip.ZipFile;
  */
 public class Snapshot implements Comparable<Snapshot> {
 
-    protected static Logger logger = Logger.getLogger(Snapshot.class.getCanonicalName());
+    protected static Logger logger = LoggerFactory.getLogger(Snapshot.class);
 
     protected File file;
     protected String name;

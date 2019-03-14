@@ -19,13 +19,13 @@
 
 package com.sk89q.worldedit.util.eventbus;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
 import com.google.common.collect.SetMultimap;
 import com.google.common.eventbus.DeadEvent;
 import com.sk89q.worldedit.internal.annotation.RequiresNewerGuava;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -36,8 +36,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Dispatches events to listeners, and provides ways for listeners to register
@@ -53,7 +53,7 @@ import java.util.logging.Logger;
  */
 public class EventBus {
 
-    private final Logger logger = Logger.getLogger(EventBus.class.getCanonicalName());
+    private final Logger logger = LoggerFactory.getLogger(EventBus.class);
 
     private final SetMultimap<Class<?>, EventHandler> handlersByType =
             Multimaps.newSetMultimap(new HashMap<>(), this::newHandlerSet);
@@ -186,8 +186,7 @@ public class EventBus {
         try {
             handler.handleEvent(event);
         } catch (InvocationTargetException e) {
-            logger.log(Level.SEVERE,
-                    "Could not dispatch event: " + event + " to handler " + handler, e);
+            logger.error("Could not dispatch event: " + event + " to handler " + handler, e);
         }
     }
 

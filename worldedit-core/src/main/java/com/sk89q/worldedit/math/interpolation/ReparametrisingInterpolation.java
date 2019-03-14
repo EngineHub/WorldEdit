@@ -21,14 +21,15 @@
 
 package com.sk89q.worldedit.math.interpolation;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import com.sk89q.worldedit.math.Vector3;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.TreeMap;
-import java.util.logging.Logger;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Reparametrises another interpolation function by arc length.
@@ -38,7 +39,7 @@ import java.util.logging.Logger;
  */
 public class ReparametrisingInterpolation implements Interpolation {
 
-    private static final Logger log = Logger.getLogger(ReparametrisingInterpolation.class.getCanonicalName());
+    private static final Logger log = LoggerFactory.getLogger(ReparametrisingInterpolation.class);
 
     private final Interpolation baseInterpolation;
     private double totalArcLength;
@@ -102,7 +103,7 @@ public class ReparametrisingInterpolation implements Interpolation {
 
         Entry<Double, Double> ceilingEntry = cache.ceilingEntry(arc);
         if (ceilingEntry == null) {
-            log.warning("Error in arcToParameter: no ceiling entry for " + arc + " found!");
+            log.warn("Error in arcToParameter: no ceiling entry for " + arc + " found!");
             return 0;
         }
         final double rightArc = ceilingEntry.getKey();

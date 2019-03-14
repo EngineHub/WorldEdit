@@ -24,8 +24,6 @@ import com.sk89q.worldedit.extent.inventory.BlockBag;
 import com.sk89q.worldedit.util.eventbus.EventBus;
 import com.sk89q.worldedit.world.World;
 
-import java.util.logging.Level;
-
 public class TracedEditSession extends EditSession {
 
     TracedEditSession(EventBus eventBus, World world, int maxBlocks, BlockBag blockBag, EditSessionEvent event) {
@@ -39,9 +37,9 @@ public class TracedEditSession extends EditSession {
         super.finalize();
 
         if (commitRequired()) {
-            WorldEdit.logger.warning("####### LEFTOVER BUFFER BLOCKS DETECTED #######");
-            WorldEdit.logger.warning("This means that some code did not flush their EditSession.");
-            WorldEdit.logger.log(Level.WARNING, "Here is a stacktrace from the creation of this EditSession:", stacktrace);
+            WorldEdit.logger.warn("####### LEFTOVER BUFFER BLOCKS DETECTED #######");
+            WorldEdit.logger.warn("This means that some code did not flush their EditSession.");
+            WorldEdit.logger.warn("Here is a stacktrace from the creation of this EditSession:", stacktrace);
         }
     }
 }
