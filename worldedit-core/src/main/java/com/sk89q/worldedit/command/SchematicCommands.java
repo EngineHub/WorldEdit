@@ -27,7 +27,6 @@ import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandException;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
-import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
@@ -129,12 +128,15 @@ public class SchematicCommands {
 
     @Command(
             aliases = { "save" },
+            flags = "f",
             usage = "[<format>] <filename>",
             desc = "Save a schematic into your clipboard",
+            help = "-f is required to overwrite an existing file",
             min = 1, max = 2
     )
     @CommandPermissions({ "worldedit.clipboard.save", "worldedit.schematic.save" })
-    public void save(Player player, LocalSession session, @Optional("sponge") String formatName, String filename) throws CommandException, WorldEditException {
+    public void save(Player player, LocalSession session, @Optional("sponge") String formatName,
+                     String filename, @Switch('f') boolean allowOverwrite) throws CommandException, WorldEditException {
         LocalConfiguration config = worldEdit.getConfiguration();
 
         File dir = worldEdit.getWorkingDirectoryFile(config.saveDir);
@@ -146,6 +148,17 @@ public class SchematicCommands {
         }
 
         File f = worldEdit.getSafeSaveFile(player, dir, filename, format.getPrimaryFileExtension());
+
+        boolean overwrite = f.exists();
+        if (overwrite) {
+            if (!player.hasPermission("worldedit.schematic.delete")) {
+                throw new CommandException("That schematic already exists!");
+            }
+            if (!allowOverwrite) {
+                player.printError("That schematic already exists. Use the -f flag to overwrite it.");
+                return;
+            }
+        }
 
         ClipboardHolder holder = session.getClipboard();
         Clipboard clipboard = holder.getClipboard();
@@ -162,21 +175,22 @@ public class SchematicCommands {
             target = clipboard;
         }
 
-        try (Closer closer = Closer.create()) {
-            // Create parent directories
-            File parent = f.getParentFile();
-            if (parent != null && !parent.exists()) {
-                if (!parent.mkdirs()) {
-                    throw new CommandException("Could not create folder for schematics!");
-                }
+        // Create parent directories
+        File parent = f.getParentFile();
+        if (parent != null && !parent.exists()) {
+            if (!parent.mkdirs()) {
+                throw new CommandException("Could not create folder for schematics!");
             }
+        }
 
+        try (Closer closer = Closer.create()) {
             FileOutputStream fos = closer.register(new FileOutputStream(f));
             BufferedOutputStream bos = closer.register(new BufferedOutputStream(fos));
             ClipboardWriter writer = closer.register(format.getWriter(bos));
             writer.write(target);
-            log.info(player.getName() + " saved " + f.getCanonicalPath());
-            player.print(filename + " saved.");
+
+            log.info(player.getName() + " saved " + f.getCanonicalPath() + (overwrite ? " (overwriting previous file)" : ""));
+            player.print(filename + " saved" + (overwrite ? " (overwriting previous file)." : "."));
         } catch (IOException e) {
             player.printError("Schematic could not written: " + e.getMessage());
             log.log(Level.WARNING, "Failed to write a saved clipboard", e);
@@ -192,29 +206,28 @@ public class SchematicCommands {
             max = 1
     )
     @CommandPermissions("worldedit.schematic.delete")
-    public void delete(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
-
+    public void delete(Actor actor, String filename) throws WorldEditException {
         LocalConfiguration config = worldEdit.getConfiguration();
-        String filename = args.getString(0);
-
         File dir = worldEdit.getWorkingDirectoryFile(config.saveDir);
-        File f = worldEdit.getSafeOpenFile(player, dir, filename, "schematic", ClipboardFormats.getFileExtensionArray());
+
+        File f = worldEdit.getSafeOpenFile(actor instanceof Player ? ((Player) actor) : null,
+                dir, filename, "schematic", ClipboardFormats.getFileExtensionArray());
 
         if (!f.exists()) {
-            player.printError("Schematic " + filename + " does not exist!");
+            actor.printError("Schematic " + filename + " does not exist!");
             return;
         }
 
         if (!f.delete()) {
-            player.printError("Deletion of " + filename + " failed! Maybe it is read-only.");
+            actor.printError("Deletion of " + filename + " failed! Maybe it is read-only.");
             return;
         }
 
-        player.print(filename + " has been deleted.");
+        actor.print(filename + " has been deleted.");
         try {
-            log.info(player.getName() + " deleted " + f.getCanonicalPath());
+            log.info(actor.getName() + " deleted " + f.getCanonicalPath());
         } catch (IOException e) {
-            log.info(player.getName() + " deleted " + f.getAbsolutePath());
+            log.info(actor.getName() + " deleted " + f.getAbsolutePath());
         }
     }
 
@@ -246,7 +259,6 @@ public class SchematicCommands {
     @Command(
             aliases = {"list", "all", "ls"},
             desc = "List saved schematics",
-            min = 0,
             max = 1,
             flags = "dnp",
             help = "List all schematics in the schematics directory\n" +
