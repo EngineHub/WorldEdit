@@ -284,12 +284,18 @@ public final class WorldEdit {
             Path filePath = Paths.get(f.toURI()).normalize();
             Path dirPath = Paths.get(dir.toURI()).normalize();
 
-            if (!filePath.startsWith(dirPath)
-                    || (!getConfiguration().allowSymlinks && !filePath.toRealPath().startsWith(dirPath))) {
+            boolean inDir = filePath.startsWith(dirPath);
+            Path existingParent = filePath;
+            do {
+                existingParent = existingParent.getParent();
+            } while (existingParent != null && !existingParent.toFile().exists());
+
+            boolean isSym = existingParent != null && !existingParent.toRealPath().equals(existingParent);
+            if (!inDir || (!getConfiguration().allowSymlinks && isSym)) {
                 throw new FilenameResolutionException(filename, "Path is outside allowable root");
             }
 
-            return f;
+            return filePath.toFile();
         } catch (IOException e) {
             throw new FilenameResolutionException(filename, "Failed to resolve path");
         }
