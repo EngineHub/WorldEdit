@@ -35,6 +35,9 @@ public class VaultResolver implements PermissionsResolver {
             return null;
         }
         RegisteredServiceProvider<Permission> rsp = server.getServicesManager().getRegistration(Permission.class);
+        if (rsp == null) {
+            return null;
+        }
         perms = rsp.getProvider();
         if (perms == null) {
             return null;

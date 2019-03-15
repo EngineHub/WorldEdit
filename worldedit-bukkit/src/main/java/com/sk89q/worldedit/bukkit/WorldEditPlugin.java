@@ -86,13 +86,9 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
     private BukkitServerInterface server;
     private BukkitConfiguration config;
 
-    /**
-     * Called on plugin enable.
-     */
-    @SuppressWarnings("AccessStaticViaInstance")
     @Override
-    public void onEnable() {
-        this.INSTANCE = this;
+    public void onLoad() {
+        INSTANCE = this;
 
         //noinspection ResultOfMethodCallIgnored
         getDataFolder().mkdirs();
@@ -107,6 +103,13 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
         worldEdit.loadMappings();
 
         loadConfig(); // Load configuration
+    }
+
+    /**
+     * Called on plugin enable.
+     */
+    @Override
+    public void onEnable() {
         PermissionsResolverManager.initialize(this); // Setup permission resolver
 
         // Register CUI
