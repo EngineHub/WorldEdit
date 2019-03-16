@@ -23,7 +23,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static com.sk89q.minecraft.util.commands.Logging.LogMode.REGION;
 
 import com.sk89q.minecraft.util.commands.Command;
-import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.minecraft.util.commands.Logging;
 import com.sk89q.worldedit.EditSession;
@@ -63,7 +62,7 @@ public class ChunkCommands {
         max = 0
     )
     @CommandPermissions("worldedit.chunkinfo")
-    public void chunkInfo(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
+    public void chunkInfo(Player player) throws WorldEditException {
         Location pos = player.getBlockIn();
         int chunkX = (int) Math.floor(pos.getBlockX() / 16.0);
         int chunkZ = (int) Math.floor(pos.getBlockZ() / 16.0);
@@ -87,7 +86,7 @@ public class ChunkCommands {
         max = 0
     )
     @CommandPermissions("worldedit.listchunks")
-    public void listChunks(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
+    public void listChunks(Player player, LocalSession session) throws WorldEditException {
         Set<BlockVector2> chunks = session.getSelection(player.getWorld()).getChunks();
 
         for (BlockVector2 chunk : chunks) {
@@ -104,7 +103,7 @@ public class ChunkCommands {
     )
     @CommandPermissions("worldedit.delchunks")
     @Logging(REGION)
-    public void deleteChunks(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
+    public void deleteChunks(Player player, LocalSession session) throws WorldEditException {
         player.print("Note that this command does not yet support the mcregion format.");
         LocalConfiguration config = worldEdit.getConfiguration();
 

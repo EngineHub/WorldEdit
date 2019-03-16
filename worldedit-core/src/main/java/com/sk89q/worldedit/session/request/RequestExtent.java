@@ -39,13 +39,13 @@ import java.util.List;
 
 public class RequestExtent implements Extent {
 
-    private EditSession extent;
+    private Request request;
 
     protected Extent getExtent() {
-        if (extent == null) {
-            extent = Request.request().getEditSession();
+        if (request == null || !request.isValid()) {
+            request = Request.request();
         }
-        return extent;
+        return request.getEditSession();
     }
 
     @Override
@@ -103,7 +103,7 @@ public class RequestExtent implements Extent {
     @Nullable
     public Operation commit() {
         Operation commit = getExtent().commit();
-        extent = null;
+        request = null;
         return commit;
     }
 }

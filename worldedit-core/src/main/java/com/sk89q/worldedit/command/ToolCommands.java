@@ -22,7 +22,6 @@ package com.sk89q.worldedit.command;
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
-import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
@@ -56,7 +55,7 @@ public class ToolCommands {
         min = 0,
         max = 0
     )
-    public void none(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
+    public void none(Player player, LocalSession session) throws WorldEditException {
 
         session.setTool(player.getItemInHand(HandSide.MAIN_HAND).getType(), null);
         player.print("Tool unbound from your current item.");
@@ -70,7 +69,7 @@ public class ToolCommands {
         max = 0
     )
     @CommandPermissions("worldedit.tool.info")
-    public void info(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
+    public void info(Player player, LocalSession session) throws WorldEditException {
 
         BaseItemStack itemStack = player.getItemInHand(HandSide.MAIN_HAND);
         session.setTool(itemStack.getType(), new QueryTool());
@@ -86,7 +85,7 @@ public class ToolCommands {
         max = 1
     )
     @CommandPermissions("worldedit.tool.tree")
-    public void tree(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
+    public void tree(Player player, LocalSession session, CommandContext args) throws WorldEditException {
 
         TreeGenerator.TreeType type = args.argsLength() > 0
                 ? TreeGenerator.lookup(args.getString(0))
@@ -124,7 +123,7 @@ public class ToolCommands {
         max = 0
     )
     @CommandPermissions("worldedit.tool.data-cycler")
-    public void cycler(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
+    public void cycler(Player player, LocalSession session) throws WorldEditException {
 
         BaseItemStack itemStack = player.getItemInHand(HandSide.MAIN_HAND);
         session.setTool(itemStack.getType(), new BlockDataCyler());
@@ -161,7 +160,7 @@ public class ToolCommands {
             max = 0
     )
     @CommandPermissions("worldedit.tool.deltree")
-    public void deltree(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
+    public void deltree(Player player, LocalSession session) throws WorldEditException {
 
         BaseItemStack itemStack = player.getItemInHand(HandSide.MAIN_HAND);
         session.setTool(itemStack.getType(), new FloatingTreeRemover());
@@ -177,7 +176,7 @@ public class ToolCommands {
             max = 0
     )
     @CommandPermissions("worldedit.tool.farwand")
-    public void farwand(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
+    public void farwand(Player player, LocalSession session) throws WorldEditException {
 
         BaseItemStack itemStack = player.getItemInHand(HandSide.MAIN_HAND);
         session.setTool(itemStack.getType(), new DistanceWand());

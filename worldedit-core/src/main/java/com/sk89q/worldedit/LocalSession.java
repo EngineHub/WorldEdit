@@ -875,9 +875,10 @@ public class LocalSession {
         EditSession editSession = WorldEdit.getInstance().getEditSessionFactory()
                 .getEditSession(player.isPlayer() ? player.getWorld() : null,
                         getBlockChangeLimit(), blockBag, player);
+        Request.request().setEditSession(editSession);
+
         editSession.setFastMode(fastMode);
         editSession.setReorderMode(reorderMode);
-        Request.request().setEditSession(editSession);
         editSession.setMask(mask);
 
         return editSession;
