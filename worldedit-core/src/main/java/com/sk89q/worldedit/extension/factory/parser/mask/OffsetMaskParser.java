@@ -22,7 +22,6 @@ package com.sk89q.worldedit.extension.factory.parser.mask;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.extension.input.InputParseException;
 import com.sk89q.worldedit.extension.input.ParserContext;
-import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.function.mask.ExistingBlockMask;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.function.mask.MaskIntersection;
@@ -30,7 +29,7 @@ import com.sk89q.worldedit.function.mask.Masks;
 import com.sk89q.worldedit.function.mask.OffsetMask;
 import com.sk89q.worldedit.internal.registry.InputParser;
 import com.sk89q.worldedit.math.BlockVector3;
-import com.sk89q.worldedit.session.request.Request;
+import com.sk89q.worldedit.session.request.RequestExtent;
 
 public class OffsetMaskParser extends InputParser<Mask> {
 
@@ -45,13 +44,11 @@ public class OffsetMaskParser extends InputParser<Mask> {
             return null;
         }
 
-        Extent extent = Request.request().getEditSession();
-
         Mask submask;
         if (input.length() > 1) {
             submask = worldEdit.getMaskFactory().parseFromInput(input.substring(1), context);
         } else {
-            submask = new ExistingBlockMask(extent);
+            submask = new ExistingBlockMask(new RequestExtent());
         }
         OffsetMask offsetMask = new OffsetMask(submask, BlockVector3.at(0, firstChar == '>' ? -1 : 1, 0));
         return new MaskIntersection(offsetMask, Masks.negate(submask));
