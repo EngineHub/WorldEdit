@@ -19,6 +19,9 @@
 
 package com.sk89q.worldedit.extension.platform;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.sk89q.worldedit.util.command.composition.LegacyCommandAdapter.adapt;
+
 import com.google.common.base.Joiner;
 import com.sk89q.minecraft.util.commands.CommandException;
 import com.sk89q.minecraft.util.commands.CommandLocals;
@@ -54,8 +57,10 @@ import com.sk89q.worldedit.command.composition.DeformCommand;
 import com.sk89q.worldedit.command.composition.PaintCommand;
 import com.sk89q.worldedit.command.composition.SelectionCommand;
 import com.sk89q.worldedit.command.composition.ShapedBrushCommand;
+import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.event.platform.CommandEvent;
 import com.sk89q.worldedit.event.platform.CommandSuggestionEvent;
+import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.function.factory.Deform;
 import com.sk89q.worldedit.function.factory.Deform.Mode;
 import com.sk89q.worldedit.internal.command.ActorAuthorizer;
@@ -76,6 +81,7 @@ import com.sk89q.worldedit.util.formatting.ColorCodeBuilder;
 import com.sk89q.worldedit.util.formatting.component.CommandUsageBox;
 import com.sk89q.worldedit.util.logging.DynamicStreamHandler;
 import com.sk89q.worldedit.util.logging.LogFormat;
+import com.sk89q.worldedit.world.World;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -84,9 +90,6 @@ import java.io.IOException;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
-
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.sk89q.worldedit.util.command.composition.LegacyCommandAdapter.adapt;
 
 /**
  * Handles the registration and invocation of commands.
@@ -260,6 +263,13 @@ public final class CommandManager {
         }
 
         LocalSession session = worldEdit.getSessionManager().get(actor);
+        Request.request().setSession(session);
+        if (actor instanceof Entity) {
+            Extent extent = ((Entity) actor).getExtent();
+            if (extent instanceof World) {
+                Request.request().setWorld(((World) extent));
+            }
+        }
         LocalConfiguration config = worldEdit.getConfiguration();
 
         CommandLocals locals = new CommandLocals();
@@ -335,6 +345,7 @@ public final class CommandManager {
 
                 worldEdit.flushBlockBag(actor, editSession);
             }
+            Request.reset();
         }
 
         event.setCancelled(true);

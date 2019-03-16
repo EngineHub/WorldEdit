@@ -28,6 +28,7 @@ import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.event.platform.ConfigurationLoadEvent;
+import com.sk89q.worldedit.session.request.Request;
 import com.sk89q.worldedit.session.storage.JsonFileSessionStore;
 import com.sk89q.worldedit.session.storage.SessionStore;
 import com.sk89q.worldedit.session.storage.VoidStore;
@@ -151,6 +152,7 @@ public class SessionManager {
                 log.warn("Failed to load saved session", e);
                 session = new LocalSession();
             }
+            Request.request().setSession(session);
 
             session.setConfiguration(config);
             session.setBlockChangeLimit(config.defaultChangeLimit);
@@ -313,7 +315,7 @@ public class SessionManager {
     /**
      * Stores the owner of a session, the session, and the last active time.
      */
-    private static class SessionHolder {
+    private static final class SessionHolder {
         private final SessionKey key;
         private final LocalSession session;
         private long lastActive = System.currentTimeMillis();

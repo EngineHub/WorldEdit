@@ -42,7 +42,6 @@ import com.sk89q.worldedit.scripting.CraftScriptContext;
 import com.sk89q.worldedit.scripting.CraftScriptEngine;
 import com.sk89q.worldedit.scripting.RhinoCraftScriptEngine;
 import com.sk89q.worldedit.session.SessionManager;
-import com.sk89q.worldedit.session.request.Request;
 import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.eventbus.EventBus;
@@ -595,8 +594,6 @@ public final class WorldEdit {
      * @throws WorldEditException
      */
     public void runScript(Player player, File f, String[] args) throws WorldEditException {
-        Request.reset();
-
         String filename = f.getPath();
         int index = filename.lastIndexOf('.');
         String ext = filename.substring(index + 1);

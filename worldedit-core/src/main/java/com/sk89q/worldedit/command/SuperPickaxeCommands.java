@@ -22,7 +22,6 @@ package com.sk89q.worldedit.command;
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
-import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
@@ -47,7 +46,7 @@ public class SuperPickaxeCommands {
         max = 0
     )
     @CommandPermissions("worldedit.superpickaxe")
-    public void single(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
+    public void single(Player player, LocalSession session) throws WorldEditException {
 
         session.setSuperPickaxe(new SinglePickaxe());
         session.enableSuperPickAxe();
@@ -62,7 +61,7 @@ public class SuperPickaxeCommands {
         max = 1
     )
     @CommandPermissions("worldedit.superpickaxe.area")
-    public void area(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
+    public void area(Player player, LocalSession session, CommandContext args) throws WorldEditException {
 
         LocalConfiguration config = we.getConfiguration();
         int range = args.getInteger(0);
@@ -85,7 +84,7 @@ public class SuperPickaxeCommands {
         max = 1
     )
     @CommandPermissions("worldedit.superpickaxe.recursive")
-    public void recursive(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
+    public void recursive(Player player, LocalSession session, CommandContext args) throws WorldEditException {
 
         LocalConfiguration config = we.getConfiguration();
         double range = args.getDouble(0);
