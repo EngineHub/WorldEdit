@@ -110,6 +110,8 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
      */
     @Override
     public void onEnable() {
+        setupTags(); // these have to be done post-world since they rely on MC registries. the other ones just use Bukkit enums
+
         PermissionsResolverManager.initialize(this); // Setup permission resolver
 
         // Register CUI
@@ -168,12 +170,15 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
                 EntityType.REGISTRY.register("minecraft:" + mcid.toLowerCase(), new EntityType("minecraft:" + mcid.toLowerCase()));
             }
         }
+    }
+
+    private void setupTags() {
         // Tags
         try {
-            for (org.bukkit.Tag<Material> blockTag : Bukkit.getTags(Tag.REGISTRY_BLOCKS, Material.class)) {
+            for (Tag<Material> blockTag : Bukkit.getTags(Tag.REGISTRY_BLOCKS, Material.class)) {
                 BlockCategory.REGISTRY.register(blockTag.getKey().toString(), new BlockCategory(blockTag.getKey().toString()));
             }
-            for (org.bukkit.Tag<Material> itemTag : Bukkit.getTags(Tag.REGISTRY_ITEMS, Material.class)) {
+            for (Tag<Material> itemTag : Bukkit.getTags(Tag.REGISTRY_ITEMS, Material.class)) {
                 ItemCategory.REGISTRY.register(itemTag.getKey().toString(), new ItemCategory(itemTag.getKey().toString()));
             }
         } catch (NoSuchMethodError e) {
