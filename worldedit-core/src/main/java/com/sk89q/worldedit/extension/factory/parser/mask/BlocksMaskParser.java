@@ -23,11 +23,10 @@ import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.extension.input.InputParseException;
 import com.sk89q.worldedit.extension.input.NoMatchException;
 import com.sk89q.worldedit.extension.input.ParserContext;
-import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.function.mask.BlockMask;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.internal.registry.InputParser;
-import com.sk89q.worldedit.session.request.Request;
+import com.sk89q.worldedit.session.request.RequestExtent;
 import com.sk89q.worldedit.world.block.BaseBlock;
 
 import java.util.Set;
@@ -41,9 +40,8 @@ public class BlocksMaskParser extends InputParser<Mask> {
         super(worldEdit);
     }
 
+    @Override
     public Mask parseFromInput(String component, ParserContext context) throws InputParseException {
-        Extent extent = Request.request().getEditSession();
-
         ParserContext tempContext = new ParserContext(context);
         tempContext.setRestricted(false);
         tempContext.setPreferringWildcard(true);
@@ -52,7 +50,7 @@ public class BlocksMaskParser extends InputParser<Mask> {
             if (holders.isEmpty()) {
                 return null;
             }
-            return new BlockMask(extent, holders);
+            return new BlockMask(new RequestExtent(), holders);
         } catch (NoMatchException e) {
             return null;
         }

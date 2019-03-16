@@ -19,7 +19,7 @@
 
 package com.sk89q.worldedit.regions.shape;
 
-import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.internal.expression.runtime.ExpressionEnvironment;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.Vector3;
@@ -29,10 +29,10 @@ public class WorldEditExpressionEnvironment implements ExpressionEnvironment {
     private final Vector3 unit;
     private final Vector3 zero2;
     private Vector3 current = Vector3.ZERO;
-    private EditSession editSession;
+    private Extent extent;
 
-    public WorldEditExpressionEnvironment(EditSession editSession, Vector3 unit, Vector3 zero) {
-        this.editSession = editSession;
+    public WorldEditExpressionEnvironment(Extent extent, Vector3 unit, Vector3 zero) {
+        this.extent = extent;
         this.unit = unit;
         this.zero2 = zero.add(0.5, 0.5, 0.5);
     }
@@ -48,7 +48,7 @@ public class WorldEditExpressionEnvironment implements ExpressionEnvironment {
 
     @Override
     public int getBlockType(double x, double y, double z) {
-        return editSession.getBlock(toWorld(x, y, z)).getBlockType().getLegacyId();
+        return extent.getBlock(toWorld(x, y, z)).getBlockType().getLegacyId();
     }
 
     @Override
@@ -58,7 +58,7 @@ public class WorldEditExpressionEnvironment implements ExpressionEnvironment {
 
     @Override
     public int getBlockTypeAbs(double x, double y, double z) {
-        return editSession.getBlock(BlockVector3.at(x, y, z)).getBlockType().getLegacyId();
+        return extent.getBlock(BlockVector3.at(x, y, z)).getBlockType().getLegacyId();
     }
 
     @Override
@@ -68,7 +68,7 @@ public class WorldEditExpressionEnvironment implements ExpressionEnvironment {
 
     @Override
     public int getBlockTypeRel(double x, double y, double z) {
-        return editSession.getBlock(toWorldRel(x, y, z).toBlockPoint()).getBlockType().getLegacyId();
+        return extent.getBlock(toWorldRel(x, y, z).toBlockPoint()).getBlockType().getLegacyId();
     }
 
     @Override

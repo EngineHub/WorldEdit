@@ -20,20 +20,13 @@
 package com.sk89q.worldedit.extension.factory.parser.mask;
 
 import com.google.common.base.Splitter;
-import com.google.common.collect.Maps;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.extension.input.InputParseException;
 import com.sk89q.worldedit.extension.input.ParserContext;
-import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.function.mask.BlockStateMask;
 import com.sk89q.worldedit.function.mask.Mask;
-import com.sk89q.worldedit.function.mask.NoiseFilter;
 import com.sk89q.worldedit.internal.registry.InputParser;
-import com.sk89q.worldedit.math.noise.RandomNoise;
-import com.sk89q.worldedit.session.request.Request;
-
-import java.util.Arrays;
-import java.util.stream.Collectors;
+import com.sk89q.worldedit.session.request.RequestExtent;
 
 public class BlockStateMaskParser extends InputParser<Mask> {
 
@@ -46,11 +39,11 @@ public class BlockStateMaskParser extends InputParser<Mask> {
         if (!(input.startsWith("^[") || input.startsWith("^=[")) || !input.endsWith("]")) {
             return null;
         }
-        Extent extent = Request.request().getEditSession();
+
         boolean strict = input.charAt(1) == '=';
         String states = input.substring(2 + (strict ? 1 : 0), input.length() - 1);
         try {
-            return new BlockStateMask(extent,
+            return new BlockStateMask(new RequestExtent(),
                     Splitter.on(',').omitEmptyStrings().trimResults().withKeyValueSeparator('=').split(states),
                     strict);
         } catch (Exception e) {
