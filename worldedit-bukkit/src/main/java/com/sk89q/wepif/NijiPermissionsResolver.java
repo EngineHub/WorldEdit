@@ -28,13 +28,12 @@ import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
-
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class NijiPermissionsResolver implements PermissionsResolver {
 
-    private static final Logger log = Logger.getLogger(NijiPermissionsResolver.class.getCanonicalName());
+    private static final Logger log = LoggerFactory.getLogger(NijiPermissionsResolver.class);
 
     private Server server;
     private Permissions api;
@@ -84,7 +83,7 @@ public class NijiPermissionsResolver implements PermissionsResolver {
                 return api.Security.permission(player, permission);
             }
         } catch (Throwable t) {
-            log.log(Level.WARNING, "Failed to check permissions", t);
+            log.warn("Failed to check permissions", t);
             return false;
         }
     }
@@ -98,7 +97,7 @@ public class NijiPermissionsResolver implements PermissionsResolver {
                 return api.getHandler().has(server.getPlayerExact(name), permission);
             }
         } catch (Throwable t) {
-            log.log(Level.WARNING, "Failed to check permissions", t);
+            log.warn("Failed to check permissions", t);
             return false;
         }
     }
@@ -115,7 +114,7 @@ public class NijiPermissionsResolver implements PermissionsResolver {
                 return api.Security.inGroup(name, group);
             }
         } catch (Throwable t) {
-            log.log(Level.WARNING, "Failed to check groups", t);
+            log.warn("Failed to check groups", t);
             return false;
         }
     }
@@ -139,7 +138,7 @@ public class NijiPermissionsResolver implements PermissionsResolver {
                 return groups;
             }
         } catch (Throwable t) {
-            log.log(Level.WARNING, "Failed to get groups", t);
+            log.warn("Failed to get groups", t);
             return new String[0];
         }
     }

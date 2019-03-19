@@ -27,6 +27,8 @@ import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.util.report.Unreported;
 import com.sk89q.worldedit.world.registry.LegacyMapper;
 import com.sk89q.worldedit.world.snapshot.SnapshotRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -39,8 +41,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Simple LocalConfiguration that loads settings using
@@ -48,7 +48,7 @@ import java.util.logging.Logger;
  */
 public class PropertiesConfiguration extends LocalConfiguration {
 
-    @Unreported private static final Logger log = Logger.getLogger(PropertiesConfiguration.class.getCanonicalName());
+    @Unreported private static final Logger log = LoggerFactory.getLogger(PropertiesConfiguration.class);
 
     @Unreported protected Properties properties;
     @Unreported protected File path;
@@ -70,7 +70,7 @@ public class PropertiesConfiguration extends LocalConfiguration {
             properties.load(stream);
         } catch (FileNotFoundException ignored) {
         } catch (IOException e) {
-            log.log(Level.WARNING, "Failed to read configuration", e);
+            log.warn("Failed to read configuration", e);
         }
 
         loadExtra();
@@ -131,7 +131,7 @@ public class PropertiesConfiguration extends LocalConfiguration {
         try (OutputStream output = new FileOutputStream(path)) {
             properties.store(output, "Don't put comments; they get removed");
         } catch (IOException e) {
-            log.log(Level.WARNING, "Failed to write configuration", e);
+            log.warn("Failed to write configuration", e);
         }
     }
 

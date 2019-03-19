@@ -26,14 +26,14 @@ import com.sk89q.worldedit.command.util.AsyncCommandHelper;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.util.command.parametric.ExceptionConverter;
 import com.sk89q.worldedit.util.task.Supervisor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.URL;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class ActorCallbackPaste {
 
-    private static final Logger LOGGER = Logger.getLogger(ActorCallbackPaste.class.getSimpleName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(ActorCallbackPaste.class);
 
     private ActorCallbackPaste() {
     }
@@ -62,7 +62,7 @@ public class ActorCallbackPaste {
 
             @Override
             public void onFailure(Throwable throwable) {
-                LOGGER.log(Level.WARNING, "Failed to submit pastebin", throwable);
+                LOGGER.warn("Failed to submit pastebin", throwable);
                 sender.printError("Failed to submit to a pastebin. Please see console for the error.");
             }
         });

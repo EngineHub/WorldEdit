@@ -19,8 +19,6 @@
 
 package com.sk89q.worldedit.internal.command;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandException;
 import com.sk89q.minecraft.util.commands.Logging;
@@ -39,6 +37,8 @@ import java.io.Closeable;
 import java.lang.reflect.Method;
 import java.util.logging.Handler;
 import java.util.logging.Logger;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Logs called commands to a logger.

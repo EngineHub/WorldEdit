@@ -19,8 +19,6 @@
 
 package com.sk89q.worldedit.bukkit;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import com.sk89q.bukkit.util.CommandInspector;
 import com.sk89q.minecraft.util.commands.CommandLocals;
 import com.sk89q.worldedit.extension.platform.Actor;
@@ -29,12 +27,14 @@ import com.sk89q.worldedit.util.command.Description;
 import com.sk89q.worldedit.util.command.Dispatcher;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.logging.Logger;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 class BukkitCommandInspector implements CommandInspector {
 
-    private static final Logger logger = Logger.getLogger(BukkitCommandInspector.class.getCanonicalName());
+    private static final Logger logger = LoggerFactory.getLogger(BukkitCommandInspector.class);
     private final WorldEditPlugin plugin;
     private final Dispatcher dispatcher;
 
@@ -51,7 +51,7 @@ class BukkitCommandInspector implements CommandInspector {
         if (mapping != null) {
             return mapping.getDescription().getDescription();
         } else {
-            logger.warning("BukkitCommandInspector doesn't know how about the command '" + command + "'");
+            logger.warn("BukkitCommandInspector doesn't know how about the command '" + command + "'");
             return "Help text not available";
         }
     }
@@ -63,7 +63,7 @@ class BukkitCommandInspector implements CommandInspector {
             Description description = mapping.getDescription();
             return "Usage: " + description.getUsage() + (description.getHelp() != null ? "\n" + description.getHelp() : "");
         } else {
-            logger.warning("BukkitCommandInspector doesn't know how about the command '" + command + "'");
+            logger.warn("BukkitCommandInspector doesn't know how about the command '" + command + "'");
             return "Help text not available";
         }
     }
@@ -76,7 +76,7 @@ class BukkitCommandInspector implements CommandInspector {
             locals.put(Actor.class, plugin.wrapCommandSender(sender));
             return mapping.getCallable().testPermission(locals);
         } else {
-            logger.warning("BukkitCommandInspector doesn't know how about the command '" + command + "'");
+            logger.warn("BukkitCommandInspector doesn't know how about the command '" + command + "'");
             return false;
         }
     }

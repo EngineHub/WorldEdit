@@ -25,17 +25,16 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.util.gson.VectorAdapter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.annotation.Nullable;
 
 /**
  * Provides block data based on the built-in block database that is bundled
@@ -50,7 +49,7 @@ import javax.annotation.Nullable;
  */
 public class BundledBlockData {
 
-    private static final Logger log = Logger.getLogger(BundledBlockData.class.getCanonicalName());
+    private static final Logger log = LoggerFactory.getLogger(BundledBlockData.class);
     private static BundledBlockData INSTANCE;
 
     private final Map<String, BlockEntry> idMap = new HashMap<>();
@@ -62,7 +61,7 @@ public class BundledBlockData {
         try {
             loadFromResource();
         } catch (Throwable e) {
-            log.log(Level.WARNING, "Failed to load the built-in block registry", e);
+            log.warn("Failed to load the built-in block registry", e);
         }
     }
 

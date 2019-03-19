@@ -19,8 +19,6 @@
 
 package com.sk89q.worldedit.extent.clipboard.io;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import com.sk89q.jnbt.ByteArrayTag;
 import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.jnbt.IntTag;
@@ -45,14 +43,16 @@ import com.sk89q.worldedit.world.entity.EntityType;
 import com.sk89q.worldedit.world.entity.EntityTypes;
 import com.sk89q.worldedit.world.registry.LegacyMapper;
 import com.sk89q.worldedit.world.storage.NBTConversions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Reads schematic files that are compatible with MCEdit and other editors.
@@ -66,7 +66,7 @@ public class MCEditSchematicReader extends NBTSchematicReader {
         // TODO Add a handler for skulls, flower pots, note blocks, etc.
     }
 
-    private static final Logger log = Logger.getLogger(MCEditSchematicReader.class.getCanonicalName());
+    private static final Logger log = LoggerFactory.getLogger(MCEditSchematicReader.class);
     private final NBTInputStream inputStream;
 
     /**
@@ -230,15 +230,15 @@ public class MCEditSchematicReader extends NBTSchematicReader {
                                 clipboard.setBlock(region.getMinimumPoint().add(pt), state);
                             }
                         } else {
-                            log.warning("Unknown block when pasting schematic: " + blocks[index] + ":" + blockData[index] + ". Please report this issue.");
+                            log.warn("Unknown block when pasting schematic: " + blocks[index] + ":" + blockData[index] + ". Please report this issue.");
                         }
                     } catch (WorldEditException e) {
                         switch (failedBlockSets) {
                             case 0:
-                                log.log(Level.WARNING, "Failed to set block on a Clipboard", e);
+                                log.warn("Failed to set block on a Clipboard", e);
                                 break;
                             case 1:
-                                log.log(Level.WARNING, "Failed to set block on a Clipboard (again) -- no more messages will be logged", e);
+                                log.warn("Failed to set block on a Clipboard (again) -- no more messages will be logged", e);
                                 break;
                             default:
                         }
@@ -268,7 +268,7 @@ public class MCEditSchematicReader extends NBTSchematicReader {
                             BaseEntity state = new BaseEntity(entityType, compound);
                             clipboard.createEntity(location, state);
                         } else {
-                            log.warning("Unknown entity when pasting schematic: " + id.toLowerCase());
+                            log.warn("Unknown entity when pasting schematic: " + id.toLowerCase());
                         }
                     }
                 }

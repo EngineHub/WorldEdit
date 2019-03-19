@@ -40,14 +40,12 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
-import java.util.logging.Logger;
 
 /**
  * Snapshot commands.
  */
 public class SnapshotCommands {
 
-    private static final Logger logger = Logger.getLogger("Minecraft.WorldEdit");
     private static final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z");
     
     private final WorldEdit we;
@@ -93,10 +91,10 @@ public class SnapshotCommands {
                 File dir = config.snapshotRepo.getDirectory();
 
                 try {
-                    logger.info("WorldEdit found no snapshots: looked in: "
+                    WorldEdit.logger.info("WorldEdit found no snapshots: looked in: "
                             + dir.getCanonicalPath());
                 } catch (IOException e) {
-                    logger.info("WorldEdit found no snapshots: looked in "
+                    WorldEdit.logger.info("WorldEdit found no snapshots: looked in "
                             + "(NON-RESOLVABLE PATH - does it exist?): "
                             + dir.getPath());
                 }

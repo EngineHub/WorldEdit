@@ -19,8 +19,6 @@
 
 package com.sk89q.worldedit;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import com.sk89q.jchronic.Chronic;
 import com.sk89q.jchronic.Options;
 import com.sk89q.jchronic.utils.Span;
@@ -53,6 +51,7 @@ import com.sk89q.worldedit.world.item.ItemType;
 import com.sk89q.worldedit.world.item.ItemTypes;
 import com.sk89q.worldedit.world.snapshot.Snapshot;
 
+import javax.annotation.Nullable;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -60,7 +59,7 @@ import java.util.Map;
 import java.util.TimeZone;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import javax.annotation.Nullable;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Stores session information.
@@ -798,7 +797,7 @@ public class LocalSession {
             try {
                 setCUIVersion(Integer.parseInt(split[1]));
             } catch (NumberFormatException e) {
-                WorldEdit.logger.warning("Error while reading CUI init message: " + e.getMessage());
+                WorldEdit.logger.warn("Error while reading CUI init message: " + e.getMessage());
                 this.failedCuiAttempts ++;
             }
         }

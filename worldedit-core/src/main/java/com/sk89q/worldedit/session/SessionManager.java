@@ -19,8 +19,6 @@
 
 package com.sk89q.worldedit.session;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
@@ -36,7 +34,10 @@ import com.sk89q.worldedit.session.storage.VoidStore;
 import com.sk89q.worldedit.util.concurrency.EvenMoreExecutors;
 import com.sk89q.worldedit.util.eventbus.Subscribe;
 import com.sk89q.worldedit.world.gamemode.GameModes;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
@@ -46,10 +47,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
 import java.util.concurrent.Callable;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import javax.annotation.Nullable;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Session manager for WorldEdit.
@@ -63,7 +62,7 @@ public class SessionManager {
     public static int EXPIRATION_GRACE = 600000;
     private static final int FLUSH_PERIOD = 1000 * 30;
     private static final ListeningExecutorService executorService = MoreExecutors.listeningDecorator(EvenMoreExecutors.newBoundedCachedThreadPool(0, 1, 5));
-    private static final Logger log = Logger.getLogger(SessionManager.class.getCanonicalName());
+    private static final Logger log = LoggerFactory.getLogger(SessionManager.class);
     private final Timer timer = new Timer();
     private final WorldEdit worldEdit;
     private final Map<UUID, SessionHolder> sessions = new HashMap<>();
@@ -149,7 +148,7 @@ public class SessionManager {
                 session = store.load(getKey(sessionKey));
                 session.postLoad();
             } catch (IOException e) {
-                log.log(Level.WARNING, "Failed to load saved session", e);
+                log.warn("Failed to load saved session", e);
                 session = new LocalSession();
             }
 
@@ -210,7 +209,7 @@ public class SessionManager {
                     try {
                         store.save(getKey(key), entry.getValue());
                     } catch (IOException e) {
-                        log.log(Level.WARNING, "Failed to write session for UUID " + getKey(key), e);
+                        log.warn("Failed to write session for UUID " + getKey(key), e);
                         exception = e;
                     }
                 }

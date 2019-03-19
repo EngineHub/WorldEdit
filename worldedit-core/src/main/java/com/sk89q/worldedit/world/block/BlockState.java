@@ -107,7 +107,7 @@ public class BlockState implements BlockStateHolder<BlockState> {
                         states.put(property, value, modifiedState);
                     } else {
                         System.out.println(stateMap);
-                        WorldEdit.logger.warning("Found a null state at " + this.withValue(property, value));
+                        WorldEdit.logger.warn("Found a null state at " + this.withValue(property, value));
                     }
                 }
             });

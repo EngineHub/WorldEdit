@@ -19,23 +19,23 @@
 
 package com.sk89q.worldedit.util.io;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Throwables;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.Closeable;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.ArrayDeque;
 import java.util.Deque;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.zip.ZipFile;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class Closer implements Closeable {
 
-    private static final Logger logger = Logger.getLogger(Closer.class.getCanonicalName());
+    private static final Logger logger = LoggerFactory.getLogger(Closer.class);
 
     /**
      * The suppressor implementation to use for the current Java version.
@@ -218,7 +218,7 @@ public final class Closer implements Closeable {
         @Override
         public void suppress(Object closeable, Throwable thrown, Throwable suppressed) {
             // log to the same place as Closeables
-            logger.log(Level.WARNING, "Suppressing exception thrown when closing " + closeable, suppressed);
+            logger.warn("Suppressing exception thrown when closing " + closeable, suppressed);
         }
     }
 

@@ -20,6 +20,8 @@
 package com.sk89q.worldedit.bukkit.adapter;
 
 import com.sk89q.worldedit.util.io.Closer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -29,15 +31,13 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Loads Bukkit implementation adapters.
  */
 public class BukkitImplLoader {
 
-    private static final Logger log = Logger.getLogger(BukkitImplLoader.class.getCanonicalName());
+    private static final Logger log = LoggerFactory.getLogger(BukkitImplLoader.class);
     private final List<String> adapterCandidates = new ArrayList<>();
     private String customCandidate;
 
@@ -73,7 +73,7 @@ public class BukkitImplLoader {
         if (className != null) {
             customCandidate = className;
             adapterCandidates.add(className);
-            log.log(Level.INFO, "-Dworldedit.bukkit.adapter used to add " + className + " to the list of available Bukkit adapters");
+            log.info("-Dworldedit.bukkit.adapter used to add " + className + " to the list of available Bukkit adapters");
         }
     }
 
@@ -157,18 +157,18 @@ public class BukkitImplLoader {
                 if (BukkitImplAdapter.class.isAssignableFrom(cls)) {
                     return (BukkitImplAdapter) cls.newInstance();
                 } else {
-                    log.log(Level.WARNING, "Failed to load the Bukkit adapter class '" + className +
+                    log.warn("Failed to load the Bukkit adapter class '" + className +
                             "' because it does not implement " + BukkitImplAdapter.class.getCanonicalName());
                 }
             } catch (ClassNotFoundException e) {
-                log.log(Level.WARNING, "Failed to load the Bukkit adapter class '" + className +
+                log.warn("Failed to load the Bukkit adapter class '" + className +
                         "' that is not supposed to be missing", e);
             } catch (IllegalAccessException e) {
-                log.log(Level.WARNING, "Failed to load the Bukkit adapter class '" + className +
+                log.warn("Failed to load the Bukkit adapter class '" + className +
                         "' that is not supposed to be raising this error", e);
             } catch (Throwable e) {
                 if (className.equals(customCandidate)) {
-                    log.log(Level.WARNING, "Failed to load the Bukkit adapter class '" + className + "'", e);
+                    log.warn("Failed to load the Bukkit adapter class '" + className + "'", e);
                 }
             }
         }

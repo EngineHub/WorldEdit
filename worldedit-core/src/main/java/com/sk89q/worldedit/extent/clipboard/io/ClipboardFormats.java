@@ -19,13 +19,12 @@
 
 package com.sk89q.worldedit.extent.clipboard.io;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
 import com.sk89q.worldedit.WorldEdit;
 
+import javax.annotation.Nullable;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -35,7 +34,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import javax.annotation.Nullable;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public class ClipboardFormats {
 
@@ -51,7 +50,7 @@ public class ClipboardFormats {
             ClipboardFormat old = aliasMap.put(lowKey, format);
             if (old != null) {
                 aliasMap.put(lowKey, old);
-                WorldEdit.logger.warning(format.getClass().getName() + " cannot override existing alias '" + lowKey + "' used by " + old.getClass().getName());
+                WorldEdit.logger.warn(format.getClass().getName() + " cannot override existing alias '" + lowKey + "' used by " + old.getClass().getName());
             }
         }
         for (String ext : format.getFileExtensions()) {

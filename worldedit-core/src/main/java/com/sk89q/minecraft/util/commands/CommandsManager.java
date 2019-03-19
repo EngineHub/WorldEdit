@@ -20,6 +20,8 @@
 package com.sk89q.minecraft.util.commands;
 
 import com.sk89q.util.StringUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -30,8 +32,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Manager for handling commands. This allows you to easily process commands,
@@ -63,7 +63,7 @@ import java.util.logging.Logger;
 public abstract class CommandsManager<T> {
 
     protected static final Logger logger =
-            Logger.getLogger(CommandsManager.class.getCanonicalName());
+            LoggerFactory.getLogger(CommandsManager.class);
 
     /**
      * Mapping of commands (including aliases) with a description. Root
@@ -142,7 +142,7 @@ public abstract class CommandsManager<T> {
                 return registerMethods(cls, parent, obj);
             }
         } catch (InvocationTargetException | InstantiationException | IllegalAccessException e) {
-            logger.log(Level.SEVERE, "Failed to register commands", e);
+            logger.error("Failed to register commands", e);
         }
         return null;
     }
@@ -523,7 +523,7 @@ public abstract class CommandsManager<T> {
         try {
             method.invoke(instance, methodArgs);
         } catch (IllegalArgumentException | IllegalAccessException e) {
-            logger.log(Level.SEVERE, "Failed to execute command", e);
+            logger.error("Failed to execute command", e);
         } catch (InvocationTargetException e) {
             if (e.getCause() instanceof CommandException) {
                 throw (CommandException) e.getCause();

@@ -14,6 +14,7 @@ dependencies {
     compile 'org.bukkit:bukkit:1.13.2-R0.1-SNAPSHOT' // zzz
     compile 'org.bstats:bstats-bukkit:1.4'
     compile "io.papermc:paperlib:1.0.1"
+    compile 'org.slf4j:slf4j-jdk14:1.7.26'
     testCompile 'org.mockito:mockito-core:1.9.0-rc1'
 }
 
@@ -37,7 +38,10 @@ jar {
 
 shadowJar {
     dependencies {
+        relocate "org.slf4j", "com.sk89q.worldedit.slf4j"
         include(dependency(':worldedit-core'))
+        include(dependency('org.slf4j:slf4j-api'))
+        include(dependency("org.slf4j:slf4j-jdk14"))
         relocate ("org.bstats", "com.sk89q.worldedit.bukkit.bstats") {
             include(dependency("org.bstats:bstats-bukkit:1.4"))
         }

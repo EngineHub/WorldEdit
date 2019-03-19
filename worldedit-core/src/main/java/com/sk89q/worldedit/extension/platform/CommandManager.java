@@ -19,9 +19,6 @@
 
 package com.sk89q.worldedit.extension.platform;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.sk89q.worldedit.util.command.composition.LegacyCommandAdapter.adapt;
-
 import com.google.common.base.Joiner;
 import com.sk89q.minecraft.util.commands.CommandException;
 import com.sk89q.minecraft.util.commands.CommandLocals;
@@ -79,13 +76,17 @@ import com.sk89q.worldedit.util.formatting.ColorCodeBuilder;
 import com.sk89q.worldedit.util.formatting.component.CommandUsageBox;
 import com.sk89q.worldedit.util.logging.DynamicStreamHandler;
 import com.sk89q.worldedit.util.logging.LogFormat;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Pattern;
+
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.sk89q.worldedit.util.command.composition.LegacyCommandAdapter.adapt;
 
 /**
  * Handles the registration and invocation of commands.
@@ -95,8 +96,9 @@ import java.util.regex.Pattern;
 public final class CommandManager {
 
     public static final Pattern COMMAND_CLEAN_PATTERN = Pattern.compile("^[/]+");
-    private static final Logger log = Logger.getLogger(CommandManager.class.getCanonicalName());
-    private static final Logger commandLog = Logger.getLogger(CommandManager.class.getCanonicalName() + ".CommandLog");
+    private static final Logger log = LoggerFactory.getLogger(CommandManager.class);
+    private static final java.util.logging.Logger commandLog =
+        java.util.logging.Logger.getLogger(CommandManager.class.getCanonicalName() + ".CommandLog");
     private static final Pattern numberFormatExceptionPattern = Pattern.compile("^For input string: \"(.*)\"$");
 
     private final WorldEdit worldEdit;
@@ -189,7 +191,7 @@ public final class CommandManager {
     }
 
     void register(Platform platform) {
-        log.log(Level.FINE, "Registering commands with " + platform.getClass().getCanonicalName());
+        log.info("Registering commands with " + platform.getClass().getCanonicalName());
 
         LocalConfiguration config = platform.getConfiguration();
         boolean logging = config.logCommands;
@@ -203,12 +205,12 @@ public final class CommandManager {
             File file = new File(config.getWorkingDirectory(), path);
             commandLog.setLevel(Level.ALL);
 
-            log.log(Level.INFO, "Logging WorldEdit commands to " + file.getAbsolutePath());
+            log.info("Logging WorldEdit commands to " + file.getAbsolutePath());
 
             try {
                 dynamicHandler.setHandler(new FileHandler(file.getAbsolutePath(), true));
             } catch (IOException e) {
-                log.log(Level.WARNING, "Could not use command log file " + path + ": " + e.getMessage());
+                log.warn("Could not use command log file " + path + ": " + e.getMessage());
             }
 
             dynamicHandler.setFormatter(new LogFormat(config.logFormat));
@@ -302,14 +304,14 @@ public final class CommandManager {
             Throwable t = e.getCause();
             actor.printError("Please report this error: [See console]");
             actor.printRaw(t.getClass().getName() + ": " + t.getMessage());
-            log.log(Level.SEVERE, "An unexpected error while handling a WorldEdit command", t);
+            log.error("An unexpected error while handling a WorldEdit command", t);
         } catch (CommandException e) {
             String message = e.getMessage();
             if (message != null) {
                 actor.printError(e.getMessage());
             } else {
                 actor.printError("An unknown error has occurred! Please see console.");
-                log.log(Level.SEVERE, "An unknown error occurred", e);
+                log.error("An unknown error occurred", e);
             }
         } finally {
             EditSession editSession = locals.get(EditSession.class);
@@ -359,7 +361,7 @@ public final class CommandManager {
         return dispatcher;
     }
 
-    public static Logger getLogger() {
+    public static java.util.logging.Logger getLogger() {
         return commandLog;
     }
 

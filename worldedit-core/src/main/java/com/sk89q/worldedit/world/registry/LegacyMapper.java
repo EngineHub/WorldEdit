@@ -32,22 +32,21 @@ import com.sk89q.worldedit.util.gson.VectorAdapter;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.item.ItemType;
 import com.sk89q.worldedit.world.item.ItemTypes;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public class LegacyMapper {
 
-    private static final Logger log = Logger.getLogger(LegacyMapper.class.getCanonicalName());
+    private static final Logger log = LoggerFactory.getLogger(LegacyMapper.class);
     private static LegacyMapper INSTANCE;
 
     private Multimap<String, BlockState> stringToBlockMap = HashMultimap.create();
@@ -62,7 +61,7 @@ public class LegacyMapper {
         try {
             loadFromResource();
         } catch (Throwable e) {
-            log.log(Level.WARNING, "Failed to load the built-in legacy id registry", e);
+            log.warn("Failed to load the built-in legacy id registry", e);
         }
     }
 
@@ -94,7 +93,7 @@ public class LegacyMapper {
                 blockToStringMap.put(state, id);
                 stringToBlockMap.put(id, state);
             } catch (Exception e) {
-                log.warning("Unknown block: " + blockEntry.getValue());
+                log.warn("Unknown block: " + blockEntry.getValue());
             }
         }
 
@@ -106,7 +105,7 @@ public class LegacyMapper {
                 itemToStringMap.put(type, id);
                 stringToItemMap.put(id, type);
             } catch (Exception e) {
-                log.warning("Unknown item: " + itemEntry.getValue());
+                log.warn("Unknown item: " + itemEntry.getValue());
             }
         }
     }
