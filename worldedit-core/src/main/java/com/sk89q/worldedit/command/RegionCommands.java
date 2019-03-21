@@ -445,14 +445,8 @@ public class RegionCommands {
     @Logging(REGION)
     public void forest(Player player, EditSession editSession, @Selection Region region, @Optional("tree") TreeType type,
                        @Optional("5") @Range(min = 0, max = 100) double density) throws WorldEditException {
-        density = density / 100;
-        ForestGenerator generator = new ForestGenerator(editSession, type);
-        GroundFunction ground = new GroundFunction(new ExistingBlockMask(editSession), generator);
-        LayerVisitor visitor = new LayerVisitor(asFlatRegion(region), minimumBlockY(region), maximumBlockY(region), ground);
-        visitor.setMask(new NoiseFilter2D(new RandomNoise(), density));
-        Operations.completeLegacy(visitor);
-
-        player.print(ground.getAffected() + " trees created.");
+        int affected = editSession.makeForest(region, density / 100, type);
+        player.print(affected + " trees created.");
     }
 
     @Command(

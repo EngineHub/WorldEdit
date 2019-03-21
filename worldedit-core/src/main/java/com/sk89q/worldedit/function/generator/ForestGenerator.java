@@ -54,15 +54,19 @@ public class ForestGenerator implements RegionFunction {
         BlockType t = block.getBlockType();
 
         if (t == BlockTypes.GRASS_BLOCK || t == BlockTypes.DIRT) {
-            treeType.generate(editSession, position.add(0, 1, 0));
-            return true;
-        } else if (t == BlockTypes.GRASS || t == BlockTypes.DEAD_BUSH || t == BlockTypes.POPPY || t == BlockTypes.DANDELION) { // TODO: This list needs to be moved
+            return treeType.generate(editSession, position.add(0, 1, 0));
+        } else if (t.getMaterial().isReplacedDuringPlacement()) {
+            // since the implementation's tree generators generally don't generate in non-air spots,
+            // we trick editsession history here in the first call
             editSession.setBlock(position, BlockTypes.AIR.getDefaultState());
-            treeType.generate(editSession, position);
-            return true;
-        } else if (t == BlockTypes.SNOW) {
-            editSession.setBlock(position, BlockTypes.AIR.getDefaultState());
-            return false;
+            // and then trick the generator here by directly setting into the world
+            editSession.getWorld().setBlock(position, BlockTypes.AIR.getDefaultState());
+            // so that now the generator can generate the tree
+            boolean success = treeType.generate(editSession, position);
+            if (!success) {
+                editSession.setBlock(position, block); // restore on failure
+            }
+            return success;
         } else { // Trees won't grow on this!
             return false;
         }

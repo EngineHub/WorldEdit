@@ -52,6 +52,7 @@ import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.registry.BiomeRegistry;
+import sun.reflect.generics.tree.Tree;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -290,7 +291,8 @@ public class WorldEditBinding extends BindingHelper {
                 return type;
             } else {
                 throw new ParameterException(
-                        String.format("Can't recognize tree type '%s' -- choose from: %s", input, Arrays.toString(TreeType.values())));
+                        String.format("Can't recognize tree type '%s' -- choose from: %s", input,
+                                TreeType.getPrimaryAliases()));
             }
         } else {
             return TreeType.TREE;
