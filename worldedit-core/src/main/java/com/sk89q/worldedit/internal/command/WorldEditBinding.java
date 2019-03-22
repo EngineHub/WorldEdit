@@ -52,9 +52,7 @@ import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.registry.BiomeRegistry;
-import sun.reflect.generics.tree.Tree;
 
-import java.util.Arrays;
 import java.util.Collection;
 
 /**
@@ -85,7 +83,7 @@ public class WorldEditBinding extends BindingHelper {
     @BindingMatch(classifier = Selection.class,
                   type = Region.class,
                   behavior = BindingBehavior.PROVIDES)
-    public Object getSelection(ArgumentStack context, Selection selection) throws IncompleteRegionException, ParameterException {
+    public Object getSelection(ArgumentStack context, @SuppressWarnings("unused") Selection selection) throws IncompleteRegionException, ParameterException {
         Player sender = getPlayer(context);
         LocalSession session = worldEdit.getSessionManager().get(sender);
         return session.getSelection(sender.getWorld());
