@@ -187,8 +187,9 @@ public class ForgeWorld extends AbstractWorld {
 
     @Override
     public boolean notifyAndLightBlock(BlockVector3 position, BlockState previousType) throws WorldEditException {
-        // TODO Implement
-        return false;
+        BlockPos pos = new BlockPos(position.getX(), position.getY(), position.getZ());
+        getWorld().notifyBlockUpdate(pos, ForgeAdapter.adapt(previousType), getWorld().getBlockState(pos), 1 | 2);
+        return true;
     }
 
     @Override

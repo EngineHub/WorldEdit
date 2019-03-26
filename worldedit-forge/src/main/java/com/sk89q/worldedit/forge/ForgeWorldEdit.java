@@ -31,6 +31,9 @@ import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.forge.net.handler.InternalPacketHandler;
 import com.sk89q.worldedit.forge.net.handler.WECUIPacketHandler;
 import com.sk89q.worldedit.forge.net.packet.LeftClickAirEventMessage;
+import com.sk89q.worldedit.forge.proxy.ClientProxy;
+import com.sk89q.worldedit.forge.proxy.CommonProxy;
+import com.sk89q.worldedit.forge.proxy.ServerProxy;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.block.BlockCategory;
@@ -89,7 +92,7 @@ public class ForgeWorldEdit {
 
     public static ForgeWorldEdit inst;
 
-    public static CommonProxy proxy = DistExecutor.runForDist(() -> ClientProxy::new, () -> CommonProxy::new);
+    public static CommonProxy proxy = DistExecutor.runForDist(() -> ClientProxy::new, () -> ServerProxy::new);
 
     private ForgePlatform platform;
     private ForgeConfiguration config;

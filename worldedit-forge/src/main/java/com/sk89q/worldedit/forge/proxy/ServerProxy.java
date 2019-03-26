@@ -17,16 +17,24 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.forge;
+package com.sk89q.worldedit.forge.proxy;
 
-import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
-public class ClientProxy extends CommonProxy {
+@OnlyIn(Dist.DEDICATED_SERVER)
+public class ServerProxy implements CommonProxy {
+
+//    public static ResourceLocation REFERENCE_GUI = new ResourceLocation("worldedit", "resource_gui");
 
     @Override
     public void registerHandlers() {
-        super.registerHandlers();
-        MinecraftForge.EVENT_BUS.register(new KeyHandler());
+//        ModLoadingContext.get().registerExtensionPoint(ExtensionPoint.GUIFACTORY, () -> openContainer -> {
+//            if (openContainer.getId().equals(REFERENCE_GUI)) {
+//                return new GuiReferenceCard();
+//            }
+//            return null;
+//        });
     }
 
 }

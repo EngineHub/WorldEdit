@@ -41,7 +41,7 @@ public class KeyHandler {
         if (mc.player != null && mc.world != null && mainKey.isPressed()) {
             mc.displayGuiScreen(new GuiReferenceCard());
             // TODO Seems GuiHandlers don't work on client right now
-//            NetworkHooks.openGui(mc.player, new ResourceLocationInteractionObject(CommonProxy.REFERENCE_GUI));
+//            NetworkHooks.openGui(mc.player, new ResourceLocationInteractionObject(ServerProxy.REFERENCE_GUI));
         }
     }
 

@@ -17,24 +17,9 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.forge;
+package com.sk89q.worldedit.forge.proxy;
 
-import com.sk89q.worldedit.forge.gui.GuiReferenceCard;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.ExtensionPoint;
-import net.minecraftforge.fml.ModLoadingContext;
+public interface CommonProxy {
 
-public class CommonProxy {
-
-    public static ResourceLocation REFERENCE_GUI = new ResourceLocation("worldedit", "resource_gui");
-
-    public void registerHandlers() {
-        ModLoadingContext.get().registerExtensionPoint(ExtensionPoint.GUIFACTORY, () -> openContainer -> {
-            if (openContainer.getId().equals(REFERENCE_GUI)) {
-                return new GuiReferenceCard();
-            }
-            return null;
-        });
-    }
-
+    void registerHandlers();
 }

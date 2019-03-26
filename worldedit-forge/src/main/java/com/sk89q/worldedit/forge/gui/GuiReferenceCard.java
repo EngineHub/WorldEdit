@@ -23,8 +23,11 @@ import com.sk89q.worldedit.forge.ForgeWorldEdit;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import org.lwjgl.opengl.GL11;
 
+@OnlyIn(Dist.CLIENT)
 public class GuiReferenceCard extends GuiScreen {
 
     private GuiButton closeButton;
