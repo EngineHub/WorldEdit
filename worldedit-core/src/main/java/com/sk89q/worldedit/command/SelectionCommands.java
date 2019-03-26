@@ -36,6 +36,9 @@ import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.input.ParserContext;
 import com.sk89q.worldedit.extension.platform.permission.ActorSelectorLimits;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
+import com.sk89q.worldedit.function.block.BlockDistributionCounter;
+import com.sk89q.worldedit.function.operation.Operations;
+import com.sk89q.worldedit.function.visitor.RegionVisitor;
 import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.Region;
@@ -625,6 +628,7 @@ public class SelectionCommands {
     @Command(
         aliases = { "/count" },
         usage = "<block>",
+        flags = "f",
         desc = "Counts the number of a certain type of block",
         min = 1,
         max = 1
@@ -638,6 +642,7 @@ public class SelectionCommands {
         context.setWorld(player.getWorld());
         context.setSession(session);
         context.setRestricted(false);
+        context.setPreferringWildcard(args.hasFlag('f'));
 
         Set<BaseBlock> searchBlocks = we.getBlockFactory().parseFromListInput(args.getString(0), context);
         int count = editSession.countBlocks(session.getSelection(player.getWorld()), searchBlocks);
@@ -659,16 +664,17 @@ public class SelectionCommands {
     @CommandPermissions("worldedit.analysis.distr")
     public void distr(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException, CommandException {
 
-        int size;
         boolean separateStates = args.hasFlag('d');
         List<Countable<BlockState>> distribution;
 
         if (args.hasFlag('c')) {
-            // TODO: Update for new clipboard
-            throw new CommandException("Needs to be re-written again");
+            Clipboard clipboard = session.getClipboard().getClipboard(); // throws if missing
+            BlockDistributionCounter count = new BlockDistributionCounter(clipboard, separateStates);
+            RegionVisitor visitor = new RegionVisitor(clipboard.getRegion(), count);
+            Operations.completeBlindly(visitor);
+            distribution = count.getDistribution();
         } else {
             distribution = editSession.getBlockDistribution(session.getSelection(player.getWorld()), separateStates);
-            size = session.getSelection(player.getWorld()).getArea();
         }
 
         if (distribution.isEmpty()) {  // *Should* always be false
@@ -676,19 +682,21 @@ public class SelectionCommands {
             return;
         }
 
+        // note: doing things like region.getArea is inaccurate for non-cuboids.
+        int size = distribution.stream().mapToInt(Countable::getAmount).sum();
         player.print("# total blocks: " + size);
 
         for (Countable<BlockState> c : distribution) {
             String name = c.getID().getBlockType().getName();
             String str;
             if (separateStates) {
-                str = String.format("%-7s (%.3f%%) %s #%s",
+                str = String.format("%-7s (%.3f%%) %s (%s)",
                         String.valueOf(c.getAmount()),
                         c.getAmount() / (double) size * 100,
                         name,
                         c.getID().getAsString());
             } else {
-                str = String.format("%-7s (%.3f%%) %s #%s",
+                str = String.format("%-7s (%.3f%%) %s (%s)",
                         String.valueOf(c.getAmount()),
                         c.getAmount() / (double) size * 100,
                         name,

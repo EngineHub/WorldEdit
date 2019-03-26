@@ -75,8 +75,7 @@ public class ClipboardCommands {
         help = "Copy the selection to the clipboard\n" +
                 "Flags:\n" +
                 "  -e will also copy entities\n" +
-                "  -m sets a source mask so that excluded blocks become air\n" +
-                "WARNING: Pasting entities cannot yet be undone!",
+                "  -m sets a source mask so that excluded blocks become air",
         min = 0,
         max = 0
     )
