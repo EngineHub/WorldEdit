@@ -31,15 +31,15 @@ import java.util.stream.Collectors;
 public class RandomStatePattern implements Pattern {
 
     private final Random rand = new Random();
-    private final List<BaseBlock> blocks;
+    private final List<BlockState> blocks;
 
     public RandomStatePattern(FuzzyBlockState state) {
         blocks = state.getBlockType().getAllStates().stream().filter(state::equalsFuzzy)
-                .map(BlockState::toBaseBlock).collect(Collectors.toList());
+                .collect(Collectors.toList());
     }
 
     @Override
     public BaseBlock apply(BlockVector3 position) {
-        return blocks.get(rand.nextInt(blocks.size()));
+        return blocks.get(rand.nextInt(blocks.size())).toBaseBlock();
     }
 }
