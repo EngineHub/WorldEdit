@@ -17,24 +17,29 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.extension.factory.parser.pattern;
+package com.sk89q.worldedit.function.pattern;
 
-import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.extension.input.InputParseException;
-import com.sk89q.worldedit.extension.input.ParserContext;
-import com.sk89q.worldedit.function.pattern.BlockPattern;
-import com.sk89q.worldedit.function.pattern.Pattern;
-import com.sk89q.worldedit.internal.registry.InputParser;
+import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.world.block.BaseBlock;
+import com.sk89q.worldedit.world.block.BlockState;
+import com.sk89q.worldedit.world.block.FuzzyBlockState;
 
-public class SingleBlockPatternParser extends InputParser<Pattern> {
+import java.util.List;
+import java.util.Random;
+import java.util.stream.Collectors;
 
-    public SingleBlockPatternParser(WorldEdit worldEdit) {
-        super(worldEdit);
+public class RandomStatePattern implements Pattern {
+
+    private final Random rand = new Random();
+    private final List<BaseBlock> blocks;
+
+    public RandomStatePattern(FuzzyBlockState state) {
+        blocks = state.getBlockType().getAllStates().stream().filter(state::equalsFuzzy)
+                .map(BlockState::toBaseBlock).collect(Collectors.toList());
     }
 
     @Override
-    public Pattern parseFromInput(String input, ParserContext context) throws InputParseException {
-        return new BlockPattern(worldEdit.getBlockFactory().parseFromInput(input, context));
+    public BaseBlock apply(BlockVector3 position) {
+        return blocks.get(rand.nextInt(blocks.size()));
     }
-
 }
