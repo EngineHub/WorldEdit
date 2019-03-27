@@ -25,6 +25,8 @@ import com.sk89q.worldedit.world.item.ItemType;
 
 import javax.annotation.Nullable;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
  * Represents an item, without an amount value. See {@link BaseItemStack}
  * for an instance with stack amount information.
@@ -32,7 +34,7 @@ import javax.annotation.Nullable;
  * <p>This class may be removed in the future.</p>
  */
 public class BaseItem implements NbtValued {
-    
+
     private ItemType itemType;
     @Nullable
     private CompoundTag nbtData;
@@ -43,6 +45,7 @@ public class BaseItem implements NbtValued {
      * @param itemType Type of the item
      */
     public BaseItem(ItemType itemType) {
+        checkNotNull(itemType);
         this.itemType = itemType;
     }
 
@@ -52,7 +55,8 @@ public class BaseItem implements NbtValued {
      * @param itemType Type of the item
      * @param tag NBT Compound tag
      */
-    public BaseItem(ItemType itemType, CompoundTag tag) {
+    public BaseItem(ItemType itemType, @Nullable CompoundTag tag) {
+        checkNotNull(itemType);
         this.itemType = itemType;
         this.nbtData = tag;
     }
