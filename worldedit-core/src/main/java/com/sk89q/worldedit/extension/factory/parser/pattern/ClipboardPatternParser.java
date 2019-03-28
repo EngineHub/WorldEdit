@@ -55,15 +55,20 @@ public class ClipboardPatternParser extends InputParser<Pattern> {
 
         BlockVector3 offset = BlockVector3.ZERO;
         if (offsetParts.length == 2) {
-            String[] offsetSplit = offsetParts[1].split(",");
+            String coords = offsetParts[1];
+            if (coords.length() < 7  // min length of `[x,y,z]`
+                || coords.charAt(0) != '[' || coords.charAt(coords.length() - 1) != ']') {
+                throw new InputParseException("Offset specified with @ but no offset given. Use '#copy@[x,y,z]'.");
+            }
+            String[] offsetSplit = coords.substring(1, coords.length() - 1).split(",");
             if (offsetSplit.length != 3) {
                 throw new InputParseException("Clipboard offset needs x,y,z coordinates.");
             }
             offset = BlockVector3.at(
-                        Integer.valueOf(offsetSplit[0]),
-                        Integer.valueOf(offsetSplit[1]),
-                        Integer.valueOf(offsetSplit[2])
-                    );
+                    Integer.valueOf(offsetSplit[0]),
+                    Integer.valueOf(offsetSplit[1]),
+                    Integer.valueOf(offsetSplit[2])
+            );
         }
 
         if (session != null) {
