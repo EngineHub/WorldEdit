@@ -253,9 +253,8 @@ public class MCEditSchematicReader extends NBTSchematicReader {
         // Entities
         // ====================================================================
 
-        try {
-            List<Tag> entityTags = requireTag(schematic, "Entities", ListTag.class).getValue();
-
+        List<Tag> entityTags = getTag(schematic, "Entities", ListTag.class).getValue();
+        if (entityTags != null) {
             for (Tag tag : entityTags) {
                 if (tag instanceof CompoundTag) {
                     CompoundTag compound = (CompoundTag) tag;
@@ -273,7 +272,6 @@ public class MCEditSchematicReader extends NBTSchematicReader {
                     }
                 }
             }
-        } catch (IOException ignored) { // No entities? No problem
         }
 
         return clipboard;

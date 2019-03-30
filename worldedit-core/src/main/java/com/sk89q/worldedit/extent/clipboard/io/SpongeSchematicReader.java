@@ -87,12 +87,10 @@ public class SpongeSchematicReader extends NBTSchematicReader {
         // Check
         Map<String, Tag> schematic = schematicTag.getValue();
         int version = requireTag(schematic, "Version", IntTag.class).getValue();
-        switch (version) {
-            case 1:
-                return readVersion1(schematicTag);
-            default:
-                throw new IOException("This schematic version is currently not supported");
+        if (version == 1) {
+            return readVersion1(schematicTag);
         }
+        throw new IOException("This schematic version is currently not supported");
     }
 
     private Clipboard readVersion1(CompoundTag schematicTag) throws IOException {
@@ -152,8 +150,9 @@ public class SpongeSchematicReader extends NBTSchematicReader {
         byte[] blocks = requireTag(schematic, "BlockData", ByteArrayTag.class).getValue();
 
         Map<BlockVector3, Map<String, Tag>> tileEntitiesMap = new HashMap<>();
-        try {
-            List<Map<String, Tag>> tileEntityTags = requireTag(schematic, "TileEntities", ListTag.class).getValue().stream()
+        ListTag tileEntities = getTag(schematic, "TileEntities", ListTag.class);
+        if (tileEntities != null) {
+            List<Map<String, Tag>> tileEntityTags = tileEntities.getValue().stream()
                     .map(tag -> (CompoundTag) tag)
                     .map(CompoundTag::getValue)
                     .collect(Collectors.toList());
@@ -162,8 +161,6 @@ public class SpongeSchematicReader extends NBTSchematicReader {
                 int[] pos = requireTag(tileEntity, "Pos", IntArrayTag.class).getValue();
                 tileEntitiesMap.put(BlockVector3.at(pos[0], pos[1], pos[2]), tileEntity);
             }
-        } catch (Exception e) {
-            throw new IOException("Failed to load Tile Entities: " + e.getMessage());
         }
 
         BlockArrayClipboard clipboard = new BlockArrayClipboard(region);
