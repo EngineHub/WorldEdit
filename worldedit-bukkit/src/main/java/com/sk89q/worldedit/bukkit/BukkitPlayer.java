@@ -52,6 +52,10 @@ public class BukkitPlayer extends AbstractPlayerActor {
     private Player player;
     private WorldEditPlugin plugin;
 
+    public BukkitPlayer(Player player) {
+        this(WorldEditPlugin.getInstance(), player);
+    }
+
     public BukkitPlayer(WorldEditPlugin plugin, Player player) {
         this.plugin = plugin;
         this.player = player;

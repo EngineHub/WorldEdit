@@ -100,7 +100,7 @@ public class BukkitServerInterface implements MultiUserPlatform {
             return player;
         } else {
             org.bukkit.entity.Player bukkitPlayer = server.getPlayerExact(player.getName());
-            return bukkitPlayer != null ? new BukkitPlayer(plugin, bukkitPlayer) : null;
+            return bukkitPlayer != null ? WorldEditPlugin.getInstance().wrapPlayer(bukkitPlayer) : null;
         }
     }
 
@@ -177,7 +177,7 @@ public class BukkitServerInterface implements MultiUserPlatform {
     public Collection<Actor> getConnectedUsers() {
         List<Actor> users = new ArrayList<>();
         for (org.bukkit.entity.Player player : Bukkit.getServer().getOnlinePlayers()) {
-            users.add(new BukkitPlayer(plugin, player));
+            users.add(WorldEditPlugin.getInstance().wrapPlayer(player));
         }
         return users;
     }
