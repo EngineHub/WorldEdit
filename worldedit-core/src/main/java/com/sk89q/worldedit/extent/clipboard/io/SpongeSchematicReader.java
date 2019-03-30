@@ -93,7 +93,7 @@ public class SpongeSchematicReader extends NBTSchematicReader {
         throw new IOException("This schematic version is currently not supported");
     }
 
-    private Clipboard readVersion1(CompoundTag schematicTag) throws IOException {
+    private BlockArrayClipboard readVersion1(CompoundTag schematicTag) throws IOException {
         BlockVector3 origin;
         Region region;
         Map<String, Tag> schematic = schematicTag.getValue();

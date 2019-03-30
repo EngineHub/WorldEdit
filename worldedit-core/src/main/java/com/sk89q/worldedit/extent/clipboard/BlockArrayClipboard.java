@@ -51,6 +51,7 @@ public class BlockArrayClipboard implements Clipboard {
     private final Region region;
     private BlockVector3 origin;
     private final BaseBlock[][][] blocks;
+    private BiomeType[][] biomes = null;
     private final List<ClipboardEntity> entities = new ArrayList<>();
 
     /**
@@ -162,11 +163,25 @@ public class BlockArrayClipboard implements Clipboard {
 
     @Override
     public BiomeType getBiome(BlockVector2 position) {
+        if (biomes != null
+                && position.containedWithin(getMinimumPoint().toBlockVector2(), getMaximumPoint().toBlockVector2())) {
+            BlockVector2 v = position.subtract(region.getMinimumPoint().toBlockVector2());
+            return biomes[v.getBlockX()][v.getBlockZ()];
+        }
+
         return BiomeTypes.OCEAN;
     }
 
     @Override
     public boolean setBiome(BlockVector2 position, BiomeType biome) {
+        if (position.containedWithin(getMinimumPoint().toBlockVector2(), getMaximumPoint().toBlockVector2())) {
+            BlockVector2 v = position.subtract(region.getMinimumPoint().toBlockVector2());
+            if (biomes == null) {
+                biomes = new BiomeType[region.getWidth()][region.getLength()];
+            }
+            biomes[v.getBlockX()][v.getBlockZ()] = biome;
+            return true;
+        }
         return false;
     }
 
