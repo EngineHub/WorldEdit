@@ -48,7 +48,7 @@ public class BoundedHeightMask extends AbstractMask {
 
     @Override
     public boolean test(BlockVector3 vector) {
-        return vector.getY() >= minY && vector.getY() <= maxY;
+        return vector.getBlockY() >= minY && vector.getBlockY() <= maxY;
     }
 
     @Nullable

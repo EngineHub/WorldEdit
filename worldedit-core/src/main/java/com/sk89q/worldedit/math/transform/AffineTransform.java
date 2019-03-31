@@ -242,7 +242,7 @@ public class AffineTransform implements Transform {
     }
 
     public AffineTransform translate(BlockVector3 vec) {
-        return translate(vec.getX(), vec.getY(), vec.getZ());
+        return translate(vec.getBlockX(), vec.getBlockY(), vec.getBlockZ());
     }
 
     public AffineTransform translate(double x, double y, double z) {

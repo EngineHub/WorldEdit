@@ -260,7 +260,7 @@ public class BukkitPlayer extends AbstractPlayerActor {
 
     @Override
     public <B extends BlockStateHolder<B>> void sendFakeBlock(BlockVector3 pos, B block) {
-        Location loc = new Location(player.getWorld(), pos.getX(), pos.getY(), pos.getZ());
+        Location loc = new Location(player.getWorld(), pos.getBlockX(), pos.getBlockY(), pos.getBlockZ());
         if (block == null) {
             player.sendBlockChange(loc, player.getWorld().getBlockAt(loc).getBlockData());
         } else {

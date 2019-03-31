@@ -31,15 +31,15 @@ public class SelectionPoint2DEvent implements CUIEvent {
 
     public SelectionPoint2DEvent(int id, BlockVector2 pos, int area) {
         this.id = id;
-        this.blockX = pos.getX();
-        this.blockZ = pos.getZ();
+        this.blockX = pos.getBlockX();
+        this.blockZ = pos.getBlockZ();
         this.area = area;
     }
 
     public SelectionPoint2DEvent(int id, BlockVector3 pos, int area) {
         this.id = id;
-        this.blockX = pos.getX();
-        this.blockZ = pos.getZ();
+        this.blockX = pos.getBlockX();
+        this.blockZ = pos.getBlockZ();
         this.area = area;
     }
 

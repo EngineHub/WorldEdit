@@ -109,7 +109,7 @@ public class Polygonal2DRegionSelector implements RegionSelector, CUIRegion {
         checkNotNull(points);
         
         final BlockVector2 pos2D = points.get(0);
-        pos1 = BlockVector3.at(pos2D.getX(), minY, pos2D.getZ());
+        pos1 = BlockVector3.at(pos2D.getBlockX(), minY, pos2D.getBlockZ());
         region = new Polygonal2DRegion(world, points, minY, maxY);
     }
 

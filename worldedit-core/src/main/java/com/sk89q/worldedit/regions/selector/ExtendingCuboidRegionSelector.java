@@ -105,13 +105,13 @@ public class ExtendingCuboidRegionSelector extends CuboidRegionSelector {
             return false;
         }
 
-        double x1 = Math.min(position.getX(), position1.getX());
-        double y1 = Math.min(position.getY(), position1.getY());
-        double z1 = Math.min(position.getZ(), position1.getZ());
+        double x1 = Math.min(position.getBlockX(), position1.getBlockX());
+        double y1 = Math.min(position.getBlockY(), position1.getBlockY());
+        double z1 = Math.min(position.getBlockZ(), position1.getBlockZ());
 
-        double x2 = Math.max(position.getX(), position2.getX());
-        double y2 = Math.max(position.getY(), position2.getY());
-        double z2 = Math.max(position.getZ(), position2.getZ());
+        double x2 = Math.max(position.getBlockX(), position2.getBlockX());
+        double y2 = Math.max(position.getBlockY(), position2.getBlockY());
+        double z2 = Math.max(position.getBlockZ(), position2.getBlockZ());
 
         final BlockVector3 o1 = position1;
         final BlockVector3 o2 = position2;

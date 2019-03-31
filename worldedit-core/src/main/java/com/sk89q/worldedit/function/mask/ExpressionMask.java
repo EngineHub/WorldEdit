@@ -21,7 +21,6 @@ package com.sk89q.worldedit.function.mask;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.internal.expression.Expression;
 import com.sk89q.worldedit.internal.expression.ExpressionException;
 import com.sk89q.worldedit.internal.expression.runtime.EvaluationException;
@@ -74,9 +73,9 @@ public class ExpressionMask extends AbstractMask {
                 ((WorldEditExpressionEnvironment) expression.getEnvironment()).setCurrentBlock(vector.toVector3());
             }
             if (timeout == null) {
-                return expression.evaluate(vector.getX(), vector.getY(), vector.getZ()) > 0;
+                return expression.evaluate(vector.getBlockX(), vector.getBlockY(), vector.getBlockZ()) > 0;
             } else {
-                return expression.evaluate(new double[]{vector.getX(), vector.getY(), vector.getZ()},
+                return expression.evaluate(new double[]{vector.getBlockX(), vector.getBlockY(), vector.getBlockZ()},
                         timeout.getAsInt()) > 0;
             }
         } catch (EvaluationException e) {

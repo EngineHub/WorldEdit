@@ -93,15 +93,6 @@ public final class BlockVector2 {
      *
      * @return the x coordinate
      */
-    public int getX() {
-        return x;
-    }
-
-    /**
-     * Get the X coordinate.
-     *
-     * @return the x coordinate
-     */
     public int getBlockX() {
         return x;
     }
@@ -114,15 +105,6 @@ public final class BlockVector2 {
      */
     public BlockVector2 withX(int x) {
         return BlockVector2.at(x, z);
-    }
-
-    /**
-     * Get the Z coordinate.
-     *
-     * @return the z coordinate
-     */
-    public int getZ() {
-        return z;
     }
 
     /**

@@ -100,15 +100,6 @@ public final class BlockVector3 {
      *
      * @return the x coordinate
      */
-    public int getX() {
-        return x;
-    }
-
-    /**
-     * Get the X coordinate.
-     *
-     * @return the x coordinate
-     */
     public int getBlockX() {
         return x;
     }
@@ -128,15 +119,6 @@ public final class BlockVector3 {
      *
      * @return the y coordinate
      */
-    public int getY() {
-        return y;
-    }
-
-    /**
-     * Get the Y coordinate.
-     *
-     * @return the y coordinate
-     */
     public int getBlockY() {
         return y;
     }
@@ -149,15 +131,6 @@ public final class BlockVector3 {
      */
     public BlockVector3 withY(int y) {
         return BlockVector3.at(x, y, z);
-    }
-
-    /**
-     * Get the Z coordinate.
-     *
-     * @return the z coordinate
-     */
-    public int getZ() {
-        return z;
     }
 
     /**
@@ -528,16 +501,16 @@ public final class BlockVector3 {
      * @return pitch in radians
      */
     public double toPitch() {
-        double x = getX();
-        double z = getZ();
+        double x = getBlockX();
+        double z = getBlockZ();
 
         if (x == 0 && z == 0) {
-            return getY() > 0 ? -90 : 90;
+            return getBlockY() > 0 ? -90 : 90;
         } else {
             double x2 = x * x;
             double z2 = z * z;
             double xz = Math.sqrt(x2 + z2);
-            return Math.toDegrees(Math.atan(-getY() / xz));
+            return Math.toDegrees(Math.atan(-getBlockY() / xz));
         }
     }
 
@@ -547,8 +520,8 @@ public final class BlockVector3 {
      * @return yaw in radians
      */
     public double toYaw() {
-        double x = getX();
-        double z = getZ();
+        double x = getBlockX();
+        double z = getBlockZ();
 
         double t = Math.atan2(-x, z);
         double tau = 2 * Math.PI;

@@ -2233,7 +2233,7 @@ public class EditSession implements Extent, AutoCloseable {
     private static Set<BlockVector3> getHollowed(Set<BlockVector3> vset) {
         Set<BlockVector3> returnset = new HashSet<>();
         for (BlockVector3 v : vset) {
-            double x = v.getX(), y = v.getY(), z = v.getZ();
+            double x = v.getBlockX(), y = v.getBlockY(), z = v.getBlockZ();
             if (!(vset.contains(BlockVector3.at(x + 1, y, z)) &&
                     vset.contains(BlockVector3.at(x - 1, y, z)) &&
                     vset.contains(BlockVector3.at(x, y + 1, z)) &&

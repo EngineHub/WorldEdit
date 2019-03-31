@@ -159,7 +159,7 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
         byte free = 0;
         byte spots = 0;
 
-        while (y <= world.getMaximumPoint().getY() + 2) {
+        while (y <= world.getMaximumPoint().getBlockY() + 2) {
             if (!world.getBlock(BlockVector3.at(x, y, z)).getBlockType().getMaterial().isMovementBlocker()) {
                 ++free;
             } else {
@@ -253,7 +253,7 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
             return false;
         }
 
-        while (y <= world.getMaximumPoint().getY()) {
+        while (y <= world.getMaximumPoint().getBlockY()) {
             // Found a ceiling!
             if (world.getBlock(BlockVector3.at(x, y, z)).getBlockType().getMaterial().isMovementBlocker()) {
                 int platformY = Math.max(initialY, y - 3 - clearance);
@@ -282,7 +282,7 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
         final int maxY = Math.min(getWorld().getMaxY() + 1, initialY + distance);
         final Extent world = getLocation().getExtent();
 
-        while (y <= world.getMaximumPoint().getY() + 2) {
+        while (y <= world.getMaximumPoint().getBlockY() + 2) {
             if (world.getBlock(BlockVector3.at(x, y, z)).getBlockType().getMaterial().isMovementBlocker()) {
                 break; // Hit something
             } else if (y > maxY + 1) {

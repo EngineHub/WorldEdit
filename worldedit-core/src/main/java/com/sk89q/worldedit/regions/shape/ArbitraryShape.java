@@ -59,9 +59,9 @@ public abstract class ArbitraryShape {
         cacheOffsetY = min.getBlockY() - 1;
         cacheOffsetZ = min.getBlockZ() - 1;
 
-        cacheSizeX = max.getX() - cacheOffsetX + 2;
-        cacheSizeY = max.getY() - cacheOffsetY + 2;
-        cacheSizeZ = max.getZ() - cacheOffsetZ + 2;
+        cacheSizeX = max.getBlockX() - cacheOffsetX + 2;
+        cacheSizeY = max.getBlockY() - cacheOffsetY + 2;
+        cacheSizeZ = max.getBlockZ() - cacheOffsetZ + 2;
 
         cache = new byte[cacheSizeX * cacheSizeY * cacheSizeZ];
     }

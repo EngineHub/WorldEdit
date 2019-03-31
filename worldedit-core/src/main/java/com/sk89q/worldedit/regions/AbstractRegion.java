@@ -91,10 +91,10 @@ public abstract class AbstractRegion implements Region {
 
         final List<BlockVector2> points = new ArrayList<>(4);
 
-        points.add(BlockVector2.at(min.getX(), min.getZ()));
-        points.add(BlockVector2.at(min.getX(), max.getZ()));
-        points.add(BlockVector2.at(max.getX(), max.getZ()));
-        points.add(BlockVector2.at(max.getX(), min.getZ()));
+        points.add(BlockVector2.at(min.getBlockX(), min.getBlockZ()));
+        points.add(BlockVector2.at(min.getBlockX(), max.getBlockZ()));
+        points.add(BlockVector2.at(max.getBlockX(), max.getBlockZ()));
+        points.add(BlockVector2.at(max.getBlockX(), min.getBlockZ()));
 
         return points;
     }
@@ -109,9 +109,9 @@ public abstract class AbstractRegion implements Region {
         BlockVector3 min = getMinimumPoint();
         BlockVector3 max = getMaximumPoint();
 
-        return (max.getX() - min.getX() + 1) *
-                (max.getY() - min.getY() + 1) *
-                (max.getZ() - min.getZ() + 1);
+        return (max.getBlockX() - min.getBlockX() + 1) *
+                (max.getBlockY() - min.getBlockY() + 1) *
+                (max.getBlockZ() - min.getBlockZ() + 1);
     }
 
     /**
@@ -124,7 +124,7 @@ public abstract class AbstractRegion implements Region {
         BlockVector3 min = getMinimumPoint();
         BlockVector3 max = getMaximumPoint();
 
-        return max.getX() - min.getX() + 1;
+        return max.getBlockX() - min.getBlockX() + 1;
     }
 
     /**
@@ -137,7 +137,7 @@ public abstract class AbstractRegion implements Region {
         BlockVector3 min = getMinimumPoint();
         BlockVector3 max = getMaximumPoint();
 
-        return max.getY() - min.getY() + 1;
+        return max.getBlockY() - min.getBlockY() + 1;
     }
 
     /**
@@ -150,7 +150,7 @@ public abstract class AbstractRegion implements Region {
         BlockVector3 min = getMinimumPoint();
         BlockVector3 max = getMaximumPoint();
 
-        return max.getZ() - min.getZ() + 1;
+        return max.getBlockZ() - min.getBlockZ() + 1;
     }
 
     /**

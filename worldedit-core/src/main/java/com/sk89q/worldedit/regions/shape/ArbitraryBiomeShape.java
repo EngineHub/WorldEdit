@@ -55,8 +55,8 @@ public abstract class ArbitraryBiomeShape {
         cacheOffsetX = min.getBlockX() - 1;
         cacheOffsetZ = min.getBlockZ() - 1;
 
-        cacheSizeX = max.getX() - cacheOffsetX + 2;
-        cacheSizeZ = max.getZ() - cacheOffsetZ + 2;
+        cacheSizeX = max.getBlockX() - cacheOffsetX + 2;
+        cacheSizeZ = max.getBlockZ() - cacheOffsetZ + 2;
 
         cache = new BiomeType[cacheSizeX * cacheSizeZ];
     }

@@ -214,7 +214,7 @@ public class BukkitAdapter {
         checkNotNull(position);
         return new org.bukkit.Location(
                 world,
-                position.getX(), position.getY(), position.getZ());
+                position.getBlockX(), position.getBlockY(), position.getBlockZ());
     }
 
     /**

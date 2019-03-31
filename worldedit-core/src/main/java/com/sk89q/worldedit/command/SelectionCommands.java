@@ -602,7 +602,7 @@ public class SelectionCommands {
             player.print("Cuboid dimensions (max - min): " + size);
             player.print("Offset: " + origin);
             player.print("Cuboid distance: " + size.distance(BlockVector3.ONE));
-            player.print("# of blocks: " + (int) (size.getX() * size.getY() * size.getZ()));
+            player.print("# of blocks: " + (int) (size.getBlockX() * size.getBlockY() * size.getBlockZ()));
             return;
         }
 
