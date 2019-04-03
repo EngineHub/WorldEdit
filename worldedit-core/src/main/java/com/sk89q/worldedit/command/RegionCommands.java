@@ -85,7 +85,7 @@ public class RegionCommands {
 
     @Command(
             aliases = { "/line" },
-            usage = "<block> [thickness]",
+            usage = "<pattern> [thickness]",
             desc = "Draws a line segment between cuboid selection corners",
             help =
                 "Draws a line segment between cuboid selection corners.\n" +
@@ -119,7 +119,7 @@ public class RegionCommands {
 
     @Command(
             aliases = { "/curve" },
-            usage = "<block> [thickness]",
+            usage = "<pattern> [thickness]",
             desc = "Draws a spline through selected points",
             help =
                 "Draws a spline through selected points.\n" +
@@ -170,7 +170,7 @@ public class RegionCommands {
 
     @Command(
         aliases = { "/overlay" },
-        usage = "<block>",
+        usage = "<pattern>",
         desc = "Set a block on top of blocks in the region",
         min = 1,
         max = 1
@@ -184,7 +184,7 @@ public class RegionCommands {
 
     @Command(
         aliases = { "/center", "/middle" },
-        usage = "<block>",
+        usage = "<pattern>",
         desc = "Set the center block(s)",
         min = 1,
         max = 1
@@ -212,7 +212,7 @@ public class RegionCommands {
 
     @Command(
         aliases = { "/walls" },
-        usage = "<block>",
+        usage = "<pattern>",
         desc = "Build the four sides of the selection",
         min = 1,
         max = 1
@@ -226,7 +226,7 @@ public class RegionCommands {
 
     @Command(
         aliases = { "/faces", "/outline" },
-        usage = "<block>",
+        usage = "<pattern>",
         desc = "Build the walls, ceiling, and floor of a selection",
         min = 1,
         max = 1
@@ -414,7 +414,7 @@ public class RegionCommands {
 
     @Command(
         aliases = { "/hollow" },
-        usage = "[<thickness>[ <block>]]",
+        usage = "[<thickness>[ <pattern>]]",
         desc = "Hollows out the object contained in this selection",
         help =
             "Hollows out the object contained in this selection.\n" +
