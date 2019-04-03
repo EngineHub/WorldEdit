@@ -1182,7 +1182,7 @@ public class EditSession implements Extent, AutoCloseable {
         checkNotNull(pattern);
 
         BlockReplace replace = new BlockReplace(this, pattern);
-        RegionOffset offset = new RegionOffset(BlockVector3.at(0, 1, 0), replace);
+        RegionOffset offset = new RegionOffset(BlockVector3.UNIT_Y, replace);
         GroundFunction ground = new GroundFunction(new ExistingBlockMask(this), offset);
         LayerVisitor visitor = new LayerVisitor(asFlatRegion(region), minimumBlockY(region), maximumBlockY(region), ground);
         Operations.completeLegacy(visitor);

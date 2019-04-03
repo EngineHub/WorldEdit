@@ -568,15 +568,15 @@ public class SelectionCommands {
         int change = args.getInteger(0);
 
         if (!args.hasFlag('h')) {
-            changes.add((BlockVector3.at(0, 1, 0)).multiply(change));
-            changes.add((BlockVector3.at(0, -1, 0)).multiply(change));
+            changes.add((BlockVector3.UNIT_Y).multiply(change));
+            changes.add((BlockVector3.UNIT_MINUS_Y).multiply(change));
         }
 
         if (!args.hasFlag('v')) {
-            changes.add((BlockVector3.at(1, 0, 0)).multiply(change));
-            changes.add((BlockVector3.at(-1, 0, 0)).multiply(change));
-            changes.add((BlockVector3.at(0, 0, 1)).multiply(change));
-            changes.add((BlockVector3.at(0, 0, -1)).multiply(change));
+            changes.add((BlockVector3.UNIT_X).multiply(change));
+            changes.add((BlockVector3.UNIT_MINUS_X).multiply(change));
+            changes.add((BlockVector3.UNIT_Z).multiply(change));
+            changes.add((BlockVector3.UNIT_MINUS_Z).multiply(change));
         }
 
         return changes.toArray(new BlockVector3[0]);

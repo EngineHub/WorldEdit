@@ -58,8 +58,10 @@ public enum Direction {
 
     private final Vector3 direction;
     private final int flags;
+    private final BlockVector3 blockPoint;
 
     Direction(Vector3 vector, int flags) {
+        this.blockPoint = vector.toBlockPoint();
         this.direction = vector.normalize();
         this.flags = flags;
     }
@@ -121,7 +123,7 @@ public enum Direction {
      * @return the vector
      */
     public BlockVector3 toBlockVector() {
-        return direction.toBlockPoint();
+        return blockPoint;
     }
 
     /**

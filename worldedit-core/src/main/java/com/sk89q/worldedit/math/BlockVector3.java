@@ -35,6 +35,9 @@ public final class BlockVector3 {
     public static final BlockVector3 UNIT_X = new BlockVector3(1, 0, 0);
     public static final BlockVector3 UNIT_Y = new BlockVector3(0, 1, 0);
     public static final BlockVector3 UNIT_Z = new BlockVector3(0, 0, 1);
+    public static final BlockVector3 UNIT_MINUS_X = new BlockVector3(-1, 0, 0);
+    public static final BlockVector3 UNIT_MINUS_Y = new BlockVector3(0, -1, 0);
+    public static final BlockVector3 UNIT_MINUS_Z = new BlockVector3(0, 0, -1);
     public static final BlockVector3 ONE = new BlockVector3(1, 1, 1);
 
     public static BlockVector3 at(double x, double y, double z) {
@@ -42,20 +45,6 @@ public final class BlockVector3 {
     }
 
     public static BlockVector3 at(int x, int y, int z) {
-        // switch for efficiency on typical cases
-        // in MC y is rarely 0/1 on selections
-        switch (y) {
-            case 0:
-                if (x == 0 && z == 0) {
-                    return ZERO;
-                }
-                break;
-            case 1:
-                if (x == 1 && z == 1) {
-                    return ONE;
-                }
-                break;
-        }
         return new BlockVector3(x, y, z);
     }
 
@@ -609,11 +598,7 @@ public final class BlockVector3 {
 
     @Override
     public int hashCode() {
-        int hash = 17;
-        hash = 31 * hash + Integer.hashCode(x);
-        hash = 31 * hash + Integer.hashCode(y);
-        hash = 31 * hash + Integer.hashCode(z);
-        return hash;
+        return (x ^ (z << 12)) ^ (y << 24);
     }
 
     @Override

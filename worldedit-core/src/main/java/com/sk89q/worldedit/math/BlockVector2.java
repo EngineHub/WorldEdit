@@ -60,18 +60,6 @@ public final class BlockVector2 {
     }
 
     public static BlockVector2 at(int x, int z) {
-        switch (x) {
-            case 0:
-                if (z == 0) {
-                    return ZERO;
-                }
-                break;
-            case 1:
-                if (z == 1) {
-                    return ONE;
-                }
-                break;
-        }
         return new BlockVector2(x, z);
     }
 
@@ -525,10 +513,7 @@ public final class BlockVector2 {
 
     @Override
     public int hashCode() {
-        int hash = 17;
-        hash = 31 * hash + Integer.hashCode(x);
-        hash = 31 * hash + Integer.hashCode(z);
-        return hash;
+        return (x << 16) ^ z;
     }
 
     @Override

@@ -38,7 +38,7 @@ public class Node {
     private double continuity;
 
     public Node() {
-        this(Vector3.at(0, 0, 0));
+        this(Vector3.ZERO);
     }
 
     public Node(Node other) {
