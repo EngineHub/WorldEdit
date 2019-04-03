@@ -321,11 +321,7 @@ public class PlatformManager {
 
             try {
                 if (event.getType() == Interaction.HIT) {
-                    if (player.getItemInHand(HandSide.MAIN_HAND).getType().getId().equals(getConfiguration().wandItem)) {
-                        if (!session.isToolControlEnabled()) {
-                            return;
-                        }
-
+                    if (session.isToolControlEnabled() && player.getItemInHand(HandSide.MAIN_HAND).getType().getId().equals(getConfiguration().wandItem)) {
                         if (!actor.hasPermission("worldedit.selection.pos")) {
                             return;
                         }
@@ -341,7 +337,7 @@ public class PlatformManager {
                         return;
                     }
 
-                    if (player.isHoldingPickAxe() && session.hasSuperPickAxe()) {
+                    if (session.hasSuperPickAxe() && player.isHoldingPickAxe()) {
                         final BlockTool superPickaxe = session.getSuperPickaxe();
                         if (superPickaxe != null && superPickaxe.canUse(player)) {
                             event.setCancelled(superPickaxe.actPrimary(queryCapability(Capability.WORLD_EDITING), getConfiguration(), player, session, location));
@@ -358,11 +354,7 @@ public class PlatformManager {
                     }
 
                 } else if (event.getType() == Interaction.OPEN) {
-                    if (player.getItemInHand(HandSide.MAIN_HAND).getType().getId().equals(getConfiguration().wandItem)) {
-                        if (!session.isToolControlEnabled()) {
-                            return;
-                        }
-
+                    if (session.isToolControlEnabled() && player.getItemInHand(HandSide.MAIN_HAND).getType().getId().equals(getConfiguration().wandItem)) {
                         if (!actor.hasPermission("worldedit.selection.pos")) {
                             return;
                         }
