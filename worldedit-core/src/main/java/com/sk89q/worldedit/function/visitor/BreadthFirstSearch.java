@@ -26,6 +26,7 @@ import com.sk89q.worldedit.function.RegionFunction;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.RunContext;
 import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.util.Direction;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -85,22 +86,22 @@ public abstract class BreadthFirstSearch implements Operation {
      * Add the directions along the axes as directions to visit.
      */
     protected void addAxes() {
-        directions.add(BlockVector3.at(0, -1, 0));
-        directions.add(BlockVector3.at(0, 1, 0));
-        directions.add(BlockVector3.at(-1, 0, 0));
-        directions.add(BlockVector3.at(1, 0, 0));
-        directions.add(BlockVector3.at(0, 0, -1));
-        directions.add(BlockVector3.at(0, 0, 1));
+        directions.add(BlockVector3.UNIT_MINUS_Y);
+        directions.add(BlockVector3.UNIT_Y);
+        directions.add(BlockVector3.UNIT_MINUS_X);
+        directions.add(BlockVector3.UNIT_X);
+        directions.add(BlockVector3.UNIT_MINUS_Z);
+        directions.add(BlockVector3.UNIT_Z);
     }
 
     /**
      * Add the diagonal directions as directions to visit.
      */
     protected void addDiagonal() {
-        directions.add(BlockVector3.at(1, 0, 1));
-        directions.add(BlockVector3.at(-1, 0, -1));
-        directions.add(BlockVector3.at(1, 0, -1));
-        directions.add(BlockVector3.at(-1, 0, 1));
+        directions.add(Direction.NORTHEAST.toBlockVector());
+        directions.add(Direction.SOUTHEAST.toBlockVector());
+        directions.add(Direction.SOUTHWEST.toBlockVector());
+        directions.add(Direction.NORTHWEST.toBlockVector());
     }
 
     /**

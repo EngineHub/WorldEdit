@@ -525,10 +525,7 @@ public final class BlockVector2 {
 
     @Override
     public int hashCode() {
-        int hash = 17;
-        hash = 31 * hash + Integer.hashCode(x);
-        hash = 31 * hash + Integer.hashCode(z);
-        return hash;
+        return (x << 16) ^ z;
     }
 
     @Override
