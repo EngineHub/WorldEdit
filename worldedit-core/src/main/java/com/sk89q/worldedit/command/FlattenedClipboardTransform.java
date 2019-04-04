@@ -115,6 +115,9 @@ class FlattenedClipboardTransform {
         BlockTransformExtent extent = new BlockTransformExtent(original, transform);
         ForwardExtentCopy copy = new ForwardExtentCopy(extent, original.getRegion(), original.getOrigin(), target, original.getOrigin());
         copy.setTransform(transform);
+        if (original.hasBiomes()) {
+            copy.setCopyingBiomes(true);
+        }
         return copy;
     }
 
