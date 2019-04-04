@@ -60,11 +60,17 @@ public final class BlockVector2 {
     }
 
     public static BlockVector2 at(int x, int z) {
-        if (x == 0 && z == 0) {
-            return ZERO;
-        }
-        if (x == 1 && z == 1) {
-            return ONE;
+        switch (x) {
+            case 0:
+                if (z == 0) {
+                    return ZERO;
+                }
+                break;
+            case 1:
+                if (z == 1) {
+                    return ONE;
+                }
+                break;
         }
         return new BlockVector2(x, z);
     }

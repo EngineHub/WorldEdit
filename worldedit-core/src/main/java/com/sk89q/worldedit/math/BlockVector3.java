@@ -45,11 +45,19 @@ public final class BlockVector3 {
     }
 
     public static BlockVector3 at(int x, int y, int z) {
-        if (x == 0 && y == 0 && z == 0) {
-            return ZERO;
-        }
-        if (x == 1 && y == 1 && z == 1) {
-            return ONE;
+        // switch for efficiency on typical cases
+        // in MC y is rarely 0/1 on selections
+        switch (y) {
+            case 0:
+                if (x == 0 && z == 0) {
+                    return ZERO;
+                }
+                break;
+            case 1:
+                if (x == 1 && z == 1) {
+                    return ONE;
+                }
+                break;
         }
         return new BlockVector3(x, y, z);
     }
