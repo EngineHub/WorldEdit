@@ -171,7 +171,10 @@ public class BlockArrayClipboard implements Clipboard {
         if (biomes != null
                 && position.containedWithin(getMinimumPoint().toBlockVector2(), getMaximumPoint().toBlockVector2())) {
             BlockVector2 v = position.subtract(region.getMinimumPoint().toBlockVector2());
-            return biomes[v.getBlockX()][v.getBlockZ()];
+            BiomeType biomeType = biomes[v.getBlockX()][v.getBlockZ()];
+            if (biomeType != null) {
+                return biomeType;
+            }
         }
 
         return BiomeTypes.OCEAN;

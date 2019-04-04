@@ -66,6 +66,12 @@ public class BukkitServerInterface implements MultiUserPlatform {
     }
 
     @Override
+    public int getDataVersion() {
+        // TODO - add to adapter - CraftMagicNumbers#getDataVersion
+        return 1631;
+    }
+
+    @Override
     public boolean isValidMobType(String type) {
         final EntityType entityType = EntityType.fromName(type);
         return entityType != null && entityType.isAlive();
