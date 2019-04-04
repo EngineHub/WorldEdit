@@ -46,6 +46,13 @@ public interface Platform {
     Registries getRegistries();
 
     /**
+     * Gets the Minecraft data version being used by the platform.
+     *
+     * @return the data version
+     */
+    int getDataVersion();
+
+    /**
      * Checks if a mob type is valid.
      *
      * @param type The mob type name to check

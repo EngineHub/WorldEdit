@@ -65,6 +65,12 @@ class ForgePlatform extends AbstractPlatform implements MultiUserPlatform {
     }
 
     @Override
+    public int getDataVersion() {
+        // TODO technically available as WorldInfo#field_209227_p but requires a world ref?
+        return 1631;
+    }
+
+    @Override
     public boolean isValidMobType(String type) {
         return net.minecraftforge.registries.ForgeRegistries.ENTITIES.containsKey(new ResourceLocation(type));
     }
