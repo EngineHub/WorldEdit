@@ -32,6 +32,12 @@ public final class Vector2 {
     public static final Vector2 ONE = new Vector2(1, 1);
 
     public static Vector2 at(double x, double z) {
+        if (x == 0 && z == 0) {
+            return ZERO;
+        }
+        if (x == 1 && z == 1) {
+            return ONE;
+        }
         return new Vector2(x, z);
     }
 

@@ -45,6 +45,12 @@ public final class BlockVector3 {
     }
 
     public static BlockVector3 at(int x, int y, int z) {
+        if (x == 0 && y == 0 && z == 0) {
+            return ZERO;
+        }
+        if (x == 1 && y == 1 && z == 1) {
+            return ONE;
+        }
         return new BlockVector3(x, y, z);
     }
 
