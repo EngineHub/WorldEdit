@@ -48,6 +48,7 @@ import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.RegionSelector;
 import com.sk89q.worldedit.regions.selector.CuboidRegionSelector;
 import com.sk89q.worldedit.session.ClipboardHolder;
+import com.sk89q.worldedit.session.PasteBuilder;
 import com.sk89q.worldedit.util.command.binding.Switch;
 import com.sk89q.worldedit.util.command.parametric.Optional;
 
@@ -75,19 +76,21 @@ public class ClipboardCommands {
         help = "Copy the selection to the clipboard\n" +
                 "Flags:\n" +
                 "  -e will also copy entities\n" +
-                "  -m sets a source mask so that excluded blocks become air",
+                "  -m sets a source mask so that excluded blocks become air\n" +
+                "  -b will also copy biomes",
         min = 0,
         max = 0
     )
     @CommandPermissions("worldedit.clipboard.copy")
     public void copy(Player player, LocalSession session, EditSession editSession,
                      @Selection Region region, @Switch('e') boolean copyEntities,
-                     @Switch('m') Mask mask) throws WorldEditException {
+                     @Switch('m') Mask mask, @Switch('b') boolean copyBiomes) throws WorldEditException {
 
         BlockArrayClipboard clipboard = new BlockArrayClipboard(region);
         clipboard.setOrigin(session.getPlacementPosition(player));
         ForwardExtentCopy copy = new ForwardExtentCopy(editSession, region, clipboard, region.getMinimumPoint());
         copy.setCopyingEntities(copyEntities);
+        copy.setCopyingBiomes(copyBiomes);
         if (mask != null) {
             copy.setSourceMask(mask);
         }
@@ -121,6 +124,8 @@ public class ClipboardCommands {
         copy.setSourceFunction(new BlockReplace(editSession, leavePattern));
         copy.setCopyingEntities(copyEntities);
         copy.setRemovingEntities(true);
+        // doesn't really make sense to "cut" biomes? so copy anyway and let them choose when pasting
+        copy.setCopyingBiomes(true);
         if (mask != null) {
             copy.setSourceMask(mask);
         }
@@ -133,14 +138,17 @@ public class ClipboardCommands {
     @Command(
         aliases = { "/paste" },
         usage = "",
-        flags = "sao",
+        flags = "saobem:",
         desc = "Paste the clipboard's contents",
         help =
             "Pastes the clipboard's contents.\n" +
             "Flags:\n" +
             "  -a skips air blocks\n" +
+            "  -b pastes biomes if available\n" +
+            "  -e skips entities (default is don't skip!)\n" +
+            "  -m [<mask>] skips matching blocks in the clipboard\n" +
             "  -o pastes at the original position\n" +
-            "  -s selects the region after pasting",
+            "  -s selects the region after pasting\n",
         min = 0,
         max = 0
     )
@@ -148,18 +156,24 @@ public class ClipboardCommands {
     @Logging(PLACEMENT)
     public void paste(Player player, LocalSession session, EditSession editSession,
                       @Switch('a') boolean ignoreAirBlocks, @Switch('o') boolean atOrigin,
-                      @Switch('s') boolean selectPasted) throws WorldEditException {
+                      @Switch('s') boolean selectPasted, @Switch('e') boolean skipEntities,
+                      @Switch('b') boolean pasteBiomes, @Switch('m') Mask sourceMask) throws WorldEditException {
 
         ClipboardHolder holder = session.getClipboard();
         Clipboard clipboard = holder.getClipboard();
         Region region = clipboard.getRegion();
 
         BlockVector3 to = atOrigin ? clipboard.getOrigin() : session.getPlacementPosition(player);
-        Operation operation = holder
+        PasteBuilder builder = holder
                 .createPaste(editSession)
                 .to(to)
                 .ignoreAirBlocks(ignoreAirBlocks)
-                .build();
+                .copyBiomes(pasteBiomes)
+                .copyEntities(!skipEntities);
+        if (sourceMask != null) {
+            builder.maskSource(sourceMask);
+        }
+        Operation operation = builder.build();
         Operations.completeLegacy(operation);
 
         if (selectPasted) {

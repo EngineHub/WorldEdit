@@ -162,6 +162,11 @@ public class BlockArrayClipboard implements Clipboard {
     }
 
     @Override
+    public boolean hasBiomes() {
+        return biomes != null;
+    }
+
+    @Override
     public BiomeType getBiome(BlockVector2 position) {
         if (biomes != null
                 && position.containedWithin(getMinimumPoint().toBlockVector2(), getMaximumPoint().toBlockVector2())) {
