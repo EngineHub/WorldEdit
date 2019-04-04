@@ -19,10 +19,8 @@
 
 package com.sk89q.worldedit.extension.platform;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.sk89q.worldedit.util.command.composition.LegacyCommandAdapter.adapt;
-
 import com.google.common.base.Joiner;
+import com.google.common.collect.ImmutableList;
 import com.sk89q.minecraft.util.commands.CommandException;
 import com.sk89q.minecraft.util.commands.CommandLocals;
 import com.sk89q.minecraft.util.commands.CommandPermissionsException;
@@ -41,6 +39,7 @@ import com.sk89q.worldedit.command.HistoryCommands;
 import com.sk89q.worldedit.command.NavigationCommands;
 import com.sk89q.worldedit.command.RegionCommands;
 import com.sk89q.worldedit.command.SchematicCommands;
+import com.sk89q.worldedit.command.SchematicCommandsRegistration;
 import com.sk89q.worldedit.command.ScriptingCommands;
 import com.sk89q.worldedit.command.SelectionCommands;
 import com.sk89q.worldedit.command.SnapshotCommands;
@@ -57,6 +56,7 @@ import com.sk89q.worldedit.command.composition.DeformCommand;
 import com.sk89q.worldedit.command.composition.PaintCommand;
 import com.sk89q.worldedit.command.composition.SelectionCommand;
 import com.sk89q.worldedit.command.composition.ShapedBrushCommand;
+import com.sk89q.worldedit.command.util.CommandPermissionsConditionGenerator;
 import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.event.platform.CommandEvent;
 import com.sk89q.worldedit.event.platform.CommandSuggestionEvent;
@@ -69,8 +69,10 @@ import com.sk89q.worldedit.internal.command.UserCommandCompleter;
 import com.sk89q.worldedit.internal.command.WorldEditBinding;
 import com.sk89q.worldedit.internal.command.WorldEditExceptionConverter;
 import com.sk89q.worldedit.session.request.Request;
+import com.sk89q.worldedit.util.command.CommandCallable;
 import com.sk89q.worldedit.util.command.Dispatcher;
 import com.sk89q.worldedit.util.command.InvalidUsageException;
+import com.sk89q.worldedit.util.command.SimpleDescription;
 import com.sk89q.worldedit.util.command.composition.ProvidedValue;
 import com.sk89q.worldedit.util.command.fluent.CommandGraph;
 import com.sk89q.worldedit.util.command.parametric.ExceptionConverter;
@@ -82,6 +84,7 @@ import com.sk89q.worldedit.util.formatting.component.CommandUsageBox;
 import com.sk89q.worldedit.util.logging.DynamicStreamHandler;
 import com.sk89q.worldedit.util.logging.LogFormat;
 import com.sk89q.worldedit.world.World;
+import org.enginehub.piston.DefaultCommandManagerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -90,6 +93,9 @@ import java.io.IOException;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
+
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.sk89q.worldedit.util.command.composition.LegacyCommandAdapter.adapt;
 
 /**
  * Handles the registration and invocation of commands.
@@ -158,10 +164,7 @@ public final class CommandManager {
                             .describeAs("WorldEdit commands")
                             .registerMethods(new WorldEditCommands(worldEdit))
                             .parent()
-                        .group("schematic", "schem", "/schematic", "/schem")
-                            .describeAs("Schematic commands for saving/loading areas")
-                            .registerMethods(new SchematicCommands(worldEdit))
-                            .parent()
+                        .register(schematicCommands(),"schematic", "schem", "/schematic", "/schem")
                         .group("snapshot", "snap")
                             .describeAs("Schematic commands for saving/loading areas")
                             .registerMethods(new SnapshotCommands(worldEdit))
@@ -187,6 +190,21 @@ public final class CommandManager {
                             .parent()
                         .graph()
                 .getDispatcher();
+    }
+
+    private CommandCallable schematicCommands() {
+        SimpleDescription desc = new SimpleDescription();
+        desc.setDescription("Schematic commands for saving/loading areas");
+        desc.setPermissions(ImmutableList.of());
+        org.enginehub.piston.CommandManager manager = DefaultCommandManagerService.getInstance()
+            .newCommandManager();
+        new SchematicCommandsRegistration(
+            manager,
+            new SchematicCommands(worldEdit),
+            new CommandPermissionsConditionGenerator()
+        );
+
+        return new CommandManagerCallable(worldEdit, manager, desc);
     }
 
     public ExceptionConverter getExceptionConverter() {

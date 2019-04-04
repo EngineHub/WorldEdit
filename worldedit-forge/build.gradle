@@ -16,6 +16,12 @@ apply plugin: 'net.minecraftforge.gradle'
 def minecraftVersion = "1.13.2"
 def forgeVersion = "25.0.76"
 
+configurations.all { Configuration it ->
+    it.resolutionStrategy { ResolutionStrategy rs ->
+        rs.force("com.google.guava:guava:21.0")
+    }
+}
+
 dependencies {
     compile project(':worldedit-core')
     compile 'org.apache.logging.log4j:log4j-slf4j-impl:2.11.2'

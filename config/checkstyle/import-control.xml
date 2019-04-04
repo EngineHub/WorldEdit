@@ -16,6 +16,8 @@
   <allow pkg="net.royawesome.jlibnoise"/>
   <allow pkg="org.json.simple" />
   <allow pkg="org.slf4j"/>
+  <allow pkg="org.enginehub"/>
+  <allow class="com.google.inject.Key"/>
 
   <subpackage name="util.yaml">
     <allow pkg="org.yaml.snakeyaml"/>

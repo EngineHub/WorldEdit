@@ -21,13 +21,11 @@ package com.sk89q.worldedit.command;
 
 import com.google.common.collect.Multimap;
 import com.google.common.io.Files;
-import com.sk89q.minecraft.util.commands.CommandContext;
-import com.sk89q.minecraft.util.commands.CommandException;
-import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.command.util.CommandPermissions;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extent.clipboard.BlockArrayClipboard;
@@ -49,6 +47,7 @@ import org.enginehub.piston.annotation.param.ArgFlag;
 import org.enginehub.piston.annotation.param.Switch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.enginehub.piston.exception.StopExecutionException;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -138,7 +137,7 @@ public class SchematicCommands {
                      @Arg(desc = "File name.") String filename,
                      @Arg(desc = "Format name.", def = "sponge") String formatName,
                      @Switch(name = 'f', desc = "Overwrite an existing file.") boolean allowOverwrite
-        ) throws CommandException, WorldEditException {
+        ) throws WorldEditException {
         LocalConfiguration config = worldEdit.getConfiguration();
 
         File dir = worldEdit.getWorkingDirectoryFile(config.saveDir);
@@ -154,7 +153,7 @@ public class SchematicCommands {
         boolean overwrite = f.exists();
         if (overwrite) {
             if (!player.hasPermission("worldedit.schematic.delete")) {
-                throw new CommandException("That schematic already exists!");
+                throw new StopExecutionException("That schematic already exists!");
             }
             if (!allowOverwrite) {
                 player.printError("That schematic already exists. Use the -f flag to overwrite it.");
@@ -181,7 +180,7 @@ public class SchematicCommands {
         File parent = f.getParentFile();
         if (parent != null && !parent.exists()) {
             if (!parent.mkdirs()) {
-                throw new CommandException("Could not create folder for schematics!");
+                throw new StopExecutionException("Could not create folder for schematics!");
             }
         }
 
@@ -263,8 +262,13 @@ public class SchematicCommands {
         descFooter = "Note: Format is not fully verified until loading."
     )
     @CommandPermissions("worldedit.schematic.list")
-    public void list(Actor actor, CommandContext args,
-                     @ArgFlag(name = 'p', desc = "Page to view.", def = "1") int page) {
+    public void list(Actor actor,
+                     @ArgFlag(name = 'p', desc = "Page to view.", def = "1") int page,
+                     @Switch(name = 'd', desc = "Sort by date, oldest first") boolean oldFirst,
+                     @Switch(name = 'n', desc = "Sort by date, newest first") boolean newFirst) {
+        if (oldFirst && newFirst) {
+            throw new StopExecutionException("Cannot sort by oldest and newest.");
+        }
         File dir = worldEdit.getWorkingDirectoryFile(worldEdit.getConfiguration().saveDir);
         List<File> fileList = allFiles(dir);
 
@@ -286,7 +290,7 @@ public class SchematicCommands {
             return;
         }
 
-        final int sortType = args.hasFlag('d') ? -1 : args.hasFlag('n') ? 1 : 0;
+        final int sortType = oldFirst ? -1 : newFirst ? 1 : 0;
         // cleanup file list
         Arrays.sort(files, (f1, f2) -> {
             // http://stackoverflow.com/questions/203030/best-way-to-list-files-in-java-sorted-by-date-modified
