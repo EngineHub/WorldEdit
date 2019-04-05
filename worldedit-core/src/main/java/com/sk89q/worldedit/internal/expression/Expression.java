@@ -32,6 +32,7 @@ import com.sk89q.worldedit.internal.expression.runtime.Functions;
 import com.sk89q.worldedit.internal.expression.runtime.RValue;
 import com.sk89q.worldedit.internal.expression.runtime.ReturnException;
 import com.sk89q.worldedit.internal.expression.runtime.Variable;
+import com.sk89q.worldedit.session.request.Request;
 
 import java.util.HashMap;
 import java.util.List;
@@ -142,7 +143,18 @@ public class Expression {
     }
 
     private double evaluateRootTimed(int timeout) throws EvaluationException {
-        Future<Double> result = evalThread.submit(this::evaluateRoot);
+        Request request = Request.request();
+        Future<Double> result = evalThread.submit(() -> {
+            Request local = Request.request();
+            local.setSession(request.getSession());
+            local.setWorld(request.getWorld());
+            local.setEditSession(request.getEditSession());
+            try {
+                return Expression.this.evaluateRoot();
+            } finally {
+                Request.reset();
+            }
+        });
         try {
             return result.get(timeout, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
