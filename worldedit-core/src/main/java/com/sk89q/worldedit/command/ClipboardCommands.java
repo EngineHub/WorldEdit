@@ -23,6 +23,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static com.sk89q.minecraft.util.commands.Logging.LogMode.PLACEMENT;
 import static com.sk89q.minecraft.util.commands.Logging.LogMode.REGION;
 
+import com.google.common.collect.Lists;
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.minecraft.util.commands.Logging;
@@ -52,6 +53,8 @@ import com.sk89q.worldedit.session.PasteBuilder;
 import com.sk89q.worldedit.util.command.binding.Switch;
 import com.sk89q.worldedit.util.command.parametric.Optional;
 
+import java.util.List;
+
 /**
  * Clipboard commands.
  */
@@ -76,8 +79,8 @@ public class ClipboardCommands {
         help = "Copy the selection to the clipboard\n" +
                 "Flags:\n" +
                 "  -e will also copy entities\n" +
-                "  -m sets a source mask so that excluded blocks become air\n" +
-                "  -b will also copy biomes",
+                "  -b will also copy biomes\n" +
+                "  -m sets a source mask so that excluded blocks become air",
         min = 0,
         max = 0
     )
@@ -97,17 +100,21 @@ public class ClipboardCommands {
         Operations.completeLegacy(copy);
         session.setClipboard(new ClipboardHolder(clipboard));
 
-        player.print(region.getArea() + " block(s) were copied.");
+        List<String> messages = Lists.newArrayList();
+        copy.addStatusMessages(messages);
+        messages.forEach(player::print);
     }
 
     @Command(
         aliases = { "/cut" },
         flags = "em",
-        usage = "[leave-id]",
+        usage = "[leave-pattern]",
         desc = "Cut the selection to the clipboard",
         help = "Copy the selection to the clipboard\n" +
+                "The space will be filled with the leave pattern if specified, otherwise air." +
                 "Flags:\n" +
                 "  -e will also cut entities\n" +
+                "  -b will also copy biomes (source biomes unaffected)\n" +
                 "  -m sets a source mask so that excluded blocks become air\n" +
                 "WARNING: Cutting and pasting entities cannot yet be undone!",
         max = 1
@@ -116,7 +123,7 @@ public class ClipboardCommands {
     @Logging(REGION)
     public void cut(Player player, LocalSession session, EditSession editSession,
                     @Selection Region region, @Optional("air") Pattern leavePattern, @Switch('e') boolean copyEntities,
-                    @Switch('m') Mask mask) throws WorldEditException {
+                    @Switch('m') Mask mask, @Switch('b') boolean copyBiomes) throws WorldEditException {
 
         BlockArrayClipboard clipboard = new BlockArrayClipboard(region);
         clipboard.setOrigin(session.getPlacementPosition(player));
@@ -124,20 +131,20 @@ public class ClipboardCommands {
         copy.setSourceFunction(new BlockReplace(editSession, leavePattern));
         copy.setCopyingEntities(copyEntities);
         copy.setRemovingEntities(true);
-        // doesn't really make sense to "cut" biomes? so copy anyway and let them choose when pasting
-        copy.setCopyingBiomes(true);
+        copy.setCopyingBiomes(copyBiomes);
         if (mask != null) {
             copy.setSourceMask(mask);
         }
         Operations.completeLegacy(copy);
         session.setClipboard(new ClipboardHolder(clipboard));
 
-        player.print(region.getArea() + " block(s) were cut.");
+        List<String> messages = Lists.newArrayList();
+        copy.addStatusMessages(messages);
+        messages.forEach(player::print);
     }
 
     @Command(
         aliases = { "/paste" },
-        usage = "",
         flags = "saobem:",
         desc = "Paste the clipboard's contents",
         help =
@@ -145,18 +152,17 @@ public class ClipboardCommands {
             "Flags:\n" +
             "  -a skips air blocks\n" +
             "  -b pastes biomes if available\n" +
-            "  -e skips entities (default is don't skip!)\n" +
+            "  -e pastes entities if available\n" +
             "  -m [<mask>] skips matching blocks in the clipboard\n" +
             "  -o pastes at the original position\n" +
             "  -s selects the region after pasting\n",
-        min = 0,
         max = 0
     )
     @CommandPermissions("worldedit.clipboard.paste")
     @Logging(PLACEMENT)
     public void paste(Player player, LocalSession session, EditSession editSession,
                       @Switch('a') boolean ignoreAirBlocks, @Switch('o') boolean atOrigin,
-                      @Switch('s') boolean selectPasted, @Switch('e') boolean skipEntities,
+                      @Switch('s') boolean selectPasted, @Switch('e') boolean pasteEntities,
                       @Switch('b') boolean pasteBiomes, @Switch('m') Mask sourceMask) throws WorldEditException {
 
         ClipboardHolder holder = session.getClipboard();
@@ -169,7 +175,7 @@ public class ClipboardCommands {
                 .to(to)
                 .ignoreAirBlocks(ignoreAirBlocks)
                 .copyBiomes(pasteBiomes)
-                .copyEntities(!skipEntities);
+                .copyEntities(pasteEntities);
         if (sourceMask != null) {
             builder.maskSource(sourceMask);
         }
@@ -187,6 +193,9 @@ public class ClipboardCommands {
         }
 
         player.print("The clipboard has been pasted at " + to);
+        List<String> messages = Lists.newArrayList();
+        operation.addStatusMessages(messages);
+        messages.forEach(player::print);
     }
 
     @Command(

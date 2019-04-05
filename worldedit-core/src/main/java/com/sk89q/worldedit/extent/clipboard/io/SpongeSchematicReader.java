@@ -39,6 +39,7 @@ import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.extent.clipboard.BlockArrayClipboard;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.extent.clipboard.io.legacycompat.NBTCompatibilityHandler;
+import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
@@ -57,6 +58,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -141,7 +143,6 @@ public class SpongeSchematicReader extends NBTSchematicReader {
             region = new CuboidRegion(origin, origin.add(width, height, length).subtract(BlockVector3.ONE));
         }
 
-        // Note: these aren't actually required by the spec, but we require them I guess?
         int paletteMax = requireTag(schematic, "PaletteMax", IntTag.class).getValue();
         Map<String, Tag> paletteObject = requireTag(schematic, "Palette", CompoundTag.class).getValue();
         if (paletteObject.size() != paletteMax) {
@@ -161,7 +162,8 @@ public class SpongeSchematicReader extends NBTSchematicReader {
             try {
                 state = WorldEdit.getInstance().getBlockFactory().parseFromInput(palettePart, parserContext).toImmutableState();
             } catch (InputParseException e) {
-                throw new IOException("Invalid BlockState in schematic: " + palettePart + ". Are you missing a mod or using a schematic made in a newer version of Minecraft?");
+                throw new IOException("Invalid BlockState in palette: " + palettePart +
+                        ". Are you missing a mod or using a schematic made in a newer version of Minecraft?");
             }
             palette.put(id, state);
         }
@@ -251,8 +253,6 @@ public class SpongeSchematicReader extends NBTSchematicReader {
 
     private void readBiomes(BlockArrayClipboard clipboard, Map<String, Tag> schematic) throws IOException {
         ByteArrayTag dataTag = requireTag(schematic, "BiomeData", ByteArrayTag.class);
-        // TODO for now, we just assume if biomedata is present, palette will be as well.
-        // atm the spec doesn't actually require palettes
         IntTag maxTag = requireTag(schematic, "BiomePaletteMax", IntTag.class);
         CompoundTag paletteTag = requireTag(schematic, "BiomePalette", CompoundTag.class);
 
@@ -262,10 +262,11 @@ public class SpongeSchematicReader extends NBTSchematicReader {
         }
         Map<String, Tag> paletteEntries = paletteTag.getValue();
 
-        for (Map.Entry<String, Tag> palettePart : paletteEntries.entrySet()) {
+        for (Entry<String, Tag> palettePart : paletteEntries.entrySet()) {
             BiomeType biome = BiomeTypes.get(palettePart.getKey());
             if (biome == null) {
-                log.warn("Unknown biome type '" + palettePart.getKey() + "' in palette. Are you missing a mod or using a schematic made in a newer version of Minecraft?");
+                log.warn("Unknown biome type :" + palettePart.getKey() +
+                        " in palette. Are you missing a mod or using a schematic made in a newer version of Minecraft?");
             }
             Tag idTag = palettePart.getValue();
             if (!(idTag instanceof IntTag)) {
@@ -281,6 +282,7 @@ public class SpongeSchematicReader extends NBTSchematicReader {
         int biomeJ = 0;
         int bVal;
         int varIntLength;
+        BlockVector2 min = clipboard.getMinimumPoint().toBlockVector2();
         while (biomeJ < biomes.length) {
             bVal = 0;
             varIntLength = 0;
@@ -299,7 +301,7 @@ public class SpongeSchematicReader extends NBTSchematicReader {
             int z = biomeIndex / width;
             int x = biomeIndex % width;
             BiomeType type = palette.get(bVal);
-            clipboard.setBiome(clipboard.getMinimumPoint().toBlockVector2().add(x, z), type);
+            clipboard.setBiome(min.add(x, z), type);
             biomeIndex++;
         }
     }
