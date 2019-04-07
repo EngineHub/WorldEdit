@@ -48,7 +48,7 @@ public class Location {
      * @param extent the extent
      */
     public Location(Extent extent) {
-        this(extent, Vector3.ZERO, Vector3.ZERO);
+        this(extent, Vector3.ZERO, 0f, 90f);
     }
 
     /**
@@ -61,7 +61,7 @@ public class Location {
      * @param z the Z coordinate
      */
     public Location(Extent extent, double x, double y, double z) {
-        this(extent, Vector3.at(x, y, z), Vector3.ZERO);
+        this(extent, Vector3.at(x, y, z), 0f, 90f);
     }
 
     /**
@@ -72,7 +72,7 @@ public class Location {
      * @param position the position vector
      */
     public Location(Extent extent, Vector3 position) {
-        this(extent, position, Vector3.ZERO);
+        this(extent, position, 0f, 90f);
     }
 
     /**
