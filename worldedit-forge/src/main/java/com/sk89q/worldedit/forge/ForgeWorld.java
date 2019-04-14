@@ -154,6 +154,11 @@ public class ForgeWorld extends AbstractWorld {
     }
 
     @Override
+    public int getMaxY() {
+        return getWorld().getHeight();
+    }
+
+    @Override
     public boolean setBlock(Vector position, BaseBlock block, boolean notifyAndLight) throws WorldEditException {
         checkNotNull(position);
         checkNotNull(block);
