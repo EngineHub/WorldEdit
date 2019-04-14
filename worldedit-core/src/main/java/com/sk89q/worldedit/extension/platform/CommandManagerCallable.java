@@ -33,6 +33,7 @@ import org.enginehub.piston.CommandManager;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Hack to get {@link CommandManager} working under {@link CommandCallable}.
@@ -51,20 +52,25 @@ public class CommandManagerCallable implements CommandCallable {
 
     @Override
     public Object call(String arguments, CommandLocals locals, String[] parentCommands) throws CommandException {
-        manager.injectValue(Key.get(Actor.class), () -> locals.get(Actor.class));
-        manager.injectValue(Key.get(Player.class), () -> getPlayer(locals));
-        manager.injectValue(Key.get(LocalSession.class), () -> {
-            Player sender = getPlayer(locals);
-            return worldEdit.getSessionManager().get(sender);
+        manager.injectValue(Key.get(Actor.class), access -> Optional.of(locals.get(Actor.class)));
+        manager.injectValue(Key.get(Player.class), access -> {
+            Actor actor = locals.get(Actor.class);
+            return actor instanceof Player ? Optional.of(((Player) actor)) : Optional.empty();
         });
-        manager.injectValue(Key.get(EditSession.class), () -> {
-            Player sender = getPlayer(locals);
-            LocalSession session = worldEdit.getSessionManager().get(sender);
-            EditSession editSession = session.createEditSession(sender);
-            editSession.enableStandardMode();
-            session.tellVersion(sender);
-            return editSession;
-        });
+        manager.injectValue(Key.get(LocalSession.class), access ->
+            access.injectedValue(Key.get(Player.class))
+                .map(worldEdit.getSessionManager()::get)
+        );
+        manager.injectValue(Key.get(EditSession.class), access ->
+            access.injectedValue(Key.get(Player.class))
+                .map(sender -> {
+                    LocalSession session = worldEdit.getSessionManager().get(sender);
+                    EditSession editSession = session.createEditSession(sender);
+                    editSession.enableStandardMode();
+                    session.tellVersion(sender);
+                    return editSession;
+                })
+        );
         return manager.execute(Splitter.on(' ').splitToList(arguments));
     }
 

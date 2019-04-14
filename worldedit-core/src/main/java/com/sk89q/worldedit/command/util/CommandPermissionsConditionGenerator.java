@@ -41,9 +41,8 @@ public class CommandPermissionsConditionGenerator implements CommandConditionGen
         CommandPermissions annotation = commandMethod.getAnnotation(CommandPermissions.class);
         checkNotNull(annotation, "Annotation is missing from commandMethod");
         Set<String> permissions = ImmutableSet.copyOf(annotation.value());
-        return p -> {
-            Actor actor = p.injectedValue(ACTOR_KEY);
-            return permissions.stream().anyMatch(actor::hasPermission);
-        };
+        return p -> p.injectedValue(ACTOR_KEY)
+            .map(actor -> permissions.stream().anyMatch(actor::hasPermission))
+            .orElse(false);
     }
 }

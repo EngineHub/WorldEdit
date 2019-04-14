@@ -145,7 +145,7 @@ public final class CommandManager {
         dispatcher = new CommandGraph()
                 .builder(builder)
                     .commands()
-                        .registerMethods(new BiomeCommands(worldEdit))
+                        .registerMethods(new BiomeCommands())
                         .registerMethods(new ChunkCommands(worldEdit))
                         .registerMethods(new ClipboardCommands(worldEdit))
                         .registerMethods(new GeneralCommands(worldEdit))
@@ -198,11 +198,12 @@ public final class CommandManager {
         desc.setPermissions(ImmutableList.of());
         org.enginehub.piston.CommandManager manager = DefaultCommandManagerService.getInstance()
             .newCommandManager();
-        new SchematicCommandsRegistration(
-            manager,
-            new SchematicCommands(worldEdit),
-            new CommandPermissionsConditionGenerator()
-        );
+        SchematicCommandsRegistration.builder()
+            .commandManager(manager)
+            .containerInstance(new SchematicCommands(worldEdit))
+            .commandPermissionsConditionGenerator(
+                new CommandPermissionsConditionGenerator()
+            ).build();
 
         return new CommandManagerCallable(worldEdit, manager, desc);
     }
