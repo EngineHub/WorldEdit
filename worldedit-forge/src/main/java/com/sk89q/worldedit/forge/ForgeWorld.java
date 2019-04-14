@@ -427,6 +427,11 @@ public class ForgeWorld extends AbstractWorld {
     }
 
     @Override
+    public int getMaxY() {
+        return getWorld().getHeight();
+    }
+
+    @Override
     public BlockVector3 getSpawnPosition() {
         return ForgeAdapter.adapt(getWorld().getSpawnPoint());
     }
