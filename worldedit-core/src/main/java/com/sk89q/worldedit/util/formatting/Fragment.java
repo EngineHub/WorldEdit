@@ -19,14 +19,43 @@
 
 package com.sk89q.worldedit.util.formatting;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * A fragment of text.
  */
 public class Fragment {
 
     private final StringBuilder builder = new StringBuilder();
-    
+    private final List<Fragment> children = new ArrayList<>();
+    private Fragment lastText;
+
     Fragment() {
+    }
+
+    public List<Fragment> getChildren() {
+        return children;
+    }
+
+    protected Fragment lastText() {
+        Fragment text;
+        if (!children.isEmpty()) {
+            text = children.get(children.size() - 1);
+            if (text == lastText) {
+                return text;
+            }
+        }
+
+        text = new Fragment();
+        this.lastText = text;
+        children.add(text);
+        return text;
+    }
+
+    public Fragment append(Fragment fragment) {
+        children.add(fragment);
+        return this;
     }
 
     public Fragment append(String str) {

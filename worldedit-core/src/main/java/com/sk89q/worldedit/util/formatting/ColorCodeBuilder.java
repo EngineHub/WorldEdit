@@ -90,6 +90,9 @@ public class ColorCodeBuilder {
         if (style.isStrikethrough()) {
             builder.append(Style.STRIKETHROUGH);
         }
+        if (style.isObfuscated()) {
+            builder.append(Style.OBFUSCATED);
+        }
         return builder.toString();
     }
     

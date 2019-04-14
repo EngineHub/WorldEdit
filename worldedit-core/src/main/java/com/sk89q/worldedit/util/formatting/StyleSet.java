@@ -19,6 +19,8 @@
 
 package com.sk89q.worldedit.util.formatting;
 
+import java.util.Objects;
+
 /**
  * Represents set of styles, such as color, bold, etc.
  */
@@ -28,6 +30,8 @@ public class StyleSet {
     private Boolean italic;
     private Boolean underline;
     private Boolean strikethrough;
+    private Boolean obfuscated;
+    private String insertion;
     private Style color;
     
     /**
@@ -55,6 +59,8 @@ public class StyleSet {
                 underline = true;
             } else if (style == Style.STRIKETHROUGH) {
                 strikethrough = true;
+            } else if (style == Style.OBFUSCATED) {
+                obfuscated = true;
             }
         }
     }
@@ -168,6 +174,60 @@ public class StyleSet {
     }
 
     /**
+     * Get whether this style set is obfuscated.
+     *
+     * @return true, false, or null if unset
+     */
+    public Boolean getObfuscated() {
+        return obfuscated;
+    }
+
+    /**
+     * Get whether this style set is obfuscated.
+     *
+     * @return true if there is obfuscation applied
+     */
+    public boolean isObfuscated() {
+        return getObfuscated() != null && getObfuscated();
+    }
+
+    /**
+     * Set whether the text is obfuscated.
+     *
+     * @param obfuscated false, or null to unset
+     */
+    public void setObfuscated(Boolean obfuscated) {
+        this.obfuscated = obfuscated;
+    }
+
+    /**
+     * Get this style set's insertion, if present.
+     *
+     * @return the insertion, or null if unset
+     */
+    public String getInsertion() {
+        return insertion;
+    }
+
+    /**
+     * Get whether this style set has an insertion.
+     *
+     * @return true if there is an insertion
+     */
+    public boolean hasInsertion() {
+        return insertion != null;
+    }
+
+    /**
+     * Set the style set's insertion.
+     *
+     * @param insertion the insertion, or null to unset
+     */
+    public void setInsertion(String insertion) {
+        this.insertion = insertion;
+    }
+
+    /**
      * Get the color of the text.
      * 
      * @return true, false, or null if unset
@@ -192,7 +252,8 @@ public class StyleSet {
      */
     public boolean hasFormatting() {
         return getBold() != null || getItalic() != null
-                || getUnderline() != null || getStrikethrough() != null;
+                || getUnderline() != null || getStrikethrough() != null
+                || getObfuscated() != null || getInsertion() != null;
     }
 
     /**
@@ -205,7 +266,9 @@ public class StyleSet {
     public boolean hasEqualFormatting(StyleSet other) {
         return getBold() == other.getBold() && getItalic() == other.getItalic()
                 && getUnderline() == other.getUnderline() && 
-                getStrikethrough() == other.getStrikethrough();
+                getStrikethrough() == other.getStrikethrough() &&
+                getObfuscated() == other.getObfuscated() &&
+                Objects.equals(getInsertion(), other.getInsertion());
     }
 
     /**
@@ -229,6 +292,12 @@ public class StyleSet {
         if (style.getStrikethrough() != null) {
             newStyle.setStrikethrough(style.getStrikethrough());
         }
+        if (style.getObfuscated() != null) {
+            newStyle.setObfuscated(style.getObfuscated());
+        }
+        if (style.getInsertion() != null) {
+            newStyle.setInsertion(style.getInsertion());
+        }
         if (style.getColor() != null) {
             newStyle.setColor(style.getColor());
         }
@@ -242,6 +311,8 @@ public class StyleSet {
         style.setItalic(getItalic());
         style.setUnderline(getUnderline());
         style.setStrikethrough(getStrikethrough());
+        style.setObfuscated(getObfuscated());
+        style.setInsertion(getInsertion());
         style.setColor(getColor());
         return style;
     }

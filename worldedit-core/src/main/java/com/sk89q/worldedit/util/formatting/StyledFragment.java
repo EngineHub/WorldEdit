@@ -19,18 +19,13 @@
 
 package com.sk89q.worldedit.util.formatting;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * A fragment of text that can be styled.
  */
 public class StyledFragment extends Fragment {
     
-    private final List<Fragment> children = new ArrayList<>();
     private StyleSet style;
-    private Fragment lastText;
-    
+
     public StyledFragment() {
         style = new StyleSet();
     }
@@ -51,34 +46,10 @@ public class StyledFragment extends Fragment {
         this.style = style;
     }
 
-    public List<Fragment> getChildren() {
-        return children;
-    }
-
-    protected Fragment lastText() {
-        Fragment text;
-        if (!children.isEmpty()) {
-            text = children.get(children.size() - 1);
-            if (text == lastText) {
-                return text;
-            }
-        }
-        
-        text = new Fragment();
-        this.lastText = text;
-        children.add(text);
-        return text;
-    }
-
     public StyledFragment createFragment(Style... styles) {
         StyledFragment fragment = new StyledFragment(styles);
         append(fragment);
         return fragment;
-    }
-
-    public StyledFragment append(StyledFragment fragment) {
-        children.add(fragment);
-        return this;
     }
 
     @Override

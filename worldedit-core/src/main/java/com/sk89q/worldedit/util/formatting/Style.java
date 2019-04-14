@@ -29,8 +29,6 @@ import java.util.regex.Pattern;
 
 /**
  * All supported color values for chat.
- * 
- * <p>From Bukkit.</p>
  */
 public enum Style {
     /**
@@ -100,7 +98,7 @@ public enum Style {
     /**
      * Represents magical characters that change around randomly
      */
-    RANDOMIZE('k', 0x10, true),
+    OBFUSCATED('k', 0x10, true),
     /**
      * Makes the text bold.
      */

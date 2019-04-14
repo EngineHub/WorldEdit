@@ -26,6 +26,7 @@ import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.internal.cui.CUIEvent;
 import com.sk89q.worldedit.session.SessionKey;
 import com.sk89q.worldedit.util.auth.AuthorizationException;
+import com.sk89q.worldedit.util.formatting.Fragment;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -89,6 +90,12 @@ public class BukkitCommandSender implements Actor {
         for (String part : msg.split("\n")) {
             sender.sendMessage("\u00A7c" + part);
         }
+    }
+
+    @Override
+    public void print(Fragment fragment) {
+        // TODO Bukkit is bad and the API is somewhat lacking
+        printRaw(fragment.toString());
     }
 
     @Override

@@ -31,6 +31,7 @@ import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.session.SessionKey;
 import com.sk89q.worldedit.util.HandSide;
 import com.sk89q.worldedit.util.Location;
+import com.sk89q.worldedit.util.formatting.Fragment;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.gamemode.GameMode;
@@ -130,6 +131,11 @@ class PlayerProxy extends AbstractPlayerActor {
     @Override
     public void printError(String msg) {
         basePlayer.printError(msg);
+    }
+
+    @Override
+    public void print(Fragment fragment) {
+        basePlayer.print(fragment);
     }
 
     @Override

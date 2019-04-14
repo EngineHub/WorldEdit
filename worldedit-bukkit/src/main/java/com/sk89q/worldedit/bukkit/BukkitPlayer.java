@@ -31,6 +31,7 @@ import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.session.SessionKey;
 import com.sk89q.worldedit.util.HandSide;
+import com.sk89q.worldedit.util.formatting.Fragment;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
@@ -123,6 +124,12 @@ public class BukkitPlayer extends AbstractPlayerActor {
         for (String part : msg.split("\n")) {
             player.sendMessage("\u00A7c" + part);
         }
+    }
+
+    @Override
+    public void print(Fragment fragment) {
+        // TODO Bukkit is bad and the API is somewhat lacking
+        printRaw(fragment.toString());
     }
 
     @Override
