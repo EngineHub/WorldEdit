@@ -30,6 +30,8 @@ import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.command.BiomeCommands;
 import com.sk89q.worldedit.command.BiomeCommandsRegistration;
+import com.sk89q.worldedit.command.BrushCommands;
+import com.sk89q.worldedit.command.BrushCommandsRegistration;
 import com.sk89q.worldedit.command.SchematicCommands;
 import com.sk89q.worldedit.command.SchematicCommandsRegistration;
 import com.sk89q.worldedit.command.argument.Arguments;
@@ -145,7 +147,27 @@ public final class PlatformCommandMananger {
             cmd.addPart(SubCommandPart.builder("action", "Sub-command to run.")
                 .withCommands(manager.getAllCommands().collect(Collectors.toList()))
                 .required()
-            .build());
+                .build());
+        });
+
+        commandManager.register("brush", cmd -> {
+            cmd.aliases(ImmutableList.of("br"));
+            cmd.description("Brushing commands");
+            cmd.action(Command.Action.NULL_ACTION);
+
+            CommandManager manager = DefaultCommandManagerService.getInstance()
+                .newCommandManager();
+            BrushCommandsRegistration.builder()
+                .commandManager(manager)
+                .containerInstance(new BrushCommands(worldEdit))
+                .commandPermissionsConditionGenerator(
+                    permsGenerator
+                ).build();
+
+            cmd.addPart(SubCommandPart.builder("action", "Sub-command to run.")
+                .withCommands(manager.getAllCommands().collect(Collectors.toList()))
+                .required()
+                .build());
         });
 
         BiomeCommandsRegistration.builder()
@@ -183,7 +205,6 @@ public final class PlatformCommandMananger {
                             .parent()
                         .group("brush", "br")
                             .describeAs("Brushing commands")
-                            .registerMethods(new BrushCommands(worldEdit))
                             .register(adapt(new ShapedBrushCommand(new DeformCommand(), "worldedit.brush.deform")), "deform")
                             .register(adapt(new ShapedBrushCommand(new ApplyCommand(new ReplaceParser(), "Set all blocks within region"), "worldedit.brush.set")), "set")
                             .register(adapt(new ShapedBrushCommand(new PaintCommand(), "worldedit.brush.paint")), "paint")

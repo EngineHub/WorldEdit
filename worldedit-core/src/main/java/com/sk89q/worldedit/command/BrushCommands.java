@@ -19,11 +19,6 @@
 
 package com.sk89q.worldedit.command;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
-import com.sk89q.minecraft.util.commands.Command;
-import com.sk89q.minecraft.util.commands.CommandContext;
-import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
@@ -37,6 +32,7 @@ import com.sk89q.worldedit.command.tool.brush.HollowCylinderBrush;
 import com.sk89q.worldedit.command.tool.brush.HollowSphereBrush;
 import com.sk89q.worldedit.command.tool.brush.SmoothBrush;
 import com.sk89q.worldedit.command.tool.brush.SphereBrush;
+import com.sk89q.worldedit.command.util.CommandPermissions;
 import com.sk89q.worldedit.command.util.CreatureButcher;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
@@ -48,13 +44,18 @@ import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.session.request.RequestExtent;
 import com.sk89q.worldedit.util.HandSide;
-import com.sk89q.worldedit.util.command.binding.Switch;
-import com.sk89q.worldedit.util.command.parametric.Optional;
 import com.sk89q.worldedit.world.block.BlockTypes;
+import org.enginehub.piston.annotation.Command;
+import org.enginehub.piston.annotation.CommandContainer;
+import org.enginehub.piston.annotation.param.Arg;
+import org.enginehub.piston.annotation.param.Switch;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Commands to set brush shape.
  */
+@CommandContainer
 public class BrushCommands {
 
     private final WorldEdit worldEdit;
@@ -70,19 +71,16 @@ public class BrushCommands {
     }
 
     @Command(
-        aliases = { "sphere", "s" },
-        usage = "<pattern> [radius]",
-        flags = "h",
-        desc = "Choose the sphere brush",
-        help =
-            "Chooses the sphere brush.\n" +
-            "The -h flag creates hollow spheres instead.",
-        min = 1,
-        max = 2
+        name = "sphere",
+        aliases = { "s" },
+        desc = "Choose the sphere brush"
     )
     @CommandPermissions("worldedit.brush.sphere")
     public void sphereBrush(Player player, LocalSession session, Pattern fill,
-                            @Optional("2") double radius, @Switch('h') boolean hollow) throws WorldEditException {
+                            @Arg(desc = "The radius of the sphere", def = "2")
+                                double radius,
+                            @Switch(name = 'h', desc = "Create hollow spheres instead")
+                                boolean hollow) throws WorldEditException {
         worldEdit.checkMaxBrushRadius(radius);
 
         BrushTool tool = session.getBrushTool(player.getItemInHand(HandSide.MAIN_HAND).getType());
@@ -99,19 +97,18 @@ public class BrushCommands {
     }
 
     @Command(
-        aliases = { "cylinder", "cyl", "c" },
-        usage = "<block> [radius] [height]",
-        flags = "h",
-        desc = "Choose the cylinder brush",
-        help =
-            "Chooses the cylinder brush.\n" +
-            "The -h flag creates hollow cylinders instead.",
-        min = 1,
-        max = 3
+        name = "cylinder",
+        aliases = { "cyl", "c" },
+        desc = "Choose the cylinder brush"
     )
     @CommandPermissions("worldedit.brush.cylinder")
     public void cylinderBrush(Player player, LocalSession session, Pattern fill,
-                              @Optional("2") double radius, @Optional("1") int height, @Switch('h') boolean hollow) throws WorldEditException {
+                              @Arg(desc = "The radius of the cylinder", def = "2")
+                                  double radius,
+                              @Arg(desc = "The height of the cylinder", def = "1")
+                                  int height,
+                              @Switch(name = 'h', desc = "Create hollow cylinders instead")
+                                  boolean hollow) throws WorldEditException {
         worldEdit.checkMaxBrushRadius(radius);
         worldEdit.checkMaxBrushRadius(height);
 
@@ -129,19 +126,16 @@ public class BrushCommands {
     }
 
     @Command(
-        aliases = { "clipboard", "copy" },
-        usage = "",
-        flags = "ap",
-        desc = "Choose the clipboard brush",
-        help =
-            "Chooses the clipboard brush.\n" +
-            "The -a flag makes it not paste air.\n" +
-            "Without the -p flag, the paste will appear centered at the target location. " +
-            "With the flag, then the paste will appear relative to where you had " +
-            "stood relative to the copied area when you copied it."
+        name = "clipboard",
+        aliases = { "copy" },
+        desc = "Choose the clipboard brush"
     )
     @CommandPermissions("worldedit.brush.clipboard")
-    public void clipboardBrush(Player player, LocalSession session, @Switch('a') boolean ignoreAir, @Switch('p') boolean usingOrigin) throws WorldEditException {
+    public void clipboardBrush(Player player, LocalSession session,
+                               @Switch(name = 'a', desc = "Don't paste air from the clipboard")
+                                   boolean ignoreAir,
+                               @Switch(name = 'p', desc = "Paste using clipboard origin, instead of being centered at the target location")
+                                   boolean usingOrigin) throws WorldEditException {
         ClipboardHolder holder = session.getClipboard();
         Clipboard clipboard = holder.getClipboard();
 
@@ -158,18 +152,18 @@ public class BrushCommands {
     }
 
     @Command(
-        aliases = { "smooth" },
-        usage = "[size] [iterations] [filter]",
+        name = "smooth",
         desc = "Choose the terrain softener brush",
-        help =
-            "Chooses the terrain softener brush. Optionally, specify a mask of blocks to be used for the heightmap.\n" +
-            "For example, '/brush smooth 2 4 grass_block,dirt,stone'.",
-        min = 0,
-        max = 3
+        descFooter = "Example: '/brush smooth 2 4 grass_block,dirt,stone'"
     )
     @CommandPermissions("worldedit.brush.smooth")
     public void smoothBrush(Player player, LocalSession session,
-                            @Optional("2") double radius, @Optional("4") int iterations, @Optional Mask mask) throws WorldEditException {
+                            @Arg(desc = "The radius to sample for softening", def = "2")
+                                double radius,
+                            @Arg(desc = "The number of iterations to perform", def = "4")
+                                int iterations,
+                            @Arg(desc = "The mask of blocks to use for the heightmap", def = "")
+                                Mask mask) throws WorldEditException {
         worldEdit.checkMaxBrushRadius(radius);
 
         BrushTool tool = session.getBrushTool(player.getItemInHand(HandSide.MAIN_HAND).getType());
@@ -180,14 +174,14 @@ public class BrushCommands {
     }
 
     @Command(
-        aliases = { "ex", "extinguish" },
-        usage = "[radius]",
-        desc = "Shortcut fire extinguisher brush",
-        min = 0,
-        max = 1
+        name = "extinguish",
+        aliases = { "ex" },
+        desc = "Shortcut fire extinguisher brush"
     )
     @CommandPermissions("worldedit.brush.ex")
-    public void extinguishBrush(Player player, LocalSession session, @Optional("5") double radius) throws WorldEditException {
+    public void extinguishBrush(Player player, LocalSession session,
+                                @Arg(desc = "The radius to extinguish", def = "5")
+                                    double radius) throws WorldEditException {
         worldEdit.checkMaxBrushRadius(radius);
 
         BrushTool tool = session.getBrushTool(player.getItemInHand(HandSide.MAIN_HAND).getType());
@@ -201,19 +195,16 @@ public class BrushCommands {
     }
 
     @Command(
-            aliases = { "gravity", "grav" },
-            usage = "[radius]",
-            flags = "h",
-            desc = "Gravity brush",
-            help =
-                "This brush simulates the affect of gravity.\n" +
-                "The -h flag makes it affect blocks starting at the world's max y, " +
-                    "instead of the clicked block's y + radius.",
-            min = 0,
-            max = 1
+        name = "gravity",
+        aliases = { "grav" },
+        desc = "Gravity brush, simulates the effect of gravity"
     )
     @CommandPermissions("worldedit.brush.gravity")
-    public void gravityBrush(Player player, LocalSession session, @Optional("5") double radius, @Switch('h') boolean fromMaxY) throws WorldEditException {
+    public void gravityBrush(Player player, LocalSession session,
+                             @Arg(desc = "The radius to apply gravity in", def = "5")
+                                 double radius,
+                             @Switch(name = 'h', desc = "Affect blocks starting at max Y, rather than the target location Y + radius")
+                                 boolean fromMaxY) throws WorldEditException {
         worldEdit.checkMaxBrushRadius(radius);
 
         BrushTool tool = session.getBrushTool(player.getItemInHand(HandSide.MAIN_HAND).getType());
@@ -225,29 +216,34 @@ public class BrushCommands {
     }
     
     @Command(
-            aliases = { "butcher", "kill" },
-            usage = "[radius]",
-            flags = "plangbtfr",
-            desc = "Butcher brush",
-            help = "Kills nearby mobs within the specified radius.\n" +
-                    "Flags:\n" +
-                    "  -p also kills pets.\n" +
-                    "  -n also kills NPCs.\n" +
-                    "  -g also kills Golems.\n" +
-                    "  -a also kills animals.\n" +
-                    "  -b also kills ambient mobs.\n" +
-                    "  -t also kills mobs with name tags.\n" +
-                    "  -f compounds all previous flags.\n" +
-                    "  -r also destroys armor stands.\n" +
-                    "  -l currently does nothing.",
-            min = 0,
-            max = 1
+        name = "butcher",
+        aliases = { "kill" },
+        desc = "Butcher brush, kills mobs within a radius"
     )
     @CommandPermissions("worldedit.brush.butcher")
-    public void butcherBrush(Player player, LocalSession session, CommandContext args) throws WorldEditException {
+    public void butcherBrush(Player player, LocalSession session,
+                             @Arg(desc = "Radius to kill mobs in", def = "5")
+                                 double radius,
+                             @Switch(name = 'p', desc = "Also kill pets")
+                                 boolean killPets,
+                             @Switch(name = 'n', desc = "Also kill NPCs")
+                                 boolean killNpcs,
+                             @Switch(name = 'g', desc = "Also kill golems")
+                                 boolean killGolems,
+                             @Switch(name = 'a', desc = "Also kill animals")
+                                 boolean killAnimals,
+                             @Switch(name = 'b', desc = "Also kill ambient mobs")
+                                 boolean killAmbient,
+                             @Switch(name = 't', desc = "Also kill mobs with name tags")
+                                 boolean killWithName,
+                             @Switch(name = 'f', desc = "Also kill all friendly mobs (Applies the flags `-abgnpt`)")
+                                 boolean killFriendly,
+                             @Switch(name = 'r', desc = "Also destroy armor stands")
+                                 boolean killArmorStands,
+                             @Switch(name = 'l', desc = "Kill via lightning. Currently non-functioning.")
+                                 boolean killWithLightning) throws WorldEditException {
         LocalConfiguration config = worldEdit.getConfiguration();
 
-        double radius = args.argsLength() > 0 ? args.getDouble(0) : 5;
         double maxRadius = config.maxBrushRadius;
         // hmmmm not horribly worried about this because -1 is still rather efficient,
         // the problem arises when butcherMaxRadius is some really high number but not infinite
@@ -261,7 +257,16 @@ public class BrushCommands {
         }
 
         CreatureButcher flags = new CreatureButcher(player);
-        flags.fromCommand(args);
+        flags.or(CreatureButcher.Flags.FRIENDLY      , killFriendly); // No permission check here. Flags will instead be filtered by the subsequent calls.
+        flags.or(CreatureButcher.Flags.PETS          , killPets, "worldedit.butcher.pets");
+        flags.or(CreatureButcher.Flags.NPCS          , killNpcs, "worldedit.butcher.npcs");
+        flags.or(CreatureButcher.Flags.GOLEMS        , killGolems, "worldedit.butcher.golems");
+        flags.or(CreatureButcher.Flags.ANIMALS       , killAnimals, "worldedit.butcher.animals");
+        flags.or(CreatureButcher.Flags.AMBIENT       , killAmbient, "worldedit.butcher.ambient");
+        flags.or(CreatureButcher.Flags.TAGGED        , killWithName, "worldedit.butcher.tagged");
+        flags.or(CreatureButcher.Flags.ARMOR_STAND   , killArmorStands, "worldedit.butcher.armorstands");
+
+        flags.or(CreatureButcher.Flags.WITH_LIGHTNING, killWithLightning, "worldedit.butcher.lightning");
 
         BrushTool tool = session.getBrushTool(player.getItemInHand(HandSide.MAIN_HAND).getType());
         tool.setSize(radius);
