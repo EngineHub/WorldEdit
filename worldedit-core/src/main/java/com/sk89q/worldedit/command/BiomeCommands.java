@@ -75,7 +75,8 @@ public class BiomeCommands {
     )
     @CommandPermissions("worldedit.biome.list")
     public void biomeList(Player player,
-                          @Arg(desc = "Page number.", def = "0") int page) throws WorldEditException {
+                          @Arg(desc = "Page number.", def = "0")
+                              int page) throws WorldEditException {
         int offset;
         int count = 0;
 
@@ -115,12 +116,10 @@ public class BiomeCommands {
     )
     @CommandPermissions("worldedit.biome.info")
     public void biomeInfo(Player player, LocalSession session,
-                          @Switch(
-                              name = 't', desc="Use the block you are looking at."
-                          ) boolean useLineOfSight,
-                          @Switch(
-                              name = 'p', desc="Use the block you are currently in."
-                          ) boolean usePosition) throws WorldEditException {
+                          @Switch(name = 't', desc="Use the block you are looking at.")
+                              boolean useLineOfSight,
+                          @Switch(name = 'p', desc="Use the block you are currently in.")
+                              boolean usePosition) throws WorldEditException {
         BiomeRegistry biomeRegistry = WorldEdit.getInstance().getPlatformManager()
                 .queryCapability(Capability.GAME_HOOKS).getRegistries().getBiomeRegistry();
         Set<BiomeType> biomes = new HashSet<>();
@@ -179,7 +178,8 @@ public class BiomeCommands {
     @CommandPermissions("worldedit.biome.set")
     public void setBiome(Player player, LocalSession session, EditSession editSession,
                          BiomeType target,
-                         @Switch(name = 'p', desc = "Use your current position") boolean atPosition) throws WorldEditException {
+                         @Switch(name = 'p', desc = "Use your current position")
+                             boolean atPosition) throws WorldEditException {
         World world = player.getWorld();
         Region region;
         Mask mask = editSession.getMask();

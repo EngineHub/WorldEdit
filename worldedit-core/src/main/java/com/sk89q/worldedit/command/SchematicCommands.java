@@ -91,8 +91,10 @@ public class SchematicCommands {
     )
     @CommandPermissions({"worldedit.clipboard.load", "worldedit.schematic.load"})
     public void load(Player player, LocalSession session,
-                     @Arg(desc = "File name.") String filename,
-                     @Arg(desc = "Format name.", def = "sponge") String formatName) throws FilenameException {
+                     @Arg(desc = "File name.")
+                         String filename,
+                     @Arg(desc = "Format name.", def = "sponge")
+                         String formatName) throws FilenameException {
         LocalConfiguration config = worldEdit.getConfiguration();
 
         File dir = worldEdit.getWorkingDirectoryFile(config.saveDir);
@@ -134,9 +136,12 @@ public class SchematicCommands {
     )
     @CommandPermissions({"worldedit.clipboard.save", "worldedit.schematic.save"})
     public void save(Player player, LocalSession session,
-                     @Arg(desc = "File name.") String filename,
-                     @Arg(desc = "Format name.", def = "sponge") String formatName,
-                     @Switch(name = 'f', desc = "Overwrite an existing file.") boolean allowOverwrite
+                     @Arg(desc = "File name.")
+                         String filename,
+                     @Arg(desc = "Format name.", def = "sponge")
+                         String formatName,
+                     @Switch(name = 'f', desc = "Overwrite an existing file.")
+                         boolean allowOverwrite
         ) throws WorldEditException {
         LocalConfiguration config = worldEdit.getConfiguration();
 
@@ -205,7 +210,8 @@ public class SchematicCommands {
     )
     @CommandPermissions("worldedit.schematic.delete")
     public void delete(Actor actor,
-                       @Arg(desc = "File name.") String filename) throws WorldEditException {
+                       @Arg(desc = "File name.")
+                           String filename) throws WorldEditException {
         LocalConfiguration config = worldEdit.getConfiguration();
         File dir = worldEdit.getWorkingDirectoryFile(config.saveDir);
 
@@ -263,9 +269,12 @@ public class SchematicCommands {
     )
     @CommandPermissions("worldedit.schematic.list")
     public void list(Actor actor,
-                     @ArgFlag(name = 'p', desc = "Page to view.", def = "1") int page,
-                     @Switch(name = 'd', desc = "Sort by date, oldest first") boolean oldFirst,
-                     @Switch(name = 'n', desc = "Sort by date, newest first") boolean newFirst) {
+                     @ArgFlag(name = 'p', desc = "Page to view.", def = "1")
+                         int page,
+                     @Switch(name = 'd', desc = "Sort by date, oldest first")
+                         boolean oldFirst,
+                     @Switch(name = 'n', desc = "Sort by date, newest first")
+                         boolean newFirst) {
         if (oldFirst && newFirst) {
             throw new StopExecutionException("Cannot sort by oldest and newest.");
         }
