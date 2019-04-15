@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.command;
 
+import com.sk89q.minecraft.util.commands.Logging;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
@@ -52,6 +53,8 @@ import org.enginehub.piston.annotation.param.Switch;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+
+import static com.sk89q.minecraft.util.commands.Logging.LogMode.REGION;
 
 /**
  * Implements biome-related commands such as "/biomelist".
@@ -172,7 +175,7 @@ public class BiomeCommands {
         desc = "Sets the biome of the player's current block or region.",
         descFooter = "By default, uses all the blocks in your selection"
     )
-//    @Logging(REGION)
+    @Logging(REGION)
     @CommandPermissions("worldedit.biome.set")
     public void setBiome(Player player, LocalSession session, EditSession editSession,
                          BiomeType target,
