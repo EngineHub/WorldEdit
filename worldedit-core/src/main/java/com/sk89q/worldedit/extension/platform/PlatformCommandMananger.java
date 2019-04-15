@@ -19,9 +19,8 @@
 
 package com.sk89q.worldedit.extension.platform;
 
-import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
-import com.sk89q.minecraft.util.commands.CommandException;
+import com.google.inject.Key;
 import com.sk89q.minecraft.util.commands.CommandLocals;
 import com.sk89q.minecraft.util.commands.CommandPermissionsException;
 import com.sk89q.minecraft.util.commands.WrappedCommandException;
@@ -30,51 +29,25 @@ import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.command.BiomeCommands;
-import com.sk89q.worldedit.command.BrushCommands;
-import com.sk89q.worldedit.command.ChunkCommands;
-import com.sk89q.worldedit.command.ClipboardCommands;
-import com.sk89q.worldedit.command.GeneralCommands;
-import com.sk89q.worldedit.command.GenerationCommands;
-import com.sk89q.worldedit.command.HistoryCommands;
-import com.sk89q.worldedit.command.NavigationCommands;
-import com.sk89q.worldedit.command.RegionCommands;
+import com.sk89q.worldedit.command.BiomeCommandsRegistration;
 import com.sk89q.worldedit.command.SchematicCommands;
 import com.sk89q.worldedit.command.SchematicCommandsRegistration;
-import com.sk89q.worldedit.command.ScriptingCommands;
-import com.sk89q.worldedit.command.SelectionCommands;
-import com.sk89q.worldedit.command.SnapshotCommands;
-import com.sk89q.worldedit.command.SnapshotUtilCommands;
-import com.sk89q.worldedit.command.SuperPickaxeCommands;
-import com.sk89q.worldedit.command.ToolCommands;
-import com.sk89q.worldedit.command.ToolUtilCommands;
-import com.sk89q.worldedit.command.UtilityCommands;
-import com.sk89q.worldedit.command.WorldEditCommands;
-import com.sk89q.worldedit.command.argument.ReplaceParser;
-import com.sk89q.worldedit.command.argument.TreeGeneratorParser;
-import com.sk89q.worldedit.command.composition.ApplyCommand;
-import com.sk89q.worldedit.command.composition.DeformCommand;
-import com.sk89q.worldedit.command.composition.PaintCommand;
-import com.sk89q.worldedit.command.composition.SelectionCommand;
-import com.sk89q.worldedit.command.composition.ShapedBrushCommand;
+import com.sk89q.worldedit.command.argument.Arguments;
+import com.sk89q.worldedit.command.argument.EditSessionHolder;
 import com.sk89q.worldedit.command.util.CommandPermissionsConditionGenerator;
+import com.sk89q.worldedit.command.util.PermissionCondition;
 import com.sk89q.worldedit.entity.Entity;
+import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.event.platform.CommandEvent;
 import com.sk89q.worldedit.event.platform.CommandSuggestionEvent;
 import com.sk89q.worldedit.extent.Extent;
-import com.sk89q.worldedit.function.factory.Deform;
-import com.sk89q.worldedit.function.factory.Deform.Mode;
 import com.sk89q.worldedit.internal.command.ActorAuthorizer;
-import com.sk89q.worldedit.internal.command.CommandLoggingHandler;
 import com.sk89q.worldedit.internal.command.UserCommandCompleter;
 import com.sk89q.worldedit.internal.command.WorldEditBinding;
 import com.sk89q.worldedit.internal.command.WorldEditExceptionConverter;
 import com.sk89q.worldedit.session.request.Request;
-import com.sk89q.worldedit.util.command.CommandCallable;
 import com.sk89q.worldedit.util.command.Dispatcher;
 import com.sk89q.worldedit.util.command.InvalidUsageException;
-import com.sk89q.worldedit.util.command.SimpleDescription;
-import com.sk89q.worldedit.util.command.composition.ProvidedValue;
-import com.sk89q.worldedit.util.command.fluent.CommandGraph;
 import com.sk89q.worldedit.util.command.parametric.ExceptionConverter;
 import com.sk89q.worldedit.util.command.parametric.LegacyCommandsHandler;
 import com.sk89q.worldedit.util.command.parametric.ParametricBuilder;
@@ -84,35 +57,44 @@ import com.sk89q.worldedit.util.formatting.component.CommandUsageBox;
 import com.sk89q.worldedit.util.logging.DynamicStreamHandler;
 import com.sk89q.worldedit.util.logging.LogFormat;
 import com.sk89q.worldedit.world.World;
+import org.enginehub.piston.Command;
+import org.enginehub.piston.CommandManager;
 import org.enginehub.piston.DefaultCommandManagerService;
+import org.enginehub.piston.exception.CommandException;
+import org.enginehub.piston.exception.CommandExecutionException;
+import org.enginehub.piston.exception.ConditionFailedException;
+import org.enginehub.piston.exception.UsageException;
+import org.enginehub.piston.part.SubCommandPart;
+import org.enginehub.piston.util.ValueProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Optional;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static com.sk89q.worldedit.util.command.composition.LegacyCommandAdapter.adapt;
 
 /**
  * Handles the registration and invocation of commands.
  *
  * <p>This class is primarily for internal usage.</p>
  */
-public final class CommandManager {
+public final class PlatformCommandMananger {
 
     public static final Pattern COMMAND_CLEAN_PATTERN = Pattern.compile("^[/]+");
-    private static final Logger log = LoggerFactory.getLogger(CommandManager.class);
+    private static final Logger log = LoggerFactory.getLogger(PlatformCommandMananger.class);
     private static final java.util.logging.Logger commandLog =
-        java.util.logging.Logger.getLogger(CommandManager.class.getCanonicalName() + ".CommandLog");
+        java.util.logging.Logger.getLogger(PlatformCommandMananger.class.getCanonicalName() + ".CommandLog");
     private static final Pattern numberFormatExceptionPattern = Pattern.compile("^For input string: \"(.*)\"$");
 
     private final WorldEdit worldEdit;
     private final PlatformManager platformManager;
-    private final Dispatcher dispatcher;
+    private final CommandManager commandManager;
     private final DynamicStreamHandler dynamicHandler = new DynamicStreamHandler();
     private final ExceptionConverter exceptionConverter;
 
@@ -121,12 +103,14 @@ public final class CommandManager {
      *
      * @param worldEdit the WorldEdit instance
      */
-    CommandManager(final WorldEdit worldEdit, PlatformManager platformManager) {
+    PlatformCommandMananger(final WorldEdit worldEdit, PlatformManager platformManager) {
         checkNotNull(worldEdit);
         checkNotNull(platformManager);
         this.worldEdit = worldEdit;
         this.platformManager = platformManager;
         this.exceptionConverter = new WorldEditExceptionConverter(worldEdit);
+        this.commandManager = DefaultCommandManagerService.getInstance()
+            .newCommandManager();
 
         // Register this instance for command events
         worldEdit.getEventBus().register(this);
@@ -140,12 +124,41 @@ public final class CommandManager {
         builder.setDefaultCompleter(new UserCommandCompleter(platformManager));
         builder.addBinding(new WorldEditBinding(worldEdit));
         builder.addInvokeListener(new LegacyCommandsHandler());
-        builder.addInvokeListener(new CommandLoggingHandler(worldEdit, commandLog));
 
+        CommandPermissionsConditionGenerator permsGenerator =
+            new CommandPermissionsConditionGenerator();
+
+        commandManager.register("schematic", cmd -> {
+            cmd.aliases(ImmutableList.of("schem", "/schematic", "/schem"));
+            cmd.description("Schematic commands for saving/loading areas");
+            cmd.action(Command.Action.NULL_ACTION);
+
+            CommandManager manager = DefaultCommandManagerService.getInstance()
+                .newCommandManager();
+            SchematicCommandsRegistration.builder()
+                .commandManager(manager)
+                .containerInstance(new SchematicCommands(worldEdit))
+                .commandPermissionsConditionGenerator(
+                    permsGenerator
+                ).build();
+
+            cmd.addPart(SubCommandPart.builder("action", "Sub-command to run.")
+                .withCommands(manager.getAllCommands().collect(Collectors.toList()))
+                .required()
+            .build());
+        });
+
+        BiomeCommandsRegistration.builder()
+            .commandManager(commandManager)
+            .containerInstance(new BiomeCommands())
+            .commandPermissionsConditionGenerator(permsGenerator)
+            .build();
+
+        // Unported commands are below. Delete once they're added to the main manager above.
+        /*
         dispatcher = new CommandGraph()
                 .builder(builder)
                     .commands()
-                        .registerMethods(new BiomeCommands())
                         .registerMethods(new ChunkCommands(worldEdit))
                         .registerMethods(new ClipboardCommands(worldEdit))
                         .registerMethods(new GeneralCommands(worldEdit))
@@ -164,7 +177,6 @@ public final class CommandManager {
                             .describeAs("WorldEdit commands")
                             .registerMethods(new WorldEditCommands(worldEdit))
                             .parent()
-                        .register(schematicCommands(),"schematic", "schem", "/schematic", "/schem")
                         .group("snapshot", "snap")
                             .describeAs("Schematic commands for saving/loading areas")
                             .registerMethods(new SnapshotCommands(worldEdit))
@@ -190,22 +202,7 @@ public final class CommandManager {
                             .parent()
                         .graph()
                 .getDispatcher();
-    }
-
-    private CommandCallable schematicCommands() {
-        SimpleDescription desc = new SimpleDescription();
-        desc.setDescription("Schematic commands for saving/loading areas");
-        desc.setPermissions(ImmutableList.of());
-        org.enginehub.piston.CommandManager manager = DefaultCommandManagerService.getInstance()
-            .newCommandManager();
-        SchematicCommandsRegistration.builder()
-            .commandManager(manager)
-            .containerInstance(new SchematicCommands(worldEdit))
-            .commandPermissionsConditionGenerator(
-                new CommandPermissionsConditionGenerator()
-            ).build();
-
-        return new CommandManagerCallable(worldEdit, manager, desc);
+         */
     }
 
     public ExceptionConverter getExceptionConverter() {
@@ -238,7 +235,7 @@ public final class CommandManager {
             dynamicHandler.setFormatter(new LogFormat(config.logFormat));
         }
 
-        platform.registerCommands(dispatcher);
+        platform.registerCommands(commandManager);
     }
 
     void unregister() {
@@ -258,10 +255,10 @@ public final class CommandManager {
         String searchCmd = split[0].toLowerCase();
 
         // Try to detect the command
-        if (!dispatcher.contains(searchCmd)) {
-            if (worldEdit.getConfiguration().noDoubleSlash && dispatcher.contains("/" + searchCmd)) {
+        if (!commandManager.containsCommand(searchCmd)) {
+            if (worldEdit.getConfiguration().noDoubleSlash && commandManager.containsCommand("/" + searchCmd)) {
                 split[0] = "/" + split[0];
-            } else if (searchCmd.length() >= 2 && searchCmd.charAt(0) == '/' && dispatcher.contains(searchCmd.substring(1))) {
+            } else if (searchCmd.length() >= 2 && searchCmd.charAt(0) == '/' && commandManager.containsCommand(searchCmd.substring(1))) {
                 split[0] = split[0].substring(1);
             }
         }
@@ -277,7 +274,7 @@ public final class CommandManager {
         String[] split = commandDetection(event.getArguments().split(" "));
 
         // No command found!
-        if (!dispatcher.contains(split[0])) {
+        if (!commandManager.containsCommand(split[0])) {
             return;
         }
 
@@ -291,9 +288,13 @@ public final class CommandManager {
         }
         LocalConfiguration config = worldEdit.getConfiguration();
 
-        CommandLocals locals = new CommandLocals();
-        locals.put(Actor.class, actor);
-        locals.put("arguments", event.getArguments());
+        commandManager.injectValue(Key.get(Actor.class), ValueProvider.constant(actor));
+        commandManager.injectValue(Key.get(Arguments.class), ValueProvider.constant(event::getArguments));
+        commandManager.injectValue(Key.get(EditSessionHolder.class),
+            context -> context.injectedValue(Key.get(Actor.class))
+                .filter(Player.class::isInstance)
+                .map(Player.class::cast)
+                .map(p -> new EditSessionHolder(worldEdit, p)));
 
         long start = System.currentTimeMillis();
 
@@ -303,7 +304,7 @@ public final class CommandManager {
             // exceptions without writing a hook into every dispatcher, we need to unwrap these
             // exceptions and rethrow their converted form, if their is one.
             try {
-                dispatcher.call(Joiner.on(" ").join(split), locals, new String[0]);
+                commandManager.execute(ImmutableList.copyOf(split));
             } catch (Throwable t) {
                 // Use the exception converter to convert the exception if any of its causes
                 // can be converted, otherwise throw the original exception
@@ -315,21 +316,14 @@ public final class CommandManager {
 
                 throw t;
             }
-        } catch (CommandPermissionsException e) {
-            actor.printError("You are not permitted to do that. Are you in the right mode?");
-        } catch (InvalidUsageException e) {
-            if (e.isFullHelpSuggested()) {
-                actor.printRaw(ColorCodeBuilder.asColorCodes(new CommandUsageBox(e.getCommand(), e.getCommandUsed("/", ""), locals)));
-                String message = e.getMessage();
-                if (message != null) {
-                    actor.printError(message);
-                }
-            } else {
-                String message = e.getMessage();
-                actor.printError(message != null ? message : "The command was not used properly (no more help available).");
-                actor.printError("Usage: " + e.getSimpleUsageString("/"));
+        } catch (ConditionFailedException e) {
+            if (e.getCondition() instanceof PermissionCondition) {
+                actor.printError("You are not permitted to do that. Are you in the right mode?");
             }
-        } catch (WrappedCommandException e) {
+        } catch (UsageException e) {
+            String message = e.getMessage();
+            actor.printError(message != null ? message : "The command was not used properly (no more help available).");
+        } catch (CommandExecutionException e) {
             Throwable t = e.getCause();
             actor.printError("Please report this error: [See console]");
             actor.printRaw(t.getClass().getName() + ": " + t.getMessage());
@@ -343,9 +337,11 @@ public final class CommandManager {
                 log.error("An unknown error occurred", e);
             }
         } finally {
-            EditSession editSession = locals.get(EditSession.class);
+            Optional<EditSession> editSessionOpt = commandManager.injectedValue(Key.get(EditSessionHolder.class))
+                .map(EditSessionHolder::getSession);
 
-            if (editSession != null) {
+            if (editSessionOpt.isPresent()) {
+                EditSession editSession = editSessionOpt.get();
                 session.remember(editSession);
                 editSession.flushSession();
 
@@ -373,22 +369,21 @@ public final class CommandManager {
     @Subscribe
     public void handleCommandSuggestion(CommandSuggestionEvent event) {
         try {
-            CommandLocals locals = new CommandLocals();
-            locals.put(Actor.class, event.getActor());
-            locals.put("arguments", event.getArguments());
-            event.setSuggestions(dispatcher.getSuggestions(event.getArguments(), locals));
+            commandManager.injectValue(Key.get(Actor.class), ValueProvider.constant(event.getActor()));
+            commandManager.injectValue(Key.get(Arguments.class), ValueProvider.constant(event::getArguments));
+            // TODO suggestions
         } catch (CommandException e) {
             event.getActor().printError(e.getMessage());
         }
     }
 
     /**
-     * Get the command dispatcher instance.
+     * Get the command manager instance.
      *
-     * @return the command dispatcher
+     * @return the command manager
      */
-    public Dispatcher getDispatcher() {
-        return dispatcher;
+    public CommandManager getCommandManager() {
+        return commandManager;
     }
 
     public static java.util.logging.Logger getLogger() {

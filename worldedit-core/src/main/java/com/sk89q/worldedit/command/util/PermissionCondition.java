@@ -19,26 +19,31 @@
 
 package com.sk89q.worldedit.command.util;
 
-import com.google.common.collect.ImmutableSet;
 import com.google.inject.Key;
 import com.sk89q.worldedit.extension.platform.Actor;
 import org.enginehub.piston.Command;
-import org.enginehub.piston.gen.CommandConditionGenerator;
-import org.enginehub.piston.util.NonnullByDefault;
+import org.enginehub.piston.CommandParameters;
 
-import java.lang.reflect.Method;
 import java.util.Set;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+public final class PermissionCondition implements Command.Condition {
 
-@NonnullByDefault
-public class CommandPermissionsConditionGenerator implements CommandConditionGenerator {
+    private static final Key<Actor> ACTOR_KEY = Key.get(Actor.class);
+
+    private final Set<String> permissions;
+
+    PermissionCondition(Set<String> permissions) {
+        this.permissions = permissions;
+    }
+
+    public Set<String> getPermissions() {
+        return permissions;
+    }
 
     @Override
-    public Command.Condition generateCondition(Method commandMethod) {
-        CommandPermissions annotation = commandMethod.getAnnotation(CommandPermissions.class);
-        checkNotNull(annotation, "Annotation is missing from commandMethod");
-        Set<String> permissions = ImmutableSet.copyOf(annotation.value());
-        return new PermissionCondition(permissions);
+    public boolean satisfied(CommandParameters parameters) {
+        return parameters.injectedValue(ACTOR_KEY)
+            .map(actor -> permissions.stream().anyMatch(actor::hasPermission))
+            .orElse(false);
     }
 }

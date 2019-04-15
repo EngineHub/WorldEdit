@@ -22,7 +22,7 @@ package com.sk89q.worldedit.util.formatting.component;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.sk89q.minecraft.util.commands.CommandLocals;
-import com.sk89q.worldedit.extension.platform.CommandManager;
+import com.sk89q.worldedit.extension.platform.PlatformCommandMananger;
 import com.sk89q.worldedit.util.command.CommandCallable;
 import com.sk89q.worldedit.util.command.CommandMapping;
 import com.sk89q.worldedit.util.command.Description;
@@ -72,7 +72,7 @@ public class CommandUsageBox extends StyledFragment {
         String prefix = !commandString.isEmpty() ? commandString + " " : "";
 
         List<CommandMapping> list = new ArrayList<>(dispatcher.getCommands());
-        list.sort(new PrimaryAliasComparator(CommandManager.COMMAND_CLEAN_PATTERN));
+        list.sort(new PrimaryAliasComparator(PlatformCommandMananger.COMMAND_CLEAN_PATTERN));
 
         for (CommandMapping mapping : list) {
             if (locals == null || mapping.getCallable().testPermission(locals)) {

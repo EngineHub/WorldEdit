@@ -77,7 +77,7 @@ public class ShapedBrushCommand extends SimpleCommand<Object> {
             tool.setFill(null);
             tool.setBrush(new OperationFactoryBrush(factory, regionFactory, session), permission);
         } catch (MaxBrushRadiusException | InvalidToolBindException e) {
-            WorldEdit.getInstance().getPlatformManager().getCommandManager().getExceptionConverter().convert(e);
+            WorldEdit.getInstance().getPlatformManager().getPlatformCommandMananger().getExceptionConverter().convert(e);
         }
 
         player.print("Set brush to " + factory);

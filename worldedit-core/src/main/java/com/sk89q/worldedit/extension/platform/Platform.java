@@ -24,6 +24,7 @@ import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.util.command.Dispatcher;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.registry.Registries;
+import org.enginehub.piston.CommandManager;
 
 import java.util.List;
 import java.util.Map;
@@ -97,11 +98,11 @@ public interface Platform {
     @Nullable World matchWorld(World world);
 
     /**
-     * Register the commands contained within the given command dispatcher.
+     * Register the commands contained within the given command manager.
      *
-     * @param dispatcher the dispatcher
+     * @param commandManager the command manager
      */
-    void registerCommands(Dispatcher dispatcher);
+    void registerCommands(CommandManager commandManager);
 
     /**
      * Register game hooks.

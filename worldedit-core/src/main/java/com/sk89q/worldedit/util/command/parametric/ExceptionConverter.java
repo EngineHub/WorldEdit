@@ -19,8 +19,9 @@
 
 package com.sk89q.worldedit.util.command.parametric;
 
-import com.sk89q.minecraft.util.commands.CommandException;
-import com.sk89q.minecraft.util.commands.WrappedCommandException;
+
+import org.enginehub.piston.exception.CommandException;
+import org.enginehub.piston.exception.CommandExecutionException;
 
 /**
  * Used to convert a recognized {@link Throwable} into an appropriate 
@@ -29,7 +30,7 @@ import com.sk89q.minecraft.util.commands.WrappedCommandException;
  * <p>Methods (when invoked by a {@link ParametricBuilder}-created command) may throw
  * relevant exceptions that are not caught by the command manager, but translate
  * into reasonable exceptions for an application. However, unknown exceptions are
- * normally simply wrapped in a {@link WrappedCommandException} and bubbled up. Only
+ * normally simply wrapped in a {@link CommandExecutionException} and bubbled up. Only
  * normal {@link CommandException}s will be printed correctly, so a converter translates
  * one of these unknown exceptions into an appropriate {@link CommandException}.</p>
  * 

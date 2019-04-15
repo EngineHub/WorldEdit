@@ -21,13 +21,13 @@
 
 package com.sk89q.worldedit.bukkit;
 
-import com.sk89q.minecraft.util.commands.CommandLocals;
+import com.google.common.collect.ImmutableMap;
+import com.google.inject.Key;
 import com.sk89q.util.StringUtil;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.util.Location;
-import com.sk89q.worldedit.util.command.CommandMapping;
 import com.sk89q.worldedit.world.World;
 import org.bukkit.block.Block;
 import org.bukkit.event.Event.Result;
@@ -40,9 +40,9 @@ import org.bukkit.event.player.PlayerCommandSendEvent;
 import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
-
-import java.util.Set;
-import java.util.stream.Collectors;
+import org.enginehub.piston.CommandManager;
+import org.enginehub.piston.CommandParameters;
+import org.enginehub.piston.NoInputCommandParameters;
 
 /**
  * Handles all events thrown in relation to a Player
@@ -87,7 +87,7 @@ public class WorldEditListener implements Listener {
 
         if (split.length > 0) {
             split[0] = split[0].substring(1);
-            split = plugin.getWorldEdit().getPlatformManager().getCommandManager().commandDetection(split);
+            split = plugin.getWorldEdit().getPlatformManager().getPlatformCommandMananger().commandDetection(split);
         }
 
         final String newMessage = "/" + StringUtil.joinString(split, " ");
@@ -108,13 +108,18 @@ public class WorldEditListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onPlayerCommand(PlayerCommandSendEvent event) {
-        CommandLocals locals = new CommandLocals();
-        locals.put(Actor.class, plugin.wrapCommandSender(event.getPlayer()));
-        Set<String> toRemove = plugin.getWorldEdit().getPlatformManager().getCommandManager().getDispatcher().getCommands().stream()
-                .filter(commandMapping -> !commandMapping.getCallable().testPermission(locals))
-                .map(CommandMapping::getPrimaryAlias)
-                .collect(Collectors.toSet());
-        event.getCommands().removeIf(toRemove::contains);
+        CommandParameters parameters = NoInputCommandParameters.builder()
+            .injectedValues(ImmutableMap.of(
+                Key.get(Actor.class), plugin.wrapCommandSender(event.getPlayer())
+            ))
+            .build();
+        CommandManager commandManager = plugin.getWorldEdit().getPlatformManager().getPlatformCommandMananger().getCommandManager();
+        event.getCommands().removeIf(name ->
+            // remove if in the manager and not satisfied
+            commandManager.getCommand(name)
+            .filter(command -> !command.getCondition().satisfied(parameters))
+            .isPresent()
+        );
     }
 
     /**

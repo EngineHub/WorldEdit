@@ -39,7 +39,7 @@ import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.input.ParserContext;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Capability;
-import com.sk89q.worldedit.extension.platform.CommandManager;
+import com.sk89q.worldedit.extension.platform.PlatformCommandMananger;
 import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.function.operation.Operations;
 import com.sk89q.worldedit.function.pattern.BlockPattern;
@@ -67,6 +67,7 @@ import com.sk89q.worldedit.util.formatting.component.CommandUsageBox;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockTypes;
+import org.enginehub.piston.CommandManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -598,7 +599,10 @@ public class UtilityCommands {
     }
 
     public static void help(CommandContext args, WorldEdit we, Actor actor) {
-        CommandCallable callable = we.getPlatformManager().getCommandManager().getDispatcher();
+        CommandManager manager = we.getPlatformManager().getPlatformCommandMananger().getCommandManager();
+
+        // TODO this will be implemented as a special utility in the manager
+        /*
 
         int page = 0;
         final int perPage = actor instanceof Player ? 8 : 20; // More pages for console
@@ -626,15 +630,15 @@ public class UtilityCommands {
         for (int i = 0; i < effectiveLength; i++) {
             String command = args.getString(i);
 
-            if (callable instanceof Dispatcher) {
+            if (manager instanceof Dispatcher) {
                 // Chop off the beginning / if we're are the root level
                 if (isRootLevel && command.length() > 1 && command.charAt(0) == '/') {
                     command = command.substring(1);
                 }
 
-                CommandMapping mapping = detectCommand((Dispatcher) callable, command, isRootLevel);
+                CommandMapping mapping = detectCommand((Dispatcher) manager, command, isRootLevel);
                 if (mapping != null) {
-                    callable = mapping.getCallable();
+                    manager = mapping.getCallable();
                 } else {
                     if (isRootLevel) {
                         actor.printError(String.format("The command '%s' could not be found.", args.getString(i)));
@@ -656,12 +660,12 @@ public class UtilityCommands {
         }
 
         // Create the message
-        if (callable instanceof Dispatcher) {
-            Dispatcher dispatcher = (Dispatcher) callable;
+        if (manager instanceof Dispatcher) {
+            Dispatcher dispatcher = (Dispatcher) manager;
 
             // Get a list of aliases
             List<CommandMapping> aliases = new ArrayList<>(dispatcher.getCommands());
-            aliases.sort(new PrimaryAliasComparator(CommandManager.COMMAND_CLEAN_PATTERN));
+            aliases.sort(new PrimaryAliasComparator(PlatformCommandMananger.COMMAND_CLEAN_PATTERN));
 
             // Calculate pagination
             int offset = perPage * page;
@@ -698,9 +702,10 @@ public class UtilityCommands {
 
             actor.printRaw(ColorCodeBuilder.asColorCodes(box));
         } else {
-            CommandUsageBox box = new CommandUsageBox(callable, Joiner.on(" ").join(visited));
+            CommandUsageBox box = new CommandUsageBox(manager, Joiner.on(" ").join(visited));
             actor.printRaw(ColorCodeBuilder.asColorCodes(box));
         }
+         */
     }
 
 }

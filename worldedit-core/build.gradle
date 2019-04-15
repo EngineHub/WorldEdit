@@ -2,6 +2,7 @@ plugins {
     id("net.ltgt.apt") version "0.21"
 }
 
+apply plugin: 'java-library'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
 apply plugin: 'net.ltgt.apt-eclipse'
@@ -11,11 +12,6 @@ configurations.all { Configuration it ->
     it.resolutionStrategy { ResolutionStrategy rs ->
         rs.force("com.google.guava:guava:21.0")
     }
-}
-
-repositories {
-    // temporary, for Piston
-    mavenLocal()
 }
 
 dependencies {
@@ -32,10 +28,11 @@ dependencies {
     compile 'org.slf4j:slf4j-api:1.7.26'
 
     def pistonVersion = '0.0.1-SNAPSHOT'
+    api "org.enginehub.piston:core:$pistonVersion"
     compileOnly "org.enginehub.piston.core-ap:annotations:$pistonVersion"
-    compile "org.enginehub.piston.core-ap:runtime:$pistonVersion"
+    implementation "org.enginehub.piston.core-ap:runtime:$pistonVersion"
     annotationProcessor "org.enginehub.piston.core-ap:processor:$pistonVersion"
-    compile "org.enginehub.piston:default-impl:$pistonVersion"
+    api "org.enginehub.piston:default-impl:$pistonVersion"
     //compile 'net.sf.trove4j:trove4j:3.0.3'
     testCompile 'org.mockito:mockito-core:1.9.0-rc1'
 }

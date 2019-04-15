@@ -21,7 +21,6 @@ package com.sk89q.worldedit.internal.command;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import com.sk89q.minecraft.util.commands.CommandException;
 import com.sk89q.worldedit.DisallowedItemException;
 import com.sk89q.worldedit.EmptyClipboardException;
 import com.sk89q.worldedit.IncompleteRegionException;
@@ -35,6 +34,7 @@ import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.command.InsufficientArgumentsException;
 import com.sk89q.worldedit.command.tool.InvalidToolBindException;
+import com.sk89q.worldedit.command.util.PermissionCondition;
 import com.sk89q.worldedit.internal.expression.ExpressionException;
 import com.sk89q.worldedit.regions.RegionOperationException;
 import com.sk89q.worldedit.util.command.parametric.ExceptionConverterHelper;
@@ -42,6 +42,8 @@ import com.sk89q.worldedit.util.command.parametric.ExceptionMatch;
 import com.sk89q.worldedit.util.io.file.FileSelectionAbortedException;
 import com.sk89q.worldedit.util.io.file.FilenameResolutionException;
 import com.sk89q.worldedit.util.io.file.InvalidFilenameException;
+import org.enginehub.piston.exception.CommandException;
+import org.enginehub.piston.exception.ConditionFailedException;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -65,99 +67,106 @@ public class WorldEditExceptionConverter extends ExceptionConverterHelper {
 
         if (matcher.matches()) {
             throw new CommandException("Number expected; string \"" + matcher.group(1)
-                    + "\" given.");
+                    + "\" given.", e, null);
         } else {
-            throw new CommandException("Number expected; string given.");
+            throw new CommandException("Number expected; string given.", e, null);
         }
     }
 
     @ExceptionMatch
     public void convert(IncompleteRegionException e) throws CommandException {
-        throw new CommandException("Make a region selection first.");
+        throw new CommandException("Make a region selection first.", e, null);
     }
 
     @ExceptionMatch
     public void convert(UnknownItemException e) throws CommandException {
-        throw new CommandException("Block name '" + e.getID() + "' was not recognized.");
+        throw new CommandException("Block name '" + e.getID() + "' was not recognized.", e, null);
     }
 
     @ExceptionMatch
     public void convert(InvalidItemException e) throws CommandException {
-        throw new CommandException(e.getMessage());
+        throw new CommandException(e.getMessage(), e, null);
     }
 
     @ExceptionMatch
     public void convert(DisallowedItemException e) throws CommandException {
         throw new CommandException("Block '" + e.getID()
-                + "' not allowed (see WorldEdit configuration).");
+                + "' not allowed (see WorldEdit configuration).", e, null);
     }
 
     @ExceptionMatch
     public void convert(MaxChangedBlocksException e) throws CommandException {
         throw new CommandException("Max blocks changed in an operation reached ("
-                + e.getBlockLimit() + ").");
+                + e.getBlockLimit() + ").", e, null);
     }
 
     @ExceptionMatch
     public void convert(MaxBrushRadiusException e) throws CommandException {
-        throw new CommandException("Maximum brush radius (in configuration): " + worldEdit.getConfiguration().maxBrushRadius);
+        throw new CommandException("Maximum brush radius (in configuration): " + worldEdit.getConfiguration().maxBrushRadius, e, null);
     }
 
     @ExceptionMatch
     public void convert(MaxRadiusException e) throws CommandException {
-        throw new CommandException("Maximum radius (in configuration): " + worldEdit.getConfiguration().maxRadius);
+        throw new CommandException("Maximum radius (in configuration): " + worldEdit.getConfiguration().maxRadius, e, null);
     }
 
     @ExceptionMatch
     public void convert(UnknownDirectionException e) throws CommandException {
-        throw new CommandException("Unknown direction: " + e.getDirection());
+        throw new CommandException("Unknown direction: " + e.getDirection(), e, null);
     }
 
     @ExceptionMatch
     public void convert(InsufficientArgumentsException e) throws CommandException {
-        throw new CommandException(e.getMessage());
+        throw new CommandException(e.getMessage(), e, null);
     }
 
     @ExceptionMatch
     public void convert(RegionOperationException e) throws CommandException {
-        throw new CommandException(e.getMessage());
+        throw new CommandException(e.getMessage(), e, null);
     }
 
     @ExceptionMatch
     public void convert(ExpressionException e) throws CommandException {
-        throw new CommandException(e.getMessage());
+        throw new CommandException(e.getMessage(), e, null);
     }
 
     @ExceptionMatch
     public void convert(EmptyClipboardException e) throws CommandException {
-        throw new CommandException("Your clipboard is empty. Use //copy first.");
+        throw new CommandException("Your clipboard is empty. Use //copy first.", e, null);
     }
 
     @ExceptionMatch
     public void convert(InvalidFilenameException e) throws CommandException {
         throw new CommandException("Filename '" + e.getFilename() + "' invalid: "
-                + e.getMessage());
+                + e.getMessage(), e, null);
     }
 
     @ExceptionMatch
     public void convert(FilenameResolutionException e) throws CommandException {
         throw new CommandException(
-                "File '" + e.getFilename() + "' resolution error: " + e.getMessage());
+                "File '" + e.getFilename() + "' resolution error: " + e.getMessage(), e, null);
     }
 
     @ExceptionMatch
     public void convert(InvalidToolBindException e) throws CommandException {
-        throw new CommandException("Can't bind tool to " + e.getItemType().getName() + ": " + e.getMessage());
+        throw new CommandException("Can't bind tool to " + e.getItemType().getName() + ": " + e.getMessage(), e, null);
     }
 
     @ExceptionMatch
     public void convert(FileSelectionAbortedException e) throws CommandException {
-        throw new CommandException("File selection aborted.");
+        throw new CommandException("File selection aborted.", e, null);
     }
 
     @ExceptionMatch
     public void convert(WorldEditException e) throws CommandException {
-        throw new CommandException(e.getMessage(), e);
+        throw new CommandException(e.getMessage(), e, null);
+    }
+
+    @ExceptionMatch
+    public void convert(ConditionFailedException e) throws CommandException {
+        if (e.getCondition() instanceof PermissionCondition) {
+            throw new CommandException("You are not permitted to do that. Are you in the right mode?", e, null);
+        }
     }
 
 }

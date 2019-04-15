@@ -101,6 +101,8 @@ subprojects {
         mavenCentral()
         maven { url "http://maven.sk89q.com/repo/" }
         maven { url "http://repo.maven.apache.org/maven2" }
+        // temporary, for Piston
+        mavenLocal()
     }
 
     if (JavaVersion.current().isJava8Compatible()) {

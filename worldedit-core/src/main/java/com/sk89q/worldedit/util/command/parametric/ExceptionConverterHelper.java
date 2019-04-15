@@ -19,8 +19,9 @@
 
 package com.sk89q.worldedit.util.command.parametric;
 
-import com.sk89q.minecraft.util.commands.CommandException;
 import com.sk89q.minecraft.util.commands.WrappedCommandException;
+import org.enginehub.piston.exception.CommandException;
+import org.enginehub.piston.exception.CommandExecutionException;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -75,9 +76,9 @@ public abstract class ExceptionConverterHelper implements ExceptionConverter {
                     if (e.getCause() instanceof CommandException) {
                         throw (CommandException) e.getCause();
                     }
-                    throw new WrappedCommandException(e);
+                    throw new CommandExecutionException(e, null);
                 } catch (IllegalArgumentException | IllegalAccessException e) {
-                    throw new WrappedCommandException(e);
+                    throw new CommandExecutionException(e, null);
                 }
             }
         }
