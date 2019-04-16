@@ -56,6 +56,13 @@ public interface World extends Extent {
     int getMaxY();
 
     /**
+     * Get the minimum Y.
+     *
+     * @return the minimum Y
+     */
+    int getMinY();
+
+    /**
      * Checks whether the given block ID is a valid block ID.
      *
      * @param id the block ID

@@ -88,6 +88,8 @@ import javax.annotation.Nullable;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -105,7 +107,7 @@ public class ForgeWorld extends AbstractWorld {
     private static final IBlockState JUNGLE_LOG = Blocks.LOG.getDefaultState().withProperty(BlockOldLog.VARIANT, BlockPlanks.EnumType.JUNGLE);
     private static final IBlockState JUNGLE_LEAF = Blocks.LEAVES.getDefaultState().withProperty(BlockOldLeaf.VARIANT, BlockPlanks.EnumType.JUNGLE).withProperty(BlockLeaves.CHECK_DECAY, Boolean.valueOf(false));
     private static final IBlockState JUNGLE_SHRUB = Blocks.LEAVES.getDefaultState().withProperty(BlockOldLeaf.VARIANT, BlockPlanks.EnumType.OAK).withProperty(BlockLeaves.CHECK_DECAY, Boolean.valueOf(false));
-    
+
     private final WeakReference<World> worldRef;
 
     /**
@@ -116,7 +118,31 @@ public class ForgeWorld extends AbstractWorld {
     ForgeWorld(World world) {
         checkNotNull(world);
         this.worldRef = new WeakReference<World>(world);
+
+// start hacky stuff
+        if (!checkedMinY) {
+            checkForMinHeight();
+        }
+        if (getMinYMethod != null) {
+            try {
+                minY = (int) getMinYMethod.invoke(world);
+            } catch (IllegalAccessException | InvocationTargetException ignored) {
+            }
+        }
     }
+
+    private static Method getMinYMethod;
+    private static boolean checkedMinY;
+    private int minY = super.getMinY();
+
+    private static void checkForMinHeight() {
+        checkedMinY = true;
+        try {
+            getMinYMethod = World.class.getMethod("getMinHeight");
+        } catch (NoSuchMethodException ignored) {
+        }
+    }
+// end hacky stuff
 
     /**
      * Get the underlying handle to the world.
@@ -151,6 +177,11 @@ public class ForgeWorld extends AbstractWorld {
     @Override
     public String getName() {
         return getWorld().getWorldInfo().getWorldName();
+    }
+
+    @Override
+    public int getMinY() {
+        return minY;
     }
 
     @Override

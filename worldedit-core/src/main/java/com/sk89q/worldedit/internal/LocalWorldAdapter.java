@@ -63,6 +63,11 @@ public class LocalWorldAdapter extends LocalWorld {
     }
 
     @Override
+    public int getMinY() {
+        return super.getMinY();
+    }
+
+    @Override
     public int getMaxY() {
         return world.getMaxY();
     }

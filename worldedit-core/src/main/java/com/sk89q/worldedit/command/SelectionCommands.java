@@ -221,7 +221,7 @@ public class SelectionCommands {
             final Vector2D min2D = ChunkStore.toChunk(region.getMinimumPoint());
             final Vector2D max2D = ChunkStore.toChunk(region.getMaximumPoint());
 
-            min = new Vector(min2D.getBlockX() * 16, 0, min2D.getBlockZ() * 16);
+            min = new Vector(min2D.getBlockX() * 16, world.getMinY(), min2D.getBlockZ() * 16);
             max = new Vector(max2D.getBlockX() * 16 + 15, world.getMaxY(), max2D.getBlockZ() * 16 + 15);
 
             player.print("Chunks selected: ("
@@ -244,7 +244,7 @@ public class SelectionCommands {
                 min2D = ChunkStore.toChunk(player.getBlockIn());
             }
 
-            min = new Vector(min2D.getBlockX() * 16, 0, min2D.getBlockZ() * 16);
+            min = new Vector(min2D.getBlockX() * 16, world.getMinY(), min2D.getBlockZ() * 16);
             max = min.add(15, world.getMaxY(), 15);
 
             player.print("Chunk selected: "

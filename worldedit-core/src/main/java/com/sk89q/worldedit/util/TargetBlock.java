@@ -118,7 +118,7 @@ public class TargetBlock {
             if (world.getBlockType(getCurrentBlock()) == BlockID.AIR) {
                 if (searchForLastBlock) {
                     lastBlock = getCurrentBlock();
-                    if (lastBlock.getBlockY() <= 0 || lastBlock.getBlockY() >= world.getMaxY()) {
+                    if (lastBlock.getBlockY() <= world.getMinY() || lastBlock.getBlockY() >= world.getMaxY()) {
                         searchForLastBlock = false;
                     }
                 }

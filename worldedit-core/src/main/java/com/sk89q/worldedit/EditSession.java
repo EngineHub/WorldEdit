@@ -1247,7 +1247,7 @@ public class EditSession implements Extent {
         checkArgument(radius >= 0, "radius >= 0 required");
 
         MaskIntersection mask = new MaskIntersection(
-                new BoundedHeightMask(0, getWorld().getMaxY()),
+                new BoundedHeightMask(getWorld().getMinY(), getWorld().getMaxY()),
                 new RegionMask(new EllipsoidRegion(null, origin, new Vector(radius, radius, radius))),
                 getWorld().createLiquidMask());
 
@@ -1295,7 +1295,7 @@ public class EditSession implements Extent {
 
         // There are boundaries that the routine needs to stay in
         MaskIntersection mask = new MaskIntersection(
-                new BoundedHeightMask(0, Math.min(origin.getBlockY(), getWorld().getMaxY())),
+                new BoundedHeightMask(getWorld().getMinY(), Math.min(origin.getBlockY(), getWorld().getMaxY())),
                 new RegionMask(new EllipsoidRegion(null, origin, new Vector(radius, radius, radius))),
                 blockMask);
 
@@ -1354,8 +1354,8 @@ public class EditSession implements Extent {
             pos = pos.subtract(0, height, 0);
         }
 
-        if (pos.getBlockY() < 0) {
-            pos = pos.setY(0);
+        if (pos.getBlockY() < world.getMinY()) {
+            pos = pos.setY(world.getMinY());
         } else if (pos.getBlockY() + height - 1 > world.getMaxY()) {
             height = world.getMaxY() - pos.getBlockY() + 1;
         }

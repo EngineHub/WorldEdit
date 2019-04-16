@@ -140,8 +140,8 @@ public class Polygonal2DRegion extends AbstractRegion implements FlatRegion {
         minY = Math.min(oldMinY, oldMaxY);
         maxY = Math.max(oldMinY, oldMaxY);
 
-        minY = Math.min(Math.max(0, minY), world == null ? 255 : world.getMaxY());
-        maxY = Math.min(Math.max(0, maxY), world == null ? 255 : world.getMaxY());
+        minY = Math.min(Math.max(world == null ? 0 : world.getMinY(), minY), world == null ? 255 : world.getMaxY());
+        maxY = Math.min(Math.max(world == null ? 0 : world.getMinY(), maxY), world == null ? 255 : world.getMaxY());
 
         min = new Vector2D(minX, minZ);
         max = new Vector2D(maxX, maxZ);
