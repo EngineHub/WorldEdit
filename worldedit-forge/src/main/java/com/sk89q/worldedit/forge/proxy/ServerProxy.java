@@ -25,16 +25,8 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 @OnlyIn(Dist.DEDICATED_SERVER)
 public class ServerProxy implements CommonProxy {
 
-//    public static ResourceLocation REFERENCE_GUI = new ResourceLocation("worldedit", "resource_gui");
-
     @Override
     public void registerHandlers() {
-//        ModLoadingContext.get().registerExtensionPoint(ExtensionPoint.GUIFACTORY, () -> openContainer -> {
-//            if (openContainer.getId().equals(REFERENCE_GUI)) {
-//                return new GuiReferenceCard();
-//            }
-//            return null;
-//        });
     }
 
 }
