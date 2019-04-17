@@ -21,9 +21,6 @@ package com.sk89q.worldedit.extension.platform;
 
 import com.google.common.collect.ImmutableList;
 import com.google.inject.Key;
-import com.sk89q.minecraft.util.commands.CommandLocals;
-import com.sk89q.minecraft.util.commands.CommandPermissionsException;
-import com.sk89q.minecraft.util.commands.WrappedCommandException;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
@@ -32,6 +29,8 @@ import com.sk89q.worldedit.command.BiomeCommands;
 import com.sk89q.worldedit.command.BiomeCommandsRegistration;
 import com.sk89q.worldedit.command.BrushCommands;
 import com.sk89q.worldedit.command.BrushCommandsRegistration;
+import com.sk89q.worldedit.command.ChunkCommands;
+import com.sk89q.worldedit.command.ChunkCommandsRegistration;
 import com.sk89q.worldedit.command.SchematicCommands;
 import com.sk89q.worldedit.command.SchematicCommandsRegistration;
 import com.sk89q.worldedit.command.argument.Arguments;
@@ -44,18 +43,16 @@ import com.sk89q.worldedit.event.platform.CommandEvent;
 import com.sk89q.worldedit.event.platform.CommandSuggestionEvent;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.internal.command.ActorAuthorizer;
+import com.sk89q.worldedit.internal.command.CommandLoggingHandler;
 import com.sk89q.worldedit.internal.command.UserCommandCompleter;
 import com.sk89q.worldedit.internal.command.WorldEditBinding;
 import com.sk89q.worldedit.internal.command.WorldEditExceptionConverter;
+import com.sk89q.worldedit.session.SessionOwner;
 import com.sk89q.worldedit.session.request.Request;
-import com.sk89q.worldedit.util.command.Dispatcher;
-import com.sk89q.worldedit.util.command.InvalidUsageException;
 import com.sk89q.worldedit.util.command.parametric.ExceptionConverter;
 import com.sk89q.worldedit.util.command.parametric.LegacyCommandsHandler;
 import com.sk89q.worldedit.util.command.parametric.ParametricBuilder;
 import com.sk89q.worldedit.util.eventbus.Subscribe;
-import com.sk89q.worldedit.util.formatting.ColorCodeBuilder;
-import com.sk89q.worldedit.util.formatting.component.CommandUsageBox;
 import com.sk89q.worldedit.util.logging.DynamicStreamHandler;
 import com.sk89q.worldedit.util.logging.LogFormat;
 import com.sk89q.worldedit.world.World;
@@ -66,6 +63,12 @@ import org.enginehub.piston.exception.CommandException;
 import org.enginehub.piston.exception.CommandExecutionException;
 import org.enginehub.piston.exception.ConditionFailedException;
 import org.enginehub.piston.exception.UsageException;
+import org.enginehub.piston.gen.CommandCallListener;
+import org.enginehub.piston.gen.CommandRegistration;
+import org.enginehub.piston.inject.InjectedValueAccess;
+import org.enginehub.piston.inject.InjectedValueStore;
+import org.enginehub.piston.inject.MapBackedValueStore;
+import org.enginehub.piston.inject.MemoizingValueAccess;
 import org.enginehub.piston.part.SubCommandPart;
 import org.enginehub.piston.util.ValueProvider;
 import org.slf4j.Logger;
@@ -73,6 +76,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
@@ -93,12 +98,14 @@ public final class PlatformCommandMananger {
     private static final java.util.logging.Logger commandLog =
         java.util.logging.Logger.getLogger(PlatformCommandMananger.class.getCanonicalName() + ".CommandLog");
     private static final Pattern numberFormatExceptionPattern = Pattern.compile("^For input string: \"(.*)\"$");
+    private static final CommandPermissionsConditionGenerator PERM_GEN = new CommandPermissionsConditionGenerator();
 
     private final WorldEdit worldEdit;
     private final PlatformManager platformManager;
     private final CommandManager commandManager;
     private final DynamicStreamHandler dynamicHandler = new DynamicStreamHandler();
     private final ExceptionConverter exceptionConverter;
+    private final List<CommandCallListener> callListeners;
 
     /**
      * Create a new instance.
@@ -113,7 +120,27 @@ public final class PlatformCommandMananger {
         this.exceptionConverter = new WorldEditExceptionConverter(worldEdit);
         this.commandManager = DefaultCommandManagerService.getInstance()
             .newCommandManager();
+        this.callListeners = Collections.singletonList(
+            new CommandLoggingHandler(worldEdit, commandLog)
+        );
+        // setup separate from main constructor
+        // ensures that everything is definitely assigned
+        initialize();
+    }
 
+    private <CI> void register(CommandManager manager, CommandRegistration<CI> registration, CI instance) {
+        registration.containerInstance(instance)
+            .commandManager(manager)
+            .listeners(callListeners);
+        if (registration instanceof CommandPermissionsConditionGenerator.Registration) {
+            ((CommandPermissionsConditionGenerator.Registration) registration).commandPermissionsConditionGenerator(
+                PERM_GEN
+            );
+        }
+        registration.build();
+    }
+
+    private void initialize() {
         // Register this instance for command events
         worldEdit.getEventBus().register(this);
 
@@ -127,9 +154,6 @@ public final class PlatformCommandMananger {
         builder.addBinding(new WorldEditBinding(worldEdit));
         builder.addInvokeListener(new LegacyCommandsHandler());
 
-        CommandPermissionsConditionGenerator permsGenerator =
-            new CommandPermissionsConditionGenerator();
-
         commandManager.register("schematic", cmd -> {
             cmd.aliases(ImmutableList.of("schem", "/schematic", "/schem"));
             cmd.description("Schematic commands for saving/loading areas");
@@ -137,19 +161,17 @@ public final class PlatformCommandMananger {
 
             CommandManager manager = DefaultCommandManagerService.getInstance()
                 .newCommandManager();
-            SchematicCommandsRegistration.builder()
-                .commandManager(manager)
-                .containerInstance(new SchematicCommands(worldEdit))
-                .commandPermissionsConditionGenerator(
-                    permsGenerator
-                ).build();
+            register(
+                manager,
+                SchematicCommandsRegistration.builder(),
+                new SchematicCommands(worldEdit)
+            );
 
             cmd.addPart(SubCommandPart.builder("action", "Sub-command to run.")
                 .withCommands(manager.getAllCommands().collect(Collectors.toList()))
                 .required()
                 .build());
         });
-
         commandManager.register("brush", cmd -> {
             cmd.aliases(ImmutableList.of("br"));
             cmd.description("Brushing commands");
@@ -157,31 +179,33 @@ public final class PlatformCommandMananger {
 
             CommandManager manager = DefaultCommandManagerService.getInstance()
                 .newCommandManager();
-            BrushCommandsRegistration.builder()
-                .commandManager(manager)
-                .containerInstance(new BrushCommands(worldEdit))
-                .commandPermissionsConditionGenerator(
-                    permsGenerator
-                ).build();
+            register(
+                manager,
+                BrushCommandsRegistration.builder(),
+                new BrushCommands(worldEdit)
+            );
 
             cmd.addPart(SubCommandPart.builder("action", "Sub-command to run.")
                 .withCommands(manager.getAllCommands().collect(Collectors.toList()))
                 .required()
                 .build());
         });
-
-        BiomeCommandsRegistration.builder()
-            .commandManager(commandManager)
-            .containerInstance(new BiomeCommands())
-            .commandPermissionsConditionGenerator(permsGenerator)
-            .build();
+        register(
+            commandManager,
+            BiomeCommandsRegistration.builder(),
+            new BiomeCommands()
+        );
+        register(
+            commandManager,
+            ChunkCommandsRegistration.builder(),
+            new ChunkCommands(worldEdit)
+        );
 
         // Unported commands are below. Delete once they're added to the main manager above.
         /*
         dispatcher = new CommandGraph()
                 .builder(builder)
                     .commands()
-                        .registerMethods(new ChunkCommands(worldEdit))
                         .registerMethods(new ClipboardCommands(worldEdit))
                         .registerMethods(new GeneralCommands(worldEdit))
                         .registerMethods(new GenerationCommands(worldEdit))
@@ -309,13 +333,31 @@ public final class PlatformCommandMananger {
         }
         LocalConfiguration config = worldEdit.getConfiguration();
 
-        commandManager.injectValue(Key.get(Actor.class), ValueProvider.constant(actor));
-        commandManager.injectValue(Key.get(Arguments.class), ValueProvider.constant(event::getArguments));
-        commandManager.injectValue(Key.get(EditSessionHolder.class),
-            context -> context.injectedValue(Key.get(Actor.class))
-                .filter(Player.class::isInstance)
-                .map(Player.class::cast)
-                .map(p -> new EditSessionHolder(worldEdit, p)));
+        InjectedValueStore store = MapBackedValueStore.create();
+        store.injectValue(Key.get(Actor.class), ValueProvider.constant(actor));
+        if (actor instanceof Player) {
+            store.injectValue(Key.get(Player.class), ValueProvider.constant((Player) actor));
+        }
+        store.injectValue(Key.get(Arguments.class), ValueProvider.constant(event::getArguments));
+        store.injectValue(Key.get(LocalSession.class),
+            context -> {
+                LocalSession localSession = worldEdit.getSessionManager().get(actor);
+                localSession.tellVersion(actor);
+                return Optional.of(localSession);
+            });
+        store.injectValue(Key.get(EditSession.class),
+            context -> {
+                LocalSession localSession = context.injectedValue(Key.get(LocalSession.class))
+                    .orElseThrow(() -> new IllegalStateException("No LocalSession"));
+                return context.injectedValue(Key.get(Player.class))
+                    .map(player -> {
+                        EditSession editSession = localSession.createEditSession(player);
+                        editSession.enableStandardMode();
+                        return editSession;
+                    });
+            });
+
+        MemoizingValueAccess context = MemoizingValueAccess.wrap(store);
 
         long start = System.currentTimeMillis();
 
@@ -325,7 +367,7 @@ public final class PlatformCommandMananger {
             // exceptions without writing a hook into every dispatcher, we need to unwrap these
             // exceptions and rethrow their converted form, if their is one.
             try {
-                commandManager.execute(ImmutableList.copyOf(split));
+                commandManager.execute(context, ImmutableList.copyOf(split));
             } catch (Throwable t) {
                 // Use the exception converter to convert the exception if any of its causes
                 // can be converted, otherwise throw the original exception
@@ -358,8 +400,8 @@ public final class PlatformCommandMananger {
                 log.error("An unknown error occurred", e);
             }
         } finally {
-            Optional<EditSession> editSessionOpt = commandManager.injectedValue(Key.get(EditSessionHolder.class))
-                .map(EditSessionHolder::getSession);
+            Optional<EditSession> editSessionOpt =
+                context.injectedValueIfMemoized(Key.get(EditSession.class));
 
             if (editSessionOpt.isPresent()) {
                 EditSession editSession = editSessionOpt.get();

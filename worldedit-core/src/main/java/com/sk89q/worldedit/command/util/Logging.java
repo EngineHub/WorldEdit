@@ -20,7 +20,7 @@
 //$Id$
 
 
-package com.sk89q.minecraft.util.commands;
+package com.sk89q.worldedit.command.util;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

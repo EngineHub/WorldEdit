@@ -19,7 +19,8 @@
 
 package com.sk89q.worldedit.command.argument;
 
-import org.enginehub.piston.InjectedValueAccess;
+
+import org.enginehub.piston.inject.InjectedValueAccess;
 
 /**
  * Key-interface for {@link InjectedValueAccess} for the String arguments.

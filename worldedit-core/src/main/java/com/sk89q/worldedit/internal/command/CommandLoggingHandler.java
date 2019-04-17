@@ -20,7 +20,7 @@
 package com.sk89q.worldedit.internal.command;
 
 import com.google.inject.Key;
-import com.sk89q.minecraft.util.commands.Logging;
+import com.sk89q.worldedit.command.util.Logging;
 import com.sk89q.worldedit.IncompleteRegionException;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;

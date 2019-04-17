@@ -19,12 +19,13 @@
 
 package com.sk89q.worldedit.command;
 
-import com.sk89q.minecraft.util.commands.Logging;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.command.util.CommandPermissions;
+import com.sk89q.worldedit.command.util.CommandPermissionsConditionGenerator;
+import com.sk89q.worldedit.command.util.Logging;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.function.FlatRegionFunction;
@@ -54,12 +55,12 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import static com.sk89q.minecraft.util.commands.Logging.LogMode.REGION;
+import static com.sk89q.worldedit.command.util.Logging.LogMode.REGION;
 
 /**
  * Implements biome-related commands such as "/biomelist".
  */
-@CommandContainer
+@CommandContainer(superTypes = CommandPermissionsConditionGenerator.Registration.class)
 public class BiomeCommands {
 
     /**

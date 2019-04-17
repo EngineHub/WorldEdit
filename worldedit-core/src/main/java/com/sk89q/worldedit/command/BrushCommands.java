@@ -33,6 +33,7 @@ import com.sk89q.worldedit.command.tool.brush.HollowSphereBrush;
 import com.sk89q.worldedit.command.tool.brush.SmoothBrush;
 import com.sk89q.worldedit.command.tool.brush.SphereBrush;
 import com.sk89q.worldedit.command.util.CommandPermissions;
+import com.sk89q.worldedit.command.util.CommandPermissionsConditionGenerator;
 import com.sk89q.worldedit.command.util.CreatureButcher;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
@@ -55,7 +56,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * Commands to set brush shape.
  */
-@CommandContainer
+@CommandContainer(superTypes = CommandPermissionsConditionGenerator.Registration.class)
 public class BrushCommands {
 
     private final WorldEdit worldEdit;

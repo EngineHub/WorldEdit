@@ -20,10 +20,9 @@
 package com.sk89q.worldedit.command.util;
 
 import com.google.common.collect.ImmutableSet;
-import com.google.inject.Key;
-import com.sk89q.worldedit.extension.platform.Actor;
 import org.enginehub.piston.Command;
 import org.enginehub.piston.gen.CommandConditionGenerator;
+import org.enginehub.piston.gen.CommandRegistration;
 import org.enginehub.piston.util.NonnullByDefault;
 
 import java.lang.reflect.Method;
@@ -33,6 +32,10 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 @NonnullByDefault
 public class CommandPermissionsConditionGenerator implements CommandConditionGenerator {
+
+    public interface Registration {
+        Registration commandPermissionsConditionGenerator(CommandPermissionsConditionGenerator generator);
+    }
 
     @Override
     public Command.Condition generateCondition(Method commandMethod) {

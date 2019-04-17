@@ -20,22 +20,23 @@
 package com.sk89q.worldedit.command;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static com.sk89q.minecraft.util.commands.Logging.LogMode.REGION;
+import static com.sk89q.worldedit.command.util.Logging.LogMode.REGION;
 
-import com.sk89q.minecraft.util.commands.Command;
-import com.sk89q.minecraft.util.commands.CommandPermissions;
-import com.sk89q.minecraft.util.commands.Logging;
-import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.command.util.CommandPermissions;
+import com.sk89q.worldedit.command.util.CommandPermissionsConditionGenerator;
+import com.sk89q.worldedit.command.util.Logging;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.math.MathUtils;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.storage.LegacyChunkStore;
 import com.sk89q.worldedit.world.storage.McRegionChunkStore;
+import org.enginehub.piston.annotation.Command;
+import org.enginehub.piston.annotation.CommandContainer;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -45,21 +46,19 @@ import java.util.Set;
 /**
  * Commands for working with chunks.
  */
+@CommandContainer(superTypes = CommandPermissionsConditionGenerator.Registration.class)
 public class ChunkCommands {
 
     private final WorldEdit worldEdit;
-    
+
     public ChunkCommands(WorldEdit worldEdit) {
         checkNotNull(worldEdit);
         this.worldEdit = worldEdit;
     }
 
     @Command(
-        aliases = { "chunkinfo" },
-        usage = "",
-        desc = "Get information about the chunk that you are inside",
-        min = 0,
-        max = 0
+        name = "chunkinfo",
+        desc = "Get information about the chunk that you are inside"
     )
     @CommandPermissions("worldedit.chunkinfo")
     public void chunkInfo(Player player) throws WorldEditException {
@@ -79,11 +78,8 @@ public class ChunkCommands {
     }
 
     @Command(
-        aliases = { "listchunks" },
-        usage = "",
-        desc = "List chunks that your selection includes",
-        min = 0,
-        max = 0
+        name = "listchunks",
+        desc = "List chunks that your selection includes"
     )
     @CommandPermissions("worldedit.listchunks")
     public void listChunks(Player player, LocalSession session) throws WorldEditException {
@@ -95,11 +91,8 @@ public class ChunkCommands {
     }
 
     @Command(
-        aliases = { "delchunks" },
-        usage = "",
-        desc = "Delete chunks that your selection includes",
-        min = 0,
-        max = 0
+        name = "delchunks",
+        desc = "Delete chunks that your selection includes"
     )
     @CommandPermissions("worldedit.delchunks")
     @Logging(REGION)
