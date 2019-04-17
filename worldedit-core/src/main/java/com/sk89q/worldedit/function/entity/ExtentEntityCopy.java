@@ -144,25 +144,24 @@ public class ExtentEntityCopy implements EntityFunction {
                         .putInt("TileZ", newTilePosition.getBlockZ());
 
                 if (hasDirection || hasLegacyDirection || hasFacing) {
-                    int d;
+                    Direction direction;
                     if (hasDirection) {
-                        d = tag.asInt("Direction");
+                        direction = MCDirections.fromPre13Hanging(tag.asInt("Direction"));
                     } else if (hasLegacyDirection) {
-                        d = MCDirections.fromLegacyHanging((byte) tag.asInt("Dir"));
+                        direction = MCDirections.fromPre13Hanging(
+                            MCDirections.fromLegacyHanging((byte) tag.asInt("Dir"))
+                        );
                     } else {
-                        d = tag.asInt("Facing");
+                        direction = MCDirections.fromHanging(tag.asInt("Facing"));
                     }
-
-                    Direction direction = MCDirections.fromHanging(d);
 
                     if (direction != null) {
                         Vector3 vector = transform.apply(direction.toVector()).subtract(transform.apply(Vector3.ZERO)).normalize();
                         Direction newDirection = Direction.findClosest(vector, Flag.CARDINAL);
 
                         if (newDirection != null) {
-                            byte hangingByte = (byte) MCDirections.toHanging(newDirection);
-                            builder.putByte("Direction", hangingByte);
-                            builder.putByte("Facing", hangingByte);
+                            builder.putByte("Direction", (byte) MCDirections.toPre13Hanging(newDirection));
+                            builder.putByte("Facing", (byte) MCDirections.toHanging(newDirection));
                             builder.putByte("Dir", MCDirections.toLegacyHanging(MCDirections.toHanging(newDirection)));
                         }
                     }
