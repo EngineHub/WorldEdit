@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.extent.clipboard.io;
 
+import com.google.common.collect.ImmutableList;
 import com.sk89q.jnbt.ByteArrayTag;
 import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.jnbt.IntTag;
@@ -32,7 +33,9 @@ import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.extent.clipboard.BlockArrayClipboard;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
+import com.sk89q.worldedit.extent.clipboard.io.legacycompat.EntityNBTCompatibilityHandler;
 import com.sk89q.worldedit.extent.clipboard.io.legacycompat.NBTCompatibilityHandler;
+import com.sk89q.worldedit.extent.clipboard.io.legacycompat.Pre13HangingCompatibilityHandler;
 import com.sk89q.worldedit.extent.clipboard.io.legacycompat.SignCompatibilityHandler;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.CuboidRegion;
@@ -47,7 +50,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -59,12 +61,15 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class MCEditSchematicReader extends NBTSchematicReader {
 
-    private static final List<NBTCompatibilityHandler> COMPATIBILITY_HANDLERS = new ArrayList<>();
-
-    static {
-        COMPATIBILITY_HANDLERS.add(new SignCompatibilityHandler());
+    private static final ImmutableList<NBTCompatibilityHandler> COMPATIBILITY_HANDLERS
+        = ImmutableList.of(
+        new SignCompatibilityHandler()
         // TODO Add a handler for skulls, flower pots, note blocks, etc.
-    }
+    );
+    private static final ImmutableList<EntityNBTCompatibilityHandler> ENTITY_COMPATIBILITY_HANDLERS
+        = ImmutableList.of(
+        new Pre13HangingCompatibilityHandler()
+    );
 
     private static final Logger log = LoggerFactory.getLogger(MCEditSchematicReader.class);
     private final NBTInputStream inputStream;
@@ -264,6 +269,11 @@ public class MCEditSchematicReader extends NBTSchematicReader {
                     if (!id.isEmpty()) {
                         EntityType entityType = EntityTypes.get(id.toLowerCase());
                         if (entityType != null) {
+                            for (EntityNBTCompatibilityHandler compatibilityHandler : ENTITY_COMPATIBILITY_HANDLERS) {
+                                if (compatibilityHandler.isAffectedEntity(entityType, compound)) {
+                                    compound = compatibilityHandler.updateNBT(entityType, compound);
+                                }
+                            }
                             BaseEntity state = new BaseEntity(entityType, compound);
                             clipboard.createEntity(location, state);
                         } else {
