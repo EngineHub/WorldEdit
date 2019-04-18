@@ -19,16 +19,16 @@
 
 package com.sk89q.worldedit.command.util;
 
-import com.google.inject.Key;
 import com.sk89q.worldedit.extension.platform.Actor;
 import org.enginehub.piston.Command;
 import org.enginehub.piston.CommandParameters;
+import org.enginehub.piston.inject.Key;
 
 import java.util.Set;
 
 public final class PermissionCondition implements Command.Condition {
 
-    private static final Key<Actor> ACTOR_KEY = Key.get(Actor.class);
+    private static final Key<Actor> ACTOR_KEY = Key.of(Actor.class);
 
     private final Set<String> permissions;
 

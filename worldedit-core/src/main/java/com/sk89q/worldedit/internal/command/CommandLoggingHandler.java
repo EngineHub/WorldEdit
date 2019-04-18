@@ -19,16 +19,16 @@
 
 package com.sk89q.worldedit.internal.command;
 
-import com.google.inject.Key;
-import com.sk89q.worldedit.command.util.Logging;
 import com.sk89q.worldedit.IncompleteRegionException;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.command.util.Logging;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.math.Vector3;
 import org.enginehub.piston.CommandParameters;
 import org.enginehub.piston.gen.CommandCallListener;
+import org.enginehub.piston.inject.Key;
 
 import java.lang.reflect.Method;
 import java.util.Optional;
@@ -72,7 +72,7 @@ public class CommandLoggingHandler implements CommandCallListener, AutoCloseable
             logMode = loggingAnnotation.value();
         }
 
-        Optional<Player> playerOpt = parameters.injectedValue(Key.get(Actor.class))
+        Optional<Player> playerOpt = parameters.injectedValue(Key.of(Actor.class))
             .filter(Player.class::isInstance)
             .map(Player.class::cast);
 

@@ -20,7 +20,6 @@
 package com.sk89q.worldedit.extension.platform;
 
 import com.google.common.collect.ImmutableList;
-import com.google.inject.Key;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
@@ -31,10 +30,11 @@ import com.sk89q.worldedit.command.BrushCommands;
 import com.sk89q.worldedit.command.BrushCommandsRegistration;
 import com.sk89q.worldedit.command.ChunkCommands;
 import com.sk89q.worldedit.command.ChunkCommandsRegistration;
+import com.sk89q.worldedit.command.ClipboardCommands;
+import com.sk89q.worldedit.command.ClipboardCommandsRegistration;
 import com.sk89q.worldedit.command.SchematicCommands;
 import com.sk89q.worldedit.command.SchematicCommandsRegistration;
 import com.sk89q.worldedit.command.argument.Arguments;
-import com.sk89q.worldedit.command.argument.EditSessionHolder;
 import com.sk89q.worldedit.command.util.CommandPermissionsConditionGenerator;
 import com.sk89q.worldedit.command.util.PermissionCondition;
 import com.sk89q.worldedit.entity.Entity;
@@ -47,7 +47,6 @@ import com.sk89q.worldedit.internal.command.CommandLoggingHandler;
 import com.sk89q.worldedit.internal.command.UserCommandCompleter;
 import com.sk89q.worldedit.internal.command.WorldEditBinding;
 import com.sk89q.worldedit.internal.command.WorldEditExceptionConverter;
-import com.sk89q.worldedit.session.SessionOwner;
 import com.sk89q.worldedit.session.request.Request;
 import com.sk89q.worldedit.util.command.parametric.ExceptionConverter;
 import com.sk89q.worldedit.util.command.parametric.LegacyCommandsHandler;
@@ -65,8 +64,8 @@ import org.enginehub.piston.exception.ConditionFailedException;
 import org.enginehub.piston.exception.UsageException;
 import org.enginehub.piston.gen.CommandCallListener;
 import org.enginehub.piston.gen.CommandRegistration;
-import org.enginehub.piston.inject.InjectedValueAccess;
 import org.enginehub.piston.inject.InjectedValueStore;
+import org.enginehub.piston.inject.Key;
 import org.enginehub.piston.inject.MapBackedValueStore;
 import org.enginehub.piston.inject.MemoizingValueAccess;
 import org.enginehub.piston.part.SubCommandPart;
@@ -200,13 +199,17 @@ public final class PlatformCommandMananger {
             ChunkCommandsRegistration.builder(),
             new ChunkCommands(worldEdit)
         );
+        register(
+            commandManager,
+            ClipboardCommandsRegistration.builder(),
+            new ClipboardCommands()
+        );
 
         // Unported commands are below. Delete once they're added to the main manager above.
         /*
         dispatcher = new CommandGraph()
                 .builder(builder)
                     .commands()
-                        .registerMethods(new ClipboardCommands(worldEdit))
                         .registerMethods(new GeneralCommands(worldEdit))
                         .registerMethods(new GenerationCommands(worldEdit))
                         .registerMethods(new HistoryCommands(worldEdit))
@@ -334,22 +337,22 @@ public final class PlatformCommandMananger {
         LocalConfiguration config = worldEdit.getConfiguration();
 
         InjectedValueStore store = MapBackedValueStore.create();
-        store.injectValue(Key.get(Actor.class), ValueProvider.constant(actor));
+        store.injectValue(Key.of(Actor.class), ValueProvider.constant(actor));
         if (actor instanceof Player) {
-            store.injectValue(Key.get(Player.class), ValueProvider.constant((Player) actor));
+            store.injectValue(Key.of(Player.class), ValueProvider.constant((Player) actor));
         }
-        store.injectValue(Key.get(Arguments.class), ValueProvider.constant(event::getArguments));
-        store.injectValue(Key.get(LocalSession.class),
+        store.injectValue(Key.of(Arguments.class), ValueProvider.constant(event::getArguments));
+        store.injectValue(Key.of(LocalSession.class),
             context -> {
                 LocalSession localSession = worldEdit.getSessionManager().get(actor);
                 localSession.tellVersion(actor);
                 return Optional.of(localSession);
             });
-        store.injectValue(Key.get(EditSession.class),
+        store.injectValue(Key.of(EditSession.class),
             context -> {
-                LocalSession localSession = context.injectedValue(Key.get(LocalSession.class))
+                LocalSession localSession = context.injectedValue(Key.of(LocalSession.class))
                     .orElseThrow(() -> new IllegalStateException("No LocalSession"));
-                return context.injectedValue(Key.get(Player.class))
+                return context.injectedValue(Key.of(Player.class))
                     .map(player -> {
                         EditSession editSession = localSession.createEditSession(player);
                         editSession.enableStandardMode();
@@ -401,7 +404,7 @@ public final class PlatformCommandMananger {
             }
         } finally {
             Optional<EditSession> editSessionOpt =
-                context.injectedValueIfMemoized(Key.get(EditSession.class));
+                context.injectedValueIfMemoized(Key.of(EditSession.class));
 
             if (editSessionOpt.isPresent()) {
                 EditSession editSession = editSessionOpt.get();
@@ -432,8 +435,8 @@ public final class PlatformCommandMananger {
     @Subscribe
     public void handleCommandSuggestion(CommandSuggestionEvent event) {
         try {
-            commandManager.injectValue(Key.get(Actor.class), ValueProvider.constant(event.getActor()));
-            commandManager.injectValue(Key.get(Arguments.class), ValueProvider.constant(event::getArguments));
+            commandManager.injectValue(Key.of(Actor.class), ValueProvider.constant(event.getActor()));
+            commandManager.injectValue(Key.of(Arguments.class), ValueProvider.constant(event::getArguments));
             // TODO suggestions
         } catch (CommandException e) {
             event.getActor().printError(e.getMessage());

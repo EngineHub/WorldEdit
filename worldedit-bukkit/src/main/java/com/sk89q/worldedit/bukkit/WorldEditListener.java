@@ -22,7 +22,6 @@
 package com.sk89q.worldedit.bukkit;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.inject.Key;
 import com.sk89q.util.StringUtil;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.entity.Player;
@@ -43,6 +42,7 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.enginehub.piston.CommandManager;
 import org.enginehub.piston.CommandParameters;
 import org.enginehub.piston.NoInputCommandParameters;
+import org.enginehub.piston.inject.Key;
 
 /**
  * Handles all events thrown in relation to a Player
@@ -110,7 +110,7 @@ public class WorldEditListener implements Listener {
     public void onPlayerCommand(PlayerCommandSendEvent event) {
         CommandParameters parameters = NoInputCommandParameters.builder()
             .injectedValues(ImmutableMap.of(
-                Key.get(Actor.class), plugin.wrapCommandSender(event.getPlayer())
+                Key.of(Actor.class), plugin.wrapCommandSender(event.getPlayer())
             ))
             .build();
         CommandManager commandManager = plugin.getWorldEdit().getPlatformManager().getPlatformCommandMananger().getCommandManager();

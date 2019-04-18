@@ -20,7 +20,6 @@
 package com.sk89q.worldedit.bukkit;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.inject.Key;
 import com.sk89q.bukkit.util.CommandInspector;
 import com.sk89q.worldedit.extension.platform.Actor;
 import org.bukkit.command.Command;
@@ -28,6 +27,7 @@ import org.bukkit.command.CommandSender;
 import org.enginehub.piston.CommandManager;
 import org.enginehub.piston.CommandParameters;
 import org.enginehub.piston.NoInputCommandParameters;
+import org.enginehub.piston.inject.Key;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -76,7 +76,7 @@ class BukkitCommandInspector implements CommandInspector {
         if (mapping.isPresent()) {
             CommandParameters parameters = NoInputCommandParameters.builder()
                 .injectedValues(ImmutableMap.of(
-                    Key.get(Actor.class), plugin.wrapCommandSender(sender)
+                    Key.of(Actor.class), plugin.wrapCommandSender(sender)
                 ))
                 .build();
             return mapping.get().getCondition().satisfied(parameters);
