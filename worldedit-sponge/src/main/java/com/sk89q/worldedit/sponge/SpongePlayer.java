@@ -36,6 +36,8 @@ import com.sk89q.worldedit.world.gamemode.GameMode;
 import com.sk89q.worldedit.world.gamemode.GameModes;
 import com.sk89q.worldedit.world.item.ItemTypes;
 
+import net.kyori.text.TextComponent;
+import net.kyori.text.adapter.spongeapi.TextAdapter;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.type.HandTypes;
 import org.spongepowered.api.entity.living.player.Player;
@@ -147,6 +149,11 @@ public class SpongePlayer extends AbstractPlayerActor {
     @Override
     public void printError(String msg) {
         sendColorized(msg, TextColors.RED);
+    }
+
+    @Override
+    public void print(TextComponent component) {
+        TextAdapter.sendComponent(player, component);
     }
 
     private void sendColorized(String msg, TextColor formatting) {

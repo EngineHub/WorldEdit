@@ -142,6 +142,9 @@ subprojects {
             include(dependency('com.sk89q:jchronic:0.2.4a'))
             include(dependency('com.thoughtworks.paranamer:paranamer:2.6'))
             include(dependency('com.sk89q.lib:jlibnoise:1.0.0'))
+            relocate('net.kyori.text', 'com.sk89q.worldedit.util.formatting') {
+                include(dependency('net.kyori:text-api:2.0.0'))
+            }
         }
         exclude 'GradleStart**'
         exclude '.cache'

@@ -16,6 +16,7 @@
   <allow pkg="net.royawesome.jlibnoise"/>
   <allow pkg="org.json.simple" />
   <allow pkg="org.slf4j"/>
+  <allow pkg="net.kyori.text"/>
 
   <subpackage name="util.yaml">
     <allow pkg="org.yaml.snakeyaml"/>

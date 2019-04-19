@@ -34,6 +34,7 @@ import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 
+import net.kyori.text.TextComponent;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
@@ -139,6 +140,11 @@ public class ForgePlayer extends AbstractPlayerActor {
     @Override
     public void printError(String msg) {
         sendColorized(msg, TextFormatting.RED);
+    }
+
+    @Override
+    public void print(TextComponent component) {
+        // TODO
     }
 
     private void sendColorized(String msg, TextFormatting formatting) {

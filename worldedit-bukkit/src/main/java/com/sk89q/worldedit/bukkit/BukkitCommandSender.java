@@ -26,7 +26,8 @@ import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.internal.cui.CUIEvent;
 import com.sk89q.worldedit.session.SessionKey;
 import com.sk89q.worldedit.util.auth.AuthorizationException;
-import com.sk89q.worldedit.util.formatting.Fragment;
+import net.kyori.text.TextComponent;
+import net.kyori.text.adapter.bukkit.TextAdapter;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -93,9 +94,8 @@ public class BukkitCommandSender implements Actor {
     }
 
     @Override
-    public void print(Fragment fragment) {
-        // TODO Bukkit is bad and the API is somewhat lacking
-        printRaw(fragment.toString());
+    public void print(TextComponent component) {
+        TextAdapter.sendComponent(sender, component);
     }
 
     @Override
