@@ -21,6 +21,7 @@ package com.sk89q.worldedit.extension.platform;
 
 import com.google.common.collect.ImmutableList;
 import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.IncompleteRegionException;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
@@ -35,6 +36,8 @@ import com.sk89q.worldedit.command.ClipboardCommandsRegistration;
 import com.sk89q.worldedit.command.SchematicCommands;
 import com.sk89q.worldedit.command.SchematicCommandsRegistration;
 import com.sk89q.worldedit.command.argument.Arguments;
+import com.sk89q.worldedit.command.argument.DirectionConverter;
+import com.sk89q.worldedit.command.argument.MaskConverter;
 import com.sk89q.worldedit.command.util.CommandPermissionsConditionGenerator;
 import com.sk89q.worldedit.command.util.PermissionCondition;
 import com.sk89q.worldedit.entity.Entity;
@@ -42,11 +45,13 @@ import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.event.platform.CommandEvent;
 import com.sk89q.worldedit.event.platform.CommandSuggestionEvent;
 import com.sk89q.worldedit.extent.Extent;
+import com.sk89q.worldedit.internal.annotation.Selection;
 import com.sk89q.worldedit.internal.command.ActorAuthorizer;
 import com.sk89q.worldedit.internal.command.CommandLoggingHandler;
 import com.sk89q.worldedit.internal.command.UserCommandCompleter;
 import com.sk89q.worldedit.internal.command.WorldEditBinding;
 import com.sk89q.worldedit.internal.command.WorldEditExceptionConverter;
+import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.session.request.Request;
 import com.sk89q.worldedit.util.command.parametric.ExceptionConverter;
 import com.sk89q.worldedit.util.command.parametric.LegacyCommandsHandler;
@@ -103,7 +108,7 @@ public final class PlatformCommandMananger {
     private final PlatformManager platformManager;
     private final CommandManager commandManager;
     private final DynamicStreamHandler dynamicHandler = new DynamicStreamHandler();
-    private final ExceptionConverter exceptionConverter;
+    private final WorldEditExceptionConverter exceptionConverter;
     private final List<CommandCallListener> callListeners;
 
     /**
@@ -153,6 +158,45 @@ public final class PlatformCommandMananger {
         builder.addBinding(new WorldEditBinding(worldEdit));
         builder.addInvokeListener(new LegacyCommandsHandler());
 
+        registerAlwaysInjectedValues();
+        registerArgumentConverters();
+        registerAllCommands();
+    }
+
+    private void registerArgumentConverters() {
+        DirectionConverter.register(worldEdit, commandManager);
+        MaskConverter.register(worldEdit, commandManager);
+    }
+
+    private void registerAlwaysInjectedValues() {
+        commandManager.injectValue(Key.of(Region.class, Selection.class),
+            context -> {
+                LocalSession localSession = context.injectedValue(Key.of(LocalSession.class))
+                    .orElseThrow(() -> new IllegalStateException("No LocalSession"));
+                return context.injectedValue(Key.of(Player.class))
+                    .map(player -> {
+                        try {
+                            return localSession.getSelection(player.getWorld());
+                        } catch (IncompleteRegionException e) {
+                            exceptionConverter.convert(e);
+                            throw new AssertionError("Should have thrown a new exception.");
+                        }
+                    });
+            });
+        commandManager.injectValue(Key.of(EditSession.class),
+            context -> {
+                LocalSession localSession = context.injectedValue(Key.of(LocalSession.class))
+                    .orElseThrow(() -> new IllegalStateException("No LocalSession"));
+                return context.injectedValue(Key.of(Player.class))
+                    .map(player -> {
+                        EditSession editSession = localSession.createEditSession(player);
+                        editSession.enableStandardMode();
+                        return editSession;
+                    });
+            });
+    }
+
+    private void registerAllCommands() {
         commandManager.register("schematic", cmd -> {
             cmd.aliases(ImmutableList.of("schem", "/schematic", "/schem"));
             cmd.description("Schematic commands for saving/loading areas");
@@ -347,17 +391,6 @@ public final class PlatformCommandMananger {
                 LocalSession localSession = worldEdit.getSessionManager().get(actor);
                 localSession.tellVersion(actor);
                 return Optional.of(localSession);
-            });
-        store.injectValue(Key.of(EditSession.class),
-            context -> {
-                LocalSession localSession = context.injectedValue(Key.of(LocalSession.class))
-                    .orElseThrow(() -> new IllegalStateException("No LocalSession"));
-                return context.injectedValue(Key.of(Player.class))
-                    .map(player -> {
-                        EditSession editSession = localSession.createEditSession(player);
-                        editSession.enableStandardMode();
-                        return editSession;
-                    });
             });
 
         MemoizingValueAccess context = MemoizingValueAccess.wrap(store);

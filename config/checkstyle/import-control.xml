@@ -17,7 +17,6 @@
   <allow pkg="org.json.simple" />
   <allow pkg="org.slf4j"/>
   <allow pkg="org.enginehub"/>
-  <allow class="com.google.inject.Key"/>
 
   <subpackage name="util.yaml">
     <allow pkg="org.yaml.snakeyaml"/>
@@ -40,6 +39,7 @@
   <subpackage name="worldedit">
     <allow pkg="org.mozilla.javascript"/>
     <allow pkg="de.schlichtherle"/>
+    <allow pkg="com.google.auto"/>
 
     <subpackage name="bukkit">
       <allow pkg="org.bukkit"/>

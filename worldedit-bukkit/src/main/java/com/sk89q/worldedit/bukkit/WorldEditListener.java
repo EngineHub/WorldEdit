@@ -21,7 +21,6 @@
 
 package com.sk89q.worldedit.bukkit;
 
-import com.google.common.collect.ImmutableMap;
 import com.sk89q.util.StringUtil;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.entity.Player;
@@ -42,7 +41,12 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.enginehub.piston.CommandManager;
 import org.enginehub.piston.CommandParameters;
 import org.enginehub.piston.NoInputCommandParameters;
+import org.enginehub.piston.inject.InjectedValueStore;
 import org.enginehub.piston.inject.Key;
+import org.enginehub.piston.inject.MapBackedValueStore;
+import org.enginehub.piston.inject.MemoizingValueAccess;
+
+import java.util.Optional;
 
 /**
  * Handles all events thrown in relation to a Player
@@ -108,17 +112,18 @@ public class WorldEditListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onPlayerCommand(PlayerCommandSendEvent event) {
+        InjectedValueStore store = MapBackedValueStore.create();
+        store.injectValue(Key.of(Actor.class), context ->
+            Optional.of(plugin.wrapCommandSender(event.getPlayer())));
         CommandParameters parameters = NoInputCommandParameters.builder()
-            .injectedValues(ImmutableMap.of(
-                Key.of(Actor.class), plugin.wrapCommandSender(event.getPlayer())
-            ))
+            .injectedValues(MemoizingValueAccess.wrap(store))
             .build();
         CommandManager commandManager = plugin.getWorldEdit().getPlatformManager().getPlatformCommandMananger().getCommandManager();
         event.getCommands().removeIf(name ->
             // remove if in the manager and not satisfied
             commandManager.getCommand(name)
-            .filter(command -> !command.getCondition().satisfied(parameters))
-            .isPresent()
+                .filter(command -> !command.getCondition().satisfied(parameters))
+                .isPresent()
         );
     }
 
