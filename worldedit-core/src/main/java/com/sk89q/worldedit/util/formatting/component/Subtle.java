@@ -19,19 +19,19 @@
 
 package com.sk89q.worldedit.util.formatting.component;
 
-import com.sk89q.worldedit.util.formatting.Style;
-import com.sk89q.worldedit.util.formatting.StyledFragment;
+import net.kyori.text.TextComponent;
+import net.kyori.text.format.TextColor;
 
 /**
  * Represents a subtle part of the message.
  */
-public class Subtle extends StyledFragment {
+public class Subtle extends TextComponent {
 
     /**
      * Create a new instance.
      */
-    public Subtle() {
-        super(Style.GRAY);
+    public Subtle(String message) {
+        super(builder(message).color(TextColor.GRAY));
     }
 
 }

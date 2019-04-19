@@ -28,7 +28,8 @@ import com.sk89q.worldedit.util.command.CommandMapping;
 import com.sk89q.worldedit.util.command.Description;
 import com.sk89q.worldedit.util.command.Dispatcher;
 import com.sk89q.worldedit.util.command.PrimaryAliasComparator;
-import com.sk89q.worldedit.util.formatting.StyledFragment;
+import net.kyori.text.Component;
+import net.kyori.text.TextComponent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +39,7 @@ import javax.annotation.Nullable;
 /**
  * A box to describe usage of a command.
  */
-public class CommandUsageBox extends StyledFragment {
+public class CommandUsageBox extends TextComponent {
 
     /**
      * Create a new usage box.
@@ -58,6 +59,7 @@ public class CommandUsageBox extends StyledFragment {
      * @param locals list of locals to use
      */
     public CommandUsageBox(CommandCallable command, String commandString, @Nullable CommandLocals locals) {
+        super(builder());
         checkNotNull(command);
         checkNotNull(commandString);
         if (command instanceof Dispatcher) {
@@ -85,23 +87,23 @@ public class CommandUsageBox extends StyledFragment {
 
     private void attachCommandUsage(Description description, String commandString) {
         MessageBox box = new MessageBox("Help for " + commandString);
-        StyledFragment contents = box.getContents();
+        Component contents = box.getContents();
 
         if (description.getUsage() != null) {
-            contents.append(new Label().append("Usage: "));
-            contents.append(description.getUsage());
+            contents.append(new Label("Usage: "));
+            contents.append(TextComponent.of(description.getUsage()));
         } else {
-            contents.append(new Subtle().append("Usage information is not available."));
+            contents.append(new Subtle("Usage information is not available."));
         }
 
-        contents.newLine();
+        contents.append(Component.newline());
 
         if (description.getHelp() != null) {
-            contents.append(description.getHelp());
+            contents.append(TextComponent.of(description.getHelp()));
         } else if (description.getDescription() != null) {
-            contents.append(description.getDescription());
+            contents.append(TextComponent.of(description.getDescription()));
         } else {
-            contents.append(new Subtle().append("No further help is available."));
+            contents.append(new Subtle("No further help is available."));
         }
 
         append(box);

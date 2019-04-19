@@ -55,15 +55,14 @@ import com.sk89q.worldedit.regions.selector.SphereRegionSelector;
 import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.util.Countable;
 import com.sk89q.worldedit.util.Location;
-import com.sk89q.worldedit.util.formatting.ColorCodeBuilder;
-import com.sk89q.worldedit.util.formatting.Style;
-import com.sk89q.worldedit.util.formatting.StyledFragment;
 import com.sk89q.worldedit.util.formatting.component.CommandListBox;
+import com.sk89q.worldedit.util.formatting.component.Subtle;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.item.ItemTypes;
 import com.sk89q.worldedit.world.storage.ChunkStore;
+import net.kyori.text.Component;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -754,9 +753,8 @@ public class SelectionCommands {
             limit.ifPresent(integer -> player.print(integer + " points maximum."));
         } else {
             CommandListBox box = new CommandListBox("Selection modes");
-            StyledFragment contents = box.getContents();
-            StyledFragment tip = contents.createFragment(Style.RED);
-            tip.append("Select one of the modes below:").newLine();
+            Component contents = box.getContents();
+            contents.append(new Subtle("Select one of the modes below:").append(Component.newline()));
 
             box.appendCommand("cuboid", "Select two corners of a cuboid");
             box.appendCommand("extend", "Fast cuboid selection mode");
@@ -766,7 +764,7 @@ public class SelectionCommands {
             box.appendCommand("cyl", "Select a cylinder");
             box.appendCommand("convex", "Select a convex polyhedral");
 
-            player.printRaw(ColorCodeBuilder.asColorCodes(box));
+            player.print(box);
             return;
         }
 

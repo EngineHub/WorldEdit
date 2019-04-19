@@ -19,19 +19,19 @@
 
 package com.sk89q.worldedit.util.formatting.component;
 
-import com.sk89q.worldedit.util.formatting.Style;
-import com.sk89q.worldedit.util.formatting.StyledFragment;
+import net.kyori.text.TextComponent;
+import net.kyori.text.format.TextColor;
 
 /**
  * Represents a fragment representing a command that is to be typed.
  */
-public class Code extends StyledFragment {
+public class Code extends TextComponent {
 
     /**
      * Create a new instance.
      */
-    public Code() {
-        super(Style.CYAN);
+    public Code(String message) {
+        super(builder(message).color(TextColor.AQUA));
     }
 
 }

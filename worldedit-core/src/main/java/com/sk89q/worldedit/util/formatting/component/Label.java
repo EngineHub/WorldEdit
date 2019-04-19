@@ -19,19 +19,19 @@
 
 package com.sk89q.worldedit.util.formatting.component;
 
-import com.sk89q.worldedit.util.formatting.Style;
-import com.sk89q.worldedit.util.formatting.StyledFragment;
+import net.kyori.text.TextComponent;
+import net.kyori.text.format.TextColor;
 
 /**
  * Represents a fragment representing a label.
  */
-public class Label extends StyledFragment {
+public class Label extends TextComponent {
 
     /**
      * Create a new instance.
      */
-    public Label() {
-        super(Style.YELLOW);
+    public Label(String message) {
+        super(builder(message).color(TextColor.YELLOW));
     }
 
 }

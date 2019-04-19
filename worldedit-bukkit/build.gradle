@@ -43,6 +43,7 @@ shadowJar {
         include(dependency(':worldedit-core'))
         include(dependency('org.slf4j:slf4j-api'))
         include(dependency("org.slf4j:slf4j-jdk14"))
+        include(dependency("net.kyori:text-adapter-bukkit:1.0.3"))
         relocate ("org.bstats", "com.sk89q.worldedit.bukkit.bstats") {
             include(dependency("org.bstats:bstats-bukkit:1.4"))
         }

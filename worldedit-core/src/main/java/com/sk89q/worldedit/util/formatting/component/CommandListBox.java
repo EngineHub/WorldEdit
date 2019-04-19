@@ -19,7 +19,9 @@
 
 package com.sk89q.worldedit.util.formatting.component;
 
-import com.sk89q.worldedit.util.formatting.Style;
+import net.kyori.text.Component;
+import net.kyori.text.TextComponent;
+import net.kyori.text.format.TextColor;
 
 public class CommandListBox extends MessageBox {
 
@@ -36,10 +38,10 @@ public class CommandListBox extends MessageBox {
 
     public CommandListBox appendCommand(String alias, String description) {
         if (!first) {
-            getContents().newLine();
+            getContents().append(Component.newline());
         }
-        getContents().createFragment(Style.YELLOW_DARK).append(alias).append(": ");
-        getContents().append(description);
+        getContents().append(TextComponent.of(alias, TextColor.GOLD).append(TextComponent.of(": ")));
+        getContents().append(TextComponent.of(description));
         first = false;
         return this;
     }

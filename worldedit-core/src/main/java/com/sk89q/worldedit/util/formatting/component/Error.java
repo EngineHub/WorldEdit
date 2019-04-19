@@ -19,19 +19,19 @@
 
 package com.sk89q.worldedit.util.formatting.component;
 
-import com.sk89q.worldedit.util.formatting.Style;
-import com.sk89q.worldedit.util.formatting.StyledFragment;
+import net.kyori.text.TextComponent;
+import net.kyori.text.format.TextColor;
 
 /**
  * Represents a fragment representing an error.
  */
-public class Error extends StyledFragment {
+public class Error extends TextComponent {
 
     /**
      * Create a new instance.
      */
-    public Error() {
-        super(Style.RED);
+    public Error(String message) {
+        super(builder(message).color(TextColor.RED));
     }
 
 }

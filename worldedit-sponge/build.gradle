@@ -43,6 +43,7 @@ shadowJar {
     dependencies {
         include(dependency(':worldedit-core'))
         include(dependency('org.bstats:bstats-sponge:1.4'))
+        include(dependency("net.kyori:text-adapter-spongeapi:1.0.3"))
     }
 }
 
