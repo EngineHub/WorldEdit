@@ -73,6 +73,7 @@ import org.enginehub.piston.inject.InjectedValueStore;
 import org.enginehub.piston.inject.Key;
 import org.enginehub.piston.inject.MapBackedValueStore;
 import org.enginehub.piston.inject.MemoizingValueAccess;
+import org.enginehub.piston.inject.MergedValueAccess;
 import org.enginehub.piston.part.SubCommandPart;
 import org.enginehub.piston.util.ValueProvider;
 import org.slf4j.Logger;
@@ -107,6 +108,7 @@ public final class PlatformCommandMananger {
     private final WorldEdit worldEdit;
     private final PlatformManager platformManager;
     private final CommandManager commandManager;
+    private final InjectedValueStore globalInjectedValues;
     private final DynamicStreamHandler dynamicHandler = new DynamicStreamHandler();
     private final WorldEditExceptionConverter exceptionConverter;
     private final List<CommandCallListener> callListeners;
@@ -124,6 +126,7 @@ public final class PlatformCommandMananger {
         this.exceptionConverter = new WorldEditExceptionConverter(worldEdit);
         this.commandManager = DefaultCommandManagerService.getInstance()
             .newCommandManager();
+        this.globalInjectedValues = MapBackedValueStore.create();
         this.callListeners = Collections.singletonList(
             new CommandLoggingHandler(worldEdit, commandLog)
         );
@@ -169,7 +172,7 @@ public final class PlatformCommandMananger {
     }
 
     private void registerAlwaysInjectedValues() {
-        commandManager.injectValue(Key.of(Region.class, Selection.class),
+        globalInjectedValues.injectValue(Key.of(Region.class, Selection.class),
             context -> {
                 LocalSession localSession = context.injectedValue(Key.of(LocalSession.class))
                     .orElseThrow(() -> new IllegalStateException("No LocalSession"));
@@ -183,7 +186,7 @@ public final class PlatformCommandMananger {
                         }
                     });
             });
-        commandManager.injectValue(Key.of(EditSession.class),
+        globalInjectedValues.injectValue(Key.of(EditSession.class),
             context -> {
                 LocalSession localSession = context.injectedValue(Key.of(LocalSession.class))
                     .orElseThrow(() -> new IllegalStateException("No LocalSession"));
@@ -393,7 +396,9 @@ public final class PlatformCommandMananger {
                 return Optional.of(localSession);
             });
 
-        MemoizingValueAccess context = MemoizingValueAccess.wrap(store);
+        MemoizingValueAccess context = MemoizingValueAccess.wrap(
+            MergedValueAccess.of(store, globalInjectedValues)
+        );
 
         long start = System.currentTimeMillis();
 
@@ -437,7 +442,7 @@ public final class PlatformCommandMananger {
             }
         } finally {
             Optional<EditSession> editSessionOpt =
-                context.injectedValueIfMemoized(Key.of(EditSession.class));
+                context.snapshotMemory().injectedValue(Key.of(EditSession.class));
 
             if (editSessionOpt.isPresent()) {
                 EditSession editSession = editSessionOpt.get();
@@ -468,8 +473,8 @@ public final class PlatformCommandMananger {
     @Subscribe
     public void handleCommandSuggestion(CommandSuggestionEvent event) {
         try {
-            commandManager.injectValue(Key.of(Actor.class), ValueProvider.constant(event.getActor()));
-            commandManager.injectValue(Key.of(Arguments.class), ValueProvider.constant(event::getArguments));
+            globalInjectedValues.injectValue(Key.of(Actor.class), ValueProvider.constant(event.getActor()));
+            globalInjectedValues.injectValue(Key.of(Arguments.class), ValueProvider.constant(event::getArguments));
             // TODO suggestions
         } catch (CommandException e) {
             event.getActor().printError(e.getMessage());
