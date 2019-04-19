@@ -1,3 +1,5 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+
 apply plugin: 'eclipse'
 apply plugin: 'idea'
 
@@ -30,4 +32,7 @@ sourceSets {
     }
 }
 
-build.dependsOn(shadowJar { classifier = null })
+task jar(type: ShadowJar, overwrite: true) {
+    from sourceSets.main.output
+    configurations = [project.configurations.runtime]
+}
