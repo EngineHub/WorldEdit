@@ -30,30 +30,32 @@ public class Pre13HangingCompatibilityHandler implements EntityNBTCompatibilityH
 
     @Override
     public boolean isAffectedEntity(EntityType type, CompoundTag tag) {
-        boolean hasLegacyDirection = tag.containsKey("Dir");
+        if (!type.getId().startsWith("minecraft:")) {
+            return false;
+        }
+        boolean hasLegacyDirection = tag.containsKey("Dir") || tag.containsKey("Direction");
         boolean hasFacing = tag.containsKey("Facing");
         return hasLegacyDirection || hasFacing;
     }
 
     @Override
     public CompoundTag updateNBT(EntityType type, CompoundTag tag) {
-        boolean hasLegacyDirection = tag.containsKey("Dir");
-        boolean hasFacing = tag.containsKey("Facing");
-        int d;
-        if (hasLegacyDirection) {
-            d = MCDirections.fromLegacyHanging((byte) tag.asInt("Dir"));
+        boolean hasLegacyDir = tag.containsKey("Dir");
+        boolean hasLegacyDirection = tag.containsKey("Direction");
+        boolean hasPre113Facing = tag.containsKey("Facing");
+        Direction newDirection;
+        if (hasLegacyDir) {
+            newDirection = MCDirections.fromPre13Hanging(MCDirections.fromLegacyHanging((byte) tag.asInt("Dir")));
+        } else if (hasLegacyDirection) {
+            newDirection = MCDirections.fromPre13Hanging(tag.asInt("Direction"));
+        } else if (hasPre113Facing) {
+            newDirection = MCDirections.fromPre13Hanging(tag.asInt("Facing"));
         } else {
-            d = tag.asInt("Facing");
+            return tag;
         }
-
-        Direction newDirection = MCDirections.fromPre13Hanging(d);
-
         byte hangingByte = (byte) MCDirections.toHanging(newDirection);
-
         CompoundTagBuilder builder = tag.createBuilder();
-        builder.putByte("Direction", hangingByte);
         builder.putByte("Facing", hangingByte);
-        builder.putByte("Dir", MCDirections.toLegacyHanging(MCDirections.toHanging(newDirection)));
         return builder.build();
     }
 
