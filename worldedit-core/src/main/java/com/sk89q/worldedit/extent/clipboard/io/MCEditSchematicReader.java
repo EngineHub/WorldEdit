@@ -34,7 +34,9 @@ import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.extent.clipboard.BlockArrayClipboard;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.extent.clipboard.io.legacycompat.EntityNBTCompatibilityHandler;
+import com.sk89q.worldedit.extent.clipboard.io.legacycompat.FlowerPotCompatibilityHandler;
 import com.sk89q.worldedit.extent.clipboard.io.legacycompat.NBTCompatibilityHandler;
+import com.sk89q.worldedit.extent.clipboard.io.legacycompat.NoteBlockCompatibilityHandler;
 import com.sk89q.worldedit.extent.clipboard.io.legacycompat.Pre13HangingCompatibilityHandler;
 import com.sk89q.worldedit.extent.clipboard.io.legacycompat.SignCompatibilityHandler;
 import com.sk89q.worldedit.math.BlockVector3;
@@ -63,8 +65,10 @@ public class MCEditSchematicReader extends NBTSchematicReader {
 
     private static final ImmutableList<NBTCompatibilityHandler> COMPATIBILITY_HANDLERS
         = ImmutableList.of(
-        new SignCompatibilityHandler()
-        // TODO Add a handler for skulls, flower pots, note blocks, etc.
+        new SignCompatibilityHandler(),
+        new FlowerPotCompatibilityHandler(),
+        new NoteBlockCompatibilityHandler()
+        // TODO - skulls, item tags for inventories...? DFUs :>
     );
     private static final ImmutableList<EntityNBTCompatibilityHandler> ENTITY_COMPATIBILITY_HANDLERS
         = ImmutableList.of(
@@ -167,65 +171,54 @@ public class MCEditSchematicReader extends NBTSchematicReader {
         // Need to pull out tile entities
         List<Tag> tileEntities = requireTag(schematic, "TileEntities", ListTag.class).getValue();
         Map<BlockVector3, Map<String, Tag>> tileEntitiesMap = new HashMap<>();
+        Map<BlockVector3, BlockState> blockOverrides = new HashMap<>();
 
         for (Tag tag : tileEntities) {
             if (!(tag instanceof CompoundTag)) continue;
             CompoundTag t = (CompoundTag) tag;
 
-            int x = 0;
-            int y = 0;
-            int z = 0;
+            int x = t.getInt("x");
+            int y = t.getInt("y");
+            int z = t.getInt("z");
+            String id = t.getString("id");
 
-            Map<String, Tag> values = new HashMap<>();
-
-            for (Map.Entry<String, Tag> entry : t.getValue().entrySet()) {
-                switch (entry.getKey()) {
-                    case "x":
-                        if (entry.getValue() instanceof IntTag) {
-                            x = ((IntTag) entry.getValue()).getValue();
-                        }
-                        break;
-                    case "y":
-                        if (entry.getValue() instanceof IntTag) {
-                            y = ((IntTag) entry.getValue()).getValue();
-                        }
-                        break;
-                    case "z":
-                        if (entry.getValue() instanceof IntTag) {
-                            z = ((IntTag) entry.getValue()).getValue();
-                        }
-                        break;
-                }
-
-                values.put(entry.getKey(), entry.getValue());
-            }
+            Map<String, Tag> values = new HashMap<>(t.getValue());
+            values.put("id", new StringTag(convertBlockEntityId(id)));
 
             int index = y * width * length + z * width + x;
             BlockState block = LegacyMapper.getInstance().getBlockFromLegacy(blocks[index], blockData[index]);
-            if (block != null) {
+            BlockState newBlock = block;
+            if (newBlock != null) {
                 for (NBTCompatibilityHandler handler : COMPATIBILITY_HANDLERS) {
-                    if (handler.isAffectedBlock(block)) {
-                        handler.updateNBT(block, values);
+                    if (handler.isAffectedBlock(newBlock)) {
+                        newBlock = handler.updateNBT(block, values);
+                        if (newBlock == null) {
+                            break;
+                        }
                     }
                 }
             }
 
             BlockVector3 vec = BlockVector3.at(x, y, z);
             tileEntitiesMap.put(vec, values);
+            if (newBlock != block) {
+                blockOverrides.put(vec, newBlock);
+            }
         }
 
         BlockArrayClipboard clipboard = new BlockArrayClipboard(region);
         clipboard.setOrigin(origin);
 
-        // Don't log a torrent of errors
-        int failedBlockSets = 0;
 
         for (int x = 0; x < width; ++x) {
             for (int y = 0; y < height; ++y) {
                 for (int z = 0; z < length; ++z) {
                     int index = y * width * length + z * width + x;
                     BlockVector3 pt = BlockVector3.at(x, y, z);
-                    BlockState state = LegacyMapper.getInstance().getBlockFromLegacy(blocks[index], blockData[index]);
+                    boolean useOverride = blockOverrides.containsKey(pt);
+                    BlockState state = useOverride
+                            ? blockOverrides.get(pt)
+                            : LegacyMapper.getInstance().getBlockFromLegacy(blocks[index], blockData[index]);
 
                     try {
                         if (state != null) {
@@ -235,20 +228,11 @@ public class MCEditSchematicReader extends NBTSchematicReader {
                                 clipboard.setBlock(region.getMinimumPoint().add(pt), state);
                             }
                         } else {
-                            log.warn("Unknown block when pasting schematic: " + blocks[index] + ":" + blockData[index] + ". Please report this issue.");
+                            if (!useOverride) {
+                                log.warn("Unknown block when pasting schematic: " + blocks[index] + ":" + blockData[index] + ". Please report this issue.");
+                            }
                         }
-                    } catch (WorldEditException e) {
-                        switch (failedBlockSets) {
-                            case 0:
-                                log.warn("Failed to set block on a Clipboard", e);
-                                break;
-                            case 1:
-                                log.warn("Failed to set block on a Clipboard (again) -- no more messages will be logged", e);
-                                break;
-                            default:
-                        }
-
-                        failedBlockSets++;
+                    } catch (WorldEditException ignored) { // BlockArrayClipboard won't throw this
                     }
                 }
             }
@@ -258,8 +242,9 @@ public class MCEditSchematicReader extends NBTSchematicReader {
         // Entities
         // ====================================================================
 
-        List<Tag> entityTags = getTag(schematic, "Entities", ListTag.class).getValue();
-        if (entityTags != null) {
+        ListTag entityList = getTag(schematic, "Entities", ListTag.class);
+        if (entityList != null) {
+            List<Tag> entityTags = entityList.getValue();
             for (Tag tag : entityTags) {
                 if (tag instanceof CompoundTag) {
                     CompoundTag compound = (CompoundTag) tag;
@@ -289,32 +274,66 @@ public class MCEditSchematicReader extends NBTSchematicReader {
 
     private String convertEntityId(String id) {
         switch(id) {
-            case "xp_orb":
-                return "experience_orb";
-            case "xp_bottle":
-                return "experience_bottle";
-            case "eye_of_ender_signal":
-                return "eye_of_ender";
-            case "ender_crystal":
-                return "end_crystal";
-            case "fireworks_rocket":
-                return "firework_rocket";
-            case "commandblock_minecart":
-                return "command_block_minecart";
-            case "snowman":
-                return "snow_golem";
-            case "villager_golem":
-                return "iron_golem";
-            case "evocation_fangs":
-                return "evoker_fangs";
-            case "evocation_illager":
-                return "evoker";
-            case "vindication_illager":
-                return "vindicator";
-            case "illusion_illager":
-                return "illusioner";
+            case "AreaEffectCloud": return "area_effect_cloud";
+            case "ArmorStand": return "armor_stand";
+            case "CaveSpider": return "cave_spider";
+            case "MinecartChest": return "chest_minecart";
+            case "MinecartCommandBlock": return "commandblock_minecart";
+            case "DragonFireball": return "dragon_fireball";
+            case "ThrownEgg": return "egg";
+            case "EnderCrystal": return "ender_crystal";
+            case "EnderDragon": return "ender_dragon";
+            case "ThrownEnderpearl": return "ender_pearl";
+            case "EyeOfEnderSignal": return "eye_of_ender_signal";
+            case "FallingSand": return "falling_block";
+            case "FireworksRocketEntity": return "fireworks_rocket";
+            case "MinecartFurnace": return "furnace_minecart";
+            case "MinecartHopper": return "hopper_minecart";
+            case "EntityHorse": return "horse";
+            case "ItemFrame": return "item_frame";
+            case "LeashKnot": return "leash_knot";
+            case "LightningBolt": return "lightning_bolt";
+            case "LavaSlime": return "magma_cube";
+            case "MinecartRideable": return "minecart";
+            case "MushroomCow": return "mooshroom";
+            case "Ozelot": return "ocelot";
+            case "PolarBear": return "polar_bear";
+            case "ThrownPotion": return "potion";
+            case "ShulkerBullet": return "shulker_bullet";
+            case "SmallFireball": return "small_fireball";
+            case "MinecartSpawner": return "spawner_minecart";
+            case "SpectralArrow": return "spectral_arrow";
+            case "PrimedTnt": return "tnt";
+            case "MinecartTNT": return "tnt_minecart";
+            case "VillagerGolem": return "villager_golem";
+            case "WitherBoss": return "wither";
+            case "WitherSkull": return "wither_skull";
+            case "ThrownExpBottle": return "xp_bottle";
+            case "XPOrb": return "xp_orb";
+            case "PigZombie": return "zombie_pigman";
+            default: return id;
         }
-        return id;
+    }
+
+    private String convertBlockEntityId(String id) {
+        switch(id) {
+            case "Cauldron": return "brewing_stand";
+            case "Control": return "command_block";
+            case "DLDetector": return "daylight_detector";
+            case "Trap": return "dispenser";
+            case "EnchantTable": return "enchanting_table";
+            case "EndGateway": return "end_gateway";
+            case "AirPortal": return "end_portal";
+            case "EnderChest": return "ender_chest";
+            case "FlowerPot": return "flower_pot";
+            case "RecordPlayer": return "jukebox";
+            case "MobSpawner": return "mob_spawner";
+            case "Music":
+            case "noteblock":
+                return "note_block";
+            case "Structure": return "structure_block";
+            default: return id;
+        }
     }
 
     @Override

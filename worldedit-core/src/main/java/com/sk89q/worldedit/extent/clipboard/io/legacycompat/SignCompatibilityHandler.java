@@ -39,7 +39,7 @@ public class SignCompatibilityHandler implements NBTCompatibilityHandler {
     }
 
     @Override
-    public <B extends BlockStateHolder<B>> void updateNBT(B block, Map<String, Tag> values) {
+    public <B extends BlockStateHolder<B>> B updateNBT(B block, Map<String, Tag> values) {
         for (int i = 0; i < 4; ++i) {
             String key = "Text" + (i + 1);
             Tag value = values.get(key);
@@ -69,5 +69,6 @@ public class SignCompatibilityHandler implements NBTCompatibilityHandler {
                 values.put("Text" + (i + 1), new StringTag(jsonTextObject.toString()));
             }
         }
+        return block;
     }
 }

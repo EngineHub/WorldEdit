@@ -82,36 +82,12 @@ public final class MCDirections {
         }
     }
 
-    public static int toPre13Hanging(Direction direction) {
-        switch (direction) {
-            case SOUTH:
-                return 0;
-            case WEST:
-                return 1;
-            case NORTH:
-                return 2;
-            case EAST:
-                return 3;
-            default:
-                return 0;
-        }
-    }
-
     public static int fromLegacyHanging(byte i) {
         switch (i) {
             case 0: return 2;
             case 1: return 1;
             case 2: return 0;
             default: return 3;
-        }
-    }
-
-    public static byte toLegacyHanging(int i) {
-        switch (i) {
-            case 0: return (byte) 2;
-            case 1: return (byte) 1;
-            case 2: return (byte) 0;
-            default: return (byte) 3;
         }
     }
 
