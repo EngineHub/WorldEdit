@@ -110,6 +110,7 @@ public class HistoryCommands {
                 worldEdit.flushBlockBag(player, redone);
             } else {
                 player.printError("Nothing left to redo.");
+                break;
             }
         }
     }
