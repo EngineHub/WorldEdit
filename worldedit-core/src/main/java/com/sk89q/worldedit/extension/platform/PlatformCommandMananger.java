@@ -33,6 +33,8 @@ import com.sk89q.worldedit.command.ChunkCommands;
 import com.sk89q.worldedit.command.ChunkCommandsRegistration;
 import com.sk89q.worldedit.command.ClipboardCommands;
 import com.sk89q.worldedit.command.ClipboardCommandsRegistration;
+import com.sk89q.worldedit.command.GeneralCommands;
+import com.sk89q.worldedit.command.GeneralCommandsRegistration;
 import com.sk89q.worldedit.command.SchematicCommands;
 import com.sk89q.worldedit.command.SchematicCommandsRegistration;
 import com.sk89q.worldedit.command.argument.Arguments;
@@ -251,13 +253,17 @@ public final class PlatformCommandMananger {
             ClipboardCommandsRegistration.builder(),
             new ClipboardCommands()
         );
+        register(
+            commandManager,
+            GeneralCommandsRegistration.builder(),
+            new GeneralCommands(worldEdit)
+        );
 
         // Unported commands are below. Delete once they're added to the main manager above.
         /*
         dispatcher = new CommandGraph()
                 .builder(builder)
                     .commands()
-                        .registerMethods(new GeneralCommands(worldEdit))
                         .registerMethods(new GenerationCommands(worldEdit))
                         .registerMethods(new HistoryCommands(worldEdit))
                         .registerMethods(new NavigationCommands(worldEdit))
