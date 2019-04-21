@@ -78,7 +78,7 @@ public class NoiseFilter2D extends AbstractMask2D {
      */
     public void setDensity(double density) {
         checkArgument(density >= 0, "density must be >= 0");
-        checkArgument(density <= 1, "density must be >= 1");
+        checkArgument(density <= 1, "density must be <= 1");
         this.density = density;
     }
 
