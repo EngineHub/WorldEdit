@@ -6,6 +6,7 @@ subprojects {
     apply plugin: 'com.jfrog.artifactory'
     configurations {
         create("shade")
+        getByName("archives").extendsFrom(getByName("default"))
     }
 
     group = rootProject.group + ".worldedit-libs"
@@ -51,11 +52,11 @@ subprojects {
 
     artifacts {
         add("default", jar)
-        add("default", sourcesJar)
+        add("archives", sourcesJar)
     }
 
     tasks.register("install", Upload) {
-        configuration = configurations.default
+        configuration = configurations.archives
         repositories.mavenInstaller {
             pom.version = project.version
             pom.artifactId = project.name
@@ -74,7 +75,9 @@ project("core") {
         shade 'net.kyori:text-api:2.0.0'
         shade 'net.kyori:text-serializer-gson:2.0.0'
         shade 'net.kyori:text-serializer-legacy:2.0.0'
-        shade 'com.sk89q:jchronic:0.2.4a'
+        shade('com.sk89q:jchronic:0.2.4a') {
+            exclude(group: "junit", module: "junit")
+        }
         shade 'com.thoughtworks.paranamer:paranamer:2.6'
         shade 'com.sk89q.lib:jlibnoise:1.0.0'
     }
@@ -82,13 +85,11 @@ project("core") {
 project("bukkit") {
     dependencies {
         shade 'net.kyori:text-adapter-bukkit:1.0.3'
-        shade 'org.bstats:bstats-bukkit:1.4'
     }
 }
 project("sponge") {
     dependencies {
         shade 'net.kyori:text-adapter-spongeapi:1.0.3'
-        shade 'org.bstats:bstats-sponge:1.4'
     }
 }
 

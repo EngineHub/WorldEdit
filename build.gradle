@@ -152,7 +152,8 @@ configure(['bukkit', 'forge', 'sponge'].collect { project(":worldedit-$it") }) {
     shadowJar {
         classifier 'dist'
         dependencies {
-            include(project(":worldedit-libs"))
+            include(project(":worldedit-libs:core"))
+            include(project(":worldedit-libs:${project.name.replace("worldedit-", "")}"))
             include(project(":worldedit-core"))
         }
         exclude 'GradleStart**'
