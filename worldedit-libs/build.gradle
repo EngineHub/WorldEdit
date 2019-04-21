@@ -1,5 +1,17 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+/*
 
+This project shades <em>API</em> libraries, i.e. those libraries
+whose classes are publicly referenced from `-core` classes.
+
+This project <em>does not</em> shade implementation libraries, i.e.
+those libraries whose classes are internally depended on.
+
+This is because the main reason for shading those libraries is for
+their internal usage in each platform, not because we need them available to
+dependents of `-core` to compile and work with WorldEdit's API.
+
+ */
 subprojects {
     apply plugin: 'maven'
     apply plugin: 'com.github.johnrengelman.shadow'
