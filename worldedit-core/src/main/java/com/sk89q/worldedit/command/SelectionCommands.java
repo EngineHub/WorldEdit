@@ -62,7 +62,7 @@ import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.item.ItemTypes;
 import com.sk89q.worldedit.world.storage.ChunkStore;
-import net.kyori.text.Component;
+import com.sk89q.worldedit.util.formatting.text.Component;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -75,7 +75,7 @@ import java.util.Set;
 public class SelectionCommands {
 
     private final WorldEdit we;
-    
+
     public SelectionCommands(WorldEdit we) {
         this.we = we;
     }
@@ -294,7 +294,7 @@ public class SelectionCommands {
     )
     @CommandPermissions("worldedit.wand.toggle")
     public void toggleWand(Player player, LocalSession session, CommandContext args) throws WorldEditException {
-        
+
         session.setToolControl(!session.isToolControlEnabled());
 
         if (session.isToolControlEnabled()) {
@@ -393,7 +393,7 @@ public class SelectionCommands {
 
         session.getRegionSelector(player.getWorld()).learnChanges();
         int newSize = region.getArea();
-        
+
         session.getRegionSelector(player.getWorld()).explainRegionAdjust(player, session);
 
         player.print("Region expanded " + (newSize - oldSize) + " blocks.");
@@ -464,7 +464,7 @@ public class SelectionCommands {
             }
             session.getRegionSelector(player.getWorld()).learnChanges();
             int newSize = region.getArea();
-            
+
             session.getRegionSelector(player.getWorld()).explainRegionAdjust(player, session);
 
 

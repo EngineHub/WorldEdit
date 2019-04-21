@@ -23,7 +23,7 @@ import com.sk89q.worldedit.internal.cui.CUIEvent;
 import com.sk89q.worldedit.session.SessionOwner;
 import com.sk89q.worldedit.util.Identifiable;
 import com.sk89q.worldedit.util.auth.Subject;
-import net.kyori.text.TextComponent;
+import com.sk89q.worldedit.util.formatting.text.TextComponent;
 
 import java.io.File;
 

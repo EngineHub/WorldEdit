@@ -65,9 +65,9 @@ import com.sk89q.worldedit.util.formatting.component.Error;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockTypes;
-import net.kyori.text.Component;
-import net.kyori.text.TextComponent;
-import net.kyori.text.format.TextColor;
+import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.util.formatting.text.TextComponent;
+import com.sk89q.worldedit.util.formatting.text.format.TextColor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -207,7 +207,7 @@ public class UtilityCommands {
     @CommandPermissions("worldedit.removeabove")
     @Logging(PLACEMENT)
     public void removeAbove(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
-        
+
         int size = args.argsLength() > 0 ? Math.max(1, args.getInteger(0)) : 1;
         we.checkMaxRadius(size);
         World world = player.getWorld();
@@ -275,7 +275,7 @@ public class UtilityCommands {
     @CommandPermissions("worldedit.replacenear")
     @Logging(PLACEMENT)
     public void replaceNear(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
-        
+
         int size = Math.max(1, args.getInteger(0));
         we.checkMaxRadius(size);
         int affected;

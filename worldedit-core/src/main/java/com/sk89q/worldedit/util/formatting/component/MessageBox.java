@@ -21,9 +21,9 @@ package com.sk89q.worldedit.util.formatting.component;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import net.kyori.text.Component;
-import net.kyori.text.TextComponent;
-import net.kyori.text.format.TextColor;
+import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.util.formatting.text.TextComponent;
+import com.sk89q.worldedit.util.formatting.text.format.TextColor;
 
 /**
  * Makes for a box with a border above and below.
@@ -67,7 +67,7 @@ public class MessageBox extends TextComponent {
 
     /**
      * Get the internal contents.
-     * 
+     *
      * @return the contents
      */
     public Component getContents() {

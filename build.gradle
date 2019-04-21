@@ -82,6 +82,14 @@ artifactory {
 artifactoryPublish.skip = true
 
 subprojects {
+    repositories {
+        mavenCentral()
+        maven { url "http://maven.sk89q.com/repo/" }
+        maven { url "http://repo.maven.apache.org/maven2" }
+    }
+}
+
+configure(['core', 'bukkit', 'forge', 'sponge'].collect { project(":worldedit-$it") }) {
     apply plugin: 'java'
     apply plugin: 'maven'
     apply plugin: 'checkstyle'
@@ -96,12 +104,6 @@ subprojects {
 
     checkstyle.configFile = new File(rootProject.projectDir, "config/checkstyle/checkstyle.xml")
     checkstyle.toolVersion = '7.6.1'
-
-    repositories {
-        mavenCentral()
-        maven { url "http://maven.sk89q.com/repo/" }
-        maven { url "http://repo.maven.apache.org/maven2" }
-    }
 
     if (JavaVersion.current().isJava8Compatible()) {
         // Java 8 turns on doclint which we fail
@@ -136,23 +138,6 @@ subprojects {
     build.dependsOn(checkstyleTest)
     build.dependsOn(javadocJar)
 
-    shadowJar {
-        classifier 'dist'
-        dependencies {
-            include(dependency('com.sk89q:jchronic:0.2.4a'))
-            include(dependency('com.thoughtworks.paranamer:paranamer:2.6'))
-            include(dependency('com.sk89q.lib:jlibnoise:1.0.0'))
-            include(dependency('net.kyori:text-api:2.0.0'))
-            include(dependency("net.kyori:text-serializer-gson:2.0.0"))
-            include(dependency("net.kyori:text-serializer-legacy:2.0.0"))
-
-            relocate('net.kyori.text', 'com.sk89q.worldedit.util.formatting.text')
-        }
-        exclude 'GradleStart**'
-        exclude '.cache'
-        exclude 'LICENSE*'
-    }
-
     artifactoryPublish {
         publishConfigs('archives')
     }
@@ -160,5 +145,18 @@ subprojects {
     license {
         header = rootProject.file("HEADER.txt")
         include '**/*.java'
+    }
+}
+
+configure(['bukkit', 'forge', 'sponge'].collect { project(":worldedit-$it") }) {
+    shadowJar {
+        classifier 'dist'
+        dependencies {
+            include(project(":worldedit-libs"))
+            include(project(":worldedit-core"))
+        }
+        exclude 'GradleStart**'
+        exclude '.cache'
+        exclude 'LICENSE*'
     }
 }

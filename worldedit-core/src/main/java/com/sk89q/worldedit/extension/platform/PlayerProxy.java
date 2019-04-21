@@ -34,7 +34,7 @@ import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.gamemode.GameMode;
-import net.kyori.text.TextComponent;
+import com.sk89q.worldedit.util.formatting.text.TextComponent;
 
 import java.util.UUID;
 
