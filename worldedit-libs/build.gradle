@@ -27,6 +27,12 @@ subprojects {
         configurations = [project.configurations.shade]
         classifier = ""
 
+        dependencies {
+            exclude(dependency("com.google.guava:guava"))
+            exclude(dependency("com.google.code.gson:gson"))
+            exclude(dependency("org.checkerframework:checker-qual"))
+        }
+
         relocate('net.kyori.text', 'com.sk89q.worldedit.util.formatting.text')
     }
     def altConfigFiles = { String artifactType ->
