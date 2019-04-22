@@ -19,7 +19,6 @@ def forgeVersion = "25.0.76"
 dependencies {
     compile project(':worldedit-core')
     compile 'org.apache.logging.log4j:log4j-slf4j-impl:2.11.2'
-    compile 'net.kyori:text-serializer-gson:2.0.0'
 
     minecraft "net.minecraftforge:forge:${minecraftVersion}-${forgeVersion}"
 
