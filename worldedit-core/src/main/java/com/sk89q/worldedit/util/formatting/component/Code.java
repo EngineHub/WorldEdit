@@ -19,19 +19,18 @@
 
 package com.sk89q.worldedit.util.formatting.component;
 
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.format.TextColor;
 
 /**
  * Represents a fragment representing a command that is to be typed.
  */
-public class Code extends TextComponent {
+public class Code extends TextComponentProducer {
 
     /**
      * Create a new instance.
      */
     public Code(String message) {
-        super(builder(message).color(TextColor.AQUA));
+        getBuilder().content(message).color(TextColor.AQUA);
     }
 
 }

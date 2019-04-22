@@ -299,7 +299,7 @@ public final class CommandManager {
             actor.printError("You are not permitted to do that. Are you in the right mode?");
         } catch (InvalidUsageException e) {
             if (e.isFullHelpSuggested()) {
-                actor.print(new CommandUsageBox(e.getCommand(), e.getCommandUsed("/", ""), locals));
+                actor.print(new CommandUsageBox(e.getCommand(), e.getCommandUsed("/", ""), locals).create());
                 String message = e.getMessage();
                 if (message != null) {
                     actor.printError(message);

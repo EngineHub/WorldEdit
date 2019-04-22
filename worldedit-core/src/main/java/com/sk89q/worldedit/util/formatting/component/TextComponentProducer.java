@@ -19,18 +19,29 @@
 
 package com.sk89q.worldedit.util.formatting.component;
 
-import com.sk89q.worldedit.util.formatting.text.format.TextColor;
+import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.util.formatting.text.TextComponent;
 
-/**
- * Represents a fragment representing a label.
- */
-public class Label extends TextComponentProducer {
+public class TextComponentProducer {
 
-    /**
-     * Create a new instance.
-     */
-    public Label(String message) {
-        getBuilder().content(message).color(TextColor.YELLOW);
+    private TextComponent.Builder builder = TextComponent.builder().content("");
+
+    public TextComponent.Builder getBuilder() {
+        return builder;
     }
 
+    /**
+     * Adds a component as a child to this Producer
+     *
+     * @param component The component
+     * @return The producer, for chaining
+     */
+    public TextComponentProducer append(Component component) {
+        getBuilder().append(component);
+        return this;
+    }
+
+    public TextComponent create() {
+        return builder.build();
+    }
 }

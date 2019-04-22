@@ -21,6 +21,8 @@ package com.sk89q.worldedit.util.formatting.component;
 
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
+import com.sk89q.worldedit.util.formatting.text.event.ClickEvent;
+import com.sk89q.worldedit.util.formatting.text.event.HoverEvent;
 import com.sk89q.worldedit.util.formatting.text.format.TextColor;
 
 public class CommandListBox extends MessageBox {
@@ -33,14 +35,24 @@ public class CommandListBox extends MessageBox {
      * @param title the title
      */
     public CommandListBox(String title) {
-        super(title);
+        super(title, new TextComponentProducer());
     }
 
     public CommandListBox appendCommand(String alias, String description) {
+        return appendCommand(alias, description, null);
+    }
+
+    public CommandListBox appendCommand(String alias, String description, String insertion) {
         if (!first) {
             getContents().append(Component.newline());
         }
-        getContents().append(TextComponent.of(alias, TextColor.GOLD).append(TextComponent.of(": ")));
+        TextComponent commandName = TextComponent.of(alias, TextColor.GOLD);
+        if (insertion != null) {
+            commandName = commandName
+                    .clickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, insertion))
+                    .hoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.of("Click to select")));
+        }
+        getContents().append(commandName.append(TextComponent.of(": ")));
         getContents().append(TextComponent.of(description));
         first = false;
         return this;

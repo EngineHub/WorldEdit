@@ -57,6 +57,7 @@ import com.sk89q.worldedit.util.Countable;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.formatting.component.CommandListBox;
 import com.sk89q.worldedit.util.formatting.component.Subtle;
+import com.sk89q.worldedit.util.formatting.component.TextComponentProducer;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;
@@ -753,18 +754,18 @@ public class SelectionCommands {
             limit.ifPresent(integer -> player.print(integer + " points maximum."));
         } else {
             CommandListBox box = new CommandListBox("Selection modes");
-            Component contents = box.getContents();
-            contents.append(new Subtle("Select one of the modes below:").append(Component.newline()));
+            TextComponentProducer contents = box.getContents();
+            contents.append(new Subtle("Select one of the modes below:").append(Component.newline()).create());
 
-            box.appendCommand("cuboid", "Select two corners of a cuboid");
-            box.appendCommand("extend", "Fast cuboid selection mode");
-            box.appendCommand("poly", "Select a 2D polygon with height");
-            box.appendCommand("ellipsoid", "Select an ellipsoid");
-            box.appendCommand("sphere", "Select a sphere");
-            box.appendCommand("cyl", "Select a cylinder");
-            box.appendCommand("convex", "Select a convex polyhedral");
+            box.appendCommand("cuboid", "Select two corners of a cuboid", "//sel cuboid");
+            box.appendCommand("extend", "Fast cuboid selection mode", "//sel extend");
+            box.appendCommand("poly", "Select a 2D polygon with height", "//sel poly");
+            box.appendCommand("ellipsoid", "Select an ellipsoid", "//sel ellipsoid");
+            box.appendCommand("sphere", "Select a sphere", "//sel sphere");
+            box.appendCommand("cyl", "Select a cylinder", "//sel cyl");
+            box.appendCommand("convex", "Select a convex polyhedral", "//sel convex");
 
-            player.print(box);
+            player.print(box.create());
             return;
         }
 

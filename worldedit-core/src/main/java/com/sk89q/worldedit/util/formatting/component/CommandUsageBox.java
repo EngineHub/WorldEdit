@@ -39,7 +39,7 @@ import javax.annotation.Nullable;
 /**
  * A box to describe usage of a command.
  */
-public class CommandUsageBox extends TextComponent {
+public class CommandUsageBox extends TextComponentProducer {
 
     /**
      * Create a new usage box.
@@ -59,7 +59,6 @@ public class CommandUsageBox extends TextComponent {
      * @param locals list of locals to use
      */
     public CommandUsageBox(CommandCallable command, String commandString, @Nullable CommandLocals locals) {
-        super(builder());
         checkNotNull(command);
         checkNotNull(commandString);
         if (command instanceof Dispatcher) {
@@ -82,18 +81,17 @@ public class CommandUsageBox extends TextComponent {
             }
         }
 
-        append(box);
+        append(box.create());
     }
 
     private void attachCommandUsage(Description description, String commandString) {
-        MessageBox box = new MessageBox("Help for " + commandString);
-        Component contents = box.getContents();
+        TextComponentProducer contents = new TextComponentProducer();
 
         if (description.getUsage() != null) {
-            contents.append(new Label("Usage: "));
+            contents.append(new Label("Usage: ").create());
             contents.append(TextComponent.of(description.getUsage()));
         } else {
-            contents.append(new Subtle("Usage information is not available."));
+            contents.append(new Subtle("Usage information is not available.").create());
         }
 
         contents.append(Component.newline());
@@ -103,10 +101,11 @@ public class CommandUsageBox extends TextComponent {
         } else if (description.getDescription() != null) {
             contents.append(TextComponent.of(description.getDescription()));
         } else {
-            contents.append(new Subtle("No further help is available."));
+            contents.append(new Subtle("No further help is available.").create());
         }
 
-        append(box);
+        MessageBox box = new MessageBox("Help for " + commandString, contents);
+        append(box.create());
     }
 
 }

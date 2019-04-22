@@ -19,19 +19,18 @@
 
 package com.sk89q.worldedit.util.formatting.component;
 
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.format.TextColor;
 
 /**
  * Represents a subtle part of the message.
  */
-public class Subtle extends TextComponent {
+public class Subtle extends TextComponentProducer {
 
     /**
      * Create a new instance.
      */
     public Subtle(String message) {
-        super(builder(message).color(TextColor.GRAY));
+        getBuilder().color(TextColor.GRAY).content(message);
     }
 
 }

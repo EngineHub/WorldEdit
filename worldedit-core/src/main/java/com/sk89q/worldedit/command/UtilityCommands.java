@@ -62,12 +62,13 @@ import com.sk89q.worldedit.util.formatting.component.Code;
 import com.sk89q.worldedit.util.formatting.component.CommandListBox;
 import com.sk89q.worldedit.util.formatting.component.CommandUsageBox;
 import com.sk89q.worldedit.util.formatting.component.Error;
+import com.sk89q.worldedit.util.formatting.component.Subtle;
+import com.sk89q.worldedit.util.formatting.component.TextComponentProducer;
+import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockTypes;
-import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
-import com.sk89q.worldedit.util.formatting.text.format.TextColor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -670,16 +671,16 @@ public class UtilityCommands {
 
             // Box
             CommandListBox box = new CommandListBox(String.format("Help: page %d/%d ", page + 1, pageTotal));
-            Component contents = box.getContents();
-            Component tip = contents.append(TextComponent.of("", TextColor.GRAY));
+            TextComponentProducer tip = new Subtle("");
+            TextComponentProducer contents = box.getContents();
 
             if (offset >= aliases.size()) {
-                tip.append(new Error(String.format("There is no page %d (total number of pages is %d).", page + 1, pageTotal))).append(Component.newline());
+                tip.append(new Error(String.format("There is no page %d (total number of pages is %d).", page + 1, pageTotal)).create()).append(Component.newline());
             } else {
                 List<CommandMapping> list = aliases.subList(offset, Math.min(offset + perPage, aliases.size()));
 
                 tip.append(TextComponent.of("Type "));
-                tip.append(new Code("//help ").append(TextComponent.of("<command> [<page>]")));
+                tip.append(new Code("//help ").append(TextComponent.of("<command> [<page>]")).create());
                 tip.append(TextComponent.of(" for more information.")).append(Component.newline());
 
                 // Add each command
@@ -697,10 +698,11 @@ public class UtilityCommands {
                 }
             }
 
-            actor.print(box);
+            contents.append(tip.create());
+            actor.print(box.create());
         } else {
             CommandUsageBox box = new CommandUsageBox(callable, Joiner.on(" ").join(visited));
-            actor.print(box);
+            actor.print(box.create());
         }
     }
 

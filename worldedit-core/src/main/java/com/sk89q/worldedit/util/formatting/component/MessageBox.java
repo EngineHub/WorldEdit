@@ -28,17 +28,16 @@ import com.sk89q.worldedit.util.formatting.text.format.TextColor;
 /**
  * Makes for a box with a border above and below.
  */
-public class MessageBox extends TextComponent {
+public class MessageBox extends TextComponentProducer {
 
-    public static final int GUARANTEED_NO_WRAP_CHAT_PAGE_WIDTH = 47;
+    private static final int GUARANTEED_NO_WRAP_CHAT_PAGE_WIDTH = 47;
 
-    private final Component contents = Component.empty();
+    private final TextComponentProducer contents;
 
     /**
      * Create a new box.
      */
-    public MessageBox(String title) {
-        super(builder());
+    public MessageBox(String title, TextComponentProducer contents) {
         checkNotNull(title);
 
         int leftOver = GUARANTEED_NO_WRAP_CHAT_PAGE_WIDTH - title.length() - 2;
@@ -54,7 +53,7 @@ public class MessageBox extends TextComponent {
             append(TextComponent.of(createBorder(rightSide), TextColor.YELLOW));
         }
         append(Component.newline());
-        append(contents);
+        this.contents = contents;
     }
 
     private String createBorder(int count) {
@@ -66,12 +65,17 @@ public class MessageBox extends TextComponent {
     }
 
     /**
-     * Get the internal contents.
+     * Gets the message box contents producer.
      *
-     * @return the contents
+     * @return The contents producer
      */
-    public Component getContents() {
+    public TextComponentProducer getContents() {
         return contents;
     }
 
+    @Override
+    public TextComponent create() {
+        append(contents.create());
+        return super.create();
+    }
 }

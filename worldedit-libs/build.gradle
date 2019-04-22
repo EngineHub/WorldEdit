@@ -102,12 +102,12 @@ project("core") {
 }
 project("bukkit") {
     dependencies {
-        shade 'net.kyori:text-adapter-bukkit:1.0.3'
+        shade 'net.kyori:text-adapter-bukkit:2.0.0-SNAPSHOT'
     }
 }
 project("sponge") {
     dependencies {
-        shade 'net.kyori:text-adapter-spongeapi:1.0.3'
+        shade 'net.kyori:text-adapter-spongeapi:2.0.0-SNAPSHOT'
     }
 }
 
