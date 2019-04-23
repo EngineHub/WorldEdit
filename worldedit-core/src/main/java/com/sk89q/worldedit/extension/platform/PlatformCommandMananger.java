@@ -40,6 +40,8 @@ import com.sk89q.worldedit.command.GenerationCommands;
 import com.sk89q.worldedit.command.GenerationCommandsRegistration;
 import com.sk89q.worldedit.command.HistoryCommands;
 import com.sk89q.worldedit.command.HistoryCommandsRegistration;
+import com.sk89q.worldedit.command.NavigationCommands;
+import com.sk89q.worldedit.command.NavigationCommandsRegistration;
 import com.sk89q.worldedit.command.SchematicCommands;
 import com.sk89q.worldedit.command.SchematicCommandsRegistration;
 import com.sk89q.worldedit.command.argument.Arguments;
@@ -284,14 +286,17 @@ public final class PlatformCommandMananger {
             HistoryCommandsRegistration.builder(),
             new HistoryCommands(worldEdit)
         );
+        register(
+            commandManager,
+            NavigationCommandsRegistration.builder(),
+            new NavigationCommands(worldEdit)
+        );
 
         // Unported commands are below. Delete once they're added to the main manager above.
         /*
         dispatcher = new CommandGraph()
                 .builder(builder)
                     .commands()
-                        .registerMethods(new HistoryCommands(worldEdit))
-                        .registerMethods(new NavigationCommands(worldEdit))
                         .registerMethods(new RegionCommands(worldEdit))
                         .registerMethods(new ScriptingCommands(worldEdit))
                         .registerMethods(new SelectionCommands(worldEdit))
