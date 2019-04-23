@@ -35,7 +35,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * Commands to undo, redo, and clear history.
  */
-@CommandContainer(superTypes = CommandPermissionsConditionGenerator.class)
+@CommandContainer(superTypes = CommandPermissionsConditionGenerator.Registration.class)
 public class HistoryCommands {
 
     private final WorldEdit worldEdit;
@@ -58,9 +58,9 @@ public class HistoryCommands {
     @CommandPermissions("worldedit.history.undo")
     public void undo(Player player, LocalSession session,
                      @Arg(desc = "Number of undoes to perform", def = "1")
-                        int times,
+                         int times,
                      @Arg(name = "player", desc = "Undo this player's operations", def = "")
-                        String playerName) throws WorldEditException {
+                         String playerName) throws WorldEditException {
         times = Math.max(1, times);
         for (int i = 0; i < times; ++i) {
             LocalSession undoSession = session;
@@ -86,7 +86,7 @@ public class HistoryCommands {
 
     @Command(
         name = "redo",
-        aliases = { "redo" },
+        aliases = { "/redo" },
         desc = "Redoes the last action (from history)"
     )
     @CommandPermissions("worldedit.history.redo")

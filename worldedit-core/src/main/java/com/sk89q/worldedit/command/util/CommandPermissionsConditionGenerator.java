@@ -31,7 +31,7 @@ import java.util.Set;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 @NonnullByDefault
-public class CommandPermissionsConditionGenerator implements CommandConditionGenerator {
+public final class CommandPermissionsConditionGenerator implements CommandConditionGenerator {
 
     public interface Registration {
         Registration commandPermissionsConditionGenerator(CommandPermissionsConditionGenerator generator);
