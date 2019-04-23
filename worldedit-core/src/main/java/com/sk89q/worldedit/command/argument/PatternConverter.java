@@ -19,8 +19,6 @@
 
 package com.sk89q.worldedit.command.argument;
 
-import com.sk89q.minecraft.util.commands.CommandException;
-import com.sk89q.minecraft.util.commands.CommandLocals;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.entity.Entity;
@@ -29,23 +27,30 @@ import com.sk89q.worldedit.extension.input.ParserContext;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.function.pattern.Pattern;
-import com.sk89q.worldedit.util.command.argument.CommandArgs;
-import com.sk89q.worldedit.util.command.composition.SimpleCommand;
 import com.sk89q.worldedit.world.World;
+import org.enginehub.piston.CommandManager;
+import org.enginehub.piston.converter.ArgumentConverter;
+import org.enginehub.piston.converter.ConversionResult;
+import org.enginehub.piston.converter.SuccessfulConversion;
+import org.enginehub.piston.inject.InjectedValueAccess;
+import org.enginehub.piston.inject.Key;
 
-public class PatternParser extends SimpleCommand<Pattern> {
+public class PatternConverter implements ArgumentConverter<Pattern> {
 
-    private final StringParser stringParser;
+    public static void register(WorldEdit worldEdit, CommandManager commandManager) {
+        commandManager.registerConverter(Key.of(Pattern.class), new PatternConverter(worldEdit));
+    }
 
-    public PatternParser(String name) {
-        stringParser = addParameter(new StringParser(name, "The pattern"));
+    private final WorldEdit worldEdit;
+
+    private PatternConverter(WorldEdit worldEdit) {
+        this.worldEdit = worldEdit;
     }
 
     @Override
-    public Pattern call(CommandArgs args, CommandLocals locals) throws CommandException {
-        String patternString = stringParser.call(args, locals);
-
-        Actor actor = locals.get(Actor.class);
+    public ConversionResult<Pattern> convert(String argument, InjectedValueAccess context) {
+        Actor actor = context.injectedValue(Key.of(Actor.class))
+            .orElseThrow(() -> new IllegalStateException("No actor"));
         LocalSession session = WorldEdit.getInstance().getSessionManager().get(actor);
 
         ParserContext parserContext = new ParserContext();
@@ -59,20 +64,16 @@ public class PatternParser extends SimpleCommand<Pattern> {
         parserContext.setSession(session);
 
         try {
-            return WorldEdit.getInstance().getPatternFactory().parseFromInput(patternString, parserContext);
+            return SuccessfulConversion.fromSingle(
+                worldEdit.getPatternFactory().parseFromInput(argument, parserContext)
+            );
         } catch (InputParseException e) {
-            throw new CommandException(e.getMessage(), e);
+            throw new IllegalArgumentException(e);
         }
     }
 
     @Override
-    public String getDescription() {
-        return "Choose a pattern";
+    public String describeAcceptableArguments() {
+        return "any pattern";
     }
-
-    @Override
-    public boolean testPermission0(CommandLocals locals) {
-        return true;
-    }
-
 }

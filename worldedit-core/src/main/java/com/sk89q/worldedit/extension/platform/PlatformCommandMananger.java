@@ -20,6 +20,7 @@
 package com.sk89q.worldedit.extension.platform;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.reflect.TypeToken;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.IncompleteRegionException;
 import com.sk89q.worldedit.LocalConfiguration;
@@ -35,11 +36,15 @@ import com.sk89q.worldedit.command.ClipboardCommands;
 import com.sk89q.worldedit.command.ClipboardCommandsRegistration;
 import com.sk89q.worldedit.command.GeneralCommands;
 import com.sk89q.worldedit.command.GeneralCommandsRegistration;
+import com.sk89q.worldedit.command.GenerationCommands;
+import com.sk89q.worldedit.command.GenerationCommandsRegistration;
 import com.sk89q.worldedit.command.SchematicCommands;
 import com.sk89q.worldedit.command.SchematicCommandsRegistration;
 import com.sk89q.worldedit.command.argument.Arguments;
+import com.sk89q.worldedit.command.argument.CommaSeparatedValuesConverter;
 import com.sk89q.worldedit.command.argument.DirectionConverter;
 import com.sk89q.worldedit.command.argument.MaskConverter;
+import com.sk89q.worldedit.command.argument.PatternConverter;
 import com.sk89q.worldedit.command.util.CommandPermissionsConditionGenerator;
 import com.sk89q.worldedit.command.util.PermissionCondition;
 import com.sk89q.worldedit.entity.Entity;
@@ -65,6 +70,7 @@ import com.sk89q.worldedit.world.World;
 import org.enginehub.piston.Command;
 import org.enginehub.piston.CommandManager;
 import org.enginehub.piston.DefaultCommandManagerService;
+import org.enginehub.piston.converter.ArgumentConverters;
 import org.enginehub.piston.exception.CommandException;
 import org.enginehub.piston.exception.CommandExecutionException;
 import org.enginehub.piston.exception.ConditionFailedException;
@@ -171,6 +177,14 @@ public final class PlatformCommandMananger {
     private void registerArgumentConverters() {
         DirectionConverter.register(worldEdit, commandManager);
         MaskConverter.register(worldEdit, commandManager);
+        PatternConverter.register(worldEdit, commandManager);
+        for (int count = 2; count <= 3; count++) {
+            commandManager.registerConverter(Key.of(double.class, Annotations.radii(count)),
+                CommaSeparatedValuesConverter.wrapAndLimit(ArgumentConverters.get(
+                    TypeToken.of(double.class)
+                ), count)
+            );
+        }
     }
 
     private void registerAlwaysInjectedValues() {
@@ -258,13 +272,17 @@ public final class PlatformCommandMananger {
             GeneralCommandsRegistration.builder(),
             new GeneralCommands(worldEdit)
         );
+        register(
+            commandManager,
+            GenerationCommandsRegistration.builder(),
+            new GenerationCommands(worldEdit)
+        );
 
         // Unported commands are below. Delete once they're added to the main manager above.
         /*
         dispatcher = new CommandGraph()
                 .builder(builder)
                     .commands()
-                        .registerMethods(new GenerationCommands(worldEdit))
                         .registerMethods(new HistoryCommands(worldEdit))
                         .registerMethods(new NavigationCommands(worldEdit))
                         .registerMethods(new RegionCommands(worldEdit))

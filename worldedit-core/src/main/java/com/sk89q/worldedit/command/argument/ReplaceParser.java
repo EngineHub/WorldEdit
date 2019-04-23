@@ -35,12 +35,14 @@ import com.sk89q.worldedit.util.command.composition.SimpleCommand;
 
 public class ReplaceParser extends SimpleCommand<Contextual<? extends RegionFunction>> {
 
-    private final PatternParser fillArg = addParameter(new PatternParser("fillPattern"));
+    // TODO rewrite for new system
+//    private final PatternParser fillArg = addParameter(new PatternParser("fillPattern"));
 
     @Override
     public Contextual<RegionFunction> call(CommandArgs args, CommandLocals locals) throws CommandException {
-        Pattern fill = fillArg.call(args, locals);
-        return new ReplaceFactory(fill);
+//        Pattern fill = fillArg.call(args, locals);
+//        return new ReplaceFactory(fill);
+        return null;
     }
 
     @Override
