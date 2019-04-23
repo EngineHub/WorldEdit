@@ -38,6 +38,8 @@ import com.sk89q.worldedit.command.GeneralCommands;
 import com.sk89q.worldedit.command.GeneralCommandsRegistration;
 import com.sk89q.worldedit.command.GenerationCommands;
 import com.sk89q.worldedit.command.GenerationCommandsRegistration;
+import com.sk89q.worldedit.command.HistoryCommands;
+import com.sk89q.worldedit.command.HistoryCommandsRegistration;
 import com.sk89q.worldedit.command.SchematicCommands;
 import com.sk89q.worldedit.command.SchematicCommandsRegistration;
 import com.sk89q.worldedit.command.argument.Arguments;
@@ -276,6 +278,11 @@ public final class PlatformCommandMananger {
             commandManager,
             GenerationCommandsRegistration.builder(),
             new GenerationCommands(worldEdit)
+        );
+        register(
+            commandManager,
+            HistoryCommandsRegistration.builder(),
+            new HistoryCommands(worldEdit)
         );
 
         // Unported commands are below. Delete once they're added to the main manager above.
