@@ -163,10 +163,8 @@ public class WorldEditExceptionConverter extends ExceptionConverterHelper {
     }
 
     @ExceptionMatch
-    public void convert(ConditionFailedException e) throws CommandException {
-        if (e.getCondition() instanceof PermissionCondition) {
-            throw new CommandException("You are not permitted to do that. Are you in the right mode?", e, null);
-        }
+    public void convert(IllegalArgumentException e) throws CommandException {
+        throw new CommandException(e.getMessage(), e, null);
     }
 
 }
