@@ -59,9 +59,8 @@ public class CommaSeparatedValuesConverter<T> implements ArgumentConverter<T> {
         if (maximum > -1) {
             result.append("up to ").append(maximum).append(' ');
         }
-        result.append("comma separated values of ")
+        result.append("comma separated values of: ")
             .append(delegate.describeAcceptableArguments());
-        result.setCharAt(0, Character.toUpperCase(result.charAt(0)));
         return result.toString();
     }
 

@@ -26,6 +26,7 @@ import com.sk89q.worldedit.UnknownDirectionException;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.internal.annotation.Direction;
+import com.sk89q.worldedit.internal.annotation.MultiDirection;
 import com.sk89q.worldedit.math.BlockVector3;
 import org.enginehub.piston.CommandManager;
 import org.enginehub.piston.converter.ArgumentConverter;
@@ -46,15 +47,23 @@ public class DirectionConverter implements ArgumentConverter<BlockVector3> {
         return new AutoAnnotation_DirectionConverter_direction(includeDiagonals);
     }
 
+    @AutoAnnotation
+    private static MultiDirection multiDirection(boolean includeDiagonals) {
+        return new AutoAnnotation_DirectionConverter_multiDirection(includeDiagonals);
+    }
+
     public static void register(WorldEdit worldEdit, CommandManager commandManager) {
-        commandManager.registerConverter(
-            Key.of(BlockVector3.class, direction(false)),
-            new DirectionConverter(worldEdit, false)
-        );
-        commandManager.registerConverter(
-            Key.of(BlockVector3.class, direction(true)),
-            new DirectionConverter(worldEdit, true)
-        );
+        for (boolean includeDiagonals : new boolean[] { false, true }) {
+            DirectionConverter directionConverter = new DirectionConverter(worldEdit, includeDiagonals);
+            commandManager.registerConverter(
+                Key.of(BlockVector3.class, direction(includeDiagonals)),
+                directionConverter
+            );
+            commandManager.registerConverter(
+                Key.of(BlockVector3.class, multiDirection(includeDiagonals)),
+                CommaSeparatedValuesConverter.wrap(directionConverter)
+            );
+        }
     }
 
     private static final ImmutableSet<String> NON_DIAGONALS = ImmutableSet.of(

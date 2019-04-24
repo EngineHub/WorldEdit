@@ -48,11 +48,16 @@ import com.sk89q.worldedit.command.SchematicCommands;
 import com.sk89q.worldedit.command.SchematicCommandsRegistration;
 import com.sk89q.worldedit.command.ScriptingCommands;
 import com.sk89q.worldedit.command.ScriptingCommandsRegistration;
+import com.sk89q.worldedit.command.SelectionCommands;
+import com.sk89q.worldedit.command.SelectionCommandsRegistration;
 import com.sk89q.worldedit.command.argument.Arguments;
 import com.sk89q.worldedit.command.argument.CommaSeparatedValuesConverter;
 import com.sk89q.worldedit.command.argument.DirectionConverter;
+import com.sk89q.worldedit.command.argument.EnumConverter;
+import com.sk89q.worldedit.command.argument.ExpandAmountConverter;
 import com.sk89q.worldedit.command.argument.MaskConverter;
 import com.sk89q.worldedit.command.argument.PatternConverter;
+import com.sk89q.worldedit.command.argument.VectorConverter;
 import com.sk89q.worldedit.command.util.CommandPermissionsConditionGenerator;
 import com.sk89q.worldedit.command.util.PermissionCondition;
 import com.sk89q.worldedit.entity.Entity;
@@ -193,6 +198,9 @@ public final class PlatformCommandMananger {
                 ), count)
             );
         }
+        VectorConverter.register(commandManager);
+        EnumConverter.register(commandManager);
+        ExpandAmountConverter.register(commandManager);
     }
 
     private void registerAlwaysInjectedValues() {
@@ -305,13 +313,17 @@ public final class PlatformCommandMananger {
             ScriptingCommandsRegistration.builder(),
             new ScriptingCommands(worldEdit)
         );
+        register(
+            commandManager,
+            SelectionCommandsRegistration.builder(),
+            new SelectionCommands(worldEdit)
+        );
 
         // Unported commands are below. Delete once they're added to the main manager above.
         /*
         dispatcher = new CommandGraph()
                 .builder(builder)
                     .commands()
-                        .registerMethods(new SelectionCommands(worldEdit))
                         .registerMethods(new SnapshotUtilCommands(worldEdit))
                         .registerMethods(new ToolUtilCommands(worldEdit))
                         .registerMethods(new ToolCommands(worldEdit))
