@@ -50,6 +50,10 @@ import com.sk89q.worldedit.command.ScriptingCommands;
 import com.sk89q.worldedit.command.ScriptingCommandsRegistration;
 import com.sk89q.worldedit.command.SelectionCommands;
 import com.sk89q.worldedit.command.SelectionCommandsRegistration;
+import com.sk89q.worldedit.command.SnapshotCommands;
+import com.sk89q.worldedit.command.SnapshotCommandsRegistration;
+import com.sk89q.worldedit.command.SnapshotUtilCommands;
+import com.sk89q.worldedit.command.SnapshotUtilCommandsRegistration;
 import com.sk89q.worldedit.command.argument.Arguments;
 import com.sk89q.worldedit.command.argument.CommaSeparatedValuesConverter;
 import com.sk89q.worldedit.command.argument.DirectionConverter;
@@ -58,6 +62,7 @@ import com.sk89q.worldedit.command.argument.ExpandAmountConverter;
 import com.sk89q.worldedit.command.argument.MaskConverter;
 import com.sk89q.worldedit.command.argument.PatternConverter;
 import com.sk89q.worldedit.command.argument.VectorConverter;
+import com.sk89q.worldedit.command.argument.ZonedDateTimeConverter;
 import com.sk89q.worldedit.command.util.CommandPermissionsConditionGenerator;
 import com.sk89q.worldedit.command.util.PermissionCondition;
 import com.sk89q.worldedit.entity.Entity;
@@ -201,6 +206,7 @@ public final class PlatformCommandMananger {
         VectorConverter.register(commandManager);
         EnumConverter.register(commandManager);
         ExpandAmountConverter.register(commandManager);
+        ZonedDateTimeConverter.register(commandManager);
     }
 
     private void registerAlwaysInjectedValues() {
@@ -243,6 +249,24 @@ public final class PlatformCommandMananger {
                 manager,
                 SchematicCommandsRegistration.builder(),
                 new SchematicCommands(worldEdit)
+            );
+
+            cmd.addPart(SubCommandPart.builder("action", "Sub-command to run.")
+                .withCommands(manager.getAllCommands().collect(Collectors.toList()))
+                .required()
+                .build());
+        });
+        commandManager.register("snapshot", cmd -> {
+            cmd.aliases(ImmutableList.of("snapshot", "snap"));
+            cmd.description("Snapshot commands for saving/loading snapshots");
+            cmd.action(Command.Action.NULL_ACTION);
+
+            CommandManager manager = DefaultCommandManagerService.getInstance()
+                .newCommandManager();
+            register(
+                manager,
+                SnapshotCommandsRegistration.builder(),
+                new SnapshotCommands(worldEdit)
             );
 
             cmd.addPart(SubCommandPart.builder("action", "Sub-command to run.")
@@ -318,6 +342,11 @@ public final class PlatformCommandMananger {
             SelectionCommandsRegistration.builder(),
             new SelectionCommands(worldEdit)
         );
+        register(
+            commandManager,
+            SnapshotUtilCommandsRegistration.builder(),
+            new SnapshotUtilCommands(worldEdit)
+        );
 
         // Unported commands are below. Delete once they're added to the main manager above.
         /*
@@ -332,10 +361,6 @@ public final class PlatformCommandMananger {
                         .group("worldedit", "we")
                             .describeAs("WorldEdit commands")
                             .registerMethods(new WorldEditCommands(worldEdit))
-                            .parent()
-                        .group("snapshot", "snap")
-                            .describeAs("Schematic commands for saving/loading areas")
-                            .registerMethods(new SnapshotCommands(worldEdit))
                             .parent()
                         .group("brush", "br")
                             .describeAs("Brushing commands")

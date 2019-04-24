@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Calendar;
+import java.time.ZonedDateTime;
 import java.util.zip.ZipFile;
 
 /**
@@ -46,7 +46,7 @@ public class Snapshot implements Comparable<Snapshot> {
 
     protected File file;
     protected String name;
-    protected Calendar date;
+    protected ZonedDateTime date;
 
     /**
      * Construct a snapshot restoration operation.
@@ -185,7 +185,7 @@ public class Snapshot implements Comparable<Snapshot> {
      *
      * @return date for the snapshot
      */
-    public Calendar getDate() {
+    public ZonedDateTime getDate() {
         return date;
     }
 
@@ -194,7 +194,7 @@ public class Snapshot implements Comparable<Snapshot> {
      *
      * @param date the date of the snapshot
      */
-    public void setDate(Calendar date) {
+    public void setDate(ZonedDateTime date) {
         this.date = date;
     }
 

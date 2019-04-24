@@ -40,16 +40,17 @@ import com.sk89q.worldedit.util.report.SystemInfoReport;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.TimeZone;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.TextStyle;
+import java.util.Locale;
 
 public class WorldEditCommands {
-    private static final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z");
-    
+    private static final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss z");
+
     private final WorldEdit we;
-    
+
     public WorldEditCommands(WorldEdit we) {
         this.we = we;
     }
@@ -138,11 +139,13 @@ public class WorldEditCommands {
         max = 1
     )
     public void tz(Player player, LocalSession session, CommandContext args) throws WorldEditException {
-        TimeZone tz = TimeZone.getTimeZone(args.getString(0));
+        ZoneId tz = ZoneId.of(args.getString(0));
         session.setTimezone(tz);
-        player.print("Timezone set for this session to: " + tz.getDisplayName());
+        player.print("Timezone set for this session to: " + tz.getDisplayName(
+            TextStyle.FULL, Locale.ENGLISH
+        ));
         player.print("The current time in that timezone is: "
-                + dateFormat.format(Calendar.getInstance(tz).getTime()));
+            + dateFormat.format(ZonedDateTime.now(tz)));
     }
 
     @Command(
