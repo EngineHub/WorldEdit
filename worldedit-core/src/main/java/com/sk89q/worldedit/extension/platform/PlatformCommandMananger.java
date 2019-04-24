@@ -54,6 +54,8 @@ import com.sk89q.worldedit.command.SnapshotCommands;
 import com.sk89q.worldedit.command.SnapshotCommandsRegistration;
 import com.sk89q.worldedit.command.SnapshotUtilCommands;
 import com.sk89q.worldedit.command.SnapshotUtilCommandsRegistration;
+import com.sk89q.worldedit.command.SuperPickaxeCommands;
+import com.sk89q.worldedit.command.SuperPickaxeCommandsRegistration;
 import com.sk89q.worldedit.command.argument.Arguments;
 import com.sk89q.worldedit.command.argument.CommaSeparatedValuesConverter;
 import com.sk89q.worldedit.command.argument.DirectionConverter;
@@ -257,7 +259,7 @@ public final class PlatformCommandMananger {
                 .build());
         });
         commandManager.register("snapshot", cmd -> {
-            cmd.aliases(ImmutableList.of("snapshot", "snap"));
+            cmd.aliases(ImmutableList.of("snap"));
             cmd.description("Snapshot commands for saving/loading snapshots");
             cmd.action(Command.Action.NULL_ACTION);
 
@@ -267,6 +269,24 @@ public final class PlatformCommandMananger {
                 manager,
                 SnapshotCommandsRegistration.builder(),
                 new SnapshotCommands(worldEdit)
+            );
+
+            cmd.addPart(SubCommandPart.builder("action", "Sub-command to run.")
+                .withCommands(manager.getAllCommands().collect(Collectors.toList()))
+                .required()
+                .build());
+        });
+        commandManager.register("superpickaxe", cmd -> {
+            cmd.aliases(ImmutableList.of("pickaxe", "sp"));
+            cmd.description("Super-pickaxe commands");
+            cmd.action(Command.Action.NULL_ACTION);
+
+            CommandManager manager = DefaultCommandManagerService.getInstance()
+                .newCommandManager();
+            register(
+                manager,
+                SuperPickaxeCommandsRegistration.builder(),
+                new SuperPickaxeCommands(worldEdit)
             );
 
             cmd.addPart(SubCommandPart.builder("action", "Sub-command to run.")
@@ -353,7 +373,6 @@ public final class PlatformCommandMananger {
         dispatcher = new CommandGraph()
                 .builder(builder)
                     .commands()
-                        .registerMethods(new SnapshotUtilCommands(worldEdit))
                         .registerMethods(new ToolUtilCommands(worldEdit))
                         .registerMethods(new ToolCommands(worldEdit))
                         .registerMethods(new UtilityCommands(worldEdit))
@@ -372,10 +391,6 @@ public final class PlatformCommandMananger {
                             .register(adapt(new ShapedBrushCommand(ProvidedValue.create(new Deform("y-=1", Mode.RAW_COORD), "Raise one block"), "worldedit.brush.raise")), "raise")
                             .register(adapt(new ShapedBrushCommand(ProvidedValue.create(new Deform("y+=1", Mode.RAW_COORD), "Lower one block"), "worldedit.brush.lower")), "lower")
                         .parent()
-                        .group("superpickaxe", "pickaxe", "sp")
-                            .describeAs("Super-pickaxe commands")
-                            .registerMethods(new SuperPickaxeCommands(worldEdit))
-                            .parent()
                         .group("tool")
                             .describeAs("Bind functions to held items")
                             .registerMethods(new ToolCommands(worldEdit))
