@@ -41,6 +41,13 @@ import javax.annotation.Nullable;
 public interface BukkitImplAdapter {
 
     /**
+     * Get the Minecraft data version for the current world data.
+     *
+     * @return the data version
+     */
+    int getDataVersion();
+
+    /**
      * Get the block at the given location.
      *
      * @param location the location

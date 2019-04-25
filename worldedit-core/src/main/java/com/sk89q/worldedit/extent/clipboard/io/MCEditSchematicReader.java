@@ -53,10 +53,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -213,6 +214,7 @@ public class MCEditSchematicReader extends NBTSchematicReader {
         clipboard.setOrigin(origin);
 
 
+        Set<Integer> unknownBlocks = new HashSet<>();
         for (int x = 0; x < width; ++x) {
             for (int y = 0; y < height; ++y) {
                 for (int z = 0; z < length; ++z) {
@@ -230,9 +232,13 @@ public class MCEditSchematicReader extends NBTSchematicReader {
                             } else {
                                 clipboard.setBlock(region.getMinimumPoint().add(pt), state);
                             }
-                        } else {
-                            if (!useOverride) {
-                                log.warn("Unknown block when pasting schematic: " + blocks[index] + ":" + blockData[index] + ". Please report this issue.");
+                        } else if (!useOverride) {
+                            short block = blocks[index];
+                            byte data = blockData[index];
+                            int combined = block << 8 | data;
+                            if (unknownBlocks.add(combined)) {
+                                log.warn("Unknown block when pasting schematic: "
+                                        + block + ":" + data + ". Please report this issue.");
                             }
                         }
                     } catch (WorldEditException ignored) { // BlockArrayClipboard won't throw this
@@ -316,7 +322,6 @@ public class MCEditSchematicReader extends NBTSchematicReader {
             case "PigZombie": return "zombie_pigman";
             default: return id;
         }
-        return id;
     }
 
     private String convertBlockEntityId(String id) {
