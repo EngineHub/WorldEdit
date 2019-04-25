@@ -58,14 +58,15 @@ import com.sk89q.worldedit.util.command.CommandMapping;
 import com.sk89q.worldedit.util.command.Dispatcher;
 import com.sk89q.worldedit.util.command.PrimaryAliasComparator;
 import com.sk89q.worldedit.util.command.binding.Text;
-import com.sk89q.worldedit.util.formatting.component.Code;
+import com.sk89q.worldedit.util.formatting.component.CodeFormat;
 import com.sk89q.worldedit.util.formatting.component.CommandListBox;
 import com.sk89q.worldedit.util.formatting.component.CommandUsageBox;
-import com.sk89q.worldedit.util.formatting.component.Error;
-import com.sk89q.worldedit.util.formatting.component.Subtle;
+import com.sk89q.worldedit.util.formatting.component.ErrorFormat;
+import com.sk89q.worldedit.util.formatting.component.SubtleFormat;
 import com.sk89q.worldedit.util.formatting.component.TextComponentProducer;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
+import com.sk89q.worldedit.util.formatting.text.format.TextColor;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockTypes;
@@ -671,17 +672,19 @@ public class UtilityCommands {
 
             // Box
             CommandListBox box = new CommandListBox(String.format("Help: page %d/%d ", page + 1, pageTotal));
-            TextComponentProducer tip = new Subtle("");
+            TextComponentProducer tip = new TextComponentProducer();
+            tip.getBuilder().content("").color(TextColor.GRAY);
             TextComponentProducer contents = box.getContents();
 
             if (offset >= aliases.size()) {
-                tip.append(new Error(String.format("There is no page %d (total number of pages is %d).", page + 1, pageTotal)).create()).append(Component.newline());
+                tip.append(ErrorFormat.wrap(String.format("There is no page %d (total number of pages is %d).", page + 1, pageTotal))).newline();
             } else {
                 List<CommandMapping> list = aliases.subList(offset, Math.min(offset + perPage, aliases.size()));
 
-                tip.append(TextComponent.of("Type "));
-                tip.append(new Code("//help ").append(TextComponent.of("<command> [<page>]")).create());
-                tip.append(TextComponent.of(" for more information.")).append(Component.newline());
+                tip.append("Type ");
+                tip.append(CodeFormat.wrap("//help "));
+                tip.append("<command> [<page>] for more information.");
+                tip.newline();
 
                 // Add each command
                 for (CommandMapping mapping : list) {

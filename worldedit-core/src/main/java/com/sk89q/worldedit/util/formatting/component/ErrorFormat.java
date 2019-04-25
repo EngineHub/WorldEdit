@@ -19,18 +19,33 @@
 
 package com.sk89q.worldedit.util.formatting.component;
 
+import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.format.TextColor;
 
 /**
- * Represents a fragment representing a command that is to be typed.
+ * Represents a fragment representing an error.
  */
-public class Code extends TextComponentProducer {
+public class ErrorFormat extends TextComponentProducer {
 
     /**
      * Create a new instance.
      */
-    public Code(String message) {
-        getBuilder().content(message).color(TextColor.AQUA);
+    private ErrorFormat() {
+        getBuilder().content("").color(TextColor.RED);
     }
 
+    /**
+     * Creates an ErrorFormat with the given message.
+     *
+     * @param texts The text
+     * @return The Component
+     */
+    public static Component wrap(String ... texts) {
+        ErrorFormat error = new ErrorFormat();
+        for (String component : texts) {
+            error.append(component);
+        }
+
+        return error.create();
+    }
 }

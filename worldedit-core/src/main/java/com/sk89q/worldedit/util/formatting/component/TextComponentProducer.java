@@ -31,13 +31,34 @@ public class TextComponentProducer {
     }
 
     /**
-     * Adds a component as a child to this Producer
+     * Adds a component as a child to this Producer.
      *
      * @param component The component
      * @return The producer, for chaining
      */
     public TextComponentProducer append(Component component) {
         getBuilder().append(component);
+        return this;
+    }
+
+    /**
+     * Adds a string as a child to this Producer.
+     *
+     * @param string The text
+     * @return The producer, for chaining
+     */
+    public TextComponentProducer append(String string) {
+        getBuilder().append(TextComponent.of(string));
+        return this;
+    }
+
+    /**
+     * Adds a newline as a child to this Producer.
+     *
+     * @return The producer, for chaining
+     */
+    public TextComponentProducer newline() {
+        getBuilder().append(Component.newline());
         return this;
     }
 

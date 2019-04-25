@@ -47,12 +47,12 @@ public class MessageBox extends TextComponentProducer {
             append(TextComponent.of(createBorder(leftSide), TextColor.YELLOW));
         }
         append(Component.space());
-        append(TextComponent.of(title));
+        append(title);
         append(Component.space());
         if (rightSide > 0) {
             append(TextComponent.of(createBorder(rightSide), TextColor.YELLOW));
         }
-        append(Component.newline());
+        newline();
         this.contents = contents;
     }
 

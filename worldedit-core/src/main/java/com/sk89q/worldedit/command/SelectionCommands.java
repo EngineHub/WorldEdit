@@ -56,7 +56,7 @@ import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.util.Countable;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.formatting.component.CommandListBox;
-import com.sk89q.worldedit.util.formatting.component.Subtle;
+import com.sk89q.worldedit.util.formatting.component.SubtleFormat;
 import com.sk89q.worldedit.util.formatting.component.TextComponentProducer;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BaseBlock;
@@ -755,7 +755,7 @@ public class SelectionCommands {
         } else {
             CommandListBox box = new CommandListBox("Selection modes");
             TextComponentProducer contents = box.getContents();
-            contents.append(new Subtle("Select one of the modes below:").append(Component.newline()).create());
+            contents.append(SubtleFormat.wrap("Select one of the modes below:")).newline();
 
             box.appendCommand("cuboid", "Select two corners of a cuboid", "//sel cuboid");
             box.appendCommand("extend", "Fast cuboid selection mode", "//sel extend");

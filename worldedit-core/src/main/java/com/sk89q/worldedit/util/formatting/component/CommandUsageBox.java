@@ -29,7 +29,6 @@ import com.sk89q.worldedit.util.command.Description;
 import com.sk89q.worldedit.util.command.Dispatcher;
 import com.sk89q.worldedit.util.command.PrimaryAliasComparator;
 import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -88,20 +87,20 @@ public class CommandUsageBox extends TextComponentProducer {
         TextComponentProducer contents = new TextComponentProducer();
 
         if (description.getUsage() != null) {
-            contents.append(new Label("Usage: ").create());
-            contents.append(TextComponent.of(description.getUsage()));
+            contents.append(LabelFormat.wrap("Usage: "));
+            contents.append(description.getUsage());
         } else {
-            contents.append(new Subtle("Usage information is not available.").create());
+            contents.append(SubtleFormat.wrap("Usage information is not available."));
         }
 
         contents.append(Component.newline());
 
         if (description.getHelp() != null) {
-            contents.append(TextComponent.of(description.getHelp()));
+            contents.append(description.getHelp());
         } else if (description.getDescription() != null) {
-            contents.append(TextComponent.of(description.getDescription()));
+            contents.append(description.getDescription());
         } else {
-            contents.append(new Subtle("No further help is available.").create());
+            contents.append(SubtleFormat.wrap("No further help is available."));
         }
 
         MessageBox box = new MessageBox("Help for " + commandString, contents);

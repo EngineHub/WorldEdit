@@ -19,18 +19,30 @@
 
 package com.sk89q.worldedit.util.formatting.component;
 
+import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.format.TextColor;
 
 /**
- * Represents a fragment representing a label.
+ * Represents a fragment representing a command that is to be typed.
  */
-public class Label extends TextComponentProducer {
+public class CodeFormat extends TextComponentProducer {
 
-    /**
-     * Create a new instance.
-     */
-    public Label(String message) {
-        getBuilder().content(message).color(TextColor.YELLOW);
+    private CodeFormat() {
+        getBuilder().content("").color(TextColor.AQUA);
     }
 
+    /**
+     * Creates a CodeFormat with the given message.
+     *
+     * @param texts The text
+     * @return The Component
+     */
+    public static Component wrap(String ... texts) {
+        CodeFormat code = new CodeFormat();
+        for (String text: texts) {
+            code.append(text);
+        }
+
+        return code.create();
+    }
 }
