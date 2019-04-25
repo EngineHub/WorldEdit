@@ -67,8 +67,10 @@ public class BukkitServerInterface implements MultiUserPlatform {
 
     @Override
     public int getDataVersion() {
-        // TODO - add to adapter - CraftMagicNumbers#getDataVersion
-        return 1631;
+        if (plugin.getBukkitImplAdapter() != null) {
+            return plugin.getBukkitImplAdapter().getDataVersion();
+        }
+        return 0;
     }
 
     @Override
