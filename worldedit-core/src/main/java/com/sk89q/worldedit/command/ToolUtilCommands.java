@@ -86,7 +86,7 @@ public class ToolUtilCommands {
 
     @Command(
         name = "material",
-        aliases = { "material" },
+        aliases = { "/material" },
         desc = "Set the brush material"
     )
     @CommandPermissions("worldedit.brush.options.material")

@@ -65,8 +65,8 @@ public class TreeGenerator {
             }
         },
         JUNGLE("Jungle tree", "jungle"),
-        SMALL_JUNGLE("Small jungle tree", "shortjungle", "smalljungle"),
-        SHORT_JUNGLE("Short jungle tree") {
+        SMALL_JUNGLE("Small jungle tree", "smalljungle"),
+        SHORT_JUNGLE("Short jungle tree", "shortjungle") {
             @Override
             public boolean generate(EditSession editSession, BlockVector3 pos) throws MaxChangedBlocksException {
                 return SMALL_JUNGLE.generate(editSession, pos);
