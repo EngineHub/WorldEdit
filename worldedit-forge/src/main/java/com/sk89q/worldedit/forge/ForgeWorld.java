@@ -178,7 +178,7 @@ public class ForgeWorld extends AbstractWorld {
         }
 
         if (successful && notifyAndLight) {
-            //world.checkLight(pos);
+            world.checkLight(pos);
             world.markAndNotifyBlock(pos, chunk, old, newState, UPDATE | NOTIFY);
         }
 
