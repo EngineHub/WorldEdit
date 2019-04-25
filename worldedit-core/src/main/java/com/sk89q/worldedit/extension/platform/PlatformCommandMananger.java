@@ -56,7 +56,12 @@ import com.sk89q.worldedit.command.SnapshotUtilCommands;
 import com.sk89q.worldedit.command.SnapshotUtilCommandsRegistration;
 import com.sk89q.worldedit.command.SuperPickaxeCommands;
 import com.sk89q.worldedit.command.SuperPickaxeCommandsRegistration;
+import com.sk89q.worldedit.command.ToolCommands;
+import com.sk89q.worldedit.command.ToolCommandsRegistration;
+import com.sk89q.worldedit.command.ToolUtilCommands;
+import com.sk89q.worldedit.command.ToolUtilCommandsRegistration;
 import com.sk89q.worldedit.command.argument.Arguments;
+import com.sk89q.worldedit.command.argument.BooleanConverter;
 import com.sk89q.worldedit.command.argument.CommaSeparatedValuesConverter;
 import com.sk89q.worldedit.command.argument.DirectionConverter;
 import com.sk89q.worldedit.command.argument.EnumConverter;
@@ -209,6 +214,7 @@ public final class PlatformCommandMananger {
         EnumConverter.register(commandManager);
         ExpandAmountConverter.register(commandManager);
         ZonedDateTimeConverter.register(commandManager);
+        BooleanConverter.register(commandManager);
     }
 
     private void registerAlwaysInjectedValues() {
@@ -367,14 +373,22 @@ public final class PlatformCommandMananger {
             SnapshotUtilCommandsRegistration.builder(),
             new SnapshotUtilCommands(worldEdit)
         );
+        register(
+            commandManager,
+            ToolCommandsRegistration.builder(),
+            new ToolCommands(worldEdit)
+        );
+        register(
+            commandManager,
+            ToolUtilCommandsRegistration.builder(),
+            new ToolUtilCommands(worldEdit)
+        );
 
         // Unported commands are below. Delete once they're added to the main manager above.
         /*
         dispatcher = new CommandGraph()
                 .builder(builder)
                     .commands()
-                        .registerMethods(new ToolUtilCommands(worldEdit))
-                        .registerMethods(new ToolCommands(worldEdit))
                         .registerMethods(new UtilityCommands(worldEdit))
                         .register(adapt(new SelectionCommand(new ApplyCommand(new ReplaceParser(), "Set all blocks within selection"), "worldedit.region.set")), "/set")
                         .group("worldedit", "we")

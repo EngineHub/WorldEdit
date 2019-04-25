@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.util;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
@@ -113,22 +114,22 @@ public class TreeGenerator {
         private static final Set<String> primaryAliases = Sets.newHashSet();
 
         private final String name;
-        private final String[] lookupKeys;
+        public final ImmutableList<String> lookupKeys;
 
         static {
             for (TreeType type : EnumSet.allOf(TreeType.class)) {
                 for (String key : type.lookupKeys) {
                     lookup.put(key, type);
                 }
-                if (type.lookupKeys.length > 0) {
-                    primaryAliases.add(type.lookupKeys[0]);
+                if (type.lookupKeys.size() > 0) {
+                    primaryAliases.add(type.lookupKeys.get(0));
                 }
             }
         }
 
         TreeType(String name, String... lookupKeys) {
             this.name = name;
-            this.lookupKeys = lookupKeys;
+            this.lookupKeys = ImmutableList.copyOf(lookupKeys);
         }
 
         public static Set<String> getAliases() {

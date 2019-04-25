@@ -175,15 +175,6 @@ public class EditSession implements Extent, AutoCloseable {
         public String getDisplayName() {
             return this.displayName;
         }
-
-        public static Optional<ReorderMode> getFromDisplayName(String name) {
-            for (ReorderMode mode : values()) {
-                if (mode.getDisplayName().equalsIgnoreCase(name)) {
-                    return Optional.of(mode);
-                }
-            }
-            return Optional.empty();
-        }
     }
 
     @SuppressWarnings("ProtectedField")

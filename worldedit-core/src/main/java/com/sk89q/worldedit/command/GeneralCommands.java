@@ -122,23 +122,18 @@ public class GeneralCommands {
     )
     @CommandPermissions("worldedit.fast")
     public void fast(Player player, LocalSession session,
-                     @Arg(name = "on|off", desc = "The new fast mode state", def = "toggle")
-                        String newState) throws WorldEditException {
+                     @Arg(desc = "The new fast mode state", def = "")
+                        Boolean fastMode) throws WorldEditException {
+        boolean hasFastMode = session.hasFastMode();
+        if (fastMode != null && fastMode == hasFastMode) {
+            player.printError("Fast mode already " + (fastMode ? "enabled" : "disabled") + ".");
+            return;
+        }
 
-        if (session.hasFastMode()) {
-            if ("on".equals(newState)) {
-                player.printError("Fast mode already enabled.");
-                return;
-            }
-
+        if (hasFastMode) {
             session.setFastMode(false);
             player.print("Fast mode disabled.");
         } else {
-            if ("off".equals(newState)) {
-                player.printError("Fast mode already disabled.");
-                return;
-            }
-
             session.setFastMode(true);
             player.print("Fast mode enabled. Lighting in the affected chunks may be wrong and/or you may need to rejoin to see changes.");
         }
@@ -150,18 +145,11 @@ public class GeneralCommands {
     )
     @CommandPermissions("worldedit.reorder")
     public void reorderMode(Player player, LocalSession session,
-                            @Arg(name = "multi|fast|none", desc = "The reorder mode", def = "")
-                                String newState) throws WorldEditException {
-        if (newState == null) {
+                            @Arg(desc = "The reorder mode", def = "")
+                                EditSession.ReorderMode reorderMode) throws WorldEditException {
+        if (reorderMode == null) {
             player.print("The reorder mode is " + session.getReorderMode().getDisplayName());
         } else {
-            java.util.Optional<EditSession.ReorderMode> reorderModeOptional = EditSession.ReorderMode.getFromDisplayName(newState);
-            if (!reorderModeOptional.isPresent()) {
-                player.printError("Unknown reorder mode!");
-                return;
-            }
-
-            EditSession.ReorderMode reorderMode = reorderModeOptional.get();
             session.setReorderMode(reorderMode);
             player.print("The reorder mode is now " + session.getReorderMode().getDisplayName());
         }
@@ -173,26 +161,21 @@ public class GeneralCommands {
     )
     @CommandPermissions("worldedit.drawsel")
     public void drawSelection(Player player, LocalSession session,
-                              @Arg(name = "on|off", desc = "The new fast mode state", def = "toggle")
-                                  String newState) throws WorldEditException {
+                              @Arg(desc = "The new draw selection state", def = "toggle")
+                                  Boolean drawSelection) throws WorldEditException {
         if (!WorldEdit.getInstance().getConfiguration().serverSideCUI) {
             throw new DisallowedUsageException("This functionality is disabled in the configuration!");
         }
-        if (session.shouldUseServerCUI()) {
-            if ("on".equals(newState)) {
-                player.printError("Server CUI already enabled.");
-                return;
-            }
-
+        boolean useServerCui = session.shouldUseServerCUI();
+        if (drawSelection != null && drawSelection == useServerCui) {
+            player.printError("Server CUI already " + (useServerCui ? "enabled" : "disabled") + ".");
+            return;
+        }
+        if (useServerCui) {
             session.setUseServerCUI(false);
             session.updateServerCUI(player);
             player.print("Server CUI disabled.");
         } else {
-            if ("off".equals(newState)) {
-                player.printError("Server CUI already disabled.");
-                return;
-            }
-
             session.setUseServerCUI(true);
             session.updateServerCUI(player);
             player.print("Server CUI enabled. This only supports cuboid regions, with a maximum size of 32x32x32.");
