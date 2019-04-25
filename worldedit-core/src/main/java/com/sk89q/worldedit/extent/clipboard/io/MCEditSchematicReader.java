@@ -39,6 +39,7 @@ import com.sk89q.worldedit.extent.clipboard.io.legacycompat.NBTCompatibilityHand
 import com.sk89q.worldedit.extent.clipboard.io.legacycompat.NoteBlockCompatibilityHandler;
 import com.sk89q.worldedit.extent.clipboard.io.legacycompat.Pre13HangingCompatibilityHandler;
 import com.sk89q.worldedit.extent.clipboard.io.legacycompat.SignCompatibilityHandler;
+import com.sk89q.worldedit.extent.clipboard.io.legacycompat.SkullBlockCompatibilityHandler;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
@@ -67,8 +68,9 @@ public class MCEditSchematicReader extends NBTSchematicReader {
         = ImmutableList.of(
         new SignCompatibilityHandler(),
         new FlowerPotCompatibilityHandler(),
-        new NoteBlockCompatibilityHandler()
-        // TODO - skulls, item tags for inventories...? DFUs :>
+        new NoteBlockCompatibilityHandler(),
+        new SkullBlockCompatibilityHandler()
+        // TODO - item tags for inventories...? DFUs :>
     );
     private static final ImmutableList<EntityNBTCompatibilityHandler> ENTITY_COMPATIBILITY_HANDLERS
         = ImmutableList.of(
