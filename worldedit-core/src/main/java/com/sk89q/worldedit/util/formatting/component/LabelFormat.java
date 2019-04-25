@@ -19,7 +19,7 @@
 
 package com.sk89q.worldedit.util.formatting.component;
 
-import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.format.TextColor;
 
 /**
@@ -40,7 +40,7 @@ public class LabelFormat extends TextComponentProducer {
      * @param texts The text
      * @return The Component
      */
-    public static Component wrap(String ... texts) {
+    public static TextComponent wrap(String ... texts) {
         LabelFormat label = new LabelFormat();
         for (String component : texts) {
             label.append(component);
