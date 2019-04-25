@@ -28,7 +28,7 @@ import com.sk89q.worldedit.util.command.CommandMapping;
 import com.sk89q.worldedit.util.command.Description;
 import com.sk89q.worldedit.util.command.Dispatcher;
 import com.sk89q.worldedit.util.command.PrimaryAliasComparator;
-import com.sk89q.worldedit.util.formatting.StyledFragment;
+import com.sk89q.worldedit.util.formatting.text.Component;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +38,7 @@ import javax.annotation.Nullable;
 /**
  * A box to describe usage of a command.
  */
-public class CommandUsageBox extends StyledFragment {
+public class CommandUsageBox extends TextComponentProducer {
 
     /**
      * Create a new usage box.
@@ -80,31 +80,31 @@ public class CommandUsageBox extends StyledFragment {
             }
         }
 
-        append(box);
+        append(box.create());
     }
 
     private void attachCommandUsage(Description description, String commandString) {
-        MessageBox box = new MessageBox("Help for " + commandString);
-        StyledFragment contents = box.getContents();
+        TextComponentProducer contents = new TextComponentProducer();
 
         if (description.getUsage() != null) {
-            contents.append(new Label().append("Usage: "));
+            contents.append(LabelFormat.wrap("Usage: "));
             contents.append(description.getUsage());
         } else {
-            contents.append(new Subtle().append("Usage information is not available."));
+            contents.append(SubtleFormat.wrap("Usage information is not available."));
         }
 
-        contents.newLine();
+        contents.append(Component.newline());
 
         if (description.getHelp() != null) {
             contents.append(description.getHelp());
         } else if (description.getDescription() != null) {
             contents.append(description.getDescription());
         } else {
-            contents.append(new Subtle().append("No further help is available."));
+            contents.append(SubtleFormat.wrap("No further help is available."));
         }
 
-        append(box);
+        MessageBox box = new MessageBox("Help for " + commandString, contents);
+        append(box.create());
     }
 
 }

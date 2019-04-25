@@ -1,0 +1,116 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+/*
+
+This project shades <em>API</em> libraries, i.e. those libraries
+whose classes are publicly referenced from `-core` classes.
+
+This project <em>does not</em> shade implementation libraries, i.e.
+those libraries whose classes are internally depended on.
+
+This is because the main reason for shading those libraries is for
+their internal usage in each platform, not because we need them available to
+dependents of `-core` to compile and work with WorldEdit's API.
+
+ */
+subprojects {
+    apply plugin: 'maven'
+    apply plugin: 'com.github.johnrengelman.shadow'
+    apply plugin: 'com.jfrog.artifactory'
+    configurations {
+        create("shade")
+        getByName("archives").extendsFrom(getByName("default"))
+    }
+
+    group = rootProject.group + ".worldedit-libs"
+
+    tasks.register("jar", ShadowJar) {
+        configurations = [project.configurations.shade]
+        classifier = ""
+
+        dependencies {
+            exclude(dependency("com.google.guava:guava"))
+            exclude(dependency("com.google.code.gson:gson"))
+            exclude(dependency("org.checkerframework:checker-qual"))
+        }
+
+        relocate('net.kyori.text', 'com.sk89q.worldedit.util.formatting.text')
+    }
+    def altConfigFiles = { String artifactType ->
+        def deps = configurations.shade.incoming.dependencies
+                .collect { it.copy() }
+                .collect { dependency ->
+                    dependency.artifact { artifact ->
+                        artifact.name = dependency.name
+                        artifact.type = artifactType
+                        artifact.extension = 'jar'
+                        artifact.classifier = artifactType
+                    }
+                    dependency
+                }
+
+        return files(configurations.detachedConfiguration(deps as Dependency[])
+                .resolvedConfiguration.lenientConfiguration.getArtifacts()
+                .findAll { it.classifier == artifactType }
+                .collect { zipTree(it.file) })
+    }
+    tasks.register("sourcesJar", Jar) {
+        from {
+            altConfigFiles('sources')
+        }
+        def filePattern = ~'(.*)net/kyori/text((?:/|$).*)'
+        def textPattern = ~/net\.kyori\.text/
+        eachFile {
+            it.filter { String line ->
+                line.replaceFirst(textPattern, 'com.sk89q.worldedit.util.formatting.text')
+            }
+            it.path = it.path.replaceFirst(filePattern, '$1com/sk89q/worldedit/util/formatting/text$2')
+        }
+        classifier = "sources"
+    }
+
+    artifacts {
+        add("default", jar)
+        add("archives", sourcesJar)
+    }
+
+    tasks.register("install", Upload) {
+        configuration = configurations.archives
+        repositories.mavenInstaller {
+            pom.version = project.version
+            pom.artifactId = project.name
+        }
+    }
+
+    artifactoryPublish {
+        publishConfigs('default')
+    }
+
+    build.dependsOn(jar, sourcesJar)
+}
+
+project("core") {
+    dependencies {
+        shade 'net.kyori:text-api:2.0.0'
+        shade 'net.kyori:text-serializer-gson:2.0.0'
+        shade 'net.kyori:text-serializer-legacy:2.0.0'
+        shade('com.sk89q:jchronic:0.2.4a') {
+            exclude(group: "junit", module: "junit")
+        }
+        shade 'com.thoughtworks.paranamer:paranamer:2.6'
+        shade 'com.sk89q.lib:jlibnoise:1.0.0'
+    }
+}
+project("bukkit") {
+    dependencies {
+        shade 'net.kyori:text-adapter-bukkit:2.0.0-SNAPSHOT'
+    }
+}
+project("sponge") {
+    dependencies {
+        shade 'net.kyori:text-adapter-spongeapi:2.0.0-SNAPSHOT'
+    }
+}
+
+tasks.register("build") {
+    dependsOn(subprojects.collect { it.tasks.named("build") })
+}

@@ -55,15 +55,15 @@ import com.sk89q.worldedit.regions.selector.SphereRegionSelector;
 import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.util.Countable;
 import com.sk89q.worldedit.util.Location;
-import com.sk89q.worldedit.util.formatting.ColorCodeBuilder;
-import com.sk89q.worldedit.util.formatting.Style;
-import com.sk89q.worldedit.util.formatting.StyledFragment;
 import com.sk89q.worldedit.util.formatting.component.CommandListBox;
+import com.sk89q.worldedit.util.formatting.component.SubtleFormat;
+import com.sk89q.worldedit.util.formatting.component.TextComponentProducer;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.item.ItemTypes;
 import com.sk89q.worldedit.world.storage.ChunkStore;
+import com.sk89q.worldedit.util.formatting.text.Component;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -76,7 +76,7 @@ import java.util.Set;
 public class SelectionCommands {
 
     private final WorldEdit we;
-    
+
     public SelectionCommands(WorldEdit we) {
         this.we = we;
     }
@@ -295,7 +295,7 @@ public class SelectionCommands {
     )
     @CommandPermissions("worldedit.wand.toggle")
     public void toggleWand(Player player, LocalSession session, CommandContext args) throws WorldEditException {
-        
+
         session.setToolControl(!session.isToolControlEnabled());
 
         if (session.isToolControlEnabled()) {
@@ -394,7 +394,7 @@ public class SelectionCommands {
 
         session.getRegionSelector(player.getWorld()).learnChanges();
         int newSize = region.getArea();
-        
+
         session.getRegionSelector(player.getWorld()).explainRegionAdjust(player, session);
 
         player.print("Region expanded " + (newSize - oldSize) + " blocks.");
@@ -465,7 +465,7 @@ public class SelectionCommands {
             }
             session.getRegionSelector(player.getWorld()).learnChanges();
             int newSize = region.getArea();
-            
+
             session.getRegionSelector(player.getWorld()).explainRegionAdjust(player, session);
 
 
@@ -754,19 +754,18 @@ public class SelectionCommands {
             limit.ifPresent(integer -> player.print(integer + " points maximum."));
         } else {
             CommandListBox box = new CommandListBox("Selection modes");
-            StyledFragment contents = box.getContents();
-            StyledFragment tip = contents.createFragment(Style.RED);
-            tip.append("Select one of the modes below:").newLine();
+            TextComponentProducer contents = box.getContents();
+            contents.append(SubtleFormat.wrap("Select one of the modes below:")).newline();
 
-            box.appendCommand("cuboid", "Select two corners of a cuboid");
-            box.appendCommand("extend", "Fast cuboid selection mode");
-            box.appendCommand("poly", "Select a 2D polygon with height");
-            box.appendCommand("ellipsoid", "Select an ellipsoid");
-            box.appendCommand("sphere", "Select a sphere");
-            box.appendCommand("cyl", "Select a cylinder");
-            box.appendCommand("convex", "Select a convex polyhedral");
+            box.appendCommand("cuboid", "Select two corners of a cuboid", "//sel cuboid");
+            box.appendCommand("extend", "Fast cuboid selection mode", "//sel extend");
+            box.appendCommand("poly", "Select a 2D polygon with height", "//sel poly");
+            box.appendCommand("ellipsoid", "Select an ellipsoid", "//sel ellipsoid");
+            box.appendCommand("sphere", "Select a sphere", "//sel sphere");
+            box.appendCommand("cyl", "Select a cylinder", "//sel cyl");
+            box.appendCommand("convex", "Select a convex polyhedral", "//sel convex");
 
-            player.printRaw(ColorCodeBuilder.asColorCodes(box));
+            player.print(box.create());
             return;
         }
 

@@ -19,19 +19,33 @@
 
 package com.sk89q.worldedit.util.formatting.component;
 
-import com.sk89q.worldedit.util.formatting.Style;
-import com.sk89q.worldedit.util.formatting.StyledFragment;
+import com.sk89q.worldedit.util.formatting.text.TextComponent;
+import com.sk89q.worldedit.util.formatting.text.format.TextColor;
 
 /**
- * Represents a fragment representing a label.
+ * Represents a fragment representing an error.
  */
-public class Label extends StyledFragment {
+public class ErrorFormat extends TextComponentProducer {
 
     /**
      * Create a new instance.
      */
-    public Label() {
-        super(Style.YELLOW);
+    private ErrorFormat() {
+        getBuilder().content("").color(TextColor.RED);
     }
 
+    /**
+     * Creates an ErrorFormat with the given message.
+     *
+     * @param texts The text
+     * @return The Component
+     */
+    public static TextComponent wrap(String ... texts) {
+        ErrorFormat error = new ErrorFormat();
+        for (String component : texts) {
+            error.append(component);
+        }
+
+        return error.create();
+    }
 }

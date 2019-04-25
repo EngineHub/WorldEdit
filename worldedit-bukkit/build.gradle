@@ -10,11 +10,12 @@ repositories {
 
 dependencies {
     compile project(':worldedit-core')
+    compile project(':worldedit-libs:bukkit')
     compile 'com.sk89q:dummypermscompat:1.10'
     compile 'org.bukkit:bukkit:1.13.2-R0.1-SNAPSHOT' // zzz
-    compile 'org.bstats:bstats-bukkit:1.4'
     compile "io.papermc:paperlib:1.0.1"
     compile 'org.slf4j:slf4j-jdk14:1.7.26'
+    compile 'org.bstats:bstats-bukkit:1.4'
     testCompile 'org.mockito:mockito-core:1.9.0-rc1'
 }
 

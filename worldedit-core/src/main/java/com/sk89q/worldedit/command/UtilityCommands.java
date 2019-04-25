@@ -58,12 +58,15 @@ import com.sk89q.worldedit.util.command.CommandMapping;
 import com.sk89q.worldedit.util.command.Dispatcher;
 import com.sk89q.worldedit.util.command.PrimaryAliasComparator;
 import com.sk89q.worldedit.util.command.binding.Text;
-import com.sk89q.worldedit.util.formatting.ColorCodeBuilder;
-import com.sk89q.worldedit.util.formatting.Style;
-import com.sk89q.worldedit.util.formatting.StyledFragment;
-import com.sk89q.worldedit.util.formatting.component.Code;
+import com.sk89q.worldedit.util.formatting.component.CodeFormat;
 import com.sk89q.worldedit.util.formatting.component.CommandListBox;
 import com.sk89q.worldedit.util.formatting.component.CommandUsageBox;
+import com.sk89q.worldedit.util.formatting.component.ErrorFormat;
+import com.sk89q.worldedit.util.formatting.component.SubtleFormat;
+import com.sk89q.worldedit.util.formatting.component.TextComponentProducer;
+import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.util.formatting.text.TextComponent;
+import com.sk89q.worldedit.util.formatting.text.format.TextColor;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockTypes;
@@ -206,7 +209,7 @@ public class UtilityCommands {
     @CommandPermissions("worldedit.removeabove")
     @Logging(PLACEMENT)
     public void removeAbove(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
-        
+
         int size = args.argsLength() > 0 ? Math.max(1, args.getInteger(0)) : 1;
         we.checkMaxRadius(size);
         World world = player.getWorld();
@@ -274,7 +277,7 @@ public class UtilityCommands {
     @CommandPermissions("worldedit.replacenear")
     @Logging(PLACEMENT)
     public void replaceNear(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
-        
+
         int size = Math.max(1, args.getInteger(0));
         we.checkMaxRadius(size);
         int affected;
@@ -669,17 +672,19 @@ public class UtilityCommands {
 
             // Box
             CommandListBox box = new CommandListBox(String.format("Help: page %d/%d ", page + 1, pageTotal));
-            StyledFragment contents = box.getContents();
-            StyledFragment tip = contents.createFragment(Style.GRAY);
+            TextComponentProducer tip = new TextComponentProducer();
+            tip.getBuilder().content("").color(TextColor.GRAY);
+            TextComponentProducer contents = box.getContents();
 
             if (offset >= aliases.size()) {
-                tip.createFragment(Style.RED).append(String.format("There is no page %d (total number of pages is %d).", page + 1, pageTotal)).newLine();
+                tip.append(ErrorFormat.wrap(String.format("There is no page %d (total number of pages is %d).", page + 1, pageTotal))).newline();
             } else {
                 List<CommandMapping> list = aliases.subList(offset, Math.min(offset + perPage, aliases.size()));
 
                 tip.append("Type ");
-                tip.append(new Code().append("//help ").append("<command> [<page>]"));
-                tip.append(" for more information.").newLine();
+                tip.append(CodeFormat.wrap("//help "));
+                tip.append("<command> [<page>] for more information.");
+                tip.newline();
 
                 // Add each command
                 for (CommandMapping mapping : list) {
@@ -696,10 +701,11 @@ public class UtilityCommands {
                 }
             }
 
-            actor.printRaw(ColorCodeBuilder.asColorCodes(box));
+            contents.append(tip.create());
+            actor.print(box.create());
         } else {
             CommandUsageBox box = new CommandUsageBox(callable, Joiner.on(" ").join(visited));
-            actor.printRaw(ColorCodeBuilder.asColorCodes(box));
+            actor.print(box.create());
         }
     }
 

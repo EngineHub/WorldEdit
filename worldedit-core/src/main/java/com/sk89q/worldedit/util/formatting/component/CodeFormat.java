@@ -19,19 +19,30 @@
 
 package com.sk89q.worldedit.util.formatting.component;
 
-import com.sk89q.worldedit.util.formatting.Style;
-import com.sk89q.worldedit.util.formatting.StyledFragment;
+import com.sk89q.worldedit.util.formatting.text.TextComponent;
+import com.sk89q.worldedit.util.formatting.text.format.TextColor;
 
 /**
  * Represents a fragment representing a command that is to be typed.
  */
-public class Code extends StyledFragment {
+public class CodeFormat extends TextComponentProducer {
 
-    /**
-     * Create a new instance.
-     */
-    public Code() {
-        super(Style.CYAN);
+    private CodeFormat() {
+        getBuilder().content("").color(TextColor.AQUA);
     }
 
+    /**
+     * Creates a CodeFormat with the given message.
+     *
+     * @param texts The text
+     * @return The Component
+     */
+    public static TextComponent wrap(String ... texts) {
+        CodeFormat code = new CodeFormat();
+        for (String text: texts) {
+            code.append(text);
+        }
+
+        return code.create();
+    }
 }
