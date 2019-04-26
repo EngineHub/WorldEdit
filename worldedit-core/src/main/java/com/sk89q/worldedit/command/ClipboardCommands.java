@@ -170,16 +170,14 @@ public class ClipboardCommands {
         Region region = clipboard.getRegion();
 
         BlockVector3 to = atOrigin ? clipboard.getOrigin() : session.getPlacementPosition(player);
-        PasteBuilder builder = holder
+        Operation operation = holder
                 .createPaste(editSession)
                 .to(to)
                 .ignoreAirBlocks(ignoreAirBlocks)
                 .copyBiomes(pasteBiomes)
-                .copyEntities(pasteEntities);
-        if (sourceMask != null) {
-            builder.maskSource(sourceMask);
-        }
-        Operation operation = builder.build();
+                .copyEntities(pasteEntities)
+                .maskSource(sourceMask)
+                .build();
         Operations.completeLegacy(operation);
 
         if (selectPasted) {

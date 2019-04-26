@@ -83,6 +83,10 @@ public class PasteBuilder {
      * @return this builder instance
      */
     public PasteBuilder maskSource(Mask sourceMask) {
+        if (sourceMask == null) {
+            this.sourceMask = Masks.alwaysTrue();
+            return this;
+        }
         this.sourceMask = sourceMask;
         return this;
     }

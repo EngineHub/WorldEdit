@@ -131,7 +131,7 @@ public class BrushCommands {
     @Command(
         aliases = { "clipboard", "copy" },
         usage = "",
-        flags = "ap",
+        flags = "aoebm",
         desc = "Choose the clipboard brush",
         help =
             "Chooses the clipboard brush.\n" +
@@ -141,7 +141,8 @@ public class BrushCommands {
             "stood relative to the copied area when you copied it."
     )
     @CommandPermissions("worldedit.brush.clipboard")
-    public void clipboardBrush(Player player, LocalSession session, @Switch('a') boolean ignoreAir, @Switch('p') boolean usingOrigin) throws WorldEditException {
+    public void clipboardBrush(Player player, LocalSession session, @Switch('a') boolean ignoreAir, @Switch('o') boolean usingOrigin,
+                               @Switch('e') boolean pasteEntities, @Switch('b') boolean pasteBiomes, @Switch('m') Mask sourceMask) throws WorldEditException {
         ClipboardHolder holder = session.getClipboard();
         Clipboard clipboard = holder.getClipboard();
 
@@ -152,7 +153,7 @@ public class BrushCommands {
         worldEdit.checkMaxBrushRadius(size.getBlockZ() / 2D - 1);
 
         BrushTool tool = session.getBrushTool(player.getItemInHand(HandSide.MAIN_HAND).getType());
-        tool.setBrush(new ClipboardBrush(holder, ignoreAir, usingOrigin), "worldedit.brush.clipboard");
+        tool.setBrush(new ClipboardBrush(holder, ignoreAir, usingOrigin, pasteEntities, pasteBiomes, sourceMask), "worldedit.brush.clipboard");
 
         player.print("Clipboard brush shape equipped.");
     }

@@ -23,7 +23,6 @@ import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.function.FlatRegionFunction;
 import com.sk89q.worldedit.math.BlockVector2;
-import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.transform.Transform;
 import com.sk89q.worldedit.world.biome.BiomeType;
 
@@ -32,7 +31,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * Copies the biome from one extent to another.
  */
-public class ExtentBiomeCopy  implements FlatRegionFunction {
+public class ExtentBiomeCopy implements FlatRegionFunction {
 
     private final Extent source;
     private final Extent destination;
