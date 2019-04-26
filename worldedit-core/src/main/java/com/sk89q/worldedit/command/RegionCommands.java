@@ -19,6 +19,8 @@
 
 package com.sk89q.worldedit.command;
 
+import com.google.common.base.Joiner;
+import com.google.common.collect.Lists;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEditException;
@@ -27,6 +29,8 @@ import com.sk89q.worldedit.command.util.CommandPermissionsConditionGenerator;
 import com.sk89q.worldedit.command.util.Logging;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.function.GroundFunction;
+import com.sk89q.worldedit.function.RegionFunction;
+import com.sk89q.worldedit.function.block.BlockReplace;
 import com.sk89q.worldedit.function.generator.FloraGenerator;
 import com.sk89q.worldedit.function.mask.ExistingBlockMask;
 import com.sk89q.worldedit.function.mask.Mask;
@@ -34,6 +38,7 @@ import com.sk89q.worldedit.function.mask.NoiseFilter2D;
 import com.sk89q.worldedit.function.operation.Operations;
 import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.function.visitor.LayerVisitor;
+import com.sk89q.worldedit.function.visitor.RegionVisitor;
 import com.sk89q.worldedit.internal.annotation.Direction;
 import com.sk89q.worldedit.internal.annotation.Selection;
 import com.sk89q.worldedit.internal.expression.ExpressionException;
@@ -74,6 +79,31 @@ public class RegionCommands {
      * Create a new instance.
      */
     public RegionCommands() {
+    }
+
+    @Command(
+        name = "/set",
+        desc = "Sets all the blocks in the region"
+    )
+    @CommandPermissions("worldedit.region.set")
+    @Logging(REGION)
+    public int set(Player player, EditSession editSession,
+                   @Selection Region region,
+                   @Arg(desc = "The patter of blocks to set")
+                       Pattern pattern) {
+        RegionFunction set = new BlockReplace(editSession, pattern);
+        RegionVisitor visitor = new RegionVisitor(region, set);
+
+        Operations.completeBlindly(visitor);
+        List<String> messages = Lists.newArrayList();
+        visitor.addStatusMessages(messages);
+        if (messages.isEmpty()) {
+            player.print("Operation completed.");
+        } else {
+            player.print("Operation completed (" + Joiner.on(", ").join(messages) + ").");
+        }
+
+        return visitor.getAffected();
     }
 
     @Command(

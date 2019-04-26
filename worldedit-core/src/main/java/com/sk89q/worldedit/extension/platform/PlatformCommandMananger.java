@@ -377,7 +377,6 @@ public final class PlatformCommandMananger {
         dispatcher = new CommandGraph()
                 .builder(builder)
                     .commands()
-                        .register(adapt(new SelectionCommand(new ApplyCommand(new ReplaceParser(), "Set all blocks within selection"), "worldedit.region.set")), "/set")
                         .group("brush", "br")
                             .describeAs("Brushing commands")
                             .register(adapt(new ShapedBrushCommand(new DeformCommand(), "worldedit.brush.deform")), "deform")
