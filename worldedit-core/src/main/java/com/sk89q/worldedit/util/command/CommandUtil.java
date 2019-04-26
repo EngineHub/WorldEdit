@@ -19,22 +19,13 @@
 
 package com.sk89q.worldedit.util.command;
 
-import com.google.common.collect.ImmutableList;
-import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.command.util.CommandPermissionsConditionGenerator;
 import com.sk89q.worldedit.extension.platform.PlatformCommandManager;
-import com.sk89q.worldedit.internal.command.CommandLoggingHandler;
 import org.enginehub.piston.Command;
-import org.enginehub.piston.CommandManager;
-import org.enginehub.piston.gen.CommandCallListener;
-import org.enginehub.piston.gen.CommandRegistration;
 import org.enginehub.piston.part.SubCommandPart;
 
 import java.util.Comparator;
-import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 public class CommandUtil {
@@ -55,26 +46,6 @@ public class CommandUtil {
 
     public static Comparator<Command> byCleanName() {
         return BY_CLEAN_NAME;
-    }
-
-    private static final CommandPermissionsConditionGenerator PERM_GEN = new CommandPermissionsConditionGenerator();
-
-    public static final Logger COMMAND_LOG =
-        Logger.getLogger("com.sk89q.worldedit.CommandLog");
-    private static final List<CommandCallListener> CALL_LISTENERS = ImmutableList.of(
-        new CommandLoggingHandler(WorldEdit.getInstance(), COMMAND_LOG)
-    );
-
-    public static <CI> void register(CommandManager manager, CommandRegistration<CI> registration, CI instance) {
-        registration.containerInstance(instance)
-            .commandManager(manager)
-            .listeners(CALL_LISTENERS);
-        if (registration instanceof CommandPermissionsConditionGenerator.Registration) {
-            ((CommandPermissionsConditionGenerator.Registration) registration).commandPermissionsConditionGenerator(
-                PERM_GEN
-            );
-        }
-        registration.build();
     }
 
     private CommandUtil() {

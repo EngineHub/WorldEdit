@@ -84,9 +84,11 @@ import com.sk89q.worldedit.event.platform.CommandEvent;
 import com.sk89q.worldedit.event.platform.CommandSuggestionEvent;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.internal.annotation.Selection;
+import com.sk89q.worldedit.internal.command.CommandLoggingHandler;
 import com.sk89q.worldedit.internal.command.WorldEditExceptionConverter;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.session.request.Request;
+import com.sk89q.worldedit.util.command.CommandRegistrationHandler;
 import com.sk89q.worldedit.util.command.parametric.ExceptionConverter;
 import com.sk89q.worldedit.util.eventbus.Subscribe;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
@@ -124,8 +126,6 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static com.sk89q.worldedit.util.command.CommandUtil.COMMAND_LOG;
-import static com.sk89q.worldedit.util.command.CommandUtil.register;
 
 /**
  * Handles the registration and invocation of commands.
@@ -136,6 +136,8 @@ public final class PlatformCommandManager {
 
     public static final Pattern COMMAND_CLEAN_PATTERN = Pattern.compile("^[/]+");
     private static final Logger log = LoggerFactory.getLogger(PlatformCommandManager.class);
+    private static final java.util.logging.Logger COMMAND_LOG =
+        java.util.logging.Logger.getLogger("com.sk89q.worldedit.CommandLog");
     private static final Pattern numberFormatExceptionPattern = Pattern.compile("^For input string: \"(.*)\"$");
 
     private final WorldEdit worldEdit;
@@ -144,6 +146,7 @@ public final class PlatformCommandManager {
     private final InjectedValueStore globalInjectedValues;
     private final DynamicStreamHandler dynamicHandler = new DynamicStreamHandler();
     private final WorldEditExceptionConverter exceptionConverter;
+    private final CommandRegistrationHandler registration;
 
     /**
      * Create a new instance.
@@ -159,6 +162,10 @@ public final class PlatformCommandManager {
         this.commandManager = DefaultCommandManagerService.getInstance()
             .newCommandManager();
         this.globalInjectedValues = MapBackedValueStore.create();
+        this.registration = new CommandRegistrationHandler(
+            ImmutableList.of(
+                new CommandLoggingHandler(worldEdit, COMMAND_LOG)
+            ));
         // setup separate from main constructor
         // ensures that everything is definitely assigned
         initialize();
@@ -239,7 +246,7 @@ public final class PlatformCommandManager {
 
             CommandManager manager = DefaultCommandManagerService.getInstance()
                 .newCommandManager();
-            register(
+            this.registration.register(
                 manager,
                 registration,
                 instance
@@ -282,8 +289,8 @@ public final class PlatformCommandManager {
             BrushCommandsRegistration.builder(),
             new BrushCommands(worldEdit),
             manager -> {
-                PaintBrushCommands.register(manager);
-                ApplyBrushCommands.register(manager);
+                PaintBrushCommands.register(manager, registration);
+                ApplyBrushCommands.register(manager, registration);
             }
         );
         registerSubCommands(
@@ -293,72 +300,72 @@ public final class PlatformCommandManager {
             WorldEditCommandsRegistration.builder(),
             new WorldEditCommands(worldEdit)
         );
-        register(
+        this.registration.register(
             commandManager,
             BiomeCommandsRegistration.builder(),
             new BiomeCommands()
         );
-        register(
+        this.registration.register(
             commandManager,
             ChunkCommandsRegistration.builder(),
             new ChunkCommands(worldEdit)
         );
-        register(
+        this.registration.register(
             commandManager,
             ClipboardCommandsRegistration.builder(),
             new ClipboardCommands()
         );
-        register(
+        this.registration.register(
             commandManager,
             GeneralCommandsRegistration.builder(),
             new GeneralCommands(worldEdit)
         );
-        register(
+        this.registration.register(
             commandManager,
             GenerationCommandsRegistration.builder(),
             new GenerationCommands(worldEdit)
         );
-        register(
+        this.registration.register(
             commandManager,
             HistoryCommandsRegistration.builder(),
             new HistoryCommands(worldEdit)
         );
-        register(
+        this.registration.register(
             commandManager,
             NavigationCommandsRegistration.builder(),
             new NavigationCommands(worldEdit)
         );
-        register(
+        this.registration.register(
             commandManager,
             RegionCommandsRegistration.builder(),
             new RegionCommands()
         );
-        register(
+        this.registration.register(
             commandManager,
             ScriptingCommandsRegistration.builder(),
             new ScriptingCommands(worldEdit)
         );
-        register(
+        this.registration.register(
             commandManager,
             SelectionCommandsRegistration.builder(),
             new SelectionCommands(worldEdit)
         );
-        register(
+        this.registration.register(
             commandManager,
             SnapshotUtilCommandsRegistration.builder(),
             new SnapshotUtilCommands(worldEdit)
         );
-        register(
+        this.registration.register(
             commandManager,
             ToolCommandsRegistration.builder(),
             new ToolCommands(worldEdit)
         );
-        register(
+        this.registration.register(
             commandManager,
             ToolUtilCommandsRegistration.builder(),
             new ToolUtilCommands(worldEdit)
         );
-        register(
+        this.registration.register(
             commandManager,
             UtilityCommandsRegistration.builder(),
             new UtilityCommands(worldEdit)

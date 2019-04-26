@@ -1,3 +1,22 @@
+/*
+ * WorldEdit, a Minecraft world manipulation toolkit
+ * Copyright (C) sk89q <http://www.sk89q.com>
+ * Copyright (C) WorldEdit team and contributors
+ *
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as published by the
+ * Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package com.sk89q.worldedit.command;
 
 import com.google.common.collect.ImmutableList;
@@ -5,9 +24,9 @@ import com.google.common.collect.ImmutableSet;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseItem;
-import com.sk89q.worldedit.command.factory.TreeGeneratorFactory;
 import com.sk89q.worldedit.command.factory.ItemUseFactory;
 import com.sk89q.worldedit.command.factory.ReplaceFactory;
+import com.sk89q.worldedit.command.factory.TreeGeneratorFactory;
 import com.sk89q.worldedit.command.util.PermissionCondition;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.function.Contextual;
@@ -16,7 +35,7 @@ import com.sk89q.worldedit.function.factory.Paint;
 import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.regions.factory.RegionFactory;
 import com.sk89q.worldedit.util.TreeGenerator;
-import com.sk89q.worldedit.util.command.CommandUtil;
+import com.sk89q.worldedit.util.command.CommandRegistrationHandler;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import org.enginehub.piston.CommandManager;
@@ -52,14 +71,14 @@ public class PaintBrushCommands {
         .ofTypes(ImmutableList.of(Key.of(double.class)))
         .build();
 
-    public static void register(CommandManager commandManager) {
+    public static void register(CommandManager commandManager, CommandRegistrationHandler registration) {
         commandManager.register("paint", builder -> {
             builder.description(TextComponent.of("Paint brush, apply a function to a surface"));
             builder.action(org.enginehub.piston.Command.Action.NULL_ACTION);
 
             CommandManager manager = DefaultCommandManagerService.getInstance()
                 .newCommandManager();
-            CommandUtil.register(
+            registration.register(
                 manager,
                 PaintBrushCommandsRegistration.builder(),
                 new PaintBrushCommands()
