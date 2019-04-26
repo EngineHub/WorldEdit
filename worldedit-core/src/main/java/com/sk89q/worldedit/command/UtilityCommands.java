@@ -545,12 +545,15 @@ public class UtilityCommands {
     public void calc(Actor actor, @Text String input) throws CommandException {
         try {
             Expression expression = Expression.compile(input);
+            double result;
             if (actor instanceof SessionOwner) {
-                actor.print("= " + expression.evaluate(
-                        new double[]{}, WorldEdit.getInstance().getSessionManager().get((SessionOwner) actor).getTimeout()));
+                result = expression.evaluate(
+                        new double[]{}, WorldEdit.getInstance().getSessionManager().get((SessionOwner) actor).getTimeout());
             } else {
-                actor.print("= " + expression.evaluate());
+                result = expression.evaluate();
             }
+
+            actor.print(result + " = " + input);
         } catch (EvaluationException e) {
             actor.printError(String.format(
                     "'%s' could not be evaluated (error: %s)", input, e.getMessage()));
