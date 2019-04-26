@@ -35,6 +35,10 @@ dependencies {
     testCompile 'org.mockito:mockito-core:1.9.0-rc1'
 }
 
+tasks.withType(JavaCompile).configureEach {
+    it.options.compilerArgs.add("-Aarg.name.key.prefix=")
+}
+
 sourceSets {
     main {
         java {
