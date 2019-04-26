@@ -53,7 +53,7 @@ public class CommandListBox extends MessageBox {
         TextComponent commandName = TextComponent.of(alias, TextColor.GOLD);
         if (insertion != null) {
             commandName = commandName
-                    .clickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, insertion))
+                    .clickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, insertion))
                     .hoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.of("Click to select")));
         }
         getContents().append(commandName.append(TextComponent.of(": ")));

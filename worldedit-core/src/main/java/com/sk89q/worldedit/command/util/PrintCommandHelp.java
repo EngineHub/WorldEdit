@@ -20,6 +20,7 @@
 package com.sk89q.worldedit.command.util;
 
 import com.google.common.base.Joiner;
+import com.google.common.collect.ImmutableList;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
@@ -35,6 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.sk89q.worldedit.util.command.CommandUtil.byCleanName;
@@ -77,7 +79,7 @@ public class PrintCommandHelp {
         final int perPage = actor instanceof Player ? 8 : 20; // More pages for console
 
         if (commandPath.isEmpty()) {
-            printAllCommands(page, perPage, manager.getAllCommands(), actor, true);
+            printAllCommands(page, perPage, manager.getAllCommands(), actor, ImmutableList.of());
             return;
         }
 
@@ -117,11 +119,12 @@ public class PrintCommandHelp {
             CommandUsageBox box = new CommandUsageBox(currentCommand, String.join(" ", visited));
             actor.print(box.create());
         } else {
-            printAllCommands(page, perPage, subCommands.values().stream(), actor, false);
+            printAllCommands(page, perPage, subCommands.values().stream(), actor, visited);
         }
     }
 
-    private static void printAllCommands(int page, int perPage, Stream<Command> commandStream, Actor actor, boolean isRootLevel) {
+    private static void printAllCommands(int page, int perPage, Stream<Command> commandStream, Actor actor,
+                                         List<String> commandList) {
         // Get a list of aliases
         List<Command> commands = commandStream
             .sorted(byCleanName())
@@ -147,7 +150,10 @@ public class PrintCommandHelp {
 
             // Add each command
             for (Command mapping : list) {
-                box.appendCommand((isRootLevel ? "/" : "") + mapping.getName(), mapping.getDescription());
+                String alias = (commandList.isEmpty() ? "/" : "") + mapping.getName();
+                String command = Stream.concat(commandList.stream(), Stream.of(mapping.getName()))
+                    .collect(Collectors.joining(" ", "/", ""));
+                box.appendCommand(alias, mapping.getDescription(), command);
             }
         }
 
