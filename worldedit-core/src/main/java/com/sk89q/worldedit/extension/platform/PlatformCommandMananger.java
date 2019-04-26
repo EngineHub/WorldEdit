@@ -62,6 +62,8 @@ import com.sk89q.worldedit.command.ToolUtilCommands;
 import com.sk89q.worldedit.command.ToolUtilCommandsRegistration;
 import com.sk89q.worldedit.command.UtilityCommands;
 import com.sk89q.worldedit.command.UtilityCommandsRegistration;
+import com.sk89q.worldedit.command.WorldEditCommands;
+import com.sk89q.worldedit.command.WorldEditCommandsRegistration;
 import com.sk89q.worldedit.command.argument.Arguments;
 import com.sk89q.worldedit.command.argument.BooleanConverter;
 import com.sk89q.worldedit.command.argument.CommaSeparatedValuesConverter;
@@ -311,6 +313,24 @@ public final class PlatformCommandMananger {
                 .required()
                 .build());
         });
+        commandManager.register("worldedit", cmd -> {
+            cmd.aliases(ImmutableList.of("we"));
+            cmd.description("WorldEdit commands");
+            cmd.action(Command.Action.NULL_ACTION);
+
+            CommandManager manager = DefaultCommandManagerService.getInstance()
+                .newCommandManager();
+            register(
+                manager,
+                WorldEditCommandsRegistration.builder(),
+                new WorldEditCommands(worldEdit)
+            );
+
+            cmd.addPart(SubCommandPart.builder("action", "Sub-command to run.")
+                .withCommands(manager.getAllCommands().collect(Collectors.toList()))
+                .required()
+                .build());
+        });
         register(
             commandManager,
             BiomeCommandsRegistration.builder(),
@@ -388,10 +408,6 @@ public final class PlatformCommandMananger {
                 .builder(builder)
                     .commands()
                         .register(adapt(new SelectionCommand(new ApplyCommand(new ReplaceParser(), "Set all blocks within selection"), "worldedit.region.set")), "/set")
-                        .group("worldedit", "we")
-                            .describeAs("WorldEdit commands")
-                            .registerMethods(new WorldEditCommands(worldEdit))
-                            .parent()
                         .group("brush", "br")
                             .describeAs("Brushing commands")
                             .register(adapt(new ShapedBrushCommand(new DeformCommand(), "worldedit.brush.deform")), "deform")
@@ -402,11 +418,6 @@ public final class PlatformCommandMananger {
                             .register(adapt(new ShapedBrushCommand(ProvidedValue.create(new Deform("y-=1", Mode.RAW_COORD), "Raise one block"), "worldedit.brush.raise")), "raise")
                             .register(adapt(new ShapedBrushCommand(ProvidedValue.create(new Deform("y+=1", Mode.RAW_COORD), "Lower one block"), "worldedit.brush.lower")), "lower")
                         .parent()
-                        .group("tool")
-                            .describeAs("Bind functions to held items")
-                            .registerMethods(new ToolCommands(worldEdit))
-                            .parent()
-                        .graph()
                 .getDispatcher();
          */
     }

@@ -509,8 +509,8 @@ public class UtilityCommands {
                      @Arg(desc = "The page to retrieve", def = "1")
                          int page,
                      @Arg(desc = "The command to retrieve help for", def = "", variable = true)
-                         List<String> commandPath) throws WorldEditException {
-        PrintCommandHelp.help(commandPath, page, we, actor);
+                         List<String> command) throws WorldEditException {
+        PrintCommandHelp.help(command, page, we, actor);
     }
 
 
