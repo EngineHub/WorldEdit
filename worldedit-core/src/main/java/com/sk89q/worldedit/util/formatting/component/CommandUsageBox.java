@@ -19,21 +19,18 @@
 
 package com.sk89q.worldedit.util.formatting.component;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
-import com.sk89q.minecraft.util.commands.CommandLocals;
-import com.sk89q.worldedit.extension.platform.PlatformCommandMananger;
-import com.sk89q.worldedit.util.command.CommandCallable;
-import com.sk89q.worldedit.util.command.CommandMapping;
-import com.sk89q.worldedit.util.command.Description;
-import com.sk89q.worldedit.util.command.Dispatcher;
-import com.sk89q.worldedit.util.command.PrimaryAliasComparator;
 import com.sk89q.worldedit.util.formatting.StyledFragment;
-
-import java.util.ArrayList;
-import java.util.List;
+import org.enginehub.piston.Command;
+import org.enginehub.piston.CommandParameters;
 
 import javax.annotation.Nullable;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.sk89q.worldedit.util.command.CommandUtil.byCleanName;
+import static com.sk89q.worldedit.util.command.CommandUtil.getSubCommands;
 
 /**
  * A box to describe usage of a command.
@@ -46,7 +43,7 @@ public class CommandUsageBox extends StyledFragment {
      * @param command the command to describe
      * @param commandString the command that was used, such as "/we" or "/brush sphere"
      */
-    public CommandUsageBox(CommandCallable command, String commandString) {
+    public CommandUsageBox(Command command, String commandString) {
         this(command, commandString, null);
     }
 
@@ -55,54 +52,40 @@ public class CommandUsageBox extends StyledFragment {
      *
      * @param command the command to describe
      * @param commandString the command that was used, such as "/we" or "/brush sphere"
-     * @param locals list of locals to use
+     * @param parameters list of parameters to use
      */
-    public CommandUsageBox(CommandCallable command, String commandString, @Nullable CommandLocals locals) {
+    public CommandUsageBox(Command command, String commandString, @Nullable CommandParameters parameters) {
         checkNotNull(command);
         checkNotNull(commandString);
-        if (command instanceof Dispatcher) {
-            attachDispatcherUsage((Dispatcher) command, commandString, locals);
+        Map<String, Command> subCommands = getSubCommands(command);
+        if (subCommands.isEmpty()) {
+            attachCommandUsage(command, commandString);
         } else {
-            attachCommandUsage(command.getDescription(), commandString);
+            attachSubcommandUsage(subCommands, commandString, parameters);
         }
     }
 
-    private void attachDispatcherUsage(Dispatcher dispatcher, String commandString, @Nullable CommandLocals locals) {
+    private void attachSubcommandUsage(Map<String, Command> dispatcher, String commandString, @Nullable CommandParameters parameters) {
         CommandListBox box = new CommandListBox("Subcommands");
         String prefix = !commandString.isEmpty() ? commandString + " " : "";
 
-        List<CommandMapping> list = new ArrayList<>(dispatcher.getCommands());
-        list.sort(new PrimaryAliasComparator(PlatformCommandMananger.COMMAND_CLEAN_PATTERN));
+        List<Command> list = dispatcher.values().stream()
+            .sorted(byCleanName())
+            .collect(Collectors.toList());
 
-        for (CommandMapping mapping : list) {
-            if (locals == null || mapping.getCallable().testPermission(locals)) {
-                box.appendCommand(prefix + mapping.getPrimaryAlias(), mapping.getDescription().getDescription());
+        for (Command mapping : list) {
+            if (parameters == null || mapping.getCondition().satisfied(parameters)) {
+                box.appendCommand(prefix + mapping.getName(), mapping.getDescription());
             }
         }
 
         append(box);
     }
 
-    private void attachCommandUsage(Description description, String commandString) {
+    private void attachCommandUsage(Command description, String commandString) {
         MessageBox box = new MessageBox("Help for " + commandString);
-        StyledFragment contents = box.getContents();
 
-        if (description.getUsage() != null) {
-            contents.append(new Label().append("Usage: "));
-            contents.append(description.getUsage());
-        } else {
-            contents.append(new Subtle().append("Usage information is not available."));
-        }
-
-        contents.newLine();
-
-        if (description.getHelp() != null) {
-            contents.append(description.getHelp());
-        } else if (description.getDescription() != null) {
-            contents.append(description.getDescription());
-        } else {
-            contents.append(new Subtle().append("No further help is available."));
-        }
+        box.getContents().append(description.getFullHelp());
 
         append(box);
     }

@@ -19,15 +19,13 @@
 
 package com.sk89q.worldedit.command.util;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
-import com.sk89q.minecraft.util.commands.CommandException;
 import com.sk89q.worldedit.entity.metadata.EntityProperties;
 import com.sk89q.worldedit.function.EntityFunction;
 
+import javax.annotation.Nullable;
 import java.util.regex.Pattern;
 
-import javax.annotation.Nullable;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * The implementation of /remove.
@@ -125,15 +123,19 @@ public class EntityRemover {
         }
     }
 
-    private Type type;
-
-    public void fromString(String str) throws CommandException {
+    public static EntityRemover fromString(String str) {
         Type type = Type.findByPattern(str);
         if (type != null) {
-            this.type = type;
+            return new EntityRemover(type);
         } else {
-            throw new CommandException("Acceptable types: projectiles, items, paintings, itemframes, boats, minecarts, tnt, xp, or all");
+            throw new IllegalArgumentException("Acceptable types: projectiles, items, paintings, itemframes, boats, minecarts, tnt, xp, or all");
         }
+    }
+
+    private final Type type;
+
+    private EntityRemover(Type type) {
+        this.type = type;
     }
 
     public EntityFunction createFunction() {

@@ -157,6 +157,5 @@ public class WorldEditCommands {
     )
     @CommandPermissions("worldedit.help")
     public void help(Actor actor, CommandContext args) throws WorldEditException {
-        UtilityCommands.help(args, we, actor);
     }
 }

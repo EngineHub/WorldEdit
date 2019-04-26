@@ -60,10 +60,13 @@ import com.sk89q.worldedit.command.ToolCommands;
 import com.sk89q.worldedit.command.ToolCommandsRegistration;
 import com.sk89q.worldedit.command.ToolUtilCommands;
 import com.sk89q.worldedit.command.ToolUtilCommandsRegistration;
+import com.sk89q.worldedit.command.UtilityCommands;
+import com.sk89q.worldedit.command.UtilityCommandsRegistration;
 import com.sk89q.worldedit.command.argument.Arguments;
 import com.sk89q.worldedit.command.argument.BooleanConverter;
 import com.sk89q.worldedit.command.argument.CommaSeparatedValuesConverter;
 import com.sk89q.worldedit.command.argument.DirectionConverter;
+import com.sk89q.worldedit.command.argument.EntityRemoverConverter;
 import com.sk89q.worldedit.command.argument.EnumConverter;
 import com.sk89q.worldedit.command.argument.ExpandAmountConverter;
 import com.sk89q.worldedit.command.argument.MaskConverter;
@@ -78,16 +81,11 @@ import com.sk89q.worldedit.event.platform.CommandEvent;
 import com.sk89q.worldedit.event.platform.CommandSuggestionEvent;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.internal.annotation.Selection;
-import com.sk89q.worldedit.internal.command.ActorAuthorizer;
 import com.sk89q.worldedit.internal.command.CommandLoggingHandler;
-import com.sk89q.worldedit.internal.command.UserCommandCompleter;
-import com.sk89q.worldedit.internal.command.WorldEditBinding;
 import com.sk89q.worldedit.internal.command.WorldEditExceptionConverter;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.session.request.Request;
 import com.sk89q.worldedit.util.command.parametric.ExceptionConverter;
-import com.sk89q.worldedit.util.command.parametric.LegacyCommandsHandler;
-import com.sk89q.worldedit.util.command.parametric.ParametricBuilder;
 import com.sk89q.worldedit.util.eventbus.Subscribe;
 import com.sk89q.worldedit.util.logging.DynamicStreamHandler;
 import com.sk89q.worldedit.util.logging.LogFormat;
@@ -188,12 +186,6 @@ public final class PlatformCommandMananger {
         commandLog.addHandler(dynamicHandler);
 
         // Set up the commands manager
-        ParametricBuilder builder = new ParametricBuilder();
-        builder.setAuthorizer(new ActorAuthorizer());
-        builder.setDefaultCompleter(new UserCommandCompleter(platformManager));
-        builder.addBinding(new WorldEditBinding(worldEdit));
-        builder.addInvokeListener(new LegacyCommandsHandler());
-
         registerAlwaysInjectedValues();
         registerArgumentConverters();
         registerAllCommands();
@@ -215,6 +207,7 @@ public final class PlatformCommandMananger {
         ExpandAmountConverter.register(commandManager);
         ZonedDateTimeConverter.register(commandManager);
         BooleanConverter.register(commandManager);
+        EntityRemoverConverter.register(commandManager);
     }
 
     private void registerAlwaysInjectedValues() {
@@ -383,13 +376,17 @@ public final class PlatformCommandMananger {
             ToolUtilCommandsRegistration.builder(),
             new ToolUtilCommands(worldEdit)
         );
+        register(
+            commandManager,
+            UtilityCommandsRegistration.builder(),
+            new UtilityCommands(worldEdit)
+        );
 
         // Unported commands are below. Delete once they're added to the main manager above.
         /*
         dispatcher = new CommandGraph()
                 .builder(builder)
                     .commands()
-                        .registerMethods(new UtilityCommands(worldEdit))
                         .register(adapt(new SelectionCommand(new ApplyCommand(new ReplaceParser(), "Set all blocks within selection"), "worldedit.region.set")), "/set")
                         .group("worldedit", "we")
                             .describeAs("WorldEdit commands")
