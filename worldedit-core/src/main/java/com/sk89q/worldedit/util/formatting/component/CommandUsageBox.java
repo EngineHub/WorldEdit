@@ -19,7 +19,6 @@
 
 package com.sk89q.worldedit.util.formatting.component;
 
-import com.sk89q.worldedit.util.formatting.StyledFragment;
 import org.enginehub.piston.Command;
 import org.enginehub.piston.CommandParameters;
 
@@ -35,7 +34,7 @@ import static com.sk89q.worldedit.util.command.CommandUtil.getSubCommands;
 /**
  * A box to describe usage of a command.
  */
-public class CommandUsageBox extends StyledFragment {
+public class CommandUsageBox extends TextComponentProducer {
 
     /**
      * Create a new usage box.
@@ -79,15 +78,14 @@ public class CommandUsageBox extends StyledFragment {
             }
         }
 
-        append(box);
+        append(box.create());
     }
 
     private void attachCommandUsage(Command description, String commandString) {
-        MessageBox box = new MessageBox("Help for " + commandString);
+        MessageBox box = new MessageBox("Help for " + commandString,
+            new TextComponentProducer().append(description.getFullHelp()));
 
-        box.getContents().append(description.getFullHelp());
-
-        append(box);
+        append(box.create());
     }
 
 }

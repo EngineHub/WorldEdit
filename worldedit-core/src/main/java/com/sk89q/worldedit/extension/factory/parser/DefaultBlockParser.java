@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.extension.factory.parser;
 
+import com.google.common.collect.Maps;
 import com.sk89q.worldedit.IncompleteRegionException;
 import com.sk89q.worldedit.NotABlockException;
 import com.sk89q.worldedit.WorldEdit;
@@ -38,6 +39,7 @@ import com.sk89q.worldedit.internal.registry.InputParser;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.util.HandSide;
+import com.sk89q.worldedit.util.formatting.component.ErrorFormat;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;
@@ -148,7 +150,7 @@ public class DefaultBlockParser extends InputParser<BaseBlock> {
         }
     }
 
-    private static Map<Property<?>, Object> parseProperties(BlockType type, String[] stateProperties) throws NoMatchException {
+    private static Map<Property<?>, Object> parseProperties(BlockType type, String[] stateProperties, ParserContext context) throws NoMatchException {
         Map<Property<?>, Object> blockStates = new HashMap<>();
 
         if (stateProperties.length > 0) { // Block data not yet detected
@@ -163,7 +165,14 @@ public class DefaultBlockParser extends InputParser<BaseBlock> {
                     @SuppressWarnings("unchecked")
                     Property<Object> propertyKey = (Property<Object>) type.getPropertyMap().get(parts[0]);
                     if (propertyKey == null) {
-                        throw new NoMatchException("Unknown property " + parts[0] + " for block " + type.getName());
+                        if (context.getActor() != null) {
+                            context.getActor().print(ErrorFormat.wrap("Unknown property ", parts[0], " for block ", type.getName(),
+                                    ". Defaulting to base."));
+                        } else {
+                            WorldEdit.logger.warn("Unknown property " + parts[0] + " for block " + type.getName());
+//                            throw new NoMatchException("Unknown property " + parts[0] + " for block " + type.getName());
+                        }
+                        return Maps.newHashMap();
                     }
                     if (blockStates.containsKey(propertyKey)) {
                         throw new NoMatchException("Duplicate property " + parts[0]);
@@ -222,7 +231,7 @@ public class DefaultBlockParser extends InputParser<BaseBlock> {
                 typeString = blockAndExtraData[0].substring(0, stateStart);
                 stateString = blockAndExtraData[0].substring(stateStart + 1, blockAndExtraData[0].length() - 1);
             }
-            if (typeString == null || typeString.isEmpty()) {
+            if (typeString.isEmpty()) {
                 throw new InputParseException("Invalid format");
             }
             String[] stateProperties = EMPTY_STRING_ARRAY;
@@ -270,7 +279,7 @@ public class DefaultBlockParser extends InputParser<BaseBlock> {
                 }
             }
 
-            blockStates.putAll(parseProperties(blockType, stateProperties));
+            blockStates.putAll(parseProperties(blockType, stateProperties, context));
 
             if (!context.isPreferringWildcard()) {
                 // No wildcards allowed => eliminate them. (Start with default state)

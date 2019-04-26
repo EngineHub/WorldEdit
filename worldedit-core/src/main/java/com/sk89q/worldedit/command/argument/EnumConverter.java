@@ -24,6 +24,8 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSortedMap;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.util.TreeGenerator;
+import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import org.enginehub.piston.CommandManager;
 import org.enginehub.piston.converter.ArgumentConverter;
 import org.enginehub.piston.converter.ConversionResult;
@@ -70,7 +72,7 @@ public class EnumConverter<E extends Enum<E>> implements ArgumentConverter<E> {
         return new EnumConverter<>(enumClass, lookupKeys, unknownValue);
     }
 
-    private final String choices;
+    private final Component choices;
     private final ImmutableMap<String, E> map;
     @Nullable
     private final E unknownValue;
@@ -92,15 +94,15 @@ public class EnumConverter<E extends Enum<E>> implements ArgumentConverter<E> {
                 map.put(key, e);
             }
         }
-        this.choices = choices.build()
+        this.choices = TextComponent.of(choices.build()
             .map(choice -> choice.stream().collect(joining("|", "[", "]")))
-            .collect(joining("|"));
+            .collect(joining("|")));
         this.map = map.build();
         this.unknownValue = unknownValue;
     }
 
     @Override
-    public String describeAcceptableArguments() {
+    public Component describeAcceptableArguments() {
         return choices;
     }
 

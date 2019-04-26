@@ -23,12 +23,11 @@ import com.google.common.base.Joiner;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
-import com.sk89q.worldedit.util.formatting.ColorCodeBuilder;
-import com.sk89q.worldedit.util.formatting.Style;
-import com.sk89q.worldedit.util.formatting.StyledFragment;
-import com.sk89q.worldedit.util.formatting.component.Code;
+import com.sk89q.worldedit.util.formatting.component.CodeFormat;
 import com.sk89q.worldedit.util.formatting.component.CommandListBox;
 import com.sk89q.worldedit.util.formatting.component.CommandUsageBox;
+import com.sk89q.worldedit.util.formatting.text.TextComponent;
+import com.sk89q.worldedit.util.formatting.text.format.TextColor;
 import org.enginehub.piston.Command;
 import org.enginehub.piston.CommandManager;
 
@@ -116,7 +115,7 @@ public class PrintCommandHelp {
         if (subCommands.isEmpty()) {
             // Create the message
             CommandUsageBox box = new CommandUsageBox(currentCommand, String.join(" ", visited));
-            actor.printRaw(ColorCodeBuilder.asColorCodes(box));
+            actor.print(box.create());
         } else {
             printAllCommands(page, perPage, subCommands.values().stream(), actor, false);
         }
@@ -134,17 +133,17 @@ public class PrintCommandHelp {
 
         // Box
         CommandListBox box = new CommandListBox(String.format("Help: page %d/%d ", page, pageTotal));
-        StyledFragment contents = box.getContents();
-        StyledFragment tip = contents.createFragment(Style.GRAY);
+        TextComponent.Builder tip = box.getContents().getBuilder().color(TextColor.GRAY);
 
         if (offset >= commands.size()) {
-            tip.createFragment(Style.RED).append(String.format("There is no page %d (total number of pages is %d).", page, pageTotal)).newLine();
+            tip.color(TextColor.RED)
+                .append(TextComponent.of(String.format("There is no page %d (total number of pages is %d).\n", page, pageTotal)));
         } else {
             List<Command> list = commands.subList(offset, Math.min(offset + perPage, commands.size()));
 
-            tip.append("Type ");
-            tip.append(new Code().append("//help ").append("[<page>] <command...>"));
-            tip.append(" for more information.").newLine();
+            tip.append(TextComponent.of("Type "));
+            tip.append(CodeFormat.wrap("//help [<page>] <command...>"));
+            tip.append(TextComponent.of(" for more information.\n"));
 
             // Add each command
             for (Command mapping : list) {
@@ -152,7 +151,7 @@ public class PrintCommandHelp {
             }
         }
 
-        actor.printRaw(ColorCodeBuilder.asColorCodes(box));
+        actor.print(box.create());
     }
 
     private PrintCommandHelp() {

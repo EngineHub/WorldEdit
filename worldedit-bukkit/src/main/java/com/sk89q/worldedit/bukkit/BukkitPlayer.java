@@ -37,7 +37,8 @@ import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.block.BlockTypes;
 import com.sk89q.worldedit.world.gamemode.GameMode;
 import com.sk89q.worldedit.world.gamemode.GameModes;
-
+import com.sk89q.worldedit.util.formatting.text.TextComponent;
+import com.sk89q.worldedit.util.formatting.text.adapter.bukkit.TextAdapter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -123,6 +124,11 @@ public class BukkitPlayer extends AbstractPlayerActor {
         for (String part : msg.split("\n")) {
             player.sendMessage("\u00A7c" + part);
         }
+    }
+
+    @Override
+    public void print(TextComponent component) {
+        TextAdapter.sendComponent(player, component);
     }
 
     @Override

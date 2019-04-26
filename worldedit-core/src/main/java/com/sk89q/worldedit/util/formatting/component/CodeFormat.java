@@ -17,16 +17,32 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.forge.proxy;
+package com.sk89q.worldedit.util.formatting.component;
 
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import com.sk89q.worldedit.util.formatting.text.TextComponent;
+import com.sk89q.worldedit.util.formatting.text.format.TextColor;
 
-@OnlyIn(Dist.DEDICATED_SERVER)
-public class ServerProxy implements CommonProxy {
+/**
+ * Represents a fragment representing a command that is to be typed.
+ */
+public class CodeFormat extends TextComponentProducer {
 
-    @Override
-    public void registerHandlers() {
+    private CodeFormat() {
+        getBuilder().content("").color(TextColor.AQUA);
     }
 
+    /**
+     * Creates a CodeFormat with the given message.
+     *
+     * @param texts The text
+     * @return The Component
+     */
+    public static TextComponent wrap(String ... texts) {
+        CodeFormat code = new CodeFormat();
+        for (String text: texts) {
+            code.append(text);
+        }
+
+        return code.create();
+    }
 }

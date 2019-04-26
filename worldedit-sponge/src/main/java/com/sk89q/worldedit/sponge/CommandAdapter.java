@@ -29,6 +29,8 @@ import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
 
+import static com.sk89q.worldedit.sponge.SpongeTextAdapter.convert;
+
 public abstract class CommandAdapter implements CommandCallable {
     private Command command;
 
@@ -51,24 +53,18 @@ public abstract class CommandAdapter implements CommandCallable {
 
     @Override
     public Optional<Text> getShortDescription(CommandSource source) {
-        String description = command.getDescription();
-        if (!description.isEmpty()) {
-            return Optional.of(Text.of(description));
-        }
-        return Optional.empty();
+        return Optional.of(command.getDescription())
+            .map(SpongeTextAdapter::convert);
     }
 
     @Override
     public Optional<Text> getHelp(CommandSource source) {
-        String help = command.getFullHelp();
-        if (!help.isEmpty()) {
-            return Optional.of(Text.of(help));
-        }
-        return Optional.empty();
+        return Optional.of(command.getFullHelp())
+            .map(SpongeTextAdapter::convert);
     }
 
     @Override
     public Text getUsage(CommandSource source) {
-        return Text.of(command.getUsage());
+        return convert(command.getUsage());
     }
 }

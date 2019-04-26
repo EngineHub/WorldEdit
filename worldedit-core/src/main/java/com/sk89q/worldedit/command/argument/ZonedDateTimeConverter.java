@@ -20,6 +20,8 @@
 package com.sk89q.worldedit.command.argument;
 
 import com.sk89q.worldedit.LocalSession;
+import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import org.enginehub.piston.CommandManager;
 import org.enginehub.piston.converter.ArgumentConverter;
 import org.enginehub.piston.converter.ConversionResult;
@@ -42,8 +44,8 @@ public class ZonedDateTimeConverter implements ArgumentConverter<ZonedDateTime> 
     }
 
     @Override
-    public String describeAcceptableArguments() {
-        return "any date";
+    public Component describeAcceptableArguments() {
+        return TextComponent.of("any date");
     }
 
     @Override

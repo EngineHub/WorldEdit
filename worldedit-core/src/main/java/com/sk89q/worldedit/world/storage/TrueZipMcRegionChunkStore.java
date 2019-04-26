@@ -93,11 +93,11 @@ public class TrueZipMcRegionChunkStore extends McRegionChunkStore {
         } else {
             Pattern pattern = Pattern.compile(".*\\.mc[ra]$");
             // World pattern
-            Pattern worldPattern = Pattern.compile(worldName + "\\$");
+            Pattern worldPattern = Pattern.compile(worldName + "[\\\\/].*");
             for (Enumeration<? extends ZipEntry> e = zip.entries(); e.hasMoreElements(); ) {
                 ZipEntry testEntry = e.nextElement();
                 // Check for world
-                if (worldPattern.matcher(worldName).matches()) {
+                if (worldPattern.matcher(testEntry.getName()).matches()) {
                     // Check for file
                     if (pattern.matcher(testEntry.getName()).matches()) {
                         folder = testEntry.getName().substring(0, testEntry.getName().lastIndexOf('/'));

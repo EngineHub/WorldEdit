@@ -22,9 +22,9 @@ package com.sk89q.worldedit.forge;
 import com.sk89q.worldedit.forge.gui.GuiReferenceCard;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
+import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
-import net.minecraftforge.fml.common.gameevent.InputEvent.KeyInputEvent;
 import org.lwjgl.glfw.GLFW;
 
 public class KeyHandler {
@@ -37,11 +37,9 @@ public class KeyHandler {
     }
 
     @SubscribeEvent
-    public void onKey(KeyInputEvent evt) {
+    public void onKey(InputEvent.KeyInputEvent evt) {
         if (mc.player != null && mc.world != null && mainKey.isPressed()) {
             mc.displayGuiScreen(new GuiReferenceCard());
-            // TODO Seems GuiHandlers don't work on client right now
-//            NetworkHooks.openGui(mc.player, new ResourceLocationInteractionObject(ServerProxy.REFERENCE_GUI));
         }
     }
 

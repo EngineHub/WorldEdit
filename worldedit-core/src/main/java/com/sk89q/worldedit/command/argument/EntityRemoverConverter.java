@@ -20,6 +20,8 @@
 package com.sk89q.worldedit.command.argument;
 
 import com.sk89q.worldedit.command.util.EntityRemover;
+import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import org.enginehub.piston.CommandManager;
 import org.enginehub.piston.converter.ArgumentConverter;
 import org.enginehub.piston.converter.ConversionResult;
@@ -38,8 +40,10 @@ public class EntityRemoverConverter implements ArgumentConverter<EntityRemover> 
     }
 
     @Override
-    public String describeAcceptableArguments() {
-        return "projectiles, items, paintings, itemframes, boats, minecarts, tnt, xp, or all";
+    public Component describeAcceptableArguments() {
+        return TextComponent.of(
+            "projectiles, items, paintings, itemframes, boats, minecarts, tnt, xp, or all"
+        );
     }
 
     @Override

@@ -20,6 +20,8 @@
 package com.sk89q.worldedit.command.argument;
 
 import com.google.common.reflect.TypeToken;
+import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import org.enginehub.piston.CommandManager;
 import org.enginehub.piston.converter.ArgumentConverter;
 import org.enginehub.piston.converter.ArgumentConverters;
@@ -45,8 +47,8 @@ public class ExpandAmountConverter implements ArgumentConverter<ExpandAmount> {
     }
 
     @Override
-    public String describeAcceptableArguments() {
-        return "`vert` or " + integerConverter.describeAcceptableArguments();
+    public Component describeAcceptableArguments() {
+        return TextComponent.of("`vert` or " + integerConverter.describeAcceptableArguments());
     }
 
     @Override

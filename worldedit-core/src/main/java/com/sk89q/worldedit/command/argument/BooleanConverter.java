@@ -20,6 +20,8 @@
 package com.sk89q.worldedit.command.argument;
 
 import com.google.common.collect.ImmutableSortedSet;
+import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import org.enginehub.piston.CommandManager;
 import org.enginehub.piston.converter.ArgumentConverter;
 import org.enginehub.piston.converter.ConversionResult;
@@ -48,8 +50,8 @@ public class BooleanConverter implements ArgumentConverter<Boolean> {
     }
 
     @Override
-    public String describeAcceptableArguments() {
-        return "on|off|true|false";
+    public Component describeAcceptableArguments() {
+        return TextComponent.of("on|off|true|false");
     }
 
     @Override

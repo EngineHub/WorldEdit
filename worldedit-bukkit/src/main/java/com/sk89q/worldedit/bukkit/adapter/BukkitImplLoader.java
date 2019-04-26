@@ -52,7 +52,7 @@ public class BukkitImplLoader {
             "**\n" +
             "** When working with blocks or undoing, chests will be empty, signs\n" +
             "** will be blank, and so on. There will be no support for entity\n" +
-            "** and biome-related functions.\n" +
+            "** and block property-related functions.\n" +
             "**\n" +
             "** Please see http://wiki.sk89q.com/wiki/WorldEdit/Bukkit_adapters\n" +
             "**********************************************\n";

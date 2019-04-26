@@ -28,7 +28,6 @@ import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.extension.platform.MultiUserPlatform;
 import com.sk89q.worldedit.extension.platform.Preference;
-import com.sk89q.worldedit.util.command.CommandMapping;
 import com.sk89q.worldedit.world.registry.Registries;
 import org.bukkit.Bukkit;
 import org.bukkit.Server;
@@ -44,6 +43,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static com.sk89q.worldedit.bukkit.BukkitTextAdapter.reduceToText;
 
 public class BukkitServerInterface implements MultiUserPlatform {
     public Server server;
@@ -132,8 +133,8 @@ public class BukkitServerInterface implements MultiUserPlatform {
                     Stream.of(command.getName()),
                     command.getAliases().stream()
                 ).toArray(String[]::new);
-                return new CommandInfo(command.getUsage(),
-                    command.getDescription(), aliases,
+                return new CommandInfo(reduceToText(command.getUsage()),
+                    reduceToText(command.getDescription()), aliases,
                     inspector, permissionsArray);
             }).collect(Collectors.toList()));
     }

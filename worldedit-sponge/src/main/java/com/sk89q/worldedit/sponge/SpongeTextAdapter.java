@@ -17,21 +17,19 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.util.formatting.component;
+package com.sk89q.worldedit.sponge;
 
-import com.sk89q.worldedit.util.formatting.Style;
-import com.sk89q.worldedit.util.formatting.StyledFragment;
+import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.util.formatting.text.serializer.gson.GsonComponentSerializer;
+import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.serializer.TextSerializers;
 
-/**
- * Represents a fragment representing a command that is to be typed.
- */
-public class Code extends StyledFragment {
+public class SpongeTextAdapter {
 
-    /**
-     * Create a new instance.
-     */
-    public Code() {
-        super(Style.CYAN);
+    public static Text convert(Component component) {
+        return TextSerializers.JSON.deserialize(GsonComponentSerializer.INSTANCE.serialize(component));
     }
 
+    private SpongeTextAdapter() {
+    }
 }

@@ -23,6 +23,7 @@ import com.sk89q.worldedit.internal.cui.CUIEvent;
 import com.sk89q.worldedit.session.SessionOwner;
 import com.sk89q.worldedit.util.Identifiable;
 import com.sk89q.worldedit.util.auth.Subject;
+import com.sk89q.worldedit.util.formatting.text.TextComponent;
 
 import java.io.File;
 
@@ -74,6 +75,13 @@ public interface Actor extends Identifiable, SessionOwner, Subject {
      * @param msg The error message text
      */
     void printError(String msg);
+
+    /**
+     * Print a {@link TextComponent}.
+     *
+     * @param component The component to print
+     */
+    void print(TextComponent component);
 
     /**
      * Returns true if the actor can destroy bedrock.

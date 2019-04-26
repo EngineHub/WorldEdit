@@ -22,11 +22,12 @@ package com.sk89q.worldedit.command.argument;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.extension.input.InputParseException;
-import com.sk89q.worldedit.extension.input.NoMatchException;
 import com.sk89q.worldedit.extension.input.ParserContext;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.function.mask.Mask;
+import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.world.World;
 import org.enginehub.piston.CommandManager;
 import org.enginehub.piston.converter.ArgumentConverter;
@@ -71,7 +72,7 @@ public class MaskConverter implements ArgumentConverter<Mask> {
     }
 
     @Override
-    public String describeAcceptableArguments() {
-        return "any mask";
+    public Component describeAcceptableArguments() {
+        return TextComponent.of("any mask");
     }
 }

@@ -22,6 +22,8 @@ package com.sk89q.worldedit.command.argument;
 import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
+import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import org.enginehub.piston.converter.ArgumentConverter;
 import org.enginehub.piston.converter.ConversionResult;
 import org.enginehub.piston.converter.SuccessfulConversion;
@@ -30,6 +32,7 @@ import org.enginehub.piston.inject.InjectedValueAccess;
 import java.util.List;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static com.sk89q.worldedit.util.formatting.text.Component.space;
 
 public class CommaSeparatedValuesConverter<T> implements ArgumentConverter<T> {
 
@@ -54,14 +57,16 @@ public class CommaSeparatedValuesConverter<T> implements ArgumentConverter<T> {
     }
 
     @Override
-    public String describeAcceptableArguments() {
-        StringBuilder result = new StringBuilder();
+    public Component describeAcceptableArguments() {
+        TextComponent.Builder result = TextComponent.builder("");
         if (maximum > -1) {
-            result.append("up to ").append(maximum).append(' ');
+            result.append(TextComponent.of("up to "))
+                .append(Component.of(maximum))
+                .append(space());
         }
-        result.append("comma separated values of: ")
+        result.append(TextComponent.of("comma separated values of: "))
             .append(delegate.describeAcceptableArguments());
-        return result.toString();
+        return result.build();
     }
 
     @Override

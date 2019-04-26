@@ -27,6 +27,8 @@ import com.sk89q.worldedit.extension.input.ParserContext;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.function.pattern.Pattern;
+import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.world.World;
 import org.enginehub.piston.CommandManager;
 import org.enginehub.piston.converter.ArgumentConverter;
@@ -73,7 +75,7 @@ public class PatternConverter implements ArgumentConverter<Pattern> {
     }
 
     @Override
-    public String describeAcceptableArguments() {
-        return "any pattern";
+    public Component describeAcceptableArguments() {
+        return TextComponent.of("any pattern");
     }
 }

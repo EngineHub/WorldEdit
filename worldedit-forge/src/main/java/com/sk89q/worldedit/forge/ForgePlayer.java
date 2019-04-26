@@ -31,9 +31,11 @@ import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.session.SessionKey;
 import com.sk89q.worldedit.util.HandSide;
 import com.sk89q.worldedit.util.Location;
+import com.sk89q.worldedit.util.formatting.text.TextComponent;
+import com.sk89q.worldedit.util.formatting.text.serializer.gson.GsonComponentSerializer;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
-
+import io.netty.buffer.Unpooled;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
@@ -42,14 +44,13 @@ import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
 
 import java.util.UUID;
 
 import javax.annotation.Nullable;
-
-import io.netty.buffer.Unpooled;
 
 public class ForgePlayer extends AbstractPlayerActor {
 
@@ -139,6 +140,11 @@ public class ForgePlayer extends AbstractPlayerActor {
     @Override
     public void printError(String msg) {
         sendColorized(msg, TextFormatting.RED);
+    }
+
+    @Override
+    public void print(TextComponent component) {
+        this.player.sendMessage(ITextComponent.Serializer.fromJson(GsonComponentSerializer.INSTANCE.serialize(component)));
     }
 
     private void sendColorized(String msg, TextFormatting formatting) {

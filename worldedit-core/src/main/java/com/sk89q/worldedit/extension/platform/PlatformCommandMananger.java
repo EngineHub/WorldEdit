@@ -89,6 +89,8 @@ import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.session.request.Request;
 import com.sk89q.worldedit.util.command.parametric.ExceptionConverter;
 import com.sk89q.worldedit.util.eventbus.Subscribe;
+import com.sk89q.worldedit.util.formatting.text.TextComponent;
+import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.util.logging.DynamicStreamHandler;
 import com.sk89q.worldedit.util.logging.LogFormat;
 import com.sk89q.worldedit.world.World;
@@ -240,97 +242,65 @@ public final class PlatformCommandMananger {
             });
     }
 
+    private <CI> void registerSubCommands(String name, List<String> aliases, String desc,
+                                          CommandRegistration<CI> registration, CI instance) {
+        commandManager.register(name, cmd -> {
+            cmd.aliases(aliases);
+            cmd.description(TextComponent.of(desc));
+            cmd.action(Command.Action.NULL_ACTION);
+
+            CommandManager manager = DefaultCommandManagerService.getInstance()
+                .newCommandManager();
+            register(
+                manager,
+                registration,
+                instance
+            );
+
+            cmd.addPart(SubCommandPart.builder(TranslatableComponent.of("worldedit.argument.action"),
+                TextComponent.of("Sub-command to run."))
+                .withCommands(manager.getAllCommands().collect(Collectors.toList()))
+                .required()
+                .build());
+        });
+    }
+
     private void registerAllCommands() {
-        commandManager.register("schematic", cmd -> {
-            cmd.aliases(ImmutableList.of("schem", "/schematic", "/schem"));
-            cmd.description("Schematic commands for saving/loading areas");
-            cmd.action(Command.Action.NULL_ACTION);
-
-            CommandManager manager = DefaultCommandManagerService.getInstance()
-                .newCommandManager();
-            register(
-                manager,
-                SchematicCommandsRegistration.builder(),
-                new SchematicCommands(worldEdit)
-            );
-
-            cmd.addPart(SubCommandPart.builder("action", "Sub-command to run.")
-                .withCommands(manager.getAllCommands().collect(Collectors.toList()))
-                .required()
-                .build());
-        });
-        commandManager.register("snapshot", cmd -> {
-            cmd.aliases(ImmutableList.of("snap"));
-            cmd.description("Snapshot commands for saving/loading snapshots");
-            cmd.action(Command.Action.NULL_ACTION);
-
-            CommandManager manager = DefaultCommandManagerService.getInstance()
-                .newCommandManager();
-            register(
-                manager,
-                SnapshotCommandsRegistration.builder(),
-                new SnapshotCommands(worldEdit)
-            );
-
-            cmd.addPart(SubCommandPart.builder("action", "Sub-command to run.")
-                .withCommands(manager.getAllCommands().collect(Collectors.toList()))
-                .required()
-                .build());
-        });
-        commandManager.register("superpickaxe", cmd -> {
-            cmd.aliases(ImmutableList.of("pickaxe", "sp"));
-            cmd.description("Super-pickaxe commands");
-            cmd.action(Command.Action.NULL_ACTION);
-
-            CommandManager manager = DefaultCommandManagerService.getInstance()
-                .newCommandManager();
-            register(
-                manager,
-                SuperPickaxeCommandsRegistration.builder(),
-                new SuperPickaxeCommands(worldEdit)
-            );
-
-            cmd.addPart(SubCommandPart.builder("action", "Sub-command to run.")
-                .withCommands(manager.getAllCommands().collect(Collectors.toList()))
-                .required()
-                .build());
-        });
-        commandManager.register("brush", cmd -> {
-            cmd.aliases(ImmutableList.of("br"));
-            cmd.description("Brushing commands");
-            cmd.action(Command.Action.NULL_ACTION);
-
-            CommandManager manager = DefaultCommandManagerService.getInstance()
-                .newCommandManager();
-            register(
-                manager,
-                BrushCommandsRegistration.builder(),
-                new BrushCommands(worldEdit)
-            );
-
-            cmd.addPart(SubCommandPart.builder("action", "Sub-command to run.")
-                .withCommands(manager.getAllCommands().collect(Collectors.toList()))
-                .required()
-                .build());
-        });
-        commandManager.register("worldedit", cmd -> {
-            cmd.aliases(ImmutableList.of("we"));
-            cmd.description("WorldEdit commands");
-            cmd.action(Command.Action.NULL_ACTION);
-
-            CommandManager manager = DefaultCommandManagerService.getInstance()
-                .newCommandManager();
-            register(
-                manager,
-                WorldEditCommandsRegistration.builder(),
-                new WorldEditCommands(worldEdit)
-            );
-
-            cmd.addPart(SubCommandPart.builder("action", "Sub-command to run.")
-                .withCommands(manager.getAllCommands().collect(Collectors.toList()))
-                .required()
-                .build());
-        });
+        registerSubCommands(
+            "schematic",
+            ImmutableList.of("schem", "/schematic", "/schem"),
+            "Schematic commands for saving/loading areas",
+            SchematicCommandsRegistration.builder(),
+            new SchematicCommands(worldEdit)
+        );
+        registerSubCommands(
+            "snapshot",
+            ImmutableList.of("snap"),
+            "Snapshot commands for saving/loading snapshots",
+            SnapshotCommandsRegistration.builder(),
+            new SnapshotCommands(worldEdit)
+        );
+        registerSubCommands(
+            "superpickaxe",
+            ImmutableList.of("pickaxe", "sp"),
+            "Super-pickaxe commands",
+            SuperPickaxeCommandsRegistration.builder(),
+            new SuperPickaxeCommands(worldEdit)
+        );
+        registerSubCommands(
+            "brush",
+            ImmutableList.of("br"),
+            "Brushing commands",
+            BrushCommandsRegistration.builder(),
+            new BrushCommands(worldEdit)
+        );
+        registerSubCommands(
+            "worldedit",
+            ImmutableList.of("we"),
+            "WorldEdit commands",
+            WorldEditCommandsRegistration.builder(),
+            new WorldEditCommands(worldEdit)
+        );
         register(
             commandManager,
             BiomeCommandsRegistration.builder(),

@@ -178,7 +178,7 @@ public class ForgeWorld extends AbstractWorld {
         }
 
         if (successful && notifyAndLight) {
-            //world.checkLight(pos);
+            world.checkLight(pos);
             world.markAndNotifyBlock(pos, chunk, old, newState, UPDATE | NOTIFY);
         }
 
@@ -424,6 +424,11 @@ public class ForgeWorld extends AbstractWorld {
             info.setThundering(false);
             info.setClearWeatherTime((int) duration);
         }
+    }
+
+    @Override
+    public int getMaxY() {
+        return getWorld().getHeight() - 1;
     }
 
     @Override

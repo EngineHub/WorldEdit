@@ -17,16 +17,35 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.forge.proxy;
+package com.sk89q.worldedit.util.formatting.component;
 
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import com.sk89q.worldedit.util.formatting.text.TextComponent;
+import com.sk89q.worldedit.util.formatting.text.format.TextColor;
 
-@OnlyIn(Dist.DEDICATED_SERVER)
-public class ServerProxy implements CommonProxy {
+/**
+ * Represents a fragment representing a label.
+ */
+public class LabelFormat extends TextComponentProducer {
 
-    @Override
-    public void registerHandlers() {
+    /**
+     * Create a new instance.
+     */
+    private LabelFormat() {
+        getBuilder().content("").color(TextColor.YELLOW);
     }
 
+    /**
+     * Creates a LabelFormat with the given message.
+     *
+     * @param texts The text
+     * @return The Component
+     */
+    public static TextComponent wrap(String ... texts) {
+        LabelFormat label = new LabelFormat();
+        for (String component : texts) {
+            label.append(component);
+        }
+
+        return label.create();
+    }
 }
