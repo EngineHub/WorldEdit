@@ -59,6 +59,7 @@ import com.sk89q.worldedit.world.block.BlockTypes;
 import org.enginehub.piston.annotation.Command;
 import org.enginehub.piston.annotation.CommandContainer;
 import org.enginehub.piston.annotation.param.Arg;
+import org.enginehub.piston.annotation.param.ArgFlag;
 import org.enginehub.piston.annotation.param.Switch;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -145,8 +146,14 @@ public class BrushCommands {
     public void clipboardBrush(Player player, LocalSession session,
                                @Switch(name = 'a', desc = "Don't paste air from the clipboard")
                                    boolean ignoreAir,
-                               @Switch(name = 'p', desc = "Paste using clipboard origin, instead of being centered at the target location")
-                                   boolean usingOrigin) throws WorldEditException {
+                               @Switch(name = 'o', desc = "Paste using clipboard origin, instead of being centered at the target location")
+                                   boolean usingOrigin,
+                               @Switch(name = 'e', desc = "Paste entities if available")
+                                   boolean pasteEntities,
+                               @Switch(name = 'b', desc = "Paste biomes if available")
+                                   boolean pasteBiomes,
+                               @ArgFlag(name = 'm', desc = "Skip blocks matching this mask", def = "")
+                                   Mask sourceMask) throws WorldEditException {
         ClipboardHolder holder = session.getClipboard();
         Clipboard clipboard = holder.getClipboard();
 
@@ -157,7 +164,7 @@ public class BrushCommands {
         worldEdit.checkMaxBrushRadius(size.getBlockZ() / 2D - 1);
 
         BrushTool tool = session.getBrushTool(player.getItemInHand(HandSide.MAIN_HAND).getType());
-        tool.setBrush(new ClipboardBrush(holder, ignoreAir, usingOrigin), "worldedit.brush.clipboard");
+        tool.setBrush(new ClipboardBrush(holder, ignoreAir, usingOrigin, pasteEntities, pasteBiomes, sourceMask), "worldedit.brush.clipboard");
 
         player.print("Clipboard brush shape equipped.");
     }

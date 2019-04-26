@@ -28,17 +28,23 @@ import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.entity.metadata.EntityProperties;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.function.CombinedRegionFunction;
+import com.sk89q.worldedit.function.FlatRegionFunction;
+import com.sk89q.worldedit.function.FlatRegionMaskingFilter;
 import com.sk89q.worldedit.function.RegionFunction;
 import com.sk89q.worldedit.function.RegionMaskingFilter;
+import com.sk89q.worldedit.function.biome.ExtentBiomeCopy;
 import com.sk89q.worldedit.function.block.ExtentBlockCopy;
 import com.sk89q.worldedit.function.entity.ExtentEntityCopy;
 import com.sk89q.worldedit.function.mask.Mask;
+import com.sk89q.worldedit.function.mask.Mask2D;
 import com.sk89q.worldedit.function.mask.Masks;
 import com.sk89q.worldedit.function.visitor.EntityVisitor;
+import com.sk89q.worldedit.function.visitor.FlatRegionVisitor;
 import com.sk89q.worldedit.function.visitor.RegionVisitor;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.transform.Identity;
 import com.sk89q.worldedit.math.transform.Transform;
+import com.sk89q.worldedit.regions.FlatRegion;
 import com.sk89q.worldedit.regions.Region;
 
 import java.util.List;
@@ -61,11 +67,18 @@ public class ForwardExtentCopy implements Operation {
     private Mask sourceMask = Masks.alwaysTrue();
     private boolean removingEntities;
     private boolean copyingEntities = true; // default to true for backwards compatibility, sort of
+    private boolean copyingBiomes;
     private RegionFunction sourceFunction = null;
     private Transform transform = new Identity();
     private Transform currentTransform = null;
+
     private RegionVisitor lastVisitor;
-    private int affected;
+    private FlatRegionVisitor lastBiomeVisitor;
+    private EntityVisitor lastEntityVisitor;
+
+    private int affectedBlocks;
+    private int affectedBiomeCols;
+    private int affectedEntities;
 
     /**
      * Create a new copy using the region's lowest minimum point as the
@@ -223,19 +236,48 @@ public class ForwardExtentCopy implements Operation {
     }
 
     /**
+     * Return whether biomes should be copied along with blocks.
+     *
+     * @return true if copying biomes
+     */
+    public boolean isCopyingBiomes() {
+        return copyingBiomes;
+    }
+
+    /**
+     * Set whether biomes should be copies along with blocks.
+     *
+     * @param copyingBiomes true if copying
+     */
+    public void setCopyingBiomes(boolean copyingBiomes) {
+        if (copyingBiomes && !(region instanceof FlatRegion)) {
+            throw new UnsupportedOperationException("Can't copy biomes from region that doesn't implement FlatRegion");
+        }
+        this.copyingBiomes = copyingBiomes;
+    }
+
+    /**
      * Get the number of affected objects.
      *
      * @return the number of affected
      */
     public int getAffected() {
-        return affected;
+        return affectedBlocks + affectedBiomeCols + affectedEntities;
     }
 
     @Override
     public Operation resume(RunContext run) throws WorldEditException {
         if (lastVisitor != null) {
-            affected += lastVisitor.getAffected();
+            affectedBlocks += lastVisitor.getAffected();
             lastVisitor = null;
+        }
+        if (lastBiomeVisitor != null) {
+            affectedBiomeCols += lastBiomeVisitor.getAffected();
+            lastBiomeVisitor = null;
+        }
+        if (lastEntityVisitor != null) {
+            affectedEntities += lastEntityVisitor.getAffected();
+            lastEntityVisitor = null;
         }
 
         if (repetitions > 0) {
@@ -254,6 +296,23 @@ public class ForwardExtentCopy implements Operation {
 
             lastVisitor = blockVisitor;
 
+            if (!copyingBiomes && !copyingEntities) {
+                return new DelegateOperation(this, blockVisitor);
+            }
+
+            List<Operation> ops = Lists.newArrayList(blockVisitor);
+
+            if (copyingBiomes && region instanceof FlatRegion) { // double-check here even though we checked before
+                ExtentBiomeCopy biomeCopy = new ExtentBiomeCopy(source, from.toBlockVector2(),
+                        destination, to.toBlockVector2(), currentTransform);
+                Mask2D biomeMask = sourceMask.toMask2D();
+                FlatRegionFunction biomeFunction = biomeMask == null ? biomeCopy
+                        : new FlatRegionMaskingFilter(biomeMask, biomeCopy);
+                FlatRegionVisitor biomeVisitor = new FlatRegionVisitor(((FlatRegion) region), biomeFunction);
+                ops.add(biomeVisitor);
+                lastBiomeVisitor = biomeVisitor;
+            }
+
             if (copyingEntities) {
                 ExtentEntityCopy entityCopy = new ExtentEntityCopy(from.toVector3(), destination, to.toVector3(), currentTransform);
                 entityCopy.setRemoving(removingEntities);
@@ -263,10 +322,11 @@ public class ForwardExtentCopy implements Operation {
                     return properties != null && !properties.isPasteable();
                 });
                 EntityVisitor entityVisitor = new EntityVisitor(entities.iterator(), entityCopy);
-                return new DelegateOperation(this, new OperationQueue(blockVisitor, entityVisitor));
-            } else {
-                return new DelegateOperation(this, blockVisitor);
+                ops.add(entityVisitor);
+                lastEntityVisitor = entityVisitor;
             }
+
+            return new DelegateOperation(this, new OperationQueue(ops));
         } else {
             return null;
         }
@@ -278,6 +338,24 @@ public class ForwardExtentCopy implements Operation {
 
     @Override
     public void addStatusMessages(List<String> messages) {
+        StringBuilder msg = new StringBuilder();
+        msg.append(affectedBlocks).append(" block(s)");
+        if (affectedBiomeCols > 0) {
+            if (affectedEntities > 0) {
+                msg.append(", ");
+            } else {
+                msg.append(" and ");
+            }
+            msg.append(affectedBiomeCols).append(" biome(s)");
+        }
+        if (affectedEntities > 0) {
+            if (affectedBiomeCols > 0) {
+                msg.append(",");
+            }
+            msg.append(" and ").append(affectedEntities).append(" entities(s)");
+        }
+        msg.append(" affected.");
+        messages.add(msg.toString());
     }
 
 }

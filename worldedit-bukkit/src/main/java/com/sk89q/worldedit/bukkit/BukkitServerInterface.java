@@ -68,6 +68,14 @@ public class BukkitServerInterface implements MultiUserPlatform {
     }
 
     @Override
+    public int getDataVersion() {
+        if (plugin.getBukkitImplAdapter() != null) {
+            return plugin.getBukkitImplAdapter().getDataVersion();
+        }
+        return 0;
+    }
+
+    @Override
     public boolean isValidMobType(String type) {
         final EntityType entityType = EntityType.fromName(type);
         return entityType != null && entityType.isAlive();

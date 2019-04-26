@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.command;
 
+import com.google.common.collect.Lists;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEditException;
@@ -49,6 +50,8 @@ import org.enginehub.piston.annotation.param.Arg;
 import org.enginehub.piston.annotation.param.ArgFlag;
 import org.enginehub.piston.annotation.param.Switch;
 
+import java.util.List;
+
 import static com.sk89q.worldedit.command.util.Logging.LogMode.PLACEMENT;
 import static com.sk89q.worldedit.command.util.Logging.LogMode.REGION;
 
@@ -73,19 +76,24 @@ public class ClipboardCommands {
                      @Selection Region region,
                      @Switch(name = 'e', desc = "Also copy entities")
                          boolean copyEntities,
+                     @Switch(name = 'b', desc = "Also copy biomes")
+                         boolean copyBiomes,
                      @ArgFlag(name = 'm', desc = "Set the exclude mask, matching blocks become air", def = "")
                          Mask mask) throws WorldEditException {
         BlockArrayClipboard clipboard = new BlockArrayClipboard(region);
         clipboard.setOrigin(session.getPlacementPosition(player));
         ForwardExtentCopy copy = new ForwardExtentCopy(editSession, region, clipboard, region.getMinimumPoint());
         copy.setCopyingEntities(copyEntities);
+        copy.setCopyingBiomes(copyBiomes);
         if (mask != null) {
             copy.setSourceMask(mask);
         }
         Operations.completeLegacy(copy);
         session.setClipboard(new ClipboardHolder(clipboard));
 
-        player.print(region.getArea() + " block(s) were copied.");
+        List<String> messages = Lists.newArrayList();
+        copy.addStatusMessages(messages);
+        messages.forEach(player::print);
     }
 
     @Command(
@@ -101,6 +109,8 @@ public class ClipboardCommands {
                         Pattern leavePattern,
                     @Switch(name = 'e', desc = "Also cut entities")
                         boolean copyEntities,
+                    @Switch(name = 'b', desc = "Also copy biomes, source biomes are unaffected")
+                        boolean copyBiomes,
                     @ArgFlag(name = 'm', desc = "Set the exclude mask, matching blocks become air", def = "")
                         Mask mask) throws WorldEditException {
 
@@ -110,13 +120,16 @@ public class ClipboardCommands {
         copy.setSourceFunction(new BlockReplace(editSession, leavePattern));
         copy.setCopyingEntities(copyEntities);
         copy.setRemovingEntities(true);
+        copy.setCopyingBiomes(copyBiomes);
         if (mask != null) {
             copy.setSourceMask(mask);
         }
         Operations.completeLegacy(copy);
         session.setClipboard(new ClipboardHolder(clipboard));
 
-        player.print(region.getArea() + " block(s) were cut.");
+        List<String> messages = Lists.newArrayList();
+        copy.addStatusMessages(messages);
+        messages.forEach(player::print);
     }
 
     @Command(
@@ -131,7 +144,13 @@ public class ClipboardCommands {
                       @Switch(name = 'o', desc = "Paste at the original position")
                           boolean atOrigin,
                       @Switch(name = 's', desc = "Select the region after pasting")
-                          boolean selectPasted) throws WorldEditException {
+                          boolean selectPasted,
+                      @Switch(name = 'e', desc = "Paste entities if available")
+                          boolean pasteEntities,
+                      @Switch(name = 'b', desc = "Paste biomes if available")
+                          boolean pasteBiomes,
+                      @ArgFlag(name = 'm', desc = "Skip blocks matching this mask", def = "")
+                          Mask sourceMask) throws WorldEditException {
 
         ClipboardHolder holder = session.getClipboard();
         Clipboard clipboard = holder.getClipboard();
@@ -139,10 +158,13 @@ public class ClipboardCommands {
 
         BlockVector3 to = atOrigin ? clipboard.getOrigin() : session.getPlacementPosition(player);
         Operation operation = holder
-            .createPaste(editSession)
-            .to(to)
-            .ignoreAirBlocks(ignoreAirBlocks)
-            .build();
+                .createPaste(editSession)
+                .to(to)
+                .ignoreAirBlocks(ignoreAirBlocks)
+                .copyBiomes(pasteBiomes)
+                .copyEntities(pasteEntities)
+                .maskSource(sourceMask)
+                .build();
         Operations.completeLegacy(operation);
 
         if (selectPasted) {
@@ -156,6 +178,9 @@ public class ClipboardCommands {
         }
 
         player.print("The clipboard has been pasted at " + to);
+        List<String> messages = Lists.newArrayList();
+        operation.addStatusMessages(messages);
+        messages.forEach(player::print);
     }
 
     @Command(

@@ -182,6 +182,18 @@ public class CompoundTagBuilder {
     }
 
     /**
+     * Remove the given key from the compound tag. Does nothing if the key doesn't exist.
+     *
+     * @param key the key
+     * @return this object
+     */
+    public CompoundTagBuilder remove(String key) {
+        checkNotNull(key);
+        entries.remove(key);
+        return this;
+    }
+
+    /**
      * Put all the entries from the given map into this map.
      *
      * @param value the map of tags

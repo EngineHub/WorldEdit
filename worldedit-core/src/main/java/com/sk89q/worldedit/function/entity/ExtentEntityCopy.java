@@ -130,8 +130,6 @@ public class ExtentEntityCopy implements EntityFunction {
         if (tag != null) {
             // Handle hanging entities (paintings, item frames, etc.)
             boolean hasTilePosition = tag.containsKey("TileX") && tag.containsKey("TileY") && tag.containsKey("TileZ");
-            boolean hasDirection = tag.containsKey("Direction");
-            boolean hasLegacyDirection = tag.containsKey("Dir");
             boolean hasFacing = tag.containsKey("Facing");
 
             if (hasTilePosition) {
@@ -143,27 +141,15 @@ public class ExtentEntityCopy implements EntityFunction {
                         .putInt("TileY", newTilePosition.getBlockY())
                         .putInt("TileZ", newTilePosition.getBlockZ());
 
-                if (hasDirection || hasLegacyDirection || hasFacing) {
-                    int d;
-                    if (hasDirection) {
-                        d = tag.asInt("Direction");
-                    } else if (hasLegacyDirection) {
-                        d = MCDirections.fromLegacyHanging((byte) tag.asInt("Dir"));
-                    } else {
-                        d = tag.asInt("Facing");
-                    }
-
-                    Direction direction = MCDirections.fromHanging(d);
+                if (hasFacing) {
+                    Direction direction = MCDirections.fromHanging(tag.asInt("Facing"));
 
                     if (direction != null) {
                         Vector3 vector = transform.apply(direction.toVector()).subtract(transform.apply(Vector3.ZERO)).normalize();
                         Direction newDirection = Direction.findClosest(vector, Flag.CARDINAL);
 
                         if (newDirection != null) {
-                            byte hangingByte = (byte) MCDirections.toHanging(newDirection);
-                            builder.putByte("Direction", hangingByte);
-                            builder.putByte("Facing", hangingByte);
-                            builder.putByte("Dir", MCDirections.toLegacyHanging(MCDirections.toHanging(newDirection)));
+                            builder.putByte("Facing", (byte) MCDirections.toHanging(newDirection));
                         }
                     }
                 }

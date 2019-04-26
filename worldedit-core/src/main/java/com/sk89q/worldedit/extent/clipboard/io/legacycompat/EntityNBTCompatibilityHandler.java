@@ -19,12 +19,14 @@
 
 package com.sk89q.worldedit.extent.clipboard.io.legacycompat;
 
+import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.jnbt.Tag;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
+import com.sk89q.worldedit.world.entity.EntityType;
 
 import java.util.Map;
 
-public interface NBTCompatibilityHandler {
-    <B extends BlockStateHolder<B>> boolean isAffectedBlock(B block);
-    <B extends BlockStateHolder<B>> B updateNBT(B block, Map<String, Tag> values);
+public interface EntityNBTCompatibilityHandler {
+    boolean isAffectedEntity(EntityType type, CompoundTag entityTag);
+    CompoundTag updateNBT(EntityType type, CompoundTag entityTag);
 }
