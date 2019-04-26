@@ -66,7 +66,7 @@ class ForgePlatform extends AbstractPlatform implements MultiUserPlatform {
 
     @Override
     public int getDataVersion() {
-        // TODO technically available as WorldInfo#field_209227_p but requires a world ref?
+        // TODO switch to SharedConstants in 1.14
         return 1631;
     }
 
