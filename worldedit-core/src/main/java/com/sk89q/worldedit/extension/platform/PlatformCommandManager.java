@@ -26,6 +26,7 @@ import com.sk89q.worldedit.IncompleteRegionException;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.command.ApplyBrushCommands;
 import com.sk89q.worldedit.command.BiomeCommands;
 import com.sk89q.worldedit.command.BiomeCommandsRegistration;
 import com.sk89q.worldedit.command.BrushCommands;
@@ -42,6 +43,7 @@ import com.sk89q.worldedit.command.HistoryCommands;
 import com.sk89q.worldedit.command.HistoryCommandsRegistration;
 import com.sk89q.worldedit.command.NavigationCommands;
 import com.sk89q.worldedit.command.NavigationCommandsRegistration;
+import com.sk89q.worldedit.command.PaintBrushCommands;
 import com.sk89q.worldedit.command.RegionCommands;
 import com.sk89q.worldedit.command.RegionCommandsRegistration;
 import com.sk89q.worldedit.command.SchematicCommands;
@@ -71,11 +73,10 @@ import com.sk89q.worldedit.command.argument.DirectionConverter;
 import com.sk89q.worldedit.command.argument.EntityRemoverConverter;
 import com.sk89q.worldedit.command.argument.EnumConverter;
 import com.sk89q.worldedit.command.argument.ExpandAmountConverter;
-import com.sk89q.worldedit.command.argument.MaskConverter;
-import com.sk89q.worldedit.command.argument.PatternConverter;
+import com.sk89q.worldedit.command.argument.FactoryConverter;
+import com.sk89q.worldedit.command.argument.RegionFactoryConverter;
 import com.sk89q.worldedit.command.argument.VectorConverter;
 import com.sk89q.worldedit.command.argument.ZonedDateTimeConverter;
-import com.sk89q.worldedit.command.util.CommandPermissionsConditionGenerator;
 import com.sk89q.worldedit.command.util.PermissionCondition;
 import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.entity.Player;
@@ -83,7 +84,6 @@ import com.sk89q.worldedit.event.platform.CommandEvent;
 import com.sk89q.worldedit.event.platform.CommandSuggestionEvent;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.internal.annotation.Selection;
-import com.sk89q.worldedit.internal.command.CommandLoggingHandler;
 import com.sk89q.worldedit.internal.command.WorldEditExceptionConverter;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.session.request.Request;
@@ -102,7 +102,6 @@ import org.enginehub.piston.exception.CommandException;
 import org.enginehub.piston.exception.CommandExecutionException;
 import org.enginehub.piston.exception.ConditionFailedException;
 import org.enginehub.piston.exception.UsageException;
-import org.enginehub.piston.gen.CommandCallListener;
 import org.enginehub.piston.gen.CommandRegistration;
 import org.enginehub.piston.inject.InjectedValueStore;
 import org.enginehub.piston.inject.Key;
@@ -116,29 +115,28 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.sk89q.worldedit.util.command.CommandUtil.COMMAND_LOG;
+import static com.sk89q.worldedit.util.command.CommandUtil.register;
 
 /**
  * Handles the registration and invocation of commands.
  *
  * <p>This class is primarily for internal usage.</p>
  */
-public final class PlatformCommandMananger {
+public final class PlatformCommandManager {
 
     public static final Pattern COMMAND_CLEAN_PATTERN = Pattern.compile("^[/]+");
-    private static final Logger log = LoggerFactory.getLogger(PlatformCommandMananger.class);
-    private static final java.util.logging.Logger commandLog =
-        java.util.logging.Logger.getLogger(PlatformCommandMananger.class.getCanonicalName() + ".CommandLog");
+    private static final Logger log = LoggerFactory.getLogger(PlatformCommandManager.class);
     private static final Pattern numberFormatExceptionPattern = Pattern.compile("^For input string: \"(.*)\"$");
-    private static final CommandPermissionsConditionGenerator PERM_GEN = new CommandPermissionsConditionGenerator();
 
     private final WorldEdit worldEdit;
     private final PlatformManager platformManager;
@@ -146,14 +144,13 @@ public final class PlatformCommandMananger {
     private final InjectedValueStore globalInjectedValues;
     private final DynamicStreamHandler dynamicHandler = new DynamicStreamHandler();
     private final WorldEditExceptionConverter exceptionConverter;
-    private final List<CommandCallListener> callListeners;
 
     /**
      * Create a new instance.
      *
      * @param worldEdit the WorldEdit instance
      */
-    PlatformCommandMananger(final WorldEdit worldEdit, PlatformManager platformManager) {
+    PlatformCommandManager(final WorldEdit worldEdit, PlatformManager platformManager) {
         checkNotNull(worldEdit);
         checkNotNull(platformManager);
         this.worldEdit = worldEdit;
@@ -162,24 +159,9 @@ public final class PlatformCommandMananger {
         this.commandManager = DefaultCommandManagerService.getInstance()
             .newCommandManager();
         this.globalInjectedValues = MapBackedValueStore.create();
-        this.callListeners = Collections.singletonList(
-            new CommandLoggingHandler(worldEdit, commandLog)
-        );
         // setup separate from main constructor
         // ensures that everything is definitely assigned
         initialize();
-    }
-
-    private <CI> void register(CommandManager manager, CommandRegistration<CI> registration, CI instance) {
-        registration.containerInstance(instance)
-            .commandManager(manager)
-            .listeners(callListeners);
-        if (registration instanceof CommandPermissionsConditionGenerator.Registration) {
-            ((CommandPermissionsConditionGenerator.Registration) registration).commandPermissionsConditionGenerator(
-                PERM_GEN
-            );
-        }
-        registration.build();
     }
 
     private void initialize() {
@@ -187,7 +169,7 @@ public final class PlatformCommandMananger {
         worldEdit.getEventBus().register(this);
 
         // Setup the logger
-        commandLog.addHandler(dynamicHandler);
+        COMMAND_LOG.addHandler(dynamicHandler);
 
         // Set up the commands manager
         registerAlwaysInjectedValues();
@@ -197,8 +179,7 @@ public final class PlatformCommandMananger {
 
     private void registerArgumentConverters() {
         DirectionConverter.register(worldEdit, commandManager);
-        MaskConverter.register(worldEdit, commandManager);
-        PatternConverter.register(worldEdit, commandManager);
+        FactoryConverter.register(worldEdit, commandManager);
         for (int count = 2; count <= 3; count++) {
             commandManager.registerConverter(Key.of(double.class, Annotations.radii(count)),
                 CommaSeparatedValuesConverter.wrapAndLimit(ArgumentConverters.get(
@@ -212,6 +193,7 @@ public final class PlatformCommandMananger {
         ZonedDateTimeConverter.register(commandManager);
         BooleanConverter.register(commandManager);
         EntityRemoverConverter.register(commandManager);
+        RegionFactoryConverter.register(commandManager);
     }
 
     private void registerAlwaysInjectedValues() {
@@ -243,7 +225,13 @@ public final class PlatformCommandMananger {
     }
 
     private <CI> void registerSubCommands(String name, List<String> aliases, String desc,
-                                          CommandRegistration<CI> registration, CI instance) {
+                                      CommandRegistration<CI> registration, CI instance) {
+        registerSubCommands(name, aliases, desc, registration, instance, m -> {});
+    }
+
+    private <CI> void registerSubCommands(String name, List<String> aliases, String desc,
+                                          CommandRegistration<CI> registration, CI instance,
+                                          Consumer<CommandManager> additionalConfig) {
         commandManager.register(name, cmd -> {
             cmd.aliases(aliases);
             cmd.description(TextComponent.of(desc));
@@ -292,7 +280,11 @@ public final class PlatformCommandMananger {
             ImmutableList.of("br"),
             "Brushing commands",
             BrushCommandsRegistration.builder(),
-            new BrushCommands(worldEdit)
+            new BrushCommands(worldEdit),
+            manager -> {
+                PaintBrushCommands.register(manager);
+                ApplyBrushCommands.register(manager);
+            }
         );
         registerSubCommands(
             "worldedit",
@@ -371,31 +363,13 @@ public final class PlatformCommandMananger {
             UtilityCommandsRegistration.builder(),
             new UtilityCommands(worldEdit)
         );
-
-        // Unported commands are below. Delete once they're added to the main manager above.
-        /*
-        dispatcher = new CommandGraph()
-                .builder(builder)
-                    .commands()
-                        .group("brush", "br")
-                            .describeAs("Brushing commands")
-                            .register(adapt(new ShapedBrushCommand(new DeformCommand(), "worldedit.brush.deform")), "deform")
-                            .register(adapt(new ShapedBrushCommand(new ApplyCommand(new ReplaceParser(), "Set all blocks within region"), "worldedit.brush.set")), "set")
-                            .register(adapt(new ShapedBrushCommand(new PaintCommand(), "worldedit.brush.paint")), "paint")
-                            .register(adapt(new ShapedBrushCommand(new ApplyCommand(), "worldedit.brush.apply")), "apply")
-                            .register(adapt(new ShapedBrushCommand(new PaintCommand(new TreeGeneratorParser("treeType")), "worldedit.brush.forest")), "forest")
-                            .register(adapt(new ShapedBrushCommand(ProvidedValue.create(new Deform("y-=1", Mode.RAW_COORD), "Raise one block"), "worldedit.brush.raise")), "raise")
-                            .register(adapt(new ShapedBrushCommand(ProvidedValue.create(new Deform("y+=1", Mode.RAW_COORD), "Lower one block"), "worldedit.brush.lower")), "lower")
-                        .parent()
-                .getDispatcher();
-         */
     }
 
     public ExceptionConverter getExceptionConverter() {
         return exceptionConverter;
     }
 
-    void register(Platform platform) {
+    void registerCommandsWith(Platform platform) {
         log.info("Registering commands with " + platform.getClass().getCanonicalName());
 
         LocalConfiguration config = platform.getConfiguration();
@@ -405,10 +379,10 @@ public final class PlatformCommandMananger {
         // Register log
         if (!logging || path.isEmpty()) {
             dynamicHandler.setHandler(null);
-            commandLog.setLevel(Level.OFF);
+            COMMAND_LOG.setLevel(Level.OFF);
         } else {
             File file = new File(config.getWorkingDirectory(), path);
-            commandLog.setLevel(Level.ALL);
+            COMMAND_LOG.setLevel(Level.ALL);
 
             log.info("Logging WorldEdit commands to " + file.getAbsolutePath());
 
@@ -424,7 +398,7 @@ public final class PlatformCommandMananger {
         platform.registerCommands(commandManager);
     }
 
-    void unregister() {
+    void removeCommands() {
         dynamicHandler.setHandler(null);
     }
 
@@ -579,10 +553,6 @@ public final class PlatformCommandMananger {
      */
     public CommandManager getCommandManager() {
         return commandManager;
-    }
-
-    public static java.util.logging.Logger getLogger() {
-        return commandLog;
     }
 
 }

@@ -91,7 +91,7 @@ public class WorldEditListener implements Listener {
 
         if (split.length > 0) {
             split[0] = split[0].substring(1);
-            split = plugin.getWorldEdit().getPlatformManager().getPlatformCommandMananger().commandDetection(split);
+            split = plugin.getWorldEdit().getPlatformManager().getPlatformCommandManager().commandDetection(split);
         }
 
         final String newMessage = "/" + StringUtil.joinString(split, " ");
@@ -118,7 +118,7 @@ public class WorldEditListener implements Listener {
         CommandParameters parameters = NoInputCommandParameters.builder()
             .injectedValues(MemoizingValueAccess.wrap(store))
             .build();
-        CommandManager commandManager = plugin.getWorldEdit().getPlatformManager().getPlatformCommandMananger().getCommandManager();
+        CommandManager commandManager = plugin.getWorldEdit().getPlatformManager().getPlatformCommandManager().getCommandManager();
         event.getCommands().removeIf(name ->
             // remove if in the manager and not satisfied
             commandManager.getCommand(name)

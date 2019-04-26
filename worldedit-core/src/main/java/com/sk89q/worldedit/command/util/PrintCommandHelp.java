@@ -74,7 +74,7 @@ public class PrintCommandHelp {
             actor.printError("Page must be >= 1.");
             return;
         }
-        CommandManager manager = we.getPlatformManager().getPlatformCommandMananger().getCommandManager();
+        CommandManager manager = we.getPlatformManager().getPlatformCommandManager().getCommandManager();
 
         final int perPage = actor instanceof Player ? 8 : 20; // More pages for console
 

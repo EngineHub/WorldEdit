@@ -19,40 +19,58 @@
 
 package com.sk89q.worldedit.command.argument;
 
+import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.extension.input.InputParseException;
 import com.sk89q.worldedit.extension.input.ParserContext;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.function.mask.Mask;
+import com.sk89q.worldedit.function.pattern.Pattern;
+import com.sk89q.worldedit.internal.registry.AbstractFactory;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.world.World;
 import org.enginehub.piston.CommandManager;
 import org.enginehub.piston.converter.ArgumentConverter;
 import org.enginehub.piston.converter.ConversionResult;
-import org.enginehub.piston.converter.FailedConversion;
 import org.enginehub.piston.converter.SuccessfulConversion;
 import org.enginehub.piston.inject.InjectedValueAccess;
 import org.enginehub.piston.inject.Key;
 
-public class MaskConverter implements ArgumentConverter<Mask> {
+import java.util.function.Function;
+
+public class FactoryConverter<T> implements ArgumentConverter<T> {
 
     public static void register(WorldEdit worldEdit, CommandManager commandManager) {
-        commandManager.registerConverter(Key.of(Mask.class), new MaskConverter(worldEdit));
+        commandManager.registerConverter(Key.of(Pattern.class),
+            new FactoryConverter<>(worldEdit, WorldEdit::getPatternFactory, "pattern"));
+        commandManager.registerConverter(Key.of(Mask.class),
+            new FactoryConverter<>(worldEdit, WorldEdit::getMaskFactory, "mask"));
+        commandManager.registerConverter(Key.of(BaseItem.class),
+            new FactoryConverter<>(worldEdit, WorldEdit::getItemFactory, "item"));
     }
 
     private final WorldEdit worldEdit;
+    private final Function<WorldEdit, AbstractFactory<T>> factoryExtractor;
+    private final String description;
 
-    private MaskConverter(WorldEdit worldEdit) {
+    private FactoryConverter(WorldEdit worldEdit,
+                             Function<WorldEdit, AbstractFactory<T>> factoryExtractor,
+                             String description) {
         this.worldEdit = worldEdit;
+        this.factoryExtractor = factoryExtractor;
+        this.description = description;
     }
 
     @Override
-    public ConversionResult<Mask> convert(String argument, InjectedValueAccess context) {
+    public ConversionResult<T> convert(String argument, InjectedValueAccess context) {
         Actor actor = context.injectedValue(Key.of(Actor.class))
             .orElseThrow(() -> new IllegalStateException("No actor"));
+        LocalSession session = WorldEdit.getInstance().getSessionManager().get(actor);
+
         ParserContext parserContext = new ParserContext();
         parserContext.setActor(actor);
         if (actor instanceof Entity) {
@@ -61,18 +79,19 @@ public class MaskConverter implements ArgumentConverter<Mask> {
                 parserContext.setWorld((World) extent);
             }
         }
-        parserContext.setSession(worldEdit.getSessionManager().get(actor));
+        parserContext.setSession(session);
+
         try {
             return SuccessfulConversion.fromSingle(
-                worldEdit.getMaskFactory().parseFromInput(argument, parserContext)
+                factoryExtractor.apply(worldEdit).parseFromInput(argument, parserContext)
             );
         } catch (InputParseException e) {
-            return FailedConversion.from(e);
+            throw new IllegalArgumentException(e);
         }
     }
 
     @Override
     public Component describeAcceptableArguments() {
-        return TextComponent.of("any mask");
+        return TextComponent.of("any " + description);
     }
 }

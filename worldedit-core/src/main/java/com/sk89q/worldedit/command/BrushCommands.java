@@ -23,6 +23,8 @@ import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.command.factory.ReplaceFactory;
+import com.sk89q.worldedit.command.factory.TreeGeneratorFactory;
 import com.sk89q.worldedit.command.tool.BrushTool;
 import com.sk89q.worldedit.command.tool.brush.ButcherBrush;
 import com.sk89q.worldedit.command.tool.brush.ClipboardBrush;
@@ -30,6 +32,7 @@ import com.sk89q.worldedit.command.tool.brush.CylinderBrush;
 import com.sk89q.worldedit.command.tool.brush.GravityBrush;
 import com.sk89q.worldedit.command.tool.brush.HollowCylinderBrush;
 import com.sk89q.worldedit.command.tool.brush.HollowSphereBrush;
+import com.sk89q.worldedit.command.tool.brush.OperationFactoryBrush;
 import com.sk89q.worldedit.command.tool.brush.SmoothBrush;
 import com.sk89q.worldedit.command.tool.brush.SphereBrush;
 import com.sk89q.worldedit.command.util.CommandPermissions;
@@ -37,14 +40,21 @@ import com.sk89q.worldedit.command.util.CommandPermissionsConditionGenerator;
 import com.sk89q.worldedit.command.util.CreatureButcher;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
+import com.sk89q.worldedit.function.Contextual;
+import com.sk89q.worldedit.function.factory.Apply;
+import com.sk89q.worldedit.function.factory.Deform;
+import com.sk89q.worldedit.function.factory.Paint;
 import com.sk89q.worldedit.function.mask.BlockTypeMask;
 import com.sk89q.worldedit.function.mask.Mask;
+import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.pattern.BlockPattern;
 import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.regions.factory.RegionFactory;
 import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.session.request.RequestExtent;
 import com.sk89q.worldedit.util.HandSide;
+import com.sk89q.worldedit.util.TreeGenerator;
 import com.sk89q.worldedit.world.block.BlockTypes;
 import org.enginehub.piston.annotation.Command;
 import org.enginehub.piston.annotation.CommandContainer;
@@ -215,7 +225,7 @@ public class BrushCommands {
         player.print(String.format("Gravity brush equipped (%.0f).",
                 radius));
     }
-    
+
     @Command(
         name = "butcher",
         aliases = { "kill" },
@@ -274,5 +284,107 @@ public class BrushCommands {
         tool.setBrush(new ButcherBrush(flags), "worldedit.brush.butcher");
 
         player.print(String.format("Butcher brush equipped (%.0f).", radius));
+    }
+
+    @Command(
+        name = "deform",
+        desc = "Deform brush, applies an expression to an area"
+    )
+    @CommandPermissions("worldedit.brush.deform")
+    public void deform(Player player, LocalSession localSession,
+                       @Arg(desc = "The shape of the region")
+                           RegionFactory regionFactory,
+                       @Arg(desc = "The size of the brush", def = "5")
+                           double radius,
+                       @Arg(desc = "Expression to apply", def = "y-=0.2")
+                           String expression,
+                       @Switch(name = 'r', desc = "Use the game's coordinate origin")
+                           boolean useRawCoords,
+                       @Switch(name = 'o', desc = "Use the placement position as the origin")
+                           boolean usePlacement) throws WorldEditException {
+        Deform deform = new Deform(expression);
+        if (useRawCoords) {
+            deform.setMode(Deform.Mode.RAW_COORD);
+        } else if (usePlacement) {
+            deform.setMode(Deform.Mode.OFFSET);
+            deform.setOffset(localSession.getPlacementPosition(player).toVector3());
+        }
+        setOperationBasedBrush(player, localSession, radius,
+            deform, regionFactory, "worldedit.brush.deform");
+    }
+
+    @Command(
+        name = "set",
+        desc = "Set brush, sets all blocks in the area"
+    )
+    @CommandPermissions("worldedit.brush.set")
+    public void set(Player player, LocalSession localSession,
+                    @Arg(desc = "The shape of the region")
+                        RegionFactory regionFactory,
+                    @Arg(desc = "The size of the brush", def = "5")
+                        double radius,
+                    @Arg(desc = "The pattern of blocks to set")
+                        Pattern pattern) throws WorldEditException {
+        setOperationBasedBrush(player, localSession, radius,
+            new Apply(new ReplaceFactory(pattern)), regionFactory, "worldedit.brush.set");
+    }
+
+    @Command(
+        name = "forest",
+        desc = "Forest brush, creates a forest in the area"
+    )
+    @CommandPermissions("worldedit.brush.forest")
+    public void forest(Player player, LocalSession localSession,
+                       @Arg(desc = "The shape of the region")
+                           RegionFactory regionFactory,
+                       @Arg(desc = "The size of the brush", def = "5")
+                           double radius,
+                       @Arg(desc = "The density of the brush", def = "20")
+                           double density,
+                       @Arg(desc = "The type of tree to use")
+                           TreeGenerator.TreeType type) throws WorldEditException {
+        setOperationBasedBrush(player, localSession, radius,
+            new Paint(new TreeGeneratorFactory(type), density / 100), regionFactory, "worldedit.brush.forest");
+    }
+
+    @Command(
+        name = "raise",
+        desc = "Raise brush, raise all blocks by one"
+    )
+    @CommandPermissions("worldedit.brush.raise")
+    public void raise(Player player, LocalSession localSession,
+                      @Arg(desc = "The shape of the region")
+                          RegionFactory regionFactory,
+                      @Arg(desc = "The size of the brush", def = "5")
+                          double radius) throws WorldEditException {
+        setOperationBasedBrush(player, localSession, radius,
+            new Deform("y-=1"), regionFactory, "worldedit.brush.raise");
+    }
+
+    @Command(
+        name = "lower",
+        desc = "Lower brush, lower all blocks by one"
+    )
+    @CommandPermissions("worldedit.brush.lower")
+    public void lower(Player player, LocalSession localSession,
+                      @Arg(desc = "The shape of the region")
+                          RegionFactory regionFactory,
+                      @Arg(desc = "The size of the brush", def = "5")
+                          double radius) throws WorldEditException {
+        setOperationBasedBrush(player, localSession, radius,
+            new Deform("y+=1"), regionFactory, "worldedit.brush.lower");
+    }
+
+    static void setOperationBasedBrush(Player player, LocalSession session, double radius,
+                                        Contextual<? extends Operation> factory,
+                                        RegionFactory regionFactory,
+                                        String permission) throws WorldEditException {
+        WorldEdit.getInstance().checkMaxBrushRadius(radius);
+        BrushTool tool = session.getBrushTool(player.getItemInHand(HandSide.MAIN_HAND).getType());
+        tool.setSize(radius);
+        tool.setFill(null);
+        tool.setBrush(new OperationFactoryBrush(factory, regionFactory, session), permission);
+
+        player.print("Set brush to " + factory);
     }
 }

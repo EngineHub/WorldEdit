@@ -32,7 +32,7 @@ public final class PermissionCondition implements Command.Condition {
 
     private final Set<String> permissions;
 
-    PermissionCondition(Set<String> permissions) {
+    public PermissionCondition(Set<String> permissions) {
         this.permissions = permissions;
     }
 
