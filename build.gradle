@@ -86,8 +86,6 @@ subprojects {
         mavenCentral()
         maven { url "http://maven.sk89q.com/repo/" }
         maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
-        // temporary, for Piston
-        mavenLocal()
     }
 }
 

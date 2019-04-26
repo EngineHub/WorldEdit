@@ -375,9 +375,7 @@ public class UtilityCommands {
                        @Switch(name = 'f', desc = "Also kill all friendly mobs (Applies the flags `-abgnpt`)")
                            boolean killFriendly,
                        @Switch(name = 'r', desc = "Also destroy armor stands")
-                           boolean killArmorStands,
-                       @Switch(name = 'l', desc = "Kill via lightning. Currently non-functioning.")
-                           boolean killWithLightning) throws WorldEditException {
+                           boolean killArmorStands) throws WorldEditException {
         LocalConfiguration config = we.getConfiguration();
         Player player = actor instanceof Player ? (Player) actor : null;
 
@@ -405,8 +403,6 @@ public class UtilityCommands {
         flags.or(CreatureButcher.Flags.AMBIENT, killAmbient, "worldedit.butcher.ambient");
         flags.or(CreatureButcher.Flags.TAGGED, killWithName, "worldedit.butcher.tagged");
         flags.or(CreatureButcher.Flags.ARMOR_STAND, killArmorStands, "worldedit.butcher.armorstands");
-
-        flags.or(CreatureButcher.Flags.WITH_LIGHTNING, killWithLightning, "worldedit.butcher.lightning");
 
         int killed = killMatchingEntities(radius, player, flags::createFunction);
 
