@@ -29,17 +29,19 @@ import com.sk89q.worldedit.util.command.composition.CommandExecutor;
 import java.util.Collections;
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 public class NumberParser implements CommandExecutor<Number> {
 
     private final String name;
     private final String description;
-    private final String defaultSuggestion;
+    private final @Nullable String defaultSuggestion;
 
     public NumberParser(String name, String description) {
         this(name, description, null);
     }
 
-    public NumberParser(String name, String description, String defaultSuggestion) {
+    public NumberParser(String name, String description, @Nullable String defaultSuggestion) {
         this.name = name;
         this.description = description;
         this.defaultSuggestion = defaultSuggestion;

@@ -75,6 +75,7 @@ import com.sk89q.worldedit.command.argument.EnumConverter;
 import com.sk89q.worldedit.command.argument.ExpandAmountConverter;
 import com.sk89q.worldedit.command.argument.FactoryConverter;
 import com.sk89q.worldedit.command.argument.RegionFactoryConverter;
+import com.sk89q.worldedit.command.argument.RegistryConverter;
 import com.sk89q.worldedit.command.argument.VectorConverter;
 import com.sk89q.worldedit.command.argument.ZonedDateTimeConverter;
 import com.sk89q.worldedit.command.util.PermissionCondition;
@@ -196,6 +197,7 @@ public final class PlatformCommandManager {
         }
         VectorConverter.register(commandManager);
         EnumConverter.register(commandManager);
+        RegistryConverter.register(commandManager);
         ExpandAmountConverter.register(commandManager);
         ZonedDateTimeConverter.register(commandManager);
         BooleanConverter.register(commandManager);

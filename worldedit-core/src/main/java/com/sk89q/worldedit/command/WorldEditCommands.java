@@ -48,6 +48,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
+import java.time.zone.ZoneRulesException;
 import java.util.List;
 import java.util.Locale;
 
@@ -68,7 +69,7 @@ public class WorldEditCommands {
     )
     public void version(Actor actor) throws WorldEditException {
         actor.print("WorldEdit version " + WorldEdit.getVersion());
-        actor.print("https://github.com/sk89q/worldedit/");
+        actor.print("https://github.com/EngineHub/worldedit/");
 
         PlatformManager pm = we.getPlatformManager();
 
@@ -141,13 +142,16 @@ public class WorldEditCommands {
     public void tz(Player player, LocalSession session,
                    @Arg(desc = "The timezone to set")
                        String timezone) throws WorldEditException {
-        ZoneId tz = ZoneId.of(timezone);
-        session.setTimezone(tz);
-        player.print("Timezone set for this session to: " + tz.getDisplayName(
-            TextStyle.FULL, Locale.ENGLISH
-        ));
-        player.print("The current time in that timezone is: "
-            + dateFormat.format(ZonedDateTime.now(tz)));
+        try {
+            ZoneId tz = ZoneId.of(timezone);
+            session.setTimezone(tz);
+            player.print("Timezone set for this session to: " + tz.getDisplayName(
+                    TextStyle.FULL, Locale.ENGLISH
+            ));
+            player.print("The current time in that timezone is: " + dateFormat.format(ZonedDateTime.now(tz)));
+        } catch (ZoneRulesException e) {
+            player.printError("Invalid timezone");
+        }
     }
 
     @Command(
