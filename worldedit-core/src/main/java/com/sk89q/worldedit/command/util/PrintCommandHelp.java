@@ -83,13 +83,13 @@ public class PrintCommandHelp {
             return;
         }
 
-        List<String> visited = new ArrayList<>();
+        List<Command> visited = new ArrayList<>();
         Command currentCommand = detectCommand(manager, commandPath.get(0));
         if (currentCommand == null) {
             actor.printError(String.format("The command '%s' could not be found.", commandPath.get(0)));
             return;
         }
-        visited.add(commandPath.get(0));
+        visited.add(currentCommand);
 
         // Drill down to the command
         for (int i = 1; i < commandPath.size(); i++) {
@@ -103,8 +103,8 @@ public class PrintCommandHelp {
             }
 
             if (subCommands.containsKey(subCommand)) {
-                visited.add(subCommand);
                 currentCommand = subCommands.get(subCommand);
+                visited.add(currentCommand);
             } else {
                 actor.printError(String.format("The sub-command '%s' under '%s' could not be found.",
                     subCommand, Joiner.on(" ").join(visited)));
@@ -116,7 +116,8 @@ public class PrintCommandHelp {
 
         if (subCommands.isEmpty()) {
             // Create the message
-            CommandUsageBox box = new CommandUsageBox(currentCommand, String.join(" ", visited));
+            CommandUsageBox box = new CommandUsageBox(visited, visited.stream()
+                .map(Command::getName).collect(Collectors.joining(" ")));
             actor.print(box.create());
         } else {
             printAllCommands(page, perPage, subCommands.values().stream(), actor, visited);
@@ -124,7 +125,7 @@ public class PrintCommandHelp {
     }
 
     private static void printAllCommands(int page, int perPage, Stream<Command> commandStream, Actor actor,
-                                         List<String> commandList) {
+                                         List<Command> commandList) {
         // Get a list of aliases
         List<Command> commands = commandStream
             .sorted(byCleanName())
@@ -151,7 +152,8 @@ public class PrintCommandHelp {
             // Add each command
             for (Command mapping : list) {
                 String alias = (commandList.isEmpty() ? "/" : "") + mapping.getName();
-                String command = Stream.concat(commandList.stream(), Stream.of(mapping.getName()))
+                String command = Stream.concat(commandList.stream(), Stream.of(mapping))
+                    .map(Command::getName)
                     .collect(Collectors.joining(" ", "/", ""));
                 box.appendCommand(alias, mapping.getDescription(), command);
             }

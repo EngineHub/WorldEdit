@@ -19,8 +19,10 @@
 
 package com.sk89q.worldedit.util.formatting.component;
 
+import com.google.common.collect.Iterables;
 import org.enginehub.piston.Command;
 import org.enginehub.piston.CommandParameters;
+import org.enginehub.piston.util.HelpGenerator;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -39,26 +41,26 @@ public class CommandUsageBox extends TextComponentProducer {
     /**
      * Create a new usage box.
      *
-     * @param command the command to describe
-     * @param commandString the command that was used, such as "/we" or "/brush sphere"
+     * @param commands the commands to describe
+     * @param commandString the commands that were used, such as "/we" or "/brush sphere"
      */
-    public CommandUsageBox(Command command, String commandString) {
-        this(command, commandString, null);
+    public CommandUsageBox(List<Command> commands, String commandString) {
+        this(commands, commandString, null);
     }
 
     /**
      * Create a new usage box.
      *
-     * @param command the command to describe
-     * @param commandString the command that was used, such as "/we" or "/brush sphere"
+     * @param commands the commands to describe
+     * @param commandString the commands that were used, such as "/we" or "/brush sphere"
      * @param parameters list of parameters to use
      */
-    public CommandUsageBox(Command command, String commandString, @Nullable CommandParameters parameters) {
-        checkNotNull(command);
+    public CommandUsageBox(List<Command> commands, String commandString, @Nullable CommandParameters parameters) {
+        checkNotNull(commands);
         checkNotNull(commandString);
-        Map<String, Command> subCommands = getSubCommands(command);
+        Map<String, Command> subCommands = getSubCommands(Iterables.getLast(commands));
         if (subCommands.isEmpty()) {
-            attachCommandUsage(command, commandString);
+            attachCommandUsage(commands, commandString);
         } else {
             attachSubcommandUsage(subCommands, commandString, parameters);
         }
@@ -81,9 +83,9 @@ public class CommandUsageBox extends TextComponentProducer {
         append(box.create());
     }
 
-    private void attachCommandUsage(Command description, String commandString) {
+    private void attachCommandUsage(List<Command> commands, String commandString) {
         MessageBox box = new MessageBox("Help for " + commandString,
-            new TextComponentProducer().append(description.getFullHelp()));
+            new TextComponentProducer().append(HelpGenerator.create(commands).getFullHelp()));
 
         append(box.create());
     }

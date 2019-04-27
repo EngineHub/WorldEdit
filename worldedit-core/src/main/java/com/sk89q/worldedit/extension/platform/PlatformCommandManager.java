@@ -94,9 +94,11 @@ import com.sk89q.worldedit.util.command.parametric.ExceptionConverter;
 import com.sk89q.worldedit.util.eventbus.Subscribe;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
+import com.sk89q.worldedit.util.formatting.text.format.TextColor;
 import com.sk89q.worldedit.util.logging.DynamicStreamHandler;
 import com.sk89q.worldedit.util.logging.LogFormat;
 import com.sk89q.worldedit.world.World;
+import org.enginehub.piston.ColorConfig;
 import org.enginehub.piston.Command;
 import org.enginehub.piston.CommandManager;
 import org.enginehub.piston.DefaultCommandManagerService;
@@ -112,6 +114,7 @@ import org.enginehub.piston.inject.MapBackedValueStore;
 import org.enginehub.piston.inject.MemoizingValueAccess;
 import org.enginehub.piston.inject.MergedValueAccess;
 import org.enginehub.piston.part.SubCommandPart;
+import org.enginehub.piston.util.HelpGenerator;
 import org.enginehub.piston.util.ValueProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -499,21 +502,28 @@ public final class PlatformCommandManager {
                 actor.printError("You are not permitted to do that. Are you in the right mode?");
             }
         } catch (UsageException e) {
-            String message = e.getMessage();
-            actor.printError(message != null ? message : "The command was not used properly (no more help available).");
+            actor.print(TextComponent.builder("")
+                .color(TextColor.RED)
+                .append(e.getRichMessage())
+                .build());
+            ImmutableList<Command> cmd = e.getCommands();
+            if (cmd.size() > 0) {
+                actor.print(TextComponent.builder("Usage: ")
+                    .color(TextColor.RED)
+                    .append(TextComponent.of("/", ColorConfig.getMainText()))
+                    .append(HelpGenerator.create(cmd).getUsage())
+                    .build());
+            }
         } catch (CommandExecutionException e) {
             Throwable t = e.getCause();
             actor.printError("Please report this error: [See console]");
             actor.printRaw(t.getClass().getName() + ": " + t.getMessage());
             log.error("An unexpected error while handling a WorldEdit command", t);
         } catch (CommandException e) {
-            String message = e.getMessage();
-            if (message != null) {
-                actor.printError(e.getMessage());
-            } else {
-                actor.printError("An unknown error has occurred! Please see console.");
-                log.error("An unknown error occurred", e);
-            }
+            actor.print(TextComponent.builder("")
+                .color(TextColor.RED)
+                .append(e.getRichMessage())
+                .build());
         } finally {
             Optional<EditSession> editSessionOpt =
                 context.snapshotMemory().injectedValue(Key.of(EditSession.class));

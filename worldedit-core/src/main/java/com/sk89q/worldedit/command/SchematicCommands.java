@@ -39,6 +39,7 @@ import com.sk89q.worldedit.extent.clipboard.io.ClipboardWriter;
 import com.sk89q.worldedit.function.operation.Operations;
 import com.sk89q.worldedit.math.transform.Transform;
 import com.sk89q.worldedit.session.ClipboardHolder;
+import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.io.Closer;
 import com.sk89q.worldedit.util.io.file.FilenameException;
 import org.enginehub.piston.annotation.Command;
@@ -159,7 +160,7 @@ public class SchematicCommands {
         boolean overwrite = f.exists();
         if (overwrite) {
             if (!player.hasPermission("worldedit.schematic.delete")) {
-                throw new StopExecutionException("That schematic already exists!");
+                throw new StopExecutionException(TextComponent.of("That schematic already exists!"));
             }
             if (!allowOverwrite) {
                 player.printError("That schematic already exists. Use the -f flag to overwrite it.");
@@ -186,7 +187,8 @@ public class SchematicCommands {
         File parent = f.getParentFile();
         if (parent != null && !parent.exists()) {
             if (!parent.mkdirs()) {
-                throw new StopExecutionException("Could not create folder for schematics!");
+                throw new StopExecutionException(TextComponent.of(
+                    "Could not create folder for schematics!"));
             }
         }
 
@@ -277,7 +279,7 @@ public class SchematicCommands {
                      @Switch(name = 'n', desc = "Sort by date, newest first")
                          boolean newFirst) {
         if (oldFirst && newFirst) {
-            throw new StopExecutionException("Cannot sort by oldest and newest.");
+            throw new StopExecutionException(TextComponent.of("Cannot sort by oldest and newest."));
         }
         File dir = worldEdit.getWorkingDirectoryFile(worldEdit.getConfiguration().saveDir);
         List<File> fileList = allFiles(dir);
