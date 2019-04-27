@@ -178,7 +178,7 @@ public class BiomeCommands {
     @Logging(REGION)
     @CommandPermissions("worldedit.biome.set")
     public void setBiome(Player player, LocalSession session, EditSession editSession,
-                         BiomeType target,
+                         @Arg(desc = "Biome type.") BiomeType target,
                          @Switch(name = 'p', desc = "Use your current position")
                              boolean atPosition) throws WorldEditException {
         World world = player.getWorld();
