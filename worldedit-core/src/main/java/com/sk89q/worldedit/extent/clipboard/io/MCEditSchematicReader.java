@@ -320,6 +320,18 @@ public class MCEditSchematicReader extends NBTSchematicReader {
             case "ThrownExpBottle": return "xp_bottle";
             case "XPOrb": return "xp_orb";
             case "PigZombie": return "zombie_pigman";
+            case "xp_orb": return "experience_orb";
+            case "xp_bottle": return "experience_bottle";
+            case "eye_of_ender_signal": return "eye_of_ender";
+            case "ender_crystal": return "end_crystal";
+            case "fireworks_rocket": return "firework_rocket";
+            case "commandblock_minecart": return "command_block_minecart";
+            case "snowman": return "snow_golem";
+            case "villager_golem": return "iron_golem";
+            case "evocation_fangs": return "evoker_fangs";
+            case "evocation_illager": return "evoker";
+            case "vindication_illager": return "vindicator";
+            case "illusion_illager": return "illusioner";
             default: return id;
         }
     }
