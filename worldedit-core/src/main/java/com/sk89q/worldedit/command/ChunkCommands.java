@@ -33,15 +33,19 @@ import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.math.MathUtils;
 import com.sk89q.worldedit.util.Location;
+import com.sk89q.worldedit.util.formatting.component.PaginationBox;
+import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.world.storage.LegacyChunkStore;
 import com.sk89q.worldedit.world.storage.McRegionChunkStore;
 import org.enginehub.piston.annotation.Command;
 import org.enginehub.piston.annotation.CommandContainer;
+import org.enginehub.piston.annotation.param.Arg;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Commands for working with chunks.
@@ -82,12 +86,13 @@ public class ChunkCommands {
         desc = "List chunks that your selection includes"
     )
     @CommandPermissions("worldedit.listchunks")
-    public void listChunks(Player player, LocalSession session) throws WorldEditException {
+    public void listChunks(Player player, LocalSession session,
+            @Arg(desc = "Page number.", def = "1") int page) throws WorldEditException {
         Set<BlockVector2> chunks = session.getSelection(player.getWorld()).getChunks();
 
-        for (BlockVector2 chunk : chunks) {
-            player.print(LegacyChunkStore.getFilename(chunk));
-        }
+        PaginationBox paginationBox = new PaginationBox("Selected Chunks", "/listchunks %page%");
+        paginationBox.setComponents(chunks.stream().map(chunk -> TextComponent.of(chunk.toString())).collect(Collectors.toList()));
+        player.print(paginationBox.create(page));
     }
 
     @Command(

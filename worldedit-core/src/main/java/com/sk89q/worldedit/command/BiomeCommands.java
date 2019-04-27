@@ -19,6 +19,8 @@
 
 package com.sk89q.worldedit.command;
 
+import static com.sk89q.worldedit.command.util.Logging.LogMode.REGION;
+
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
@@ -42,6 +44,8 @@ import com.sk89q.worldedit.regions.FlatRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.Regions;
 import com.sk89q.worldedit.util.Location;
+import com.sk89q.worldedit.util.formatting.component.PaginationBox;
+import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.biome.BiomeData;
 import com.sk89q.worldedit.world.biome.BiomeType;
@@ -51,11 +55,10 @@ import org.enginehub.piston.annotation.CommandContainer;
 import org.enginehub.piston.annotation.param.Arg;
 import org.enginehub.piston.annotation.param.Switch;
 
-import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
-
-import static com.sk89q.worldedit.command.util.Logging.LogMode.REGION;
+import java.util.stream.Collectors;
 
 /**
  * Implements biome-related commands such as "/biomelist".
@@ -76,38 +79,15 @@ public class BiomeCommands {
     )
     @CommandPermissions("worldedit.biome.list")
     public void biomeList(Player player,
-                          @Arg(desc = "Page number.", def = "0")
+                          @Arg(desc = "Page number.", def = "1")
                               int page) throws WorldEditException {
-        int offset;
-        int count = 0;
-
-        if (page < 2) {
-            page = 1;
-            offset = 0;
-        } else {
-            offset = (page - 1) * 19;
-        }
-
         BiomeRegistry biomeRegistry = WorldEdit.getInstance().getPlatformManager()
                 .queryCapability(Capability.GAME_HOOKS).getRegistries().getBiomeRegistry();
-        Collection<BiomeType> biomes = BiomeType.REGISTRY.values();
-        int totalPages = biomes.size() / 19 + 1;
-        player.print("Available Biomes (page " + page + "/" + totalPages + ") :");
-        for (BiomeType biome : biomes) {
-            if (offset > 0) {
-                offset--;
-            } else {
-                BiomeData data = biomeRegistry.getData(biome);
-                if (data != null) {
-                    player.print(" " + data.getName());
-                    if (++count == 19) {
-                        break;
-                    }
-                } else {
-                    player.print(" <unknown #" + biome.getId() + ">");
-                }
-            }
-        }
+        List<BiomeData> biomes = BiomeType.REGISTRY.values().stream().map(biomeRegistry::getData).collect(Collectors.toList());
+
+        PaginationBox paginationBox = new PaginationBox("Available Biomes", "/biomelist %page%");
+        paginationBox.setComponents(biomes.stream().map(biome -> TextComponent.of(biome.getName())).collect(Collectors.toList()));
+        player.print(paginationBox.create(page));
     }
 
     @Command(

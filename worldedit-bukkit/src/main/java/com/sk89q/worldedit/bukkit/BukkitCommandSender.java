@@ -26,7 +26,7 @@ import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.internal.cui.CUIEvent;
 import com.sk89q.worldedit.session.SessionKey;
 import com.sk89q.worldedit.util.auth.AuthorizationException;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
+import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.adapter.bukkit.TextAdapter;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -94,7 +94,7 @@ public class BukkitCommandSender implements Actor {
     }
 
     @Override
-    public void print(TextComponent component) {
+    public void print(Component component) {
         TextAdapter.sendComponent(sender, component);
     }
 

@@ -31,6 +31,7 @@ import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.session.SessionKey;
 import com.sk89q.worldedit.util.HandSide;
+import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
@@ -127,7 +128,7 @@ public class BukkitPlayer extends AbstractPlayerActor {
     }
 
     @Override
-    public void print(TextComponent component) {
+    public void print(Component component) {
         TextAdapter.sendComponent(player, component);
     }
 
