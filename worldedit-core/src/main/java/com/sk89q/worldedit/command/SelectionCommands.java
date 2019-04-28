@@ -457,32 +457,26 @@ public class SelectionCommands {
     public void size(Player player, LocalSession session,
                      @Switch(name = 'c', desc = "Get clipboard info instead")
                          boolean clipboardInfo) throws WorldEditException {
+        Region region;
         if (clipboardInfo) {
             ClipboardHolder holder = session.getClipboard();
             Clipboard clipboard = holder.getClipboard();
-            Region region = clipboard.getRegion();
-            BlockVector3 size = region.getMaximumPoint().subtract(region.getMinimumPoint());
+            region = clipboard.getRegion();
+
             BlockVector3 origin = clipboard.getOrigin();
-
-            player.print("Cuboid dimensions (max - min): " + size);
             player.print("Offset: " + origin);
-            player.print("Cuboid distance: " + size.distance(BlockVector3.ONE));
-            player.print("# of blocks: " + (size.getX() * size.getY() * size.getZ()));
-            return;
-        }
+        } else {
+            region = session.getSelection(player.getWorld());
 
-        Region region = session.getSelection(player.getWorld());
+            player.print("Type: " + session.getRegionSelector(player.getWorld()).getTypeName());
+
+            for (String line : session.getRegionSelector(player.getWorld()).getInformationLines()) {
+                player.print(line);
+            }
+        }
         BlockVector3 size = region.getMaximumPoint()
                 .subtract(region.getMinimumPoint())
                 .add(1, 1, 1);
-
-        player.print("Type: " + session.getRegionSelector(player.getWorld())
-                .getTypeName());
-
-        for (String line : session.getRegionSelector(player.getWorld())
-                .getInformationLines()) {
-            player.print(line);
-        }
 
         player.print("Size: " + size);
         player.print("Cuboid distance: " + region.getMaximumPoint().distance(region.getMinimumPoint()));
