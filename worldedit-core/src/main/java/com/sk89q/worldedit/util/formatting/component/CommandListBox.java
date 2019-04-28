@@ -19,47 +19,75 @@
 
 package com.sk89q.worldedit.util.formatting.component;
 
+import com.google.common.collect.Lists;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.event.ClickEvent;
 import com.sk89q.worldedit.util.formatting.text.event.HoverEvent;
 import com.sk89q.worldedit.util.formatting.text.format.TextColor;
 
-public class CommandListBox extends MessageBox {
+import java.util.List;
 
-    private boolean first = true;
+public class CommandListBox extends PaginationBox {
+
+    private List<CommandEntry> commands = Lists.newArrayList();
 
     /**
      * Create a new box.
      *
      * @param title the title
      */
-    public CommandListBox(String title) {
-        super(title, new TextComponentProducer());
+    public CommandListBox(String title, String pageCommand) {
+        super(title, pageCommand);
     }
 
-    public CommandListBox appendCommand(String alias, Component description) {
-        return appendCommand(alias, description, null);
+    @Override
+    public Component getComponent(int number) {
+        return commands.get(number).createComponent();
     }
 
-    public CommandListBox appendCommand(String alias, String description, String insertion) {
-        return appendCommand(alias, TextComponent.of(description), insertion);
+    @Override
+    public int getComponentsSize() {
+        return commands.size();
     }
 
-    public CommandListBox appendCommand(String alias, Component description, String insertion) {
-        if (!first) {
-            getContents().newline();
+    public void appendCommand(String alias, Component description) {
+        appendCommand(alias, description, null);
+    }
+
+    public void appendCommand(String alias, String description, String insertion) {
+        appendCommand(alias, TextComponent.of(description), insertion);
+    }
+
+    public void appendCommand(String alias, Component description, String insertion) {
+        commands.add(new CommandEntry(alias, description, insertion));
+    }
+
+    private static class CommandEntry {
+        private final String alias;
+        private final Component description;
+        private final String insertion;
+
+        CommandEntry(String alias, Component description, String insertion) {
+            this.alias = alias;
+            this.description = description;
+            this.insertion = insertion;
         }
-        TextComponent commandName = TextComponent.of(alias, TextColor.GOLD);
-        if (insertion != null) {
-            commandName = commandName
-                    .clickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, insertion))
-                    .hoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.of("Click to select")));
-        }
-        getContents().append(commandName.append(TextComponent.of(": ")));
-        getContents().append(description);
-        first = false;
-        return this;
-    }
 
+        Component createComponent() {
+            TextComponentProducer line = new TextComponentProducer();
+            line.append(SubtleFormat.wrap("? ")
+                    .clickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "//help " + insertion))
+                    .hoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.of("Additional Help"))));
+            TextComponent command = TextComponent.of(alias, TextColor.GOLD);
+            if (insertion == null) {
+                line.append(command);
+            } else {
+                line.append(command
+                        .clickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, insertion))
+                        .hoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.of("Click to select"))));
+            }
+            return line.append(TextComponent.of(": ")).append(description).create();
+        }
+    }
 }

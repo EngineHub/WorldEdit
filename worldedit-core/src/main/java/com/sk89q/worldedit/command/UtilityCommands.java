@@ -51,6 +51,10 @@ import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.CylinderRegion;
 import com.sk89q.worldedit.regions.Region;
+import com.sk89q.worldedit.util.formatting.component.InvalidComponentException;
+import com.sk89q.worldedit.util.formatting.component.SubtleFormat;
+import com.sk89q.worldedit.util.formatting.text.TextComponent;
+import com.sk89q.worldedit.util.formatting.text.format.TextColor;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BlockTypes;
 import org.enginehub.piston.annotation.Command;
@@ -58,8 +62,11 @@ import org.enginehub.piston.annotation.CommandContainer;
 import org.enginehub.piston.annotation.param.Arg;
 import org.enginehub.piston.annotation.param.Switch;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.function.Supplier;
 
 import static com.sk89q.worldedit.command.util.Logging.LogMode.PLACEMENT;
@@ -474,6 +481,12 @@ public class UtilityCommands {
         return killed;
     }
 
+    // get the formatter with the system locale. in the future, if we can get a local from a player, we can use that
+    private static final DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Locale.getDefault());
+    static {
+        formatter.applyPattern("#,##0.#####"); // pattern is locale-insensitive. this can translate to "1.234,56789"
+    }
+
     @Command(
         name = "/calculate",
         aliases = { "/calc", "/eval", "/evaluate", "/solve" },
@@ -485,8 +498,14 @@ public class UtilityCommands {
                          String input) {
         try {
             Expression expression = Expression.compile(input);
-            actor.print("= " + expression.evaluate(
-                new double[] {}, WorldEdit.getInstance().getSessionManager().get(actor).getTimeout()));
+            double result = expression.evaluate(
+                    new double[]{}, WorldEdit.getInstance().getSessionManager().get(actor).getTimeout());
+            String formatted = formatter.format(result);
+            actor.print(SubtleFormat.wrap(input + " = ")
+                    .append(TextComponent.of(formatted, TextColor.LIGHT_PURPLE)));
+            //actor.print(SubtleFormat.wrap(input).append(Component.newline())
+            //        .append(SubtleFormat.wrap("= "))
+            //        .append(TextComponent.of(formatted, TextColor.LIGHT_PURPLE)));
         } catch (EvaluationException e) {
             actor.printError(String.format(
                 "'%s' could not be evaluated (error: %s)", input, e.getMessage()));

@@ -72,7 +72,7 @@ public class BukkitServerInterface implements MultiUserPlatform {
         if (plugin.getBukkitImplAdapter() != null) {
             return plugin.getBukkitImplAdapter().getDataVersion();
         }
-        return 0;
+        return -1;
     }
 
     @Override

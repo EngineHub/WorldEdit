@@ -25,14 +25,14 @@ import com.sk89q.worldedit.util.formatting.text.event.ClickEvent;
 import com.sk89q.worldedit.util.formatting.text.event.HoverEvent;
 import com.sk89q.worldedit.util.formatting.text.format.TextColor;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
-public class PaginationBox extends MessageBox {
+public abstract class PaginationBox extends MessageBox {
 
-    public static final int IDEAL_ROWS_FOR_PLAYER = 8;
+    private static final int IDEAL_ROWS_FOR_PLAYER = 8;
 
     private String pageCommand;
-    private List<TextComponent> components;
     private int componentsPerPage = IDEAL_ROWS_FOR_PLAYER;
 
     /**
@@ -40,21 +40,21 @@ public class PaginationBox extends MessageBox {
      *
      * @param title The title
      */
-    public PaginationBox(String title) {
+    protected PaginationBox(String title) {
         this(title, null);
     }
 
-    /**
-     * Sets the components to create pages for.
-     *
-     * @param components The components
-     */
-    public void setComponents(List<TextComponent> components) {
-        this.components = components;
-    }
+    public abstract Component getComponent(int number);
+
+    public abstract int getComponentsSize();
 
     public void setComponentsPerPage(int componentsPerPage) {
         this.componentsPerPage = componentsPerPage;
+    }
+
+    public void formatForConsole() {
+        this.pageCommand = null;
+        this.componentsPerPage = 20;
     }
 
     /**
@@ -63,7 +63,7 @@ public class PaginationBox extends MessageBox {
      * @param title The title
      * @param pageCommand The command to run to switch page, with %page% representing page number
      */
-    public PaginationBox(String title, String pageCommand) {
+    protected PaginationBox(String title, @Nullable String pageCommand) {
         super(title, new TextComponentProducer());
 
         if (pageCommand != null && !pageCommand.contains("%page%")) {
@@ -72,48 +72,76 @@ public class PaginationBox extends MessageBox {
         this.pageCommand = pageCommand;
     }
 
-    public TextComponent create(int page) throws InvalidComponentException {
-        if (components == null) {
-            throw new IllegalStateException("You must provide components before creating.");
-        }
-        if (page == 1 && components.isEmpty()) {
+    public Component create(int page) throws InvalidComponentException {
+        if (page == 1 && getComponentsSize() == 0) {
             return getContents().reset().append("There's nothing to see here").create();
         }
-        int pageCount = (int) Math.ceil(components.size() / (double) componentsPerPage);
+        int pageCount = (int) Math.ceil(getComponentsSize() / (double) componentsPerPage);
         if (page < 1 || page > pageCount) {
             throw new InvalidComponentException("Invalid page number.");
         }
-        getContents().reset();
-        for (int i = (page - 1) * componentsPerPage; i < Math.min(page * componentsPerPage, components.size()); i++) {
-            getContents().append(components.get(i)).newline();
+        final int lastComp = Math.min(page * componentsPerPage, getComponentsSize());
+        for (int i = (page - 1) * componentsPerPage; i < lastComp; i++) {
+            getContents().append(getComponent(i));
+            if (i + 1 != lastComp) {
+                getContents().newline();
+            }
         }
+        if (pageCount == 1) {
+            return super.create();
+        }
+        getContents().newline();
         TextComponent pageNumberComponent = TextComponent.of("Page ", TextColor.YELLOW)
                 .append(TextComponent.of(String.valueOf(page), TextColor.GOLD))
                 .append(TextComponent.of(" of "))
                 .append(TextComponent.of(String.valueOf(pageCount), TextColor.GOLD));
-
         if (pageCommand != null) {
+            TextComponentProducer navProducer = new TextComponentProducer();
             if (page > 1) {
                 TextComponent prevComponent = TextComponent.of("<<< ", TextColor.GOLD)
                         .clickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, pageCommand.replace("%page%", String.valueOf(page - 1))))
                         .hoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.of("Click to navigate")));
-                getContents().append(prevComponent);
+                navProducer.append(prevComponent);
             }
-            getContents().append(pageNumberComponent);
+            navProducer.append(pageNumberComponent);
             if (page < pageCount) {
                 TextComponent nextComponent = TextComponent.of(" >>>", TextColor.GOLD)
                         .clickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, pageCommand.replace("%page%", String.valueOf(page + 1))))
                         .hoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.of("Click to navigate")));
-                getContents().append(nextComponent);
+                navProducer.append(nextComponent);
             }
+            getContents().append(centerAndBorder(navProducer.create()));
         } else {
-            getContents().append(pageNumberComponent);
+            getContents().append(centerAndBorder(pageNumberComponent));
         }
-        return TextComponent.of("").append(Component.newline()).append(super.create());
+        return super.create();
     }
 
     @Override
     public TextComponent create() {
         throw new IllegalStateException("Pagination components must be created with a page");
+    }
+
+    public static PaginationBox fromStrings(String header, @Nullable String pageCommand, List<String> lines) {
+        return new ListPaginationBox(header, pageCommand, lines);
+    }
+
+    private static class ListPaginationBox extends PaginationBox {
+        private final List<String> lines;
+
+        ListPaginationBox(String header, String pageCommand, List<String> lines) {
+            super(header, pageCommand);
+            this.lines = lines;
+        }
+
+        @Override
+        public Component getComponent(int number) {
+            return TextComponent.of(lines.get(number));
+        }
+
+        @Override
+        public int getComponentsSize() {
+            return lines.size();
+        }
     }
 }

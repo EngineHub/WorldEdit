@@ -24,7 +24,6 @@ import com.sk89q.worldedit.session.SessionOwner;
 import com.sk89q.worldedit.util.Identifiable;
 import com.sk89q.worldedit.util.auth.Subject;
 import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
 
 import java.io.File;
 

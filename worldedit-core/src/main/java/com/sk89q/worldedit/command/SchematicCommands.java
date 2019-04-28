@@ -19,8 +19,6 @@
 
 package com.sk89q.worldedit.command;
 
-import com.google.common.collect.Multimap;
-import com.google.common.io.Files;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
@@ -39,6 +37,8 @@ import com.sk89q.worldedit.extent.clipboard.io.ClipboardWriter;
 import com.sk89q.worldedit.function.operation.Operations;
 import com.sk89q.worldedit.math.transform.Transform;
 import com.sk89q.worldedit.session.ClipboardHolder;
+import com.sk89q.worldedit.util.formatting.component.PaginationBox;
+import com.sk89q.worldedit.util.formatting.component.SchematicPaginationBox;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.io.Closer;
 import com.sk89q.worldedit.util.io.file.FilenameException;
@@ -60,7 +60,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.regex.Pattern;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -70,10 +69,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 @CommandContainer(superTypes = CommandPermissionsConditionGenerator.Registration.class)
 public class SchematicCommands {
 
-    /**
-     * 9 schematics per page fits in the MC chat window.
-     */
-    private static final int SCHEMATICS_PER_PAGE = 9;
     private static final Logger log = LoggerFactory.getLogger(SchematicCommands.class);
     private final WorldEdit worldEdit;
 
@@ -100,7 +95,9 @@ public class SchematicCommands {
         LocalConfiguration config = worldEdit.getConfiguration();
 
         File dir = worldEdit.getWorkingDirectoryFile(config.saveDir);
-        File f = worldEdit.getSafeOpenFile(player, dir, filename, BuiltInClipboardFormat.SPONGE_SCHEMATIC.getPrimaryFileExtension(), ClipboardFormats.getFileExtensionArray());
+        File f = worldEdit.getSafeOpenFile(player, dir, filename,
+                BuiltInClipboardFormat.SPONGE_SCHEMATIC.getPrimaryFileExtension(),
+                ClipboardFormats.getFileExtensionArray());
 
         if (!f.exists()) {
             player.printError("Schematic " + filename + " does not exist!");
@@ -128,7 +125,7 @@ public class SchematicCommands {
             player.print(filename + " loaded. Paste it with //paste");
         } catch (IOException e) {
             player.printError("Schematic could not read or it does not exist: " + e.getMessage());
-            log.warn("Failed to load a saved clipboard", e);
+            log.warn("Failed to load schematic: " + e.getMessage());
         }
     }
 
@@ -277,7 +274,7 @@ public class SchematicCommands {
                      @Switch(name = 'd', desc = "Sort by date, oldest first")
                          boolean oldFirst,
                      @Switch(name = 'n', desc = "Sort by date, newest first")
-                         boolean newFirst) {
+                         boolean newFirst) throws WorldEditException {
         if (oldFirst && newFirst) {
             throw new StopExecutionException(TextComponent.of("Cannot sort by oldest and newest."));
         }
@@ -291,16 +288,6 @@ public class SchematicCommands {
 
         File[] files = new File[fileList.size()];
         fileList.toArray(files);
-
-        int pageCount = files.length / SCHEMATICS_PER_PAGE + 1;
-        if (page < 1) {
-            actor.printError("Page must be at least 1");
-            return;
-        }
-        if (page > pageCount) {
-            actor.printError("Page must be less than " + (pageCount + 1));
-            return;
-        }
 
         final int sortType = oldFirst ? -1 : newFirst ? 1 : 0;
         // cleanup file list
@@ -321,20 +308,9 @@ public class SchematicCommands {
             return res;
         });
 
-        List<String> schematics = listFiles(worldEdit.getConfiguration().saveDir, files);
-        int offset = (page - 1) * SCHEMATICS_PER_PAGE;
-
-        actor.print("Available schematics (Filename: Format) [" + page + "/" + pageCount + "]:");
-        StringBuilder build = new StringBuilder();
-        int limit = Math.min(offset + SCHEMATICS_PER_PAGE, schematics.size());
-        for (int i = offset; i < limit; ) {
-            build.append(schematics.get(i));
-            if (++i != limit) {
-                build.append("\n");
-            }
-        }
-
-        actor.print(build.toString());
+        String pageCommand = actor.isPlayer() ? "/schem list -p %page%" + (oldFirst ? " -d" : newFirst ? " -n" : "") : null;
+        PaginationBox paginationBox = new SchematicPaginationBox(worldEdit.getConfiguration().saveDir, files, pageCommand);
+        actor.print(paginationBox.create(page));
     }
 
     private List<File> allFiles(File root) {
@@ -353,22 +329,4 @@ public class SchematicCommands {
         return fileList;
     }
 
-    private List<String> listFiles(String prefix, File[] files) {
-        if (prefix == null) prefix = "";
-        List<String> result = new ArrayList<>();
-        for (File file : files) {
-            StringBuilder build = new StringBuilder();
-
-            build.append("\u00a72");
-            //ClipboardFormat format = ClipboardFormats.findByFile(file);
-            Multimap<String, ClipboardFormat> exts = ClipboardFormats.getFileExtensionMap();
-            ClipboardFormat format = exts.get(Files.getFileExtension(file.getName()))
-                .stream().findFirst().orElse(null);
-            boolean inRoot = file.getParentFile().getName().equals(prefix);
-            build.append(inRoot ? file.getName() : file.getPath().split(Pattern.quote(prefix + File.separator))[1])
-                .append(": ").append(format == null ? "Unknown" : format.getName() + "*");
-            result.add(build.toString());
-        }
-        return result;
-    }
 }

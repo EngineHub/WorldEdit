@@ -94,6 +94,7 @@ import com.sk89q.worldedit.util.command.parametric.ExceptionConverter;
 import com.sk89q.worldedit.util.eventbus.Subscribe;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
+import com.sk89q.worldedit.util.formatting.text.event.HoverEvent;
 import com.sk89q.worldedit.util.formatting.text.format.TextColor;
 import com.sk89q.worldedit.util.logging.DynamicStreamHandler;
 import com.sk89q.worldedit.util.logging.LogFormat;
@@ -142,7 +143,6 @@ public final class PlatformCommandManager {
     private static final Logger log = LoggerFactory.getLogger(PlatformCommandManager.class);
     private static final java.util.logging.Logger COMMAND_LOG =
         java.util.logging.Logger.getLogger("com.sk89q.worldedit.CommandLog");
-    private static final Pattern numberFormatExceptionPattern = Pattern.compile("^For input string: \"(.*)\"$");
 
     private final WorldEdit worldEdit;
     private final PlatformManager platformManager;
@@ -507,7 +507,7 @@ public final class PlatformCommandManager {
                 .append(e.getRichMessage())
                 .build());
             ImmutableList<Command> cmd = e.getCommands();
-            if (cmd.size() > 0) {
+            if (!cmd.isEmpty()) {
                 actor.print(TextComponent.builder("Usage: ")
                     .color(TextColor.RED)
                     .append(TextComponent.of("/", ColorConfig.getMainText()))
@@ -515,15 +515,14 @@ public final class PlatformCommandManager {
                     .build());
             }
         } catch (CommandExecutionException e) {
-            Throwable t = e.getCause();
-            actor.printError("Please report this error: [See console]");
-            actor.printRaw(t.getClass().getName() + ": " + t.getMessage());
-            log.error("An unexpected error while handling a WorldEdit command", t);
+            handleUnknownException(actor, e.getCause());
         } catch (CommandException e) {
             actor.print(TextComponent.builder("")
-                .color(TextColor.RED)
-                .append(e.getRichMessage())
-                .build());
+                    .color(TextColor.RED)
+                    .append(e.getRichMessage())
+                    .build());
+        } catch (Throwable t) {
+            handleUnknownException(actor, t);
         } finally {
             Optional<EditSession> editSessionOpt =
                 context.snapshotMemory().injectedValue(Key.of(EditSession.class));
@@ -552,6 +551,12 @@ public final class PlatformCommandManager {
         }
 
         event.setCancelled(true);
+    }
+
+    private void handleUnknownException(Actor actor, Throwable t) {
+        actor.printError("Please report this error: [See console]");
+        actor.printRaw(t.getClass().getName() + ": " + t.getMessage());
+        log.error("An unexpected error while handling a WorldEdit command", t);
     }
 
     @Subscribe

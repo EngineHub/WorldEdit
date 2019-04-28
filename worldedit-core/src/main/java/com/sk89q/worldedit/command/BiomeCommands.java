@@ -45,7 +45,6 @@ import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.Regions;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.formatting.component.PaginationBox;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.biome.BiomeData;
 import com.sk89q.worldedit.world.biome.BiomeType;
@@ -56,7 +55,7 @@ import org.enginehub.piston.annotation.param.Arg;
 import org.enginehub.piston.annotation.param.Switch;
 
 import java.util.HashSet;
-import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -83,10 +82,11 @@ public class BiomeCommands {
                               int page) throws WorldEditException {
         BiomeRegistry biomeRegistry = WorldEdit.getInstance().getPlatformManager()
                 .queryCapability(Capability.GAME_HOOKS).getRegistries().getBiomeRegistry();
-        List<BiomeData> biomes = BiomeType.REGISTRY.values().stream().map(biomeRegistry::getData).collect(Collectors.toList());
 
-        PaginationBox paginationBox = new PaginationBox("Available Biomes", "/biomelist %page%");
-        paginationBox.setComponents(biomes.stream().map(biome -> TextComponent.of(biome.getName())).collect(Collectors.toList()));
+        PaginationBox paginationBox = PaginationBox.fromStrings("Available Biomes", "/biomelist %page%",
+                BiomeType.REGISTRY.values().stream()
+                        .map(biomeRegistry::getData).filter(Objects::nonNull)
+                        .map(BiomeData::getName).collect(Collectors.toList()));
         player.print(paginationBox.create(page));
     }
 
@@ -152,7 +152,7 @@ public class BiomeCommands {
 
     @Command(
         name = "/setbiome",
-        desc = "Sets the biome of the player's current block or region.",
+        desc = "Sets the biome of your current block or region.",
         descFooter = "By default, uses all the blocks in your selection"
     )
     @Logging(REGION)

@@ -624,7 +624,7 @@ public class SelectionCommands {
             }
             case UNKNOWN:
             default:
-                CommandListBox box = new CommandListBox("Selection modes");
+                CommandListBox box = new CommandListBox("Selection modes", null);
                 TextComponentProducer contents = box.getContents();
                 contents.append(SubtleFormat.wrap("Select one of the modes below:")).newline();
 
@@ -636,7 +636,7 @@ public class SelectionCommands {
                 box.appendCommand("cyl", "Select a cylinder", "//sel cyl");
                 box.appendCommand("convex", "Select a convex polyhedral", "//sel convex");
 
-                player.print(box.create());
+                player.print(box.create(1));
                 return;
         }
 

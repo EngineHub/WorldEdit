@@ -34,7 +34,6 @@ import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.math.MathUtils;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.formatting.component.PaginationBox;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.world.storage.LegacyChunkStore;
 import com.sk89q.worldedit.world.storage.McRegionChunkStore;
 import org.enginehub.piston.annotation.Command;
@@ -62,10 +61,10 @@ public class ChunkCommands {
 
     @Command(
         name = "chunkinfo",
-        desc = "Get information about the chunk that you are inside"
+        desc = "Get information about the chunk you're inside"
     )
     @CommandPermissions("worldedit.chunkinfo")
-    public void chunkInfo(Player player) throws WorldEditException {
+    public void chunkInfo(Player player) {
         Location pos = player.getBlockIn();
         int chunkX = (int) Math.floor(pos.getBlockX() / 16.0);
         int chunkZ = (int) Math.floor(pos.getBlockZ() / 16.0);
@@ -90,8 +89,8 @@ public class ChunkCommands {
             @Arg(desc = "Page number.", def = "1") int page) throws WorldEditException {
         Set<BlockVector2> chunks = session.getSelection(player.getWorld()).getChunks();
 
-        PaginationBox paginationBox = new PaginationBox("Selected Chunks", "/listchunks %page%");
-        paginationBox.setComponents(chunks.stream().map(chunk -> TextComponent.of(chunk.toString())).collect(Collectors.toList()));
+        PaginationBox paginationBox = PaginationBox.fromStrings("Selected Chunks", "/listchunks %page%",
+                chunks.stream().map(BlockVector2::toString).collect(Collectors.toList()));
         player.print(paginationBox.create(page));
     }
 

@@ -22,13 +22,10 @@ package com.sk89q.worldedit.command.util;
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
 import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
-import com.sk89q.worldedit.util.formatting.component.CodeFormat;
 import com.sk89q.worldedit.util.formatting.component.CommandListBox;
 import com.sk89q.worldedit.util.formatting.component.CommandUsageBox;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
-import com.sk89q.worldedit.util.formatting.text.format.TextColor;
+import com.sk89q.worldedit.util.formatting.component.InvalidComponentException;
 import org.enginehub.piston.Command;
 import org.enginehub.piston.CommandManager;
 
@@ -46,7 +43,7 @@ import static java.util.stream.Collectors.toList;
 /**
  * Implementation of the //help command.
  */
-// Stored in a separate class to prevent import conflicts.
+// Stored in a separate class to prevent import conflicts, and because it's aliased via /we help.
 public class PrintCommandHelp {
 
     private static Command detectCommand(CommandManager manager, String command) {
@@ -69,17 +66,11 @@ public class PrintCommandHelp {
         return mapping.orElse(null);
     }
 
-    public static void help(List<String> commandPath, int page, WorldEdit we, Actor actor) {
-        if (page < 1) {
-            actor.printError("Page must be >= 1.");
-            return;
-        }
+    public static void help(List<String> commandPath, int page, WorldEdit we, Actor actor) throws InvalidComponentException {
         CommandManager manager = we.getPlatformManager().getPlatformCommandManager().getCommandManager();
 
-        final int perPage = actor instanceof Player ? 8 : 20; // More pages for console
-
         if (commandPath.isEmpty()) {
-            printAllCommands(page, perPage, manager.getAllCommands(), actor, ImmutableList.of());
+            printCommands(page, manager.getAllCommands(), actor, ImmutableList.of());
             return;
         }
 
@@ -98,7 +89,11 @@ public class PrintCommandHelp {
 
             if (subCommands.isEmpty()) {
                 actor.printError(String.format("'%s' has no sub-commands. (Maybe '%s' is for a parameter?)",
-                    Joiner.on(" ").join(visited), subCommand));
+                    Joiner.on(" ").join(visited.stream().map(Command::getName).iterator()), subCommand));
+                // full help for single command
+                CommandUsageBox box = new CommandUsageBox(visited, visited.stream()
+                        .map(Command::getName).collect(Collectors.joining(" ")));
+                actor.print(box.create());
                 return;
             }
 
@@ -107,7 +102,11 @@ public class PrintCommandHelp {
                 visited.add(currentCommand);
             } else {
                 actor.printError(String.format("The sub-command '%s' under '%s' could not be found.",
-                    subCommand, Joiner.on(" ").join(visited)));
+                    subCommand, Joiner.on(" ").join(visited.stream().map(Command::getName).iterator())));
+                // list subcommands for currentCommand
+                CommandUsageBox box = new CommandUsageBox(visited, visited.stream()
+                        .map(Command::getName).collect(Collectors.joining(" ")));
+                actor.print(box.create());
                 return;
             }
         }
@@ -120,46 +119,35 @@ public class PrintCommandHelp {
                 .map(Command::getName).collect(Collectors.joining(" ")));
             actor.print(box.create());
         } else {
-            printAllCommands(page, perPage, subCommands.values().stream(), actor, visited);
+            printCommands(page, subCommands.values().stream(), actor, visited);
         }
     }
 
-    private static void printAllCommands(int page, int perPage, Stream<Command> commandStream, Actor actor,
-                                         List<Command> commandList) {
+    private static void printCommands(int page, Stream<Command> commandStream, Actor actor,
+                                      List<Command> commandList) throws InvalidComponentException {
         // Get a list of aliases
         List<Command> commands = commandStream
             .sorted(byCleanName())
             .collect(toList());
 
-        // Calculate pagination
-        int offset = perPage * (page - 1);
-        int pageTotal = (int) Math.ceil(commands.size() / (double) perPage);
-
-        // Box
-        CommandListBox box = new CommandListBox(String.format("Help: page %d/%d ", page, pageTotal));
-        TextComponent.Builder tip = box.getContents().getBuilder().color(TextColor.GRAY);
-
-        if (offset >= commands.size()) {
-            tip.color(TextColor.RED)
-                .append(TextComponent.of(String.format("There is no page %d (total number of pages is %d).\n", page, pageTotal)));
-        } else {
-            List<Command> list = commands.subList(offset, Math.min(offset + perPage, commands.size()));
-
-            tip.append(TextComponent.of("Type "));
-            tip.append(CodeFormat.wrap("//help [<page>] <command...>"));
-            tip.append(TextComponent.of(" for more information.\n"));
-
-            // Add each command
-            for (Command mapping : list) {
-                String alias = (commandList.isEmpty() ? "/" : "") + mapping.getName();
-                String command = Stream.concat(commandList.stream(), Stream.of(mapping))
-                    .map(Command::getName)
-                    .collect(Collectors.joining(" ", "/", ""));
-                box.appendCommand(alias, mapping.getDescription(), command);
-            }
+        String used = commandList.isEmpty() ? null
+                : Joiner.on(" ").join(commandList.stream().map(Command::getName).iterator());
+        CommandListBox box = new CommandListBox(
+                (used == null ? "Help" : "Subcommands: " + used),
+                "//help %page%" + (used == null ? "" : " " + used));
+        if (!actor.isPlayer()) {
+            box.formatForConsole();
         }
 
-        actor.print(box.create());
+        for (Command mapping : commands) {
+            String alias = (commandList.isEmpty() ? "/" : "") + mapping.getName();
+            String command = Stream.concat(commandList.stream(), Stream.of(mapping))
+                .map(Command::getName)
+                .collect(Collectors.joining(" ", "/", ""));
+            box.appendCommand(alias, mapping.getDescription(), command);
+        }
+
+        actor.print(box.create(page));
     }
 
     private PrintCommandHelp() {

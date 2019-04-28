@@ -44,7 +44,7 @@ public class CommandUsageBox extends TextComponentProducer {
      * @param commands the commands to describe
      * @param commandString the commands that were used, such as "/we" or "/brush sphere"
      */
-    public CommandUsageBox(List<Command> commands, String commandString) {
+    public CommandUsageBox(List<Command> commands, String commandString) throws InvalidComponentException {
         this(commands, commandString, null);
     }
 
@@ -55,7 +55,7 @@ public class CommandUsageBox extends TextComponentProducer {
      * @param commandString the commands that were used, such as "/we" or "/brush sphere"
      * @param parameters list of parameters to use
      */
-    public CommandUsageBox(List<Command> commands, String commandString, @Nullable CommandParameters parameters) {
+    public CommandUsageBox(List<Command> commands, String commandString, @Nullable CommandParameters parameters) throws InvalidComponentException {
         checkNotNull(commands);
         checkNotNull(commandString);
         Map<String, Command> subCommands = getSubCommands(Iterables.getLast(commands));
@@ -66,8 +66,9 @@ public class CommandUsageBox extends TextComponentProducer {
         }
     }
 
-    private void attachSubcommandUsage(Map<String, Command> dispatcher, String commandString, @Nullable CommandParameters parameters) {
-        CommandListBox box = new CommandListBox("Subcommands");
+    private void attachSubcommandUsage(Map<String, Command> dispatcher, String commandString, @Nullable CommandParameters parameters) throws InvalidComponentException {
+        CommandListBox box = new CommandListBox(commandString.isEmpty() ? "Help" : "Subcommands:" + commandString,
+                "//help %page%" + (commandString.isEmpty() ? "" : " " + commandString));
         String prefix = !commandString.isEmpty() ? commandString + " " : "";
 
         List<Command> list = dispatcher.values().stream()
@@ -80,7 +81,7 @@ public class CommandUsageBox extends TextComponentProducer {
             }
         }
 
-        append(box.create());
+        append(box.create(1));
     }
 
     private void attachCommandUsage(List<Command> commands, String commandString) {
