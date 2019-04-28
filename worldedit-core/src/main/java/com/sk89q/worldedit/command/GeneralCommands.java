@@ -161,7 +161,7 @@ public class GeneralCommands {
     )
     @CommandPermissions("worldedit.drawsel")
     public void drawSelection(Player player, LocalSession session,
-                              @Arg(desc = "The new draw selection state", def = "toggle")
+                              @Arg(desc = "The new draw selection state", def = "")
                                   Boolean drawSelection) throws WorldEditException {
         if (!WorldEdit.getInstance().getConfiguration().serverSideCUI) {
             throw new DisallowedUsageException("This functionality is disabled in the configuration!");

@@ -19,6 +19,8 @@
 
 package com.sk89q.worldedit.command;
 
+import static com.sk89q.worldedit.command.util.Logging.LogMode.PLACEMENT;
+
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.IncompleteRegionException;
 import com.sk89q.worldedit.LocalConfiguration;
@@ -51,7 +53,6 @@ import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.CylinderRegion;
 import com.sk89q.worldedit.regions.Region;
-import com.sk89q.worldedit.util.formatting.component.InvalidComponentException;
 import com.sk89q.worldedit.util.formatting.component.SubtleFormat;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.format.TextColor;
@@ -68,8 +69,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.function.Supplier;
-
-import static com.sk89q.worldedit.command.util.Logging.LogMode.PLACEMENT;
 
 /**
  * Utility commands.
@@ -386,7 +385,6 @@ public class UtilityCommands {
         LocalConfiguration config = we.getConfiguration();
         Player player = actor instanceof Player ? (Player) actor : null;
 
-        int defaultRadius = config.butcherDefaultRadius;
         if (radius == null) {
             radius = config.butcherDefaultRadius;
         } else if (radius < -1) {

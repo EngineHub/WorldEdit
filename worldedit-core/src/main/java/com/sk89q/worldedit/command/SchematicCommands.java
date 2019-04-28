@@ -308,7 +308,7 @@ public class SchematicCommands {
             return res;
         });
 
-        String pageCommand = actor.isPlayer() ? "/schem list -p %page%" + (oldFirst ? " -d" : newFirst ? " -n" : "") : null;
+        String pageCommand = actor.isPlayer() ? "//schem list -p %page%" + (oldFirst ? " -d" : newFirst ? " -n" : "") : null;
         PaginationBox paginationBox = new SchematicPaginationBox(worldEdit.getConfiguration().saveDir, files, pageCommand);
         actor.print(paginationBox.create(page));
     }
