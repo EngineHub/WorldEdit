@@ -34,7 +34,7 @@ import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.internal.Constants;
-import com.sk89q.worldedit.internal.block.BlockStateIdAcess;
+import com.sk89q.worldedit.internal.block.BlockStateIdAccess;
 import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.Vector3;
@@ -96,7 +96,6 @@ import java.io.File;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.OptionalInt;
 import java.util.Random;
 import java.util.concurrent.ExecutionException;
@@ -177,8 +176,8 @@ public class ForgeWorld extends AbstractWorld {
         Chunk chunk = world.getChunk(x >> 4, z >> 4);
         BlockPos pos = new BlockPos(x, y, z);
         IBlockState old = chunk.getBlockState(pos);
-        OptionalInt stateId = BlockStateIdAcess.getBlockStateId(block.toImmutableState());
-        IBlockState newState = stateId.isPresent() ? Block.getStateById(stateId.getAsInt()) : ForgeAdapter.adaptState(block.toImmutableState());
+        OptionalInt stateId = BlockStateIdAccess.getBlockStateId(block.toImmutableState());
+        IBlockState newState = stateId.isPresent() ? Block.getStateById(stateId.getAsInt()) : ForgeAdapter.adapt(block.toImmutableState());
         IBlockState successState = chunk.setBlockState(pos, newState, false);
         boolean successful = successState != null;
 
