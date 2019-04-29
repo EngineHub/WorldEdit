@@ -77,7 +77,7 @@ public class ForgeBlockRegistry extends BundledBlockRegistry {
 
     @Override
     public OptionalInt getInternalBlockStateId(BlockState state) {
-        IBlockState equivalent = ForgeAdapter.adaptState(state);
+        IBlockState equivalent = ForgeAdapter.adapt(state);
         return OptionalInt.of(Block.getStateId(equivalent));
     }
 

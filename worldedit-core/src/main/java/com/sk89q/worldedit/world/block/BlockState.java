@@ -27,7 +27,7 @@ import com.google.common.collect.Table;
 import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.extension.platform.Capability;
-import com.sk89q.worldedit.internal.block.BlockStateIdAcess;
+import com.sk89q.worldedit.internal.block.BlockStateIdAccess;
 import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.world.registry.BlockRegistry;
 
@@ -48,7 +48,7 @@ import java.util.Set;
 public class BlockState implements BlockStateHolder<BlockState> {
     
     static {
-        BlockStateIdAcess.setBlockStateStateId(x -> x.internalId);
+        BlockStateIdAccess.setBlockStateStateId(x -> x.internalId);
     }
 
     private final BlockType blockType;
