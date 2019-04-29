@@ -469,6 +469,10 @@ public final class PlatformCommandManager {
         store.injectValue(Key.of(Actor.class), ValueProvider.constant(actor));
         if (actor instanceof Player) {
             store.injectValue(Key.of(Player.class), ValueProvider.constant((Player) actor));
+        } else {
+            store.injectValue(Key.of(Player.class), context -> {
+                throw new CommandException(TextComponent.of("This command must be used with a player."), ImmutableList.of());
+            });
         }
         store.injectValue(Key.of(Arguments.class), ValueProvider.constant(event::getArguments));
         store.injectValue(Key.of(LocalSession.class),
