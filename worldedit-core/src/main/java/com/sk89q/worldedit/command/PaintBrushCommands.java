@@ -56,7 +56,7 @@ import static org.enginehub.piston.part.CommandParts.arg;
 @CommandContainer
 public class PaintBrushCommands {
 
-    private static final CommandArgument REGION_FACTORY = arg(TranslatableComponent.of("regionFactory"), TextComponent.of("The shape of the region"))
+    private static final CommandArgument REGION_FACTORY = arg(TranslatableComponent.of("shape"), TextComponent.of("The shape of the region"))
         .defaultsTo(ImmutableList.of())
         .ofTypes(ImmutableList.of(Key.of(RegionFactory.class)))
         .build();

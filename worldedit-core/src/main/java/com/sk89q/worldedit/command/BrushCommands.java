@@ -296,7 +296,7 @@ public class BrushCommands {
     @CommandPermissions("worldedit.brush.deform")
     public void deform(Player player, LocalSession localSession,
                        @Arg(desc = "The shape of the region")
-                           RegionFactory regionFactory,
+                           RegionFactory shape,
                        @Arg(desc = "The size of the brush", def = "5")
                            double radius,
                        @Arg(desc = "Expression to apply", def = "y-=0.2")
@@ -313,7 +313,7 @@ public class BrushCommands {
             deform.setOffset(localSession.getPlacementPosition(player).toVector3());
         }
         setOperationBasedBrush(player, localSession, radius,
-            deform, regionFactory, "worldedit.brush.deform");
+            deform, shape, "worldedit.brush.deform");
     }
 
     @Command(
@@ -323,13 +323,13 @@ public class BrushCommands {
     @CommandPermissions("worldedit.brush.set")
     public void set(Player player, LocalSession localSession,
                     @Arg(desc = "The shape of the region")
-                        RegionFactory regionFactory,
+                        RegionFactory shape,
                     @Arg(desc = "The size of the brush", def = "5")
                         double radius,
                     @Arg(desc = "The pattern of blocks to set")
                         Pattern pattern) throws WorldEditException {
         setOperationBasedBrush(player, localSession, radius,
-            new Apply(new ReplaceFactory(pattern)), regionFactory, "worldedit.brush.set");
+            new Apply(new ReplaceFactory(pattern)), shape, "worldedit.brush.set");
     }
 
     @Command(
@@ -339,7 +339,7 @@ public class BrushCommands {
     @CommandPermissions("worldedit.brush.forest")
     public void forest(Player player, LocalSession localSession,
                        @Arg(desc = "The shape of the region")
-                           RegionFactory regionFactory,
+                           RegionFactory shape,
                        @Arg(desc = "The size of the brush", def = "5")
                            double radius,
                        @Arg(desc = "The density of the brush", def = "20")
@@ -347,7 +347,7 @@ public class BrushCommands {
                        @Arg(desc = "The type of tree to use")
                            TreeGenerator.TreeType type) throws WorldEditException {
         setOperationBasedBrush(player, localSession, radius,
-            new Paint(new TreeGeneratorFactory(type), density / 100), regionFactory, "worldedit.brush.forest");
+            new Paint(new TreeGeneratorFactory(type), density / 100), shape, "worldedit.brush.forest");
     }
 
     @Command(
@@ -357,11 +357,11 @@ public class BrushCommands {
     @CommandPermissions("worldedit.brush.raise")
     public void raise(Player player, LocalSession localSession,
                       @Arg(desc = "The shape of the region")
-                          RegionFactory regionFactory,
+                          RegionFactory shape,
                       @Arg(desc = "The size of the brush", def = "5")
                           double radius) throws WorldEditException {
         setOperationBasedBrush(player, localSession, radius,
-            new Deform("y-=1"), regionFactory, "worldedit.brush.raise");
+            new Deform("y-=1"), shape, "worldedit.brush.raise");
     }
 
     @Command(
@@ -371,22 +371,22 @@ public class BrushCommands {
     @CommandPermissions("worldedit.brush.lower")
     public void lower(Player player, LocalSession localSession,
                       @Arg(desc = "The shape of the region")
-                          RegionFactory regionFactory,
+                          RegionFactory shape,
                       @Arg(desc = "The size of the brush", def = "5")
                           double radius) throws WorldEditException {
         setOperationBasedBrush(player, localSession, radius,
-            new Deform("y+=1"), regionFactory, "worldedit.brush.lower");
+            new Deform("y+=1"), shape, "worldedit.brush.lower");
     }
 
     static void setOperationBasedBrush(Player player, LocalSession session, double radius,
                                         Contextual<? extends Operation> factory,
-                                        RegionFactory regionFactory,
+                                        RegionFactory shape,
                                         String permission) throws WorldEditException {
         WorldEdit.getInstance().checkMaxBrushRadius(radius);
         BrushTool tool = session.getBrushTool(player.getItemInHand(HandSide.MAIN_HAND).getType());
         tool.setSize(radius);
         tool.setFill(null);
-        tool.setBrush(new OperationFactoryBrush(factory, regionFactory, session), permission);
+        tool.setBrush(new OperationFactoryBrush(factory, shape, session), permission);
 
         player.print("Set brush to " + factory);
     }
