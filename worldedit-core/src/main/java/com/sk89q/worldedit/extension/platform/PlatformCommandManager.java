@@ -256,6 +256,7 @@ public final class PlatformCommandManager {
                 registration,
                 instance
             );
+            additionalConfig.accept(manager);
 
             cmd.addPart(SubCommandPart.builder(TranslatableComponent.of("worldedit.argument.action"),
                 TextComponent.of("Sub-command to run."))
@@ -443,7 +444,7 @@ public final class PlatformCommandManager {
         Request.reset();
 
         Actor actor = platformManager.createProxyActor(event.getActor());
-        String[] split = commandDetection(event.getArguments().split(" "));
+        String[] split = commandDetection(event.getArguments().substring(1).split(" "));
 
         // No command found!
         if (!commandManager.containsCommand(split[0])) {
@@ -511,7 +512,7 @@ public final class PlatformCommandManager {
                 actor.print(TextComponent.builder("Usage: ")
                     .color(TextColor.RED)
                     .append(TextComponent.of("/", ColorConfig.getMainText()))
-                    .append(HelpGenerator.create(cmd).getUsage())
+                    .append(HelpGenerator.create(e.getCommandParseResult()).getUsage())
                     .build());
             }
         } catch (CommandExecutionException e) {

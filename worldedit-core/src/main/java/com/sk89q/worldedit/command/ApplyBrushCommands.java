@@ -84,6 +84,7 @@ public class ApplyBrushCommands {
             builder.addParts(REGION_FACTORY, RADIUS);
             builder.addPart(SubCommandPart.builder(TranslatableComponent.of("type"), TextComponent.of("Type of brush to use"))
                 .withCommands(manager.getAllCommands().collect(Collectors.toList()))
+                .required()
                 .build());
         });
     }

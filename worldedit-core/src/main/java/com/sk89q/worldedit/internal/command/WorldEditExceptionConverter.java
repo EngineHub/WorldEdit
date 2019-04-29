@@ -19,8 +19,6 @@
 
 package com.sk89q.worldedit.internal.command;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import com.google.common.collect.ImmutableList;
 import com.sk89q.worldedit.DisallowedItemException;
 import com.sk89q.worldedit.EmptyClipboardException;
@@ -35,7 +33,6 @@ import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.command.InsufficientArgumentsException;
 import com.sk89q.worldedit.command.tool.InvalidToolBindException;
-import com.sk89q.worldedit.command.util.PermissionCondition;
 import com.sk89q.worldedit.internal.expression.ExpressionException;
 import com.sk89q.worldedit.regions.RegionOperationException;
 import com.sk89q.worldedit.util.command.parametric.ExceptionConverterHelper;
@@ -45,10 +42,12 @@ import com.sk89q.worldedit.util.io.file.FileSelectionAbortedException;
 import com.sk89q.worldedit.util.io.file.FilenameResolutionException;
 import com.sk89q.worldedit.util.io.file.InvalidFilenameException;
 import org.enginehub.piston.exception.CommandException;
-import org.enginehub.piston.exception.ConditionFailedException;
+import org.enginehub.piston.exception.UsageException;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * converts WorldEdit exceptions and converts them into {@link CommandException}s.
@@ -171,6 +170,12 @@ public class WorldEditExceptionConverter extends ExceptionConverterHelper {
     @ExceptionMatch
     public void convert(IllegalArgumentException e) throws CommandException {
         throw newCommandException(e.getMessage(), e);
+    }
+
+    // Prevent investigation into UsageExceptions
+    @ExceptionMatch
+    public void convert(UsageException e) throws CommandException {
+        throw e;
     }
 
 }

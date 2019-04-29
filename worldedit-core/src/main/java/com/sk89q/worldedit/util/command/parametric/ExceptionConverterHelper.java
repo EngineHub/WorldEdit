@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.util.command.parametric;
 
+import com.google.common.collect.ImmutableList;
 import com.sk89q.minecraft.util.commands.WrappedCommandException;
 import org.enginehub.piston.exception.CommandException;
 import org.enginehub.piston.exception.CommandExecutionException;
@@ -32,24 +33,24 @@ import java.util.List;
 /**
  * An implementation of an {@link ExceptionConverter} that automatically calls
  * the correct method defined on this object.
- * 
+ *
  * <p>Only public methods will be used. Methods will be called in order of decreasing
  * levels of inheritance (between classes where one inherits the other). For two
  * different inheritance branches, the order between them is undefined.</p>
  */
 public abstract class ExceptionConverterHelper implements ExceptionConverter {
-    
+
     private final List<ExceptionHandler> handlers;
 
     @SuppressWarnings("unchecked")
     public ExceptionConverterHelper() {
         List<ExceptionHandler> handlers = new ArrayList<>();
-        
+
         for (Method method : this.getClass().getMethods()) {
             if (method.getAnnotation(ExceptionMatch.class) == null) {
                 continue;
             }
-            
+
             Class<?>[] parameters = method.getParameterTypes();
             if (parameters.length == 1) {
                 Class<?> cls = parameters[0];
@@ -59,9 +60,9 @@ public abstract class ExceptionConverterHelper implements ExceptionConverter {
                 }
             }
         }
-        
+
         Collections.sort(handlers);
-        
+
         this.handlers = handlers;
     }
 
@@ -76,18 +77,18 @@ public abstract class ExceptionConverterHelper implements ExceptionConverter {
                     if (e.getCause() instanceof CommandException) {
                         throw (CommandException) e.getCause();
                     }
-                    throw new CommandExecutionException(e, null);
+                    throw new CommandExecutionException(e, ImmutableList.of());
                 } catch (IllegalArgumentException | IllegalAccessException e) {
-                    throw new CommandExecutionException(e, null);
+                    throw new CommandExecutionException(e, ImmutableList.of());
                 }
             }
         }
     }
-    
+
     private static class ExceptionHandler implements Comparable<ExceptionHandler> {
         final Class<? extends Throwable> cls;
         final Method method;
-        
+
         private ExceptionHandler(Class<? extends Throwable> cls, Method method) {
             this.cls = cls;
             this.method = method;
