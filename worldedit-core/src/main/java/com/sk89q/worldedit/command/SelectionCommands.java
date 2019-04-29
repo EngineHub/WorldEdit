@@ -619,6 +619,7 @@ public class SelectionCommands {
             case UNKNOWN:
             default:
                 CommandListBox box = new CommandListBox("Selection modes", null);
+                box.setHidingHelp(true);
                 TextComponentProducer contents = box.getContents();
                 contents.append(SubtleFormat.wrap("Select one of the modes below:")).newline();
 

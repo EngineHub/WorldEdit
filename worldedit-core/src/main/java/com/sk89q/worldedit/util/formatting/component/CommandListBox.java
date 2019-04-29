@@ -31,6 +31,7 @@ import java.util.List;
 public class CommandListBox extends PaginationBox {
 
     private List<CommandEntry> commands = Lists.newArrayList();
+    private boolean hideHelp;
 
     /**
      * Create a new box.
@@ -43,7 +44,7 @@ public class CommandListBox extends PaginationBox {
 
     @Override
     public Component getComponent(int number) {
-        return commands.get(number).createComponent();
+        return commands.get(number).createComponent(hideHelp);
     }
 
     @Override
@@ -63,6 +64,14 @@ public class CommandListBox extends PaginationBox {
         commands.add(new CommandEntry(alias, description, insertion));
     }
 
+    public boolean isHidingHelp() {
+        return hideHelp;
+    }
+
+    public void setHidingHelp(boolean hideHelp) {
+        this.hideHelp = hideHelp;
+    }
+
     private static class CommandEntry {
         private final String alias;
         private final Component description;
@@ -74,11 +83,13 @@ public class CommandListBox extends PaginationBox {
             this.insertion = insertion;
         }
 
-        Component createComponent() {
+        Component createComponent(boolean hideHelp) {
             TextComponentProducer line = new TextComponentProducer();
-            line.append(SubtleFormat.wrap("? ")
-                    .clickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "//help " + insertion))
-                    .hoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.of("Additional Help"))));
+            if (!hideHelp) {
+                line.append(SubtleFormat.wrap("? ")
+                        .clickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "//help " + insertion))
+                        .hoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.of("Additional Help"))));
+            }
             TextComponent command = TextComponent.of(alias, TextColor.GOLD);
             if (insertion == null) {
                 line.append(command);
