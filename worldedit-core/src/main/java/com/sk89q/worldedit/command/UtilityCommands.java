@@ -501,9 +501,6 @@ public class UtilityCommands {
             String formatted = formatter.format(result);
             actor.print(SubtleFormat.wrap(input + " = ")
                     .append(TextComponent.of(formatted, TextColor.LIGHT_PURPLE)));
-            //actor.print(SubtleFormat.wrap(input).append(Component.newline())
-            //        .append(SubtleFormat.wrap("= "))
-            //        .append(TextComponent.of(formatted, TextColor.LIGHT_PURPLE)));
         } catch (EvaluationException e) {
             actor.printError(String.format(
                 "'%s' could not be evaluated (error: %s)", input, e.getMessage()));
