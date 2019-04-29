@@ -273,8 +273,8 @@ public class GenerationCommands {
                         @Selection Region region,
                         @Arg(desc = "The pattern of blocks to set")
                             Pattern pattern,
-                        @Arg(desc = "Expression to test block placement locations and set block type")
-                            String expression,
+                        @Arg(desc = "Expression to test block placement locations and set block type", variable = true)
+                            List<String> expression,
                         @Switch(name = 'h', desc = "Generate a hollow shape")
                             boolean hollow,
                         @Switch(name = 'r', desc = "Use the game's coordinate origin")
@@ -312,7 +312,7 @@ public class GenerationCommands {
         }
 
         try {
-            final int affected = editSession.makeShape(region, zero, unit, pattern, expression, hollow, session.getTimeout());
+            final int affected = editSession.makeShape(region, zero, unit, pattern, String.join(" ", expression), hollow, session.getTimeout());
             player.findFreePosition();
             player.print(affected + " block(s) have been created.");
             return affected;
@@ -334,8 +334,8 @@ public class GenerationCommands {
                              @Selection Region region,
                              @Arg(desc = "The biome type to set")
                                  BiomeType target,
-                             @Arg(desc = "Expression to test block placement locations and set biome type")
-                                 String expression,
+                             @Arg(desc = "Expression to test block placement locations and set biome type", variable = true)
+                                 List<String> expression,
                              @Switch(name = 'h', desc = "Generate a hollow shape")
                                  boolean hollow,
                              @Switch(name = 'r', desc = "Use the game's coordinate origin")
@@ -372,7 +372,7 @@ public class GenerationCommands {
         }
 
         try {
-            final int affected = editSession.makeBiomeShape(region, zero, unit, target, expression, hollow, session.getTimeout());
+            final int affected = editSession.makeBiomeShape(region, zero, unit, target, String.join(" ", expression), hollow, session.getTimeout());
             player.findFreePosition();
             player.print("" + affected + " columns affected.");
             return affected;

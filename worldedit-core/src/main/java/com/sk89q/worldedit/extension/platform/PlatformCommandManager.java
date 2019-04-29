@@ -89,12 +89,12 @@ import com.sk89q.worldedit.internal.command.CommandLoggingHandler;
 import com.sk89q.worldedit.internal.command.WorldEditExceptionConverter;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.session.request.Request;
+import com.sk89q.worldedit.util.command.CommandArgParser;
 import com.sk89q.worldedit.util.command.CommandRegistrationHandler;
 import com.sk89q.worldedit.util.command.parametric.ExceptionConverter;
 import com.sk89q.worldedit.util.eventbus.Subscribe;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
-import com.sk89q.worldedit.util.formatting.text.event.HoverEvent;
 import com.sk89q.worldedit.util.formatting.text.format.TextColor;
 import com.sk89q.worldedit.util.logging.DynamicStreamHandler;
 import com.sk89q.worldedit.util.logging.LogFormat;
@@ -439,12 +439,16 @@ public final class PlatformCommandManager {
         return split;
     }
 
+    private String[] parseArgs(String input) {
+        return new CommandArgParser(input).parseArgs().toArray(String[]::new);
+    }
+
     @Subscribe
     public void handleCommand(CommandEvent event) {
         Request.reset();
 
         Actor actor = platformManager.createProxyActor(event.getActor());
-        String[] split = commandDetection(event.getArguments().substring(1).split(" "));
+        String[] split = commandDetection(parseArgs(event.getArguments().substring(1)));
 
         // No command found!
         if (!commandManager.containsCommand(split[0])) {

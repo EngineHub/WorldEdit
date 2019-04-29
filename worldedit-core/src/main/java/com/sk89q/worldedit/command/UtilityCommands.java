@@ -492,10 +492,10 @@ public class UtilityCommands {
     )
     @CommandPermissions("worldedit.calc")
     public void calc(Actor actor,
-                     @Arg(desc = "Expression to evaluate")
-                         String input) {
+                     @Arg(desc = "Expression to evaluate", variable = true)
+                         List<String> input) {
         try {
-            Expression expression = Expression.compile(input);
+            Expression expression = Expression.compile(String.join(" ", input));
             double result = expression.evaluate(
                     new double[]{}, WorldEdit.getInstance().getSessionManager().get(actor).getTimeout());
             String formatted = formatter.format(result);

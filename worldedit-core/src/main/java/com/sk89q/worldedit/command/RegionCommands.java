@@ -382,8 +382,8 @@ public class RegionCommands {
     @Logging(ALL)
     public int deform(Player player, LocalSession session, EditSession editSession,
                       @Selection Region region,
-                      @Arg(desc = "The expression to use")
-                          String expression,
+                      @Arg(desc = "The expression to use", variable = true)
+                          List<String> expression,
                       @Switch(name = 'r', desc = "Use the game's coordinate origin")
                           boolean useRawCoords,
                       @Switch(name = 'o', desc = "Use the selection's center as origin")
@@ -410,7 +410,7 @@ public class RegionCommands {
         }
 
         try {
-            final int affected = editSession.deformRegion(region, zero, unit, expression, session.getTimeout());
+            final int affected = editSession.deformRegion(region, zero, unit, String.join(" ", expression), session.getTimeout());
             player.findFreePosition();
             player.print(affected + " block(s) have been deformed.");
             return affected;
