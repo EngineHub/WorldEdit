@@ -88,7 +88,9 @@ public class BrushCommands {
         desc = "Choose the sphere brush"
     )
     @CommandPermissions("worldedit.brush.sphere")
-    public void sphereBrush(Player player, LocalSession session, Pattern fill,
+    public void sphereBrush(Player player, LocalSession session,
+                            @Arg(desc = "The pattern of blocks to set")
+                                Pattern fill,
                             @Arg(desc = "The radius of the sphere", def = "2")
                                 double radius,
                             @Switch(name = 'h', desc = "Create hollow spheres instead")
@@ -114,7 +116,9 @@ public class BrushCommands {
         desc = "Choose the cylinder brush"
     )
     @CommandPermissions("worldedit.brush.cylinder")
-    public void cylinderBrush(Player player, LocalSession session, Pattern fill,
+    public void cylinderBrush(Player player, LocalSession session,
+                              @Arg(desc = "The pattern of blocks to set")
+                                  Pattern fill,
                               @Arg(desc = "The radius of the cylinder", def = "2")
                                   double radius,
                               @Arg(desc = "The height of the cylinder", def = "1")
@@ -152,7 +156,7 @@ public class BrushCommands {
                                    boolean pasteEntities,
                                @Switch(name = 'b', desc = "Paste biomes if available")
                                    boolean pasteBiomes,
-                               @ArgFlag(name = 'm', desc = "Skip blocks matching this mask", def = "")
+                               @ArgFlag(name = 'm', desc = "Skip blocks matching this mask in the clipboard", def = "")
                                    Mask sourceMask) throws WorldEditException {
         ClipboardHolder holder = session.getClipboard();
         Clipboard clipboard = holder.getClipboard();

@@ -177,7 +177,7 @@ public class RegionCommands {
                        @Arg(desc = "The mask representing blocks to replace", def = "")
                            Mask from,
                        @Arg(desc = "The pattern of blocks to replace with")
-                               Pattern to) throws WorldEditException {
+                           Pattern to) throws WorldEditException {
         if (from == null) {
             from = new ExistingBlockMask(editSession);
         }
