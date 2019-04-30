@@ -34,7 +34,7 @@ public class BooleanConverter {
                     .putAll(true, "on", "t", "true", "y", "yes")
                     .build()
             )
-                .errorMessage(arg -> "Not a boolean value" + arg)
+                .errorMessage(arg -> "Not a boolean value: " + arg)
                 .build()
         );
     }

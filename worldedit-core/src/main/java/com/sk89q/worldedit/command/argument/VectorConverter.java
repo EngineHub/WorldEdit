@@ -53,14 +53,14 @@ public class VectorConverter<C, T> implements ArgumentConverter<T> {
         commandManager.registerConverter(Key.of(Vector2.class),
             new VectorConverter<>(
                 doubleConverter,
-                3,
+                2,
                 cmps -> Vector2.at(cmps.get(0), cmps.get(1)),
                 "vector with x and z"
             ));
         commandManager.registerConverter(Key.of(BlockVector3.class),
             new VectorConverter<>(
                 intConverter,
-                2,
+                3,
                 cmps -> BlockVector3.at(cmps.get(0), cmps.get(1), cmps.get(2)),
                 "block vector with x, y, and z"
             ));
