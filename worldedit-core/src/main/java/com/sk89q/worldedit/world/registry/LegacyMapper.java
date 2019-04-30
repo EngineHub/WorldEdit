@@ -29,6 +29,7 @@ import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.extension.input.ParserContext;
 import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.util.gson.VectorAdapter;
+import com.sk89q.worldedit.util.io.ResourceLoader;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.item.ItemType;
 import com.sk89q.worldedit.world.item.ItemTypes;
@@ -74,7 +75,7 @@ public class LegacyMapper {
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.registerTypeAdapter(Vector3.class, new VectorAdapter());
         Gson gson = gsonBuilder.disableHtmlEscaping().create();
-        URL url = LegacyMapper.class.getResource("legacy.json");
+        URL url = ResourceLoader.getResource(LegacyMapper.class, "legacy.json");
         if (url == null) {
             throw new IOException("Could not find legacy.json");
         }

@@ -287,13 +287,10 @@ public class MCEditSchematicReader extends NBTSchematicReader {
             case "ArmorStand": return "armor_stand";
             case "CaveSpider": return "cave_spider";
             case "MinecartChest": return "chest_minecart";
-            case "MinecartCommandBlock": return "commandblock_minecart";
             case "DragonFireball": return "dragon_fireball";
             case "ThrownEgg": return "egg";
-            case "EnderCrystal": return "ender_crystal";
             case "EnderDragon": return "ender_dragon";
             case "ThrownEnderpearl": return "ender_pearl";
-            case "EyeOfEnderSignal": return "eye_of_ender_signal";
             case "FallingSand": return "falling_block";
             case "FireworksRocketEntity": return "fireworks_rocket";
             case "MinecartFurnace": return "furnace_minecart";
@@ -317,9 +314,29 @@ public class MCEditSchematicReader extends NBTSchematicReader {
             case "VillagerGolem": return "villager_golem";
             case "WitherBoss": return "wither";
             case "WitherSkull": return "wither_skull";
-            case "ThrownExpBottle": return "xp_bottle";
-            case "XPOrb": return "xp_orb";
             case "PigZombie": return "zombie_pigman";
+            case "XPOrb":
+            case "xp_orb":
+                return "experience_orb";
+            case "ThrownExpBottle":
+            case "xp_bottle":
+                return "experience_bottle";
+            case "EyeOfEnderSignal":
+            case "eye_of_ender_signal":
+                return "eye_of_ender";
+            case "EnderCrystal":
+            case "ender_crystal":
+                return "end_crystal";
+            case "fireworks_rocket": return "firework_rocket";
+            case "MinecartCommandBlock":
+            case "commandblock_minecart":
+                return "command_block_minecart";
+            case "snowman": return "snow_golem";
+            case "villager_golem": return "iron_golem";
+            case "evocation_fangs": return "evoker_fangs";
+            case "evocation_illager": return "evoker";
+            case "vindication_illager": return "vindicator";
+            case "illusion_illager": return "illusioner";
             default: return id;
         }
     }
