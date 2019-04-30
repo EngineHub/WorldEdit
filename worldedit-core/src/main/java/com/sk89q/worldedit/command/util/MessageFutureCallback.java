@@ -23,7 +23,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.google.common.util.concurrent.FutureCallback;
 import com.sk89q.worldedit.extension.platform.Actor;
-import com.sk89q.worldedit.util.command.parametric.ExceptionConverter;
+import com.sk89q.worldedit.internal.command.exception.ExceptionConverter;
 import org.enginehub.piston.exception.CommandException;
 
 import javax.annotation.Nullable;

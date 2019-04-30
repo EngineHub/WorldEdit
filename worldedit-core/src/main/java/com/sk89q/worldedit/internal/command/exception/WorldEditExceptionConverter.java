@@ -17,7 +17,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.internal.command;
+package com.sk89q.worldedit.internal.command.exception;
 
 import com.google.common.collect.ImmutableList;
 import com.sk89q.worldedit.DisallowedItemException;
@@ -35,8 +35,6 @@ import com.sk89q.worldedit.command.InsufficientArgumentsException;
 import com.sk89q.worldedit.command.tool.InvalidToolBindException;
 import com.sk89q.worldedit.internal.expression.ExpressionException;
 import com.sk89q.worldedit.regions.RegionOperationException;
-import com.sk89q.worldedit.util.command.parametric.ExceptionConverterHelper;
-import com.sk89q.worldedit.util.command.parametric.ExceptionMatch;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.io.file.FileSelectionAbortedException;
 import com.sk89q.worldedit.util.io.file.FilenameResolutionException;

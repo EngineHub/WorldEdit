@@ -24,7 +24,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.sk89q.worldedit.extension.platform.Actor;
-import com.sk89q.worldedit.util.command.parametric.ExceptionConverter;
+import com.sk89q.worldedit.internal.command.exception.ExceptionConverter;
 import com.sk89q.worldedit.util.task.FutureForwardingTask;
 import com.sk89q.worldedit.util.task.Supervisor;
 import com.sk89q.worldedit.world.World;

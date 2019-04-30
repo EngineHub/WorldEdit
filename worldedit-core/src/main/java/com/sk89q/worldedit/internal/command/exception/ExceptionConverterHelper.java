@@ -17,10 +17,9 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.util.command.parametric;
+package com.sk89q.worldedit.internal.command.exception;
 
 import com.google.common.collect.ImmutableList;
-import com.sk89q.minecraft.util.commands.WrappedCommandException;
 import org.enginehub.piston.exception.CommandException;
 import org.enginehub.piston.exception.CommandExecutionException;
 

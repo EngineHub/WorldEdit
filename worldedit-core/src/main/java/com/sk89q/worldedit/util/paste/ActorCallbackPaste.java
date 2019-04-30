@@ -24,7 +24,7 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.sk89q.worldedit.command.util.AsyncCommandHelper;
 import com.sk89q.worldedit.extension.platform.Actor;
-import com.sk89q.worldedit.util.command.parametric.ExceptionConverter;
+import com.sk89q.worldedit.internal.command.exception.ExceptionConverter;
 import com.sk89q.worldedit.util.task.Supervisor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -17,7 +17,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.util.command.parametric;
+package com.sk89q.worldedit.internal.command.exception;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

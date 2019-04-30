@@ -36,8 +36,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.sk89q.worldedit.util.command.CommandUtil.byCleanName;
-import static com.sk89q.worldedit.util.command.CommandUtil.getSubCommands;
+import static com.sk89q.worldedit.internal.command.CommandUtil.byCleanName;
+import static com.sk89q.worldedit.internal.command.CommandUtil.getSubCommands;
 import static java.util.stream.Collectors.toList;
 
 /**

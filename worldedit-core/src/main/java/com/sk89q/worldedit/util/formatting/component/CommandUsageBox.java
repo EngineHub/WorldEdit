@@ -30,8 +30,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static com.sk89q.worldedit.util.command.CommandUtil.byCleanName;
-import static com.sk89q.worldedit.util.command.CommandUtil.getSubCommands;
+import static com.sk89q.worldedit.internal.command.CommandUtil.byCleanName;
+import static com.sk89q.worldedit.internal.command.CommandUtil.getSubCommands;
 
 /**
  * A box to describe usage of a command.
