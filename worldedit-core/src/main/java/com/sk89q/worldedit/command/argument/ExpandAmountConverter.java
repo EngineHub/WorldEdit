@@ -31,8 +31,9 @@ import org.enginehub.piston.inject.InjectedValueAccess;
 import org.enginehub.piston.inject.Key;
 
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static org.enginehub.piston.converter.SuggestionHelper.limitByPrefix;
 
 public class ExpandAmountConverter implements ArgumentConverter<ExpandAmount> {
 
@@ -53,9 +54,9 @@ public class ExpandAmountConverter implements ArgumentConverter<ExpandAmount> {
 
     @Override
     public List<String> getSuggestions(String input) {
-        return Stream.concat(Stream.of("vert"), integerConverter.getSuggestions(input).stream())
-            .filter(x -> x.startsWith(input))
-            .collect(Collectors.toList());
+        return limitByPrefix(Stream.concat(
+            Stream.of("vert"), integerConverter.getSuggestions(input).stream()
+        ), input);
     }
 
     @Override

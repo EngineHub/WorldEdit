@@ -19,54 +19,31 @@
 
 package com.sk89q.worldedit.command.argument;
 
+import com.google.common.collect.ImmutableSetMultimap;
 import com.sk89q.worldedit.regions.factory.CuboidRegionFactory;
 import com.sk89q.worldedit.regions.factory.CylinderRegionFactory;
 import com.sk89q.worldedit.regions.factory.RegionFactory;
 import com.sk89q.worldedit.regions.factory.SphereRegionFactory;
-import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import org.enginehub.piston.CommandManager;
-import org.enginehub.piston.converter.ArgumentConverter;
-import org.enginehub.piston.converter.ConversionResult;
-import org.enginehub.piston.converter.FailedConversion;
-import org.enginehub.piston.converter.SuccessfulConversion;
-import org.enginehub.piston.inject.InjectedValueAccess;
+import org.enginehub.piston.converter.MultiKeyConverter;
 import org.enginehub.piston.inject.Key;
 
-public class RegionFactoryConverter implements ArgumentConverter<RegionFactory> {
+public class RegionFactoryConverter {
 
     public static void register(CommandManager commandManager) {
-        commandManager.registerConverter(Key.of(RegionFactory.class), new RegionFactoryConverter());
+        commandManager.registerConverter(Key.of(RegionFactory.class),
+            MultiKeyConverter.builder(
+                ImmutableSetMultimap.<RegionFactory, String>builder()
+                    .put(new CuboidRegionFactory(), "cuboid")
+                    .put(new SphereRegionFactory(), "sphere")
+                    .putAll(new CylinderRegionFactory(1), "cyl", "cylinder")
+                    .build()
+            )
+                .errorMessage(arg -> "Not a known region type: " + arg)
+                .build()
+        );
     }
 
     private RegionFactoryConverter() {
-    }
-
-    @Override
-    public Component describeAcceptableArguments() {
-        return TextComponent.of("cuboid|sphere|cyl");
-    }
-
-    @Override
-    public ConversionResult<RegionFactory> convert(String argument, InjectedValueAccess context) {
-        try {
-            return SuccessfulConversion.fromSingle(parse(argument));
-        } catch (Exception e) {
-            return FailedConversion.from(e);
-        }
-    }
-
-    private RegionFactory parse(String argument) {
-        switch (argument) {
-            case "cuboid":
-                return new CuboidRegionFactory();
-            case "sphere":
-                return new SphereRegionFactory();
-            case "cyl":
-            case "cylinder":
-                return new CylinderRegionFactory(1); // TODO: Adjustable height
-            default:
-                throw new IllegalArgumentException("Not a known region type: " + argument);
-        }
     }
 }

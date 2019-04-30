@@ -41,6 +41,7 @@ import org.enginehub.piston.inject.Key;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
+import static org.enginehub.piston.converter.SuggestionHelper.limitByPrefix;
 
 public class DirectionConverter implements ArgumentConverter<BlockVector3> {
 
@@ -113,8 +114,6 @@ public class DirectionConverter implements ArgumentConverter<BlockVector3> {
 
     @Override
     public List<String> getSuggestions(String input) {
-        return suggestions.stream()
-            .filter(s -> s.startsWith(input))
-            .collect(toList());
+        return limitByPrefix(suggestions.stream(), input);
     }
 }
