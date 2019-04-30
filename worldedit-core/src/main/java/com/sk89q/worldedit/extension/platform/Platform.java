@@ -21,15 +21,13 @@ package com.sk89q.worldedit.extension.platform;
 
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.entity.Player;
-import com.sk89q.worldedit.util.command.Dispatcher;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.registry.Registries;
 import org.enginehub.piston.CommandManager;
 
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
-
-import javax.annotation.Nullable;
 
 /**
  * Represents a platform that WorldEdit has been implemented for.

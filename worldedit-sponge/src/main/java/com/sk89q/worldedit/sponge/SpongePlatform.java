@@ -30,8 +30,6 @@ import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.extension.platform.MultiUserPlatform;
 import com.sk89q.worldedit.extension.platform.Preference;
 import com.sk89q.worldedit.sponge.config.SpongeConfiguration;
-import com.sk89q.worldedit.util.command.CommandMapping;
-import com.sk89q.worldedit.util.command.Dispatcher;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.registry.Registries;
 import org.enginehub.piston.Command;
@@ -44,14 +42,13 @@ import org.spongepowered.api.entity.EntityType;
 import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.world.Location;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-
-import javax.annotation.Nullable;
 
 import static java.util.stream.Collectors.toList;
 

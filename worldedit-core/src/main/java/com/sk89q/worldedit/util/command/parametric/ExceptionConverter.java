@@ -24,27 +24,26 @@ import org.enginehub.piston.exception.CommandException;
 import org.enginehub.piston.exception.CommandExecutionException;
 
 /**
- * Used to convert a recognized {@link Throwable} into an appropriate 
+ * Used to convert a recognized {@link Throwable} into an appropriate
  * {@link CommandException}.
- * 
- * <p>Methods (when invoked by a {@link ParametricBuilder}-created command) may throw
- * relevant exceptions that are not caught by the command manager, but translate
- * into reasonable exceptions for an application. However, unknown exceptions are
+ *
+ * <p>Methods may throw relevant exceptions that are not caught by the command manager,
+ * but translate into reasonable exceptions for an application. However, unknown exceptions are
  * normally simply wrapped in a {@link CommandExecutionException} and bubbled up. Only
  * normal {@link CommandException}s will be printed correctly, so a converter translates
  * one of these unknown exceptions into an appropriate {@link CommandException}.</p>
- * 
+ *
  * <p>This also allows the code calling the command to not need be aware of these
  * application-specific exceptions, as they will all be converted to
  * {@link CommandException}s that are handled normally.</p>
  */
 public interface ExceptionConverter {
-    
+
     /**
      * Attempt to convert the given throwable into a {@link CommandException}.
-     * 
+     *
      * <p>If the exception is not recognized, then nothing should be thrown.</p>
-     * 
+     *
      * @param t the throwable
      * @throws CommandException a command exception
      */
