@@ -60,6 +60,7 @@ import java.util.Set;
  * @param <T> command sender class
  */
 @SuppressWarnings("ProtectedField")
+@Deprecated
 public abstract class CommandsManager<T> {
 
     protected static final Logger logger =

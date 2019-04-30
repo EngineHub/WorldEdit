@@ -30,6 +30,7 @@ import org.bukkit.help.HelpTopicFactory;
 
 import java.util.Map;
 
+@SuppressWarnings("deprecation")
 public class DynamicPluginCommandHelpTopic extends HelpTopic {
 
     private final DynamicPluginCommand cmd;
