@@ -227,8 +227,8 @@ public class GenerationCommands {
     }
 
     @Command(
-            name = "/hpyramid",
-            desc = "Generate a hollow pyramid"
+        name = "/hpyramid",
+        desc = "Generate a hollow pyramid"
     )
     @CommandPermissions("worldedit.generation.pyramid")
     @Logging(PLACEMENT)

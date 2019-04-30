@@ -19,8 +19,6 @@
 
 package com.sk89q.worldedit.command;
 
-import static com.sk89q.worldedit.command.util.Logging.LogMode.REGION;
-
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
@@ -58,6 +56,8 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import static com.sk89q.worldedit.command.util.Logging.LogMode.REGION;
 
 /**
  * Implements biome-related commands such as "/biomelist".
@@ -97,9 +97,9 @@ public class BiomeCommands {
     )
     @CommandPermissions("worldedit.biome.info")
     public void biomeInfo(Player player, LocalSession session,
-                          @Switch(name = 't', desc="Use the block you are looking at.")
+                          @Switch(name = 't', desc = "Use the block you are looking at.")
                               boolean useLineOfSight,
-                          @Switch(name = 'p', desc="Use the block you are currently in.")
+                          @Switch(name = 'p', desc = "Use the block you are currently in.")
                               boolean usePosition) throws WorldEditException {
         BiomeRegistry biomeRegistry = WorldEdit.getInstance().getPlatformManager()
                 .queryCapability(Capability.GAME_HOOKS).getRegistries().getBiomeRegistry();

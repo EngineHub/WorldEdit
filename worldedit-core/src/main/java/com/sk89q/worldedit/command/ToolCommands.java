@@ -137,8 +137,8 @@ public class ToolCommands {
     }
 
     @Command(
-            name = "deltree",
-            desc = "Floating tree remover tool"
+        name = "deltree",
+        desc = "Floating tree remover tool"
     )
     @CommandPermissions("worldedit.tool.deltree")
     public void deltree(Player player, LocalSession session) throws WorldEditException {
@@ -150,8 +150,8 @@ public class ToolCommands {
     }
 
     @Command(
-            name = "farwand",
-            desc = "Wand at a distance tool"
+        name = "farwand",
+        desc = "Wand at a distance tool"
     )
     @CommandPermissions("worldedit.tool.farwand")
     public void farwand(Player player, LocalSession session) throws WorldEditException {

@@ -90,7 +90,7 @@ public class MobSpawnerBlock extends BaseBlock {
 
     /**
      * Get the spawn delay.
-     * 
+     *
      * @return the delay
      */
     public short getDelay() {
@@ -99,13 +99,13 @@ public class MobSpawnerBlock extends BaseBlock {
 
     /**
      * Set the spawn delay.
-     * 
+     *
      * @param delay the delay to set
      */
     public void setDelay(short delay) {
         this.delay = delay;
     }
-    
+
     @Override
     public boolean hasNbtData() {
         return true;
@@ -208,7 +208,7 @@ public class MobSpawnerBlock extends BaseBlock {
             this.spawnCount = spawnCountTag.getValue();
         }
         if (spawnRangeTag != null) {
-            this.spawnRange =spawnRangeTag.getValue();
+            this.spawnRange = spawnRangeTag.getValue();
         }
         if (minSpawnDelayTag != null) {
             this.minSpawnDelay = minSpawnDelayTag.getValue();

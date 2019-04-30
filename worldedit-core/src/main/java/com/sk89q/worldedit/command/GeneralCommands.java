@@ -223,9 +223,9 @@ public class GeneralCommands {
                            @Arg(desc = "Item query")
                                String query,
                            @Switch(name = 'b', desc = "Only search for blocks")
-                                   boolean blocksOnly,
+                               boolean blocksOnly,
                            @Switch(name = 'i', desc = "Only search for items")
-                                   boolean itemsOnly) throws WorldEditException {
+                               boolean itemsOnly) throws WorldEditException {
         ItemType type = ItemTypes.get(query);
 
         if (type != null) {
