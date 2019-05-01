@@ -19,9 +19,10 @@
 
 package com.sk89q.worldedit.world.gamemode;
 
+import com.sk89q.worldedit.registry.Keyed;
 import com.sk89q.worldedit.registry.Registry;
 
-public class GameMode {
+public class GameMode implements Keyed {
 
     public static final Registry<GameMode> REGISTRY = new Registry<>("game mode");
 
@@ -31,6 +32,7 @@ public class GameMode {
         this.id = id;
     }
 
+    @Override
     public String getId() {
         return this.id;
     }

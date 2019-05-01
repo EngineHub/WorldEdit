@@ -23,7 +23,6 @@ import javax.annotation.Nullable;
 
 public class GameModes {
 
-    public static final GameMode NOT_SET = register("");
     public static final GameMode SURVIVAL = register("survival");
     public static final GameMode CREATIVE = register("creative");
     public static final GameMode ADVENTURE = register("adventure");
@@ -40,7 +39,8 @@ public class GameModes {
         return GameMode.REGISTRY.register(gameMode.getId(), gameMode);
     }
 
-    public static @Nullable GameMode get(final String id) {
+    @Nullable
+    public static GameMode get(final String id) {
         return GameMode.REGISTRY.get(id);
     }
 

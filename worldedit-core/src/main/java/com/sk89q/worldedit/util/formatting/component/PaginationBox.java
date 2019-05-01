@@ -34,6 +34,7 @@ public abstract class PaginationBox extends MessageBox {
 
     private String pageCommand;
     private int componentsPerPage = IDEAL_ROWS_FOR_PLAYER;
+    private int currentPage = -1;
 
     /**
      * Creates a Paginated component
@@ -55,6 +56,10 @@ public abstract class PaginationBox extends MessageBox {
     public void formatForConsole() {
         this.pageCommand = null;
         this.componentsPerPage = 20;
+    }
+
+    protected final int getCurrentPage() {
+        return currentPage;
     }
 
     /**
@@ -80,6 +85,7 @@ public abstract class PaginationBox extends MessageBox {
         if (page < 1 || page > pageCount) {
             throw new InvalidComponentException("Invalid page number.");
         }
+        currentPage = page;
         final int lastComp = Math.min(page * componentsPerPage, getComponentsSize());
         for (int i = (page - 1) * componentsPerPage; i < lastComp; i++) {
             getContents().append(getComponent(i));

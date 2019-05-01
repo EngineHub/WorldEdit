@@ -23,6 +23,7 @@ import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.registry.Category;
+import com.sk89q.worldedit.registry.Keyed;
 import com.sk89q.worldedit.registry.NamespacedRegistry;
 
 import java.util.Set;
@@ -31,7 +32,7 @@ import java.util.Set;
  * A category of items. This is due to the splitting up of
  * items such as wool into separate ids.
  */
-public class ItemCategory extends Category<ItemType> {
+public class ItemCategory extends Category<ItemType> implements Keyed {
 
     public static final NamespacedRegistry<ItemCategory> REGISTRY = new NamespacedRegistry<>("item tag");
 

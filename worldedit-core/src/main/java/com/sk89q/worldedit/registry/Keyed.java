@@ -17,25 +17,16 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.world.registry;
 
-import com.sk89q.worldedit.registry.Category;
-import com.sk89q.worldedit.registry.Keyed;
-
-import java.util.Set;
+package com.sk89q.worldedit.registry;
 
 /**
- * A registry of categories. Minecraft internally calls these 'Tags'.
+ * Represents an objects that can be added to a registry and referenced by an id which is unique within its registry.
  */
-public interface CategoryRegistry<T extends Keyed> {
-
+public interface Keyed {
     /**
-     * Gets a set of values with a given category.
-     *
-     * @param category The category
-     * @return A set of values
+     * The id of this object in the registry. Must be unique, and lowercase. Certain registries (e.g Namespaced ones) may have additional restrictions.
+     * @return an id
      */
-    Set<T> getCategorisedByName(String category);
-
-    Set<T> getAll(final Category<T> category);
+    String getId();
 }

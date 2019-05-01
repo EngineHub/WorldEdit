@@ -24,7 +24,7 @@ import static java.util.Objects.requireNonNull;
 
 import javax.annotation.Nullable;
 
-public final class NamespacedRegistry<V> extends Registry<V> {
+public final class NamespacedRegistry<V extends Keyed> extends Registry<V> {
     private static final String MINECRAFT_NAMESPACE = "minecraft";
     private final String defaultNamespace;
 
@@ -37,10 +37,13 @@ public final class NamespacedRegistry<V> extends Registry<V> {
         this.defaultNamespace = defaultNamespace;
     }
 
-    public @Nullable V get(final String key) {
+    @Nullable
+    @Override
+    public V get(final String key) {
         return super.get(this.orDefaultNamespace(key));
     }
 
+    @Override
     public V register(final String key, final V value) {
         requireNonNull(key, "key");
         checkState(key.indexOf(':') > -1, "key is not namespaced");

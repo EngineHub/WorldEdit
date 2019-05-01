@@ -25,6 +25,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.extension.platform.Capability;
+import com.sk89q.worldedit.registry.Keyed;
 import com.sk89q.worldedit.registry.NamespacedRegistry;
 import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.world.item.ItemType;
@@ -41,7 +42,7 @@ import java.util.function.Supplier;
 
 import javax.annotation.Nullable;
 
-public class BlockType {
+public class BlockType implements Keyed {
 
     public static final NamespacedRegistry<BlockType> REGISTRY = new NamespacedRegistry<>("block type");
 
@@ -91,6 +92,7 @@ public class BlockType {
      *
      * @return The id
      */
+    @Override
     public String getId() {
         return this.id;
     }

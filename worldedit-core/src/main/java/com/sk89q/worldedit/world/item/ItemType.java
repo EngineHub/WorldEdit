@@ -21,13 +21,14 @@ package com.sk89q.worldedit.world.item;
 
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.extension.platform.Capability;
+import com.sk89q.worldedit.registry.Keyed;
 import com.sk89q.worldedit.registry.NamespacedRegistry;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.block.BlockTypes;
 
 import javax.annotation.Nullable;
 
-public class ItemType {
+public class ItemType implements Keyed {
 
     public static final NamespacedRegistry<ItemType> REGISTRY = new NamespacedRegistry<>("item type");
 
@@ -41,6 +42,7 @@ public class ItemType {
         this.id = id;
     }
 
+    @Override
     public String getId() {
         return this.id;
     }

@@ -20,6 +20,7 @@
 package com.sk89q.worldedit.command.argument;
 
 import com.google.common.collect.ImmutableList;
+import com.sk89q.worldedit.registry.Keyed;
 import com.sk89q.worldedit.registry.Registry;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
@@ -46,7 +47,7 @@ import java.util.List;
 
 import static org.enginehub.piston.converter.SuggestionHelper.limitByPrefix;
 
-public class RegistryConverter<V> implements ArgumentConverter<V> {
+public final class RegistryConverter<V extends Keyed> implements ArgumentConverter<V> {
 
     @SuppressWarnings("unchecked")
     public static void register(CommandManager commandManager) {
@@ -62,18 +63,18 @@ public class RegistryConverter<V> implements ArgumentConverter<V> {
             GameMode.class,
             WeatherType.class
         ).stream()
-            .map(c -> (Class<Object>) c)
+            .map(c -> (Class<Keyed>) c)
             .forEach(registryType ->
                 commandManager.registerConverter(Key.of(registryType), from(registryType))
             );
     }
 
     @SuppressWarnings("unchecked")
-    private static <V> RegistryConverter<V> from(Class<V> registryType) {
+    private static <V extends Keyed> RegistryConverter<V> from(Class<Keyed> registryType) {
         try {
             Field registryField = registryType.getDeclaredField("REGISTRY");
             Registry<V> registry = (Registry<V>) registryField.get(null);
-            return new RegistryConverter<>(registryType, registry);
+            return new RegistryConverter<>(registry);
         } catch (NoSuchFieldException e) {
             throw new IllegalArgumentException("Not a registry-backed type: " + registryType.getName());
         } catch (IllegalAccessException e) {
@@ -84,7 +85,7 @@ public class RegistryConverter<V> implements ArgumentConverter<V> {
     private final Registry<V> registry;
     private final TextComponent choices;
 
-    private RegistryConverter(Class<V> clazz, Registry<V> registry) {
+    private RegistryConverter(Registry<V> registry) {
         this.registry = registry;
         this.choices = TextComponent.of("any " + registry.getName());
     }

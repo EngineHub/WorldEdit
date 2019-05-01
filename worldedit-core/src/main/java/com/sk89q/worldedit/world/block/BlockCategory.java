@@ -22,6 +22,7 @@ package com.sk89q.worldedit.world.block;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.registry.Category;
+import com.sk89q.worldedit.registry.Keyed;
 import com.sk89q.worldedit.registry.NamespacedRegistry;
 
 import java.util.Set;
@@ -30,7 +31,7 @@ import java.util.Set;
  * A category of blocks. This is due to the splitting up of
  * blocks such as wool into separate ids.
  */
-public class BlockCategory extends Category<BlockType> {
+public class BlockCategory extends Category<BlockType> implements Keyed {
 
     public static final NamespacedRegistry<BlockCategory> REGISTRY = new NamespacedRegistry<>("block tag");
 

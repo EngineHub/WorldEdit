@@ -19,9 +19,10 @@
 
 package com.sk89q.worldedit.world.weather;
 
+import com.sk89q.worldedit.registry.Keyed;
 import com.sk89q.worldedit.registry.Registry;
 
-public class WeatherType {
+public class WeatherType implements Keyed {
 
     public static final Registry<WeatherType> REGISTRY = new Registry<>("weather type");
 
@@ -31,6 +32,7 @@ public class WeatherType {
         this.id = id;
     }
 
+    @Override
     public String getId() {
         return this.id;
     }
