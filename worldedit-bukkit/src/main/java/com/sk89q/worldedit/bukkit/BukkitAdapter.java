@@ -53,6 +53,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
@@ -278,7 +279,7 @@ public class BukkitAdapter {
         if (!itemType.getId().startsWith("minecraft:")) {
             throw new IllegalArgumentException("Bukkit only supports Minecraft items");
         }
-        return Material.getMaterial(itemType.getId().substring(10).toUpperCase());
+        return Material.getMaterial(itemType.getId().substring(10).toUpperCase(Locale.ROOT));
     }
 
     /**
@@ -292,7 +293,7 @@ public class BukkitAdapter {
         if (!blockType.getId().startsWith("minecraft:")) {
             throw new IllegalArgumentException("Bukkit only supports Minecraft blocks");
         }
-        return Material.getMaterial(blockType.getId().substring(10).toUpperCase());
+        return Material.getMaterial(blockType.getId().substring(10).toUpperCase(Locale.ROOT));
     }
 
     /**
@@ -303,7 +304,7 @@ public class BukkitAdapter {
      */
     public static GameMode adapt(org.bukkit.GameMode gameMode) {
         checkNotNull(gameMode);
-        return GameModes.get(gameMode.name().toLowerCase());
+        return GameModes.get(gameMode.name().toLowerCase(Locale.ROOT));
     }
 
     /**
@@ -313,7 +314,7 @@ public class BukkitAdapter {
      * @return WorldEdit BiomeType
      */
     public static BiomeType adapt(Biome biome) {
-        return BiomeTypes.get(biome.name().toLowerCase());
+        return BiomeTypes.get(biome.name().toLowerCase(Locale.ROOT));
     }
 
     public static Biome adapt(BiomeType biomeType) {
@@ -321,7 +322,7 @@ public class BukkitAdapter {
             throw new IllegalArgumentException("Bukkit only supports vanilla biomes");
         }
         try {
-            return Biome.valueOf(biomeType.getId().substring(10).toUpperCase());
+            return Biome.valueOf(biomeType.getId().substring(10).toUpperCase(Locale.ROOT));
         } catch (IllegalArgumentException e) {
             return null;
         }
@@ -334,7 +335,7 @@ public class BukkitAdapter {
      * @return WorldEdit EntityType
      */
     public static EntityType adapt(org.bukkit.entity.EntityType entityType) {
-        return EntityTypes.get(entityType.getName().toLowerCase());
+        return EntityTypes.get(entityType.getName().toLowerCase(Locale.ROOT));
     }
 
     public static org.bukkit.entity.EntityType adapt(EntityType entityType) {

@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -159,8 +160,8 @@ public class FlatFilePermissionsResolver implements PermissionsResolver {
                         }
                     }
 
-                    userPermissionsCache.put(key.toLowerCase(), permsCache);
-                    userGroups.put(key.toLowerCase(), new HashSet<>(Arrays.asList(groups)));
+                    userPermissionsCache.put(key.toLowerCase(Locale.ROOT), permsCache);
+                    userGroups.put(key.toLowerCase(Locale.ROOT), new HashSet<>(Arrays.asList(groups)));
                 }
             }
         } catch (IOException e) {
@@ -184,7 +185,7 @@ public class FlatFilePermissionsResolver implements PermissionsResolver {
             }
         }
 
-        Set<String> perms = userPermissionsCache.get(player.toLowerCase());
+        Set<String> perms = userPermissionsCache.get(player.toLowerCase(Locale.ROOT));
         if (perms == null) {
             return defaultPermissionsCache.contains(permission)
                     || defaultPermissionsCache.contains("*");
@@ -201,13 +202,13 @@ public class FlatFilePermissionsResolver implements PermissionsResolver {
 
     @Override
     public boolean inGroup(String player, String group) {
-        Set<String> groups = userGroups.get(player.toLowerCase());
+        Set<String> groups = userGroups.get(player.toLowerCase(Locale.ROOT));
         return groups != null && groups.contains(group);
     }
 
     @Override
     public String[] getGroups(String player) {
-        Set<String> groups = userGroups.get(player.toLowerCase());
+        Set<String> groups = userGroups.get(player.toLowerCase(Locale.ROOT));
         if (groups == null) {
             return new String[0];
         }

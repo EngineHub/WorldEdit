@@ -21,6 +21,7 @@ package com.sk89q.worldedit.blocks;
 
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.annotation.Nullable;
@@ -84,7 +85,7 @@ public enum ClothColor {
      */
     @Nullable
     public static ClothColor lookup(String name) {
-        return lookup.get(name.toLowerCase());
+        return lookup.get(name.toLowerCase(Locale.ROOT));
     }
 
     /**

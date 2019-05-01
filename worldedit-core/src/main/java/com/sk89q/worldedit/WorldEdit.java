@@ -72,6 +72,7 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import static com.sk89q.worldedit.event.platform.Interaction.HIT;
@@ -403,7 +404,7 @@ public final class WorldEdit {
      * @throws UnknownDirectionException thrown if the direction is not known
      */
     public BlockVector3 getDirection(Player player, String dirStr) throws UnknownDirectionException {
-        dirStr = dirStr.toLowerCase();
+        dirStr = dirStr.toLowerCase(Locale.ROOT);
 
         final Direction dir = getPlayerDirection(player, dirStr);
 
@@ -424,7 +425,7 @@ public final class WorldEdit {
      * @throws UnknownDirectionException thrown if the direction is not known
      */
     public BlockVector3 getDiagonalDirection(Player player, String dirStr) throws UnknownDirectionException {
-        dirStr = dirStr.toLowerCase();
+        dirStr = dirStr.toLowerCase(Locale.ROOT);
 
         final Direction dir = getPlayerDirection(player, dirStr);
 

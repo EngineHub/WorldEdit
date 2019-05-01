@@ -19,6 +19,8 @@
 
 package com.sk89q.jnbt;
 
+import java.util.Locale;
+
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
@@ -48,7 +50,7 @@ public class LongArrayTag extends Tag {
     public String toString() {
         StringBuilder hex = new StringBuilder();
         for (long b : value) {
-            String hexDigits = Long.toHexString(b).toUpperCase();
+            String hexDigits = Long.toHexString(b).toUpperCase(Locale.ROOT);
             if (hexDigits.length() == 1) {
                 hex.append("0");
             }

@@ -123,6 +123,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.logging.FileHandler;
@@ -425,7 +426,7 @@ public final class PlatformCommandManager {
             split = newSplit;
         }
 
-        String searchCmd = split[0].toLowerCase();
+        String searchCmd = split[0].toLowerCase(Locale.ROOT);
 
         // Try to detect the command
         if (!commandManager.containsCommand(searchCmd)) {

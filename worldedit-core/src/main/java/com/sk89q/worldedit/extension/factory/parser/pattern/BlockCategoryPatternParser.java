@@ -30,6 +30,7 @@ import com.sk89q.worldedit.world.block.BlockCategory;
 import com.sk89q.worldedit.world.block.BlockType;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -49,7 +50,7 @@ public class BlockCategoryPatternParser extends InputParser<Pattern> {
         if (!input.startsWith("##")) {
             return null;
         }
-        String tag = input.substring(2).toLowerCase();
+        String tag = input.substring(2).toLowerCase(Locale.ROOT);
         boolean anyState = false;
         if (tag.startsWith("*")) {
             tag = tag.substring(1);

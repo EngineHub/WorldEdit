@@ -49,6 +49,7 @@ import com.sk89q.worldedit.world.block.FuzzyBlockState;
 import com.sk89q.worldedit.world.registry.LegacyMapper;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -107,7 +108,7 @@ public class DefaultBlockParser extends InputParser<BaseBlock> {
      * @return Mapped string
      */
     private String woolMapper(String string) {
-        switch (string.toLowerCase()) {
+        switch (string.toLowerCase(Locale.ROOT)) {
             case "white":
                 return BlockTypes.WHITE_WOOL.getId();
             case "black":
@@ -272,7 +273,7 @@ public class DefaultBlockParser extends InputParser<BaseBlock> {
                 blockStates.putAll(blockInHand.getStates());
             } else {
                 // Attempt to lookup a block from ID or name.
-                blockType = BlockTypes.get(typeString.toLowerCase());
+                blockType = BlockTypes.get(typeString.toLowerCase(Locale.ROOT));
 
                 if (blockType == null) {
                     throw new NoMatchException("Does not match a valid block type: '" + input + "'");
@@ -323,7 +324,7 @@ public class DefaultBlockParser extends InputParser<BaseBlock> {
             if (blockAndExtraData.length > 1) {
                 String mobName = blockAndExtraData[1];
                 for (MobType mobType : MobType.values()) {
-                    if (mobType.getName().toLowerCase().equals(mobName.toLowerCase())) {
+                    if (mobType.getName().toLowerCase(Locale.ROOT).equals(mobName.toLowerCase(Locale.ROOT))) {
                         mobName = mobType.getName();
                         break;
                     }

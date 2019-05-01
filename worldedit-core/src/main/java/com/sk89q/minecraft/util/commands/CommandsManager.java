@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -254,7 +255,7 @@ public abstract class CommandsManager<T> {
      * @return true if the command exists
      */
     public boolean hasCommand(String command) {
-        return commands.get(null).containsKey(command.toLowerCase());
+        return commands.get(null).containsKey(command.toLowerCase(Locale.ROOT));
     }
 
     /**
@@ -434,7 +435,7 @@ public abstract class CommandsManager<T> {
         String cmdName = args[level];
 
         Map<String, Method> map = commands.get(parent);
-        Method method = map.get(cmdName.toLowerCase());
+        Method method = map.get(cmdName.toLowerCase(Locale.ROOT));
 
         if (method == null) {
             if (parent == null) { // Root
