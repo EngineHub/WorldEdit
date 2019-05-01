@@ -19,23 +19,26 @@
 
 package com.sk89q.worldedit.command;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.sk89q.minecraft.util.commands.Logging.LogMode.POSITION;
-
-import com.sk89q.minecraft.util.commands.Command;
-import com.sk89q.minecraft.util.commands.CommandContext;
-import com.sk89q.minecraft.util.commands.CommandPermissions;
-import com.sk89q.minecraft.util.commands.Logging;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.command.util.CommandPermissions;
+import com.sk89q.worldedit.command.util.CommandPermissionsConditionGenerator;
+import com.sk89q.worldedit.command.util.Logging;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.util.Location;
-import com.sk89q.worldedit.util.command.parametric.Optional;
+import org.enginehub.piston.annotation.Command;
+import org.enginehub.piston.annotation.CommandContainer;
+import org.enginehub.piston.annotation.param.Arg;
+import org.enginehub.piston.annotation.param.Switch;
+
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.sk89q.worldedit.command.util.Logging.LogMode.POSITION;
 
 /**
  * Commands for moving the player around.
  */
+@CommandContainer(superTypes = CommandPermissionsConditionGenerator.Registration.class)
 public class NavigationCommands {
 
     private final WorldEdit worldEdit;
@@ -51,80 +54,78 @@ public class NavigationCommands {
     }
 
     @Command(
-        aliases = { "unstuck", "!" },
-        usage = "",
-        desc = "Escape from being stuck inside a block",
-        min = 0,
-        max = 0
+        name = "unstuck",
+        aliases = { "!" },
+        desc = "Escape from being stuck inside a block"
     )
     @CommandPermissions("worldedit.navigation.unstuck")
     public void unstuck(Player player) throws WorldEditException {
-        player.print("There you go!");
         player.findFreePosition();
+        player.print("There you go!");
     }
 
     @Command(
-        aliases = { "ascend", "asc" },
-        usage = "[# of levels]",
-        desc = "Go up a floor",
-        min = 0,
-        max = 1
+        name = "ascend",
+        aliases = { "asc" },
+        desc = "Go up a floor"
     )
     @CommandPermissions("worldedit.navigation.ascend")
-    public void ascend(Player player, @Optional("1") int levelsToAscend) throws WorldEditException {
+    public void ascend(Player player,
+                       @Arg(desc = "# of levels to ascend", def = "1")
+                           int levels) throws WorldEditException {
         int ascentLevels = 0;
         while (player.ascendLevel()) {
             ++ascentLevels;
-            if (levelsToAscend == ascentLevels) {
+            if (levels == ascentLevels) {
                 break;
             }
         }
         if (ascentLevels == 0) {
             player.printError("No free spot above you found.");
         } else {
-            player.print((ascentLevels != 1) ? "Ascended " + Integer.toString(ascentLevels) + " levels." : "Ascended a level.");
+            player.print((ascentLevels != 1) ? "Ascended " + ascentLevels + " levels." : "Ascended a level.");
         }
     }
 
     @Command(
-        aliases = { "descend", "desc" },
-        usage = "[# of floors]",
-        desc = "Go down a floor",
-        min = 0,
-        max = 1
+        name = "descend",
+        aliases = { "desc" },
+        desc = "Go down a floor"
     )
     @CommandPermissions("worldedit.navigation.descend")
-    public void descend(Player player, @Optional("1") int levelsToDescend) throws WorldEditException {
+    public void descend(Player player,
+                        @Arg(desc = "# of levels to descend", def = "1")
+                            int levels) throws WorldEditException {
         int descentLevels = 0;
         while (player.descendLevel()) {
             ++descentLevels;
-            if (levelsToDescend == descentLevels) {
+            if (levels == descentLevels) {
                 break;
             }
         }
         if (descentLevels == 0) {
             player.printError("No free spot below you found.");
         } else {
-            player.print((descentLevels != 1) ? "Descended " + Integer.toString(descentLevels) + " levels." : "Descended a level.");
+            player.print((descentLevels != 1) ? "Descended " + descentLevels + " levels." : "Descended a level.");
         }
     }
 
     @Command(
-        aliases = { "ceil" },
-        usage = "[clearance]",
-        desc = "Go to the celing",
-        flags = "fg",
-        min = 0,
-        max = 1
+        name = "ceil",
+        desc = "Go to the ceiling"
     )
     @CommandPermissions("worldedit.navigation.ceiling")
     @Logging(POSITION)
-    public void ceiling(Player player, CommandContext args) throws WorldEditException {
+    public void ceiling(Player player,
+                        @Arg(desc = "# of blocks to leave above you", def = "0")
+                            int clearance,
+                        @Switch(name = 'f', desc = "Force using flight to keep you still")
+                            boolean forceFlight,
+                        @Switch(name = 'g', desc = "Force using glass to keep you still")
+                            boolean forceGlass) throws WorldEditException {
+        clearance = Math.max(0, clearance);
 
-        final int clearance = args.argsLength() > 0 ?
-            Math.max(0, args.getInteger(0)) : 0;
-
-        final boolean alwaysGlass = getAlwaysGlass(args);
+        boolean alwaysGlass = getAlwaysGlass(forceFlight, forceGlass);
         if (player.ascendToCeiling(clearance, alwaysGlass)) {
             player.print("Whoosh!");
         } else {
@@ -133,11 +134,8 @@ public class NavigationCommands {
     }
 
     @Command(
-        aliases = { "thru" },
-        usage = "",
-        desc = "Passthrough walls",
-        min = 0,
-        max = 0
+        name = "thru",
+        desc = "Pass through walls"
     )
     @CommandPermissions("worldedit.navigation.thru.command")
     public void thru(Player player) throws WorldEditException {
@@ -149,11 +147,9 @@ public class NavigationCommands {
     }
 
     @Command(
-        aliases = { "jumpto", "j" },
-        usage = "",
-        desc = "Teleport to a location",
-        min = 0,
-        max = 0
+        name = "jumpto",
+        aliases = { "j" },
+        desc = "Teleport to a location"
     )
     @CommandPermissions("worldedit.navigation.jumpto.command")
     public void jumpTo(Player player) throws WorldEditException {
@@ -168,19 +164,19 @@ public class NavigationCommands {
     }
 
     @Command(
-        aliases = { "up" },
-        usage = "<block>",
-        desc = "Go upwards some distance",
-        flags = "fg",
-        min = 1,
-        max = 1
+        name = "up",
+        desc = "Go upwards some distance"
     )
     @CommandPermissions("worldedit.navigation.up")
     @Logging(POSITION)
-    public void up(Player player, CommandContext args) throws WorldEditException {
-        final int distance = args.getInteger(0);
-
-        final boolean alwaysGlass = getAlwaysGlass(args);
+    public void up(Player player,
+                   @Arg(desc = "Distance to go upwards")
+                       int distance,
+                   @Switch(name = 'f', desc = "Force using flight to keep you still")
+                       boolean forceFlight,
+                   @Switch(name = 'g', desc = "Force using glass to keep you still")
+                       boolean forceGlass) throws WorldEditException {
+        boolean alwaysGlass = getAlwaysGlass(forceFlight, forceGlass);
         if (player.ascendUpwards(distance, alwaysGlass)) {
             player.print("Whoosh!");
         } else {
@@ -190,15 +186,13 @@ public class NavigationCommands {
 
     /**
      * Helper function for /up and /ceil.
-     * 
-     * @param args The {@link CommandContext} to extract the flags from.
+     *
+     * @param forceFlight if flight should be used, rather than the default config option
+     * @param forceGlass if glass should always be placed, rather than the default config option
      * @return true, if glass should always be put under the player
      */
-    private boolean getAlwaysGlass(CommandContext args) {
+    private boolean getAlwaysGlass(boolean forceFlight, boolean forceGlass) {
         final LocalConfiguration config = worldEdit.getConfiguration();
-
-        final boolean forceFlight = args.hasFlag('f');
-        final boolean forceGlass = args.hasFlag('g');
 
         return forceGlass || (config.navigationUseGlass && !forceFlight);
     }

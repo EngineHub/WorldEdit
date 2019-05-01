@@ -78,6 +78,11 @@ subprojects {
         maven { url "http://maven.sk89q.com/repo/" }
         maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
     }
+    configurations.all {
+        resolutionStrategy {
+            cacheChangingModulesFor 5, 'minutes'
+        }
+    }
 }
 
 configure(['core', 'bukkit', 'forge', 'sponge'].collect { project(":worldedit-$it") }) {

@@ -19,14 +19,13 @@
 
 package com.sk89q.worldedit.forge;
 
+import com.sk89q.worldedit.command.util.PermissionCondition;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.AbstractPlatform;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.extension.platform.MultiUserPlatform;
 import com.sk89q.worldedit.extension.platform.Preference;
-import com.sk89q.worldedit.util.command.CommandMapping;
-import com.sk89q.worldedit.util.command.Dispatcher;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.registry.Registries;
 import net.minecraft.command.Commands;
@@ -36,13 +35,19 @@ import net.minecraft.server.management.PlayerList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
+import org.enginehub.piston.Command;
+import org.enginehub.piston.CommandManager;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
+import static java.util.stream.Collectors.toList;
 
 class ForgePlatform extends AbstractPlatform implements MultiUserPlatform {
 
@@ -123,16 +128,17 @@ class ForgePlatform extends AbstractPlatform implements MultiUserPlatform {
     }
 
     @Override
-    public void registerCommands(Dispatcher dispatcher) {
+    public void registerCommands(CommandManager manager) {
         if (server == null) return;
         Commands mcMan = server.getCommandManager();
 
-        for (final CommandMapping command : dispatcher.getCommands()) {
+        for (Command command : manager.getAllCommands().collect(toList())) {
             CommandWrapper.register(mcMan.getDispatcher(), command);
-            if (command.getDescription().getPermissions().size() > 0) {
-                for (int i = 1; i < command.getDescription().getPermissions().size(); i++) {
-                    ForgeWorldEdit.inst.getPermissionsProvider().registerPermission(command.getDescription().getPermissions().get(i));
-                }
+            Set<String> perms = command.getCondition().as(PermissionCondition.class)
+                .map(PermissionCondition::getPermissions)
+                .orElseGet(Collections::emptySet);
+            if (perms.size() > 0) {
+                perms.forEach(ForgeWorldEdit.inst.getPermissionsProvider()::registerPermission);
             }
         }
     }

@@ -53,5 +53,13 @@
     <!-- <module name="PackageName"/> Unlikely that we would miss this in a PR -->
     <module name="ParameterName"/>
     <!-- <module name="TypeName"/> Unlikely that we would miss this in a PR -->
+    <!-- Validate assignment operators -->
+    <module name="WhitespaceAround">
+      <property name="tokens" value="ASSIGN"/>
+    </module>
+  </module>
+  <!-- Validate that command annotations are formatted correctly -->
+  <module name="RegexpMultiline">
+    <property name="format" value="^( +)@(Arg|Switch|Command)\(.*?\n\1 {5,}"/>
   </module>
 </module>

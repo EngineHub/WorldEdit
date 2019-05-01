@@ -19,7 +19,8 @@
 
 package com.sk89q.worldedit.internal.annotation;
 
-import com.sk89q.worldedit.math.Vector3;
+import com.sk89q.worldedit.math.BlockVector3;
+import org.enginehub.piston.inject.InjectAnnotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -27,12 +28,13 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotates a {@link Vector3} parameter to inject a direction.
+ * Annotates a {@link BlockVector3} parameter to inject a direction.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.PARAMETER)
+@InjectAnnotation
 public @interface Direction {
-    
+
     String AIM = "me";
 
     boolean includeDiagonals() default false;

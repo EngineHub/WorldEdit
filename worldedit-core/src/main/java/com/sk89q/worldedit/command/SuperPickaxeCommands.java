@@ -19,9 +19,6 @@
 
 package com.sk89q.worldedit.command;
 
-import com.sk89q.minecraft.util.commands.Command;
-import com.sk89q.minecraft.util.commands.CommandContext;
-import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
@@ -29,8 +26,14 @@ import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.command.tool.AreaPickaxe;
 import com.sk89q.worldedit.command.tool.RecursivePickaxe;
 import com.sk89q.worldedit.command.tool.SinglePickaxe;
+import com.sk89q.worldedit.command.util.CommandPermissions;
+import com.sk89q.worldedit.command.util.CommandPermissionsConditionGenerator;
 import com.sk89q.worldedit.entity.Player;
+import org.enginehub.piston.annotation.Command;
+import org.enginehub.piston.annotation.CommandContainer;
+import org.enginehub.piston.annotation.param.Arg;
 
+@CommandContainer(superTypes = CommandPermissionsConditionGenerator.Registration.class)
 public class SuperPickaxeCommands {
     private final WorldEdit we;
 
@@ -39,32 +42,26 @@ public class SuperPickaxeCommands {
     }
 
     @Command(
-        aliases = { "single" },
-        usage = "",
-        desc = "Enable the single block super pickaxe mode",
-        min = 0,
-        max = 0
+        name = "single",
+        desc = "Enable the single block super pickaxe mode"
     )
     @CommandPermissions("worldedit.superpickaxe")
     public void single(Player player, LocalSession session) throws WorldEditException {
-
         session.setSuperPickaxe(new SinglePickaxe());
         session.enableSuperPickAxe();
         player.print("Mode changed. Left click with a pickaxe. // to disable.");
     }
 
     @Command(
-        aliases = { "area" },
-        usage = "<radius>",
-        desc = "Enable the area super pickaxe pickaxe mode",
-        min = 1,
-        max = 1
+        name = "area",
+        desc = "Enable the area super pickaxe pickaxe mode"
     )
     @CommandPermissions("worldedit.superpickaxe.area")
-    public void area(Player player, LocalSession session, CommandContext args) throws WorldEditException {
+    public void area(Player player, LocalSession session,
+                     @Arg(desc = "The range of the area pickaxe")
+                         int range) throws WorldEditException {
 
         LocalConfiguration config = we.getConfiguration();
-        int range = args.getInteger(0);
 
         if (range > config.maxSuperPickaxeSize) {
             player.printError("Maximum range: " + config.maxSuperPickaxeSize);
@@ -77,17 +74,16 @@ public class SuperPickaxeCommands {
     }
 
     @Command(
-        aliases = { "recur", "recursive" },
-        usage = "<radius>",
-        desc = "Enable the recursive super pickaxe pickaxe mode",
-        min = 1,
-        max = 1
+        name = "recursive",
+        aliases = { "recur" },
+        desc = "Enable the recursive super pickaxe pickaxe mode"
     )
     @CommandPermissions("worldedit.superpickaxe.recursive")
-    public void recursive(Player player, LocalSession session, CommandContext args) throws WorldEditException {
+    public void recursive(Player player, LocalSession session,
+                          @Arg(desc = "The range of the recursive pickaxe")
+                              double range) throws WorldEditException {
 
         LocalConfiguration config = we.getConfiguration();
-        double range = args.getDouble(0);
 
         if (range > config.maxSuperPickaxeSize) {
             player.printError("Maximum range: " + config.maxSuperPickaxeSize);

@@ -19,23 +19,31 @@
 
 package com.sk89q.worldedit.sponge;
 
-import com.sk89q.worldedit.util.command.CommandMapping;
+import com.sk89q.worldedit.command.util.PermissionCondition;
+import org.enginehub.piston.Command;
 import org.spongepowered.api.command.CommandCallable;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.text.Text;
 
+import java.util.Collections;
 import java.util.Optional;
+import java.util.Set;
+
+import static com.sk89q.worldedit.sponge.SpongeTextAdapter.convert;
 
 public abstract class CommandAdapter implements CommandCallable {
-    private CommandMapping command;
+    private Command command;
 
-    protected CommandAdapter(CommandMapping command) {
+    protected CommandAdapter(Command command) {
         this.command = command;
     }
 
     @Override
     public boolean testPermission(CommandSource source) {
-        for (String perm : command.getDescription().getPermissions()) {
+        Set<String> permissions = command.getCondition().as(PermissionCondition.class)
+            .map(PermissionCondition::getPermissions)
+            .orElseGet(Collections::emptySet);
+        for (String perm : permissions) {
             if (!source.hasPermission(perm)) {
                 return false;
             }
@@ -45,24 +53,18 @@ public abstract class CommandAdapter implements CommandCallable {
 
     @Override
     public Optional<Text> getShortDescription(CommandSource source) {
-        String description = command.getDescription().getDescription();
-        if (description != null && !description.isEmpty()) {
-            return Optional.of(Text.of(description));
-        }
-        return Optional.empty();
+        return Optional.of(command.getDescription())
+            .map(SpongeTextAdapter::convert);
     }
 
     @Override
     public Optional<Text> getHelp(CommandSource source) {
-        String help = command.getDescription().getHelp();
-        if (help != null && !help.isEmpty()) {
-            return Optional.of(Text.of(help));
-        }
-        return Optional.empty();
+        return Optional.of(command.getFullHelp())
+            .map(SpongeTextAdapter::convert);
     }
 
     @Override
     public Text getUsage(CommandSource source) {
-        return Text.of(command.getDescription().getUsage());
+        return convert(command.getUsage());
     }
 }

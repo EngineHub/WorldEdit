@@ -19,21 +19,19 @@
 
 package com.sk89q.worldedit.util.formatting.component;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
-import com.sk89q.minecraft.util.commands.CommandLocals;
-import com.sk89q.worldedit.extension.platform.CommandManager;
-import com.sk89q.worldedit.util.command.CommandCallable;
-import com.sk89q.worldedit.util.command.CommandMapping;
-import com.sk89q.worldedit.util.command.Description;
-import com.sk89q.worldedit.util.command.Dispatcher;
-import com.sk89q.worldedit.util.command.PrimaryAliasComparator;
-import com.sk89q.worldedit.util.formatting.text.Component;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.google.common.collect.Iterables;
+import org.enginehub.piston.Command;
+import org.enginehub.piston.CommandParameters;
+import org.enginehub.piston.util.HelpGenerator;
 
 import javax.annotation.Nullable;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.sk89q.worldedit.internal.command.CommandUtil.byCleanName;
+import static com.sk89q.worldedit.internal.command.CommandUtil.getSubCommands;
 
 /**
  * A box to describe usage of a command.
@@ -43,67 +41,53 @@ public class CommandUsageBox extends TextComponentProducer {
     /**
      * Create a new usage box.
      *
-     * @param command the command to describe
-     * @param commandString the command that was used, such as "/we" or "/brush sphere"
+     * @param commands the commands to describe
+     * @param commandString the commands that were used, such as "/we" or "/brush sphere"
      */
-    public CommandUsageBox(CommandCallable command, String commandString) {
-        this(command, commandString, null);
+    public CommandUsageBox(List<Command> commands, String commandString) throws InvalidComponentException {
+        this(commands, commandString, null);
     }
 
     /**
      * Create a new usage box.
      *
-     * @param command the command to describe
-     * @param commandString the command that was used, such as "/we" or "/brush sphere"
-     * @param locals list of locals to use
+     * @param commands the commands to describe
+     * @param commandString the commands that were used, such as "/we" or "/brush sphere"
+     * @param parameters list of parameters to use
      */
-    public CommandUsageBox(CommandCallable command, String commandString, @Nullable CommandLocals locals) {
-        checkNotNull(command);
+    public CommandUsageBox(List<Command> commands, String commandString, @Nullable CommandParameters parameters) throws InvalidComponentException {
+        checkNotNull(commands);
         checkNotNull(commandString);
-        if (command instanceof Dispatcher) {
-            attachDispatcherUsage((Dispatcher) command, commandString, locals);
+        Map<String, Command> subCommands = getSubCommands(Iterables.getLast(commands));
+        if (subCommands.isEmpty()) {
+            attachCommandUsage(commands, commandString);
         } else {
-            attachCommandUsage(command.getDescription(), commandString);
+            attachSubcommandUsage(subCommands, commandString, parameters);
         }
     }
 
-    private void attachDispatcherUsage(Dispatcher dispatcher, String commandString, @Nullable CommandLocals locals) {
-        CommandListBox box = new CommandListBox("Subcommands");
+    private void attachSubcommandUsage(Map<String, Command> dispatcher, String commandString, @Nullable CommandParameters parameters) throws InvalidComponentException {
+        CommandListBox box = new CommandListBox(commandString.isEmpty() ? "Help" : "Subcommands:" + commandString,
+                "//help %page%" + (commandString.isEmpty() ? "" : " " + commandString));
         String prefix = !commandString.isEmpty() ? commandString + " " : "";
 
-        List<CommandMapping> list = new ArrayList<>(dispatcher.getCommands());
-        list.sort(new PrimaryAliasComparator(CommandManager.COMMAND_CLEAN_PATTERN));
+        List<Command> list = dispatcher.values().stream()
+            .sorted(byCleanName())
+            .collect(Collectors.toList());
 
-        for (CommandMapping mapping : list) {
-            if (locals == null || mapping.getCallable().testPermission(locals)) {
-                box.appendCommand(prefix + mapping.getPrimaryAlias(), mapping.getDescription().getDescription());
+        for (Command mapping : list) {
+            if (parameters == null || mapping.getCondition().satisfied(parameters)) {
+                box.appendCommand(prefix + mapping.getName(), mapping.getDescription());
             }
         }
 
-        append(box.create());
+        append(box.create(1));
     }
 
-    private void attachCommandUsage(Description description, String commandString) {
-        TextComponentProducer contents = new TextComponentProducer();
+    private void attachCommandUsage(List<Command> commands, String commandString) {
+        MessageBox box = new MessageBox("Help for " + commandString,
+            new TextComponentProducer().append(HelpGenerator.create(commands).getFullHelp()));
 
-        if (description.getUsage() != null) {
-            contents.append(LabelFormat.wrap("Usage: "));
-            contents.append(description.getUsage());
-        } else {
-            contents.append(SubtleFormat.wrap("Usage information is not available."));
-        }
-
-        contents.append(Component.newline());
-
-        if (description.getHelp() != null) {
-            contents.append(description.getHelp());
-        } else if (description.getDescription() != null) {
-            contents.append(description.getDescription());
-        } else {
-            contents.append(SubtleFormat.wrap("No further help is available."));
-        }
-
-        MessageBox box = new MessageBox("Help for " + commandString, contents);
         append(box.create());
     }
 

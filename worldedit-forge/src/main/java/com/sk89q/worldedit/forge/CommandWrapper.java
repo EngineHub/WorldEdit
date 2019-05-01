@@ -19,15 +19,17 @@
 
 package com.sk89q.worldedit.forge;
 
+import com.google.common.collect.ImmutableList;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.mojang.brigadier.tree.LiteralCommandNode;
-import com.sk89q.worldedit.util.command.CommandMapping;
+import com.sk89q.worldedit.command.util.PermissionCondition;
 import net.minecraft.command.CommandSource;
 import net.minecraft.entity.player.EntityPlayerMP;
 
+import java.util.Set;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 import static net.minecraft.command.Commands.literal;
 
@@ -35,11 +37,14 @@ public final class CommandWrapper {
     private CommandWrapper() {
     }
 
-    public static void register(CommandDispatcher<CommandSource> dispatcher, CommandMapping command) {
-        for (String alias : command.getAllAliases()) {
+    public static void register(CommandDispatcher<CommandSource> dispatcher, org.enginehub.piston.Command command) {
+        ImmutableList.Builder<String> aliases = ImmutableList.builder();
+        aliases.add(command.getName()).addAll(command.getAliases());
+        for (String alias : aliases.build()) {
             LiteralArgumentBuilder<CommandSource> base = literal(alias)
                 .executes(FAKE_COMMAND);
-            if (command.getDescription().getPermissions().size() > 0) {
+            if (command.getCondition().as(PermissionCondition.class)
+                .filter(p -> p.getPermissions().size() > 0).isPresent()) {
                 base.requires(requirementsFor(command));
             }
             dispatcher.register(base);
@@ -54,11 +59,14 @@ public final class CommandWrapper {
         return 1;
     };
 
-    private static Predicate<CommandSource> requirementsFor(CommandMapping mapping) {
+    private static Predicate<CommandSource> requirementsFor(org.enginehub.piston.Command mapping) {
         return ctx -> {
             ForgePermissionsProvider permsProvider = ForgeWorldEdit.inst.getPermissionsProvider();
             return ctx.getEntity() instanceof EntityPlayerMP &&
-                mapping.getDescription().getPermissions().stream()
+                mapping.getCondition().as(PermissionCondition.class)
+                    .map(PermissionCondition::getPermissions)
+                    .map(Set::stream)
+                    .orElseGet(Stream::empty)
                     .allMatch(perm -> permsProvider.hasPermission(
                         (EntityPlayerMP) ctx.getEntity(), perm
                     ));

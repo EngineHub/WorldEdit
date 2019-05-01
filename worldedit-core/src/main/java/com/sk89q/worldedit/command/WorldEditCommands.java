@@ -20,12 +20,12 @@
 package com.sk89q.worldedit.command;
 
 import com.google.common.io.Files;
-import com.sk89q.minecraft.util.commands.Command;
-import com.sk89q.minecraft.util.commands.CommandContext;
-import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.command.util.CommandPermissions;
+import com.sk89q.worldedit.command.util.CommandPermissionsConditionGenerator;
+import com.sk89q.worldedit.command.util.PrintCommandHelp;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.event.platform.ConfigurationLoadEvent;
 import com.sk89q.worldedit.extension.platform.Actor;
@@ -36,34 +36,40 @@ import com.sk89q.worldedit.util.paste.ActorCallbackPaste;
 import com.sk89q.worldedit.util.report.ConfigReport;
 import com.sk89q.worldedit.util.report.ReportList;
 import com.sk89q.worldedit.util.report.SystemInfoReport;
+import org.enginehub.piston.annotation.Command;
+import org.enginehub.piston.annotation.CommandContainer;
+import org.enginehub.piston.annotation.param.Arg;
+import org.enginehub.piston.annotation.param.Switch;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.TimeZone;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.TextStyle;
+import java.time.zone.ZoneRulesException;
+import java.util.List;
+import java.util.Locale;
 
+@CommandContainer(superTypes = CommandPermissionsConditionGenerator.Registration.class)
 public class WorldEditCommands {
-    private static final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z");
-    
+    private static final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss z");
+
     private final WorldEdit we;
-    
+
     public WorldEditCommands(WorldEdit we) {
         this.we = we;
     }
 
     @Command(
-        aliases = { "version", "ver" },
-        usage = "",
-        desc = "Get WorldEdit version",
-        min = 0,
-        max = 0
+        name = "version",
+        aliases = { "ver" },
+        desc = "Get WorldEdit version"
     )
     public void version(Actor actor) throws WorldEditException {
         actor.print("WorldEdit version " + WorldEdit.getVersion());
-        actor.print("https://github.com/sk89q/worldedit/");
+        actor.print("https://github.com/EngineHub/worldedit/");
 
         PlatformManager pm = we.getPlatformManager();
 
@@ -80,11 +86,8 @@ public class WorldEditCommands {
     }
 
     @Command(
-        aliases = { "reload" },
-        usage = "",
-        desc = "Reload configuration",
-        min = 0,
-        max = 0
+        name = "reload",
+        desc = "Reload configuration"
     )
     @CommandPermissions("worldedit.reload")
     public void reload(Actor actor) throws WorldEditException {
@@ -93,9 +96,14 @@ public class WorldEditCommands {
         actor.print("Configuration reloaded!");
     }
 
-    @Command(aliases = {"report"}, desc = "Writes a report on WorldEdit", flags = "p", max = 0)
+    @Command(
+        name = "report",
+        desc = "Writes a report on WorldEdit"
+    )
     @CommandPermissions({"worldedit.report"})
-    public void report(Actor actor, CommandContext args) throws WorldEditException {
+    public void report(Actor actor,
+                       @Switch(name = 'p', desc = "Pastebins the report")
+                           boolean pastebin) throws WorldEditException {
         ReportList report = new ReportList("Report");
         report.add(new SystemInfoReport());
         report.add(new ConfigReport());
@@ -109,21 +117,18 @@ public class WorldEditCommands {
             actor.printError("Failed to write report: " + e.getMessage());
         }
 
-        if (args.hasFlag('p')) {
+        if (pastebin) {
             actor.checkPermission("worldedit.report.pastebin");
             ActorCallbackPaste.pastebin(
                     we.getSupervisor(), actor, result, "WorldEdit report: %s.report",
-                    WorldEdit.getInstance().getPlatformManager().getCommandManager().getExceptionConverter()
+                    WorldEdit.getInstance().getPlatformManager().getPlatformCommandManager().getExceptionConverter()
             );
         }
     }
 
     @Command(
-        aliases = { "cui" },
-        usage = "",
-        desc = "Complete CUI handshake (internal usage)",
-        min = 0,
-        max = 0
+        name = "cui",
+        desc = "Complete CUI handshake (internal usage)"
     )
     public void cui(Player player, LocalSession session) throws WorldEditException {
         session.setCUISupport(true);
@@ -131,29 +136,34 @@ public class WorldEditCommands {
     }
 
     @Command(
-        aliases = { "tz" },
-        usage = "[timezone]",
-        desc = "Set your timezone for snapshots",
-        min = 1,
-        max = 1
+        name = "tz",
+        desc = "Set your timezone for snapshots"
     )
-    public void tz(Player player, LocalSession session, CommandContext args) throws WorldEditException {
-        TimeZone tz = TimeZone.getTimeZone(args.getString(0));
-        session.setTimezone(tz);
-        player.print("Timezone set for this session to: " + tz.getDisplayName());
-        player.print("The current time in that timezone is: "
-                + dateFormat.format(Calendar.getInstance(tz).getTime()));
+    public void tz(Player player, LocalSession session,
+                   @Arg(desc = "The timezone to set")
+                       String timezone) throws WorldEditException {
+        try {
+            ZoneId tz = ZoneId.of(timezone);
+            session.setTimezone(tz);
+            player.print("Timezone set for this session to: " + tz.getDisplayName(
+                    TextStyle.FULL, Locale.ENGLISH
+            ));
+            player.print("The current time in that timezone is: " + dateFormat.format(ZonedDateTime.now(tz)));
+        } catch (ZoneRulesException e) {
+            player.printError("Invalid timezone");
+        }
     }
 
     @Command(
-        aliases = { "help" },
-        usage = "[<command>]",
-            desc = "Displays help for WorldEdit commands",
-        min = 0,
-        max = -1
+        name = "help",
+        desc = "Displays help for WorldEdit commands"
     )
     @CommandPermissions("worldedit.help")
-    public void help(Actor actor, CommandContext args) throws WorldEditException {
-        UtilityCommands.help(args, we, actor);
+    public void help(Actor actor,
+                     @Arg(desc = "The page to retrieve", def = "1")
+                         int page,
+                     @Arg(desc = "The command to retrieve help for", def = "", variable = true)
+                         List<String> command) throws WorldEditException {
+        PrintCommandHelp.help(command, page, we, actor);
     }
 }

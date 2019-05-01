@@ -19,21 +19,23 @@
 
 package com.sk89q.worldedit.command;
 
-import com.sk89q.minecraft.util.commands.Command;
-import com.sk89q.minecraft.util.commands.CommandContext;
-import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.command.util.CommandPermissions;
+import com.sk89q.worldedit.command.util.CommandPermissionsConditionGenerator;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.util.HandSide;
-import com.sk89q.worldedit.util.command.parametric.Optional;
+import org.enginehub.piston.annotation.Command;
+import org.enginehub.piston.annotation.CommandContainer;
+import org.enginehub.piston.annotation.param.Arg;
 
 /**
  * Tool commands.
  */
+@CommandContainer(superTypes = CommandPermissionsConditionGenerator.Registration.class)
 public class ToolUtilCommands {
     private final WorldEdit we;
 
@@ -42,44 +44,37 @@ public class ToolUtilCommands {
     }
 
     @Command(
-        aliases = { "/", "," },
-        usage = "[on|off]",
-        desc = "Toggle the super pickaxe function",
-        min = 0,
-        max = 1
+        name = "/",
+        aliases = { "," },
+        desc = "Toggle the super pickaxe function"
     )
     @CommandPermissions("worldedit.superpickaxe")
-    public void togglePickaxe(Player player, LocalSession session, CommandContext args) throws WorldEditException {
-
-        String newState = args.getString(0, null);
-        if (session.hasSuperPickAxe()) {
-            if ("on".equals(newState)) {
-                player.printError("Super pick axe already enabled.");
-                return;
-            }
-
+    public void togglePickaxe(Player player, LocalSession session,
+                              @Arg(desc = "The new super pickaxe state", def = "")
+                                  Boolean superPickaxe) throws WorldEditException {
+        boolean hasSuperPickAxe = session.hasSuperPickAxe();
+        if (superPickaxe != null && superPickaxe == hasSuperPickAxe) {
+            player.printError("Super pickaxe already " + (superPickaxe ? "enabled" : "disabled") + ".");
+            return;
+        }
+        if (hasSuperPickAxe) {
             session.disableSuperPickAxe();
-            player.print("Super pick axe disabled.");
+            player.print("Super pickaxe disabled.");
         } else {
-            if ("off".equals(newState)) {
-                player.printError("Super pick axe already disabled.");
-                return;
-            }
             session.enableSuperPickAxe();
-            player.print("Super pick axe enabled.");
+            player.print("Super pickaxe enabled.");
         }
 
     }
 
     @Command(
-        aliases = { "mask" },
-        usage = "[mask]",
-        desc = "Set the brush mask",
-        min = 0,
-        max = -1
+        name = "mask",
+        desc = "Set the brush mask"
     )
     @CommandPermissions("worldedit.brush.options.mask")
-    public void mask(Player player, LocalSession session, @Optional Mask mask) throws WorldEditException {
+    public void mask(Player player, LocalSession session,
+                     @Arg(desc = "The mask to set", def = "")
+                         Mask mask) throws WorldEditException {
         if (mask == null) {
             session.getBrushTool(player.getItemInHand(HandSide.MAIN_HAND).getType()).setMask(null);
             player.print("Brush mask disabled.");
@@ -90,46 +85,41 @@ public class ToolUtilCommands {
     }
 
     @Command(
-        aliases = { "mat", "material" },
-        usage = "[pattern]",
-        desc = "Set the brush material",
-        min = 1,
-        max = 1
+        name = "material",
+        aliases = { "/material" },
+        desc = "Set the brush material"
     )
     @CommandPermissions("worldedit.brush.options.material")
-    public void material(Player player, LocalSession session, Pattern pattern) throws WorldEditException {
+    public void material(Player player, LocalSession session,
+                         @Arg(desc = "The pattern of blocks to use")
+                             Pattern pattern) throws WorldEditException {
         session.getBrushTool(player.getItemInHand(HandSide.MAIN_HAND).getType()).setFill(pattern);
         player.print("Brush material set.");
     }
 
     @Command(
-            aliases = { "range" },
-            usage = "[pattern]",
-            desc = "Set the brush range",
-            min = 1,
-            max = 1
-        )
+        name = "range",
+        desc = "Set the brush range"
+    )
     @CommandPermissions("worldedit.brush.options.range")
-    public void range(Player player, LocalSession session, CommandContext args) throws WorldEditException {
-        int range = args.getInteger(0);
+    public void range(Player player, LocalSession session,
+                      @Arg(desc = "The range of the brush")
+                          int range) throws WorldEditException {
         session.getBrushTool(player.getItemInHand(HandSide.MAIN_HAND).getType()).setRange(range);
         player.print("Brush range set.");
     }
 
     @Command(
-        aliases = { "size" },
-        usage = "[pattern]",
-        desc = "Set the brush size",
-        min = 1,
-        max = 1
+        name = "size",
+        desc = "Set the brush size"
     )
     @CommandPermissions("worldedit.brush.options.size")
-    public void size(Player player, LocalSession session, CommandContext args) throws WorldEditException {
+    public void size(Player player, LocalSession session,
+                     @Arg(desc = "The size of the brush")
+                         int size) throws WorldEditException {
+        we.checkMaxBrushRadius(size);
 
-        int radius = args.getInteger(0);
-        we.checkMaxBrushRadius(radius);
-
-        session.getBrushTool(player.getItemInHand(HandSide.MAIN_HAND).getType()).setSize(radius);
+        session.getBrushTool(player.getItemInHand(HandSide.MAIN_HAND).getType()).setSize(size);
         player.print("Brush size set.");
     }
 }

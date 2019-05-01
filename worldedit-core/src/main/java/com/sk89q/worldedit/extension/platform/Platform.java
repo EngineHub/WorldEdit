@@ -21,14 +21,13 @@ package com.sk89q.worldedit.extension.platform;
 
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.entity.Player;
-import com.sk89q.worldedit.util.command.Dispatcher;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.registry.Registries;
-
-import java.util.List;
-import java.util.Map;
+import org.enginehub.piston.CommandManager;
 
 import javax.annotation.Nullable;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Represents a platform that WorldEdit has been implemented for.
@@ -104,11 +103,11 @@ public interface Platform {
     @Nullable World matchWorld(World world);
 
     /**
-     * Register the commands contained within the given command dispatcher.
+     * Register the commands contained within the given command manager.
      *
-     * @param dispatcher the dispatcher
+     * @param commandManager the command manager
      */
-    void registerCommands(Dispatcher dispatcher);
+    void registerCommands(CommandManager commandManager);
 
     /**
      * Register game hooks.

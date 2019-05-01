@@ -19,16 +19,12 @@
 
 package com.sk89q.worldedit.command;
 
-import com.google.common.collect.Multimap;
-import com.google.common.io.Files;
-import com.sk89q.minecraft.util.commands.Command;
-import com.sk89q.minecraft.util.commands.CommandContext;
-import com.sk89q.minecraft.util.commands.CommandException;
-import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.command.util.CommandPermissions;
+import com.sk89q.worldedit.command.util.CommandPermissionsConditionGenerator;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extent.clipboard.BlockArrayClipboard;
@@ -41,12 +37,19 @@ import com.sk89q.worldedit.extent.clipboard.io.ClipboardWriter;
 import com.sk89q.worldedit.function.operation.Operations;
 import com.sk89q.worldedit.math.transform.Transform;
 import com.sk89q.worldedit.session.ClipboardHolder;
-import com.sk89q.worldedit.util.command.binding.Switch;
-import com.sk89q.worldedit.util.command.parametric.Optional;
+import com.sk89q.worldedit.util.formatting.component.PaginationBox;
+import com.sk89q.worldedit.util.formatting.component.SchematicPaginationBox;
+import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.io.Closer;
 import com.sk89q.worldedit.util.io.file.FilenameException;
+import org.enginehub.piston.annotation.Command;
+import org.enginehub.piston.annotation.CommandContainer;
+import org.enginehub.piston.annotation.param.Arg;
+import org.enginehub.piston.annotation.param.ArgFlag;
+import org.enginehub.piston.annotation.param.Switch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.enginehub.piston.exception.StopExecutionException;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -57,19 +60,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.regex.Pattern;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Commands that work with schematic files.
  */
+@CommandContainer(superTypes = CommandPermissionsConditionGenerator.Registration.class)
 public class SchematicCommands {
 
-    /**
-     * 9 schematics per page fits in the MC chat window.
-     */
-    private static final int SCHEMATICS_PER_PAGE = 9;
     private static final Logger log = LoggerFactory.getLogger(SchematicCommands.class);
     private final WorldEdit worldEdit;
 
@@ -84,17 +83,21 @@ public class SchematicCommands {
     }
 
     @Command(
-            aliases = { "load" },
-            usage = "[<format>] <filename>",
-            desc = "Load a schematic into your clipboard",
-            min = 1, max = 2
+        name = "load",
+        desc = "Load a schematic into your clipboard"
     )
-    @CommandPermissions({ "worldedit.clipboard.load", "worldedit.schematic.load" })
-    public void load(Player player, LocalSession session, @Optional("sponge") String formatName, String filename) throws FilenameException {
+    @CommandPermissions({"worldedit.clipboard.load", "worldedit.schematic.load"})
+    public void load(Player player, LocalSession session,
+                     @Arg(desc = "File name.")
+                         String filename,
+                     @Arg(desc = "Format name.", def = "sponge")
+                         String formatName) throws FilenameException {
         LocalConfiguration config = worldEdit.getConfiguration();
 
         File dir = worldEdit.getWorkingDirectoryFile(config.saveDir);
-        File f = worldEdit.getSafeOpenFile(player, dir, filename, BuiltInClipboardFormat.SPONGE_SCHEMATIC.getPrimaryFileExtension(), ClipboardFormats.getFileExtensionArray());
+        File f = worldEdit.getSafeOpenFile(player, dir, filename,
+                BuiltInClipboardFormat.SPONGE_SCHEMATIC.getPrimaryFileExtension(),
+                ClipboardFormats.getFileExtensionArray());
 
         if (!f.exists()) {
             player.printError("Schematic " + filename + " does not exist!");
@@ -122,21 +125,23 @@ public class SchematicCommands {
             player.print(filename + " loaded. Paste it with //paste");
         } catch (IOException e) {
             player.printError("Schematic could not read or it does not exist: " + e.getMessage());
-            log.warn("Failed to load a saved clipboard", e);
+            log.warn("Failed to load schematic: " + e.getMessage());
         }
     }
 
     @Command(
-            aliases = { "save" },
-            flags = "f",
-            usage = "[<format>] <filename>",
-            desc = "Save a schematic into your clipboard",
-            help = "-f is required to overwrite an existing file",
-            min = 1, max = 2
+        name = "save",
+        desc = "Save a schematic into your clipboard"
     )
-    @CommandPermissions({ "worldedit.clipboard.save", "worldedit.schematic.save" })
-    public void save(Player player, LocalSession session, @Optional("sponge") String formatName,
-                     String filename, @Switch('f') boolean allowOverwrite) throws CommandException, WorldEditException {
+    @CommandPermissions({"worldedit.clipboard.save", "worldedit.schematic.save"})
+    public void save(Player player, LocalSession session,
+                     @Arg(desc = "File name.")
+                         String filename,
+                     @Arg(desc = "Format name.", def = "sponge")
+                         String formatName,
+                     @Switch(name = 'f', desc = "Overwrite an existing file.")
+                         boolean allowOverwrite
+        ) throws WorldEditException {
         LocalConfiguration config = worldEdit.getConfiguration();
 
         File dir = worldEdit.getWorkingDirectoryFile(config.saveDir);
@@ -152,7 +157,7 @@ public class SchematicCommands {
         boolean overwrite = f.exists();
         if (overwrite) {
             if (!player.hasPermission("worldedit.schematic.delete")) {
-                throw new CommandException("That schematic already exists!");
+                throw new StopExecutionException(TextComponent.of("That schematic already exists!"));
             }
             if (!allowOverwrite) {
                 player.printError("That schematic already exists. Use the -f flag to overwrite it.");
@@ -179,7 +184,8 @@ public class SchematicCommands {
         File parent = f.getParentFile();
         if (parent != null && !parent.exists()) {
             if (!parent.mkdirs()) {
-                throw new CommandException("Could not create folder for schematics!");
+                throw new StopExecutionException(TextComponent.of(
+                    "Could not create folder for schematics!"));
             }
         }
 
@@ -198,15 +204,14 @@ public class SchematicCommands {
     }
 
     @Command(
-            aliases = { "delete", "d" },
-            usage = "<filename>",
-            desc = "Delete a saved schematic",
-            help = "Delete a schematic from the schematic list",
-            min = 1,
-            max = 1
+        name = "delete",
+        aliases = {"d"},
+        desc = "Delete a saved schematic"
     )
     @CommandPermissions("worldedit.schematic.delete")
-    public void delete(Actor actor, String filename) throws WorldEditException {
+    public void delete(Actor actor,
+                       @Arg(desc = "File name.")
+                           String filename) throws WorldEditException {
         LocalConfiguration config = worldEdit.getConfiguration();
         File dir = worldEdit.getWorkingDirectoryFile(config.saveDir);
 
@@ -232,12 +237,12 @@ public class SchematicCommands {
     }
 
     @Command(
-            aliases = {"formats", "listformats", "f"},
-            desc = "List available formats",
-            max = 0
+        name = "formats",
+        aliases = {"listformats", "f"},
+        desc = "List available formats"
     )
     @CommandPermissions("worldedit.schematic.formats")
-    public void formats(Actor actor) throws WorldEditException {
+    public void formats(Actor actor) {
         actor.print("Available clipboard formats (Name: Lookup names)");
         StringBuilder builder;
         boolean first = true;
@@ -257,18 +262,22 @@ public class SchematicCommands {
     }
 
     @Command(
-            aliases = {"list", "all", "ls"},
-            desc = "List saved schematics",
-            max = 1,
-            flags = "dnp",
-            help = "List all schematics in the schematics directory\n" +
-                    " -d sorts by date, oldest first\n" +
-                    " -n sorts by date, newest first\n" +
-                    " -p <page> prints the requested page\n" +
-                    "Note: Format is not thoroughly verified until loading."
+        name = "list",
+        aliases = {"all", "ls"},
+        desc = "List saved schematics",
+        descFooter = "Note: Format is not fully verified until loading."
     )
     @CommandPermissions("worldedit.schematic.list")
-    public void list(Actor actor, CommandContext args, @Switch('p') @Optional("1") int page) throws WorldEditException {
+    public void list(Actor actor,
+                     @ArgFlag(name = 'p', desc = "Page to view.", def = "1")
+                         int page,
+                     @Switch(name = 'd', desc = "Sort by date, oldest first")
+                         boolean oldFirst,
+                     @Switch(name = 'n', desc = "Sort by date, newest first")
+                         boolean newFirst) throws WorldEditException {
+        if (oldFirst && newFirst) {
+            throw new StopExecutionException(TextComponent.of("Cannot sort by oldest and newest."));
+        }
         File dir = worldEdit.getWorkingDirectoryFile(worldEdit.getConfiguration().saveDir);
         List<File> fileList = allFiles(dir);
 
@@ -280,17 +289,7 @@ public class SchematicCommands {
         File[] files = new File[fileList.size()];
         fileList.toArray(files);
 
-        int pageCount = files.length / SCHEMATICS_PER_PAGE + 1;
-        if (page < 1) {
-            actor.printError("Page must be at least 1");
-            return;
-        }
-        if (page > pageCount) {
-            actor.printError("Page must be less than " + (pageCount + 1));
-            return;
-        }
-
-        final int sortType = args.hasFlag('d') ? -1 : args.hasFlag('n') ? 1 : 0;
+        final int sortType = oldFirst ? -1 : newFirst ? 1 : 0;
         // cleanup file list
         Arrays.sort(files, (f1, f2) -> {
             // http://stackoverflow.com/questions/203030/best-way-to-list-files-in-java-sorted-by-date-modified
@@ -309,20 +308,9 @@ public class SchematicCommands {
             return res;
         });
 
-        List<String> schematics = listFiles(worldEdit.getConfiguration().saveDir, files);
-        int offset = (page - 1) * SCHEMATICS_PER_PAGE;
-
-        actor.print("Available schematics (Filename: Format) [" + page + "/" + pageCount + "]:");
-        StringBuilder build = new StringBuilder();
-        int limit = Math.min(offset + SCHEMATICS_PER_PAGE, schematics.size());
-        for (int i = offset; i < limit;) {
-            build.append(schematics.get(i));
-            if (++i != limit) {
-                build.append("\n");
-            }
-        }
-
-        actor.print(build.toString());
+        String pageCommand = actor.isPlayer() ? "//schem list -p %page%" + (oldFirst ? " -d" : newFirst ? " -n" : "") : null;
+        PaginationBox paginationBox = new SchematicPaginationBox(worldEdit.getConfiguration().saveDir, files, pageCommand);
+        actor.print(paginationBox.create(page));
     }
 
     private List<File> allFiles(File root) {
@@ -341,22 +329,4 @@ public class SchematicCommands {
         return fileList;
     }
 
-    private List<String> listFiles(String prefix, File[] files) {
-        if (prefix == null) prefix = "";
-        List<String> result = new ArrayList<>();
-        for (File file : files) {
-            StringBuilder build = new StringBuilder();
-
-            build.append("\u00a72");
-            //ClipboardFormat format = ClipboardFormats.findByFile(file);
-            Multimap<String, ClipboardFormat> exts = ClipboardFormats.getFileExtensionMap();
-            ClipboardFormat format = exts.get(Files.getFileExtension(file.getName()))
-                    .stream().findFirst().orElse(null);
-            boolean inRoot = file.getParentFile().getName().equals(prefix);
-            build.append(inRoot ? file.getName() : file.getPath().split(Pattern.quote(prefix + File.separator))[1])
-                    .append(": ").append(format == null ? "Unknown" : format.getName() + "*");
-            result.add(build.toString());
-        }
-        return result;
-    }
 }

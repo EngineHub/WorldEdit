@@ -122,7 +122,6 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -174,15 +173,6 @@ public class EditSession implements Extent, AutoCloseable {
 
         public String getDisplayName() {
             return this.displayName;
-        }
-
-        public static Optional<ReorderMode> getFromDisplayName(String name) {
-            for (ReorderMode mode : values()) {
-                if (mode.getDisplayName().equalsIgnoreCase(name)) {
-                    return Optional.of(mode);
-                }
-            }
-            return Optional.empty();
         }
     }
 
@@ -914,16 +904,15 @@ public class EditSession implements Extent, AutoCloseable {
      * Remove blocks of a certain type nearby a given position.
      *
      * @param position center position of cuboid
-     * @param blockType the block type to match
+     * @param mask the mask to match
      * @param apothem an apothem of the cuboid, where the minimum is 1
      * @return number of blocks affected
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
-    public int removeNear(BlockVector3 position, BlockType blockType, int apothem) throws MaxChangedBlocksException {
+    public int removeNear(BlockVector3 position, Mask mask, int apothem) throws MaxChangedBlocksException {
         checkNotNull(position);
         checkArgument(apothem >= 1, "apothem >= 1");
 
-        Mask mask = new BlockTypeMask(this, blockType);
         BlockVector3 adjustment = BlockVector3.ONE.multiply(apothem - 1);
         Region region = new CuboidRegion(
                 getWorld(), // Causes clamping of Y range

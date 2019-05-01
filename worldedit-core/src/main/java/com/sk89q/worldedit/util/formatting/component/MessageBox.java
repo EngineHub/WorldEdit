@@ -21,9 +21,12 @@ package com.sk89q.worldedit.util.formatting.component;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import com.google.common.base.Strings;
+import com.google.common.collect.Sets;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.format.TextColor;
+import com.sk89q.worldedit.util.formatting.text.format.TextDecoration;
 
 /**
  * Makes for a box with a border above and below.
@@ -32,7 +35,7 @@ public class MessageBox extends TextComponentProducer {
 
     private static final int GUARANTEED_NO_WRAP_CHAT_PAGE_WIDTH = 47;
 
-    private final TextComponentProducer contents;
+    private TextComponentProducer contents;
 
     /**
      * Create a new box.
@@ -40,28 +43,38 @@ public class MessageBox extends TextComponentProducer {
     public MessageBox(String title, TextComponentProducer contents) {
         checkNotNull(title);
 
-        int leftOver = GUARANTEED_NO_WRAP_CHAT_PAGE_WIDTH - title.length() - 2;
-        int leftSide = (int) Math.floor(leftOver * 1.0/3);
-        int rightSide = (int) Math.floor(leftOver * 2.0/3);
-        if (leftSide > 0) {
-            append(TextComponent.of(createBorder(leftSide), TextColor.YELLOW));
-        }
-        append(Component.space());
-        append(title);
-        append(Component.space());
-        if (rightSide > 0) {
-            append(TextComponent.of(createBorder(rightSide), TextColor.YELLOW));
-        }
-        newline();
+        append(centerAndBorder(TextComponent.of(title))).newline();
         this.contents = contents;
     }
 
-    private String createBorder(int count) {
-        StringBuilder builder = new StringBuilder();
-        for (int i = 0; i < count; i++) {
-            builder.append("-");
+    protected Component centerAndBorder(TextComponent text) {
+        TextComponentProducer line = new TextComponentProducer();
+        int leftOver = GUARANTEED_NO_WRAP_CHAT_PAGE_WIDTH - getLength(text);
+        int side = (int) Math.floor(leftOver / 2.0);
+        if (side > 0) {
+            if (side > 1) {
+                line.append(createBorder(side - 1));
+            }
+            line.append(Component.space());
         }
-        return builder.toString();
+        line.append(text);
+        if (side > 0) {
+            line.append(Component.space());
+            if (side > 1) {
+                line.append(createBorder(side - 1));
+            }
+        }
+        return line.create();
+    }
+
+    private static int getLength(TextComponent text) {
+        return text.content().length() + text.children().stream().filter(c -> c instanceof TextComponent)
+                .mapToInt(c -> getLength((TextComponent) c)).sum();
+    }
+
+    private TextComponent createBorder(int count) {
+        return TextComponent.of(Strings.repeat("-", count),
+                TextColor.YELLOW, Sets.newHashSet(TextDecoration.STRIKETHROUGH));
     }
 
     /**

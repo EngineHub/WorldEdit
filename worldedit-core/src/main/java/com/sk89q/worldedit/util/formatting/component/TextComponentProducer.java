@@ -62,7 +62,22 @@ public class TextComponentProducer {
         return this;
     }
 
+    /**
+     * Create a TextComponent from this producer.
+     *
+     * @return The component
+     */
     public TextComponent create() {
         return builder.build();
+    }
+
+    /**
+     * Reset the producer to a clean slate.
+     *
+     * @return The producer, for chaining
+     */
+    public TextComponentProducer reset() {
+        builder = TextComponent.builder().content("");
+        return this;
     }
 }

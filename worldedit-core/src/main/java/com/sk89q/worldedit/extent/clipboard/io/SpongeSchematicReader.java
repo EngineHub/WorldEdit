@@ -102,10 +102,11 @@ public class SpongeSchematicReader extends NBTSchematicReader {
             return readVersion1(schematicTag);
         } else if (version == 2) {
             int dataVersion = requireTag(schematic, "DataVersion", IntTag.class).getValue();
-            if (dataVersion > WorldEdit.getInstance().getPlatformManager()
-                    .queryCapability(Capability.WORLD_EDITING).getDataVersion()) {
-                // maybe should just warn? simple schematics may be compatible still.
-                throw new IOException("Schematic was made in a newer Minecraft version. Data may be incompatible.");
+            int liveDataVersion = WorldEdit.getInstance().getPlatformManager()
+                    .queryCapability(Capability.WORLD_EDITING).getDataVersion();
+            if (dataVersion > liveDataVersion) {
+                log.warn("Schematic was made in a newer Minecraft version ({} > {}). Data may be incompatible.",
+                        dataVersion, liveDataVersion);
             }
             BlockArrayClipboard clip = readVersion1(schematicTag);
             return readVersion2(clip, schematicTag);

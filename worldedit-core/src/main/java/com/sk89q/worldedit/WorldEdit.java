@@ -303,6 +303,17 @@ public final class WorldEdit {
             if (exts.size() != 1) {
                 exts = exts.subList(0, 1);
             }
+        } else {
+            int dot = filename.lastIndexOf('.');
+            if (dot < 0 || dot == filename.length() - 1) {
+                String currentExt = filename.substring(dot + 1);
+                if (exts.contains(currentExt) && checkFilename(filename)) {
+                    File f = new File(dir, filename);
+                    if (f.exists()) {
+                        return f;
+                    }
+                }
+            }
         }
         File result = null;
         for (Iterator<String> iter = exts.iterator(); iter.hasNext() && (result == null || (!isSave && !result.exists()));) {
@@ -317,7 +328,7 @@ public final class WorldEdit {
     private File getSafeFileWithExtension(File dir, String filename, String extension) {
         if (extension != null) {
             int dot = filename.lastIndexOf('.');
-            if (dot < 0 || !filename.substring(dot).equalsIgnoreCase(extension)) {
+            if (dot < 0 || dot == filename.length() - 1 || !filename.substring(dot + 1).equalsIgnoreCase(extension)) {
                 filename += "." + extension;
             }
         }

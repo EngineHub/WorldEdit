@@ -39,6 +39,10 @@ public class Registry<V> implements Iterable<V> {
         this.name = name;
     }
 
+    public String getName() {
+        return name;
+    }
+
     public @Nullable V get(final String key) {
         checkState(key.equals(key.toLowerCase()), "key must be lowercase");
         return this.map.get(key);

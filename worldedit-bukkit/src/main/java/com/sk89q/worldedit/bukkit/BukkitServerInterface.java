@@ -22,27 +22,29 @@ package com.sk89q.worldedit.bukkit;
 import com.sk89q.bukkit.util.CommandInfo;
 import com.sk89q.bukkit.util.CommandRegistration;
 import com.sk89q.worldedit.LocalConfiguration;
+import com.sk89q.worldedit.command.util.PermissionCondition;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.extension.platform.MultiUserPlatform;
 import com.sk89q.worldedit.extension.platform.Preference;
-import com.sk89q.worldedit.util.command.CommandMapping;
-import com.sk89q.worldedit.util.command.Description;
-import com.sk89q.worldedit.util.command.Dispatcher;
 import com.sk89q.worldedit.world.registry.Registries;
 import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.entity.EntityType;
+import org.enginehub.piston.CommandManager;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import javax.annotation.Nullable;
+import static com.sk89q.worldedit.bukkit.BukkitTextAdapter.reduceToText;
 
 public class BukkitServerInterface implements MultiUserPlatform {
     public Server server;
@@ -70,7 +72,7 @@ public class BukkitServerInterface implements MultiUserPlatform {
         if (plugin.getBukkitImplAdapter() != null) {
             return plugin.getBukkitImplAdapter().getDataVersion();
         }
-        return 0;
+        return -1;
     }
 
     @Override
@@ -124,20 +126,25 @@ public class BukkitServerInterface implements MultiUserPlatform {
     }
 
     @Override
-    public void registerCommands(Dispatcher dispatcher) {
-        List<CommandInfo> toRegister = new ArrayList<>();
+    public void registerCommands(CommandManager dispatcher) {
         BukkitCommandInspector inspector = new BukkitCommandInspector(plugin, dispatcher);
-        
-        for (CommandMapping command : dispatcher.getCommands()) {
-            Description description = command.getDescription();
-            List<String> permissions = description.getPermissions();
-            String[] permissionsArray = new String[permissions.size()];
-            permissions.toArray(permissionsArray);
 
-            toRegister.add(new CommandInfo(description.getUsage(), description.getDescription(), command.getAllAliases(), inspector, permissionsArray));
-        }
+        dynamicCommands.register(dispatcher.getAllCommands()
+            .map(command -> {
+                String[] permissionsArray = command.getCondition()
+                    .as(PermissionCondition.class)
+                    .map(PermissionCondition::getPermissions)
+                    .map(s -> s.toArray(new String[0]))
+                    .orElseGet(() -> new String[0]);
 
-        dynamicCommands.register(toRegister);
+                String[] aliases = Stream.concat(
+                    Stream.of(command.getName()),
+                    command.getAliases().stream()
+                ).toArray(String[]::new);
+                return new CommandInfo(reduceToText(command.getUsage()),
+                    reduceToText(command.getDescription()), aliases,
+                    inspector, permissionsArray);
+            }).collect(Collectors.toList()));
     }
 
     @Override

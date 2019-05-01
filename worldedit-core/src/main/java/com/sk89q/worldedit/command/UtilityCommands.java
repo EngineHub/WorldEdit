@@ -19,30 +19,31 @@
 
 package com.sk89q.worldedit.command;
 
-import static com.sk89q.minecraft.util.commands.Logging.LogMode.PLACEMENT;
+import static com.sk89q.worldedit.command.util.Logging.LogMode.PLACEMENT;
 
-import com.google.common.base.Joiner;
-import com.sk89q.minecraft.util.commands.Command;
-import com.sk89q.minecraft.util.commands.CommandContext;
-import com.sk89q.minecraft.util.commands.CommandException;
-import com.sk89q.minecraft.util.commands.CommandPermissions;
-import com.sk89q.minecraft.util.commands.Logging;
 import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.IncompleteRegionException;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
+import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.command.util.CommandPermissions;
+import com.sk89q.worldedit.command.util.CommandPermissionsConditionGenerator;
 import com.sk89q.worldedit.command.util.CreatureButcher;
 import com.sk89q.worldedit.command.util.EntityRemover;
+import com.sk89q.worldedit.command.util.Logging;
+import com.sk89q.worldedit.command.util.PrintCommandHelp;
 import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.entity.Player;
-import com.sk89q.worldedit.extension.input.ParserContext;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Capability;
-import com.sk89q.worldedit.extension.platform.CommandManager;
 import com.sk89q.worldedit.extension.platform.Platform;
+import com.sk89q.worldedit.function.EntityFunction;
+import com.sk89q.worldedit.function.mask.BlockTypeMask;
+import com.sk89q.worldedit.function.mask.ExistingBlockMask;
+import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.function.operation.Operations;
-import com.sk89q.worldedit.function.pattern.BlockPattern;
 import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.function.visitor.EntityVisitor;
 import com.sk89q.worldedit.internal.expression.Expression;
@@ -52,32 +53,27 @@ import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.CylinderRegion;
 import com.sk89q.worldedit.regions.Region;
-import com.sk89q.worldedit.session.SessionOwner;
-import com.sk89q.worldedit.util.command.CommandCallable;
-import com.sk89q.worldedit.util.command.CommandMapping;
-import com.sk89q.worldedit.util.command.Dispatcher;
-import com.sk89q.worldedit.util.command.PrimaryAliasComparator;
-import com.sk89q.worldedit.util.command.binding.Text;
-import com.sk89q.worldedit.util.formatting.component.CodeFormat;
-import com.sk89q.worldedit.util.formatting.component.CommandListBox;
-import com.sk89q.worldedit.util.formatting.component.CommandUsageBox;
-import com.sk89q.worldedit.util.formatting.component.ErrorFormat;
 import com.sk89q.worldedit.util.formatting.component.SubtleFormat;
-import com.sk89q.worldedit.util.formatting.component.TextComponentProducer;
-import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.format.TextColor;
 import com.sk89q.worldedit.world.World;
-import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockTypes;
+import org.enginehub.piston.annotation.Command;
+import org.enginehub.piston.annotation.CommandContainer;
+import org.enginehub.piston.annotation.param.Arg;
+import org.enginehub.piston.annotation.param.Switch;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
+import java.util.Locale;
+import java.util.function.Supplier;
 
 /**
  * Utility commands.
  */
+@CommandContainer(superTypes = CommandPermissionsConditionGenerator.Registration.class)
 public class UtilityCommands {
 
     private final WorldEdit we;
@@ -87,357 +83,365 @@ public class UtilityCommands {
     }
 
     @Command(
-        aliases = { "/fill" },
-        usage = "<block> <radius> [depth]",
-        desc = "Fill a hole",
-        min = 2,
-        max = 3
+        name = "/fill",
+        desc = "Fill a hole"
     )
     @CommandPermissions("worldedit.fill")
     @Logging(PLACEMENT)
-    public void fill(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
-
-        ParserContext context = new ParserContext();
-        context.setActor(player);
-        context.setWorld(player.getWorld());
-        context.setSession(session);
-        Pattern pattern = we.getPatternFactory().parseFromInput(args.getString(0), context);
-
-        double radius = Math.max(1, args.getDouble(1));
+    public int fill(Player player, LocalSession session, EditSession editSession,
+                    @Arg(desc = "The blocks to fill with")
+                        Pattern pattern,
+                    @Arg(desc = "The radius to fill in")
+                        double radius,
+                    @Arg(desc = "The depth to fill", def = "1")
+                        int depth) throws WorldEditException {
+        radius = Math.max(1, radius);
         we.checkMaxRadius(radius);
-        int depth = args.argsLength() > 2 ? Math.max(1, args.getInteger(2)) : 1;
+        depth = Math.max(1, depth);
 
         BlockVector3 pos = session.getPlacementPosition(player);
         int affected = editSession.fillXZ(pos, pattern, radius, depth, false);
         player.print(affected + " block(s) have been created.");
+        return affected;
     }
 
     @Command(
-        aliases = { "/fillr" },
-        usage = "<block> <radius> [depth]",
-        desc = "Fill a hole recursively",
-        min = 2,
-        max = 3
+        name = "/fillr",
+        desc = "Fill a hole recursively"
     )
     @CommandPermissions("worldedit.fill.recursive")
     @Logging(PLACEMENT)
-    public void fillr(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
-
-        ParserContext context = new ParserContext();
-        context.setActor(player);
-        context.setWorld(player.getWorld());
-        context.setSession(session);
-        Pattern pattern = we.getPatternFactory().parseFromInput(args.getString(0), context);
-
-        double radius = Math.max(1, args.getDouble(1));
+    public int fillr(Player player, LocalSession session, EditSession editSession,
+                     @Arg(desc = "The blocks to fill with")
+                         Pattern pattern,
+                     @Arg(desc = "The radius to fill in")
+                         double radius,
+                     @Arg(desc = "The depth to fill", def = "")
+                         Integer depth) throws WorldEditException {
+        radius = Math.max(1, radius);
         we.checkMaxRadius(radius);
-        int depth = args.argsLength() > 2 ? Math.max(1, args.getInteger(2)) : Integer.MAX_VALUE;
+        depth = depth == null ? Integer.MAX_VALUE : Math.max(1, depth);
+        we.checkMaxRadius(radius);
 
         BlockVector3 pos = session.getPlacementPosition(player);
-        int affected = 0;
-        if (pattern instanceof BlockPattern) {
-            affected = editSession.fillXZ(pos, ((BlockPattern) pattern).getBlock(), radius, depth, true);
-        } else {
-            affected = editSession.fillXZ(pos, pattern, radius, depth, true);
-        }
+        int affected = editSession.fillXZ(pos, pattern, radius, depth, true);
         player.print(affected + " block(s) have been created.");
+        return affected;
     }
 
     @Command(
-        aliases = { "/drain" },
-        usage = "<radius>",
-        flags = "w",
-        desc = "Drain a pool",
-        help = "Removes all connected water sources.\n" +
-                "  If -w is specified, also makes waterlogged blocks non-waterlogged.",
-        min = 1,
-        max = 1
+        name = "/drain",
+        desc = "Drain a pool"
     )
     @CommandPermissions("worldedit.drain")
     @Logging(PLACEMENT)
-    public void drain(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
-
-        double radius = Math.max(0, args.getDouble(0));
-        boolean waterlogged = args.hasFlag('w');
+    public int drain(Player player, LocalSession session, EditSession editSession,
+                     @Arg(desc = "The radius to drain")
+                         double radius,
+                     @Switch(name = 'w', desc = "Also un-waterlog blocks")
+                         boolean waterlogged) throws WorldEditException {
+        radius = Math.max(0, radius);
         we.checkMaxRadius(radius);
         int affected = editSession.drainArea(
-                session.getPlacementPosition(player), radius, waterlogged);
+            session.getPlacementPosition(player), radius, waterlogged);
         player.print(affected + " block(s) have been changed.");
+        return affected;
     }
 
     @Command(
-        aliases = { "/fixlava", "fixlava" },
-        usage = "<radius>",
-        desc = "Fix lava to be stationary",
-        min = 1,
-        max = 1
+        name = "fixlava",
+        aliases = { "/fixlava" },
+        desc = "Fix lava to be stationary"
     )
     @CommandPermissions("worldedit.fixlava")
     @Logging(PLACEMENT)
-    public void fixLava(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
-
-        double radius = Math.max(0, args.getDouble(0));
+    public int fixLava(Player player, LocalSession session, EditSession editSession,
+                       @Arg(desc = "The radius to fix in")
+                           double radius) throws WorldEditException {
+        radius = Math.max(0, radius);
         we.checkMaxRadius(radius);
         int affected = editSession.fixLiquid(session.getPlacementPosition(player), radius, BlockTypes.LAVA);
         player.print(affected + " block(s) have been changed.");
+        return affected;
     }
 
     @Command(
-        aliases = { "/fixwater", "fixwater" },
-        usage = "<radius>",
-        desc = "Fix water to be stationary",
-        min = 1,
-        max = 1
+        name = "fixwater",
+        aliases = { "/fixwater" },
+        desc = "Fix water to be stationary"
     )
     @CommandPermissions("worldedit.fixwater")
     @Logging(PLACEMENT)
-    public void fixWater(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
-
-        double radius = Math.max(0, args.getDouble(0));
+    public int fixWater(Player player, LocalSession session, EditSession editSession,
+                        @Arg(desc = "The radius to fix in")
+                            double radius) throws WorldEditException {
+        radius = Math.max(0, radius);
         we.checkMaxRadius(radius);
         int affected = editSession.fixLiquid(session.getPlacementPosition(player), radius, BlockTypes.WATER);
         player.print(affected + " block(s) have been changed.");
+        return affected;
     }
 
     @Command(
-        aliases = { "/removeabove", "removeabove" },
-        usage = "[size] [height]",
-        desc = "Remove blocks above your head.",
-        min = 0,
-        max = 2
+        name = "removeabove",
+        aliases = { "/removeabove" },
+        desc = "Remove blocks above your head."
     )
     @CommandPermissions("worldedit.removeabove")
     @Logging(PLACEMENT)
-    public void removeAbove(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
-
-        int size = args.argsLength() > 0 ? Math.max(1, args.getInteger(0)) : 1;
+    public int removeAbove(Player player, LocalSession session, EditSession editSession,
+                           @Arg(desc = "The apothem of the square to remove from", def = "1")
+                               int size,
+                           @Arg(desc = "The maximum height above you to remove from", def = "")
+                               Integer height) throws WorldEditException {
+        size = Math.max(1, size);
         we.checkMaxRadius(size);
         World world = player.getWorld();
-        int height = args.argsLength() > 1 ? Math.min((world.getMaxY() + 1), args.getInteger(1) + 2) : (world.getMaxY() + 1);
+        height = height != null ? Math.min((world.getMaxY() + 1), height + 2) : (world.getMaxY() + 1);
 
         int affected = editSession.removeAbove(
-                session.getPlacementPosition(player), size, height);
+            session.getPlacementPosition(player), size, height);
         player.print(affected + " block(s) have been removed.");
+        return affected;
     }
 
     @Command(
-        aliases = { "/removebelow", "removebelow" },
-        usage = "[size] [height]",
-        desc = "Remove blocks below you.",
-        min = 0,
-        max = 2
+        name = "removebelow",
+        aliases = { "/removebelow" },
+        desc = "Remove blocks below you."
     )
     @CommandPermissions("worldedit.removebelow")
     @Logging(PLACEMENT)
-    public void removeBelow(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
-
-        int size = args.argsLength() > 0 ? Math.max(1, args.getInteger(0)) : 1;
+    public int removeBelow(Player player, LocalSession session, EditSession editSession,
+                           @Arg(desc = "The apothem of the square to remove from", def = "1")
+                               int size,
+                           @Arg(desc = "The maximum height below you to remove from", def = "")
+                               Integer height) throws WorldEditException {
+        size = Math.max(1, size);
         we.checkMaxRadius(size);
         World world = player.getWorld();
-        int height = args.argsLength() > 1 ? Math.min((world.getMaxY() + 1), args.getInteger(1) + 2) : (world.getMaxY() + 1);
+        height = height != null ? Math.min((-world.getMaxY() + 1), height + 2) : (world.getMaxY() + 1);
 
         int affected = editSession.removeBelow(session.getPlacementPosition(player), size, height);
         player.print(affected + " block(s) have been removed.");
+        return affected;
     }
 
     @Command(
-        aliases = { "/removenear", "removenear" },
-        usage = "<block> [size]",
-        desc = "Remove blocks near you.",
-        min = 1,
-        max = 2
+        name = "removenear",
+        aliases = { "/removenear" },
+        desc = "Remove blocks near you."
     )
     @CommandPermissions("worldedit.removenear")
     @Logging(PLACEMENT)
-    public void removeNear(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
+    public int removeNear(Player player, LocalSession session, EditSession editSession,
+                          @Arg(desc = "The mask of blocks to remove")
+                              Mask mask,
+                          @Arg(desc = "The radius of the square to remove from", def = "50")
+                              int radius) throws WorldEditException {
+        radius = Math.max(1, radius);
+        we.checkMaxRadius(radius);
 
-        ParserContext context = new ParserContext();
-        context.setActor(player);
-        context.setWorld(player.getWorld());
-        context.setSession(session);
-        context.setRestricted(false);
-        context.setPreferringWildcard(false);
-
-        BaseBlock block = we.getBlockFactory().parseFromInput(args.getString(0), context);
-        int size = Math.max(1, args.getInteger(1, 50));
-        we.checkMaxRadius(size);
-
-        int affected = editSession.removeNear(session.getPlacementPosition(player), block.getBlockType(), size);
+        int affected = editSession.removeNear(session.getPlacementPosition(player), mask, radius);
         player.print(affected + " block(s) have been removed.");
+        return affected;
     }
 
     @Command(
-        aliases = { "/replacenear", "replacenear" },
-        usage = "<size> <from-id> <to-id>",
-        desc = "Replace nearby blocks",
-        flags = "f",
-        min = 3,
-        max = 3
+        name = "replacenear",
+        aliases = { "/replacenear" },
+        desc = "Replace nearby blocks"
     )
     @CommandPermissions("worldedit.replacenear")
     @Logging(PLACEMENT)
-    public void replaceNear(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
-
-        int size = Math.max(1, args.getInteger(0));
-        we.checkMaxRadius(size);
-        int affected;
-        Set<BaseBlock> from;
-        Pattern to;
-
-        ParserContext context = new ParserContext();
-        context.setActor(player);
-        context.setWorld(player.getWorld());
-        context.setSession(session);
-        context.setRestricted(false);
-        context.setPreferringWildcard(!args.hasFlag('f'));
-
-        if (args.argsLength() == 2) {
-            from = null;
-            context.setRestricted(true);
-            to = we.getPatternFactory().parseFromInput(args.getString(1), context);
-        } else {
-            from = we.getBlockFactory().parseFromListInput(args.getString(1), context);
-            context.setRestricted(true);
-            to = we.getPatternFactory().parseFromInput(args.getString(2), context);
-        }
+    public int replaceNear(Player player, LocalSession session, EditSession editSession,
+                           @Arg(desc = "The radius of the square to remove in")
+                               int radius,
+                           @Arg(desc = "The mask matching blocks to remove", def = "")
+                               Mask from,
+                           @Arg(desc = "The pattern of blocks to replace with")
+                               Pattern to) throws WorldEditException {
+        radius = Math.max(1, radius);
+        we.checkMaxRadius(radius);
 
         BlockVector3 base = session.getPlacementPosition(player);
-        BlockVector3 min = base.subtract(size, size, size);
-        BlockVector3 max = base.add(size, size, size);
+        BlockVector3 min = base.subtract(radius, radius, radius);
+        BlockVector3 max = base.add(radius, radius, radius);
         Region region = new CuboidRegion(player.getWorld(), min, max);
 
-        if (to instanceof BlockPattern) {
-            affected = editSession.replaceBlocks(region, from, ((BlockPattern) to).getBlock());
-        } else {
-            affected = editSession.replaceBlocks(region, from, to);
+        if (from == null) {
+            from = new ExistingBlockMask(editSession);
         }
+
+        int affected = editSession.replaceBlocks(region, from, to);
         player.print(affected + " block(s) have been replaced.");
+        return affected;
     }
 
     @Command(
-        aliases = { "/snow", "snow" },
-        usage = "[radius]",
-        desc = "Simulates snow",
-        min = 0,
-        max = 1
+        name = "snow",
+        aliases = { "/snow" },
+        desc = "Simulates snow"
     )
     @CommandPermissions("worldedit.snow")
     @Logging(PLACEMENT)
-    public void snow(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
-        double size = args.argsLength() > 0 ? Math.max(1, args.getDouble(0)) : 10;
+    public int snow(Player player, LocalSession session, EditSession editSession,
+                    @Arg(desc = "The radius of the circle to snow in", def = "10")
+                        double size) throws WorldEditException {
+        size = Math.max(1, size);
         we.checkMaxRadius(size);
 
         int affected = editSession.simulateSnow(session.getPlacementPosition(player), size);
-        player.print(affected + " surfaces covered. Let it snow~");
+        player.print(affected + " surface(s) covered. Let it snow~");
+        return affected;
     }
 
     @Command(
-        aliases = {"/thaw", "thaw"},
-        usage = "[radius]",
-        desc = "Thaws the area",
-        min = 0,
-        max = 1
+        name = "thaw",
+        aliases = { "/thaw" },
+        desc = "Thaws the area"
     )
     @CommandPermissions("worldedit.thaw")
     @Logging(PLACEMENT)
-    public void thaw(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
-        double size = args.argsLength() > 0 ? Math.max(1, args.getDouble(0)) : 10;
+    public int thaw(Player player, LocalSession session, EditSession editSession,
+                    @Arg(desc = "The radius of the circle to thaw in", def = "10")
+                        double size) throws WorldEditException {
+        size = Math.max(1, size);
         we.checkMaxRadius(size);
 
         int affected = editSession.thaw(session.getPlacementPosition(player), size);
-        player.print(affected + " surfaces thawed.");
+        player.print(affected + " surface(s) thawed.");
+        return affected;
     }
 
     @Command(
-        aliases = { "/green", "green" },
-        usage = "[radius]",
-        desc = "Greens the area",
-        help = "Converts dirt to grass blocks. -f also converts coarse dirt.",
-        flags = "f",
-        min = 0,
-        max = 1
+        name = "green",
+        aliases = { "/green" },
+        desc = "Converts dirt to grass blocks in the area"
     )
     @CommandPermissions("worldedit.green")
     @Logging(PLACEMENT)
-    public void green(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
-        final double size = args.argsLength() > 0 ? Math.max(1, args.getDouble(0)) : 10;
+    public int green(Player player, LocalSession session, EditSession editSession,
+                     @Arg(desc = "The radius of the circle to convert in", def = "10")
+                         double size,
+                     @Switch(name = 'f', desc = "Also convert coarse dirt")
+                         boolean convertCoarse) throws WorldEditException {
+        size = Math.max(1, size);
         we.checkMaxRadius(size);
-        final boolean onlyNormalDirt = !args.hasFlag('f');
+        final boolean onlyNormalDirt = !convertCoarse;
 
         final int affected = editSession.green(session.getPlacementPosition(player), size, onlyNormalDirt);
-        player.print(affected + " surfaces greened.");
+        player.print(affected + " surface(s) greened.");
+        return affected;
     }
 
     @Command(
-            aliases = { "/ex", "/ext", "/extinguish", "ex", "ext", "extinguish" },
-            usage = "[radius]",
-            desc = "Extinguish nearby fire",
-            min = 0,
-            max = 1
-        )
+        name = "extinguish",
+        aliases = { "/ex", "/ext", "/extinguish", "ex", "ext" },
+        desc = "Extinguish nearby fire"
+    )
     @CommandPermissions("worldedit.extinguish")
     @Logging(PLACEMENT)
-    public void extinguish(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
+    public void extinguish(Player player, LocalSession session, EditSession editSession,
+                           @Arg(desc = "The radius of the square to remove in", def = "")
+                               Integer radius) throws WorldEditException {
 
         LocalConfiguration config = we.getConfiguration();
 
         int defaultRadius = config.maxRadius != -1 ? Math.min(40, config.maxRadius) : 40;
-        int size = args.argsLength() > 0 ? Math.max(1, args.getInteger(0))
-                : defaultRadius;
+        int size = radius != null ? Math.max(1, radius) : defaultRadius;
         we.checkMaxRadius(size);
 
-        int affected = editSession.removeNear(session.getPlacementPosition(player), BlockTypes.FIRE, size);
+        Mask mask = new BlockTypeMask(editSession, BlockTypes.FIRE);
+        int affected = editSession.removeNear(session.getPlacementPosition(player), mask, size);
         player.print(affected + " block(s) have been removed.");
     }
 
     @Command(
-        aliases = { "butcher" },
-        usage = "[radius]",
-        flags = "plangbtfr",
-        desc = "Kill all or nearby mobs",
-        help =
-            "Kills nearby mobs, based on radius, if none is given uses default in configuration.\n" +
-            "Flags:\n" +
-            "  -p also kills pets.\n" +
-            "  -n also kills NPCs.\n" +
-            "  -g also kills Golems.\n" +
-            "  -a also kills animals.\n" +
-            "  -b also kills ambient mobs.\n" +
-            "  -t also kills mobs with name tags.\n" +
-            "  -f compounds all previous flags.\n" +
-            "  -r also destroys armor stands.\n" +
-            "  -l currently does nothing.",
-        min = 0,
-        max = 1
+        name = "butcher",
+        desc = "Kill all or nearby mobs"
     )
     @CommandPermissions("worldedit.butcher")
     @Logging(PLACEMENT)
-    public void butcher(Actor actor, CommandContext args) throws WorldEditException {
+    public int butcher(Actor actor,
+                       @Arg(desc = "Radius to kill mobs in", def = "")
+                           Integer radius,
+                       @Switch(name = 'p', desc = "Also kill pets")
+                           boolean killPets,
+                       @Switch(name = 'n', desc = "Also kill NPCs")
+                           boolean killNpcs,
+                       @Switch(name = 'g', desc = "Also kill golems")
+                           boolean killGolems,
+                       @Switch(name = 'a', desc = "Also kill animals")
+                           boolean killAnimals,
+                       @Switch(name = 'b', desc = "Also kill ambient mobs")
+                           boolean killAmbient,
+                       @Switch(name = 't', desc = "Also kill mobs with name tags")
+                           boolean killWithName,
+                       @Switch(name = 'f', desc = "Also kill all friendly mobs (Applies the flags `-abgnpt`)")
+                           boolean killFriendly,
+                       @Switch(name = 'r', desc = "Also destroy armor stands")
+                           boolean killArmorStands) throws WorldEditException {
         LocalConfiguration config = we.getConfiguration();
         Player player = actor instanceof Player ? (Player) actor : null;
 
-        // technically the default can be larger than the max, but that's not my problem
-        int radius = config.butcherDefaultRadius;
-
-        // there might be a better way to do this but my brain is fried right now
-        if (args.argsLength() > 0) { // user inputted radius, override the default
-            radius = args.getInteger(0);
-            if (radius < -1) {
-                actor.printError("Use -1 to remove all mobs in loaded chunks");
-                return;
+        if (radius == null) {
+            radius = config.butcherDefaultRadius;
+        } else if (radius < -1) {
+            actor.printError("Use -1 to remove all mobs in loaded chunks");
+            return 0;
+        } else if (radius == -1) {
+            if (config.butcherMaxRadius != -1) {
+                radius = config.butcherMaxRadius;
             }
-            if (config.butcherMaxRadius != -1) { // clamp if there is a max
-                if (radius == -1) {
-                    radius = config.butcherMaxRadius;
-                } else { // Math.min does not work if radius is -1 (actually highest possible value)
-                    radius = Math.min(radius, config.butcherMaxRadius);
-                }
-            }
+        }
+        if (config.butcherMaxRadius != -1) {
+            radius = Math.min(radius, config.butcherMaxRadius);
         }
 
         CreatureButcher flags = new CreatureButcher(actor);
-        flags.fromCommand(args);
+        flags.or(CreatureButcher.Flags.FRIENDLY, killFriendly); // No permission check here. Flags will instead be filtered by the subsequent calls.
+        flags.or(CreatureButcher.Flags.PETS, killPets, "worldedit.butcher.pets");
+        flags.or(CreatureButcher.Flags.NPCS, killNpcs, "worldedit.butcher.npcs");
+        flags.or(CreatureButcher.Flags.GOLEMS, killGolems, "worldedit.butcher.golems");
+        flags.or(CreatureButcher.Flags.ANIMALS, killAnimals, "worldedit.butcher.animals");
+        flags.or(CreatureButcher.Flags.AMBIENT, killAmbient, "worldedit.butcher.ambient");
+        flags.or(CreatureButcher.Flags.TAGGED, killWithName, "worldedit.butcher.tagged");
+        flags.or(CreatureButcher.Flags.ARMOR_STAND, killArmorStands, "worldedit.butcher.armorstands");
 
+        int killed = killMatchingEntities(radius, player, flags::createFunction);
+
+        actor.print("Killed " + killed + (killed != 1 ? " mobs" : " mob") + (radius < 0 ? "" : " in a radius of " + radius) + ".");
+
+        return killed;
+    }
+
+    @Command(
+        name = "remove",
+        aliases = { "rem", "rement" },
+        desc = "Remove all entities of a type"
+    )
+    @CommandPermissions("worldedit.remove")
+    @Logging(PLACEMENT)
+    public int remove(Actor actor,
+                      @Arg(desc = "The type of entity to remove")
+                          EntityRemover remover,
+                      @Arg(desc = "The radius of the cuboid to remove from")
+                          int radius) throws WorldEditException {
+        Player player = actor instanceof Player ? (Player) actor : null;
+
+        if (radius < -1) {
+            actor.printError("Use -1 to remove all entities in loaded chunks");
+            return 0;
+        }
+
+        int removed = killMatchingEntities(radius, player, remover::createFunction);
+
+        actor.print("Marked " + removed + (removed != 1 ? " entities" : " entity") + " for removal.");
+        return removed;
+    }
+
+    private int killMatchingEntities(Integer radius, Player player, Supplier<EntityFunction> func) throws IncompleteRegionException, MaxChangedBlocksException {
         List<EntityVisitor> visitors = new ArrayList<>();
         LocalSession session = null;
         EditSession editSession = null;
@@ -453,12 +457,12 @@ public class UtilityCommands {
             } else {
                 entities = editSession.getEntities();
             }
-            visitors.add(new EntityVisitor(entities.iterator(), flags.createFunction()));
+            visitors.add(new EntityVisitor(entities.iterator(), func.get()));
         } else {
             Platform platform = we.getPlatformManager().queryCapability(Capability.WORLD_EDITING);
             for (World world : platform.getWorlds()) {
                 List<? extends Entity> entities = world.getEntities();
-                visitors.add(new EntityVisitor(entities.iterator(), flags.createFunction()));
+                visitors.add(new EntityVisitor(entities.iterator(), func.get()));
             }
         }
 
@@ -468,245 +472,55 @@ public class UtilityCommands {
             killed += visitor.getAffected();
         }
 
-        actor.print("Killed " + killed + (killed != 1 ? " mobs" : " mob") + (radius < 0 ? "" : " in a radius of " + radius) + ".");
-
         if (editSession != null) {
             session.remember(editSession);
             editSession.flushSession();
         }
+        return killed;
+    }
+
+    // get the formatter with the system locale. in the future, if we can get a local from a player, we can use that
+    private static final DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Locale.getDefault());
+    static {
+        formatter.applyPattern("#,##0.#####"); // pattern is locale-insensitive. this can translate to "1.234,56789"
     }
 
     @Command(
-        aliases = { "remove", "rem", "rement" },
-        usage = "<type> <radius>",
-        desc = "Remove all entities of a type",
-        min = 2,
-        max = 2
-    )
-    @CommandPermissions("worldedit.remove")
-    @Logging(PLACEMENT)
-    public void remove(Actor actor, CommandContext args) throws WorldEditException, CommandException {
-        String typeStr = args.getString(0);
-        int radius = args.getInteger(1);
-        Player player = actor instanceof Player ? (Player) actor : null;
-
-        if (radius < -1) {
-            actor.printError("Use -1 to remove all entities in loaded chunks");
-            return;
-        }
-
-        EntityRemover remover = new EntityRemover();
-        remover.fromString(typeStr);
-
-        List<EntityVisitor> visitors = new ArrayList<>();
-        LocalSession session = null;
-        EditSession editSession = null;
-
-        if (player != null) {
-            session = we.getSessionManager().get(player);
-            BlockVector3 center = session.getPlacementPosition(player);
-            editSession = session.createEditSession(player);
-            List<? extends Entity> entities;
-            if (radius >= 0) {
-                CylinderRegion region = CylinderRegion.createRadius(editSession, center, radius);
-                entities = editSession.getEntities(region);
-            } else {
-                entities = editSession.getEntities();
-            }
-            visitors.add(new EntityVisitor(entities.iterator(), remover.createFunction()));
-        } else {
-            Platform platform = we.getPlatformManager().queryCapability(Capability.WORLD_EDITING);
-            for (World world : platform.getWorlds()) {
-                List<? extends Entity> entities = world.getEntities();
-                visitors.add(new EntityVisitor(entities.iterator(), remover.createFunction()));
-            }
-        }
-
-        int removed = 0;
-        for (EntityVisitor visitor : visitors) {
-            Operations.completeLegacy(visitor);
-            removed += visitor.getAffected();
-        }
-
-        actor.print("Marked " + removed + (removed != 1 ? " entities" : " entity") + " for removal.");
-
-        if (editSession != null) {
-            session.remember(editSession);
-            editSession.flushSession();
-        }
-    }
-
-    @Command(
-        aliases = { "/calc", "/calculate", "/eval", "/evaluate", "/solve" },
-        usage = "<expression>",
+        name = "/calculate",
+        aliases = { "/calc", "/eval", "/evaluate", "/solve" },
         desc = "Evaluate a mathematical expression"
     )
     @CommandPermissions("worldedit.calc")
-    public void calc(Actor actor, @Text String input) throws CommandException {
+    public void calc(Actor actor,
+                     @Arg(desc = "Expression to evaluate", variable = true)
+                         List<String> input) {
         try {
-            Expression expression = Expression.compile(input);
-            if (actor instanceof SessionOwner) {
-                actor.print("= " + expression.evaluate(
-                        new double[]{}, WorldEdit.getInstance().getSessionManager().get((SessionOwner) actor).getTimeout()));
-            } else {
-                actor.print("= " + expression.evaluate());
-            }
+            Expression expression = Expression.compile(String.join(" ", input));
+            double result = expression.evaluate(
+                    new double[]{}, WorldEdit.getInstance().getSessionManager().get(actor).getTimeout());
+            String formatted = formatter.format(result);
+            actor.print(SubtleFormat.wrap(input + " = ")
+                    .append(TextComponent.of(formatted, TextColor.LIGHT_PURPLE)));
         } catch (EvaluationException e) {
             actor.printError(String.format(
-                    "'%s' could not be evaluated (error: %s)", input, e.getMessage()));
+                "'%s' could not be evaluated (error: %s)", input, e.getMessage()));
         } catch (ExpressionException e) {
             actor.printError(String.format(
-                    "'%s' could not be parsed as a valid expression", input));
+                "'%s' could not be parsed as a valid expression", input));
         }
     }
 
     @Command(
-        aliases = { "/help" },
-        usage = "[<command>]",
-        desc = "Displays help for WorldEdit commands",
-        min = 0,
-        max = -1
+        name = "/help",
+        desc = "Displays help for WorldEdit commands"
     )
     @CommandPermissions("worldedit.help")
-    public void help(Actor actor, CommandContext args) throws WorldEditException {
-        help(args, we, actor);
-    }
-
-    private static CommandMapping detectCommand(Dispatcher dispatcher, String command, boolean isRootLevel) {
-        CommandMapping mapping;
-
-        // First try the command as entered
-        mapping = dispatcher.get(command);
-        if (mapping != null) {
-            return mapping;
-        }
-
-        // Then if we're looking at root commands and the user didn't use
-        // any slashes, let's try double slashes and then single slashes.
-        // However, be aware that there exists different single slash
-        // and double slash commands in WorldEdit
-        if (isRootLevel && !command.contains("/")) {
-            mapping = dispatcher.get("//" + command);
-            if (mapping != null) {
-                return mapping;
-            }
-
-            mapping = dispatcher.get("/" + command);
-            if (mapping != null) {
-                return mapping;
-            }
-        }
-
-        return null;
-    }
-
-    public static void help(CommandContext args, WorldEdit we, Actor actor) {
-        CommandCallable callable = we.getPlatformManager().getCommandManager().getDispatcher();
-
-        int page = 0;
-        final int perPage = actor instanceof Player ? 8 : 20; // More pages for console
-        int effectiveLength = args.argsLength();
-
-        // Detect page from args
-        try {
-            if (args.argsLength() > 0) {
-                page = args.getInteger(args.argsLength() - 1);
-                if (page <= 0) {
-                    page = 1;
-                } else {
-                    page--;
-                }
-
-                effectiveLength--;
-            }
-        } catch (NumberFormatException ignored) {
-        }
-
-        boolean isRootLevel = true;
-        List<String> visited = new ArrayList<>();
-
-        // Drill down to the command
-        for (int i = 0; i < effectiveLength; i++) {
-            String command = args.getString(i);
-
-            if (callable instanceof Dispatcher) {
-                // Chop off the beginning / if we're are the root level
-                if (isRootLevel && command.length() > 1 && command.charAt(0) == '/') {
-                    command = command.substring(1);
-                }
-
-                CommandMapping mapping = detectCommand((Dispatcher) callable, command, isRootLevel);
-                if (mapping != null) {
-                    callable = mapping.getCallable();
-                } else {
-                    if (isRootLevel) {
-                        actor.printError(String.format("The command '%s' could not be found.", args.getString(i)));
-                        return;
-                    } else {
-                        actor.printError(String.format("The sub-command '%s' under '%s' could not be found.",
-                                command, Joiner.on(" ").join(visited)));
-                        return;
-                    }
-                }
-
-                visited.add(args.getString(i));
-                isRootLevel = false;
-            } else {
-                actor.printError(String.format("'%s' has no sub-commands. (Maybe '%s' is for a parameter?)",
-                        Joiner.on(" ").join(visited), command));
-                return;
-            }
-        }
-
-        // Create the message
-        if (callable instanceof Dispatcher) {
-            Dispatcher dispatcher = (Dispatcher) callable;
-
-            // Get a list of aliases
-            List<CommandMapping> aliases = new ArrayList<>(dispatcher.getCommands());
-            aliases.sort(new PrimaryAliasComparator(CommandManager.COMMAND_CLEAN_PATTERN));
-
-            // Calculate pagination
-            int offset = perPage * page;
-            int pageTotal = (int) Math.ceil(aliases.size() / (double) perPage);
-
-            // Box
-            CommandListBox box = new CommandListBox(String.format("Help: page %d/%d ", page + 1, pageTotal));
-            TextComponentProducer tip = new TextComponentProducer();
-            tip.getBuilder().content("").color(TextColor.GRAY);
-            TextComponentProducer contents = box.getContents();
-
-            if (offset >= aliases.size()) {
-                tip.append(ErrorFormat.wrap(String.format("There is no page %d (total number of pages is %d).", page + 1, pageTotal))).newline();
-            } else {
-                List<CommandMapping> list = aliases.subList(offset, Math.min(offset + perPage, aliases.size()));
-
-                tip.append("Type ");
-                tip.append(CodeFormat.wrap("//help "));
-                tip.append("<command> [<page>] for more information.");
-                tip.newline();
-
-                // Add each command
-                for (CommandMapping mapping : list) {
-                    StringBuilder builder = new StringBuilder();
-                    if (isRootLevel) {
-                        builder.append("/");
-                    }
-                    if (!visited.isEmpty()) {
-                        builder.append(Joiner.on(" ").join(visited));
-                        builder.append(" ");
-                    }
-                    builder.append(mapping.getPrimaryAlias());
-                    box.appendCommand(builder.toString(), mapping.getDescription().getDescription());
-                }
-            }
-
-            contents.append(tip.create());
-            actor.print(box.create());
-        } else {
-            CommandUsageBox box = new CommandUsageBox(callable, Joiner.on(" ").join(visited));
-            actor.print(box.create());
-        }
+    public void help(Actor actor,
+                     @Arg(desc = "The page to retrieve", def = "1")
+                         int page,
+                     @Arg(desc = "The command to retrieve help for", def = "", variable = true)
+                         List<String> command) throws WorldEditException {
+        PrintCommandHelp.help(command, page, we, actor);
     }
 
 }

@@ -24,12 +24,13 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.sk89q.worldedit.extension.platform.Actor;
-import com.sk89q.worldedit.util.command.parametric.ExceptionConverter;
+import com.sk89q.worldedit.internal.command.exception.ExceptionConverter;
 import com.sk89q.worldedit.util.task.FutureForwardingTask;
 import com.sk89q.worldedit.util.task.Supervisor;
 import com.sk89q.worldedit.world.World;
 
 import javax.annotation.Nullable;
+import java.util.concurrent.ForkJoinPool;
 
 public class AsyncCommandHelper {
 
@@ -85,7 +86,8 @@ public class AsyncCommandHelper {
                         .exceptionConverter(exceptionConverter)
                         .onSuccess(format(success))
                         .onFailure(format(failure))
-                        .build());
+                        .build(),
+                ForkJoinPool.commonPool());
         return this;
     }
 
@@ -96,7 +98,8 @@ public class AsyncCommandHelper {
                 new MessageFutureCallback.Builder(sender)
                         .exceptionConverter(exceptionConverter)
                         .onFailure(format(failure))
-                        .build());
+                        .build(),
+                ForkJoinPool.commonPool());
         return this;
     }
 

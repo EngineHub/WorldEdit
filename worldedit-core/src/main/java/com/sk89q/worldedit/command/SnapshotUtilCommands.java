@@ -19,15 +19,14 @@
 
 package com.sk89q.worldedit.command;
 
-import com.sk89q.minecraft.util.commands.Command;
-import com.sk89q.minecraft.util.commands.CommandContext;
-import com.sk89q.minecraft.util.commands.CommandPermissions;
-import com.sk89q.minecraft.util.commands.Logging;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.command.util.CommandPermissions;
+import com.sk89q.worldedit.command.util.CommandPermissionsConditionGenerator;
+import com.sk89q.worldedit.command.util.Logging;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.world.DataException;
@@ -36,12 +35,16 @@ import com.sk89q.worldedit.world.snapshot.Snapshot;
 import com.sk89q.worldedit.world.snapshot.SnapshotRestore;
 import com.sk89q.worldedit.world.storage.ChunkStore;
 import com.sk89q.worldedit.world.storage.MissingWorldException;
+import org.enginehub.piston.annotation.Command;
+import org.enginehub.piston.annotation.CommandContainer;
+import org.enginehub.piston.annotation.param.Arg;
 
 import java.io.File;
 import java.io.IOException;
 
-import static com.sk89q.minecraft.util.commands.Logging.LogMode.REGION;
+import static com.sk89q.worldedit.command.util.Logging.LogMode.REGION;
 
+@CommandContainer(superTypes = CommandPermissionsConditionGenerator.Registration.class)
 public class SnapshotUtilCommands {
 
     private final WorldEdit we;
@@ -51,15 +54,15 @@ public class SnapshotUtilCommands {
     }
 
     @Command(
-            aliases = { "restore", "/restore" },
-            usage = "[snapshot]",
-            desc = "Restore the selection from a snapshot",
-            min = 0,
-            max = 1
+        name = "restore",
+        aliases = { "/restore" },
+        desc = "Restore the selection from a snapshot"
     )
     @Logging(REGION)
     @CommandPermissions("worldedit.snapshots.restore")
-    public void restore(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
+    public void restore(Player player, LocalSession session, EditSession editSession,
+                        @Arg(name = "snapshot", desc = "The snapshot to restore", def = "")
+                            String snapshotName) throws WorldEditException {
 
         LocalConfiguration config = we.getConfiguration();
 
@@ -71,9 +74,9 @@ public class SnapshotUtilCommands {
         Region region = session.getSelection(player.getWorld());
         Snapshot snapshot;
 
-        if (args.argsLength() > 0) {
+        if (snapshotName != null) {
             try {
-                snapshot = config.snapshotRepo.getSnapshot(args.getString(0));
+                snapshot = config.snapshotRepo.getSnapshot(snapshotName);
             } catch (InvalidSnapshotException e) {
                 player.printError("That snapshot does not exist or is not available.");
                 return;
@@ -110,7 +113,7 @@ public class SnapshotUtilCommands {
             }
         }
 
-        ChunkStore chunkStore = null;
+        ChunkStore chunkStore;
 
         // Load chunk store
         try {

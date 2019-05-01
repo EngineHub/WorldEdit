@@ -19,31 +19,30 @@
 
 package com.sk89q.worldedit.internal.command;
 
-import com.sk89q.minecraft.util.commands.CommandContext;
-import com.sk89q.minecraft.util.commands.CommandException;
-import com.sk89q.minecraft.util.commands.Logging;
 import com.sk89q.worldedit.IncompleteRegionException;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.command.util.Logging;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.math.Vector3;
-import com.sk89q.worldedit.util.command.parametric.AbstractInvokeListener;
-import com.sk89q.worldedit.util.command.parametric.InvokeHandler;
-import com.sk89q.worldedit.util.command.parametric.ParameterData;
-import com.sk89q.worldedit.util.command.parametric.ParameterException;
+import org.enginehub.piston.CommandParameters;
+import org.enginehub.piston.gen.CommandCallListener;
+import org.enginehub.piston.inject.Key;
 
-import java.io.Closeable;
 import java.lang.reflect.Method;
+import java.util.Optional;
 import java.util.logging.Handler;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Logs called commands to a logger.
  */
-public class CommandLoggingHandler extends AbstractInvokeListener implements InvokeHandler, Closeable {
+public class CommandLoggingHandler implements CommandCallListener, AutoCloseable {
 
     private final WorldEdit worldEdit;
     private final Logger logger;
@@ -62,91 +61,75 @@ public class CommandLoggingHandler extends AbstractInvokeListener implements Inv
     }
 
     @Override
-    public void preProcess(Object object, Method method, ParameterData[] parameters, CommandContext context) throws CommandException, ParameterException {
-    }
-
-    @Override
-    public void preInvoke(Object object, Method method, ParameterData[] parameters, Object[] args, CommandContext context) throws CommandException {
+    public void beforeCall(Method method, CommandParameters parameters) {
         Logging loggingAnnotation = method.getAnnotation(Logging.class);
         Logging.LogMode logMode;
         StringBuilder builder = new StringBuilder();
-        
+
         if (loggingAnnotation == null) {
             logMode = null;
         } else {
             logMode = loggingAnnotation.value();
         }
 
-        Actor sender = context.getLocals().get(Actor.class);
-        Player player;
+        Optional<Player> playerOpt = parameters.injectedValue(Key.of(Actor.class))
+            .filter(Player.class::isInstance)
+            .map(Player.class::cast);
 
-        if (sender == null) {
+        if (!playerOpt.isPresent()) {
             return;
         }
 
-        if (sender instanceof Player) {
-            player = (Player) sender;
-        } else {
-            return;
-        }
+        Player player = playerOpt.get();
 
-        builder.append("WorldEdit: ").append(sender.getName());
-        if (sender.isPlayer()) {
-            builder.append(" (in \"").append(player.getWorld().getName()).append("\")");
-        }
+        builder.append("WorldEdit: ").append(player.getName());
+        builder.append(" (in \"").append(player.getWorld().getName()).append("\")");
 
-        builder.append(": ").append(context.getCommand());
-        
-        if (context.argsLength() > 0) {
-            builder.append(" ").append(context.getJoinedStrings(0));
-        }
-        
-        if (logMode != null && sender.isPlayer()) {
+        builder.append(": ").append(parameters.getMetadata().getCalledName());
+
+        builder.append(": ")
+            .append(Stream.concat(
+                Stream.of(parameters.getMetadata().getCalledName()),
+                parameters.getMetadata().getArguments().stream()
+            ).collect(Collectors.joining(" ")));
+
+        if (logMode != null) {
             Vector3 position = player.getLocation().toVector();
             LocalSession session = worldEdit.getSessionManager().get(player);
-            
+
             switch (logMode) {
-            case PLACEMENT:
-                try {
-                    position = session.getPlacementPosition(player).toVector3();
-                } catch (IncompleteRegionException e) {
+                case PLACEMENT:
+                    try {
+                        position = session.getPlacementPosition(player).toVector3();
+                    } catch (IncompleteRegionException e) {
+                        break;
+                    }
+                    /* FALL-THROUGH */
+
+                case POSITION:
+                    builder.append(" - Position: ").append(position);
                     break;
-                }
-                /* FALL-THROUGH */
 
-            case POSITION:
-                builder.append(" - Position: ").append(position);
-                break;
+                case ALL:
+                    builder.append(" - Position: ").append(position);
+                    /* FALL-THROUGH */
 
-            case ALL:
-                builder.append(" - Position: ").append(position);
-                /* FALL-THROUGH */
+                case ORIENTATION_REGION:
+                    builder.append(" - Orientation: ").append(player.getCardinalDirection().name());
+                    /* FALL-THROUGH */
 
-            case ORIENTATION_REGION:
-                builder.append(" - Orientation: ").append(player.getCardinalDirection().name());
-                /* FALL-THROUGH */
-
-            case REGION:
-                try {
-                    builder.append(" - Region: ")
+                case REGION:
+                    try {
+                        builder.append(" - Region: ")
                             .append(session.getSelection(player.getWorld()));
-                } catch (IncompleteRegionException e) {
+                    } catch (IncompleteRegionException e) {
+                        break;
+                    }
                     break;
-                }
-                break;
             }
         }
 
         logger.info(builder.toString());
-    }
-
-    @Override
-    public void postInvoke(Object object, Method method, ParameterData[] parameters, Object[] args, CommandContext context) throws CommandException {
-    }
-
-    @Override
-    public InvokeHandler createInvokeHandler() {
-        return this;
     }
 
     @Override

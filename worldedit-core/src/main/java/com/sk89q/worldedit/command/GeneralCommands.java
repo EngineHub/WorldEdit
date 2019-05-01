@@ -19,28 +19,31 @@
 
 package com.sk89q.worldedit.command;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import com.google.common.collect.Sets;
-import com.sk89q.minecraft.util.commands.Command;
-import com.sk89q.minecraft.util.commands.CommandContext;
-import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.command.util.CommandPermissions;
+import com.sk89q.worldedit.command.util.CommandPermissionsConditionGenerator;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.input.DisallowedUsageException;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.function.mask.Mask;
-import com.sk89q.worldedit.util.command.parametric.Optional;
 import com.sk89q.worldedit.world.item.ItemType;
 import com.sk89q.worldedit.world.item.ItemTypes;
+import org.enginehub.piston.annotation.Command;
+import org.enginehub.piston.annotation.CommandContainer;
+import org.enginehub.piston.annotation.param.Arg;
+import org.enginehub.piston.annotation.param.Switch;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * General WorldEdit commands.
  */
+@CommandContainer(superTypes = CommandPermissionsConditionGenerator.Registration.class)
 public class GeneralCommands {
 
     private final WorldEdit worldEdit;
@@ -56,19 +59,18 @@ public class GeneralCommands {
     }
 
     @Command(
-        aliases = { "/limit" },
-        usage = "[limit]",
-        desc = "Modify block change limit",
-        min = 0,
-        max = 1
+        name = "/limit",
+        desc = "Modify block change limit"
     )
     @CommandPermissions("worldedit.limit")
-    public void limit(Player player, LocalSession session, CommandContext args) throws WorldEditException {
-        
+    public void limit(Player player, LocalSession session,
+                      @Arg(desc = "The limit to set", def = "")
+                          Integer limit) throws WorldEditException {
+
         LocalConfiguration config = worldEdit.getConfiguration();
         boolean mayDisable = player.hasPermission("worldedit.limit.unrestricted");
 
-        int limit = args.argsLength() == 0 ? config.defaultChangeLimit : Math.max(-1, args.getInteger(0));
+        limit = limit == null ? config.defaultChangeLimit : Math.max(-1, limit);
         if (!mayDisable && config.maxChangeLimit > -1) {
             if (limit > config.maxChangeLimit) {
                 player.printError("Your maximum allowable limit is " + config.maxChangeLimit + ".");
@@ -86,19 +88,18 @@ public class GeneralCommands {
     }
 
     @Command(
-            aliases = { "/timeout" },
-            usage = "[time]",
-            desc = "Modify evaluation timeout time.",
-            min = 0,
-            max = 1
+        name = "/timeout",
+        desc = "Modify evaluation timeout time."
     )
     @CommandPermissions("worldedit.timeout")
-    public void timeout(Player player, LocalSession session, CommandContext args) throws WorldEditException {
+    public void timeout(Player player, LocalSession session,
+                        @Arg(desc = "The timeout time to set", def = "")
+                            Integer limit) throws WorldEditException {
 
         LocalConfiguration config = worldEdit.getConfiguration();
         boolean mayDisable = player.hasPermission("worldedit.timeout.unrestricted");
 
-        int limit = args.argsLength() == 0 ? config.calculationTimeout : Math.max(-1, args.getInteger(0));
+        limit = limit == null ? config.calculationTimeout : Math.max(-1, limit);
         if (!mayDisable && config.maxCalculationTimeout > -1) {
             if (limit > config.maxCalculationTimeout) {
                 player.printError("Your maximum allowable timeout is " + config.maxCalculationTimeout + " ms.");
@@ -116,89 +117,65 @@ public class GeneralCommands {
     }
 
     @Command(
-        aliases = { "/fast" },
-        usage = "[on|off]",
-        desc = "Toggle fast mode",
-        min = 0,
-        max = 1
+        name = "/fast",
+        desc = "Toggle fast mode"
     )
     @CommandPermissions("worldedit.fast")
-    public void fast(Player player, LocalSession session, CommandContext args) throws WorldEditException {
+    public void fast(Player player, LocalSession session,
+                     @Arg(desc = "The new fast mode state", def = "")
+                        Boolean fastMode) throws WorldEditException {
+        boolean hasFastMode = session.hasFastMode();
+        if (fastMode != null && fastMode == hasFastMode) {
+            player.printError("Fast mode already " + (fastMode ? "enabled" : "disabled") + ".");
+            return;
+        }
 
-        String newState = args.getString(0, null);
-        if (session.hasFastMode()) {
-            if ("on".equals(newState)) {
-                player.printError("Fast mode already enabled.");
-                return;
-            }
-
+        if (hasFastMode) {
             session.setFastMode(false);
             player.print("Fast mode disabled.");
         } else {
-            if ("off".equals(newState)) {
-                player.printError("Fast mode already disabled.");
-                return;
-            }
-
             session.setFastMode(true);
             player.print("Fast mode enabled. Lighting in the affected chunks may be wrong and/or you may need to rejoin to see changes.");
         }
     }
 
     @Command(
-            aliases = { "/reorder" },
-            usage = "[multi|fast|none]",
-            desc = "Sets the reorder mode of WorldEdit",
-            min = 0,
-            max = 1
+        name = "/reorder",
+        desc = "Sets the reorder mode of WorldEdit"
     )
     @CommandPermissions("worldedit.reorder")
-    public void reorderMode(Player player, LocalSession session, CommandContext args) throws WorldEditException {
-        String newState = args.getString(0, null);
-        if (newState == null) {
+    public void reorderMode(Player player, LocalSession session,
+                            @Arg(desc = "The reorder mode", def = "")
+                                EditSession.ReorderMode reorderMode) throws WorldEditException {
+        if (reorderMode == null) {
             player.print("The reorder mode is " + session.getReorderMode().getDisplayName());
         } else {
-            java.util.Optional<EditSession.ReorderMode> reorderModeOptional = EditSession.ReorderMode.getFromDisplayName(newState);
-            if (!reorderModeOptional.isPresent()) {
-                player.printError("Unknown reorder mode!");
-                return;
-            }
-
-            EditSession.ReorderMode reorderMode = reorderModeOptional.get();
             session.setReorderMode(reorderMode);
             player.print("The reorder mode is now " + session.getReorderMode().getDisplayName());
         }
     }
 
     @Command(
-            aliases = { "/drawsel" },
-            usage = "[on|off]",
-            desc = "Toggle drawing the current selection",
-            min = 0,
-            max = 1
+        name = "/drawsel",
+        desc = "Toggle drawing the current selection"
     )
     @CommandPermissions("worldedit.drawsel")
-    public void drawSelection(Player player, LocalSession session, CommandContext args) throws WorldEditException {
-
+    public void drawSelection(Player player, LocalSession session,
+                              @Arg(desc = "The new draw selection state", def = "")
+                                  Boolean drawSelection) throws WorldEditException {
         if (!WorldEdit.getInstance().getConfiguration().serverSideCUI) {
             throw new DisallowedUsageException("This functionality is disabled in the configuration!");
         }
-        String newState = args.getString(0, null);
-        if (session.shouldUseServerCUI()) {
-            if ("on".equals(newState)) {
-                player.printError("Server CUI already enabled.");
-                return;
-            }
-
+        boolean useServerCui = session.shouldUseServerCUI();
+        if (drawSelection != null && drawSelection == useServerCui) {
+            player.printError("Server CUI already " + (useServerCui ? "enabled" : "disabled") + ".");
+            return;
+        }
+        if (useServerCui) {
             session.setUseServerCUI(false);
             session.updateServerCUI(player);
             player.print("Server CUI disabled.");
         } else {
-            if ("off".equals(newState)) {
-                player.printError("Server CUI already disabled.");
-                return;
-            }
-
             session.setUseServerCUI(true);
             session.updateServerCUI(player);
             player.print("Server CUI enabled. This only supports cuboid regions, with a maximum size of 32x32x32.");
@@ -206,14 +183,14 @@ public class GeneralCommands {
     }
 
     @Command(
-        aliases = { "/gmask", "gmask" },
-        usage = "[mask]",
-        desc = "Set the global mask",
-        min = 0,
-        max = -1
+        name = "gmask",
+        aliases = {"/gmask"},
+        desc = "Set the global mask"
     )
     @CommandPermissions("worldedit.global-mask")
-    public void gmask(Player player, LocalSession session, @Optional Mask mask) throws WorldEditException {
+    public void gmask(Player player, LocalSession session,
+                      @Arg(desc = "The mask to set", def = "")
+                          Mask mask) throws WorldEditException {
         if (mask == null) {
             session.setMask((Mask) null);
             player.print("Global mask disabled.");
@@ -224,11 +201,9 @@ public class GeneralCommands {
     }
 
     @Command(
-        aliases = { "/toggleplace", "toggleplace" },
-        usage = "",
-        desc = "Switch between your position and pos1 for placement",
-        min = 0,
-        max = 0
+        name = "toggleplace",
+        aliases = {"/toggleplace"},
+        desc = "Switch between your position and pos1 for placement"
     )
     public void togglePlace(Player player, LocalSession session) throws WorldEditException {
 
@@ -240,24 +215,17 @@ public class GeneralCommands {
     }
 
     @Command(
-        aliases = { "/searchitem", "/l", "/search", "searchitem" },
-        usage = "<query>",
-        flags = "bi",
-        desc = "Search for an item",
-        help =
-            "Searches for an item.\n" +
-            "Flags:\n" +
-            "  -b only search for blocks\n" +
-            "  -i only search for items",
-        min = 1,
-        max = 1
+        name = "searchitem",
+        aliases = {"/searchitem", "/l", "/search"},
+        desc = "Search for an item"
     )
-    public void searchItem(Actor actor, CommandContext args) throws WorldEditException {
-        
-        String query = args.getString(0).trim().toLowerCase();
-        boolean blocksOnly = args.hasFlag('b');
-        boolean itemsOnly = args.hasFlag('i');
-
+    public void searchItem(Actor actor,
+                           @Arg(desc = "Item query")
+                               String query,
+                           @Switch(name = 'b', desc = "Only search for blocks")
+                               boolean blocksOnly,
+                           @Switch(name = 'i', desc = "Only search for items")
+                               boolean itemsOnly) throws WorldEditException {
         ItemType type = ItemTypes.get(query);
 
         if (type != null) {

@@ -8,6 +8,12 @@ repositories {
     maven { url 'https://papermc.io/repo/repository/maven-public/' }
 }
 
+configurations.all { Configuration it ->
+    it.resolutionStrategy { ResolutionStrategy rs ->
+        rs.force("com.google.guava:guava:21.0")
+    }
+}
+
 dependencies {
     compile project(':worldedit-core')
     compile project(':worldedit-libs:bukkit')

@@ -50,12 +50,12 @@ public enum Capability {
     USER_COMMANDS {
         @Override
         void initialize(PlatformManager platformManager, Platform platform) {
-            platformManager.getCommandManager().register(platform);
+            platformManager.getPlatformCommandManager().registerCommandsWith(platform);
         }
 
         @Override
         void unload(PlatformManager platformManager, Platform platform) {
-            platformManager.getCommandManager().unregister();
+            platformManager.getPlatformCommandManager().removeCommands();
         }
     },
 

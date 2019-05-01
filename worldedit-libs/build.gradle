@@ -12,7 +12,7 @@ their internal usage in each platform, not because we need them available to
 dependents of `-core` to compile and work with WorldEdit's API.
 
  */
-subprojects {
+configure(subprojects + project("core:ap")) {
     apply plugin: 'maven'
     apply plugin: 'com.github.johnrengelman.shadow'
     apply plugin: 'com.jfrog.artifactory'
@@ -89,6 +89,8 @@ subprojects {
 }
 
 project("core") {
+    def pistonVersion = '0.1.0'
+
     dependencies {
         shade 'net.kyori:text-api:2.0.0'
         shade 'net.kyori:text-serializer-gson:2.0.0'
@@ -98,6 +100,16 @@ project("core") {
         }
         shade 'com.thoughtworks.paranamer:paranamer:2.6'
         shade 'com.sk89q.lib:jlibnoise:1.0.0'
+        shade "org.enginehub.piston:core:$pistonVersion"
+        shade "org.enginehub.piston.core-ap:runtime:$pistonVersion"
+        shade "org.enginehub.piston:default-impl:$pistonVersion"
+    }
+
+    project("ap") {
+        dependencies {
+            shade "org.enginehub.piston.core-ap:annotations:$pistonVersion"
+            shade "org.enginehub.piston.core-ap:processor:$pistonVersion"
+        }
     }
 }
 project("bukkit") {
