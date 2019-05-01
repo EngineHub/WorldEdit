@@ -57,6 +57,12 @@
     <module name="WhitespaceAround">
       <property name="tokens" value="ASSIGN"/>
     </module>
+    <!-- Validate String.to(Lower|Upper)Case() calls include Locale argument -->
+    <module name="Regexp">
+      <property name="message" value="Case-conversion calls must include an explicit Locale"/>
+      <property name="format" value="(?!Character)\.to(Lower|Upper)Case\(\)"/>
+      <property name="illegalPattern" value="true"/>
+    </module>
   </module>
   <!-- Validate that command annotations are formatted correctly -->
   <module name="RegexpMultiline">
