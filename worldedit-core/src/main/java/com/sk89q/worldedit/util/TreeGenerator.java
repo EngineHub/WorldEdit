@@ -31,6 +31,7 @@ import com.sk89q.worldedit.world.block.BlockTypes;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
@@ -161,7 +162,7 @@ public class TreeGenerator {
          */
         @Nullable
         public static TreeType lookup(String name) {
-            return lookup.get(name.toLowerCase());
+            return lookup.get(name.toLowerCase(Locale.ROOT));
         }
     }
 

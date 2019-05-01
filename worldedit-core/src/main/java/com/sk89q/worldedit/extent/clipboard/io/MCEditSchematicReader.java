@@ -56,6 +56,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -261,7 +262,7 @@ public class MCEditSchematicReader extends NBTSchematicReader {
                     Location location = NBTConversions.toLocation(clipboard, compound.getListTag("Pos"), compound.getListTag("Rotation"));
 
                     if (!id.isEmpty()) {
-                        EntityType entityType = EntityTypes.get(id.toLowerCase());
+                        EntityType entityType = EntityTypes.get(id.toLowerCase(Locale.ROOT));
                         if (entityType != null) {
                             for (EntityNBTCompatibilityHandler compatibilityHandler : ENTITY_COMPATIBILITY_HANDLERS) {
                                 if (compatibilityHandler.isAffectedEntity(entityType, compound)) {
@@ -271,7 +272,7 @@ public class MCEditSchematicReader extends NBTSchematicReader {
                             BaseEntity state = new BaseEntity(entityType, compound);
                             clipboard.createEntity(location, state);
                         } else {
-                            log.warn("Unknown entity when pasting schematic: " + id.toLowerCase());
+                            log.warn("Unknown entity when pasting schematic: " + id.toLowerCase(Locale.ROOT));
                         }
                     }
                 }

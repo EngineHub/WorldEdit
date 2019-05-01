@@ -23,6 +23,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.google.common.base.Function;
 
+import java.util.Locale;
 import java.util.regex.Pattern;
 
 import javax.annotation.Nullable;
@@ -60,7 +61,7 @@ public class LevenshteinDistance implements Function<String, Integer> {
         checkNotNull(baseString);
         this.caseSensitive = caseSensitive;
         this.replacePattern = replacePattern;
-        baseString = caseSensitive ? baseString : baseString.toLowerCase();
+        baseString = caseSensitive ? baseString : baseString.toLowerCase(Locale.ROOT);
         baseString = replacePattern != null ? replacePattern.matcher(baseString).replaceAll("") : baseString;
         this.baseString = baseString;
     }
@@ -79,7 +80,7 @@ public class LevenshteinDistance implements Function<String, Integer> {
         if (caseSensitive) {
             return distance(baseString, input);
         } else {
-            return distance(baseString, input.toLowerCase());
+            return distance(baseString, input.toLowerCase(Locale.ROOT));
         }
     }
 
@@ -189,5 +190,5 @@ public class LevenshteinDistance implements Function<String, Integer> {
         // actually has the most recent cost counts
         return p[n];
     }
-    
+
 }

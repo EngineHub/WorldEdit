@@ -22,6 +22,7 @@ package com.sk89q.worldedit.world.block;
 import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.worldedit.registry.state.Property;
 
+import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -92,9 +93,11 @@ public interface BlockStateHolder<B extends BlockStateHolder<B>> {
         if (getStates().isEmpty()) {
             return this.getBlockType().getId();
         } else {
-            String properties =
-                    getStates().entrySet().stream().map(entry -> entry.getKey().getName() + "=" + entry.getValue().toString().toLowerCase()).collect(Collectors.joining(
-                    ","));
+            String properties = getStates().entrySet().stream()
+                .map(entry -> entry.getKey().getName()
+                    + "="
+                    + entry.getValue().toString().toLowerCase(Locale.ROOT))
+                .collect(Collectors.joining(","));
             return this.getBlockType().getId() + "[" + properties + "]";
         }
     }

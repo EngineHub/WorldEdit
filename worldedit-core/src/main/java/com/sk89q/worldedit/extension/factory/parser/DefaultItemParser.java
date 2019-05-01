@@ -28,6 +28,8 @@ import com.sk89q.worldedit.world.item.ItemType;
 import com.sk89q.worldedit.world.item.ItemTypes;
 import com.sk89q.worldedit.world.registry.LegacyMapper;
 
+import java.util.Locale;
+
 public class DefaultItemParser extends InputParser<BaseItem> {
 
     public DefaultItemParser(WorldEdit worldEdit) {
@@ -53,7 +55,7 @@ public class DefaultItemParser extends InputParser<BaseItem> {
         }
 
         if (item == null) {
-            ItemType type = ItemTypes.get(input.toLowerCase());
+            ItemType type = ItemTypes.get(input.toLowerCase(Locale.ROOT));
             if (type != null) {
                 item = new BaseItem(type);
             }

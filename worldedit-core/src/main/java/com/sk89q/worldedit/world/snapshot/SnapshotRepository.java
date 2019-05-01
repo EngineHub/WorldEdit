@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * A repository contains zero or more snapshots.
@@ -208,11 +209,17 @@ public class SnapshotRepository {
             return false;
         }
 
-        return (file.isDirectory() && (new File(file, "level.dat")).exists())
-                || (file.isFile() && (file.getName().toLowerCase().endsWith(".zip")
-                || file.getName().toLowerCase().endsWith(".tar.bz2")
-                || file.getName().toLowerCase().endsWith(".tar.gz")
-                || file.getName().toLowerCase().endsWith(".tar")));
+        if (file.isDirectory() && new File(file, "level.dat").exists()) {
+            return true;
+        }
+        if (file.isFile()) {
+            String lowerCaseFileName = file.getName().toLowerCase(Locale.ROOT);
+            return lowerCaseFileName.endsWith(".zip")
+                || lowerCaseFileName.endsWith(".tar.bz2")
+                || lowerCaseFileName.endsWith(".tar.gz")
+                || lowerCaseFileName.endsWith(".tar");
+        }
+        return false;
     }
 
     /**

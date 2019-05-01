@@ -44,6 +44,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.Locale;
 import java.util.UUID;
 
 import javax.annotation.Nullable;
@@ -149,12 +150,12 @@ public class BukkitPlayer extends AbstractPlayerActor {
 
     @Override
     public GameMode getGameMode() {
-        return GameModes.get(player.getGameMode().name().toLowerCase());
+        return GameModes.get(player.getGameMode().name().toLowerCase(Locale.ROOT));
     }
 
     @Override
     public void setGameMode(GameMode gameMode) {
-        player.setGameMode(org.bukkit.GameMode.valueOf(gameMode.getId().toUpperCase()));
+        player.setGameMode(org.bukkit.GameMode.valueOf(gameMode.getId().toUpperCase(Locale.ROOT)));
     }
 
     @Override

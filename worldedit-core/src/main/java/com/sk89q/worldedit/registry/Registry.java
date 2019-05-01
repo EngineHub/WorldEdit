@@ -26,6 +26,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -44,14 +45,14 @@ public class Registry<V> implements Iterable<V> {
     }
 
     public @Nullable V get(final String key) {
-        checkState(key.equals(key.toLowerCase()), "key must be lowercase");
+        checkState(key.equals(key.toLowerCase(Locale.ROOT)), "key must be lowercase");
         return this.map.get(key);
     }
 
     public V register(final String key, final V value) {
         requireNonNull(key, "key");
         requireNonNull(value, "value");
-        checkState(key.equals(key.toLowerCase()), "key must be lowercase");
+        checkState(key.equals(key.toLowerCase(Locale.ROOT)), "key must be lowercase");
         checkState(!this.map.containsKey(key), "key '%s' already has an associated %s", key, this.name);
         this.map.put(key, value);
         return value;
