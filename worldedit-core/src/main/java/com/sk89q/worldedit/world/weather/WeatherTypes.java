@@ -21,23 +21,25 @@ package com.sk89q.worldedit.world.weather;
 
 import javax.annotation.Nullable;
 
-public class WeatherTypes {
+public final class WeatherTypes {
 
-    static {
-        // This isn't really a proper registry - so inject these before they're obtained.
-        WeatherType.REGISTRY.register("clear", new WeatherType("clear"));
-        WeatherType.REGISTRY.register("rain", new WeatherType("rain"));
-        WeatherType.REGISTRY.register("thunder_storm", new WeatherType("thunder_storm"));
-    }
-
-    @Nullable public static final WeatherType CLEAR = get("clear");
-    @Nullable public static final WeatherType RAIN = get("rain");
-    @Nullable public static final WeatherType THUNDER_STORM = get("thunder_storm");
+    public static final WeatherType CLEAR = register("clear");
+    public static final WeatherType RAIN = register("rain");
+    public static final WeatherType THUNDER_STORM = register("thunder_storm");
 
     private WeatherTypes() {
     }
 
-    public static @Nullable WeatherType get(final String id) {
+    private static WeatherType register(String id) {
+        return register(new WeatherType(id));
+    }
+
+    public static WeatherType register(WeatherType weather) {
+        return WeatherType.REGISTRY.register(weather.getId(), weather);
+    }
+
+    @Nullable
+    public static WeatherType get(final String id) {
         return WeatherType.REGISTRY.get(id);
     }
 }

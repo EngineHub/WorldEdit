@@ -21,7 +21,7 @@ package com.sk89q.worldedit.world.gamemode;
 
 import javax.annotation.Nullable;
 
-public class GameModes {
+public final class GameModes {
 
     public static final GameMode SURVIVAL = register("survival");
     public static final GameMode CREATIVE = register("creative");

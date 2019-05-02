@@ -628,7 +628,8 @@ public final class BlockTypes {
     private BlockTypes() {
     }
 
-    public static @Nullable BlockType get(final String id) {
+    @Nullable
+    public static BlockType get(final String id) {
         return BlockType.REGISTRY.get(id);
     }
 }
