@@ -197,10 +197,9 @@ public class UtilityCommands {
         size = Math.max(1, size);
         we.checkMaxRadius(size);
         World world = player.getWorld();
-        height = height != null ? Math.min((world.getMaxY() + 1), height + 2) : (world.getMaxY() + 1);
+        height = height != null ? Math.min((world.getMaxY() + 1), height + 1) : (world.getMaxY() + 1);
 
-        int affected = editSession.removeAbove(
-            session.getPlacementPosition(player), size, height);
+        int affected = editSession.removeAbove(session.getPlacementPosition(player), size, height);
         player.print(affected + " block(s) have been removed.");
         return affected;
     }
@@ -220,7 +219,7 @@ public class UtilityCommands {
         size = Math.max(1, size);
         we.checkMaxRadius(size);
         World world = player.getWorld();
-        height = height != null ? Math.min((-world.getMaxY() + 1), height + 2) : (world.getMaxY() + 1);
+        height = height != null ? Math.min((world.getMaxY() + 1), height + 1) : (world.getMaxY() + 1);
 
         int affected = editSession.removeBelow(session.getPlacementPosition(player), size, height);
         player.print(affected + " block(s) have been removed.");
