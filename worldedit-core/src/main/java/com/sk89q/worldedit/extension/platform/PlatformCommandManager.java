@@ -20,6 +20,7 @@
 package com.sk89q.worldedit.extension.platform;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.reflect.TypeToken;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.IncompleteRegionException;
@@ -85,13 +86,13 @@ import com.sk89q.worldedit.event.platform.CommandEvent;
 import com.sk89q.worldedit.event.platform.CommandSuggestionEvent;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.internal.annotation.Selection;
+import com.sk89q.worldedit.internal.command.CommandArgParser;
 import com.sk89q.worldedit.internal.command.CommandLoggingHandler;
+import com.sk89q.worldedit.internal.command.CommandRegistrationHandler;
+import com.sk89q.worldedit.internal.command.exception.ExceptionConverter;
 import com.sk89q.worldedit.internal.command.exception.WorldEditExceptionConverter;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.session.request.Request;
-import com.sk89q.worldedit.internal.command.CommandArgParser;
-import com.sk89q.worldedit.internal.command.CommandRegistrationHandler;
-import com.sk89q.worldedit.internal.command.exception.ExceptionConverter;
 import com.sk89q.worldedit.util.eventbus.Subscribe;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
@@ -116,6 +117,7 @@ import org.enginehub.piston.inject.MapBackedValueStore;
 import org.enginehub.piston.inject.MemoizingValueAccess;
 import org.enginehub.piston.inject.MergedValueAccess;
 import org.enginehub.piston.part.SubCommandPart;
+import org.enginehub.piston.suggestion.Suggestion;
 import org.enginehub.piston.util.HelpGenerator;
 import org.enginehub.piston.util.ValueProvider;
 import org.slf4j.Logger;
@@ -123,6 +125,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -441,7 +444,9 @@ public final class PlatformCommandManager {
     }
 
     private String[] parseArgs(String input) {
-        return new CommandArgParser(input).parseArgs().toArray(String[]::new);
+        return commandDetection(new CommandArgParser(input.substring(1))
+            .parseArgs()
+            .toArray(String[]::new));
     }
 
     @Subscribe
@@ -449,7 +454,7 @@ public final class PlatformCommandManager {
         Request.reset();
 
         Actor actor = platformManager.createProxyActor(event.getActor());
-        String[] split = commandDetection(parseArgs(event.getArguments().substring(1)));
+        String[] split = parseArgs(event.getArguments());
 
         // No command found!
         if (!commandManager.containsCommand(split[0])) {
@@ -466,26 +471,7 @@ public final class PlatformCommandManager {
         }
         LocalConfiguration config = worldEdit.getConfiguration();
 
-        InjectedValueStore store = MapBackedValueStore.create();
-        store.injectValue(Key.of(Actor.class), ValueProvider.constant(actor));
-        if (actor instanceof Player) {
-            store.injectValue(Key.of(Player.class), ValueProvider.constant((Player) actor));
-        } else {
-            store.injectValue(Key.of(Player.class), context -> {
-                throw new CommandException(TextComponent.of("This command must be used with a player."), ImmutableList.of());
-            });
-        }
-        store.injectValue(Key.of(Arguments.class), ValueProvider.constant(event::getArguments));
-        store.injectValue(Key.of(LocalSession.class),
-            context -> {
-                LocalSession localSession = worldEdit.getSessionManager().get(actor);
-                localSession.tellVersion(actor);
-                return Optional.of(localSession);
-            });
-
-        MemoizingValueAccess context = MemoizingValueAccess.wrap(
-            MergedValueAccess.of(store, globalInjectedValues)
-        );
+        MemoizingValueAccess context = initializeInjectedValues(event::getArguments, actor);
 
         long start = System.currentTimeMillis();
 
@@ -563,6 +549,29 @@ public final class PlatformCommandManager {
         event.setCancelled(true);
     }
 
+    private MemoizingValueAccess initializeInjectedValues(Arguments arguments, Actor actor) {
+        InjectedValueStore store = MapBackedValueStore.create();
+        store.injectValue(Key.of(Actor.class), ValueProvider.constant(actor));
+        if (actor instanceof Player) {
+            store.injectValue(Key.of(Player.class), ValueProvider.constant((Player) actor));
+        } else {
+            store.injectValue(Key.of(Player.class), context -> {
+                throw new CommandException(TextComponent.of("This command must be used with a player."), ImmutableList.of());
+            });
+        }
+        store.injectValue(Key.of(Arguments.class), ValueProvider.constant(arguments));
+        store.injectValue(Key.of(LocalSession.class),
+            context -> {
+                LocalSession localSession = worldEdit.getSessionManager().get(actor);
+                localSession.tellVersion(actor);
+                return Optional.of(localSession);
+            });
+
+        return MemoizingValueAccess.wrap(
+            MergedValueAccess.of(store, globalInjectedValues)
+        );
+    }
+
     private void handleUnknownException(Actor actor, Throwable t) {
         actor.printError("Please report this error: [See console]");
         actor.printRaw(t.getClass().getName() + ": " + t.getMessage());
@@ -572,9 +581,13 @@ public final class PlatformCommandManager {
     @Subscribe
     public void handleCommandSuggestion(CommandSuggestionEvent event) {
         try {
-            globalInjectedValues.injectValue(Key.of(Actor.class), ValueProvider.constant(event.getActor()));
-            globalInjectedValues.injectValue(Key.of(Arguments.class), ValueProvider.constant(event::getArguments));
-            // TODO suggestions
+            String[] split = parseArgs(event.getArguments());
+            MemoizingValueAccess access = initializeInjectedValues(event::getArguments, event.getActor());
+            ImmutableSet<Suggestion> suggestions = commandManager.getSuggestions(access, Arrays.asList(split));
+
+            log.debug("For input: {}", event.getArguments());
+            log.debug("I would suggest this: {}", suggestions);
+            // TODO send back suggestions
         } catch (CommandException e) {
             event.getActor().printError(e.getMessage());
         }
