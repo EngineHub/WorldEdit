@@ -109,6 +109,7 @@ import org.enginehub.piston.exception.CommandExecutionException;
 import org.enginehub.piston.exception.ConditionFailedException;
 import org.enginehub.piston.exception.UsageException;
 import org.enginehub.piston.gen.CommandRegistration;
+import org.enginehub.piston.impl.CommandManagerServiceImpl;
 import org.enginehub.piston.inject.InjectedValueStore;
 import org.enginehub.piston.inject.Key;
 import org.enginehub.piston.inject.MapBackedValueStore;
@@ -164,8 +165,7 @@ public final class PlatformCommandManager {
         this.worldEdit = worldEdit;
         this.platformManager = platformManager;
         this.exceptionConverter = new WorldEditExceptionConverter(worldEdit);
-        this.commandManager = DefaultCommandManagerService.getInstance()
-            .newCommandManager();
+        this.commandManager = new CommandManagerServiceImpl().newCommandManager();
         this.globalInjectedValues = MapBackedValueStore.create();
         this.registration = new CommandRegistrationHandler(
             ImmutableList.of(
