@@ -46,7 +46,7 @@ public class SchematicPaginationBox extends PaginationBox {
 
     @Override
     public Component getComponent(int number) {
-        checkArgument(number < files.length - 1 && number >= 0);
+        checkArgument(number < files.length && number >= 0);
         File file = files[number];
         Multimap<String, ClipboardFormat> exts = ClipboardFormats.getFileExtensionMap();
         String format = exts.get(Files.getFileExtension(file.getName()))

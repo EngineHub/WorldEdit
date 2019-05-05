@@ -61,7 +61,7 @@ public class WorldEditExceptionConverter extends ExceptionConverterHelper {
     }
 
     private CommandException newCommandException(String message, Throwable cause) {
-        return new CommandException(TextComponent.of(message), cause, ImmutableList.of());
+        return new CommandException(TextComponent.of(String.valueOf(message)), cause, ImmutableList.of());
     }
 
     @ExceptionMatch

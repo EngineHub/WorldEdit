@@ -59,7 +59,7 @@ public class ConfigurationPermissionsResolver implements PermissionsResolver {
 
         Map<String, Set<String>> userGroupPermissions = new HashMap<>();
 
-        List<String> groupKeys = config.getStringList("permissions.groups", null);
+        List<String> groupKeys = config.getKeys("permissions.groups");
 
         if (groupKeys != null) {
             for (String key : groupKeys) {
@@ -77,7 +77,7 @@ public class ConfigurationPermissionsResolver implements PermissionsResolver {
             }
         }
 
-        List<String> userKeys = config.getStringList("permissions.users", null);
+        List<String> userKeys = config.getKeys("permissions.users");
 
         if (userKeys != null) {
             for (String key : userKeys) {
@@ -150,7 +150,7 @@ public class ConfigurationPermissionsResolver implements PermissionsResolver {
             return new String[0];
         }
 
-        return groups.toArray(new String[groups.size()]);
+        return groups.toArray(new String[0]);
     }
 
     @Override

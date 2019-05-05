@@ -261,6 +261,7 @@ public class SessionManager {
      */
     public synchronized void unload() {
         clear();
+        timer.cancel();
     }
 
     /**
