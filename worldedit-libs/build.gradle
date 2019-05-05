@@ -88,13 +88,14 @@ configure(subprojects + project("core:ap")) {
     build.dependsOn(jar, sourcesJar)
 }
 
+def textVersion = "3.0.0"
 project("core") {
-    def pistonVersion = '0.1.2'
+    def pistonVersion = '0.2.0'
 
     dependencies {
-        shade 'net.kyori:text-api:2.0.0'
-        shade 'net.kyori:text-serializer-gson:2.0.0'
-        shade 'net.kyori:text-serializer-legacy:2.0.0'
+        shade "net.kyori:text-api:$textVersion"
+        shade "net.kyori:text-serializer-gson:$textVersion"
+        shade "net.kyori:text-serializer-legacy:$textVersion"
         shade('com.sk89q:jchronic:0.2.4a') {
             exclude(group: "junit", module: "junit")
         }
@@ -113,13 +114,25 @@ project("core") {
     }
 }
 project("bukkit") {
+    repositories {
+        maven {
+            name = "SpigotMC"
+            url = "https://hub.spigotmc.org/nexus/content/repositories/snapshots/"
+        }
+    }
     dependencies {
-        shade 'net.kyori:text-adapter-bukkit:2.0.0-SNAPSHOT'
+        shade "net.kyori:text-adapter-bukkit:$textVersion"
     }
 }
 project("sponge") {
+    repositories {
+        maven {
+            name = "Sponge"
+            url = "https://repo.spongepowered.org/maven"
+        }
+    }
     dependencies {
-        shade 'net.kyori:text-adapter-spongeapi:2.0.0-SNAPSHOT'
+        shade "net.kyori:text-adapter-spongeapi:$textVersion"
     }
 }
 

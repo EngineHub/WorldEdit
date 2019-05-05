@@ -55,11 +55,11 @@ public class MessageBox extends TextComponentProducer {
             if (side > 1) {
                 line.append(createBorder(side - 1));
             }
-            line.append(Component.space());
+            line.append(TextComponent.space());
         }
         line.append(text);
         if (side > 0) {
-            line.append(Component.space());
+            line.append(TextComponent.space());
             if (side > 1) {
                 line.append(createBorder(side - 1));
             }

@@ -58,7 +58,7 @@ public class TextComponentProducer {
      * @return The producer, for chaining
      */
     public TextComponentProducer newline() {
-        getBuilder().append(Component.newline());
+        getBuilder().append(TextComponent.newline());
         return this;
     }
 

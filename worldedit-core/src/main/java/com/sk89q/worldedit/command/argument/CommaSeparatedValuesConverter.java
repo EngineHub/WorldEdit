@@ -32,7 +32,7 @@ import org.enginehub.piston.inject.InjectedValueAccess;
 import java.util.List;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.sk89q.worldedit.util.formatting.text.Component.space;
+import static com.sk89q.worldedit.util.formatting.text.TextComponent.space;
 
 public class CommaSeparatedValuesConverter<T> implements ArgumentConverter<T> {
 
@@ -61,7 +61,7 @@ public class CommaSeparatedValuesConverter<T> implements ArgumentConverter<T> {
         TextComponent.Builder result = TextComponent.builder("");
         if (maximum > -1) {
             result.append(TextComponent.of("up to "))
-                .append(Component.of(maximum))
+                .append(TextComponent.of(maximum))
                 .append(space());
         }
         result.append(TextComponent.of("comma separated values of: "))
