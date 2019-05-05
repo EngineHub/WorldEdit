@@ -16,14 +16,12 @@ The build process uses Gradle, which you do *not* need to download. WorldEdit is
 ### On Windows
 
 1. Shift + right click the folder with WorldEdit's files and click "Open command prompt".
-2. `gradlew clean setupDecompWorkspace`
-3. `gradlew build`
+2. `gradlew build`
 
 ### On Linux, BSD, or Mac OS X
 
 1. In your terminal, navigate to the folder with WorldEdit's files (`cd /folder/of/worldedit/files`)
-2. `./gradlew clean setupDecompWorkspace`
-3. `./gradlew build`
+2. `./gradlew build`
 
 ## Then you will find...
 
@@ -38,8 +36,8 @@ If you want to use WorldEdit, use the `-dist` version.
 
 (The -dist version includes WorldEdit + necessary libraries.)
 
-### Note regarding `setupDecompWorkspace`
-`setupDecompWorkspace` requires more memory than is usually given to Gradle by default.
+### Note regarding Forge builds 
+The build system used for forge (ForgeGradle) requires more memory than is usually given to Gradle by default.
 If it fails, you should put `org.gradle.jvmargs=-Xmx3G` in `gradle.properties`.
 Please don't commit this change!
 
@@ -47,4 +45,3 @@ Please don't commit this change!
 
 * `gradlew idea` will generate an [IntelliJ IDEA](http://www.jetbrains.com/idea/) module for each folder.
 * `gradlew eclipse` will generate an [Eclipse](https://www.eclipse.org/downloads/) project for each folder.
-* Use `setupCIWorkspace` instead of `setupDecompWorkspace` if you are doing this on a CI server.
