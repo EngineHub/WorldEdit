@@ -49,7 +49,7 @@ public class ExpandAmountConverter implements ArgumentConverter<ExpandAmount> {
 
     @Override
     public Component describeAcceptableArguments() {
-        return TextComponent.of("`vert` or " + integerConverter.describeAcceptableArguments());
+        return TextComponent.of("`vert` or ").append(integerConverter.describeAcceptableArguments());
     }
 
     @Override
