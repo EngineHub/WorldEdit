@@ -59,12 +59,12 @@ public class SchematicPaginationBox extends PaginationBox {
                 .content("")
                 .append(TextComponent.of("[L]")
                         .color(TextColor.GOLD)
-                        .clickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/schem load " + path))
-                        .hoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.of("Click to load"))))
-                .append(Component.space())
+                        .clickEvent(ClickEvent.of(ClickEvent.Action.RUN_COMMAND, "/schem load " + path))
+                        .hoverEvent(HoverEvent.of(HoverEvent.Action.SHOW_TEXT, TextComponent.of("Click to load"))))
+                .append(TextComponent.space())
                 .append(TextComponent.of(path)
                         .color(TextColor.DARK_GREEN)
-                        .hoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.of(format))))
+                        .hoverEvent(HoverEvent.of(HoverEvent.Action.SHOW_TEXT, TextComponent.of(format))))
                 .build();
     }
 
