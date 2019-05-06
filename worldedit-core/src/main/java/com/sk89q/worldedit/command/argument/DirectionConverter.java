@@ -101,7 +101,7 @@ public class DirectionConverter implements ArgumentConverter<BlockVector3> {
             return SuccessfulConversion.fromSingle(includeDiagonals
                 ? worldEdit.getDiagonalDirection(player, argument)
                 : worldEdit.getDirection(player, argument));
-        } catch (UnknownDirectionException e) {
+        } catch (Exception e) {
             return FailedConversion.from(e);
         }
     }
