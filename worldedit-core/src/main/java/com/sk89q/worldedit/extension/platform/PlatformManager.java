@@ -106,7 +106,7 @@ public class PlatformManager {
         // Make sure that versions are in sync
         if (firstSeenVersion != null) {
             if (!firstSeenVersion.equals(platform.getVersion())) {
-                logger.warn("Multiple ports of WorldEdit are installed but they report different versions ({0} and {1}). " +
+                logger.warn("Multiple ports of WorldEdit are installed but they report different versions ({} and {}). " +
                                 "If these two versions are truly different, then you may run into unexpected crashes and errors.",
                         new Object[]{ firstSeenVersion, platform.getVersion() });
             }

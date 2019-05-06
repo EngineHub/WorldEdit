@@ -145,6 +145,9 @@ public class BlockState implements BlockStateHolder<BlockState> {
 
     @Override
     public boolean equalsFuzzy(BlockStateHolder<?> o) {
+        if (null == o) {
+            return false;
+        }
         if (this == o) {
             // Added a reference equality check for speediness
             return true;
