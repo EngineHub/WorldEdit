@@ -88,8 +88,9 @@ configure(subprojects + project("core:ap")) {
     build.dependsOn(jar, sourcesJar)
 }
 
-def textVersion = "3.0.0"
+def textExtrasVersion = "3.0.1"
 project("core") {
+    def textVersion = "3.0.0"
     def pistonVersion = '0.2.2'
 
     dependencies {
@@ -121,7 +122,7 @@ project("bukkit") {
         }
     }
     dependencies {
-        shade "net.kyori:text-adapter-bukkit:$textVersion"
+        shade "net.kyori:text-adapter-bukkit:$textExtrasVersion"
     }
 }
 project("sponge") {
@@ -132,7 +133,7 @@ project("sponge") {
         }
     }
     dependencies {
-        shade "net.kyori:text-adapter-spongeapi:$textVersion"
+        shade "net.kyori:text-adapter-spongeapi:$textExtrasVersion"
     }
 }
 
