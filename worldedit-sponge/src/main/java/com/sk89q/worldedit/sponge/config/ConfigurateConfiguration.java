@@ -98,8 +98,6 @@ public class ConfigurateConfiguration extends LocalConfiguration {
         superPickaxeDrop = node.getNode("super-pickaxe", "drop-items").getBoolean(superPickaxeDrop);
         superPickaxeManyDrop = node.getNode("super-pickaxe", "many-drop-items").getBoolean(superPickaxeManyDrop);
 
-        noDoubleSlash = node.getNode("no-double-slash").getBoolean(noDoubleSlash);
-
         useInventory = node.getNode("use-inventory", "enable").getBoolean(useInventory);
         useInventoryOverride = node.getNode("use-inventory", "allow-override").getBoolean(useInventoryOverride);
         useInventoryCreativeOverride = node.getNode("use-inventory", "creative-mode-overrides").getBoolean(useInventoryCreativeOverride);

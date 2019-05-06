@@ -37,6 +37,7 @@ import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
+import com.sk89q.worldedit.internal.command.CommandUtil;
 import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.block.BlockCategory;
@@ -313,9 +314,10 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
         System.arraycopy(args, 0, split, 1, args.length);
         split[0] = "/" + cmd.getName();
 
-        CommandSuggestionEvent event = new CommandSuggestionEvent(wrapCommandSender(sender), Joiner.on(" ").join(split));
+        String arguments = Joiner.on(" ").join(split);
+        CommandSuggestionEvent event = new CommandSuggestionEvent(wrapCommandSender(sender), arguments);
         getWorldEdit().getEventBus().post(event);
-        return event.getSuggestions();
+        return CommandUtil.fixSuggestions(arguments, event.getSuggestions());
     }
 
     /**

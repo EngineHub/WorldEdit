@@ -58,7 +58,6 @@ public abstract class LocalConfiguration {
     public String wandItem = "minecraft:wooden_axe";
     public boolean superPickaxeDrop = true;
     public boolean superPickaxeManyDrop = true;
-    public boolean noDoubleSlash = false;
     public boolean useInventory = false;
     public boolean useInventoryOverride = false;
     public boolean useInventoryCreativeOverride = false;

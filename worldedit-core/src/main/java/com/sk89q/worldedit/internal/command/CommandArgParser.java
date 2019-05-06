@@ -19,86 +19,94 @@
 
 package com.sk89q.worldedit.internal.command;
 
+import com.google.common.base.Splitter;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
+import com.sk89q.worldedit.internal.util.Substring;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class CommandArgParser {
+
+    public static ImmutableList<Substring> spaceSplit(String string) {
+        ImmutableList.Builder<Substring> result = ImmutableList.builder();
+        int index = 0;
+        for (String part : Splitter.on(' ').split(string)) {
+            result.add(Substring.from(string, index, index + part.length()));
+            index += part.length() + 1;
+        }
+        return result.build();
+    }
 
     private enum State {
         NORMAL,
         QUOTE
     }
 
-    private final Stream.Builder<String> args = Stream.builder();
-    private final StringBuilder currentArg = new StringBuilder();
-    private final String input;
+    private final Stream.Builder<Substring> args = Stream.builder();
+    private final List<Substring> input;
+    private final List<Substring> currentArg = new ArrayList<>();
     private int index = 0;
     private State state = State.NORMAL;
 
-    public CommandArgParser(String input) {
+    public CommandArgParser(List<Substring> input) {
         this.input = input;
     }
 
-    public Stream<String> parseArgs() {
-        for (; index < input.length(); index++) {
-            char c = input.charAt(index);
+    public Stream<Substring> parseArgs() {
+        for (; index < input.size(); index++) {
+            Substring nextPart = input.get(index);
             switch (state) {
                 case NORMAL:
-                    handleNormal(c);
+                    handleNormal(nextPart);
                     break;
                 case QUOTE:
-                    handleQuote(c);
+                    handleQuote(nextPart);
             }
         }
-        finishArg(true);
         return args.build();
     }
 
-    private void handleNormal(char c) {
-        switch (c) {
-            case '"':
-                state = State.QUOTE;
-                break;
-            case ' ':
-                finishArg(true);
-                break;
-            case '\\':
-                if (index + 1 < input.length()) {
-                    index++;
-                }
-                appendChar(input.charAt(index));
-                break;
-            default:
-                appendChar(c);
+    private void handleNormal(Substring part) {
+        if (part.getSubstring().startsWith("\"")) {
+            state = State.QUOTE;
+            currentArg.add(Substring.wrap(
+                part.getSubstring().substring(1),
+                part.getStart(), part.getEnd()
+            ));
+        } else {
+            currentArg.add(part);
+            finishArg();
         }
     }
 
-    private void handleQuote(char c) {
-        switch (c) {
-            case '"':
-                state = State.NORMAL;
-                finishArg(false);
-                break;
-            case '\\':
-                if (index + 1 < input.length()) {
-                    index++;
-                }
-                appendChar(input.charAt(index));
-                break;
-            default:
-                appendChar(c);
+    private void handleQuote(Substring part) {
+        if (part.getSubstring().endsWith("\"")) {
+            state = State.NORMAL;
+            currentArg.add(Substring.wrap(
+                part.getSubstring().substring(0, part.getSubstring().length() - 1),
+                part.getStart(), part.getEnd()
+            ));
+            finishArg();
+        } else {
+            currentArg.add(part);
         }
     }
 
-    private void finishArg(boolean requireText) {
-        if (currentArg.length() == 0 && requireText) {
-            return;
-        }
-        args.add(currentArg.toString());
-        currentArg.setLength(0);
-    }
-
-    private void appendChar(char c) {
-        currentArg.append(c);
+    private void finishArg() {
+        // Merge the arguments into a single, space-joined, string
+        // Keep the original start + end points.
+        int start = currentArg.get(0).getStart();
+        int end = Iterables.getLast(currentArg).getEnd();
+        args.add(Substring.wrap(currentArg.stream()
+                .map(Substring::getSubstring)
+                .collect(Collectors.joining(" ")),
+            start, end
+        ));
+        currentArg.clear();
     }
 
 }

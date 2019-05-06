@@ -29,6 +29,7 @@ import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.extension.platform.MultiUserPlatform;
 import com.sk89q.worldedit.extension.platform.Preference;
+import com.sk89q.worldedit.internal.command.CommandUtil;
 import com.sk89q.worldedit.sponge.config.SpongeConfiguration;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.registry.Registries;
@@ -144,7 +145,7 @@ class SpongePlatform extends AbstractPlatform implements MultiUserPlatform {
                 public List<String> getSuggestions(CommandSource source, String arguments, @Nullable Location<org.spongepowered.api.world.World> targetPosition) throws CommandException {
                     CommandSuggestionEvent weEvent = new CommandSuggestionEvent(SpongeWorldEdit.inst().wrapCommandSource(source), command.getName() + " " + arguments);
                     WorldEdit.getInstance().getEventBus().post(weEvent);
-                    return weEvent.getSuggestions();
+                    return CommandUtil.fixSuggestions(arguments, weEvent.getSuggestions());
                 }
             };
             ImmutableList.Builder<String> aliases = ImmutableList.builder();
