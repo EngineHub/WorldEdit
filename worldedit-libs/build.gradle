@@ -90,7 +90,7 @@ configure(subprojects + project("core:ap")) {
 
 def textVersion = "3.0.0"
 project("core") {
-    def pistonVersion = '0.2.0'
+    def pistonVersion = '0.2.1'
 
     dependencies {
         shade "net.kyori:text-api:$textVersion"

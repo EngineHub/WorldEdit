@@ -19,13 +19,14 @@
 
 package com.sk89q.worldedit.event.platform;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import com.sk89q.worldedit.event.Event;
 import com.sk89q.worldedit.extension.platform.Actor;
+import com.sk89q.worldedit.internal.util.Substring;
 
 import java.util.Collections;
 import java.util.List;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Posted when suggestions for auto-completion are requested for command input.
@@ -34,7 +35,7 @@ public class CommandSuggestionEvent extends Event {
 
     private final Actor actor;
     private final String arguments;
-    private List<String> suggestions = Collections.emptyList();
+    private List<Substring> suggestions = Collections.emptyList();
 
     /**
      * Create a new instance.
@@ -71,9 +72,14 @@ public class CommandSuggestionEvent extends Event {
     /**
      * Get the list of suggestions that are to be presented.
      *
+     * <p>
+     *     Each Substring holds the replacement as the substring,
+     *     and the replacement range as the original substring range.
+     * </p>
+     *
      * @return the list of suggestions
      */
-    public List<String> getSuggestions() {
+    public List<Substring> getSuggestions() {
         return suggestions;
     }
 
@@ -82,7 +88,7 @@ public class CommandSuggestionEvent extends Event {
      *
      * @param suggestions the list of suggestions
      */
-    public void setSuggestions(List<String> suggestions) {
+    public void setSuggestions(List<Substring> suggestions) {
         checkNotNull(suggestions);
         this.suggestions = suggestions;
     }

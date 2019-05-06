@@ -80,36 +80,6 @@ public class WorldEditListener implements Listener {
         WorldEdit.getInstance().getSessionManager().get(plugin.wrapPlayer(event.getPlayer()));
     }
 
-    /**
-     * Called when a player attempts to use a command
-     *
-     * @param event Relevant event details
-     */
-    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
-    public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
-        String[] split = event.getMessage().split(" ");
-
-        if (split.length > 0) {
-            split[0] = split[0].substring(1);
-            split = plugin.getWorldEdit().getPlatformManager().getPlatformCommandManager().commandDetection(split);
-        }
-
-        final String newMessage = "/" + StringUtil.joinString(split, " ");
-
-        if (!newMessage.equals(event.getMessage())) {
-            event.setMessage(newMessage);
-            plugin.getServer().getPluginManager().callEvent(event);
-
-            if (!event.isCancelled()) {
-                if (!event.getMessage().isEmpty()) {
-                    plugin.getServer().dispatchCommand(event.getPlayer(), event.getMessage().substring(1));
-                }
-
-                event.setCancelled(true);
-            }
-        }
-    }
-
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onPlayerCommand(PlayerCommandSendEvent event) {
         InjectedValueStore store = MapBackedValueStore.create();
