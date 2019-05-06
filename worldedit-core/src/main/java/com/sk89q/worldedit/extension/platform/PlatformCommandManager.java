@@ -567,8 +567,9 @@ public final class PlatformCommandManager {
 
             event.setSuggestions(suggestions.stream()
                 .map(suggestion -> {
+                    int noSlashLength = arguments.length() - 1;
                     Substring original = suggestion.getReplacedArgument() == split.size()
-                        ? Substring.from(arguments, arguments.length() - 1)
+                        ? Substring.from(arguments, noSlashLength, noSlashLength)
                         : split.get(suggestion.getReplacedArgument());
                     // increase original points by 1, for removed `/` in `parseArgs`
                     return Substring.wrap(

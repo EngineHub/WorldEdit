@@ -22,15 +22,28 @@ package com.sk89q.worldedit.forge;
 import com.google.common.collect.ImmutableList;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.context.StringRange;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.suggestion.Suggestion;
+import com.mojang.brigadier.suggestion.Suggestions;
+import com.mojang.brigadier.suggestion.SuggestionsBuilder;
+import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.command.util.PermissionCondition;
+import com.sk89q.worldedit.event.platform.CommandSuggestionEvent;
+import com.sk89q.worldedit.internal.util.Substring;
 import net.minecraft.command.CommandSource;
 import net.minecraft.entity.player.EntityPlayerMP;
 
+import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+import static net.minecraft.command.Commands.argument;
 import static net.minecraft.command.Commands.literal;
 
 public final class CommandWrapper {
@@ -41,8 +54,10 @@ public final class CommandWrapper {
         ImmutableList.Builder<String> aliases = ImmutableList.builder();
         aliases.add(command.getName()).addAll(command.getAliases());
         for (String alias : aliases.build()) {
-            LiteralArgumentBuilder<CommandSource> base = literal(alias)
-                .executes(FAKE_COMMAND);
+            LiteralArgumentBuilder<CommandSource> base = literal(alias).executes(FAKE_COMMAND)
+                .then(argument("args", StringArgumentType.greedyString())
+                    .suggests(CommandWrapper::suggest)
+                    .executes(FAKE_COMMAND));
             if (command.getCondition().as(PermissionCondition.class)
                 .filter(p -> p.getPermissions().size() > 0).isPresent()) {
                 base.requires(requirementsFor(command));
@@ -71,6 +86,37 @@ public final class CommandWrapper {
                         (EntityPlayerMP) ctx.getEntity(), perm
                     ));
         };
+    }
+
+    private static CompletableFuture<Suggestions> suggest(CommandContext<CommandSource> context,
+                                                          SuggestionsBuilder builder) throws CommandSyntaxException {
+        CommandSuggestionEvent event = new CommandSuggestionEvent(
+            ForgeAdapter.adaptPlayer(context.getSource().asPlayer()),
+            builder.getInput()
+        );
+        WorldEdit.getInstance().getEventBus().post(event);
+        List<Substring> suggestions = event.getSuggestions();
+
+        ImmutableList.Builder<Suggestion> result = ImmutableList.builder();
+
+        for (Substring suggestion : suggestions) {
+            String suggestionText = suggestion.getSubstring();
+            // If at end, we are actually suggesting the next argument
+            // Ensure there is a space!
+            if (suggestion.getStart() == suggestion.getEnd()
+                && suggestion.getEnd() == builder.getInput().length()
+                && !builder.getInput().endsWith(" ")) {
+                suggestionText = " " + suggestionText;
+            }
+            result.add(new Suggestion(
+                StringRange.between(suggestion.getStart(), suggestion.getEnd()),
+                suggestionText
+            ));
+        }
+
+        return CompletableFuture.completedFuture(
+            Suggestions.create(builder.getInput(), result.build())
+        );
     }
 
 }
