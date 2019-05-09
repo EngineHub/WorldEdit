@@ -61,12 +61,6 @@ import static com.sk89q.worldedit.command.util.Logging.LogMode.REGION;
 @CommandContainer(superTypes = CommandPermissionsConditionGenerator.Registration.class)
 public class ClipboardCommands {
 
-    /**
-     * Create a new instance.
-     */
-    public ClipboardCommands() {
-    }
-
     @Command(
         name = "/copy",
         desc = "Copy the selection to the clipboard"
@@ -78,7 +72,7 @@ public class ClipboardCommands {
                          boolean copyEntities,
                      @Switch(name = 'b', desc = "Also copy biomes")
                          boolean copyBiomes,
-                     @ArgFlag(name = 'm', desc = "Set the exclude mask, matching blocks become air", def = "")
+                     @ArgFlag(name = 'm', desc = "Set the include mask, non-matching blocks become air", def = "")
                          Mask mask) throws WorldEditException {
         BlockArrayClipboard clipboard = new BlockArrayClipboard(region);
         clipboard.setOrigin(session.getPlacementPosition(player));

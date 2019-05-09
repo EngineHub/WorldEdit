@@ -172,7 +172,10 @@ public class SpongeSchematicReader extends NBTSchematicReader {
         byte[] blocks = requireTag(schematic, "BlockData", ByteArrayTag.class).getValue();
 
         Map<BlockVector3, Map<String, Tag>> tileEntitiesMap = new HashMap<>();
-        ListTag tileEntities = getTag(schematic, "TileEntities", ListTag.class);
+        ListTag tileEntities = getTag(schematic, "BlockEntities", ListTag.class);
+        if (tileEntities == null) {
+            tileEntities = getTag(schematic, "TileEntities", ListTag.class);
+        }
         if (tileEntities != null) {
             List<Map<String, Tag>> tileEntityTags = tileEntities.getValue().stream()
                     .map(tag -> (CompoundTag) tag)

@@ -21,7 +21,6 @@ package com.sk89q.worldedit.extent.clipboard.io;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.sk89q.jnbt.ByteArrayTag;
 import com.sk89q.jnbt.CompoundTag;
@@ -52,6 +51,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -85,9 +85,8 @@ public class SpongeSchematicWriter implements ClipboardWriter {
      *
      * @param clipboard The clipboard
      * @return The schematic map
-     * @throws IOException If an error occurs
      */
-    private Map<String, Tag> write2(Clipboard clipboard) throws IOException {
+    private Map<String, Tag> write2(Clipboard clipboard) {
         Region region = clipboard.getRegion();
         BlockVector3 origin = clipboard.getOrigin();
         BlockVector3 min = region.getMinimumPoint();
@@ -190,7 +189,7 @@ public class SpongeSchematicWriter implements ClipboardWriter {
 
         schematic.put("Palette", new CompoundTag(paletteTag));
         schematic.put("BlockData", new ByteArrayTag(buffer.toByteArray()));
-        schematic.put("TileEntities", new ListTag(CompoundTag.class, tileEntities));
+        schematic.put("BlockEntities", new ListTag(CompoundTag.class, tileEntities));
 
         // version 2 stuff
         if (clipboard.hasBiomes()) {
@@ -265,7 +264,7 @@ public class SpongeSchematicWriter implements ClipboardWriter {
             values.put("Rotation", writeRotation(e.getLocation()));
 
             return new CompoundTag(values);
-        }).filter(e -> e != null).collect(Collectors.toList());
+        }).filter(Objects::nonNull).collect(Collectors.toList());
         if (entities.isEmpty()) {
             return;
         }
@@ -273,7 +272,7 @@ public class SpongeSchematicWriter implements ClipboardWriter {
     }
 
     private Tag writeVector(Vector3 vector) {
-        List<DoubleTag> list = new ArrayList<DoubleTag>();
+        List<DoubleTag> list = new ArrayList<>();
         list.add(new DoubleTag(vector.getX()));
         list.add(new DoubleTag(vector.getY()));
         list.add(new DoubleTag(vector.getZ()));
@@ -281,7 +280,7 @@ public class SpongeSchematicWriter implements ClipboardWriter {
     }
 
     private Tag writeRotation(Location location) {
-        List<FloatTag> list = new ArrayList<FloatTag>();
+        List<FloatTag> list = new ArrayList<>();
         list.add(new FloatTag(location.getYaw()));
         list.add(new FloatTag(location.getPitch()));
         return new ListTag(FloatTag.class, list);
