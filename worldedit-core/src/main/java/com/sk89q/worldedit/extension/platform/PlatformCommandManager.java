@@ -104,7 +104,6 @@ import com.sk89q.worldedit.world.World;
 import org.enginehub.piston.ColorConfig;
 import org.enginehub.piston.Command;
 import org.enginehub.piston.CommandManager;
-import org.enginehub.piston.DefaultCommandManagerService;
 import org.enginehub.piston.converter.ArgumentConverters;
 import org.enginehub.piston.exception.CommandException;
 import org.enginehub.piston.exception.CommandExecutionException;
@@ -300,8 +299,8 @@ public final class PlatformCommandManager {
             BrushCommandsRegistration.builder(),
             new BrushCommands(worldEdit),
             manager -> {
-                PaintBrushCommands.register(manager, registration);
-                ApplyBrushCommands.register(manager, registration);
+                PaintBrushCommands.register(commandManagerService, manager, registration);
+                ApplyBrushCommands.register(commandManagerService, manager, registration);
             }
         );
         registerSubCommands(

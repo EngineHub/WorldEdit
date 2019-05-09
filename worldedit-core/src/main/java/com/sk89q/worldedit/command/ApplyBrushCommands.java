@@ -39,8 +39,8 @@ import com.sk89q.worldedit.internal.command.CommandRegistrationHandler;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import org.enginehub.piston.CommandManager;
+import org.enginehub.piston.CommandManagerService;
 import org.enginehub.piston.CommandParameters;
-import org.enginehub.piston.DefaultCommandManagerService;
 import org.enginehub.piston.annotation.Command;
 import org.enginehub.piston.annotation.CommandContainer;
 import org.enginehub.piston.annotation.param.Arg;
@@ -66,13 +66,12 @@ public class ApplyBrushCommands {
         .ofTypes(ImmutableList.of(Key.of(double.class)))
         .build();
 
-    public static void register(CommandManager commandManager, CommandRegistrationHandler registration) {
+    public static void register(CommandManagerService service, CommandManager commandManager, CommandRegistrationHandler registration) {
         commandManager.register("apply", builder -> {
             builder.description(TextComponent.of("Apply brush, apply a function to every block"));
             builder.action(org.enginehub.piston.Command.Action.NULL_ACTION);
 
-            CommandManager manager = DefaultCommandManagerService.getInstance()
-                .newCommandManager();
+            CommandManager manager = service.newCommandManager();
             registration.register(
                 manager,
                 ApplyBrushCommandsRegistration.builder(),
