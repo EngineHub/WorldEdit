@@ -19,11 +19,9 @@
 
 package com.sk89q.worldedit.util.eventbus;
 
+import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
-import com.google.common.collect.Multimaps;
 import com.google.common.collect.SetMultimap;
-import com.google.common.eventbus.DeadEvent;
-import com.sk89q.worldedit.internal.annotation.RequiresNewerGuava;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,11 +29,11 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -46,17 +44,15 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * <p>This class is based on Guava's {@link EventBus} but priority is supported
  * and events are dispatched at the time of call, rather than being queued up.
  * This does allow dispatching during an in-progress dispatch.</p>
- *
- * <p>This implementation utilizes naive synchronization on all getter and
- * setter methods. Dispatch does not occur when a lock has been acquired,
- * however.</p>
  */
-public class EventBus {
+public final class EventBus {
 
     private final Logger logger = LoggerFactory.getLogger(EventBus.class);
 
+    private final ReadWriteLock lock = new ReentrantReadWriteLock();
+
     private final SetMultimap<Class<?>, EventHandler> handlersByType =
-            Multimaps.newSetMultimap(new HashMap<>(), this::newHandlerSet);
+        HashMultimap.create();
 
     /**
      * Strategy for finding handler methods in registered objects.  Currently,
@@ -65,7 +61,6 @@ public class EventBus {
      */
     private final SubscriberFindingStrategy finder = new AnnotatedSubscriberFinder();
 
-    @RequiresNewerGuava
     private HierarchyCache flattenHierarchyCache = new HierarchyCache();
 
     /**
@@ -74,10 +69,15 @@ public class EventBus {
      * @param clazz the event class to register
      * @param handler the handler to register
      */
-    public synchronized void subscribe(Class<?> clazz, EventHandler handler) {
+    public void subscribe(Class<?> clazz, EventHandler handler) {
         checkNotNull(clazz);
         checkNotNull(handler);
-        handlersByType.put(clazz, handler);
+        lock.writeLock().lock();
+        try {
+            handlersByType.put(clazz, handler);
+        } finally {
+            lock.writeLock().unlock();
+        }
     }
 
     /**
@@ -85,9 +85,14 @@ public class EventBus {
      *
      * @param handlers a map of handlers
      */
-    public synchronized void subscribeAll(Multimap<Class<?>, EventHandler> handlers) {
+    public void subscribeAll(Multimap<Class<?>, EventHandler> handlers) {
         checkNotNull(handlers);
-        handlersByType.putAll(handlers);
+        lock.writeLock().lock();
+        try {
+            handlersByType.putAll(handlers);
+        } finally {
+            lock.writeLock().unlock();
+        }
     }
 
     /**
@@ -96,10 +101,15 @@ public class EventBus {
      * @param clazz the class
      * @param handler the handler
      */
-    public synchronized void unsubscribe(Class<?> clazz, EventHandler handler) {
+    public void unsubscribe(Class<?> clazz, EventHandler handler) {
         checkNotNull(clazz);
         checkNotNull(handler);
-        handlersByType.remove(clazz, handler);
+        lock.writeLock().lock();
+        try {
+            handlersByType.remove(clazz, handler);
+        } finally {
+            lock.writeLock().unlock();
+        }
     }
 
     /**
@@ -107,15 +117,15 @@ public class EventBus {
      *
      * @param handlers a map of handlers
      */
-    public synchronized void unsubscribeAll(Multimap<Class<?>, EventHandler> handlers) {
+    public void unsubscribeAll(Multimap<Class<?>, EventHandler> handlers) {
         checkNotNull(handlers);
-        for (Map.Entry<Class<?>, Collection<EventHandler>> entry : handlers.asMap().entrySet()) {
-            Set<EventHandler> currentHandlers = getHandlersForEventType(entry.getKey());
-            Collection<EventHandler> eventMethodsInListener = entry.getValue();
-
-            if (currentHandlers != null &&!currentHandlers.containsAll(entry.getValue())) {
-                currentHandlers.removeAll(eventMethodsInListener);
+        lock.writeLock().lock();
+        try {
+            for (Map.Entry<Class<?>, Collection<EventHandler>> entry : handlers.asMap().entrySet()) {
+                handlersByType.get(entry.getKey()).removeAll(entry.getValue());
             }
+        } finally {
+            lock.writeLock().unlock();
         }
     }
 
@@ -146,25 +156,23 @@ public class EventBus {
      * successfully after the event has been posted to all handlers, and
      * regardless of any exceptions thrown by handlers.
      *
-     * <p>If no handlers have been subscribed for {@code event}'s class, and
-     * {@code event} is not already a {@link DeadEvent}, it will be wrapped in a
-     * DeadEvent and reposted.
-     *
      * @param event  event to post.
      */
     public void post(Object event) {
         List<EventHandler> dispatching = new ArrayList<>();
 
-        synchronized (this) {
-            Set<Class<?>> dispatchTypes = flattenHierarchy(event.getClass());
-
+        Set<Class<?>> dispatchTypes = flattenHierarchyCache.get(event.getClass());
+        lock.readLock().lock();
+        try {
             for (Class<?> eventType : dispatchTypes) {
-                Set<EventHandler> wrappers = getHandlersForEventType(eventType);
+                Set<EventHandler> wrappers = handlersByType.get(eventType);
 
                 if (wrappers != null && !wrappers.isEmpty()) {
                     dispatching.addAll(wrappers);
                 }
             }
+        } finally {
+            lock.readLock().unlock();
         }
 
         Collections.sort(dispatching);
@@ -175,54 +183,17 @@ public class EventBus {
     }
 
     /**
-     * Dispatches {@code event} to the handler in {@code handler}.  This method
-     * is an appropriate override point for subclasses that wish to make
-     * event delivery asynchronous.
+     * Dispatches {@code event} to the handler in {@code handler}.
      *
      * @param event  event to dispatch.
      * @param handler  handler that will call the handler.
      */
-    protected void dispatch(Object event, EventHandler handler) {
+    private void dispatch(Object event, EventHandler handler) {
         try {
             handler.handleEvent(event);
         } catch (InvocationTargetException e) {
             logger.error("Could not dispatch event: " + event + " to handler " + handler, e);
         }
-    }
-
-    /**
-     * Retrieves a mutable set of the currently registered handlers for
-     * {@code type}.  If no handlers are currently registered for {@code type},
-     * this method may either return {@code null} or an empty set.
-     *
-     * @param type  type of handlers to retrieve.
-     * @return currently registered handlers, or {@code null}.
-     */
-    synchronized Set<EventHandler> getHandlersForEventType(Class<?> type) {
-        return handlersByType.get(type);
-    }
-
-    /**
-     * Creates a new Set for insertion into the handler map.  This is provided
-     * as an override point for subclasses. The returned set should support
-     * concurrent access.
-     *
-     * @return a new, mutable set for handlers.
-     */
-    protected synchronized Set<EventHandler> newHandlerSet() {
-        return new HashSet<>();
-    }
-
-    /**
-     * Flattens a class's type hierarchy into a set of Class objects.  The set
-     * will include all superclasses (transitively), and all interfaces
-     * implemented by these superclasses.
-     *
-     * @param concreteClass  class whose type hierarchy will be retrieved.
-     * @return {@code clazz}'s complete type hierarchy, flattened and uniqued.
-     */
-    Set<Class<?>> flattenHierarchy(Class<?> concreteClass) {
-        return flattenHierarchyCache.get(concreteClass);
     }
 
 }

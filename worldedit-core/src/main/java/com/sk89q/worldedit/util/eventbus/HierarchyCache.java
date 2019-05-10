@@ -19,34 +19,27 @@
 
 package com.sk89q.worldedit.util.eventbus;
 
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import com.sk89q.worldedit.internal.annotation.RequiresNewerGuava;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.WeakHashMap;
 
 /**
  * Holds a cache of class hierarchy.
- *
- * <p>This exists because Bukkit has an ancient version of Guava and the cache
- * library in Guava has since changed.</>
  */
-@RequiresNewerGuava
 class HierarchyCache {
 
-    private final Map<Class<?>, Set<Class<?>>> cache = new WeakHashMap<>();
+    private final LoadingCache<Class<?>, Set<Class<?>>> cache = CacheBuilder.newBuilder()
+        .weakKeys()
+        .build(CacheLoader.from(this::build));
 
     public Set<Class<?>> get(Class<?> concreteClass) {
-        Set<Class<?>> ret = cache.get(concreteClass);
-        if (ret == null) {
-            ret = build(concreteClass);
-            cache.put(concreteClass, ret);
-        }
-        return ret;
+        return cache.getUnchecked(concreteClass);
     }
 
     protected Set<Class<?>> build(Class<?> concreteClass) {
