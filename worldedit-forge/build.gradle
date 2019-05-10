@@ -11,6 +11,7 @@ buildscript {
     }
 }
 
+apply plugin: 'eclipse'
 apply plugin: 'net.minecraftforge.gradle'
 
 def minecraftVersion = "1.13.2"
