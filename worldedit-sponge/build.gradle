@@ -1,7 +1,7 @@
 buildscript {
     repositories {
         mavenCentral()
-        maven { url = "http://files.minecraftforge.net/maven" }
+        maven { url = "https://files.minecraftforge.net/maven" }
         maven { url = "https://oss.sonatype.org/content/repositories/snapshots/" }
         jcenter()
     }
@@ -9,17 +9,19 @@ buildscript {
 
 plugins {
     id 'signing'
-    id 'org.spongepowered.plugin' version '0.8.1'
+    id 'org.spongepowered.plugin' version '0.9.0'
 }
 
 dependencies {
     compile project(':worldedit-core')
-    compile 'org.spongepowered:spongeapi:7.0.0-SNAPSHOT'
+    compile 'org.spongepowered:spongeapi:7.1.0'
     testCompile group: 'org.mockito', name: 'mockito-core', version:'1.9.0-rc1'
 }
 
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
+
+project.archivesBaseName = "${project.archivesBaseName}-api7.1.0"
 
 sponge {
     plugin {
