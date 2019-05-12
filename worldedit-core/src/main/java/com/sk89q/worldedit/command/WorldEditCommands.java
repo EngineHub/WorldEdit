@@ -110,7 +110,7 @@ public class WorldEditCommands {
         String result = report.toString();
 
         try {
-            File dest = new File(we.getWorkingDirectoryFile(we.getConfiguration().saveDir), "report.txt");
+            File dest = new File(we.getConfiguration().getWorkingDirectory(), "report.txt");
             Files.write(result, dest, Charset.forName("UTF-8"));
             actor.print("WorldEdit report written to " + dest.getAbsolutePath());
         } catch (IOException e) {
