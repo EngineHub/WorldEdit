@@ -412,8 +412,18 @@ public class BukkitWorld extends AbstractWorld {
 
     @Override
     public com.sk89q.worldedit.world.block.BlockState getBlock(BlockVector3 position) {
-        Block bukkitBlock = getWorld().getBlockAt(position.getBlockX(), position.getBlockY(), position.getBlockZ());
-        return BukkitAdapter.adapt(bukkitBlock.getBlockData());
+        BukkitImplAdapter adapter = WorldEditPlugin.getInstance().getBukkitImplAdapter();
+        if (adapter != null) {
+            try {
+                return adapter.getBlock(BukkitAdapter.adapt(getWorld(), position)).toImmutableState();
+            } catch (Exception e) {
+                Block bukkitBlock = getWorld().getBlockAt(position.getBlockX(), position.getBlockY(), position.getBlockZ());
+                return BukkitAdapter.adapt(bukkitBlock.getBlockData());
+            }
+        } else {
+            Block bukkitBlock = getWorld().getBlockAt(position.getBlockX(), position.getBlockY(), position.getBlockZ());
+            return BukkitAdapter.adapt(bukkitBlock.getBlockData());
+        }
     }
 
     @Override

@@ -67,4 +67,11 @@ public interface BlockRegistry {
      */
     OptionalInt getInternalBlockStateId(BlockState state);
 
+    /**
+     * Retrieve a block state by its internal ID, if possible.
+     *
+     * @param id The internal ID
+     * @return the block state, if available
+     */
+    BlockState getBlockStateByInternalId(int id);
 }
