@@ -46,7 +46,7 @@ import java.util.Set;
  */
 @SuppressWarnings("unchecked")
 public class BlockState implements BlockStateHolder<BlockState> {
-    
+
     static {
         BlockStateIdAccess.setBlockStateStateId(x -> x.internalId);
     }
@@ -86,13 +86,14 @@ public class BlockState implements BlockStateHolder<BlockState> {
             List<List<Object>> valueLists = Lists.cartesianProduct(separatedValues);
             for (List<Object> valueList : valueLists) {
                 Map<Property<?>, Object> valueMap = Maps.newTreeMap(Comparator.comparing(Property::getName));
-                BlockState stateMaker = new BlockState(blockType).initializeId(registry);
+                BlockState stateMaker = new BlockState(blockType);
                 for (int i = 0; i < valueList.size(); i++) {
                     Property<?> property = properties.get(i);
                     Object value = valueList.get(i);
                     valueMap.put(property, value);
                     stateMaker.setState(property, value);
                 }
+                stateMaker.initializeId(registry);
                 stateMap.put(valueMap, stateMaker);
             }
         }

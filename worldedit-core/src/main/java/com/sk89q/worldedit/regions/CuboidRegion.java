@@ -345,9 +345,9 @@ public class CuboidRegion extends AbstractRegion implements FlatRegion {
                 BlockVector3 answer = BlockVector3.at(nextX, nextY, nextZ);
                 if (++nextX > max.getBlockX()) {
                     nextX = min.getBlockX();
-                    if (++nextY > max.getBlockY()) {
-                        nextY = min.getBlockY();
-                        if (++nextZ > max.getBlockZ()) {
+                    if (++nextZ > max.getBlockZ()) {
+                        nextZ = min.getBlockZ();
+                        if (++nextY > max.getBlockY()) {
                             nextX = Integer.MIN_VALUE;
                         }
                     }
