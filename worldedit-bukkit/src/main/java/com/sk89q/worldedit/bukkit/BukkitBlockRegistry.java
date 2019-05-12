@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.bukkit;
 
+import com.sk89q.worldedit.world.block.BlockTypes;
 import com.sk89q.worldedit.world.registry.BlockMaterial;
 import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.world.block.BlockState;
@@ -34,8 +35,8 @@ import java.util.OptionalInt;
 import javax.annotation.Nullable;
 
 public class BukkitBlockRegistry extends BundledBlockRegistry {
-
     private Map<Material, BukkitBlockMaterial> materialMap = new EnumMap<>(Material.class);
+    private BlockState[] statesById = new BlockState[2 << 14];
 
     @Nullable
     @Override
@@ -58,10 +59,32 @@ public class BukkitBlockRegistry extends BundledBlockRegistry {
 
     @Override
     public OptionalInt getInternalBlockStateId(BlockState state) {
-        if (WorldEditPlugin.getInstance().getBukkitImplAdapter() != null) {
-            return WorldEditPlugin.getInstance().getBukkitImplAdapter().getInternalBlockStateId(state);
+        if (state.getBlockType() == BlockTypes.AIR) {
+            statesById[0] = state;
+            return OptionalInt.of(0);
         }
-        return super.getInternalBlockStateId(state);
+        final OptionalInt id;
+        if (WorldEditPlugin.getInstance().getBukkitImplAdapter() != null) {
+            id = WorldEditPlugin.getInstance().getBukkitImplAdapter().getInternalBlockStateId(state);
+        } else {
+            id = super.getInternalBlockStateId(state);
+        }
+        if (id.isPresent()) {
+            final int idx = id.getAsInt();
+            if (statesById.length <= idx) {
+                BlockState[] newArr = new BlockState[statesById.length * 2];
+                System.arraycopy(statesById, 0, newArr, 0, statesById.length);
+                statesById = newArr;
+            }
+            statesById[idx] = state;
+        }
+        return id;
+    }
+
+    @Nullable
+    @Override
+    public BlockState getBlockStateByInternalId(int id) {
+        return id >= statesById.length ? null : statesById[id];
     }
 
     public static class BukkitBlockMaterial extends PassthroughBlockMaterial {
