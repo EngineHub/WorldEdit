@@ -19,12 +19,11 @@
 
 package com.sk89q.worldedit.util.paste;
 
-import com.google.common.util.concurrent.ListenableFuture;
-
 import java.net.URL;
+import java.util.concurrent.Callable;
 
 public interface Paster {
 
-    ListenableFuture<URL> paste(String content);
+    Callable<URL> paste(String content);
 
 }
