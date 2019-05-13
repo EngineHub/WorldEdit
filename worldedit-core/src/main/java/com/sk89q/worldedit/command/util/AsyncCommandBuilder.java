@@ -144,6 +144,7 @@ public final class AsyncCommandBuilder<T> {
                 if (exceptionConverter != null) {
                     try {
                         exceptionConverter.convert(orig);
+                        throw orig;
                     } catch (CommandException converted) {
                         Component message;
 
