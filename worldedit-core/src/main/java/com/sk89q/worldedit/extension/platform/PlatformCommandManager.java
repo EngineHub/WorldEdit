@@ -281,7 +281,7 @@ public final class PlatformCommandManager {
         registerSubCommands(
             "snapshot",
             ImmutableList.of("snap"),
-            "Snapshot commands for saving/loading snapshots",
+            "Snapshot commands for restoring backups",
             SnapshotCommandsRegistration.builder(),
             new SnapshotCommands(worldEdit)
         );
@@ -294,7 +294,7 @@ public final class PlatformCommandManager {
         );
         registerSubCommands(
             "brush",
-            ImmutableList.of("br"),
+            ImmutableList.of("br", "/brush", "/br"),
             "Brushing commands",
             BrushCommandsRegistration.builder(),
             new BrushCommands(worldEdit),
