@@ -23,6 +23,7 @@ import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.registry.state.Property;
+import com.sk89q.worldedit.world.DataFixer;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
@@ -46,6 +47,14 @@ public interface BukkitImplAdapter {
      * @return the data version
      */
     int getDataVersion();
+
+    /**
+     * Get a data fixer, or null if not supported
+     *
+     * @return the data fixer
+     */
+    @Nullable
+    DataFixer getDataFixer();
 
     /**
      * Get the block at the given location.

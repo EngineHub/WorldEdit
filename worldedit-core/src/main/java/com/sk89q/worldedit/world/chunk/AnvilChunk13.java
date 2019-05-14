@@ -35,11 +35,10 @@ import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.block.BlockTypes;
 import com.sk89q.worldedit.world.storage.InvalidFormatException;
 
+import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.annotation.Nullable;
 
 /**
  * The chunk format for Minecraft 1.13 and newer
@@ -160,10 +159,12 @@ public class AnvilChunk13 implements Chunk {
      * @throws DataException
      */
     private void populateTileEntities() throws DataException {
+        tileEntities = new HashMap<>();
+        if (!rootTag.getValue().containsKey("TileEntities")) {
+            return;
+        }
         List<Tag> tags = NBTUtils.getChildTag(rootTag.getValue(),
                 "TileEntities", ListTag.class).getValue();
-
-        tileEntities = new HashMap<>();
 
         for (Tag tag : tags) {
             if (!(tag instanceof CompoundTag)) {

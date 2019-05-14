@@ -157,7 +157,7 @@ public class BukkitImplLoader {
                 if (BukkitImplAdapter.class.isAssignableFrom(cls)) {
                     return (BukkitImplAdapter) cls.newInstance();
                 } else {
-                    log.warn("Failed to load the Bukkit adapter class '" + className +
+                    log.debug("Failed to load the Bukkit adapter class '" + className +
                             "' because it does not implement " + BukkitImplAdapter.class.getCanonicalName());
                 }
             } catch (ClassNotFoundException e) {

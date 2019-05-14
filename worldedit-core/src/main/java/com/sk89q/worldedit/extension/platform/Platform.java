@@ -21,6 +21,7 @@ package com.sk89q.worldedit.extension.platform;
 
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.entity.Player;
+import com.sk89q.worldedit.world.DataFixer;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.registry.Registries;
 import org.enginehub.piston.CommandManager;
@@ -50,6 +51,13 @@ public interface Platform {
      * @return the data version
      */
     int getDataVersion();
+
+    /**
+     * Get a DataFixer capable of upgrading old data.
+     *
+     * @return a data fixer, or null if not supported by this platform
+     */
+    DataFixer getDataFixer();
 
     /**
      * Checks if a mob type is valid.

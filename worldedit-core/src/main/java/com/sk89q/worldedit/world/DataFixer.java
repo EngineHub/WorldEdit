@@ -17,31 +17,18 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.extension.platform;
+package com.sk89q.worldedit.world;
 
-import com.sk89q.worldedit.world.DataFixer;
-import com.sk89q.worldedit.world.World;
+import com.google.common.annotations.Beta;
+import com.sk89q.jnbt.CompoundTag;
 
-import java.util.Collections;
-import java.util.List;
+@Beta
+public interface DataFixer {
 
-/**
- * An abstract implementation of {@link Platform}.
- */
-public abstract class AbstractPlatform implements Platform {
+    /**
+     * API SUBJECT TO CHANGE. DON'T USE THIS.
+     */
+    @Beta
+    CompoundTag fixChunk(CompoundTag originalChunk);
 
-    @Override
-    public int schedule(long delay, long period, Runnable task) {
-        return -1;
-    }
-
-    @Override
-    public List<? extends World> getWorlds() {
-        return Collections.emptyList();
-    }
-
-    @Override
-    public DataFixer getDataFixer() {
-        return null;
-    }
 }
