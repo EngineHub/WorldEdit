@@ -26,14 +26,13 @@ dependencies {
 }
 
 processResources {
-    from (sourceSets.main.resources.srcDirs) {
+    filesMatching('plugin.yml') {
         expand 'internalVersion': project.internalVersion
-        include 'plugin.yml'
     }
-
-    from (sourceSets.main.resources.srcDirs) {
-        exclude 'plugin.yml'
-    }
+    from (zipTree('src/main/resources/worldedit-adapters.jar').matching {
+        exclude 'META-INF/'
+    })
+    exclude '**/worldedit-adapters.jar'
 }
 
 jar {
