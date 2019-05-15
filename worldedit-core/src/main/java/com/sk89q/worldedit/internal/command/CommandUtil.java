@@ -19,10 +19,14 @@
 
 package com.sk89q.worldedit.internal.command;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.sk89q.worldedit.extension.platform.PlatformCommandManager;
 import com.sk89q.worldedit.internal.util.Substring;
+import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import org.enginehub.piston.Command;
+import org.enginehub.piston.exception.CommandException;
 import org.enginehub.piston.part.SubCommandPart;
 
 import java.util.Comparator;
@@ -90,6 +94,30 @@ public class CommandUtil {
             "Suggestion ends too late, last=%s, suggestion=", last, suggestion);
         builder.replace(start, end, suggestion.getSubstring());
         return Optional.of(builder.toString());
+    }
+
+    /**
+     * Require {@code condition} to be {@code true}, otherwise throw a {@link CommandException}
+     * with the given message.
+     *
+     * @param condition the condition to check
+     * @param message the message for failure
+     */
+    public static void checkCommandArgument(boolean condition, String message) {
+        checkCommandArgument(condition, TextComponent.of(message));
+    }
+
+    /**
+     * Require {@code condition} to be {@code true}, otherwise throw a {@link CommandException}
+     * with the given message.
+     *
+     * @param condition the condition to check
+     * @param message the message for failure
+     */
+    public static void checkCommandArgument(boolean condition, Component message) {
+        if (!condition) {
+            throw new CommandException(message, ImmutableList.of());
+        }
     }
 
     private CommandUtil() {

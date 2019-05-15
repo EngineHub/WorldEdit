@@ -165,11 +165,6 @@ public class WorldEditExceptionConverter extends ExceptionConverterHelper {
         throw newCommandException(e.getMessage(), e);
     }
 
-    @ExceptionMatch
-    public void convert(IllegalArgumentException e) throws CommandException {
-        throw newCommandException(e.getMessage(), e);
-    }
-
     // Prevent investigation into UsageExceptions
     @ExceptionMatch
     public void convert(UsageException e) throws CommandException {
