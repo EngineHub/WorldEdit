@@ -173,33 +173,10 @@ public class AnvilChunk13 implements Chunk {
 
             CompoundTag t = (CompoundTag) tag;
 
-            int x = 0;
-            int y = 0;
-            int z = 0;
-
-            Map<String, Tag> values = new HashMap<>();
-
-            for (Map.Entry<String, Tag> entry : t.getValue().entrySet()) {
-                switch (entry.getKey()) {
-                    case "x":
-                        if (entry.getValue() instanceof IntTag) {
-                            x = ((IntTag) entry.getValue()).getValue();
-                        }
-                        break;
-                    case "y":
-                        if (entry.getValue() instanceof IntTag) {
-                            y = ((IntTag) entry.getValue()).getValue();
-                        }
-                        break;
-                    case "z":
-                        if (entry.getValue() instanceof IntTag) {
-                            z = ((IntTag) entry.getValue()).getValue();
-                        }
-                        break;
-                }
-
-                values.put(entry.getKey(), entry.getValue());
-            }
+            Map<String, Tag> values = new HashMap<>(t.getValue());
+            int x = ((IntTag) values.get("x")).getValue();
+            int y = ((IntTag) values.get("y")).getValue();
+            int z = ((IntTag) values.get("z")).getValue();
 
             BlockVector3 vec = BlockVector3.at(x, y, z);
             tileEntities.put(vec, values);

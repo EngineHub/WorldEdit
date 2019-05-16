@@ -48,6 +48,7 @@ public class FlowerPotCompatibilityHandler implements NBTCompatibilityHandler {
             }
             BlockState newState = convertLegacyBlockType(id, data);
             if (newState != null) {
+                values.clear();
                 return (B) newState; // generics pls :\
             }
         }
