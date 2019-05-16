@@ -54,7 +54,8 @@ public class NoteBlockCompatibilityHandler implements NBTCompatibilityHandler {
         if (noteTag instanceof ByteTag) {
             Byte note = ((ByteTag) noteTag).getValue();
             if (note != null) {
-                return block.with(NoteProperty, (int) note);
+                values.clear();
+                return (B) block.with(NoteProperty, (int) note).toImmutableState();
             }
         }
         return block;

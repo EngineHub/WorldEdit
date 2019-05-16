@@ -106,12 +106,13 @@ public abstract class ChunkStore implements Closeable {
         }
 
         int dataVersion = rootTag.getInt("DataVersion");
+        if (dataVersion == 0) dataVersion = -1;
         final Platform platform = WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.WORLD_EDITING);
         final int currentDataVersion = platform.getDataVersion();
         if (dataVersion < currentDataVersion) {
             final DataFixer dataFixer = platform.getDataFixer();
             if (dataFixer != null) {
-                return new AnvilChunk13((CompoundTag) dataFixer.fixChunk(rootTag).getValue().get("Level"));
+                return new AnvilChunk13((CompoundTag) dataFixer.fixUp(DataFixer.FixTypes.CHUNK, rootTag, dataVersion).getValue().get("Level"));
             }
         }
         if (dataVersion >= DATA_VERSION_MC_1_13) {

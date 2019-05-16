@@ -22,13 +22,32 @@ package com.sk89q.worldedit.world;
 import com.google.common.annotations.Beta;
 import com.sk89q.jnbt.CompoundTag;
 
+/**
+ * This entire class is subject to heavy changes. Do not use this as API.
+ */
 @Beta
 public interface DataFixer {
 
-    /**
-     * API SUBJECT TO CHANGE. DON'T USE THIS.
-     */
-    @Beta
-    CompoundTag fixChunk(CompoundTag originalChunk);
+    final class FixType<T> {
+        private FixType() {
+        }
+    }
 
+    final class FixTypes {
+        private FixTypes() {
+        }
+
+        public static FixType<CompoundTag> CHUNK = new FixType<>();
+        public static FixType<CompoundTag> BLOCK_ENTITY = new FixType<>();
+        public static FixType<CompoundTag> ENTITY = new FixType<>();
+        public static FixType<String> BLOCK_STATE = new FixType<>();
+        public static FixType<String> BIOME = new FixType<>();
+        public static FixType<String> ITEM_TYPE = new FixType<>();
+    }
+
+    default <T> T fixUp(FixType<T> type, T original) {
+        return fixUp(type, original, -1);
+    }
+
+    <T> T fixUp(FixType<T> type, T original, int srcVer);
 }

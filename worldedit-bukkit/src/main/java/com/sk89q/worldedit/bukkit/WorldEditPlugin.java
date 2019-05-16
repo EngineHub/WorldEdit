@@ -58,6 +58,10 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.world.WorldInitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -102,11 +106,6 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
         // Setup platform
         server = new BukkitServerInterface(this, getServer());
         worldEdit.getPlatformManager().register(server);
-        loadAdapter(); // Need an adapter to work with special blocks with NBT data
-        setupRegistries();
-        worldEdit.loadMappings();
-
-        loadConfig(); // Load configuration
     }
 
     /**
@@ -114,8 +113,6 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
      */
     @Override
     public void onEnable() {
-        setupTags(); // these have to be done post-world since they rely on MC registries. the other ones just use Bukkit enums
-
         PermissionsResolverManager.initialize(this); // Setup permission resolver
 
         // Register CUI
@@ -125,10 +122,8 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
         // Now we can register events
         getServer().getPluginManager().registerEvents(new WorldEditListener(this), this);
 
-        // If we are on MCPC+/Cauldron, then Forge will have already loaded
-        // Forge WorldEdit and there's (probably) not going to be any other
-        // platforms to be worried about... at the current time of writing
-        WorldEdit.getInstance().getEventBus().post(new PlatformReadyEvent());
+        // register this so we can load world-dependent data right as the first world is loading
+        getServer().getPluginManager().registerEvents(new WorldInitListener(), this);
 
         // Enable metrics
         new Metrics(this);
@@ -433,4 +428,20 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
         return bukkitAdapter;
     }
 
+    private class WorldInitListener implements Listener {
+        private boolean loaded = false;
+        @EventHandler(priority = EventPriority.LOWEST)
+        public void onWorldInit(@SuppressWarnings("unused") WorldInitEvent event) {
+            if (loaded) return;
+            loaded = true;
+
+            loadAdapter(); // Need an adapter to work with special blocks with NBT data
+            setupRegistries();
+            WorldEdit.getInstance().loadMappings();
+            loadConfig(); // Load configuration
+            setupTags();
+
+            WorldEdit.getInstance().getEventBus().post(new PlatformReadyEvent());
+        }
+    }
 }
