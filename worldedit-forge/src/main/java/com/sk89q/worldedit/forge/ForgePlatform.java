@@ -26,6 +26,7 @@ import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.extension.platform.MultiUserPlatform;
 import com.sk89q.worldedit.extension.platform.Preference;
+import com.sk89q.worldedit.world.DataFixer;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.registry.Registries;
 import net.minecraft.command.Commands;
@@ -53,11 +54,13 @@ class ForgePlatform extends AbstractPlatform implements MultiUserPlatform {
 
     private final ForgeWorldEdit mod;
     private final MinecraftServer server;
+    private final ForgeDataFixer dataFixer;
     private boolean hookingEvents = false;
 
     ForgePlatform(ForgeWorldEdit mod) {
         this.mod = mod;
         this.server = ServerLifecycleHooks.getCurrentServer();
+        this.dataFixer = new ForgeDataFixer(getDataVersion());
     }
 
     boolean isHookingEvents() {
@@ -73,6 +76,11 @@ class ForgePlatform extends AbstractPlatform implements MultiUserPlatform {
     public int getDataVersion() {
         // TODO switch to SharedConstants in 1.14
         return 1631;
+    }
+
+    @Override
+    public DataFixer getDataFixer() {
+        return dataFixer;
     }
 
     @Override
