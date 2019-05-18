@@ -36,11 +36,17 @@ import com.sk89q.worldedit.world.registry.BiomeRegistry;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Stream;
 
 public class BiomeMaskParser extends InputParser<Mask> {
 
     public BiomeMaskParser(WorldEdit worldEdit) {
         super(worldEdit);
+    }
+
+    @Override
+    public Stream<String> getSuggestions() {
+        return BiomeType.REGISTRY.keySet().stream().map(biomeType -> "$" + biomeType);
     }
 
     @Override

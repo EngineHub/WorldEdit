@@ -19,7 +19,6 @@
 
 package com.sk89q.worldedit.extension.factory.parser.pattern;
 
-import com.google.common.collect.Lists;
 import com.sk89q.worldedit.EmptyClipboardException;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
@@ -32,7 +31,7 @@ import com.sk89q.worldedit.internal.registry.InputParser;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.session.ClipboardHolder;
 
-import java.util.List;
+import java.util.stream.Stream;
 
 public class ClipboardPatternParser extends InputParser<Pattern> {
 
@@ -41,8 +40,8 @@ public class ClipboardPatternParser extends InputParser<Pattern> {
     }
 
     @Override
-    public List<String> getSuggestions() {
-        return Lists.newArrayList("#clipboard", "#copy");
+    public Stream<String> getSuggestions() {
+        return Stream.of("#clipboard", "#copy");
     }
 
     @Override

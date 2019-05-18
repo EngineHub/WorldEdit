@@ -29,11 +29,17 @@ import com.sk89q.worldedit.session.request.RequestExtent;
 import com.sk89q.worldedit.world.block.BlockCategory;
 
 import java.util.Locale;
+import java.util.stream.Stream;
 
 public class BlockCategoryMaskParser extends InputParser<Mask> {
 
     public BlockCategoryMaskParser(WorldEdit worldEdit) {
         super(worldEdit);
+    }
+
+    @Override
+    public Stream<String> getSuggestions() {
+        return BlockCategory.REGISTRY.keySet().stream().map(str -> "##" + str);
     }
 
     @Override

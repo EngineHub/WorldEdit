@@ -25,6 +25,7 @@ import com.sk89q.worldedit.extension.input.ParserContext;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * Input parser interface for {@link AbstractFactory}.
@@ -43,11 +44,11 @@ public abstract class InputParser<E> {
     public abstract E parseFromInput(String input, ParserContext context) throws InputParseException;
 
     /**
-     * Gets a list of suggestions of input to this parser.
+     * Gets a stream of suggestions of input to this parser.
      *
-     * @return a list of suggestions
+     * @return a stream of suggestions
      */
-    public List<String> getSuggestions() {
-        return Collections.emptyList();
+    public Stream<String> getSuggestions() {
+        return Stream.empty();
     }
 }
