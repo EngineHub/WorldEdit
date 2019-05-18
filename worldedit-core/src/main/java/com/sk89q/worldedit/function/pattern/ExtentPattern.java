@@ -28,5 +28,5 @@ public interface ExtentPattern extends Pattern {
      *
      * @return the extent for this pattern
      */
-    public Extent getExtent();
+    Extent getExtent();
 }

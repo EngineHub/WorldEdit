@@ -29,10 +29,9 @@ import com.sk89q.worldedit.internal.registry.InputParser;
 import com.sk89q.worldedit.world.block.BlockCategory;
 import com.sk89q.worldedit.world.block.BlockType;
 
-import java.util.List;
 import java.util.Locale;
 import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class BlockCategoryPatternParser extends InputParser<Pattern> {
 
@@ -41,8 +40,8 @@ public class BlockCategoryPatternParser extends InputParser<Pattern> {
     }
 
     @Override
-    public List<String> getSuggestions() {
-        return BlockCategory.REGISTRY.keySet().stream().map(str -> "##" + str).collect(Collectors.toList());
+    public Stream<String> getSuggestions() {
+        return BlockCategory.REGISTRY.keySet().stream().map(str -> "##" + str);
     }
 
     @Override

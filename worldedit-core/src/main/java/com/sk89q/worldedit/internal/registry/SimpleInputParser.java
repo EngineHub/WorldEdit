@@ -25,6 +25,7 @@ import com.sk89q.worldedit.extension.input.InputParseException;
 import com.sk89q.worldedit.extension.input.ParserContext;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * An input parser that only performs a single function from aliases.
@@ -65,7 +66,7 @@ public abstract class SimpleInputParser<E> extends InputParser<E> {
     }
 
     @Override
-    public List<String> getSuggestions() {
-        return Lists.newArrayList(getPrimaryMatcher());
+    public Stream<String> getSuggestions() {
+        return Stream.of(getPrimaryMatcher());
     }
 }

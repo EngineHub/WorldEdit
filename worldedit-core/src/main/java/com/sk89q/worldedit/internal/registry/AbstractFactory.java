@@ -27,8 +27,11 @@ import com.sk89q.worldedit.extension.input.NoMatchException;
 import com.sk89q.worldedit.extension.input.ParserContext;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * An abstract implementation of a factory for internal usage.
@@ -74,6 +77,10 @@ public abstract class AbstractFactory<E> {
         }
 
         throw new NoMatchException("No match for '" + input + "'");
+    }
+
+    public Stream<String> getSuggestions() {
+        return parsers.stream().flatMap(InputParser::getSuggestions);
     }
 
     /**

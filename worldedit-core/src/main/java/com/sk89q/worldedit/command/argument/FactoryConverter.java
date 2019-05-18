@@ -19,6 +19,8 @@
 
 package com.sk89q.worldedit.command.argument;
 
+import static org.enginehub.piston.converter.SuggestionHelper.limitByPrefix;
+
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.blocks.BaseItem;
@@ -41,6 +43,7 @@ import org.enginehub.piston.converter.SuccessfulConversion;
 import org.enginehub.piston.inject.InjectedValueAccess;
 import org.enginehub.piston.inject.Key;
 
+import java.util.List;
 import java.util.function.Function;
 
 public class FactoryConverter<T> implements ArgumentConverter<T> {
@@ -89,6 +92,11 @@ public class FactoryConverter<T> implements ArgumentConverter<T> {
         } catch (InputParseException e) {
             return FailedConversion.from(e);
         }
+    }
+
+    @Override
+    public List<String> getSuggestions(String input) {
+        return limitByPrefix(factoryExtractor.apply(worldEdit).getSuggestions(), input);
     }
 
     @Override
