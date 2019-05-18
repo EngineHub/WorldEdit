@@ -157,10 +157,12 @@ public class WorldEditCommands {
     )
     @CommandPermissions("worldedit.help")
     public void help(Actor actor,
+                     @Switch(name = 's', desc = "List sub-commands of the given command, if applicable")
+                         boolean listSubCommands,
                      @Arg(desc = "The page to retrieve", def = "1")
                          int page,
                      @Arg(desc = "The command to retrieve help for", def = "", variable = true)
                          List<String> command) throws WorldEditException {
-        PrintCommandHelp.help(command, page, we, actor);
+        PrintCommandHelp.help(command, page, listSubCommands, we, actor);
     }
 }

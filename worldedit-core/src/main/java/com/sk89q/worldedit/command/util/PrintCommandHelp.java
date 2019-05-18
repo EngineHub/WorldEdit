@@ -21,6 +21,7 @@ package com.sk89q.worldedit.command.util;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.util.formatting.component.CommandListBox;
@@ -66,7 +67,7 @@ public class PrintCommandHelp {
         return mapping.orElse(null);
     }
 
-    public static void help(List<String> commandPath, int page, WorldEdit we, Actor actor) throws InvalidComponentException {
+    public static void help(List<String> commandPath, int page, boolean listSubCommands, WorldEdit we, Actor actor) throws InvalidComponentException {
         CommandManager manager = we.getPlatformManager().getPlatformCommandManager().getCommandManager();
 
         if (commandPath.isEmpty()) {
@@ -89,7 +90,7 @@ public class PrintCommandHelp {
 
             if (subCommands.isEmpty()) {
                 actor.printError(String.format("'%s' has no sub-commands. (Maybe '%s' is for a parameter?)",
-                    Joiner.on(" ").join(visited.stream().map(Command::getName).iterator()), subCommand));
+                    toCommandString(visited), subCommand));
                 // full help for single command
                 CommandUsageBox box = new CommandUsageBox(visited, visited.stream()
                         .map(Command::getName).collect(Collectors.joining(" ")));
@@ -102,25 +103,26 @@ public class PrintCommandHelp {
                 visited.add(currentCommand);
             } else {
                 actor.printError(String.format("The sub-command '%s' under '%s' could not be found.",
-                    subCommand, Joiner.on(" ").join(visited.stream().map(Command::getName).iterator())));
+                    subCommand, toCommandString(visited)));
                 // list subcommands for currentCommand
-                CommandUsageBox box = new CommandUsageBox(visited, visited.stream()
-                        .map(Command::getName).collect(Collectors.joining(" ")));
-                actor.print(box.create());
+                printCommands(page, getSubCommands(Iterables.getLast(visited)).values().stream(), actor, visited);
                 return;
             }
         }
 
         Map<String, Command> subCommands = getSubCommands(currentCommand);
 
-        if (subCommands.isEmpty()) {
+        if (subCommands.isEmpty() || !listSubCommands) {
             // Create the message
-            CommandUsageBox box = new CommandUsageBox(visited, visited.stream()
-                .map(Command::getName).collect(Collectors.joining(" ")));
+            CommandUsageBox box = new CommandUsageBox(visited, toCommandString(visited));
             actor.print(box.create());
         } else {
             printCommands(page, subCommands.values().stream(), actor, visited);
         }
+    }
+
+    private static String toCommandString(List<Command> visited) {
+        return "/" + Joiner.on(" ").join(visited.stream().map(Command::getName).iterator());
     }
 
     private static void printCommands(int page, Stream<Command> commandStream, Actor actor,
@@ -130,11 +132,10 @@ public class PrintCommandHelp {
             .sorted(byCleanName())
             .collect(toList());
 
-        String used = commandList.isEmpty() ? null
-                : Joiner.on(" ").join(commandList.stream().map(Command::getName).iterator());
+        String used = commandList.isEmpty() ? null : toCommandString(commandList);
         CommandListBox box = new CommandListBox(
                 (used == null ? "Help" : "Subcommands: " + used),
-                "//help %page%" + (used == null ? "" : " " + used));
+                "//help -s %page%" + (used == null ? "" : " " + used));
         if (!actor.isPlayer()) {
             box.formatForConsole();
         }

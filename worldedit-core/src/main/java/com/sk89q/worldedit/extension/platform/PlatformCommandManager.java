@@ -36,6 +36,7 @@ import com.sk89q.worldedit.command.ChunkCommands;
 import com.sk89q.worldedit.command.ChunkCommandsRegistration;
 import com.sk89q.worldedit.command.ClipboardCommands;
 import com.sk89q.worldedit.command.ClipboardCommandsRegistration;
+import com.sk89q.worldedit.command.ExpandCommands;
 import com.sk89q.worldedit.command.GeneralCommands;
 import com.sk89q.worldedit.command.GeneralCommandsRegistration;
 import com.sk89q.worldedit.command.GenerationCommands;
@@ -73,7 +74,6 @@ import com.sk89q.worldedit.command.argument.CommaSeparatedValuesConverter;
 import com.sk89q.worldedit.command.argument.DirectionConverter;
 import com.sk89q.worldedit.command.argument.EntityRemoverConverter;
 import com.sk89q.worldedit.command.argument.EnumConverter;
-import com.sk89q.worldedit.command.argument.ExpandAmountConverter;
 import com.sk89q.worldedit.command.argument.FactoryConverter;
 import com.sk89q.worldedit.command.argument.RegionFactoryConverter;
 import com.sk89q.worldedit.command.argument.RegistryConverter;
@@ -104,6 +104,7 @@ import com.sk89q.worldedit.world.World;
 import org.enginehub.piston.ColorConfig;
 import org.enginehub.piston.Command;
 import org.enginehub.piston.CommandManager;
+import org.enginehub.piston.TextConfig;
 import org.enginehub.piston.converter.ArgumentConverters;
 import org.enginehub.piston.exception.CommandException;
 import org.enginehub.piston.exception.CommandExecutionException;
@@ -147,6 +148,10 @@ public final class PlatformCommandManager {
     private static final Logger log = LoggerFactory.getLogger(PlatformCommandManager.class);
     private static final java.util.logging.Logger COMMAND_LOG =
         java.util.logging.Logger.getLogger("com.sk89q.worldedit.CommandLog");
+
+    static {
+        TextConfig.setCommandPrefix("/");
+    }
 
     private final WorldEdit worldEdit;
     private final PlatformManager platformManager;
@@ -206,7 +211,6 @@ public final class PlatformCommandManager {
         VectorConverter.register(commandManager);
         EnumConverter.register(commandManager);
         RegistryConverter.register(commandManager);
-        ExpandAmountConverter.register(commandManager);
         ZonedDateTimeConverter.register(commandManager);
         BooleanConverter.register(commandManager);
         EntityRemoverConverter.register(commandManager);
@@ -360,6 +364,7 @@ public final class PlatformCommandManager {
             SelectionCommandsRegistration.builder(),
             new SelectionCommands(worldEdit)
         );
+        ExpandCommands.register(registration, commandManager, commandManagerService);
         this.registration.register(
             commandManager,
             SnapshotUtilCommandsRegistration.builder(),

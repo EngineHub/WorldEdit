@@ -27,6 +27,8 @@ import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import org.enginehub.piston.Command;
 import org.enginehub.piston.exception.CommandException;
+import org.enginehub.piston.inject.InjectedValueAccess;
+import org.enginehub.piston.inject.Key;
 import org.enginehub.piston.part.SubCommandPart;
 
 import java.util.Comparator;
@@ -118,6 +120,12 @@ public class CommandUtil {
         if (!condition) {
             throw new CommandException(message, ImmutableList.of());
         }
+    }
+
+    public static <T> T requireIV(Key<T> type, String name, InjectedValueAccess injectedValueAccess) {
+        return injectedValueAccess.injectedValue(type).orElseThrow(() ->
+            new IllegalStateException("No injected value for " + name + " (type " + type + ")")
+        );
     }
 
     private CommandUtil() {
