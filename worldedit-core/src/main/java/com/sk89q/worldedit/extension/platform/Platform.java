@@ -63,7 +63,7 @@ public interface Platform {
      * Checks if a mob type is valid.
      *
      * @param type The mob type name to check
-     * @return Whether the name is a valid mod bype
+     * @return Whether the name is a valid mod type
      */
     boolean isValidMobType(String type);
 

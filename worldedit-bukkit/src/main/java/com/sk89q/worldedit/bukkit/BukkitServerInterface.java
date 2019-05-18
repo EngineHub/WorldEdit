@@ -86,7 +86,10 @@ public class BukkitServerInterface implements MultiUserPlatform {
 
     @Override
     public boolean isValidMobType(String type) {
-        final EntityType entityType = EntityType.fromName(type);
+        if (!type.startsWith("minecraft:")) {
+            return false;
+        }
+        final EntityType entityType = EntityType.fromName(type.substring(10));
         return entityType != null && entityType.isAlive();
     }
 
