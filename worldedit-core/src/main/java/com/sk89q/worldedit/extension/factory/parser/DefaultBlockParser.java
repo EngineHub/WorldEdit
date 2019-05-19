@@ -27,7 +27,6 @@ import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.MobSpawnerBlock;
 import com.sk89q.worldedit.blocks.SignBlock;
 import com.sk89q.worldedit.blocks.SkullBlock;
-import com.sk89q.worldedit.blocks.metadata.MobType;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.input.DisallowedUsageException;
 import com.sk89q.worldedit.extension.input.InputParseException;
@@ -335,7 +334,7 @@ public class DefaultBlockParser extends InputParser<BaseBlock> {
                 }
                 return new MobSpawnerBlock(state, mobName);
             } else {
-                return new MobSpawnerBlock(state, MobType.PIG.getName());
+                return new MobSpawnerBlock(state, EntityTypes.PIG.getId());
             }
         } else if (blockType == BlockTypes.PLAYER_HEAD || blockType == BlockTypes.PLAYER_WALL_HEAD) {
             // allow setting type/player/rotation
