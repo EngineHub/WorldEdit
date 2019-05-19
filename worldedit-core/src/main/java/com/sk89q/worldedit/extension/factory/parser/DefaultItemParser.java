@@ -41,7 +41,7 @@ public class DefaultItemParser extends InputParser<BaseItem> {
     }
 
     @Override
-    public Stream<String> getSuggestions() {
+    public Stream<String> getSuggestions(String input) {
         return ItemType.REGISTRY.keySet().stream();
     }
 

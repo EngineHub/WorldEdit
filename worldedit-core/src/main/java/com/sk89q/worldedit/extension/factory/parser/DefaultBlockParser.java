@@ -200,7 +200,7 @@ public class DefaultBlockParser extends InputParser<BaseBlock> {
     }
 
     @Override
-    public Stream<String> getSuggestions() {
+    public Stream<String> getSuggestions(String input) {
         // TODO Include states
         return BlockType.REGISTRY.keySet().stream();
     }

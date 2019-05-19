@@ -40,7 +40,7 @@ public class BlockCategoryPatternParser extends InputParser<Pattern> {
     }
 
     @Override
-    public Stream<String> getSuggestions() {
+    public Stream<String> getSuggestions(String input) {
         return BlockCategory.REGISTRY.keySet().stream().map(str -> "##" + str);
     }
 
