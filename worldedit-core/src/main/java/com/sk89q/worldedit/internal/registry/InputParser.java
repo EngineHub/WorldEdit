@@ -48,7 +48,7 @@ public abstract class InputParser<E> {
      *
      * @return a stream of suggestions
      */
-    public Stream<String> getSuggestions() {
+    public Stream<String> getSuggestions(String input) {
         return Stream.empty();
     }
 }

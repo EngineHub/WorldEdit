@@ -38,7 +38,7 @@ public class BlockCategoryMaskParser extends InputParser<Mask> {
     }
 
     @Override
-    public Stream<String> getSuggestions() {
+    public Stream<String> getSuggestions(String input) {
         return BlockCategory.REGISTRY.keySet().stream().map(str -> "##" + str);
     }
 

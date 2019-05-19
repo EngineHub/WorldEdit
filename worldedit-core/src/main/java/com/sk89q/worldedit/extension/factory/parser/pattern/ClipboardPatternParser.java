@@ -40,7 +40,7 @@ public class ClipboardPatternParser extends InputParser<Pattern> {
     }
 
     @Override
-    public Stream<String> getSuggestions() {
+    public Stream<String> getSuggestions(String input) {
         return Stream.of("#clipboard", "#copy");
     }
 

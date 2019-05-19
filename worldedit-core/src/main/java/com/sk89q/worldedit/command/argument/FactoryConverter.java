@@ -97,7 +97,7 @@ public class FactoryConverter<T> implements ArgumentConverter<T> {
 
     @Override
     public List<String> getSuggestions(String input) {
-        return limitByPrefix(factoryExtractor.apply(worldEdit).getSuggestions(), input);
+        return factoryExtractor.apply(worldEdit).getSuggestions(input);
     }
 
     @Override

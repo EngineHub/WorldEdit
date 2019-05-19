@@ -66,7 +66,7 @@ public abstract class SimpleInputParser<E> extends InputParser<E> {
     }
 
     @Override
-    public Stream<String> getSuggestions() {
+    public Stream<String> getSuggestions(String input) {
         return Stream.of(getPrimaryMatcher());
     }
 }

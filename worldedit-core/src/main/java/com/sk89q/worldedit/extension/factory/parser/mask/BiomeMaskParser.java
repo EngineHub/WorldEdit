@@ -45,7 +45,7 @@ public class BiomeMaskParser extends InputParser<Mask> {
     }
 
     @Override
-    public Stream<String> getSuggestions() {
+    public Stream<String> getSuggestions(String input) {
         return BiomeType.REGISTRY.keySet().stream().map(biomeType -> "$" + biomeType);
     }
 

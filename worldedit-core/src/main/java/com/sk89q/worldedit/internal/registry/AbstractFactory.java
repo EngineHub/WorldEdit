@@ -20,6 +20,7 @@
 package com.sk89q.worldedit.internal.registry;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static org.enginehub.piston.converter.SuggestionHelper.limitByPrefix;
 
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.extension.input.InputParseException;
@@ -79,8 +80,8 @@ public abstract class AbstractFactory<E> {
         throw new NoMatchException("No match for '" + input + "'");
     }
 
-    public Stream<String> getSuggestions() {
-        return parsers.stream().flatMap(InputParser::getSuggestions);
+    public List<String> getSuggestions(String input) {
+        return limitByPrefix(parsers.stream().flatMap(parser -> parser.getSuggestions(input)), input);
     }
 
     /**
