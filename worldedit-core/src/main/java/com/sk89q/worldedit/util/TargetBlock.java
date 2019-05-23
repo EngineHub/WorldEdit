@@ -27,7 +27,7 @@ import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.world.World;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import javax.annotation.Nullable;
 
 /**
  * This class uses an inefficient method to figure out what block a player
@@ -39,6 +39,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class TargetBlock {
 
     private final World world;
+
     private int maxDistance;
     private double checkDistance, curDistance;
     private BlockVector3 targetPos = BlockVector3.ZERO;
@@ -80,22 +81,30 @@ public class TargetBlock {
 
     /**
      * Set the mask used for determine where to stop traces.
+     * Setting to null will restore the default.
      *
      * @param stopMask the mask used to stop traces
      */
-    public void setStopMask(Mask stopMask) {
-        checkNotNull(stopMask);
-        this.stopMask = stopMask;
+    public void setStopMask(@Nullable Mask stopMask) {
+        if (stopMask == null) {
+            this.stopMask = new ExistingBlockMask(world);
+        } else {
+            this.stopMask = stopMask;
+        }
     }
 
     /**
      * Set the mask used for determine where to stop solid block traces.
+     * Setting to null will restore the default.
      *
      * @param solidMask the mask used to stop solid block traces
      */
-    public void setSolidMask(Mask solidMask) {
-        checkNotNull(solidMask);
-        this.solidMask = solidMask;
+    public void setSolidMask(@Nullable Mask solidMask) {
+        if (solidMask == null ) {
+            this.solidMask = new SolidBlockMask(world);
+        } else {
+            this.solidMask = solidMask;
+        }
     }
 
     /**

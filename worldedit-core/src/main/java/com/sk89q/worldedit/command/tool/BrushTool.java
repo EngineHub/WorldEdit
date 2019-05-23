@@ -87,7 +87,7 @@ public class BrushTool implements TraceTool {
     }
 
     /**
-     * Get the mask used for identifying where to stop traces
+     * Get the mask used for identifying where to stop traces.
      *
      * @return the mask used to stop block traces
      */
@@ -180,12 +180,7 @@ public class BrushTool implements TraceTool {
 
     @Override
     public boolean actPrimary(Platform server, LocalConfiguration config, Player player, LocalSession session) {
-        Location target;
-        if (traceMask == null) {
-            target = player.getBlockTrace(getRange(), true);
-        } else {
-            target = player.getBlockTrace(getRange(), true, traceMask);
-        }
+        Location target = player.getBlockTrace(getRange(), true, traceMask);
 
         if (target == null) {
             player.printError("No block in sight!");

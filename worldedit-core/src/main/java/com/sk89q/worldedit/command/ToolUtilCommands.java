@@ -22,19 +22,15 @@ package com.sk89q.worldedit.command;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.command.tool.Tool;
-import com.sk89q.worldedit.command.tool.TraceTool;
 import com.sk89q.worldedit.command.util.CommandPermissions;
 import com.sk89q.worldedit.command.util.CommandPermissionsConditionGenerator;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.util.HandSide;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import org.enginehub.piston.annotation.Command;
 import org.enginehub.piston.annotation.CommandContainer;
 import org.enginehub.piston.annotation.param.Arg;
-import org.enginehub.piston.exception.StopExecutionException;
 
 /**
  * Tool commands.
@@ -79,11 +75,10 @@ public class ToolUtilCommands {
     public void mask(Player player, LocalSession session,
                      @Arg(desc = "The mask to set", def = "")
                          Mask mask) throws WorldEditException {
+        session.getBrushTool(player.getItemInHand(HandSide.MAIN_HAND).getType()).setMask(mask);
         if (mask == null) {
-            session.getBrushTool(player.getItemInHand(HandSide.MAIN_HAND).getType()).setMask(null);
             player.print("Brush mask disabled.");
         } else {
-            session.getBrushTool(player.getItemInHand(HandSide.MAIN_HAND).getType()).setMask(mask);
             player.print("Brush mask set.");
         }
     }
@@ -128,18 +123,17 @@ public class ToolUtilCommands {
     }
 
     @Command(
-            name = "tracemask",
-            desc = "Set the mask used to stop tool traces"
+        name = "tracemask",
+        desc = "Set the mask used to stop tool traces"
     )
     @CommandPermissions("worldedit.brush.options.tracemask")
     public void traceMask(Player player, LocalSession session,
-                          @Arg(desc = "The mask to set", def = "")
+                          @Arg(desc = "The trace mask to set", def = "")
                              Mask mask) throws WorldEditException {
+        session.getBrushTool(player.getItemInHand(HandSide.MAIN_HAND).getType()).setTraceMask(mask);
         if (mask == null) {
-            session.getBrushTool(player.getItemInHand(HandSide.MAIN_HAND).getType()).setTraceMask(null);
             player.print("Trace mask disabled.");
         } else {
-            session.getBrushTool(player.getItemInHand(HandSide.MAIN_HAND).getType()).setTraceMask(mask);
             player.print("Trace mask set.");
         }
     }

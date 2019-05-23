@@ -95,10 +95,10 @@ public class LongRangeBuildTool extends BrushTool implements DoubleActionTraceTo
     private Location getTargetFace(Player player) {
         Location target;
         Mask mask = getTraceMask();
-        if (mask != null) {
-            target = player.getBlockTraceFace(getRange(), true, mask);
+        if (this.range > -1) {
+            target = player.getBlockTrace(getRange(), true, mask);
         } else {
-            target = player.getBlockTraceFace(getRange(), true);
+            target = player.getBlockTrace(MAX_RANGE, false, mask);
         }
 
         if (target == null) {

@@ -42,6 +42,7 @@ import com.sk89q.worldedit.world.gamemode.GameModes;
 import com.sk89q.worldedit.world.item.ItemType;
 import com.sk89q.worldedit.world.item.ItemTypes;
 
+import javax.annotation.Nullable;
 import java.io.File;
 
 /**
@@ -324,25 +325,23 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
 
     @Override
     public Location getBlockTrace(int range, boolean useLastBlock) {
-        TargetBlock tb = new TargetBlock(this, range, 0.2);
-        return (useLastBlock ? tb.getAnyTargetBlock() : tb.getTargetBlock());
+        return getBlockTrace(range, useLastBlock, null);
     }
 
     @Override
     public Location getBlockTraceFace(int range, boolean useLastBlock) {
-        TargetBlock tb = new TargetBlock(this, range, 0.2);
-        return (useLastBlock ? tb.getAnyTargetBlockFace() : tb.getTargetBlockFace());
+        return getBlockTraceFace(range, useLastBlock, null);
     }
 
     @Override
-    public Location getBlockTrace(int range, boolean useLastBlock, Mask stopMask) {
+    public Location getBlockTrace(int range, boolean useLastBlock, @Nullable Mask stopMask) {
         TargetBlock tb = new TargetBlock(this, range, 0.2);
         tb.setStopMask(stopMask);
         return (useLastBlock ? tb.getAnyTargetBlock() : tb.getTargetBlock());
     }
 
     @Override
-    public Location getBlockTraceFace(int range, boolean useLastBlock, Mask stopMask) {
+    public Location getBlockTraceFace(int range, boolean useLastBlock, @Nullable Mask stopMask) {
         TargetBlock tb = new TargetBlock(this, range, 0.2);
         tb.setStopMask(stopMask);
         return (useLastBlock ? tb.getAnyTargetBlockFace() : tb.getTargetBlockFace());

@@ -220,7 +220,7 @@ public interface Player extends Entity, Actor {
      * @param stopMask the mask used to determine when to stop tracing
      * @return point
      */
-    Location getBlockTrace(int range, boolean useLastBlock, Mask stopMask);
+    Location getBlockTrace(int range, boolean useLastBlock, @Nullable Mask stopMask);
 
     /**
      * Get the face that the player is looking at.
@@ -239,7 +239,7 @@ public interface Player extends Entity, Actor {
      * @param stopMask the mask used to determine when to stop tracing
      * @return a face
      */
-    Location getBlockTraceFace(int range, boolean useLastBlock, Mask stopMask);
+    Location getBlockTraceFace(int range, boolean useLastBlock, @Nullable Mask stopMask);
 
     /**
      * Get the point of the block being looked at. May return null.
