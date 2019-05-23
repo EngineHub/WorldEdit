@@ -133,7 +133,7 @@ public class ToolUtilCommands {
     )
     @CommandPermissions("worldedit.brush.options.tracemask")
     public void traceMask(Player player, LocalSession session,
-                     @Arg(desc = "The mask to set", def = "")
+                          @Arg(desc = "The mask to set", def = "")
                              Mask mask) throws WorldEditException {
         if (mask == null) {
             session.getBrushTool(player.getItemInHand(HandSide.MAIN_HAND).getType()).setTraceMask(null);
