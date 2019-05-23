@@ -25,6 +25,7 @@ import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.extension.platform.permission.ActorSelectorLimits;
+import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.RegionSelector;
 import com.sk89q.worldedit.util.Location;
@@ -58,7 +59,6 @@ public class DistanceWand extends BrushTool implements DoubleActionTraceTool {
 
         }
         return false;
-
     }
 
     @Override
@@ -78,12 +78,21 @@ public class DistanceWand extends BrushTool implements DoubleActionTraceTool {
         return false;
     }
 
-    public Location getTarget(Player player) {
+    private Location getTarget(Player player) {
         Location target;
+        Mask mask = getTraceMask();
         if (this.range > -1) {
-            target = player.getBlockTrace(getRange(), true);
+            if (mask != null) {
+                target = player.getBlockTrace(getRange(), true, mask);
+            } else {
+                target = player.getBlockTrace(getRange(), true);
+            }
         } else {
-            target = player.getBlockTrace(MAX_RANGE);
+            if (mask != null) {
+                target = player.getBlockTrace(MAX_RANGE, false, mask);
+            } else {
+                target = player.getBlockTrace(MAX_RANGE);
+            }
         }
 
         if (target == null) {

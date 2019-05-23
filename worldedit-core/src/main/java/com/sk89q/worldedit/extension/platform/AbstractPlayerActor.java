@@ -23,6 +23,7 @@ import com.sk89q.worldedit.NotABlockException;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extent.Extent;
+import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.internal.cui.CUIEvent;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.Vector3;
@@ -330,6 +331,20 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
     @Override
     public Location getBlockTraceFace(int range, boolean useLastBlock) {
         TargetBlock tb = new TargetBlock(this, range, 0.2);
+        return (useLastBlock ? tb.getAnyTargetBlockFace() : tb.getTargetBlockFace());
+    }
+
+    @Override
+    public Location getBlockTrace(int range, boolean useLastBlock, Mask stopMask) {
+        TargetBlock tb = new TargetBlock(this, range, 0.2);
+        tb.setStopMask(stopMask);
+        return (useLastBlock ? tb.getAnyTargetBlock() : tb.getTargetBlock());
+    }
+
+    @Override
+    public Location getBlockTraceFace(int range, boolean useLastBlock, Mask stopMask) {
+        TargetBlock tb = new TargetBlock(this, range, 0.2);
+        tb.setStopMask(stopMask);
         return (useLastBlock ? tb.getAnyTargetBlockFace() : tb.getTargetBlockFace());
     }
 
