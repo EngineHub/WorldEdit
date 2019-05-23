@@ -100,7 +100,7 @@ public class TargetBlock {
      * @param solidMask the mask used to stop solid block traces
      */
     public void setSolidMask(@Nullable Mask solidMask) {
-        if (solidMask == null ) {
+        if (solidMask == null) {
             this.solidMask = new SolidBlockMask(world);
         } else {
             this.solidMask = solidMask;

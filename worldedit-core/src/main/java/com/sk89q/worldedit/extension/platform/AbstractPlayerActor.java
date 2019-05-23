@@ -336,14 +336,18 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
     @Override
     public Location getBlockTrace(int range, boolean useLastBlock, @Nullable Mask stopMask) {
         TargetBlock tb = new TargetBlock(this, range, 0.2);
-        tb.setStopMask(stopMask);
+        if (stopMask != null) {
+            tb.setStopMask(stopMask);
+        }
         return (useLastBlock ? tb.getAnyTargetBlock() : tb.getTargetBlock());
     }
 
     @Override
     public Location getBlockTraceFace(int range, boolean useLastBlock, @Nullable Mask stopMask) {
         TargetBlock tb = new TargetBlock(this, range, 0.2);
-        tb.setStopMask(stopMask);
+        if (stopMask != null) {
+            tb.setStopMask(stopMask);
+        }
         return (useLastBlock ? tb.getAnyTargetBlockFace() : tb.getTargetBlockFace());
     }
 

@@ -51,7 +51,7 @@ public class ToolUtilCommands {
     @CommandPermissions("worldedit.superpickaxe")
     public void togglePickaxe(Player player, LocalSession session,
                               @Arg(desc = "The new super pickaxe state", def = "")
-                                  Boolean superPickaxe) throws WorldEditException {
+                                  Boolean superPickaxe) {
         boolean hasSuperPickAxe = session.hasSuperPickAxe();
         if (superPickaxe != null && superPickaxe == hasSuperPickAxe) {
             player.printError("Super pickaxe already " + (superPickaxe ? "enabled" : "disabled") + ".");
