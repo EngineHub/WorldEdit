@@ -175,9 +175,6 @@ public class ForgeWorldEdit {
                 ItemCategory.REGISTRY.register(name.toString(), new ItemCategory(name.toString()));
             }
         }
-
-        config = new ForgeConfiguration(this);
-        config.load();
     }
 
     @SubscribeEvent
@@ -211,7 +208,7 @@ public class ForgeWorldEdit {
             InternalPacketHandler.getHandler().sendToServer(new LeftClickAirEventMessage());
             return;
         }
-        
+
         boolean isLeftDeny = event instanceof PlayerInteractEvent.LeftClickBlock
                 && ((PlayerInteractEvent.LeftClickBlock) event)
                         .getUseItem() == Event.Result.DENY;

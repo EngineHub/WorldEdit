@@ -27,8 +27,11 @@ import com.sk89q.worldedit.world.registry.BundledBlockRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.init.Blocks;
 import net.minecraft.state.IProperty;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.loading.FMLLoader;
+import net.minecraftforge.registries.GameData;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -40,6 +43,7 @@ import javax.annotation.Nullable;
 
 public class ForgeBlockRegistry extends BundledBlockRegistry {
 
+    private final int airId = Block.getStateId(Blocks.AIR.getDefaultState());
     private Map<Material, ForgeBlockMaterial> materialMap = new HashMap<>();
 
     @Nullable
@@ -82,4 +86,13 @@ public class ForgeBlockRegistry extends BundledBlockRegistry {
         return OptionalInt.of(Block.getStateId(equivalent));
     }
 
+    @Override
+    public BlockState getBlockStateByInternalId(int id) {
+        IBlockState equivalent = Block.getStateById(id);
+        if (equivalent.equals(Blocks.AIR.getDefaultState()) && id != airId) {
+            // We didn't find a match.
+            return null;
+        }
+        return ForgeAdapter.adapt(equivalent);
+    }
 }
