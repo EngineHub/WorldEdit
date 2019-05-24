@@ -21,7 +21,11 @@ package com.sk89q.worldedit.internal.block;
 
 import com.sk89q.worldedit.world.block.BlockState;
 
+import javax.annotation.Nullable;
+import java.util.Arrays;
 import java.util.OptionalInt;
+
+import static com.google.common.base.Preconditions.checkState;
 
 public class BlockStateIdAccess {
 
@@ -40,7 +44,28 @@ public class BlockStateIdAccess {
     }
 
     public static OptionalInt getBlockStateId(BlockState holder) {
-        return blockStateStateId.getBlockStateId((BlockState) holder);
+        return blockStateStateId.getBlockStateId(holder);
+    }
+
+    public static @Nullable BlockState getBlockStateById(int id) {
+        return id < blockStates.length ? blockStates[id] : null;
+    }
+
+    private static BlockState[] blockStates = new BlockState[2 << 14];
+
+    public static void register(BlockState blockState) {
+        OptionalInt id = getBlockStateId(blockState);
+        if (id.isPresent()) {
+            int i = id.getAsInt();
+            while (i >= blockStates.length) {
+                blockStates = Arrays.copyOf(blockStates, blockStates.length + blockStates.length >> 1);
+            }
+            BlockState existing = blockStates[i];
+            checkState(existing == null || existing == blockState,
+                "BlockState %s is using the same block ID (%s) as BlockState %s",
+                blockState, i, existing);
+            blockStates[i] = blockState;
+        }
     }
 
 }

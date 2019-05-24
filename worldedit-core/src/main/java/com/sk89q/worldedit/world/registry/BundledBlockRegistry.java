@@ -59,9 +59,4 @@ public class BundledBlockRegistry implements BlockRegistry {
         return OptionalInt.empty();
     }
 
-    @Override
-    public BlockState getBlockStateByInternalId(int id) {
-        return null;
-    }
-
 }

@@ -20,15 +20,18 @@
 package com.sk89q.worldedit.forge;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static net.minecraft.world.chunk.Chunk.EMPTY_SECTION;
 
 import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
+import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
+import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.internal.Constants;
 import com.sk89q.worldedit.internal.block.BlockStateIdAccess;
 import com.sk89q.worldedit.math.BlockVector2;
@@ -49,6 +52,9 @@ import com.sk89q.worldedit.world.weather.WeatherTypes;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLeaves;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.crash.CrashReport;
+import net.minecraft.crash.CrashReportCategory;
+import net.minecraft.crash.ReportedException;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.init.Blocks;
@@ -63,7 +69,9 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
+import net.minecraft.world.WorldType;
 import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.chunk.ChunkSection;
 import net.minecraft.world.gen.feature.BigBrownMushroomFeature;
 import net.minecraft.world.gen.feature.BigRedMushroomFeature;
 import net.minecraft.world.gen.feature.BigTreeFeature;
@@ -102,7 +110,7 @@ public class ForgeWorld extends AbstractWorld {
     private static final IBlockState JUNGLE_LOG = Blocks.JUNGLE_LOG.getDefaultState();
     private static final IBlockState JUNGLE_LEAF = Blocks.JUNGLE_LEAVES.getDefaultState().with(BlockLeaves.PERSISTENT, Boolean.TRUE);
     private static final IBlockState JUNGLE_SHRUB = Blocks.OAK_LEAVES.getDefaultState().with(BlockLeaves.PERSISTENT, Boolean.TRUE);
-    
+
     private final WeakReference<World> worldRef;
 
     /**
@@ -448,13 +456,19 @@ public class ForgeWorld extends AbstractWorld {
                 position.getBlockZ()
         );
 
+        BlockState matchingBlock = BlockStateIdAccess.getBlockStateById(Block.getStateId(mcState));
+        if (matchingBlock != null) {
+            return matchingBlock;
+        }
+
         return ForgeAdapter.adapt(mcState);
     }
 
     @Override
     public BaseBlock getFullBlock(BlockVector3 position) {
         BlockPos pos = new BlockPos(position.getBlockX(), position.getBlockY(), position.getBlockZ());
-        TileEntity tile = getWorld().getTileEntity(pos);
+        // Avoid creation by using the CHECK mode -- if it's needed, it'll be re-created anyways
+        TileEntity tile = getWorld().getChunk(pos).getTileEntity(pos, Chunk.EnumCreateEntityType.CHECK);
 
         if (tile != null) {
             return getBlock(position).toBaseBlock(NBTConverter.fromNative(TileEntityUtils.copyNbtData(tile)));

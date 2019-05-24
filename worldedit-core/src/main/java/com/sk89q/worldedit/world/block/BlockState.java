@@ -68,6 +68,7 @@ public class BlockState implements BlockStateHolder<BlockState> {
 
     BlockState initializeId(BlockRegistry registry) {
         this.internalId = registry.getInternalBlockStateId(this);
+        BlockStateIdAccess.register(this);
         return this;
     }
 

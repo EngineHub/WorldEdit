@@ -81,12 +81,6 @@ public class BukkitBlockRegistry extends BundledBlockRegistry {
         return id;
     }
 
-    @Nullable
-    @Override
-    public BlockState getBlockStateByInternalId(int id) {
-        return id >= statesById.length ? null : statesById[id];
-    }
-
     public static class BukkitBlockMaterial extends PassthroughBlockMaterial {
 
         private final Material material;
