@@ -65,7 +65,7 @@ public class BlockState implements BlockStateHolder<BlockState> {
         this.values = new LinkedHashMap<>();
         this.emptyBaseBlock = new BaseBlock(this);
     }
-    
+
     BlockState initializeId(BlockRegistry registry) {
         this.internalId = registry.getInternalBlockStateId(this);
         return this;

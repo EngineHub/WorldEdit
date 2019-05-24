@@ -73,5 +73,6 @@ public interface BlockRegistry {
      * @param id The internal ID
      * @return the block state, if available
      */
+    @Nullable
     BlockState getBlockStateByInternalId(int id);
 }
