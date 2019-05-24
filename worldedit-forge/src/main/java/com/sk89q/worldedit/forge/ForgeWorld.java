@@ -19,8 +19,6 @@
 
 package com.sk89q.worldedit.forge;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -92,6 +90,7 @@ import net.minecraft.world.gen.feature.TallTaigaTreeFeature;
 import net.minecraft.world.gen.feature.TreeFeature;
 import net.minecraft.world.storage.WorldInfo;
 
+import javax.annotation.Nullable;
 import java.io.File;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -101,7 +100,7 @@ import java.util.Random;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ThreadLocalRandom;
 
-import javax.annotation.Nullable;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * An adapter to Minecraft worlds for WorldEdit.
@@ -464,13 +463,19 @@ public class ForgeWorld extends AbstractWorld {
                 position.getBlockZ()
         );
 
+        BlockState matchingBlock = BlockStateIdAccess.getBlockStateById(Block.getStateId(mcState));
+        if (matchingBlock != null) {
+            return matchingBlock;
+        }
+
         return ForgeAdapter.adapt(mcState);
     }
 
     @Override
     public BaseBlock getFullBlock(BlockVector3 position) {
         BlockPos pos = new BlockPos(position.getBlockX(), position.getBlockY(), position.getBlockZ());
-        TileEntity tile = getWorld().getTileEntity(pos);
+        // Avoid creation by using the CHECK mode -- if it's needed, it'll be re-created anyways
+        TileEntity tile = getWorld().getChunk(pos).getTileEntity(pos, Chunk.EnumCreateEntityType.CHECK);
 
         if (tile != null) {
             return getBlock(position).toBaseBlock(NBTConverter.fromNative(TileEntityUtils.copyNbtData(tile)));
