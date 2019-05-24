@@ -21,7 +21,6 @@
 
 package com.sk89q.worldedit.bukkit;
 
-import com.sk89q.util.StringUtil;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
@@ -33,7 +32,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerCommandSendEvent;
 import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -54,12 +52,6 @@ import java.util.Optional;
 public class WorldEditListener implements Listener {
 
     private WorldEditPlugin plugin;
-
-    /**
-     * Called when a player plays an animation, such as an arm swing
-     *
-     * @param event Relevant event details
-     */
 
     /**
      * Construct the object;
@@ -112,12 +104,8 @@ public class WorldEditListener implements Listener {
             return;
         }
 
-        try {
-            if (event.getHand() == EquipmentSlot.OFF_HAND) {
-                return; // TODO api needs to be able to get either hand depending on event
-                // for now just ignore all off hand interacts
-            }
-        } catch (NoSuchMethodError | NoSuchFieldError ignored) {
+        if (event.getHand() == EquipmentSlot.OFF_HAND) {
+            return;
         }
 
         final Player player = plugin.wrapPlayer(event.getPlayer());
@@ -142,7 +130,6 @@ public class WorldEditListener implements Listener {
             if (we.handleArmSwing(player)) {
                 event.setCancelled(true);
             }
-
 
         } else if (action == Action.RIGHT_CLICK_BLOCK) {
             final Block clickedBlock = event.getClickedBlock();

@@ -34,7 +34,6 @@ import com.sk89q.worldedit.extent.inventory.BlockBag;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.function.mask.MaskIntersection;
 import com.sk89q.worldedit.function.pattern.Pattern;
-import com.sk89q.worldedit.session.request.Request;
 import com.sk89q.worldedit.util.Location;
 
 import javax.annotation.Nullable;
@@ -47,6 +46,7 @@ public class BrushTool implements TraceTool {
     protected static int MAX_RANGE = 500;
     protected int range = -1;
     private Mask mask = null;
+    private Mask traceMask = null;
     private Brush brush = new SphereBrush();
     @Nullable
     private Pattern material;
@@ -84,6 +84,24 @@ public class BrushTool implements TraceTool {
      */
     public void setMask(Mask filter) {
         this.mask = filter;
+    }
+
+    /**
+     * Get the mask used for identifying where to stop traces.
+     *
+     * @return the mask used to stop block traces
+     */
+    public @Nullable Mask getTraceMask() {
+        return mask;
+    }
+
+    /**
+     * Set the block mask used for identifying where to stop traces.
+     *
+     * @param traceMask the mask used to stop block traces
+     */
+    public void setTraceMask(@Nullable Mask traceMask) {
+        this.traceMask = traceMask;
     }
 
     /**
@@ -162,8 +180,7 @@ public class BrushTool implements TraceTool {
 
     @Override
     public boolean actPrimary(Platform server, LocalConfiguration config, Player player, LocalSession session) {
-        Location target = null;
-        target = player.getBlockTrace(getRange(), true);
+        Location target = player.getBlockTrace(getRange(), true, traceMask);
 
         if (target == null) {
             player.printError("No block in sight!");

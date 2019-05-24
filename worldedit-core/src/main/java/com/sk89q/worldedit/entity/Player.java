@@ -23,6 +23,7 @@ import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
+import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.util.Direction;
@@ -211,6 +212,17 @@ public interface Player extends Entity, Actor {
     Location getBlockTrace(int range, boolean useLastBlock);
 
     /**
+     * Get the point of the block being looked at. May return null.
+     * Will return the farthest away block before matching the stop mask if useLastBlock is true and no other block is found.
+     *
+     * @param range how far to checks for blocks
+     * @param useLastBlock try to return the last valid block not matching the stop mask found
+     * @param stopMask the mask used to determine when to stop tracing
+     * @return point
+     */
+    Location getBlockTrace(int range, boolean useLastBlock, @Nullable Mask stopMask);
+
+    /**
      * Get the face that the player is looking at.
      *
      * @param range the range
@@ -218,6 +230,16 @@ public interface Player extends Entity, Actor {
      * @return a face
      */
     Location getBlockTraceFace(int range, boolean useLastBlock);
+
+    /**
+     * Get the face that the player is looking at.
+     *
+     * @param range the range
+     * @param useLastBlock try to return the last valid block not matching the stop mask found
+     * @param stopMask the mask used to determine when to stop tracing
+     * @return a face
+     */
+    Location getBlockTraceFace(int range, boolean useLastBlock, @Nullable Mask stopMask);
 
     /**
      * Get the point of the block being looked at. May return null.
