@@ -21,9 +21,13 @@ package com.sk89q.worldedit.world.storage;
 
 import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.jnbt.Tag;
+import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.extension.platform.Capability;
+import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.world.DataException;
+import com.sk89q.worldedit.world.DataFixer;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.chunk.AnvilChunk;
 import com.sk89q.worldedit.world.chunk.AnvilChunk13;
@@ -42,7 +46,7 @@ public abstract class ChunkStore implements Closeable {
     /**
      * The DataVersion for Minecraft 1.13
      */
-    public static final int DATA_VERSION_MC_1_13 = 1519;
+    private static final int DATA_VERSION_MC_1_13 = 1519;
 
     /**
      * {@code >>} - to chunk
@@ -102,6 +106,15 @@ public abstract class ChunkStore implements Closeable {
         }
 
         int dataVersion = rootTag.getInt("DataVersion");
+        if (dataVersion == 0) dataVersion = -1;
+        final Platform platform = WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.WORLD_EDITING);
+        final int currentDataVersion = platform.getDataVersion();
+        if (dataVersion < currentDataVersion) {
+            final DataFixer dataFixer = platform.getDataFixer();
+            if (dataFixer != null) {
+                return new AnvilChunk13((CompoundTag) dataFixer.fixUp(DataFixer.FixTypes.CHUNK, rootTag, dataVersion).getValue().get("Level"));
+            }
+        }
         if (dataVersion >= DATA_VERSION_MC_1_13) {
             return new AnvilChunk13(tag);
         }
@@ -114,6 +127,7 @@ public abstract class ChunkStore implements Closeable {
         return new OldChunk(world, tag);
     }
 
+    @Override
     public void close() throws IOException {
     }
 

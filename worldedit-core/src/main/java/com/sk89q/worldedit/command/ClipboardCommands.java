@@ -143,7 +143,7 @@ public class ClipboardCommands {
                           boolean pasteEntities,
                       @Switch(name = 'b', desc = "Paste biomes if available")
                           boolean pasteBiomes,
-                      @ArgFlag(name = 'm', desc = "Skip blocks matching this mask", def = "")
+                      @ArgFlag(name = 'm', desc = "Only paste blocks matching this mask", def = "")
                           Mask sourceMask) throws WorldEditException {
 
         ClipboardHolder holder = session.getClipboard();

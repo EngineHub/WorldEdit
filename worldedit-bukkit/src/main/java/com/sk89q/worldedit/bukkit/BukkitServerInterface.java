@@ -28,6 +28,7 @@ import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.extension.platform.MultiUserPlatform;
 import com.sk89q.worldedit.extension.platform.Preference;
+import com.sk89q.worldedit.world.DataFixer;
 import com.sk89q.worldedit.world.registry.Registries;
 import org.bukkit.Bukkit;
 import org.bukkit.Server;
@@ -76,8 +77,19 @@ public class BukkitServerInterface implements MultiUserPlatform {
     }
 
     @Override
+    public DataFixer getDataFixer() {
+        if (plugin.getBukkitImplAdapter() != null) {
+            return plugin.getBukkitImplAdapter().getDataFixer();
+        }
+        return null;
+    }
+
+    @Override
     public boolean isValidMobType(String type) {
-        final EntityType entityType = EntityType.fromName(type);
+        if (!type.startsWith("minecraft:")) {
+            return false;
+        }
+        final EntityType entityType = EntityType.fromName(type.substring(10));
         return entityType != null && entityType.isAlive();
     }
 

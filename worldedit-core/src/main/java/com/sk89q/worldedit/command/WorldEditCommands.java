@@ -67,7 +67,7 @@ public class WorldEditCommands {
         aliases = { "ver" },
         desc = "Get WorldEdit version"
     )
-    public void version(Actor actor) throws WorldEditException {
+    public void version(Actor actor) {
         actor.print("WorldEdit version " + WorldEdit.getVersion());
         actor.print("https://github.com/EngineHub/worldedit/");
 
@@ -90,7 +90,7 @@ public class WorldEditCommands {
         desc = "Reload configuration"
     )
     @CommandPermissions("worldedit.reload")
-    public void reload(Actor actor) throws WorldEditException {
+    public void reload(Actor actor) {
         we.getPlatformManager().queryCapability(Capability.CONFIGURATION).reload();
         we.getEventBus().post(new ConfigurationLoadEvent(we.getPlatformManager().queryCapability(Capability.CONFIGURATION).getConfiguration()));
         actor.print("Configuration reloaded!");
@@ -100,7 +100,7 @@ public class WorldEditCommands {
         name = "report",
         desc = "Writes a report on WorldEdit"
     )
-    @CommandPermissions({"worldedit.report"})
+    @CommandPermissions("worldedit.report")
     public void report(Actor actor,
                        @Switch(name = 'p', desc = "Pastebins the report")
                            boolean pastebin) throws WorldEditException {
@@ -110,7 +110,7 @@ public class WorldEditCommands {
         String result = report.toString();
 
         try {
-            File dest = new File(we.getWorkingDirectoryFile(we.getConfiguration().saveDir), "report.txt");
+            File dest = new File(we.getConfiguration().getWorkingDirectory(), "report.txt");
             Files.write(result, dest, Charset.forName("UTF-8"));
             actor.print("WorldEdit report written to " + dest.getAbsolutePath());
         } catch (IOException e) {
@@ -119,10 +119,7 @@ public class WorldEditCommands {
 
         if (pastebin) {
             actor.checkPermission("worldedit.report.pastebin");
-            ActorCallbackPaste.pastebin(
-                    we.getSupervisor(), actor, result, "WorldEdit report: %s.report",
-                    WorldEdit.getInstance().getPlatformManager().getPlatformCommandManager().getExceptionConverter()
-            );
+            ActorCallbackPaste.pastebin(we.getSupervisor(), actor, result, "WorldEdit report: %s.report");
         }
     }
 
@@ -130,7 +127,7 @@ public class WorldEditCommands {
         name = "cui",
         desc = "Complete CUI handshake (internal usage)"
     )
-    public void cui(Player player, LocalSession session) throws WorldEditException {
+    public void cui(Player player, LocalSession session) {
         session.setCUISupport(true);
         session.dispatchCUISetup(player);
     }
@@ -141,7 +138,7 @@ public class WorldEditCommands {
     )
     public void tz(Player player, LocalSession session,
                    @Arg(desc = "The timezone to set")
-                       String timezone) throws WorldEditException {
+                       String timezone) {
         try {
             ZoneId tz = ZoneId.of(timezone);
             session.setTimezone(tz);
@@ -160,10 +157,12 @@ public class WorldEditCommands {
     )
     @CommandPermissions("worldedit.help")
     public void help(Actor actor,
+                     @Switch(name = 's', desc = "List sub-commands of the given command, if applicable")
+                         boolean listSubCommands,
                      @Arg(desc = "The page to retrieve", def = "1")
                          int page,
                      @Arg(desc = "The command to retrieve help for", def = "", variable = true)
                          List<String> command) throws WorldEditException {
-        PrintCommandHelp.help(command, page, we, actor);
+        PrintCommandHelp.help(command, page, listSubCommands, we, actor);
     }
 }

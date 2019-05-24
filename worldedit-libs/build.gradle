@@ -88,10 +88,10 @@ configure(subprojects + project("core:ap")) {
     build.dependsOn(jar, sourcesJar)
 }
 
-def textExtrasVersion = "3.0.1"
+def textExtrasVersion = "3.0.2"
 project("core") {
     def textVersion = "3.0.0"
-    def pistonVersion = '0.2.2'
+    def pistonVersion = '0.3.0'
 
     dependencies {
         shade "net.kyori:text-api:$textVersion"

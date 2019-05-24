@@ -61,10 +61,10 @@ import org.enginehub.piston.annotation.param.Switch;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.google.common.base.Preconditions.checkArgument;
 import static com.sk89q.worldedit.command.util.Logging.LogMode.ALL;
 import static com.sk89q.worldedit.command.util.Logging.LogMode.ORIENTATION_REGION;
 import static com.sk89q.worldedit.command.util.Logging.LogMode.REGION;
+import static com.sk89q.worldedit.internal.command.CommandUtil.checkCommandArgument;
 import static com.sk89q.worldedit.regions.Regions.asFlatRegion;
 import static com.sk89q.worldedit.regions.Regions.maximumBlockY;
 import static com.sk89q.worldedit.regions.Regions.minimumBlockY;
@@ -125,7 +125,7 @@ public class RegionCommands {
             player.printError("//line only works with cuboid selections");
             return 0;
         }
-        checkArgument(thickness >= 0, "Thickness must be >= 0");
+        checkCommandArgument(thickness >= 0, "Thickness must be >= 0");
 
         CuboidRegion cuboidregion = (CuboidRegion) region;
         BlockVector3 pos1 = cuboidregion.getPos1();
@@ -155,7 +155,7 @@ public class RegionCommands {
             player.printError("//curve only works with convex polyhedral selections");
             return 0;
         }
-        checkArgument(thickness >= 0, "Thickness must be >= 0");
+        checkCommandArgument(thickness >= 0, "Thickness must be >= 0");
 
         ConvexPolyhedralRegion cpregion = (ConvexPolyhedralRegion) region;
         List<BlockVector3> vectors = new ArrayList<>(cpregion.getVertices());
@@ -294,9 +294,7 @@ public class RegionCommands {
                         boolean moveSelection,
                     @Switch(name = 'a', desc = "Ignore air blocks")
                         boolean ignoreAirBlocks) throws WorldEditException {
-        if (count < 1) {
-            throw new IllegalArgumentException("Count must be >= 1");
-        }
+        checkCommandArgument(count >= 1, "Count must be >= 1");
 
         int affected = editSession.moveRegion(region, direction, count, !ignoreAirBlocks, replace);
 
@@ -433,7 +431,7 @@ public class RegionCommands {
                           int thickness,
                       @Arg(desc = "The pattern of blocks to replace the hollowed area with", def = "air")
                           Pattern pattern) throws WorldEditException {
-        checkArgument(thickness >= 0, "Thickness must be >= 0");
+        checkCommandArgument(thickness >= 0, "Thickness must be >= 0");
 
         int affected = editSession.hollowOutRegion(region, thickness, pattern);
         player.print(affected + " block(s) have been changed.");
@@ -451,7 +449,7 @@ public class RegionCommands {
                           TreeType type,
                       @Arg(desc = "The density of the forest", def = "5")
                           double density) throws WorldEditException {
-        checkArgument(0 <= density && density <= 100, "Density must be in [0, 100]");
+        checkCommandArgument(0 <= density && density <= 100, "Density must be in [0, 100]");
         int affected = editSession.makeForest(region, density / 100, type);
         player.print(affected + " trees created.");
         return affected;
@@ -466,7 +464,7 @@ public class RegionCommands {
     public int flora(Player player, EditSession editSession, @Selection Region region,
                      @Arg(desc = "The density of the forest", def = "5")
                          double density) throws WorldEditException {
-        checkArgument(0 <= density && density <= 100, "Density must be in [0, 100]");
+        checkCommandArgument(0 <= density && density <= 100, "Density must be in [0, 100]");
         density = density / 100;
         FloraGenerator generator = new FloraGenerator(editSession);
         GroundFunction ground = new GroundFunction(new ExistingBlockMask(editSession), generator);

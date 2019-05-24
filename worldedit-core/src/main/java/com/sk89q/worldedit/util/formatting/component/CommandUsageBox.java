@@ -20,17 +20,19 @@
 package com.sk89q.worldedit.util.formatting.component;
 
 import com.google.common.collect.Iterables;
+import com.sk89q.worldedit.util.formatting.text.TextComponent;
+import com.sk89q.worldedit.util.formatting.text.event.ClickEvent;
+import com.sk89q.worldedit.util.formatting.text.event.HoverEvent;
+import com.sk89q.worldedit.util.formatting.text.format.TextDecoration;
+import org.enginehub.piston.ColorConfig;
 import org.enginehub.piston.Command;
 import org.enginehub.piston.CommandParameters;
 import org.enginehub.piston.util.HelpGenerator;
 
 import javax.annotation.Nullable;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static com.sk89q.worldedit.internal.command.CommandUtil.byCleanName;
 import static com.sk89q.worldedit.internal.command.CommandUtil.getSubCommands;
 
 /**
@@ -58,35 +60,26 @@ public class CommandUsageBox extends TextComponentProducer {
     public CommandUsageBox(List<Command> commands, String commandString, @Nullable CommandParameters parameters) throws InvalidComponentException {
         checkNotNull(commands);
         checkNotNull(commandString);
-        Map<String, Command> subCommands = getSubCommands(Iterables.getLast(commands));
-        if (subCommands.isEmpty()) {
-            attachCommandUsage(commands, commandString);
-        } else {
-            attachSubcommandUsage(subCommands, commandString, parameters);
-        }
-    }
-
-    private void attachSubcommandUsage(Map<String, Command> dispatcher, String commandString, @Nullable CommandParameters parameters) throws InvalidComponentException {
-        CommandListBox box = new CommandListBox(commandString.isEmpty() ? "Help" : "Subcommands:" + commandString,
-                "//help %page%" + (commandString.isEmpty() ? "" : " " + commandString));
-        String prefix = !commandString.isEmpty() ? commandString + " " : "";
-
-        List<Command> list = dispatcher.values().stream()
-            .sorted(byCleanName())
-            .collect(Collectors.toList());
-
-        for (Command mapping : list) {
-            if (parameters == null || mapping.getCondition().satisfied(parameters)) {
-                box.appendCommand(prefix + mapping.getName(), mapping.getDescription());
-            }
-        }
-
-        append(box.create(1));
+        attachCommandUsage(commands, commandString);
     }
 
     private void attachCommandUsage(List<Command> commands, String commandString) {
+        TextComponentProducer boxContent = new TextComponentProducer()
+            .append(HelpGenerator.create(commands).getFullHelp());
+        if (getSubCommands(Iterables.getLast(commands)).size() > 0) {
+            boxContent.append(TextComponent.newline())
+                .append(TextComponent.builder("> ")
+                    .color(ColorConfig.getHelpText())
+                    .append(TextComponent.builder("List Subcommands")
+                        .color(ColorConfig.getMainText())
+                        .decoration(TextDecoration.ITALIC, true)
+                        .clickEvent(ClickEvent.runCommand("//help -s " + commandString))
+                        .hoverEvent(HoverEvent.showText(TextComponent.of("List all subcommands of this command")))
+                        .build())
+                    .build());
+        }
         MessageBox box = new MessageBox("Help for " + commandString,
-            new TextComponentProducer().append(HelpGenerator.create(commands).getFullHelp()));
+            boxContent);
 
         append(box.create());
     }

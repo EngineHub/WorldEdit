@@ -47,6 +47,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static com.sk89q.worldedit.command.util.Logging.LogMode.ALL;
 import static com.sk89q.worldedit.command.util.Logging.LogMode.PLACEMENT;
 import static com.sk89q.worldedit.command.util.Logging.LogMode.POSITION;
+import static com.sk89q.worldedit.internal.command.CommandUtil.checkCommandArgument;
 
 /**
  * Commands for the generation of shapes and other objects.
@@ -203,9 +204,7 @@ public class GenerationCommands {
                              TreeType type,
                          @Arg(desc = "The density of the forest, between 0 and 100", def = "5")
                              double density) throws WorldEditException {
-        if (density < 0 || density > 100) {
-            throw new IllegalArgumentException("Density must be between 0 and 100");
-        }
+        checkCommandArgument(0 <= density && density <= 100, "Density must be between 0 and 100");
         density = density / 100;
         int affected = editSession.makeForest(session.getPlacementPosition(player), size, density, type);
         player.print(affected + " trees created.");

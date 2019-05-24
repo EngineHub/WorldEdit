@@ -24,7 +24,6 @@ import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseItemStack;
-import com.sk89q.worldedit.command.argument.ExpandAmount;
 import com.sk89q.worldedit.command.argument.SelectorChoice;
 import com.sk89q.worldedit.command.util.CommandPermissions;
 import com.sk89q.worldedit.command.util.CommandPermissionsConditionGenerator;
@@ -265,63 +264,6 @@ public class SelectionCommands {
         } else {
             player.print("Edit wand disabled.");
         }
-    }
-
-    @Command(
-        name = "/expand",
-        desc = "Expand the selection area"
-    )
-    @Logging(REGION)
-    @CommandPermissions("worldedit.selection.expand")
-    public void expand(Player player, LocalSession session,
-                       @Arg(desc = "Amount to expand the selection by, can be `vert` to expand to the whole vertical column")
-                           ExpandAmount amount,
-                       @Arg(desc = "Amount to expand the selection by in the other direction", def = "0")
-                           int reverseAmount,
-                       @Arg(desc = "Direction to expand", def = Direction.AIM)
-                       @MultiDirection
-                           List<BlockVector3> direction) throws WorldEditException {
-
-        // Special syntax (//expand vert) to expand the selection between
-        // sky and bedrock.
-        if (amount.isVert()) {
-            Region region = session.getSelection(player.getWorld());
-            try {
-                int oldSize = region.getArea();
-                region.expand(
-                        BlockVector3.at(0, (player.getWorld().getMaxY() + 1), 0),
-                        BlockVector3.at(0, -(player.getWorld().getMaxY() + 1), 0));
-                session.getRegionSelector(player.getWorld()).learnChanges();
-                int newSize = region.getArea();
-                session.getRegionSelector(player.getWorld()).explainRegionAdjust(player, session);
-                player.print("Region expanded " + (newSize - oldSize)
-                        + " blocks [top-to-bottom].");
-            } catch (RegionOperationException e) {
-                player.printError(e.getMessage());
-            }
-
-            return;
-        }
-
-        Region region = session.getSelection(player.getWorld());
-        int oldSize = region.getArea();
-
-        if (reverseAmount == 0) {
-            for (BlockVector3 dir : direction) {
-                region.expand(dir.multiply(amount.getAmount()));
-            }
-        } else {
-            for (BlockVector3 dir : direction) {
-                region.expand(dir.multiply(amount.getAmount()), dir.multiply(-reverseAmount));
-            }
-        }
-
-        session.getRegionSelector(player.getWorld()).learnChanges();
-        int newSize = region.getArea();
-
-        session.getRegionSelector(player.getWorld()).explainRegionAdjust(player, session);
-
-        player.print("Region expanded " + (newSize - oldSize) + " block(s).");
     }
 
     @Command(

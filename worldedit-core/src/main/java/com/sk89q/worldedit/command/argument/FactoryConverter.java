@@ -81,6 +81,7 @@ public class FactoryConverter<T> implements ArgumentConverter<T> {
             }
         }
         parserContext.setSession(session);
+        parserContext.setRestricted(true);
 
         try {
             return SuccessfulConversion.fromSingle(

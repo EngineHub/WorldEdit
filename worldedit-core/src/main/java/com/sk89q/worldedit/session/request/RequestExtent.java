@@ -45,7 +45,8 @@ public class RequestExtent implements Extent {
         if (request == null || !request.isValid()) {
             request = Request.request();
         }
-        return request.getEditSession();
+        final EditSession editSession = request.getEditSession();
+        return editSession == null ? request.getWorld() : editSession;
     }
 
     @Override

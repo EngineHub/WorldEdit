@@ -23,6 +23,7 @@ import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.command.util.AsyncCommandBuilder;
 import com.sk89q.worldedit.command.util.CommandPermissions;
 import com.sk89q.worldedit.command.util.CommandPermissionsConditionGenerator;
 import com.sk89q.worldedit.entity.Player;
@@ -60,6 +61,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -113,20 +115,13 @@ public class SchematicCommands {
             return;
         }
 
-        try (Closer closer = Closer.create()) {
-            FileInputStream fis = closer.register(new FileInputStream(f));
-            BufferedInputStream bis = closer.register(new BufferedInputStream(fis));
-            ClipboardReader reader = closer.register(format.getReader(bis));
-
-            Clipboard clipboard = reader.read();
-            session.setClipboard(new ClipboardHolder(clipboard));
-
-            log.info(player.getName() + " loaded " + f.getCanonicalPath());
-            player.print(filename + " loaded. Paste it with //paste");
-        } catch (IOException e) {
-            player.printError("Schematic could not read or it does not exist: " + e.getMessage());
-            log.warn("Failed to load schematic: " + e.getMessage());
-        }
+        SchematicLoadTask task = new SchematicLoadTask(player, f, format);
+        AsyncCommandBuilder.wrap(task, player)
+                .registerWithSupervisor(worldEdit.getSupervisor(), "Loading schematic " + filename)
+                .sendMessageAfterDelay("(Please wait... loading schematic.)")
+                .onSuccess(filename + " loaded. Paste it with //paste", session::setClipboard)
+                .onFailure("Failed to load schematic", worldEdit.getPlatformManager().getPlatformCommandManager().getExceptionConverter())
+                .buildAndExec(worldEdit.getExecutorService());
     }
 
     @Command(
@@ -165,42 +160,24 @@ public class SchematicCommands {
             }
         }
 
-        ClipboardHolder holder = session.getClipboard();
-        Clipboard clipboard = holder.getClipboard();
-        Transform transform = holder.getTransform();
-        Clipboard target;
-
-        // If we have a transform, bake it into the copy
-        if (!transform.isIdentity()) {
-            FlattenedClipboardTransform result = FlattenedClipboardTransform.transform(clipboard, transform);
-            target = new BlockArrayClipboard(result.getTransformedRegion());
-            target.setOrigin(clipboard.getOrigin());
-            Operations.completeLegacy(result.copyTo(target));
-        } else {
-            target = clipboard;
-        }
-
         // Create parent directories
         File parent = f.getParentFile();
         if (parent != null && !parent.exists()) {
             if (!parent.mkdirs()) {
                 throw new StopExecutionException(TextComponent.of(
-                    "Could not create folder for schematics!"));
+                        "Could not create folder for schematics!"));
             }
         }
 
-        try (Closer closer = Closer.create()) {
-            FileOutputStream fos = closer.register(new FileOutputStream(f));
-            BufferedOutputStream bos = closer.register(new BufferedOutputStream(fos));
-            ClipboardWriter writer = closer.register(format.getWriter(bos));
-            writer.write(target);
+        ClipboardHolder holder = session.getClipboard();
 
-            log.info(player.getName() + " saved " + f.getCanonicalPath() + (overwrite ? " (overwriting previous file)" : ""));
-            player.print(filename + " saved" + (overwrite ? " (overwriting previous file)." : "."));
-        } catch (IOException e) {
-            player.printError("Schematic could not written: " + e.getMessage());
-            log.warn("Failed to write a saved clipboard", e);
-        }
+        SchematicSaveTask task = new SchematicSaveTask(player, f, format, holder, overwrite);
+        AsyncCommandBuilder.wrap(task, player)
+                .registerWithSupervisor(worldEdit.getSupervisor(), "Saving schematic " + filename)
+                .sendMessageAfterDelay("(Please wait... saving schematic.)")
+                .onSuccess(filename + " saved" + (overwrite ? " (overwriting previous file)." : "."), null)
+                .onFailure("Failed to load schematic", worldEdit.getPlatformManager().getPlatformCommandManager().getExceptionConverter())
+                .buildAndExec(worldEdit.getExecutorService());
     }
 
     @Command(
@@ -329,4 +306,71 @@ public class SchematicCommands {
         return fileList;
     }
 
+    private static class SchematicLoadTask implements Callable<ClipboardHolder> {
+        private final Player player;
+        private final File file;
+        private final ClipboardFormat format;
+
+        SchematicLoadTask(Player player, File file, ClipboardFormat format) {
+            this.player = player;
+            this.file = file;
+            this.format = format;
+        }
+
+        @Override
+        public ClipboardHolder call() throws Exception {
+            try (Closer closer = Closer.create()) {
+                FileInputStream fis = closer.register(new FileInputStream(file));
+                BufferedInputStream bis = closer.register(new BufferedInputStream(fis));
+                ClipboardReader reader = closer.register(format.getReader(bis));
+
+                Clipboard clipboard = reader.read();
+                log.info(player.getName() + " loaded " + file.getCanonicalPath());
+                return new ClipboardHolder(clipboard);
+            }
+        }
+    }
+
+    private static class SchematicSaveTask implements Callable<Void> {
+        private final Player player;
+        private final File file;
+        private final ClipboardFormat format;
+        private final ClipboardHolder holder;
+        private final boolean overwrite;
+
+        SchematicSaveTask(Player player, File file, ClipboardFormat format, ClipboardHolder holder, boolean overwrite) {
+            this.player = player;
+            this.file = file;
+            this.format = format;
+            this.holder = holder;
+            this.overwrite = overwrite;
+        }
+
+        @Override
+        public Void call() throws Exception {
+            Clipboard clipboard = holder.getClipboard();
+            Transform transform = holder.getTransform();
+            Clipboard target;
+
+            // If we have a transform, bake it into the copy
+            if (transform.isIdentity()) {
+                target = clipboard;
+            } else {
+                FlattenedClipboardTransform result = FlattenedClipboardTransform.transform(clipboard, transform);
+                target = new BlockArrayClipboard(result.getTransformedRegion());
+                target.setOrigin(clipboard.getOrigin());
+                Operations.completeLegacy(result.copyTo(target));
+            }
+
+            try (Closer closer = Closer.create()) {
+                FileOutputStream fos = closer.register(new FileOutputStream(file));
+                BufferedOutputStream bos = closer.register(new BufferedOutputStream(fos));
+                ClipboardWriter writer = closer.register(format.getWriter(bos));
+                writer.write(target);
+
+                log.info(player.getName() + " saved " + file.getCanonicalPath() + (overwrite ? " (overwriting previous file)" : ""));
+            }
+            return null;
+        }
+    }
 }

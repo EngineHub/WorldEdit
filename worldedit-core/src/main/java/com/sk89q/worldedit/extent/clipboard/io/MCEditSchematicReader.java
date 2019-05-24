@@ -44,6 +44,7 @@ import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.Location;
+import com.sk89q.worldedit.world.DataFixer;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.entity.EntityType;
 import com.sk89q.worldedit.world.entity.EntityTypes;
@@ -67,21 +68,20 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class MCEditSchematicReader extends NBTSchematicReader {
 
-    private static final ImmutableList<NBTCompatibilityHandler> COMPATIBILITY_HANDLERS
-        = ImmutableList.of(
-        new SignCompatibilityHandler(),
-        new FlowerPotCompatibilityHandler(),
-        new NoteBlockCompatibilityHandler(),
-        new SkullBlockCompatibilityHandler()
-        // TODO - item tags for inventories...? DFUs :>
-    );
-    private static final ImmutableList<EntityNBTCompatibilityHandler> ENTITY_COMPATIBILITY_HANDLERS
-        = ImmutableList.of(
-        new Pre13HangingCompatibilityHandler()
-    );
-
     private static final Logger log = LoggerFactory.getLogger(MCEditSchematicReader.class);
     private final NBTInputStream inputStream;
+    private final DataFixer fixer;
+    private static final ImmutableList<NBTCompatibilityHandler> COMPATIBILITY_HANDLERS
+            = ImmutableList.of(
+                new SignCompatibilityHandler(),
+                new FlowerPotCompatibilityHandler(),
+                new NoteBlockCompatibilityHandler(),
+                new SkullBlockCompatibilityHandler()
+    );
+    private static final ImmutableList<EntityNBTCompatibilityHandler> ENTITY_COMPATIBILITY_HANDLERS
+            = ImmutableList.of(
+                    new Pre13HangingCompatibilityHandler()
+    );
 
     /**
      * Create a new instance.
@@ -91,6 +91,9 @@ public class MCEditSchematicReader extends NBTSchematicReader {
     public MCEditSchematicReader(NBTInputStream inputStream) {
         checkNotNull(inputStream);
         this.inputStream = inputStream;
+        this.fixer = null;
+                //com.sk89q.worldedit.WorldEdit.getInstance().getPlatformManager().queryCapability(
+                        //com.sk89q.worldedit.extension.platform.Capability.WORLD_EDITING).getDataFixer();
     }
 
     @Override
@@ -176,39 +179,44 @@ public class MCEditSchematicReader extends NBTSchematicReader {
         // Need to pull out tile entities
         List<Tag> tileEntities = requireTag(schematic, "TileEntities", ListTag.class).getValue();
         Map<BlockVector3, Map<String, Tag>> tileEntitiesMap = new HashMap<>();
-        Map<BlockVector3, BlockState> blockOverrides = new HashMap<>();
+        Map<BlockVector3, BlockState> blockStates = new HashMap<>();
 
         for (Tag tag : tileEntities) {
             if (!(tag instanceof CompoundTag)) continue;
             CompoundTag t = (CompoundTag) tag;
-
+            Map<String, Tag> values = new HashMap<>(t.getValue());
+            String id = t.getString("id");
+            values.put("id", new StringTag(convertBlockEntityId(id)));
             int x = t.getInt("x");
             int y = t.getInt("y");
             int z = t.getInt("z");
-            String id = t.getString("id");
-
-            Map<String, Tag> values = new HashMap<>(t.getValue());
-            values.put("id", new StringTag(convertBlockEntityId(id)));
-
             int index = y * width * length + z * width + x;
-            BlockState block = LegacyMapper.getInstance().getBlockFromLegacy(blocks[index], blockData[index]);
+
+            BlockState block = getBlockState(blocks[index], blockData[index]);
             BlockState newBlock = block;
             if (newBlock != null) {
                 for (NBTCompatibilityHandler handler : COMPATIBILITY_HANDLERS) {
                     if (handler.isAffectedBlock(newBlock)) {
                         newBlock = handler.updateNBT(block, values);
-                        if (newBlock == null) {
+                        if (newBlock == null || values.isEmpty()) {
                             break;
                         }
                     }
                 }
             }
+            if (values.isEmpty()) {
+                t = null;
+            }
+
+            if (fixer != null && t != null) {
+                t = fixer.fixUp(DataFixer.FixTypes.BLOCK_ENTITY, t, -1);
+            }
 
             BlockVector3 vec = BlockVector3.at(x, y, z);
-            tileEntitiesMap.put(vec, values);
-            if (newBlock != block) {
-                blockOverrides.put(vec, newBlock);
+            if (t != null) {
+                tileEntitiesMap.put(vec, t.getValue());
             }
+            blockStates.put(vec, newBlock);
         }
 
         BlockArrayClipboard clipboard = new BlockArrayClipboard(region);
@@ -221,10 +229,7 @@ public class MCEditSchematicReader extends NBTSchematicReader {
                 for (int z = 0; z < length; ++z) {
                     int index = y * width * length + z * width + x;
                     BlockVector3 pt = BlockVector3.at(x, y, z);
-                    boolean useOverride = blockOverrides.containsKey(pt);
-                    BlockState state = useOverride
-                            ? blockOverrides.get(pt)
-                            : LegacyMapper.getInstance().getBlockFromLegacy(blocks[index], blockData[index]);
+                    BlockState state = blockStates.computeIfAbsent(pt, p -> getBlockState(blocks[index], blockData[index]));
 
                     try {
                         if (state != null) {
@@ -233,7 +238,7 @@ public class MCEditSchematicReader extends NBTSchematicReader {
                             } else {
                                 clipboard.setBlock(region.getMinimumPoint().add(pt), state);
                             }
-                        } else if (!useOverride) {
+                        } else {
                             short block = blocks[index];
                             byte data = blockData[index];
                             int combined = block << 8 | data;
@@ -258,9 +263,11 @@ public class MCEditSchematicReader extends NBTSchematicReader {
             for (Tag tag : entityTags) {
                 if (tag instanceof CompoundTag) {
                     CompoundTag compound = (CompoundTag) tag;
+                    if (fixer != null) {
+                        compound = fixer.fixUp(DataFixer.FixTypes.ENTITY, compound, -1);
+                    }
                     String id = convertEntityId(compound.getString("id"));
                     Location location = NBTConversions.toLocation(clipboard, compound.getListTag("Pos"), compound.getListTag("Rotation"));
-
                     if (!id.isEmpty()) {
                         EntityType entityType = EntityTypes.get(id.toLowerCase(Locale.ROOT));
                         if (entityType != null) {
@@ -343,24 +350,41 @@ public class MCEditSchematicReader extends NBTSchematicReader {
     }
 
     private String convertBlockEntityId(String id) {
-        switch(id) {
-            case "Cauldron": return "brewing_stand";
-            case "Control": return "command_block";
-            case "DLDetector": return "daylight_detector";
-            case "Trap": return "dispenser";
-            case "EnchantTable": return "enchanting_table";
-            case "EndGateway": return "end_gateway";
-            case "AirPortal": return "end_portal";
-            case "EnderChest": return "ender_chest";
-            case "FlowerPot": return "flower_pot";
-            case "RecordPlayer": return "jukebox";
-            case "MobSpawner": return "mob_spawner";
+        switch (id) {
+            case "Cauldron":
+                return "brewing_stand";
+            case "Control":
+                return "command_block";
+            case "DLDetector":
+                return "daylight_detector";
+            case "Trap":
+                return "dispenser";
+            case "EnchantTable":
+                return "enchanting_table";
+            case "EndGateway":
+                return "end_gateway";
+            case "AirPortal":
+                return "end_portal";
+            case "EnderChest":
+                return "ender_chest";
+            case "FlowerPot":
+                return "flower_pot";
+            case "RecordPlayer":
+                return "jukebox";
+            case "MobSpawner":
+                return "mob_spawner";
             case "Music":
             case "noteblock":
                 return "note_block";
-            case "Structure": return "structure_block";
-            default: return id;
+            case "Structure":
+                return "structure_block";
+            default:
+                return id;
         }
+    }
+
+    private BlockState getBlockState(int id, int data) {
+        return LegacyMapper.getInstance().getBlockFromLegacy(id, data);
     }
 
     @Override
