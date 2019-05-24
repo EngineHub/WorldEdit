@@ -410,6 +410,8 @@ public class BukkitWorld extends AbstractWorld {
         getWorld().getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ()).breakNaturally();
     }
 
+    private static volatile boolean hasWarnedImplError = false;
+
     @Override
     public com.sk89q.worldedit.world.block.BlockState getBlock(BlockVector3 position) {
         BukkitImplAdapter adapter = WorldEditPlugin.getInstance().getBukkitImplAdapter();
@@ -417,13 +419,14 @@ public class BukkitWorld extends AbstractWorld {
             try {
                 return adapter.getBlock(BukkitAdapter.adapt(getWorld(), position)).toImmutableState();
             } catch (Exception e) {
-                Block bukkitBlock = getWorld().getBlockAt(position.getBlockX(), position.getBlockY(), position.getBlockZ());
-                return BukkitAdapter.adapt(bukkitBlock.getBlockData());
+                if (!hasWarnedImplError) {
+                    hasWarnedImplError = true;
+                    logger.warn("Unable to retrieve block via impl adapter", e);
+                }
             }
-        } else {
-            Block bukkitBlock = getWorld().getBlockAt(position.getBlockX(), position.getBlockY(), position.getBlockZ());
-            return BukkitAdapter.adapt(bukkitBlock.getBlockData());
         }
+        Block bukkitBlock = getWorld().getBlockAt(position.getBlockX(), position.getBlockY(), position.getBlockZ());
+        return BukkitAdapter.adapt(bukkitBlock.getBlockData());
     }
 
     @Override
