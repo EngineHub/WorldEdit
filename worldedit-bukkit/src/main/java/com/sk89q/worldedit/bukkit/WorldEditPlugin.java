@@ -87,8 +87,9 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
 
     private static final Logger log = LoggerFactory.getLogger(WorldEditPlugin.class);
-    public static final String CUI_PLUGIN_CHANNEL = "worldedit:cui";
+    static final String CUI_PLUGIN_CHANNEL = "worldedit:cui";
     private static WorldEditPlugin INSTANCE;
+    private static WorldInitListener worldInitListener = null;
 
     private BukkitImplAdapter bukkitAdapter;
     private BukkitServerInterface server;
@@ -123,13 +124,33 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
         getServer().getPluginManager().registerEvents(new WorldEditListener(this), this);
 
         // register this so we can load world-dependent data right as the first world is loading
-        getServer().getPluginManager().registerEvents(new WorldInitListener(), this);
+        if (worldInitListener != null) {
+            getLogger().warning("Server reload detected. This may cause various issues with WorldEdit and dependant plugins.");
+            try {
+                // these don't stick around between reload
+                loadAdapter();
+                loadConfig();
+            } catch (Throwable ignored) {
+            }
+        } else {
+            getServer().getPluginManager().registerEvents((worldInitListener = new WorldInitListener()), this);
+        }
 
         // Enable metrics
         new Metrics(this);
     }
 
-    public void setupRegistries() {
+    private void setupWorldData() {
+        loadAdapter(); // Need an adapter to work with special blocks with NBT data
+        setupRegistries();
+        WorldEdit.getInstance().loadMappings();
+        loadConfig(); // Load configuration
+        setupTags();
+
+        WorldEdit.getInstance().getEventBus().post(new PlatformReadyEvent());
+    }
+
+    private void setupRegistries() {
         // Biome
         for (Biome biome : Biome.values()) {
             String lowerCaseBiomeName = biome.name().toLowerCase(Locale.ROOT);
@@ -434,14 +455,7 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
         public void onWorldInit(@SuppressWarnings("unused") WorldInitEvent event) {
             if (loaded) return;
             loaded = true;
-
-            loadAdapter(); // Need an adapter to work with special blocks with NBT data
-            setupRegistries();
-            WorldEdit.getInstance().loadMappings();
-            loadConfig(); // Load configuration
-            setupTags();
-
-            WorldEdit.getInstance().getEventBus().post(new PlatformReadyEvent());
+            setupWorldData();
         }
     }
 }
