@@ -41,6 +41,9 @@ public class FlowerPotCompatibilityHandler implements NBTCompatibilityHandler {
         Tag item = values.get("Item");
         if (item instanceof StringTag) {
             String id = ((StringTag) item).getValue();
+            if (id.isEmpty()) {
+                return (B) BlockTypes.FLOWER_POT.getDefaultState();
+            }
             int data = 0;
             Tag dataTag = values.get("Data");
             if (dataTag instanceof IntTag) {
@@ -75,7 +78,7 @@ public class FlowerPotCompatibilityHandler implements NBTCompatibilityHandler {
                 break;
         }
         String plantedName = null;
-        if (newId == 0) {
+        if (newId == 0 && id.startsWith("minecraft:")) {
             plantedName = id.substring(10);
         } else {
             BlockState plantedWithData = LegacyMapper.getInstance().getBlockFromLegacy(newId, data);
