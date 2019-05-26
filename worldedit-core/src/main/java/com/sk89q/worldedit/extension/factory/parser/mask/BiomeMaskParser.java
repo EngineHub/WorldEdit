@@ -35,6 +35,7 @@ import com.sk89q.worldedit.world.registry.BiomeRegistry;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -46,7 +47,22 @@ public class BiomeMaskParser extends InputParser<Mask> {
 
     @Override
     public Stream<String> getSuggestions(String input) {
-        return BiomeType.REGISTRY.keySet().stream().map(biomeType -> "$" + biomeType);
+        final Stream<String> allBiomes = BiomeType.REGISTRY.keySet().stream().map(biomeType -> "$" + biomeType);
+        if (input.isEmpty()) {
+            return allBiomes;
+        }
+        if (input.charAt(0) == '$') {
+            String key = input.substring(1);
+            if (key.isEmpty()) {
+                return allBiomes;
+            }
+            if (key.indexOf(':') < 0) {
+                key = "minecraft:" + key;
+            }
+            String biomeId = key.toLowerCase(Locale.ROOT);
+            return BiomeType.REGISTRY.keySet().stream().filter(s -> s.startsWith(biomeId)).map(s -> "$" + s);
+        }
+        return Stream.empty();
     }
 
     @Override

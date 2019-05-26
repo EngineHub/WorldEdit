@@ -26,10 +26,23 @@ import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.function.mask.Masks;
 import com.sk89q.worldedit.internal.registry.InputParser;
 
+import java.util.stream.Stream;
+
 public class NegateMaskParser extends InputParser<Mask> {
 
     public NegateMaskParser(WorldEdit worldEdit) {
         super(worldEdit);
+    }
+
+    @Override
+    public Stream<String> getSuggestions(String input) {
+        if (input.isEmpty()) {
+            return Stream.of("!");
+        }
+        if (input.charAt(0) != '!') {
+            return Stream.empty();
+        }
+        return worldEdit.getMaskFactory().getSuggestions(input.substring(1)).stream().map(s -> "!" + s);
     }
 
     @Override

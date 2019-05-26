@@ -50,10 +50,10 @@ public final class PatternFactory extends AbstractFactory<Pattern> {
         register(new RandomPatternParser(worldEdit));
 
         // individual patterns
-        register(new BlockCategoryPatternParser(worldEdit));
         register(new ClipboardPatternParser(worldEdit));
         register(new TypeOrStateApplyingPatternParser(worldEdit));
         register(new RandomStatePatternParser(worldEdit));
+        register(new BlockCategoryPatternParser(worldEdit));
 
         // inner-most pattern: just one block - must be last
         register(new SingleBlockPatternParser(worldEdit));

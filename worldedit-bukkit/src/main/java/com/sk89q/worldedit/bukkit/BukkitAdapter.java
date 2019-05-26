@@ -151,7 +151,7 @@ public class BukkitAdapter {
             if (match != null) {
                 return match;
             } else {
-                throw new IllegalArgumentException("Can't find a Bukkit world for " + world);
+                throw new IllegalArgumentException("Can't find a Bukkit world for " + world.getName());
             }
         }
     }

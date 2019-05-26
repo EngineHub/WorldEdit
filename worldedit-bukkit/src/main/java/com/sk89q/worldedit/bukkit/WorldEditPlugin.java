@@ -49,6 +49,7 @@ import com.sk89q.worldedit.world.gamemode.GameModes;
 import com.sk89q.worldedit.world.item.ItemCategory;
 import com.sk89q.worldedit.world.item.ItemType;
 import com.sk89q.worldedit.world.weather.WeatherTypes;
+import io.papermc.lib.PaperLib;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -75,6 +76,7 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.jar.JarFile;
 import java.util.logging.Level;
 import java.util.zip.ZipEntry;
@@ -122,6 +124,10 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
 
         // Now we can register events
         getServer().getPluginManager().registerEvents(new WorldEditListener(this), this);
+        // register async tab complete, if available
+        if (PaperLib.isPaper()) {
+            getServer().getPluginManager().registerEvents(new AsyncTabCompleteListener(), this);
+        }
 
         // register this so we can load world-dependent data right as the first world is loading
         if (worldInitListener != null) {
@@ -138,6 +144,7 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
 
         // Enable metrics
         new Metrics(this);
+        PaperLib.suggestPaper(this);
     }
 
     private void setupWorldData() {
@@ -171,11 +178,12 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
                         ).toImmutableState();
                         BlockState defaultState = blockState.getBlockType().getAllStates().get(0);
                         for (Map.Entry<Property<?>, Object> propertyObjectEntry : state.getStates().entrySet()) {
-                            defaultState = defaultState.with((Property) propertyObjectEntry.getKey(), propertyObjectEntry.getValue());
+                            //noinspection unchecked
+                            defaultState = defaultState.with((Property<Object>) propertyObjectEntry.getKey(), propertyObjectEntry.getValue());
                         }
                         return defaultState;
                     } catch (InputParseException e) {
-                        e.printStackTrace();
+                        getLogger().log(Level.WARNING, "Error loading block state for " + material.getKey(), e);
                         return blockState;
                     }
                 }));
@@ -206,7 +214,7 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
             for (Tag<Material> itemTag : Bukkit.getTags(Tag.REGISTRY_ITEMS, Material.class)) {
                 ItemCategory.REGISTRY.register(itemTag.getKey().toString(), new ItemCategory(itemTag.getKey().toString()));
             }
-        } catch (NoSuchMethodError e) {
+        } catch (NoSuchMethodError ignored) {
             getLogger().warning("The version of Spigot/Paper you are using doesn't support Tags. The usage of tags with WorldEdit will not work until you update.");
         }
     }
@@ -456,6 +464,31 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
             if (loaded) return;
             loaded = true;
             setupWorldData();
+        }
+    }
+
+    private class AsyncTabCompleteListener implements Listener {
+        AsyncTabCompleteListener() {
+        }
+
+        @SuppressWarnings("UnnecessaryFullyQualifiedName")
+        @EventHandler(ignoreCancelled = true)
+        public void onAsyncTabComplete(com.destroystokyo.paper.event.server.AsyncTabCompleteEvent event) {
+            if (!event.isCommand()) return;
+
+            String buffer = event.getBuffer();
+            final String[] parts = buffer.split(" ");
+            if (parts.length < 1) return;
+            final String label = parts[0];
+            final Optional<org.enginehub.piston.Command> command
+                    = WorldEdit.getInstance().getPlatformManager().getPlatformCommandManager().getCommandManager().getCommand(label);
+            if (!command.isPresent()) return;
+
+            CommandSuggestionEvent suggestEvent = new CommandSuggestionEvent(wrapCommandSender(event.getSender()), event.getBuffer());
+            getWorldEdit().getEventBus().post(suggestEvent);
+
+            event.setCompletions(CommandUtil.fixSuggestions(event.getBuffer(), suggestEvent.getSuggestions()));
+            event.setHandled(true);
         }
     }
 }

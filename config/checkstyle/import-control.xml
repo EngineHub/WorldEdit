@@ -44,7 +44,7 @@
     <subpackage name="bukkit">
       <allow pkg="org.bukkit"/>
       <allow pkg="org.bstats.bukkit"/>
-      <allow pkg="net.minecraft.server"/>
+      <allow pkg="io.papermc.lib"/>
     </subpackage>
 
     <subpackage name="forge">

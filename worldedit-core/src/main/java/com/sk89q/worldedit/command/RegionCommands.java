@@ -89,7 +89,7 @@ public class RegionCommands {
     @Logging(REGION)
     public int set(Player player, EditSession editSession,
                    @Selection Region region,
-                   @Arg(desc = "The patter of blocks to set")
+                   @Arg(desc = "The pattern of blocks to set")
                        Pattern pattern) {
         RegionFunction set = new BlockReplace(editSession, pattern);
         RegionVisitor visitor = new RegionVisitor(region, set);

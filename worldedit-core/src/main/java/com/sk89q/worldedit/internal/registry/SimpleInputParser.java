@@ -19,12 +19,12 @@
 
 package com.sk89q.worldedit.internal.registry;
 
-import com.google.common.collect.Lists;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.extension.input.InputParseException;
 import com.sk89q.worldedit.extension.input.ParserContext;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Stream;
 
 /**
@@ -34,7 +34,7 @@ import java.util.stream.Stream;
  */
 public abstract class SimpleInputParser<E> extends InputParser<E> {
 
-    public SimpleInputParser(WorldEdit worldEdit) {
+    protected SimpleInputParser(WorldEdit worldEdit) {
         super(worldEdit);
     }
 
@@ -67,6 +67,15 @@ public abstract class SimpleInputParser<E> extends InputParser<E> {
 
     @Override
     public Stream<String> getSuggestions(String input) {
-        return Stream.of(getPrimaryMatcher());
+        if (input.isEmpty()) {
+            return Stream.of(getPrimaryMatcher());
+        }
+        final String prefix = input.toLowerCase(Locale.ROOT);
+        for (String alias : getMatchedAliases()) {
+            if (alias.startsWith(prefix)) {
+                return Stream.of(alias);
+            }
+        }
+        return Stream.empty();
     }
 }

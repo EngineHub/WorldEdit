@@ -19,7 +19,7 @@
 
 package com.sk89q.worldedit.extension.factory.parser.mask;
 
-import com.google.common.collect.Lists;
+import com.google.common.collect.ImmutableList;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.extension.input.ParserContext;
 import com.sk89q.worldedit.function.mask.ExistingBlockMask;
@@ -31,13 +31,15 @@ import java.util.List;
 
 public class ExistingMaskParser extends SimpleInputParser<Mask> {
 
+    private final List<String> aliases = ImmutableList.of("#existing");
+
     public ExistingMaskParser(WorldEdit worldEdit) {
         super(worldEdit);
     }
 
     @Override
     public List<String> getMatchedAliases() {
-        return Lists.newArrayList("#existing");
+        return aliases;
     }
 
     @Override

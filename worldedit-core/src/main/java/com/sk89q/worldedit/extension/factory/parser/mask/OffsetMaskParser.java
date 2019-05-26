@@ -31,10 +31,24 @@ import com.sk89q.worldedit.internal.registry.InputParser;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.session.request.RequestExtent;
 
+import java.util.stream.Stream;
+
 public class OffsetMaskParser extends InputParser<Mask> {
 
     public OffsetMaskParser(WorldEdit worldEdit) {
         super(worldEdit);
+    }
+
+    @Override
+    public Stream<String> getSuggestions(String input) {
+        if (input.isEmpty()) {
+            return Stream.of(">", "<");
+        }
+        final char firstChar = input.charAt(0);
+        if (firstChar != '>' && firstChar != '<') {
+            return Stream.empty();
+        }
+        return worldEdit.getMaskFactory().getSuggestions(input.substring(1)).stream().map(s -> firstChar + s);
     }
 
     @Override
