@@ -20,6 +20,7 @@
 package com.sk89q.worldedit.extension.factory.parser.pattern;
 
 import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.command.util.SuggestionHelper;
 import com.sk89q.worldedit.extension.input.InputParseException;
 import com.sk89q.worldedit.extension.input.ParserContext;
 import com.sk89q.worldedit.function.pattern.BlockPattern;
@@ -41,7 +42,7 @@ public class BlockCategoryPatternParser extends InputParser<Pattern> {
 
     @Override
     public Stream<String> getSuggestions(String input) {
-        return BlockCategory.REGISTRY.keySet().stream().map(str -> "##" + str);
+        return SuggestionHelper.getBlockCategorySuggestions(input, true);
     }
 
     @Override

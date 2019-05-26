@@ -21,6 +21,7 @@ package com.sk89q.worldedit.command.argument;
 
 import com.google.common.collect.ImmutableList;
 import com.sk89q.worldedit.registry.Keyed;
+import com.sk89q.worldedit.registry.NamespacedRegistry;
 import com.sk89q.worldedit.registry.Registry;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
@@ -84,10 +85,12 @@ public final class RegistryConverter<V extends Keyed> implements ArgumentConvert
 
     private final Registry<V> registry;
     private final TextComponent choices;
+    private final boolean namespaced;
 
     private RegistryConverter(Registry<V> registry) {
         this.registry = registry;
         this.choices = TextComponent.of("any " + registry.getName());
+        this.namespaced = registry instanceof NamespacedRegistry;
     }
 
     @Override
@@ -106,6 +109,9 @@ public final class RegistryConverter<V extends Keyed> implements ArgumentConvert
 
     @Override
     public List<String> getSuggestions(String input) {
+        if (namespaced && input.indexOf(':') < 0) {
+            input = "minecraft:" + input;
+        }
         return limitByPrefix(registry.keySet().stream(), input);
     }
 }

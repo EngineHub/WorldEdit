@@ -29,9 +29,23 @@ import com.sk89q.worldedit.internal.registry.InputParser;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.FuzzyBlockState;
 
+import java.util.stream.Stream;
+
 public class RandomStatePatternParser extends InputParser<Pattern> {
     public RandomStatePatternParser(WorldEdit worldEdit) {
         super(worldEdit);
+    }
+
+    @Override
+    public Stream<String> getSuggestions(String input) {
+        if (input.isEmpty()) {
+            return Stream.of("*");
+        }
+        if (!input.startsWith("*")) {
+            return Stream.empty();
+        }
+
+        return worldEdit.getBlockFactory().getSuggestions(input.substring(1)).stream().map(s -> "*" + s);
     }
 
     @Override

@@ -19,7 +19,7 @@
 
 package com.sk89q.worldedit.extension.factory.parser.mask;
 
-import com.google.common.collect.Lists;
+import com.google.common.collect.ImmutableList;
 import com.sk89q.worldedit.IncompleteRegionException;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.extension.input.InputParseException;
@@ -32,13 +32,15 @@ import java.util.List;
 
 public class RegionMaskParser extends SimpleInputParser<Mask> {
 
+    private final List<String> aliases = ImmutableList.of("#region", "#selection", "#sel");
+
     public RegionMaskParser(WorldEdit worldEdit) {
         super(worldEdit);
     }
 
     @Override
     public List<String> getMatchedAliases() {
-        return Lists.newArrayList("#region", "#selection", "#sel");
+        return aliases;
     }
 
     @Override

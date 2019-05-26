@@ -306,7 +306,11 @@ public final class StringUtil {
     }
 
     public static List<String> parseListInQuotes(String[] input, char delimiter, char quoteOpen, char quoteClose) {
-        List<String> parsableBlocks = new ArrayList<>();
+        return parseListInQuotes(input, delimiter, quoteOpen, quoteClose, false);
+    }
+
+    public static List<String> parseListInQuotes(String[] input, char delimiter, char quoteOpen, char quoteClose, boolean appendLeftover) {
+       List<String> parsableBlocks = new ArrayList<>();
         StringBuilder buffer = new StringBuilder();
         for (String split : input) {
             if (split.indexOf(quoteOpen) != -1 && split.indexOf(quoteClose) == -1) {
@@ -320,6 +324,9 @@ public final class StringUtil {
             } else {
                 buffer.append(split).append(delimiter);
             }
+        }
+        if (appendLeftover && buffer.length() != 0) {
+            parsableBlocks.add(buffer.delete(buffer.length() - 1, buffer.length()).toString());
         }
 
         return parsableBlocks;

@@ -28,10 +28,7 @@ import com.sk89q.worldedit.world.item.ItemType;
 import com.sk89q.worldedit.world.item.ItemTypes;
 import com.sk89q.worldedit.world.registry.LegacyMapper;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class DefaultItemParser extends InputParser<BaseItem> {
@@ -42,7 +39,11 @@ public class DefaultItemParser extends InputParser<BaseItem> {
 
     @Override
     public Stream<String> getSuggestions(String input) {
-        return ItemType.REGISTRY.keySet().stream();
+        if (input.indexOf(':') == -1) {
+            input = "minecraft:" + input;
+        }
+        String key = input;
+        return ItemType.REGISTRY.keySet().stream().filter(s -> s.startsWith(key));
     }
 
     @Override
@@ -58,8 +59,10 @@ public class DefaultItemParser extends InputParser<BaseItem> {
                 } else {
                     type = LegacyMapper.getInstance().getItemFromLegacy(Integer.parseInt(split[0]), Integer.parseInt(split[1]));
                 }
-                item = new BaseItem(type);
-            } catch (NumberFormatException e) {
+                if (type != null) {
+                    item = new BaseItem(type);
+                }
+            } catch (NumberFormatException ignored) {
             }
         }
 

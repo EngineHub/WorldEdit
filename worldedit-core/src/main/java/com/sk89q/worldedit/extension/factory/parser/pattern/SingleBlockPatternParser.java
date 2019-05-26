@@ -25,7 +25,6 @@ import com.sk89q.worldedit.extension.input.ParserContext;
 import com.sk89q.worldedit.function.pattern.BlockPattern;
 import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.internal.registry.InputParser;
-import com.sk89q.worldedit.world.block.BlockType;
 
 import java.util.stream.Stream;
 

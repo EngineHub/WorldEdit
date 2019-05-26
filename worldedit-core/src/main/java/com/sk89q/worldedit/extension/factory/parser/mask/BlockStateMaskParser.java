@@ -28,10 +28,20 @@ import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.internal.registry.InputParser;
 import com.sk89q.worldedit.session.request.RequestExtent;
 
+import java.util.stream.Stream;
+
 public class BlockStateMaskParser extends InputParser<Mask> {
 
     public BlockStateMaskParser(WorldEdit worldEdit) {
         super(worldEdit);
+    }
+
+    @Override
+    public Stream<String> getSuggestions(String input) {
+        if (input.isEmpty()) {
+            return Stream.of("^[", "^=[");
+        }
+        return Stream.of("^[", "^=[").filter(s -> s.startsWith(input)); // no block type, can't suggest states
     }
 
     @Override

@@ -42,6 +42,6 @@ public final class ItemUseFactory implements Contextual<RegionFunction> {
 
     @Override
     public String toString() {
-        return "application of the item " + item.getType() + ":" + item.getNbtData();
+        return "application of the item " + item.getType();
     }
 }

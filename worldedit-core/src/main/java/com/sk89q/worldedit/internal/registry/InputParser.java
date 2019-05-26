@@ -23,8 +23,6 @@ import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.extension.input.InputParseException;
 import com.sk89q.worldedit.extension.input.ParserContext;
 
-import java.util.Collections;
-import java.util.List;
 import java.util.stream.Stream;
 
 /**
@@ -37,7 +35,7 @@ public abstract class InputParser<E> {
 
     protected final WorldEdit worldEdit;
 
-    public InputParser(WorldEdit worldEdit) {
+    protected InputParser(WorldEdit worldEdit) {
         this.worldEdit = worldEdit;
     }
 

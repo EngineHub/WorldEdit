@@ -27,6 +27,7 @@ import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.MobSpawnerBlock;
 import com.sk89q.worldedit.blocks.SignBlock;
 import com.sk89q.worldedit.blocks.SkullBlock;
+import com.sk89q.worldedit.command.util.SuggestionHelper;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.input.DisallowedUsageException;
 import com.sk89q.worldedit.extension.input.InputParseException;
@@ -38,7 +39,6 @@ import com.sk89q.worldedit.internal.registry.InputParser;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.util.HandSide;
-import com.sk89q.worldedit.util.formatting.component.ErrorFormat;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;
@@ -101,7 +101,7 @@ public class DefaultBlockParser extends InputParser<BaseBlock> {
         }
     }
 
-    private static String[] EMPTY_STRING_ARRAY = new String[]{};
+    private static String[] EMPTY_STRING_ARRAY = {};
 
     /**
      * Backwards compatibility for wool colours in block syntax.
@@ -169,11 +169,9 @@ public class DefaultBlockParser extends InputParser<BaseBlock> {
                     Property<Object> propertyKey = (Property<Object>) type.getPropertyMap().get(parts[0]);
                     if (propertyKey == null) {
                         if (context.getActor() != null) {
-                            context.getActor().print(ErrorFormat.wrap("Unknown property ", parts[0], " for block ", type.getName(),
-                                    ". Defaulting to base."));
+                            throw new NoMatchException("Unknown property " + parts[0] + " for block " + type.getName());
                         } else {
                             WorldEdit.logger.warn("Unknown property " + parts[0] + " for block " + type.getName());
-//                            throw new NoMatchException("Unknown property " + parts[0] + " for block " + type.getName());
                         }
                         return Maps.newHashMap();
                     }
@@ -202,8 +200,29 @@ public class DefaultBlockParser extends InputParser<BaseBlock> {
 
     @Override
     public Stream<String> getSuggestions(String input) {
-        // TODO Include states
-        return BlockType.REGISTRY.keySet().stream();
+        final int idx = input.lastIndexOf('[');
+        if (idx < 0) {
+            if (input.indexOf(':') == -1) {
+                String key =  ("minecraft:" + input).toLowerCase(Locale.ROOT);
+                return BlockType.REGISTRY.keySet().stream().filter(s -> s.startsWith(key));
+            }
+            if (input.contains(",")) {
+                return Stream.empty();
+            }
+            return BlockType.REGISTRY.keySet().stream();
+        }
+        String blockType = input.substring(0, idx);
+        BlockType type = BlockTypes.get(blockType.toLowerCase(Locale.ROOT));
+        if (type == null) {
+            return Stream.empty();
+        }
+
+        String props = input.substring(idx + 1);
+        if (props.isEmpty()) {
+            return type.getProperties().stream().map(p -> input + p.getName() + "=");
+        }
+
+        return SuggestionHelper.getBlockPropertySuggestions(blockType, props);
     }
 
     private BaseBlock parseLogic(String input, ParserContext context) throws InputParseException {
@@ -238,6 +257,13 @@ public class DefaultBlockParser extends InputParser<BaseBlock> {
                 typeString = blockAndExtraData[0];
             } else {
                 typeString = blockAndExtraData[0].substring(0, stateStart);
+                if (stateStart + 1 >= blockAndExtraData[0].length()) {
+                    throw new InputParseException("Invalid format. Hanging bracket @ " + stateStart + ".");
+                }
+                int stateEnd = blockAndExtraData[0].lastIndexOf(']');
+                if (stateEnd < 0) {
+                    throw new InputParseException("Invalid format. Unclosed property.");
+                }
                 stateString = blockAndExtraData[0].substring(stateStart + 1, blockAndExtraData[0].length() - 1);
             }
             if (typeString.isEmpty()) {

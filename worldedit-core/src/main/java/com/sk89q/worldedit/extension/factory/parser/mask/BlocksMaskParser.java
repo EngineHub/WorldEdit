@@ -28,7 +28,6 @@ import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.internal.registry.InputParser;
 import com.sk89q.worldedit.session.request.RequestExtent;
 import com.sk89q.worldedit.world.block.BaseBlock;
-import com.sk89q.worldedit.world.block.BlockCategory;
 
 import java.util.Set;
 import java.util.stream.Stream;

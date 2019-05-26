@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.command.argument;
 
+import com.google.common.collect.ImmutableList;
 import com.sk89q.worldedit.command.util.EntityRemover;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
@@ -30,11 +31,18 @@ import org.enginehub.piston.converter.SuccessfulConversion;
 import org.enginehub.piston.inject.InjectedValueAccess;
 import org.enginehub.piston.inject.Key;
 
+import java.util.List;
+
+import static org.enginehub.piston.converter.SuggestionHelper.limitByPrefix;
+
 public class EntityRemoverConverter implements ArgumentConverter<EntityRemover> {
 
     public static void register(CommandManager commandManager) {
         commandManager.registerConverter(Key.of(EntityRemover.class), new EntityRemoverConverter());
     }
+
+    private final List<String> suggestions
+            = ImmutableList.of("projectiles", "items", "paintings", "itemframes", "boats", "minecarts", "tnt", "xp", "all");
 
     private EntityRemoverConverter() {
     }
@@ -44,6 +52,11 @@ public class EntityRemoverConverter implements ArgumentConverter<EntityRemover> 
         return TextComponent.of(
             "projectiles, items, paintings, itemframes, boats, minecarts, tnt, xp, or all"
         );
+    }
+
+    @Override
+    public List<String> getSuggestions(String input) {
+        return limitByPrefix(suggestions.stream(), input);
     }
 
     @Override
