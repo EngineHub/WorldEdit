@@ -32,9 +32,7 @@ public class ItemFactory extends AbstractFactory<BaseItem> {
      * @param worldEdit the WorldEdit instance.
      */
     public ItemFactory(WorldEdit worldEdit) {
-        super(worldEdit);
-
-        register(new DefaultItemParser(worldEdit));
+        super(worldEdit, new DefaultItemParser(worldEdit));
     }
 
 }
