@@ -19,6 +19,9 @@
 
 package com.sk89q.worldedit.command.util;
 
+import com.sk89q.worldedit.registry.Keyed;
+import com.sk89q.worldedit.registry.NamespacedRegistry;
+import com.sk89q.worldedit.registry.Registry;
 import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.world.block.BlockCategory;
 import com.sk89q.worldedit.world.block.BlockType;
@@ -30,39 +33,32 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static org.enginehub.piston.converter.SuggestionHelper.byPrefix;
+import static org.enginehub.piston.converter.SuggestionHelper.limitByPrefix;
+
+/**
+ * Internal class for generating common command suggestions.
+ */
 public final class SuggestionHelper {
     private SuggestionHelper() {
     }
 
     public static Stream<String> getBlockCategorySuggestions(String tag, boolean allowRandom) {
-        final Stream<String> allTags = BlockCategory.REGISTRY.keySet().stream().map(str -> "##" + str);
-        if (tag.isEmpty()) {
-            return allTags;
+        if (tag.isEmpty() || tag.equals("#")) {
+            return Stream.of("##", "##*");
         }
         if (tag.startsWith("#")) {
-            String key;
-            if (tag.startsWith("##")) {
-                key = tag.substring(2);
-                if (key.isEmpty()) {
-                    return allTags;
-                }
-                boolean anyState = false;
-                if (allowRandom && key.charAt(0) == '*') {
-                    key = key.substring(1);
-                    anyState = true;
-                }
-                if (key.indexOf(':') < 0) {
-                    key = "minecraft:" + key;
-                }
-                String finalTag = key.toLowerCase(Locale.ROOT);
-                final Stream<String> stream = BlockCategory.REGISTRY.keySet().stream().filter(s ->
-                        s.startsWith(finalTag));
-                return anyState ? stream.map(s -> "##*" + s) : stream.map(s -> "##" + s);
-            } else if (tag.length() == 1) {
-                return allTags;
+            if (tag.equals("##")) {
+                return Stream.concat(Stream.of("##*"), getNamespacedRegistrySuggestions(BlockCategory.REGISTRY, tag.substring(2)).map(s -> "##" + s));
+            } else if (tag.equals("##*") && allowRandom) {
+                return getNamespacedRegistrySuggestions(BlockCategory.REGISTRY, tag.substring(3)).map(s -> "##*" + s);
+            } else {
+                boolean wild = tag.startsWith("##*") && allowRandom;
+                return getNamespacedRegistrySuggestions(BlockCategory.REGISTRY, tag.substring(wild ? 3 : 2)).map(s -> (wild ? "##*" : "##") + s);
             }
         }
         return Stream.empty();
@@ -103,7 +99,7 @@ public final class SuggestionHelper {
                 } else {
                     Property<?> prop = propertyMap.get(matchProp);
                     if (prop == null) {
-                        return Stream.empty();
+                        return propertyMap.keySet().stream().map(p -> lastValidInput + p);
                     }
                     final List<String> values = prop.getValues().stream().map(v -> v.toString().toLowerCase(Locale.ROOT)).collect(Collectors.toList());
                     String matchVal = propVal[1].toLowerCase(Locale.ROOT);
@@ -139,5 +135,39 @@ public final class SuggestionHelper {
             }
         }
         return Stream.empty();
+    }
+
+    public static <V extends Keyed> Stream<String> getRegistrySuggestions(Registry<V> registry, String input) {
+        if (registry instanceof NamespacedRegistry) {
+            return getNamespacedRegistrySuggestions(((NamespacedRegistry<V>) registry), input);
+        }
+        return limitByPrefix(registry.keySet().stream(), input).stream();
+    }
+
+    public static <V extends Keyed> Stream<String> getNamespacedRegistrySuggestions(NamespacedRegistry<V> registry, String input) {
+        if (input.isEmpty() || input.equals(":")) {
+            final Set<String> namespaces = registry.getKnownNamespaces();
+            if (namespaces.size() == 1) {
+                return registry.keySet().stream();
+            } else {
+                return namespaces.stream().map(s -> s + ":");
+            }
+        }
+        if (input.startsWith(":")) { // special case - search across namespaces
+            final String term = input.substring(1).toLowerCase(Locale.ROOT);
+            Predicate<String> search = byPrefix(term);
+            return registry.keySet().stream().filter(s -> search.test(s.substring(s.indexOf(':') + 1)));
+        }
+        // otherwise, we actually have some text to search
+        if (input.indexOf(':') < 0) {
+            // don't yet have namespace - search namespaces + default
+            final String lowerSearch = input.toLowerCase(Locale.ROOT);
+            String defKey = registry.getDefaultNamespace() + ":" + lowerSearch;
+            return Stream.concat(registry.keySet().stream().filter(s -> s.startsWith(defKey)),
+                    registry.getKnownNamespaces().stream().filter(n -> n.startsWith(lowerSearch)).map(n -> n + ":"));
+        }
+        // have a namespace - search that
+        Predicate<String> search = byPrefix(input.toLowerCase(Locale.ROOT));
+        return registry.keySet().stream().filter(search);
     }
 }

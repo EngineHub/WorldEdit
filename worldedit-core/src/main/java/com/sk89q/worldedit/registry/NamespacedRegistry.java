@@ -23,9 +23,13 @@ import static com.google.common.base.Preconditions.checkState;
 import static java.util.Objects.requireNonNull;
 
 import javax.annotation.Nullable;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 public final class NamespacedRegistry<V extends Keyed> extends Registry<V> {
     private static final String MINECRAFT_NAMESPACE = "minecraft";
+    private final Set<String> knownNamespaces = new HashSet<>();
     private final String defaultNamespace;
 
     public NamespacedRegistry(final String name) {
@@ -46,8 +50,29 @@ public final class NamespacedRegistry<V extends Keyed> extends Registry<V> {
     @Override
     public V register(final String key, final V value) {
         requireNonNull(key, "key");
-        checkState(key.indexOf(':') > -1, "key is not namespaced");
-        return super.register(key, value);
+        final int i = key.indexOf(':');
+        checkState(i > 0, "key is not namespaced");
+        final V registered = super.register(key, value);
+        knownNamespaces.add(key.substring(0, i));
+        return registered;
+    }
+
+    /**
+     * Get a set of the namespaces of all registered keys.
+     *
+     * @return set of namespaces
+     */
+    public Set<String> getKnownNamespaces() {
+        return Collections.unmodifiableSet(knownNamespaces);
+    }
+
+    /**
+     * Get the default namespace for this registry.
+     *
+     * @return the default namespace
+     */
+    public String getDefaultNamespace() {
+        return defaultNamespace;
     }
 
     private String orDefaultNamespace(final String key) {
