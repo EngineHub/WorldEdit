@@ -54,8 +54,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import static org.enginehub.piston.converter.SuggestionHelper.limitByPrefix;
-
 /**
  * Parses block input strings.
  */
@@ -111,6 +109,7 @@ public class DefaultBlockParser extends InputParser<BaseBlock> {
      * @param string Input string
      * @return Mapped string
      */
+    @SuppressWarnings("ConstantConditions")
     private String woolMapper(String string) {
         switch (string.toLowerCase(Locale.ROOT)) {
             case "white":
@@ -191,7 +190,7 @@ public class DefaultBlockParser extends InputParser<BaseBlock> {
                 } catch (NoMatchException e) {
                     throw e; // Pass-through
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    WorldEdit.logger.warn("Unknown state '" + parseableData + "'", e);
                     throw new NoMatchException("Unknown state '" + parseableData + "'");
                 }
             }
@@ -204,14 +203,7 @@ public class DefaultBlockParser extends InputParser<BaseBlock> {
     public Stream<String> getSuggestions(String input) {
         final int idx = input.lastIndexOf('[');
         if (idx < 0) {
-            if (input.indexOf(':') == -1) {
-                String key =  ("minecraft:" + input).toLowerCase(Locale.ROOT);
-                return BlockType.REGISTRY.keySet().stream().filter(s -> s.startsWith(key));
-            }
-            if (input.contains(",")) {
-                return Stream.empty();
-            }
-            return limitByPrefix(BlockType.REGISTRY.keySet().stream(), input).stream();
+            return SuggestionHelper.getNamespacedRegistrySuggestions(BlockType.REGISTRY, input);
         }
         String blockType = input.substring(0, idx);
         BlockType type = BlockTypes.get(blockType.toLowerCase(Locale.ROOT));
@@ -238,8 +230,10 @@ public class DefaultBlockParser extends InputParser<BaseBlock> {
         // Legacy matcher
         if (context.isTryingLegacy()) {
             try {
-                String[] split = blockAndExtraData[0].split(":");
-                if (split.length == 1) {
+                String[] split = blockAndExtraData[0].split(":", 2);
+                if (split.length == 0) {
+                    throw new InputParseException("Invalid colon.");
+                } else if (split.length == 1) {
                     state = LegacyMapper.getInstance().getBlockFromLegacy(Integer.parseInt(split[0]));
                 } else {
                     state = LegacyMapper.getInstance().getBlockFromLegacy(Integer.parseInt(split[0]), Integer.parseInt(split[1]));
@@ -247,7 +241,7 @@ public class DefaultBlockParser extends InputParser<BaseBlock> {
                 if (state != null) {
                     blockType = state.getBlockType();
                 }
-            } catch (NumberFormatException e) {
+            } catch (NumberFormatException ignored) {
             }
         }
 
@@ -310,23 +304,15 @@ public class DefaultBlockParser extends InputParser<BaseBlock> {
             } else {
                 // Attempt to lookup a block from ID or name.
                 blockType = BlockTypes.get(typeString.toLowerCase(Locale.ROOT));
+            }
 
-                if (blockType == null) {
-                    throw new NoMatchException("Does not match a valid block type: '" + input + "'");
-                }
+            if (blockType == null) {
+                throw new NoMatchException("Does not match a valid block type: '" + input + "'");
             }
 
             blockStates.putAll(parseProperties(blockType, stateProperties, context));
 
-            if (!context.isPreferringWildcard()) {
-                // No wildcards allowed => eliminate them. (Start with default state)
-                state = blockType.getDefaultState();
-                for (Map.Entry<Property<?>, Object> blockState : blockStates.entrySet()) {
-                    @SuppressWarnings("unchecked")
-                    Property<Object> objProp = (Property<Object>) blockState.getKey();
-                    state = state.with(objProp, blockState.getValue());
-                }
-            } else {
+            if (context.isPreferringWildcard()) {
                 FuzzyBlockState.Builder fuzzyBuilder = FuzzyBlockState.builder();
                 fuzzyBuilder.type(blockType);
                 for (Map.Entry<Property<?>, Object> blockState : blockStates.entrySet()) {
@@ -335,7 +321,19 @@ public class DefaultBlockParser extends InputParser<BaseBlock> {
                     fuzzyBuilder.withProperty(objProp, blockState.getValue());
                 }
                 state = fuzzyBuilder.build();
+            } else {
+                // No wildcards allowed => eliminate them. (Start with default state)
+                state = blockType.getDefaultState();
+                for (Map.Entry<Property<?>, Object> blockState : blockStates.entrySet()) {
+                    @SuppressWarnings("unchecked")
+                    Property<Object> objProp = (Property<Object>) blockState.getKey();
+                    state = state.with(objProp, blockState.getValue());
+                }
             }
+        }
+        // this should be impossible but IntelliJ isn't that smart
+        if (blockType == null) {
+            throw new NoMatchException("Does not match a valid block type: '" + input + "'");
         }
 
         // Check if the item is allowed
@@ -369,6 +367,7 @@ public class DefaultBlockParser extends InputParser<BaseBlock> {
                 }
                 return new MobSpawnerBlock(state, mobName);
             } else {
+                //noinspection ConstantConditions
                 return new MobSpawnerBlock(state, EntityTypes.PIG.getId());
             }
         } else if (blockType == BlockTypes.PLAYER_HEAD || blockType == BlockTypes.PLAYER_WALL_HEAD) {
