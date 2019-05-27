@@ -21,6 +21,7 @@ package com.sk89q.worldedit.forge;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import com.google.common.io.Files;
 import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
@@ -33,6 +34,7 @@ import com.sk89q.worldedit.internal.Constants;
 import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.Vector3;
+import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.util.Location;
@@ -55,6 +57,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUseContext;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.ResourceLocation;
@@ -62,6 +65,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.chunk.IChunkProvider;
+import net.minecraft.world.chunk.storage.AnvilSaveHandler;
+import net.minecraft.world.gen.ChunkProviderServer;
 import net.minecraft.world.gen.feature.BigBrownMushroomFeature;
 import net.minecraft.world.gen.feature.BigRedMushroomFeature;
 import net.minecraft.world.gen.feature.BigTreeFeature;
@@ -79,7 +85,9 @@ import net.minecraft.world.gen.feature.SwampTreeFeature;
 import net.minecraft.world.gen.feature.TallTaigaTreeFeature;
 import net.minecraft.world.gen.feature.TreeFeature;
 import net.minecraft.world.storage.WorldInfo;
+import net.minecraftforge.common.DimensionManager;
 
+import java.io.File;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
@@ -99,7 +107,7 @@ public class ForgeWorld extends AbstractWorld {
     private static final IBlockState JUNGLE_LOG = Blocks.JUNGLE_LOG.getDefaultState();
     private static final IBlockState JUNGLE_LEAF = Blocks.JUNGLE_LEAVES.getDefaultState().with(BlockLeaves.PERSISTENT, Boolean.TRUE);
     private static final IBlockState JUNGLE_SHRUB = Blocks.OAK_LEAVES.getDefaultState().with(BlockLeaves.PERSISTENT, Boolean.TRUE);
-    
+
     private final WeakReference<World> worldRef;
 
     /**
@@ -280,46 +288,41 @@ public class ForgeWorld extends AbstractWorld {
 
     @Override
     public boolean regenerate(Region region, EditSession editSession) {
-        // TODO Fix for 1.13
-        return false;
-//        // Don't even try to regen if it's going to fail.
-//        IChunkProvider provider = getWorld().getChunkProvider();
-//        if (!(provider instanceof ChunkProviderServer)) {
-//            return false;
-//        }
-//
-//        File saveFolder = Files.createTempDir();
-//        // register this just in case something goes wrong
-//        // normally it should be deleted at the end of this method
-//        saveFolder.deleteOnExit();
-//
-//        WorldServer originalWorld = (WorldServer) getWorld();
-//
-//        MinecraftServer server = originalWorld.getServer();
-//        AnvilSaveHandler saveHandler = new AnvilSaveHandler(saveFolder, originalWorld.getSaveHandler().getWorldDirectory().getName(), server, server.getDataFixer());
-//        World freshWorld = new WorldServer(server, saveHandler, originalWorld.getSavedDataStorage(), originalWorld.getWorldInfo(), originalWorld.dimension.getType(), originalWorld.profiler).func_212251_i__();
-//
-//        // Pre-gen all the chunks
-//        // We need to also pull one more chunk in every direction
-//        CuboidRegion expandedPreGen = new CuboidRegion(region.getMinimumPoint().subtract(16, 0, 16), region.getMaximumPoint().add(16, 0, 16));
-//        for (BlockVector2 chunk : expandedPreGen.getChunks()) {
-//            freshWorld.getChunk(chunk.getBlockX(), chunk.getBlockZ());
-//        }
-//
-//        ForgeWorld from = new ForgeWorld(freshWorld);
-//        try {
-//            for (BlockVector3 vec : region) {
-//                editSession.setBlock(vec, from.getFullBlock(vec));
-//            }
-//        } catch (MaxChangedBlocksException e) {
-//            throw new RuntimeException(e);
-//        } finally {
-//            saveFolder.delete();
-//            DimensionManager.setWorld(originalWorld.dimension.getType(), null, server);
-//            DimensionManager.setWorld(originalWorld.dimension.getType(), originalWorld, server);
-//        }
-//
-//        return true;
+        // Don't even try to regen if it's going to fail.
+        IChunkProvider provider = getWorld().getChunkProvider();
+        if (!(provider instanceof ChunkProviderServer)) {
+            return false;
+        }
+
+        File saveFolder = Files.createTempDir();
+        // register this just in case something goes wrong
+        // normally it should be deleted at the end of this method
+        saveFolder.deleteOnExit();
+        try {
+            WorldServer originalWorld = (WorldServer) getWorld();
+
+            MinecraftServer server = originalWorld.getServer();
+            AnvilSaveHandler saveHandler = new AnvilSaveHandler(saveFolder, originalWorld.getSaveHandler().getWorldDirectory().getName(), server, server.getDataFixer());
+            World freshWorld = new WorldServer(server, saveHandler, originalWorld.getSavedDataStorage(), originalWorld.getWorldInfo(), originalWorld.dimension.getType(), originalWorld.profiler).init();
+
+            // Pre-gen all the chunks
+            // We need to also pull one more chunk in every direction
+            CuboidRegion expandedPreGen = new CuboidRegion(region.getMinimumPoint().subtract(16, 0, 16), region.getMaximumPoint().add(16, 0, 16));
+            for (BlockVector2 chunk : expandedPreGen.getChunks()) {
+                freshWorld.getChunk(chunk.getBlockX(), chunk.getBlockZ());
+            }
+
+            ForgeWorld from = new ForgeWorld(freshWorld);
+            for (BlockVector3 vec : region) {
+                editSession.setBlock(vec, from.getFullBlock(vec));
+            }
+        } catch (MaxChangedBlocksException e) {
+            throw new RuntimeException(e);
+        } finally {
+            saveFolder.delete();
+        }
+
+        return true;
     }
 
     @Nullable
