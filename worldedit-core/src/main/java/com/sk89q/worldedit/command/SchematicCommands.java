@@ -38,9 +38,12 @@ import com.sk89q.worldedit.extent.clipboard.io.ClipboardWriter;
 import com.sk89q.worldedit.function.operation.Operations;
 import com.sk89q.worldedit.math.transform.Transform;
 import com.sk89q.worldedit.session.ClipboardHolder;
+import com.sk89q.worldedit.util.formatting.component.CodeFormat;
 import com.sk89q.worldedit.util.formatting.component.PaginationBox;
 import com.sk89q.worldedit.util.formatting.component.SchematicPaginationBox;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
+import com.sk89q.worldedit.util.formatting.text.event.ClickEvent;
+import com.sk89q.worldedit.util.formatting.text.format.TextColor;
 import com.sk89q.worldedit.util.io.Closer;
 import com.sk89q.worldedit.util.io.file.FilenameException;
 import org.enginehub.piston.annotation.Command;
@@ -119,7 +122,10 @@ public class SchematicCommands {
         AsyncCommandBuilder.wrap(task, player)
                 .registerWithSupervisor(worldEdit.getSupervisor(), "Loading schematic " + filename)
                 .sendMessageAfterDelay("(Please wait... loading schematic.)")
-                .onSuccess(filename + " loaded. Paste it with //paste", session::setClipboard)
+                .onSuccess(TextComponent.of(filename, TextColor.GOLD)
+                                .append(TextComponent.of(" loaded. Paste it with ", TextColor.LIGHT_PURPLE))
+                                .append(CodeFormat.wrap("//paste").clickEvent(ClickEvent.of(ClickEvent.Action.RUN_COMMAND, "//paste"))),
+                        session::setClipboard)
                 .onFailure("Failed to load schematic", worldEdit.getPlatformManager().getPlatformCommandManager().getExceptionConverter())
                 .buildAndExec(worldEdit.getExecutorService());
     }
