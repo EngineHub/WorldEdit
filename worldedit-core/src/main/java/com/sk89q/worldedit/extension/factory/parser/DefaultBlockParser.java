@@ -54,6 +54,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import static org.enginehub.piston.converter.SuggestionHelper.limitByPrefix;
+
 /**
  * Parses block input strings.
  */
@@ -209,7 +211,7 @@ public class DefaultBlockParser extends InputParser<BaseBlock> {
             if (input.contains(",")) {
                 return Stream.empty();
             }
-            return BlockType.REGISTRY.keySet().stream();
+            return limitByPrefix(BlockType.REGISTRY.keySet().stream(), input).stream();
         }
         String blockType = input.substring(0, idx);
         BlockType type = BlockTypes.get(blockType.toLowerCase(Locale.ROOT));

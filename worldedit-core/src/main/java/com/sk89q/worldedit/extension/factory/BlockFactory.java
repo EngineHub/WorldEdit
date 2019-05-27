@@ -45,9 +45,7 @@ public class BlockFactory extends AbstractFactory<BaseBlock> {
      * @param worldEdit the WorldEdit instance.
      */
     public BlockFactory(WorldEdit worldEdit) {
-        super(worldEdit);
-
-        register(new DefaultBlockParser(worldEdit));
+        super(worldEdit, new DefaultBlockParser(worldEdit));
     }
 
     /**

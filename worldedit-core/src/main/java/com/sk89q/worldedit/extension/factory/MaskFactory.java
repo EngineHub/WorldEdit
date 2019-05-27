@@ -58,7 +58,7 @@ public final class MaskFactory extends AbstractFactory<Mask> {
      * @param worldEdit the WorldEdit instance
      */
     public MaskFactory(WorldEdit worldEdit) {
-        super(worldEdit);
+        super(worldEdit, new BlocksMaskParser(worldEdit));
 
         register(new ExistingMaskParser(worldEdit));
         register(new SolidMaskParser(worldEdit));
@@ -72,8 +72,6 @@ public final class MaskFactory extends AbstractFactory<Mask> {
 
         register(new BlockCategoryMaskParser(worldEdit));
         register(new BiomeMaskParser(worldEdit));
-
-        register(new BlocksMaskParser(worldEdit));
     }
 
     @Override
