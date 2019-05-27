@@ -22,7 +22,6 @@ package com.sk89q.worldedit.command.util;
 import com.google.common.collect.ImmutableSet;
 import org.enginehub.piston.Command;
 import org.enginehub.piston.gen.CommandConditionGenerator;
-import org.enginehub.piston.gen.CommandRegistration;
 import org.enginehub.piston.util.NonnullByDefault;
 
 import java.lang.reflect.Method;

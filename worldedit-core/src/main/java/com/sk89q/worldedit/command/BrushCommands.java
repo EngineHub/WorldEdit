@@ -90,7 +90,7 @@ public class BrushCommands {
     @CommandPermissions("worldedit.brush.sphere")
     public void sphereBrush(Player player, LocalSession session,
                             @Arg(desc = "The pattern of blocks to set")
-                                Pattern fill,
+                                Pattern pattern,
                             @Arg(desc = "The radius of the sphere", def = "2")
                                 double radius,
                             @Switch(name = 'h', desc = "Create hollow spheres instead")
@@ -98,7 +98,7 @@ public class BrushCommands {
         worldEdit.checkMaxBrushRadius(radius);
 
         BrushTool tool = session.getBrushTool(player.getItemInHand(HandSide.MAIN_HAND).getType());
-        tool.setFill(fill);
+        tool.setFill(pattern);
         tool.setSize(radius);
 
         if (hollow) {
@@ -118,7 +118,7 @@ public class BrushCommands {
     @CommandPermissions("worldedit.brush.cylinder")
     public void cylinderBrush(Player player, LocalSession session,
                               @Arg(desc = "The pattern of blocks to set")
-                                  Pattern fill,
+                                  Pattern pattern,
                               @Arg(desc = "The radius of the cylinder", def = "2")
                                   double radius,
                               @Arg(desc = "The height of the cylinder", def = "1")
@@ -129,7 +129,7 @@ public class BrushCommands {
         worldEdit.checkMaxBrushRadius(height);
 
         BrushTool tool = session.getBrushTool(player.getItemInHand(HandSide.MAIN_HAND).getType());
-        tool.setFill(fill);
+        tool.setFill(pattern);
         tool.setSize(radius);
 
         if (hollow) {

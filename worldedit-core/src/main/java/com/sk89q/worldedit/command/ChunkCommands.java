@@ -39,6 +39,7 @@ import com.sk89q.worldedit.world.storage.McRegionChunkStore;
 import org.enginehub.piston.annotation.Command;
 import org.enginehub.piston.annotation.CommandContainer;
 import org.enginehub.piston.annotation.param.Arg;
+import org.enginehub.piston.annotation.param.ArgFlag;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -86,10 +87,10 @@ public class ChunkCommands {
     )
     @CommandPermissions("worldedit.listchunks")
     public void listChunks(Player player, LocalSession session,
-            @Arg(desc = "Page number.", def = "1") int page) throws WorldEditException {
+            @ArgFlag(name = 'p', desc = "Page number.", def = "1") int page) throws WorldEditException {
         Set<BlockVector2> chunks = session.getSelection(player.getWorld()).getChunks();
 
-        PaginationBox paginationBox = PaginationBox.fromStrings("Selected Chunks", "/listchunks %page%",
+        PaginationBox paginationBox = PaginationBox.fromStrings("Selected Chunks", "/listchunks -p %page%",
                 chunks.stream().map(BlockVector2::toString).collect(Collectors.toList()));
         player.print(paginationBox.create(page));
     }

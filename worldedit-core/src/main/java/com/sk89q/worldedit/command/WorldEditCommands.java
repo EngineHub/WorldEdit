@@ -39,6 +39,7 @@ import com.sk89q.worldedit.util.report.SystemInfoReport;
 import org.enginehub.piston.annotation.Command;
 import org.enginehub.piston.annotation.CommandContainer;
 import org.enginehub.piston.annotation.param.Arg;
+import org.enginehub.piston.annotation.param.ArgFlag;
 import org.enginehub.piston.annotation.param.Switch;
 
 import java.io.File;
@@ -159,7 +160,7 @@ public class WorldEditCommands {
     public void help(Actor actor,
                      @Switch(name = 's', desc = "List sub-commands of the given command, if applicable")
                          boolean listSubCommands,
-                     @Arg(desc = "The page to retrieve", def = "1")
+                     @ArgFlag(name = 'p', desc = "The page to retrieve", def = "1")
                          int page,
                      @Arg(desc = "The command to retrieve help for", def = "", variable = true)
                          List<String> command) throws WorldEditException {

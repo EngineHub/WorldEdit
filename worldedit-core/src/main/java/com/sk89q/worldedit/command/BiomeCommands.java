@@ -26,7 +26,9 @@ import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.command.util.CommandPermissions;
 import com.sk89q.worldedit.command.util.CommandPermissionsConditionGenerator;
 import com.sk89q.worldedit.command.util.Logging;
+import com.sk89q.worldedit.command.util.WorldEditAsyncCommandBuilder;
 import com.sk89q.worldedit.entity.Player;
+import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.function.FlatRegionFunction;
 import com.sk89q.worldedit.function.FlatRegionMaskingFilter;
@@ -50,10 +52,10 @@ import com.sk89q.worldedit.world.registry.BiomeRegistry;
 import org.enginehub.piston.annotation.Command;
 import org.enginehub.piston.annotation.CommandContainer;
 import org.enginehub.piston.annotation.param.Arg;
+import org.enginehub.piston.annotation.param.ArgFlag;
 import org.enginehub.piston.annotation.param.Switch;
 
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -77,17 +79,28 @@ public class BiomeCommands {
         desc = "Gets all biomes available."
     )
     @CommandPermissions("worldedit.biome.list")
-    public void biomeList(Player player,
-                          @Arg(desc = "Page number.", def = "1")
-                              int page) throws WorldEditException {
-        BiomeRegistry biomeRegistry = WorldEdit.getInstance().getPlatformManager()
-                .queryCapability(Capability.GAME_HOOKS).getRegistries().getBiomeRegistry();
+    public void biomeList(Actor actor,
+                          @ArgFlag(name = 'p', desc = "Page number.", def = "1")
+                              int page) {
+        WorldEditAsyncCommandBuilder.createAndSendMessage(actor, () -> {
+            BiomeRegistry biomeRegistry = WorldEdit.getInstance().getPlatformManager()
+                    .queryCapability(Capability.GAME_HOOKS).getRegistries().getBiomeRegistry();
 
-        PaginationBox paginationBox = PaginationBox.fromStrings("Available Biomes", "/biomelist %page%",
-                BiomeType.REGISTRY.values().stream()
-                        .map(biomeRegistry::getData).filter(Objects::nonNull)
-                        .map(BiomeData::getName).collect(Collectors.toList()));
-        player.print(paginationBox.create(page));
+            PaginationBox paginationBox = PaginationBox.fromStrings("Available Biomes", "/biomelist -p %page%",
+                    BiomeType.REGISTRY.values().stream()
+                            .map(biomeType -> {
+                                String id = biomeType.getId();
+                                final BiomeData data = biomeRegistry.getData(biomeType);
+                                if (data != null) {
+                                    String name = data.getName();
+                                    return id + " (" + name + ")";
+                                } else {
+                                    return id;
+                                }
+                            })
+                            .collect(Collectors.toList()));
+             return paginationBox.create(page);
+        }, null);
     }
 
     @Command(

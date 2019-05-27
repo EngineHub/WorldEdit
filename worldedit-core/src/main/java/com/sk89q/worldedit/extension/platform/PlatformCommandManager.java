@@ -101,7 +101,6 @@ import com.sk89q.worldedit.util.formatting.text.format.TextColor;
 import com.sk89q.worldedit.util.logging.DynamicStreamHandler;
 import com.sk89q.worldedit.util.logging.LogFormat;
 import com.sk89q.worldedit.world.World;
-import org.enginehub.piston.ColorConfig;
 import org.enginehub.piston.Command;
 import org.enginehub.piston.CommandManager;
 import org.enginehub.piston.TextConfig;
@@ -477,6 +476,8 @@ public final class PlatformCommandManager {
         } catch (ConditionFailedException e) {
             if (e.getCondition() instanceof PermissionCondition) {
                 actor.printError("You are not permitted to do that. Are you in the right mode?");
+            } else {
+                actor.print(e.getRichMessage());
             }
         } catch (UsageException e) {
             actor.print(TextComponent.builder("")
@@ -487,7 +488,6 @@ public final class PlatformCommandManager {
             if (!cmd.isEmpty()) {
                 actor.print(TextComponent.builder("Usage: ")
                     .color(TextColor.RED)
-                    .append(TextComponent.of("/", ColorConfig.getMainText()))
                     .append(HelpGenerator.create(e.getCommandParseResult()).getUsage())
                     .build());
             }

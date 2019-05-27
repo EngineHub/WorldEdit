@@ -26,6 +26,7 @@ import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.command.util.AsyncCommandBuilder;
 import com.sk89q.worldedit.command.util.CommandPermissions;
 import com.sk89q.worldedit.command.util.CommandPermissionsConditionGenerator;
+import com.sk89q.worldedit.command.util.WorldEditAsyncCommandBuilder;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extent.clipboard.BlockArrayClipboard;
@@ -39,8 +40,10 @@ import com.sk89q.worldedit.function.operation.Operations;
 import com.sk89q.worldedit.math.transform.Transform;
 import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.util.formatting.component.CodeFormat;
+import com.sk89q.worldedit.util.formatting.component.ErrorFormat;
 import com.sk89q.worldedit.util.formatting.component.PaginationBox;
 import com.sk89q.worldedit.util.formatting.component.SchematicPaginationBox;
+import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.event.ClickEvent;
 import com.sk89q.worldedit.util.formatting.text.format.TextColor;
@@ -124,7 +127,7 @@ public class SchematicCommands {
                 .sendMessageAfterDelay("(Please wait... loading schematic.)")
                 .onSuccess(TextComponent.of(filename, TextColor.GOLD)
                                 .append(TextComponent.of(" loaded. Paste it with ", TextColor.LIGHT_PURPLE))
-                                .append(CodeFormat.wrap("//paste").clickEvent(ClickEvent.of(ClickEvent.Action.RUN_COMMAND, "//paste"))),
+                                .append(CodeFormat.wrap("//paste").clickEvent(ClickEvent.of(ClickEvent.Action.SUGGEST_COMMAND, "//paste"))),
                         session::setClipboard)
                 .onFailure("Failed to load schematic", worldEdit.getPlatformManager().getPlatformCommandManager().getExceptionConverter())
                 .buildAndExec(worldEdit.getExecutorService());
@@ -257,59 +260,17 @@ public class SchematicCommands {
                      @Switch(name = 'd', desc = "Sort by date, oldest first")
                          boolean oldFirst,
                      @Switch(name = 'n', desc = "Sort by date, newest first")
-                         boolean newFirst) throws WorldEditException {
+                         boolean newFirst) {
         if (oldFirst && newFirst) {
             throw new StopExecutionException(TextComponent.of("Cannot sort by oldest and newest."));
         }
-        File dir = worldEdit.getWorkingDirectoryFile(worldEdit.getConfiguration().saveDir);
-        List<File> fileList = allFiles(dir);
-
-        if (fileList == null || fileList.isEmpty()) {
-            actor.printError("No schematics found.");
-            return;
-        }
-
-        File[] files = new File[fileList.size()];
-        fileList.toArray(files);
-
+        final String saveDir = worldEdit.getConfiguration().saveDir;
         final int sortType = oldFirst ? -1 : newFirst ? 1 : 0;
-        // cleanup file list
-        Arrays.sort(files, (f1, f2) -> {
-            // http://stackoverflow.com/questions/203030/best-way-to-list-files-in-java-sorted-by-date-modified
-            int res;
-            if (sortType == 0) { // use name by default
-                int p = f1.getParent().compareTo(f2.getParent());
-                if (p == 0) { // same parent, compare names
-                    res = f1.getName().compareTo(f2.getName());
-                } else { // different parent, sort by that
-                    res = p;
-                }
-            } else {
-                res = Long.compare(f1.lastModified(), f2.lastModified()); // use date if there is a flag
-                if (sortType == 1) res = -res; // flip date for newest first instead of oldest first
-            }
-            return res;
-        });
+        final String pageCommand = actor.isPlayer()
+                ? "//schem list -p %page%" + (sortType == -1 ? " -d" : sortType == 1 ? " -n" : "") : null;
 
-        String pageCommand = actor.isPlayer() ? "//schem list -p %page%" + (oldFirst ? " -d" : newFirst ? " -n" : "") : null;
-        PaginationBox paginationBox = new SchematicPaginationBox(worldEdit.getConfiguration().saveDir, files, pageCommand);
-        actor.print(paginationBox.create(page));
-    }
-
-    private List<File> allFiles(File root) {
-        File[] files = root.listFiles();
-        if (files == null) return null;
-        List<File> fileList = new ArrayList<>();
-        for (File f : files) {
-            if (f.isDirectory()) {
-                List<File> subFiles = allFiles(f);
-                if (subFiles == null) continue; // empty subdir
-                fileList.addAll(subFiles);
-            } else {
-                fileList.add(f);
-            }
-        }
-        return fileList;
+        WorldEditAsyncCommandBuilder.createAndSendMessage(actor,
+                new SchematicListTask(saveDir, sortType, page, pageCommand), "(Please wait... gathering schematic list.)");
     }
 
     private static class SchematicLoadTask implements Callable<ClipboardHolder> {
@@ -378,5 +339,69 @@ public class SchematicCommands {
             }
             return null;
         }
+    }
+
+    private static class SchematicListTask implements Callable<Component> {
+        private final String prefix;
+        private final int sortType;
+        private final int page;
+        private final File rootDir;
+        private final String pageCommand;
+
+        SchematicListTask(String prefix, int sortType, int page, String pageCommand) {
+            this.prefix = prefix;
+            this.sortType = sortType;
+            this.page = page;
+            this.rootDir = WorldEdit.getInstance().getWorkingDirectoryFile(prefix);
+            this.pageCommand = pageCommand;
+        }
+
+        @Override
+        public Component call() throws Exception {
+            List<File> fileList = allFiles(rootDir);
+
+            if (fileList == null || fileList.isEmpty()) {
+                return ErrorFormat.wrap("No schematics found.");
+            }
+
+            File[] files = new File[fileList.size()];
+            fileList.toArray(files);
+            // cleanup file list
+            Arrays.sort(files, (f1, f2) -> {
+                // http://stackoverflow.com/questions/203030/best-way-to-list-files-in-java-sorted-by-date-modified
+                int res;
+                if (sortType == 0) { // use name by default
+                    int p = f1.getParent().compareTo(f2.getParent());
+                    if (p == 0) { // same parent, compare names
+                        res = f1.getName().compareTo(f2.getName());
+                    } else { // different parent, sort by that
+                        res = p;
+                    }
+                } else {
+                    res = Long.compare(f1.lastModified(), f2.lastModified()); // use date if there is a flag
+                    if (sortType == 1) res = -res; // flip date for newest first instead of oldest first
+                }
+                return res;
+            });
+
+            PaginationBox paginationBox = new SchematicPaginationBox(prefix, files, pageCommand);
+            return paginationBox.create(page);
+        }
+    }
+
+    private static List<File> allFiles(File root) {
+        File[] files = root.listFiles();
+        if (files == null) return null;
+        List<File> fileList = new ArrayList<>();
+        for (File f : files) {
+            if (f.isDirectory()) {
+                List<File> subFiles = allFiles(f);
+                if (subFiles == null) continue; // empty subdir
+                fileList.addAll(subFiles);
+            } else {
+                fileList.add(f);
+            }
+        }
+        return fileList;
     }
 }

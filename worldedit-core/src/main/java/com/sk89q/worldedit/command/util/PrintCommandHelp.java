@@ -135,7 +135,7 @@ public class PrintCommandHelp {
         String used = commandList.isEmpty() ? null : toCommandString(commandList);
         CommandListBox box = new CommandListBox(
                 (used == null ? "Help" : "Subcommands: " + used),
-                "//help -s %page%" + (used == null ? "" : " " + used));
+                "//help -s -p %page%" + (used == null ? "" : " " + used));
         if (!actor.isPlayer()) {
             box.formatForConsole();
         }

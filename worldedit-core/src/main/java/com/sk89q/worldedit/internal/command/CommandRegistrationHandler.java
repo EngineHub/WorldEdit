@@ -20,15 +20,12 @@
 package com.sk89q.worldedit.internal.command;
 
 import com.google.common.collect.ImmutableList;
-import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.command.util.CommandPermissionsConditionGenerator;
-import com.sk89q.worldedit.internal.command.CommandLoggingHandler;
 import org.enginehub.piston.CommandManager;
 import org.enginehub.piston.gen.CommandCallListener;
 import org.enginehub.piston.gen.CommandRegistration;
 
 import java.util.List;
-import java.util.logging.Logger;
 
 public class CommandRegistrationHandler {
 

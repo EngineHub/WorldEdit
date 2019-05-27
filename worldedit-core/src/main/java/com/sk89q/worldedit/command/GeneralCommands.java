@@ -19,24 +19,34 @@
 
 package com.sk89q.worldedit.command;
 
-import com.google.common.collect.Sets;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.command.util.AsyncCommandBuilder;
 import com.sk89q.worldedit.command.util.CommandPermissions;
 import com.sk89q.worldedit.command.util.CommandPermissionsConditionGenerator;
+import com.sk89q.worldedit.command.util.WorldEditAsyncCommandBuilder;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.input.DisallowedUsageException;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.function.mask.Mask;
+import com.sk89q.worldedit.util.formatting.component.PaginationBox;
+import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.world.item.ItemType;
-import com.sk89q.worldedit.world.item.ItemTypes;
 import org.enginehub.piston.annotation.Command;
 import org.enginehub.piston.annotation.CommandContainer;
 import org.enginehub.piston.annotation.param.Arg;
+import org.enginehub.piston.annotation.param.ArgFlag;
 import org.enginehub.piston.annotation.param.Switch;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.concurrent.Callable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -65,7 +75,7 @@ public class GeneralCommands {
     @CommandPermissions("worldedit.limit")
     public void limit(Player player, LocalSession session,
                       @Arg(desc = "The limit to set", def = "")
-                          Integer limit) throws WorldEditException {
+                          Integer limit) {
 
         LocalConfiguration config = worldEdit.getConfiguration();
         boolean mayDisable = player.hasPermission("worldedit.limit.unrestricted");
@@ -79,12 +89,8 @@ public class GeneralCommands {
         }
 
         session.setBlockChangeLimit(limit);
-
-        if (limit != config.defaultChangeLimit) {
-            player.print("Block change limit set to " + limit + ". (Use //limit to go back to the default.)");
-        } else {
-            player.print("Block change limit set to " + limit + ".");
-        }
+        player.print("Block change limit set to " + limit + "."
+                + (limit == config.defaultChangeLimit ? "" : " (Use //limit to go back to the default.)"));
     }
 
     @Command(
@@ -94,8 +100,7 @@ public class GeneralCommands {
     @CommandPermissions("worldedit.timeout")
     public void timeout(Player player, LocalSession session,
                         @Arg(desc = "The timeout time to set", def = "")
-                            Integer limit) throws WorldEditException {
-
+                            Integer limit) {
         LocalConfiguration config = worldEdit.getConfiguration();
         boolean mayDisable = player.hasPermission("worldedit.timeout.unrestricted");
 
@@ -108,12 +113,8 @@ public class GeneralCommands {
         }
 
         session.setTimeout(limit);
-
-        if (limit != config.calculationTimeout) {
-            player.print("Timeout time set to " + limit + " ms. (Use //timeout to go back to the default.)");
-        } else {
-            player.print("Timeout time set to " + limit + " ms.");
-        }
+        player.print("Timeout time set to " + limit + " ms."
+                + (limit == config.calculationTimeout ? "" : " (Use //timeout to go back to the default.)"));
     }
 
     @Command(
@@ -123,7 +124,7 @@ public class GeneralCommands {
     @CommandPermissions("worldedit.fast")
     public void fast(Player player, LocalSession session,
                      @Arg(desc = "The new fast mode state", def = "")
-                        Boolean fastMode) throws WorldEditException {
+                        Boolean fastMode) {
         boolean hasFastMode = session.hasFastMode();
         if (fastMode != null && fastMode == hasFastMode) {
             player.printError("Fast mode already " + (fastMode ? "enabled" : "disabled") + ".");
@@ -146,7 +147,7 @@ public class GeneralCommands {
     @CommandPermissions("worldedit.reorder")
     public void reorderMode(Player player, LocalSession session,
                             @Arg(desc = "The reorder mode", def = "")
-                                EditSession.ReorderMode reorderMode) throws WorldEditException {
+                                EditSession.ReorderMode reorderMode) {
         if (reorderMode == null) {
             player.print("The reorder mode is " + session.getReorderMode().getDisplayName());
         } else {
@@ -190,9 +191,9 @@ public class GeneralCommands {
     @CommandPermissions("worldedit.global-mask")
     public void gmask(Player player, LocalSession session,
                       @Arg(desc = "The mask to set", def = "")
-                          Mask mask) throws WorldEditException {
+                          Mask mask) {
         if (mask == null) {
-            session.setMask((Mask) null);
+            session.setMask(null);
             player.print("Global mask disabled.");
         } else {
             session.setMask(mask);
@@ -205,8 +206,7 @@ public class GeneralCommands {
         aliases = {"/toggleplace"},
         desc = "Switch between your position and pos1 for placement"
     )
-    public void togglePlace(Player player, LocalSession session) throws WorldEditException {
-
+    public void togglePlace(Player player, LocalSession session) {
         if (session.togglePlacementPosition()) {
             player.print("Now placing at pos #1.");
         } else {
@@ -220,41 +220,48 @@ public class GeneralCommands {
         desc = "Search for an item"
     )
     public void searchItem(Actor actor,
-                           @Arg(desc = "Item query")
-                               String query,
+                           @Arg(desc = "Search query", variable = true)
+                               List<String> query,
                            @Switch(name = 'b', desc = "Only search for blocks")
                                boolean blocksOnly,
                            @Switch(name = 'i', desc = "Only search for items")
-                               boolean itemsOnly) throws WorldEditException {
-        ItemType type = ItemTypes.get(query);
+                               boolean itemsOnly,
+                           @ArgFlag(name = 'p', desc = "Page of results to return", def = "1")
+                               int page) {
+        String search = String.join(" ", query);
+        if (search.length() <= 2) {
+            actor.printError("Enter a longer search string (len > 2).");
+            return;
+        }
+        if (blocksOnly && itemsOnly) {
+            actor.printError("You cannot use both the 'b' and 'i' flags simultaneously.");
+            return;
+        }
 
-        if (type != null) {
-            actor.print(type.getId() + " (" + type.getName() + ")");
-        } else {
-            if (query.length() <= 2) {
-                actor.printError("Enter a longer search string (len > 2).");
-                return;
-            }
+        WorldEditAsyncCommandBuilder.createAndSendMessage(actor, new ItemSearcher(search, blocksOnly, itemsOnly, page),
+                "(Please wait... searching items.)");
+    }
 
-            if (!blocksOnly && !itemsOnly) {
-                actor.print("Searching for: " + query);
-            } else if (blocksOnly && itemsOnly) {
-                actor.printError("You cannot use both the 'b' and 'i' flags simultaneously.");
-                return;
-            } else if (blocksOnly) {
-                actor.print("Searching for blocks: " + query);
-            } else {
-                actor.print("Searching for items: " + query);
-            }
+    private static class ItemSearcher implements Callable<Component> {
+        private final boolean blocksOnly;
+        private final boolean itemsOnly;
+        private final String search;
+        private final int page;
 
-            int found = 0;
+        ItemSearcher(String search, boolean blocksOnly, boolean itemsOnly, int page) {
+            this.blocksOnly = blocksOnly;
+            this.itemsOnly = itemsOnly;
+            this.search = search;
+            this.page = page;
+        }
 
+        @Override
+        public Component call() throws Exception {
+            String command = "/searchitem " + (blocksOnly ? "-b " : "") + (itemsOnly ? "-i " : "") + "-p %page% " + search;
+            Map<String, String> results = new TreeMap<>();
+            String idMatch = search.replace(' ', '_');
+            String nameMatch = search.toLowerCase(Locale.ROOT);
             for (ItemType searchType : ItemType.REGISTRY) {
-                if (found >= 15) {
-                    actor.print("Too many results!");
-                    break;
-                }
-
                 if (blocksOnly && !searchType.hasBlockType()) {
                     continue;
                 }
@@ -262,20 +269,16 @@ public class GeneralCommands {
                 if (itemsOnly && searchType.hasBlockType()) {
                     continue;
                 }
-
-                for (String alias : Sets.newHashSet(searchType.getId(), searchType.getName())) {
-                    if (alias.contains(query)) {
-                        actor.print(searchType.getId() + " (" + searchType.getName() + ")");
-                        ++found;
-                        break;
-                    }
+                final String id = searchType.getId();
+                String name = searchType.getName();
+                final boolean hasName = !name.equals(id);
+                name = name.toLowerCase(Locale.ROOT);
+                if (id.contains(idMatch) || (hasName && name.contains(nameMatch))) {
+                    results.put(id, name + (hasName ? " (" + id + ")" : ""));
                 }
             }
-
-            if (found == 0) {
-                actor.printError("No items found.");
-            }
+            List<String> list = new ArrayList<>(results.values());
+            return PaginationBox.fromStrings("Search results for '" + search + "'", command, list).create(page);
         }
     }
-
 }

@@ -33,6 +33,7 @@ public class ItemType implements Keyed {
     public static final NamespacedRegistry<ItemType> REGISTRY = new NamespacedRegistry<>("item type");
 
     private String id;
+    private String name;
 
     public ItemType(String id) {
         // If it has no namespace, assume minecraft.
@@ -53,12 +54,14 @@ public class ItemType implements Keyed {
      * @return The name, or ID
      */
     public String getName() {
-        String name = WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.GAME_HOOKS).getRegistries().getItemRegistry().getName(this);
         if (name == null) {
-            return getId();
-        } else {
-            return name;
+            name = WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.GAME_HOOKS).getRegistries()
+                    .getItemRegistry().getName(this);
+            if (name == null) {
+                name = "";
+            }
         }
+        return name.isEmpty() ? getId() : name;
     }
 
 
