@@ -315,8 +315,7 @@ public final class WorldEdit {
     private File getSafeFileWithExtension(File dir, String filename, String extension) {
         if (extension != null) {
             int dot = filename.lastIndexOf('.');
-            if (dot < 0 || !filename.substring(dot).equalsIgnoreCase(extension))
-            {
+            if (dot < 0 || !filename.substring(dot).equalsIgnoreCase(extension)) {
                 filename += "." + extension;
             }
         }

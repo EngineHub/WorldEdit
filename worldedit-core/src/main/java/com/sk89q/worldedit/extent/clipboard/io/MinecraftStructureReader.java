@@ -1,3 +1,23 @@
+/*
+ * WorldEdit, a Minecraft world manipulation toolkit
+ * Copyright (C) sk89q <http://www.sk89q.com>
+ * Copyright (C) WorldEdit team and contributors
+ *
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as published by the
+ * Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+
+
 package com.sk89q.worldedit.extent.clipboard.io;
 
 import com.google.common.collect.Maps;
@@ -36,7 +56,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Reads Mincraft structure files.
- * {@link https://minecraft.gamepedia.com/Structure_block_file_format}
+ * {@link "https://minecraft.gamepedia.com/Structure_block_file_format"}
  */
 public class MinecraftStructureReader extends NBTSchematicReader {
     private static final Logger log = Logger.getLogger(MinecraftStructureReader.class.getCanonicalName());
@@ -157,11 +177,10 @@ public class MinecraftStructureReader extends NBTSchematicReader {
             Tag props = palettePart.getValue().getOrDefault("Properties", null);
             if (props instanceof CompoundTag) {
                 CompoundTag properties = ((CompoundTag) props);
-                if (!properties.getValue().isEmpty())
-                {
+                if (!properties.getValue().isEmpty()) {
                     stateBuilder.append('[');
                     stateBuilder.append(properties.getValue().entrySet().stream().map(e ->
-                            e.getKey() + "=" + (String) e.getValue().getValue()).collect(Collectors.joining(",")));
+                            e.getKey() + "=" + e.getValue().getValue()).collect(Collectors.joining(",")));
                     stateBuilder.append(']');
                 }
             }
