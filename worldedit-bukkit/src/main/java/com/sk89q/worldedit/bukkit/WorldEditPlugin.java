@@ -131,7 +131,7 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
 
         // register this so we can load world-dependent data right as the first world is loading
         if (worldInitListener != null) {
-            getLogger().warning("Server reload detected. This may cause various issues with WorldEdit and dependant plugins.");
+            getLogger().warning("Server reload detected. This may cause various issues with WorldEdit and dependent plugins.");
             try {
                 // these don't stick around between reload
                 loadAdapter();

@@ -76,6 +76,9 @@ public abstract class ExceptionConverterHelper implements ExceptionConverter {
                     if (e.getCause() instanceof CommandException) {
                         throw (CommandException) e.getCause();
                     }
+                    if (e.getCause() instanceof com.sk89q.minecraft.util.commands.CommandException) {
+                        throw new CommandException(e.getCause(), ImmutableList.of());
+                    }
                     throw new CommandExecutionException(e, ImmutableList.of());
                 } catch (IllegalArgumentException | IllegalAccessException e) {
                     throw new CommandExecutionException(e, ImmutableList.of());
