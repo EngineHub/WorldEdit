@@ -41,8 +41,9 @@ public class CUIChannelListener implements PluginMessageListener {
     public void onPluginMessageReceived(String channel, Player player, byte[] message) {
         LocalSession session = plugin.getSession(player);
         String text = new String(message, UTF_8_CHARSET);
-        session.handleCUIInitializationMessage(text);
-        session.describeCUI(plugin.wrapPlayer(player));
+        final BukkitPlayer actor = plugin.wrapPlayer(player);
+        session.handleCUIInitializationMessage(text, actor);
+        session.describeCUI(actor);
     }
 
 }

@@ -782,9 +782,9 @@ public class LocalSession {
      *
      * @param text the message
      */
-    public void handleCUIInitializationMessage(String text) {
+    public void handleCUIInitializationMessage(String text, Actor actor) {
         checkNotNull(text);
-        if (this.failedCuiAttempts > 3) {
+        if (this.hasCUISupport || this.failedCuiAttempts > 3) {
             return;
         }
 
@@ -794,13 +794,18 @@ public class LocalSession {
                 this.failedCuiAttempts ++;
                 return;
             }
-            setCUISupport(true);
+
+            int version;
             try {
-                setCUIVersion(Integer.parseInt(split[1]));
+                version = Integer.parseInt(split[1]);
             } catch (NumberFormatException e) {
                 WorldEdit.logger.warn("Error while reading CUI init message: " + e.getMessage());
                 this.failedCuiAttempts ++;
+                return;
             }
+            setCUISupport(true);
+            setCUIVersion(version);
+            dispatchCUISelection(actor);
         }
     }
 

@@ -20,6 +20,7 @@
 package com.sk89q.worldedit.forge.net.handler;
 
 import com.sk89q.worldedit.LocalSession;
+import com.sk89q.worldedit.forge.ForgePlayer;
 import com.sk89q.worldedit.forge.ForgeWorldEdit;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -62,8 +63,9 @@ public final class WECUIPacketHandler {
         }
 
         String text = event.getPayload().toString(UTF_8_CHARSET);
-        session.handleCUIInitializationMessage(text);
-        session.describeCUI(adaptPlayer(player));
+        final ForgePlayer actor = adaptPlayer(player);
+        session.handleCUIInitializationMessage(text, actor);
+        session.describeCUI(actor);
     }
     
     public static void callProcessPacket(ClientCustomPayloadEvent event) {
