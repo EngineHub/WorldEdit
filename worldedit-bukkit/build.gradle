@@ -17,12 +17,12 @@ configurations.all { Configuration it ->
 dependencies {
     compile project(':worldedit-core')
     compile project(':worldedit-libs:bukkit')
-    compile 'com.sk89q:dummypermscompat:1.10'
     compile 'org.bukkit:bukkit:1.13.2-R0.1-SNAPSHOT' // zzz
-    compile 'com.destroystokyo.paper:paper-api:1.13.2-R0.1-SNAPSHOT'
-    compile "io.papermc:paperlib:1.0.2"
-    compile 'org.apache.logging.log4j:log4j-slf4j-impl:2.8.1'
-    compile 'org.bstats:bstats-bukkit:1.4'
+    compileOnly 'com.destroystokyo.paper:paper-api:1.13.2-R0.1-SNAPSHOT'
+    compileOnly "io.papermc:paperlib:1.0.2"
+    compileOnly 'com.sk89q:dummypermscompat:1.10'
+    compileOnly 'org.apache.logging.log4j:log4j-slf4j-impl:2.8.1'
+    compileOnly 'org.bstats:bstats-bukkit:1.4'
     testCompile 'org.mockito:mockito-core:1.9.0-rc1'
 }
 
