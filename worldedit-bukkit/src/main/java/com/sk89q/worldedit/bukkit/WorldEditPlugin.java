@@ -89,7 +89,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
 
     private static final Logger log = LoggerFactory.getLogger(WorldEditPlugin.class);
-    static final String CUI_PLUGIN_CHANNEL = "worldedit:cui";
+    public static final String CUI_PLUGIN_CHANNEL = "worldedit:cui";
     private static WorldEditPlugin INSTANCE;
     private static WorldInitListener worldInitListener = null;
 
