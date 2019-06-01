@@ -232,6 +232,9 @@ public class LocalSession {
                 newEditSession.enableStandardMode();
                 newEditSession.setReorderMode(reorderMode);
                 newEditSession.setFastMode(fastMode);
+                if (newEditSession.getSurvivalExtent() != null) {
+                    newEditSession.getSurvivalExtent().setStripNbt(!player.hasPermission("worldedit.setnbt"));
+                }
                 editSession.undo(newEditSession);
             }
             return editSession;
@@ -257,6 +260,9 @@ public class LocalSession {
                 newEditSession.enableStandardMode();
                 newEditSession.setReorderMode(reorderMode);
                 newEditSession.setFastMode(fastMode);
+                if (newEditSession.getSurvivalExtent() != null) {
+                    newEditSession.getSurvivalExtent().setStripNbt(!player.hasPermission("worldedit.setnbt"));
+                }
                 editSession.redo(newEditSession);
             }
             ++historyPointer;
@@ -887,6 +893,9 @@ public class LocalSession {
         editSession.setFastMode(fastMode);
         editSession.setReorderMode(reorderMode);
         editSession.setMask(mask);
+        if (editSession.getSurvivalExtent() != null) {
+            editSession.getSurvivalExtent().setStripNbt(!player.hasPermission("worldedit.setnbt"));
+        }
 
         return editSession;
     }
