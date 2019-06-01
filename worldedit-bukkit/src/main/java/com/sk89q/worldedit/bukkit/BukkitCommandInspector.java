@@ -80,10 +80,7 @@ class BukkitCommandInspector implements CommandInspector {
             InjectedValueStore store = MapBackedValueStore.create();
             store.injectValue(Key.of(Actor.class), context ->
                 Optional.of(plugin.wrapCommandSender(sender)));
-            CommandParameters parameters = NoInputCommandParameters.builder()
-                .injectedValues(MemoizingValueAccess.wrap(store))
-                .build();
-            return mapping.get().getCondition().satisfied(parameters);
+            return mapping.get().getCondition().satisfied(store);
         } else {
             logger.warn("BukkitCommandInspector doesn't know how about the command '" + command + "'");
             return false;

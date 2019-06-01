@@ -219,15 +219,16 @@ public class GeneralCommands {
         aliases = {"/searchitem", "/l", "/search"},
         desc = "Search for an item"
     )
+    @CommandPermissions("worldedit.searchitem")
     public void searchItem(Actor actor,
-                           @Arg(desc = "Search query", variable = true)
-                               List<String> query,
                            @Switch(name = 'b', desc = "Only search for blocks")
                                boolean blocksOnly,
                            @Switch(name = 'i', desc = "Only search for items")
                                boolean itemsOnly,
                            @ArgFlag(name = 'p', desc = "Page of results to return", def = "1")
-                               int page) {
+                               int page,
+                           @Arg(desc = "Search query", variable = true)
+                               List<String> query) {
         String search = String.join(" ", query);
         if (search.length() <= 2) {
             actor.printError("Enter a longer search string (len > 2).");

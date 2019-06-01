@@ -31,17 +31,20 @@ import com.mojang.brigadier.suggestion.Suggestion;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.command.util.PermissionCondition;
 import com.sk89q.worldedit.event.platform.CommandSuggestionEvent;
+import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.internal.util.Substring;
 import net.minecraft.command.CommandSource;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
+import org.enginehub.piston.inject.InjectedValueStore;
+import org.enginehub.piston.inject.Key;
+import org.enginehub.piston.inject.MapBackedValueStore;
 
 import java.util.List;
-import java.util.Set;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
-import java.util.stream.Stream;
 
 import static net.minecraft.command.Commands.argument;
 import static net.minecraft.command.Commands.literal;
@@ -58,8 +61,7 @@ public final class CommandWrapper {
                 .then(argument("args", StringArgumentType.greedyString())
                     .suggests(CommandWrapper::suggest)
                     .executes(FAKE_COMMAND));
-            if (command.getCondition().as(PermissionCondition.class)
-                .filter(p -> p.getPermissions().size() > 0).isPresent()) {
+            if (command.getCondition() != org.enginehub.piston.Command.Condition.TRUE) {
                 base.requires(requirementsFor(command));
             }
             dispatcher.register(base);
@@ -67,8 +69,7 @@ public final class CommandWrapper {
     }
 
     public static final Command<CommandSource> FAKE_COMMAND = ctx -> {
-        EntityPlayerMP player = ctx.getSource().asPlayer();
-        if (player.world.isRemote()) {
+        if (ctx.getSource().getWorld().isRemote) {
             return 0;
         }
         return 1;
@@ -76,15 +77,12 @@ public final class CommandWrapper {
 
     private static Predicate<CommandSource> requirementsFor(org.enginehub.piston.Command mapping) {
         return ctx -> {
-            ForgePermissionsProvider permsProvider = ForgeWorldEdit.inst.getPermissionsProvider();
-            return ctx.getEntity() instanceof EntityPlayerMP &&
-                mapping.getCondition().as(PermissionCondition.class)
-                    .map(PermissionCondition::getPermissions)
-                    .map(Set::stream)
-                    .orElseGet(Stream::empty)
-                    .allMatch(perm -> permsProvider.hasPermission(
-                        (EntityPlayerMP) ctx.getEntity(), perm
-                    ));
+            final Entity entity = ctx.getEntity();
+            if (!(entity instanceof EntityPlayerMP)) return true;
+            final Actor actor = ForgeAdapter.adaptPlayer(((EntityPlayerMP) entity));
+            InjectedValueStore store = MapBackedValueStore.create();
+            store.injectValue(Key.of(Actor.class), context -> Optional.of(actor));
+            return mapping.getCondition().satisfied(store);
         };
     }
 
