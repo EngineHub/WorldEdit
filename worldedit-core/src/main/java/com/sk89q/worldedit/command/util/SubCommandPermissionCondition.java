@@ -19,31 +19,34 @@
 
 package com.sk89q.worldedit.command.util;
 
-import com.sk89q.worldedit.extension.platform.Actor;
 import org.enginehub.piston.Command;
 import org.enginehub.piston.inject.InjectedValueAccess;
-import org.enginehub.piston.inject.Key;
 
-import java.util.Set;
+import java.util.Collection;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-public class PermissionCondition implements Command.Condition {
+public class SubCommandPermissionCondition extends PermissionCondition {
 
-    private static final Key<Actor> ACTOR_KEY = Key.of(Actor.class);
+    private final Command.Condition aggregate;
 
-    private final Set<String> permissions;
-
-    public PermissionCondition(Set<String> permissions) {
-        this.permissions = permissions;
-    }
-
-    public Set<String> getPermissions() {
-        return permissions;
+    public SubCommandPermissionCondition(Collection<Command> commands) {
+        super(commands.stream().map(Command::getCondition)
+                .map(c -> c.as(PermissionCondition.class))
+                .flatMap(optCon -> optCon.map(permCon -> permCon.getPermissions().stream()).orElse(Stream.empty()))
+                .collect(Collectors.toSet()));
+        this.aggregate = commands.stream().map(Command::getCondition)
+                .map(c -> c.as(PermissionCondition.class))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .map(c -> c.as(Command.Condition.class))
+                .map(Optional::get)
+                .reduce(Command.Condition::or).orElse(Command.Condition.TRUE);
     }
 
     @Override
     public boolean satisfied(InjectedValueAccess context) {
-        return context.injectedValue(ACTOR_KEY)
-            .map(actor -> permissions.stream().anyMatch(actor::hasPermission))
-            .orElse(false);
+        return aggregate.satisfied(context);
     }
 }
