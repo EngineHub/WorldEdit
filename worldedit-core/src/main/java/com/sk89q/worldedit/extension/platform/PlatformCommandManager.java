@@ -80,6 +80,7 @@ import com.sk89q.worldedit.command.argument.RegistryConverter;
 import com.sk89q.worldedit.command.argument.VectorConverter;
 import com.sk89q.worldedit.command.argument.ZonedDateTimeConverter;
 import com.sk89q.worldedit.command.util.PermissionCondition;
+import com.sk89q.worldedit.command.util.SubCommandPermissionCondition;
 import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.event.platform.CommandEvent;
@@ -266,11 +267,14 @@ public final class PlatformCommandManager {
             );
             additionalConfig.accept(manager);
 
+            final List<Command> subCommands = manager.getAllCommands().collect(Collectors.toList());
             cmd.addPart(SubCommandPart.builder(TranslatableComponent.of("worldedit.argument.action"),
                 TextComponent.of("Sub-command to run."))
-                .withCommands(manager.getAllCommands().collect(Collectors.toList()))
+                .withCommands(subCommands)
                 .required()
                 .build());
+
+            cmd.condition(new SubCommandPermissionCondition(subCommands));
         });
     }
 
