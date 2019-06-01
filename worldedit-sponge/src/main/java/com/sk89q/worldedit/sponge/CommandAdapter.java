@@ -44,11 +44,11 @@ public abstract class CommandAdapter implements CommandCallable {
             .map(PermissionCondition::getPermissions)
             .orElseGet(Collections::emptySet);
         for (String perm : permissions) {
-            if (!source.hasPermission(perm)) {
-                return false;
+            if (source.hasPermission(perm)) {
+                return true;
             }
         }
-        return true;
+        return false;
     }
 
     @Override
