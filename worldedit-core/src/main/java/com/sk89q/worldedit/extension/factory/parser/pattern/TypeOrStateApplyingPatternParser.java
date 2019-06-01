@@ -19,7 +19,6 @@
 
 package com.sk89q.worldedit.extension.factory.parser.pattern;
 
-import com.google.common.base.Splitter;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.command.util.SuggestionHelper;
 import com.sk89q.worldedit.extension.input.InputParseException;
@@ -32,6 +31,7 @@ import com.sk89q.worldedit.function.pattern.StateApplyingPattern;
 import com.sk89q.worldedit.function.pattern.TypeApplyingPattern;
 import com.sk89q.worldedit.internal.registry.InputParser;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
 
@@ -82,10 +82,21 @@ public class TypeOrStateApplyingPatternParser extends InputParser<Pattern> {
                     worldEdit.getBlockFactory().parseFromInput(type, context).getBlockType().getDefaultState());
         } else {
             // states given
-            if (!parts[1].endsWith("]")) throw new InputParseException("Invalid state format.");
-            Map<String, String> statesToSet = Splitter.on(',')
-                    .omitEmptyStrings().trimResults().withKeyValueSeparator('=')
-                    .split(parts[1].substring(0, parts[1].length() - 1));
+            if (!parts[1].endsWith("]")) throw new InputParseException("State is missing trailing ']'");
+            final String[] states = parts[1].substring(0, parts[1].length() - 1).split(",");
+            Map<String, String> statesToSet = new HashMap<>();
+            for (String state : states) {
+                if (state.isEmpty()) throw new InputParseException("Empty part in state");
+                String[] propVal = state.split("=", 2);
+                if (propVal.length != 2) throw new InputParseException("Missing '=' separator");
+                final String prop = propVal[0];
+                if (prop.isEmpty()) throw new InputParseException("Empty property in state");
+                final String value = propVal[1];
+                if (value.isEmpty()) throw new InputParseException("Empty value in state");
+                if (statesToSet.put(prop, value) != null) {
+                    throw new InputParseException("Duplicate properties in state");
+                }
+            }
             if (type.isEmpty()) {
                 return new StateApplyingPattern(extent, statesToSet);
             } else {
