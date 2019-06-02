@@ -274,7 +274,7 @@ public final class PlatformCommandManager {
                 .required()
                 .build());
 
-            cmd.condition(new SubCommandPermissionCondition(subCommands));
+            cmd.condition(new SubCommandPermissionCondition.Generator(subCommands).build());
         });
     }
 
