@@ -19,34 +19,21 @@
 
 package com.sk89q.worldedit.internal.util;
 
-import com.sk89q.minecraft.util.commands.Command;
-import com.sk89q.minecraft.util.commands.CommandPermissions;
-import com.sk89q.minecraft.util.commands.NestedCommand;
-import com.sk89q.worldedit.command.BiomeCommands;
-import com.sk89q.worldedit.command.ChunkCommands;
-import com.sk89q.worldedit.command.ClipboardCommands;
-import com.sk89q.worldedit.command.GeneralCommands;
-import com.sk89q.worldedit.command.GenerationCommands;
-import com.sk89q.worldedit.command.HistoryCommands;
-import com.sk89q.worldedit.command.NavigationCommands;
-import com.sk89q.worldedit.command.RegionCommands;
-import com.sk89q.worldedit.command.ScriptingCommands;
-import com.sk89q.worldedit.command.SelectionCommands;
-import com.sk89q.worldedit.command.SnapshotUtilCommands;
-import com.sk89q.worldedit.command.ToolCommands;
-import com.sk89q.worldedit.command.ToolUtilCommands;
-import com.sk89q.worldedit.command.UtilityCommands;
+import com.google.common.base.Strings;
+import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.command.util.PermissionCondition;
+import com.sk89q.worldedit.extension.platform.PlatformCommandManager;
+import com.sk89q.worldedit.extension.platform.PlatformManager;
+import com.sk89q.worldedit.util.formatting.text.TextComponent;
+import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
+import com.sk89q.worldedit.util.formatting.text.serializer.plain.PlainComponentSerializer;
+import org.enginehub.piston.Command;
+import org.enginehub.piston.CommandManager;
+import org.enginehub.piston.TextConfig;
+import org.enginehub.piston.part.SubCommandPart;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.PrintStream;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.stream.Stream;
 
-@SuppressWarnings("UseOfSystemOutOrSystemErr")
 public final class DocumentationPrinter {
 
     private DocumentationPrinter() {
@@ -56,153 +43,49 @@ public final class DocumentationPrinter {
      * Generates documentation.
      *
      * @param args arguments
-     * @throws IOException thrown on I/O error
      */
-    public static void main(String[] args) throws IOException {
-        File commandsDir = new File(args[0]);
-
-        List<Class<?>> commandClasses = getCommandClasses(commandsDir);
-
-        System.out.println("Writing permissions wiki table...");
-        writePermissionsWikiTable(commandClasses);
-        System.out.println("Writing Bukkit plugin.yml...");
-        writeBukkitYAML();
-
-        System.out.println("Done!");
+    public static void main(String[] args) {
+        final PlatformManager platformManager = WorldEdit.getInstance().getPlatformManager();
+        PlatformCommandManager mgr = platformManager.getPlatformCommandManager();
+        final CommandManager commandManager = mgr.getCommandManager();
+        dumpCommands(commandManager);
     }
 
-    private static List<Class<?>> getCommandClasses(File dir) {
-        List<Class<?>> classes = new ArrayList<>();
+    private static void dumpCommands(CommandManager commandManager) {
+        final PlainComponentSerializer serializer = new PlainComponentSerializer(kbc -> "", TranslatableComponent::key);
+        cmdToUsages(serializer, commandManager.getAllCommands(), TextConfig.getCommandPrefix(), 0);
 
-        classes.add(BiomeCommands.class);
-        classes.add(ChunkCommands.class);
-        classes.add(ClipboardCommands.class);
-        classes.add(GeneralCommands.class);
-        classes.add(GenerationCommands.class);
-        classes.add(HistoryCommands.class);
-        classes.add(NavigationCommands.class);
-        classes.add(RegionCommands.class);
-        classes.add(ScriptingCommands.class);
-        classes.add(SelectionCommands.class);
-        classes.add(SnapshotUtilCommands.class);
-        classes.add(ToolUtilCommands.class);
-        classes.add(ToolCommands.class);
-        classes.add(UtilityCommands.class);
-
-        /*for (File f : dir.listFiles()) {
-            if (!f.getName().matches("^.*\\.java$")) {
-                continue;
-            }
-            
-            String className = "com.sk89q.worldedit.commands."
-                + f.getName().substring(0, f.getName().lastIndexOf("."));
-            
-            Class<?> cls;
-            try {
-                cls = Class.forName(className, true,
-                        Thread.currentThread().getContextClassLoader());
-            } catch (ClassNotFoundException e) {
-                continue;
-            }
-            
-            classes.add(cls);
-        }*/
-
-        return classes;
+        cmdsToPerms(commandManager.getAllCommands(), TextConfig.getCommandPrefix());
     }
 
-    private static void writePermissionsWikiTable(List<Class<?>> commandClasses)
-            throws IOException {
-        try (FileOutputStream stream = new FileOutputStream("wiki_permissions.txt")) {
-            PrintStream print = new PrintStream(stream);
-            writePermissionsWikiTable(print, commandClasses, "/");
-        }
+    private static void cmdsToPerms(Stream<Command> cmds, String prefix) {
+        cmds.forEach(c -> {
+            System.out.println("    " + cmdToPerm(prefix, c));
+            c.getParts().stream().filter(p -> p instanceof SubCommandPart).map(p -> (SubCommandPart) p)
+                    .forEach(scp -> cmdsToPerms(scp.getCommands().stream(), prefix + c.getName() + " "));
+        });
     }
 
-    private static void writePermissionsWikiTable(PrintStream stream,
-                                                  List<Class<?>> commandClasses, String prefix) {
-
-        for (Class<?> cls : commandClasses) {
-            for (Method method : cls.getMethods()) {
-                if (!method.isAnnotationPresent(Command.class)) {
-                    continue;
-                }
-
-                Command cmd = method.getAnnotation(Command.class);
-
-                stream.println("|-");
-                stream.print("| " + prefix + cmd.aliases()[0]);
-                stream.print(" || ");
-
-                if (method.isAnnotationPresent(CommandPermissions.class)) {
-                    CommandPermissions perms =
-                            method.getAnnotation(CommandPermissions.class);
-
-                    String[] permKeys = perms.value();
-                    for (int i = 0; i < permKeys.length; ++i) {
-                        if (i > 0) {
-                            stream.print(", ");
-                        }
-                        stream.print(permKeys[i]);
-                    }
-                }
-
-                stream.print(" || ");
-
-                boolean firstAlias = true;
-                if (cmd.aliases().length != 0) {
-                    for (String alias : cmd.aliases()) {
-                        if (!firstAlias) stream.print("<br />");
-                        stream.print(prefix + alias);
-                        firstAlias = false;
-                    }
-                }
-
-                stream.print(" || ");
-
-                if (cmd.flags() != null && !cmd.flags().isEmpty()) {
-                    stream.print(cmd.flags());
-                }
-
-                stream.print(" || ");
-
-                if (cmd.desc() != null && !cmd.desc().isEmpty()) {
-                    stream.print(cmd.desc());
-                }
-
-                stream.println();
-
-                if (method.isAnnotationPresent(NestedCommand.class)) {
-                    NestedCommand nested =
-                            method.getAnnotation(NestedCommand.class);
-
-                    Class<?>[] nestedClasses = nested.value();
-                    writePermissionsWikiTable(stream,
-                            Arrays.asList(nestedClasses),
-                            prefix + cmd.aliases()[0] + " ");
-                }
-            }
-        }
+    private static String cmdToPerm(String prefix, Command c) {
+        return prefix + c.getName() + ",\"" + (c.getCondition() instanceof PermissionCondition
+                ? String.join(", ", ((PermissionCondition) c.getCondition()).getPermissions()) : "") + "\"";
     }
 
-    private static void writeBukkitYAML()
-            throws IOException {
-        try (FileOutputStream stream = new FileOutputStream("plugin.yml")) {
-            PrintStream print = new PrintStream(stream);
-            writeBukkitYAML(print);
-        }
+    private static void cmdToUsages(PlainComponentSerializer serializer, Stream<Command> cmds, String prefix, int indent) {
+        cmds.forEach(c -> {
+            System.out.println(Strings.repeat("\t", indent) + cmdToString(serializer, prefix, c, indent));
+            c.getParts().stream().filter(p -> p instanceof SubCommandPart).map(p -> (SubCommandPart) p)
+                    .forEach(scp -> cmdToUsages(serializer, scp.getCommands().stream(), prefix + c.getName() + " ", indent + 1));
+            System.out.println();
+        });
     }
 
-    private static void writeBukkitYAML(PrintStream stream) {
-        stream.println("name: WorldEdit");
-        stream.println("main: com.sk89q.worldedit.bukkit.WorldEditPlugin");
-        stream.println("version: ${project.version}");
-        stream.println("softdepend: [Spout] #hack to fix trove errors");
-
-        stream.println();
-        stream.println();
-        stream.println("# Permissions aren't here. Read http://wiki.sk89q.com/wiki/WEPIF/DinnerPerms");
-        stream.println("# for how WorldEdit permissions actually work.");
+    private static String cmdToString(PlainComponentSerializer serializer, String prefix, Command c, int indent) {
+        return serializer.serialize(TextComponent.of(prefix + c.getName()).append(TextComponent.newline())
+            .append(TextComponent.of(c.getCondition() instanceof PermissionCondition
+                    ? "Permissions: " + (String.join(", ", ((PermissionCondition) c.getCondition()).getPermissions())) + "\n"
+                    : ""))
+            .append(c.getFullHelp())).replace("\n", "\n" + Strings.repeat("\t", indent));
     }
 
 }
