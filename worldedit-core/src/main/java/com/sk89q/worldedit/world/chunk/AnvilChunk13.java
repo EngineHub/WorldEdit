@@ -83,18 +83,17 @@ public class AnvilChunk13 implements Chunk {
                 continue;
             }
 
-            int blocksPerChunkSection = 16 * 16 * 16;
-            BlockState[] chunkSectionBlocks = new BlockState[blocksPerChunkSection];
-            blocks[y] = chunkSectionBlocks;
-
             // parse palette
             List<CompoundTag> paletteEntries = sectionTag.getList("Palette", CompoundTag.class);
             int paletteSize = paletteEntries.size();
+            if (paletteSize == 0) {
+                continue;
+            }
             BlockState[] palette = new BlockState[paletteSize];
             for (int paletteEntryId = 0; paletteEntryId < paletteSize; paletteEntryId++) {
                 CompoundTag paletteEntry = paletteEntries.get(paletteEntryId);
                 BlockType type = BlockTypes.get(paletteEntry.getString("Name"));
-                if(type == null) {
+                if (type == null) {
                     throw new InvalidFormatException("Invalid block type: " + paletteEntry.getString("Name"));
                 }
                 BlockState blockState = type.getDefaultState();
@@ -121,11 +120,16 @@ public class AnvilChunk13 implements Chunk {
 
             // parse block states
             long[] blockStatesSerialized = NBTUtils.getChildTag(sectionTag.getValue(), "BlockStates", LongArrayTag.class).getValue();
+
+            int blocksPerChunkSection = 16 * 16 * 16;
+            BlockState[] chunkSectionBlocks = new BlockState[blocksPerChunkSection];
+            blocks[y] = chunkSectionBlocks;
+
             long currentSerializedValue = 0;
             int nextSerializedItem = 0;
             int remainingBits = 0;
             for (int blockPos = 0; blockPos < blocksPerChunkSection; blockPos++) {
-                int localBlockId = 0;
+                int localBlockId;
                 if (remainingBits < paletteBits) {
                     int bitsNextLong = paletteBits - remainingBits;
                     localBlockId = (int) currentSerializedValue;
