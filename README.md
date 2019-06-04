@@ -3,7 +3,7 @@
 
 WorldEdit is Minecraft mod that turns Minecraft into an in-game map editor (sorta, kinda).
 
-* Make awesome stuff with half the time OR make ***quadriply** awesome* creations with the same time :sparkles:
+* Make awesome stuff with half the time OR make ***quadruply** awesome* creations with the same time :sparkles:
 * Get lost in hundreds of options and functions that even we've forgotten existed
 * Utilize Photoshop-like tools like "selection areas" and "brushes"
 * Making fjords and other natural wonders with weird names
@@ -28,8 +28,8 @@ Links
 -----
 
 * [Visit our website](http://www.enginehub.org/)
-* [Discord](https://discord.gg/wvneRVm)
-* [IRC channel](http://skq.me/irc/irc.esper.net/sk89q/) (#sk89q on irc.esper.net)
-* [Issue tracker](http://youtrack.sk89q.com/issues/WORLDEDIT)
+* [Discord](https://discord.gg/enginehub)
+* [IRC channel](https://webchat.esper.net/?join=sk89q) (#sk89q on irc.esper.net)
+* [Issue tracker](https://dev.enginehub.org/youtrack/issues/WORLDEDIT)
 * [Continuous integration](http://builds.enginehub.org) [![Build Status](https://travis-ci.org/EngineHub/WorldEdit.svg?branch=master)](https://travis-ci.org/EngineHub/WorldEdit)
-* [End-user documentation](http://wiki.sk89q.com/wiki/WorldEdit)
+* [End-user documentation](https://worldedit.readthedocs.io/en/latest/) / [Older Wiki](http://wiki.sk89q.com/wiki/WorldEdit)
