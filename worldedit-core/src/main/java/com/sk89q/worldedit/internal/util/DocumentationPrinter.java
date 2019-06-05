@@ -368,10 +368,11 @@ public final class DocumentationPrinter {
                 "    worldedit.navigation.jumpto.tool,\"Allows usage of the navigation wand's ``/jumpto`` shortcut (left click).\"\n" +
                 "    worldedit.navigation.thru.tool,\"Allows usage of the navigation wand's ``/thru`` shortcut (right click).\"\n" +
                 "    worldedit.anyblock,\"Allows usage of blocks in the :doc:`disallowed-blocks <config>` config option.\"\n" +
-                "    worldedit.limit.unrestricted,\"Allows setting the limit via the ``//limit`` :doc:`command <commands>` higher than the maximum in the :doc:`configuration <config>`.\"\n" +
+                "    worldedit.limit.unrestricted,\"Allows setting the limit via the ``//limit`` :doc:`command <commands>` higher than the maximum in the :doc:`configuration <config>`, as well as other limit bypasses.\"\n" +
                 "    worldedit.timeout.unrestricted,\"Allows setting the calculation timeout via the ``//timeout`` :doc:`command <commands>` higher than the maximum in the :doc:`configuration <config>`.\"\n" +
                 "    worldedit.inventory.unrestricted,\"Override the ``use-inventory`` option if enabled in the :doc:`configuration <config>`.\"\n" +
                 "    worldedit.override.bedrock,\"Allows breaking of bedrock with the super-pickaxe tool.\"\n" +
+                "    worldedit.override.data-cycler,\"Allows cycling non-whitelisted blocks with the data cycler tool.\"\n" +
                 "    worldedit.setnbt,\"Allows setting `extra data <https://minecraft.gamepedia.com/Block_entity>`_ on blocks (such as signs, chests, etc).\"\n" +
                 "    worldedit.report.pastebin,\"Allows uploading report files to pastebin automatically for the ``/worldedit report`` :doc:`command <commands>`.\"");
     }
