@@ -322,6 +322,8 @@ public final class DocumentationPrinter {
                 new UtilityCommands(worldEdit)
         );
         dumpSection("Utility Commands", manager);
+
+        writeFooter();
     }
 
     private void writeHeader() {
@@ -336,6 +338,42 @@ public final class DocumentationPrinter {
                 ".. tip::\n" +
                 "\n" +
                 "    Arguments enclosed in ``[ ]`` are optional, those enclosed in ``< >`` are required.\n\n");
+
+        permsOutput.append("===========\n" +
+                "Permissions\n" +
+                "===========\n" +
+                "\n" +
+                "By default, no one can use WorldEdit. In order for yourself, moderators, and players to use WorldEdit, you must provide the proper permissions. One way is to provide op to moderators and administrators (unless disabled in the :doc:`configuration <config>`), but providing the permission nodes on this page (through a permissions plugin) is the more flexible.\n" +
+                "\n" +
+                "You can give the ``worldedit.*`` permission to give yourself and other administrators full access to WorldEdit.\n" +
+                "\n" +
+                "Commands\n" +
+                "=========\n" +
+                "\n" +
+                "See the :doc:`commands` page for an explanation of some of these commands.\n" +
+                "\n" +
+                ".. csv-table::\n" +
+                "    :header: Command, Permission\n" +
+                "    :widths: 15, 25\n\n");
+    }
+
+    private void writeFooter() {
+        permsOutput.append("\nOther Permissions\n" +
+                "==================\n" +
+                "\n" +
+                ".. csv-table::\n" +
+                "    :header: Permission, Explanation\n" +
+                "    :widths: 15, 25\n" +
+                "\n" +
+                "    worldedit.navigation.jumpto.tool,\"Allows usage of the navigation wand's ``/jumpto`` shortcut (left click).\"\n" +
+                "    worldedit.navigation.thru.tool,\"Allows usage of the navigation wand's ``/thru`` shortcut (right click).\"\n" +
+                "    worldedit.anyblock,\"Allows usage of blocks in the :doc:`disallowed-blocks <config>` config option.\"\n" +
+                "    worldedit.limit.unrestricted,\"Allows setting the limit via the ``//limit`` :doc:`command <commands>` higher than the maximum in the :doc:`configuration <config>`.\"\n" +
+                "    worldedit.timeout.unrestricted,\"Allows setting the calculation timeout via the ``//timeout`` :doc:`command <commands>` higher than the maximum in the :doc:`configuration <config>`.\"\n" +
+                "    worldedit.inventory.unrestricted,\"Override the ``use-inventory`` option if enabled in the :doc:`configuration <config>`.\"\n" +
+                "    worldedit.override.bedrock,\"Allows breaking of bedrock with the super-pickaxe tool.\"\n" +
+                "    worldedit.setnbt,\"Allows setting `extra data <https://minecraft.gamepedia.com/Block_entity>`_ on blocks (such as signs, chests, etc).\"\n" +
+                "    worldedit.report.pastebin,\"Allows uploading report files to pastebin automatically for the ``/worldedit report`` :doc:`command <commands>`.\"");
     }
 
     private CommandManager createManager() {
@@ -357,8 +395,10 @@ public final class DocumentationPrinter {
 //        permsOutput.append("\n------------\n\n");
         cmdsToPerms(manager.getAllCommands(), prefix);
 
+        boolean first = true;
         for (Command command : manager.getAllCommands().collect(Collectors.toList())) {
-            cmdOutput.append("\n------------\n\n");
+            if (!first) cmdOutput.append("\n------------\n\n");
+            first = false;
             writeCommandBlock(command, prefix, Stream.empty());
             command.getParts().stream().filter(p -> p instanceof SubCommandPart)
                     .flatMap(p -> ((SubCommandPart) p).getCommands().stream())
