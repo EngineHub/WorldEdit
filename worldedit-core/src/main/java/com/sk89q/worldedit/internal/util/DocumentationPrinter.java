@@ -350,7 +350,7 @@ public final class DocumentationPrinter {
     }
 
     private void dumpSection(String title, CommandManager manager) {
-        cmdOutput.append(title).append("\n").append(Strings.repeat("~", title.length())).append("\n\n");
+        cmdOutput.append("\n").append(title).append("\n").append(Strings.repeat("~", title.length())).append("\n");
 
         String prefix = TextConfig.getCommandPrefix();
 
