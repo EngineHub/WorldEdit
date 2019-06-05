@@ -103,6 +103,8 @@ public final class DocumentationPrinter {
         printer.writeAllCommands();
         writeOutput("commands.rst", printer.cmdOutput.toString());
         writeOutput("permissions.rst", printer.permsOutput.toString());
+
+        WorldEdit.getInstance().getSessionManager().unload();
     }
 
     private static void writeOutput(String file, String output) throws IOException {
@@ -427,12 +429,14 @@ public final class DocumentationPrinter {
         String name = prefix + command.getName();
         String desc = serializer.serialize(command.getDescription());
         cmdOutput.append(".. csv-table::\n    :widths: 8, 15\n\n");
-        cmdOutput.append("    ").append(name).append(",\"").append(desc).append("\"\n");
+        cmdOutput.append("    ").append(name).append(",");
         if (!command.getAliases().isEmpty()) {
-            cmdOutput.append("    Aliases,\"").append(String.join(", ",
-                        command.getAliases().stream().map(a -> prefix + a).collect(Collectors.toSet())))
-                    .append("\"\n");
+            cmdOutput.append("\"(or ").append(String.join(", ",
+                    command.getAliases().stream().map(a -> prefix + a).collect(Collectors.toSet())))
+                    .append(")\"");
         }
+        cmdOutput.append("\n");
+        cmdOutput.append("    Description,\"").append(desc).append("\"\n");
         if (command.getCondition() instanceof PermissionCondition) {
             cmdOutput.append("    Permissions,\"").append(String.join(", ", ((PermissionCondition) command.getCondition()).getPermissions())).append("\"\n");
         }
