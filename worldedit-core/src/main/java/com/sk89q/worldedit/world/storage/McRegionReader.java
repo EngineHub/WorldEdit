@@ -100,10 +100,9 @@ public class McRegionReader {
     /**
      * Read the header.
      * 
-     * @throws DataException
      * @throws IOException
      */
-    private void readHeader() throws DataException, IOException {
+    private void readHeader() throws IOException {
         offsets = new int[SECTOR_INTS];
 
         for (int i = 0; i < SECTOR_INTS; ++i) {
@@ -124,10 +123,6 @@ public class McRegionReader {
         int x = position.getBlockX() & 31;
         int z = position.getBlockZ() & 31;
 
-        if (x < 0 || x >= 32 || z < 0 || z >= 32) {
-            throw new DataException("MCRegion file does not contain " + x + "," + z);
-        }
-
         int offset = getOffset(x, z);
 
         // The chunk hasn't been generated
@@ -138,7 +133,7 @@ public class McRegionReader {
         int sectorNumber = offset >> 8;
         int numSectors = offset & 0xFF;
 
-        stream.seek(sectorNumber * SECTOR_BYTES);
+        stream.seek((long) sectorNumber * SECTOR_BYTES);
         int length = dataStream.readInt();
 
         if (length > SECTOR_BYTES * numSectors) {

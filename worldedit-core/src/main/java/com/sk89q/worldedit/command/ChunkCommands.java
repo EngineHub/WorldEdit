@@ -19,9 +19,6 @@
 
 package com.sk89q.worldedit.command;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.sk89q.worldedit.command.util.Logging.LogMode.REGION;
-
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
@@ -39,12 +36,18 @@ import com.sk89q.worldedit.world.storage.McRegionChunkStore;
 import org.enginehub.piston.annotation.Command;
 import org.enginehub.piston.annotation.CommandContainer;
 import org.enginehub.piston.annotation.param.ArgFlag;
+import org.enginehub.piston.annotation.param.Switch;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.sk89q.worldedit.command.util.Logging.LogMode.REGION;
 
 /**
  * Commands for working with chunks.
@@ -69,15 +72,10 @@ public class ChunkCommands {
         int chunkX = (int) Math.floor(pos.getBlockX() / 16.0);
         int chunkZ = (int) Math.floor(pos.getBlockZ() / 16.0);
 
-        String folder1 = Integer.toString(MathUtils.divisorMod(chunkX, 64), 36);
-        String folder2 = Integer.toString(MathUtils.divisorMod(chunkZ, 64), 36);
-        String filename = "c." + Integer.toString(chunkX, 36)
-                + "." + Integer.toString(chunkZ, 36) + ".dat";
-
+        final BlockVector2 chunkPos = BlockVector2.at(chunkX, chunkZ);
         player.print("Chunk: " + chunkX + ", " + chunkZ);
-        player.print("Old format: " + folder1 + "/" + folder2 + "/" + filename);
-        player.print("McRegion: region/" + McRegionChunkStore.getFilename(
-                BlockVector2.at(chunkX, chunkZ)));
+        player.print("Old format: " + LegacyChunkStore.getFilename(chunkPos));
+        player.print("McRegion: region/" + McRegionChunkStore.getFilename(chunkPos));
     }
 
     @Command(
@@ -100,81 +98,69 @@ public class ChunkCommands {
     )
     @CommandPermissions("worldedit.delchunks")
     @Logging(REGION)
-    public void deleteChunks(Player player, LocalSession session) throws WorldEditException {
-        player.print("Note that this command does not yet support the mcregion format.");
+    public void deleteChunks(Player player, LocalSession session,
+                             @Switch(name = 'f', desc = "Don't backup region files.")
+                                boolean skipBackup,
+                             @Switch(name = 's', desc = "Run on next startup.")
+                                boolean startup) throws WorldEditException {
         LocalConfiguration config = worldEdit.getConfiguration();
 
+        String worldName = player.getWorld().getName();
         Set<BlockVector2> chunks = session.getSelection(player.getWorld()).getChunks();
-        FileOutputStream out = null;
 
-        if (config.shellSaveType == null) {
+        String classPath = ChunkCommands.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+        String chunkFileName = (startup ? "startup_" : "") + "delete_chunks.txt";
+        File chunkFile = worldEdit.getWorkingDirectoryFile(chunkFileName);
+        try (FileOutputStream out = new FileOutputStream(chunkFile, true)) {
+            OutputStreamWriter writer = new OutputStreamWriter(out, StandardCharsets.UTF_8);
+            for (BlockVector2 cc : chunks) {
+                writer.write(worldName + "," + cc.getBlockX() + "," + cc.getBlockZ() + "\n");
+            }
+            writer.close();
+        } catch (IOException e) {
+            player.printError("Failed to write chunk list: " + e.getMessage());
+            return;
+        }
+        if (startup) {
+            player.print(String.format("%d chunk(s) have been marked for deletion and will be deleted the next time the server starts.", chunks.size()));
+            return;
+        }
+
+        if (!"bat".equals(config.shellSaveType) && !"bash".equals(config.shellSaveType)) {
             player.printError("Shell script type must be configured: 'bat' or 'bash' expected.");
-        } else if (config.shellSaveType.equalsIgnoreCase("bat")) {
-            try {
-                out = new FileOutputStream("worldedit-delchunks.bat");
-                OutputStreamWriter writer = new OutputStreamWriter(out, "UTF-8");
+            return;
+        }
+
+        final String javaCmd = "java -classpath \"" + classPath + "\" com.sk89q.worldedit.internal.util.ChunkDeleter \""
+                + chunkFile.getPath() + "\" " + (skipBackup ? "false" : "true");
+        if (config.shellSaveType.equalsIgnoreCase("bat")) {
+            try (FileOutputStream out = new FileOutputStream("worldedit-delchunks.bat")) {
+                OutputStreamWriter writer = new OutputStreamWriter(out, StandardCharsets.UTF_8);
                 writer.write("@ECHO off\r\n");
-                writer.write("ECHO This batch file was generated by WorldEdit.\r\n");
-                writer.write("ECHO It contains a list of chunks that were in the selected region\r\n");
-                writer.write("ECHO at the time that the /delchunks command was used. Run this file\r\n");
-                writer.write("ECHO in order to delete the chunk files listed in this file.\r\n");
-                writer.write("ECHO.\r\n");
-                writer.write("PAUSE\r\n");
-
-                for (BlockVector2 chunk : chunks) {
-                    String filename = LegacyChunkStore.getFilename(chunk);
-                    writer.write("ECHO " + filename + "\r\n");
-                    writer.write("DEL \"world/" + filename + "\"\r\n");
-                }
-
-                writer.write("ECHO Complete.\r\n");
-                writer.write("PAUSE\r\n");
+                writer.write("ECHO Running WorldEdit chunk deleter.\r\n");
+                writer.write(javaCmd + "\r\n");
                 writer.close();
-                player.print("worldedit-delchunks.bat written. Run it when no one is near the region.");
+
+                player.print("worldedit-delchunks.bat written. Run it when the server is shutdown.");
             } catch (IOException e) {
-                player.printError("Error occurred: " + e.getMessage());
-            } finally {
-                if (out != null) {
-                    try {
-                        out.close();
-                    } catch (IOException ignored) { }
-                }
+                player.printError("Error occurred writing script: " + e.getMessage());
             }
         } else if (config.shellSaveType.equalsIgnoreCase("bash")) {
-            try {
-                out = new FileOutputStream("worldedit-delchunks.sh");
-                OutputStreamWriter writer = new OutputStreamWriter(out, "UTF-8");
+            try (FileOutputStream out = new FileOutputStream("worldedit-delchunks.sh")) {
+                OutputStreamWriter writer = new OutputStreamWriter(out, StandardCharsets.UTF_8);
                 writer.write("#!/bin/bash\n");
-                writer.write("echo This shell file was generated by WorldEdit.\n");
-                writer.write("echo It contains a list of chunks that were in the selected region\n");
-                writer.write("echo at the time that the /delchunks command was used. Run this file\n");
-                writer.write("echo in order to delete the chunk files listed in this file.\n");
-                writer.write("echo\n");
-                writer.write("read -p \"Press any key to continue...\"\n");
-
-                for (BlockVector2 chunk : chunks) {
-                    String filename = LegacyChunkStore.getFilename(chunk);
-                    writer.write("echo " + filename + "\n");
-                    writer.write("rm \"world/" + filename + "\"\n");
-                }
-
-                writer.write("echo Complete.\n");
-                writer.write("read -p \"Press any key to continue...\"\n");
+                writer.write("echo Running WorldEdit chunk deleter.\n");
+                writer.write(javaCmd + "\n");
                 writer.close();
-                player.print("worldedit-delchunks.sh written. Run it when no one is near the region.");
-                player.print("You will have to chmod it to be executable.");
+
+                player.print("worldedit-delchunks.sh written. Run it when the server is shutdown.");
             } catch (IOException e) {
-                player.printError("Error occurred: " + e.getMessage());
-            } finally {
-                if (out != null) {
-                    try {
-                        out.close();
-                    } catch (IOException ignored) {
-                    }
-                }
+                player.printError("Error occurred writing script: " + e.getMessage());
+                return;
             }
-        } else {
-            player.printError("Shell script type must be configured: 'bat' or 'bash' expected.");
+            if (!new File("worldedit-delchunks.sh").setExecutable(true)) {
+                player.print("You may have to set the file as executable (chmod +x) to run it.");
+            }
         }
     }
 
