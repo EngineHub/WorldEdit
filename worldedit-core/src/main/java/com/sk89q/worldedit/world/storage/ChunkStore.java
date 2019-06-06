@@ -109,7 +109,7 @@ public abstract class ChunkStore implements Closeable {
         if (dataVersion == 0) dataVersion = -1;
         final Platform platform = WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.WORLD_EDITING);
         final int currentDataVersion = platform.getDataVersion();
-        if (dataVersion < currentDataVersion) {
+        if (tag.getValue().containsKey("Sections") &&  dataVersion < currentDataVersion) { // only fix up MCA format, DFU doesn't support MCR chunks
             final DataFixer dataFixer = platform.getDataFixer();
             if (dataFixer != null) {
                 return new AnvilChunk13((CompoundTag) dataFixer.fixUp(DataFixer.FixTypes.CHUNK, rootTag, dataVersion).getValue().get("Level"));

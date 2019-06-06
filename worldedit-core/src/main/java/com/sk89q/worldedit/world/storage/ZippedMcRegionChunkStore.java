@@ -102,7 +102,14 @@ public class ZippedMcRegionChunkStore extends McRegionChunkStore {
 
         ZipEntry entry = getEntry(name);
         if (entry == null) {
-            throw new MissingChunkException();
+            if (name.endsWith(".mca")) { // try old mcr format
+                entry = getEntry(name.replace(".mca", ".mcr"));
+                if (entry == null) {
+                    throw new MissingChunkException();
+                }
+            } else {
+                throw new MissingChunkException();
+            }
         }
         try {
             return zip.getInputStream(entry);
@@ -136,7 +143,7 @@ public class ZippedMcRegionChunkStore extends McRegionChunkStore {
 
             ZipEntry testEntry = e.nextElement();
 
-            if (testEntry.getName().matches(".*\\.mcr$") || testEntry.getName().matches(".*\\.mca$")) { // TODO: does this need a separate class?
+            if (testEntry.getName().matches(".*\\.mcr$") || testEntry.getName().matches(".*\\.mca$")) {
                 return true;
             }
         }

@@ -78,7 +78,7 @@ public abstract class McRegionChunkStore extends ChunkStore {
                 throw new ChunkStoreException("CompoundTag expected for chunk; got " + tag.getClass().getName());
             }
 
-            return (CompoundTag)tag;
+            return (CompoundTag) tag;
         }
     }
 
