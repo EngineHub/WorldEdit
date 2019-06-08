@@ -310,7 +310,9 @@ public class BukkitWorld extends AbstractWorld {
 
     @Override
     public boolean equals(Object other) {
-        if (other == null) {
+        if (worldRef.get() == null) {
+            return false;
+        } else if (other == null) {
             return false;
         } else if ((other instanceof BukkitWorld)) {
             return ((BukkitWorld) other).getWorld().equals(getWorld());
