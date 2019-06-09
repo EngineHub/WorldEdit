@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.forge;
 
+import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.util.StringUtil;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.entity.BaseEntity;
@@ -33,12 +34,16 @@ import com.sk89q.worldedit.util.HandSide;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.serializer.gson.GsonComponentSerializer;
+import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
+import com.sk89q.worldedit.world.block.BlockTypes;
 import io.netty.buffer.Unpooled;
+import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.play.server.SPacketBlockChange;
 import net.minecraft.network.play.server.SPacketCustomPayload;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.util.EnumHand;
@@ -48,12 +53,14 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
 
+import java.io.IOException;
 import java.util.UUID;
 
 import javax.annotation.Nullable;
 
 public class ForgePlayer extends AbstractPlayerActor {
 
+    private static final int STRUCTURE_BLOCK_PACKET_ID = 7;
     private final EntityPlayerMP player;
 
     protected ForgePlayer(EntityPlayerMP player) {
@@ -183,18 +190,35 @@ public class ForgePlayer extends AbstractPlayerActor {
 
     @Override
     public <B extends BlockStateHolder<B>> void sendFakeBlock(BlockVector3 pos, B block) {
+        World world = getWorld();
+        if (!(world instanceof ForgeWorld)) {
+            return;
+        }
         BlockPos loc = ForgeAdapter.toBlockPos(pos);
         if (block == null) {
-            // TODO
-//            player.sendBlockChange(loc, player.getWorld().getBlockAt(loc).getBlockData());
+            final SPacketBlockChange packetOut = new SPacketBlockChange(((ForgeWorld) world).getWorld(), loc);
+            player.connection.sendPacket(packetOut);
         } else {
-            // TODO
-//            player.sendBlockChange(loc, BukkitAdapter.adapt(block));
-            if (block instanceof BaseBlock && ((BaseBlock) block).hasNbtData()) {
-                player.connection.sendPacket(new SPacketUpdateTileEntity(
-                        new BlockPos(pos.getBlockX(), pos.getBlockY(), pos.getBlockZ()), 7,
-                        NBTConverter.toNative(((BaseBlock) block).getNbtData()))
-                );
+            final SPacketBlockChange packetOut = new SPacketBlockChange();
+            PacketBuffer buf = new PacketBuffer(Unpooled.buffer());
+            buf.writeBlockPos(loc);
+            buf.writeVarInt(Block.getStateId(ForgeAdapter.adapt(block.toImmutableState())));
+            try {
+                packetOut.readPacketData(buf);
+            } catch (IOException e) {
+                return;
+            }
+            player.connection.sendPacket(packetOut);
+            if (block instanceof BaseBlock && block.getBlockType().equals(BlockTypes.STRUCTURE_BLOCK)) {
+                final BaseBlock baseBlock = (BaseBlock) block;
+                final CompoundTag nbtData = baseBlock.getNbtData();
+                if (nbtData != null) {
+                    player.connection.sendPacket(new SPacketUpdateTileEntity(
+                            new BlockPos(pos.getBlockX(), pos.getBlockY(), pos.getBlockZ()),
+                            STRUCTURE_BLOCK_PACKET_ID,
+                            NBTConverter.toNative(nbtData))
+                    );
+                }
             }
         }
     }

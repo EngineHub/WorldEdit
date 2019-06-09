@@ -19,28 +19,28 @@
 
 package com.sk89q.worldedit.forge;
 
-import com.sk89q.worldedit.world.item.ItemType;
-import com.sk89q.worldedit.world.registry.BundledItemRegistry;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.item.Item;
+import com.sk89q.worldedit.registry.Category;
+import com.sk89q.worldedit.world.block.BlockType;
+import com.sk89q.worldedit.world.registry.BlockCategoryRegistry;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.tags.Tag;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.loading.FMLLoader;
-import net.minecraftforge.registries.RegistryManager;
 
-import javax.annotation.Nullable;
+import java.util.Collections;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
-public class ForgeItemRegistry extends BundledItemRegistry {
-
-    @Nullable
+public class ForgeBlockCategoryRegistry implements BlockCategoryRegistry {
     @Override
-    public String getName(ItemType itemType) {
-        if (FMLLoader.getDist().isClient()) {
-            final Item item = RegistryManager.ACTIVE.getRegistry(Item.class)
-                    .getValue(ResourceLocation.tryCreate(itemType.getId()));
-            if (item != null) {
-                return I18n.format(item.getTranslationKey());
-            }
-        }
-        return super.getName(itemType);
+    public Set<BlockType> getCategorisedByName(String category) {
+        return Optional.ofNullable(BlockTags.getCollection().get(new ResourceLocation(category)))
+                .map(Tag::getAllElements).orElse(Collections.emptySet())
+                .stream().map(ForgeAdapter::adapt).collect(Collectors.toSet());
+    }
+
+    @Override
+    public Set<BlockType> getAll(Category<BlockType> category) {
+        return getCategorisedByName(category.getId());
     }
 }

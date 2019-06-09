@@ -20,8 +20,10 @@
 package com.sk89q.worldedit.forge;
 
 import com.sk89q.worldedit.world.registry.BiomeRegistry;
+import com.sk89q.worldedit.world.registry.BlockCategoryRegistry;
 import com.sk89q.worldedit.world.registry.BlockRegistry;
 import com.sk89q.worldedit.world.registry.BundledRegistries;
+import com.sk89q.worldedit.world.registry.ItemCategoryRegistry;
 import com.sk89q.worldedit.world.registry.ItemRegistry;
 
 /**
@@ -33,6 +35,8 @@ class ForgeRegistries extends BundledRegistries {
     private final BlockRegistry blockRegistry = new ForgeBlockRegistry();
     private final BiomeRegistry biomeRegistry = new ForgeBiomeRegistry();
     private final ItemRegistry itemRegistry = new ForgeItemRegistry();
+    private final BlockCategoryRegistry blockCategoryRegistry = new ForgeBlockCategoryRegistry();
+    private final ItemCategoryRegistry itemCategoryRegistry = new ForgeItemCategoryRegistry();
 
     @Override
     public BlockRegistry getBlockRegistry() {
@@ -47,6 +51,16 @@ class ForgeRegistries extends BundledRegistries {
     @Override
     public ItemRegistry getItemRegistry() {
         return itemRegistry;
+    }
+
+    @Override
+    public BlockCategoryRegistry getBlockCategoryRegistry() {
+        return blockCategoryRegistry;
+    }
+
+    @Override
+    public ItemCategoryRegistry getItemCategoryRegistry() {
+        return itemCategoryRegistry;
     }
 
     /**

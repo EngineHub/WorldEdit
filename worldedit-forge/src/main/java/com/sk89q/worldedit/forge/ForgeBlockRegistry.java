@@ -26,6 +26,7 @@ import com.sk89q.worldedit.world.registry.BundledBlockRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.state.IProperty;
+import net.minecraftforge.fml.loading.FMLLoader;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -42,7 +43,7 @@ public class ForgeBlockRegistry extends BundledBlockRegistry {
     @Override
     public String getName(BlockType blockType) {
         Block block = ForgeAdapter.adapt(blockType);
-        if (block != null) {
+        if (block != null && FMLLoader.getDist().isClient()) {
             return block.getNameTextComponent().getFormattedText();
         } else {
             return super.getName(blockType);

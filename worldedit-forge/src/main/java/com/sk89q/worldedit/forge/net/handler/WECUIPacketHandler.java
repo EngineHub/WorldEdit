@@ -29,7 +29,6 @@ import net.minecraft.network.play.server.SPacketCustomPayload;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.network.NetworkEvent.ClientCustomPayloadEvent;
 import net.minecraftforge.fml.network.NetworkEvent.ServerCustomPayloadEvent;
-import net.minecraftforge.fml.network.NetworkRegistry.ChannelBuilder;
 import net.minecraftforge.fml.network.event.EventNetworkChannel;
 
 import java.nio.charset.Charset;
@@ -41,13 +40,11 @@ public final class WECUIPacketHandler {
     }
 
     public static final Charset UTF_8_CHARSET = Charset.forName("UTF-8");
-    private static final String PROTOCOL_VERSION = Integer.toString(1);
-    public static EventNetworkChannel HANDLER = ChannelBuilder
-            .named(new ResourceLocation(ForgeWorldEdit.MOD_ID, ForgeWorldEdit.CUI_PLUGIN_CHANNEL))
-            .clientAcceptedVersions(PROTOCOL_VERSION::equals)
-            .serverAcceptedVersions(PROTOCOL_VERSION::equals)
-            .networkProtocolVersion(() -> PROTOCOL_VERSION)
+    private static final int PROTOCOL_VERSION = 1;
+    private static EventNetworkChannel HANDLER = PacketHandlerUtil
+            .buildLenientHandler(ForgeWorldEdit.CUI_PLUGIN_CHANNEL, PROTOCOL_VERSION)
             .eventNetworkChannel();
+
     
     public static void init() {
         HANDLER.addListener(WECUIPacketHandler::onPacketData);

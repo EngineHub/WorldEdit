@@ -21,6 +21,7 @@ package com.sk89q.worldedit.forge;
 
 import com.google.common.collect.ImmutableList;
 import com.sk89q.jnbt.CompoundTag;
+import com.sk89q.jnbt.Tag;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.Vector3;
@@ -210,11 +211,23 @@ public final class ForgeAdapter {
         if (baseItemStack.getNbtData() != null) {
             forgeCompound = NBTConverter.toNative(baseItemStack.getNbtData());
         }
-        return new ItemStack(adapt(baseItemStack.getType()), baseItemStack.getAmount(), forgeCompound);
+        final ItemStack itemStack = new ItemStack(adapt(baseItemStack.getType()), baseItemStack.getAmount());
+        itemStack.setTag(forgeCompound);
+        return itemStack;
     }
 
     public static BaseItemStack adapt(ItemStack itemStack) {
         CompoundTag tag = NBTConverter.fromNative(itemStack.serializeNBT());
+        if (tag.getValue().isEmpty()) {
+            tag = null;
+        } else {
+            final Tag tagTag = tag.getValue().get("tag");
+            if (tagTag instanceof CompoundTag) {
+                tag = ((CompoundTag) tagTag);
+            } else {
+                tag = null;
+            }
+        }
         return new BaseItemStack(adapt(itemStack.getItem()), tag, itemStack.getCount());
     }
 
