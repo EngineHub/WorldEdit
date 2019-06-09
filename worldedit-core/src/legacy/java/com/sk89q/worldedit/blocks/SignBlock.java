@@ -88,7 +88,7 @@ public class SignBlock extends BaseBlock {
 
     @Override
     public String getNbtId() {
-        return "Sign";
+        return "minecraft:sign";
     }
 
     @Override
@@ -114,8 +114,8 @@ public class SignBlock extends BaseBlock {
         text = new String[] { EMPTY, EMPTY, EMPTY, EMPTY };
 
         t = values.get("id");
-        if (!(t instanceof StringTag) || !((StringTag) t).getValue().equals("Sign")) {
-            throw new RuntimeException("'Sign' tile entity expected");
+        if (!(t instanceof StringTag) || !((StringTag) t).getValue().equals(getNbtId())) {
+            throw new RuntimeException(String.format("'%s' tile entity expected", getNbtId()));
         }
 
         t = values.get("Text1");

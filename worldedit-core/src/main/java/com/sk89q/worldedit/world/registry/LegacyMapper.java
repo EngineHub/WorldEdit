@@ -93,15 +93,16 @@ public final class LegacyMapper {
 
         for (Map.Entry<String, String> blockEntry : dataFile.blocks.entrySet()) {
             String id = blockEntry.getKey();
-            blockEntries.put(id, blockEntry.getValue());
+            final String value = blockEntry.getValue();
+            blockEntries.put(id, value);
             try {
-                BlockState state = WorldEdit.getInstance().getBlockFactory().parseFromInput(blockEntry.getValue(), parserContext).toImmutableState();
+                BlockState state = WorldEdit.getInstance().getBlockFactory().parseFromInput(value, parserContext).toImmutableState();
                 blockToStringMap.put(state, id);
                 stringToBlockMap.put(id, state);
             } catch (InputParseException e) {
                 boolean fixed = false;
                 if (fixer != null) {
-                    String newEntry = fixer.fixUp(DataFixer.FixTypes.BLOCK_STATE, blockEntry.getValue(), 1631);
+                    String newEntry = fixer.fixUp(DataFixer.FixTypes.BLOCK_STATE, value, 1631);
                     try {
                         BlockState state = WorldEdit.getInstance().getBlockFactory().parseFromInput(newEntry, parserContext).toImmutableState();
                         blockToStringMap.put(state, id);
@@ -111,7 +112,7 @@ public final class LegacyMapper {
                     }
                 }
                 if (!fixed) {
-                    log.warn("Unknown block: " + blockEntry.getValue());
+                    log.warn("Unknown block: " + value);
                 }
             }
         }

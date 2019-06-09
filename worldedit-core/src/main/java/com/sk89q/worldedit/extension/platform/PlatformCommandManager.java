@@ -72,6 +72,7 @@ import com.sk89q.worldedit.command.argument.Arguments;
 import com.sk89q.worldedit.command.argument.BooleanConverter;
 import com.sk89q.worldedit.command.argument.CommaSeparatedValuesConverter;
 import com.sk89q.worldedit.command.argument.DirectionConverter;
+import com.sk89q.worldedit.command.argument.DirectionVectorConverter;
 import com.sk89q.worldedit.command.argument.EntityRemoverConverter;
 import com.sk89q.worldedit.command.argument.EnumConverter;
 import com.sk89q.worldedit.command.argument.FactoryConverter;
@@ -200,6 +201,7 @@ public final class PlatformCommandManager {
     }
 
     private void registerArgumentConverters() {
+        DirectionVectorConverter.register(worldEdit, commandManager);
         DirectionConverter.register(worldEdit, commandManager);
         FactoryConverter.register(worldEdit, commandManager);
         for (int count = 2; count <= 3; count++) {

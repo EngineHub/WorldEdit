@@ -22,34 +22,28 @@ package com.sk89q.worldedit.command.argument;
 import com.sk89q.worldedit.UnknownDirectionException;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.entity.Player;
-import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.math.BlockVector3;
-import com.sk89q.worldedit.util.Direction;
 import org.enginehub.piston.CommandManager;
 
 import javax.annotation.Nullable;
-import java.util.Optional;
 
-public final class DirectionConverter extends AbstractDirectionConverter<Direction> {
+public final class DirectionVectorConverter extends AbstractDirectionConverter<BlockVector3> {
 
-    private DirectionConverter(WorldEdit worldEdit, boolean includeDiagonals) {
+    private DirectionVectorConverter(WorldEdit worldEdit, boolean includeDiagonals) {
         super(worldEdit, includeDiagonals);
     }
 
     public static void register(WorldEdit worldEdit, CommandManager commandManager) {
         for (boolean includeDiagonals : new boolean[] { false, true }) {
-            DirectionConverter directionConverter = new DirectionConverter(worldEdit, includeDiagonals);
-            register(commandManager, directionConverter, Direction.class, includeDiagonals);
+            DirectionVectorConverter directionConverter = new DirectionVectorConverter(worldEdit, includeDiagonals);
+            register(commandManager, directionConverter, BlockVector3.class, includeDiagonals);
         }
     }
 
     @Override
-    protected Direction convertDirection(String argument, @Nullable Player player, boolean includeDiagonals) throws UnknownDirectionException {
-        final BlockVector3 vec = includeDiagonals
+    protected BlockVector3 convertDirection(String argument, @Nullable Player player, boolean includeDiagonals) throws UnknownDirectionException {
+        return includeDiagonals
                 ? getWorldEdit().getDiagonalDirection(player, argument)
                 : getWorldEdit().getDirection(player, argument);
-        return Optional.ofNullable(Direction.findClosest(vec.toVector3(), Direction.Flag.ALL))
-                .orElseThrow(() -> new UnknownDirectionException(argument));
     }
-
 }

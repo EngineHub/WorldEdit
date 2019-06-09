@@ -116,7 +116,7 @@ public class MobSpawnerBlock extends BaseBlock {
 
     @Override
     public String getNbtId() {
-        return "MobSpawner";
+        return "minecraft:mob_spawner";
     }
 
     @Override
@@ -154,8 +154,8 @@ public class MobSpawnerBlock extends BaseBlock {
         Map<String, Tag> values = rootTag.getValue();
 
         Tag t = values.get("id");
-        if (!(t instanceof StringTag) || !((StringTag) t).getValue().equals("MobSpawner")) {
-            throw new RuntimeException("'MobSpawner' tile entity expected");
+        if (!(t instanceof StringTag) || !((StringTag) t).getValue().equals(getNbtId())) {
+            throw new RuntimeException(String.format("'%s' tile entity expected", getNbtId()));
         }
 
         CompoundTag spawnDataTag;
@@ -169,6 +169,7 @@ public class MobSpawnerBlock extends BaseBlock {
                 throw new InvalidFormatException("No spawn id.");
             }
             this.mobType = mobType;
+            this.spawnData = spawnDataTag;
         } catch (InvalidFormatException ignored) {
             throw new RuntimeException("Invalid mob spawner data: no SpawnData and/or no Delay");
         }

@@ -27,17 +27,22 @@ import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.command.factory.ItemUseFactory;
 import com.sk89q.worldedit.command.factory.ReplaceFactory;
 import com.sk89q.worldedit.command.factory.TreeGeneratorFactory;
+import com.sk89q.worldedit.command.util.CommandPermissions;
+import com.sk89q.worldedit.command.util.CommandPermissionsConditionGenerator;
 import com.sk89q.worldedit.command.util.PermissionCondition;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.function.Contextual;
 import com.sk89q.worldedit.function.RegionFunction;
 import com.sk89q.worldedit.function.factory.Paint;
 import com.sk89q.worldedit.function.pattern.Pattern;
+import com.sk89q.worldedit.internal.annotation.Direction;
+import com.sk89q.worldedit.internal.command.CommandRegistrationHandler;
 import com.sk89q.worldedit.regions.factory.RegionFactory;
 import com.sk89q.worldedit.util.TreeGenerator;
-import com.sk89q.worldedit.internal.command.CommandRegistrationHandler;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
+import com.sk89q.worldedit.util.formatting.text.format.TextColor;
+import com.sk89q.worldedit.util.formatting.text.format.TextDecoration;
 import org.enginehub.piston.CommandManager;
 import org.enginehub.piston.CommandManagerService;
 import org.enginehub.piston.CommandParameters;
@@ -53,7 +58,7 @@ import java.util.stream.Collectors;
 import static java.util.Objects.requireNonNull;
 import static org.enginehub.piston.part.CommandParts.arg;
 
-@CommandContainer
+@CommandContainer(superTypes = CommandPermissionsConditionGenerator.Registration.class)
 public class PaintBrushCommands {
 
     private static final CommandArgument REGION_FACTORY = arg(TranslatableComponent.of("shape"), TextComponent.of("The shape of the region"))
@@ -117,11 +122,18 @@ public class PaintBrushCommands {
         name = "item",
         desc = "Use an item"
     )
+    @CommandPermissions("worldedit.brush.item")
     public void item(CommandParameters parameters,
                      Player player, LocalSession localSession,
                      @Arg(desc = "The type of item to use")
-                         BaseItem item) throws WorldEditException {
-        setPaintBrush(parameters, player, localSession, new ItemUseFactory(item));
+                         BaseItem item,
+                     @Arg(desc = "The direction in which the item will be applied", def = "up")
+                     @Direction(includeDiagonals = true)
+                         com.sk89q.worldedit.util.Direction direction) throws WorldEditException {
+        player.print(TextComponent.builder().append("WARNING: ", TextColor.RED, TextDecoration.BOLD)
+                .append("This brush simulates item usages. Its effects may not work on all platforms, may not be undo-able," +
+                        " and may cause strange interactions with other mods/plugins. Use at your own risk.").build());
+        setPaintBrush(parameters, player, localSession, new ItemUseFactory(item, direction));
     }
 
     @Command(
