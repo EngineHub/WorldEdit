@@ -1,0 +1,320 @@
+/*
+ * WorldEdit, a Minecraft world manipulation toolkit
+ * Copyright (C) sk89q <http://www.sk89q.com>
+ * Copyright (C) WorldEdit team and contributors
+ *
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as published by the
+ * Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+
+package com.sk89q.worldedit.internal.util
+
+import com.google.common.base.Strings
+import com.sk89q.worldedit.WorldEdit
+import com.sk89q.worldedit.command.BiomeCommands
+import com.sk89q.worldedit.command.ChunkCommands
+import com.sk89q.worldedit.command.ClipboardCommands
+import com.sk89q.worldedit.command.ExpandCommands
+import com.sk89q.worldedit.command.GeneralCommands
+import com.sk89q.worldedit.command.GenerationCommands
+import com.sk89q.worldedit.command.HistoryCommands
+import com.sk89q.worldedit.command.NavigationCommands
+import com.sk89q.worldedit.command.RegionCommands
+import com.sk89q.worldedit.command.ScriptingCommands
+import com.sk89q.worldedit.command.SelectionCommands
+import com.sk89q.worldedit.command.SnapshotUtilCommands
+import com.sk89q.worldedit.command.ToolCommands
+import com.sk89q.worldedit.command.ToolUtilCommands
+import com.sk89q.worldedit.command.UtilityCommands
+import com.sk89q.worldedit.command.util.PermissionCondition
+import com.sk89q.worldedit.util.formatting.text.TextComponent
+import com.sk89q.worldedit.util.formatting.text.TranslatableComponent
+import com.sk89q.worldedit.util.formatting.text.serializer.plain.PlainComponentSerializer
+import org.enginehub.piston.Command
+import org.enginehub.piston.TextConfig
+import org.enginehub.piston.part.SubCommandPart
+import org.enginehub.piston.util.HelpGenerator
+import java.nio.file.Files
+import java.nio.file.Paths
+import java.util.stream.Stream
+import kotlin.streams.toList
+import org.enginehub.piston.annotation.Command as CommandAnnotation
+
+class DocumentationPrinter private constructor() {
+
+    private val serializer = PlainComponentSerializer({ "" }, TranslatableComponent::key)
+    private val commands = WorldEdit.getInstance().platformManager.platformCommandManager.commandManager.allCommands
+            .map { it.name to it }.toList().toMap()
+    private val cmdOutput = StringBuilder()
+    private val permsOutput = StringBuilder()
+
+    private suspend inline fun <reified T> SequenceScope<String>.yieldAllCommandsIn() {
+        for (method in T::class.java.methods) {
+            val cmdAnno = method.getDeclaredAnnotation(CommandAnnotation::class.java)
+            if (cmdAnno != null) {
+                yield(cmdAnno.name)
+            }
+        }
+    }
+
+    private fun writeAllCommands() {
+        writeHeader()
+
+        dumpSection("General Commands") {
+            yield("worldedit")
+            yieldAllCommandsIn<HistoryCommands>()
+            yieldAllCommandsIn<GeneralCommands>()
+        }
+
+        dumpSection("Navigation Commands") {
+            yieldAllCommandsIn<NavigationCommands>()
+        }
+
+        dumpSection("Selection Commands") {
+            yieldAllCommandsIn<SelectionCommands>()
+            yieldAllCommandsIn<ExpandCommands>()
+        }
+
+        dumpSection("Region Commands") {
+            yieldAllCommandsIn<RegionCommands>()
+        }
+
+        dumpSection("Generation Commands") {
+            yieldAllCommandsIn<GenerationCommands>()
+        }
+
+        dumpSection("Schematic and Clipboard Commands") {
+            yield("schematic")
+            yieldAllCommandsIn<ClipboardCommands>()
+        }
+
+        dumpSection("Tool Commands") {
+            yieldAllCommandsIn<ToolCommands>()
+            yieldAllCommandsIn<ToolUtilCommands>()
+        }
+
+        dumpSection("Super Pickaxe Commands") {
+            yield("superpickaxe")
+        }
+
+        dumpSection("Brush Commands") {
+            yield("brush")
+        }
+
+        dumpSection("Biome Commands") {
+            yieldAllCommandsIn<BiomeCommands>()
+        }
+
+        dumpSection("Chunk Commands") {
+            yieldAllCommandsIn<ChunkCommands>()
+        }
+
+        dumpSection("Snapshot Commands") {
+            yieldAllCommandsIn<SnapshotUtilCommands>()
+            yield("snapshot")
+        }
+
+        dumpSection("Scripting Commands") {
+            yieldAllCommandsIn<ScriptingCommands>()
+        }
+
+        dumpSection("Utility Commands") {
+            yieldAllCommandsIn<UtilityCommands>()
+        }
+
+        writeFooter()
+    }
+
+    private fun writeHeader() {
+        cmdOutput.appendln("""
+========
+Commands
+========
+
+.. contents::
+    :local:
+
+.. tip::
+
+    Arguments enclosed in ``[ ]`` are optional, those enclosed in ``< >`` are required.
+""".trim())
+
+        permsOutput.appendln("""
+===========
+Permissions
+===========
+
+By default, no one can use WorldEdit. In order for yourself, moderators, and players to use WorldEdit, you must provide the proper permissions. One way is to provide op to moderators and administrators (unless disabled in the :doc:`configuration <config>`), but providing the permission nodes on this page (through a permissions plugin) is the more flexible.
+
+You can give the ``worldedit.*`` permission to give yourself and other administrators full access to WorldEdit.
+
+Commands
+=========
+
+See the :doc:`commands` page for an explanation of some of these commands.
+
+.. csv-table::
+  :header: Command, Permission
+  :widths: 15, 25
+""".trim())
+        permsOutput.appendln()
+    }
+
+    private fun writeFooter() {
+        permsOutput.appendln()
+        permsOutput.append("""
+Other Permissions
+==================
+
+.. csv-table::
+    :header: Permission, Explanation
+    :widths: 15, 25
+
+    ``worldedit.navigation.jumpto.tool``,"Allows usage of the navigation wand's ``/jumpto`` shortcut (left click)."
+    ``worldedit.navigation.thru.tool``,"Allows usage of the navigation wand's ``/thru`` shortcut (right click)."
+    ``worldedit.anyblock``,"Allows usage of blocks in the :doc:`disallowed-blocks <config>` config option."
+    ``worldedit.limit.unrestricted``,"Allows setting the limit via the ``//limit`` :doc:`command <commands>` higher than the maximum in the :doc:`configuration <config>`, as well as other limit bypasses."
+    ``worldedit.timeout.unrestricted``,"Allows setting the calculation timeout via the ``//timeout`` :doc:`command <commands>` higher than the maximum in the :doc:`configuration <config>`."
+    ``worldedit.inventory.unrestricted``,"Override the ``use-inventory`` option if enabled in the :doc:`configuration <config>`."
+    ``worldedit.override.bedrock``,"Allows breaking of bedrock with the super-pickaxe tool."
+    ``worldedit.override.data-cycler``,"Allows cycling non-whitelisted blocks with the data cycler tool."
+    ``worldedit.setnbt``,"Allows setting `extra data <https://minecraft.gamepedia.com/Block_entity>`_ on blocks (such as signs, chests, etc)."
+    ``worldedit.report.pastebin``,"Allows uploading report files to pastebin automatically for the ``/worldedit report`` :doc:`command <commands>`."
+""".trim())
+    }
+
+    private fun dumpSection(title: String, addCommandNames: suspend SequenceScope<String>.() -> Unit) {
+        cmdOutput.append("\n").append(title).append("\n").append(Strings.repeat("~", title.length)).append("\n")
+
+        val prefix = TextConfig.getCommandPrefix()
+        val commands = sequence(addCommandNames).map { this.commands.getValue(it) }.toList()
+
+        cmdsToPerms(commands, prefix)
+
+        for (command in commands) {
+            writeCommandBlock(command, prefix, Stream.empty())
+            command.parts.stream().filter { p -> p is SubCommandPart }
+                    .flatMap { p -> (p as SubCommandPart).commands.stream() }
+                    .forEach { sc ->
+                        writeCommandBlock(sc, prefix + command.name + " ", Stream.of(command))
+                    }
+        }
+    }
+
+    private fun cmdsToPerms(cmds: List<Command>, prefix: String) {
+        cmds.forEach { c ->
+            permsOutput.append("    ").append(cmdToPerm(prefix, c)).append("\n")
+            c.parts.filter { p -> p is SubCommandPart }
+                    .map { p -> p as SubCommandPart }
+                    .forEach { scp ->
+                        cmdsToPerms(scp.commands.sortedBy { it.name }, prefix + c.name + " ")
+                    }
+        }
+    }
+
+    private fun cmdToPerm(prefix: String, c: Command): String {
+        val cond = c.condition
+        val permissions = when {
+            cond is PermissionCondition && cond.permissions.isNotEmpty() ->
+                cond.permissions.joinToString(", ") { "``$it``" }
+            else -> ""
+        }
+        return "``$prefix${c.name}``,\"$permissions\""
+    }
+
+    private fun writeCommandBlock(command: Command, prefix: String, parents: Stream<Command>) {
+        val name = prefix + command.name
+        val entries = commandTableEntries(command, parents)
+
+        cmdOutput.appendln(".. raw:: html")
+        cmdOutput.appendln()
+        cmdOutput.appendln("""    <span id="command-${linkSafe(name)}"></span>""")
+        cmdOutput.appendln()
+        cmdOutput.append(".. topic:: ``$name``")
+        if (!command.aliases.isEmpty()) {
+            command.aliases.joinTo(cmdOutput, ", ",
+                    prefix = " (or ",
+                    postfix = ")",
+                    transform = { "``$prefix$it``" })
+        }
+        cmdOutput.appendln().appendln()
+        cmdOutput.appendln("""
+            |    .. csv-table::
+            |        :widths: 8, 15
+        """.trimMargin())
+        cmdOutput.appendln()
+        for ((k, v) in entries) {
+            val rstSafe = v.replace("\"", "\\\"").replace("\n", "\n" + "    ".repeat(2))
+            cmdOutput.append("    ".repeat(2))
+                    .append(k)
+                    .append(",")
+                    .append('"')
+                    .append(rstSafe)
+                    .append('"').appendln()
+        }
+        cmdOutput.appendln()
+    }
+
+    private fun linkSafe(text: String) = text.replace(" ", "-")
+
+    private fun commandTableEntries(command: Command, parents: Stream<Command>): Map<String, String> {
+        return sequence {
+            val desc = command.description.run {
+                when {
+                    command.footer.isPresent -> append(
+                            TextComponent.builder("\n\n").append(command.footer.get())
+                    )
+                    else -> this
+                }
+            }
+            yield("**Description**" to serializer.serialize(desc))
+            val cond = command.condition
+            if (cond is PermissionCondition && cond.permissions.isNotEmpty()) {
+                val perms = cond.permissions.joinToString(", ") { "``$it``" }
+                yield("**Permissions**" to perms)
+            }
+            val usage = serializer.serialize(HelpGenerator.create(Stream.concat(parents, Stream.of(command)).toList()).usage)
+            yield("**Usage**" to "``$usage``")
+
+            // Part descriptions
+            command.parts.filterNot { it is SubCommandPart }
+                    .forEach {
+                        val title = "\u2001\u2001``" + serializer.serialize(it.textRepresentation) + "``"
+                        yield(title to serializer.serialize(it.description))
+                    }
+        }.toMap()
+    }
+
+    companion object {
+
+        /**
+         * Generates documentation.
+         */
+        @JvmStatic
+        fun main(args: Array<String>) {
+            val printer = DocumentationPrinter()
+
+            printer.writeAllCommands()
+            writeOutput("commands.rst", printer.cmdOutput.toString())
+            writeOutput("permissions.rst", printer.permsOutput.toString())
+
+            WorldEdit.getInstance().sessionManager.unload()
+        }
+
+        private fun writeOutput(file: String, output: String) {
+            Files.newBufferedWriter(Paths.get(file)).use {
+                it.write(output)
+            }
+        }
+    }
+}

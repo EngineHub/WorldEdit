@@ -54,7 +54,7 @@ public abstract class LocalConfiguration {
     public boolean logCommands = false;
     public String logFile = "";
     public String logFormat = LogFormat.DEFAULT_FORMAT;
-    public boolean registerHelp = true; // what is the point of this, it's not even used
+    public boolean registerHelp = true; // unused
     public String wandItem = "minecraft:wooden_axe";
     public boolean superPickaxeDrop = true;
     public boolean superPickaxeManyDrop = true;
@@ -70,7 +70,7 @@ public abstract class LocalConfiguration {
     public Set<String> allowedDataCycleBlocks = new HashSet<>();
     public String saveDir = "schematics";
     public String scriptsDir = "craftscripts";
-    public boolean showHelpInfo = true;
+    public boolean showHelpInfo = true; // unused
     public int butcherDefaultRadius = -1;
     public int butcherMaxRadius = -1;
     public boolean allowSymlinks = false;

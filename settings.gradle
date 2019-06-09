@@ -7,3 +7,5 @@ include 'worldedit-libs'
     include "worldedit-$it"
 }
 include "worldedit-libs:core:ap"
+
+include "worldedit-core:doctools"
