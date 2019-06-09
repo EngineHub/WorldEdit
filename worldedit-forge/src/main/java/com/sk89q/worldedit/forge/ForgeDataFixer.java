@@ -212,13 +212,14 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
         INSTANCE = this;
         registerConverters();
         registerInspectors();
+        this.fixer = new WrappedDataFixer(DataFixesManager.getDataFixer());
     }
 
 
     // Called after fixers are built and ready for FIXING
     @Override
     public DataFixer build(final Executor executor) {
-        return this.fixer = new WrappedDataFixer(DataFixesManager.getDataFixer());
+        return fixer;
     }
 
     private class WrappedDataFixer implements DataFixer {

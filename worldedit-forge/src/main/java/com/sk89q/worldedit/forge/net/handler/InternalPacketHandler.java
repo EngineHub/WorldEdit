@@ -19,20 +19,14 @@
 
 package com.sk89q.worldedit.forge.net.handler;
 
-import com.sk89q.worldedit.forge.ForgeWorldEdit;
 import com.sk89q.worldedit.forge.net.packet.LeftClickAirEventMessage;
 import com.sk89q.worldedit.forge.net.packet.LeftClickAirEventMessage.Handler;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.network.NetworkRegistry.ChannelBuilder;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
 
 public final class InternalPacketHandler {
-    private static final String PROTOCOL_VERSION = Integer.toString(1);
-    public static SimpleChannel HANDLER = ChannelBuilder
-            .named(new ResourceLocation(ForgeWorldEdit.MOD_ID, "internal"))
-            .clientAcceptedVersions(PROTOCOL_VERSION::equals)
-            .serverAcceptedVersions(PROTOCOL_VERSION::equals)
-            .networkProtocolVersion(() -> PROTOCOL_VERSION)
+    private static final int PROTOCOL_VERSION = 1;
+    private static SimpleChannel HANDLER = PacketHandlerUtil
+            .buildLenientHandler("internal", PROTOCOL_VERSION)
             .simpleChannel();
 
     private InternalPacketHandler() {
@@ -41,5 +35,9 @@ public final class InternalPacketHandler {
     public static void init() {
         HANDLER.registerMessage(0, LeftClickAirEventMessage.class,
                 LeftClickAirEventMessage::encode, LeftClickAirEventMessage::decode, Handler::handle);
+    }
+
+    public static SimpleChannel getHandler() {
+        return HANDLER;
     }
 }

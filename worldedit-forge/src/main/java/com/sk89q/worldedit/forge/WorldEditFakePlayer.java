@@ -33,4 +33,8 @@ public class WorldEditFakePlayer extends FakePlayer {
         super(world, FAKE_GAME_PROFILE);
     }
 
+    @Override
+    public boolean canEat(boolean ignoreHunger) {
+        return true;
+    }
 }

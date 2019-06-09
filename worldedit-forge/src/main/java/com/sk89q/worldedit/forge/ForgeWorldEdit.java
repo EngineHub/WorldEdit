@@ -46,6 +46,7 @@ import net.minecraft.command.CommandSource;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
@@ -105,7 +106,6 @@ public class ForgeWorldEdit {
 
         IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
         modBus.addListener(this::init);
-        modBus.addListener(this::load);
 
         MinecraftForge.EVENT_BUS.register(ThreadSafeCache.getInstance());
         MinecraftForge.EVENT_BUS.register(this);
@@ -131,24 +131,6 @@ public class ForgeWorldEdit {
         LOGGER.info("WorldEdit for Forge (version " + getInternalVersion() + ") is loaded");
     }
 
-    private void load(FMLLoadCompleteEvent event) {
-        if (FMLLoader.getDist() == Dist.CLIENT) {
-            // we want to setup platform before we hit the main menu
-            // but this event is async -- so we must delay until the first game loop:
-            Minecraft.getInstance().addScheduledTask(this::setupPlatform);
-        }
-    }
-
-    @SubscribeEvent
-    public void serverAboutToStart(FMLServerAboutToStartEvent event) {
-        if (this.platform != null) {
-            LOGGER.warn("FMLServerStartingEvent occurred when FMLServerStoppingEvent hasn't");
-            WorldEdit.getInstance().getPlatformManager().unregister(platform);
-        }
-
-        setupPlatform();
-    }
-
     private void setupPlatform() {
         this.platform = new ForgePlatform(this);
 
@@ -159,11 +141,6 @@ public class ForgeWorldEdit {
 //        } else {
         this.provider = new ForgePermissionsProvider.VanillaPermissionsProvider(platform);
 //        }
-
-        setupRegistries();
-
-        config = new ForgeConfiguration(this);
-        config.load();
     }
 
     private void setupRegistries() {
@@ -214,6 +191,11 @@ public class ForgeWorldEdit {
 
     @SubscribeEvent
     public void serverStarted(FMLServerStartedEvent event) {
+        setupPlatform();
+        setupRegistries();
+
+        config = new ForgeConfiguration(this);
+        config.load();
         WorldEdit.getInstance().getEventBus().post(new PlatformReadyEvent());
     }
 
@@ -228,7 +210,7 @@ public class ForgeWorldEdit {
 
         if (event.getWorld().isRemote && event instanceof LeftClickEmpty) {
             // catch LCE, pass it to server
-            InternalPacketHandler.HANDLER.sendToServer(new LeftClickAirEventMessage());
+            InternalPacketHandler.getHandler().sendToServer(new LeftClickAirEventMessage());
             return;
         }
         
@@ -239,7 +221,7 @@ public class ForgeWorldEdit {
                 event instanceof PlayerInteractEvent.RightClickBlock
                         && ((PlayerInteractEvent.RightClickBlock) event)
                                 .getUseItem() == Event.Result.DENY;
-        if (isLeftDeny || isRightDeny || event.getEntity().world.isRemote) {
+        if (isLeftDeny || isRightDeny || event.getEntity().world.isRemote || event.getHand() == EnumHand.OFF_HAND) {
             return;
         }
 
@@ -248,10 +230,7 @@ public class ForgeWorldEdit {
         ForgeWorld world = getWorld(event.getEntityPlayer().world);
 
         if (event instanceof PlayerInteractEvent.LeftClickEmpty) {
-            if (we.handleArmSwing(player)) {
-                // this event cannot be canceled
-                // event.setCanceled(true);
-            }
+            we.handleArmSwing(player); // this event cannot be canceled
         } else if (event instanceof PlayerInteractEvent.LeftClickBlock) {
             Location pos = new Location(world, event.getPos().getX(), event.getPos().getY(), event.getPos().getZ());
 

@@ -60,8 +60,11 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumActionResult;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
@@ -243,25 +246,26 @@ public class ForgeWorld extends AbstractWorld {
 
     @Override
     public boolean useItem(BlockVector3 position, BaseItem item, Direction face) {
-        Item nativeItem = ForgeAdapter.adapt(item.getType());
-        ItemStack stack;
-        if (item.getNbtData() == null) {
-            stack = new ItemStack(nativeItem, 1);
-        } else {
-            stack = new ItemStack(nativeItem, 1, NBTConverter.toNative(item.getNbtData()));
-        }
+        ItemStack stack = ForgeAdapter.adapt(new BaseItemStack(item.getType(), item.getNbtData(), 1));
         World world = getWorld();
-        ItemUseContext itemUseContext = new ItemUseContext(
-                new WorldEditFakePlayer((WorldServer) world),
-                stack,
-                ForgeAdapter.toBlockPos(position),
-                ForgeAdapter.adapt(face),
-                0f,
-                0f,
-                0f
-        );
+        final WorldEditFakePlayer fakePlayer = new WorldEditFakePlayer((WorldServer) world);
+        fakePlayer.setHeldItem(EnumHand.MAIN_HAND, stack);
+        fakePlayer.setLocationAndAngles(position.getBlockX(), position.getBlockY(), position.getBlockZ(),
+                (float) face.toVector().toYaw(), (float) face.toVector().toPitch());
+        final BlockPos blockPos = ForgeAdapter.toBlockPos(position);
+        final EnumFacing enumFacing = ForgeAdapter.adapt(face);
+        ItemUseContext itemUseContext = new ItemUseContext(fakePlayer, stack, blockPos, enumFacing, blockPos.getX(), blockPos.getY(), blockPos.getZ());
         EnumActionResult used = stack.onItemUse(itemUseContext);
-        return used != EnumActionResult.FAIL;
+        if (used != EnumActionResult.SUCCESS) {
+            // try activating the block
+            if (getWorld().getBlockState(blockPos).onBlockActivated(world, blockPos, fakePlayer, EnumHand.MAIN_HAND,
+                    enumFacing, blockPos.getX(), blockPos.getY(), blockPos.getZ())) {
+                used = EnumActionResult.SUCCESS;
+            } else {
+                used = stack.getItem().onItemRightClick(world, fakePlayer, EnumHand.MAIN_HAND).getType();
+            }
+        }
+        return used == EnumActionResult.SUCCESS;
     }
 
     @Override
