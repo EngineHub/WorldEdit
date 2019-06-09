@@ -42,7 +42,7 @@ final class PacketHandlerUtil {
     private static Predicate<String> validateLenient(String protocolVersion) {
         return remoteVersion ->
                 protocolVersion.equals(remoteVersion)
-                        || NetworkRegistry.ABSENT.equals(remoteVersion)
-                        || NetworkRegistry.ACCEPTVANILLA.equals(remoteVersion);
+                || NetworkRegistry.ABSENT.equals(remoteVersion)
+                || NetworkRegistry.ACCEPTVANILLA.equals(remoteVersion);
     }
 }

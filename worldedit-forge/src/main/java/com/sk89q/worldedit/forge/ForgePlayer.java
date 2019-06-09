@@ -40,17 +40,17 @@ import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.block.BlockTypes;
 import io.netty.buffer.Unpooled;
 import net.minecraft.block.Block;
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.network.play.server.SPacketBlockChange;
-import net.minecraft.network.play.server.SPacketCustomPayload;
-import net.minecraft.network.play.server.SPacketUpdateTileEntity;
-import net.minecraft.util.EnumHand;
+import net.minecraft.network.play.server.SChangeBlockPacket;
+import net.minecraft.network.play.server.SCustomPayloadPlayPacket;
+import net.minecraft.network.play.server.SUpdateTileEntityPacket;
+import net.minecraft.util.Hand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 
 import java.io.IOException;
@@ -60,10 +60,11 @@ import javax.annotation.Nullable;
 
 public class ForgePlayer extends AbstractPlayerActor {
 
+    // see ClientPlayNetHandler: search for "invalid update packet", lots of hardcoded consts
     private static final int STRUCTURE_BLOCK_PACKET_ID = 7;
-    private final EntityPlayerMP player;
+    private final ServerPlayerEntity player;
 
-    protected ForgePlayer(EntityPlayerMP player) {
+    protected ForgePlayer(ServerPlayerEntity player) {
         this.player = player;
         ThreadSafeCache.getInstance().getOnlineIds().add(getUniqueId());
     }
@@ -75,7 +76,7 @@ public class ForgePlayer extends AbstractPlayerActor {
 
     @Override
     public BaseItemStack getItemInHand(HandSide handSide) {
-        ItemStack is = this.player.getHeldItem(handSide == HandSide.MAIN_HAND ? EnumHand.MAIN_HAND : EnumHand.OFF_HAND);
+        ItemStack is = this.player.getHeldItem(handSide == HandSide.MAIN_HAND ? Hand.MAIN_HAND : Hand.OFF_HAND);
         return ForgeAdapter.adapt(is);
     }
 
@@ -123,14 +124,14 @@ public class ForgePlayer extends AbstractPlayerActor {
             send = send + "|" + StringUtil.joinString(params, "|");
         }
         PacketBuffer buffer = new PacketBuffer(Unpooled.copiedBuffer(send.getBytes(WECUIPacketHandler.UTF_8_CHARSET)));
-        SPacketCustomPayload packet = new SPacketCustomPayload(new ResourceLocation(ForgeWorldEdit.CUI_PLUGIN_CHANNEL), buffer);
+        SCustomPayloadPlayPacket packet = new SCustomPayloadPlayPacket(new ResourceLocation(ForgeWorldEdit.CUI_PLUGIN_CHANNEL), buffer);
         this.player.connection.sendPacket(packet);
     }
 
     @Override
     public void printRaw(String msg) {
         for (String part : msg.split("\n")) {
-            this.player.sendMessage(new TextComponentString(part));
+            this.player.sendMessage(new StringTextComponent(part));
         }
     }
 
@@ -156,7 +157,7 @@ public class ForgePlayer extends AbstractPlayerActor {
 
     private void sendColorized(String msg, TextFormatting formatting) {
         for (String part : msg.split("\n")) {
-            TextComponentString component = new TextComponentString(part);
+            StringTextComponent component = new StringTextComponent(part);
             component.getStyle().setColor(formatting);
             this.player.sendMessage(component);
         }
@@ -196,10 +197,10 @@ public class ForgePlayer extends AbstractPlayerActor {
         }
         BlockPos loc = ForgeAdapter.toBlockPos(pos);
         if (block == null) {
-            final SPacketBlockChange packetOut = new SPacketBlockChange(((ForgeWorld) world).getWorld(), loc);
+            final SChangeBlockPacket packetOut = new SChangeBlockPacket(((ForgeWorld) world).getWorld(), loc);
             player.connection.sendPacket(packetOut);
         } else {
-            final SPacketBlockChange packetOut = new SPacketBlockChange();
+            final SChangeBlockPacket packetOut = new SChangeBlockPacket();
             PacketBuffer buf = new PacketBuffer(Unpooled.buffer());
             buf.writeBlockPos(loc);
             buf.writeVarInt(Block.getStateId(ForgeAdapter.adapt(block.toImmutableState())));
@@ -213,7 +214,7 @@ public class ForgePlayer extends AbstractPlayerActor {
                 final BaseBlock baseBlock = (BaseBlock) block;
                 final CompoundTag nbtData = baseBlock.getNbtData();
                 if (nbtData != null) {
-                    player.connection.sendPacket(new SPacketUpdateTileEntity(
+                    player.connection.sendPacket(new SUpdateTileEntityPacket(
                             new BlockPos(pos.getBlockX(), pos.getBlockY(), pos.getBlockZ()),
                             STRUCTURE_BLOCK_PACKET_ID,
                             NBTConverter.toNative(nbtData))

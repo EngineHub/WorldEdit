@@ -40,15 +40,13 @@ import com.sk89q.worldedit.world.block.BlockTypes;
 import com.sk89q.worldedit.world.item.ItemType;
 import com.sk89q.worldedit.world.item.ItemTypes;
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.state.DirectionProperty;
 import net.minecraft.state.IProperty;
 import net.minecraft.state.StateContainer;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.IStringSerializable;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
@@ -92,20 +90,20 @@ public final class ForgeAdapter {
         return new Vec3d(vector.getBlockX(), vector.getBlockY(), vector.getBlockZ());
     }
 
-    public static EnumFacing adapt(Direction face) {
+    public static net.minecraft.util.Direction adapt(Direction face) {
         switch (face) {
-            case NORTH: return EnumFacing.NORTH;
-            case SOUTH: return EnumFacing.SOUTH;
-            case WEST: return EnumFacing.WEST;
-            case EAST: return EnumFacing.EAST;
-            case DOWN: return EnumFacing.DOWN;
+            case NORTH: return net.minecraft.util.Direction.NORTH;
+            case SOUTH: return net.minecraft.util.Direction.SOUTH;
+            case WEST: return net.minecraft.util.Direction.WEST;
+            case EAST: return net.minecraft.util.Direction.EAST;
+            case DOWN: return net.minecraft.util.Direction.DOWN;
             case UP:
             default:
-                return EnumFacing.UP;
+                return net.minecraft.util.Direction.UP;
         }
     }
 
-    public static Direction adaptEnumFacing(EnumFacing face) {
+    public static Direction adaptEnumFacing(net.minecraft.util.Direction face) {
         switch (face) {
             case NORTH: return Direction.NORTH;
             case SOUTH: return Direction.SOUTH;
@@ -149,7 +147,7 @@ public final class ForgeAdapter {
         for (Map.Entry<IProperty<?>, Comparable<?>> prop : mcProps.entrySet()) {
             Object value = prop.getValue();
             if (prop.getKey() instanceof DirectionProperty) {
-                value = adaptEnumFacing((EnumFacing) value);
+                value = adaptEnumFacing((net.minecraft.util.Direction) value);
             } else if (prop.getKey() instanceof net.minecraft.state.EnumProperty) {
                 value = ((IStringSerializable) value).getName();
             }
@@ -158,14 +156,14 @@ public final class ForgeAdapter {
         return props;
     }
 
-    private static IBlockState applyProperties(StateContainer<Block, IBlockState> stateContainer, IBlockState newState, Map<Property<?>, Object> states) {
+    private static net.minecraft.block.BlockState applyProperties(StateContainer<Block, net.minecraft.block.BlockState> stateContainer, net.minecraft.block.BlockState newState, Map<Property<?>, Object> states) {
         for (Map.Entry<Property<?>, Object> state : states.entrySet()) {
             IProperty property = stateContainer.getProperty(state.getKey().getName());
             Comparable value = (Comparable) state.getValue();
             // we may need to adapt this value, depending on the source prop
             if (property instanceof DirectionProperty) {
                 Direction dir = (Direction) value;
-                value = ForgeAdapter.adapt(dir);
+                value = adapt(dir);
             } else if (property instanceof net.minecraft.state.EnumProperty) {
                 String enumName = (String) value;
                 value = ((net.minecraft.state.EnumProperty<?>) property).parseValue((String) value).orElseGet(() -> {
@@ -178,16 +176,16 @@ public final class ForgeAdapter {
         return newState;
     }
 
-    public static IBlockState adapt(BlockState blockState) {
-        Block mcBlock = ForgeAdapter.adapt(blockState.getBlockType());
-        IBlockState newState = mcBlock.getDefaultState();
+    public static net.minecraft.block.BlockState adapt(BlockState blockState) {
+        Block mcBlock = adapt(blockState.getBlockType());
+        net.minecraft.block.BlockState newState = mcBlock.getDefaultState();
         Map<Property<?>, Object> states = blockState.getStates();
         return applyProperties(mcBlock.getStateContainer(), newState, states);
     }
 
-    public static BlockState adapt(IBlockState blockState) {
+    public static BlockState adapt(net.minecraft.block.BlockState blockState) {
         BlockType blockType = adapt(blockState.getBlock());
-        return blockType.getState(ForgeAdapter.adaptProperties(blockType, blockState.getValues()));
+        return blockType.getState(adaptProperties(blockType, blockState.getValues()));
     }
 
     public static Block adapt(BlockType blockType) {
@@ -207,7 +205,7 @@ public final class ForgeAdapter {
     }
 
     public static ItemStack adapt(BaseItemStack baseItemStack) {
-        NBTTagCompound forgeCompound = null;
+        CompoundNBT forgeCompound = null;
         if (baseItemStack.getNbtData() != null) {
             forgeCompound = NBTConverter.toNative(baseItemStack.getNbtData());
         }
@@ -237,7 +235,7 @@ public final class ForgeAdapter {
      * @param player the player
      * @return the WorldEdit player
      */
-    public static ForgePlayer adaptPlayer(EntityPlayerMP player) {
+    public static ForgePlayer adaptPlayer(ServerPlayerEntity player) {
         checkNotNull(player);
         return new ForgePlayer(player);
     }

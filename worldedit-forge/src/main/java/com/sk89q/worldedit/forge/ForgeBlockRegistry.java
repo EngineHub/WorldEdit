@@ -26,7 +26,6 @@ import com.sk89q.worldedit.world.registry.BlockMaterial;
 import com.sk89q.worldedit.world.registry.BundledBlockRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.state.IProperty;
 import net.minecraftforge.fml.loading.FMLLoader;
 
@@ -77,7 +76,7 @@ public class ForgeBlockRegistry extends BundledBlockRegistry {
 
     @Override
     public OptionalInt getInternalBlockStateId(BlockState state) {
-        IBlockState equivalent = ForgeAdapter.adapt(state);
+        net.minecraft.block.BlockState equivalent = ForgeAdapter.adapt(state);
         return OptionalInt.of(Block.getStateId(equivalent));
     }
 }

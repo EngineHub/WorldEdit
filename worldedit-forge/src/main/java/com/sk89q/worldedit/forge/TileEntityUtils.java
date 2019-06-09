@@ -23,8 +23,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.sk89q.worldedit.math.BlockVector3;
 
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagInt;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.IntNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -45,13 +45,13 @@ final class TileEntityUtils {
      * @param tag the tag
      * @param position the position
      */
-    private static void updateForSet(NBTTagCompound tag, BlockVector3 position) {
+    private static void updateForSet(CompoundNBT tag, BlockVector3 position) {
         checkNotNull(tag);
         checkNotNull(position);
 
-        tag.put("x", new NBTTagInt(position.getBlockX()));
-        tag.put("y", new NBTTagInt(position.getBlockY()));
-        tag.put("z", new NBTTagInt(position.getBlockZ()));
+        tag.put("x", new IntNBT(position.getBlockX()));
+        tag.put("y", new IntNBT(position.getBlockY()));
+        tag.put("z", new IntNBT(position.getBlockZ()));
     }
 
     /**
@@ -62,7 +62,7 @@ final class TileEntityUtils {
      * @param position the position
      * @param tag the tag for the tile entity (may be null to do nothing)
      */
-    static void setTileEntity(World world, BlockVector3 position, @Nullable NBTTagCompound tag) {
+    static void setTileEntity(World world, BlockVector3 position, @Nullable CompoundNBT tag) {
         if (tag != null) {
             updateForSet(tag, position);
             TileEntity tileEntity = TileEntity.create(tag);
@@ -72,8 +72,8 @@ final class TileEntityUtils {
         }
     }
 
-    public static NBTTagCompound copyNbtData(TileEntity tile) {
-        NBTTagCompound tag = new NBTTagCompound();
+    public static CompoundNBT copyNbtData(TileEntity tile) {
+        CompoundNBT tag = new CompoundNBT();
         tile.write(tag);
         return tag;
     }

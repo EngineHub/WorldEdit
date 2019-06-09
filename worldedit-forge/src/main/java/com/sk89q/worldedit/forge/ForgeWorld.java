@@ -50,34 +50,37 @@ import com.sk89q.worldedit.world.item.ItemTypes;
 import com.sk89q.worldedit.world.weather.WeatherType;
 import com.sk89q.worldedit.world.weather.WeatherTypes;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockLeaves;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.LeavesBlock;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.init.Blocks;
+import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUseContext;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.ActionResultType;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.math.ChunkPos;
+import net.minecraft.world.ServerWorld;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
+import net.minecraft.world.chunk.AbstractChunkProvider;
 import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.chunk.IChunkProvider;
-import net.minecraft.world.chunk.storage.AnvilSaveHandler;
-import net.minecraft.world.gen.ChunkProviderServer;
+import net.minecraft.world.chunk.ChunkStatus;
+import net.minecraft.world.chunk.IChunk;
+import net.minecraft.world.chunk.ServerChunkProvider;
+import net.minecraft.world.chunk.listener.IChunkStatusListener;
 import net.minecraft.world.gen.feature.BigBrownMushroomFeature;
+import net.minecraft.world.gen.feature.BigMushroomFeatureConfig;
 import net.minecraft.world.gen.feature.BigRedMushroomFeature;
 import net.minecraft.world.gen.feature.BigTreeFeature;
 import net.minecraft.world.gen.feature.BirchTreeFeature;
-import net.minecraft.world.gen.feature.CanopyTreeFeature;
+import net.minecraft.world.gen.feature.DarkOakTreeFeature;
 import net.minecraft.world.gen.feature.Feature;
+import net.minecraft.world.gen.feature.IFeatureConfig;
 import net.minecraft.world.gen.feature.JungleTreeFeature;
 import net.minecraft.world.gen.feature.MegaJungleFeature;
 import net.minecraft.world.gen.feature.MegaPineTree;
@@ -88,17 +91,20 @@ import net.minecraft.world.gen.feature.ShrubFeature;
 import net.minecraft.world.gen.feature.SwampTreeFeature;
 import net.minecraft.world.gen.feature.TallTaigaTreeFeature;
 import net.minecraft.world.gen.feature.TreeFeature;
+import net.minecraft.world.storage.SaveHandler;
 import net.minecraft.world.storage.WorldInfo;
 
 import javax.annotation.Nullable;
 import java.io.File;
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.Random;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -110,9 +116,9 @@ public class ForgeWorld extends AbstractWorld {
     private static final Random random = new Random();
     private static final int UPDATE = 1, NOTIFY = 2;
 
-    private static final IBlockState JUNGLE_LOG = Blocks.JUNGLE_LOG.getDefaultState();
-    private static final IBlockState JUNGLE_LEAF = Blocks.JUNGLE_LEAVES.getDefaultState().with(BlockLeaves.PERSISTENT, Boolean.TRUE);
-    private static final IBlockState JUNGLE_SHRUB = Blocks.OAK_LEAVES.getDefaultState().with(BlockLeaves.PERSISTENT, Boolean.TRUE);
+    private static final net.minecraft.block.BlockState JUNGLE_LOG = Blocks.JUNGLE_LOG.getDefaultState();
+    private static final net.minecraft.block.BlockState JUNGLE_LEAF = Blocks.JUNGLE_LEAVES.getDefaultState().with(LeavesBlock.PERSISTENT, Boolean.TRUE);
+    private static final net.minecraft.block.BlockState JUNGLE_SHRUB = Blocks.OAK_LEAVES.getDefaultState().with(LeavesBlock.PERSISTENT, Boolean.TRUE);
 
     private final WeakReference<World> worldRef;
 
@@ -174,10 +180,10 @@ public class ForgeWorld extends AbstractWorld {
         // First set the block
         Chunk chunk = world.getChunk(x >> 4, z >> 4);
         BlockPos pos = new BlockPos(x, y, z);
-        IBlockState old = chunk.getBlockState(pos);
+        net.minecraft.block.BlockState old = chunk.getBlockState(pos);
         OptionalInt stateId = BlockStateIdAccess.getBlockStateId(block.toImmutableState());
-        IBlockState newState = stateId.isPresent() ? Block.getStateById(stateId.getAsInt()) : ForgeAdapter.adapt(block.toImmutableState());
-        IBlockState successState = chunk.setBlockState(pos, newState, false);
+        net.minecraft.block.BlockState newState = stateId.isPresent() ? Block.getStateById(stateId.getAsInt()) : ForgeAdapter.adapt(block.toImmutableState());
+        net.minecraft.block.BlockState successState = chunk.setBlockState(pos, newState, false);
         boolean successful = successState != null;
 
         // Create the TileEntity
@@ -185,15 +191,16 @@ public class ForgeWorld extends AbstractWorld {
             if (block instanceof BaseBlock) {
                 CompoundTag tag = ((BaseBlock) block).getNbtData();
                 if (tag != null) {
-                    NBTTagCompound nativeTag = NBTConverter.toNative(tag);
+                    CompoundNBT nativeTag = NBTConverter.toNative(tag);
                     nativeTag.putString("id", ((BaseBlock) block).getNbtId());
                     TileEntityUtils.setTileEntity(world, position, nativeTag);
+                    successful = true; // update if TE changed as well
                 }
             }
         }
 
         if (successful && notifyAndLight) {
-            world.checkLight(pos);
+            world.getChunkProvider().getLightManager().checkBlock(pos);
             world.markAndNotifyBlock(pos, chunk, old, newState, UPDATE | NOTIFY);
         }
 
@@ -239,45 +246,44 @@ public class ForgeWorld extends AbstractWorld {
         checkNotNull(position);
         checkNotNull(biome);
 
-        Chunk chunk = getWorld().getChunk(new BlockPos(position.getBlockX(), 0, position.getBlockZ()));
-        if (chunk.isLoaded()) {
-            chunk.getBiomes()[((position.getBlockZ() & 0xF) << 4 | position.getBlockX() & 0xF)] = ForgeAdapter.adapt(biome);
-            return true;
+        IChunk chunk = getWorld().getChunk(position.getBlockX() >> 4, position.getBlockZ() >> 4, ChunkStatus.FULL, false);
+        if (chunk == null) {
+            return false;
         }
-
-        return false;
+        chunk.getBiomes()[((position.getBlockZ() & 0xF) << 4 | position.getBlockX() & 0xF)] = ForgeAdapter.adapt(biome);
+        return true;
     }
 
-    private static LoadingCache<WorldServer, WorldEditFakePlayer> fakePlayers
+    private static LoadingCache<ServerWorld, WorldEditFakePlayer> fakePlayers
             = CacheBuilder.newBuilder().weakKeys().softValues().build(CacheLoader.from(WorldEditFakePlayer::new));
 
     @Override
     public boolean useItem(BlockVector3 position, BaseItem item, Direction face) {
         ItemStack stack = ForgeAdapter.adapt(new BaseItemStack(item.getType(), item.getNbtData(), 1));
-        WorldServer world = (WorldServer) getWorld();
+        ServerWorld world = (ServerWorld) getWorld();
         final WorldEditFakePlayer fakePlayer;
         try {
             fakePlayer = fakePlayers.get(world);
         } catch (ExecutionException ignored) {
             return false;
         }
-        fakePlayer.setHeldItem(EnumHand.MAIN_HAND, stack);
+        fakePlayer.setHeldItem(Hand.MAIN_HAND, stack);
         fakePlayer.setLocationAndAngles(position.getBlockX(), position.getBlockY(), position.getBlockZ(),
                 (float) face.toVector().toYaw(), (float) face.toVector().toPitch());
         final BlockPos blockPos = ForgeAdapter.toBlockPos(position);
-        final EnumFacing enumFacing = ForgeAdapter.adapt(face);
-        ItemUseContext itemUseContext = new ItemUseContext(fakePlayer, stack, blockPos, enumFacing, blockPos.getX(), blockPos.getY(), blockPos.getZ());
-        EnumActionResult used = stack.onItemUse(itemUseContext);
-        if (used != EnumActionResult.SUCCESS) {
+        final BlockRayTraceResult rayTraceResult = new BlockRayTraceResult(ForgeAdapter.toVec3(position),
+                ForgeAdapter.adapt(face), blockPos, false);
+        ItemUseContext itemUseContext = new ItemUseContext(fakePlayer, Hand.MAIN_HAND, rayTraceResult);
+        ActionResultType used = stack.onItemUse(itemUseContext);
+        if (used != ActionResultType.SUCCESS) {
             // try activating the block
-            if (getWorld().getBlockState(blockPos).onBlockActivated(world, blockPos, fakePlayer, EnumHand.MAIN_HAND,
-                    enumFacing, blockPos.getX(), blockPos.getY(), blockPos.getZ())) {
-                used = EnumActionResult.SUCCESS;
+            if (getWorld().getBlockState(blockPos).onBlockActivated(world, fakePlayer, Hand.MAIN_HAND, rayTraceResult)) {
+                used = ActionResultType.SUCCESS;
             } else {
-                used = stack.getItem().onItemRightClick(world, fakePlayer, EnumHand.MAIN_HAND).getType();
+                used = stack.getItem().onItemRightClick(world, fakePlayer, Hand.MAIN_HAND).getType();
             }
         }
-        return used == EnumActionResult.SUCCESS;
+        return used == ActionResultType.SUCCESS;
     }
 
     @Override
@@ -289,24 +295,22 @@ public class ForgeWorld extends AbstractWorld {
             return;
         }
 
-        EntityItem entity = new EntityItem(getWorld(), position.getX(), position.getY(), position.getZ(), ForgeAdapter.adapt(item));
+        ItemEntity entity = new ItemEntity(getWorld(), position.getX(), position.getY(), position.getZ(), ForgeAdapter.adapt(item));
         entity.setPickupDelay(10);
-        getWorld().spawnEntity(entity);
+        getWorld().addEntity(entity);
     }
 
     @Override
     public void simulateBlockMine(BlockVector3 position) {
         BlockPos pos = ForgeAdapter.toBlockPos(position);
-        IBlockState state = getWorld().getBlockState(pos);
-        state.dropBlockAsItem(getWorld(), pos, 0);
-        getWorld().removeBlock(pos);
+        getWorld().destroyBlock(pos, true);
     }
 
     @Override
     public boolean regenerate(Region region, EditSession editSession) {
         // Don't even try to regen if it's going to fail.
-        IChunkProvider provider = getWorld().getChunkProvider();
-        if (!(provider instanceof ChunkProviderServer)) {
+        AbstractChunkProvider provider = getWorld().getChunkProvider();
+        if (!(provider instanceof ServerChunkProvider)) {
             return false;
         }
 
@@ -315,11 +319,12 @@ public class ForgeWorld extends AbstractWorld {
         // normally it should be deleted at the end of this method
         saveFolder.deleteOnExit();
         try {
-            WorldServer originalWorld = (WorldServer) getWorld();
+            ServerWorld originalWorld = (ServerWorld) getWorld();
 
             MinecraftServer server = originalWorld.getServer();
-            AnvilSaveHandler saveHandler = new AnvilSaveHandler(saveFolder, originalWorld.getSaveHandler().getWorldDirectory().getName(), server, server.getDataFixer());
-            World freshWorld = new WorldServer(server, saveHandler, originalWorld.getSavedDataStorage(), originalWorld.getWorldInfo(), originalWorld.dimension.getType(), originalWorld.profiler).init();
+            SaveHandler saveHandler = new SaveHandler(saveFolder, originalWorld.getSaveHandler().getWorldDirectory().getName(), server, server.getDataFixer());
+            World freshWorld = new ServerWorld(server, server.getBackgroundExecutor(), saveHandler, originalWorld.getWorldInfo(),
+                    originalWorld.dimension.getType(), originalWorld.getProfiler(), new NoOpChunkStatusListener());
 
             // Pre-gen all the chunks
             // We need to also pull one more chunk in every direction
@@ -342,36 +347,45 @@ public class ForgeWorld extends AbstractWorld {
     }
 
     @Nullable
-    private static Feature<NoFeatureConfig> createTreeFeatureGenerator(TreeType type) {
+    private static Feature<? extends IFeatureConfig> createTreeFeatureGenerator(TreeType type) {
         switch (type) {
-            case TREE: return new TreeFeature(true);
-            case BIG_TREE: return new BigTreeFeature(true);
-            case PINE:
-            case REDWOOD: return new PointyTaigaTreeFeature();
-            case TALL_REDWOOD: return new TallTaigaTreeFeature(true);
-            case BIRCH: return new BirchTreeFeature(true, false);
-            case JUNGLE: return new MegaJungleFeature(true, 10, 20, JUNGLE_LOG, JUNGLE_LEAF);
-            case SMALL_JUNGLE: return new JungleTreeFeature(true, 4 + random.nextInt(7), JUNGLE_LOG, JUNGLE_LEAF, false);
-            case SHORT_JUNGLE: return new JungleTreeFeature(true, 4 + random.nextInt(7), JUNGLE_LOG, JUNGLE_LEAF, true);
-            case JUNGLE_BUSH: return new ShrubFeature(JUNGLE_LOG, JUNGLE_SHRUB);
-            case RED_MUSHROOM: return new BigBrownMushroomFeature();
-            case BROWN_MUSHROOM: return new BigRedMushroomFeature();
-            case SWAMP: return new SwampTreeFeature();
-            case ACACIA: return new SavannaTreeFeature(true);
-            case DARK_OAK: return new CanopyTreeFeature(true);
-            case MEGA_REDWOOD: return new MegaPineTree(false, random.nextBoolean());
-            case TALL_BIRCH: return new BirchTreeFeature(true, true);
+            case TREE: return new TreeFeature(NoFeatureConfig::deserialize, true);
+            case BIG_TREE: return new BigTreeFeature(NoFeatureConfig::deserialize, true);
+            case REDWOOD: return new PointyTaigaTreeFeature(NoFeatureConfig::deserialize);
+            case TALL_REDWOOD: return new TallTaigaTreeFeature(NoFeatureConfig::deserialize, true);
+            case BIRCH: return new BirchTreeFeature(NoFeatureConfig::deserialize, true, false);
+            case JUNGLE: return new MegaJungleFeature(NoFeatureConfig::deserialize, true, 10, 20, JUNGLE_LOG, JUNGLE_LEAF);
+            case SMALL_JUNGLE: return new JungleTreeFeature(NoFeatureConfig::deserialize, true, 4 + random.nextInt(7), JUNGLE_LOG, JUNGLE_LEAF, false);
+            case SHORT_JUNGLE: return new JungleTreeFeature(NoFeatureConfig::deserialize, true, 4 + random.nextInt(7), JUNGLE_LOG, JUNGLE_LEAF, true);
+            case JUNGLE_BUSH: return new ShrubFeature(NoFeatureConfig::deserialize, JUNGLE_LOG, JUNGLE_SHRUB);
+            case SWAMP: return new SwampTreeFeature(NoFeatureConfig::deserialize);
+            case ACACIA: return new SavannaTreeFeature(NoFeatureConfig::deserialize, true);
+            case DARK_OAK: return new DarkOakTreeFeature(NoFeatureConfig::deserialize, true);
+            case MEGA_REDWOOD: return new MegaPineTree(NoFeatureConfig::deserialize, true, random.nextBoolean());
+            case TALL_BIRCH: return new BirchTreeFeature(NoFeatureConfig::deserialize, true, true);
+            case RED_MUSHROOM: return new BigRedMushroomFeature(BigMushroomFeatureConfig::deserialize);
+            case BROWN_MUSHROOM: return new BigBrownMushroomFeature(BigMushroomFeatureConfig::deserialize);
             case RANDOM: return createTreeFeatureGenerator(TreeType.values()[ThreadLocalRandom.current().nextInt(TreeType.values().length)]);
-            case RANDOM_REDWOOD:
             default:
                 return null;
         }
     }
 
+    private IFeatureConfig createFeatureConfig(TreeType type) {
+        if (type == TreeType.RED_MUSHROOM || type == TreeType.BROWN_MUSHROOM) {
+            return new BigMushroomFeatureConfig(true);
+        } else {
+            return new NoFeatureConfig();
+        }
+    }
+
     @Override
     public boolean generateTree(TreeType type, EditSession editSession, BlockVector3 position) throws MaxChangedBlocksException {
-        Feature<NoFeatureConfig> generator = createTreeFeatureGenerator(type);
-        return generator != null && generator.place(getWorld(), getWorld().getChunkProvider().getChunkGenerator(), random, ForgeAdapter.toBlockPos(position), new NoFeatureConfig());
+        @SuppressWarnings("unchecked")
+        Feature<IFeatureConfig> generator = (Feature<IFeatureConfig>) createTreeFeatureGenerator(type);
+        return generator != null
+                && generator.place(getWorld(), getWorld().getChunkProvider().getChunkGenerator(), random,
+                ForgeAdapter.toBlockPos(position), createFeatureConfig(type));
     }
 
     @Override
@@ -388,7 +402,7 @@ public class ForgeWorld extends AbstractWorld {
     public void fixLighting(Iterable<BlockVector2> chunks) {
         World world = getWorld();
         for (BlockVector2 chunk : chunks) {
-            world.getChunk(chunk.getBlockX(), chunk.getBlockZ()).resetRelightChecks();
+            world.getChunkProvider().getLightManager().func_215571_a(new ChunkPos(chunk.getBlockX(), chunk.getBlockZ()), true);
         }
     }
 
@@ -447,7 +461,7 @@ public class ForgeWorld extends AbstractWorld {
 
     @Override
     public int getMaxY() {
-        return getWorld().getHeight() - 1;
+        return getWorld().getMaxHeight() - 1;
     }
 
     @Override
@@ -457,11 +471,9 @@ public class ForgeWorld extends AbstractWorld {
 
     @Override
     public BlockState getBlock(BlockVector3 position) {
-        IBlockState mcState = getWorld().getChunk(position.getBlockX() >> 4, position.getBlockZ() >> 4).getBlockState(
-                position.getBlockX(),
-                position.getBlockY(),
-                position.getBlockZ()
-        );
+        net.minecraft.block.BlockState mcState = getWorld()
+                .getChunk(position.getBlockX() >> 4, position.getBlockZ() >> 4)
+                .getBlockState(ForgeAdapter.toBlockPos(position));
 
         BlockState matchingBlock = BlockStateIdAccess.getBlockStateById(Block.getStateId(mcState));
         if (matchingBlock != null) {
@@ -475,7 +487,7 @@ public class ForgeWorld extends AbstractWorld {
     public BaseBlock getFullBlock(BlockVector3 position) {
         BlockPos pos = new BlockPos(position.getBlockX(), position.getBlockY(), position.getBlockZ());
         // Avoid creation by using the CHECK mode -- if it's needed, it'll be re-created anyways
-        TileEntity tile = getWorld().getChunk(pos).getTileEntity(pos, Chunk.EnumCreateEntityType.CHECK);
+        TileEntity tile = getWorld().getChunk(pos).getTileEntity(pos, Chunk.CreateEntityType.CHECK);
 
         if (tile != null) {
             return getBlock(position).toBaseBlock(NBTConverter.fromNative(TileEntityUtils.copyNbtData(tile)));
@@ -507,33 +519,34 @@ public class ForgeWorld extends AbstractWorld {
 
     @Override
     public List<? extends Entity> getEntities(Region region) {
-        List<Entity> entities = new ArrayList<>();
-        for (net.minecraft.entity.Entity entity : getWorld().loadedEntityList) {
-            if (region.contains(BlockVector3.at(entity.posX, entity.posY, entity.posZ))) {
-                entities.add(new ForgeEntity(entity));
-            }
+        final World world = getWorld();
+        if (!(world instanceof ServerWorld)) {
+            return Collections.emptyList();
         }
-        return entities;
+        return ((ServerWorld) world).getEntities().filter(e -> region.contains(ForgeAdapter.adapt(e.getPosition())))
+                .map(ForgeEntity::new).collect(Collectors.toList());
     }
 
     @Override
     public List<? extends Entity> getEntities() {
-        List<Entity> entities = new ArrayList<>();
-        for (net.minecraft.entity.Entity entity : getWorld().loadedEntityList) {
-            entities.add(new ForgeEntity(entity));
+        final World world = getWorld();
+        if (!(world instanceof ServerWorld)) {
+            return Collections.emptyList();
         }
-        return entities;
+        return ((ServerWorld) world).getEntities().map(ForgeEntity::new).collect(Collectors.toList());
     }
 
     @Nullable
     @Override
     public Entity createEntity(Location location, BaseEntity entity) {
         World world = getWorld();
-        net.minecraft.entity.Entity createdEntity = EntityType.create(world, new ResourceLocation(entity.getType().getId()));
+        final Optional<EntityType<?>> entityType = EntityType.getTypeFromString(entity.getType().getId());
+        if (!entityType.isPresent()) return null;
+        net.minecraft.entity.Entity createdEntity = entityType.get().create(world);
         if (createdEntity != null) {
             CompoundTag nativeTag = entity.getNbtData();
             if (nativeTag != null) {
-                NBTTagCompound tag = NBTConverter.toNative(entity.getNbtData());
+                CompoundNBT tag = NBTConverter.toNative(entity.getNbtData());
                 for (String name : Constants.NO_COPY_ENTITY_NBT_FIELDS) {
                     tag.remove(name);
                 }
@@ -542,7 +555,7 @@ public class ForgeWorld extends AbstractWorld {
 
             createdEntity.setLocationAndAngles(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
 
-            world.spawnEntity(createdEntity);
+            world.addEntity(createdEntity);
             return new ForgeEntity(createdEntity);
         } else {
             return null;
@@ -553,10 +566,23 @@ public class ForgeWorld extends AbstractWorld {
      * Thrown when the reference to the world is lost.
      */
     @SuppressWarnings("serial")
-    private static class WorldReferenceLostException extends WorldEditException {
+    private static final class WorldReferenceLostException extends WorldEditException {
         private WorldReferenceLostException(String message) {
             super(message);
         }
     }
 
+    private static class NoOpChunkStatusListener implements IChunkStatusListener {
+        @Override
+        public void func_219509_a(ChunkPos chunkPos) {
+        }
+
+        @Override
+        public void func_219508_a(ChunkPos chunkPos, @Nullable ChunkStatus chunkStatus) {
+        }
+
+        @Override
+        public void func_219510_b() {
+        }
+    }
 }

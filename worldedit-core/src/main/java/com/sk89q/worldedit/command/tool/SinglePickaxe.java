@@ -58,8 +58,6 @@ public class SinglePickaxe implements BlockTool {
             player.printError("Max blocks change limit reached.");
         }
 
-        world.playEffect(clicked.toVector(), 2001, blockType.getLegacyId());
-
         return true;
     }
 

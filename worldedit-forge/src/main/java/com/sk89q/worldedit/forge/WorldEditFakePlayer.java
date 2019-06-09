@@ -20,21 +20,29 @@
 package com.sk89q.worldedit.forge;
 
 import com.mojang.authlib.GameProfile;
-import net.minecraft.world.WorldServer;
+import net.minecraft.inventory.container.INamedContainerProvider;
+import net.minecraft.world.ServerWorld;
 import net.minecraftforge.common.util.FakePlayer;
 
+import javax.annotation.Nullable;
+import java.util.OptionalInt;
 import java.util.UUID;
 
 public class WorldEditFakePlayer extends FakePlayer {
 
     private static final GameProfile FAKE_GAME_PROFILE = new GameProfile(UUID.nameUUIDFromBytes("worldedit".getBytes()), "[WorldEdit]");
 
-    public WorldEditFakePlayer(WorldServer world) {
+    public WorldEditFakePlayer(ServerWorld world) {
         super(world, FAKE_GAME_PROFILE);
     }
 
     @Override
-    public boolean canEat(boolean ignoreHunger) {
+    public boolean canEat(boolean checkHunger) {
         return true;
+    }
+
+    @Override
+    public OptionalInt openContainer(@Nullable INamedContainerProvider container) {
+        return OptionalInt.empty();
     }
 }

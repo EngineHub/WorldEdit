@@ -23,27 +23,27 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.sk89q.worldedit.entity.metadata.EntityProperties;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.IMerchant;
-import net.minecraft.entity.INpc;
+import net.minecraft.entity.boss.dragon.EnderDragonPartEntity;
+import net.minecraft.entity.item.ArmorStandEntity;
+import net.minecraft.entity.item.ExperienceOrbEntity;
+import net.minecraft.entity.item.PaintingEntity;
+import net.minecraft.entity.item.TNTEntity;
+import net.minecraft.entity.merchant.IMerchant;
+import net.minecraft.entity.INPC;
 import net.minecraft.entity.IProjectile;
-import net.minecraft.entity.MultiPartEntityPart;
-import net.minecraft.entity.item.EntityArmorStand;
-import net.minecraft.entity.item.EntityBoat;
-import net.minecraft.entity.item.EntityEnderEye;
-import net.minecraft.entity.item.EntityFallingBlock;
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.item.EntityItemFrame;
-import net.minecraft.entity.item.EntityMinecart;
-import net.minecraft.entity.item.EntityPainting;
-import net.minecraft.entity.item.EntityTNTPrimed;
-import net.minecraft.entity.item.EntityXPOrb;
-import net.minecraft.entity.monster.EntityGolem;
-import net.minecraft.entity.passive.EntityAmbientCreature;
-import net.minecraft.entity.passive.EntityAnimal;
-import net.minecraft.entity.passive.EntityTameable;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.MobEntity;
+import net.minecraft.entity.item.BoatEntity;
+import net.minecraft.entity.item.EyeOfEnderEntity;
+import net.minecraft.entity.item.FallingBlockEntity;
+import net.minecraft.entity.item.ItemEntity;
+import net.minecraft.entity.item.ItemFrameEntity;
+import net.minecraft.entity.item.minecart.AbstractMinecartEntity;
+import net.minecraft.entity.passive.AmbientEntity;
+import net.minecraft.entity.passive.AnimalEntity;
+import net.minecraft.entity.passive.TameableEntity;
+import net.minecraft.entity.passive.GolemEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 
 public class ForgeEntityProperties implements EntityProperties {
 
@@ -56,82 +56,82 @@ public class ForgeEntityProperties implements EntityProperties {
 
     @Override
     public boolean isPlayerDerived() {
-        return entity instanceof EntityPlayer;
+        return entity instanceof PlayerEntity;
     }
 
     @Override
     public boolean isProjectile() {
-        return entity instanceof EntityEnderEye || entity instanceof IProjectile;
+        return entity instanceof EyeOfEnderEntity || entity instanceof IProjectile;
     }
 
     @Override
     public boolean isItem() {
-        return entity instanceof EntityItem;
+        return entity instanceof ItemEntity;
     }
 
     @Override
     public boolean isFallingBlock() {
-        return entity instanceof EntityFallingBlock;
+        return entity instanceof FallingBlockEntity;
     }
 
     @Override
     public boolean isPainting() {
-        return entity instanceof EntityPainting;
+        return entity instanceof PaintingEntity;
     }
 
     @Override
     public boolean isItemFrame() {
-        return entity instanceof EntityItemFrame;
+        return entity instanceof ItemFrameEntity;
     }
 
     @Override
     public boolean isBoat() {
-        return entity instanceof EntityBoat;
+        return entity instanceof BoatEntity;
     }
 
     @Override
     public boolean isMinecart() {
-        return entity instanceof EntityMinecart;
+        return entity instanceof AbstractMinecartEntity;
     }
 
     @Override
     public boolean isTNT() {
-        return entity instanceof EntityTNTPrimed;
+        return entity instanceof TNTEntity;
     }
 
     @Override
     public boolean isExperienceOrb() {
-        return entity instanceof EntityXPOrb;
+        return entity instanceof ExperienceOrbEntity;
     }
 
     @Override
     public boolean isLiving() {
-        return entity instanceof EntityLiving;
+        return entity instanceof MobEntity;
     }
 
     @Override
     public boolean isAnimal() {
-        return entity instanceof EntityAnimal;
+        return entity instanceof AnimalEntity;
     }
 
     @Override
     public boolean isAmbient() {
-        return entity instanceof EntityAmbientCreature;
+        return entity instanceof AmbientEntity;
     }
 
     @Override
     public boolean isNPC() {
-        return entity instanceof INpc || entity instanceof IMerchant;
+        return entity instanceof INPC || entity instanceof IMerchant;
     }
 
     @Override
     public boolean isGolem() {
-        return entity instanceof EntityGolem;
+        return entity instanceof GolemEntity;
     }
 
     @Override
     public boolean isTamed() {
-        return entity instanceof EntityTameable && ((EntityTameable) entity).isTamed();
+        return entity instanceof TameableEntity && ((TameableEntity) entity).isTamed();
     }
 
     @Override
@@ -141,11 +141,11 @@ public class ForgeEntityProperties implements EntityProperties {
 
     @Override
     public boolean isArmorStand() {
-        return entity instanceof EntityArmorStand;
+        return entity instanceof ArmorStandEntity;
     }
 
     @Override
     public boolean isPasteable() {
-        return !(entity instanceof EntityPlayerMP || entity instanceof MultiPartEntityPart);
+        return !(entity instanceof ServerPlayerEntity || entity instanceof EnderDragonPartEntity);
     }
 }

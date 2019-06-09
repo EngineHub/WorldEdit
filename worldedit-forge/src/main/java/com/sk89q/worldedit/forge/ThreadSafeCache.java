@@ -19,7 +19,7 @@
 
 package com.sk89q.worldedit.forge;
 
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
@@ -58,10 +58,10 @@ public class ThreadSafeCache {
             Set<UUID> onlineIds = new HashSet<>();
             
             MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
-            if (server == null || server.getPlayerList() == null) {
+            if (server == null) {
                 return;
             }
-            for (EntityPlayerMP player : server.getPlayerList().getPlayers()) {
+            for (ServerPlayerEntity player : server.getPlayerList().getPlayers()) {
                 if (player != null) {
                     onlineIds.add(player.getUniqueID());
                 }
