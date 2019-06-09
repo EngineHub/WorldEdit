@@ -408,15 +408,14 @@ public final class WorldEdit {
     }
 
     /**
-     * Get the direction vector for a player's direction. May return
-     * null if a direction could not be found.
+     * Get the direction vector for a player's direction.
      *
      * @param player the player
      * @param dirStr the direction string
      * @return a direction vector
-     * @throws UnknownDirectionException thrown if the direction is not known
+     * @throws UnknownDirectionException thrown if the direction is not known, or a relative direction is used with null player
      */
-    public BlockVector3 getDirection(Player player, String dirStr) throws UnknownDirectionException {
+    public BlockVector3 getDirection(@Nullable Player player, String dirStr) throws UnknownDirectionException {
         dirStr = dirStr.toLowerCase(Locale.ROOT);
 
         final Direction dir = getPlayerDirection(player, dirStr);
@@ -429,15 +428,14 @@ public final class WorldEdit {
     }
 
     /**
-     * Get the direction vector for a player's direction. May return
-     * null if a direction could not be found.
+     * Get the direction vector for a player's direction.
      *
      * @param player the player
      * @param dirStr the direction string
      * @return a direction vector
-     * @throws UnknownDirectionException thrown if the direction is not known
+     * @throws UnknownDirectionException thrown if the direction is not known, or a relative direction is used with null player
      */
-    public BlockVector3 getDiagonalDirection(Player player, String dirStr) throws UnknownDirectionException {
+    public BlockVector3 getDiagonalDirection(@Nullable Player player, String dirStr) throws UnknownDirectionException {
         dirStr = dirStr.toLowerCase(Locale.ROOT);
 
         final Direction dir = getPlayerDirection(player, dirStr);
@@ -450,15 +448,14 @@ public final class WorldEdit {
     }
 
     /**
-     * Get the direction vector for a player's direction. May return
-     * null if a direction could not be found.
+     * Get the direction vector for a player's direction.
      *
      * @param player the player
      * @param dirStr the direction string
      * @return a direction enum value
-     * @throws UnknownDirectionException thrown if the direction is not known
+     * @throws UnknownDirectionException thrown if the direction is not known, or a relative direction is used with null player
      */
-    private Direction getPlayerDirection(Player player, String dirStr) throws UnknownDirectionException {
+    private Direction getPlayerDirection(@Nullable Player player, String dirStr) throws UnknownDirectionException {
         final Direction dir;
 
         switch (dirStr.charAt(0)) {
@@ -502,25 +499,32 @@ public final class WorldEdit {
 
         case 'm': // me
         case 'f': // forward
-            dir = player.getCardinalDirection(0);
+            dir = getDirectionRelative(player, 0);
             break;
 
         case 'b': // back
-            dir = player.getCardinalDirection(180);
+            dir = getDirectionRelative(player, 180);
             break;
 
         case 'l': // left
-            dir = player.getCardinalDirection(-90);
+            dir = getDirectionRelative(player, -90);
             break;
 
         case 'r': // right
-            dir = player.getCardinalDirection(90);
+            dir = getDirectionRelative(player, 90);
             break;
 
         default:
             throw new UnknownDirectionException(dirStr);
         }
         return dir;
+    }
+
+    private Direction getDirectionRelative(Player player, int yawOffset) throws UnknownDirectionException {
+        if (player != null) {
+            return player.getCardinalDirection(yawOffset);
+        }
+        throw new UnknownDirectionException("Only a player can use relative directions");
     }
 
     /**
