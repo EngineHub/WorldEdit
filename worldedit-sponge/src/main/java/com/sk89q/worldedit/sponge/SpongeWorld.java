@@ -21,7 +21,9 @@ package com.sk89q.worldedit.sponge;
 
 import com.flowpowered.math.vector.Vector3d;
 import com.flowpowered.math.vector.Vector3i;
+import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.Vector2D;
 import com.sk89q.worldedit.WorldEditException;
@@ -29,11 +31,15 @@ import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
+import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.AbstractWorld;
 import com.sk89q.worldedit.world.biome.BaseBiome;
 import com.sk89q.worldedit.world.registry.WorldData;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.spongepowered.api.Server;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockSnapshot;
 import org.spongepowered.api.block.BlockState;
@@ -44,9 +50,13 @@ import org.spongepowered.api.data.property.block.SkyLuminanceProperty;
 import org.spongepowered.api.entity.EntityType;
 import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.world.BlockChangeFlags;
+import org.spongepowered.api.world.SerializationBehaviors;
 import org.spongepowered.api.world.World;
+import org.spongepowered.api.world.WorldArchetype;
+import org.spongepowered.api.world.storage.WorldProperties;
 
 import javax.annotation.Nullable;
+import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
@@ -59,6 +69,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public abstract class SpongeWorld extends AbstractWorld {
 
+    private static final Logger log = LoggerFactory.getLogger(SpongeWorld.class);
     private final WeakReference<World> worldRef;
 
     /**
@@ -142,6 +153,52 @@ public abstract class SpongeWorld extends AbstractWorld {
 
     @Override
     public boolean regenerate(Region region, EditSession editSession) {
+        Server server = Sponge.getServer();
+
+        final String id = "regenArchetype" + getWorld().getName();
+        final WorldArchetype regenerationArchetype = Sponge.getRegistry().getType(WorldArchetype.class, id)
+                .orElseGet(() -> WorldArchetype.builder()
+                        .from(getWorld().getProperties())
+                        .serializationBehavior(SerializationBehaviors.NONE)
+                        .build(id, id));
+
+        WorldProperties tempWorldProperties;
+        try {
+            tempWorldProperties = server.createWorldProperties("worldedittemp", regenerationArchetype);
+            tempWorldProperties.setGenerateSpawnOnLoad(false);
+        } catch (IOException e) {
+            log.error("Error creating world properties", e);
+            return false;
+        }
+
+        Optional<World> tempWorldOpt = server.loadWorld(tempWorldProperties);
+        if (!tempWorldOpt.isPresent()) {
+            log.error("Failed to load temp world");
+            return false;
+        }
+
+        World freshWorld = tempWorldOpt.get();
+        try {
+            // Pre-gen all the chunks
+            // We need to also pull one more chunk in every direction
+            CuboidRegion expandedPreGen = new CuboidRegion(region.getMinimumPoint().subtract(16, 0, 16), region.getMaximumPoint().add(16, 0, 16));
+            for (Vector2D chunk : expandedPreGen.getChunks()) {
+                freshWorld.getChunk(chunk.getBlockX(), 0, chunk.getBlockZ());
+            }
+
+            SpongeWorld from = SpongeWorldEdit.inst().getWorld(freshWorld);
+            for (BlockVector vec : region) {
+                editSession.setBlock(vec, from.getBlock(vec));
+            }
+
+        } catch (MaxChangedBlocksException e) {
+            throw new RuntimeException(e);
+        } finally {
+            // Remove temp world
+            server.unloadWorld(freshWorld);
+            server.deleteWorld(tempWorldProperties);
+        }
+
         return false;
     }
 
