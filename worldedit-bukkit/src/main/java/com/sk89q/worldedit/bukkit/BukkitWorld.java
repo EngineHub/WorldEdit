@@ -53,6 +53,7 @@ import org.slf4j.Logger;
 
 import javax.annotation.Nullable;
 import java.lang.ref.WeakReference;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -156,6 +157,11 @@ public class BukkitWorld extends AbstractWorld {
     @Override
     public String getName() {
         return getWorld().getName();
+    }
+
+    @Override
+    public Path getStoragePath() {
+        return getWorld().getWorldFolder().toPath();
     }
 
     @Override
