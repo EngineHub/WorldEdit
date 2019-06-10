@@ -23,7 +23,9 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.flowpowered.math.vector.Vector3d;
 import com.flowpowered.math.vector.Vector3i;
+import com.google.common.io.Files;
 import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.entity.BaseEntity;
@@ -31,6 +33,7 @@ import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.Vector3;
+import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.util.Location;
@@ -41,6 +44,7 @@ import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.item.ItemTypes;
 import com.sk89q.worldedit.world.weather.WeatherType;
 import com.sk89q.worldedit.world.weather.WeatherTypes;
+import org.spongepowered.api.Server;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockSnapshot;
 import org.spongepowered.api.block.BlockState;
@@ -52,15 +56,15 @@ import org.spongepowered.api.data.property.block.GroundLuminanceProperty;
 import org.spongepowered.api.data.property.block.SkyLuminanceProperty;
 import org.spongepowered.api.entity.EntityType;
 import org.spongepowered.api.entity.EntityTypes;
-import org.spongepowered.api.world.BlockChangeFlags;
-import org.spongepowered.api.world.World;
+import org.spongepowered.api.world.*;
+import org.spongepowered.api.world.storage.WorldProperties;
 import org.spongepowered.api.world.weather.Weather;
 
+import java.io.File;
+import java.io.IOException;
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.Nullable;
 
@@ -70,6 +74,7 @@ import javax.annotation.Nullable;
 public abstract class SpongeWorld extends AbstractWorld {
 
     private final WeakReference<World> worldRef;
+    private final WorldArchetype regenerationArchetype;
 
     /**
      * Construct a new world.
@@ -79,6 +84,12 @@ public abstract class SpongeWorld extends AbstractWorld {
     protected SpongeWorld(World world) {
         checkNotNull(world);
         this.worldRef = new WeakReference<>(world);
+        final String id = "regenArchetype" + world.getName();
+        this.regenerationArchetype = Sponge.getRegistry().getType(WorldArchetype.class, id)
+                .orElseGet(() -> WorldArchetype.builder()
+                        .from(world.getProperties())
+                        .serializationBehavior(SerializationBehaviors.NONE)
+                        .build(id, id));
     }
 
     /**
@@ -170,6 +181,43 @@ public abstract class SpongeWorld extends AbstractWorld {
 
     @Override
     public boolean regenerate(Region region, EditSession editSession) {
+        try {
+            Server server = Sponge.getServer();
+            WorldProperties tempWorldProperties;
+            try {
+                tempWorldProperties = server.createWorldProperties("worldedittemp", this.regenerationArchetype);
+            } catch (IOException e) {
+                e.printStackTrace();
+                return false;
+            }
+
+            Optional<World> tempWorldOpt = server.loadWorld(tempWorldProperties);
+            if (!tempWorldOpt.isPresent()) {
+                return false;
+            }
+
+            World freshWorld = tempWorldOpt.get();
+
+
+            // Pre-gen all the chunks
+            // We need to also pull one more chunk in every direction
+            CuboidRegion expandedPreGen = new CuboidRegion(region.getMinimumPoint().subtract(16, 0, 16), region.getMaximumPoint().add(16, 0, 16));
+            for (BlockVector2 chunk : expandedPreGen.getChunks()) {
+                freshWorld.getChunk(chunk.getBlockX(), 0, chunk.getBlockZ());
+            }
+
+            SpongeWorld from = SpongeWorldEdit.inst().getWorld(freshWorld);
+            for (BlockVector3 vec : region) {
+                editSession.setBlock(vec, from.getFullBlock(vec));
+            }
+
+            // Delete temp world
+            server.unloadWorld(freshWorld);
+            server.deleteWorld(tempWorldProperties);
+
+        } catch (MaxChangedBlocksException e) {
+            throw new RuntimeException(e);
+        }
         return false;
     }
 
