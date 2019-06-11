@@ -1,13 +1,84 @@
-7.0-beta-1
-- Added support for 1.13.
-- Removed support for all prior versions.
-- Added a basic server-only GUI for editing. //drawsel to enable/disable. Requires creative.
-- Added a tag mask, ##minecraft:tag_name.
-- Added Sponge Schematic Format to replace MCEdit Schematics.
-- Added a compatibility layer for old schematics.
-- Rewrote the block parser, now uses official Minecraft format, minecraft:snow[layers=7]
-- Removed deprecated code.
-- Many more major changes! (Read this blog post for more details https://blog.me4502.com/updating-worldedit-to-minecraft-113.html)
+7.0.0
+See https://matthewmiller.dev/blog/introducing-worldedit-7/ for a friendlier explanation of some new features
+
+- Added support for 1.13 and higher versions, and removed support for earlier
+- Use the official Minecraft format for entering blocks, `minecraft:oak_sign[rotation=7]`
+- Massively improved the //help command
+- Added a "##tag" pattern to set random blocks from the tag
+- Fixed long-range build tool
+- Fixed generation of hollow shapes
+- Improve general performance
+- Fixed some issues with the fuzzy blocks parser
+- Fixed the clipboard brush description not showing some flags
+- Added offset to ClipboardPattern, "//set #clipboard@-1,0,1"
+- Added a "##*tag" pattern that behaves similarly to "##tag" but sets all BlockStates
+- Added methods to set states and types of blocks independently, explained in this blog post
+- Fixed an issue with legacy block IDs returning the wrong stair shapes
+- Added a biome registry to make biomes more modern and stable
+- Fixed a few issues where WorldEdit will fail to load on versions that it hasn't been updated for yet
+- Use radius for the clipboard brush rather than diameter
+- Fixed some utility commands missing radius checks
+- Re-add mask support to the smooth command, to replace natural smoothing
+- Fixed some positional issues with craftscripts
+- Fixed a few issues with using hand/offhand/pos as block parser targets
+- Improved expression timeouts to reduce overhead
+- Improved entity conversions with legacy schematics
+- Fixed a few issues with "//schem save" and certain filesystem setups
+- Fixed a few issues with the forest commands
+- Added -f flag to //count to allow fuzzy inputs
+- Fixed TrueZip region stores
+- Partial support for CubicChunks, only upwards directions
+- Update many messages throughout the plugin to use new text features of Minecraft
+- Added biome and entity storing to the Sponge schematics
+- Improve TileEntity conversions for legacy schematics
+- Fixed "//size" on clipboards
+- Fixed some locale related issues that could occur in some specific circumstances
+- Switched to a new command system, to allow more modern features such as completions
+- Fixed an issue with invalid blocks being fuzzy compared
+- Added proper world conversions for files being loaded with "//restore"
+- Fixed other small miscellaneous issues
+- Remove the final stage committer from the MultiStage reorder mode, as it was unnecessary
+- Added /we report, and move the reporting system into WorldEdit
+- Update draw.js, roof.js, and maze.js
+- Allow the 'leave-id' parameter of //move to be a pattern rather than just a block
+- Modularised masks and patterns, allowing plugins to register their own
+- Minor improvements to the server side CUI
+- Cleaned up the fuzzy blocks system
+- Improved the error shown when WorldEdit doesn't support the platform
+- Provide better caching with LastAccessExtent
+- Allow biome changes to be undone
+- Workaround for a Spigot bug where it incorrectly sends a few commands to the client for tab completion despite permissions
+- Fixed issue where blockbags were checked for items when a block didn't need to change
+- Added a "fast" mode for reordering blocks. In the future this will be the default as it is much faster, it just needs more testing.
+    - Reordering blocks is what allows edits to not break signs off walls, or doors off the ground.
+    - To enable, run //reorder fast
+    - To disable, run //reorder multi
+    - This affects all edits
+    - You can disable reordering entirely if you know what you're doing, with //reorder none
+- Fixed a bug with Entity resolution
+- More gracefully handle errors if the world's palette is corrupt
+- Made BlockType lazily-loaded
+- Properly rotate blocks. This should be fairly future resilient and work with mods
+- Added a configurable timeout to expression evaluation
+- Edits are now batched by chunks and ordered by region files, improving performance
+- Improved the API around flushing edit sessions
+- Refactored the vector system to prevent bugs caused by confusion, and improve performance due to less memory allocation
+- Added a debug option to help developers find places they've forgotten to flush sessions that require flushing
+- Added partial diagonal direction support back to some commands (Was removed in WorldEdit 6)
+- Added //drawsel, a Server-Side WorldEditCUI for small cuboid selections (< 32x32x32)
+- Rewrote the block parser, now properly handles Minecraft 1.13 names (See this blog post for more information)
+- Switched to the Sponge Schematic format, as the MCEdit Schematic Format does not work in 1.13
+    - Old schematics will be loaded and converted as best as possible
+- Major improvements to the API (See this blog post for more information)
+- Removal of all old deprecated code
+- Added /tracemask, to set masks used for brush tracing
+- Added suggestions to almost all commands
+- Allowed plugins to register their own masks and patterns
+- Removed command requirement for CUI
+- Added a permission node to set NBT data, allowing servers to disallow copying full chests etc
+- Made a few paged commands use -p for pages
+- Fixed //restore not working for very old chunks
+- Massively expanded the capabilities of apply and paint item brushes
 
 6.1
 - Added support for Spigot for MC 1.8.3 to 1.8.6.
