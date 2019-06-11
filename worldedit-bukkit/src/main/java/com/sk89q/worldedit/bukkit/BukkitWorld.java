@@ -315,7 +315,8 @@ public class BukkitWorld extends AbstractWorld {
         } else if (other == null) {
             return false;
         } else if ((other instanceof BukkitWorld)) {
-            return ((BukkitWorld) other).getWorld().equals(getWorld());
+            World otherWorld = ((BukkitWorld) other).worldRef.get();
+            return otherWorld != null && otherWorld.equals(getWorld());
         } else if (other instanceof com.sk89q.worldedit.world.World) {
             return ((com.sk89q.worldedit.world.World) other).getName().equals(getName());
         } else {

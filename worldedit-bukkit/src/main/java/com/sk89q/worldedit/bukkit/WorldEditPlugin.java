@@ -136,10 +136,15 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
                 // these don't stick around between reload
                 loadAdapter();
                 loadConfig();
+                WorldEdit.getInstance().getEventBus().post(new PlatformReadyEvent());
             } catch (Throwable ignored) {
             }
         } else {
             getServer().getPluginManager().registerEvents((worldInitListener = new WorldInitListener()), this);
+            loadAdapter(); // Need an adapter to work with special blocks with NBT data
+            setupRegistries();
+            WorldEdit.getInstance().loadMappings();
+            loadConfig(); // Load configuration
         }
 
         // Enable metrics
@@ -148,12 +153,7 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
     }
 
     private void setupWorldData() {
-        loadAdapter(); // Need an adapter to work with special blocks with NBT data
-        setupRegistries();
-        WorldEdit.getInstance().loadMappings();
-        loadConfig(); // Load configuration
         setupTags();
-
         WorldEdit.getInstance().getEventBus().post(new PlatformReadyEvent());
     }
 
