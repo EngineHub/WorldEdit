@@ -68,21 +68,35 @@ public class Naturalizer implements LayerFunction {
         return mask.matches(editSession, position);
     }
 
+    private BaseBlock getTargetBlock(int depth) {
+        switch (depth) {
+            case 0:
+                return grass;
+            case 1:
+            case 2:
+            case 3:
+                return dirt;
+            default:
+                return stone;
+        }
+    }
+
+    private boolean makeChangeTo(Vector position, int depth) throws WorldEditException {
+        BaseBlock block = editSession.getLazyBlock(position);
+        BaseBlock targetBlock = getTargetBlock(depth);
+
+        if (block.equalsFuzzy(targetBlock)) {
+            return false;
+        }
+
+        return editSession.setBlock(position, targetBlock);
+    }
+
     @Override
     public boolean apply(Vector position, int depth) throws WorldEditException {
         if (mask.matches(editSession, position)) {
-            affected++;
-            switch (depth) {
-                case 0:
-                    editSession.setBlock(position, grass);
-                    break;
-                case 1:
-                case 2:
-                case 3:
-                    editSession.setBlock(position, dirt);
-                    break;
-                default:
-                    editSession.setBlock(position, stone);
+            if (makeChangeTo(position, depth)) {
+                ++affected;
             }
         }
 
