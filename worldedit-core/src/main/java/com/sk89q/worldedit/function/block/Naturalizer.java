@@ -27,6 +27,7 @@ import com.sk89q.worldedit.function.LayerFunction;
 import com.sk89q.worldedit.function.mask.BlockTypeMask;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockTypes;
 
 /**
@@ -65,21 +66,35 @@ public class Naturalizer implements LayerFunction {
         return mask.test(position);
     }
 
+    private BlockState getTargetBlock(int depth) {
+        switch (depth) {
+            case 0:
+                return BlockTypes.GRASS_BLOCK.getDefaultState();
+            case 1:
+            case 2:
+            case 3:
+                return BlockTypes.DIRT.getDefaultState();
+            default:
+                return BlockTypes.STONE.getDefaultState();
+        }
+    }
+
+    private boolean naturalize(BlockVector3 position, int depth) throws WorldEditException {
+        BlockState block = editSession.getBlock(position);
+        BlockState targetBlock = getTargetBlock(depth);
+
+        if (block.equalsFuzzy(targetBlock)) {
+            return false;
+        }
+
+        return editSession.setBlock(position, targetBlock);
+    }
+
     @Override
     public boolean apply(BlockVector3 position, int depth) throws WorldEditException {
         if (mask.test(position)) {
-            affected++;
-            switch (depth) {
-                case 0:
-                    editSession.setBlock(position, BlockTypes.GRASS_BLOCK.getDefaultState());
-                    break;
-                case 1:
-                case 2:
-                case 3:
-                    editSession.setBlock(position, BlockTypes.DIRT.getDefaultState());
-                    break;
-                default:
-                    editSession.setBlock(position, BlockTypes.STONE.getDefaultState());
+            if (naturalize(position, depth)) {
+                ++affected;
             }
         }
 
