@@ -206,7 +206,7 @@ public class SpongeWorldEdit {
     }
 
     @Listener
-    public void onPlayerItemInteract(InteractItemEvent event, @Root Player spongePlayer) {
+    public void onPlayerItemInteract(InteractItemEvent.Secondary event, @Root Player spongePlayer) {
         if (platform == null) {
             return;
         }
