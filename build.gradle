@@ -38,7 +38,7 @@ println """
 
 allprojects {
     group = 'com.sk89q.worldedit'
-    version = '7.0.0'
+    version = '7.0.1-SNAPSHOT'
 }
 
 if (!project.hasProperty("artifactory_contextUrl")) ext.artifactory_contextUrl = "http://localhost"
