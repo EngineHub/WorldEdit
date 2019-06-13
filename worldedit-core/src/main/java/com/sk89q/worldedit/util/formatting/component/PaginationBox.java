@@ -79,7 +79,7 @@ public abstract class PaginationBox extends MessageBox {
 
     public Component create(int page) throws InvalidComponentException {
         if (page == 1 && getComponentsSize() == 0) {
-            return getContents().reset().append("There's nothing to see here").create();
+            return getContents().reset().append("No results found.").create();
         }
         int pageCount = (int) Math.ceil(getComponentsSize() / (double) componentsPerPage);
         if (page < 1 || page > pageCount) {

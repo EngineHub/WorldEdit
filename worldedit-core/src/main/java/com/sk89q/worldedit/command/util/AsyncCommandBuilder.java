@@ -20,6 +20,7 @@
 package com.sk89q.worldedit.command.util;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableList;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.sk89q.worldedit.extension.platform.Actor;
@@ -142,6 +143,9 @@ public final class AsyncCommandBuilder<T> {
             try {
                 if (exceptionConverter != null) {
                     try {
+                        if (orig instanceof com.sk89q.minecraft.util.commands.CommandException) {
+                            throw new CommandExecutionException(orig, ImmutableList.of());
+                        }
                         exceptionConverter.convert(orig);
                         throw orig;
                     } catch (CommandException converted) {
