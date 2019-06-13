@@ -20,17 +20,22 @@
 package com.sk89q.worldedit.bukkit.adapter;
 
 import com.sk89q.jnbt.CompoundTag;
+import com.sk89q.worldedit.blocks.BaseItem;
+import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.registry.state.Property;
+import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.world.DataFixer;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.block.BlockType;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.Map;
 
@@ -126,4 +131,33 @@ public interface BukkitImplAdapter {
      * @param player The player
      */
     void sendFakeOP(Player player);
+
+    /**
+     * Simulates a player using an item.
+     *
+     * @param world the world
+     * @param position the location
+     * @param item the item to be used
+     * @param face the direction in which to "face" when using the item
+     * @return whether the usage was successful
+     */
+    default boolean simulateItemUse(World world, BlockVector3 position, BaseItem item, Direction face) {
+        return false;
+    }
+
+    /**
+     * Create a Bukkit ItemStack with NBT, if available.
+     *
+     * @param item the WorldEdit BaseItemStack to adapt
+     * @return the Bukkit ItemStack
+     */
+    ItemStack adapt(BaseItemStack item);
+
+    /**
+     * Create a WorldEdit ItemStack with NBT, if available.
+     *
+     * @param itemStack the Bukkit ItemStack to adapt
+     * @return the WorldEdit BaseItemStack
+     */
+    BaseItemStack adapt(ItemStack itemStack);
 }
