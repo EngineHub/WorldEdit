@@ -133,7 +133,9 @@ public class SnapshotUtilCommands {
 
             if (restore.hadTotalFailure()) {
                 String error = restore.getLastErrorMessage();
-                if (error != null) {
+                if (!restore.getMissingChunks().isEmpty()) {
+                    player.printError("Chunks were not present in snapshot.");
+                } else if (error != null) {
                     player.printError("Errors prevented any blocks from being restored.");
                     player.printError("Last error: " + error);
                 } else {

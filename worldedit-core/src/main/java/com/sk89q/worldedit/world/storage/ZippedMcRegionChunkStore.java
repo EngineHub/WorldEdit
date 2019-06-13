@@ -87,6 +87,7 @@ public class ZippedMcRegionChunkStore extends McRegionChunkStore {
                 if (testEntry.getName().startsWith(worldName + "/")) {
                     if (pattern.matcher(testEntry.getName()).matches()) { // does entry end in .mca
                         folder = testEntry.getName().substring(0, testEntry.getName().lastIndexOf('/'));
+                        if (folder.endsWith("poi")) continue;
                         name = folder + "/" + name;
                         break;
                     }

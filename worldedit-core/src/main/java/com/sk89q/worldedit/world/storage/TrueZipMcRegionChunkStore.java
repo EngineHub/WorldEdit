@@ -101,6 +101,7 @@ public class TrueZipMcRegionChunkStore extends McRegionChunkStore {
                     // Check for file
                     if (pattern.matcher(testEntry.getName()).matches()) {
                         folder = testEntry.getName().substring(0, testEntry.getName().lastIndexOf('/'));
+                        if (folder.endsWith("poi")) continue;
                         name = folder + "/" + name;
                         break;
                     }

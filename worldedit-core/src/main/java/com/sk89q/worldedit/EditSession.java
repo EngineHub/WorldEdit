@@ -1307,14 +1307,16 @@ public class EditSession implements Extent, AutoCloseable {
         checkNotNull(origin);
         checkArgument(radius >= 0, "radius >= 0 required");
 
+        Mask waterloggedMask = null;
+        if (waterlogged) {
+            Map<String, String> stateMap = new HashMap<>();
+            stateMap.put("waterlogged", "true");
+            waterloggedMask = new BlockStateMask(this, stateMap, true);
+        }
         MaskIntersection mask = new MaskIntersection(
                 new BoundedHeightMask(0, getWorld().getMaxY()),
                 new RegionMask(new EllipsoidRegion(null, origin, Vector3.at(radius, radius, radius))),
-                waterlogged ? new MaskUnion(
-                                getWorld().createLiquidMask(),
-                                new BlockStateMask(this, new HashMap<String, String>() {{
-                                    put("waterlogged", "true");
-                                }}, true))
+                waterlogged ? new MaskUnion(getWorld().createLiquidMask(), waterloggedMask)
                             : getWorld().createLiquidMask());
 
         BlockReplace replace;
