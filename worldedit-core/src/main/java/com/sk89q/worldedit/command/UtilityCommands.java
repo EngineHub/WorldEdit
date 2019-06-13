@@ -34,6 +34,7 @@ import com.sk89q.worldedit.command.util.CreatureButcher;
 import com.sk89q.worldedit.command.util.EntityRemover;
 import com.sk89q.worldedit.command.util.Logging;
 import com.sk89q.worldedit.command.util.PrintCommandHelp;
+import com.sk89q.worldedit.command.util.WorldEditAsyncCommandBuilder;
 import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
@@ -494,20 +495,20 @@ public class UtilityCommands {
     public void calc(Actor actor,
                      @Arg(desc = "Expression to evaluate", variable = true)
                          List<String> input) {
+        Expression expression;
         try {
-            Expression expression = Expression.compile(String.join(" ", input));
-            double result = expression.evaluate(
-                    new double[]{}, WorldEdit.getInstance().getSessionManager().get(actor).getTimeout());
-            String formatted = formatter.format(result);
-            actor.print(SubtleFormat.wrap(input + " = ")
-                    .append(TextComponent.of(formatted, TextColor.LIGHT_PURPLE)));
-        } catch (EvaluationException e) {
-            actor.printError(String.format(
-                "'%s' could not be evaluated (error: %s)", input, e.getMessage()));
+            expression = Expression.compile(String.join(" ", input));
         } catch (ExpressionException e) {
             actor.printError(String.format(
                 "'%s' could not be parsed as a valid expression", input));
+            return;
         }
+        WorldEditAsyncCommandBuilder.createAndSendMessage(actor, () -> {
+            double result = expression.evaluate(
+                    new double[]{}, WorldEdit.getInstance().getSessionManager().get(actor).getTimeout());
+            String formatted = Double.isNaN(result) ? "NaN" : formatter.format(result);
+            return SubtleFormat.wrap(input + " = ").append(TextComponent.of(formatted, TextColor.LIGHT_PURPLE));
+        }, null);
     }
 
     @Command(
