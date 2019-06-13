@@ -22,6 +22,7 @@ package com.sk89q.worldedit.bukkit;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.bukkit.adapter.BukkitImplAdapter;
 import com.sk89q.worldedit.entity.BaseEntity;
@@ -30,6 +31,7 @@ import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.regions.Region;
+import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.util.TreeGenerator;
 import com.sk89q.worldedit.world.AbstractWorld;
 import com.sk89q.worldedit.world.biome.BiomeType;
@@ -456,6 +458,16 @@ public class BukkitWorld extends AbstractWorld {
         if (adapter != null) {
             adapter.notifyAndLightBlock(BukkitAdapter.adapt(getWorld(), position), previousType);
             return true;
+        }
+
+        return false;
+    }
+
+    @Override
+    public boolean useItem(BlockVector3 position, BaseItem item, Direction face) {
+        BukkitImplAdapter adapter = WorldEditPlugin.getInstance().getBukkitImplAdapter();
+        if (adapter != null) {
+            return adapter.simulateItemUse(getWorld(), position, item, face);
         }
 
         return false;
