@@ -1,7 +1,7 @@
 buildscript {
     repositories {
         mavenCentral()
-        maven { url = "http://files.minecraftforge.net/maven" }
+        maven { url = "https://files.minecraftforge.net/maven" }
         maven { url = "https://oss.sonatype.org/content/repositories/snapshots/" }
         jcenter()
     }
@@ -19,7 +19,7 @@ dependencies {
     compile project(':worldedit-core')
     compile project(':worldedit-libs:sponge')
     compile 'org.spongepowered:spongeapi:7.1.0'
-    compile 'org.bstats:bstats-sponge:1.4'
+    compile 'org.bstats:bstats-sponge:1.5'
     testCompile group: 'org.mockito', name: 'mockito-core', version:'1.9.0-rc1'
 }
 
@@ -42,7 +42,7 @@ jar {
 shadowJar {
     dependencies {
         relocate ("org.bstats", "com.sk89q.worldedit.sponge.bstats") {
-            include(dependency('org.bstats:bstats-sponge:1.4'))
+            include(dependency('org.bstats:bstats-sponge:1.5'))
         }
     }
 }

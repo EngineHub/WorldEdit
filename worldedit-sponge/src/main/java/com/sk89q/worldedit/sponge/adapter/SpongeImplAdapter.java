@@ -29,7 +29,6 @@ import com.sk89q.worldedit.util.Location;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.world.World;
-import org.spongepowered.api.world.biome.BiomeType;
 
 /**
  * An interface for various things that can't be done through the Sponge API.

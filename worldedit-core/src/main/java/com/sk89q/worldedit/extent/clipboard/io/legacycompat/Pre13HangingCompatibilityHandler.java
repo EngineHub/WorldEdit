@@ -19,7 +19,6 @@
 
 package com.sk89q.worldedit.extent.clipboard.io.legacycompat;
 
-import com.sk89q.jnbt.ByteTag;
 import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.jnbt.CompoundTagBuilder;
 import com.sk89q.worldedit.internal.helper.MCDirections;

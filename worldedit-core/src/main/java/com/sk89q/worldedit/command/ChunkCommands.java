@@ -38,7 +38,6 @@ import com.sk89q.worldedit.world.storage.LegacyChunkStore;
 import com.sk89q.worldedit.world.storage.McRegionChunkStore;
 import org.enginehub.piston.annotation.Command;
 import org.enginehub.piston.annotation.CommandContainer;
-import org.enginehub.piston.annotation.param.Arg;
 import org.enginehub.piston.annotation.param.ArgFlag;
 
 import java.io.FileOutputStream;

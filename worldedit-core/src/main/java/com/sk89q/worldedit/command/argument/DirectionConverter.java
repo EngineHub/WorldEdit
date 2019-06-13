@@ -22,7 +22,6 @@ package com.sk89q.worldedit.command.argument;
 import com.sk89q.worldedit.UnknownDirectionException;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.entity.Player;
-import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.util.Direction;
 import org.enginehub.piston.CommandManager;

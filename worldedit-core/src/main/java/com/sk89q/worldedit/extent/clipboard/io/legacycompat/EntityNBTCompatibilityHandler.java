@@ -20,11 +20,7 @@
 package com.sk89q.worldedit.extent.clipboard.io.legacycompat;
 
 import com.sk89q.jnbt.CompoundTag;
-import com.sk89q.jnbt.Tag;
-import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.entity.EntityType;
-
-import java.util.Map;
 
 public interface EntityNBTCompatibilityHandler {
     boolean isAffectedEntity(EntityType type, CompoundTag entityTag);

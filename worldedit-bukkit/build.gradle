@@ -23,7 +23,7 @@ dependencies {
     implementation 'io.papermc:paperlib:1.0.2'
     compileOnly 'com.sk89q:dummypermscompat:1.10'
     implementation 'org.apache.logging.log4j:log4j-slf4j-impl:2.8.1'
-    implementation 'org.bstats:bstats-bukkit:1.4'
+    implementation 'org.bstats:bstats-bukkit:1.5'
     testCompile 'org.mockito:mockito-core:1.9.0-rc1'
 }
 
@@ -52,7 +52,7 @@ shadowJar {
         include(dependency('org.slf4j:slf4j-api'))
         include(dependency("org.apache.logging.log4j:log4j-slf4j-impl"))
         relocate ("org.bstats", "com.sk89q.worldedit.bukkit.bstats") {
-            include(dependency("org.bstats:bstats-bukkit:1.4"))
+            include(dependency("org.bstats:bstats-bukkit:1.5"))
         }
         relocate ("io.papermc.lib", "com.sk89q.worldedit.bukkit.paperlib") {
             include(dependency("io.papermc:paperlib:1.0.2"))
