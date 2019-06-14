@@ -21,6 +21,9 @@ package com.sk89q.worldedit.forge;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import com.google.common.io.Files;
 import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.worldedit.EditSession;
@@ -92,6 +95,7 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ThreadLocalRandom;
 
 import javax.annotation.Nullable;
@@ -241,11 +245,19 @@ public class ForgeWorld extends AbstractWorld {
         return false;
     }
 
+    private static LoadingCache<WorldServer, WorldEditFakePlayer> fakePlayers
+            = CacheBuilder.newBuilder().weakKeys().softValues().build(CacheLoader.from(WorldEditFakePlayer::new));
+
     @Override
     public boolean useItem(BlockVector3 position, BaseItem item, Direction face) {
         ItemStack stack = ForgeAdapter.adapt(new BaseItemStack(item.getType(), item.getNbtData(), 1));
-        World world = getWorld();
-        final WorldEditFakePlayer fakePlayer = new WorldEditFakePlayer((WorldServer) world);
+        WorldServer world = (WorldServer) getWorld();
+        final WorldEditFakePlayer fakePlayer;
+        try {
+            fakePlayer = fakePlayers.get(world);
+        } catch (ExecutionException ignored) {
+            return false;
+        }
         fakePlayer.setHeldItem(EnumHand.MAIN_HAND, stack);
         fakePlayer.setLocationAndAngles(position.getBlockX(), position.getBlockY(), position.getBlockZ(),
                 (float) face.toVector().toYaw(), (float) face.toVector().toPitch());
