@@ -71,7 +71,6 @@ public abstract class SpongeWorld extends AbstractWorld {
 
     private static final Logger log = LoggerFactory.getLogger(SpongeWorld.class);
     private final WeakReference<World> worldRef;
-    private final WorldArchetype regenerationArchetype;
 
     /**
      * Construct a new world.
@@ -81,12 +80,6 @@ public abstract class SpongeWorld extends AbstractWorld {
     protected SpongeWorld(World world) {
         checkNotNull(world);
         this.worldRef = new WeakReference<>(world);
-        final String id = "regenArchetype" + world.getName();
-        this.regenerationArchetype = Sponge.getRegistry().getType(WorldArchetype.class, id)
-                .orElseGet(() -> WorldArchetype.builder()
-                        .from(world.getProperties())
-                        .serializationBehavior(SerializationBehaviors.NONE)
-                        .build(id, id));
     }
 
     /**
@@ -161,9 +154,18 @@ public abstract class SpongeWorld extends AbstractWorld {
     @Override
     public boolean regenerate(Region region, EditSession editSession) {
         Server server = Sponge.getServer();
+
+        final String id = "regenArchetype" + getWorld().getName();
+        final WorldArchetype regenerationArchetype = Sponge.getRegistry().getType(WorldArchetype.class, id)
+                .orElseGet(() -> WorldArchetype.builder()
+                        .from(getWorld().getProperties())
+                        .serializationBehavior(SerializationBehaviors.NONE)
+                        .build(id, id));
+
         WorldProperties tempWorldProperties;
         try {
-            tempWorldProperties = server.createWorldProperties("worldedittemp", this.regenerationArchetype);
+            tempWorldProperties = server.createWorldProperties("worldedittemp", regenerationArchetype);
+            tempWorldProperties.setGenerateSpawnOnLoad(false);
         } catch (IOException e) {
             log.error("Error creating world properties", e);
             return false;
