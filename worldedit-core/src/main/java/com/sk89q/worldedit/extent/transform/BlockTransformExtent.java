@@ -19,8 +19,6 @@
 
 package com.sk89q.worldedit.extent.transform;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import com.google.common.collect.Sets;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.extent.AbstractDelegateExtent;
@@ -38,14 +36,16 @@ import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 
+import javax.annotation.Nullable;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.Set;
-import java.util.stream.Collectors;
 
-import javax.annotation.Nullable;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Transforms blocks themselves (but not their position) according to a
@@ -183,22 +183,35 @@ public class BlockTransformExtent extends AbstractDelegateExtent {
             }
         }
 
-        List<String> directionalProperties = properties.stream()
-                .filter(prop -> prop instanceof BooleanProperty)
-                .filter(prop -> directionNames.contains(prop.getName()))
-                .filter(property -> (Boolean) block.getState(property))
-                .map(Property::getName)
-                .map(String::toUpperCase)
-                .map(Direction::valueOf)
-                .map(dir -> Direction.findClosest(transform.apply(dir.toVector()), Direction.Flag.CARDINAL))
-                .filter(Objects::nonNull)
-                .map(Direction::name)
-                .map(String::toLowerCase)
-                .collect(Collectors.toList());
+        Map<String, Object> directionalProperties = new HashMap<>();
+        for (Property<?> prop : properties) {
+            if (directionNames.contains(prop.getName())) {
+                if (prop instanceof BooleanProperty && (Boolean) block.getState(prop)
+                        || prop instanceof EnumProperty && !block.getState(prop).toString().equals("none")) {
+                    String origProp = prop.getName().toUpperCase(Locale.ROOT);
+                    Direction dir = Direction.valueOf(origProp);
+                    Direction closest = Direction.findClosest(transform.apply(dir.toVector()), Direction.Flag.CARDINAL);
+                    if (closest != null) {
+                        String closestProp = closest.name().toLowerCase(Locale.ROOT);
+                        if (prop instanceof BooleanProperty) {
+                            result = result.with((BooleanProperty) prop, Boolean.FALSE);
+                            directionalProperties.put(closestProp, Boolean.TRUE);
+                        } else {
+                            if (prop.getValues().contains("none")) {
+                                //noinspection unchecked
+                                result = result.with((Property<Object>) prop, "none");
+                            }
+                            directionalProperties.put(closestProp, block.getState(prop));
+                        }
+                    }
+                }
+            }
+        }
 
-        if (directionalProperties.size() > 0) {
+        if (!directionalProperties.isEmpty()) {
             for (String directionName : directionNames) {
-                result = result.with(block.getBlockType().getProperty(directionName), directionalProperties.contains(directionName));
+                Property<Object> dirProp = block.getBlockType().getProperty(directionName);
+                result = result.with(dirProp, directionalProperties.get(directionName));
             }
         }
 
