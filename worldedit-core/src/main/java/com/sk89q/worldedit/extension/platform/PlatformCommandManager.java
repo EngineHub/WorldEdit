@@ -36,6 +36,8 @@ import com.sk89q.worldedit.command.ChunkCommands;
 import com.sk89q.worldedit.command.ChunkCommandsRegistration;
 import com.sk89q.worldedit.command.ClipboardCommands;
 import com.sk89q.worldedit.command.ClipboardCommandsRegistration;
+import com.sk89q.worldedit.command.DebugCommands;
+import com.sk89q.worldedit.command.DebugCommandsRegistration;
 import com.sk89q.worldedit.command.ExpandCommands;
 import com.sk89q.worldedit.command.GeneralCommands;
 import com.sk89q.worldedit.command.GeneralCommandsRegistration;
@@ -318,7 +320,17 @@ public final class PlatformCommandManager {
             ImmutableList.of("we"),
             "WorldEdit commands",
             WorldEditCommandsRegistration.builder(),
-            new WorldEditCommands(worldEdit)
+            new WorldEditCommands(worldEdit),
+            manager -> {
+                if (Boolean.getBoolean("worldedit.test.commands")) {
+                    log.error("Registering WorldEdit debug commands. You should not be passing this flag on a production server");
+                    registration.register(
+                        manager,
+                        DebugCommandsRegistration.builder(),
+                        new DebugCommands()
+                    );
+                }
+            }
         );
         this.registration.register(
             commandManager,
