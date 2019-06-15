@@ -27,7 +27,7 @@ import java.util.OptionalInt;
 
 import static com.google.common.base.Preconditions.checkState;
 
-public class BlockStateIdAccess {
+public final class BlockStateIdAccess {
 
     private BlockStateIdAccess() {
     }
