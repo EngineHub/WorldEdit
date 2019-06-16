@@ -51,7 +51,7 @@ public final class BlockStateIdAccess {
         return id < blockStates.length ? blockStates[id] : null;
     }
 
-    private static BlockState[] blockStates = new BlockState[2 << 14];
+    private static BlockState[] blockStates = new BlockState[2 << 13];
 
     public static void register(BlockState blockState) {
         OptionalInt id = getBlockStateId(blockState);
