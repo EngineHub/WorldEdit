@@ -37,7 +37,6 @@ import com.sk89q.worldedit.command.ChunkCommandsRegistration;
 import com.sk89q.worldedit.command.ClipboardCommands;
 import com.sk89q.worldedit.command.ClipboardCommandsRegistration;
 import com.sk89q.worldedit.command.DebugCommands;
-import com.sk89q.worldedit.command.DebugCommandsRegistration;
 import com.sk89q.worldedit.command.ExpandCommands;
 import com.sk89q.worldedit.command.GeneralCommands;
 import com.sk89q.worldedit.command.GeneralCommandsRegistration;
@@ -324,11 +323,7 @@ public final class PlatformCommandManager {
             manager -> {
                 if (Boolean.getBoolean("worldedit.test.commands")) {
                     log.error("Registering WorldEdit debug commands. You should not be passing this flag on a production server");
-                    registration.register(
-                        manager,
-                        DebugCommandsRegistration.builder(),
-                        new DebugCommands()
-                    );
+                    DebugCommands.register(manager, commandManagerService, registration);
                 }
             }
         );
@@ -527,6 +522,7 @@ public final class PlatformCommandManager {
                 EditSession editSession = editSessionOpt.get();
                 session.remember(editSession);
                 editSession.flushSession();
+                // ((org.bukkit.craftbukkit.v1_14_R1.CraftWorld) ((com.sk89q.worldedit.bukkit.BukkitWorld) ((Player) actor).getWorld()).worldRef.get()).world.worldData.f = net.minecraft.server.v1_14_R1.WorldType.DEBUG_ALL_BLOCK_STATES;
 
                 if (config.profile) {
                     long time = System.currentTimeMillis() - start;
