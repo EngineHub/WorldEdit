@@ -32,19 +32,19 @@ import com.sk89q.jnbt.LongTag;
 import com.sk89q.jnbt.ShortTag;
 import com.sk89q.jnbt.StringTag;
 import com.sk89q.jnbt.Tag;
-import net.minecraft.nbt.INBTBase;
-import net.minecraft.nbt.NBTTagByte;
-import net.minecraft.nbt.NBTTagByteArray;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagDouble;
-import net.minecraft.nbt.NBTTagEnd;
-import net.minecraft.nbt.NBTTagFloat;
-import net.minecraft.nbt.NBTTagInt;
-import net.minecraft.nbt.NBTTagIntArray;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.nbt.NBTTagLong;
-import net.minecraft.nbt.NBTTagShort;
-import net.minecraft.nbt.NBTTagString;
+import net.minecraft.nbt.ByteArrayNBT;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.DoubleNBT;
+import net.minecraft.nbt.INBT;
+import net.minecraft.nbt.ByteNBT;
+import net.minecraft.nbt.EndNBT;
+import net.minecraft.nbt.FloatNBT;
+import net.minecraft.nbt.IntArrayNBT;
+import net.minecraft.nbt.IntNBT;
+import net.minecraft.nbt.ListNBT;
+import net.minecraft.nbt.LongNBT;
+import net.minecraft.nbt.StringNBT;
+import net.minecraft.nbt.ShortNBT;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -62,7 +62,7 @@ final class NBTConverter {
     private NBTConverter() {
     }
 
-    public static INBTBase toNative(Tag tag) {
+    public static INBT toNative(Tag tag) {
         if (tag instanceof IntArrayTag) {
             return toNative((IntArrayTag) tag);
 
@@ -100,13 +100,13 @@ final class NBTConverter {
         }
     }
 
-    public static NBTTagIntArray toNative(IntArrayTag tag) {
+    public static IntArrayNBT toNative(IntArrayTag tag) {
         int[] value = tag.getValue();
-        return new NBTTagIntArray(Arrays.copyOf(value, value.length));
+        return new IntArrayNBT(Arrays.copyOf(value, value.length));
     }
 
-    public static NBTTagList toNative(ListTag tag) {
-        NBTTagList list = new NBTTagList();
+    public static ListNBT toNative(ListTag tag) {
+        ListNBT list = new ListNBT();
         for (Tag child : tag.getValue()) {
             if (child instanceof EndTag) {
                 continue;
@@ -116,94 +116,94 @@ final class NBTConverter {
         return list;
     }
 
-    public static NBTTagLong toNative(LongTag tag) {
-        return new NBTTagLong(tag.getValue());
+    public static LongNBT toNative(LongTag tag) {
+        return new LongNBT(tag.getValue());
     }
 
-    public static NBTTagString toNative(StringTag tag) {
-        return new NBTTagString(tag.getValue());
+    public static StringNBT toNative(StringTag tag) {
+        return new StringNBT(tag.getValue());
     }
 
-    public static NBTTagInt toNative(IntTag tag) {
-        return new NBTTagInt(tag.getValue());
+    public static IntNBT toNative(IntTag tag) {
+        return new IntNBT(tag.getValue());
     }
 
-    public static NBTTagByte toNative(ByteTag tag) {
-        return new NBTTagByte(tag.getValue());
+    public static ByteNBT toNative(ByteTag tag) {
+        return new ByteNBT(tag.getValue());
     }
 
-    public static NBTTagByteArray toNative(ByteArrayTag tag) {
+    public static ByteArrayNBT toNative(ByteArrayTag tag) {
         byte[] value = tag.getValue();
-        return new NBTTagByteArray(Arrays.copyOf(value, value.length));
+        return new ByteArrayNBT(Arrays.copyOf(value, value.length));
     }
 
-    public static NBTTagCompound toNative(CompoundTag tag) {
-        NBTTagCompound compound = new NBTTagCompound();
+    public static CompoundNBT toNative(CompoundTag tag) {
+        CompoundNBT compound = new CompoundNBT();
         for (Entry<String, Tag> child : tag.getValue().entrySet()) {
             compound.put(child.getKey(), toNative(child.getValue()));
         }
         return compound;
     }
 
-    public static NBTTagFloat toNative(FloatTag tag) {
-        return new NBTTagFloat(tag.getValue());
+    public static FloatNBT toNative(FloatTag tag) {
+        return new FloatNBT(tag.getValue());
     }
 
-    public static NBTTagShort toNative(ShortTag tag) {
-        return new NBTTagShort(tag.getValue());
+    public static ShortNBT toNative(ShortTag tag) {
+        return new ShortNBT(tag.getValue());
     }
 
-    public static NBTTagDouble toNative(DoubleTag tag) {
-        return new NBTTagDouble(tag.getValue());
+    public static DoubleNBT toNative(DoubleTag tag) {
+        return new DoubleNBT(tag.getValue());
     }
 
-    public static Tag fromNative(INBTBase other) {
-        if (other instanceof NBTTagIntArray) {
-            return fromNative((NBTTagIntArray) other);
+    public static Tag fromNative(INBT other) {
+        if (other instanceof IntArrayNBT) {
+            return fromNative((IntArrayNBT) other);
 
-        } else if (other instanceof NBTTagList) {
-            return fromNative((NBTTagList) other);
+        } else if (other instanceof ListNBT) {
+            return fromNative((ListNBT) other);
 
-        } else if (other instanceof NBTTagEnd) {
-            return fromNative((NBTTagEnd) other);
+        } else if (other instanceof EndNBT) {
+            return fromNative((EndNBT) other);
 
-        } else if (other instanceof NBTTagLong) {
-            return fromNative((NBTTagLong) other);
+        } else if (other instanceof LongNBT) {
+            return fromNative((LongNBT) other);
 
-        } else if (other instanceof NBTTagString) {
-            return fromNative((NBTTagString) other);
+        } else if (other instanceof StringNBT) {
+            return fromNative((StringNBT) other);
 
-        } else if (other instanceof NBTTagInt) {
-            return fromNative((NBTTagInt) other);
+        } else if (other instanceof IntNBT) {
+            return fromNative((IntNBT) other);
 
-        } else if (other instanceof NBTTagByte) {
-            return fromNative((NBTTagByte) other);
+        } else if (other instanceof ByteNBT) {
+            return fromNative((ByteNBT) other);
 
-        } else if (other instanceof NBTTagByteArray) {
-            return fromNative((NBTTagByteArray) other);
+        } else if (other instanceof ByteArrayNBT) {
+            return fromNative((ByteArrayNBT) other);
 
-        } else if (other instanceof NBTTagCompound) {
-            return fromNative((NBTTagCompound) other);
+        } else if (other instanceof CompoundNBT) {
+            return fromNative((CompoundNBT) other);
 
-        } else if (other instanceof NBTTagFloat) {
-            return fromNative((NBTTagFloat) other);
+        } else if (other instanceof FloatNBT) {
+            return fromNative((FloatNBT) other);
 
-        } else if (other instanceof NBTTagShort) {
-            return fromNative((NBTTagShort) other);
+        } else if (other instanceof ShortNBT) {
+            return fromNative((ShortNBT) other);
 
-        } else if (other instanceof NBTTagDouble) {
-            return fromNative((NBTTagDouble) other);
+        } else if (other instanceof DoubleNBT) {
+            return fromNative((DoubleNBT) other);
         } else {
             throw new IllegalArgumentException("Can't convert other of type " + other.getClass().getCanonicalName());
         }
     }
 
-    public static IntArrayTag fromNative(NBTTagIntArray other) {
+    public static IntArrayTag fromNative(IntArrayNBT other) {
         int[] value = other.getIntArray();
         return new IntArrayTag(Arrays.copyOf(value, value.length));
     }
 
-    public static ListTag fromNative(NBTTagList other) {
+    public static ListTag fromNative(ListNBT other) {
         other = other.copy();
         List<Tag> list = new ArrayList<>();
         Class<? extends Tag> listClass = StringTag.class;
@@ -216,32 +216,32 @@ final class NBTConverter {
         return new ListTag(listClass, list);
     }
 
-    public static EndTag fromNative(NBTTagEnd other) {
+    public static EndTag fromNative(EndNBT other) {
         return new EndTag();
     }
 
-    public static LongTag fromNative(NBTTagLong other) {
+    public static LongTag fromNative(LongNBT other) {
         return new LongTag(other.getLong());
     }
 
-    public static StringTag fromNative(NBTTagString other) {
+    public static StringTag fromNative(StringNBT other) {
         return new StringTag(other.getString());
     }
 
-    public static IntTag fromNative(NBTTagInt other) {
+    public static IntTag fromNative(IntNBT other) {
         return new IntTag(other.getInt());
     }
 
-    public static ByteTag fromNative(NBTTagByte other) {
+    public static ByteTag fromNative(ByteNBT other) {
         return new ByteTag(other.getByte());
     }
 
-    public static ByteArrayTag fromNative(NBTTagByteArray other) {
+    public static ByteArrayTag fromNative(ByteArrayNBT other) {
         byte[] value = other.getByteArray();
         return new ByteArrayTag(Arrays.copyOf(value, value.length));
     }
 
-    public static CompoundTag fromNative(NBTTagCompound other) {
+    public static CompoundTag fromNative(CompoundNBT other) {
         Set<String> tags = other.keySet();
         Map<String, Tag> map = new HashMap<>();
         for (String tagName : tags) {
@@ -250,15 +250,15 @@ final class NBTConverter {
         return new CompoundTag(map);
     }
 
-    public static FloatTag fromNative(NBTTagFloat other) {
+    public static FloatTag fromNative(FloatNBT other) {
         return new FloatTag(other.getFloat());
     }
 
-    public static ShortTag fromNative(NBTTagShort other) {
+    public static ShortTag fromNative(ShortNBT other) {
         return new ShortTag(other.getShort());
     }
 
-    public static DoubleTag fromNative(NBTTagDouble other) {
+    public static DoubleTag fromNative(DoubleNBT other) {
         return new DoubleTag(other.getDouble());
     }
 

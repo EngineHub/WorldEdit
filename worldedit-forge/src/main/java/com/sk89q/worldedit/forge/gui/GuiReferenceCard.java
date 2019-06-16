@@ -20,46 +20,46 @@
 package com.sk89q.worldedit.forge.gui;
 
 import com.sk89q.worldedit.forge.ForgeWorldEdit;
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.widget.button.Button;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.lwjgl.opengl.GL11;
 
 @OnlyIn(Dist.CLIENT)
-public class GuiReferenceCard extends GuiScreen {
+public class GuiReferenceCard extends Screen {
 
-    private GuiButton closeButton;
+    private Button closeButton;
     private int backgroundWidth = 256;
     private int backgroundHeight = 256;
 
-    @Override
-    public void initGui() {
-        this.closeButton = new GuiButton(0, (this.width - this.backgroundWidth + 100) / 2,
-                (this.height + this.backgroundHeight - 60) / 2, this.backgroundWidth - 100, 20, "Close") {
-            @Override
-            public void onClick(double mouseX, double mouseY) {
-                super.onClick(mouseX, mouseY);
+    public GuiReferenceCard(ITextComponent title) {
+        super(title);
+    }
 
-                mc.player.closeScreen();
-            }
-        };
+    @Override
+    public void init() {
+        this.addButton(closeButton = new Button(
+                (this.width - this.backgroundWidth + 56) / 2, (this.height + this.backgroundHeight) / 2,
+                200, 20, "Close",
+                button -> this.minecraft.player.closeScreen()));
     }
 
     @Override
     public void render(int mouseX, int mouseY, float par3) {
         int x = (this.width - this.backgroundWidth) / 2;
-        int y = (this.height - this.backgroundHeight) / 2 - this.closeButton.height;
+        int y = (this.height - this.backgroundHeight) / 2 - this.closeButton.getHeight();
 
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-        this.mc.textureManager.bindTexture(new ResourceLocation(ForgeWorldEdit.MOD_ID, "textures/gui/reference.png"));
-        this.drawTexturedModalRect(x, y, 0, 0, this.backgroundWidth, this.backgroundHeight);
+        this.minecraft.textureManager.bindTexture(new ResourceLocation(ForgeWorldEdit.MOD_ID, "textures/gui/reference.png"));
+        this.blit(x, y, 0, 0, this.backgroundWidth, this.backgroundHeight);
         super.render(mouseX, mouseY, par3);
     }
 
     @Override
-    public boolean doesGuiPauseGame() {
+    public boolean isPauseScreen() {
         return true;
     }
 

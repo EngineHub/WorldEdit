@@ -22,6 +22,7 @@ package com.sk89q.worldedit.forge;
 import com.sk89q.worldedit.forge.gui.GuiReferenceCard;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
@@ -39,7 +40,7 @@ public class KeyHandler {
     @SubscribeEvent
     public void onKey(InputEvent.KeyInputEvent evt) {
         if (mc.player != null && mc.world != null && mainKey.isPressed()) {
-            mc.displayGuiScreen(new GuiReferenceCard());
+            mc.displayGuiScreen(new GuiReferenceCard(new StringTextComponent("WorldEdit Reference")));
         }
     }
 

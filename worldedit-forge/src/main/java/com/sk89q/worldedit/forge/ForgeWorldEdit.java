@@ -19,9 +19,6 @@
 
 package com.sk89q.worldedit.forge;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.sk89q.worldedit.forge.ForgeAdapter.adaptPlayer;
-
 import com.mojang.brigadier.ParseResults;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.sk89q.worldedit.LocalSession;
@@ -42,12 +39,13 @@ import com.sk89q.worldedit.world.entity.EntityType;
 import com.sk89q.worldedit.world.item.ItemCategory;
 import com.sk89q.worldedit.world.item.ItemType;
 import net.minecraft.command.CommandSource;
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;
-import net.minecraft.util.EnumHand;
+import net.minecraft.util.Hand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.CommandEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
@@ -60,9 +58,11 @@ import net.minecraftforge.fml.ModContainer;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartedEvent;
 import net.minecraftforge.fml.event.server.FMLServerStoppingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fml.loading.FMLLoader;
 import net.minecraftforge.fml.loading.FMLPaths;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.logging.log4j.LogManager;
@@ -73,6 +73,9 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.sk89q.worldedit.forge.ForgeAdapter.adaptPlayer;
 
 /**
  * The Forge implementation of WorldEdit.
@@ -216,12 +219,12 @@ public class ForgeWorldEdit {
                 event instanceof PlayerInteractEvent.RightClickBlock
                         && ((PlayerInteractEvent.RightClickBlock) event)
                                 .getUseItem() == Event.Result.DENY;
-        if (isLeftDeny || isRightDeny || event.getEntity().world.isRemote || event.getHand() == EnumHand.OFF_HAND) {
+        if (isLeftDeny || isRightDeny || event.getEntity().world.isRemote || event.getHand() == Hand.OFF_HAND) {
             return;
         }
 
         WorldEdit we = WorldEdit.getInstance();
-        ForgePlayer player = adaptPlayer((EntityPlayerMP) event.getEntityPlayer());
+        ForgePlayer player = adaptPlayer((ServerPlayerEntity) event.getEntityPlayer());
         ForgeWorld world = getWorld(event.getEntityPlayer().world);
 
         if (event instanceof PlayerInteractEvent.LeftClickEmpty) {
@@ -256,10 +259,10 @@ public class ForgeWorldEdit {
     @SubscribeEvent
     public void onCommandEvent(CommandEvent event) throws CommandSyntaxException {
         ParseResults<CommandSource> parseResults = event.getParseResults();
-        if (!(parseResults.getContext().getSource().getEntity() instanceof EntityPlayerMP)) {
+        if (!(parseResults.getContext().getSource().getEntity() instanceof ServerPlayerEntity)) {
             return;
         }
-        EntityPlayerMP player = parseResults.getContext().getSource().asPlayer();
+        ServerPlayerEntity player = parseResults.getContext().getSource().asPlayer();
         if (player.world.isRemote()) {
             return;
         }
@@ -288,7 +291,7 @@ public class ForgeWorldEdit {
      * @param player the player
      * @return the session
      */
-    public LocalSession getSession(EntityPlayerMP player) {
+    public LocalSession getSession(ServerPlayerEntity player) {
         checkNotNull(player);
         return WorldEdit.getInstance().getSessionManager().get(adaptPlayer(player));
     }

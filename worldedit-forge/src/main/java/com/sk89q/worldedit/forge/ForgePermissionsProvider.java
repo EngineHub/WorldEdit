@@ -19,13 +19,13 @@
 
 package com.sk89q.worldedit.forge;
 
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.world.GameType;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
 public interface ForgePermissionsProvider {
 
-    boolean hasPermission(EntityPlayerMP player, String permission);
+    boolean hasPermission(ServerPlayerEntity player, String permission);
 
     void registerPermission(String permission);
 
@@ -38,7 +38,7 @@ public interface ForgePermissionsProvider {
         }
 
         @Override
-        public boolean hasPermission(EntityPlayerMP player, String permission) {
+        public boolean hasPermission(ServerPlayerEntity player, String permission) {
             ForgeConfiguration configuration = platform.getConfiguration();
             return configuration.cheatMode ||
                     ServerLifecycleHooks.getCurrentServer().getPlayerList().canSendCommands(player.getGameProfile()) ||
@@ -49,7 +49,7 @@ public interface ForgePermissionsProvider {
         public void registerPermission(String permission) {}
     }
 
-    // TODO Re-add when Sponge for 1.13 is out
+    // TODO Re-add when Sponge for 1.14 is out
 //    class SpongePermissionsProvider implements ForgePermissionsProvider {
 //
 //        @Override

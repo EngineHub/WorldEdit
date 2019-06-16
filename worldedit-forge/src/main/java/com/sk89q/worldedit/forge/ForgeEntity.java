@@ -29,7 +29,7 @@ import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.NullWorld;
 import com.sk89q.worldedit.world.entity.EntityTypes;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 
 import java.lang.ref.WeakReference;
@@ -51,7 +51,7 @@ class ForgeEntity implements Entity {
         if (entity != null) {
             ResourceLocation id = entity.getType().getRegistryName();
             if (id != null) {
-                NBTTagCompound tag = new NBTTagCompound();
+                CompoundNBT tag = new CompoundNBT();
                 entity.writeWithoutTypeId(tag);
                 return new BaseEntity(EntityTypes.get(id.toString()), NBTConverter.fromNative(tag));
             } else {
@@ -78,7 +78,7 @@ class ForgeEntity implements Entity {
 
     @Override
     public boolean setLocation(Location location) {
-        // TODO
+        // TODO unused atm
         return false;
     }
 

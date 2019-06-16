@@ -36,7 +36,7 @@ import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.internal.util.Substring;
 import net.minecraft.command.CommandSource;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import org.enginehub.piston.inject.InjectedValueStore;
 import org.enginehub.piston.inject.Key;
 import org.enginehub.piston.inject.MapBackedValueStore;
@@ -78,8 +78,8 @@ public final class CommandWrapper {
     private static Predicate<CommandSource> requirementsFor(org.enginehub.piston.Command mapping) {
         return ctx -> {
             final Entity entity = ctx.getEntity();
-            if (!(entity instanceof EntityPlayerMP)) return true;
-            final Actor actor = ForgeAdapter.adaptPlayer(((EntityPlayerMP) entity));
+            if (!(entity instanceof ServerPlayerEntity)) return true;
+            final Actor actor = ForgeAdapter.adaptPlayer(((ServerPlayerEntity) entity));
             InjectedValueStore store = MapBackedValueStore.create();
             store.injectValue(Key.of(Actor.class), context -> Optional.of(actor));
             return mapping.getCondition().satisfied(store);

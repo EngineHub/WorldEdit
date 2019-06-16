@@ -23,9 +23,9 @@ import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.forge.ForgePlayer;
 import com.sk89q.worldedit.forge.ForgeWorldEdit;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.ThreadQuickExitException;
-import net.minecraft.network.play.server.SPacketCustomPayload;
+import net.minecraft.network.play.server.SCustomPayloadPlayPacket;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.network.NetworkEvent.ClientCustomPayloadEvent;
 import net.minecraftforge.fml.network.NetworkEvent.ServerCustomPayloadEvent;
@@ -45,14 +45,13 @@ public final class WECUIPacketHandler {
             .buildLenientHandler(ForgeWorldEdit.CUI_PLUGIN_CHANNEL, PROTOCOL_VERSION)
             .eventNetworkChannel();
 
-    
     public static void init() {
         HANDLER.addListener(WECUIPacketHandler::onPacketData);
         HANDLER.addListener(WECUIPacketHandler::callProcessPacket);
     }
 
     public static void onPacketData(ServerCustomPayloadEvent event) {
-        EntityPlayerMP player = event.getSource().get().getSender();
+        ServerPlayerEntity player = event.getSource().get().getSender();
         LocalSession session = ForgeWorldEdit.inst.getSession(player);
 
         if (session.hasCUISupport()) {
@@ -67,11 +66,12 @@ public final class WECUIPacketHandler {
     
     public static void callProcessPacket(ClientCustomPayloadEvent event) {
         try {
-            new SPacketCustomPayload(
+            new SCustomPayloadPlayPacket(
                     new ResourceLocation(ForgeWorldEdit.MOD_ID, ForgeWorldEdit.CUI_PLUGIN_CHANNEL),
                     event.getPayload()
             ).processPacket(Minecraft.getInstance().player.connection);
         } catch (ThreadQuickExitException ignored) {
         }
     }
+
 }

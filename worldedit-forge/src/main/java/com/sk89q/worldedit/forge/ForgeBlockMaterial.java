@@ -22,7 +22,7 @@ package com.sk89q.worldedit.forge;
 import com.sk89q.worldedit.world.registry.BlockMaterial;
 import com.sk89q.worldedit.world.registry.PassthroughBlockMaterial;
 
-import net.minecraft.block.material.EnumPushReaction;
+import net.minecraft.block.material.PushReaction;
 import net.minecraft.block.material.Material;
 
 import javax.annotation.Nullable;
@@ -63,12 +63,12 @@ public class ForgeBlockMaterial extends PassthroughBlockMaterial {
 
     @Override
     public boolean isFragileWhenPushed() {
-        return delegate.getPushReaction() == EnumPushReaction.DESTROY;
+        return delegate.getPushReaction() == PushReaction.DESTROY;
     }
 
     @Override
     public boolean isUnpushable() {
-        return delegate.getPushReaction() == EnumPushReaction.BLOCK;
+        return delegate.getPushReaction() == PushReaction.BLOCK;
     }
 
     @Override

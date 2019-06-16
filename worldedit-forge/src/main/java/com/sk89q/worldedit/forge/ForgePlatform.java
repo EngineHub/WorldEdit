@@ -30,11 +30,12 @@ import com.sk89q.worldedit.world.DataFixer;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.registry.Registries;
 import net.minecraft.command.Commands;
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.management.PlayerList;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.WorldServer;
+import net.minecraft.util.SharedConstants;
+import net.minecraft.world.ServerWorld;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
 import org.enginehub.piston.Command;
 import org.enginehub.piston.CommandManager;
@@ -74,8 +75,7 @@ class ForgePlatform extends AbstractPlatform implements MultiUserPlatform {
 
     @Override
     public int getDataVersion() {
-        // TODO switch to SharedConstants in 1.14
-        return 1631;
+        return SharedConstants.getVersion().getWorldVersion();
     }
 
     @Override
@@ -99,10 +99,10 @@ class ForgePlatform extends AbstractPlatform implements MultiUserPlatform {
     }
 
     @Override
-    public List<? extends com.sk89q.worldedit.world.World> getWorlds() {
-        Iterable<WorldServer> worlds = server.getWorlds();
-        List<com.sk89q.worldedit.world.World> ret = new ArrayList<>();
-        for (WorldServer world : worlds) {
+    public List<? extends World> getWorlds() {
+        Iterable<ServerWorld> worlds = server.getWorlds();
+        List<World> ret = new ArrayList<>();
+        for (ServerWorld world : worlds) {
             ret.add(new ForgeWorld(world));
         }
         return ret;
@@ -114,7 +114,7 @@ class ForgePlatform extends AbstractPlatform implements MultiUserPlatform {
         if (player instanceof ForgePlayer) {
             return player;
         } else {
-            EntityPlayerMP entity = server.getPlayerList().getPlayerByUsername(player.getName());
+            ServerPlayerEntity entity = server.getPlayerList().getPlayerByUsername(player.getName());
             return entity != null ? new ForgePlayer(entity) : null;
         }
     }
@@ -125,7 +125,7 @@ class ForgePlatform extends AbstractPlatform implements MultiUserPlatform {
         if (world instanceof ForgeWorld) {
             return world;
         } else {
-            for (WorldServer ws : server.getWorlds()) {
+            for (ServerWorld ws : server.getWorlds()) {
                 if (ws.getWorldInfo().getWorldName().equals(world.getName())) {
                     return new ForgeWorld(ws);
                 }
@@ -145,7 +145,7 @@ class ForgePlatform extends AbstractPlatform implements MultiUserPlatform {
             Set<String> perms = command.getCondition().as(PermissionCondition.class)
                 .map(PermissionCondition::getPermissions)
                 .orElseGet(Collections::emptySet);
-            if (perms.size() > 0) {
+            if (!perms.isEmpty()) {
                 perms.forEach(ForgeWorldEdit.inst.getPermissionsProvider()::registerPermission);
             }
         }
@@ -193,7 +193,7 @@ class ForgePlatform extends AbstractPlatform implements MultiUserPlatform {
     public Collection<Actor> getConnectedUsers() {
         List<Actor> users = new ArrayList<>();
         PlayerList scm = server.getPlayerList();
-        for (EntityPlayerMP entity : scm.getPlayers()) {
+        for (ServerPlayerEntity entity : scm.getPlayers()) {
             if (entity != null) {
                 users.add(new ForgePlayer(entity));
             }
