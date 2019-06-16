@@ -55,32 +55,36 @@ public class HistoryCommands {
         aliases = { "/undo" },
         desc = "Undoes the last action (from history)"
     )
-    @CommandPermissions("worldedit.history.undo")
+    @CommandPermissions({"worldedit.history.undo", "worldedit.history.undo.self"})
     public void undo(Player player, LocalSession session,
                      @Arg(desc = "Number of undoes to perform", def = "1")
                          int times,
                      @Arg(name = "player", desc = "Undo this player's operations", def = "")
                          String playerName) throws WorldEditException {
         times = Math.max(1, times);
-        for (int i = 0; i < times; ++i) {
-            LocalSession undoSession = session;
-            if (playerName != null) {
-                player.checkPermission("worldedit.history.undo.other");
-                LocalSession sess = worldEdit.getSessionManager().findByName(playerName);
-                if (sess == null) {
-                    player.printError("Unable to find session for " + playerName);
-                    break;
-                }
-                undoSession = session;
+        LocalSession undoSession = session;
+        if (playerName != null) {
+            player.checkPermission("worldedit.history.undo.other");
+            undoSession = worldEdit.getSessionManager().findByName(playerName);
+            if (undoSession == null) {
+                player.printError("Unable to find session for " + playerName);
+                return;
             }
+        }
+        int timesUndone = 0;
+        for (int i = 0; i < times; ++i) {
             EditSession undone = undoSession.undo(undoSession.getBlockBag(player), player);
             if (undone != null) {
-                player.print("Undo successful.");
+                timesUndone++;
                 worldEdit.flushBlockBag(player, undone);
             } else {
-                player.printError("Nothing left to undo.");
                 break;
             }
+        }
+        if (timesUndone > 0) {
+            player.print("Undid " + timesUndone + " available edits.");
+        } else {
+            player.printError("Nothing left to undo.");
         }
     }
 
@@ -89,32 +93,36 @@ public class HistoryCommands {
         aliases = { "/redo" },
         desc = "Redoes the last action (from history)"
     )
-    @CommandPermissions("worldedit.history.redo")
+    @CommandPermissions({"worldedit.history.redo", "worldedit.history.redo.self"})
     public void redo(Player player, LocalSession session,
                      @Arg(desc = "Number of redoes to perform", def = "1")
                          int times,
                      @Arg(name = "player", desc = "Redo this player's operations", def = "")
                          String playerName) throws WorldEditException {
         times = Math.max(1, times);
-        for (int i = 0; i < times; ++i) {
-            LocalSession redoSession = session;
-            if (playerName != null) {
-                player.checkPermission("worldedit.history.redo.other");
-                LocalSession sess = worldEdit.getSessionManager().findByName(playerName);
-                if (sess == null) {
-                    player.printError("Unable to find session for " + playerName);
-                    break;
-                }
-                redoSession = session;
+        LocalSession redoSession = session;
+        if (playerName != null) {
+            player.checkPermission("worldedit.history.redo.other");
+            redoSession = worldEdit.getSessionManager().findByName(playerName);
+            if (redoSession == null) {
+                player.printError("Unable to find session for " + playerName);
+                return;
             }
+        }
+        int timesRedone = 0;
+        for (int i = 0; i < times; ++i) {
             EditSession redone = redoSession.redo(redoSession.getBlockBag(player), player);
             if (redone != null) {
-                player.print("Redo successful.");
+                timesRedone++;
                 worldEdit.flushBlockBag(player, redone);
             } else {
-                player.printError("Nothing left to redo.");
                 break;
             }
+        }
+        if (timesRedone > 0) {
+            player.print("Redid " + timesRedone + " available edits.");
+        } else {
+            player.printError("Nothing left to redo.");
         }
     }
 
@@ -124,7 +132,7 @@ public class HistoryCommands {
         desc = "Clear your history"
     )
     @CommandPermissions("worldedit.history.clear")
-    public void clearHistory(Player player, LocalSession session) throws WorldEditException {
+    public void clearHistory(Player player, LocalSession session) {
         session.clearHistory();
         player.print("History cleared.");
     }
