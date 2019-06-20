@@ -1,0 +1,6141 @@
+[
+  {
+    "id": "minecraft:acacia_boat",
+    "unlocalizedName": "item.minecraft.acacia_boat",
+    "localizedName": "Acacia Boat",
+    "maxStackSize": 1,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:acacia_button",
+    "unlocalizedName": "block.minecraft.acacia_button",
+    "localizedName": "Acacia Button",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:acacia_door",
+    "unlocalizedName": "block.minecraft.acacia_door",
+    "localizedName": "Acacia Door",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:acacia_fence",
+    "unlocalizedName": "block.minecraft.acacia_fence",
+    "localizedName": "Acacia Fence",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:acacia_fence_gate",
+    "unlocalizedName": "block.minecraft.acacia_fence_gate",
+    "localizedName": "Acacia Fence Gate",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:acacia_leaves",
+    "unlocalizedName": "block.minecraft.acacia_leaves",
+    "localizedName": "Acacia Leaves",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:acacia_log",
+    "unlocalizedName": "block.minecraft.acacia_log",
+    "localizedName": "Acacia Log",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:acacia_planks",
+    "unlocalizedName": "block.minecraft.acacia_planks",
+    "localizedName": "Acacia Planks",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:acacia_pressure_plate",
+    "unlocalizedName": "block.minecraft.acacia_pressure_plate",
+    "localizedName": "Acacia Pressure Plate",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:acacia_sapling",
+    "unlocalizedName": "block.minecraft.acacia_sapling",
+    "localizedName": "Acacia Sapling",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:acacia_sign",
+    "unlocalizedName": "block.minecraft.acacia_sign",
+    "localizedName": "Acacia Sign",
+    "maxStackSize": 16,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:acacia_slab",
+    "unlocalizedName": "block.minecraft.acacia_slab",
+    "localizedName": "Acacia Slab",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:acacia_stairs",
+    "unlocalizedName": "block.minecraft.acacia_stairs",
+    "localizedName": "Acacia Stairs",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:acacia_trapdoor",
+    "unlocalizedName": "block.minecraft.acacia_trapdoor",
+    "localizedName": "Acacia Trapdoor",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:acacia_wood",
+    "unlocalizedName": "block.minecraft.acacia_wood",
+    "localizedName": "Acacia Wood",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:activator_rail",
+    "unlocalizedName": "block.minecraft.activator_rail",
+    "localizedName": "Activator Rail",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:air",
+    "unlocalizedName": "block.minecraft.air",
+    "localizedName": "Air",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:allium",
+    "unlocalizedName": "block.minecraft.allium",
+    "localizedName": "Allium",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:andesite",
+    "unlocalizedName": "block.minecraft.andesite",
+    "localizedName": "Andesite",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:andesite_slab",
+    "unlocalizedName": "block.minecraft.andesite_slab",
+    "localizedName": "Andesite Slab",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:andesite_stairs",
+    "unlocalizedName": "block.minecraft.andesite_stairs",
+    "localizedName": "Andesite Stairs",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:andesite_wall",
+    "unlocalizedName": "block.minecraft.andesite_wall",
+    "localizedName": "Andesite Wall",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:anvil",
+    "unlocalizedName": "block.minecraft.anvil",
+    "localizedName": "Anvil",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:apple",
+    "unlocalizedName": "item.minecraft.apple",
+    "localizedName": "Apple",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:armor_stand",
+    "unlocalizedName": "item.minecraft.armor_stand",
+    "localizedName": "Armor Stand",
+    "maxStackSize": 16,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:arrow",
+    "unlocalizedName": "item.minecraft.arrow",
+    "localizedName": "Arrow",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:azure_bluet",
+    "unlocalizedName": "block.minecraft.azure_bluet",
+    "localizedName": "Azure Bluet",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:baked_potato",
+    "unlocalizedName": "item.minecraft.baked_potato",
+    "localizedName": "Baked Potato",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:bamboo",
+    "unlocalizedName": "block.minecraft.bamboo",
+    "localizedName": "Bamboo",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:barrel",
+    "unlocalizedName": "block.minecraft.barrel",
+    "localizedName": "Barrel",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:barrier",
+    "unlocalizedName": "block.minecraft.barrier",
+    "localizedName": "Barrier",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:bat_spawn_egg",
+    "unlocalizedName": "item.minecraft.bat_spawn_egg",
+    "localizedName": "Bat Spawn Egg",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:beacon",
+    "unlocalizedName": "block.minecraft.beacon",
+    "localizedName": "Beacon",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:bedrock",
+    "unlocalizedName": "block.minecraft.bedrock",
+    "localizedName": "Bedrock",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:beef",
+    "unlocalizedName": "item.minecraft.beef",
+    "localizedName": "Raw Beef",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:beetroot",
+    "unlocalizedName": "item.minecraft.beetroot",
+    "localizedName": "Beetroot",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:beetroot_seeds",
+    "unlocalizedName": "item.minecraft.beetroot_seeds",
+    "localizedName": "Beetroot Seeds",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:beetroot_soup",
+    "unlocalizedName": "item.minecraft.beetroot_soup",
+    "localizedName": "Beetroot Soup",
+    "maxStackSize": 1,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:bell",
+    "unlocalizedName": "block.minecraft.bell",
+    "localizedName": "Bell",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:birch_boat",
+    "unlocalizedName": "item.minecraft.birch_boat",
+    "localizedName": "Birch Boat",
+    "maxStackSize": 1,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:birch_button",
+    "unlocalizedName": "block.minecraft.birch_button",
+    "localizedName": "Birch Button",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:birch_door",
+    "unlocalizedName": "block.minecraft.birch_door",
+    "localizedName": "Birch Door",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:birch_fence",
+    "unlocalizedName": "block.minecraft.birch_fence",
+    "localizedName": "Birch Fence",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:birch_fence_gate",
+    "unlocalizedName": "block.minecraft.birch_fence_gate",
+    "localizedName": "Birch Fence Gate",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:birch_leaves",
+    "unlocalizedName": "block.minecraft.birch_leaves",
+    "localizedName": "Birch Leaves",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:birch_log",
+    "unlocalizedName": "block.minecraft.birch_log",
+    "localizedName": "Birch Log",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:birch_planks",
+    "unlocalizedName": "block.minecraft.birch_planks",
+    "localizedName": "Birch Planks",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:birch_pressure_plate",
+    "unlocalizedName": "block.minecraft.birch_pressure_plate",
+    "localizedName": "Birch Pressure Plate",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:birch_sapling",
+    "unlocalizedName": "block.minecraft.birch_sapling",
+    "localizedName": "Birch Sapling",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:birch_sign",
+    "unlocalizedName": "block.minecraft.birch_sign",
+    "localizedName": "Birch Sign",
+    "maxStackSize": 16,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:birch_slab",
+    "unlocalizedName": "block.minecraft.birch_slab",
+    "localizedName": "Birch Slab",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:birch_stairs",
+    "unlocalizedName": "block.minecraft.birch_stairs",
+    "localizedName": "Birch Stairs",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:birch_trapdoor",
+    "unlocalizedName": "block.minecraft.birch_trapdoor",
+    "localizedName": "Birch Trapdoor",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:birch_wood",
+    "unlocalizedName": "block.minecraft.birch_wood",
+    "localizedName": "Birch Wood",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:black_banner",
+    "unlocalizedName": "block.minecraft.black_banner",
+    "localizedName": "Black Banner",
+    "maxStackSize": 16,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:black_bed",
+    "unlocalizedName": "block.minecraft.black_bed",
+    "localizedName": "Black Bed",
+    "maxStackSize": 1,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:black_carpet",
+    "unlocalizedName": "block.minecraft.black_carpet",
+    "localizedName": "Black Carpet",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:black_concrete",
+    "unlocalizedName": "block.minecraft.black_concrete",
+    "localizedName": "Black Concrete",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:black_concrete_powder",
+    "unlocalizedName": "block.minecraft.black_concrete_powder",
+    "localizedName": "Black Concrete Powder",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:black_dye",
+    "unlocalizedName": "item.minecraft.black_dye",
+    "localizedName": "Black Dye",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:black_glazed_terracotta",
+    "unlocalizedName": "block.minecraft.black_glazed_terracotta",
+    "localizedName": "Black Glazed Terracotta",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:black_shulker_box",
+    "unlocalizedName": "block.minecraft.black_shulker_box",
+    "localizedName": "Black Shulker Box",
+    "maxStackSize": 1,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:black_stained_glass",
+    "unlocalizedName": "block.minecraft.black_stained_glass",
+    "localizedName": "Black Stained Glass",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:black_stained_glass_pane",
+    "unlocalizedName": "block.minecraft.black_stained_glass_pane",
+    "localizedName": "Black Stained Glass Pane",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:black_terracotta",
+    "unlocalizedName": "block.minecraft.black_terracotta",
+    "localizedName": "Black Terracotta",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:black_wool",
+    "unlocalizedName": "block.minecraft.black_wool",
+    "localizedName": "Black Wool",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:blast_furnace",
+    "unlocalizedName": "block.minecraft.blast_furnace",
+    "localizedName": "Blast Furnace",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:blaze_powder",
+    "unlocalizedName": "item.minecraft.blaze_powder",
+    "localizedName": "Blaze Powder",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:blaze_rod",
+    "unlocalizedName": "item.minecraft.blaze_rod",
+    "localizedName": "Blaze Rod",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:blaze_spawn_egg",
+    "unlocalizedName": "item.minecraft.blaze_spawn_egg",
+    "localizedName": "Blaze Spawn Egg",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:blue_banner",
+    "unlocalizedName": "block.minecraft.blue_banner",
+    "localizedName": "Blue Banner",
+    "maxStackSize": 16,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:blue_bed",
+    "unlocalizedName": "block.minecraft.blue_bed",
+    "localizedName": "Blue Bed",
+    "maxStackSize": 1,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:blue_carpet",
+    "unlocalizedName": "block.minecraft.blue_carpet",
+    "localizedName": "Blue Carpet",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:blue_concrete",
+    "unlocalizedName": "block.minecraft.blue_concrete",
+    "localizedName": "Blue Concrete",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:blue_concrete_powder",
+    "unlocalizedName": "block.minecraft.blue_concrete_powder",
+    "localizedName": "Blue Concrete Powder",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:blue_dye",
+    "unlocalizedName": "item.minecraft.blue_dye",
+    "localizedName": "Blue Dye",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:blue_glazed_terracotta",
+    "unlocalizedName": "block.minecraft.blue_glazed_terracotta",
+    "localizedName": "Blue Glazed Terracotta",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:blue_ice",
+    "unlocalizedName": "block.minecraft.blue_ice",
+    "localizedName": "Blue Ice",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:blue_orchid",
+    "unlocalizedName": "block.minecraft.blue_orchid",
+    "localizedName": "Blue Orchid",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:blue_shulker_box",
+    "unlocalizedName": "block.minecraft.blue_shulker_box",
+    "localizedName": "Blue Shulker Box",
+    "maxStackSize": 1,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:blue_stained_glass",
+    "unlocalizedName": "block.minecraft.blue_stained_glass",
+    "localizedName": "Blue Stained Glass",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:blue_stained_glass_pane",
+    "unlocalizedName": "block.minecraft.blue_stained_glass_pane",
+    "localizedName": "Blue Stained Glass Pane",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:blue_terracotta",
+    "unlocalizedName": "block.minecraft.blue_terracotta",
+    "localizedName": "Blue Terracotta",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:blue_wool",
+    "unlocalizedName": "block.minecraft.blue_wool",
+    "localizedName": "Blue Wool",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:bone",
+    "unlocalizedName": "item.minecraft.bone",
+    "localizedName": "Bone",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:bone_block",
+    "unlocalizedName": "block.minecraft.bone_block",
+    "localizedName": "Bone Block",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:bone_meal",
+    "unlocalizedName": "item.minecraft.bone_meal",
+    "localizedName": "Bone Meal",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:book",
+    "unlocalizedName": "item.minecraft.book",
+    "localizedName": "Book",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:bookshelf",
+    "unlocalizedName": "block.minecraft.bookshelf",
+    "localizedName": "Bookshelf",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:bow",
+    "unlocalizedName": "item.minecraft.bow",
+    "localizedName": "Bow",
+    "maxStackSize": 1,
+    "maxDamage": 384
+  },
+  {
+    "id": "minecraft:bowl",
+    "unlocalizedName": "item.minecraft.bowl",
+    "localizedName": "Bowl",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:brain_coral",
+    "unlocalizedName": "block.minecraft.brain_coral",
+    "localizedName": "Brain Coral",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:brain_coral_block",
+    "unlocalizedName": "block.minecraft.brain_coral_block",
+    "localizedName": "Brain Coral Block",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:brain_coral_fan",
+    "unlocalizedName": "block.minecraft.brain_coral_fan",
+    "localizedName": "Brain Coral Fan",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:bread",
+    "unlocalizedName": "item.minecraft.bread",
+    "localizedName": "Bread",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:brewing_stand",
+    "unlocalizedName": "block.minecraft.brewing_stand",
+    "localizedName": "Brewing Stand",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:brick",
+    "unlocalizedName": "item.minecraft.brick",
+    "localizedName": "Brick",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:brick_slab",
+    "unlocalizedName": "block.minecraft.brick_slab",
+    "localizedName": "Brick Slab",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:brick_stairs",
+    "unlocalizedName": "block.minecraft.brick_stairs",
+    "localizedName": "Brick Stairs",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:brick_wall",
+    "unlocalizedName": "block.minecraft.brick_wall",
+    "localizedName": "Brick Wall",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:bricks",
+    "unlocalizedName": "block.minecraft.bricks",
+    "localizedName": "Bricks",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:brown_banner",
+    "unlocalizedName": "block.minecraft.brown_banner",
+    "localizedName": "Brown Banner",
+    "maxStackSize": 16,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:brown_bed",
+    "unlocalizedName": "block.minecraft.brown_bed",
+    "localizedName": "Brown Bed",
+    "maxStackSize": 1,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:brown_carpet",
+    "unlocalizedName": "block.minecraft.brown_carpet",
+    "localizedName": "Brown Carpet",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:brown_concrete",
+    "unlocalizedName": "block.minecraft.brown_concrete",
+    "localizedName": "Brown Concrete",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:brown_concrete_powder",
+    "unlocalizedName": "block.minecraft.brown_concrete_powder",
+    "localizedName": "Brown Concrete Powder",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:brown_dye",
+    "unlocalizedName": "item.minecraft.brown_dye",
+    "localizedName": "Brown Dye",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:brown_glazed_terracotta",
+    "unlocalizedName": "block.minecraft.brown_glazed_terracotta",
+    "localizedName": "Brown Glazed Terracotta",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:brown_mushroom",
+    "unlocalizedName": "block.minecraft.brown_mushroom",
+    "localizedName": "Brown Mushroom",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:brown_mushroom_block",
+    "unlocalizedName": "block.minecraft.brown_mushroom_block",
+    "localizedName": "Brown Mushroom Block",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:brown_shulker_box",
+    "unlocalizedName": "block.minecraft.brown_shulker_box",
+    "localizedName": "Brown Shulker Box",
+    "maxStackSize": 1,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:brown_stained_glass",
+    "unlocalizedName": "block.minecraft.brown_stained_glass",
+    "localizedName": "Brown Stained Glass",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:brown_stained_glass_pane",
+    "unlocalizedName": "block.minecraft.brown_stained_glass_pane",
+    "localizedName": "Brown Stained Glass Pane",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:brown_terracotta",
+    "unlocalizedName": "block.minecraft.brown_terracotta",
+    "localizedName": "Brown Terracotta",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:brown_wool",
+    "unlocalizedName": "block.minecraft.brown_wool",
+    "localizedName": "Brown Wool",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:bubble_coral",
+    "unlocalizedName": "block.minecraft.bubble_coral",
+    "localizedName": "Bubble Coral",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:bubble_coral_block",
+    "unlocalizedName": "block.minecraft.bubble_coral_block",
+    "localizedName": "Bubble Coral Block",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:bubble_coral_fan",
+    "unlocalizedName": "block.minecraft.bubble_coral_fan",
+    "localizedName": "Bubble Coral Fan",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:bucket",
+    "unlocalizedName": "item.minecraft.bucket",
+    "localizedName": "Bucket",
+    "maxStackSize": 16,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:cactus",
+    "unlocalizedName": "block.minecraft.cactus",
+    "localizedName": "Cactus",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:cake",
+    "unlocalizedName": "block.minecraft.cake",
+    "localizedName": "Cake",
+    "maxStackSize": 1,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:campfire",
+    "unlocalizedName": "block.minecraft.campfire",
+    "localizedName": "Campfire",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:carrot",
+    "unlocalizedName": "item.minecraft.carrot",
+    "localizedName": "Carrot",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:carrot_on_a_stick",
+    "unlocalizedName": "item.minecraft.carrot_on_a_stick",
+    "localizedName": "Carrot on a Stick",
+    "maxStackSize": 1,
+    "maxDamage": 25
+  },
+  {
+    "id": "minecraft:cartography_table",
+    "unlocalizedName": "block.minecraft.cartography_table",
+    "localizedName": "Cartography Table",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:carved_pumpkin",
+    "unlocalizedName": "block.minecraft.carved_pumpkin",
+    "localizedName": "Carved Pumpkin",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:cat_spawn_egg",
+    "unlocalizedName": "item.minecraft.cat_spawn_egg",
+    "localizedName": "Cat Spawn Egg",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:cauldron",
+    "unlocalizedName": "block.minecraft.cauldron",
+    "localizedName": "Cauldron",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:cave_spider_spawn_egg",
+    "unlocalizedName": "item.minecraft.cave_spider_spawn_egg",
+    "localizedName": "Cave Spider Spawn Egg",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:chain_command_block",
+    "unlocalizedName": "block.minecraft.chain_command_block",
+    "localizedName": "Chain Command Block",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:chainmail_boots",
+    "unlocalizedName": "item.minecraft.chainmail_boots",
+    "localizedName": "Chainmail Boots",
+    "maxStackSize": 1,
+    "maxDamage": 195
+  },
+  {
+    "id": "minecraft:chainmail_chestplate",
+    "unlocalizedName": "item.minecraft.chainmail_chestplate",
+    "localizedName": "Chainmail Chestplate",
+    "maxStackSize": 1,
+    "maxDamage": 240
+  },
+  {
+    "id": "minecraft:chainmail_helmet",
+    "unlocalizedName": "item.minecraft.chainmail_helmet",
+    "localizedName": "Chainmail Helmet",
+    "maxStackSize": 1,
+    "maxDamage": 165
+  },
+  {
+    "id": "minecraft:chainmail_leggings",
+    "unlocalizedName": "item.minecraft.chainmail_leggings",
+    "localizedName": "Chainmail Leggings",
+    "maxStackSize": 1,
+    "maxDamage": 225
+  },
+  {
+    "id": "minecraft:charcoal",
+    "unlocalizedName": "item.minecraft.charcoal",
+    "localizedName": "Charcoal",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:chest",
+    "unlocalizedName": "block.minecraft.chest",
+    "localizedName": "Chest",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:chest_minecart",
+    "unlocalizedName": "item.minecraft.chest_minecart",
+    "localizedName": "Minecart with Chest",
+    "maxStackSize": 1,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:chicken",
+    "unlocalizedName": "item.minecraft.chicken",
+    "localizedName": "Raw Chicken",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:chicken_spawn_egg",
+    "unlocalizedName": "item.minecraft.chicken_spawn_egg",
+    "localizedName": "Chicken Spawn Egg",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:chipped_anvil",
+    "unlocalizedName": "block.minecraft.chipped_anvil",
+    "localizedName": "Chipped Anvil",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:chiseled_quartz_block",
+    "unlocalizedName": "block.minecraft.chiseled_quartz_block",
+    "localizedName": "Chiseled Quartz Block",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:chiseled_red_sandstone",
+    "unlocalizedName": "block.minecraft.chiseled_red_sandstone",
+    "localizedName": "Chiseled Red Sandstone",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:chiseled_sandstone",
+    "unlocalizedName": "block.minecraft.chiseled_sandstone",
+    "localizedName": "Chiseled Sandstone",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:chiseled_stone_bricks",
+    "unlocalizedName": "block.minecraft.chiseled_stone_bricks",
+    "localizedName": "Chiseled Stone Bricks",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:chorus_flower",
+    "unlocalizedName": "block.minecraft.chorus_flower",
+    "localizedName": "Chorus Flower",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:chorus_fruit",
+    "unlocalizedName": "item.minecraft.chorus_fruit",
+    "localizedName": "Chorus Fruit",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:chorus_plant",
+    "unlocalizedName": "block.minecraft.chorus_plant",
+    "localizedName": "Chorus Plant",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:clay",
+    "unlocalizedName": "block.minecraft.clay",
+    "localizedName": "Clay",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:clay_ball",
+    "unlocalizedName": "item.minecraft.clay_ball",
+    "localizedName": "Clay",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:clock",
+    "unlocalizedName": "item.minecraft.clock",
+    "localizedName": "Clock",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:coal",
+    "unlocalizedName": "item.minecraft.coal",
+    "localizedName": "Coal",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:coal_block",
+    "unlocalizedName": "block.minecraft.coal_block",
+    "localizedName": "Block of Coal",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:coal_ore",
+    "unlocalizedName": "block.minecraft.coal_ore",
+    "localizedName": "Coal Ore",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:coarse_dirt",
+    "unlocalizedName": "block.minecraft.coarse_dirt",
+    "localizedName": "Coarse Dirt",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:cobblestone",
+    "unlocalizedName": "block.minecraft.cobblestone",
+    "localizedName": "Cobblestone",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:cobblestone_slab",
+    "unlocalizedName": "block.minecraft.cobblestone_slab",
+    "localizedName": "Cobblestone Slab",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:cobblestone_stairs",
+    "unlocalizedName": "block.minecraft.cobblestone_stairs",
+    "localizedName": "Cobblestone Stairs",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:cobblestone_wall",
+    "unlocalizedName": "block.minecraft.cobblestone_wall",
+    "localizedName": "Cobblestone Wall",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:cobweb",
+    "unlocalizedName": "block.minecraft.cobweb",
+    "localizedName": "Cobweb",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:cocoa_beans",
+    "unlocalizedName": "item.minecraft.cocoa_beans",
+    "localizedName": "Cocoa Beans",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:cod",
+    "unlocalizedName": "item.minecraft.cod",
+    "localizedName": "Raw Cod",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:cod_bucket",
+    "unlocalizedName": "item.minecraft.cod_bucket",
+    "localizedName": "Bucket of Cod",
+    "maxStackSize": 1,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:cod_spawn_egg",
+    "unlocalizedName": "item.minecraft.cod_spawn_egg",
+    "localizedName": "Cod Spawn Egg",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:command_block",
+    "unlocalizedName": "block.minecraft.command_block",
+    "localizedName": "Command Block",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:command_block_minecart",
+    "unlocalizedName": "item.minecraft.command_block_minecart",
+    "localizedName": "Minecart with Command Block",
+    "maxStackSize": 1,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:comparator",
+    "unlocalizedName": "block.minecraft.comparator",
+    "localizedName": "Redstone Comparator",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:compass",
+    "unlocalizedName": "item.minecraft.compass",
+    "localizedName": "Compass",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:composter",
+    "unlocalizedName": "block.minecraft.composter",
+    "localizedName": "Composter",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:conduit",
+    "unlocalizedName": "block.minecraft.conduit",
+    "localizedName": "Conduit",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:cooked_beef",
+    "unlocalizedName": "item.minecraft.cooked_beef",
+    "localizedName": "Steak",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:cooked_chicken",
+    "unlocalizedName": "item.minecraft.cooked_chicken",
+    "localizedName": "Cooked Chicken",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:cooked_cod",
+    "unlocalizedName": "item.minecraft.cooked_cod",
+    "localizedName": "Cooked Cod",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:cooked_mutton",
+    "unlocalizedName": "item.minecraft.cooked_mutton",
+    "localizedName": "Cooked Mutton",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:cooked_porkchop",
+    "unlocalizedName": "item.minecraft.cooked_porkchop",
+    "localizedName": "Cooked Porkchop",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:cooked_rabbit",
+    "unlocalizedName": "item.minecraft.cooked_rabbit",
+    "localizedName": "Cooked Rabbit",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:cooked_salmon",
+    "unlocalizedName": "item.minecraft.cooked_salmon",
+    "localizedName": "Cooked Salmon",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:cookie",
+    "unlocalizedName": "item.minecraft.cookie",
+    "localizedName": "Cookie",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:cornflower",
+    "unlocalizedName": "block.minecraft.cornflower",
+    "localizedName": "Cornflower",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:cow_spawn_egg",
+    "unlocalizedName": "item.minecraft.cow_spawn_egg",
+    "localizedName": "Cow Spawn Egg",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:cracked_stone_bricks",
+    "unlocalizedName": "block.minecraft.cracked_stone_bricks",
+    "localizedName": "Cracked Stone Bricks",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:crafting_table",
+    "unlocalizedName": "block.minecraft.crafting_table",
+    "localizedName": "Crafting Table",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:creeper_banner_pattern",
+    "unlocalizedName": "item.minecraft.creeper_banner_pattern",
+    "localizedName": "Banner Pattern",
+    "maxStackSize": 1,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:creeper_head",
+    "unlocalizedName": "block.minecraft.creeper_head",
+    "localizedName": "Creeper Head",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:creeper_spawn_egg",
+    "unlocalizedName": "item.minecraft.creeper_spawn_egg",
+    "localizedName": "Creeper Spawn Egg",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:crossbow",
+    "unlocalizedName": "item.minecraft.crossbow",
+    "localizedName": "Crossbow",
+    "maxStackSize": 1,
+    "maxDamage": 326
+  },
+  {
+    "id": "minecraft:cut_red_sandstone",
+    "unlocalizedName": "block.minecraft.cut_red_sandstone",
+    "localizedName": "Cut Red Sandstone",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:cut_red_sandstone_slab",
+    "unlocalizedName": "block.minecraft.cut_red_sandstone_slab",
+    "localizedName": "Cut Red Sandstone Slab",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:cut_sandstone",
+    "unlocalizedName": "block.minecraft.cut_sandstone",
+    "localizedName": "Cut Sandstone",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:cut_sandstone_slab",
+    "unlocalizedName": "block.minecraft.cut_sandstone_slab",
+    "localizedName": "Cut Sandstone Slab",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:cyan_banner",
+    "unlocalizedName": "block.minecraft.cyan_banner",
+    "localizedName": "Cyan Banner",
+    "maxStackSize": 16,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:cyan_bed",
+    "unlocalizedName": "block.minecraft.cyan_bed",
+    "localizedName": "Cyan Bed",
+    "maxStackSize": 1,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:cyan_carpet",
+    "unlocalizedName": "block.minecraft.cyan_carpet",
+    "localizedName": "Cyan Carpet",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:cyan_concrete",
+    "unlocalizedName": "block.minecraft.cyan_concrete",
+    "localizedName": "Cyan Concrete",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:cyan_concrete_powder",
+    "unlocalizedName": "block.minecraft.cyan_concrete_powder",
+    "localizedName": "Cyan Concrete Powder",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:cyan_dye",
+    "unlocalizedName": "item.minecraft.cyan_dye",
+    "localizedName": "Cyan Dye",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:cyan_glazed_terracotta",
+    "unlocalizedName": "block.minecraft.cyan_glazed_terracotta",
+    "localizedName": "Cyan Glazed Terracotta",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:cyan_shulker_box",
+    "unlocalizedName": "block.minecraft.cyan_shulker_box",
+    "localizedName": "Cyan Shulker Box",
+    "maxStackSize": 1,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:cyan_stained_glass",
+    "unlocalizedName": "block.minecraft.cyan_stained_glass",
+    "localizedName": "Cyan Stained Glass",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:cyan_stained_glass_pane",
+    "unlocalizedName": "block.minecraft.cyan_stained_glass_pane",
+    "localizedName": "Cyan Stained Glass Pane",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:cyan_terracotta",
+    "unlocalizedName": "block.minecraft.cyan_terracotta",
+    "localizedName": "Cyan Terracotta",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:cyan_wool",
+    "unlocalizedName": "block.minecraft.cyan_wool",
+    "localizedName": "Cyan Wool",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:damaged_anvil",
+    "unlocalizedName": "block.minecraft.damaged_anvil",
+    "localizedName": "Damaged Anvil",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:dandelion",
+    "unlocalizedName": "block.minecraft.dandelion",
+    "localizedName": "Dandelion",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:dark_oak_boat",
+    "unlocalizedName": "item.minecraft.dark_oak_boat",
+    "localizedName": "Dark Oak Boat",
+    "maxStackSize": 1,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:dark_oak_button",
+    "unlocalizedName": "block.minecraft.dark_oak_button",
+    "localizedName": "Dark Oak Button",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:dark_oak_door",
+    "unlocalizedName": "block.minecraft.dark_oak_door",
+    "localizedName": "Dark Oak Door",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:dark_oak_fence",
+    "unlocalizedName": "block.minecraft.dark_oak_fence",
+    "localizedName": "Dark Oak Fence",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:dark_oak_fence_gate",
+    "unlocalizedName": "block.minecraft.dark_oak_fence_gate",
+    "localizedName": "Dark Oak Fence Gate",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:dark_oak_leaves",
+    "unlocalizedName": "block.minecraft.dark_oak_leaves",
+    "localizedName": "Dark Oak Leaves",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:dark_oak_log",
+    "unlocalizedName": "block.minecraft.dark_oak_log",
+    "localizedName": "Dark Oak Log",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:dark_oak_planks",
+    "unlocalizedName": "block.minecraft.dark_oak_planks",
+    "localizedName": "Dark Oak Planks",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:dark_oak_pressure_plate",
+    "unlocalizedName": "block.minecraft.dark_oak_pressure_plate",
+    "localizedName": "Dark Oak Pressure Plate",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:dark_oak_sapling",
+    "unlocalizedName": "block.minecraft.dark_oak_sapling",
+    "localizedName": "Dark Oak Sapling",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:dark_oak_sign",
+    "unlocalizedName": "block.minecraft.dark_oak_sign",
+    "localizedName": "Dark Oak Sign",
+    "maxStackSize": 16,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:dark_oak_slab",
+    "unlocalizedName": "block.minecraft.dark_oak_slab",
+    "localizedName": "Dark Oak Slab",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:dark_oak_stairs",
+    "unlocalizedName": "block.minecraft.dark_oak_stairs",
+    "localizedName": "Dark Oak Stairs",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:dark_oak_trapdoor",
+    "unlocalizedName": "block.minecraft.dark_oak_trapdoor",
+    "localizedName": "Dark Oak Trapdoor",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:dark_oak_wood",
+    "unlocalizedName": "block.minecraft.dark_oak_wood",
+    "localizedName": "Dark Oak Wood",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:dark_prismarine",
+    "unlocalizedName": "block.minecraft.dark_prismarine",
+    "localizedName": "Dark Prismarine",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:dark_prismarine_slab",
+    "unlocalizedName": "block.minecraft.dark_prismarine_slab",
+    "localizedName": "Dark Prismarine Slab",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:dark_prismarine_stairs",
+    "unlocalizedName": "block.minecraft.dark_prismarine_stairs",
+    "localizedName": "Dark Prismarine Stairs",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:daylight_detector",
+    "unlocalizedName": "block.minecraft.daylight_detector",
+    "localizedName": "Daylight Detector",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:dead_brain_coral",
+    "unlocalizedName": "block.minecraft.dead_brain_coral",
+    "localizedName": "Dead Brain Coral",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:dead_brain_coral_block",
+    "unlocalizedName": "block.minecraft.dead_brain_coral_block",
+    "localizedName": "Dead Brain Coral Block",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:dead_brain_coral_fan",
+    "unlocalizedName": "block.minecraft.dead_brain_coral_fan",
+    "localizedName": "Dead Brain Coral Fan",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:dead_bubble_coral",
+    "unlocalizedName": "block.minecraft.dead_bubble_coral",
+    "localizedName": "Dead Bubble Coral",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:dead_bubble_coral_block",
+    "unlocalizedName": "block.minecraft.dead_bubble_coral_block",
+    "localizedName": "Dead Bubble Coral Block",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:dead_bubble_coral_fan",
+    "unlocalizedName": "block.minecraft.dead_bubble_coral_fan",
+    "localizedName": "Dead Bubble Coral Fan",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:dead_bush",
+    "unlocalizedName": "block.minecraft.dead_bush",
+    "localizedName": "Dead Bush",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:dead_fire_coral",
+    "unlocalizedName": "block.minecraft.dead_fire_coral",
+    "localizedName": "Dead Fire Coral",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:dead_fire_coral_block",
+    "unlocalizedName": "block.minecraft.dead_fire_coral_block",
+    "localizedName": "Dead Fire Coral Block",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:dead_fire_coral_fan",
+    "unlocalizedName": "block.minecraft.dead_fire_coral_fan",
+    "localizedName": "Dead Fire Coral Fan",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:dead_horn_coral",
+    "unlocalizedName": "block.minecraft.dead_horn_coral",
+    "localizedName": "Dead Horn Coral",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:dead_horn_coral_block",
+    "unlocalizedName": "block.minecraft.dead_horn_coral_block",
+    "localizedName": "Dead Horn Coral Block",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:dead_horn_coral_fan",
+    "unlocalizedName": "block.minecraft.dead_horn_coral_fan",
+    "localizedName": "Dead Horn Coral Fan",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:dead_tube_coral",
+    "unlocalizedName": "block.minecraft.dead_tube_coral",
+    "localizedName": "Dead Tube Coral",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:dead_tube_coral_block",
+    "unlocalizedName": "block.minecraft.dead_tube_coral_block",
+    "localizedName": "Dead Tube Coral Block",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:dead_tube_coral_fan",
+    "unlocalizedName": "block.minecraft.dead_tube_coral_fan",
+    "localizedName": "Dead Tube Coral Fan",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:debug_stick",
+    "unlocalizedName": "item.minecraft.debug_stick",
+    "localizedName": "Debug Stick",
+    "maxStackSize": 1,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:detector_rail",
+    "unlocalizedName": "block.minecraft.detector_rail",
+    "localizedName": "Detector Rail",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:diamond",
+    "unlocalizedName": "item.minecraft.diamond",
+    "localizedName": "Diamond",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:diamond_axe",
+    "unlocalizedName": "item.minecraft.diamond_axe",
+    "localizedName": "Diamond Axe",
+    "maxStackSize": 1,
+    "maxDamage": 1561
+  },
+  {
+    "id": "minecraft:diamond_block",
+    "unlocalizedName": "block.minecraft.diamond_block",
+    "localizedName": "Block of Diamond",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:diamond_boots",
+    "unlocalizedName": "item.minecraft.diamond_boots",
+    "localizedName": "Diamond Boots",
+    "maxStackSize": 1,
+    "maxDamage": 429
+  },
+  {
+    "id": "minecraft:diamond_chestplate",
+    "unlocalizedName": "item.minecraft.diamond_chestplate",
+    "localizedName": "Diamond Chestplate",
+    "maxStackSize": 1,
+    "maxDamage": 528
+  },
+  {
+    "id": "minecraft:diamond_helmet",
+    "unlocalizedName": "item.minecraft.diamond_helmet",
+    "localizedName": "Diamond Helmet",
+    "maxStackSize": 1,
+    "maxDamage": 363
+  },
+  {
+    "id": "minecraft:diamond_hoe",
+    "unlocalizedName": "item.minecraft.diamond_hoe",
+    "localizedName": "Diamond Hoe",
+    "maxStackSize": 1,
+    "maxDamage": 1561
+  },
+  {
+    "id": "minecraft:diamond_horse_armor",
+    "unlocalizedName": "item.minecraft.diamond_horse_armor",
+    "localizedName": "Diamond Horse Armor",
+    "maxStackSize": 1,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:diamond_leggings",
+    "unlocalizedName": "item.minecraft.diamond_leggings",
+    "localizedName": "Diamond Leggings",
+    "maxStackSize": 1,
+    "maxDamage": 495
+  },
+  {
+    "id": "minecraft:diamond_ore",
+    "unlocalizedName": "block.minecraft.diamond_ore",
+    "localizedName": "Diamond Ore",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:diamond_pickaxe",
+    "unlocalizedName": "item.minecraft.diamond_pickaxe",
+    "localizedName": "Diamond Pickaxe",
+    "maxStackSize": 1,
+    "maxDamage": 1561
+  },
+  {
+    "id": "minecraft:diamond_shovel",
+    "unlocalizedName": "item.minecraft.diamond_shovel",
+    "localizedName": "Diamond Shovel",
+    "maxStackSize": 1,
+    "maxDamage": 1561
+  },
+  {
+    "id": "minecraft:diamond_sword",
+    "unlocalizedName": "item.minecraft.diamond_sword",
+    "localizedName": "Diamond Sword",
+    "maxStackSize": 1,
+    "maxDamage": 1561
+  },
+  {
+    "id": "minecraft:diorite",
+    "unlocalizedName": "block.minecraft.diorite",
+    "localizedName": "Diorite",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:diorite_slab",
+    "unlocalizedName": "block.minecraft.diorite_slab",
+    "localizedName": "Diorite Slab",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:diorite_stairs",
+    "unlocalizedName": "block.minecraft.diorite_stairs",
+    "localizedName": "Diorite Stairs",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:diorite_wall",
+    "unlocalizedName": "block.minecraft.diorite_wall",
+    "localizedName": "Diorite Wall",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:dirt",
+    "unlocalizedName": "block.minecraft.dirt",
+    "localizedName": "Dirt",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:dispenser",
+    "unlocalizedName": "block.minecraft.dispenser",
+    "localizedName": "Dispenser",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:dolphin_spawn_egg",
+    "unlocalizedName": "item.minecraft.dolphin_spawn_egg",
+    "localizedName": "Dolphin Spawn Egg",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:donkey_spawn_egg",
+    "unlocalizedName": "item.minecraft.donkey_spawn_egg",
+    "localizedName": "Donkey Spawn Egg",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:dragon_breath",
+    "unlocalizedName": "item.minecraft.dragon_breath",
+    "localizedName": "Dragon\u0027s Breath",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:dragon_egg",
+    "unlocalizedName": "block.minecraft.dragon_egg",
+    "localizedName": "Dragon Egg",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:dragon_head",
+    "unlocalizedName": "block.minecraft.dragon_head",
+    "localizedName": "Dragon Head",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:dried_kelp",
+    "unlocalizedName": "item.minecraft.dried_kelp",
+    "localizedName": "Dried Kelp",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:dried_kelp_block",
+    "unlocalizedName": "block.minecraft.dried_kelp_block",
+    "localizedName": "Dried Kelp Block",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:dropper",
+    "unlocalizedName": "block.minecraft.dropper",
+    "localizedName": "Dropper",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:drowned_spawn_egg",
+    "unlocalizedName": "item.minecraft.drowned_spawn_egg",
+    "localizedName": "Drowned Spawn Egg",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:egg",
+    "unlocalizedName": "item.minecraft.egg",
+    "localizedName": "Egg",
+    "maxStackSize": 16,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:elder_guardian_spawn_egg",
+    "unlocalizedName": "item.minecraft.elder_guardian_spawn_egg",
+    "localizedName": "Elder Guardian Spawn Egg",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:elytra",
+    "unlocalizedName": "item.minecraft.elytra",
+    "localizedName": "Elytra",
+    "maxStackSize": 1,
+    "maxDamage": 432
+  },
+  {
+    "id": "minecraft:emerald",
+    "unlocalizedName": "item.minecraft.emerald",
+    "localizedName": "Emerald",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:emerald_block",
+    "unlocalizedName": "block.minecraft.emerald_block",
+    "localizedName": "Block of Emerald",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:emerald_ore",
+    "unlocalizedName": "block.minecraft.emerald_ore",
+    "localizedName": "Emerald Ore",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:enchanted_book",
+    "unlocalizedName": "item.minecraft.enchanted_book",
+    "localizedName": "Enchanted Book",
+    "maxStackSize": 1,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:enchanted_golden_apple",
+    "unlocalizedName": "item.minecraft.enchanted_golden_apple",
+    "localizedName": "Enchanted Golden Apple",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:enchanting_table",
+    "unlocalizedName": "block.minecraft.enchanting_table",
+    "localizedName": "Enchanting Table",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:end_crystal",
+    "unlocalizedName": "item.minecraft.end_crystal",
+    "localizedName": "End Crystal",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:end_portal_frame",
+    "unlocalizedName": "block.minecraft.end_portal_frame",
+    "localizedName": "End Portal Frame",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:end_rod",
+    "unlocalizedName": "block.minecraft.end_rod",
+    "localizedName": "End Rod",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:end_stone",
+    "unlocalizedName": "block.minecraft.end_stone",
+    "localizedName": "End Stone",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:end_stone_brick_slab",
+    "unlocalizedName": "block.minecraft.end_stone_brick_slab",
+    "localizedName": "End Stone Brick Slab",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:end_stone_brick_stairs",
+    "unlocalizedName": "block.minecraft.end_stone_brick_stairs",
+    "localizedName": "End Stone Brick Stairs",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:end_stone_brick_wall",
+    "unlocalizedName": "block.minecraft.end_stone_brick_wall",
+    "localizedName": "End Stone Brick Wall",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:end_stone_bricks",
+    "unlocalizedName": "block.minecraft.end_stone_bricks",
+    "localizedName": "End Stone Bricks",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:ender_chest",
+    "unlocalizedName": "block.minecraft.ender_chest",
+    "localizedName": "Ender Chest",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:ender_eye",
+    "unlocalizedName": "item.minecraft.ender_eye",
+    "localizedName": "Eye of Ender",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:ender_pearl",
+    "unlocalizedName": "item.minecraft.ender_pearl",
+    "localizedName": "Ender Pearl",
+    "maxStackSize": 16,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:enderman_spawn_egg",
+    "unlocalizedName": "item.minecraft.enderman_spawn_egg",
+    "localizedName": "Enderman Spawn Egg",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:endermite_spawn_egg",
+    "unlocalizedName": "item.minecraft.endermite_spawn_egg",
+    "localizedName": "Endermite Spawn Egg",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:evoker_spawn_egg",
+    "unlocalizedName": "item.minecraft.evoker_spawn_egg",
+    "localizedName": "Evoker Spawn Egg",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:experience_bottle",
+    "unlocalizedName": "item.minecraft.experience_bottle",
+    "localizedName": "Bottle o\u0027 Enchanting",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:farmland",
+    "unlocalizedName": "block.minecraft.farmland",
+    "localizedName": "Farmland",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:feather",
+    "unlocalizedName": "item.minecraft.feather",
+    "localizedName": "Feather",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:fermented_spider_eye",
+    "unlocalizedName": "item.minecraft.fermented_spider_eye",
+    "localizedName": "Fermented Spider Eye",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:fern",
+    "unlocalizedName": "block.minecraft.fern",
+    "localizedName": "Fern",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:filled_map",
+    "unlocalizedName": "item.minecraft.filled_map",
+    "localizedName": "Map",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:fire_charge",
+    "unlocalizedName": "item.minecraft.fire_charge",
+    "localizedName": "Fire Charge",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:fire_coral",
+    "unlocalizedName": "block.minecraft.fire_coral",
+    "localizedName": "Fire Coral",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:fire_coral_block",
+    "unlocalizedName": "block.minecraft.fire_coral_block",
+    "localizedName": "Fire Coral Block",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:fire_coral_fan",
+    "unlocalizedName": "block.minecraft.fire_coral_fan",
+    "localizedName": "Fire Coral Fan",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:firework_rocket",
+    "unlocalizedName": "item.minecraft.firework_rocket",
+    "localizedName": "Firework Rocket",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:firework_star",
+    "unlocalizedName": "item.minecraft.firework_star",
+    "localizedName": "Firework Star",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:fishing_rod",
+    "unlocalizedName": "item.minecraft.fishing_rod",
+    "localizedName": "Fishing Rod",
+    "maxStackSize": 1,
+    "maxDamage": 64
+  },
+  {
+    "id": "minecraft:fletching_table",
+    "unlocalizedName": "block.minecraft.fletching_table",
+    "localizedName": "Fletching Table",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:flint",
+    "unlocalizedName": "item.minecraft.flint",
+    "localizedName": "Flint",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:flint_and_steel",
+    "unlocalizedName": "item.minecraft.flint_and_steel",
+    "localizedName": "Flint and Steel",
+    "maxStackSize": 1,
+    "maxDamage": 64
+  },
+  {
+    "id": "minecraft:flower_banner_pattern",
+    "unlocalizedName": "item.minecraft.flower_banner_pattern",
+    "localizedName": "Banner Pattern",
+    "maxStackSize": 1,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:flower_pot",
+    "unlocalizedName": "block.minecraft.flower_pot",
+    "localizedName": "Flower Pot",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:fox_spawn_egg",
+    "unlocalizedName": "item.minecraft.fox_spawn_egg",
+    "localizedName": "Fox Spawn Egg",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:furnace",
+    "unlocalizedName": "block.minecraft.furnace",
+    "localizedName": "Furnace",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:furnace_minecart",
+    "unlocalizedName": "item.minecraft.furnace_minecart",
+    "localizedName": "Minecart with Furnace",
+    "maxStackSize": 1,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:ghast_spawn_egg",
+    "unlocalizedName": "item.minecraft.ghast_spawn_egg",
+    "localizedName": "Ghast Spawn Egg",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:ghast_tear",
+    "unlocalizedName": "item.minecraft.ghast_tear",
+    "localizedName": "Ghast Tear",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:glass",
+    "unlocalizedName": "block.minecraft.glass",
+    "localizedName": "Glass",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:glass_bottle",
+    "unlocalizedName": "item.minecraft.glass_bottle",
+    "localizedName": "Glass Bottle",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:glass_pane",
+    "unlocalizedName": "block.minecraft.glass_pane",
+    "localizedName": "Glass Pane",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:glistering_melon_slice",
+    "unlocalizedName": "item.minecraft.glistering_melon_slice",
+    "localizedName": "Glistering Melon Slice",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:globe_banner_pattern",
+    "unlocalizedName": "item.minecraft.globe_banner_pattern",
+    "localizedName": "Banner Pattern",
+    "maxStackSize": 1,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:glowstone",
+    "unlocalizedName": "block.minecraft.glowstone",
+    "localizedName": "Glowstone",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:glowstone_dust",
+    "unlocalizedName": "item.minecraft.glowstone_dust",
+    "localizedName": "Glowstone Dust",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:gold_block",
+    "unlocalizedName": "block.minecraft.gold_block",
+    "localizedName": "Block of Gold",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:gold_ingot",
+    "unlocalizedName": "item.minecraft.gold_ingot",
+    "localizedName": "Gold Ingot",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:gold_nugget",
+    "unlocalizedName": "item.minecraft.gold_nugget",
+    "localizedName": "Gold Nugget",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:gold_ore",
+    "unlocalizedName": "block.minecraft.gold_ore",
+    "localizedName": "Gold Ore",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:golden_apple",
+    "unlocalizedName": "item.minecraft.golden_apple",
+    "localizedName": "Golden Apple",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:golden_axe",
+    "unlocalizedName": "item.minecraft.golden_axe",
+    "localizedName": "Golden Axe",
+    "maxStackSize": 1,
+    "maxDamage": 32
+  },
+  {
+    "id": "minecraft:golden_boots",
+    "unlocalizedName": "item.minecraft.golden_boots",
+    "localizedName": "Golden Boots",
+    "maxStackSize": 1,
+    "maxDamage": 91
+  },
+  {
+    "id": "minecraft:golden_carrot",
+    "unlocalizedName": "item.minecraft.golden_carrot",
+    "localizedName": "Golden Carrot",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:golden_chestplate",
+    "unlocalizedName": "item.minecraft.golden_chestplate",
+    "localizedName": "Golden Chestplate",
+    "maxStackSize": 1,
+    "maxDamage": 112
+  },
+  {
+    "id": "minecraft:golden_helmet",
+    "unlocalizedName": "item.minecraft.golden_helmet",
+    "localizedName": "Golden Helmet",
+    "maxStackSize": 1,
+    "maxDamage": 77
+  },
+  {
+    "id": "minecraft:golden_hoe",
+    "unlocalizedName": "item.minecraft.golden_hoe",
+    "localizedName": "Golden Hoe",
+    "maxStackSize": 1,
+    "maxDamage": 32
+  },
+  {
+    "id": "minecraft:golden_horse_armor",
+    "unlocalizedName": "item.minecraft.golden_horse_armor",
+    "localizedName": "Golden Horse Armor",
+    "maxStackSize": 1,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:golden_leggings",
+    "unlocalizedName": "item.minecraft.golden_leggings",
+    "localizedName": "Golden Leggings",
+    "maxStackSize": 1,
+    "maxDamage": 105
+  },
+  {
+    "id": "minecraft:golden_pickaxe",
+    "unlocalizedName": "item.minecraft.golden_pickaxe",
+    "localizedName": "Golden Pickaxe",
+    "maxStackSize": 1,
+    "maxDamage": 32
+  },
+  {
+    "id": "minecraft:golden_shovel",
+    "unlocalizedName": "item.minecraft.golden_shovel",
+    "localizedName": "Golden Shovel",
+    "maxStackSize": 1,
+    "maxDamage": 32
+  },
+  {
+    "id": "minecraft:golden_sword",
+    "unlocalizedName": "item.minecraft.golden_sword",
+    "localizedName": "Golden Sword",
+    "maxStackSize": 1,
+    "maxDamage": 32
+  },
+  {
+    "id": "minecraft:granite",
+    "unlocalizedName": "block.minecraft.granite",
+    "localizedName": "Granite",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:granite_slab",
+    "unlocalizedName": "block.minecraft.granite_slab",
+    "localizedName": "Granite Slab",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:granite_stairs",
+    "unlocalizedName": "block.minecraft.granite_stairs",
+    "localizedName": "Granite Stairs",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:granite_wall",
+    "unlocalizedName": "block.minecraft.granite_wall",
+    "localizedName": "Granite Wall",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:grass",
+    "unlocalizedName": "block.minecraft.grass",
+    "localizedName": "Grass",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:grass_block",
+    "unlocalizedName": "block.minecraft.grass_block",
+    "localizedName": "Grass Block",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:grass_path",
+    "unlocalizedName": "block.minecraft.grass_path",
+    "localizedName": "Grass Path",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:gravel",
+    "unlocalizedName": "block.minecraft.gravel",
+    "localizedName": "Gravel",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:gray_banner",
+    "unlocalizedName": "block.minecraft.gray_banner",
+    "localizedName": "Gray Banner",
+    "maxStackSize": 16,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:gray_bed",
+    "unlocalizedName": "block.minecraft.gray_bed",
+    "localizedName": "Gray Bed",
+    "maxStackSize": 1,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:gray_carpet",
+    "unlocalizedName": "block.minecraft.gray_carpet",
+    "localizedName": "Gray Carpet",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:gray_concrete",
+    "unlocalizedName": "block.minecraft.gray_concrete",
+    "localizedName": "Gray Concrete",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:gray_concrete_powder",
+    "unlocalizedName": "block.minecraft.gray_concrete_powder",
+    "localizedName": "Gray Concrete Powder",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:gray_dye",
+    "unlocalizedName": "item.minecraft.gray_dye",
+    "localizedName": "Gray Dye",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:gray_glazed_terracotta",
+    "unlocalizedName": "block.minecraft.gray_glazed_terracotta",
+    "localizedName": "Gray Glazed Terracotta",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:gray_shulker_box",
+    "unlocalizedName": "block.minecraft.gray_shulker_box",
+    "localizedName": "Gray Shulker Box",
+    "maxStackSize": 1,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:gray_stained_glass",
+    "unlocalizedName": "block.minecraft.gray_stained_glass",
+    "localizedName": "Gray Stained Glass",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:gray_stained_glass_pane",
+    "unlocalizedName": "block.minecraft.gray_stained_glass_pane",
+    "localizedName": "Gray Stained Glass Pane",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:gray_terracotta",
+    "unlocalizedName": "block.minecraft.gray_terracotta",
+    "localizedName": "Gray Terracotta",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:gray_wool",
+    "unlocalizedName": "block.minecraft.gray_wool",
+    "localizedName": "Gray Wool",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:green_banner",
+    "unlocalizedName": "block.minecraft.green_banner",
+    "localizedName": "Green Banner",
+    "maxStackSize": 16,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:green_bed",
+    "unlocalizedName": "block.minecraft.green_bed",
+    "localizedName": "Green Bed",
+    "maxStackSize": 1,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:green_carpet",
+    "unlocalizedName": "block.minecraft.green_carpet",
+    "localizedName": "Green Carpet",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:green_concrete",
+    "unlocalizedName": "block.minecraft.green_concrete",
+    "localizedName": "Green Concrete",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:green_concrete_powder",
+    "unlocalizedName": "block.minecraft.green_concrete_powder",
+    "localizedName": "Green Concrete Powder",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:green_dye",
+    "unlocalizedName": "item.minecraft.green_dye",
+    "localizedName": "Green Dye",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:green_glazed_terracotta",
+    "unlocalizedName": "block.minecraft.green_glazed_terracotta",
+    "localizedName": "Green Glazed Terracotta",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:green_shulker_box",
+    "unlocalizedName": "block.minecraft.green_shulker_box",
+    "localizedName": "Green Shulker Box",
+    "maxStackSize": 1,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:green_stained_glass",
+    "unlocalizedName": "block.minecraft.green_stained_glass",
+    "localizedName": "Green Stained Glass",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:green_stained_glass_pane",
+    "unlocalizedName": "block.minecraft.green_stained_glass_pane",
+    "localizedName": "Green Stained Glass Pane",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:green_terracotta",
+    "unlocalizedName": "block.minecraft.green_terracotta",
+    "localizedName": "Green Terracotta",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:green_wool",
+    "unlocalizedName": "block.minecraft.green_wool",
+    "localizedName": "Green Wool",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:grindstone",
+    "unlocalizedName": "block.minecraft.grindstone",
+    "localizedName": "Grindstone",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:guardian_spawn_egg",
+    "unlocalizedName": "item.minecraft.guardian_spawn_egg",
+    "localizedName": "Guardian Spawn Egg",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:gunpowder",
+    "unlocalizedName": "item.minecraft.gunpowder",
+    "localizedName": "Gunpowder",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:hay_block",
+    "unlocalizedName": "block.minecraft.hay_block",
+    "localizedName": "Hay Bale",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:heart_of_the_sea",
+    "unlocalizedName": "item.minecraft.heart_of_the_sea",
+    "localizedName": "Heart of the Sea",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:heavy_weighted_pressure_plate",
+    "unlocalizedName": "block.minecraft.heavy_weighted_pressure_plate",
+    "localizedName": "Heavy Weighted Pressure Plate",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:hopper",
+    "unlocalizedName": "block.minecraft.hopper",
+    "localizedName": "Hopper",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:hopper_minecart",
+    "unlocalizedName": "item.minecraft.hopper_minecart",
+    "localizedName": "Minecart with Hopper",
+    "maxStackSize": 1,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:horn_coral",
+    "unlocalizedName": "block.minecraft.horn_coral",
+    "localizedName": "Horn Coral",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:horn_coral_block",
+    "unlocalizedName": "block.minecraft.horn_coral_block",
+    "localizedName": "Horn Coral Block",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:horn_coral_fan",
+    "unlocalizedName": "block.minecraft.horn_coral_fan",
+    "localizedName": "Horn Coral Fan",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:horse_spawn_egg",
+    "unlocalizedName": "item.minecraft.horse_spawn_egg",
+    "localizedName": "Horse Spawn Egg",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:husk_spawn_egg",
+    "unlocalizedName": "item.minecraft.husk_spawn_egg",
+    "localizedName": "Husk Spawn Egg",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:ice",
+    "unlocalizedName": "block.minecraft.ice",
+    "localizedName": "Ice",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:infested_chiseled_stone_bricks",
+    "unlocalizedName": "block.minecraft.infested_chiseled_stone_bricks",
+    "localizedName": "Infested Chiseled Stone Bricks",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:infested_cobblestone",
+    "unlocalizedName": "block.minecraft.infested_cobblestone",
+    "localizedName": "Infested Cobblestone",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:infested_cracked_stone_bricks",
+    "unlocalizedName": "block.minecraft.infested_cracked_stone_bricks",
+    "localizedName": "Infested Cracked Stone Bricks",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:infested_mossy_stone_bricks",
+    "unlocalizedName": "block.minecraft.infested_mossy_stone_bricks",
+    "localizedName": "Infested Mossy Stone Bricks",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:infested_stone",
+    "unlocalizedName": "block.minecraft.infested_stone",
+    "localizedName": "Infested Stone",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:infested_stone_bricks",
+    "unlocalizedName": "block.minecraft.infested_stone_bricks",
+    "localizedName": "Infested Stone Bricks",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:ink_sac",
+    "unlocalizedName": "item.minecraft.ink_sac",
+    "localizedName": "Ink Sac",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:iron_axe",
+    "unlocalizedName": "item.minecraft.iron_axe",
+    "localizedName": "Iron Axe",
+    "maxStackSize": 1,
+    "maxDamage": 250
+  },
+  {
+    "id": "minecraft:iron_bars",
+    "unlocalizedName": "block.minecraft.iron_bars",
+    "localizedName": "Iron Bars",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:iron_block",
+    "unlocalizedName": "block.minecraft.iron_block",
+    "localizedName": "Block of Iron",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:iron_boots",
+    "unlocalizedName": "item.minecraft.iron_boots",
+    "localizedName": "Iron Boots",
+    "maxStackSize": 1,
+    "maxDamage": 195
+  },
+  {
+    "id": "minecraft:iron_chestplate",
+    "unlocalizedName": "item.minecraft.iron_chestplate",
+    "localizedName": "Iron Chestplate",
+    "maxStackSize": 1,
+    "maxDamage": 240
+  },
+  {
+    "id": "minecraft:iron_door",
+    "unlocalizedName": "block.minecraft.iron_door",
+    "localizedName": "Iron Door",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:iron_helmet",
+    "unlocalizedName": "item.minecraft.iron_helmet",
+    "localizedName": "Iron Helmet",
+    "maxStackSize": 1,
+    "maxDamage": 165
+  },
+  {
+    "id": "minecraft:iron_hoe",
+    "unlocalizedName": "item.minecraft.iron_hoe",
+    "localizedName": "Iron Hoe",
+    "maxStackSize": 1,
+    "maxDamage": 250
+  },
+  {
+    "id": "minecraft:iron_horse_armor",
+    "unlocalizedName": "item.minecraft.iron_horse_armor",
+    "localizedName": "Iron Horse Armor",
+    "maxStackSize": 1,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:iron_ingot",
+    "unlocalizedName": "item.minecraft.iron_ingot",
+    "localizedName": "Iron Ingot",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:iron_leggings",
+    "unlocalizedName": "item.minecraft.iron_leggings",
+    "localizedName": "Iron Leggings",
+    "maxStackSize": 1,
+    "maxDamage": 225
+  },
+  {
+    "id": "minecraft:iron_nugget",
+    "unlocalizedName": "item.minecraft.iron_nugget",
+    "localizedName": "Iron Nugget",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:iron_ore",
+    "unlocalizedName": "block.minecraft.iron_ore",
+    "localizedName": "Iron Ore",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:iron_pickaxe",
+    "unlocalizedName": "item.minecraft.iron_pickaxe",
+    "localizedName": "Iron Pickaxe",
+    "maxStackSize": 1,
+    "maxDamage": 250
+  },
+  {
+    "id": "minecraft:iron_shovel",
+    "unlocalizedName": "item.minecraft.iron_shovel",
+    "localizedName": "Iron Shovel",
+    "maxStackSize": 1,
+    "maxDamage": 250
+  },
+  {
+    "id": "minecraft:iron_sword",
+    "unlocalizedName": "item.minecraft.iron_sword",
+    "localizedName": "Iron Sword",
+    "maxStackSize": 1,
+    "maxDamage": 250
+  },
+  {
+    "id": "minecraft:iron_trapdoor",
+    "unlocalizedName": "block.minecraft.iron_trapdoor",
+    "localizedName": "Iron Trapdoor",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:item_frame",
+    "unlocalizedName": "item.minecraft.item_frame",
+    "localizedName": "Item Frame",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:jack_o_lantern",
+    "unlocalizedName": "block.minecraft.jack_o_lantern",
+    "localizedName": "Jack o\u0027Lantern",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:jigsaw",
+    "unlocalizedName": "block.minecraft.jigsaw",
+    "localizedName": "Jigsaw Block",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:jukebox",
+    "unlocalizedName": "block.minecraft.jukebox",
+    "localizedName": "Jukebox",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:jungle_boat",
+    "unlocalizedName": "item.minecraft.jungle_boat",
+    "localizedName": "Jungle Boat",
+    "maxStackSize": 1,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:jungle_button",
+    "unlocalizedName": "block.minecraft.jungle_button",
+    "localizedName": "Jungle Button",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:jungle_door",
+    "unlocalizedName": "block.minecraft.jungle_door",
+    "localizedName": "Jungle Door",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:jungle_fence",
+    "unlocalizedName": "block.minecraft.jungle_fence",
+    "localizedName": "Jungle Fence",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:jungle_fence_gate",
+    "unlocalizedName": "block.minecraft.jungle_fence_gate",
+    "localizedName": "Jungle Fence Gate",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:jungle_leaves",
+    "unlocalizedName": "block.minecraft.jungle_leaves",
+    "localizedName": "Jungle Leaves",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:jungle_log",
+    "unlocalizedName": "block.minecraft.jungle_log",
+    "localizedName": "Jungle Log",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:jungle_planks",
+    "unlocalizedName": "block.minecraft.jungle_planks",
+    "localizedName": "Jungle Planks",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:jungle_pressure_plate",
+    "unlocalizedName": "block.minecraft.jungle_pressure_plate",
+    "localizedName": "Jungle Pressure Plate",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:jungle_sapling",
+    "unlocalizedName": "block.minecraft.jungle_sapling",
+    "localizedName": "Jungle Sapling",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:jungle_sign",
+    "unlocalizedName": "block.minecraft.jungle_sign",
+    "localizedName": "Jungle Sign",
+    "maxStackSize": 16,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:jungle_slab",
+    "unlocalizedName": "block.minecraft.jungle_slab",
+    "localizedName": "Jungle Slab",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:jungle_stairs",
+    "unlocalizedName": "block.minecraft.jungle_stairs",
+    "localizedName": "Jungle Stairs",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:jungle_trapdoor",
+    "unlocalizedName": "block.minecraft.jungle_trapdoor",
+    "localizedName": "Jungle Trapdoor",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:jungle_wood",
+    "unlocalizedName": "block.minecraft.jungle_wood",
+    "localizedName": "Jungle Wood",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:kelp",
+    "unlocalizedName": "block.minecraft.kelp",
+    "localizedName": "Kelp",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:knowledge_book",
+    "unlocalizedName": "item.minecraft.knowledge_book",
+    "localizedName": "Knowledge Book",
+    "maxStackSize": 1,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:ladder",
+    "unlocalizedName": "block.minecraft.ladder",
+    "localizedName": "Ladder",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:lantern",
+    "unlocalizedName": "block.minecraft.lantern",
+    "localizedName": "Lantern",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:lapis_block",
+    "unlocalizedName": "block.minecraft.lapis_block",
+    "localizedName": "Lapis Lazuli Block",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:lapis_lazuli",
+    "unlocalizedName": "item.minecraft.lapis_lazuli",
+    "localizedName": "Lapis Lazuli",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:lapis_ore",
+    "unlocalizedName": "block.minecraft.lapis_ore",
+    "localizedName": "Lapis Lazuli Ore",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:large_fern",
+    "unlocalizedName": "block.minecraft.large_fern",
+    "localizedName": "Large Fern",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:lava_bucket",
+    "unlocalizedName": "item.minecraft.lava_bucket",
+    "localizedName": "Lava Bucket",
+    "maxStackSize": 1,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:lead",
+    "unlocalizedName": "item.minecraft.lead",
+    "localizedName": "Lead",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:leather",
+    "unlocalizedName": "item.minecraft.leather",
+    "localizedName": "Leather",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:leather_boots",
+    "unlocalizedName": "item.minecraft.leather_boots",
+    "localizedName": "Leather Boots",
+    "maxStackSize": 1,
+    "maxDamage": 65
+  },
+  {
+    "id": "minecraft:leather_chestplate",
+    "unlocalizedName": "item.minecraft.leather_chestplate",
+    "localizedName": "Leather Tunic",
+    "maxStackSize": 1,
+    "maxDamage": 80
+  },
+  {
+    "id": "minecraft:leather_helmet",
+    "unlocalizedName": "item.minecraft.leather_helmet",
+    "localizedName": "Leather Cap",
+    "maxStackSize": 1,
+    "maxDamage": 55
+  },
+  {
+    "id": "minecraft:leather_horse_armor",
+    "unlocalizedName": "item.minecraft.leather_horse_armor",
+    "localizedName": "Leather Horse Armor",
+    "maxStackSize": 1,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:leather_leggings",
+    "unlocalizedName": "item.minecraft.leather_leggings",
+    "localizedName": "Leather Pants",
+    "maxStackSize": 1,
+    "maxDamage": 75
+  },
+  {
+    "id": "minecraft:lectern",
+    "unlocalizedName": "block.minecraft.lectern",
+    "localizedName": "Lectern",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:lever",
+    "unlocalizedName": "block.minecraft.lever",
+    "localizedName": "Lever",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:light_blue_banner",
+    "unlocalizedName": "block.minecraft.light_blue_banner",
+    "localizedName": "Light Blue Banner",
+    "maxStackSize": 16,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:light_blue_bed",
+    "unlocalizedName": "block.minecraft.light_blue_bed",
+    "localizedName": "Light Blue Bed",
+    "maxStackSize": 1,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:light_blue_carpet",
+    "unlocalizedName": "block.minecraft.light_blue_carpet",
+    "localizedName": "Light Blue Carpet",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:light_blue_concrete",
+    "unlocalizedName": "block.minecraft.light_blue_concrete",
+    "localizedName": "Light Blue Concrete",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:light_blue_concrete_powder",
+    "unlocalizedName": "block.minecraft.light_blue_concrete_powder",
+    "localizedName": "Light Blue Concrete Powder",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:light_blue_dye",
+    "unlocalizedName": "item.minecraft.light_blue_dye",
+    "localizedName": "Light Blue Dye",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:light_blue_glazed_terracotta",
+    "unlocalizedName": "block.minecraft.light_blue_glazed_terracotta",
+    "localizedName": "Light Blue Glazed Terracotta",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:light_blue_shulker_box",
+    "unlocalizedName": "block.minecraft.light_blue_shulker_box",
+    "localizedName": "Light Blue Shulker Box",
+    "maxStackSize": 1,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:light_blue_stained_glass",
+    "unlocalizedName": "block.minecraft.light_blue_stained_glass",
+    "localizedName": "Light Blue Stained Glass",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:light_blue_stained_glass_pane",
+    "unlocalizedName": "block.minecraft.light_blue_stained_glass_pane",
+    "localizedName": "Light Blue Stained Glass Pane",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:light_blue_terracotta",
+    "unlocalizedName": "block.minecraft.light_blue_terracotta",
+    "localizedName": "Light Blue Terracotta",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:light_blue_wool",
+    "unlocalizedName": "block.minecraft.light_blue_wool",
+    "localizedName": "Light Blue Wool",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:light_gray_banner",
+    "unlocalizedName": "block.minecraft.light_gray_banner",
+    "localizedName": "Light Gray Banner",
+    "maxStackSize": 16,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:light_gray_bed",
+    "unlocalizedName": "block.minecraft.light_gray_bed",
+    "localizedName": "Light Gray Bed",
+    "maxStackSize": 1,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:light_gray_carpet",
+    "unlocalizedName": "block.minecraft.light_gray_carpet",
+    "localizedName": "Light Gray Carpet",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:light_gray_concrete",
+    "unlocalizedName": "block.minecraft.light_gray_concrete",
+    "localizedName": "Light Gray Concrete",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:light_gray_concrete_powder",
+    "unlocalizedName": "block.minecraft.light_gray_concrete_powder",
+    "localizedName": "Light Gray Concrete Powder",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:light_gray_dye",
+    "unlocalizedName": "item.minecraft.light_gray_dye",
+    "localizedName": "Light Gray Dye",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:light_gray_glazed_terracotta",
+    "unlocalizedName": "block.minecraft.light_gray_glazed_terracotta",
+    "localizedName": "Light Gray Glazed Terracotta",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:light_gray_shulker_box",
+    "unlocalizedName": "block.minecraft.light_gray_shulker_box",
+    "localizedName": "Light Gray Shulker Box",
+    "maxStackSize": 1,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:light_gray_stained_glass",
+    "unlocalizedName": "block.minecraft.light_gray_stained_glass",
+    "localizedName": "Light Gray Stained Glass",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:light_gray_stained_glass_pane",
+    "unlocalizedName": "block.minecraft.light_gray_stained_glass_pane",
+    "localizedName": "Light Gray Stained Glass Pane",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:light_gray_terracotta",
+    "unlocalizedName": "block.minecraft.light_gray_terracotta",
+    "localizedName": "Light Gray Terracotta",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:light_gray_wool",
+    "unlocalizedName": "block.minecraft.light_gray_wool",
+    "localizedName": "Light Gray Wool",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:light_weighted_pressure_plate",
+    "unlocalizedName": "block.minecraft.light_weighted_pressure_plate",
+    "localizedName": "Light Weighted Pressure Plate",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:lilac",
+    "unlocalizedName": "block.minecraft.lilac",
+    "localizedName": "Lilac",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:lily_of_the_valley",
+    "unlocalizedName": "block.minecraft.lily_of_the_valley",
+    "localizedName": "Lily of the Valley",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:lily_pad",
+    "unlocalizedName": "block.minecraft.lily_pad",
+    "localizedName": "Lily Pad",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:lime_banner",
+    "unlocalizedName": "block.minecraft.lime_banner",
+    "localizedName": "Lime Banner",
+    "maxStackSize": 16,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:lime_bed",
+    "unlocalizedName": "block.minecraft.lime_bed",
+    "localizedName": "Lime Bed",
+    "maxStackSize": 1,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:lime_carpet",
+    "unlocalizedName": "block.minecraft.lime_carpet",
+    "localizedName": "Lime Carpet",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:lime_concrete",
+    "unlocalizedName": "block.minecraft.lime_concrete",
+    "localizedName": "Lime Concrete",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:lime_concrete_powder",
+    "unlocalizedName": "block.minecraft.lime_concrete_powder",
+    "localizedName": "Lime Concrete Powder",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:lime_dye",
+    "unlocalizedName": "item.minecraft.lime_dye",
+    "localizedName": "Lime Dye",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:lime_glazed_terracotta",
+    "unlocalizedName": "block.minecraft.lime_glazed_terracotta",
+    "localizedName": "Lime Glazed Terracotta",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:lime_shulker_box",
+    "unlocalizedName": "block.minecraft.lime_shulker_box",
+    "localizedName": "Lime Shulker Box",
+    "maxStackSize": 1,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:lime_stained_glass",
+    "unlocalizedName": "block.minecraft.lime_stained_glass",
+    "localizedName": "Lime Stained Glass",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:lime_stained_glass_pane",
+    "unlocalizedName": "block.minecraft.lime_stained_glass_pane",
+    "localizedName": "Lime Stained Glass Pane",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:lime_terracotta",
+    "unlocalizedName": "block.minecraft.lime_terracotta",
+    "localizedName": "Lime Terracotta",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:lime_wool",
+    "unlocalizedName": "block.minecraft.lime_wool",
+    "localizedName": "Lime Wool",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:lingering_potion",
+    "unlocalizedName": "item.minecraft.lingering_potion.effect.water",
+    "localizedName": "Lingering Water Bottle",
+    "maxStackSize": 1,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:llama_spawn_egg",
+    "unlocalizedName": "item.minecraft.llama_spawn_egg",
+    "localizedName": "Llama Spawn Egg",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:loom",
+    "unlocalizedName": "block.minecraft.loom",
+    "localizedName": "Loom",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:magenta_banner",
+    "unlocalizedName": "block.minecraft.magenta_banner",
+    "localizedName": "Magenta Banner",
+    "maxStackSize": 16,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:magenta_bed",
+    "unlocalizedName": "block.minecraft.magenta_bed",
+    "localizedName": "Magenta Bed",
+    "maxStackSize": 1,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:magenta_carpet",
+    "unlocalizedName": "block.minecraft.magenta_carpet",
+    "localizedName": "Magenta Carpet",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:magenta_concrete",
+    "unlocalizedName": "block.minecraft.magenta_concrete",
+    "localizedName": "Magenta Concrete",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:magenta_concrete_powder",
+    "unlocalizedName": "block.minecraft.magenta_concrete_powder",
+    "localizedName": "Magenta Concrete Powder",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:magenta_dye",
+    "unlocalizedName": "item.minecraft.magenta_dye",
+    "localizedName": "Magenta Dye",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:magenta_glazed_terracotta",
+    "unlocalizedName": "block.minecraft.magenta_glazed_terracotta",
+    "localizedName": "Magenta Glazed Terracotta",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:magenta_shulker_box",
+    "unlocalizedName": "block.minecraft.magenta_shulker_box",
+    "localizedName": "Magenta Shulker Box",
+    "maxStackSize": 1,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:magenta_stained_glass",
+    "unlocalizedName": "block.minecraft.magenta_stained_glass",
+    "localizedName": "Magenta Stained Glass",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:magenta_stained_glass_pane",
+    "unlocalizedName": "block.minecraft.magenta_stained_glass_pane",
+    "localizedName": "Magenta Stained Glass Pane",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:magenta_terracotta",
+    "unlocalizedName": "block.minecraft.magenta_terracotta",
+    "localizedName": "Magenta Terracotta",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:magenta_wool",
+    "unlocalizedName": "block.minecraft.magenta_wool",
+    "localizedName": "Magenta Wool",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:magma_block",
+    "unlocalizedName": "block.minecraft.magma_block",
+    "localizedName": "Magma Block",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:magma_cream",
+    "unlocalizedName": "item.minecraft.magma_cream",
+    "localizedName": "Magma Cream",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:magma_cube_spawn_egg",
+    "unlocalizedName": "item.minecraft.magma_cube_spawn_egg",
+    "localizedName": "Magma Cube Spawn Egg",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:map",
+    "unlocalizedName": "item.minecraft.map",
+    "localizedName": "Empty Map",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:melon",
+    "unlocalizedName": "block.minecraft.melon",
+    "localizedName": "Melon",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:melon_seeds",
+    "unlocalizedName": "item.minecraft.melon_seeds",
+    "localizedName": "Melon Seeds",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:melon_slice",
+    "unlocalizedName": "item.minecraft.melon_slice",
+    "localizedName": "Melon Slice",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:milk_bucket",
+    "unlocalizedName": "item.minecraft.milk_bucket",
+    "localizedName": "Milk Bucket",
+    "maxStackSize": 1,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:minecart",
+    "unlocalizedName": "item.minecraft.minecart",
+    "localizedName": "Minecart",
+    "maxStackSize": 1,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:mojang_banner_pattern",
+    "unlocalizedName": "item.minecraft.mojang_banner_pattern",
+    "localizedName": "Banner Pattern",
+    "maxStackSize": 1,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:mooshroom_spawn_egg",
+    "unlocalizedName": "item.minecraft.mooshroom_spawn_egg",
+    "localizedName": "Mooshroom Spawn Egg",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:mossy_cobblestone",
+    "unlocalizedName": "block.minecraft.mossy_cobblestone",
+    "localizedName": "Mossy Cobblestone",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:mossy_cobblestone_slab",
+    "unlocalizedName": "block.minecraft.mossy_cobblestone_slab",
+    "localizedName": "Mossy Cobblestone Slab",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:mossy_cobblestone_stairs",
+    "unlocalizedName": "block.minecraft.mossy_cobblestone_stairs",
+    "localizedName": "Mossy Cobblestone Stairs",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:mossy_cobblestone_wall",
+    "unlocalizedName": "block.minecraft.mossy_cobblestone_wall",
+    "localizedName": "Mossy Cobblestone Wall",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:mossy_stone_brick_slab",
+    "unlocalizedName": "block.minecraft.mossy_stone_brick_slab",
+    "localizedName": "Mossy Stone Brick Slab",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:mossy_stone_brick_stairs",
+    "unlocalizedName": "block.minecraft.mossy_stone_brick_stairs",
+    "localizedName": "Mossy Stone Brick Stairs",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:mossy_stone_brick_wall",
+    "unlocalizedName": "block.minecraft.mossy_stone_brick_wall",
+    "localizedName": "Mossy Stone Brick Wall",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:mossy_stone_bricks",
+    "unlocalizedName": "block.minecraft.mossy_stone_bricks",
+    "localizedName": "Mossy Stone Bricks",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:mule_spawn_egg",
+    "unlocalizedName": "item.minecraft.mule_spawn_egg",
+    "localizedName": "Mule Spawn Egg",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:mushroom_stem",
+    "unlocalizedName": "block.minecraft.mushroom_stem",
+    "localizedName": "Mushroom Stem",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:mushroom_stew",
+    "unlocalizedName": "item.minecraft.mushroom_stew",
+    "localizedName": "Mushroom Stew",
+    "maxStackSize": 1,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:music_disc_11",
+    "unlocalizedName": "item.minecraft.music_disc_11",
+    "localizedName": "Music Disc",
+    "maxStackSize": 1,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:music_disc_13",
+    "unlocalizedName": "item.minecraft.music_disc_13",
+    "localizedName": "Music Disc",
+    "maxStackSize": 1,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:music_disc_blocks",
+    "unlocalizedName": "item.minecraft.music_disc_blocks",
+    "localizedName": "Music Disc",
+    "maxStackSize": 1,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:music_disc_cat",
+    "unlocalizedName": "item.minecraft.music_disc_cat",
+    "localizedName": "Music Disc",
+    "maxStackSize": 1,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:music_disc_chirp",
+    "unlocalizedName": "item.minecraft.music_disc_chirp",
+    "localizedName": "Music Disc",
+    "maxStackSize": 1,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:music_disc_far",
+    "unlocalizedName": "item.minecraft.music_disc_far",
+    "localizedName": "Music Disc",
+    "maxStackSize": 1,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:music_disc_mall",
+    "unlocalizedName": "item.minecraft.music_disc_mall",
+    "localizedName": "Music Disc",
+    "maxStackSize": 1,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:music_disc_mellohi",
+    "unlocalizedName": "item.minecraft.music_disc_mellohi",
+    "localizedName": "Music Disc",
+    "maxStackSize": 1,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:music_disc_stal",
+    "unlocalizedName": "item.minecraft.music_disc_stal",
+    "localizedName": "Music Disc",
+    "maxStackSize": 1,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:music_disc_strad",
+    "unlocalizedName": "item.minecraft.music_disc_strad",
+    "localizedName": "Music Disc",
+    "maxStackSize": 1,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:music_disc_wait",
+    "unlocalizedName": "item.minecraft.music_disc_wait",
+    "localizedName": "Music Disc",
+    "maxStackSize": 1,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:music_disc_ward",
+    "unlocalizedName": "item.minecraft.music_disc_ward",
+    "localizedName": "Music Disc",
+    "maxStackSize": 1,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:mutton",
+    "unlocalizedName": "item.minecraft.mutton",
+    "localizedName": "Raw Mutton",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:mycelium",
+    "unlocalizedName": "block.minecraft.mycelium",
+    "localizedName": "Mycelium",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:name_tag",
+    "unlocalizedName": "item.minecraft.name_tag",
+    "localizedName": "Name Tag",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:nautilus_shell",
+    "unlocalizedName": "item.minecraft.nautilus_shell",
+    "localizedName": "Nautilus Shell",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:nether_brick",
+    "unlocalizedName": "item.minecraft.nether_brick",
+    "localizedName": "Nether Brick",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:nether_brick_fence",
+    "unlocalizedName": "block.minecraft.nether_brick_fence",
+    "localizedName": "Nether Brick Fence",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:nether_brick_slab",
+    "unlocalizedName": "block.minecraft.nether_brick_slab",
+    "localizedName": "Nether Brick Slab",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:nether_brick_stairs",
+    "unlocalizedName": "block.minecraft.nether_brick_stairs",
+    "localizedName": "Nether Brick Stairs",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:nether_brick_wall",
+    "unlocalizedName": "block.minecraft.nether_brick_wall",
+    "localizedName": "Nether Brick Wall",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:nether_bricks",
+    "unlocalizedName": "block.minecraft.nether_bricks",
+    "localizedName": "Nether Bricks",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:nether_quartz_ore",
+    "unlocalizedName": "block.minecraft.nether_quartz_ore",
+    "localizedName": "Nether Quartz Ore",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:nether_star",
+    "unlocalizedName": "item.minecraft.nether_star",
+    "localizedName": "Nether Star",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:nether_wart",
+    "unlocalizedName": "item.minecraft.nether_wart",
+    "localizedName": "Nether Wart",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:nether_wart_block",
+    "unlocalizedName": "block.minecraft.nether_wart_block",
+    "localizedName": "Nether Wart Block",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:netherrack",
+    "unlocalizedName": "block.minecraft.netherrack",
+    "localizedName": "Netherrack",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:note_block",
+    "unlocalizedName": "block.minecraft.note_block",
+    "localizedName": "Note Block",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:oak_boat",
+    "unlocalizedName": "item.minecraft.oak_boat",
+    "localizedName": "Oak Boat",
+    "maxStackSize": 1,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:oak_button",
+    "unlocalizedName": "block.minecraft.oak_button",
+    "localizedName": "Oak Button",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:oak_door",
+    "unlocalizedName": "block.minecraft.oak_door",
+    "localizedName": "Oak Door",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:oak_fence",
+    "unlocalizedName": "block.minecraft.oak_fence",
+    "localizedName": "Oak Fence",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:oak_fence_gate",
+    "unlocalizedName": "block.minecraft.oak_fence_gate",
+    "localizedName": "Oak Fence Gate",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:oak_leaves",
+    "unlocalizedName": "block.minecraft.oak_leaves",
+    "localizedName": "Oak Leaves",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:oak_log",
+    "unlocalizedName": "block.minecraft.oak_log",
+    "localizedName": "Oak Log",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:oak_planks",
+    "unlocalizedName": "block.minecraft.oak_planks",
+    "localizedName": "Oak Planks",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:oak_pressure_plate",
+    "unlocalizedName": "block.minecraft.oak_pressure_plate",
+    "localizedName": "Oak Pressure Plate",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:oak_sapling",
+    "unlocalizedName": "block.minecraft.oak_sapling",
+    "localizedName": "Oak Sapling",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:oak_sign",
+    "unlocalizedName": "block.minecraft.oak_sign",
+    "localizedName": "Oak Sign",
+    "maxStackSize": 16,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:oak_slab",
+    "unlocalizedName": "block.minecraft.oak_slab",
+    "localizedName": "Oak Slab",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:oak_stairs",
+    "unlocalizedName": "block.minecraft.oak_stairs",
+    "localizedName": "Oak Stairs",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:oak_trapdoor",
+    "unlocalizedName": "block.minecraft.oak_trapdoor",
+    "localizedName": "Oak Trapdoor",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:oak_wood",
+    "unlocalizedName": "block.minecraft.oak_wood",
+    "localizedName": "Oak Wood",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:observer",
+    "unlocalizedName": "block.minecraft.observer",
+    "localizedName": "Observer",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:obsidian",
+    "unlocalizedName": "block.minecraft.obsidian",
+    "localizedName": "Obsidian",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:ocelot_spawn_egg",
+    "unlocalizedName": "item.minecraft.ocelot_spawn_egg",
+    "localizedName": "Ocelot Spawn Egg",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:orange_banner",
+    "unlocalizedName": "block.minecraft.orange_banner",
+    "localizedName": "Orange Banner",
+    "maxStackSize": 16,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:orange_bed",
+    "unlocalizedName": "block.minecraft.orange_bed",
+    "localizedName": "Orange Bed",
+    "maxStackSize": 1,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:orange_carpet",
+    "unlocalizedName": "block.minecraft.orange_carpet",
+    "localizedName": "Orange Carpet",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:orange_concrete",
+    "unlocalizedName": "block.minecraft.orange_concrete",
+    "localizedName": "Orange Concrete",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:orange_concrete_powder",
+    "unlocalizedName": "block.minecraft.orange_concrete_powder",
+    "localizedName": "Orange Concrete Powder",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:orange_dye",
+    "unlocalizedName": "item.minecraft.orange_dye",
+    "localizedName": "Orange Dye",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:orange_glazed_terracotta",
+    "unlocalizedName": "block.minecraft.orange_glazed_terracotta",
+    "localizedName": "Orange Glazed Terracotta",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:orange_shulker_box",
+    "unlocalizedName": "block.minecraft.orange_shulker_box",
+    "localizedName": "Orange Shulker Box",
+    "maxStackSize": 1,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:orange_stained_glass",
+    "unlocalizedName": "block.minecraft.orange_stained_glass",
+    "localizedName": "Orange Stained Glass",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:orange_stained_glass_pane",
+    "unlocalizedName": "block.minecraft.orange_stained_glass_pane",
+    "localizedName": "Orange Stained Glass Pane",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:orange_terracotta",
+    "unlocalizedName": "block.minecraft.orange_terracotta",
+    "localizedName": "Orange Terracotta",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:orange_tulip",
+    "unlocalizedName": "block.minecraft.orange_tulip",
+    "localizedName": "Orange Tulip",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:orange_wool",
+    "unlocalizedName": "block.minecraft.orange_wool",
+    "localizedName": "Orange Wool",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:oxeye_daisy",
+    "unlocalizedName": "block.minecraft.oxeye_daisy",
+    "localizedName": "Oxeye Daisy",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:packed_ice",
+    "unlocalizedName": "block.minecraft.packed_ice",
+    "localizedName": "Packed Ice",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:painting",
+    "unlocalizedName": "item.minecraft.painting",
+    "localizedName": "Painting",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:panda_spawn_egg",
+    "unlocalizedName": "item.minecraft.panda_spawn_egg",
+    "localizedName": "Panda Spawn Egg",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:paper",
+    "unlocalizedName": "item.minecraft.paper",
+    "localizedName": "Paper",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:parrot_spawn_egg",
+    "unlocalizedName": "item.minecraft.parrot_spawn_egg",
+    "localizedName": "Parrot Spawn Egg",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:peony",
+    "unlocalizedName": "block.minecraft.peony",
+    "localizedName": "Peony",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:petrified_oak_slab",
+    "unlocalizedName": "block.minecraft.petrified_oak_slab",
+    "localizedName": "Petrified Oak Slab",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:phantom_membrane",
+    "unlocalizedName": "item.minecraft.phantom_membrane",
+    "localizedName": "Phantom Membrane",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:phantom_spawn_egg",
+    "unlocalizedName": "item.minecraft.phantom_spawn_egg",
+    "localizedName": "Phantom Spawn Egg",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:pig_spawn_egg",
+    "unlocalizedName": "item.minecraft.pig_spawn_egg",
+    "localizedName": "Pig Spawn Egg",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:pillager_spawn_egg",
+    "unlocalizedName": "item.minecraft.pillager_spawn_egg",
+    "localizedName": "Pillager Spawn Egg",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:pink_banner",
+    "unlocalizedName": "block.minecraft.pink_banner",
+    "localizedName": "Pink Banner",
+    "maxStackSize": 16,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:pink_bed",
+    "unlocalizedName": "block.minecraft.pink_bed",
+    "localizedName": "Pink Bed",
+    "maxStackSize": 1,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:pink_carpet",
+    "unlocalizedName": "block.minecraft.pink_carpet",
+    "localizedName": "Pink Carpet",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:pink_concrete",
+    "unlocalizedName": "block.minecraft.pink_concrete",
+    "localizedName": "Pink Concrete",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:pink_concrete_powder",
+    "unlocalizedName": "block.minecraft.pink_concrete_powder",
+    "localizedName": "Pink Concrete Powder",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:pink_dye",
+    "unlocalizedName": "item.minecraft.pink_dye",
+    "localizedName": "Pink Dye",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:pink_glazed_terracotta",
+    "unlocalizedName": "block.minecraft.pink_glazed_terracotta",
+    "localizedName": "Pink Glazed Terracotta",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:pink_shulker_box",
+    "unlocalizedName": "block.minecraft.pink_shulker_box",
+    "localizedName": "Pink Shulker Box",
+    "maxStackSize": 1,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:pink_stained_glass",
+    "unlocalizedName": "block.minecraft.pink_stained_glass",
+    "localizedName": "Pink Stained Glass",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:pink_stained_glass_pane",
+    "unlocalizedName": "block.minecraft.pink_stained_glass_pane",
+    "localizedName": "Pink Stained Glass Pane",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:pink_terracotta",
+    "unlocalizedName": "block.minecraft.pink_terracotta",
+    "localizedName": "Pink Terracotta",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:pink_tulip",
+    "unlocalizedName": "block.minecraft.pink_tulip",
+    "localizedName": "Pink Tulip",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:pink_wool",
+    "unlocalizedName": "block.minecraft.pink_wool",
+    "localizedName": "Pink Wool",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:piston",
+    "unlocalizedName": "block.minecraft.piston",
+    "localizedName": "Piston",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:player_head",
+    "unlocalizedName": "block.minecraft.player_head",
+    "localizedName": "Player Head",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:podzol",
+    "unlocalizedName": "block.minecraft.podzol",
+    "localizedName": "Podzol",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:poisonous_potato",
+    "unlocalizedName": "item.minecraft.poisonous_potato",
+    "localizedName": "Poisonous Potato",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:polar_bear_spawn_egg",
+    "unlocalizedName": "item.minecraft.polar_bear_spawn_egg",
+    "localizedName": "Polar Bear Spawn Egg",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:polished_andesite",
+    "unlocalizedName": "block.minecraft.polished_andesite",
+    "localizedName": "Polished Andesite",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:polished_andesite_slab",
+    "unlocalizedName": "block.minecraft.polished_andesite_slab",
+    "localizedName": "Polished Andesite Slab",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:polished_andesite_stairs",
+    "unlocalizedName": "block.minecraft.polished_andesite_stairs",
+    "localizedName": "Polished Andesite Stairs",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:polished_diorite",
+    "unlocalizedName": "block.minecraft.polished_diorite",
+    "localizedName": "Polished Diorite",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:polished_diorite_slab",
+    "unlocalizedName": "block.minecraft.polished_diorite_slab",
+    "localizedName": "Polished Diorite Slab",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:polished_diorite_stairs",
+    "unlocalizedName": "block.minecraft.polished_diorite_stairs",
+    "localizedName": "Polished Diorite Stairs",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:polished_granite",
+    "unlocalizedName": "block.minecraft.polished_granite",
+    "localizedName": "Polished Granite",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:polished_granite_slab",
+    "unlocalizedName": "block.minecraft.polished_granite_slab",
+    "localizedName": "Polished Granite Slab",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:polished_granite_stairs",
+    "unlocalizedName": "block.minecraft.polished_granite_stairs",
+    "localizedName": "Polished Granite Stairs",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:popped_chorus_fruit",
+    "unlocalizedName": "item.minecraft.popped_chorus_fruit",
+    "localizedName": "Popped Chorus Fruit",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:poppy",
+    "unlocalizedName": "block.minecraft.poppy",
+    "localizedName": "Poppy",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:porkchop",
+    "unlocalizedName": "item.minecraft.porkchop",
+    "localizedName": "Raw Porkchop",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:potato",
+    "unlocalizedName": "item.minecraft.potato",
+    "localizedName": "Potato",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:potion",
+    "unlocalizedName": "item.minecraft.potion.effect.water",
+    "localizedName": "Water Bottle",
+    "maxStackSize": 1,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:powered_rail",
+    "unlocalizedName": "block.minecraft.powered_rail",
+    "localizedName": "Powered Rail",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:prismarine",
+    "unlocalizedName": "block.minecraft.prismarine",
+    "localizedName": "Prismarine",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:prismarine_brick_slab",
+    "unlocalizedName": "block.minecraft.prismarine_brick_slab",
+    "localizedName": "Prismarine Brick Slab",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:prismarine_brick_stairs",
+    "unlocalizedName": "block.minecraft.prismarine_brick_stairs",
+    "localizedName": "Prismarine Brick Stairs",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:prismarine_bricks",
+    "unlocalizedName": "block.minecraft.prismarine_bricks",
+    "localizedName": "Prismarine Bricks",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:prismarine_crystals",
+    "unlocalizedName": "item.minecraft.prismarine_crystals",
+    "localizedName": "Prismarine Crystals",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:prismarine_shard",
+    "unlocalizedName": "item.minecraft.prismarine_shard",
+    "localizedName": "Prismarine Shard",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:prismarine_slab",
+    "unlocalizedName": "block.minecraft.prismarine_slab",
+    "localizedName": "Prismarine Slab",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:prismarine_stairs",
+    "unlocalizedName": "block.minecraft.prismarine_stairs",
+    "localizedName": "Prismarine Stairs",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:prismarine_wall",
+    "unlocalizedName": "block.minecraft.prismarine_wall",
+    "localizedName": "Prismarine Wall",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:pufferfish",
+    "unlocalizedName": "item.minecraft.pufferfish",
+    "localizedName": "Pufferfish",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:pufferfish_bucket",
+    "unlocalizedName": "item.minecraft.pufferfish_bucket",
+    "localizedName": "Bucket of Pufferfish",
+    "maxStackSize": 1,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:pufferfish_spawn_egg",
+    "unlocalizedName": "item.minecraft.pufferfish_spawn_egg",
+    "localizedName": "Pufferfish Spawn Egg",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:pumpkin",
+    "unlocalizedName": "block.minecraft.pumpkin",
+    "localizedName": "Pumpkin",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:pumpkin_pie",
+    "unlocalizedName": "item.minecraft.pumpkin_pie",
+    "localizedName": "Pumpkin Pie",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:pumpkin_seeds",
+    "unlocalizedName": "item.minecraft.pumpkin_seeds",
+    "localizedName": "Pumpkin Seeds",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:purple_banner",
+    "unlocalizedName": "block.minecraft.purple_banner",
+    "localizedName": "Purple Banner",
+    "maxStackSize": 16,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:purple_bed",
+    "unlocalizedName": "block.minecraft.purple_bed",
+    "localizedName": "Purple Bed",
+    "maxStackSize": 1,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:purple_carpet",
+    "unlocalizedName": "block.minecraft.purple_carpet",
+    "localizedName": "Purple Carpet",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:purple_concrete",
+    "unlocalizedName": "block.minecraft.purple_concrete",
+    "localizedName": "Purple Concrete",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:purple_concrete_powder",
+    "unlocalizedName": "block.minecraft.purple_concrete_powder",
+    "localizedName": "Purple Concrete Powder",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:purple_dye",
+    "unlocalizedName": "item.minecraft.purple_dye",
+    "localizedName": "Purple Dye",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:purple_glazed_terracotta",
+    "unlocalizedName": "block.minecraft.purple_glazed_terracotta",
+    "localizedName": "Purple Glazed Terracotta",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:purple_shulker_box",
+    "unlocalizedName": "block.minecraft.purple_shulker_box",
+    "localizedName": "Purple Shulker Box",
+    "maxStackSize": 1,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:purple_stained_glass",
+    "unlocalizedName": "block.minecraft.purple_stained_glass",
+    "localizedName": "Purple Stained Glass",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:purple_stained_glass_pane",
+    "unlocalizedName": "block.minecraft.purple_stained_glass_pane",
+    "localizedName": "Purple Stained Glass Pane",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:purple_terracotta",
+    "unlocalizedName": "block.minecraft.purple_terracotta",
+    "localizedName": "Purple Terracotta",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:purple_wool",
+    "unlocalizedName": "block.minecraft.purple_wool",
+    "localizedName": "Purple Wool",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:purpur_block",
+    "unlocalizedName": "block.minecraft.purpur_block",
+    "localizedName": "Purpur Block",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:purpur_pillar",
+    "unlocalizedName": "block.minecraft.purpur_pillar",
+    "localizedName": "Purpur Pillar",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:purpur_slab",
+    "unlocalizedName": "block.minecraft.purpur_slab",
+    "localizedName": "Purpur Slab",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:purpur_stairs",
+    "unlocalizedName": "block.minecraft.purpur_stairs",
+    "localizedName": "Purpur Stairs",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:quartz",
+    "unlocalizedName": "item.minecraft.quartz",
+    "localizedName": "Nether Quartz",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:quartz_block",
+    "unlocalizedName": "block.minecraft.quartz_block",
+    "localizedName": "Block of Quartz",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:quartz_pillar",
+    "unlocalizedName": "block.minecraft.quartz_pillar",
+    "localizedName": "Quartz Pillar",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:quartz_slab",
+    "unlocalizedName": "block.minecraft.quartz_slab",
+    "localizedName": "Quartz Slab",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:quartz_stairs",
+    "unlocalizedName": "block.minecraft.quartz_stairs",
+    "localizedName": "Quartz Stairs",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:rabbit",
+    "unlocalizedName": "item.minecraft.rabbit",
+    "localizedName": "Raw Rabbit",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:rabbit_foot",
+    "unlocalizedName": "item.minecraft.rabbit_foot",
+    "localizedName": "Rabbit\u0027s Foot",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:rabbit_hide",
+    "unlocalizedName": "item.minecraft.rabbit_hide",
+    "localizedName": "Rabbit Hide",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:rabbit_spawn_egg",
+    "unlocalizedName": "item.minecraft.rabbit_spawn_egg",
+    "localizedName": "Rabbit Spawn Egg",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:rabbit_stew",
+    "unlocalizedName": "item.minecraft.rabbit_stew",
+    "localizedName": "Rabbit Stew",
+    "maxStackSize": 1,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:rail",
+    "unlocalizedName": "block.minecraft.rail",
+    "localizedName": "Rail",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:ravager_spawn_egg",
+    "unlocalizedName": "item.minecraft.ravager_spawn_egg",
+    "localizedName": "Ravager Spawn Egg",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:red_banner",
+    "unlocalizedName": "block.minecraft.red_banner",
+    "localizedName": "Red Banner",
+    "maxStackSize": 16,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:red_bed",
+    "unlocalizedName": "block.minecraft.red_bed",
+    "localizedName": "Red Bed",
+    "maxStackSize": 1,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:red_carpet",
+    "unlocalizedName": "block.minecraft.red_carpet",
+    "localizedName": "Red Carpet",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:red_concrete",
+    "unlocalizedName": "block.minecraft.red_concrete",
+    "localizedName": "Red Concrete",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:red_concrete_powder",
+    "unlocalizedName": "block.minecraft.red_concrete_powder",
+    "localizedName": "Red Concrete Powder",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:red_dye",
+    "unlocalizedName": "item.minecraft.red_dye",
+    "localizedName": "Red Dye",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:red_glazed_terracotta",
+    "unlocalizedName": "block.minecraft.red_glazed_terracotta",
+    "localizedName": "Red Glazed Terracotta",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:red_mushroom",
+    "unlocalizedName": "block.minecraft.red_mushroom",
+    "localizedName": "Red Mushroom",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:red_mushroom_block",
+    "unlocalizedName": "block.minecraft.red_mushroom_block",
+    "localizedName": "Red Mushroom Block",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:red_nether_brick_slab",
+    "unlocalizedName": "block.minecraft.red_nether_brick_slab",
+    "localizedName": "Red Nether Brick Slab",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:red_nether_brick_stairs",
+    "unlocalizedName": "block.minecraft.red_nether_brick_stairs",
+    "localizedName": "Red Nether Brick Stairs",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:red_nether_brick_wall",
+    "unlocalizedName": "block.minecraft.red_nether_brick_wall",
+    "localizedName": "Red Nether Brick Wall",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:red_nether_bricks",
+    "unlocalizedName": "block.minecraft.red_nether_bricks",
+    "localizedName": "Red Nether Bricks",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:red_sand",
+    "unlocalizedName": "block.minecraft.red_sand",
+    "localizedName": "Red Sand",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:red_sandstone",
+    "unlocalizedName": "block.minecraft.red_sandstone",
+    "localizedName": "Red Sandstone",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:red_sandstone_slab",
+    "unlocalizedName": "block.minecraft.red_sandstone_slab",
+    "localizedName": "Red Sandstone Slab",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:red_sandstone_stairs",
+    "unlocalizedName": "block.minecraft.red_sandstone_stairs",
+    "localizedName": "Red Sandstone Stairs",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:red_sandstone_wall",
+    "unlocalizedName": "block.minecraft.red_sandstone_wall",
+    "localizedName": "Red Sandstone Wall",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:red_shulker_box",
+    "unlocalizedName": "block.minecraft.red_shulker_box",
+    "localizedName": "Red Shulker Box",
+    "maxStackSize": 1,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:red_stained_glass",
+    "unlocalizedName": "block.minecraft.red_stained_glass",
+    "localizedName": "Red Stained Glass",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:red_stained_glass_pane",
+    "unlocalizedName": "block.minecraft.red_stained_glass_pane",
+    "localizedName": "Red Stained Glass Pane",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:red_terracotta",
+    "unlocalizedName": "block.minecraft.red_terracotta",
+    "localizedName": "Red Terracotta",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:red_tulip",
+    "unlocalizedName": "block.minecraft.red_tulip",
+    "localizedName": "Red Tulip",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:red_wool",
+    "unlocalizedName": "block.minecraft.red_wool",
+    "localizedName": "Red Wool",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:redstone",
+    "unlocalizedName": "item.minecraft.redstone",
+    "localizedName": "Redstone Dust",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:redstone_block",
+    "unlocalizedName": "block.minecraft.redstone_block",
+    "localizedName": "Block of Redstone",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:redstone_lamp",
+    "unlocalizedName": "block.minecraft.redstone_lamp",
+    "localizedName": "Redstone Lamp",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:redstone_ore",
+    "unlocalizedName": "block.minecraft.redstone_ore",
+    "localizedName": "Redstone Ore",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:redstone_torch",
+    "unlocalizedName": "block.minecraft.redstone_torch",
+    "localizedName": "Redstone Torch",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:repeater",
+    "unlocalizedName": "block.minecraft.repeater",
+    "localizedName": "Redstone Repeater",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:repeating_command_block",
+    "unlocalizedName": "block.minecraft.repeating_command_block",
+    "localizedName": "Repeating Command Block",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:rose_bush",
+    "unlocalizedName": "block.minecraft.rose_bush",
+    "localizedName": "Rose Bush",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:rotten_flesh",
+    "unlocalizedName": "item.minecraft.rotten_flesh",
+    "localizedName": "Rotten Flesh",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:saddle",
+    "unlocalizedName": "item.minecraft.saddle",
+    "localizedName": "Saddle",
+    "maxStackSize": 1,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:salmon",
+    "unlocalizedName": "item.minecraft.salmon",
+    "localizedName": "Raw Salmon",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:salmon_bucket",
+    "unlocalizedName": "item.minecraft.salmon_bucket",
+    "localizedName": "Bucket of Salmon",
+    "maxStackSize": 1,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:salmon_spawn_egg",
+    "unlocalizedName": "item.minecraft.salmon_spawn_egg",
+    "localizedName": "Salmon Spawn Egg",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:sand",
+    "unlocalizedName": "block.minecraft.sand",
+    "localizedName": "Sand",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:sandstone",
+    "unlocalizedName": "block.minecraft.sandstone",
+    "localizedName": "Sandstone",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:sandstone_slab",
+    "unlocalizedName": "block.minecraft.sandstone_slab",
+    "localizedName": "Sandstone Slab",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:sandstone_stairs",
+    "unlocalizedName": "block.minecraft.sandstone_stairs",
+    "localizedName": "Sandstone Stairs",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:sandstone_wall",
+    "unlocalizedName": "block.minecraft.sandstone_wall",
+    "localizedName": "Sandstone Wall",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:scaffolding",
+    "unlocalizedName": "block.minecraft.scaffolding",
+    "localizedName": "Scaffolding",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:scute",
+    "unlocalizedName": "item.minecraft.scute",
+    "localizedName": "Scute",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:sea_lantern",
+    "unlocalizedName": "block.minecraft.sea_lantern",
+    "localizedName": "Sea Lantern",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:sea_pickle",
+    "unlocalizedName": "block.minecraft.sea_pickle",
+    "localizedName": "Sea Pickle",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:seagrass",
+    "unlocalizedName": "block.minecraft.seagrass",
+    "localizedName": "Seagrass",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:shears",
+    "unlocalizedName": "item.minecraft.shears",
+    "localizedName": "Shears",
+    "maxStackSize": 1,
+    "maxDamage": 238
+  },
+  {
+    "id": "minecraft:sheep_spawn_egg",
+    "unlocalizedName": "item.minecraft.sheep_spawn_egg",
+    "localizedName": "Sheep Spawn Egg",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:shield",
+    "unlocalizedName": "item.minecraft.shield",
+    "localizedName": "Shield",
+    "maxStackSize": 1,
+    "maxDamage": 336
+  },
+  {
+    "id": "minecraft:shulker_box",
+    "unlocalizedName": "block.minecraft.shulker_box",
+    "localizedName": "Shulker Box",
+    "maxStackSize": 1,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:shulker_shell",
+    "unlocalizedName": "item.minecraft.shulker_shell",
+    "localizedName": "Shulker Shell",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:shulker_spawn_egg",
+    "unlocalizedName": "item.minecraft.shulker_spawn_egg",
+    "localizedName": "Shulker Spawn Egg",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:silverfish_spawn_egg",
+    "unlocalizedName": "item.minecraft.silverfish_spawn_egg",
+    "localizedName": "Silverfish Spawn Egg",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:skeleton_horse_spawn_egg",
+    "unlocalizedName": "item.minecraft.skeleton_horse_spawn_egg",
+    "localizedName": "Skeleton Horse Spawn Egg",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:skeleton_skull",
+    "unlocalizedName": "block.minecraft.skeleton_skull",
+    "localizedName": "Skeleton Skull",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:skeleton_spawn_egg",
+    "unlocalizedName": "item.minecraft.skeleton_spawn_egg",
+    "localizedName": "Skeleton Spawn Egg",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:skull_banner_pattern",
+    "unlocalizedName": "item.minecraft.skull_banner_pattern",
+    "localizedName": "Banner Pattern",
+    "maxStackSize": 1,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:slime_ball",
+    "unlocalizedName": "item.minecraft.slime_ball",
+    "localizedName": "Slimeball",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:slime_block",
+    "unlocalizedName": "block.minecraft.slime_block",
+    "localizedName": "Slime Block",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:slime_spawn_egg",
+    "unlocalizedName": "item.minecraft.slime_spawn_egg",
+    "localizedName": "Slime Spawn Egg",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:smithing_table",
+    "unlocalizedName": "block.minecraft.smithing_table",
+    "localizedName": "Smithing Table",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:smoker",
+    "unlocalizedName": "block.minecraft.smoker",
+    "localizedName": "Smoker",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:smooth_quartz",
+    "unlocalizedName": "block.minecraft.smooth_quartz",
+    "localizedName": "Smooth Quartz",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:smooth_quartz_slab",
+    "unlocalizedName": "block.minecraft.smooth_quartz_slab",
+    "localizedName": "Smooth Quartz Slab",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:smooth_quartz_stairs",
+    "unlocalizedName": "block.minecraft.smooth_quartz_stairs",
+    "localizedName": "Smooth Quartz Stairs",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:smooth_red_sandstone",
+    "unlocalizedName": "block.minecraft.smooth_red_sandstone",
+    "localizedName": "Smooth Red Sandstone",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:smooth_red_sandstone_slab",
+    "unlocalizedName": "block.minecraft.smooth_red_sandstone_slab",
+    "localizedName": "Smooth Red Sandstone Slab",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:smooth_red_sandstone_stairs",
+    "unlocalizedName": "block.minecraft.smooth_red_sandstone_stairs",
+    "localizedName": "Smooth Red Sandstone Stairs",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:smooth_sandstone",
+    "unlocalizedName": "block.minecraft.smooth_sandstone",
+    "localizedName": "Smooth Sandstone",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:smooth_sandstone_slab",
+    "unlocalizedName": "block.minecraft.smooth_sandstone_slab",
+    "localizedName": "Smooth Sandstone Slab",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:smooth_sandstone_stairs",
+    "unlocalizedName": "block.minecraft.smooth_sandstone_stairs",
+    "localizedName": "Smooth Sandstone Stairs",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:smooth_stone",
+    "unlocalizedName": "block.minecraft.smooth_stone",
+    "localizedName": "Smooth Stone",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:smooth_stone_slab",
+    "unlocalizedName": "block.minecraft.smooth_stone_slab",
+    "localizedName": "Smooth Stone Slab",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:snow",
+    "unlocalizedName": "block.minecraft.snow",
+    "localizedName": "Snow",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:snow_block",
+    "unlocalizedName": "block.minecraft.snow_block",
+    "localizedName": "Snow Block",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:snowball",
+    "unlocalizedName": "item.minecraft.snowball",
+    "localizedName": "Snowball",
+    "maxStackSize": 16,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:soul_sand",
+    "unlocalizedName": "block.minecraft.soul_sand",
+    "localizedName": "Soul Sand",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:spawner",
+    "unlocalizedName": "block.minecraft.spawner",
+    "localizedName": "Spawner",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:spectral_arrow",
+    "unlocalizedName": "item.minecraft.spectral_arrow",
+    "localizedName": "Spectral Arrow",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:spider_eye",
+    "unlocalizedName": "item.minecraft.spider_eye",
+    "localizedName": "Spider Eye",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:spider_spawn_egg",
+    "unlocalizedName": "item.minecraft.spider_spawn_egg",
+    "localizedName": "Spider Spawn Egg",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:splash_potion",
+    "unlocalizedName": "item.minecraft.splash_potion.effect.water",
+    "localizedName": "Splash Water Bottle",
+    "maxStackSize": 1,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:sponge",
+    "unlocalizedName": "block.minecraft.sponge",
+    "localizedName": "Sponge",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:spruce_boat",
+    "unlocalizedName": "item.minecraft.spruce_boat",
+    "localizedName": "Spruce Boat",
+    "maxStackSize": 1,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:spruce_button",
+    "unlocalizedName": "block.minecraft.spruce_button",
+    "localizedName": "Spruce Button",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:spruce_door",
+    "unlocalizedName": "block.minecraft.spruce_door",
+    "localizedName": "Spruce Door",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:spruce_fence",
+    "unlocalizedName": "block.minecraft.spruce_fence",
+    "localizedName": "Spruce Fence",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:spruce_fence_gate",
+    "unlocalizedName": "block.minecraft.spruce_fence_gate",
+    "localizedName": "Spruce Fence Gate",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:spruce_leaves",
+    "unlocalizedName": "block.minecraft.spruce_leaves",
+    "localizedName": "Spruce Leaves",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:spruce_log",
+    "unlocalizedName": "block.minecraft.spruce_log",
+    "localizedName": "Spruce Log",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:spruce_planks",
+    "unlocalizedName": "block.minecraft.spruce_planks",
+    "localizedName": "Spruce Planks",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:spruce_pressure_plate",
+    "unlocalizedName": "block.minecraft.spruce_pressure_plate",
+    "localizedName": "Spruce Pressure Plate",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:spruce_sapling",
+    "unlocalizedName": "block.minecraft.spruce_sapling",
+    "localizedName": "Spruce Sapling",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:spruce_sign",
+    "unlocalizedName": "block.minecraft.spruce_sign",
+    "localizedName": "Spruce Sign",
+    "maxStackSize": 16,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:spruce_slab",
+    "unlocalizedName": "block.minecraft.spruce_slab",
+    "localizedName": "Spruce Slab",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:spruce_stairs",
+    "unlocalizedName": "block.minecraft.spruce_stairs",
+    "localizedName": "Spruce Stairs",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:spruce_trapdoor",
+    "unlocalizedName": "block.minecraft.spruce_trapdoor",
+    "localizedName": "Spruce Trapdoor",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:spruce_wood",
+    "unlocalizedName": "block.minecraft.spruce_wood",
+    "localizedName": "Spruce Wood",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:squid_spawn_egg",
+    "unlocalizedName": "item.minecraft.squid_spawn_egg",
+    "localizedName": "Squid Spawn Egg",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:stick",
+    "unlocalizedName": "item.minecraft.stick",
+    "localizedName": "Stick",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:sticky_piston",
+    "unlocalizedName": "block.minecraft.sticky_piston",
+    "localizedName": "Sticky Piston",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:stone",
+    "unlocalizedName": "block.minecraft.stone",
+    "localizedName": "Stone",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:stone_axe",
+    "unlocalizedName": "item.minecraft.stone_axe",
+    "localizedName": "Stone Axe",
+    "maxStackSize": 1,
+    "maxDamage": 131
+  },
+  {
+    "id": "minecraft:stone_brick_slab",
+    "unlocalizedName": "block.minecraft.stone_brick_slab",
+    "localizedName": "Stone Brick Slab",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:stone_brick_stairs",
+    "unlocalizedName": "block.minecraft.stone_brick_stairs",
+    "localizedName": "Stone Brick Stairs",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:stone_brick_wall",
+    "unlocalizedName": "block.minecraft.stone_brick_wall",
+    "localizedName": "Stone Brick Wall",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:stone_bricks",
+    "unlocalizedName": "block.minecraft.stone_bricks",
+    "localizedName": "Stone Bricks",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:stone_button",
+    "unlocalizedName": "block.minecraft.stone_button",
+    "localizedName": "Stone Button",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:stone_hoe",
+    "unlocalizedName": "item.minecraft.stone_hoe",
+    "localizedName": "Stone Hoe",
+    "maxStackSize": 1,
+    "maxDamage": 131
+  },
+  {
+    "id": "minecraft:stone_pickaxe",
+    "unlocalizedName": "item.minecraft.stone_pickaxe",
+    "localizedName": "Stone Pickaxe",
+    "maxStackSize": 1,
+    "maxDamage": 131
+  },
+  {
+    "id": "minecraft:stone_pressure_plate",
+    "unlocalizedName": "block.minecraft.stone_pressure_plate",
+    "localizedName": "Stone Pressure Plate",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:stone_shovel",
+    "unlocalizedName": "item.minecraft.stone_shovel",
+    "localizedName": "Stone Shovel",
+    "maxStackSize": 1,
+    "maxDamage": 131
+  },
+  {
+    "id": "minecraft:stone_slab",
+    "unlocalizedName": "block.minecraft.stone_slab",
+    "localizedName": "Stone Slab",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:stone_stairs",
+    "unlocalizedName": "block.minecraft.stone_stairs",
+    "localizedName": "Stone Stairs",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:stone_sword",
+    "unlocalizedName": "item.minecraft.stone_sword",
+    "localizedName": "Stone Sword",
+    "maxStackSize": 1,
+    "maxDamage": 131
+  },
+  {
+    "id": "minecraft:stonecutter",
+    "unlocalizedName": "block.minecraft.stonecutter",
+    "localizedName": "Stonecutter",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:stray_spawn_egg",
+    "unlocalizedName": "item.minecraft.stray_spawn_egg",
+    "localizedName": "Stray Spawn Egg",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:string",
+    "unlocalizedName": "item.minecraft.string",
+    "localizedName": "String",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:stripped_acacia_log",
+    "unlocalizedName": "block.minecraft.stripped_acacia_log",
+    "localizedName": "Stripped Acacia Log",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:stripped_acacia_wood",
+    "unlocalizedName": "block.minecraft.stripped_acacia_wood",
+    "localizedName": "Stripped Acacia Wood",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:stripped_birch_log",
+    "unlocalizedName": "block.minecraft.stripped_birch_log",
+    "localizedName": "Stripped Birch Log",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:stripped_birch_wood",
+    "unlocalizedName": "block.minecraft.stripped_birch_wood",
+    "localizedName": "Stripped Birch Wood",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:stripped_dark_oak_log",
+    "unlocalizedName": "block.minecraft.stripped_dark_oak_log",
+    "localizedName": "Stripped Dark Oak Log",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:stripped_dark_oak_wood",
+    "unlocalizedName": "block.minecraft.stripped_dark_oak_wood",
+    "localizedName": "Stripped Dark Oak Wood",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:stripped_jungle_log",
+    "unlocalizedName": "block.minecraft.stripped_jungle_log",
+    "localizedName": "Stripped Jungle Log",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:stripped_jungle_wood",
+    "unlocalizedName": "block.minecraft.stripped_jungle_wood",
+    "localizedName": "Stripped Jungle Wood",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:stripped_oak_log",
+    "unlocalizedName": "block.minecraft.stripped_oak_log",
+    "localizedName": "Stripped Oak Log",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:stripped_oak_wood",
+    "unlocalizedName": "block.minecraft.stripped_oak_wood",
+    "localizedName": "Stripped Oak Wood",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:stripped_spruce_log",
+    "unlocalizedName": "block.minecraft.stripped_spruce_log",
+    "localizedName": "Stripped Spruce Log",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:stripped_spruce_wood",
+    "unlocalizedName": "block.minecraft.stripped_spruce_wood",
+    "localizedName": "Stripped Spruce Wood",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:structure_block",
+    "unlocalizedName": "block.minecraft.structure_block",
+    "localizedName": "Structure Block",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:structure_void",
+    "unlocalizedName": "block.minecraft.structure_void",
+    "localizedName": "Structure Void",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:sugar",
+    "unlocalizedName": "item.minecraft.sugar",
+    "localizedName": "Sugar",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:sugar_cane",
+    "unlocalizedName": "block.minecraft.sugar_cane",
+    "localizedName": "Sugar Cane",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:sunflower",
+    "unlocalizedName": "block.minecraft.sunflower",
+    "localizedName": "Sunflower",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:suspicious_stew",
+    "unlocalizedName": "item.minecraft.suspicious_stew",
+    "localizedName": "Suspicious Stew",
+    "maxStackSize": 1,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:sweet_berries",
+    "unlocalizedName": "item.minecraft.sweet_berries",
+    "localizedName": "Sweet Berries",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:tall_grass",
+    "unlocalizedName": "block.minecraft.tall_grass",
+    "localizedName": "Tall Grass",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:terracotta",
+    "unlocalizedName": "block.minecraft.terracotta",
+    "localizedName": "Terracotta",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:tipped_arrow",
+    "unlocalizedName": "item.minecraft.tipped_arrow.effect.poison",
+    "localizedName": "Arrow of Poison",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:tnt",
+    "unlocalizedName": "block.minecraft.tnt",
+    "localizedName": "TNT",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:tnt_minecart",
+    "unlocalizedName": "item.minecraft.tnt_minecart",
+    "localizedName": "Minecart with TNT",
+    "maxStackSize": 1,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:torch",
+    "unlocalizedName": "block.minecraft.torch",
+    "localizedName": "Torch",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:totem_of_undying",
+    "unlocalizedName": "item.minecraft.totem_of_undying",
+    "localizedName": "Totem of Undying",
+    "maxStackSize": 1,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:trader_llama_spawn_egg",
+    "unlocalizedName": "item.minecraft.trader_llama_spawn_egg",
+    "localizedName": "Trader Llama Spawn Egg",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:trapped_chest",
+    "unlocalizedName": "block.minecraft.trapped_chest",
+    "localizedName": "Trapped Chest",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:trident",
+    "unlocalizedName": "item.minecraft.trident",
+    "localizedName": "Trident",
+    "maxStackSize": 1,
+    "maxDamage": 250
+  },
+  {
+    "id": "minecraft:tripwire_hook",
+    "unlocalizedName": "block.minecraft.tripwire_hook",
+    "localizedName": "Tripwire Hook",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:tropical_fish",
+    "unlocalizedName": "item.minecraft.tropical_fish",
+    "localizedName": "Tropical Fish",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:tropical_fish_bucket",
+    "unlocalizedName": "item.minecraft.tropical_fish_bucket",
+    "localizedName": "Bucket of Tropical Fish",
+    "maxStackSize": 1,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:tropical_fish_spawn_egg",
+    "unlocalizedName": "item.minecraft.tropical_fish_spawn_egg",
+    "localizedName": "Tropical Fish Spawn Egg",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:tube_coral",
+    "unlocalizedName": "block.minecraft.tube_coral",
+    "localizedName": "Tube Coral",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:tube_coral_block",
+    "unlocalizedName": "block.minecraft.tube_coral_block",
+    "localizedName": "Tube Coral Block",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:tube_coral_fan",
+    "unlocalizedName": "block.minecraft.tube_coral_fan",
+    "localizedName": "Tube Coral Fan",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:turtle_egg",
+    "unlocalizedName": "block.minecraft.turtle_egg",
+    "localizedName": "Turtle Egg",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:turtle_helmet",
+    "unlocalizedName": "item.minecraft.turtle_helmet",
+    "localizedName": "Turtle Shell",
+    "maxStackSize": 1,
+    "maxDamage": 275
+  },
+  {
+    "id": "minecraft:turtle_spawn_egg",
+    "unlocalizedName": "item.minecraft.turtle_spawn_egg",
+    "localizedName": "Turtle Spawn Egg",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:vex_spawn_egg",
+    "unlocalizedName": "item.minecraft.vex_spawn_egg",
+    "localizedName": "Vex Spawn Egg",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:villager_spawn_egg",
+    "unlocalizedName": "item.minecraft.villager_spawn_egg",
+    "localizedName": "Villager Spawn Egg",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:vindicator_spawn_egg",
+    "unlocalizedName": "item.minecraft.vindicator_spawn_egg",
+    "localizedName": "Vindicator Spawn Egg",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:vine",
+    "unlocalizedName": "block.minecraft.vine",
+    "localizedName": "Vines",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:wandering_trader_spawn_egg",
+    "unlocalizedName": "item.minecraft.wandering_trader_spawn_egg",
+    "localizedName": "Wandering Trader Spawn Egg",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:water_bucket",
+    "unlocalizedName": "item.minecraft.water_bucket",
+    "localizedName": "Water Bucket",
+    "maxStackSize": 1,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:wet_sponge",
+    "unlocalizedName": "block.minecraft.wet_sponge",
+    "localizedName": "Wet Sponge",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:wheat",
+    "unlocalizedName": "item.minecraft.wheat",
+    "localizedName": "Wheat",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:wheat_seeds",
+    "unlocalizedName": "item.minecraft.wheat_seeds",
+    "localizedName": "Wheat Seeds",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:white_banner",
+    "unlocalizedName": "block.minecraft.white_banner",
+    "localizedName": "White Banner",
+    "maxStackSize": 16,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:white_bed",
+    "unlocalizedName": "block.minecraft.white_bed",
+    "localizedName": "White Bed",
+    "maxStackSize": 1,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:white_carpet",
+    "unlocalizedName": "block.minecraft.white_carpet",
+    "localizedName": "White Carpet",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:white_concrete",
+    "unlocalizedName": "block.minecraft.white_concrete",
+    "localizedName": "White Concrete",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:white_concrete_powder",
+    "unlocalizedName": "block.minecraft.white_concrete_powder",
+    "localizedName": "White Concrete Powder",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:white_dye",
+    "unlocalizedName": "item.minecraft.white_dye",
+    "localizedName": "White Dye",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:white_glazed_terracotta",
+    "unlocalizedName": "block.minecraft.white_glazed_terracotta",
+    "localizedName": "White Glazed Terracotta",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:white_shulker_box",
+    "unlocalizedName": "block.minecraft.white_shulker_box",
+    "localizedName": "White Shulker Box",
+    "maxStackSize": 1,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:white_stained_glass",
+    "unlocalizedName": "block.minecraft.white_stained_glass",
+    "localizedName": "White Stained Glass",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:white_stained_glass_pane",
+    "unlocalizedName": "block.minecraft.white_stained_glass_pane",
+    "localizedName": "White Stained Glass Pane",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:white_terracotta",
+    "unlocalizedName": "block.minecraft.white_terracotta",
+    "localizedName": "White Terracotta",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:white_tulip",
+    "unlocalizedName": "block.minecraft.white_tulip",
+    "localizedName": "White Tulip",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:white_wool",
+    "unlocalizedName": "block.minecraft.white_wool",
+    "localizedName": "White Wool",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:witch_spawn_egg",
+    "unlocalizedName": "item.minecraft.witch_spawn_egg",
+    "localizedName": "Witch Spawn Egg",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:wither_rose",
+    "unlocalizedName": "block.minecraft.wither_rose",
+    "localizedName": "Wither Rose",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:wither_skeleton_skull",
+    "unlocalizedName": "block.minecraft.wither_skeleton_skull",
+    "localizedName": "Wither Skeleton Skull",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:wither_skeleton_spawn_egg",
+    "unlocalizedName": "item.minecraft.wither_skeleton_spawn_egg",
+    "localizedName": "Wither Skeleton Spawn Egg",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:wolf_spawn_egg",
+    "unlocalizedName": "item.minecraft.wolf_spawn_egg",
+    "localizedName": "Wolf Spawn Egg",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:wooden_axe",
+    "unlocalizedName": "item.minecraft.wooden_axe",
+    "localizedName": "Wooden Axe",
+    "maxStackSize": 1,
+    "maxDamage": 59
+  },
+  {
+    "id": "minecraft:wooden_hoe",
+    "unlocalizedName": "item.minecraft.wooden_hoe",
+    "localizedName": "Wooden Hoe",
+    "maxStackSize": 1,
+    "maxDamage": 59
+  },
+  {
+    "id": "minecraft:wooden_pickaxe",
+    "unlocalizedName": "item.minecraft.wooden_pickaxe",
+    "localizedName": "Wooden Pickaxe",
+    "maxStackSize": 1,
+    "maxDamage": 59
+  },
+  {
+    "id": "minecraft:wooden_shovel",
+    "unlocalizedName": "item.minecraft.wooden_shovel",
+    "localizedName": "Wooden Shovel",
+    "maxStackSize": 1,
+    "maxDamage": 59
+  },
+  {
+    "id": "minecraft:wooden_sword",
+    "unlocalizedName": "item.minecraft.wooden_sword",
+    "localizedName": "Wooden Sword",
+    "maxStackSize": 1,
+    "maxDamage": 59
+  },
+  {
+    "id": "minecraft:writable_book",
+    "unlocalizedName": "item.minecraft.writable_book",
+    "localizedName": "Book and Quill",
+    "maxStackSize": 1,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:written_book",
+    "unlocalizedName": "item.minecraft.written_book",
+    "localizedName": "Written Book",
+    "maxStackSize": 16,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:yellow_banner",
+    "unlocalizedName": "block.minecraft.yellow_banner",
+    "localizedName": "Yellow Banner",
+    "maxStackSize": 16,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:yellow_bed",
+    "unlocalizedName": "block.minecraft.yellow_bed",
+    "localizedName": "Yellow Bed",
+    "maxStackSize": 1,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:yellow_carpet",
+    "unlocalizedName": "block.minecraft.yellow_carpet",
+    "localizedName": "Yellow Carpet",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:yellow_concrete",
+    "unlocalizedName": "block.minecraft.yellow_concrete",
+    "localizedName": "Yellow Concrete",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:yellow_concrete_powder",
+    "unlocalizedName": "block.minecraft.yellow_concrete_powder",
+    "localizedName": "Yellow Concrete Powder",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:yellow_dye",
+    "unlocalizedName": "item.minecraft.yellow_dye",
+    "localizedName": "Yellow Dye",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:yellow_glazed_terracotta",
+    "unlocalizedName": "block.minecraft.yellow_glazed_terracotta",
+    "localizedName": "Yellow Glazed Terracotta",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:yellow_shulker_box",
+    "unlocalizedName": "block.minecraft.yellow_shulker_box",
+    "localizedName": "Yellow Shulker Box",
+    "maxStackSize": 1,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:yellow_stained_glass",
+    "unlocalizedName": "block.minecraft.yellow_stained_glass",
+    "localizedName": "Yellow Stained Glass",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:yellow_stained_glass_pane",
+    "unlocalizedName": "block.minecraft.yellow_stained_glass_pane",
+    "localizedName": "Yellow Stained Glass Pane",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:yellow_terracotta",
+    "unlocalizedName": "block.minecraft.yellow_terracotta",
+    "localizedName": "Yellow Terracotta",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:yellow_wool",
+    "unlocalizedName": "block.minecraft.yellow_wool",
+    "localizedName": "Yellow Wool",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:zombie_head",
+    "unlocalizedName": "block.minecraft.zombie_head",
+    "localizedName": "Zombie Head",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:zombie_horse_spawn_egg",
+    "unlocalizedName": "item.minecraft.zombie_horse_spawn_egg",
+    "localizedName": "Zombie Horse Spawn Egg",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:zombie_pigman_spawn_egg",
+    "unlocalizedName": "item.minecraft.zombie_pigman_spawn_egg",
+    "localizedName": "Zombie Pigman Spawn Egg",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:zombie_spawn_egg",
+    "unlocalizedName": "item.minecraft.zombie_spawn_egg",
+    "localizedName": "Zombie Spawn Egg",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  },
+  {
+    "id": "minecraft:zombie_villager_spawn_egg",
+    "unlocalizedName": "item.minecraft.zombie_villager_spawn_egg",
+    "localizedName": "Zombie Villager Spawn Egg",
+    "maxStackSize": 64,
+    "maxDamage": 0
+  }
+]

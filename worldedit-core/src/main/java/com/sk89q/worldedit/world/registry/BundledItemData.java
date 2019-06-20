@@ -23,6 +23,8 @@ import com.google.common.io.Resources;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.util.gson.VectorAdapter;
 import com.sk89q.worldedit.util.io.ResourceLoader;
@@ -48,7 +50,7 @@ import java.util.Map;
  * reading fails (which occurs when this class is first instantiated), then
  * the methods will return {@code null}s for all items.</p>
  */
-public class BundledItemData {
+public final class BundledItemData {
 
     private static final Logger log = LoggerFactory.getLogger(BundledItemData.class);
     private static BundledItemData INSTANCE;
@@ -75,10 +77,18 @@ public class BundledItemData {
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.registerTypeAdapter(Vector3.class, new VectorAdapter());
         Gson gson = gsonBuilder.create();
-        URL url = ResourceLoader.getResource(BundledItemData.class,"items.json");
+        URL url = null;
+        final int dataVersion = WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.WORLD_EDITING).getDataVersion();
+        if (dataVersion > 1900) { // > MC 1.13
+            url = ResourceLoader.getResource(BundledBlockData.class, "items.114.json");
+        }
+        if (url == null) {
+            url = ResourceLoader.getResource(BundledBlockData.class, "items.json");
+        }
         if (url == null) {
             throw new IOException("Could not find items.json");
         }
+        log.debug("Using {} for bundled item data.", url);
         String data = Resources.toString(url, Charset.defaultCharset());
         List<ItemEntry> entries = gson.fromJson(data, new TypeToken<List<ItemEntry>>() {}.getType());
 
