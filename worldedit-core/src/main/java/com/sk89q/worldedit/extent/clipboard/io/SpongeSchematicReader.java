@@ -129,21 +129,28 @@ public class SpongeSchematicReader extends NBTSchematicReader {
         BlockVector3 origin;
         Region region;
         Map<String, Tag> schematic = schematicTag.getValue();
-        Map<String, Tag> metadata = requireTag(schematic, "Metadata", CompoundTag.class).getValue();
 
         int width = requireTag(schematic, "Width", ShortTag.class).getValue();
         int height = requireTag(schematic, "Height", ShortTag.class).getValue();
         int length = requireTag(schematic, "Length", ShortTag.class).getValue();
 
-        int[] offsetParts = requireTag(schematic, "Offset", IntArrayTag.class).getValue();
-        if (offsetParts.length != 3) {
-            throw new IOException("Invalid offset specified in schematic.");
+        IntArrayTag offsetTag = getTag(schematic, "Offset", IntArrayTag.class);
+        int[] offsetParts;
+        if (offsetTag != null) {
+            offsetParts = offsetTag.getValue();
+            if  (offsetParts.length != 3) {
+                throw new IOException("Invalid offset specified in schematic.");
+            }
+        } else {
+            offsetParts = new int[] {0, 0, 0};
         }
 
         BlockVector3 min = BlockVector3.at(offsetParts[0], offsetParts[1], offsetParts[2]);
 
-        if (metadata.containsKey("WEOffsetX")) {
+        CompoundTag metadataTag = getTag(schematic, "Metadata", CompoundTag.class);
+        if (metadataTag != null && metadataTag.containsKey("WEOffsetX")) {
             // We appear to have WorldEdit Metadata
+            Map<String, Tag> metadata = metadataTag.getValue();
             int offsetX = requireTag(metadata, "WEOffsetX", IntTag.class).getValue();
             int offsetY = requireTag(metadata, "WEOffsetY", IntTag.class).getValue();
             int offsetZ = requireTag(metadata, "WEOffsetZ", IntTag.class).getValue();
