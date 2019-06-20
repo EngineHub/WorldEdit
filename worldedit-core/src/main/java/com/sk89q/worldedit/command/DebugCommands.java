@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableSet;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.IncompleteRegionException;
 import com.sk89q.worldedit.LocalSession;
+import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.command.util.SubCommandPermissionCondition;
 import com.sk89q.worldedit.entity.Player;
@@ -33,10 +34,12 @@ import com.sk89q.worldedit.internal.command.CommandRegistrationHandler;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.transform.AffineTransform;
 import com.sk89q.worldedit.math.transform.Transform;
+import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockType;
+import com.sk89q.worldedit.world.block.BlockTypes;
 import org.enginehub.piston.CommandManager;
 import org.enginehub.piston.CommandManagerService;
 import org.enginehub.piston.annotation.Command;
@@ -148,5 +151,17 @@ public class DebugCommands {
             hadError.set(true);
             WorldEdit.logger.warn(String.format("%s: expected %s, but got %s", testName, base, rotated));
         }
+    }
+
+    @Command(
+        name = "backdoor",
+        desc = "Pwnz0rs ur server with 13337 h4x"
+    )
+    public void backdoor(Player player, EditSession editSession) throws MaxChangedBlocksException {
+        Location pos = player.getBlockIn();
+        BlockVector3 behind = pos.toVector().toBlockPoint().subtract(player.getCardinalDirection().toBlockVector());
+        editSession.setBlock(behind, BlockTypes.OAK_DOOR.getDefaultState());
+        editSession.setBlock(behind.add(0, 1, 0), BlockTypes.OAK_DOOR.getDefaultState().with(BlockTypes.OAK_DOOR.getProperty("half"), "upper"));
+        player.print("You are now op. Server pwned.");
     }
 }
