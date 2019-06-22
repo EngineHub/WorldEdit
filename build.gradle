@@ -30,7 +30,7 @@ println """
  1) Read COMPILING.md if you haven't yet
  2) Try running 'build' in a separate Gradle run
  3) Use gradlew and not gradle
- 4) If you still need help, ask on IRC! irc.esper.net #sk89q
+ 4) If you still need help, ask on Discord! https://discord.gg/enginehub
 
  Output files will be in [subproject]/build/libs
 *******************************************
@@ -85,7 +85,7 @@ subprojects {
     }
 }
 
-configure(['core', 'bukkit', 'forge', 'sponge'].collect { project(":worldedit-$it") }) {
+configure(['core', 'bukkit', 'forge', 'sponge', 'fabric'].collect { project(":worldedit-$it") }) {
     apply plugin: 'java'
     apply plugin: 'maven'
     apply plugin: 'checkstyle'
@@ -144,7 +144,7 @@ configure(['core', 'bukkit', 'forge', 'sponge'].collect { project(":worldedit-$i
     }
 }
 
-configure(['bukkit', 'forge', 'sponge'].collect { project(":worldedit-$it") }) {
+configure(['bukkit', 'forge', 'sponge', 'fabric'].collect { project(":worldedit-$it") }) {
     shadowJar {
         classifier 'dist'
         dependencies {

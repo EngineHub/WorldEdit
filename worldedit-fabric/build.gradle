@@ -1,0 +1,99 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        maven {
+            name = 'Fabric'
+            url = 'https://maven.fabricmc.net/'
+        }
+        jcenter()
+    }
+
+    configurations.all {
+        resolutionStrategy {
+            force 'commons-io:commons-io:2.4'
+        }
+    }
+
+    dependencies {
+        classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.4'
+        classpath 'org.jfrog.buildinfo:build-info-extractor-gradle:4.8.1'
+        classpath 'net.fabricmc:fabric-loom:0.2.4-SNAPSHOT'
+    }
+}
+
+apply plugin: 'eclipse'
+apply plugin: 'fabric-loom'
+
+def minecraftVersion = "1.14.2"
+def fabricVersion = "0.3.0+build.185"
+def yarnMappings = "1.14.2+build.7"
+def loaderVersion = "0.4.8+build.155"
+
+configurations.all { Configuration it ->
+    it.resolutionStrategy { ResolutionStrategy rs ->
+        rs.force("com.google.guava:guava:21.0")
+    }
+}
+
+dependencies {
+    compile project(':worldedit-core')
+    compile 'org.apache.logging.log4j:log4j-slf4j-impl:2.11.2'
+
+    minecraft "com.mojang:minecraft:${minecraftVersion}"
+    mappings "net.fabricmc:yarn:${yarnMappings}"
+    modCompile "net.fabricmc:fabric-loader:${loaderVersion}"
+
+    modCompile "net.fabricmc.fabric-api:fabric-api:${fabricVersion}"
+
+    testCompile group: 'org.mockito', name: 'mockito-core', version: '1.9.0-rc1'
+}
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+minecraft {
+}
+
+project.archivesBaseName = "${project.archivesBaseName}-mc${minecraftVersion}"
+
+processResources {
+    // this will ensure that this task is redone when the versions change.
+    inputs.property 'version', project.internalVersion
+    inputs.property 'fabricVersion', fabricVersion
+
+    from(sourceSets.main.resources.srcDirs) {
+        include "fabric.mod.json"
+        expand "version": project.version
+    }
+
+    // copy everything else except the mod json
+    from(sourceSets.main.resources.srcDirs) {
+        exclude "fabric.mod.json"
+    }
+}
+
+jar {
+    manifest {
+        attributes("Class-Path": "truezip.jar WorldEdit/truezip.jar js.jar WorldEdit/js.jar",
+                   "WorldEdit-Version": version)
+    }
+}
+
+shadowJar {
+    dependencies {
+        relocate "org.slf4j", "com.sk89q.worldedit.slf4j"
+        relocate "org.apache.logging.slf4j", "com.sk89q.worldedit.log4jbridge"
+
+        include(dependency('org.slf4j:slf4j-api'))
+        include(dependency("org.apache.logging.log4j:log4j-slf4j-impl"))
+    }
+}
+
+task deobfJar(type: Jar) {
+    from sourceSets.main.output
+    classifier = 'dev'
+}
+
+artifacts {
+    archives deobfJar
+}
