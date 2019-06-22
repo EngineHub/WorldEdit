@@ -496,8 +496,7 @@ public class ForgeWorld extends AbstractWorld {
     @Override
     public BaseBlock getFullBlock(BlockVector3 position) {
         BlockPos pos = new BlockPos(position.getBlockX(), position.getBlockY(), position.getBlockZ());
-        // Avoid creation by using the CHECK mode -- if it's needed, it'll be re-created anyways
-        TileEntity tile = getWorld().getChunk(pos).getTileEntity(pos, Chunk.CreateEntityType.CHECK);
+        TileEntity tile = getWorld().getChunk(pos).getTileEntity(pos);
 
         if (tile != null) {
             return getBlock(position).toBaseBlock(NBTConverter.fromNative(TileEntityUtils.copyNbtData(tile)));
@@ -550,7 +549,7 @@ public class ForgeWorld extends AbstractWorld {
     @Override
     public Entity createEntity(Location location, BaseEntity entity) {
         World world = getWorld();
-        final Optional<EntityType<?>> entityType = EntityType.getTypeFromString(entity.getType().getId());
+        final Optional<EntityType<?>> entityType = EntityType.byKey(entity.getType().getId());
         if (!entityType.isPresent()) return null;
         net.minecraft.entity.Entity createdEntity = entityType.get().create(world);
         if (createdEntity != null) {
