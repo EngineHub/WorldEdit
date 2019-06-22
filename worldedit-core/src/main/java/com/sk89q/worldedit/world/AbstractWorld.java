@@ -34,6 +34,7 @@ import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.block.BlockTypes;
 
+import java.nio.file.Path;
 import java.util.PriorityQueue;
 
 import javax.annotation.Nullable;
@@ -54,6 +55,11 @@ public abstract class AbstractWorld implements World {
     @Override
     public final <B extends BlockStateHolder<B>> boolean setBlock(BlockVector3 pt, B block) throws WorldEditException {
         return setBlock(pt, block, true);
+    }
+
+    @Override
+    public Path getStoragePath() {
+        return null;
     }
 
     @Override

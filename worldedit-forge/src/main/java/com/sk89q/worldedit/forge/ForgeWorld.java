@@ -97,6 +97,7 @@ import net.minecraft.world.storage.WorldInfo;
 import javax.annotation.Nullable;
 import java.io.File;
 import java.lang.ref.WeakReference;
+import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -165,6 +166,15 @@ public class ForgeWorld extends AbstractWorld {
     @Override
     public String getName() {
         return getWorld().getWorldInfo().getWorldName();
+    }
+
+    @Override
+    public Path getStoragePath() {
+        final World world = getWorld();
+        if (world instanceof ServerWorld) {
+            return ((ServerWorld) world).getSaveHandler().getWorldDirectory().toPath();
+        }
+        return null;
     }
 
     @Override

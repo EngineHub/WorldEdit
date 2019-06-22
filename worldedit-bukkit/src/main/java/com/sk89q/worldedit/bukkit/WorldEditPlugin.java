@@ -38,6 +38,7 @@ import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
 import com.sk89q.worldedit.internal.command.CommandUtil;
+import com.sk89q.worldedit.internal.anvil.ChunkDeleter;
 import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.block.BlockCategory;
@@ -73,6 +74,9 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -82,6 +86,7 @@ import java.util.logging.Level;
 import java.util.zip.ZipEntry;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.sk89q.worldedit.internal.anvil.ChunkDeleter.DELCHUNKS_FILE_NAME;
 
 /**
  * Plugin for Bukkit.
@@ -109,6 +114,11 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
         // Setup platform
         server = new BukkitServerInterface(this, getServer());
         worldEdit.getPlatformManager().register(server);
+
+        Path delChunks = Paths.get(getDataFolder().getPath(), DELCHUNKS_FILE_NAME);
+        if (Files.exists(delChunks)) {
+            ChunkDeleter.runFromFile(delChunks, true);
+        }
     }
 
     /**
