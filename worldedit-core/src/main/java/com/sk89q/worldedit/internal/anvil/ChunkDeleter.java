@@ -44,9 +44,11 @@ import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.BiPredicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -119,6 +121,7 @@ public final class ChunkDeleter {
     }
 
     private final ChunkDeletionInfo chunkDeletionInfo;
+    private Set<Path> backedUpRegions = new HashSet<>();
     private boolean shouldPreload;
     private int chunksDeleted = 0;
     private int deletionsRequested = 0;
@@ -134,7 +137,7 @@ public final class ChunkDeleter {
         return regionToChunkList.entrySet().stream().allMatch(entry -> {
             Path regionPath = entry.getKey();
             if (!Files.exists(regionPath)) return true;
-            if (chunkBatch.backup) {
+            if (chunkBatch.backup && !backedUpRegions.contains(regionPath)) {
                 try {
                     backupRegion(regionPath);
                 } catch (IOException e) {
@@ -161,8 +164,8 @@ public final class ChunkDeleter {
             final RegionFilePos minRegion = new RegionFilePos(minChunk);
             final RegionFilePos maxRegion = new RegionFilePos(maxChunk);
             Map<Path, Stream<BlockVector2>> groupedChunks = new HashMap<>();
-            for (int regX = minRegion.getX(); regX < maxRegion.getX(); regX++) {
-                for (int regZ = minRegion.getZ(); regZ < maxRegion.getZ(); regZ++) {
+            for (int regX = minRegion.getX(); regX <= maxRegion.getX(); regX++) {
+                for (int regZ = minRegion.getZ(); regZ <= maxRegion.getZ(); regZ++) {
                     final Path regionPath = worldPath.resolve("region").resolve(new RegionFilePos(regX, regZ).getFileName());
                     if (!Files.exists(regionPath)) continue;
                     int minChunkX = regX >> 5;
@@ -177,7 +180,7 @@ public final class ChunkDeleter {
                     groupedChunks.put(regionPath, stream);
                 }
             }
-            final BlockVector2 dist = minChunk.subtract(maxChunk);
+            final BlockVector2 dist = maxChunk.subtract(minChunk).add(1, 1);
             deletionsRequested += dist.getBlockX() * dist.getBlockZ();
             return groupedChunks;
         }
@@ -226,6 +229,7 @@ public final class ChunkDeleter {
     private void backupRegion(Path regionFile) throws IOException {
         Path backupFile = regionFile.resolveSibling(regionFile.getFileName() + ".bak");
         Files.copy(regionFile, backupFile, StandardCopyOption.REPLACE_EXISTING);
+        backedUpRegions.add(backupFile);
     }
 
     private boolean deleteChunks(Path regionFile, Stream<BlockVector2> chunks,
