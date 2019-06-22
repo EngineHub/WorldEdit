@@ -19,7 +19,6 @@
 
 package com.sk89q.worldedit.internal.anvil;
 
-import com.google.common.collect.Streams;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonIOException;
@@ -29,8 +28,6 @@ import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import com.sk89q.worldedit.math.BlockVector2;
-import com.sk89q.worldedit.math.BlockVector3;
-import com.sk89q.worldedit.regions.CuboidRegion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -86,6 +83,7 @@ public final class ChunkDeleter {
             logger.error("Could not parse chunk deletion file. Invalid file?", e);
             return;
         }
+        logger.info("Found chunk deletions. Proceeding with deletion...");
         long start = System.currentTimeMillis();
         if (chunkDeleter.runDeleter()) {
             logger.info("Successfully deleted {} matching chunks (out of {}, taking {} ms).",
@@ -123,7 +121,7 @@ public final class ChunkDeleter {
     private final ChunkDeletionInfo chunkDeletionInfo;
     private Set<Path> backedUpRegions = new HashSet<>();
     private boolean shouldPreload;
-    private int chunksDeleted = 0;
+    private int totalChunksDeleted = 0;
     private int deletionsRequested = 0;
 
     private boolean runDeleter() {
@@ -168,15 +166,27 @@ public final class ChunkDeleter {
                 for (int regZ = minRegion.getZ(); regZ <= maxRegion.getZ(); regZ++) {
                     final Path regionPath = worldPath.resolve("region").resolve(new RegionFilePos(regX, regZ).getFileName());
                     if (!Files.exists(regionPath)) continue;
-                    int minChunkX = regX >> 5;
-                    int maxChunkX = (regX >> 5) + 31;
-                    int minChunkZ = regZ >> 5;
-                    int maxChunkZ = (regZ >> 5) + 31;
-                    final Iterable<BlockVector2> chunksInRegion = new CuboidRegion(
-                            BlockVector3.at(minChunkX, 0, minChunkZ), BlockVector3.at(maxChunkX, 0, maxChunkZ)
-                        ).asFlatRegion();
-                    final Stream<BlockVector2> stream = Streams.stream(chunksInRegion)
-                            .filter(chunk -> chunk.containedWithin(minChunk, maxChunk));
+                    int startX = regX << 5;
+                    int endX = (regX << 5) + 31;
+                    int startZ = regZ << 5;
+                    int endZ = (regZ << 5) + 31;
+
+                    int minX = Math.max(Math.min(startX, endX), minChunk.getBlockX());
+                    int minZ = Math.max(Math.min(startZ, endZ), minChunk.getBlockZ());
+                    int maxX = Math.min(Math.max(startX, endX), maxChunk.getBlockX());
+                    int maxZ = Math.min(Math.max(startZ, endZ), maxChunk.getBlockZ());
+                    Stream<BlockVector2> stream = Stream.iterate(BlockVector2.at(minX, minZ),
+                            bv2 -> {
+                                int nextX = bv2.getBlockX();
+                                int nextZ = bv2.getBlockZ();
+                                if (++nextX > maxX) {
+                                    nextX = minX;
+                                    if (++nextZ > maxZ) {
+                                        return null;
+                                    }
+                                }
+                                return BlockVector2.at(nextX, nextZ);
+                            });
                     groupedChunks.put(regionPath, stream);
                 }
             }
@@ -234,16 +244,27 @@ public final class ChunkDeleter {
 
     private boolean deleteChunks(Path regionFile, Stream<BlockVector2> chunks,
                                  BiPredicate<RegionAccess, BlockVector2> deletionPredicate) {
+//        logger.debug("Now deleting from " + regionFile);
+//        int fileChunksDeleted = 0;
+//        Set<BlockVector2> deletedChunks = new HashSet<>();
         try (RegionAccess region = new RegionAccess(regionFile, shouldPreload)) {
             for (Iterator<BlockVector2> iterator = chunks.iterator(); iterator.hasNext();) {
                 BlockVector2 chunk = iterator.next();
+                if (chunk == null) break;
                 if (deletionPredicate.test(region, chunk)) {
                     region.deleteChunk(chunk);
-                    chunksDeleted++;
+//                    deletedChunks.add(chunk);
+//                    fileChunksDeleted++;
+                    totalChunksDeleted++;
+                    if (totalChunksDeleted % 100 == 0) {
+                        logger.debug("Deleted {} chunks so far.", totalChunksDeleted);
+                    }
                 } else {
                     logger.debug("Chunk did not match predicates: " + chunk);
                 }
             }
+//            logger.debug(fileChunksDeleted + " chunks deleted in this file: "
+//                    + deletedChunks.stream().map(BlockVector2::toString).collect(Collectors.joining(",")));
             return true;
         } catch (IOException e) {
             logger.warn("Error deleting chunks from region: " + regionFile + ". Aborting the process.", e);
@@ -252,7 +273,7 @@ public final class ChunkDeleter {
     }
 
     public int getDeletedChunkCount() {
-        return chunksDeleted;
+        return totalChunksDeleted;
     }
 
     public int getDeletionsRequested() {
