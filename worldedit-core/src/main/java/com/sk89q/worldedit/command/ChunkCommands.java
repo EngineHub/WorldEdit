@@ -133,17 +133,13 @@ public class ChunkCommands {
         newBatch.worldPath = worldDir.toAbsolutePath().normalize().toString();
         newBatch.backup = true;
         final Region selection = session.getSelection(player.getWorld());
-        int chunkCount;
         if (selection instanceof CuboidRegion) {
             newBatch.minChunk = BlockVector2.at(selection.getMinimumPoint().getBlockX() >> 4, selection.getMinimumPoint().getBlockZ() >> 4);
             newBatch.maxChunk = BlockVector2.at(selection.getMaximumPoint().getBlockX() >> 4, selection.getMaximumPoint().getBlockZ() >> 4);
-            final BlockVector2 dist = newBatch.maxChunk.subtract(newBatch.minChunk).add(1, 1);
-            chunkCount = dist.getBlockX() * dist.getBlockZ();
         } else {
             // this has a possibility to OOM for very large selections still
             Set<BlockVector2> chunks = selection.getChunks();
             newBatch.chunks = new ArrayList<>(chunks);
-            chunkCount = chunks.size();
         }
         if (beforeTime != null) {
             newBatch.deletionPredicates = new ArrayList<>();
@@ -161,9 +157,15 @@ public class ChunkCommands {
             throw new StopExecutionException(TextComponent.of("Failed to write chunk list: " + e.getMessage()));
         }
 
-        player.print(String.format("%d chunk(s) have been marked for deletion and will be deleted the next time the server starts.", chunkCount));
-        player.print(TextComponent.of("You can mark more chunks for deletion, or to stop the server now, run: ", TextColor.LIGHT_PURPLE)
-                .append(TextComponent.of("/stop", TextColor.AQUA).clickEvent(ClickEvent.of(ClickEvent.Action.SUGGEST_COMMAND, "/stop"))));
+        player.print(String.format("%d chunk(s) have been marked for deletion the next time the server starts.",
+                newBatch.getChunkCount()));
+        if (currentInfo.batches.size() > 1) {
+            player.printDebug(String.format("%d chunks total marked for deletion. (May have overlaps).",
+                    currentInfo.batches.stream().mapToInt(ChunkDeletionInfo.ChunkBatch::getChunkCount).sum()));
+        }
+        player.print(TextComponent.of("You can mark more chunks for deletion, or to stop now, run: ", TextColor.LIGHT_PURPLE)
+                .append(TextComponent.of("/stop", TextColor.AQUA)
+                        .clickEvent(ClickEvent.of(ClickEvent.Action.SUGGEST_COMMAND, "/stop"))));
     }
 
 }

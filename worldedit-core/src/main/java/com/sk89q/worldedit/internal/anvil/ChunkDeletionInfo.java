@@ -38,6 +38,12 @@ public class ChunkDeletionInfo {
         public List<BlockVector2> chunks;
         public BlockVector2 minChunk;
         public BlockVector2 maxChunk;
+
+        public int getChunkCount() {
+            if (chunks != null) return chunks.size();
+            final BlockVector2 dist = maxChunk.subtract(minChunk).add(1, 1);
+            return dist.getBlockX() * dist.getBlockZ();
+        }
     }
 
     public static class DeletionPredicate {

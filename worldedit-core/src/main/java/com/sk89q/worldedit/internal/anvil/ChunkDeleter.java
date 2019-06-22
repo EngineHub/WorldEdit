@@ -70,7 +70,7 @@ public final class ChunkDeleter {
 
     public static void writeInfo(ChunkDeletionInfo info, Path chunkFile) throws IOException, JsonIOException {
         String json = chunkDeleterGson.toJson(info, new TypeToken<ChunkDeletionInfo>() {}.getType());
-        try (BufferedWriter writer = Files.newBufferedWriter(chunkFile, StandardOpenOption.CREATE)) {
+        try (BufferedWriter writer = Files.newBufferedWriter(chunkFile)) {
             writer.write(json);
         }
     }
@@ -130,10 +130,14 @@ public final class ChunkDeleter {
     }
 
     private boolean runBatch(ChunkDeletionInfo.ChunkBatch chunkBatch) {
-        logger.debug("Processing deletion batch.");
+        int chunkCount = chunkBatch.getChunkCount();
+        logger.debug("Processing deletion batch with {} chunks.", chunkCount);
         final Map<Path, Stream<BlockVector2>> regionToChunkList = groupChunks(chunkBatch);
         BiPredicate<RegionAccess, BlockVector2> predicate = createPredicates(chunkBatch.deletionPredicates);
         shouldPreload = chunkBatch.chunks == null;
+        deletionsRequested += chunkCount;
+        debugRate = chunkCount / 10;
+
         return regionToChunkList.entrySet().stream().allMatch(entry -> {
             Path regionPath = entry.getKey();
             if (!Files.exists(regionPath)) return true;
@@ -152,8 +156,6 @@ public final class ChunkDeleter {
     private Map<Path, Stream<BlockVector2>> groupChunks(ChunkDeletionInfo.ChunkBatch chunkBatch) {
         Path worldPath = Paths.get(chunkBatch.worldPath);
         if (chunkBatch.chunks != null) {
-            deletionsRequested += chunkBatch.chunks.size();
-            debugRate = chunkBatch.chunks.size() / 10;
             return chunkBatch.chunks.stream()
                     .collect(Collectors.groupingBy(RegionFilePos::new))
                     .entrySet().stream().collect(Collectors.toMap(
@@ -193,10 +195,6 @@ public final class ChunkDeleter {
                     groupedChunks.put(regionPath, stream);
                 }
             }
-            final BlockVector2 dist = maxChunk.subtract(minChunk).add(1, 1);
-            final int batchSize = dist.getBlockX() * dist.getBlockZ();
-            debugRate = batchSize / 10;
-            this.deletionsRequested += batchSize;
             return groupedChunks;
         }
     }
@@ -256,7 +254,7 @@ public final class ChunkDeleter {
                 if (deletionPredicate.test(region, chunk)) {
                     region.deleteChunk(chunk);
                     totalChunksDeleted++;
-                    if (totalChunksDeleted % debugRate == 0) {
+                    if (debugRate != 0 && totalChunksDeleted % debugRate == 0) {
                         logger.debug("Deleted {} chunks so far.", totalChunksDeleted);
                     }
                 } else {
