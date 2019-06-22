@@ -47,7 +47,9 @@ import java.util.function.BiPredicate;
 import java.util.stream.Collectors;
 
 public final class ChunkDeleter {
-    public static final Logger logger = LoggerFactory.getLogger(ChunkDeleter.class);
+
+    public static final String DELCHUNKS_FILE_NAME = "delete_chunks.json";
+    private static final Logger logger = LoggerFactory.getLogger(ChunkDeleter.class);
 
     private static final Comparator<BlockVector2> chunkSorter = Comparator.comparing(
             pos -> (pos.getBlockX() & 31) + (pos.getBlockZ() & 31) * 32);

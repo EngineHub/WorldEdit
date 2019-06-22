@@ -31,6 +31,7 @@ import com.sk89q.worldedit.forge.net.packet.LeftClickAirEventMessage;
 import com.sk89q.worldedit.forge.proxy.ClientProxy;
 import com.sk89q.worldedit.forge.proxy.CommonProxy;
 import com.sk89q.worldedit.forge.proxy.ServerProxy;
+import com.sk89q.worldedit.internal.anvil.ChunkDeleter;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.block.BlockCategory;
@@ -45,7 +46,6 @@ import net.minecraft.tags.ItemTags;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
-import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.CommandEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
@@ -58,11 +58,10 @@ import net.minecraftforge.fml.ModContainer;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
+import net.minecraftforge.fml.event.server.FMLServerAboutToStartEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartedEvent;
 import net.minecraftforge.fml.event.server.FMLServerStoppingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.fml.loading.FMLLoader;
 import net.minecraftforge.fml.loading.FMLPaths;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.logging.log4j.LogManager;
@@ -76,6 +75,7 @@ import java.nio.file.Path;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.sk89q.worldedit.forge.ForgeAdapter.adaptPlayer;
+import static com.sk89q.worldedit.internal.anvil.ChunkDeleter.DELCHUNKS_FILE_NAME;
 
 /**
  * The Forge implementation of WorldEdit.
@@ -177,6 +177,14 @@ public class ForgeWorldEdit {
             if (ItemCategory.REGISTRY.get(name.toString()) == null) {
                 ItemCategory.REGISTRY.register(name.toString(), new ItemCategory(name.toString()));
             }
+        }
+    }
+
+    @SubscribeEvent
+    public void serverAboutToStart(FMLServerAboutToStartEvent event) {
+        final Path delChunks = workingDir.resolve(DELCHUNKS_FILE_NAME);
+        if (Files.exists(delChunks)) {
+            ChunkDeleter.runFromFile(delChunks, true);
         }
     }
 

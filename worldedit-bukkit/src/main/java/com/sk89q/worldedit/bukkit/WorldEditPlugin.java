@@ -86,6 +86,7 @@ import java.util.logging.Level;
 import java.util.zip.ZipEntry;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.sk89q.worldedit.internal.anvil.ChunkDeleter.DELCHUNKS_FILE_NAME;
 
 /**
  * Plugin for Bukkit.
@@ -114,7 +115,7 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
         server = new BukkitServerInterface(this, getServer());
         worldEdit.getPlatformManager().register(server);
 
-        Path delChunks = Paths.get(getDataFolder().getPath(), "delete_chunks.json");
+        Path delChunks = Paths.get(getDataFolder().getPath(), DELCHUNKS_FILE_NAME);
         if (Files.exists(delChunks)) {
             ChunkDeleter.runFromFile(delChunks, true);
         }

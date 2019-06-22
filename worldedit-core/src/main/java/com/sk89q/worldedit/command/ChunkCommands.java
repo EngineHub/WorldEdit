@@ -55,6 +55,7 @@ import java.util.stream.Collectors;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.sk89q.worldedit.command.util.Logging.LogMode.REGION;
+import static com.sk89q.worldedit.internal.anvil.ChunkDeleter.DELCHUNKS_FILE_NAME;
 
 /**
  * Commands for working with chunks.
@@ -114,8 +115,7 @@ public class ChunkCommands {
         }
         Set<BlockVector2> chunks = session.getSelection(player.getWorld()).getChunks();
 
-        String chunkFileName = "delete_chunks.json";
-        File chunkFile = worldEdit.getWorkingDirectoryFile(chunkFileName);
+        File chunkFile = worldEdit.getWorkingDirectoryFile(DELCHUNKS_FILE_NAME);
         Path chunkPath = chunkFile.toPath();
         ChunkDeletionInfo currentInfo = null;
         if (Files.exists(chunkPath)) {
