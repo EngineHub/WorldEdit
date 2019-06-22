@@ -34,7 +34,10 @@ public class ChunkDeletionInfo {
         public String worldPath;
         public boolean backup;
         public List<DeletionPredicate> deletionPredicates;
+        // specify either list of chunks, or min-max
         public List<BlockVector2> chunks;
+        public BlockVector2 minChunk;
+        public BlockVector2 maxChunk;
     }
 
     public static class DeletionPredicate {

@@ -31,35 +31,67 @@ import java.nio.file.Path;
 class RegionAccess implements AutoCloseable {
 
     private RandomAccessFile raf;
+    private int[] offsets;
+    private int[] timestamps;
 
     RegionAccess(Path file) throws IOException {
+        this(file, false);
+    }
+
+    RegionAccess(Path file, boolean preload) throws IOException {
         raf = new RandomAccessFile(file.toFile(), "rw");
+        if (preload) {
+            readHeaders();
+        }
+    }
+
+    private void readHeaders() throws IOException {
+        offsets = new int[1024];
+        timestamps = new int[1024];
+        for (int idx = 0; idx < 1024; ++idx) {
+            offsets[idx] = raf.readInt();
+        }
+        for (int idx = 0; idx < 1024; ++idx) {
+            timestamps[idx] = raf.readInt();
+        }
+    }
+
+    private static int indexChunk(BlockVector2 pos) {
+        int x = pos.getBlockX() & 31;
+        int z = pos.getBlockZ() & 31;
+        return x + z * 32;
     }
 
     int getModificationTime(BlockVector2 pos) throws IOException {
-        int x = pos.getBlockX() & 31;
-        int z = pos.getBlockZ() & 31;
-        raf.seek((x + z * 32) * 4 + 4096);
+        int idx = indexChunk(pos);
+        if (timestamps != null) {
+            return timestamps[idx];
+        }
+        raf.seek(idx * 4L + 4096);
         return raf.readInt();
     }
 
     int getChunkSize(BlockVector2 pos) throws IOException {
-        int x = pos.getBlockX() & 31;
-        int z = pos.getBlockZ() & 31;
-        raf.seek((x + z * 32) * 4);
+        int idx = indexChunk(pos);
+        if (offsets != null) {
+            return offsets[idx] & 0xFF;
+        }
+        raf.seek(idx * 4L);
         // 3 bytes for offset
         raf.read();
         raf.read();
         raf.read();
-        // one byte for size
+        // one byte for size - note, yes, could do raf.readInt() & 0xFF but that does extra checks
         return raf.read();
     }
 
     void deleteChunk(BlockVector2 pos) throws IOException {
-        int x = pos.getBlockX() & 31;
-        int z = pos.getBlockZ() & 31;
-        raf.seek((x + z * 32) * 4);
+        int idx = indexChunk(pos);
+        raf.seek(idx * 4L);
         raf.writeInt(0);
+        if (offsets != null) {
+            offsets[idx] = 0;
+        }
     }
 
     @Override

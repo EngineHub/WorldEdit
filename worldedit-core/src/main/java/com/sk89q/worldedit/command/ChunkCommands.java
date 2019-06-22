@@ -30,6 +30,8 @@ import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.internal.anvil.ChunkDeleter;
 import com.sk89q.worldedit.internal.anvil.ChunkDeletionInfo;
 import com.sk89q.worldedit.math.BlockVector2;
+import com.sk89q.worldedit.regions.CuboidRegion;
+import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.formatting.component.PaginationBox;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
@@ -43,12 +45,10 @@ import org.enginehub.piston.annotation.param.ArgFlag;
 import org.enginehub.piston.exception.StopExecutionException;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -108,12 +108,11 @@ public class ChunkCommands {
     @Logging(REGION)
     public void deleteChunks(Player player, LocalSession session,
                                 @ArgFlag(name = 'o', desc = "Only delete chunks older than the specified time.", def = "")
-                                    Integer beforeTime) throws WorldEditException {
+                                    ZonedDateTime beforeTime) throws WorldEditException {
         Path worldDir = player.getWorld().getStoragePath();
         if (worldDir == null) {
             throw new StopExecutionException(TextComponent.of("Couldn't find world folder for this world."));
         }
-        Set<BlockVector2> chunks = session.getSelection(player.getWorld()).getChunks();
 
         File chunkFile = worldEdit.getWorkingDirectoryFile(DELCHUNKS_FILE_NAME);
         Path chunkPath = chunkFile.toPath();
@@ -133,13 +132,25 @@ public class ChunkCommands {
         ChunkDeletionInfo.ChunkBatch newBatch = new ChunkDeletionInfo.ChunkBatch();
         newBatch.worldPath = worldDir.toAbsolutePath().normalize().toString();
         newBatch.backup = true;
-        newBatch.chunks = new ArrayList<>(chunks);
+        final Region selection = session.getSelection(player.getWorld());
+        int chunkCount;
+        if (selection instanceof CuboidRegion) {
+            newBatch.minChunk = BlockVector2.at(selection.getMinimumPoint().getBlockX() >> 4, selection.getMinimumPoint().getBlockZ() >> 4);
+            newBatch.maxChunk = BlockVector2.at(selection.getMaximumPoint().getBlockX() >> 4, selection.getMaximumPoint().getBlockZ() >> 4);
+            final BlockVector2 dist = newBatch.minChunk.subtract(newBatch.maxChunk);
+            chunkCount = dist.getBlockX() * dist.getBlockZ();
+        } else {
+            // this has a possibility to OOM for very large selections still
+            Set<BlockVector2> chunks = selection.getChunks();
+            newBatch.chunks = new ArrayList<>(chunks);
+            chunkCount = chunks.size();
+        }
         if (beforeTime != null) {
             newBatch.deletionPredicates = new ArrayList<>();
             ChunkDeletionInfo.DeletionPredicate timePred = new ChunkDeletionInfo.DeletionPredicate();
             timePred.property = "modification";
             timePred.comparison = "<";
-            timePred.value = beforeTime.toString();
+            timePred.value = String.valueOf((int) beforeTime.toOffsetDateTime().toEpochSecond());
             newBatch.deletionPredicates.add(timePred);
         }
         currentInfo.batches.add(newBatch);
@@ -150,7 +161,7 @@ public class ChunkCommands {
             throw new StopExecutionException(TextComponent.of("Failed to write chunk list: " + e.getMessage()));
         }
         /*if (startup) {*/
-        player.print(String.format("%d chunk(s) have been marked for deletion and will be deleted the next time the server starts.", chunks.size()));
+        player.print(String.format("%d chunk(s) have been marked for deletion and will be deleted the next time the server starts.", chunkCount));
         player.print(TextComponent.of("You can mark more chunks for deletion, or to stop the server now, run: ", TextColor.LIGHT_PURPLE)
                 .append(TextComponent.of("/stop", TextColor.AQUA).clickEvent(ClickEvent.of(ClickEvent.Action.SUGGEST_COMMAND, "/stop"))));
         /*
