@@ -156,9 +156,6 @@ public class BukkitImplLoader {
                 if (cls.isSynthetic()) continue;
                 if (BukkitImplAdapter.class.isAssignableFrom(cls)) {
                     return (BukkitImplAdapter) cls.newInstance();
-                } else {
-                    log.debug("Failed to load the Bukkit adapter class '" + className +
-                            "' because it does not implement " + BukkitImplAdapter.class.getCanonicalName());
                 }
             } catch (ClassNotFoundException e) {
                 log.warn("Failed to load the Bukkit adapter class '" + className +

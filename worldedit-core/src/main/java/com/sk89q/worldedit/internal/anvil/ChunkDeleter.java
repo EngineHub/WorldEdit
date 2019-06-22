@@ -121,6 +121,7 @@ public final class ChunkDeleter {
     private final ChunkDeletionInfo chunkDeletionInfo;
     private Set<Path> backedUpRegions = new HashSet<>();
     private boolean shouldPreload;
+    private int debugRate = 100;
     private int totalChunksDeleted = 0;
     private int deletionsRequested = 0;
 
@@ -129,6 +130,7 @@ public final class ChunkDeleter {
     }
 
     private boolean runBatch(ChunkDeletionInfo.ChunkBatch chunkBatch) {
+        logger.debug("Processing deletion batch.");
         final Map<Path, Stream<BlockVector2>> regionToChunkList = groupChunks(chunkBatch);
         BiPredicate<RegionAccess, BlockVector2> predicate = createPredicates(chunkBatch.deletionPredicates);
         shouldPreload = chunkBatch.chunks == null;
@@ -151,6 +153,7 @@ public final class ChunkDeleter {
         Path worldPath = Paths.get(chunkBatch.worldPath);
         if (chunkBatch.chunks != null) {
             deletionsRequested += chunkBatch.chunks.size();
+            debugRate = chunkBatch.chunks.size() / 10;
             return chunkBatch.chunks.stream()
                     .collect(Collectors.groupingBy(RegionFilePos::new))
                     .entrySet().stream().collect(Collectors.toMap(
@@ -191,7 +194,9 @@ public final class ChunkDeleter {
                 }
             }
             final BlockVector2 dist = maxChunk.subtract(minChunk).add(1, 1);
-            deletionsRequested += dist.getBlockX() * dist.getBlockZ();
+            final int batchSize = dist.getBlockX() * dist.getBlockZ();
+            debugRate = batchSize / 10;
+            this.deletionsRequested += batchSize;
             return groupedChunks;
         }
     }
@@ -244,27 +249,20 @@ public final class ChunkDeleter {
 
     private boolean deleteChunks(Path regionFile, Stream<BlockVector2> chunks,
                                  BiPredicate<RegionAccess, BlockVector2> deletionPredicate) {
-//        logger.debug("Now deleting from " + regionFile);
-//        int fileChunksDeleted = 0;
-//        Set<BlockVector2> deletedChunks = new HashSet<>();
         try (RegionAccess region = new RegionAccess(regionFile, shouldPreload)) {
             for (Iterator<BlockVector2> iterator = chunks.iterator(); iterator.hasNext();) {
                 BlockVector2 chunk = iterator.next();
                 if (chunk == null) break;
                 if (deletionPredicate.test(region, chunk)) {
                     region.deleteChunk(chunk);
-//                    deletedChunks.add(chunk);
-//                    fileChunksDeleted++;
                     totalChunksDeleted++;
-                    if (totalChunksDeleted % 100 == 0) {
+                    if (totalChunksDeleted % debugRate == 0) {
                         logger.debug("Deleted {} chunks so far.", totalChunksDeleted);
                     }
                 } else {
                     logger.debug("Chunk did not match predicates: " + chunk);
                 }
             }
-//            logger.debug(fileChunksDeleted + " chunks deleted in this file: "
-//                    + deletedChunks.stream().map(BlockVector2::toString).collect(Collectors.joining(",")));
             return true;
         } catch (IOException e) {
             logger.warn("Error deleting chunks from region: " + regionFile + ". Aborting the process.", e);
