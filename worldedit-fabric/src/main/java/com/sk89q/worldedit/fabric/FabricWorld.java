@@ -19,6 +19,8 @@
 
 package com.sk89q.worldedit.fabric;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -57,11 +59,14 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemUsageContext;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.WorldGenerationProgressListener;
 import net.minecraft.server.world.ServerChunkManager;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
@@ -83,12 +88,13 @@ import net.minecraft.world.gen.feature.LargeOakTreeFeature;
 import net.minecraft.world.gen.feature.MegaJungleTreeFeature;
 import net.minecraft.world.gen.feature.MegaPineTreeFeature;
 import net.minecraft.world.gen.feature.OakTreeFeature;
+import net.minecraft.world.gen.feature.PineTreeFeature;
 import net.minecraft.world.gen.feature.PlantedFeatureConfig;
 import net.minecraft.world.gen.feature.SavannaTreeFeature;
+import net.minecraft.world.gen.feature.SpruceTreeFeature;
 import net.minecraft.world.gen.feature.SwampTreeFeature;
 import net.minecraft.world.level.LevelProperties;
 
-import javax.annotation.Nullable;
 import java.io.File;
 import java.lang.ref.WeakReference;
 import java.util.Collections;
@@ -100,7 +106,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import javax.annotation.Nullable;
 
 /**
  * An adapter to Minecraft worlds for WorldEdit.
@@ -195,7 +201,7 @@ public class FabricWorld extends AbstractWorld {
 
         if (successful && notifyAndLight) {
             world.getChunkManager().getLightingProvider().enqueueLightUpdate(pos);
-            world.markAndNotifyBlock(pos, chunk, old, newState, UPDATE | NOTIFY);
+            world.updateListeners(pos, old, newState, UPDATE | NOTIFY);
         }
 
         return successful;
@@ -204,7 +210,7 @@ public class FabricWorld extends AbstractWorld {
     @Override
     public boolean notifyAndLightBlock(BlockVector3 position, BlockState previousType) throws WorldEditException {
         BlockPos pos = new BlockPos(position.getX(), position.getY(), position.getZ());
-        getWorld().notifyBlockUpdate(pos, FabricAdapter.adapt(previousType), getWorld().getBlockState(pos), 1 | 2);
+        getWorld().updateListeners(pos, FabricAdapter.adapt(previousType), getWorld().getBlockState(pos), 1 | 2);
         return true;
     }
 
@@ -261,23 +267,23 @@ public class FabricWorld extends AbstractWorld {
         } catch (ExecutionException ignored) {
             return false;
         }
-        fakePlayer.setHeldItem(Hand.MAIN_HAND, stack);
-        fakePlayer.setLocationAndAngles(position.getBlockX(), position.getBlockY(), position.getBlockZ(),
+        fakePlayer.setStackInHand(Hand.MAIN_HAND, stack);
+        fakePlayer.setPositionAndAngles(position.getBlockX(), position.getBlockY(), position.getBlockZ(),
                 (float) face.toVector().toYaw(), (float) face.toVector().toPitch());
         final BlockPos blockPos = FabricAdapter.toBlockPos(position);
-        final BlockRayTraceResult rayTraceResult = new BlockRayTraceResult(FabricAdapter.toVec3(position),
+        final BlockHitResult rayTraceResult = new BlockHitResult(FabricAdapter.toVec3(position),
                 FabricAdapter.adapt(face), blockPos, false);
-        ItemUseContext itemUseContext = new ItemUseContext(fakePlayer, Hand.MAIN_HAND, rayTraceResult);
-        ActionResultType used = stack.onItemUse(itemUseContext);
-        if (used != ActionResultType.SUCCESS) {
+        ItemUsageContext itemUseContext = new ItemUsageContext(fakePlayer, Hand.MAIN_HAND, rayTraceResult);
+        ActionResult used = stack.useOnBlock(itemUseContext);
+        if (used != ActionResult.SUCCESS) {
             // try activating the block
-            if (getWorld().getBlockState(blockPos).onBlockActivated(world, fakePlayer, Hand.MAIN_HAND, rayTraceResult)) {
-                used = ActionResultType.SUCCESS;
+            if (getWorld().getBlockState(blockPos).activate(world, fakePlayer, Hand.MAIN_HAND, rayTraceResult)) {
+                used = ActionResult.SUCCESS;
             } else {
-                used = stack.getItem().onItemRightClick(world, fakePlayer, Hand.MAIN_HAND).getType();
+                used = stack.getItem().use(world, fakePlayer, Hand.MAIN_HAND).getResult();
             }
         }
-        return used == ActionResultType.SUCCESS;
+        return used == ActionResult.SUCCESS;
     }
 
     @Override
@@ -291,7 +297,7 @@ public class FabricWorld extends AbstractWorld {
 
         ItemEntity entity = new ItemEntity(getWorld(), position.getX(), position.getY(), position.getZ(), FabricAdapter.adapt(item));
         entity.setPickupDelay(10);
-        getWorld().addEntity(entity);
+        getWorld().spawnEntity(entity);
     }
 
     @Override
@@ -345,8 +351,8 @@ public class FabricWorld extends AbstractWorld {
         switch (type) {
             case TREE: return new OakTreeFeature(DefaultFeatureConfig::deserialize, true);
             case BIG_TREE: return new LargeOakTreeFeature(DefaultFeatureConfig::deserialize, true);
-            case REDWOOD: return new PointyTaigaTreeFeature(DefaultFeatureConfig::deserialize);
-            case TALL_REDWOOD: return new TallTaigaTreeFeature(DefaultFeatureConfig::deserialize, true);
+            case REDWOOD: return new PineTreeFeature(DefaultFeatureConfig::deserialize);
+            case TALL_REDWOOD: return new SpruceTreeFeature(DefaultFeatureConfig::deserialize, true);
             case BIRCH: return new BirchTreeFeature(DefaultFeatureConfig::deserialize, true, false);
             case JUNGLE: return new MegaJungleTreeFeature(DefaultFeatureConfig::deserialize, true, 10, 20, JUNGLE_LOG, JUNGLE_LEAF);
             case SMALL_JUNGLE: return new JungleTreeFeature(DefaultFeatureConfig::deserialize, true, 4 + random.nextInt(7), JUNGLE_LOG, JUNGLE_LEAF, false);
@@ -396,7 +402,7 @@ public class FabricWorld extends AbstractWorld {
     public void fixLighting(Iterable<BlockVector2> chunks) {
         World world = getWorld();
         for (BlockVector2 chunk : chunks) {
-            world.getChunkManager().getLightingProvider().func_215571_a(new ChunkPos(chunk.getBlockX(), chunk.getBlockZ()), true);
+            world.getChunkManager().getLightingProvider().suppressLight(new ChunkPos(chunk.getBlockX(), chunk.getBlockZ()), true);
         }
     }
 
@@ -517,7 +523,9 @@ public class FabricWorld extends AbstractWorld {
         if (!(world instanceof ServerWorld)) {
             return Collections.emptyList();
         }
-        return ((ServerWorld) world).getEntities().filter(e -> region.contains(FabricAdapter.adapt(e.getPosition())))
+        return ((ServerWorld) world).getEntities(null, entity -> true)
+                .stream()
+                .filter(e -> region.contains(FabricAdapter.adapt(e.getBlockPos())))
                 .map(FabricEntity::new).collect(Collectors.toList());
     }
 
@@ -527,7 +535,10 @@ public class FabricWorld extends AbstractWorld {
         if (!(world instanceof ServerWorld)) {
             return Collections.emptyList();
         }
-        return ((ServerWorld) world).getEntities().map(FabricEntity::new).collect(Collectors.toList());
+        return ((ServerWorld) world).getEntities(null, entity -> true)
+                .stream()
+                .map(FabricEntity::new)
+                .collect(Collectors.toList());
     }
 
     @Nullable
@@ -544,12 +555,12 @@ public class FabricWorld extends AbstractWorld {
                 for (String name : Constants.NO_COPY_ENTITY_NBT_FIELDS) {
                     tag.remove(name);
                 }
-                createdEntity.read(tag);
+                createdEntity.fromTag(tag);
             }
 
             createdEntity.setPositionAndAngles(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
 
-            world.addEntity(createdEntity);
+            world.spawnEntity(createdEntity);
             return new FabricEntity(createdEntity);
         } else {
             return null;

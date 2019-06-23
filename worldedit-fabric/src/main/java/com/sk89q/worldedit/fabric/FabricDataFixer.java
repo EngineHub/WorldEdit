@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.fabric;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -35,6 +36,8 @@ import com.mojang.datafixers.DataFixerBuilder;
 import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.schemas.Schema;
 import com.sk89q.jnbt.CompoundTag;
+import net.minecraft.datafixers.NbtOps;
+import net.minecraft.datafixers.Schemas;
 import net.minecraft.datafixers.TypeReferences;
 import net.minecraft.nbt.FloatTag;
 import net.minecraft.nbt.ListTag;
@@ -44,11 +47,11 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.JsonHelper;
 import net.minecraft.util.math.Direction;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.annotation.Nullable;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.EnumMap;
@@ -62,6 +65,8 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
+
+import javax.annotation.Nullable;
 
 /**
  * Handles converting all Pre 1.13.2 data using the Legacy DataFix System (ported to 1.13.2)
@@ -166,7 +171,7 @@ class FabricDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wo
                 .asString().orElse(key);
     }
 
-    private static final NBTDynamicOps OPS_NBT = NBTDynamicOps.INSTANCE;
+    private static final NbtOps OPS_NBT = NbtOps.INSTANCE;
     private static final int LEGACY_VERSION = 1343;
     private static int DATA_VERSION;
     private static FabricDataFixer INSTANCE;
@@ -206,7 +211,7 @@ class FabricDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wo
         INSTANCE = this;
         registerConverters();
         registerInspectors();
-        this.fixer = new WrappedDataFixer(DataFixesManager.getDataFixer());
+        this.fixer = new WrappedDataFixer(Schemas.getFixer());
     }
 
     @Override
@@ -275,7 +280,7 @@ class FabricDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wo
     }
 
     public static net.minecraft.nbt.CompoundTag convert(TypeReference type, net.minecraft.nbt.CompoundTag cmp) {
-        int i = cmp.contains("DataVersion", 99) ? cmp.getInt("DataVersion") : -1;
+        int i = cmp.containsKey("DataVersion", 99) ? cmp.getInt("DataVersion") : -1;
         return convert(type, cmp, i);
     }
 
@@ -1832,12 +1837,12 @@ class FabricDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wo
                         String s = nbttaglist.getString(i);
                         Object object = null;
 
-                        if (!"null".equals(s) && !StringUtils.isNullOrEmpty(s)) {
+                        if (!"null".equals(s) && !Strings.isNullOrEmpty(s)) {
                             if ((s.charAt(0) != 34 || s.charAt(s.length() - 1) != 34) && (s.charAt(0) != 123 || s.charAt(s.length() - 1) != 125)) {
                                 object = new TextComponent(s);
                             } else {
                                 try {
-                                    object = JSONUtils.fromJson(DataConverterSignText.a, s, Component.class, true);
+                                    object = JsonHelper.deserialize(DataConverterSignText.a, s, Component.class, true);
                                     if (object == null) {
                                         object = new TextComponent("");
                                     }
@@ -1847,7 +1852,7 @@ class FabricDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wo
 
                                 if (object == null) {
                                     try {
-                                        object = Component.Serializer.fromJson(s);
+                                        object = Component.Serializer.fromJsonString(s);
                                     } catch (JsonParseException jsonparseexception1) {
                                         ;
                                     }
@@ -2479,12 +2484,12 @@ class FabricDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wo
             String s1 = nbttagcompound.getString(s);
             Object object = null;
 
-            if (!"null".equals(s1) && !StringUtils.isNullOrEmpty(s1)) {
+            if (!"null".equals(s1) && !Strings.isNullOrEmpty(s1)) {
                 if ((s1.charAt(0) != 34 || s1.charAt(s1.length() - 1) != 34) && (s1.charAt(0) != 123 || s1.charAt(s1.length() - 1) != 125)) {
                     object = new TextComponent(s1);
                 } else {
                     try {
-                        object = JSONUtils.fromJson(DataConverterSignText.a, s1, Component.class, true);
+                        object = JsonHelper.deserialize(DataConverterSignText.a, s1, Component.class, true);
                         if (object == null) {
                             object = new TextComponent("");
                         }
@@ -2494,7 +2499,7 @@ class FabricDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wo
 
                     if (object == null) {
                         try {
-                            object = Component.Serializer.fromJson(s1);
+                            object = Component.Serializer.fromJsonString(s1);
                         } catch (JsonParseException jsonparseexception1) {
                             ;
                         }

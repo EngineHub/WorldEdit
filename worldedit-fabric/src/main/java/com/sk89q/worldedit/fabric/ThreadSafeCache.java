@@ -19,11 +19,9 @@
 
 package com.sk89q.worldedit.fabric;
 
-import net.minecraft.entity.player.ServerPlayerEntity;
+import net.fabricmc.fabric.api.event.server.ServerTickCallback;
 import net.minecraft.server.MinecraftServer;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
-import net.minecraftforge.fml.server.ServerLifecycleHooks;
+import net.minecraft.server.network.ServerPlayerEntity;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -34,7 +32,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
 /**
  * Caches data that cannot be accessed from another thread safely.
  */
-public class ThreadSafeCache {
+public class ThreadSafeCache implements ServerTickCallback {
 
     private static final long REFRESH_DELAY = 1000 * 30;
     private static final ThreadSafeCache INSTANCE = new ThreadSafeCache();
@@ -50,20 +48,19 @@ public class ThreadSafeCache {
         return onlineIds;
     }
 
-    @SubscribeEvent
-    public void tickStart(TickEvent event) {
+    @Override
+    public void tick(MinecraftServer server) {
         long now = System.currentTimeMillis();
 
         if (now - lastRefresh > REFRESH_DELAY) {
             Set<UUID> onlineIds = new HashSet<>();
-            
-            MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
+
             if (server == null) {
                 return;
             }
-            for (ServerPlayerEntity player : server.getPlayerList().getPlayers()) {
+            for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
                 if (player != null) {
-                    onlineIds.add(player.getUniqueID());
+                    onlineIds.add(player.getUuid());
                 }
             }
 
@@ -76,5 +73,4 @@ public class ThreadSafeCache {
     public static ThreadSafeCache getInstance() {
         return INSTANCE;
     }
-
 }

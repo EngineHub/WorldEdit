@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.fabric;
 
+import static com.sk89q.worldedit.fabric.FabricAdapter.adaptPlayer;
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
 
@@ -51,17 +52,28 @@ import java.util.function.Predicate;
 
 
 public final class CommandWrapper {
+
     private CommandWrapper() {
     }
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher, org.enginehub.piston.Command command) {
         ImmutableList.Builder<String> aliases = ImmutableList.builder();
         aliases.add(command.getName()).addAll(command.getAliases());
+
+        Command<ServerCommandSource> commandRunner =
+                ctx -> {
+                    WorldEdit.getInstance().getEventBus().post(new com.sk89q.worldedit.event.platform.CommandEvent(
+                            adaptPlayer(ctx.getSource().getPlayer()),
+                            ctx.getInput()
+                    ));
+                    return 0;
+                };
+
         for (String alias : aliases.build()) {
-            LiteralArgumentBuilder<ServerCommandSource> base = literal(alias).executes(FAKE_COMMAND)
-                .then(argument("args", StringArgumentType.greedyString())
-                    .suggests(CommandWrapper::suggest)
-                    .executes(FAKE_COMMAND));
+            LiteralArgumentBuilder<ServerCommandSource> base = literal(alias).executes(commandRunner)
+                    .then(argument("args", StringArgumentType.greedyString())
+                            .suggests(CommandWrapper::suggest)
+                            .executes(commandRunner));
             if (command.getCondition() != org.enginehub.piston.Command.Condition.TRUE) {
                 base.requires(requirementsFor(command));
             }
@@ -69,17 +81,12 @@ public final class CommandWrapper {
         }
     }
 
-    public static final Command<ServerCommandSource> FAKE_COMMAND = ctx -> {
-        if (ctx.getSource().getWorld().isClient) {
-            return 0;
-        }
-        return 1;
-    };
-
     private static Predicate<ServerCommandSource> requirementsFor(org.enginehub.piston.Command mapping) {
         return ctx -> {
             final Entity entity = ctx.getEntity();
-            if (!(entity instanceof ServerPlayerEntity)) return true;
+            if (!(entity instanceof ServerPlayerEntity)) {
+                return true;
+            }
             final Actor actor = FabricAdapter.adaptPlayer(((ServerPlayerEntity) entity));
             InjectedValueStore store = MapBackedValueStore.create();
             store.injectValue(Key.of(Actor.class), context -> Optional.of(actor));
@@ -88,10 +95,10 @@ public final class CommandWrapper {
     }
 
     private static CompletableFuture<Suggestions> suggest(CommandContext<ServerCommandSource> context,
-                                                          SuggestionsBuilder builder) throws CommandSyntaxException {
+            SuggestionsBuilder builder) throws CommandSyntaxException {
         CommandSuggestionEvent event = new CommandSuggestionEvent(
-            FabricAdapter.adaptPlayer(context.getSource().getPlayer()),
-            builder.getInput()
+                FabricAdapter.adaptPlayer(context.getSource().getPlayer()),
+                builder.getInput()
         );
         WorldEdit.getInstance().getEventBus().post(event);
         List<Substring> suggestions = event.getSuggestions();
@@ -103,18 +110,18 @@ public final class CommandWrapper {
             // If at end, we are actually suggesting the next argument
             // Ensure there is a space!
             if (suggestion.getStart() == suggestion.getEnd()
-                && suggestion.getEnd() == builder.getInput().length()
-                && !builder.getInput().endsWith(" ")) {
+                    && suggestion.getEnd() == builder.getInput().length()
+                    && !builder.getInput().endsWith(" ")) {
                 suggestionText = " " + suggestionText;
             }
             result.add(new Suggestion(
-                StringRange.between(suggestion.getStart(), suggestion.getEnd()),
-                suggestionText
+                    StringRange.between(suggestion.getStart(), suggestion.getEnd()),
+                    suggestionText
             ));
         }
 
         return CompletableFuture.completedFuture(
-            Suggestions.create(builder.getInput(), result.build())
+                Suggestions.create(builder.getInput(), result.build())
         );
     }
 

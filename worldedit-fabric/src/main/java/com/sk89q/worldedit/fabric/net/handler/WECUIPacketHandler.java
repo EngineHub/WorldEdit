@@ -19,59 +19,46 @@
 
 package com.sk89q.worldedit.fabric.net.handler;
 
-import com.sk89q.worldedit.LocalSession;
-import com.sk89q.worldedit.fabric.FabricPlayer;
-import com.sk89q.worldedit.fabric.FabricWorldEdit;
-import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.network.ThreadQuickExitException;
-import net.minecraft.network.play.server.SCustomPayloadPlayPacket;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.network.NetworkEvent.ClientCustomPayloadEvent;
-import net.minecraftforge.fml.network.NetworkEvent.ServerCustomPayloadEvent;
-import net.minecraftforge.fml.network.event.EventNetworkChannel;
-
 import java.nio.charset.Charset;
-
-import static com.sk89q.worldedit.fabric.FabricAdapter.adaptPlayer;
+import java.nio.charset.StandardCharsets;
 
 public final class WECUIPacketHandler {
     private WECUIPacketHandler() {
     }
 
-    public static final Charset UTF_8_CHARSET = Charset.forName("UTF-8");
+    public static final Charset UTF_8_CHARSET = StandardCharsets.UTF_8;
     private static final int PROTOCOL_VERSION = 1;
-    private static EventNetworkChannel HANDLER = PacketHandlerUtil
-            .buildLenientHandler(FabricWorldEdit.CUI_PLUGIN_CHANNEL, PROTOCOL_VERSION)
-            .eventNetworkChannel();
-
-    public static void init() {
-        HANDLER.addListener(WECUIPacketHandler::onPacketData);
-        HANDLER.addListener(WECUIPacketHandler::callProcessPacket);
-    }
-
-    public static void onPacketData(ServerCustomPayloadEvent event) {
-        ServerPlayerEntity player = event.getSource().get().getSender();
-        LocalSession session = FabricWorldEdit.inst.getSession(player);
-
-        if (session.hasCUISupport()) {
-            return;
-        }
-
-        String text = event.getPayload().toString(UTF_8_CHARSET);
-        final FabricPlayer actor = adaptPlayer(player);
-        session.handleCUIInitializationMessage(text, actor);
-        session.describeCUI(actor);
-    }
-    
-    public static void callProcessPacket(ClientCustomPayloadEvent event) {
-        try {
-            new SCustomPayloadPlayPacket(
-                    new ResourceLocation(FabricWorldEdit.MOD_ID, FabricWorldEdit.CUI_PLUGIN_CHANNEL),
-                    event.getPayload()
-            ).processPacket(Minecraft.getInstance().player.connection);
-        } catch (ThreadQuickExitException ignored) {
-        }
-    }
+//    private static EventNetworkChannel HANDLER = PacketHandlerUtil
+//            .buildLenientHandler(FabricWorldEdit.CUI_PLUGIN_CHANNEL, PROTOCOL_VERSION)
+//            .eventNetworkChannel();
+//
+//    public static void init() {
+//        HANDLER.addListener(WECUIPacketHandler::onPacketData);
+//        HANDLER.addListener(WECUIPacketHandler::callProcessPacket);
+//    }
+//
+//    public static void onPacketData(CustomPayloadS2CPacket event) {
+//        ServerPlayerEntity player = event.getSource().get().getSender();
+//        LocalSession session = FabricWorldEdit.inst.getSession(player);
+//
+//        if (session.hasCUISupport()) {
+//            return;
+//        }
+//
+//        String text = event.getData().toString(UTF_8_CHARSET);
+//        final FabricPlayer actor = adaptPlayer(player);
+//        session.handleCUIInitializationMessage(text, actor);
+//        session.describeCUI(actor);
+//    }
+//
+//    public static void callProcessPacket(CustomPayloadS2CPacket event) {
+//        try {
+//            new CustomPayloadC2SPacket(
+//                    new Identifier(FabricWorldEdit.MOD_ID, FabricWorldEdit.CUI_PLUGIN_CHANNEL),
+//                    event.getData()
+//            ).(MinecraftClient.getInstance().player.networkHandler);
+//        } catch (ThreadQuickExitException ignored) {
+//        }
+//    }
 
 }

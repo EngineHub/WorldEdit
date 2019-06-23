@@ -27,12 +27,12 @@ import com.sk89q.worldedit.registry.state.Property;
 import java.util.List;
 import java.util.Optional;
 
-class IPropertyAdapter<T extends Comparable<T>> implements Property<T> {
+class PropertyAdapter<T extends Comparable<T>> implements Property<T> {
 
     private final net.minecraft.state.property.Property<T> property;
     private final List<T> values;
 
-    public IPropertyAdapter(net.minecraft.state.property.Property<T> property) {
+    public PropertyAdapter(net.minecraft.state.property.Property<T> property) {
         this.property = property;
         this.values = ImmutableList.copyOf(property.getValues());
     }

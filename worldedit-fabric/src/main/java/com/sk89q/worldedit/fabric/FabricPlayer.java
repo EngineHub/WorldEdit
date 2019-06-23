@@ -151,7 +151,7 @@ public class FabricPlayer extends AbstractPlayerActor {
 
     @Override
     public void print(Component component) {
-        this.player.sendMessage(net.minecraft.network.chat.Component.Serializer.fromJson(GsonComponentSerializer.INSTANCE.serialize(component)));
+        this.player.sendMessage(net.minecraft.network.chat.Component.Serializer.fromJsonString(GsonComponentSerializer.INSTANCE.serialize(component)));
     }
 
     private void sendColorized(String msg, ChatFormat formatting) {

@@ -21,6 +21,8 @@ package com.sk89q.worldedit.fabric;
 
 import com.sk89q.worldedit.world.item.ItemType;
 import com.sk89q.worldedit.world.registry.BundledItemRegistry;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.item.Item;
 
@@ -31,7 +33,7 @@ public class FabricItemRegistry extends BundledItemRegistry {
     @Nullable
     @Override
     public String getName(ItemType itemType) {
-        if (FMLLoader.getDist().isClient()) {
+        if (FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) {
             final Item item = FabricAdapter.adapt(itemType);
             return I18n.translate(item.getTranslationKey());
         }

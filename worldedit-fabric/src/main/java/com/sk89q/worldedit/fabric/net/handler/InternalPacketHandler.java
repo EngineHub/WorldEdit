@@ -19,25 +19,21 @@
 
 package com.sk89q.worldedit.fabric.net.handler;
 
-import com.sk89q.worldedit.fabric.net.packet.LeftClickAirEventMessage;
-import com.sk89q.worldedit.fabric.net.packet.LeftClickAirEventMessage.Handler;
-import net.minecraftforge.fml.network.simple.SimpleChannel;
-
 public final class InternalPacketHandler {
     private static final int PROTOCOL_VERSION = 1;
-    private static SimpleChannel HANDLER = PacketHandlerUtil
-            .buildLenientHandler("internal", PROTOCOL_VERSION)
-            .simpleChannel();
-
-    private InternalPacketHandler() {
-    }
-
-    public static void init() {
-        HANDLER.registerMessage(0, LeftClickAirEventMessage.class,
-                LeftClickAirEventMessage::encode, LeftClickAirEventMessage::decode, Handler::handle);
-    }
-
-    public static SimpleChannel getHandler() {
-        return HANDLER;
-    }
+//    private static SimpleChannel HANDLER = PacketHandlerUtil
+//            .buildLenientHandler("internal", PROTOCOL_VERSION)
+//            .simpleChannel();
+//
+//    private InternalPacketHandler() {
+//    }
+//
+//    public static void init() {
+//        HANDLER.registerMessage(0, LeftClickAirEventMessage.class,
+//                LeftClickAirEventMessage::encode, LeftClickAirEventMessage::decode, Handler::handle);
+//    }
+//
+//    public static SimpleChannel getHandler() {
+//        return HANDLER;
+//    }
 }

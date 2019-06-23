@@ -19,30 +19,24 @@
 
 package com.sk89q.worldedit.fabric.net.handler;
 
-import com.sk89q.worldedit.fabric.FabricWorldEdit;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.network.NetworkRegistry;
-
-import java.util.function.Predicate;
-
 final class PacketHandlerUtil {
     private PacketHandlerUtil() {
     }
 
-    static NetworkRegistry.ChannelBuilder buildLenientHandler(String id, int protocolVersion) {
-        final String verStr = Integer.toString(protocolVersion);
-        final Predicate<String> validator = validateLenient(verStr);
-        return NetworkRegistry.ChannelBuilder
-                .named(new ResourceLocation(FabricWorldEdit.MOD_ID, id))
-                .clientAcceptedVersions(validator)
-                .serverAcceptedVersions(validator)
-                .networkProtocolVersion(() -> verStr);
-    }
-
-    private static Predicate<String> validateLenient(String protocolVersion) {
-        return remoteVersion ->
-                protocolVersion.equals(remoteVersion)
-                || NetworkRegistry.ABSENT.equals(remoteVersion)
-                || NetworkRegistry.ACCEPTVANILLA.equals(remoteVersion);
-    }
+//    static NetworkRegistry.ChannelBuilder buildLenientHandler(String id, int protocolVersion) {
+//        final String verStr = Integer.toString(protocolVersion);
+//        final Predicate<String> validator = validateLenient(verStr);
+//        return NetworkRegistry.ChannelBuilder
+//                .named(new Identifier(FabricWorldEdit.MOD_ID, id))
+//                .clientAcceptedVersions(validator)
+//                .serverAcceptedVersions(validator)
+//                .networkProtocolVersion(() -> verStr);
+//    }
+//
+//    private static Predicate<String> validateLenient(String protocolVersion) {
+//        return remoteVersion ->
+//                protocolVersion.equals(remoteVersion)
+//                || NetworkRegistry.ABSENT.equals(remoteVersion)
+//                || NetworkRegistry.ACCEPTVANILLA.equals(remoteVersion);
+//    }
 }

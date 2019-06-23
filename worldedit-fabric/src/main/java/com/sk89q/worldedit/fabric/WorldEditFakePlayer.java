@@ -20,29 +20,63 @@
 package com.sk89q.worldedit.fabric;
 
 import com.mojang.authlib.GameProfile;
-import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.world.ServerWorld;
-import net.minecraftforge.common.util.FakePlayer;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.network.chat.Component;
+import net.minecraft.stat.Stat;
+import net.minecraft.world.World;
+import net.minecraft.world.dimension.DimensionType;
 
-import javax.annotation.Nullable;
-import java.util.OptionalInt;
 import java.util.UUID;
 
-public class WorldEditFakePlayer extends FakePlayer {
+import javax.annotation.Nullable;
 
-    private static final GameProfile FAKE_GAME_PROFILE = new GameProfile(UUID.nameUUIDFromBytes("worldedit".getBytes()), "[WorldEdit]");
+public class WorldEditFakePlayer extends PlayerEntity {
+    private static final GameProfile FAKE_WORLDEDIT_PROFILE = new GameProfile(UUID.nameUUIDFromBytes("worldedit".getBytes()), "[WorldEdit]");
 
-    public WorldEditFakePlayer(ServerWorld world) {
-        super(world, FAKE_GAME_PROFILE);
+    public WorldEditFakePlayer(World world) {
+        super(world, FAKE_WORLDEDIT_PROFILE);
     }
 
     @Override
-    public boolean canEat(boolean checkHunger) {
+    public void tick() {
+    }
+
+    @Override
+    public boolean isSpectator() {
+        return false;
+    }
+
+    @Override
+    public boolean isCreative() {
+        return false;
+    }
+
+    @Override
+    public void increaseStat(Stat<?> stat, int incrementer) {
+    }
+
+    @Override
+    public void incrementStat(Stat<?> stat) {
+    }
+
+    @Override
+    public void sendMessage(Component component) {
+    }
+
+    @Override
+    public void addChatMessage(Component component, boolean opt) {
+    }
+
+    @Nullable
+    @Override
+    public Entity changeDimension(DimensionType dimensionType) {
+        return this;
+    }
+
+    @Override
+    public boolean isInvulnerableTo(DamageSource damageSource) {
         return true;
-    }
-
-    @Override
-    public OptionalInt openContainer(@Nullable INamedContainerProvider container) {
-        return OptionalInt.empty();
     }
 }

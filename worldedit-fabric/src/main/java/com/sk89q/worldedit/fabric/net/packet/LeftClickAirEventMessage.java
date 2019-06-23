@@ -19,30 +19,24 @@
 
 package com.sk89q.worldedit.fabric.net.packet;
 
-import com.sk89q.worldedit.fabric.FabricWorldEdit;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent.LeftClickEmpty;
-import net.minecraftforge.fml.network.NetworkEvent.Context;
-
-import java.util.Objects;
-import java.util.function.Supplier;
+import net.minecraft.util.PacketByteBuf;
 
 @SuppressWarnings({"NonFinalUtilityClass", "checkstyle:hideutilityclassconstructor"})
 public class LeftClickAirEventMessage {
 
-    public static final class Handler {
-        public static void handle(final LeftClickAirEventMessage message, Supplier<Context> ctx) {
-            Context context = ctx.get();
-            context.enqueueWork(() -> FabricWorldEdit.inst.onPlayerInteract(new LeftClickEmpty(Objects.requireNonNull(context.getSender()))));
-        }
-    }
+//    public static final class Handler {
+//        public static void handle(final LeftClickAirEventMessage message, Supplier<Context> ctx) {
+//            Context context = ctx.get();
+//            context.enqueueWork(() -> FabricWorldEdit.inst.onPlayerInteract(new LeftClickEmpty(Objects.requireNonNull(context.getSender()))));
+//        }
+//    }
 
     public static LeftClickAirEventMessage decode(ByteBuf buf) {
         return new LeftClickAirEventMessage();
     }
 
-    public static void encode(LeftClickAirEventMessage msg, PacketBuffer buf) {
+    public static void encode(LeftClickAirEventMessage msg, PacketByteBuf buf) {
     }
 
 }

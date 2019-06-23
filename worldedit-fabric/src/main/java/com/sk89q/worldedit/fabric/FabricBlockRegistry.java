@@ -24,10 +24,14 @@ import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.registry.BlockMaterial;
 import com.sk89q.worldedit.world.registry.BundledBlockRegistry;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.Block;
 import net.minecraft.block.Material;
 
 import javax.annotation.Nullable;
+
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.OptionalInt;
@@ -41,8 +45,8 @@ public class FabricBlockRegistry extends BundledBlockRegistry {
     @Override
     public String getName(BlockType blockType) {
         Block block = FabricAdapter.adapt(blockType);
-        if (block != null && FMLLoader.getDist().isClient()) {
-            return block.getNameTextComponent().getFormattedText();
+        if (FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) {
+            return block.getTextComponent().getFormattedText();
         } else {
             return super.getName(blockType);
         }
@@ -51,9 +55,6 @@ public class FabricBlockRegistry extends BundledBlockRegistry {
     @Override
     public BlockMaterial getMaterial(BlockType blockType) {
         Block block = FabricAdapter.adapt(blockType);
-        if (block == null) {
-            return super.getMaterial(blockType);
-        }
         return materialMap.computeIfAbsent(block.getDefaultState().getMaterial(),
                 m -> new FabricBlockMaterial(m, super.getMaterial(blockType)));
     }
@@ -62,10 +63,10 @@ public class FabricBlockRegistry extends BundledBlockRegistry {
     public Map<String, ? extends Property<?>> getProperties(BlockType blockType) {
         Block block = FabricAdapter.adapt(blockType);
         Map<String, Property<?>> map = new TreeMap<>();
-        Collection<IProperty<?>> propertyKeys = block
+        Collection<net.minecraft.state.property.Property<?>> propertyKeys = block
                 .getDefaultState()
                 .getProperties();
-        for (IProperty<?> key : propertyKeys) {
+        for (net.minecraft.state.property.Property<?> key : propertyKeys) {
             map.put(key.getName(), FabricAdapter.adaptProperty(key));
         }
         return map;

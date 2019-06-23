@@ -22,20 +22,10 @@ package com.sk89q.worldedit.fabric;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.sk89q.worldedit.fabric.FabricAdapter.adaptPlayer;
 
-import com.mojang.brigadier.ParseResults;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.event.platform.CommandEvent;
 import com.sk89q.worldedit.event.platform.PlatformReadyEvent;
 import com.sk89q.worldedit.extension.platform.Platform;
-import com.sk89q.worldedit.fabric.net.handler.InternalPacketHandler;
-import com.sk89q.worldedit.fabric.net.handler.WECUIPacketHandler;
-import com.sk89q.worldedit.fabric.net.packet.LeftClickAirEventMessage;
-import com.sk89q.worldedit.fabric.proxy.ClientProxy;
-import com.sk89q.worldedit.fabric.proxy.CommonProxy;
-import com.sk89q.worldedit.fabric.proxy.ServerProxy;
-import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.block.BlockCategory;
 import com.sk89q.worldedit.world.block.BlockType;
@@ -43,11 +33,15 @@ import com.sk89q.worldedit.world.entity.EntityType;
 import com.sk89q.worldedit.world.item.ItemCategory;
 import com.sk89q.worldedit.world.item.ItemType;
 import net.fabricmc.api.ModInitializer;
-import net.minecraft.server.command.ServerCommandSource;
+import net.fabricmc.fabric.api.event.server.ServerStartCallback;
+import net.fabricmc.fabric.api.event.server.ServerStopCallback;
+import net.fabricmc.fabric.api.event.server.ServerTickCallback;
+import net.fabricmc.loader.api.FabricLoader;
+import net.fabricmc.loader.api.ModContainer;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.ItemTags;
-import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
@@ -61,9 +55,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 /**
- * The Forge implementation of WorldEdit.
+ * The Fabric implementation of WorldEdit.
  */
-public class FabricWorldEdit implements ModInitializer {
+public class FabricWorldEdit implements ModInitializer, ServerStartCallback, ServerStopCallback {
 
     private static final Logger LOGGER = LogManager.getLogger();
     public static final String MOD_ID = "worldedit";
@@ -73,8 +67,6 @@ public class FabricWorldEdit implements ModInitializer {
 
     public static FabricWorldEdit inst;
 
-    public static CommonProxy proxy = DistExecutor.runForDist(() -> ClientProxy::new, () -> ServerProxy::new);
-
     private FabricPlatform platform;
     private FabricConfiguration config;
     private Path workingDir;
@@ -83,24 +75,16 @@ public class FabricWorldEdit implements ModInitializer {
 
     public FabricWorldEdit() {
         inst = this;
-
-        IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
-        modBus.addListener(this::init);
-
-        MinecraftForge.EVENT_BUS.register(ThreadSafeCache.getInstance());
-        MinecraftForge.EVENT_BUS.register(this);
     }
 
     @Override
     public void onInitialize() {
-
-    }
-
-    private void init(FMLCommonSetupEvent event) {
-        this.container = ModLoadingContext.get().getActiveContainer();
+        this.container = FabricLoader.getInstance().getModContainer("worldedit").orElseThrow(
+                () -> new IllegalStateException("WorldEdit mod missing in Fabric")
+        );
 
         // Setup working directory
-        workingDir = FMLPaths.CONFIGDIR.get().resolve("worldedit");
+        workingDir = new File(FabricLoader.getInstance().getConfigDirectory(), "worldedit").toPath();
         if (!Files.exists(workingDir)) {
             try {
                 Files.createDirectory(workingDir);
@@ -109,15 +93,17 @@ public class FabricWorldEdit implements ModInitializer {
             }
         }
 
-        WECUIPacketHandler.init();
-        InternalPacketHandler.init();
-        proxy.registerHandlers();
+//        WECUIPacketHandler.init();
+//        InternalPacketHandler.init();
 
-        LOGGER.info("WorldEdit for Forge (version " + getInternalVersion() + ") is loaded");
+        ServerTickCallback.EVENT.register(ThreadSafeCache.getInstance());
+        ServerStartCallback.EVENT.register(this);
+        ServerStopCallback.EVENT.register(this);
+        LOGGER.info("WorldEdit for Fabric (version " + getInternalVersion() + ") is loaded");
     }
 
-    private void setupPlatform() {
-        this.platform = new FabricPlatform(this);
+    private void setupPlatform(MinecraftServer server) {
+        this.platform = new FabricPlatform(this, server);
 
         WorldEdit.getInstance().getPlatformManager().register(platform);
 
@@ -163,16 +149,9 @@ public class FabricWorldEdit implements ModInitializer {
         }
     }
 
-    @SubscribeEvent
-    public void serverStopping(FMLServerStoppingEvent event) {
-        WorldEdit worldEdit = WorldEdit.getInstance();
-        worldEdit.getSessionManager().unload();
-        worldEdit.getPlatformManager().unregister(platform);
-    }
-
-    @SubscribeEvent
-    public void serverStarted(FMLServerStartedEvent event) {
-        setupPlatform();
+    @Override
+    public void onStartServer(MinecraftServer minecraftServer) {
+        setupPlatform(minecraftServer);
         setupRegistries();
 
         config = new FabricConfiguration(this);
@@ -180,84 +159,71 @@ public class FabricWorldEdit implements ModInitializer {
         WorldEdit.getInstance().getEventBus().post(new PlatformReadyEvent());
     }
 
-    @SubscribeEvent
-    public void onPlayerInteract(PlayerInteractEvent event) {
-        if (platform == null) {
-            return;
-        }
-
-        if (!platform.isHookingEvents())
-            return; // We have to be told to catch these events
-
-        if (event.getWorld().isRemote && event instanceof LeftClickEmpty) {
-            // catch LCE, pass it to server
-            InternalPacketHandler.getHandler().sendToServer(new LeftClickAirEventMessage());
-            return;
-        }
-
-        boolean isLeftDeny = event instanceof PlayerInteractEvent.LeftClickBlock
-                && ((PlayerInteractEvent.LeftClickBlock) event)
-                        .getUseItem() == Event.Result.DENY;
-        boolean isRightDeny =
-                event instanceof PlayerInteractEvent.RightClickBlock
-                        && ((PlayerInteractEvent.RightClickBlock) event)
-                                .getUseItem() == Event.Result.DENY;
-        if (isLeftDeny || isRightDeny || event.getEntity().world.isRemote || event.getHand() == Hand.OFF_HAND) {
-            return;
-        }
-
-        WorldEdit we = WorldEdit.getInstance();
-        FabricPlayer player = adaptPlayer((ServerPlayerEntity) event.getEntityPlayer());
-        FabricWorld world = getWorld(event.getEntityPlayer().world);
-
-        if (event instanceof PlayerInteractEvent.LeftClickEmpty) {
-            we.handleArmSwing(player); // this event cannot be canceled
-        } else if (event instanceof PlayerInteractEvent.LeftClickBlock) {
-            Location pos = new Location(world, event.getPos().getX(), event.getPos().getY(), event.getPos().getZ());
-
-            if (we.handleBlockLeftClick(player, pos)) {
-                event.setCanceled(true);
-            }
-
-            if (we.handleArmSwing(player)) {
-                event.setCanceled(true);
-            }
-        } else if (event instanceof PlayerInteractEvent.RightClickBlock) {
-            Location pos = new Location(world, event.getPos().getX(), event.getPos().getY(), event.getPos().getZ());
-
-            if (we.handleBlockRightClick(player, pos)) {
-                event.setCanceled(true);
-            }
-
-            if (we.handleRightClick(player)) {
-                event.setCanceled(true);
-            }
-        } else if (event instanceof PlayerInteractEvent.RightClickItem) {
-            if (we.handleRightClick(player)) {
-                event.setCanceled(true);
-            }
-        }
+    @Override
+    public void onStopServer(MinecraftServer minecraftServer) {
+        WorldEdit worldEdit = WorldEdit.getInstance();
+        worldEdit.getSessionManager().unload();
+        worldEdit.getPlatformManager().unregister(platform);
     }
 
-    @SubscribeEvent
-    public void onCommandEvent(CommandEvent event) throws CommandSyntaxException {
-        ParseResults<ServerCommandSource> parseResults = event.getParseResults();
-        if (!(parseResults.getContext().getSource().getEntity() instanceof ServerPlayerEntity)) {
-            return;
-        }
-        ServerPlayerEntity player = parseResults.getContext().getSource().getPlayer();
-        if (player.world.isClient) {
-            return;
-        }
-        if (parseResults.getContext().getCommand() != CommandWrapper.FAKE_COMMAND) {
-            return;
-        }
-        event.setCanceled(true);
-        WorldEdit.getInstance().getEventBus().post(new com.sk89q.worldedit.event.platform.CommandEvent(
-            adaptPlayer(parseResults.getContext().getSource().getPlayer()),
-            parseResults.getReader().getString()
-        ));
-    }
+//    @SubscribeEvent
+//    public void onPlayerInteract(PlayerInteractEvent event) {
+//        if (platform == null) {
+//            return;
+//        }
+//
+//        if (!platform.isHookingEvents())
+//            return; // We have to be told to catch these events
+//
+//        if (event.getWorld().isRemote && event instanceof LeftClickEmpty) {
+//            // catch LCE, pass it to server
+//            InternalPacketHandler.getHandler().sendToServer(new LeftClickAirEventMessage());
+//            return;
+//        }
+//
+//        boolean isLeftDeny = event instanceof PlayerInteractEvent.LeftClickBlock
+//                && ((PlayerInteractEvent.LeftClickBlock) event)
+//                        .getUseItem() == Event.Result.DENY;
+//        boolean isRightDeny =
+//                event instanceof PlayerInteractEvent.RightClickBlock
+//                        && ((PlayerInteractEvent.RightClickBlock) event)
+//                                .getUseItem() == Event.Result.DENY;
+//        if (isLeftDeny || isRightDeny || event.getEntity().world.isRemote || event.getHand() == Hand.OFF_HAND) {
+//            return;
+//        }
+//
+//        WorldEdit we = WorldEdit.getInstance();
+//        FabricPlayer player = adaptPlayer((ServerPlayerEntity) event.getEntityPlayer());
+//        FabricWorld world = getWorld(event.getEntityPlayer().world);
+//
+//        if (event instanceof PlayerInteractEvent.LeftClickEmpty) {
+//            we.handleArmSwing(player); // this event cannot be canceled
+//        } else if (event instanceof PlayerInteractEvent.LeftClickBlock) {
+//            Location pos = new Location(world, event.getPos().getX(), event.getPos().getY(), event.getPos().getZ());
+//
+//            if (we.handleBlockLeftClick(player, pos)) {
+//                event.setCanceled(true);
+//            }
+//
+//            if (we.handleArmSwing(player)) {
+//                event.setCanceled(true);
+//            }
+//        } else if (event instanceof PlayerInteractEvent.RightClickBlock) {
+//            Location pos = new Location(world, event.getPos().getX(), event.getPos().getY(), event.getPos().getZ());
+//
+//            if (we.handleBlockRightClick(player, pos)) {
+//                event.setCanceled(true);
+//            }
+//
+//            if (we.handleRightClick(player)) {
+//                event.setCanceled(true);
+//            }
+//        } else if (event instanceof PlayerInteractEvent.RightClickItem) {
+//            if (we.handleRightClick(player)) {
+//                event.setCanceled(true);
+//            }
+//        }
+//    }
 
     /**
      * Get the configuration.
@@ -314,7 +280,7 @@ public class FabricWorldEdit implements ModInitializer {
      * @return a version string
      */
     String getInternalVersion() {
-        return container.getModInfo().getVersion().toString();
+        return container.getMetadata().getVersion().getFriendlyString();
     }
 
     public void setPermissionsProvider(FabricPermissionsProvider provider) {

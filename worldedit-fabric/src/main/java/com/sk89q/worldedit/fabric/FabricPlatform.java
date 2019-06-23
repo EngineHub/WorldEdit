@@ -57,9 +57,9 @@ class FabricPlatform extends AbstractPlatform implements MultiUserPlatform {
     private final FabricDataFixer dataFixer;
     private boolean hookingEvents = false;
 
-    FabricPlatform(FabricWorldEdit mod) {
+    FabricPlatform(FabricWorldEdit mod, MinecraftServer server) {
         this.mod = mod;
-        this.server = ServerLifecycleHooks.getCurrentServer();
+        this.server = server;
         this.dataFixer = new FabricDataFixer(getDataVersion());
     }
 

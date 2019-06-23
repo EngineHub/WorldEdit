@@ -137,7 +137,7 @@ public final class FabricAdapter {
                     .map(x -> x.asString())
                     .collect(Collectors.toList()));
         }
-        return new IPropertyAdapter<>(property);
+        return new PropertyAdapter<>(property);
     }
 
     public static Map<Property<?>, Object> adaptProperties(BlockType block, Map<net.minecraft.state.property.Property<?>, Comparable<?>> mcProps) {
