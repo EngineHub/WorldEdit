@@ -1,3 +1,5 @@
+import net.fabricmc.loom.task.RemapJarTask
+
 buildscript {
     repositories {
         mavenCentral()
@@ -94,3 +96,11 @@ task deobfJar(type: Jar) {
 artifacts {
     archives deobfJar
 }
+
+task shadowJarRemap(type: RemapJarTask) {
+    input shadowJar.archivePath
+    output shadowJar.archivePath
+}
+
+shadowJarRemap.dependsOn(shadowJar)
+build.dependsOn(shadowJarRemap)

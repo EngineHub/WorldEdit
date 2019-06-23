@@ -118,7 +118,7 @@ configure(['core', 'bukkit', 'forge', 'sponge', 'fabric'].collect { project(":wo
         archives javadocJar
     }
 
-    if (!(name.equals('worldedit-forge') || name.equals('worldedit-sponge'))) {
+    if (!(name.equals('worldedit-forge') || name.equals('worldedit-sponge') || name.equals('worldedit-fabric'))) {
         task sourcesJar(type: Jar, dependsOn: classes) {
             classifier = 'sources'
             from sourceSets.main.allSource
