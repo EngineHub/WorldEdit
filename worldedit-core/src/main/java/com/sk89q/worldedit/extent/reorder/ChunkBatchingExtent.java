@@ -19,22 +19,25 @@
 
 package com.sk89q.worldedit.extent.reorder;
 
+import com.google.common.collect.Table;
+import com.google.common.collect.TreeBasedTable;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.extent.AbstractDelegateExtent;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.RunContext;
-import com.sk89q.worldedit.function.operation.SetLocatedBlocks;
 import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.math.BlockVector3;
-import com.sk89q.worldedit.util.collection.LocatedBlockList;
+import com.sk89q.worldedit.world.block.BaseBlock;
+import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * A special extent that batches changes into Minecraft chunks. This helps
@@ -49,10 +52,12 @@ public class ChunkBatchingExtent extends AbstractDelegateExtent {
      * in. This allows for file caches to be used while loading the chunk.
      */
     private static final Comparator<BlockVector2> REGION_OPTIMIZED_SORT =
-            Comparator.comparing((BlockVector2 vec) -> vec.divide(32), BlockVector2.COMPARING_GRID_ARRANGEMENT)
+            Comparator.comparing((BlockVector2 vec) -> vec.shr(5), BlockVector2.COMPARING_GRID_ARRANGEMENT)
                     .thenComparing(BlockVector2.COMPARING_GRID_ARRANGEMENT);
 
-    private final SortedMap<BlockVector2, LocatedBlockList> batches = new TreeMap<>(REGION_OPTIMIZED_SORT);
+    private final Table<BlockVector2, BlockVector3, BaseBlock> batches =
+        TreeBasedTable.create(REGION_OPTIMIZED_SORT, BlockVector3.sortByCoordsYzx());
+    private final Set<BlockVector3> containedBlocks = new HashSet<>();
     private boolean enabled;
 
     public ChunkBatchingExtent(Extent extent) {
@@ -76,14 +81,49 @@ public class ChunkBatchingExtent extends AbstractDelegateExtent {
         return enabled;
     }
 
+    private BlockVector2 getChunkPos(BlockVector3 location) {
+        return location.shr(4).toBlockVector2();
+    }
+
+    private BlockVector3 getInChunkPos(BlockVector3 location) {
+        return BlockVector3.at(location.getX() & 15, location.getY(), location.getZ() & 15);
+    }
+
     @Override
     public <B extends BlockStateHolder<B>> boolean setBlock(BlockVector3 location, B block) throws WorldEditException {
         if (!enabled) {
             return getExtent().setBlock(location, block);
         }
-        BlockVector2 chunkPos = BlockVector2.at(location.getBlockX() >> 4, location.getBlockZ() >> 4);
-        batches.computeIfAbsent(chunkPos, k -> new LocatedBlockList()).add(location, block);
+        BlockVector2 chunkPos = getChunkPos(location);
+        BlockVector3 inChunkPos = getInChunkPos(location);
+        batches.put(chunkPos, inChunkPos, block.toBaseBlock());
+        containedBlocks.add(location);
         return true;
+    }
+
+    @Override
+    public BlockState getBlock(BlockVector3 position) {
+        BaseBlock internal = getInternalBlock(position);
+        if (internal != null) {
+            return internal.toImmutableState();
+        }
+        return super.getBlock(position);
+    }
+
+    @Override
+    public BaseBlock getFullBlock(BlockVector3 position) {
+        BaseBlock internal = getInternalBlock(position);
+        if (internal != null) {
+            return internal;
+        }
+        return super.getFullBlock(position);
+    }
+
+    private BaseBlock getInternalBlock(BlockVector3 position) {
+        if (!containedBlocks.contains(position)) {
+            return null;
+        }
+        return batches.get(getChunkPos(position), getInChunkPos(position));
     }
 
     @Override
@@ -94,17 +134,21 @@ public class ChunkBatchingExtent extends AbstractDelegateExtent {
         return new Operation() {
 
             // we get modified between create/resume -- only create this on resume to prevent CME
-            private Iterator<LocatedBlockList> batchIterator;
+            private Iterator<Map<BlockVector3, BaseBlock>> batchIterator;
 
             @Override
             public Operation resume(RunContext run) throws WorldEditException {
                 if (batchIterator == null) {
-                    batchIterator = batches.values().iterator();
+                    batchIterator = batches.rowMap().values().iterator();
                 }
                 if (!batchIterator.hasNext()) {
                     return null;
                 }
-                new SetLocatedBlocks(getExtent(), batchIterator.next()).resume(run);
+                Map<BlockVector3, BaseBlock> next = batchIterator.next();
+                for (Map.Entry<BlockVector3, BaseBlock> block : next.entrySet()) {
+                    getExtent().setBlock(block.getKey(), block.getValue());
+                    containedBlocks.remove(block.getKey());
+                }
                 batchIterator.remove();
                 return this;
             }
