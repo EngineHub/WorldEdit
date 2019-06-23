@@ -5,11 +5,16 @@ buildscript {
             name = 'Fabric'
             url = 'https://maven.fabricmc.net/'
         }
+        maven {
+            name = 'sponge'
+            url = 'https://repo.spongepowered.org/maven'
+        }
         jcenter()
     }
 
     dependencies {
         classpath 'net.fabricmc:fabric-loom:0.2.4-SNAPSHOT'
+        classpath 'org.spongepowered:mixin:0.7.11-SNAPSHOT'
     }
 }
 
