@@ -8,15 +8,7 @@ buildscript {
         jcenter()
     }
 
-    configurations.all {
-        resolutionStrategy {
-            force 'commons-io:commons-io:2.4'
-        }
-    }
-
     dependencies {
-        classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.4'
-        classpath 'org.jfrog.buildinfo:build-info-extractor-gradle:4.8.1'
         classpath 'net.fabricmc:fabric-loom:0.2.4-SNAPSHOT'
     }
 }
