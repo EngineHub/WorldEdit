@@ -26,6 +26,7 @@ import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.event.platform.PlatformReadyEvent;
 import com.sk89q.worldedit.extension.platform.Platform;
+import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.block.BlockCategory;
 import com.sk89q.worldedit.world.block.BlockType;
@@ -33,16 +34,25 @@ import com.sk89q.worldedit.world.entity.EntityType;
 import com.sk89q.worldedit.world.item.ItemCategory;
 import com.sk89q.worldedit.world.item.ItemType;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
+import net.fabricmc.fabric.api.event.player.UseBlockCallback;
+import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.fabricmc.fabric.api.event.server.ServerStartCallback;
 import net.fabricmc.fabric.api.event.server.ServerStopCallback;
 import net.fabricmc.fabric.api.event.server.ServerTickCallback;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.ItemTags;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import org.apache.logging.log4j.LogManager;
@@ -57,7 +67,8 @@ import java.nio.file.Path;
 /**
  * The Fabric implementation of WorldEdit.
  */
-public class FabricWorldEdit implements ModInitializer, ServerStartCallback, ServerStopCallback {
+public class FabricWorldEdit implements ModInitializer, ServerStartCallback, ServerStopCallback, AttackBlockCallback, UseBlockCallback,
+        UseItemCallback {
 
     private static final Logger LOGGER = LogManager.getLogger();
     public static final String MOD_ID = "worldedit";
@@ -99,6 +110,9 @@ public class FabricWorldEdit implements ModInitializer, ServerStartCallback, Ser
         ServerTickCallback.EVENT.register(ThreadSafeCache.getInstance());
         ServerStartCallback.EVENT.register(this);
         ServerStopCallback.EVENT.register(this);
+        AttackBlockCallback.EVENT.register(this);
+        UseBlockCallback.EVENT.register(this);
+        UseItemCallback.EVENT.register(this);
         LOGGER.info("WorldEdit for Fabric (version " + getInternalVersion() + ") is loaded");
     }
 
@@ -166,64 +180,86 @@ public class FabricWorldEdit implements ModInitializer, ServerStartCallback, Ser
         worldEdit.getPlatformManager().unregister(platform);
     }
 
-//    @SubscribeEvent
-//    public void onPlayerInteract(PlayerInteractEvent event) {
-//        if (platform == null) {
-//            return;
-//        }
-//
-//        if (!platform.isHookingEvents())
-//            return; // We have to be told to catch these events
-//
-//        if (event.getWorld().isRemote && event instanceof LeftClickEmpty) {
-//            // catch LCE, pass it to server
-//            InternalPacketHandler.getHandler().sendToServer(new LeftClickAirEventMessage());
-//            return;
-//        }
-//
-//        boolean isLeftDeny = event instanceof PlayerInteractEvent.LeftClickBlock
-//                && ((PlayerInteractEvent.LeftClickBlock) event)
-//                        .getUseItem() == Event.Result.DENY;
-//        boolean isRightDeny =
-//                event instanceof PlayerInteractEvent.RightClickBlock
-//                        && ((PlayerInteractEvent.RightClickBlock) event)
-//                                .getUseItem() == Event.Result.DENY;
-//        if (isLeftDeny || isRightDeny || event.getEntity().world.isRemote || event.getHand() == Hand.OFF_HAND) {
-//            return;
-//        }
-//
-//        WorldEdit we = WorldEdit.getInstance();
-//        FabricPlayer player = adaptPlayer((ServerPlayerEntity) event.getEntityPlayer());
-//        FabricWorld world = getWorld(event.getEntityPlayer().world);
-//
-//        if (event instanceof PlayerInteractEvent.LeftClickEmpty) {
-//            we.handleArmSwing(player); // this event cannot be canceled
-//        } else if (event instanceof PlayerInteractEvent.LeftClickBlock) {
-//            Location pos = new Location(world, event.getPos().getX(), event.getPos().getY(), event.getPos().getZ());
-//
-//            if (we.handleBlockLeftClick(player, pos)) {
-//                event.setCanceled(true);
-//            }
-//
-//            if (we.handleArmSwing(player)) {
-//                event.setCanceled(true);
-//            }
-//        } else if (event instanceof PlayerInteractEvent.RightClickBlock) {
-//            Location pos = new Location(world, event.getPos().getX(), event.getPos().getY(), event.getPos().getZ());
-//
-//            if (we.handleBlockRightClick(player, pos)) {
-//                event.setCanceled(true);
-//            }
-//
-//            if (we.handleRightClick(player)) {
-//                event.setCanceled(true);
-//            }
-//        } else if (event instanceof PlayerInteractEvent.RightClickItem) {
-//            if (we.handleRightClick(player)) {
-//                event.setCanceled(true);
-//            }
-//        }
-//    }
+    private boolean shouldSkip() {
+        if (platform == null) {
+            return true;
+        }
+
+        return !platform.isHookingEvents(); // We have to be told to catch these events
+    }
+
+    // Left Click Block
+    @Override
+    public ActionResult interact(PlayerEntity playerEntity, World world, Hand hand, BlockPos blockPos, Direction direction) {
+        if (shouldSkip() || hand == Hand.OFF_HAND || world.isClient) {
+            return ActionResult.PASS;
+        }
+
+        WorldEdit we = WorldEdit.getInstance();
+        FabricPlayer player = adaptPlayer((ServerPlayerEntity) playerEntity);
+        FabricWorld localWorld = getWorld(world);
+        Location pos = new Location(localWorld,
+                blockPos.getX(),
+                blockPos.getY(),
+                blockPos.getZ()
+        );
+
+        if (we.handleBlockLeftClick(player, pos)) {
+            return ActionResult.SUCCESS;
+        }
+
+        if (we.handleArmSwing(player)) {
+            return ActionResult.SUCCESS;
+        }
+
+        return ActionResult.PASS;
+    }
+
+    // Right Click Block
+    @Override
+    public ActionResult interact(PlayerEntity playerEntity, World world, Hand hand, BlockHitResult blockHitResult) {
+        if (shouldSkip() || hand == Hand.OFF_HAND || world.isClient) {
+            return ActionResult.PASS;
+        }
+
+        WorldEdit we = WorldEdit.getInstance();
+        FabricPlayer player = adaptPlayer((ServerPlayerEntity) playerEntity);
+        FabricWorld localWorld = getWorld(world);
+        Location pos = new Location(localWorld,
+                blockHitResult.getBlockPos().getX(),
+                blockHitResult.getBlockPos().getY(),
+                blockHitResult.getBlockPos().getZ()
+        );
+
+        if (we.handleBlockRightClick(player, pos)) {
+            return ActionResult.SUCCESS;
+        }
+
+        if (we.handleRightClick(player)) {
+            return ActionResult.SUCCESS;
+        }
+
+        return ActionResult.PASS;
+    }
+
+    // Right Click Air
+    @Override
+    public ActionResult interact(PlayerEntity playerEntity, World world, Hand hand) {
+        if (shouldSkip() || hand == Hand.OFF_HAND || world.isClient) {
+            return ActionResult.PASS;
+        }
+
+        WorldEdit we = WorldEdit.getInstance();
+        FabricPlayer player = adaptPlayer((ServerPlayerEntity) playerEntity);
+
+        if (we.handleRightClick(player)) {
+            return ActionResult.SUCCESS;
+        }
+
+        return ActionResult.PASS;
+    }
+
+    // TODO Pass empty left click to server
 
     /**
      * Get the configuration.
