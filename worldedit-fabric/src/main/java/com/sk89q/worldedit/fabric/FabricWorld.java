@@ -57,7 +57,6 @@ import net.minecraft.block.LeavesBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
-import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.server.MinecraftServer;
@@ -65,6 +64,7 @@ import net.minecraft.server.WorldGenerationProgressListener;
 import net.minecraft.server.world.ServerChunkManager;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.Clearable;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -97,6 +97,7 @@ import net.minecraft.world.level.LevelProperties;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
+import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -168,6 +169,15 @@ public class FabricWorld extends AbstractWorld {
     }
 
     @Override
+    public Path getStoragePath() {
+        final World world = getWorld();
+        if (world instanceof ServerWorld) {
+            return ((ServerWorld) world).getSaveHandler().getWorldDir().toPath();
+        }
+        return null;
+    }
+
+    @Override
     public <B extends BlockStateHolder<B>> boolean setBlock(BlockVector3 position, B block, boolean notifyAndLight) throws WorldEditException {
         checkNotNull(position);
         checkNotNull(block);
@@ -224,12 +234,8 @@ public class FabricWorld extends AbstractWorld {
     public boolean clearContainerBlockContents(BlockVector3 position) {
         checkNotNull(position);
         BlockEntity tile = getWorld().getBlockEntity(FabricAdapter.toBlockPos(position));
-        if ((tile instanceof Inventory)) {
-            Inventory inv = (Inventory) tile;
-            int size = inv.getInvSize();
-            for (int i = 0; i < size; i++) {
-                inv.setInvStack(i, ItemStack.EMPTY);
-            }
+        if ((tile instanceof Clearable)) {
+            ((Clearable) tile).clear();
             return true;
         }
         return false;
