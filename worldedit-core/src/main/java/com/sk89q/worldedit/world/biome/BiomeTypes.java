@@ -24,10 +24,12 @@ import javax.annotation.Nullable;
 /**
  * Stores a list of common Biome String IDs.
  */
-public class BiomeTypes {
+public final class BiomeTypes {
 
     @Nullable public static final BiomeType BADLANDS = get("minecraft:badlands");
     @Nullable public static final BiomeType BADLANDS_PLATEAU = get("minecraft:badlands_plateau");
+    @Nullable public static final BiomeType BAMBOO_JUNGLE = get("minecraft:bamboo_jungle");
+    @Nullable public static final BiomeType BAMBOO_JUNGLE_HILLS = get("minecraft:bamboo_jungle_hills");
     @Nullable public static final BiomeType BEACH = get("minecraft:beach");
     @Nullable public static final BiomeType BIRCH_FOREST = get("minecraft:birch_forest");
     @Nullable public static final BiomeType BIRCH_FOREST_HILLS = get("minecraft:birch_forest_hills");

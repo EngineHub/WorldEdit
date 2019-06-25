@@ -61,6 +61,8 @@ public class MultiStageReorder extends AbstractDelegateExtent implements Reorder
         BlockCategories.WOODEN_PRESSURE_PLATES.getAll().forEach(type -> priorityMap.put(type, PlacementPriority.LAST));
         BlockCategories.CARPETS.getAll().forEach(type -> priorityMap.put(type, PlacementPriority.LAST));
         BlockCategories.RAILS.getAll().forEach(type -> priorityMap.put(type, PlacementPriority.LAST));
+        BlockCategories.BEDS.getAll().forEach(type -> priorityMap.put(type, PlacementPriority.LAST));
+        BlockCategories.SMALL_FLOWERS.getAll().forEach(type -> priorityMap.put(type, PlacementPriority.LAST));
         priorityMap.put(BlockTypes.BLACK_BED, PlacementPriority.LAST);
         priorityMap.put(BlockTypes.BLUE_BED, PlacementPriority.LAST);
         priorityMap.put(BlockTypes.BROWN_BED, PlacementPriority.LAST);
@@ -128,6 +130,7 @@ public class MultiStageReorder extends AbstractDelegateExtent implements Reorder
         // Final
         BlockCategories.DOORS.getAll().forEach(type -> priorityMap.put(type, PlacementPriority.FINAL));
         BlockCategories.BANNERS.getAll().forEach(type -> priorityMap.put(type, PlacementPriority.FINAL));
+        BlockCategories.SIGNS.getAll().forEach(type -> priorityMap.put(type, PlacementPriority.FINAL));
         priorityMap.put(BlockTypes.SIGN, PlacementPriority.FINAL);
         priorityMap.put(BlockTypes.WALL_SIGN, PlacementPriority.FINAL);
         priorityMap.put(BlockTypes.CACTUS, PlacementPriority.FINAL);

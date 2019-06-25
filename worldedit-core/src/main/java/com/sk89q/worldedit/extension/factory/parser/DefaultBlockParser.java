@@ -41,6 +41,7 @@ import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.util.HandSide;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BaseBlock;
+import com.sk89q.worldedit.world.block.BlockCategories;
 import com.sk89q.worldedit.world.block.BlockCategory;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockType;
@@ -346,9 +347,12 @@ public class DefaultBlockParser extends InputParser<BaseBlock> {
             }
         }
 
-        final BlockCategory signCategory = BlockCategory.REGISTRY.get("minecraft:signs");
+        if (!context.isTryingLegacy()) {
+            return state.toBaseBlock();
+        }
+
         if (blockType == BlockTypes.SIGN || blockType == BlockTypes.WALL_SIGN
-                || signCategory != null && signCategory.contains(blockType)) {
+                || BlockCategories.SIGNS.contains(blockType)) {
             // Allow special sign text syntax
             String[] text = new String[4];
             text[0] = blockAndExtraData.length > 1 ? blockAndExtraData[1] : "";
