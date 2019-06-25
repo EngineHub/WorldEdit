@@ -54,7 +54,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.LeavesBlock;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.IClearable;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUseContext;
 import net.minecraft.nbt.CompoundNBT;
@@ -234,12 +234,8 @@ public class ForgeWorld extends AbstractWorld {
     public boolean clearContainerBlockContents(BlockVector3 position) {
         checkNotNull(position);
         TileEntity tile = getWorld().getTileEntity(ForgeAdapter.toBlockPos(position));
-        if ((tile instanceof IInventory)) {
-            IInventory inv = (IInventory) tile;
-            int size = inv.getSizeInventory();
-            for (int i = 0; i < size; i++) {
-                inv.setInventorySlotContents(i, ItemStack.EMPTY);
-            }
+        if (tile instanceof IClearable) {
+            ((IClearable) tile).clear();
             return true;
         }
         return false;
