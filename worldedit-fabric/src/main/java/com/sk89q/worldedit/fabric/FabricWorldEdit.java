@@ -67,8 +67,7 @@ import java.nio.file.Path;
 /**
  * The Fabric implementation of WorldEdit.
  */
-public class FabricWorldEdit implements ModInitializer, ServerStartCallback, ServerStopCallback, AttackBlockCallback, UseBlockCallback,
-        UseItemCallback {
+public class FabricWorldEdit implements ModInitializer {
 
     private static final Logger LOGGER = LogManager.getLogger();
     public static final String MOD_ID = "worldedit";
@@ -108,11 +107,11 @@ public class FabricWorldEdit implements ModInitializer, ServerStartCallback, Ser
 //        InternalPacketHandler.init();
 
         ServerTickCallback.EVENT.register(ThreadSafeCache.getInstance());
-        ServerStartCallback.EVENT.register(this);
-        ServerStopCallback.EVENT.register(this);
-        AttackBlockCallback.EVENT.register(this);
-        UseBlockCallback.EVENT.register(this);
-        UseItemCallback.EVENT.register(this);
+        ServerStartCallback.EVENT.register(this::onStartServer);
+        ServerStopCallback.EVENT.register(this::onStopServer);
+        AttackBlockCallback.EVENT.register(this::onLeftClickBlock);
+        UseBlockCallback.EVENT.register(this::onRightClickBlock);
+        UseItemCallback.EVENT.register(this::onRightClickAir);
         LOGGER.info("WorldEdit for Fabric (version " + getInternalVersion() + ") is loaded");
     }
 
@@ -163,8 +162,7 @@ public class FabricWorldEdit implements ModInitializer, ServerStartCallback, Ser
         }
     }
 
-    @Override
-    public void onStartServer(MinecraftServer minecraftServer) {
+    private void onStartServer(MinecraftServer minecraftServer) {
         setupPlatform(minecraftServer);
         setupRegistries();
 
@@ -173,8 +171,7 @@ public class FabricWorldEdit implements ModInitializer, ServerStartCallback, Ser
         WorldEdit.getInstance().getEventBus().post(new PlatformReadyEvent());
     }
 
-    @Override
-    public void onStopServer(MinecraftServer minecraftServer) {
+    private void onStopServer(MinecraftServer minecraftServer) {
         WorldEdit worldEdit = WorldEdit.getInstance();
         worldEdit.getSessionManager().unload();
         worldEdit.getPlatformManager().unregister(platform);
@@ -188,9 +185,7 @@ public class FabricWorldEdit implements ModInitializer, ServerStartCallback, Ser
         return !platform.isHookingEvents(); // We have to be told to catch these events
     }
 
-    // Left Click Block
-    @Override
-    public ActionResult interact(PlayerEntity playerEntity, World world, Hand hand, BlockPos blockPos, Direction direction) {
+    private ActionResult onLeftClickBlock(PlayerEntity playerEntity, World world, Hand hand, BlockPos blockPos, Direction direction) {
         if (shouldSkip() || hand == Hand.OFF_HAND || world.isClient) {
             return ActionResult.PASS;
         }
@@ -215,9 +210,7 @@ public class FabricWorldEdit implements ModInitializer, ServerStartCallback, Ser
         return ActionResult.PASS;
     }
 
-    // Right Click Block
-    @Override
-    public ActionResult interact(PlayerEntity playerEntity, World world, Hand hand, BlockHitResult blockHitResult) {
+    private ActionResult onRightClickBlock(PlayerEntity playerEntity, World world, Hand hand, BlockHitResult blockHitResult) {
         if (shouldSkip() || hand == Hand.OFF_HAND || world.isClient) {
             return ActionResult.PASS;
         }
@@ -242,9 +235,7 @@ public class FabricWorldEdit implements ModInitializer, ServerStartCallback, Ser
         return ActionResult.PASS;
     }
 
-    // Right Click Air
-    @Override
-    public ActionResult interact(PlayerEntity playerEntity, World world, Hand hand) {
+    private ActionResult onRightClickAir(PlayerEntity playerEntity, World world, Hand hand) {
         if (shouldSkip() || hand == Hand.OFF_HAND || world.isClient) {
             return ActionResult.PASS;
         }
