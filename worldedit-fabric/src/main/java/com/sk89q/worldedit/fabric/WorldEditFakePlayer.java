@@ -22,35 +22,26 @@ package com.sk89q.worldedit.fabric;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.network.ServerPlayerInteractionManager;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.stat.Stat;
-import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
 
 import java.util.UUID;
 
 import javax.annotation.Nullable;
 
-public class WorldEditFakePlayer extends PlayerEntity {
+public class WorldEditFakePlayer extends ServerPlayerEntity {
     private static final GameProfile FAKE_WORLDEDIT_PROFILE = new GameProfile(UUID.nameUUIDFromBytes("worldedit".getBytes()), "[WorldEdit]");
 
-    public WorldEditFakePlayer(World world) {
-        super(world, FAKE_WORLDEDIT_PROFILE);
+    public WorldEditFakePlayer(ServerWorld world) {
+        super(world.getServer(), world, FAKE_WORLDEDIT_PROFILE, new ServerPlayerInteractionManager(world));
     }
 
     @Override
     public void tick() {
-    }
-
-    @Override
-    public boolean isSpectator() {
-        return false;
-    }
-
-    @Override
-    public boolean isCreative() {
-        return false;
     }
 
     @Override
