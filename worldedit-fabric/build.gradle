@@ -57,11 +57,10 @@ project.archivesBaseName = "${project.archivesBaseName}-mc${minecraftVersion}"
 processResources {
     // this will ensure that this task is redone when the versions change.
     inputs.property 'version', project.internalVersion
-    inputs.property 'fabricVersion', fabricVersion
 
     from(sourceSets.main.resources.srcDirs) {
         include "fabric.mod.json"
-        expand "version": project.version
+        expand "version": project.internalVersion
     }
 
     // copy everything else except the mod json
@@ -99,7 +98,10 @@ artifacts {
 
 task shadowJarRemap(type: RemapJarTask) {
     input shadowJar.archivePath
-    output shadowJar.archivePath
+    output new File(shadowJar.archivePath.getAbsolutePath().substring(
+            0,
+            shadowJar.archivePath.getAbsolutePath().length() - "dist-dev.jar".length()
+    ) + "dist.jar")
 }
 
 shadowJarRemap.dependsOn(shadowJar)
