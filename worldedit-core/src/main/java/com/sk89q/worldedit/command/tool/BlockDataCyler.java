@@ -50,8 +50,8 @@ public class BlockDataCyler implements DoubleActionBlockTool {
 
     private Map<UUID, Property<?>> selectedProperties = new HashMap<>();
 
-    private boolean handleCycle(Platform server, LocalConfiguration config,
-            Player player, LocalSession session, Location clicked, boolean forward) {
+    private boolean handleCycle(LocalConfiguration config, Player player, LocalSession session,
+                                Location clicked, boolean forward) {
 
         World world = (World) clicked.getExtent();
 
@@ -88,7 +88,7 @@ public class BlockDataCyler implements DoubleActionBlockTool {
 
                     try {
                         editSession.setBlock(blockPoint, newBlock);
-                        player.print("Value of " + currentProperty.getName() + " is now " + currentProperty.getValues().get(index).toString());
+                        player.print("Value of " + currentProperty.getName() + " is now " + currentProperty.getValues().get(index));
                     } catch (MaxChangedBlocksException e) {
                         player.printError("Max blocks change limit reached.");
                     } finally {
@@ -110,12 +110,12 @@ public class BlockDataCyler implements DoubleActionBlockTool {
 
     @Override
     public boolean actPrimary(Platform server, LocalConfiguration config, Player player, LocalSession session, Location clicked) {
-        return handleCycle(server, config, player, session, clicked, true);
+        return handleCycle(config, player, session, clicked, true);
     }
 
     @Override
     public boolean actSecondary(Platform server, LocalConfiguration config, Player player, LocalSession session, Location clicked) {
-        return handleCycle(server, config, player, session, clicked, false);
+        return handleCycle(config, player, session, clicked, false);
     }
 
 }

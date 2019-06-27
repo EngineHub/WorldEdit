@@ -27,5 +27,15 @@ import com.sk89q.worldedit.util.Location;
 
 public interface BlockTool extends Tool {
 
+    /**
+     * Perform the primary action of this tool.
+     *
+     * @param server
+     * @param config
+     * @param player
+     * @param session
+     * @param clicked
+     * @return true to cancel the original event which triggered this action (if possible)
+     */
     boolean actPrimary(Platform server, LocalConfiguration config, Player player, LocalSession session, Location clicked);
 }

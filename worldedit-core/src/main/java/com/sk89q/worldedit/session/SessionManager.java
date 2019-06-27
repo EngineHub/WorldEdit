@@ -26,6 +26,10 @@ import com.google.common.util.concurrent.MoreExecutors;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.command.tool.InvalidToolBindException;
+import com.sk89q.worldedit.command.tool.NavigationWand;
+import com.sk89q.worldedit.command.tool.SelectionWand;
+import com.sk89q.worldedit.command.tool.Tool;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.event.platform.ConfigurationLoadEvent;
 import com.sk89q.worldedit.session.request.Request;
@@ -35,6 +39,8 @@ import com.sk89q.worldedit.session.storage.VoidStore;
 import com.sk89q.worldedit.util.concurrency.EvenMoreExecutors;
 import com.sk89q.worldedit.util.eventbus.Subscribe;
 import com.sk89q.worldedit.world.gamemode.GameModes;
+import com.sk89q.worldedit.world.item.ItemType;
+import com.sk89q.worldedit.world.item.ItemTypes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,10 +66,12 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class SessionManager {
 
-    public static int EXPIRATION_GRACE = 600000;
+    public static int EXPIRATION_GRACE = 10 * 60 * 1000;
     private static final int FLUSH_PERIOD = 1000 * 30;
     private static final ListeningExecutorService executorService = MoreExecutors.listeningDecorator(EvenMoreExecutors.newBoundedCachedThreadPool(0, 1, 5));
     private static final Logger log = LoggerFactory.getLogger(SessionManager.class);
+    private static boolean warnedInvalidTool;
+
     private final Timer timer = new Timer();
     private final WorldEdit worldEdit;
     private final Map<UUID, SessionHolder> sessions = new HashMap<>();
@@ -157,6 +165,15 @@ public class SessionManager {
             session.setConfiguration(config);
             session.setBlockChangeLimit(config.defaultChangeLimit);
             session.setTimeout(config.calculationTimeout);
+            try {
+                setDefaultWand(session.getWandItem(), config.wandItem, session, new SelectionWand());
+                setDefaultWand(session.getNavWandItem(), config.navigationWand, session, new NavigationWand());
+            } catch (InvalidToolBindException e) {
+                if (!warnedInvalidTool) {
+                    warnedInvalidTool = true;
+                    log.warn("Invalid wand tool set in config. Tool will not be assigned: " + e.getItemType());
+                }
+            }
 
             // Remember the session regardless of if it's currently active or not.
             // And have the SessionTracker FLUSH inactive sessions.
@@ -186,6 +203,19 @@ public class SessionManager {
                     && !owner.hasPermission(permission); // unless user has unlimited permission
         }
         return false;
+    }
+
+    private void setDefaultWand(String sessionItem, String configItem, LocalSession session, Tool wand) throws InvalidToolBindException {
+        ItemType wandItem = null;
+        if (sessionItem != null) {
+            wandItem = ItemTypes.get(sessionItem);
+        }
+        if (wandItem == null) {
+            wandItem = ItemTypes.get(configItem);
+        }
+        if (wandItem != null) {
+            session.setTool(wandItem, wand);
+        }
     }
 
     /**

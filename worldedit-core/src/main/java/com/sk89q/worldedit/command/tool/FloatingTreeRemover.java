@@ -116,7 +116,7 @@ public class FloatingTreeRemover implements BlockTool {
      * @param origin any point contained in the floating tree
      * @return a set containing all blocks in the tree/shroom or null if this is not a floating tree/shroom.
      */
-    private Set<BlockVector3> bfs(World world, BlockVector3 origin) throws MaxChangedBlocksException {
+    private Set<BlockVector3> bfs(World world, BlockVector3 origin) {
         final Set<BlockVector3> visited = new HashSet<>();
         final LinkedList<BlockVector3> queue = new LinkedList<>();
 

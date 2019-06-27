@@ -26,5 +26,14 @@ import com.sk89q.worldedit.extension.platform.Platform;
 
 public interface TraceTool extends Tool {
 
+    /**
+     * Perform the primary action of this trace tool.
+     *
+     * @param server
+     * @param config
+     * @param player
+     * @param session
+     * @return true to cancel the original event which triggered this action (if possible)
+     */
     boolean actPrimary(Platform server, LocalConfiguration config, Player player, LocalSession session);
 }

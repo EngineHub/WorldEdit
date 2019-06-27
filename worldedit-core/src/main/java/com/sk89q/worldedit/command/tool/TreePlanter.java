@@ -26,6 +26,7 @@ import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Platform;
+import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.TreeGenerator;
 
@@ -52,8 +53,9 @@ public class TreePlanter implements BlockTool {
             try {
                 boolean successful = false;
 
+                final BlockVector3 pos = clicked.toVector().add(0, 1, 0).toBlockPoint();
                 for (int i = 0; i < 10; i++) {
-                    if (treeType.generate(editSession, clicked.toVector().add(0, 1, 0).toBlockPoint())) {
+                    if (treeType.generate(editSession, pos)) {
                         successful = true;
                         break;
                     }
