@@ -14,8 +14,8 @@ buildscript {
 apply plugin: 'eclipse'
 apply plugin: 'net.minecraftforge.gradle'
 
-def minecraftVersion = "1.14.2"
-def forgeVersion = "26.0.48"
+def minecraftVersion = "1.14.3"
+def forgeVersion = "27.0.13"
 
 configurations.all { Configuration it ->
     it.resolutionStrategy { ResolutionStrategy rs ->
@@ -36,7 +36,7 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 minecraft {
-    mappings channel: 'snapshot', version: "20190621-${minecraftVersion}"
+    mappings channel: 'snapshot', version: "20190626-${minecraftVersion}"
 
     runs {
         client = {
