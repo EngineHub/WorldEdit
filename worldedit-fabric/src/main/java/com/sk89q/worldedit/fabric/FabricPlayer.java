@@ -39,23 +39,23 @@ import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.block.BlockTypes;
 import io.netty.buffer.Unpooled;
-import net.minecraft.ChatFormat;
 import net.minecraft.block.Block;
 import net.minecraft.client.network.packet.BlockEntityUpdateS2CPacket;
 import net.minecraft.client.network.packet.BlockUpdateS2CPacket;
 import net.minecraft.client.network.packet.CustomPayloadS2CPacket;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.PacketByteBuf;
 import net.minecraft.util.math.BlockPos;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.UUID;
-
-import javax.annotation.Nullable;
 
 public class FabricPlayer extends AbstractPlayerActor {
 
@@ -81,7 +81,7 @@ public class FabricPlayer extends AbstractPlayerActor {
 
     @Override
     public String getName() {
-        return this.player.getName().getFormattedText();
+        return this.player.getName().asFormattedString();
     }
 
     @Override
@@ -130,33 +130,33 @@ public class FabricPlayer extends AbstractPlayerActor {
     @Override
     public void printRaw(String msg) {
         for (String part : msg.split("\n")) {
-            this.player.sendMessage(new TextComponent(part));
+            this.player.sendMessage(new LiteralText(part));
         }
     }
 
     @Override
     public void printDebug(String msg) {
-        sendColorized(msg, ChatFormat.GRAY);
+        sendColorized(msg, Formatting.GRAY);
     }
 
     @Override
     public void print(String msg) {
-        sendColorized(msg, ChatFormat.LIGHT_PURPLE);
+        sendColorized(msg, Formatting.LIGHT_PURPLE);
     }
 
     @Override
     public void printError(String msg) {
-        sendColorized(msg, ChatFormat.RED);
+        sendColorized(msg, Formatting.RED);
     }
 
     @Override
     public void print(Component component) {
-        this.player.sendMessage(net.minecraft.network.chat.Component.Serializer.fromJsonString(GsonComponentSerializer.INSTANCE.serialize(component)));
+        this.player.sendMessage(Text.Serializer.fromJson(GsonComponentSerializer.INSTANCE.serialize(component)));
     }
 
-    private void sendColorized(String msg, ChatFormat formatting) {
+    private void sendColorized(String msg, Formatting formatting) {
         for (String part : msg.split("\n")) {
-            TextComponent component = new TextComponent(part);
+            LiteralText component = new LiteralText(part);
             component.getStyle().setColor(formatting);
             this.player.sendMessage(component);
         }

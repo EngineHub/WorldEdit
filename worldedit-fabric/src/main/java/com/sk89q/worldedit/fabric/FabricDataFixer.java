@@ -43,8 +43,8 @@ import net.minecraft.nbt.FloatTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
@@ -1839,12 +1839,12 @@ class FabricDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wo
 
                         if (!"null".equals(s) && !Strings.isNullOrEmpty(s)) {
                             if ((s.charAt(0) != 34 || s.charAt(s.length() - 1) != 34) && (s.charAt(0) != 123 || s.charAt(s.length() - 1) != 125)) {
-                                object = new TextComponent(s);
+                                object = new LiteralText(s);
                             } else {
                                 try {
-                                    object = JsonHelper.deserialize(DataConverterSignText.a, s, Component.class, true);
+                                    object = JsonHelper.deserialize(DataConverterSignText.a, s, Text.class, true);
                                     if (object == null) {
-                                        object = new TextComponent("");
+                                        object = new LiteralText("");
                                     }
                                 } catch (JsonParseException jsonparseexception) {
                                     ;
@@ -1852,7 +1852,7 @@ class FabricDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wo
 
                                 if (object == null) {
                                     try {
-                                        object = Component.Serializer.fromJsonString(s);
+                                        object = Text.Serializer.fromJson(s);
                                     } catch (JsonParseException jsonparseexception1) {
                                         ;
                                     }
@@ -1860,21 +1860,21 @@ class FabricDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wo
 
                                 if (object == null) {
                                     try {
-                                        object = Component.Serializer.fromLenientJsonString(s);
+                                        object = Text.Serializer.fromLenientJson(s);
                                     } catch (JsonParseException jsonparseexception2) {
                                         ;
                                     }
                                 }
 
                                 if (object == null) {
-                                    object = new TextComponent(s);
+                                    object = new LiteralText(s);
                                 }
                             }
                         } else {
-                            object = new TextComponent("");
+                            object = new LiteralText("");
                         }
 
-                        nbttaglist.set(i, new StringTag(Component.Serializer.toJsonString((Component) object)));
+                        nbttaglist.set(i, new StringTag(Text.Serializer.toJson((Text) object)));
                     }
 
                     nbttagcompound1.put("pages", nbttaglist);
@@ -2432,18 +2432,18 @@ class FabricDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wo
 
     private static class DataConverterSignText implements DataConverter {
 
-        public static final Gson a = new GsonBuilder().registerTypeAdapter(Component.class, new JsonDeserializer() {
-            Component a(JsonElement jsonelement, Type type, JsonDeserializationContext jsondeserializationcontext) throws JsonParseException {
+        public static final Gson a = new GsonBuilder().registerTypeAdapter(Text.class, new JsonDeserializer() {
+            Text a(JsonElement jsonelement, Type type, JsonDeserializationContext jsondeserializationcontext) throws JsonParseException {
                 if (jsonelement.isJsonPrimitive()) {
-                    return new TextComponent(jsonelement.getAsString());
+                    return new LiteralText(jsonelement.getAsString());
                 } else if (jsonelement.isJsonArray()) {
                     JsonArray jsonarray = jsonelement.getAsJsonArray();
-                    Component iTextComponent = null;
+                    Text iTextComponent = null;
                     Iterator iterator = jsonarray.iterator();
 
                     while (iterator.hasNext()) {
                         JsonElement jsonelement1 = (JsonElement) iterator.next();
-                        Component iTextComponent1 = this.a(jsonelement1, jsonelement1.getClass(), jsondeserializationcontext);
+                        Text iTextComponent1 = this.a(jsonelement1, jsonelement1.getClass(), jsondeserializationcontext);
 
                         if (iTextComponent == null) {
                             iTextComponent = iTextComponent1;
@@ -2486,12 +2486,12 @@ class FabricDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wo
 
             if (!"null".equals(s1) && !Strings.isNullOrEmpty(s1)) {
                 if ((s1.charAt(0) != 34 || s1.charAt(s1.length() - 1) != 34) && (s1.charAt(0) != 123 || s1.charAt(s1.length() - 1) != 125)) {
-                    object = new TextComponent(s1);
+                    object = new LiteralText(s1);
                 } else {
                     try {
-                        object = JsonHelper.deserialize(DataConverterSignText.a, s1, Component.class, true);
+                        object = JsonHelper.deserialize(DataConverterSignText.a, s1, Text.class, true);
                         if (object == null) {
-                            object = new TextComponent("");
+                            object = new LiteralText("");
                         }
                     } catch (JsonParseException jsonparseexception) {
                         ;
@@ -2499,7 +2499,7 @@ class FabricDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wo
 
                     if (object == null) {
                         try {
-                            object = Component.Serializer.fromJsonString(s1);
+                            object = Text.Serializer.fromJson(s1);
                         } catch (JsonParseException jsonparseexception1) {
                             ;
                         }
@@ -2507,21 +2507,21 @@ class FabricDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wo
 
                     if (object == null) {
                         try {
-                            object = Component.Serializer.fromLenientJsonString(s1);
+                            object = Text.Serializer.fromLenientJson(s1);
                         } catch (JsonParseException jsonparseexception2) {
                             ;
                         }
                     }
 
                     if (object == null) {
-                        object = new TextComponent(s1);
+                        object = new LiteralText(s1);
                     }
                 }
             } else {
-                object = new TextComponent("");
+                object = new LiteralText("");
             }
 
-            nbttagcompound.putString(s, Component.Serializer.toJsonString((Component) object));
+            nbttagcompound.putString(s, Text.Serializer.toJson((Text) object));
         }
     }
 

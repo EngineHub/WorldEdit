@@ -46,7 +46,7 @@ public class FabricBlockRegistry extends BundledBlockRegistry {
     public String getName(BlockType blockType) {
         Block block = FabricAdapter.adapt(blockType);
         if (FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) {
-            return block.getTextComponent().getFormattedText();
+            return block.getName().asFormattedString();
         } else {
             return super.getName(blockType);
         }

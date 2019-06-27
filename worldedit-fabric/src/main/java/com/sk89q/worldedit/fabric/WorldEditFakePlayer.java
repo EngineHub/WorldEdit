@@ -22,16 +22,15 @@ package com.sk89q.worldedit.fabric;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.network.ServerPlayerInteractionManager;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.stat.Stat;
+import net.minecraft.text.Text;
 import net.minecraft.world.dimension.DimensionType;
 
-import java.util.UUID;
-
 import javax.annotation.Nullable;
+import java.util.UUID;
 
 public class WorldEditFakePlayer extends ServerPlayerEntity {
     private static final GameProfile FAKE_WORLDEDIT_PROFILE = new GameProfile(UUID.nameUUIDFromBytes("worldedit".getBytes()), "[WorldEdit]");
@@ -53,11 +52,11 @@ public class WorldEditFakePlayer extends ServerPlayerEntity {
     }
 
     @Override
-    public void sendMessage(Component component) {
+    public void sendMessage(Text component) {
     }
 
     @Override
-    public void addChatMessage(Component component, boolean opt) {
+    public void addChatMessage(Text component, boolean opt) {
     }
 
     @Nullable

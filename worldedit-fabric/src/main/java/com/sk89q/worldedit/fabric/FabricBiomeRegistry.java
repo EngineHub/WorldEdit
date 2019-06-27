@@ -51,7 +51,7 @@ class FabricBiomeRegistry implements BiomeRegistry {
 
         @Override
         public String getName() {
-            return biome.getTextComponent().getString();
+            return biome.getName().asFormattedString();
         }
     }
 

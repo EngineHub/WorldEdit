@@ -22,9 +22,9 @@ buildscript {
 apply plugin: 'eclipse'
 apply plugin: 'fabric-loom'
 
-def minecraftVersion = "1.14.2"
-def fabricVersion = "0.3.0+build.185"
-def yarnMappings = "1.14.2+build.7"
+def minecraftVersion = "1.14.3"
+def fabricVersion = "0.3.0+build.187"
+def yarnMappings = "1.14.3+build.1"
 def loaderVersion = "0.4.8+build.155"
 
 configurations.all { Configuration it ->
