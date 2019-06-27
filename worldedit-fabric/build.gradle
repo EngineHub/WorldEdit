@@ -98,10 +98,7 @@ artifacts {
 
 task shadowJarRemap(type: RemapJarTask) {
     input shadowJar.archivePath
-    output new File(shadowJar.archivePath.getAbsolutePath().substring(
-            0,
-            shadowJar.archivePath.getAbsolutePath().length() - "dist-dev.jar".length()
-    ) + "dist.jar")
+    output new File(shadowJar.archivePath.getAbsolutePath().replaceFirst('-dev\\.jar$', ".jar"))
 }
 
 shadowJarRemap.dependsOn(shadowJar)
