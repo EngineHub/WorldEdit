@@ -26,6 +26,7 @@ import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.event.platform.PlatformReadyEvent;
 import com.sk89q.worldedit.extension.platform.Platform;
+import com.sk89q.worldedit.fabric.net.handler.WECUIPacketHandler;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.block.BlockCategory;
@@ -103,8 +104,7 @@ public class FabricWorldEdit implements ModInitializer {
             }
         }
 
-//        WECUIPacketHandler.init();
-//        InternalPacketHandler.init();
+        WECUIPacketHandler.init();
 
         ServerTickCallback.EVENT.register(ThreadSafeCache.getInstance());
         ServerStartCallback.EVENT.register(this::onStartServer);
@@ -255,7 +255,7 @@ public class FabricWorldEdit implements ModInitializer {
     /**
      * Get the configuration.
      *
-     * @return the Forge configuration
+     * @return the Fabric configuration
      */
     FabricConfiguration getConfig() {
         return this.config;
@@ -302,7 +302,7 @@ public class FabricWorldEdit implements ModInitializer {
     }
 
     /**
-     * Get the version of the WorldEdit-for-Forge implementation.
+     * Get the version of the WorldEdit-Fabric implementation.
      *
      * @return a version string
      */

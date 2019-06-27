@@ -2,7 +2,7 @@ import net.fabricmc.loom.task.RemapJarTask
 
 buildscript {
     repositories {
-        mavenCentral()
+        jcenter()
         maven {
             name = 'Fabric'
             url = 'https://maven.fabricmc.net/'
@@ -11,7 +11,6 @@ buildscript {
             name = 'sponge'
             url = 'https://repo.spongepowered.org/maven'
         }
-        jcenter()
     }
 
     dependencies {
@@ -79,6 +78,7 @@ jar {
 }
 
 shadowJar {
+    classifier = 'dist-dev'
     dependencies {
         relocate "org.slf4j", "com.sk89q.worldedit.slf4j"
         relocate "org.apache.logging.slf4j", "com.sk89q.worldedit.log4jbridge"

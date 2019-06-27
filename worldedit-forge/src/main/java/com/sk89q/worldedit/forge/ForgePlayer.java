@@ -124,7 +124,7 @@ public class ForgePlayer extends AbstractPlayerActor {
             send = send + "|" + StringUtil.joinString(params, "|");
         }
         PacketBuffer buffer = new PacketBuffer(Unpooled.copiedBuffer(send.getBytes(WECUIPacketHandler.UTF_8_CHARSET)));
-        SCustomPayloadPlayPacket packet = new SCustomPayloadPlayPacket(new ResourceLocation(ForgeWorldEdit.CUI_PLUGIN_CHANNEL), buffer);
+        SCustomPayloadPlayPacket packet = new SCustomPayloadPlayPacket(new ResourceLocation(ForgeWorldEdit.MOD_ID, ForgeWorldEdit.CUI_PLUGIN_CHANNEL), buffer);
         this.player.connection.sendPacket(packet);
     }
 

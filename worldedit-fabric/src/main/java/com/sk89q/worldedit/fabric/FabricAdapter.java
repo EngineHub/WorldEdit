@@ -131,7 +131,7 @@ public final class FabricAdapter {
                     .collect(Collectors.toList()));
         }
         if (property instanceof net.minecraft.state.property.EnumProperty) {
-            // Note: do not make x.getName a method reference.
+            // Note: do not make x.asString a method reference.
             // It will cause runtime bootstrap exceptions.
             return new EnumProperty(property.getName(), ((net.minecraft.state.property.EnumProperty<?>) property).getValues().stream()
                     .map(x -> x.asString())

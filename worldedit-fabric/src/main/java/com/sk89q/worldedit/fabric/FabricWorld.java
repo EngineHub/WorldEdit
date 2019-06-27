@@ -260,7 +260,7 @@ public class FabricWorld extends AbstractWorld {
         return true;
     }
 
-    private static LoadingCache<ServerWorld, WorldEditFakePlayer> fakePlayers
+    private static final LoadingCache<ServerWorld, WorldEditFakePlayer> fakePlayers
             = CacheBuilder.newBuilder().weakKeys().softValues().build(CacheLoader.from(WorldEditFakePlayer::new));
 
     @Override
@@ -509,9 +509,7 @@ public class FabricWorld extends AbstractWorld {
 
     @Override
     public boolean equals(Object o) {
-        if (o == null) {
-            return false;
-        } else if ((o instanceof FabricWorld)) {
+        if ((o instanceof FabricWorld)) {
             FabricWorld other = ((FabricWorld) o);
             World otherWorld = other.worldRef.get();
             World thisWorld = worldRef.get();
