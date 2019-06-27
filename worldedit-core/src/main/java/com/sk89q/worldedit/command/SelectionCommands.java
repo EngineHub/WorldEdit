@@ -25,6 +25,7 @@ import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.command.argument.SelectorChoice;
+import com.sk89q.worldedit.command.tool.NavigationWand;
 import com.sk89q.worldedit.command.tool.SelectionWand;
 import com.sk89q.worldedit.command.util.CommandPermissions;
 import com.sk89q.worldedit.command.util.CommandPermissionsConditionGenerator;
@@ -251,19 +252,25 @@ public class SelectionCommands {
         desc = "Get the wand object"
     )
     @CommandPermissions("worldedit.wand")
-    public void wand(Player player, LocalSession session) throws WorldEditException {
-        String wandId = session.getWandItem();
+    public void wand(Player player, LocalSession session,
+                        @Switch(name = 'n', desc = "Get a navigation wand") boolean navWand) throws WorldEditException {
+        String wandId = navWand ? session.getNavWandItem() : session.getWandItem();
         if (wandId == null) {
-            wandId = we.getConfiguration().wandItem;
+            wandId = navWand ? we.getConfiguration().navigationWand : we.getConfiguration().wandItem;
         }
         ItemType itemType = ItemTypes.get(wandId);
         if (itemType == null) {
             player.printError("Wand item is mis-configured or disabled.");
             return;
         }
-        session.setTool(itemType, new SelectionWand());
         player.giveItem(new BaseItemStack(itemType, 1));
-        player.print("Left click: select pos #1; Right click: select pos #2");
+        if (navWand) {
+            session.setTool(itemType, new NavigationWand());
+            player.print("Left click: jump to location; Right click: pass through walls");
+        } else {
+            session.setTool(itemType, new SelectionWand());
+            player.print("Left click: select pos #1; Right click: select pos #2");
+        }
     }
 
     @Command(

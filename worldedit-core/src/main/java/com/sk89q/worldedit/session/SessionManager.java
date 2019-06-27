@@ -166,8 +166,12 @@ public class SessionManager {
             session.setBlockChangeLimit(config.defaultChangeLimit);
             session.setTimeout(config.calculationTimeout);
             try {
-                setDefaultWand(session.getWandItem(), config.wandItem, session, new SelectionWand());
-                setDefaultWand(session.getNavWandItem(), config.navigationWand, session, new NavigationWand());
+                if (owner.hasPermission("worldedit.selection.pos")) {
+                    setDefaultWand(session.getWandItem(), config.wandItem, session, new SelectionWand());
+                }
+                if (owner.hasPermission("worldedit.command.jumpto.tool") || owner.hasPermission("worldedit.command.thru.tool")) {
+                    setDefaultWand(session.getNavWandItem(), config.navigationWand, session, new NavigationWand());
+                }
             } catch (InvalidToolBindException e) {
                 if (!warnedInvalidTool) {
                     warnedInvalidTool = true;
