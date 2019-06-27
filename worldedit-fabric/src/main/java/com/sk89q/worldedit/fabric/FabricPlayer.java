@@ -17,7 +17,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.forge;
+package com.sk89q.worldedit.fabric;
 
 import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.util.StringUtil;
@@ -25,7 +25,7 @@ import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.extension.platform.AbstractPlayerActor;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
-import com.sk89q.worldedit.forge.net.handler.WECUIPacketHandler;
+import com.sk89q.worldedit.fabric.net.handler.WECUIPacketHandler;
 import com.sk89q.worldedit.internal.cui.CUIEvent;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.Vector3;
@@ -39,45 +39,44 @@ import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.block.BlockTypes;
 import io.netty.buffer.Unpooled;
+import net.minecraft.ChatFormat;
 import net.minecraft.block.Block;
-import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.client.network.packet.BlockEntityUpdateS2CPacket;
+import net.minecraft.client.network.packet.BlockUpdateS2CPacket;
+import net.minecraft.client.network.packet.CustomPayloadS2CPacket;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.network.play.server.SChangeBlockPacket;
-import net.minecraft.network.play.server.SCustomPayloadPlayPacket;
-import net.minecraft.network.play.server.SUpdateTileEntityPacket;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Hand;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.PacketByteBuf;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
 
 import java.io.IOException;
 import java.util.UUID;
 
 import javax.annotation.Nullable;
 
-public class ForgePlayer extends AbstractPlayerActor {
+public class FabricPlayer extends AbstractPlayerActor {
 
     // see ClientPlayNetHandler: search for "invalid update packet", lots of hardcoded consts
     private static final int STRUCTURE_BLOCK_PACKET_ID = 7;
     private final ServerPlayerEntity player;
 
-    protected ForgePlayer(ServerPlayerEntity player) {
+    protected FabricPlayer(ServerPlayerEntity player) {
         this.player = player;
         ThreadSafeCache.getInstance().getOnlineIds().add(getUniqueId());
     }
 
     @Override
     public UUID getUniqueId() {
-        return player.getUniqueID();
+        return player.getUuid();
     }
 
     @Override
     public BaseItemStack getItemInHand(HandSide handSide) {
-        ItemStack is = this.player.getHeldItem(handSide == HandSide.MAIN_HAND ? Hand.MAIN_HAND : Hand.OFF_HAND);
-        return ForgeAdapter.adapt(is);
+        ItemStack is = this.player.getStackInHand(handSide == HandSide.MAIN_HAND ? Hand.MAIN_HAND : Hand.OFF_HAND);
+        return FabricAdapter.adapt(is);
     }
 
     @Override
@@ -92,12 +91,12 @@ public class ForgePlayer extends AbstractPlayerActor {
 
     @Override
     public Location getLocation() {
-        Vector3 position = Vector3.at(this.player.posX, this.player.posY, this.player.posZ);
+        Vector3 position = Vector3.at(this.player.x, this.player.y, this.player.z);
         return new Location(
-                ForgeWorldEdit.inst.getWorld(this.player.world),
+                FabricWorldEdit.inst.getWorld(this.player.world),
                 position,
-                this.player.rotationYaw,
-                this.player.rotationPitch);
+                this.player.yaw,
+                this.player.pitch);
     }
 
     @Override
@@ -108,12 +107,12 @@ public class ForgePlayer extends AbstractPlayerActor {
 
     @Override
     public com.sk89q.worldedit.world.World getWorld() {
-        return ForgeWorldEdit.inst.getWorld(this.player.world);
+        return FabricWorldEdit.inst.getWorld(this.player.world);
     }
 
     @Override
     public void giveItem(BaseItemStack itemStack) {
-        this.player.inventory.addItemStackToInventory(ForgeAdapter.adapt(itemStack));
+        this.player.inventory.insertStack(FabricAdapter.adapt(itemStack));
     }
 
     @Override
@@ -123,41 +122,41 @@ public class ForgePlayer extends AbstractPlayerActor {
         if (params.length > 0) {
             send = send + "|" + StringUtil.joinString(params, "|");
         }
-        PacketBuffer buffer = new PacketBuffer(Unpooled.copiedBuffer(send.getBytes(WECUIPacketHandler.UTF_8_CHARSET)));
-        SCustomPayloadPlayPacket packet = new SCustomPayloadPlayPacket(new ResourceLocation(ForgeWorldEdit.MOD_ID, ForgeWorldEdit.CUI_PLUGIN_CHANNEL), buffer);
-        this.player.connection.sendPacket(packet);
+        PacketByteBuf buffer = new PacketByteBuf(Unpooled.copiedBuffer(send.getBytes(WECUIPacketHandler.UTF_8_CHARSET)));
+        CustomPayloadS2CPacket packet = new CustomPayloadS2CPacket(new Identifier(FabricWorldEdit.MOD_ID, FabricWorldEdit.CUI_PLUGIN_CHANNEL), buffer);
+        this.player.networkHandler.sendPacket(packet);
     }
 
     @Override
     public void printRaw(String msg) {
         for (String part : msg.split("\n")) {
-            this.player.sendMessage(new StringTextComponent(part));
+            this.player.sendMessage(new TextComponent(part));
         }
     }
 
     @Override
     public void printDebug(String msg) {
-        sendColorized(msg, TextFormatting.GRAY);
+        sendColorized(msg, ChatFormat.GRAY);
     }
 
     @Override
     public void print(String msg) {
-        sendColorized(msg, TextFormatting.LIGHT_PURPLE);
+        sendColorized(msg, ChatFormat.LIGHT_PURPLE);
     }
 
     @Override
     public void printError(String msg) {
-        sendColorized(msg, TextFormatting.RED);
+        sendColorized(msg, ChatFormat.RED);
     }
 
     @Override
     public void print(Component component) {
-        this.player.sendMessage(ITextComponent.Serializer.fromJson(GsonComponentSerializer.INSTANCE.serialize(component)));
+        this.player.sendMessage(net.minecraft.network.chat.Component.Serializer.fromJsonString(GsonComponentSerializer.INSTANCE.serialize(component)));
     }
 
-    private void sendColorized(String msg, TextFormatting formatting) {
+    private void sendColorized(String msg, ChatFormat formatting) {
         for (String part : msg.split("\n")) {
-            StringTextComponent component = new StringTextComponent(part);
+            TextComponent component = new TextComponent(part);
             component.getStyle().setColor(formatting);
             this.player.sendMessage(component);
         }
@@ -165,7 +164,7 @@ public class ForgePlayer extends AbstractPlayerActor {
 
     @Override
     public void setPosition(Vector3 pos, float pitch, float yaw) {
-        this.player.connection.setPlayerLocation(pos.getX(), pos.getY(), pos.getZ(), yaw, pitch);
+        this.player.networkHandler.requestTeleport(pos.getX(), pos.getY(), pos.getZ(), yaw, pitch);
     }
 
     @Override
@@ -180,7 +179,7 @@ public class ForgePlayer extends AbstractPlayerActor {
 
     @Override
     public boolean hasPermission(String perm) {
-        return ForgeWorldEdit.inst.getPermissionsProvider().hasPermission(player, perm);
+        return FabricWorldEdit.inst.getPermissionsProvider().hasPermission(player, perm);
     }
 
     @Nullable
@@ -192,29 +191,29 @@ public class ForgePlayer extends AbstractPlayerActor {
     @Override
     public <B extends BlockStateHolder<B>> void sendFakeBlock(BlockVector3 pos, B block) {
         World world = getWorld();
-        if (!(world instanceof ForgeWorld)) {
+        if (!(world instanceof FabricWorld)) {
             return;
         }
-        BlockPos loc = ForgeAdapter.toBlockPos(pos);
+        BlockPos loc = FabricAdapter.toBlockPos(pos);
         if (block == null) {
-            final SChangeBlockPacket packetOut = new SChangeBlockPacket(((ForgeWorld) world).getWorld(), loc);
-            player.connection.sendPacket(packetOut);
+            final BlockUpdateS2CPacket packetOut = new BlockUpdateS2CPacket(((FabricWorld) world).getWorld(), loc);
+            player.networkHandler.sendPacket(packetOut);
         } else {
-            final SChangeBlockPacket packetOut = new SChangeBlockPacket();
-            PacketBuffer buf = new PacketBuffer(Unpooled.buffer());
+            final BlockUpdateS2CPacket packetOut = new BlockUpdateS2CPacket();
+            PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
             buf.writeBlockPos(loc);
-            buf.writeVarInt(Block.getStateId(ForgeAdapter.adapt(block.toImmutableState())));
+            buf.writeVarInt(Block.getRawIdFromState(FabricAdapter.adapt(block.toImmutableState())));
             try {
-                packetOut.readPacketData(buf);
+                packetOut.read(buf);
             } catch (IOException e) {
                 return;
             }
-            player.connection.sendPacket(packetOut);
+            player.networkHandler.sendPacket(packetOut);
             if (block instanceof BaseBlock && block.getBlockType().equals(BlockTypes.STRUCTURE_BLOCK)) {
                 final BaseBlock baseBlock = (BaseBlock) block;
                 final CompoundTag nbtData = baseBlock.getNbtData();
                 if (nbtData != null) {
-                    player.connection.sendPacket(new SUpdateTileEntityPacket(
+                    player.networkHandler.sendPacket(new BlockEntityUpdateS2CPacket(
                             new BlockPos(pos.getBlockX(), pos.getBlockY(), pos.getBlockZ()),
                             STRUCTURE_BLOCK_PACKET_ID,
                             NBTConverter.toNative(nbtData))
@@ -226,7 +225,7 @@ public class ForgePlayer extends AbstractPlayerActor {
 
     @Override
     public SessionKey getSessionKey() {
-        return new SessionKeyImpl(player.getUniqueID(), player.getName().getString());
+        return new SessionKeyImpl(player.getUuid(), player.getName().getString());
     }
 
     private static class SessionKeyImpl implements SessionKey {

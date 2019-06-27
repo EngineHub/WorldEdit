@@ -1,0 +1,13 @@
+{
+    "required": true,
+    "package": "com.sk89q.worldedit.fabric.mixin",
+    "compatibilityLevel": "JAVA_8",
+    "mixins": [
+        "MixinServerPlayerEntity"
+    ],
+    "server": [
+    ],
+    "injectors": {
+        "defaultRequire": 1
+    }
+}

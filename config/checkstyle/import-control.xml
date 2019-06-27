@@ -60,6 +60,18 @@
       <allow pkg="com.mojang.datafixers" />
     </subpackage>
 
+    <subpackage name="fabric">
+      <allow pkg="net.minecraft"/>
+      <allow pkg="net.fabricmc"/>
+      <allow pkg="com.mojang.authlib"/>
+      <allow pkg="org.apache.logging.log4j"/>
+      <allow pkg="org.lwjgl"/>
+      <allow pkg="io.netty.buffer"/>
+      <allow pkg="org.spongepowered" />
+      <allow pkg="com.mojang.brigadier" />
+      <allow pkg="com.mojang.datafixers" />
+    </subpackage>
+
     <subpackage name="sponge">
       <allow pkg="net.minecraft"/>
       <allow pkg="com.google.inject" />
