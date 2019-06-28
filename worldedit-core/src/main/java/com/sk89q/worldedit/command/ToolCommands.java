@@ -30,7 +30,9 @@ import com.sk89q.worldedit.command.tool.DistanceWand;
 import com.sk89q.worldedit.command.tool.FloatingTreeRemover;
 import com.sk89q.worldedit.command.tool.FloodFillTool;
 import com.sk89q.worldedit.command.tool.LongRangeBuildTool;
+import com.sk89q.worldedit.command.tool.NavigationWand;
 import com.sk89q.worldedit.command.tool.QueryTool;
+import com.sk89q.worldedit.command.tool.SelectionWand;
 import com.sk89q.worldedit.command.tool.TreePlanter;
 import com.sk89q.worldedit.command.util.CommandPermissions;
 import com.sk89q.worldedit.command.util.CommandPermissionsConditionGenerator;
@@ -39,6 +41,7 @@ import com.sk89q.worldedit.function.pattern.BlockPattern;
 import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.util.HandSide;
 import com.sk89q.worldedit.util.TreeGenerator;
+import com.sk89q.worldedit.world.item.ItemType;
 import org.enginehub.piston.annotation.Command;
 import org.enginehub.piston.annotation.CommandContainer;
 import org.enginehub.piston.annotation.param.Arg;
@@ -62,6 +65,32 @@ public class ToolCommands {
     }
 
     @Command(
+        name = "/selwand",
+        aliases = "selwand",
+        desc = "Selection wand tool"
+    )
+    @CommandPermissions("worldedit.selection.pos")
+    public void selwand(Player player, LocalSession session) throws WorldEditException {
+
+        final ItemType itemType = player.getItemInHand(HandSide.MAIN_HAND).getType();
+        session.setTool(itemType, new SelectionWand());
+        player.print("Selection wand bound to " + itemType.getName() + ".");
+    }
+
+    @Command(
+        name = "/navwand",
+        aliases = "navwand",
+        desc = "Navigation wand tool"
+    )
+    @CommandPermissions({"worldedit.command.jumpto.tool", "worldedit.command.thru.tool"})
+    public void navwand(Player player, LocalSession session) throws WorldEditException {
+
+        BaseItemStack itemStack = player.getItemInHand(HandSide.MAIN_HAND);
+        session.setTool(itemStack.getType(), new NavigationWand());
+        player.print("Navigation wand bound to " + itemStack.getType().getName() + ".");
+    }
+
+    @Command(
         name = "info",
         desc = "Block information tool"
     )
@@ -82,6 +111,7 @@ public class ToolCommands {
     public void tree(Player player, LocalSession session,
                      @Arg(desc = "Type of tree to generate", def = "tree")
                      TreeGenerator.TreeType type) throws WorldEditException {
+
         BaseItemStack itemStack = player.getItemInHand(HandSide.MAIN_HAND);
         session.setTool(itemStack.getType(), new TreePlanter(type));
         player.print("Tree tool bound to " + itemStack.getType().getName() + ".");
@@ -95,6 +125,7 @@ public class ToolCommands {
     public void repl(Player player, LocalSession session,
                      @Arg(desc = "The pattern of blocks to place")
                          Pattern pattern) throws WorldEditException {
+
         BaseItemStack itemStack = player.getItemInHand(HandSide.MAIN_HAND);
         session.setTool(itemStack.getType(), new BlockReplacer(pattern));
         player.print("Block replacer tool bound to " + itemStack.getType().getName() + ".");

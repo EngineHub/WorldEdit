@@ -19,46 +19,41 @@
 
 package com.sk89q.worldedit.command.tool;
 
-import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
-import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Platform;
+import com.sk89q.worldedit.extension.platform.permission.ActorSelectorLimits;
 import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.regions.RegionSelector;
 import com.sk89q.worldedit.util.Location;
-import com.sk89q.worldedit.world.World;
-import com.sk89q.worldedit.world.block.BlockType;
-import com.sk89q.worldedit.world.block.BlockTypes;
 
-/**
- * A super pickaxe mode that removes one block.
- */
-public class SinglePickaxe implements BlockTool {
+public class SelectionWand implements DoubleActionBlockTool {
 
     @Override
-    public boolean canUse(Actor player) {
-        return player.hasPermission("worldedit.superpickaxe");
+    public boolean actSecondary(Platform server, LocalConfiguration config, Player player, LocalSession session, Location clicked) {
+        RegionSelector selector = session.getRegionSelector(player.getWorld());
+
+        BlockVector3 blockPoint = clicked.toVector().toBlockPoint();
+        if (selector.selectPrimary(blockPoint, ActorSelectorLimits.forActor(player))) {
+            selector.explainPrimarySelection(player, session, blockPoint);
+        }
+        return true;
     }
 
     @Override
     public boolean actPrimary(Platform server, LocalConfiguration config, Player player, LocalSession session, Location clicked) {
-        World world = (World) clicked.getExtent();
+        RegionSelector selector = session.getRegionSelector(player.getWorld());
         BlockVector3 blockPoint = clicked.toVector().toBlockPoint();
-        final BlockType blockType = world.getBlock(blockPoint).getBlockType();
-        if (blockType == BlockTypes.BEDROCK && !player.canDestroyBedrock()) {
-            return false;
+        if (selector.selectSecondary(blockPoint, ActorSelectorLimits.forActor(player))) {
+            selector.explainSecondarySelection(player, session, blockPoint);
         }
-
-        try (EditSession editSession = session.createEditSession(player)) {
-            editSession.getSurvivalExtent().setToolUse(config.superPickaxeDrop);
-            editSession.setBlock(blockPoint, BlockTypes.AIR.getDefaultState());
-        } catch (MaxChangedBlocksException e) {
-            player.printError("Max blocks change limit reached.");
-        }
-
         return true;
     }
 
+    @Override
+    public boolean canUse(Actor actor) {
+        return actor.hasPermission("worldedit.selection.pos");
+    }
 }

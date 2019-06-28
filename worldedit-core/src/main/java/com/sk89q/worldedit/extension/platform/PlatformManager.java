@@ -308,78 +308,52 @@ public class PlatformManager {
         Actor actor = createProxyActor(event.getCause());
 
         Location location = event.getLocation();
-        Vector3 vector = location.toVector();
 
         // At this time, only handle interaction from players
-        if (actor instanceof Player) {
-            Player player = (Player) actor;
-            LocalSession session = worldEdit.getSessionManager().get(actor);
+        if (!(actor instanceof Player)) {
+            return;
+        }
+        Player player = (Player) actor;
+        LocalSession session = worldEdit.getSessionManager().get(actor);
 
-            Request.reset();
-            Request.request().setSession(session);
-            Request.request().setWorld(player.getWorld());
+        Request.reset();
+        Request.request().setSession(session);
+        Request.request().setWorld(player.getWorld());
 
-            try {
-                if (event.getType() == Interaction.HIT) {
-                    if (session.isToolControlEnabled() && player.getItemInHand(HandSide.MAIN_HAND).getType().getId().equals(getConfiguration().wandItem)) {
-                        if (!actor.hasPermission("worldedit.selection.pos")) {
-                            return;
-                        }
-
-                        RegionSelector selector = session.getRegionSelector(player.getWorld());
-
-                        BlockVector3 blockPoint = vector.toBlockPoint();
-                        if (selector.selectPrimary(blockPoint, ActorSelectorLimits.forActor(player))) {
-                            selector.explainPrimarySelection(actor, session, blockPoint);
-                        }
-
-                        event.setCancelled(true);
-                        return;
-                    }
-
-                    if (session.hasSuperPickAxe() && player.isHoldingPickAxe()) {
-                        final BlockTool superPickaxe = session.getSuperPickaxe();
-                        if (superPickaxe != null && superPickaxe.canUse(player)) {
-                            event.setCancelled(superPickaxe.actPrimary(queryCapability(Capability.WORLD_EDITING), getConfiguration(), player, session, location));
-                            return;
-                        }
-                    }
-
-                    Tool tool = session.getTool(player.getItemInHand(HandSide.MAIN_HAND).getType());
-                    if (tool instanceof DoubleActionBlockTool) {
-                        if (tool.canUse(player)) {
-                            ((DoubleActionBlockTool) tool).actSecondary(queryCapability(Capability.WORLD_EDITING), getConfiguration(), player, session, location);
+        try {
+            if (event.getType() == Interaction.HIT) {
+                // superpickaxe is special because its primary interaction is a left click, not a right click
+                // in addition, it is implicitly bound to all pickaxe items, not just a single tool item
+                if (session.hasSuperPickAxe() && player.isHoldingPickAxe()) {
+                    final BlockTool superPickaxe = session.getSuperPickaxe();
+                    if (superPickaxe != null && superPickaxe.canUse(player)) {
+                        if (superPickaxe.actPrimary(queryCapability(Capability.WORLD_EDITING),
+                                getConfiguration(), player, session, location)) {
                             event.setCancelled(true);
                         }
-                    }
-
-                } else if (event.getType() == Interaction.OPEN) {
-                    if (session.isToolControlEnabled() && player.getItemInHand(HandSide.MAIN_HAND).getType().getId().equals(getConfiguration().wandItem)) {
-                        if (!actor.hasPermission("worldedit.selection.pos")) {
-                            return;
-                        }
-
-                        RegionSelector selector = session.getRegionSelector(player.getWorld());
-                        BlockVector3 blockPoint = vector.toBlockPoint();
-                        if (selector.selectSecondary(blockPoint, ActorSelectorLimits.forActor(player))) {
-                            selector.explainSecondarySelection(actor, session, blockPoint);
-                        }
-
-                        event.setCancelled(true);
                         return;
-                    }
-
-                    Tool tool = session.getTool(player.getItemInHand(HandSide.MAIN_HAND).getType());
-                    if (tool instanceof BlockTool) {
-                        if (tool.canUse(player)) {
-                            ((BlockTool) tool).actPrimary(queryCapability(Capability.WORLD_EDITING), getConfiguration(), player, session, location);
-                            event.setCancelled(true);
-                        }
                     }
                 }
-            } finally {
-                Request.reset();
+
+                Tool tool = session.getTool(player.getItemInHand(HandSide.MAIN_HAND).getType());
+                if (tool instanceof DoubleActionBlockTool && tool.canUse(player)) {
+                    if (((DoubleActionBlockTool) tool).actSecondary(queryCapability(Capability.WORLD_EDITING),
+                            getConfiguration(), player, session, location)) {
+                        event.setCancelled(true);
+                    }
+                }
+
+            } else if (event.getType() == Interaction.OPEN) {
+                Tool tool = session.getTool(player.getItemInHand(HandSide.MAIN_HAND).getType());
+                if (tool instanceof BlockTool && tool.canUse(player)) {
+                    if (((BlockTool) tool).actPrimary(queryCapability(Capability.WORLD_EDITING),
+                            getConfiguration(), player, session, location)) {
+                        event.setCancelled(true);
+                    }
+                }
             }
+        } finally {
+            Request.reset();
         }
     }
 
@@ -396,63 +370,26 @@ public class PlatformManager {
         try {
             switch (event.getInputType()) {
                 case PRIMARY: {
-                    if (player.getItemInHand(HandSide.MAIN_HAND).getType().getId().equals(getConfiguration().navigationWand)) {
-                        if (getConfiguration().navigationWandMaxDistance <= 0) {
-                            return;
-                        }
-
-                        if (!player.hasPermission("worldedit.navigation.jumpto.tool")) {
-                            return;
-                        }
-
-                        Location pos = player.getSolidBlockTrace(getConfiguration().navigationWandMaxDistance);
-                        if (pos != null) {
-                            player.findFreePosition(pos);
-                        } else {
-                            player.printError("No block in sight (or too far)!");
-                        }
-
-                        event.setCancelled(true);
-                        return;
-                    }
-
                     Tool tool = session.getTool(player.getItemInHand(HandSide.MAIN_HAND).getType());
-                    if (tool instanceof DoubleActionTraceTool) {
-                        if (tool.canUse(player)) {
-                            ((DoubleActionTraceTool) tool).actSecondary(queryCapability(Capability.WORLD_EDITING), getConfiguration(), player, session);
+                    if (tool instanceof DoubleActionTraceTool && tool.canUse(player)) {
+                        if (((DoubleActionTraceTool) tool).actSecondary(queryCapability(Capability.WORLD_EDITING),
+                                getConfiguration(), player, session)) {
                             event.setCancelled(true);
-                            return;
                         }
+                        return;
                     }
 
                     break;
                 }
 
                 case SECONDARY: {
-                    if (player.getItemInHand(HandSide.MAIN_HAND).getType().getId().equals(getConfiguration().navigationWand)) {
-                        if (getConfiguration().navigationWandMaxDistance <= 0) {
-                            return;
-                        }
-
-                        if (!player.hasPermission("worldedit.navigation.thru.tool")) {
-                            return;
-                        }
-
-                        if (!player.passThroughForwardWall(40)) {
-                            player.printError("Nothing to pass through!");
-                        }
-
-                        event.setCancelled(true);
-                        return;
-                    }
-
                     Tool tool = session.getTool(player.getItemInHand(HandSide.MAIN_HAND).getType());
-                    if (tool instanceof TraceTool) {
-                        if (tool.canUse(player)) {
-                            ((TraceTool) tool).actPrimary(queryCapability(Capability.WORLD_EDITING), getConfiguration(), player, session);
+                    if (tool instanceof TraceTool && tool.canUse(player)) {
+                        if (((TraceTool) tool).actPrimary(queryCapability(Capability.WORLD_EDITING),
+                                getConfiguration(), player, session)) {
                             event.setCancelled(true);
-                            return;
                         }
+                        return;
                     }
 
                     break;

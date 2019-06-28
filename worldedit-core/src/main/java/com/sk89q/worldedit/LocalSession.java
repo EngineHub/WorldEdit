@@ -28,6 +28,8 @@ import com.sk89q.jnbt.Tag;
 import com.sk89q.worldedit.command.tool.BlockTool;
 import com.sk89q.worldedit.command.tool.BrushTool;
 import com.sk89q.worldedit.command.tool.InvalidToolBindException;
+import com.sk89q.worldedit.command.tool.NavigationWand;
+import com.sk89q.worldedit.command.tool.SelectionWand;
 import com.sk89q.worldedit.command.tool.SinglePickaxe;
 import com.sk89q.worldedit.command.tool.Tool;
 import com.sk89q.worldedit.entity.Player;
@@ -48,7 +50,6 @@ import com.sk89q.worldedit.session.request.Request;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.item.ItemType;
-import com.sk89q.worldedit.world.item.ItemTypes;
 import com.sk89q.worldedit.world.snapshot.Snapshot;
 
 import javax.annotation.Nullable;
@@ -67,11 +68,11 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class LocalSession {
 
-    public transient static int MAX_HISTORY_SIZE = 15;
+    public static transient int MAX_HISTORY_SIZE = 15;
 
     // Non-session related fields
     private transient LocalConfiguration config;
-    private transient final AtomicBoolean dirty = new AtomicBoolean();
+    private final transient AtomicBoolean dirty = new AtomicBoolean();
     private transient int failedCuiAttempts = 0;
 
     // Session related
@@ -80,7 +81,6 @@ public class LocalSession {
     private transient LinkedList<EditSession> history = new LinkedList<>();
     private transient int historyPointer = 0;
     private transient ClipboardHolder clipboard;
-    private transient boolean toolControl = true;
     private transient boolean superPickaxe = false;
     private transient BlockTool pickaxeMode = new SinglePickaxe();
     private transient Map<ItemType, Tool> tools = new HashMap<>();
@@ -100,6 +100,8 @@ public class LocalSession {
     private String lastScript;
     private RegionSelectorType defaultSelector;
     private boolean useServerCUI = false; // Save this to not annoy players.
+    private String wandItem;
+    private String navWandItem;
 
     /**
      * Construct the object.
@@ -387,21 +389,20 @@ public class LocalSession {
     }
 
     /**
-     * See if tool control is enabled.
-     *
-     * @return true if enabled
+     * @return true always - see deprecation notice
+     * @deprecated The wand is now a tool that can be bound/unbound.
      */
+    @Deprecated
     public boolean isToolControlEnabled() {
-        return toolControl;
+        return true;
     }
 
     /**
-     * Change tool control setting.
-     *
-     * @param toolControl true to enable tool control
+     * @param toolControl unused - see deprecation notice
+     * @deprecated The wand is now a tool that can be bound/unbound.
      */
+    @Deprecated
     public void setToolControl(boolean toolControl) {
-        this.toolControl = toolControl;
     }
 
     /**
@@ -594,10 +595,13 @@ public class LocalSession {
     public void setTool(ItemType item, @Nullable Tool tool) throws InvalidToolBindException {
         if (item.hasBlockType()) {
             throw new InvalidToolBindException(item, "Blocks can't be used");
-        } else if (item == ItemTypes.get(config.wandItem)) {
-            throw new InvalidToolBindException(item, "Already used for the wand");
-        } else if (item == ItemTypes.get(config.navigationWand)) {
-            throw new InvalidToolBindException(item, "Already used for the navigation wand");
+        }
+        if (tool instanceof SelectionWand) {
+            this.wandItem = item.getId();
+            setDirty();
+        } else if (tool instanceof NavigationWand) {
+            this.navWandItem = item.getId();
+            setDirty();
         }
 
         this.tools.put(item, tool);
@@ -954,4 +958,19 @@ public class LocalSession {
         this.mask = mask;
     }
 
+    /**
+     * Get the preferred wand item for this user, or {@code null} to use the default
+     * @return item id of wand item, or {@code null}
+     */
+    public String getWandItem() {
+        return wandItem;
+    }
+
+    /**
+     * Get the preferred navigation wand item for this user, or {@code null} to use the default
+     * @return item id of nav wand item, or {@code null}
+     */
+    public String getNavWandItem() {
+        return navWandItem;
+    }
 }

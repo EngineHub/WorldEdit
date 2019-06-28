@@ -29,6 +29,15 @@ import com.sk89q.worldedit.extension.platform.Platform;
  */
 public interface DoubleActionTraceTool extends TraceTool {
 
+    /**
+     * Perform the secondary function of this tool.
+     *
+     * @param server
+     * @param config
+     * @param player
+     * @param session
+     * @return true to cancel the original event which triggered this action (if possible)
+     */
     boolean actSecondary(Platform server, LocalConfiguration config, Player player, LocalSession session);
 
 }

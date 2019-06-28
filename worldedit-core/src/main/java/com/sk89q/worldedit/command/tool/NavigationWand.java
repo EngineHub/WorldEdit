@@ -19,46 +19,50 @@
 
 package com.sk89q.worldedit.command.tool;
 
-import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
-import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Platform;
-import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.util.Location;
-import com.sk89q.worldedit.world.World;
-import com.sk89q.worldedit.world.block.BlockType;
-import com.sk89q.worldedit.world.block.BlockTypes;
 
-/**
- * A super pickaxe mode that removes one block.
- */
-public class SinglePickaxe implements BlockTool {
-
+public class NavigationWand implements DoubleActionTraceTool {
     @Override
-    public boolean canUse(Actor player) {
-        return player.hasPermission("worldedit.superpickaxe");
-    }
-
-    @Override
-    public boolean actPrimary(Platform server, LocalConfiguration config, Player player, LocalSession session, Location clicked) {
-        World world = (World) clicked.getExtent();
-        BlockVector3 blockPoint = clicked.toVector().toBlockPoint();
-        final BlockType blockType = world.getBlock(blockPoint).getBlockType();
-        if (blockType == BlockTypes.BEDROCK && !player.canDestroyBedrock()) {
+    public boolean actSecondary(Platform server, LocalConfiguration config, Player player, LocalSession session) {
+        if (!player.hasPermission("worldedit.navigation.jumpto.tool")) {
             return false;
         }
-
-        try (EditSession editSession = session.createEditSession(player)) {
-            editSession.getSurvivalExtent().setToolUse(config.superPickaxeDrop);
-            editSession.setBlock(blockPoint, BlockTypes.AIR.getDefaultState());
-        } catch (MaxChangedBlocksException e) {
-            player.printError("Max blocks change limit reached.");
+        final int maxDist = config.navigationWandMaxDistance;
+        if (maxDist <= 0) {
+            return false;
         }
-
+        Location pos = player.getSolidBlockTrace(maxDist);
+        if (pos != null) {
+            player.findFreePosition(pos);
+        } else {
+            player.printError("No block in sight (or too far)!");
+        }
         return true;
     }
 
+    @Override
+    public boolean actPrimary(Platform server, LocalConfiguration config, Player player, LocalSession session) {
+        if (!player.hasPermission("worldedit.navigation.thru.tool")) {
+            return false;
+        }
+        final int maxDist = config.navigationWandMaxDistance;
+        if (maxDist <= 0) {
+            return false;
+        }
+
+        if (!player.passThroughForwardWall(Math.max(1, maxDist - 10))) {
+            player.printError("Nothing to pass through (or too far)!");
+        }
+        return true;
+    }
+
+    @Override
+    public boolean canUse(Actor actor) {
+        return true; // skip check here - checked separately for primary/secondary
+    }
 }

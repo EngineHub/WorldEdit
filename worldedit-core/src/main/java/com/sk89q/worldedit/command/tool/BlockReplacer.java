@@ -30,6 +30,7 @@ import com.sk89q.worldedit.extent.inventory.BlockBag;
 import com.sk89q.worldedit.function.pattern.BlockPattern;
 import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.block.BlockState;
 
 /**
@@ -49,7 +50,7 @@ public class BlockReplacer implements DoubleActionBlockTool {
     }
 
     @Override
-    public boolean actPrimary(Platform server, LocalConfiguration config, Player player, LocalSession session, com.sk89q.worldedit.util.Location clicked) {
+    public boolean actPrimary(Platform server, LocalConfiguration config, Player player, LocalSession session, Location clicked) {
         BlockBag bag = session.getBlockBag(player);
 
         try (EditSession editSession = session.createEditSession(player)) {
@@ -72,7 +73,7 @@ public class BlockReplacer implements DoubleActionBlockTool {
 
 
     @Override
-    public boolean actSecondary(Platform server, LocalConfiguration config, Player player, LocalSession session, com.sk89q.worldedit.util.Location clicked) {
+    public boolean actSecondary(Platform server, LocalConfiguration config, Player player, LocalSession session, Location clicked) {
         BlockState targetBlock = player.getWorld().getBlock(clicked.toVector().toBlockPoint());
 
         if (targetBlock != null) {

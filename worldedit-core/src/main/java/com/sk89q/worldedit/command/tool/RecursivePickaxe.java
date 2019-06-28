@@ -27,6 +27,7 @@ import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.block.BlockTypes;
@@ -52,18 +53,18 @@ public class RecursivePickaxe implements BlockTool {
     }
 
     @Override
-    public boolean actPrimary(Platform server, LocalConfiguration config, Player player, LocalSession session, com.sk89q.worldedit.util.Location clicked) {
+    public boolean actPrimary(Platform server, LocalConfiguration config, Player player, LocalSession session, Location clicked) {
         World world = (World) clicked.getExtent();
 
         BlockVector3 origin = clicked.toVector().toBlockPoint();
         BlockType initialType = world.getBlock(origin).getBlockType();
 
         if (initialType.getMaterial().isAir()) {
-            return true;
+            return false;
         }
 
         if (initialType == BlockTypes.BEDROCK && !player.canDestroyBedrock()) {
-            return true;
+            return false;
         }
 
         try (EditSession editSession = session.createEditSession(player)) {
@@ -96,9 +97,9 @@ public class RecursivePickaxe implements BlockTool {
             return;
         }
 
-        world.queueBlockBreakEffect(server, pos, initialType, distanceSq);
-
         editSession.setBlock(pos, BlockTypes.AIR.getDefaultState());
+
+        world.queueBlockBreakEffect(server, pos, initialType, distanceSq);
 
         recurse(server, editSession, world, pos.add(1, 0, 0),
                 origin, size, initialType, visited);
