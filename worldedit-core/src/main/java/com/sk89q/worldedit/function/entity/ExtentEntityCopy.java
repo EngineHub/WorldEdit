@@ -23,6 +23,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.jnbt.CompoundTagBuilder;
+import com.sk89q.jnbt.Tag;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
@@ -138,6 +139,23 @@ public class ExtentEntityCopy implements EntityFunction {
         CompoundTag tag = state.getNbtData();
 
         if (tag != null) {
+            // Handle leashed entities
+            Tag leashTag = tag.getValue().get("Leash");
+            if (leashTag instanceof CompoundTag) {
+                CompoundTag leashCompound = (CompoundTag) leashTag;
+                if (leashCompound.containsKey("X")) { // leashed to a fence
+                    Vector3 tilePosition = Vector3.at(leashCompound.asInt("X"), leashCompound.asInt("Y"), leashCompound.asInt("Z"));
+                    BlockVector3 newLeash = transform.apply(tilePosition.subtract(from)).add(to).toBlockPoint();
+                    return new BaseEntity(state.getType(), tag.createBuilder()
+                            .put("Leash", leashCompound.createBuilder()
+                                .putInt("X", newLeash.getBlockX())
+                                .putInt("Y", newLeash.getBlockY())
+                                .putInt("Z", newLeash.getBlockZ())
+                                .build()
+                            ).build());
+                }
+            }
+
             // Handle hanging entities (paintings, item frames, etc.)
             boolean hasTilePosition = tag.containsKey("TileX") && tag.containsKey("TileY") && tag.containsKey("TileZ");
             boolean hasFacing = tag.containsKey("Facing");
