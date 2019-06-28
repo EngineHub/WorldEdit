@@ -29,5 +29,5 @@ public enum SelectorChoice {
     CONVEX,
     HULL,
     POLYHEDRON,
-    UNKNOWN
+    LIST
 }

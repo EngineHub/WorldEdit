@@ -29,14 +29,15 @@ import org.enginehub.piston.inject.Key;
 
 import javax.annotation.Nullable;
 import java.util.EnumSet;
+import java.util.Locale;
 import java.util.Set;
 import java.util.function.Function;
 
-public class EnumConverter {
+public final class EnumConverter {
 
     public static void register(CommandManager commandManager) {
         commandManager.registerConverter(Key.of(SelectorChoice.class),
-            basic(SelectorChoice.class, SelectorChoice.UNKNOWN));
+            basic(SelectorChoice.class));
         commandManager.registerConverter(Key.of(TreeGenerator.TreeType.class),
             full(TreeGenerator.TreeType.class,
                 t -> ImmutableSet.copyOf(t.lookupKeys),
@@ -48,11 +49,11 @@ public class EnumConverter {
     }
 
     private static <E extends Enum<E>> ArgumentConverter<E> basic(Class<E> enumClass) {
-        return full(enumClass, e -> ImmutableSet.of(e.name()), null);
+        return full(enumClass, e -> ImmutableSet.of(e.name().toLowerCase(Locale.ROOT)), null);
     }
 
-    private static <E extends Enum<E>> ArgumentConverter<E> basic(Class<E> enumClass, E unknownValue) {
-        return full(enumClass, e -> ImmutableSet.of(e.name()), unknownValue);
+    private static <E extends Enum<E>> ArgumentConverter<E> basic(Class<E> enumClass, @Nullable E unknownValue) {
+        return full(enumClass, e -> ImmutableSet.of(e.name().toLowerCase(Locale.ROOT)), unknownValue);
     }
 
     private static <E extends Enum<E>> ArgumentConverter<E> full(Class<E> enumClass,

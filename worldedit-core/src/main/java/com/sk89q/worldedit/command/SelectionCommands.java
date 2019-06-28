@@ -582,7 +582,7 @@ public class SelectionCommands {
                 limit.ifPresent(integer -> player.print(integer + " points maximum."));
                 break;
             }
-            case UNKNOWN:
+            case LIST:
             default:
                 CommandListBox box = new CommandListBox("Selection modes", null);
                 box.setHidingHelp(true);
