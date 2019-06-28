@@ -57,8 +57,12 @@ public final class BlockStateIdAccess {
         OptionalInt id = getBlockStateId(blockState);
         if (id.isPresent()) {
             int i = id.getAsInt();
-            while (i >= blockStates.length) {
-                blockStates = Arrays.copyOf(blockStates, blockStates.length + blockStates.length >> 1);
+            if (i >= blockStates.length) {
+                int curLength = blockStates.length;
+                do {
+                    curLength += curLength >> 1;
+                } while (i >= curLength);
+                blockStates = Arrays.copyOf(blockStates, curLength);
             }
             BlockState existing = blockStates[i];
             checkState(existing == null || existing == blockState,
