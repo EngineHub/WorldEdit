@@ -68,6 +68,10 @@ public final class MCDirections {
     }
 
     public static Direction fromPre13Hanging(int i) {
+        return fromHorizontalHanging(i);
+    }
+
+    public static Direction fromHorizontalHanging(int i) {
         switch (i) {
             case 0:
                 return Direction.SOUTH;
@@ -79,6 +83,21 @@ public final class MCDirections {
                 return Direction.EAST;
             default:
                 return Direction.NORTH;
+        }
+    }
+
+    public static int toHorizontalHanging(Direction direction) {
+        switch (direction) {
+            case SOUTH:
+                return 0;
+            case WEST:
+                return 1;
+            case NORTH:
+                return 2;
+            case EAST:
+                return 3;
+            default:
+                return 0;
         }
     }
 
