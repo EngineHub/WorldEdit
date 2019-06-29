@@ -83,14 +83,15 @@ public class SkullBlock extends BaseBlock {
 
     @Override
     public String getNbtId() {
-        return "Skull";
+        return "skull";
     }
 
     @Override
     public CompoundTag getNbtData() {
         Map<String, Tag> values = new HashMap<>();
-        if (owner == null) owner = "";
-        values.put("ExtraType", new StringTag(owner));
+        Map<String, Tag> inner = new HashMap<>();
+        inner.put("Name", new StringTag(owner));
+        values.put("Owner", new CompoundTag(inner));
         return new CompoundTag(values);
     }
 
@@ -105,13 +106,13 @@ public class SkullBlock extends BaseBlock {
         Tag t;
 
         t = values.get("id");
-        if (!(t instanceof StringTag) || !((StringTag) t).getValue().equals("Skull")) {
-            throw new RuntimeException("'Skull' tile entity expected");
+        if (!(t instanceof StringTag) || !((StringTag) t).getValue().equals(getNbtId())) {
+            throw new RuntimeException(String.format("'%s' tile entity expected", getNbtId()));
         }
 
-        t = values.get("ExtraType");
-        if (t instanceof StringTag) {
-            owner = ((StringTag) t).getValue();
+        t = values.get("Owner");
+        if (t instanceof CompoundTag) {
+            setOwner(((CompoundTag) t).getValue().get("Name").getValue().toString());
         }
     }
 }
