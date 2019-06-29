@@ -144,9 +144,13 @@ Commands
 .. contents::
     :local:
 
-.. tip::
+.. note::
 
     Arguments enclosed in ``[ ]`` are optional, those enclosed in ``< >`` are required.
+
+.. tip::
+
+    You can access a command listing in-game via the ``//help`` command.
 """.trim())
 
         permsOutput.appendln("""
