@@ -169,7 +169,7 @@ public class SessionManager {
                 if (owner.hasPermission("worldedit.selection.pos")) {
                     setDefaultWand(session.getWandItem(), config.wandItem, session, new SelectionWand());
                 }
-                if (owner.hasPermission("worldedit.command.jumpto.tool") || owner.hasPermission("worldedit.command.thru.tool")) {
+                if (owner.hasPermission("worldedit.nagivation.jumpto.tool") || owner.hasPermission("worldedit.nagivation.thru.tool")) {
                     setDefaultWand(session.getNavWandItem(), config.navigationWand, session, new NavigationWand());
                 }
             } catch (InvalidToolBindException e) {

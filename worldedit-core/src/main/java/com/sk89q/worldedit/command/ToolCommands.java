@@ -82,7 +82,7 @@ public class ToolCommands {
         aliases = "navwand",
         desc = "Navigation wand tool"
     )
-    @CommandPermissions({"worldedit.command.jumpto.tool", "worldedit.command.thru.tool"})
+    @CommandPermissions({"worldedit.nagivation.jumpto.tool", "worldedit.nagivation.thru.tool"})
     public void navwand(Player player, LocalSession session) throws WorldEditException {
 
         BaseItemStack itemStack = player.getItemInHand(HandSide.MAIN_HAND);
