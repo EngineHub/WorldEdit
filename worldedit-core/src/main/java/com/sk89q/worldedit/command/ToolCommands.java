@@ -69,7 +69,7 @@ public class ToolCommands {
         aliases = "selwand",
         desc = "Selection wand tool"
     )
-    @CommandPermissions("worldedit.selection.pos")
+    @CommandPermissions("worldedit.setwand")
     public void selwand(Player player, LocalSession session) throws WorldEditException {
 
         final ItemType itemType = player.getItemInHand(HandSide.MAIN_HAND).getType();
@@ -82,7 +82,7 @@ public class ToolCommands {
         aliases = "navwand",
         desc = "Navigation wand tool"
     )
-    @CommandPermissions({"worldedit.nagivation.jumpto.tool", "worldedit.nagivation.thru.tool"})
+    @CommandPermissions("worldedit.setwand")
     public void navwand(Player player, LocalSession session) throws WorldEditException {
 
         BaseItemStack itemStack = player.getItemInHand(HandSide.MAIN_HAND);
