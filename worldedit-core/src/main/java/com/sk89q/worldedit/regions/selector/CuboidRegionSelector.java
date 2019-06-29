@@ -26,6 +26,7 @@ import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.internal.cui.CUIRegion;
 import com.sk89q.worldedit.internal.cui.SelectionPointEvent;
+import com.sk89q.worldedit.internal.cui.SelectionShapeEvent;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
@@ -124,7 +125,7 @@ public class CuboidRegionSelector implements RegionSelector, CUIRegion {
     public boolean selectPrimary(BlockVector3 position, SelectorLimits limits) {
         checkNotNull(position);
 
-        if (position1 != null && position1.equals(position)) {
+        if (position.equals(position1)) {
             return false;
         }
 
@@ -137,7 +138,7 @@ public class CuboidRegionSelector implements RegionSelector, CUIRegion {
     public boolean selectSecondary(BlockVector3 position, SelectorLimits limits) {
         checkNotNull(position);
 
-        if (position2 != null && position2.equals(position)) {
+        if (position.equals(position2)) {
             return false;
         }
 
@@ -180,6 +181,8 @@ public class CuboidRegionSelector implements RegionSelector, CUIRegion {
     public void explainRegionAdjust(Actor player, LocalSession session) {
         checkNotNull(player);
         checkNotNull(session);
+
+        session.dispatchCUIEvent(player, new SelectionShapeEvent(getTypeID()));
 
         if (position1 != null) {
             session.dispatchCUIEvent(player, new SelectionPointEvent(0, position1, getArea()));
