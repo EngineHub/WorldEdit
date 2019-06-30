@@ -35,6 +35,7 @@ import com.sk89q.worldedit.extension.input.ParserContext;
 import com.sk89q.worldedit.extension.platform.permission.ActorSelectorLimits;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.function.block.BlockDistributionCounter;
+import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.function.operation.Operations;
 import com.sk89q.worldedit.function.visitor.RegionVisitor;
 import com.sk89q.worldedit.internal.annotation.Direction;
@@ -452,24 +453,13 @@ public class SelectionCommands {
 
     @Command(
         name = "/count",
-        desc = "Counts the number of a certain type of block"
+        desc = "Counts the number of blocks matching a mask"
     )
     @CommandPermissions("worldedit.analysis.count")
     public void count(Player player, LocalSession session, EditSession editSession,
-                      @Arg(desc = "The block type(s) to count")
-                          String blocks,
-                      @Switch(name = 'f', desc = "Fuzzy, match states using a wildcard")
-                          boolean fuzzy) throws WorldEditException {
-        ParserContext context = new ParserContext();
-        context.setActor(player);
-        context.setExtent(player.getExtent());
-        context.setWorld(player.getWorld());
-        context.setSession(session);
-        context.setRestricted(false);
-        context.setPreferringWildcard(fuzzy);
-
-        Set<BaseBlock> searchBlocks = we.getBlockFactory().parseFromListInput(blocks, context);
-        int count = editSession.countBlocks(session.getSelection(player.getWorld()), searchBlocks);
+                      @Arg(desc = "The mask of blocks to match")
+                          Mask mask) throws WorldEditException {
+        int count = editSession.countBlocks(session.getSelection(player.getWorld()), mask);
         player.print("Counted: " + count);
     }
 

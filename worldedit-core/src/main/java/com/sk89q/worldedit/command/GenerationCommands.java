@@ -264,7 +264,7 @@ public class GenerationCommands {
         name = "/generate",
         aliases = { "/gen", "/g" },
         desc = "Generates a shape according to a formula.",
-        descFooter = "See also https://tinyurl.com/wesyntax."
+        descFooter = "See also https://tinyurl.com/weexpr."
     )
     @CommandPermissions("worldedit.generation.shape")
     @Logging(ALL)
@@ -325,7 +325,7 @@ public class GenerationCommands {
         name = "/generatebiome",
         aliases = { "/genbiome", "/gb" },
         desc = "Sets biome according to a formula.",
-        descFooter = "See also https://tinyurl.com/wesyntax."
+        descFooter = "See also https://tinyurl.com/weexpr."
     )
     @CommandPermissions("worldedit.generation.shape.biome")
     @Logging(ALL)

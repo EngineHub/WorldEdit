@@ -786,12 +786,23 @@ public class EditSession implements Extent, AutoCloseable {
      *
      * @param region the region
      * @param searchBlocks the list of blocks to search
-     * @return the number of blocks that matched the pattern
+     * @return the number of blocks that matched the block
      */
     public int countBlocks(Region region, Set<BaseBlock> searchBlocks) {
         BlockMask mask = new BlockMask(this, searchBlocks);
+        return countBlocks(region, mask);
+    }
+
+    /**
+     * Count the number of blocks of a list of types in a region.
+     *
+     * @param region the region
+     * @param searchMask mask to match
+     * @return the number of blocks that matched the mask
+     */
+    public int countBlocks(Region region, Mask searchMask) {
         Counter count = new Counter();
-        RegionMaskingFilter filter = new RegionMaskingFilter(mask, count);
+        RegionMaskingFilter filter = new RegionMaskingFilter(searchMask, count);
         RegionVisitor visitor = new RegionVisitor(region, filter);
         Operations.completeBlindly(visitor); // We can't throw exceptions, nor do we expect any
         return count.getCount();
