@@ -26,6 +26,7 @@ import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.event.HoverEvent;
 import com.sk89q.worldedit.util.formatting.text.format.TextColor;
 import com.sk89q.worldedit.world.block.BlockState;
+import com.sk89q.worldedit.world.block.BlockType;
 
 import java.util.List;
 
@@ -58,10 +59,20 @@ public class BlockDistributionResult extends PaginationBox {
         final int space = maxDigits - curDigits;
         String pad = Strings.repeat(" ", space == 0 ? 2 : 2 * space + 1);
         line.append(String.format("%s%s", count, pad), TextColor.YELLOW);
-        line.append(TextComponent.of(c.getID().getBlockType().getName(), TextColor.LIGHT_PURPLE)
-                .hoverEvent(HoverEvent.of(HoverEvent.Action.SHOW_TEXT, TextComponent.of(separateStates
-                        ? c.getID().getAsString()
-                        : c.getID().getBlockType().getId(), TextColor.GRAY))));
+
+        final BlockState state = c.getID();
+        final BlockType blockType = state.getBlockType();
+        TextComponent blockName = TextComponent.of(blockType.getName(), TextColor.LIGHT_PURPLE);
+        TextComponent toolTip;
+        if (separateStates && state != blockType.getDefaultState()) {
+            toolTip = TextComponent.of(state.getAsString(), TextColor.GRAY);
+            blockName = blockName.append(TextComponent.of("*", TextColor.LIGHT_PURPLE));
+        } else {
+            toolTip = TextComponent.of(blockType.getId(), TextColor.GRAY);
+        }
+        blockName = blockName.hoverEvent(HoverEvent.of(HoverEvent.Action.SHOW_TEXT, toolTip));
+        line.append(blockName);
+
         return line.build();
     }
 
