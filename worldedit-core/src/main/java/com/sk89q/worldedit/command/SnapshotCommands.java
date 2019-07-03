@@ -28,12 +28,19 @@ import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.command.util.CommandPermissions;
 import com.sk89q.worldedit.command.util.CommandPermissionsConditionGenerator;
 import com.sk89q.worldedit.entity.Player;
+import com.sk89q.worldedit.util.formatting.component.PaginationBox;
+import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.util.formatting.text.TextComponent;
+import com.sk89q.worldedit.util.formatting.text.event.ClickEvent;
+import com.sk89q.worldedit.util.formatting.text.event.HoverEvent;
+import com.sk89q.worldedit.util.formatting.text.format.TextColor;
 import com.sk89q.worldedit.world.snapshot.InvalidSnapshotException;
 import com.sk89q.worldedit.world.snapshot.Snapshot;
 import com.sk89q.worldedit.world.storage.MissingWorldException;
 import org.enginehub.piston.annotation.Command;
 import org.enginehub.piston.annotation.CommandContainer;
 import org.enginehub.piston.annotation.param.Arg;
+import org.enginehub.piston.annotation.param.ArgFlag;
 
 import java.io.File;
 import java.io.IOException;
@@ -61,8 +68,8 @@ public class SnapshotCommands {
     )
     @CommandPermissions("worldedit.snapshots.list")
     public void list(Player player,
-                     @Arg(desc = "# of snapshots to list", def = "5")
-                         int num) throws WorldEditException {
+                     @ArgFlag(name = 'p', desc = "Page of results to return", def = "1")
+                         int page) throws WorldEditException {
 
         LocalConfiguration config = we.getConfiguration();
 
@@ -75,15 +82,7 @@ public class SnapshotCommands {
             List<Snapshot> snapshots = config.snapshotRepo.getSnapshots(true, player.getWorld().getName());
 
             if (!snapshots.isEmpty()) {
-
-                num = Math.min(40, Math.max(5, num));
-
-                player.print("Snapshots for world: '" + player.getWorld().getName() + "'");
-                for (byte i = 0; i < Math.min(num, snapshots.size()); i++) {
-                    player.print((i + 1) + ". " + snapshots.get(i).getName());
-                }
-
-                player.print("Use /snap use [snapshot] or /snap use latest.");
+                player.print(new SnapshotListBox(player.getWorld().getName(), snapshots).create(page));
             } else {
                 player.printError("No snapshots are available. See console for details.");
 
@@ -243,4 +242,26 @@ public class SnapshotCommands {
         }
     }
 
+    private static class SnapshotListBox extends PaginationBox {
+        private final List<Snapshot> snapshots;
+
+        SnapshotListBox(String world, List<Snapshot> snapshots) {
+            super("Snapshots for: " + world, "/snap list -p %page%");
+            this.snapshots = snapshots;
+        }
+
+        @Override
+        public Component getComponent(int number) {
+            final Snapshot snapshot = snapshots.get(number);
+            return TextComponent.of(number + 1 + ". ", TextColor.GOLD)
+                    .append(TextComponent.of(snapshot.getName(), TextColor.LIGHT_PURPLE)
+                            .hoverEvent(HoverEvent.of(HoverEvent.Action.SHOW_TEXT, TextComponent.of("Click to use")))
+                            .clickEvent(ClickEvent.of(ClickEvent.Action.RUN_COMMAND, "/snap use " + snapshot.getName())));
+        }
+
+        @Override
+        public int getComponentsSize() {
+            return snapshots.size();
+        }
+    }
 }

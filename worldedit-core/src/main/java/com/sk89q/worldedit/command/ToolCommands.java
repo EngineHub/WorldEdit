@@ -199,9 +199,9 @@ public class ToolCommands {
     )
     @CommandPermissions("worldedit.tool.lrbuild")
     public void longrangebuildtool(Player player, LocalSession session,
-                                   @Arg(desc = "Block to set on left-click")
+                                   @Arg(desc = "Pattern to set on left-click")
                                        Pattern primary,
-                                   @Arg(desc = "Block to set on right-click")
+                                   @Arg(desc = "Pattern to set on right-click")
                                        Pattern secondary) throws WorldEditException {
         BaseItemStack itemStack = player.getItemInHand(HandSide.MAIN_HAND);
 

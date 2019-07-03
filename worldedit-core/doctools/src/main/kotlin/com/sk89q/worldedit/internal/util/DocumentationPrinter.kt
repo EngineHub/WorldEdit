@@ -194,6 +194,7 @@ Other Permissions
     ``worldedit.override.data-cycler``,"Allows cycling non-whitelisted blocks with the data cycler tool."
     ``worldedit.setnbt``,"Allows setting `extra data <https://minecraft.gamepedia.com/Block_entity>`_ on blocks (such as signs, chests, etc)."
     ``worldedit.report.pastebin``,"Allows uploading report files to pastebin automatically for the ``/worldedit report`` :doc:`command <commands>`."
+    ``worldedit.scripting.execute.<filename>``,"Allows using the CraftScript with the given filename."
 """.trim())
     }
 

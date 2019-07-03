@@ -43,7 +43,7 @@ public class ClipboardPatternParser extends InputParser<Pattern> {
     @Override
     public Stream<String> getSuggestions(String input) {
         if (input.isEmpty()) {
-            return Stream.of("#clipoard");
+            return Stream.of("#clipboard");
         }
         String[] offsetParts = input.split("@", 2);
         String firstLower = offsetParts[0].toLowerCase(Locale.ROOT);
