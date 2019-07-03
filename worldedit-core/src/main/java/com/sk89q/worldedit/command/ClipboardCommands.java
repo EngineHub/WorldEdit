@@ -92,8 +92,7 @@ public class ClipboardCommands {
 
     @Command(
         name = "/cut",
-        desc = "Cut the selection to the clipboard",
-        descFooter = "WARNING: Cutting and pasting entities cannot be undone!"
+        desc = "Cut the selection to the clipboard"
     )
     @CommandPermissions("worldedit.clipboard.cut")
     @Logging(REGION)
@@ -105,7 +104,7 @@ public class ClipboardCommands {
                         boolean copyEntities,
                     @Switch(name = 'b', desc = "Also copy biomes, source biomes are unaffected")
                         boolean copyBiomes,
-                    @ArgFlag(name = 'm', desc = "Set the exclude mask, matching blocks become air", def = "")
+                    @ArgFlag(name = 'm', desc = "Set the exclude mask, non-matching blocks become air", def = "")
                         Mask mask) throws WorldEditException {
 
         BlockArrayClipboard clipboard = new BlockArrayClipboard(region);

@@ -150,7 +150,7 @@ public class BrushCommands {
     public void clipboardBrush(Player player, LocalSession session,
                                @Switch(name = 'a', desc = "Don't paste air from the clipboard")
                                    boolean ignoreAir,
-                               @Switch(name = 'o', desc = "Paste using clipboard origin, instead of being centered at the target location")
+                               @Switch(name = 'o', desc = "Paste starting at the target location, instead of centering on it")
                                    boolean usingOrigin,
                                @Switch(name = 'e', desc = "Paste entities if available")
                                    boolean pasteEntities,
