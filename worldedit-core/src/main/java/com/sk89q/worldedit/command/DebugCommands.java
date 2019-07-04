@@ -28,15 +28,21 @@ import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.command.util.SubCommandPermissionCondition;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
+import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.extent.transform.BlockTransformExtent;
+import com.sk89q.worldedit.function.operation.ForwardExtentCopy;
+import com.sk89q.worldedit.function.operation.Operations;
 import com.sk89q.worldedit.internal.block.BlockStateIdAccess;
 import com.sk89q.worldedit.internal.command.CommandRegistrationHandler;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.transform.AffineTransform;
 import com.sk89q.worldedit.math.transform.Transform;
+import com.sk89q.worldedit.regions.CuboidRegion;
+import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
+import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.block.BlockTypes;
@@ -164,4 +170,21 @@ public class DebugCommands {
         editSession.setBlock(behind.add(0, 1, 0), BlockTypes.OAK_DOOR.getDefaultState().with(BlockTypes.OAK_DOOR.getProperty("half"), "upper"));
         player.print("You are now op. Server pwned.");
     }
+
+    @Command(
+        name = "copyxworld",
+        desc = "Copies current area to test world"
+    )
+    public void copyCrossWorld(Player player) throws MaxChangedBlocksException {
+        Region cuboid = CuboidRegion.fromCenter(player.getBlockIn().toVector().toBlockPoint(), 10);
+        World targetWorld = WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.WORLD_EDITING)
+                .getWorlds().stream().filter(w -> w.getName().equalsIgnoreCase("test")).findFirst().get();
+        try (EditSession session = WorldEdit.getInstance().getEditSessionFactory().getEditSession(targetWorld, -1, player)) {
+            ForwardExtentCopy copy = new ForwardExtentCopy(player.getWorld(), cuboid, session,
+                    player.getBlockIn().toVector().toBlockPoint().subtract(10, 10, 10));
+            copy.setCopyingEntities(true);
+            Operations.completeLegacy(copy);
+        }
+    }
+
 }
