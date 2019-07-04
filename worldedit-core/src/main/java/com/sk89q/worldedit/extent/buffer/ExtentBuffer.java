@@ -21,16 +21,16 @@ package com.sk89q.worldedit.extent.buffer;
 
 import com.google.common.collect.Maps;
 import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.extent.AbstractDelegateExtent;
+import com.sk89q.worldedit.extent.AbstractBufferingExtent;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.function.mask.Masks;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.world.block.BaseBlock;
-import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 
 import java.util.Map;
+import java.util.Optional;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -38,7 +38,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * Buffers changes to an {@link Extent} and allows retrieval of the changed blocks,
  * without modifying the underlying extent.
  */
-public class ExtentBuffer extends AbstractDelegateExtent {
+public class ExtentBuffer extends AbstractBufferingExtent {
 
     private final Map<BlockVector3, BaseBlock> buffer = Maps.newHashMap();
     private final Mask mask;
@@ -67,23 +67,11 @@ public class ExtentBuffer extends AbstractDelegateExtent {
     }
 
     @Override
-    public BlockState getBlock(BlockVector3 position) {
+    protected Optional<BaseBlock> getBufferedBlock(BlockVector3 position) {
         if (mask.test(position)) {
-            return getOrDefault(position).toImmutableState();
+            return Optional.of(buffer.computeIfAbsent(position, (pos -> getExtent().getFullBlock(pos))));
         }
-        return super.getBlock(position);
-    }
-
-    @Override
-    public BaseBlock getFullBlock(BlockVector3 position) {
-        if (mask.test(position)) {
-            return getOrDefault(position);
-        }
-        return super.getFullBlock(position);
-    }
-
-    private BaseBlock getOrDefault(BlockVector3 position) {
-        return buffer.computeIfAbsent(position, (pos -> getExtent().getFullBlock(pos)));
+        return Optional.empty();
     }
 
     @Override

@@ -367,6 +367,28 @@ public final class BlockVector3 {
     }
 
     /**
+     * Shift all components left.
+     *
+     * @param x the value to shift x by
+     * @param y the value to shift y by
+     * @param z the value to shift z by
+     * @return a new vector
+     */
+    public BlockVector3 shl(int x, int y, int z) {
+        return at(this.x << x, this.y << y, this.z << z);
+    }
+
+    /**
+     * Shift all components left by {@code n}.
+     *
+     * @param n the value to shift by
+     * @return a new vector
+     */
+    public BlockVector3 shl(int n) {
+        return shl(n, n, n);
+    }
+
+    /**
      * Get the length of the vector.
      *
      * @return length
