@@ -290,7 +290,7 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
             } else if (y > maxY + 1) {
                 break;
             } else if (y == maxY + 1) {
-                floatAt(x, y - 1, z, alwaysGlass);
+                floatAt(x, Math.max(1, y - 1), z, alwaysGlass);
                 return true;
             }
 
