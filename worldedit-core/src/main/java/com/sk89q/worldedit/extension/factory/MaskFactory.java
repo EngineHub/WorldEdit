@@ -42,6 +42,7 @@ import com.sk89q.worldedit.internal.registry.InputParser;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * A registry of known {@link Mask}s. Provides methods to instantiate
@@ -72,6 +73,16 @@ public final class MaskFactory extends AbstractFactory<Mask> {
 
         register(new BlockCategoryMaskParser(worldEdit));
         register(new BiomeMaskParser(worldEdit));
+    }
+
+    @Override
+    public List<String> getSuggestions(String input) {
+        final String[] split = input.split(" ");
+        if (split.length > 1) {
+            String prev = input.substring(0, input.lastIndexOf(" ")) + " ";
+            return super.getSuggestions(split[split.length -1]).stream().map(s -> prev + s).collect(Collectors.toList());
+        }
+        return super.getSuggestions(input);
     }
 
     @Override

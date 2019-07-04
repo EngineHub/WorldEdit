@@ -67,16 +67,28 @@ public class CommandArgParser {
                     handleQuote(nextPart);
             }
         }
+        if (currentArg.size() > 0) {
+            finishArg(); // force finish "hanging" args
+        }
         return args.build();
     }
 
     private void handleNormal(Substring part) {
-        if (part.getSubstring().startsWith("\"")) {
-            state = State.QUOTE;
-            currentArg.add(Substring.wrap(
-                part.getSubstring().substring(1),
-                part.getStart(), part.getEnd()
-            ));
+        final String strPart = part.getSubstring();
+        if (strPart.startsWith("\"")) {
+            if (strPart.endsWith("\"") && strPart.length() > 1) {
+                currentArg.add(Substring.wrap(
+                        strPart.substring(1, strPart.length() - 1),
+                        part.getStart(), part.getEnd()
+                ));
+                finishArg();
+            } else {
+                state = State.QUOTE;
+                currentArg.add(Substring.wrap(
+                        strPart.substring(1),
+                        part.getStart(), part.getEnd()
+                ));
+            }
         } else {
             currentArg.add(part);
             finishArg();
