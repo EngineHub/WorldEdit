@@ -30,8 +30,8 @@ import com.sk89q.worldedit.command.tool.SelectionWand;
 import com.sk89q.worldedit.command.util.CommandPermissions;
 import com.sk89q.worldedit.command.util.CommandPermissionsConditionGenerator;
 import com.sk89q.worldedit.command.util.Logging;
+import com.sk89q.worldedit.command.util.WorldEditAsyncCommandBuilder;
 import com.sk89q.worldedit.entity.Player;
-import com.sk89q.worldedit.extension.input.ParserContext;
 import com.sk89q.worldedit.extension.platform.permission.ActorSelectorLimits;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.function.block.BlockDistributionCounter;
@@ -56,14 +56,15 @@ import com.sk89q.worldedit.regions.selector.SphereRegionSelector;
 import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.util.Countable;
 import com.sk89q.worldedit.util.Location;
+import com.sk89q.worldedit.util.formatting.component.BlockDistributionResult;
 import com.sk89q.worldedit.util.formatting.component.CommandListBox;
+import com.sk89q.worldedit.util.formatting.component.PaginationBox;
 import com.sk89q.worldedit.util.formatting.component.SubtleFormat;
 import com.sk89q.worldedit.util.formatting.component.TextComponentProducer;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.event.ClickEvent;
 import com.sk89q.worldedit.util.formatting.text.format.TextColor;
 import com.sk89q.worldedit.world.World;
-import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.item.ItemType;
 import com.sk89q.worldedit.world.item.ItemTypes;
@@ -71,11 +72,11 @@ import com.sk89q.worldedit.world.storage.ChunkStore;
 import org.enginehub.piston.annotation.Command;
 import org.enginehub.piston.annotation.CommandContainer;
 import org.enginehub.piston.annotation.param.Arg;
+import org.enginehub.piston.annotation.param.ArgFlag;
 import org.enginehub.piston.annotation.param.Switch;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Stream;
 
 import static com.sk89q.worldedit.command.util.Logging.LogMode.POSITION;
@@ -468,21 +469,35 @@ public class SelectionCommands {
         desc = "Get the distribution of blocks in the selection"
     )
     @CommandPermissions("worldedit.analysis.distr")
-    public void distr(Player player, LocalSession session, EditSession editSession,
+    public void distr(Player player, LocalSession session,
                       @Switch(name = 'c', desc = "Get the distribution of the clipboard instead")
                           boolean clipboardDistr,
                       @Switch(name = 'd', desc = "Separate blocks by state")
-                          boolean separateStates) throws WorldEditException {
+                          boolean separateStates,
+                      @ArgFlag(name = 'p', desc = "Gets page from a previous distribution.", def = "")
+                          Integer page) throws WorldEditException {
         List<Countable<BlockState>> distribution;
 
-        if (clipboardDistr) {
-            Clipboard clipboard = session.getClipboard().getClipboard(); // throws if missing
-            BlockDistributionCounter count = new BlockDistributionCounter(clipboard, separateStates);
-            RegionVisitor visitor = new RegionVisitor(clipboard.getRegion(), count);
-            Operations.completeBlindly(visitor);
-            distribution = count.getDistribution();
+        if (page == null) {
+            if (clipboardDistr) {
+                Clipboard clipboard = session.getClipboard().getClipboard(); // throws if missing
+                BlockDistributionCounter count = new BlockDistributionCounter(clipboard, separateStates);
+                RegionVisitor visitor = new RegionVisitor(clipboard.getRegion(), count);
+                Operations.completeBlindly(visitor);
+                distribution = count.getDistribution();
+            } else {
+                try (EditSession editSession = session.createEditSession(player)) {
+                    distribution = editSession.getBlockDistribution(session.getSelection(player.getWorld()), separateStates);
+                }
+            }
+            session.setLastDistribution(distribution);
+            page = 1;
         } else {
-            distribution = editSession.getBlockDistribution(session.getSelection(player.getWorld()), separateStates);
+            distribution = session.getLastDistribution();
+            if (distribution == null) {
+                player.printError("No previous distribution.");
+                return;
+            }
         }
 
         if (distribution.isEmpty()) {  // *Should* always be false
@@ -490,28 +505,9 @@ public class SelectionCommands {
             return;
         }
 
-        // note: doing things like region.getArea is inaccurate for non-cuboids.
-        int size = distribution.stream().mapToInt(Countable::getAmount).sum();
-        player.print("# total blocks: " + size);
-
-        for (Countable<BlockState> c : distribution) {
-            String name = c.getID().getBlockType().getName();
-            String str;
-            if (separateStates) {
-                str = String.format("%-7s (%.3f%%) %s (%s)",
-                        String.valueOf(c.getAmount()),
-                        c.getAmount() / (double) size * 100,
-                        name,
-                        c.getID().getAsString());
-            } else {
-                str = String.format("%-7s (%.3f%%) %s (%s)",
-                        String.valueOf(c.getAmount()),
-                        c.getAmount() / (double) size * 100,
-                        name,
-                        c.getID().getBlockType().getId());
-            }
-            player.print(str);
-        }
+        final int finalPage = page;
+        WorldEditAsyncCommandBuilder.createAndSendMessage(player,
+                () -> new BlockDistributionResult(distribution, separateStates).create(finalPage), null);
     }
 
     @Command(
