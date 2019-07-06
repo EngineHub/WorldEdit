@@ -565,12 +565,12 @@ public class EditSession implements Extent, AutoCloseable {
 
     @Override
     public BlockState getBlock(BlockVector3 position) {
-        return bypassNone.getBlock(position);
+        return world.getBlock(position);
     }
 
     @Override
     public BaseBlock getFullBlock(BlockVector3 position) {
-        return bypassNone.getFullBlock(position);
+        return world.getFullBlock(position);
     }
 
     /**

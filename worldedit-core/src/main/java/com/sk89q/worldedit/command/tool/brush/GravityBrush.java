@@ -23,44 +23,62 @@ import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.math.BlockVector3;
-import com.sk89q.worldedit.world.block.BlockState;
+import com.sk89q.worldedit.util.LocatedBlock;
+import com.sk89q.worldedit.util.collection.LocatedBlockList;
+import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockTypes;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 public class GravityBrush implements Brush {
 
     private final boolean fullHeight;
-    
+
     public GravityBrush(boolean fullHeight) {
         this.fullHeight = fullHeight;
     }
 
     @Override
     public void build(EditSession editSession, BlockVector3 position, Pattern pattern, double size) throws MaxChangedBlocksException {
-        final double startY = fullHeight ? editSession.getWorld().getMaxY() : position.getBlockY() + size;
-        for (double x = position.getBlockX() + size; x > position.getBlockX() - size; --x) {
-            for (double z = position.getBlockZ() + size; z > position.getBlockZ() - size; --z) {
-                double y = startY;
-                final List<BlockState> blockTypes = new ArrayList<>();
-                for (; y > position.getBlockY() - size; --y) {
-                    final BlockVector3 pt = BlockVector3.at(x, y, z);
-                    final BlockState block = editSession.getBlock(pt);
-                    if (!block.getBlockType().getMaterial().isAir()) {
-                        blockTypes.add(block);
-                        editSession.setBlock(pt, BlockTypes.AIR.getDefaultState());
+        double yMax = fullHeight ? editSession.getWorld().getMaxY() : position.getY() + size;
+        LocatedBlockList column = new LocatedBlockList();
+        Set<BlockVector3> removedBlocks = new LinkedHashSet<>();
+        for (double x = position.getX() - size; x <= position.getX() + size; x++) {
+            for (double z = position.getZ() - size; z <= position.getZ() + size; z++) {
+                for (double y = position.getY() - size; y <= yMax; y++) {
+                    BlockVector3 newPos = BlockVector3.at(x, y - 1, z);
+                    BlockVector3 pt = BlockVector3.at(x, y, z);
+
+                    BaseBlock block = editSession.getFullBlock(pt);
+
+                    if (block.getBlockType().getMaterial().isAir()) {
+                        continue;
                     }
-                }
-                BlockVector3 pt = BlockVector3.at(x, y, z);
-                Collections.reverse(blockTypes);
-                for (int i = 0; i < blockTypes.size();) {
-                    if (editSession.getBlock(pt).getBlockType().getMaterial().isAir()) {
-                        editSession.setBlock(pt, blockTypes.get(i++));
+
+                    if (!removedBlocks.remove(newPos)) {
+                        // we have not moved the block below this one.
+                        // is it free in the edit session?
+                        if (!editSession.getBlock(newPos).getBlockType().getMaterial().isAir()) {
+                            // no -- do not move this block
+                            continue;
+                        }
                     }
-                    pt = pt.add(0, 1, 0);
+
+                    column.add(newPos, block);
+                    removedBlocks.add(pt);
                 }
+
+                for (LocatedBlock block : column) {
+                    editSession.setBlock(block.getLocation(), block.getBlock());
+                }
+
+                for (BlockVector3 removedBlock : removedBlocks) {
+                    editSession.setBlock(removedBlock, BlockTypes.AIR.getDefaultState());
+                }
+
+                column.clear();
+                removedBlocks.clear();
             }
         }
     }
