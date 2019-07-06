@@ -46,25 +46,40 @@ public class GravityBrush implements Brush {
         Set<BlockVector3> removedBlocks = new LinkedHashSet<>();
         for (double x = position.getX() - size; x <= position.getX() + size; x++) {
             for (double z = position.getZ() - size; z <= position.getZ() + size; z++) {
+                /*
+                 * Algorithm:
+                 * 1. Find lowest air block in the selection -> $lowestAir = position
+                 * 2. Move the first non-air block above it down to $lowestAir
+                 * 3. Add 1 to $lowestAir's y-coord.
+                 * 4. If more blocks above current position, repeat from 2
+                 */
+
+                BlockVector3 lowestAir = null;
                 for (double y = position.getY() - size; y <= yMax; y++) {
-                    BlockVector3 newPos = BlockVector3.at(x, y - 1, z);
                     BlockVector3 pt = BlockVector3.at(x, y, z);
 
                     BaseBlock block = editSession.getFullBlock(pt);
 
                     if (block.getBlockType().getMaterial().isAir()) {
+                        if (lowestAir == null) {
+                            // we found the lowest air block
+                            lowestAir = pt;
+                        }
                         continue;
                     }
 
-                    if (!removedBlocks.remove(newPos)) {
-                        // we have not moved the block below this one.
-                        // is it free in the edit session?
-                        if (!editSession.getBlock(newPos).getBlockType().getMaterial().isAir()) {
-                            // no -- do not move this block
-                            continue;
-                        }
+                    if (lowestAir == null) {
+                        // no place to move the block to
+                        continue;
                     }
 
+                    BlockVector3 newPos = lowestAir;
+                    // we know the block above must be air,
+                    // since either this block is being moved into it,
+                    // or there has been more air before this block
+                    lowestAir = lowestAir.add(0, 1, 0);
+
+                    removedBlocks.remove(newPos);
                     column.add(newPos, block);
                     removedBlocks.add(pt);
                 }
