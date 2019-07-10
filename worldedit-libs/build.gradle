@@ -13,7 +13,7 @@ dependents of `-core` to compile and work with WorldEdit's API.
 
  */
 configure(subprojects + project("core:ap")) {
-    apply plugin: 'java'
+    apply plugin: 'java-base'
     apply plugin: 'maven'
     apply plugin: 'com.github.johnrengelman.shadow'
     apply plugin: 'com.jfrog.artifactory'
@@ -24,8 +24,7 @@ configure(subprojects + project("core:ap")) {
 
     group = rootProject.group + ".worldedit-libs"
 
-    tasks.replace("jar", ShadowJar) 
-    tasks.withType(ShadowJar).named("jar").configure {
+    tasks.register("jar", ShadowJar) {
         configurations = [project.configurations.shade]
         classifier = ""
 
@@ -79,7 +78,7 @@ configure(subprojects + project("core:ap")) {
         }
     }
 
-    tasks.withType(Upload).named("install").configure {
+    tasks.register("install", Upload) {
         configuration = configurations.archives
         repositories.mavenInstaller {
             pom.version = project.version

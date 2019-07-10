@@ -108,7 +108,7 @@ afterEvaluate {
 
 task deobfJar(type: Jar) {
     from sourceSets.main.output
-    classifier = 'dev'
+    getArchiveClassifier().set("dev")
 }
 
 artifacts {

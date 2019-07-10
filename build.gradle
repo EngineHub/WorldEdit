@@ -1,25 +1,8 @@
-buildscript {
-    repositories {
-        mavenCentral()
-        maven { url = "https://oss.sonatype.org/content/repositories/snapshots/" }
-        jcenter()
-    }
-
-    configurations.all {
-        resolutionStrategy {
-            force 'commons-io:commons-io:2.4'
-        }
-    }
-
-    dependencies {
-        classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.4'
-        classpath 'org.jfrog.buildinfo:build-info-extractor-gradle:4.8.1'
-    }
-}
-
 plugins {
     id 'net.minecrell.licenser' version '0.4.1' apply false
-    id "org.ajoberstar.grgit" version "2.3.0"
+    id "org.ajoberstar.grgit" version "3.1.1"
+    id "com.github.johnrengelman.shadow" version "5.1.0"
+    id "com.jfrog.artifactory" version "4.9.7"
 }
 
 println """
@@ -109,7 +92,7 @@ configure(['core', 'bukkit', 'forge', 'sponge', 'fabric'].collect { project(":wo
     }
 
     task javadocJar(type: Jar, dependsOn: javadoc) {
-        classifier = 'javadoc'
+        getArchiveClassifier().set('javadoc')
         from javadoc.destinationDir
     }
 
@@ -120,7 +103,7 @@ configure(['core', 'bukkit', 'forge', 'sponge', 'fabric'].collect { project(":wo
 
     if (name == "worldedit-core" || name == "worldedit-bukkit") {
         task sourcesJar(type: Jar, dependsOn: classes) {
-            classifier = 'sources'
+            getArchiveClassifier().set('sources')
             from sourceSets.main.allSource
         }
 
@@ -146,7 +129,7 @@ configure(['core', 'bukkit', 'forge', 'sponge', 'fabric'].collect { project(":wo
 
 configure(['bukkit', 'forge', 'sponge', 'fabric'].collect { project(":worldedit-$it") }) {
     shadowJar {
-        classifier 'dist'
+        getArchiveClassifier().set('dist')
         dependencies {
             include(project(":worldedit-libs:core"))
             include(project(":worldedit-libs:${project.name.replace("worldedit-", "")}"))
