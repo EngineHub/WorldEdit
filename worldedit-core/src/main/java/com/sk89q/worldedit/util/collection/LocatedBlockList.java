@@ -21,68 +21,72 @@ package com.sk89q.worldedit.util.collection;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import com.google.common.collect.ImmutableList;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.util.LocatedBlock;
+import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
 
 /**
  * Wrapper around a list of blocks located in the world.
  */
 public class LocatedBlockList implements Iterable<LocatedBlock> {
 
-    private final List<LocatedBlock> list;
+    private final Map<BlockVector3, LocatedBlock> map = new LinkedHashMap<>();
 
     public LocatedBlockList() {
-        list = new ArrayList<>();
     }
 
     public LocatedBlockList(Collection<? extends LocatedBlock> collection) {
-        list = new ArrayList<>(collection);
+        for (LocatedBlock locatedBlock : collection) {
+            map.put(locatedBlock.getLocation(), locatedBlock);
+        }
     }
 
     public void add(LocatedBlock setBlockCall) {
         checkNotNull(setBlockCall);
-        list.add(setBlockCall);
+        map.put(setBlockCall.getLocation(), setBlockCall);
     }
 
     public <B extends BlockStateHolder<B>> void add(BlockVector3 location, B block) {
         add(new LocatedBlock(location, block.toBaseBlock()));
     }
 
+    public boolean containsLocation(BlockVector3 location) {
+        return map.containsKey(location);
+    }
+
+    public @Nullable BaseBlock get(BlockVector3 location) {
+        return map.get(location).getBlock();
+    }
+
     public int size() {
-        return list.size();
+        return map.size();
     }
 
     public void clear() {
-        list.clear();
+        map.clear();
     }
 
     @Override
     public Iterator<LocatedBlock> iterator() {
-        return list.iterator();
+        return map.values().iterator();
     }
 
     public Iterator<LocatedBlock> reverseIterator() {
-        return new Iterator<LocatedBlock>() {
-
-            private final ListIterator<LocatedBlock> backingIterator = list.listIterator(list.size());
-
-            @Override
-            public boolean hasNext() {
-                return backingIterator.hasPrevious();
-            }
-
-            @Override
-            public LocatedBlock next() {
-                return backingIterator.previous();
-            }
-        };
+        List<LocatedBlock> data = new ArrayList<>(map.values());
+        Collections.reverse(data);
+        return data.iterator();
     }
 
 }
