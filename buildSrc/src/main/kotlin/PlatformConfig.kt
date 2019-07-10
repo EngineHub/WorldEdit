@@ -20,6 +20,8 @@ import org.gradle.kotlin.dsl.named
 fun Project.applyPlatformAndCoreConfiguration() {
     applyCommonConfiguration()
     apply(plugin = "java")
+    apply(plugin = "eclipse")
+    apply(plugin = "idea")
     apply(plugin = "maven")
     apply(plugin = "checkstyle")
     apply(plugin = "com.github.johnrengelman.shadow")
