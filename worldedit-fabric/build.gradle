@@ -19,6 +19,9 @@ buildscript {
     }
 }
 
+PlatformConfigKt.applyPlatformAndCoreConfiguration(project)
+PlatformConfigKt.applyShadowConfiguration(project)
+
 apply plugin: 'eclipse'
 apply plugin: 'fabric-loom'
 

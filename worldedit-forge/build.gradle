@@ -1,15 +1,5 @@
-buildscript {
-    repositories {
-        mavenLocal()
-        mavenCentral()
-        maven { url = "https://files.minecraftforge.net/maven" }
-        jcenter()
-    }
-
-    dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.+', changing: true
-    }
-}
+PlatformConfigKt.applyPlatformAndCoreConfiguration(project)
+PlatformConfigKt.applyShadowConfiguration(project)
 
 apply plugin: 'eclipse'
 apply plugin: 'net.minecraftforge.gradle'

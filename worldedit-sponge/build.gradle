@@ -2,6 +2,9 @@ plugins {
     id("org.spongepowered.plugin")
 }
 
+PlatformConfigKt.applyPlatformAndCoreConfiguration(project)
+PlatformConfigKt.applyShadowConfiguration(project)
+
 repositories {
     maven { url "https://repo.codemc.org/repository/maven-public" }
 }
