@@ -42,6 +42,7 @@ public class GravityBrush implements Brush {
     @Override
     public void build(EditSession editSession, BlockVector3 position, Pattern pattern, double size) throws MaxChangedBlocksException {
         double yMax = fullHeight ? editSession.getWorld().getMaxY() : position.getY() + size;
+        double yMin = Math.max(position.getY() - size, 0);
         LocatedBlockList column = new LocatedBlockList();
         Set<BlockVector3> removedBlocks = new LinkedHashSet<>();
         for (double x = position.getX() - size; x <= position.getX() + size; x++) {
@@ -55,7 +56,7 @@ public class GravityBrush implements Brush {
                  */
 
                 BlockVector3 lowestAir = null;
-                for (double y = position.getY() - size; y <= yMax; y++) {
+                for (double y = yMin; y <= yMax; y++) {
                     BlockVector3 pt = BlockVector3.at(x, y, z);
 
                     BaseBlock block = editSession.getFullBlock(pt);
