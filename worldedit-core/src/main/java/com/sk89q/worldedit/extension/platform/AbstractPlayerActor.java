@@ -19,7 +19,10 @@
 
 package com.sk89q.worldedit.extension.platform;
 
+import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.NotABlockException;
+import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extent.Extent;
@@ -32,6 +35,7 @@ import com.sk89q.worldedit.util.HandSide;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.TargetBlock;
 import com.sk89q.worldedit.util.auth.AuthorizationException;
+import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
@@ -173,7 +177,7 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
                 if (spots == 2) {
                     final BlockVector3 platform = BlockVector3.at(x, y - 2, z);
                     final BlockState block = world.getBlock(platform);
-                    final com.sk89q.worldedit.world.block.BlockType type = block.getBlockType();
+                    final BlockType type = block.getBlockType();
 
                     // Don't get put in lava!
                     if (type == BlockTypes.LAVA) {
@@ -259,6 +263,13 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
             // Found a ceiling!
             if (world.getBlock(BlockVector3.at(x, y, z)).getBlockType().getMaterial().isMovementBlocker()) {
                 int platformY = Math.max(initialY, y - 3 - clearance);
+                if (platformY < initialY) { // if ==, they already have the given clearance, if <, clearance is too large
+                    printError("Not enough space above you!");
+                    return false;
+                } else if (platformY == initialY) {
+                    printError("You're already at the ceiling.");
+                    return false;
+                }
                 floatAt(x, platformY + 1, z, alwaysGlass);
                 return true;
             }
@@ -302,25 +313,27 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
 
     @Override
     public void floatAt(int x, int y, int z, boolean alwaysGlass) {
-        try {
-            BlockVector3 spot = BlockVector3.at(x, y - 1, z);
-            if (!getLocation().getExtent().getBlock(spot).getBlockType().getMaterial().isMovementBlocker()) {
-                getLocation().getExtent().setBlock(spot, BlockTypes.GLASS.getDefaultState());
+        BlockVector3 spot = BlockVector3.at(x, y - 1, z);
+        final World world = (World) getLocation().getExtent();
+        if (!world.getBlock(spot).getBlockType().getMaterial().isMovementBlocker()) {
+            try (EditSession session = WorldEdit.getInstance().getEditSessionFactory().getEditSession(world, 1, this)) {
+                session.setBlock(spot, BlockTypes.GLASS.getDefaultState());
+            } catch (MaxChangedBlocksException ignored) {
             }
-        } catch (WorldEditException e) {
-            e.printStackTrace();
         }
         setPosition(Vector3.at(x + 0.5, y, z + 0.5));
     }
 
     @Override
     public Location getBlockIn() {
-        return getLocation().setPosition(getLocation().toVector().floor());
+        final Location location = getLocation();
+        return location.setPosition(location.toVector().floor());
     }
 
     @Override
     public Location getBlockOn() {
-        return getLocation().setPosition(getLocation().setY(getLocation().getY() - 1).toVector().floor());
+        final Location location = getLocation();
+        return location.setPosition(location.setY(location.getY() - 1).toVector().floor());
     }
 
     @Override
@@ -369,15 +382,16 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
 
     @Override
     public Direction getCardinalDirection(int yawOffset) {
-        if (getLocation().getPitch() > 67.5) {
+        final Location location = getLocation();
+        if (location.getPitch() > 67.5) {
             return Direction.DOWN;
         }
-        if (getLocation().getPitch() < -67.5) {
+        if (location.getPitch() < -67.5) {
             return Direction.UP;
         }
 
         // From hey0's code
-        double rot = (getLocation().getYaw() + yawOffset) % 360; //let's use real yaw now
+        double rot = (location.getYaw() + yawOffset) % 360; //let's use real yaw now
         if (rot < 0) {
             rot += 360.0;
         }
@@ -446,7 +460,8 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
 
     @Override
     public void setPosition(Vector3 pos) {
-        setPosition(pos, getLocation().getPitch(), getLocation().getYaw());
+        final Location location = getLocation();
+        setPosition(pos, location.getPitch(), location.getYaw());
     }
 
     @Override

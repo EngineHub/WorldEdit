@@ -38,6 +38,7 @@ import com.sk89q.worldedit.world.gamemode.GameMode;
 import com.sk89q.worldedit.world.gamemode.GameModes;
 import com.sk89q.worldedit.world.item.ItemTypes;
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.type.HandTypes;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.ItemType;
@@ -200,6 +201,17 @@ public class SpongePlayer extends AbstractPlayerActor {
     public void setGameMode(GameMode gameMode) {
         player.getGameModeData().type().set(Sponge.getRegistry().getType(org.spongepowered.api.entity.living.player.gamemode.GameMode.class,
                 gameMode.getId()).get());
+    }
+
+    @Override
+    public void floatAt(int x, int y, int z, boolean alwaysGlass) {
+        if (alwaysGlass || !player.get(Keys.CAN_FLY).orElse(false)) {
+            super.floatAt(x, y, z, alwaysGlass);
+            return;
+        }
+
+        setPosition(Vector3.at(x + 0.5, y, z + 0.5));
+        player.offer(Keys.IS_FLYING, true);
     }
 
     @Override

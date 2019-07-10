@@ -260,8 +260,9 @@ public class SpongeSchematicWriter implements ClipboardWriter {
             }
             values.remove("id");
             values.put("Id", new StringTag(state.getType().getId()));
-            values.put("Pos", writeVector(e.getLocation().toVector()));
-            values.put("Rotation", writeRotation(e.getLocation()));
+            final Location location = e.getLocation();
+            values.put("Pos", writeVector(location.toVector()));
+            values.put("Rotation", writeRotation(location));
 
             return new CompoundTag(values);
         }).filter(Objects::nonNull).collect(Collectors.toList());
