@@ -77,7 +77,7 @@ jar {
 }
 
 shadowJar {
-    classifier = 'dist-dev'
+    archiveClassifier.set("dist-dev")
     dependencies {
         relocate "org.slf4j", "com.sk89q.worldedit.slf4j"
         relocate "org.apache.logging.slf4j", "com.sk89q.worldedit.log4jbridge"
@@ -89,7 +89,7 @@ shadowJar {
 
 task deobfJar(type: Jar) {
     from sourceSets.main.output
-    classifier = 'dev'
+    archiveClassifier.set("dev")
 }
 
 artifacts {
@@ -97,8 +97,8 @@ artifacts {
 }
 
 task shadowJarRemap(type: RemapJarTask) {
-    input shadowJar.archivePath
-    output new File(shadowJar.archivePath.getAbsolutePath().replaceFirst('-dev\\.jar$', ".jar"))
+    input shadowJar.archiveFile
+    output new File(shadowJar.archiveFile.get().asFile.getAbsolutePath().replaceFirst('-dev\\.jar$', ".jar"))
 }
 
 shadowJarRemap.dependsOn(shadowJar)

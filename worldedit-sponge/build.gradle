@@ -1,14 +1,5 @@
-buildscript {
-    repositories {
-        mavenCentral()
-        maven { url = "https://files.minecraftforge.net/maven" }
-        maven { url = "https://oss.sonatype.org/content/repositories/snapshots/" }
-        jcenter()
-    }
-}
-
 plugins {
-    id 'org.spongepowered.plugin' version '0.9.0'
+    id("org.spongepowered.plugin")
 }
 
 repositories {

@@ -1,12 +1,10 @@
 plugins {
-    id("net.ltgt.apt") version "0.21" apply false
+    id("java-library")
+    id("eclipse")
+    id("idea")
+    id("net.ltgt.apt-eclipse")
+    id("net.ltgt.apt-idea")
 }
-
-apply plugin: 'java-library'
-apply plugin: 'eclipse'
-apply plugin: 'idea'
-apply plugin: 'net.ltgt.apt-eclipse'
-apply plugin: 'net.ltgt.apt-idea'
 
 configurations.all { Configuration it ->
     it.resolutionStrategy { ResolutionStrategy rs ->
