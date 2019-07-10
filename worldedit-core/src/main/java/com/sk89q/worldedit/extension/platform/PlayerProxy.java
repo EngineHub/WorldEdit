@@ -178,4 +178,9 @@ class PlayerProxy extends AbstractPlayerActor {
     public <B extends BlockStateHolder<B>> void sendFakeBlock(BlockVector3 pos, B block) {
         basePlayer.sendFakeBlock(pos, block);
     }
+
+    @Override
+    public void floatAt(int x, int y, int z, boolean alwaysGlass) {
+        basePlayer.floatAt(x, y, z, alwaysGlass);
+    }
 }

@@ -32,6 +32,7 @@ import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.RegionSelector;
 import com.sk89q.worldedit.regions.selector.CuboidRegionSelector;
+import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockTypes;
 
@@ -114,11 +115,12 @@ public class ServerCUIHandler {
         }
 
         // Borrowed this math from FAWE
-        double rotX = player.getLocation().getYaw();
-        double rotY = player.getLocation().getPitch();
+        final Location location = player.getLocation();
+        double rotX = location.getYaw();
+        double rotY = location.getPitch();
         double xz = Math.cos(Math.toRadians(rotY));
-        int x = (int) (player.getLocation().getX() - (-xz * Math.sin(Math.toRadians(rotX))) * 12);
-        int z = (int) (player.getLocation().getZ() - (xz * Math.cos(Math.toRadians(rotX))) * 12);
+        int x = (int) (location.getX() - (-xz * Math.sin(Math.toRadians(rotX))) * 12);
+        int z = (int) (location.getZ() - (xz * Math.cos(Math.toRadians(rotX))) * 12);
         int y = Math.max(0, Math.min(Math.min(255, posY + 32), posY + 3));
 
         Map<String, Tag> structureTag = new HashMap<>();

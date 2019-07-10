@@ -180,7 +180,8 @@ public class BiomeCommands {
         Mask2D mask2d = mask != null ? mask.toMask2D() : null;
 
         if (atPosition) {
-            region = new CuboidRegion(player.getLocation().toVector().toBlockPoint(), player.getLocation().toVector().toBlockPoint());
+            final BlockVector3 pos = player.getLocation().toVector().toBlockPoint();
+            region = new CuboidRegion(pos, pos);
         } else {
             region = session.getSelection(world);
         }
