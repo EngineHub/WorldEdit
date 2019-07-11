@@ -4,12 +4,10 @@ plugins {
     kotlin("jvm") version "1.3.41"
 }
 
+applyCommonConfiguration()
+
 tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = "1.8"
-}
-
-repositories {
-    jcenter()
 }
 
 dependencies {
