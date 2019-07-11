@@ -53,8 +53,6 @@ configure<BasePluginConvention> {
     archivesBaseName = "$archivesBaseName-mc$minecraftVersion"
 }
 
-val sourceSets = project.the<JavaPluginConvention>().sourceSets
-
 tasks.named<Copy>("processResources") {
     // this will ensure that this task is redone when the versions change.
     inputs.property("version", project.ext["internalVersion"])
