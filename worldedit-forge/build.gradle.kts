@@ -91,7 +91,9 @@ tasks.named<ShadowJar>("shadowJar") {
         include(dependency("org.apache.logging.log4j:log4j-slf4j-impl"))
         include(dependency("de.schlichtherle:truezip"))
         include(dependency("org.mozilla:rhino"))
-
+    }
+    minimize {
+        exclude(dependency("org.mozilla:rhino"))
     }
 }
 

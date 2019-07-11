@@ -15,7 +15,7 @@ configurations.all {
 dependencies {
     "compile"(project(":worldedit-libs:core"))
     "compile"("de.schlichtherle:truezip:6.8.3")
-    "compile"("org.mozilla:rhino:1.7R5")
+    "compile"("org.mozilla:rhino:1.7.11")
     "compile"("org.yaml:snakeyaml:1.9")
     "compile"("com.google.guava:guava:21.0")
     "compile"("com.google.code.findbugs:jsr305:1.3.9")
