@@ -190,15 +190,14 @@ public class ForgePlayer extends AbstractPlayerActor {
     }
 
     @Override
-    public void floatAt(int x, int y, int z, boolean alwaysGlass) {
-        if (alwaysGlass || !player.abilities.allowFlying) {
-            super.floatAt(x, y, z, alwaysGlass);
-            return;
-        }
+    public boolean isAllowedToFly() {
+        return player.abilities.allowFlying;
+    }
 
-        setPosition(Vector3.at(x + 0.5, y, z + 0.5));
-        if (!player.abilities.isFlying) {
-            player.abilities.isFlying = true;
+    @Override
+    public void setFlying(boolean flying) {
+        if (player.abilities.isFlying != flying) {
+            player.abilities.isFlying = flying;
             player.sendPlayerAbilities();
         }
     }

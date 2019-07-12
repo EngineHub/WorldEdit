@@ -185,14 +185,13 @@ public class BukkitPlayer extends AbstractPlayerActor {
     }
 
     @Override
-    public void floatAt(int x, int y, int z, boolean alwaysGlass) {
-        if (alwaysGlass || !player.getAllowFlight()) {
-            super.floatAt(x, y, z, alwaysGlass);
-            return;
-        }
+    public boolean isAllowedToFly() {
+        return player.getAllowFlight();
+    }
 
-        setPosition(Vector3.at(x + 0.5, y, z + 0.5));
-        player.setFlying(true);
+    @Override
+    public void setFlying(boolean flying) {
+        player.setFlying(flying);
     }
 
     @Override

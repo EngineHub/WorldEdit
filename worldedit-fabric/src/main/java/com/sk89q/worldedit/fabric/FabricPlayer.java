@@ -189,15 +189,14 @@ public class FabricPlayer extends AbstractPlayerActor {
     }
 
     @Override
-    public void floatAt(int x, int y, int z, boolean alwaysGlass) {
-        if (alwaysGlass || !player.abilities.allowFlying) {
-            super.floatAt(x, y, z, alwaysGlass);
-            return;
-        }
+    public boolean isAllowedToFly() {
+        return player.abilities.allowFlying;
+    }
 
-        setPosition(Vector3.at(x + 0.5, y, z + 0.5));
-        if (!player.abilities.flying) {
-            player.abilities.flying = true;
+    @Override
+    public void setFlying(boolean flying) {
+        if (player.abilities.flying != flying) {
+            player.abilities.flying = flying;
             player.sendAbilitiesUpdate();
         }
     }

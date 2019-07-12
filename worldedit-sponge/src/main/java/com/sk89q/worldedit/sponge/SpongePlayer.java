@@ -204,14 +204,13 @@ public class SpongePlayer extends AbstractPlayerActor {
     }
 
     @Override
-    public void floatAt(int x, int y, int z, boolean alwaysGlass) {
-        if (alwaysGlass || !player.get(Keys.CAN_FLY).orElse(false)) {
-            super.floatAt(x, y, z, alwaysGlass);
-            return;
-        }
+    public boolean isAllowedToFly() {
+        return player.get(Keys.CAN_FLY).orElse(super.isAllowedToFly());
+    }
 
-        setPosition(Vector3.at(x + 0.5, y, z + 0.5));
-        player.offer(Keys.IS_FLYING, true);
+    @Override
+    public void setFlying(boolean flying) {
+        player.offer(Keys.IS_FLYING, flying);
     }
 
     @Override

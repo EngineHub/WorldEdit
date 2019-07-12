@@ -188,6 +188,24 @@ public interface Player extends Entity, Actor {
     void floatAt(int x, int y, int z, boolean alwaysGlass);
 
     /**
+     * Check whether the player is allowed to fly.
+     *
+     * @return true if allowed flight
+     */
+    default boolean isAllowedToFly() {
+        return false;
+    }
+
+    /**
+     * Set whether the player is currently flying.
+     *
+     * @param flying true to fly
+     */
+    default void setFlying(boolean flying) {
+        throw new UnsupportedOperationException("setFlying unimplemented but isAllowedToFly was true (or unchecked)");
+    }
+
+    /**
      * Get the point of the block that is being stood in.
      *
      * @return point

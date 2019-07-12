@@ -313,13 +313,17 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
 
     @Override
     public void floatAt(int x, int y, int z, boolean alwaysGlass) {
-        BlockVector3 spot = BlockVector3.at(x, y - 1, z);
-        final World world = (World) getLocation().getExtent();
-        if (!world.getBlock(spot).getBlockType().getMaterial().isMovementBlocker()) {
-            try (EditSession session = WorldEdit.getInstance().getEditSessionFactory().getEditSession(world, 1, this)) {
-                session.setBlock(spot, BlockTypes.GLASS.getDefaultState());
-            } catch (MaxChangedBlocksException ignored) {
+        if (alwaysGlass || !isAllowedToFly()) {
+            BlockVector3 spot = BlockVector3.at(x, y - 1, z);
+            final World world = getWorld();
+            if (!world.getBlock(spot).getBlockType().getMaterial().isMovementBlocker()) {
+                try (EditSession session = WorldEdit.getInstance().getEditSessionFactory().getEditSession(world, 1, this)) {
+                    session.setBlock(spot, BlockTypes.GLASS.getDefaultState());
+                } catch (MaxChangedBlocksException ignored) {
+                }
             }
+        } else {
+            setFlying(true);
         }
         setPosition(Vector3.at(x + 0.5, y, z + 0.5));
     }
