@@ -1,5 +1,5 @@
 plugins {
-    id("net.ltgt.apt") version "0.21"
+    id("net.ltgt.apt") version "0.21" apply false
 }
 
 apply plugin: 'java-library'
@@ -36,6 +36,7 @@ dependencies {
 }
 
 tasks.withType(JavaCompile).configureEach {
+    dependsOn(":worldedit-libs:build")
     it.options.compilerArgs.add("-Aarg.name.key.prefix=")
 }
 
