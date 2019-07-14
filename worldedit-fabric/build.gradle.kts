@@ -15,7 +15,7 @@ buildscript {
     }
 
     dependencies {
-        "classpath"("net.fabricmc:fabric-loom:0.2.4-SNAPSHOT")
+        "classpath"("net.fabricmc:fabric-loom:0.2.3-SNAPSHOT")
         "classpath"("org.spongepowered:mixin:0.7.11-SNAPSHOT")
     }
 }
