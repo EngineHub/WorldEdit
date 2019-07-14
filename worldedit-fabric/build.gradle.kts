@@ -99,7 +99,7 @@ tasks.register<RemapJarTask>("remapShadowJar") {
     val shadowJar = tasks.getByName<ShadowJar>("shadowJar")
     dependsOn(shadowJar)
     setInput(shadowJar.archiveFile)
-    setOutput(shadowJar.archiveFile.get().asFile.getAbsolutePath().replaceFirst("-dev\\.jar$", ".jar"))
+    setOutput(shadowJar.archiveFile.get().asFile.absolutePath.replace(Regex("-dev\\.jar$"), ".jar"))
 }
 
 tasks.named("assemble").configure {
