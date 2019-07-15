@@ -67,24 +67,29 @@ public class CLICommandSender implements Actor {
         }
     }
 
+    public static final String ANSI_PURPLE = "\u001B[35m";
+    public static final String ANSI_RED = "\u001B[31m";
+    public static final String ANSI_GREEN = "\u001B[32m";
+    public static final String ANSI_RESET = "\u001B[0m";
+
     @Override
     public void print(String msg) {
         for (String part : msg.split("\n")) {
-            sender.info("\u00A7d" + part);
+            sender.info(ANSI_PURPLE + part + ANSI_RESET);
         }
     }
 
     @Override
     public void printDebug(String msg) {
         for (String part : msg.split("\n")) {
-            sender.debug("\u00A77" + part);
+            sender.debug(ANSI_GREEN + part + ANSI_RESET);
         }
     }
 
     @Override
     public void printError(String msg) {
         for (String part : msg.split("\n")) {
-            sender.error("\u00A7c" + part);
+            sender.error(ANSI_RED + part + ANSI_RESET);
         }
     }
 

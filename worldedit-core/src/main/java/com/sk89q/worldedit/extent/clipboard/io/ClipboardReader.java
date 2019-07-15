@@ -23,6 +23,7 @@ import com.sk89q.worldedit.extent.clipboard.Clipboard;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.util.OptionalInt;
 
 /**
  * Reads {@code Clipboard}s.
@@ -39,4 +40,12 @@ public interface ClipboardReader extends Closeable {
      */
     Clipboard read() throws IOException;
 
+    /**
+     * Get the DataVersion from a file (if possible).
+     *
+     * @return The data version, or empty
+     */
+    default OptionalInt getDataVersion() {
+        return OptionalInt.empty();
+    }
 }

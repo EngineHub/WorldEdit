@@ -39,6 +39,9 @@ import javax.annotation.Nullable;
 class CLIPlatform extends AbstractPlatform {
 
     private final CLIWorldEdit mod;
+    private int dataVersion = -1;
+
+    private List<World> worlds = new ArrayList<>();
 
     CLIPlatform(CLIWorldEdit mod) {
         this.mod = mod;
@@ -51,8 +54,11 @@ class CLIPlatform extends AbstractPlatform {
 
     @Override
     public int getDataVersion() {
-        // TODO Determine from loaded file.
-        return 1968;
+        return dataVersion;
+    }
+
+    public void setDataVersion(int dataVersion) {
+        this.dataVersion = dataVersion;
     }
 
     @Override
@@ -77,7 +83,7 @@ class CLIPlatform extends AbstractPlatform {
 
     @Override
     public List<? extends World> getWorlds() {
-        return new ArrayList<>();
+        return worlds;
     }
 
     @Nullable
@@ -129,5 +135,9 @@ class CLIPlatform extends AbstractPlatform {
         capabilities.put(Capability.USER_COMMANDS, Preference.NORMAL);
         capabilities.put(Capability.WORLD_EDITING, Preference.PREFERRED);
         return capabilities;
+    }
+
+    public void addWorld(World world) {
+        worlds.add(world);
     }
 }

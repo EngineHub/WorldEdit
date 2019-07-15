@@ -32,21 +32,29 @@ import com.sk89q.worldedit.world.registry.BundledBlockRegistry;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 
 public class CLIBlockRegistry extends BundledBlockRegistry {
 
-    private Property<?> createProperty(String type, String key, List<?> values) {
+    private Property<?> createProperty(String type, String key, List<String> values) {
         switch (type) {
-            case "int":
-                return new IntegerProperty(key, (List<Integer>) values);
-            case "bool":
-                return new BooleanProperty(key, (List<Boolean>) values);
-            case "enum":
-                return new EnumProperty(key, (List<String>) values);
-            case "dir":
-                return new DirectionalProperty(key, (List<Direction>) values);
+            case "int": {
+                List<Integer> fixedValues = values.stream().map(Integer::parseInt).collect(Collectors.toList());
+                return new IntegerProperty(key, fixedValues);
+            }
+            case "bool": {
+                List<Boolean> fixedValues = values.stream().map(Boolean::parseBoolean).collect(Collectors.toList());
+                return new BooleanProperty(key, fixedValues);
+            }
+            case "enum": {
+                return new EnumProperty(key, values);
+            }
+            case "direction": {
+                List<Direction> fixedValues = values.stream().map(String::toUpperCase).map(Direction::valueOf).collect(Collectors.toList());
+                return new DirectionalProperty(key, fixedValues);
+            }
             default:
                 throw new RuntimeException("Failed to create property");
         }
@@ -58,9 +66,7 @@ public class CLIBlockRegistry extends BundledBlockRegistry {
         Map<String, FileRegistries.BlockProperty> properties = CLIWorldEdit.inst.getFileRegistries().getDataFile().blocks.get(blockType.getId()).properties;
         Map<String, Property<?>> worldEditProperties = new HashMap<>();
 
-        properties.forEach((name, prop) -> {
-            worldEditProperties.put(name, createProperty(prop.type, name, prop.values));
-        });
+        properties.forEach((name, prop) -> worldEditProperties.put(name, createProperty(prop.type, name, prop.values)));
 
         return worldEditProperties;
     }

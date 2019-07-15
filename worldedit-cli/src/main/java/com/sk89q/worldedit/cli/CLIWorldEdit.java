@@ -21,6 +21,7 @@ package com.sk89q.worldedit.cli;
 
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.cli.data.FileRegistries;
+import com.sk89q.worldedit.cli.schematic.ClipboardWorld;
 import com.sk89q.worldedit.event.platform.CommandEvent;
 import com.sk89q.worldedit.event.platform.PlatformReadyEvent;
 import com.sk89q.worldedit.extension.input.InputParseException;
@@ -28,9 +29,14 @@ import com.sk89q.worldedit.extension.input.ParserContext;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
+import com.sk89q.worldedit.extent.clipboard.io.BuiltInClipboardFormat;
+import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormat;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormats;
+import com.sk89q.worldedit.extent.clipboard.io.ClipboardReader;
+import com.sk89q.worldedit.extent.clipboard.io.ClipboardWriter;
 import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.util.FileDialogUtil;
+import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.block.BlockCategory;
 import com.sk89q.worldedit.world.block.BlockState;
@@ -43,11 +49,11 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
@@ -75,32 +81,9 @@ public class CLIWorldEdit {
 
     public CLIWorldEdit() {
         inst = this;
-
-        onInitialize();
-
-        onStarted();
-
-        run();
-
-        onStopped();
-    }
-
-    public void onInitialize() {
-        // Setup working directory
-        workingDir = new File("worldedit").toPath();
-        if (!Files.exists(workingDir)) {
-            try {
-                Files.createDirectory(workingDir);
-            } catch (IOException e) {
-                throw new UncheckedIOException(e);
-            }
-        }
-
-        LOGGER.info("WorldEdit CLI (version " + getInternalVersion() + ") is loaded");
     }
 
     private void setupPlatform() {
-        this.platform = new CLIPlatform(this);
         this.fileRegistries = new FileRegistries(this);
         this.fileRegistries.loadDataFiles();
 
@@ -165,6 +148,21 @@ public class CLIWorldEdit {
         }
     }
 
+    public void onInitialized() {
+        // Setup working directory
+        workingDir = new File("worldedit").toPath();
+        if (!Files.exists(workingDir)) {
+            try {
+                Files.createDirectory(workingDir);
+            } catch (IOException e) {
+                throw new UncheckedIOException(e);
+            }
+        }
+
+        this.platform = new CLIPlatform(this);
+        LOGGER.info("WorldEdit CLI (version " + getInternalVersion() + ") is loaded");
+    }
+
     public void onStarted() {
         setupPlatform();
 
@@ -227,9 +225,41 @@ public class CLIWorldEdit {
     public void run() {
         Scanner scanner = new Scanner(System.in);
         while (scanner.hasNext()) {
+            String line = scanner.nextLine();
+            if (line.equalsIgnoreCase("stop")) {
+                commandSender.print("Stopping!");
+                return;
+            }
+            if (line.startsWith("save")) {
+                String[] bits = line.split(" ");
+                if (bits.length == 0) {
+                    commandSender.print("Usage: save <filename>");
+                    return;
+                }
+                World world = platform.getWorlds().get(0);
+                if (world instanceof ClipboardWorld) {
+                    File file = null;
+                    if (bits.length >= 2) {
+                        file = new File(bits[1]);
+                    } else {
+                        file = FileDialogUtil.showSaveDialog(new String[]{"schem"});
+                    }
+                    if (file == null) {
+                        commandSender.printError("Please choose a file.");
+                        return;
+                    }
+                    try(ClipboardWriter writer = BuiltInClipboardFormat.SPONGE_SCHEMATIC.getWriter(new FileOutputStream(file))) {
+                        writer.write((Clipboard) world);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                return;
+            }
             WorldEdit.getInstance().getEventBus().post(new CommandEvent(
                     commandSender,
-                    scanner.nextLine()
+                    line
             ));
         }
     }
@@ -238,6 +268,9 @@ public class CLIWorldEdit {
         Options options = new Options();
         options.addRequiredOption("f", "file", false, "The file to load in. Either a schematic, or a level.dat in a world folder.");
         CommandLineParser parser = new DefaultParser();
+
+        CLIWorldEdit worldEdit = new CLIWorldEdit();
+        worldEdit.onInitialized();
 
         try {
             CommandLine cmd = parser.parse(options, args);
@@ -254,16 +287,30 @@ public class CLIWorldEdit {
             if (file.getName().endsWith(".dat")) {
 
             } else if (file.getName().endsWith(".schem")) {
-                Clipboard clipboard = ClipboardFormats.findByFile(file)
-                        .getReader(Files.newInputStream(file.toPath(), StandardOpenOption.READ))
-                        .read();
+                ClipboardFormat format = ClipboardFormats.findByFile(file);
+                if (format == null) {
+                    throw new IOException("Unknown clipboard format for file.");
+                }
+                ClipboardReader clipboardReader = format
+                        .getReader(Files.newInputStream(file.toPath(), StandardOpenOption.READ));
+                int dataVersion = clipboardReader.getDataVersion()
+                        .orElseThrow(() -> new IllegalArgumentException("Failed to obtain data version from schematic."));
+                worldEdit.platform.setDataVersion(dataVersion);
+                worldEdit.onStarted();
+                ClipboardWorld world = new ClipboardWorld(
+                        format.getReader(Files.newInputStream(file.toPath(), StandardOpenOption.READ)).read(),
+                        file.getName()
+                );
+                worldEdit.platform.addWorld(world);
             } else {
                 throw new IllegalArgumentException("Unknown file provided!");
             }
 
-            new CLIWorldEdit();
-        } catch (ParseException | IOException e) {
+            worldEdit.run();
+        } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            worldEdit.onStopped();
         }
     }
 }

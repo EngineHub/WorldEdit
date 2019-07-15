@@ -30,6 +30,7 @@ import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.event.platform.ConfigurationLoadEvent;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Capability;
+import com.sk89q.worldedit.extension.platform.NoCapablePlatformException;
 import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.extension.platform.PlatformManager;
 import com.sk89q.worldedit.util.paste.ActorCallbackPaste;
@@ -81,8 +82,12 @@ public class WorldEditCommands {
 
         actor.printDebug("----------- Capabilities -----------");
         for (Capability capability : Capability.values()) {
-            Platform platform = pm.queryCapability(capability);
-            actor.printDebug(String.format("%s: %s", capability.name(), platform != null ? platform.getPlatformName() : "NONE"));
+            try {
+                Platform platform = pm.queryCapability(capability);
+                actor.printDebug(String.format("%s: %s", capability.name(), platform != null ? platform.getPlatformName() : "NONE"));
+            } catch (NoCapablePlatformException e) {
+                actor.printDebug(String.format("%s: %s", capability.name(), "NONE"));
+            }
         }
     }
 
