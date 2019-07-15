@@ -32,9 +32,10 @@ import org.mockito.Mockito;
 
 import static java.lang.Math.atan2;
 import static java.lang.Math.sin;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 public class ExpressionTest {
     @BeforeEach
@@ -67,56 +68,46 @@ public class ExpressionTest {
     }
 
     @Test
-    public void testErrors() throws ExpressionException {
-        // test lexer errors
-        try {
-            compile("#");
-            fail("Error expected");
-        } catch (LexerException e) {
-            assertEquals(0, e.getPosition(), "Error position");
-        }
-
-        // test parser errors
-        try {
-            compile("x");
-            fail("Error expected");
-        } catch (ParserException e) {
-            assertEquals(0, e.getPosition(), "Error position");
-        }
-        try {
-            compile("x()");
-            fail("Error expected");
-        } catch (ParserException e) {
-            assertEquals(0, e.getPosition(), "Error position");
-        }
-        try {
-            compile("(");
-            fail("Error expected");
-        } catch (ParserException ignored) {}
-        try {
-            compile("x(");
-            fail("Error expected");
-        } catch (ParserException ignored) {}
-
-        // test overloader errors
-        try {
-            compile("atan2(1)");
-            fail("Error expected");
-        } catch (ParserException e) {
-            assertEquals(0, e.getPosition(), "Error position");
-        }
-        try {
-            compile("atan2(1, 2, 3)");
-            fail("Error expected");
-        } catch (ParserException e) {
-            assertEquals(0, e.getPosition(), "Error position");
-        }
-        try {
-            compile("rotate(1, 2, 3)");
-            fail("Error expected");
-        } catch (ParserException e) {
-            assertEquals(0, e.getPosition(), "Error position");
-        }
+    public void testErrors() {
+        assertAll(
+            // test lexer errors
+            () -> {
+                LexerException e = assertThrows(LexerException.class,
+                    () -> compile("#"));
+                assertEquals(0, e.getPosition(), "Error position");
+            },
+            // test parser errors
+            () -> {
+                ParserException e = assertThrows(ParserException.class,
+                    () -> compile("x"));
+                assertEquals(0, e.getPosition(), "Error position");
+            },
+            () -> {
+                ParserException e = assertThrows(ParserException.class,
+                    () -> compile("x()"));
+                assertEquals(0, e.getPosition(), "Error position");
+            },
+            () -> assertThrows(ParserException.class,
+                () -> compile("(")),
+            () -> assertThrows(ParserException.class,
+                () -> compile("x(")),
+            // test overloader errors
+            () -> {
+                ParserException e = assertThrows(ParserException.class,
+                    () -> compile("atan2(1)"));
+                assertEquals(0, e.getPosition(), "Error position");
+            },
+            () -> {
+                ParserException e = assertThrows(ParserException.class,
+                    () -> compile("atan2(1, 2, 3)"));
+                assertEquals(0, e.getPosition(), "Error position");
+            },
+            () -> {
+                ParserException e = assertThrows(ParserException.class,
+                    () -> compile("rotate(1, 2, 3)"));
+                assertEquals(0, e.getPosition(), "Error position");
+            }
+        );
     }
 
     @Test
@@ -180,13 +171,11 @@ public class ExpressionTest {
     }
 
     @Test
-    public void testTimeout() throws Exception {
-        try {
-            simpleEval("for(i=0;i<256;i++){for(j=0;j<256;j++){for(k=0;k<256;k++){for(l=0;l<256;l++){ln(pi)}}}}");
-            fail("Loop was not stopped.");
-        } catch (EvaluationException e) {
-            assertTrue(e.getMessage().contains("Calculations exceeded time limit"));
-        }
+    public void testTimeout() {
+        EvaluationException e = assertThrows(EvaluationException.class,
+            () -> simpleEval("for(i=0;i<256;i++){for(j=0;j<256;j++){for(k=0;k<256;k++){for(l=0;l<256;l++){ln(pi)}}}}"),
+            "Loop was not stopped.");
+        assertTrue(e.getMessage().contains("Calculations exceeded time limit"));
     }
 
     private double simpleEval(String expressionString) throws ExpressionException {
