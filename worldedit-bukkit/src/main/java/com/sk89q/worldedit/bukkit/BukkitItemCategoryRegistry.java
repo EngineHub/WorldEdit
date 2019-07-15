@@ -19,7 +19,6 @@
 
 package com.sk89q.worldedit.bukkit;
 
-import com.sk89q.worldedit.registry.Category;
 import com.sk89q.worldedit.world.item.ItemType;
 import com.sk89q.worldedit.world.registry.ItemCategoryRegistry;
 import org.bukkit.Bukkit;
@@ -43,10 +42,5 @@ public class BukkitItemCategoryRegistry implements ItemCategoryRegistry {
         String key =  split.length > 1 ? split[1] : category;
         Tag<Material> tag = Bukkit.getTag(Tag.REGISTRY_ITEMS, new NamespacedKey(namespace, key), Material.class);
         return getFromBukkitTag(tag);
-    }
-
-    @Override
-    public Set<ItemType> getAll(Category<ItemType> category) {
-        return getCategorisedByName(category.getId());
     }
 }

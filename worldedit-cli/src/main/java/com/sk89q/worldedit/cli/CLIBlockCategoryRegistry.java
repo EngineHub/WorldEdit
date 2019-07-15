@@ -17,24 +17,20 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.forge;
+package com.sk89q.worldedit.cli;
 
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.registry.BlockCategoryRegistry;
-import net.minecraft.tags.BlockTags;
-import net.minecraft.tags.Tag;
-import net.minecraft.util.ResourceLocation;
 
-import java.util.Collections;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class ForgeBlockCategoryRegistry implements BlockCategoryRegistry {
+public class CLIBlockCategoryRegistry implements BlockCategoryRegistry {
+
     @Override
     public Set<BlockType> getCategorisedByName(String category) {
-        return Optional.ofNullable(BlockTags.getCollection().get(new ResourceLocation(category)))
-                .map(Tag::getAllElements).orElse(Collections.emptySet())
-                .stream().map(ForgeAdapter::adapt).collect(Collectors.toSet());
+        return CLIWorldEdit.inst.getFileRegistries().getDataFile().blocktags.get(category).stream()
+                .map(BlockType.REGISTRY::get)
+                .collect(Collectors.toSet());
     }
 }

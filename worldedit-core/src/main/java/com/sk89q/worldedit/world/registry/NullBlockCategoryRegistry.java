@@ -19,7 +19,6 @@
 
 package com.sk89q.worldedit.world.registry;
 
-import com.sk89q.worldedit.registry.Category;
 import com.sk89q.worldedit.world.block.BlockType;
 
 import java.util.Collections;
@@ -29,11 +28,6 @@ public class NullBlockCategoryRegistry implements BlockCategoryRegistry {
 
     @Override
     public Set<BlockType> getCategorisedByName(String category) {
-        return Collections.emptySet();
-    }
-
-    @Override
-    public Set<BlockType> getAll(final Category<BlockType> category) {
         return Collections.emptySet();
     }
 }

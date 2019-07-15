@@ -19,7 +19,6 @@
 
 package com.sk89q.worldedit.fabric;
 
-import com.sk89q.worldedit.registry.Category;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.registry.BlockCategoryRegistry;
 import net.minecraft.tag.BlockTags;
@@ -37,10 +36,5 @@ public class FabricBlockCategoryRegistry implements BlockCategoryRegistry {
         return Optional.ofNullable(BlockTags.getContainer().get(new Identifier(category)))
                 .map(Tag::values).orElse(Collections.emptySet())
                 .stream().map(FabricAdapter::adapt).collect(Collectors.toSet());
-    }
-
-    @Override
-    public Set<BlockType> getAll(Category<BlockType> category) {
-        return getCategorisedByName(category.getId());
     }
 }

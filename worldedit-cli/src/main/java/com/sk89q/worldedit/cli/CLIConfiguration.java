@@ -17,24 +17,29 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.forge;
+package com.sk89q.worldedit.cli;
 
-import com.sk89q.worldedit.world.block.BlockType;
-import com.sk89q.worldedit.world.registry.BlockCategoryRegistry;
-import net.minecraft.tags.BlockTags;
-import net.minecraft.tags.Tag;
-import net.minecraft.util.ResourceLocation;
+import com.sk89q.worldedit.util.PropertiesConfiguration;
 
-import java.util.Collections;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.io.File;
 
-public class ForgeBlockCategoryRegistry implements BlockCategoryRegistry {
+public class CLIConfiguration extends PropertiesConfiguration {
+
+    public boolean creativeEnable = false;
+    public boolean cheatMode = false;
+
+    public CLIConfiguration(CLIWorldEdit mod) {
+        super(new File(mod.getWorkingDir() + File.separator + "worldedit.properties"));
+    }
+
     @Override
-    public Set<BlockType> getCategorisedByName(String category) {
-        return Optional.ofNullable(BlockTags.getCollection().get(new ResourceLocation(category)))
-                .map(Tag::getAllElements).orElse(Collections.emptySet())
-                .stream().map(ForgeAdapter::adapt).collect(Collectors.toSet());
+    protected void loadExtra() {
+        creativeEnable = getBool("use-in-creative", false);
+        cheatMode = getBool("cheat-mode", false);
+    }
+
+    @Override
+    public File getWorkingDirectory() {
+        return CLIWorldEdit.inst.getWorkingDir();
     }
 }

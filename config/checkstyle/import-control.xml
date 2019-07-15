@@ -48,6 +48,10 @@
       <allow pkg="io.papermc.lib"/>
     </subpackage>
 
+    <subpackage name="cli">
+      <allow pkg="org.apache.logging.log4j"/>
+    </subpackage>
+
     <subpackage name="forge">
       <allow pkg="cpw"/>
       <allow pkg="net.minecraft"/>

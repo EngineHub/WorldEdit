@@ -19,7 +19,6 @@
 
 package com.sk89q.worldedit.fabric;
 
-import com.sk89q.worldedit.registry.Category;
 import com.sk89q.worldedit.world.item.ItemType;
 import com.sk89q.worldedit.world.registry.ItemCategoryRegistry;
 import net.minecraft.tag.ItemTags;
@@ -37,10 +36,5 @@ public class FabricItemCategoryRegistry implements ItemCategoryRegistry {
         return Optional.ofNullable(ItemTags.getContainer().get(new Identifier(category)))
                 .map(Tag::values).orElse(Collections.emptySet())
                 .stream().map(FabricAdapter::adapt).collect(Collectors.toSet());
-    }
-
-    @Override
-    public Set<ItemType> getAll(Category<ItemType> category) {
-        return getCategorisedByName(category.getId());
     }
 }
