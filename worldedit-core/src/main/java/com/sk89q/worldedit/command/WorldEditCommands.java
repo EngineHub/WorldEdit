@@ -142,18 +142,18 @@ public class WorldEditCommands {
         name = "tz",
         desc = "Set your timezone for snapshots"
     )
-    public void tz(Player player, LocalSession session,
+    public void tz(Actor actor, LocalSession session,
                    @Arg(desc = "The timezone to set")
                        String timezone) {
         try {
             ZoneId tz = ZoneId.of(timezone);
             session.setTimezone(tz);
-            player.print("Timezone set for this session to: " + tz.getDisplayName(
+            actor.print("Timezone set for this session to: " + tz.getDisplayName(
                     TextStyle.FULL, Locale.ENGLISH
             ));
-            player.print("The current time in that timezone is: " + dateFormat.format(ZonedDateTime.now(tz)));
+            actor.print("The current time in that timezone is: " + dateFormat.format(ZonedDateTime.now(tz)));
         } catch (ZoneRulesException e) {
-            player.printError("Invalid timezone");
+            actor.printError("Invalid timezone");
         }
     }
 

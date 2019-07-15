@@ -99,7 +99,7 @@ public class SchematicCommands {
         desc = "Load a schematic into your clipboard"
     )
     @CommandPermissions({"worldedit.clipboard.load", "worldedit.schematic.load"})
-    public void load(Player player, LocalSession session,
+    public void load(Actor actor, LocalSession session,
                      @Arg(desc = "File name.")
                          String filename,
                      @Arg(desc = "Format name.", def = "sponge")
@@ -107,12 +107,12 @@ public class SchematicCommands {
         LocalConfiguration config = worldEdit.getConfiguration();
 
         File dir = worldEdit.getWorkingDirectoryFile(config.saveDir);
-        File f = worldEdit.getSafeOpenFile(player, dir, filename,
+        File f = worldEdit.getSafeOpenFile(actor, dir, filename,
                 BuiltInClipboardFormat.SPONGE_SCHEMATIC.getPrimaryFileExtension(),
                 ClipboardFormats.getFileExtensionArray());
 
         if (!f.exists()) {
-            player.printError("Schematic " + filename + " does not exist!");
+            actor.printError("Schematic " + filename + " does not exist!");
             return;
         }
 
@@ -121,12 +121,12 @@ public class SchematicCommands {
             format = ClipboardFormats.findByAlias(formatName);
         }
         if (format == null) {
-            player.printError("Unknown schematic format: " + formatName);
+            actor.printError("Unknown schematic format: " + formatName);
             return;
         }
 
-        SchematicLoadTask task = new SchematicLoadTask(player, f, format);
-        AsyncCommandBuilder.wrap(task, player)
+        SchematicLoadTask task = new SchematicLoadTask(actor, f, format);
+        AsyncCommandBuilder.wrap(task, actor)
                 .registerWithSupervisor(worldEdit.getSupervisor(), "Loading schematic " + filename)
                 .sendMessageAfterDelay("(Please wait... loading schematic.)")
                 .onSuccess(TextComponent.of(filename, TextColor.GOLD)
@@ -142,7 +142,7 @@ public class SchematicCommands {
         desc = "Save a schematic into your clipboard"
     )
     @CommandPermissions({"worldedit.clipboard.save", "worldedit.schematic.save"})
-    public void save(Player player, LocalSession session,
+    public void save(Actor actor, LocalSession session,
                      @Arg(desc = "File name.")
                          String filename,
                      @Arg(desc = "Format name.", def = "sponge")
@@ -156,19 +156,19 @@ public class SchematicCommands {
 
         ClipboardFormat format = ClipboardFormats.findByAlias(formatName);
         if (format == null) {
-            player.printError("Unknown schematic format: " + formatName);
+            actor.printError("Unknown schematic format: " + formatName);
             return;
         }
 
-        File f = worldEdit.getSafeSaveFile(player, dir, filename, format.getPrimaryFileExtension());
+        File f = worldEdit.getSafeSaveFile(actor, dir, filename, format.getPrimaryFileExtension());
 
         boolean overwrite = f.exists();
         if (overwrite) {
-            if (!player.hasPermission("worldedit.schematic.delete")) {
+            if (!actor.hasPermission("worldedit.schematic.delete")) {
                 throw new StopExecutionException(TextComponent.of("That schematic already exists!"));
             }
             if (!allowOverwrite) {
-                player.printError("That schematic already exists. Use the -f flag to overwrite it.");
+                actor.printError("That schematic already exists. Use the -f flag to overwrite it.");
                 return;
             }
         }
@@ -184,8 +184,8 @@ public class SchematicCommands {
 
         ClipboardHolder holder = session.getClipboard();
 
-        SchematicSaveTask task = new SchematicSaveTask(player, f, format, holder, overwrite);
-        AsyncCommandBuilder.wrap(task, player)
+        SchematicSaveTask task = new SchematicSaveTask(actor, f, format, holder, overwrite);
+        AsyncCommandBuilder.wrap(task, actor)
                 .registerWithSupervisor(worldEdit.getSupervisor(), "Saving schematic " + filename)
                 .sendMessageAfterDelay("(Please wait... saving schematic.)")
                 .onSuccess(filename + " saved" + (overwrite ? " (overwriting previous file)." : "."), null)
@@ -278,12 +278,12 @@ public class SchematicCommands {
     }
 
     private static class SchematicLoadTask implements Callable<ClipboardHolder> {
-        private final Player player;
+        private final Actor actor;
         private final File file;
         private final ClipboardFormat format;
 
-        SchematicLoadTask(Player player, File file, ClipboardFormat format) {
-            this.player = player;
+        SchematicLoadTask(Actor actor, File file, ClipboardFormat format) {
+            this.actor = actor;
             this.file = file;
             this.format = format;
         }
@@ -296,21 +296,21 @@ public class SchematicCommands {
                 ClipboardReader reader = closer.register(format.getReader(bis));
 
                 Clipboard clipboard = reader.read();
-                log.info(player.getName() + " loaded " + file.getCanonicalPath());
+                log.info(actor.getName() + " loaded " + file.getCanonicalPath());
                 return new ClipboardHolder(clipboard);
             }
         }
     }
 
     private static class SchematicSaveTask implements Callable<Void> {
-        private final Player player;
+        private final Actor actor;
         private final File file;
         private final ClipboardFormat format;
         private final ClipboardHolder holder;
         private final boolean overwrite;
 
-        SchematicSaveTask(Player player, File file, ClipboardFormat format, ClipboardHolder holder, boolean overwrite) {
-            this.player = player;
+        SchematicSaveTask(Actor actor, File file, ClipboardFormat format, ClipboardHolder holder, boolean overwrite) {
+            this.actor = actor;
             this.file = file;
             this.format = format;
             this.holder = holder;
@@ -339,7 +339,7 @@ public class SchematicCommands {
                 ClipboardWriter writer = closer.register(format.getWriter(bos));
                 writer.write(target);
 
-                log.info(player.getName() + " saved " + file.getCanonicalPath() + (overwrite ? " (overwriting previous file)" : ""));
+                log.info(actor.getName() + " saved " + file.getCanonicalPath() + (overwrite ? " (overwriting previous file)" : ""));
             }
             return null;
         }

@@ -19,6 +19,8 @@
 
 package com.sk89q.worldedit.extension.platform;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.reflect.TypeToken;
@@ -137,8 +139,6 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 /**
  * Handles the registration and invocation of commands.
  *
@@ -222,30 +222,67 @@ public final class PlatformCommandManager {
 
     private void registerAlwaysInjectedValues() {
         globalInjectedValues.injectValue(Key.of(Region.class, Selection.class),
-            context -> {
-                LocalSession localSession = context.injectedValue(Key.of(LocalSession.class))
-                    .orElseThrow(() -> new IllegalStateException("No LocalSession"));
-                return context.injectedValue(Key.of(Player.class))
-                    .map(player -> {
-                        try {
-                            return localSession.getSelection(player.getWorld());
-                        } catch (IncompleteRegionException e) {
-                            exceptionConverter.convert(e);
-                            throw new AssertionError("Should have thrown a new exception.");
-                        }
-                    });
-            });
+                context -> {
+                    LocalSession localSession = context.injectedValue(Key.of(LocalSession.class))
+                            .orElseThrow(() -> new IllegalStateException("No LocalSession"));
+                    Optional<Player> playerValue = context.injectedValue(Key.of(Player.class));
+                    if (playerValue.isPresent()) {
+                        return playerValue.map(player -> {
+                            try {
+                                return localSession.getSelection(player.getWorld());
+                            } catch (IncompleteRegionException e) {
+                                exceptionConverter.convert(e);
+                                throw new AssertionError("Should have thrown a new exception.");
+                            }
+                        });
+                    } else {
+                        return context.injectedValue(Key.of(Actor.class))
+                                .map(actor -> {
+                                    try {
+                                        if (!localSession.hasWorldOverride()) {
+                                            throw new IncompleteRegionException();
+                                        }
+                                        return localSession.getSelection(localSession.getWorldOverride());
+                                    } catch (IncompleteRegionException e) {
+                                        exceptionConverter.convert(e);
+                                        throw new AssertionError("Should have thrown a new exception.");
+                                    }
+                                });
+                    }
+                });
         globalInjectedValues.injectValue(Key.of(EditSession.class),
-            context -> {
-                LocalSession localSession = context.injectedValue(Key.of(LocalSession.class))
-                    .orElseThrow(() -> new IllegalStateException("No LocalSession"));
-                return context.injectedValue(Key.of(Player.class))
-                    .map(player -> {
-                        EditSession editSession = localSession.createEditSession(player);
-                        editSession.enableStandardMode();
-                        return editSession;
-                    });
-            });
+                context -> {
+                    LocalSession localSession = context.injectedValue(Key.of(LocalSession.class))
+                            .orElseThrow(() -> new IllegalStateException("No LocalSession"));
+                    Optional<Player> playerValue = context.injectedValue(Key.of(Player.class));
+                    if (playerValue.isPresent()) {
+                        return playerValue.map(player -> {
+                            EditSession editSession = localSession.createEditSession(player);
+                            editSession.enableStandardMode();
+                            return editSession;
+                        });
+                    } else {
+                        return context.injectedValue(Key.of(Actor.class))
+                                .map(actor -> {
+                                    EditSession editSession = localSession.createEditSession(actor);
+                                    editSession.enableStandardMode();
+                                    return editSession;
+                                });
+                    }
+                });
+        globalInjectedValues.injectValue(Key.of(World.class),
+                context -> {
+                    LocalSession localSession = context.injectedValue(Key.of(LocalSession.class))
+                            .orElseThrow(() -> new IllegalStateException("No LocalSession"));
+                    Optional<Player> playerValue = context.injectedValue(Key.of(Player.class));
+                    if (playerValue.isPresent()) {
+                        return playerValue
+                                .map(player -> localSession.hasWorldOverride() ? localSession.getWorldOverride() : player.getWorld());
+                    } else {
+                        return context.injectedValue(Key.of(Actor.class))
+                                .map(actor -> localSession.getWorldOverride());
+                    }
+                });
     }
 
     private <CI> void registerSubCommands(String name, List<String> aliases, String desc,
