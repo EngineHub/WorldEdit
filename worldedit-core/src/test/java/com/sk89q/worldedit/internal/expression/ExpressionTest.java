@@ -19,16 +19,6 @@
 
 package com.sk89q.worldedit.internal.expression;
 
-import static java.lang.Math.atan2;
-import static java.lang.Math.sin;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Mockito;
-
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.extension.platform.Platform;
@@ -36,9 +26,18 @@ import com.sk89q.worldedit.internal.expression.lexer.LexerException;
 import com.sk89q.worldedit.internal.expression.parser.ParserException;
 import com.sk89q.worldedit.internal.expression.runtime.EvaluationException;
 import com.sk89q.worldedit.internal.expression.runtime.ExpressionEnvironment;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+
+import static java.lang.Math.atan2;
+import static java.lang.Math.sin;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class ExpressionTest {
-    @Before
+    @BeforeEach
     public void setup() {
         Platform mockPlat = Mockito.mock(Platform.class);
         Mockito.when(mockPlat.getConfiguration()).thenReturn(new LocalConfiguration() {
@@ -51,7 +50,7 @@ public class ExpressionTest {
 
     @Test
     public void testEvaluate() throws ExpressionException {
-        // check 
+        // check
         assertEquals(1 - 2 + 3, simpleEval("1 - 2 + 3"), 0);
 
         // check unary ops
@@ -74,7 +73,7 @@ public class ExpressionTest {
             compile("#");
             fail("Error expected");
         } catch (LexerException e) {
-            assertEquals("Error position", 0, e.getPosition());
+            assertEquals(0, e.getPosition(), "Error position");
         }
 
         // test parser errors
@@ -82,13 +81,13 @@ public class ExpressionTest {
             compile("x");
             fail("Error expected");
         } catch (ParserException e) {
-            assertEquals("Error position", 0, e.getPosition());
+            assertEquals(0, e.getPosition(), "Error position");
         }
         try {
             compile("x()");
             fail("Error expected");
         } catch (ParserException e) {
-            assertEquals("Error position", 0, e.getPosition());
+            assertEquals(0, e.getPosition(), "Error position");
         }
         try {
             compile("(");
@@ -104,19 +103,19 @@ public class ExpressionTest {
             compile("atan2(1)");
             fail("Error expected");
         } catch (ParserException e) {
-            assertEquals("Error position", 0, e.getPosition());
+            assertEquals(0, e.getPosition(), "Error position");
         }
         try {
             compile("atan2(1, 2, 3)");
             fail("Error expected");
         } catch (ParserException e) {
-            assertEquals("Error position", 0, e.getPosition());
+            assertEquals(0, e.getPosition(), "Error position");
         }
         try {
             compile("rotate(1, 2, 3)");
             fail("Error expected");
         } catch (ParserException e) {
-            assertEquals("Error position", 0, e.getPosition());
+            assertEquals(0, e.getPosition(), "Error position");
         }
     }
 

@@ -19,12 +19,12 @@
 
 package com.sk89q.worldedit.util;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
-
 import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.world.World;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests {@link Location}.

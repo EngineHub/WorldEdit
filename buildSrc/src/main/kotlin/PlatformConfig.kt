@@ -6,6 +6,7 @@ import org.gradle.api.plugins.JavaPluginConvention
 import org.gradle.api.plugins.quality.CheckstyleExtension
 import org.gradle.api.tasks.bundling.Jar
 import org.gradle.api.tasks.javadoc.Javadoc
+import org.gradle.api.tasks.testing.Test
 import org.gradle.external.javadoc.CoreJavadocOptions
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
@@ -39,8 +40,13 @@ fun Project.applyPlatformAndCoreConfiguration() {
         toolVersion = "7.6.1"
     }
 
+    tasks.withType<Test>().configureEach {
+        useJUnitPlatform()
+    }
+
     dependencies {
-        "testImplementation"("junit:junit:4.12")
+        "testImplementation"("org.junit.jupiter:junit-jupiter-api:${Versions.JUNIT}")
+        "testRuntime"("org.junit.jupiter:junit-jupiter-engine:${Versions.JUNIT}")
     }
 
     // Java 8 turns on doclint which we fail
