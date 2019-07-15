@@ -1,5 +1,6 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import net.fabricmc.loom.task.RemapJarTask
+import kotlin.reflect.KClass
 
 buildscript {
     repositories {
@@ -95,11 +96,16 @@ artifacts {
     add("archives", tasks.named("deobfJar"))
 }
 
-tasks.register<RemapJarTask>("remapShadowJar") {
-    val shadowJar = tasks.getByName<ShadowJar>("shadowJar")
-    dependsOn(shadowJar)
-    setInput(shadowJar.archiveFile)
-    setOutput(shadowJar.archiveFile.get().asFile.absolutePath.replace(Regex("-dev\\.jar$"), ".jar"))
+// intellij has trouble detecting RemapJarTask as a subclass of Task
+@Suppress("UNCHECKED_CAST")
+val remapJarIntellijHack = RemapJarTask::class as KClass<Task>
+tasks.register("remapShadowJar", remapJarIntellijHack) {
+    (this as RemapJarTask).run {
+        val shadowJar = tasks.getByName<ShadowJar>("shadowJar")
+        dependsOn(shadowJar)
+        setInput(shadowJar.archiveFile)
+        setOutput(shadowJar.archiveFile.get().asFile.absolutePath.replace(Regex("-dev\\.jar$"), ".jar"))
+    }
 }
 
 tasks.named("assemble").configure {
