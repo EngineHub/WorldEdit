@@ -302,6 +302,7 @@ public class CLIWorldEdit {
                         file.getName()
                 );
                 worldEdit.platform.addWorld(world);
+                WorldEdit.getInstance().getSessionManager().get(worldEdit.commandSender).setWorldOverride(world);
             } else {
                 throw new IllegalArgumentException("Unknown file provided!");
             }

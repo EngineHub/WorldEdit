@@ -28,6 +28,7 @@ import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.IncompleteRegionException;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
+import com.sk89q.worldedit.MissingWorldException;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.command.ApplyBrushCommands;
 import com.sk89q.worldedit.command.BiomeCommands;
@@ -225,63 +226,54 @@ public final class PlatformCommandManager {
                 context -> {
                     LocalSession localSession = context.injectedValue(Key.of(LocalSession.class))
                             .orElseThrow(() -> new IllegalStateException("No LocalSession"));
-                    Optional<Player> playerValue = context.injectedValue(Key.of(Player.class));
-                    if (playerValue.isPresent()) {
-                        return playerValue.map(player -> {
-                            try {
-                                return localSession.getSelection(player.getWorld());
-                            } catch (IncompleteRegionException e) {
-                                exceptionConverter.convert(e);
-                                throw new AssertionError("Should have thrown a new exception.");
-                            }
-                        });
-                    } else {
-                        return context.injectedValue(Key.of(Actor.class))
-                                .map(actor -> {
-                                    try {
-                                        if (!localSession.hasWorldOverride()) {
-                                            throw new IncompleteRegionException();
-                                        }
-                                        return localSession.getSelection(localSession.getWorldOverride());
-                                    } catch (IncompleteRegionException e) {
-                                        exceptionConverter.convert(e);
-                                        throw new AssertionError("Should have thrown a new exception.");
+                    return context.injectedValue(Key.of(Actor.class))
+                            .map(actor -> {
+                                try {
+                                    World world;
+                                    if (localSession.hasWorldOverride()) {
+                                        world = localSession.getWorldOverride();
+                                    } else if (actor.isPlayer() && actor instanceof Player) {
+                                        world = ((Player) actor).getWorld();
+                                    } else {
+                                        throw new MissingWorldException();
                                     }
-                                });
-                    }
+                                    return localSession.getSelection(world);
+                                } catch (MissingWorldException | IncompleteRegionException e) {
+                                    exceptionConverter.convert(e);
+                                    throw new AssertionError("Should have thrown a new exception.");
+                                }
+                            });
                 });
         globalInjectedValues.injectValue(Key.of(EditSession.class),
                 context -> {
                     LocalSession localSession = context.injectedValue(Key.of(LocalSession.class))
                             .orElseThrow(() -> new IllegalStateException("No LocalSession"));
-                    Optional<Player> playerValue = context.injectedValue(Key.of(Player.class));
-                    if (playerValue.isPresent()) {
-                        return playerValue.map(player -> {
-                            EditSession editSession = localSession.createEditSession(player);
-                            editSession.enableStandardMode();
-                            return editSession;
-                        });
-                    } else {
-                        return context.injectedValue(Key.of(Actor.class))
-                                .map(actor -> {
-                                    EditSession editSession = localSession.createEditSession(actor);
-                                    editSession.enableStandardMode();
-                                    return editSession;
-                                });
-                    }
+                    return context.injectedValue(Key.of(Actor.class))
+                            .map(player -> {
+                                EditSession editSession = localSession.createEditSession(player);
+                                editSession.enableStandardMode();
+                                return editSession;
+                            });
                 });
         globalInjectedValues.injectValue(Key.of(World.class),
                 context -> {
                     LocalSession localSession = context.injectedValue(Key.of(LocalSession.class))
                             .orElseThrow(() -> new IllegalStateException("No LocalSession"));
-                    Optional<Player> playerValue = context.injectedValue(Key.of(Player.class));
-                    if (playerValue.isPresent()) {
-                        return playerValue
-                                .map(player -> localSession.hasWorldOverride() ? localSession.getWorldOverride() : player.getWorld());
-                    } else {
-                        return context.injectedValue(Key.of(Actor.class))
-                                .map(actor -> localSession.getWorldOverride());
-                    }
+                    return context.injectedValue(Key.of(Actor.class))
+                            .map(actor -> {
+                                try {
+                                    if (localSession.hasWorldOverride()) {
+                                        return localSession.getWorldOverride();
+                                    } else if (actor.isPlayer() && actor instanceof Player) {
+                                        return ((Player) actor).getWorld();
+                                    } else {
+                                        throw new MissingWorldException();
+                                    }
+                                } catch (MissingWorldException e) {
+                                    exceptionConverter.convert(e);
+                                    throw new AssertionError("Should have thrown a new exception.");
+                                }
+                            });
                 });
     }
 

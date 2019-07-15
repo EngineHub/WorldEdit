@@ -33,6 +33,7 @@ import com.sk89q.worldedit.command.util.CommandPermissionsConditionGenerator;
 import com.sk89q.worldedit.command.util.Logging;
 import com.sk89q.worldedit.command.util.WorldEditAsyncCommandBuilder;
 import com.sk89q.worldedit.entity.Player;
+import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.permission.ActorSelectorLimits;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.function.block.BlockDistributionCounter;
@@ -104,23 +105,26 @@ public class SelectionCommands {
     )
     @Logging(POSITION)
     @CommandPermissions("worldedit.selection.pos")
-    public void pos1(Player player, LocalSession session,
+    public void pos1(Actor actor, World world, LocalSession session,
                      @Arg(desc = "Coordinates to set position 1 to", def = "")
                          BlockVector3 coordinates) throws WorldEditException {
         Location pos;
         if (coordinates != null) {
-            pos = new Location(player.getWorld(), coordinates.toVector3());
+            pos = new Location(world, coordinates.toVector3());
+        } else if (actor.isPlayer() && actor instanceof Player) {
+            pos = ((Player) actor).getBlockIn();
         } else {
-            pos = player.getBlockIn();
-        }
-
-        if (!session.getRegionSelector(player.getWorld()).selectPrimary(pos.toVector().toBlockPoint(), ActorSelectorLimits.forActor(player))) {
-            player.printError("Position already set.");
+            actor.printError("You must provide coordinates as console.");
             return;
         }
 
-        session.getRegionSelector(player.getWorld())
-                .explainPrimarySelection(player, session, pos.toVector().toBlockPoint());
+        if (!session.getRegionSelector(world).selectPrimary(pos.toVector().toBlockPoint(), ActorSelectorLimits.forActor(actor))) {
+            actor.printError("Position already set.");
+            return;
+        }
+
+        session.getRegionSelector(world)
+                .explainPrimarySelection(actor, session, pos.toVector().toBlockPoint());
     }
 
     @Command(
@@ -129,23 +133,26 @@ public class SelectionCommands {
     )
     @Logging(POSITION)
     @CommandPermissions("worldedit.selection.pos")
-    public void pos2(Player player, LocalSession session,
+    public void pos2(Actor actor, World world, LocalSession session,
                      @Arg(desc = "Coordinates to set position 2 to", def = "")
                          BlockVector3 coordinates) throws WorldEditException {
         Location pos;
         if (coordinates != null) {
-            pos = new Location(player.getWorld(), coordinates.toVector3());
+            pos = new Location(world, coordinates.toVector3());
+        } else if (actor.isPlayer() && actor instanceof Player) {
+            pos = ((Player) actor).getBlockIn();
         } else {
-            pos = player.getBlockIn();
-        }
-
-        if (!session.getRegionSelector(player.getWorld()).selectSecondary(pos.toVector().toBlockPoint(), ActorSelectorLimits.forActor(player))) {
-            player.printError("Position already set.");
+            actor.printError("You must provide coordinates as console.");
             return;
         }
 
-        session.getRegionSelector(player.getWorld())
-                .explainSecondarySelection(player, session, pos.toVector().toBlockPoint());
+        if (!session.getRegionSelector(world).selectSecondary(pos.toVector().toBlockPoint(), ActorSelectorLimits.forActor(actor))) {
+            actor.printError("Position already set.");
+            return;
+        }
+
+        session.getRegionSelector(world)
+                .explainSecondarySelection(actor, session, pos.toVector().toBlockPoint());
     }
 
     @Command(

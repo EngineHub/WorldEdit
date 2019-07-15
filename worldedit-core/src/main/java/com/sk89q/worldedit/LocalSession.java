@@ -903,44 +903,31 @@ public class LocalSession {
     /**
      * Construct a new edit session.
      *
-     * @param player the player
-     * @return an edit session
-     */
-    public EditSession createEditSession(Player player) {
-        checkNotNull(player);
-
-        BlockBag blockBag = getBlockBag(player);
-
-        // Create an edit session
-        EditSession editSession = WorldEdit.getInstance().getEditSessionFactory().getEditSession(
-                hasWorldOverride() ? getWorldOverride() : player.isPlayer() ? player.getWorld() : null,
-                getBlockChangeLimit(), blockBag, player
-        );
-        Request.request().setEditSession(editSession);
-
-        editSession.setFastMode(fastMode);
-        editSession.setReorderMode(reorderMode);
-        editSession.setMask(mask);
-        if (editSession.getSurvivalExtent() != null) {
-            editSession.getSurvivalExtent().setStripNbt(!player.hasPermission("worldedit.setnbt"));
-        }
-
-        return editSession;
-    }
-
-    /**
-     * Construct a new edit session.
-     *
      * @param actor the actor
      * @return an edit session
      */
     public EditSession createEditSession(Actor actor) {
         checkNotNull(actor);
-        checkNotNull(getWorldOverride());
+
+        World world = null;
+        if (hasWorldOverride()) {
+            world = getWorldOverride();
+        } else if (actor.isPlayer() && actor instanceof Player) {
+            world = ((Player) actor).getWorld();
+        }
 
         // Create an edit session
-        EditSession editSession = WorldEdit.getInstance().getEditSessionFactory()
-                .getEditSession(getWorldOverride(), getBlockChangeLimit());
+        EditSession editSession;
+        if (actor.isPlayer() && actor instanceof Player) {
+            BlockBag blockBag = getBlockBag((Player) actor);
+            editSession = WorldEdit.getInstance().getEditSessionFactory().getEditSession(
+                    world,
+                    getBlockChangeLimit(), blockBag, actor
+            );
+        } else {
+            editSession = WorldEdit.getInstance().getEditSessionFactory()
+                    .getEditSession(world, getBlockChangeLimit());
+        }
         Request.request().setEditSession(editSession);
 
         editSession.setFastMode(fastMode);
