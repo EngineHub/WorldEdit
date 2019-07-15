@@ -9,6 +9,7 @@ import org.gradle.api.tasks.javadoc.Javadoc
 import org.gradle.external.javadoc.CoreJavadocOptions
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
+import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.get
 import org.gradle.kotlin.dsl.getByName
 import org.gradle.kotlin.dsl.named
@@ -36,6 +37,10 @@ fun Project.applyPlatformAndCoreConfiguration() {
     configure<CheckstyleExtension> {
         configFile = rootProject.file("config/checkstyle/checkstyle.xml")
         toolVersion = "7.6.1"
+    }
+
+    dependencies {
+        "testImplementation"("junit:junit:4.12")
     }
 
     // Java 8 turns on doclint which we fail
