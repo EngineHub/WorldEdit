@@ -15,7 +15,11 @@ repositories {
 configurations.all {
     resolutionStrategy {
         // Fabric needs this.
-        force("commons-io:commons-io:2.5", "org.ow2.asm:asm:7.1")
+        force(
+            "commons-io:commons-io:2.5",
+            "org.ow2.asm:asm:7.1",
+            "org.ow2.asm:asm-commons:7.1"
+        )
     }
 }
 
