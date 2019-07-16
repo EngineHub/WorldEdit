@@ -63,6 +63,9 @@ tasks.named<ShadowJar>("shadowJar") {
         relocate("io.papermc.lib", "com.sk89q.worldedit.bukkit.paperlib") {
             include(dependency("io.papermc:paperlib:1.0.2"))
         }
+        relocate("it.unimi.dsi.fastutil", "com.sk89q.worldedit.bukkit.fastutil") {
+            include(dependency("it.unimi.dsi:fastutil"))
+        }
     }
 }
 

@@ -21,6 +21,7 @@ dependencies {
     "compile"("com.google.code.findbugs:jsr305:1.3.9")
     "compile"("com.google.code.gson:gson:2.8.0")
     "compile"("org.slf4j:slf4j-api:1.7.26")
+    "compile"("it.unimi.dsi:fastutil:8.2.1")
 
     "compileOnly"(project(":worldedit-libs:core:ap"))
     "annotationProcessor"(project(":worldedit-libs:core:ap"))

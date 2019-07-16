@@ -19,15 +19,18 @@
 
 package com.sk89q.worldedit.util.collection;
 
-import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.AbstractIterator;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.world.block.BaseBlock;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMaps;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectIterator;
 
 import java.util.AbstractCollection;
 import java.util.AbstractMap;
 import java.util.AbstractSet;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
@@ -122,7 +125,7 @@ public class BlockMap extends AbstractMap<BlockVector3, BaseBlock> {
         return (h << FIX_SIGN_SHIFT) >> FIX_SIGN_SHIFT;
     }
 
-    private final Map<Integer, Map<Integer, BaseBlock>> maps = new HashMap<>();
+    private final Int2ObjectMap<Int2ObjectMap<BaseBlock>> maps = new Int2ObjectOpenHashMap<>();
     private Set<Entry<BlockVector3, BaseBlock>> entrySet;
     private Collection<BaseBlock> values;
 
@@ -134,19 +137,19 @@ public class BlockMap extends AbstractMap<BlockVector3, BaseBlock> {
     }
 
     private Map<Integer, BaseBlock> getOrCreateMap(int groupKey) {
-        return maps.computeIfAbsent(groupKey, k -> new HashMap<>());
+        return maps.computeIfAbsent(groupKey, k -> new Int2ObjectOpenHashMap<>());
     }
 
     private Map<Integer, BaseBlock> getOrEmptyMap(int groupKey) {
-        return maps.getOrDefault(groupKey, ImmutableMap.of());
+        return maps.getOrDefault(groupKey, Int2ObjectMaps.emptyMap());
     }
 
     /**
      * Apply the function the the map at {@code groupKey}, and if the function empties the map,
      * delete it from {@code maps}.
      */
-    private <R> R cleanlyModifyMap(int groupKey, Function<Map<Integer, BaseBlock>, R> func) {
-        Map<Integer, BaseBlock> map = maps.get(groupKey);
+    private <R> R cleanlyModifyMap(int groupKey, Function<Int2ObjectMap<BaseBlock>, R> func) {
+        Int2ObjectMap<BaseBlock> map = maps.get(groupKey);
         if (map != null) {
             R result = func.apply(map);
             if (map.isEmpty()) {
@@ -154,7 +157,7 @@ public class BlockMap extends AbstractMap<BlockVector3, BaseBlock> {
             }
             return result;
         }
-        map = new HashMap<>();
+        map = new Int2ObjectOpenHashMap<>();
         R result = func.apply(map);
         if (!map.isEmpty()) {
             maps.put(groupKey, map);
@@ -246,14 +249,28 @@ public class BlockMap extends AbstractMap<BlockVector3, BaseBlock> {
             entrySet = es = new AbstractSet<Entry<BlockVector3, BaseBlock>>() {
                 @Override
                 public Iterator<Entry<BlockVector3, BaseBlock>> iterator() {
-                    return maps.entrySet().stream()
-                        .flatMap(ge -> {
-                            int groupKey = ge.getKey();
-                            return ge.getValue().entrySet().stream()
-                                .map(ie -> (Entry<BlockVector3, BaseBlock>)
-                                    new LazyEntry(groupKey, ie.getKey(), ie.getValue()));
-                        })
-                        .iterator();
+                    return new AbstractIterator<Entry<BlockVector3, BaseBlock>>() {
+
+                        private final ObjectIterator<Int2ObjectMap.Entry<Int2ObjectMap<BaseBlock>>> primaryIterator
+                            = Int2ObjectMaps.fastIterator(maps);
+                        private int currentGroupKey;
+                        private ObjectIterator<Int2ObjectMap.Entry<BaseBlock>> secondaryIterator;
+
+                        @Override
+                        protected Entry<BlockVector3, BaseBlock> computeNext() {
+                            if (secondaryIterator == null || !secondaryIterator.hasNext()) {
+                                if (!primaryIterator.hasNext()) {
+                                    return endOfData();
+                                }
+
+                                Int2ObjectMap.Entry<Int2ObjectMap<BaseBlock>> next = primaryIterator.next();
+                                currentGroupKey = next.getIntKey();
+                                secondaryIterator = Int2ObjectMaps.fastIterator(next.getValue());
+                            }
+                            Int2ObjectMap.Entry<BaseBlock> next = secondaryIterator.next();
+                            return new LazyEntry(currentGroupKey, next.getIntKey(), next.getValue());
+                        }
+                    };
                 }
 
                 @Override
