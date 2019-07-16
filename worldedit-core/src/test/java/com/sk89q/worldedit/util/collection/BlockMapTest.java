@@ -19,16 +19,16 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.AbstractMap;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -45,7 +45,7 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 @DisplayName("An ordered block map")
-class OrderedBlockMapTest {
+class BlockMapTest {
 
     @BeforeAll
     static void setupFakePlatform() {
@@ -80,7 +80,7 @@ class OrderedBlockMapTest {
     private final BaseBlock air = checkNotNull(BlockTypes.AIR).getDefaultState().toBaseBlock();
     private final BaseBlock oakWood = checkNotNull(BlockTypes.OAK_WOOD).getDefaultState().toBaseBlock();
 
-    private OrderedBlockMap map = OrderedBlockMap.create();
+    private BlockMap map = BlockMap.create();
 
     @BeforeEach
     void setUp() {
@@ -537,6 +537,21 @@ class OrderedBlockMapTest {
             assertEquals(oakWood, map.get(vec));
         }
 
+    }
+
+    @Test
+    @DisplayName("contains all inserted vectors")
+    void containsAllInsertedVectors() {
+        Set<BlockVector3> allVectors = VariedVectorsProvider.makeVectorsStream().collect(Collectors.toSet());
+        for (BlockVector3 vec : allVectors) {
+            map.put(vec, air);
+        }
+        assertEquals(allVectors.size(), map.size());
+        assertEquals(allVectors, map.keySet());
+        for (Map.Entry<BlockVector3, BaseBlock> entry : map.entrySet()) {
+            assertTrue(allVectors.contains(entry.getKey()));
+            assertEquals(air, entry.getValue());
+        }
     }
 
 }
