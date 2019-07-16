@@ -46,6 +46,9 @@ fun Project.applyPlatformAndCoreConfiguration() {
 
     dependencies {
         "testImplementation"("org.junit.jupiter:junit-jupiter-api:${Versions.JUNIT}")
+        "testImplementation"("org.junit.jupiter:junit-jupiter-params:${Versions.JUNIT}")
+        "testImplementation"("org.mockito:mockito-core:${Versions.MOCKITO}")
+        "testImplementation"("org.mockito:mockito-junit-jupiter:${Versions.MOCKITO}")
         "testRuntime"("org.junit.jupiter:junit-jupiter-engine:${Versions.JUNIT}")
     }
 
