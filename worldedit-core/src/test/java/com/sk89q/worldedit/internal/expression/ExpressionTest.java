@@ -26,6 +26,7 @@ import com.sk89q.worldedit.internal.expression.lexer.LexerException;
 import com.sk89q.worldedit.internal.expression.parser.ParserException;
 import com.sk89q.worldedit.internal.expression.runtime.EvaluationException;
 import com.sk89q.worldedit.internal.expression.runtime.ExpressionEnvironment;
+import com.sk89q.worldedit.internal.expression.runtime.ExpressionTimeoutException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -172,7 +173,7 @@ public class ExpressionTest {
 
     @Test
     public void testTimeout() {
-        EvaluationException e = assertThrows(EvaluationException.class,
+        ExpressionTimeoutException e = assertThrows(ExpressionTimeoutException.class,
             () -> simpleEval("for(i=0;i<256;i++){for(j=0;j<256;j++){for(k=0;k<256;k++){for(l=0;l<256;l++){ln(pi)}}}}"),
             "Loop was not stopped.");
         assertTrue(e.getMessage().contains("Calculations exceeded time limit"));
