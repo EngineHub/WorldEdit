@@ -26,7 +26,6 @@ import java.util.Comparator;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.sk89q.worldedit.math.BitMath.BITS_12;
 import static com.sk89q.worldedit.math.BitMath.BITS_26;
-import static com.sk89q.worldedit.math.BitMath.fixSign26;
 import static com.sk89q.worldedit.math.BitMath.unpackX;
 import static com.sk89q.worldedit.math.BitMath.unpackY;
 import static com.sk89q.worldedit.math.BitMath.unpackZ;
@@ -70,14 +69,14 @@ public final class BlockVector3 {
     private static final int WORLD_XZ_MINMAX = 30_000_000;
     private static final int WORLD_Y_MAX = 4095;
 
-    private static boolean isHorizontallyOOB(int h) {
-        return h < -WORLD_XZ_MINMAX || h > WORLD_XZ_MINMAX;
+    private static boolean isHorizontallyInBounds(int h) {
+        return -WORLD_XZ_MINMAX <= h && h <= WORLD_XZ_MINMAX;
     }
 
     public static boolean isLongPackable(BlockVector3 location) {
-        return isHorizontallyOOB(location.getX()) ||
-            isHorizontallyOOB(location.getZ()) ||
-            location.getY() < 0 || location.getY() > WORLD_Y_MAX;
+        return isHorizontallyInBounds(location.getX()) &&
+            isHorizontallyInBounds(location.getZ()) &&
+            0 <= location.getY() && location.getY() <= WORLD_Y_MAX;
     }
 
     public static void checkLongPackable(BlockVector3 location) {

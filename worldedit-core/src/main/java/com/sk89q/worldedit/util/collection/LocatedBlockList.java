@@ -41,7 +41,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class LocatedBlockList implements Iterable<LocatedBlock> {
 
-    private final Map<BlockVector3, BaseBlock> map = new LinkedHashMap<>();
+    private final Map<BlockVector3, BaseBlock> map = new LinkedHashMap<>(16, 1.5f);
 
     public LocatedBlockList() {
     }

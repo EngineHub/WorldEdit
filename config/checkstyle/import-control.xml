@@ -40,6 +40,7 @@
     <allow pkg="org.mozilla.javascript"/>
     <allow pkg="de.schlichtherle"/>
     <allow pkg="com.google.auto"/>
+    <allow pkg="it.unimi.dsi.fastutil"/>
 
     <subpackage name="bukkit">
       <allow pkg="org.bukkit"/>
