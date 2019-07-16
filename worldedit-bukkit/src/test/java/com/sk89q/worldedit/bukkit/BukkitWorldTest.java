@@ -20,15 +20,16 @@
 package com.sk89q.worldedit.bukkit;
 
 import com.sk89q.worldedit.util.TreeGenerator;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class BukkitWorldTest {
 
     @Test
     public void testTreeTypeMapping() {
         for (TreeGenerator.TreeType type : TreeGenerator.TreeType.values()) {
-            Assert.assertNotNull("No mapping for: " + type, BukkitWorld.toBukkitTreeType(type));
+            assertNotNull(BukkitWorld.toBukkitTreeType(type), "No mapping for: " + type);
         }
     }
 

@@ -22,7 +22,9 @@ configurations.all {
 dependencies {
     "api"(project(":worldedit-core"))
     "api"(project(":worldedit-libs:bukkit"))
-    "api"("org.bukkit:bukkit:1.13.2-R0.1-SNAPSHOT")
+    "api"("org.bukkit:bukkit:1.13.2-R0.1-SNAPSHOT") {
+        exclude("junit", "junit")
+    }
     "compileOnly"("com.destroystokyo.paper:paper-api:1.13.2-R0.1-SNAPSHOT")
     "implementation"("io.papermc:paperlib:1.0.2")
     "compileOnly"("com.sk89q:dummypermscompat:1.10")

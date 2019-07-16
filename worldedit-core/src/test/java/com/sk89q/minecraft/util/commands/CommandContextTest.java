@@ -19,19 +19,20 @@
 
 package com.sk89q.minecraft.util.commands;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.HashSet;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class CommandContextTest {
 
@@ -39,7 +40,7 @@ public class CommandContextTest {
     private static final String firstCmdString = "herpderp -opw testers \"mani world\" 'another thing'  because something";
     CommandContext firstCommand;
 
-    @Before
+    @BeforeEach
     public void setUpTest() {
         try {
             firstCommand = new CommandContext(firstCmdString, new HashSet<>(Arrays.asList('o', 'w')));
@@ -49,10 +50,12 @@ public class CommandContextTest {
         }
     }
 
-    @Test(expected = CommandException.class)
-    public void testInvalidFlags() throws CommandException {
+    @Test
+    public void testInvalidFlags() {
         final String failingCommand = "herpderp -opw testers";
-        new CommandContext(failingCommand, new HashSet<>(Arrays.asList('o', 'w')));
+        assertThrows(CommandException.class, () -> {
+            new CommandContext(failingCommand, new HashSet<>(Arrays.asList('o', 'w')));
+        });
     }
 
     @Test

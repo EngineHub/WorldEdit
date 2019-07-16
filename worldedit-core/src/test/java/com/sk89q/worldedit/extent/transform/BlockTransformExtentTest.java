@@ -19,33 +19,33 @@
 
 package com.sk89q.worldedit.extent.transform;
 
-import static org.junit.Assert.assertEquals;
-
 import com.sk89q.worldedit.math.transform.AffineTransform;
 import com.sk89q.worldedit.math.transform.Transform;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockType;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import java.util.HashSet;
 import java.util.Set;
 
-@Ignore("A platform is currently required to get properties, preventing this test.")
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+@Disabled("A platform is currently required to get properties, preventing this test.")
 public class BlockTransformExtentTest {
 
     private static final Transform ROTATE_90 = new AffineTransform().rotateY(-90);
     private static final Transform ROTATE_NEG_90 = new AffineTransform().rotateY(90);
     private final Set<BlockType> ignored = new HashSet<>();
 
-    @Before
-    public void setUp() throws Exception {
+    @BeforeEach
+    public void setUp() {
         BlockType.REGISTRY.register("worldedit:test", new BlockType("worldedit:test"));
     }
 
     @Test
-    public void testTransform() throws Exception {
+    public void testTransform() {
         for (BlockType type : BlockType.REGISTRY.values()) {
             if (ignored.contains(type)) {
                 continue;

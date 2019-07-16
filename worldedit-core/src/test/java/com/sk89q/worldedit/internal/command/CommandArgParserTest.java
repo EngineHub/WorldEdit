@@ -21,10 +21,10 @@ package com.sk89q.worldedit.internal.command;
 
 import com.google.common.collect.ImmutableList;
 import com.sk89q.worldedit.internal.util.Substring;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static com.sk89q.worldedit.internal.command.CommandArgParser.spaceSplit;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class CommandArgParserTest {
     @Test
