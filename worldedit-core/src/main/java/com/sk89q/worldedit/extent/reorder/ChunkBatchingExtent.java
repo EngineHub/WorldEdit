@@ -19,25 +19,22 @@
 
 package com.sk89q.worldedit.extent.reorder;
 
-import com.google.common.collect.Table;
-import com.google.common.collect.TreeBasedTable;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.extent.AbstractBufferingExtent;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.RunContext;
-import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.math.RegionOptimizedLongComparator;
+import com.sk89q.worldedit.util.collection.BlockMap;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
+import it.unimi.dsi.fastutil.longs.LongAVLTreeSet;
+import it.unimi.dsi.fastutil.longs.LongIterator;
+import it.unimi.dsi.fastutil.longs.LongSet;
 
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 
 /**
  * A special extent that batches changes into Minecraft chunks. This helps
@@ -47,17 +44,8 @@ import java.util.Set;
  */
 public class ChunkBatchingExtent extends AbstractBufferingExtent {
 
-    /**
-     * Comparator optimized for sorting chunks by the region file they reside
-     * in. This allows for file caches to be used while loading the chunk.
-     */
-    private static final Comparator<BlockVector2> REGION_OPTIMIZED_SORT =
-            Comparator.comparing((BlockVector2 vec) -> vec.shr(5), BlockVector2.COMPARING_GRID_ARRANGEMENT)
-                    .thenComparing(BlockVector2.COMPARING_GRID_ARRANGEMENT);
-
-    private final Table<BlockVector2, BlockVector3, BaseBlock> batches =
-        TreeBasedTable.create(REGION_OPTIMIZED_SORT, BlockVector3.sortByCoordsYzx());
-    private final Set<BlockVector3> containedBlocks = new HashSet<>();
+    private final BlockMap blockMap = BlockMap.create();
+    private final LongSet containedBlocks = new LongAVLTreeSet(RegionOptimizedLongComparator.INSTANCE);
     private boolean enabled;
 
     public ChunkBatchingExtent(Extent extent) {
@@ -81,32 +69,19 @@ public class ChunkBatchingExtent extends AbstractBufferingExtent {
         return enabled;
     }
 
-    private BlockVector2 getChunkPos(BlockVector3 location) {
-        return location.shr(4).toBlockVector2();
-    }
-
-    private BlockVector3 getInChunkPos(BlockVector3 location) {
-        return BlockVector3.at(location.getX() & 15, location.getY(), location.getZ() & 15);
-    }
-
     @Override
     public <B extends BlockStateHolder<B>> boolean setBlock(BlockVector3 location, B block) throws WorldEditException {
         if (!enabled) {
             return setDelegateBlock(location, block);
         }
-        BlockVector2 chunkPos = getChunkPos(location);
-        BlockVector3 inChunkPos = getInChunkPos(location);
-        batches.put(chunkPos, inChunkPos, block.toBaseBlock());
-        containedBlocks.add(location);
+        blockMap.put(location, block.toBaseBlock());
+        containedBlocks.add(location.toLongPackedForm());
         return true;
     }
 
     @Override
     protected Optional<BaseBlock> getBufferedBlock(BlockVector3 position) {
-        if (!containedBlocks.contains(position)) {
-            return Optional.empty();
-        }
-        return Optional.of(batches.get(getChunkPos(position), getInChunkPos(position)));
+        return Optional.ofNullable(blockMap.get(position));
     }
 
     @Override
@@ -117,23 +92,19 @@ public class ChunkBatchingExtent extends AbstractBufferingExtent {
         return new Operation() {
 
             // we get modified between create/resume -- only create this on resume to prevent CME
-            private Iterator<Map.Entry<BlockVector2, Map<BlockVector3, BaseBlock>>> batchIterator;
+            private LongIterator iterator;
 
             @Override
             public Operation resume(RunContext run) throws WorldEditException {
-                if (batchIterator == null) {
-                    batchIterator = batches.rowMap().entrySet().iterator();
+                if (iterator == null) {
+                    iterator = containedBlocks.iterator();
                 }
-                if (!batchIterator.hasNext()) {
-                    return null;
+                while (iterator.hasNext()) {
+                    BlockVector3 position = BlockVector3.fromLongPackedForm(iterator.nextLong());
+                    BaseBlock block = blockMap.get(position);
+                    getExtent().setBlock(position, block);
+                    iterator.remove();
                 }
-                Map.Entry<BlockVector2, Map<BlockVector3, BaseBlock>> next = batchIterator.next();
-                BlockVector3 chunkOffset = next.getKey().toBlockVector3().shl(4);
-                for (Map.Entry<BlockVector3, BaseBlock> block : next.getValue().entrySet()) {
-                    getExtent().setBlock(block.getKey().add(chunkOffset), block.getValue());
-                    containedBlocks.remove(block.getKey());
-                }
-                batchIterator.remove();
                 return this;
             }
 

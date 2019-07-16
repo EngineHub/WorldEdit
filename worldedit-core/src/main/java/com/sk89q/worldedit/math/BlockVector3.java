@@ -24,6 +24,12 @@ import com.sk89q.worldedit.math.transform.AffineTransform;
 import java.util.Comparator;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static com.sk89q.worldedit.math.BitMath.BITS_12;
+import static com.sk89q.worldedit.math.BitMath.BITS_26;
+import static com.sk89q.worldedit.math.BitMath.fixSign26;
+import static com.sk89q.worldedit.math.BitMath.unpackX;
+import static com.sk89q.worldedit.math.BitMath.unpackY;
+import static com.sk89q.worldedit.math.BitMath.unpackZ;
 
 /**
  * An immutable 3-dimensional vector.
@@ -61,6 +67,29 @@ public final class BlockVector3 {
         return new BlockVector3(x, y, z);
     }
 
+    private static final int WORLD_XZ_MINMAX = 30_000_000;
+    private static final int WORLD_Y_MAX = 4095;
+
+    private static boolean isHorizontallyOOB(int h) {
+        return h < -WORLD_XZ_MINMAX || h > WORLD_XZ_MINMAX;
+    }
+
+    public static boolean isLongPackable(BlockVector3 location) {
+        return isHorizontallyOOB(location.getX()) ||
+            isHorizontallyOOB(location.getZ()) ||
+            location.getY() < 0 || location.getY() > WORLD_Y_MAX;
+    }
+
+    public static void checkLongPackable(BlockVector3 location) {
+        checkArgument(isLongPackable(location),
+            "Location exceeds long packing limits: %s", location);
+    }
+
+
+    public static BlockVector3 fromLongPackedForm(long packed) {
+        return at(unpackX(packed), unpackY(packed), unpackZ(packed));
+    }
+
     // thread-safe initialization idiom
     private static final class YzxOrderComparator {
         private static final Comparator<BlockVector3> YZX_ORDER =
@@ -92,6 +121,11 @@ public final class BlockVector3 {
         this.x = x;
         this.y = y;
         this.z = z;
+    }
+
+    public long toLongPackedForm() {
+        checkLongPackable(this);
+        return (x & BITS_26) | ((z & BITS_26) << 26) | (((y & (long) BITS_12) << (26 + 26)));
     }
 
     /**

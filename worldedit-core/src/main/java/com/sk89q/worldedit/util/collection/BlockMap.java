@@ -39,6 +39,12 @@ import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
+import static com.sk89q.worldedit.math.BitMath.BITS_12;
+import static com.sk89q.worldedit.math.BitMath.BITS_14;
+import static com.sk89q.worldedit.math.BitMath.BITS_4;
+import static com.sk89q.worldedit.math.BitMath.BITS_8;
+import static com.sk89q.worldedit.math.BitMath.fixSign26;
+
 /**
  * A space-efficient map implementation for block locations.
  */
@@ -58,9 +64,6 @@ public class BlockMap extends AbstractMap<BlockVector3, BaseBlock> {
         return new BlockMap(source);
     }
 
-    private static final int WORLD_XZ_MINMAX = 30_000_000;
-    private static final int WORLD_Y_MAX = 4095;
-
     /*
      * Stores blocks by sub-dividing them into smaller groups.
      * A block location is 26 bits long for x + z, and usually
@@ -74,21 +77,9 @@ public class BlockMap extends AbstractMap<BlockVector3, BaseBlock> {
      * This means that each group has 12 bits of x + z, and 8 bits of y.
      */
 
-    private static final int BITS_14 = 0x3F_FF;
-    private static final int BITS_12 = 0x0F_FF;
-    private static final int BITS_8 = 0xFF;
-    private static final int BITS_4 = 0x0F;
-
-    private static boolean isHorizontallyOOB(int h) {
-        return h < -WORLD_XZ_MINMAX || h > WORLD_XZ_MINMAX;
-    }
 
     private static int toGroupKey(BlockVector3 location) {
-        if (isHorizontallyOOB(location.getX()) ||
-            isHorizontallyOOB(location.getZ()) ||
-            location.getY() < 0 || location.getY() > WORLD_Y_MAX) {
-            throw new IllegalArgumentException("Location exceeds OrderedBlockMap limits: " + location);
-        }
+        BlockVector3.checkLongPackable(location);
         return ((location.getX() >>> 12) & BITS_14)
             | (((location.getZ() >>> 12) & BITS_14) << 14)
             | (((location.getY() >>> 8) & BITS_4) << (14 + 14));
@@ -108,21 +99,10 @@ public class BlockMap extends AbstractMap<BlockVector3, BaseBlock> {
     private static final int INNER_Y = BITS_8 << (12 + 12);
 
     private static BlockVector3 reconstructLocation(int group, int inner) {
-        int x = fixSign(((group & GROUP_X) << 12) | (inner & INNER_X));
-        int z = fixSign(((group & GROUP_Z) >>> (14 - 12)) | ((inner & INNER_Z) >>> 12));
+        int x = fixSign26(((group & GROUP_X) << 12) | (inner & INNER_X));
+        int z = fixSign26(((group & GROUP_Z) >>> (14 - 12)) | ((inner & INNER_Z) >>> 12));
         int y = ((group & GROUP_Y) >>> (14 + 14 - 8)) | ((inner & INNER_Y) >>> (12 + 12));
         return BlockVector3.at(x, y, z);
-    }
-
-    private static final int FIX_SIGN_SHIFT = 32 - 26;
-
-    /**
-     * Fix horizontal sign -- we have a 26-bit two's-complement int,
-     * we need it to be a 32-bit two's-complement int.
-     */
-    private static int fixSign(int h) {
-        // Using https://stackoverflow.com/a/29266331/436524
-        return (h << FIX_SIGN_SHIFT) >> FIX_SIGN_SHIFT;
     }
 
     private final Int2ObjectMap<Int2ObjectMap<BaseBlock>> maps = new Int2ObjectOpenHashMap<>();
