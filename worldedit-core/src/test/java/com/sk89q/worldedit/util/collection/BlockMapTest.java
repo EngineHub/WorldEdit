@@ -21,7 +21,6 @@ package com.sk89q.worldedit.util.collection;
 
 import com.google.common.collect.ImmutableMap;
 import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.event.platform.PlatformReadyEvent;
 import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.extension.platform.PlatformManager;
@@ -32,6 +31,7 @@ import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.block.BlockTypes;
 import com.sk89q.worldedit.world.registry.BundledRegistries;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -66,21 +66,26 @@ import static org.mockito.Mockito.when;
 @DisplayName("An ordered block map")
 class BlockMapTest {
 
+    private static Platform mockedPlatform = mock(Platform.class);
+
     @BeforeAll
     static void setupFakePlatform() {
-        Platform mocked = mock(Platform.class);
-        when(mocked.getRegistries()).thenReturn(new BundledRegistries() {
+        when(mockedPlatform.getRegistries()).thenReturn(new BundledRegistries() {
         });
-        when(mocked.getCapabilities()).thenReturn(ImmutableMap.of(
+        when(mockedPlatform.getCapabilities()).thenReturn(ImmutableMap.of(
             Capability.WORLD_EDITING, Preference.PREFERRED,
             Capability.GAME_HOOKS, Preference.PREFERRED
         ));
         PlatformManager platformManager = WorldEdit.getInstance().getPlatformManager();
-        platformManager.register(mocked);
-        platformManager.handlePlatformReady(new PlatformReadyEvent());
+        platformManager.register(mockedPlatform);
 
         registerBlock("minecraft:air");
         registerBlock("minecraft:oak_wood");
+    }
+
+    @AfterAll
+    static void tearDownFakePlatform() {
+        WorldEdit.getInstance().getPlatformManager().unregister(mockedPlatform);
     }
 
     private static void registerBlock(String id) {
