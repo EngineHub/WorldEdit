@@ -1258,9 +1258,25 @@ public class EditSession implements Extent, AutoCloseable {
                 new BlockPattern(BlockTypes.AIR.getDefaultState());
         BlockReplace remove = new BlockReplace(this, pattern);
 
-        // Copy to a buffer so we don't destroy our original before we can copy all the blocks from it
-        ForgetfulExtentBuffer buffer = new ForgetfulExtentBuffer(this, new RegionMask(region));
-        ForwardExtentCopy copy = new ForwardExtentCopy(this, region, buffer, to);
+        final BlockVector3 displace = dir.multiply(distance);
+        final BlockVector3 size = region.getMaximumPoint().subtract(region.getMinimumPoint()).add(1, 1, 1);
+
+        BlockVector3 disAbs = displace.abs();
+
+        Region bufferRegion;
+        Extent bufferExtent;
+        boolean copyBuffer = false;
+        ForgetfulExtentBuffer buffer = null;
+        if (!isQueueEnabled() && disAbs.getBlockX() < size.getBlockX() && disAbs.getBlockY() < size.getBlockY() && disAbs.getBlockZ() < size.getBlockZ()) {
+            // Copy to a buffer so we don't destroy our original before we can copy all the blocks from it
+            buffer = new ForgetfulExtentBuffer(this, new RegionMask(region));
+            bufferExtent = buffer;
+            bufferRegion = buffer.asRegion();
+        } else {
+            bufferExtent = this;
+            bufferRegion = region;
+        }
+        ForwardExtentCopy copy = new ForwardExtentCopy(this, region, bufferExtent, to);
         copy.setTransform(new AffineTransform().translate(dir.multiply(distance)));
         copy.setSourceFunction(remove); // Remove
         copy.setRemovingEntities(true);
@@ -1268,11 +1284,15 @@ public class EditSession implements Extent, AutoCloseable {
             copy.setSourceMask(new ExistingBlockMask(this));
         }
 
-        // Then we need to copy the buffer to the world
-        BlockReplace replace = new BlockReplace(this, buffer);
-        RegionVisitor visitor = new RegionVisitor(buffer.asRegion(), replace);
-
-        OperationQueue operation = new OperationQueue(copy, visitor);
+        Operation operation;
+        if (copyBuffer) {
+            // Then we need to copy the buffer to the world
+            BlockReplace replace = new BlockReplace(this, buffer);
+            RegionVisitor visitor = new RegionVisitor(bufferRegion, replace);
+            operation = new OperationQueue(copy, visitor);
+        } else {
+            operation = copy;
+        }
         Operations.completeLegacy(operation);
 
         return copy.getAffected();
