@@ -41,6 +41,12 @@ import java.util.function.Function;
  */
 public class BlockMap extends AbstractMap<BlockVector3, BaseBlock> {
 
+    /* =========================
+       IF YOU MAKE CHANGES TO THIS CLASS
+       Re-run BlockMapTest with the blockmap.fulltesting=true system property.
+       Or just temporarily remove the annotation disabling the related tests.
+       ========================= */
+
     public static BlockMap create() {
         return new BlockMap();
     }
