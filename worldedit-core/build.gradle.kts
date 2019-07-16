@@ -28,7 +28,6 @@ dependencies {
     "annotationProcessor"("com.google.guava:guava:21.0")
     "compileOnly"("com.google.auto.value:auto-value-annotations:${Versions.AUTO_VALUE}")
     "annotationProcessor"("com.google.auto.value:auto-value:${Versions.AUTO_VALUE}")
-    "testCompile"("org.mockito:mockito-core:1.9.0-rc1")
 }
 
 tasks.withType<JavaCompile>().configureEach {
