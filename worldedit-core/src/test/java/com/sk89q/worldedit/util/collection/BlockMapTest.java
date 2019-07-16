@@ -38,6 +38,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -255,6 +256,7 @@ class BlockMapTest {
 
     @Nested
     @DisplayName("after having an entry added")
+    @EnabledIfSystemProperty(named = "blockmap.fulltesting", matches = "true")
     class AfterEntryAdded {
 
         // Note: This section of tests would really benefit from

@@ -66,8 +66,8 @@ public final class VariedVectorsProvider implements ArgumentsProvider, Annotatio
 
     // For better coverage assurance, increase these values for a local Gradle run.
     // Don't do it for IntelliJ, it'll probably run out of memory.
-    private static final int DIVISIONS_XZ = Integer.getInteger("ordered.block.divisions.xz", 4);
-    private static final int DIVISIONS_Y = Integer.getInteger("ordered.block.divisions.y", 3);
+    private static final int DIVISIONS_XZ = Integer.getInteger("variedvecs.divisions.xz", 4);
+    private static final int DIVISIONS_Y = Integer.getInteger("variedvecs.divisions.y", 3);
 
     private static final int XZ_STEP = (WORLD_XZ_MINMAX * 2) / DIVISIONS_XZ;
     private static final int Y_STEP = WORLD_Y_MAX / DIVISIONS_Y;
