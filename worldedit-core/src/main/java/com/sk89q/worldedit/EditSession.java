@@ -1272,6 +1272,7 @@ public class EditSession implements Extent, AutoCloseable {
             buffer = new ForgetfulExtentBuffer(this, new RegionMask(region));
             bufferExtent = buffer;
             bufferRegion = buffer.asRegion();
+            copyBuffer = true;
         } else {
             bufferExtent = this;
             bufferRegion = region;
