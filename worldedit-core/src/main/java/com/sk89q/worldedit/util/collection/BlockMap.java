@@ -27,8 +27,8 @@ import java.util.AbstractCollection;
 import java.util.AbstractMap;
 import java.util.AbstractSet;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -39,14 +39,14 @@ import java.util.function.Function;
 /**
  * A space-efficient map implementation for block locations.
  */
-public class OrderedBlockMap extends AbstractMap<BlockVector3, BaseBlock> {
+public class BlockMap extends AbstractMap<BlockVector3, BaseBlock> {
 
-    public static OrderedBlockMap create() {
-        return new OrderedBlockMap();
+    public static BlockMap create() {
+        return new BlockMap();
     }
 
-    public static OrderedBlockMap copyOf(Map<? extends BlockVector3, ? extends BaseBlock> source) {
-        return new OrderedBlockMap(source);
+    public static BlockMap copyOf(Map<? extends BlockVector3, ? extends BaseBlock> source) {
+        return new BlockMap(source);
     }
 
     private static final int WORLD_XZ_MINMAX = 30_000_000;
@@ -116,19 +116,19 @@ public class OrderedBlockMap extends AbstractMap<BlockVector3, BaseBlock> {
         return (h << FIX_SIGN_SHIFT) >> FIX_SIGN_SHIFT;
     }
 
-    private final Map<Integer, Map<Integer, BaseBlock>> maps = new LinkedHashMap<>();
+    private final Map<Integer, Map<Integer, BaseBlock>> maps = new HashMap<>();
     private Set<Entry<BlockVector3, BaseBlock>> entrySet;
     private Collection<BaseBlock> values;
 
-    private OrderedBlockMap() {
+    private BlockMap() {
     }
 
-    private OrderedBlockMap(Map<? extends BlockVector3, ? extends BaseBlock> source) {
+    private BlockMap(Map<? extends BlockVector3, ? extends BaseBlock> source) {
         putAll(source);
     }
 
     private Map<Integer, BaseBlock> getOrCreateMap(int groupKey) {
-        return maps.computeIfAbsent(groupKey, k -> new LinkedHashMap<>());
+        return maps.computeIfAbsent(groupKey, k -> new HashMap<>());
     }
 
     private Map<Integer, BaseBlock> getOrEmptyMap(int groupKey) {
@@ -148,7 +148,7 @@ public class OrderedBlockMap extends AbstractMap<BlockVector3, BaseBlock> {
             }
             return result;
         }
-        map = new LinkedHashMap<>();
+        map = new HashMap<>();
         R result = func.apply(map);
         if (!map.isEmpty()) {
             maps.put(groupKey, map);
@@ -252,7 +252,7 @@ public class OrderedBlockMap extends AbstractMap<BlockVector3, BaseBlock> {
 
                 @Override
                 public int size() {
-                    return OrderedBlockMap.this.size();
+                    return BlockMap.this.size();
                 }
             };
         }
@@ -357,9 +357,9 @@ public class OrderedBlockMap extends AbstractMap<BlockVector3, BaseBlock> {
 
     @Override
     public void putAll(Map<? extends BlockVector3, ? extends BaseBlock> m) {
-        if (m instanceof OrderedBlockMap) {
+        if (m instanceof BlockMap) {
             // optimize insertions:
-            ((OrderedBlockMap) m).maps.forEach((groupKey, map) ->
+            ((BlockMap) m).maps.forEach((groupKey, map) ->
                 getOrCreateMap(groupKey).putAll(map)
             );
         } else {
@@ -394,7 +394,7 @@ public class OrderedBlockMap extends AbstractMap<BlockVector3, BaseBlock> {
 
                 @Override
                 public int size() {
-                    return OrderedBlockMap.this.size();
+                    return BlockMap.this.size();
                 }
             };
         }
@@ -406,9 +406,9 @@ public class OrderedBlockMap extends AbstractMap<BlockVector3, BaseBlock> {
         if (o == this) {
             return true;
         }
-        if (o instanceof OrderedBlockMap) {
+        if (o instanceof BlockMap) {
             // optimize by skipping entry translations:
-            return maps.equals(((OrderedBlockMap) o).maps);
+            return maps.equals(((BlockMap) o).maps);
         }
         return super.equals(o);
     }

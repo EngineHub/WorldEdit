@@ -77,14 +77,14 @@ public final class VariedVectorsProvider implements ArgumentsProvider, Annotatio
         return makeVectorsStream().map(Arguments::of);
     }
 
-    private Stream<BlockVector3> makeVectorsStream() {
+    public static Stream<BlockVector3> makeVectorsStream() {
         return Stream.concat(
             ALWAYS_INCLUDE.stream(),
             Streams.stream(generateVectors()).filter(v -> !ALWAYS_INCLUDE.contains(v))
         );
     }
 
-    private Iterator<BlockVector3> generateVectors() {
+    private static Iterator<BlockVector3> generateVectors() {
         return new AbstractIterator<BlockVector3>() {
 
             private int x = -WORLD_XZ_MINMAX + 1;
