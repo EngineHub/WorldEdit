@@ -162,13 +162,13 @@ public class GenerationCommands {
         final double radiusX, radiusY, radiusZ;
         switch (radii.size()) {
         case 1:
-            radiusX = radiusY = radiusZ = Math.max(1, radii.get(0));
+            radiusX = radiusY = radiusZ = Math.max(0, radii.get(0));
             break;
 
         case 3:
-            radiusX = Math.max(1, radii.get(0));
-            radiusY = Math.max(1, radii.get(1));
-            radiusZ = Math.max(1, radii.get(2));
+            radiusX = Math.max(0, radii.get(0));
+            radiusY = Math.max(0, radii.get(1));
+            radiusZ = Math.max(0, radii.get(2));
             break;
 
         default:
@@ -205,7 +205,7 @@ public class GenerationCommands {
                          @Arg(desc = "The density of the forest, between 0 and 100", def = "5")
                              double density) throws WorldEditException {
         checkCommandArgument(0 <= density && density <= 100, "Density must be between 0 and 100");
-        density = density / 100;
+        density /= 100;
         int affected = editSession.makeForest(session.getPlacementPosition(player), size, density, type);
         player.print(affected + " trees created.");
         return affected;
