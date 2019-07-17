@@ -328,6 +328,24 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
         setPosition(Vector3.at(x + 0.5, y, z + 0.5));
     }
 
+    /**
+     * Check whether the player is allowed to fly.
+     *
+     * @return true if allowed flight
+     */
+    protected boolean isAllowedToFly() {
+        return false;
+    }
+
+    /**
+     * Set whether the player is currently flying.
+     *
+     * @param flying true to fly
+     */
+    protected void setFlying(boolean flying) {
+    }
+
+
     @Override
     public Location getBlockIn() {
         final Location location = getLocation();
