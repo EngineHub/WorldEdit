@@ -26,6 +26,7 @@ import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.extension.platform.PlatformManager;
 import com.sk89q.worldedit.extension.platform.Preference;
 import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.registry.Registry;
 import com.sk89q.worldedit.util.VariedVectorsProvider;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockType;
@@ -42,6 +43,7 @@ import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.lang.reflect.Field;
 import java.util.AbstractMap;
 import java.util.Map;
 import java.util.Set;
@@ -85,8 +87,11 @@ class BlockMapTest {
     }
 
     @AfterAll
-    static void tearDownFakePlatform() {
+    static void tearDownFakePlatform() throws Exception {
         WorldEdit.getInstance().getPlatformManager().unregister(mockedPlatform);
+        Field map = Registry.class.getDeclaredField("map");
+        map.setAccessible(true);
+        ((Map<?, ?>) map.get(BlockType.REGISTRY)).clear();
     }
 
     private static void registerBlock(String id) {

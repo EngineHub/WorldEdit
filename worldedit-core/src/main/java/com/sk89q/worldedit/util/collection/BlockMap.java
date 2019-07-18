@@ -105,7 +105,7 @@ public class BlockMap extends AbstractMap<BlockVector3, BaseBlock> {
         return BlockVector3.at(x, y, z);
     }
 
-    private final Int2ObjectMap<Int2ObjectMap<BaseBlock>> maps = new Int2ObjectOpenHashMap<>();
+    private final Int2ObjectMap<SubBlockMap> maps = new Int2ObjectOpenHashMap<>(64, 1f);
     private Set<Entry<BlockVector3, BaseBlock>> entrySet;
     private Collection<BaseBlock> values;
 
@@ -116,12 +116,12 @@ public class BlockMap extends AbstractMap<BlockVector3, BaseBlock> {
         putAll(source);
     }
 
-    private Map<Integer, BaseBlock> getOrCreateMap(int groupKey) {
-        return maps.computeIfAbsent(groupKey, k -> new Int2ObjectOpenHashMap<>());
+    private SubBlockMap getOrCreateMap(int groupKey) {
+        return maps.computeIfAbsent(groupKey, k -> new SubBlockMap());
     }
 
-    private Map<Integer, BaseBlock> getOrEmptyMap(int groupKey) {
-        return maps.getOrDefault(groupKey, Int2ObjectMaps.emptyMap());
+    private SubBlockMap getOrEmptyMap(int groupKey) {
+        return maps.getOrDefault(groupKey, SubBlockMap.EMPTY);
     }
 
     /**
@@ -129,7 +129,7 @@ public class BlockMap extends AbstractMap<BlockVector3, BaseBlock> {
      * delete it from {@code maps}.
      */
     private <R> R cleanlyModifyMap(int groupKey, Function<Int2ObjectMap<BaseBlock>, R> func) {
-        Int2ObjectMap<BaseBlock> map = maps.get(groupKey);
+        SubBlockMap map = maps.get(groupKey);
         if (map != null) {
             R result = func.apply(map);
             if (map.isEmpty()) {
@@ -137,7 +137,7 @@ public class BlockMap extends AbstractMap<BlockVector3, BaseBlock> {
             }
             return result;
         }
-        map = new Int2ObjectOpenHashMap<>();
+        map = new SubBlockMap();
         R result = func.apply(map);
         if (!map.isEmpty()) {
             maps.put(groupKey, map);
@@ -231,7 +231,7 @@ public class BlockMap extends AbstractMap<BlockVector3, BaseBlock> {
                 public Iterator<Entry<BlockVector3, BaseBlock>> iterator() {
                     return new AbstractIterator<Entry<BlockVector3, BaseBlock>>() {
 
-                        private final ObjectIterator<Int2ObjectMap.Entry<Int2ObjectMap<BaseBlock>>> primaryIterator
+                        private final ObjectIterator<Int2ObjectMap.Entry<SubBlockMap>> primaryIterator
                             = Int2ObjectMaps.fastIterator(maps);
                         private int currentGroupKey;
                         private ObjectIterator<Int2ObjectMap.Entry<BaseBlock>> secondaryIterator;
@@ -243,7 +243,7 @@ public class BlockMap extends AbstractMap<BlockVector3, BaseBlock> {
                                     return endOfData();
                                 }
 
-                                Int2ObjectMap.Entry<Int2ObjectMap<BaseBlock>> next = primaryIterator.next();
+                                Int2ObjectMap.Entry<SubBlockMap> next = primaryIterator.next();
                                 currentGroupKey = next.getIntKey();
                                 secondaryIterator = Int2ObjectMaps.fastIterator(next.getValue());
                             }

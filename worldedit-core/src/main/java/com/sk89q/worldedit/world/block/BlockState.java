@@ -67,7 +67,8 @@ public class BlockState implements BlockStateHolder<BlockState> {
     }
 
     BlockState initializeId(BlockRegistry registry) {
-        this.internalId = registry.getInternalBlockStateId(this);
+        this.internalId = OptionalInt.of(registry.getInternalBlockStateId(this)
+            .orElseGet(BlockStateIdAccess::provideUnusedWorldEditId));
         BlockStateIdAccess.register(this);
         return this;
     }

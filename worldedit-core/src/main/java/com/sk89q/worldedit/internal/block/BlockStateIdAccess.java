@@ -20,9 +20,11 @@
 package com.sk89q.worldedit.internal.block;
 
 import com.sk89q.worldedit.world.block.BlockState;
+import com.sk89q.worldedit.world.registry.BlockRegistry;
 
 import javax.annotation.Nullable;
 import java.util.Arrays;
+import java.util.BitSet;
 import java.util.OptionalInt;
 
 import static com.google.common.base.Preconditions.checkState;
@@ -51,7 +53,19 @@ public final class BlockStateIdAccess {
         return id < blockStates.length ? blockStates[id] : null;
     }
 
+    /**
+     * For platforms that don't have an internal ID system,
+     * {@link BlockRegistry#getInternalBlockStateId(BlockState)} will return
+     * {@link OptionalInt#empty()}. In those cases, we will use our own ID system,
+     * since it's useful for other entries as well.
+     * @return an unused ID in WorldEdit's ID tracker
+     */
+    public static int provideUnusedWorldEditId() {
+        return usedIds.nextClearBit(0);
+    }
+
     private static BlockState[] blockStates = new BlockState[2 << 13];
+    private static final BitSet usedIds = new BitSet();
 
     public static void register(BlockState blockState) {
         OptionalInt id = getBlockStateId(blockState);
@@ -69,6 +83,7 @@ public final class BlockStateIdAccess {
                 "BlockState %s is using the same block ID (%s) as BlockState %s",
                 blockState, i, existing);
             blockStates[i] = blockState;
+            usedIds.set(i);
         }
     }
 
