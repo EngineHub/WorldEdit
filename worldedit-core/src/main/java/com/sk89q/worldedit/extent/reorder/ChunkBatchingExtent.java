@@ -19,20 +19,19 @@
 
 package com.sk89q.worldedit.extent.reorder;
 
+import com.google.common.collect.ImmutableSortedSet;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.extent.AbstractBufferingExtent;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.RunContext;
 import com.sk89q.worldedit.math.BlockVector3;
-import com.sk89q.worldedit.math.RegionOptimizedLongComparator;
+import com.sk89q.worldedit.math.RegionOptimizedComparator;
 import com.sk89q.worldedit.util.collection.BlockMap;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
-import it.unimi.dsi.fastutil.longs.LongAVLTreeSet;
-import it.unimi.dsi.fastutil.longs.LongIterator;
-import it.unimi.dsi.fastutil.longs.LongSet;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
@@ -45,7 +44,6 @@ import java.util.Optional;
 public class ChunkBatchingExtent extends AbstractBufferingExtent {
 
     private final BlockMap blockMap = BlockMap.create();
-    private final LongSet containedBlocks = new LongAVLTreeSet(RegionOptimizedLongComparator.INSTANCE);
     private boolean enabled;
 
     public ChunkBatchingExtent(Extent extent) {
@@ -75,7 +73,6 @@ public class ChunkBatchingExtent extends AbstractBufferingExtent {
             return setDelegateBlock(location, block);
         }
         blockMap.put(location, block.toBaseBlock());
-        containedBlocks.add(location.toLongPackedForm());
         return true;
     }
 
@@ -92,19 +89,20 @@ public class ChunkBatchingExtent extends AbstractBufferingExtent {
         return new Operation() {
 
             // we get modified between create/resume -- only create this on resume to prevent CME
-            private LongIterator iterator;
+            private Iterator<BlockVector3> iterator;
 
             @Override
             public Operation resume(RunContext run) throws WorldEditException {
                 if (iterator == null) {
-                    iterator = containedBlocks.iterator();
+                    iterator = ImmutableSortedSet.copyOf(RegionOptimizedComparator.INSTANCE,
+                        blockMap.keySet()).iterator();
                 }
                 while (iterator.hasNext()) {
-                    BlockVector3 position = BlockVector3.fromLongPackedForm(iterator.nextLong());
+                    BlockVector3 position = iterator.next();
                     BaseBlock block = blockMap.get(position);
                     getExtent().setBlock(position, block);
-                    iterator.remove();
                 }
+                blockMap.clear();
                 return null;
             }
 

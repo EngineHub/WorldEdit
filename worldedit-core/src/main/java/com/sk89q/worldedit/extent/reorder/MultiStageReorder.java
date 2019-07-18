@@ -34,8 +34,6 @@ import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.block.BlockTypes;
-import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
-import it.unimi.dsi.fastutil.longs.LongSet;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -144,7 +142,6 @@ public class MultiStageReorder extends AbstractBufferingExtent implements Reorde
         priorityMap.put(BlockTypes.MOVING_PISTON, PlacementPriority.FINAL);
     }
 
-    private final LongSet containedBlocks = new LongOpenHashSet();
     private Map<PlacementPriority, BlockMap> stages = new HashMap<>();
 
     private boolean enabled;
@@ -246,15 +243,11 @@ public class MultiStageReorder extends AbstractBufferingExtent implements Reorde
         }
 
         stages.get(priority).put(location, block.toBaseBlock());
-        containedBlocks.add(location.toLongPackedForm());
         return !existing.equalsFuzzy(block);
     }
 
     @Override
     protected Optional<BaseBlock> getBufferedBlock(BlockVector3 position) {
-        if (!containedBlocks.contains(position.toLongPackedForm())) {
-            return Optional.empty();
-        }
         return stages.values().stream()
             .map(blocks -> blocks.get(position))
             .filter(Objects::nonNull)
@@ -273,7 +266,7 @@ public class MultiStageReorder extends AbstractBufferingExtent implements Reorde
                 @Override
                 public Operation resume(RunContext run) throws WorldEditException {
                     Operation operation = super.resume(run);
-                    if (operation != null) {
+                    if (operation == null) {
                         blocks.clear();
                     }
                     return operation;
