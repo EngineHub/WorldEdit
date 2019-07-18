@@ -21,10 +21,13 @@ package com.sk89q.worldedit.math;
 
 public class BitMath {
 
-    public static final long BITS_26 = 0x3_FF_FF_FF;
+    public static final long BITS_26 = 0x03_FF_FF_FF;
+    public static final long BITS_24 = 0x00_FF_FF_FF;
+    public static final long BITS_20 = 0x00_0F_FF_FF;
     public static final int BITS_14 = 0x3F_FF;
     public static final int BITS_12 = 0x0F_FF;
     public static final int BITS_8 = 0xFF;
+    public static final int BITS_6 = 0x3F;
     public static final int BITS_4 = 0x0F;
 
     private static final int FIX_SIGN_SHIFT = 32 - 26;

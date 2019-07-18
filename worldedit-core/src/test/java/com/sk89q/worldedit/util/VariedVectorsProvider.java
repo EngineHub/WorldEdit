@@ -62,15 +62,16 @@ public final class VariedVectorsProvider implements ArgumentsProvider, Annotatio
     }
 
     private static final int WORLD_XZ_MINMAX = 30_000_000;
-    private static final int WORLD_Y_MAX = 4095;
+    private static final long WORLD_Y_MAX = Integer.MAX_VALUE;
+    private static final long WORLD_Y_MIN = Integer.MIN_VALUE;
 
     // For better coverage assurance, increase these values for a local Gradle run.
     // Don't do it for IntelliJ, it'll probably run out of memory.
-    private static final int DIVISIONS_XZ = Integer.getInteger("variedvecs.divisions.xz", 4);
-    private static final int DIVISIONS_Y = Integer.getInteger("variedvecs.divisions.y", 3);
+    private static final int DIVISIONS_XZ = Integer.getInteger("variedvecs.divisions.xz", 5);
+    private static final int DIVISIONS_Y = Integer.getInteger("variedvecs.divisions.y", 5);
 
     private static final int XZ_STEP = (WORLD_XZ_MINMAX * 2) / DIVISIONS_XZ;
-    private static final int Y_STEP = WORLD_Y_MAX / DIVISIONS_Y;
+    private static final long Y_STEP = (WORLD_Y_MAX * 2) / DIVISIONS_Y;
 
     private static final Set<BlockVector3> ALWAYS_INCLUDE =
         ImmutableSet.of(BlockVector3.ZERO, BlockVector3.ONE,
@@ -108,14 +109,14 @@ public final class VariedVectorsProvider implements ArgumentsProvider, Annotatio
 
             private int x = -WORLD_XZ_MINMAX + 1;
             private int z = -WORLD_XZ_MINMAX + 1;
-            private int y = 0;
+            private long y = WORLD_Y_MAX;
 
             @Override
             protected BlockVector3 computeNext() {
                 if (x > WORLD_XZ_MINMAX) {
                     return endOfData();
                 }
-                BlockVector3 newVector = BlockVector3.at(x, y, z);
+                BlockVector3 newVector = BlockVector3.at(x, (int) y, z);
                 y += Y_STEP;
                 if (y > WORLD_Y_MAX) {
                     y = 0;

@@ -24,7 +24,9 @@ import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMaps;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
+import it.unimi.dsi.fastutil.longs.Long2ObjectMaps;
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectIterator;
 
 import java.util.AbstractCollection;
@@ -39,9 +41,9 @@ import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-import static com.sk89q.worldedit.math.BitMath.BITS_12;
-import static com.sk89q.worldedit.math.BitMath.BITS_14;
-import static com.sk89q.worldedit.math.BitMath.BITS_4;
+import static com.sk89q.worldedit.math.BitMath.BITS_20;
+import static com.sk89q.worldedit.math.BitMath.BITS_24;
+import static com.sk89q.worldedit.math.BitMath.BITS_6;
 import static com.sk89q.worldedit.math.BitMath.BITS_8;
 import static com.sk89q.worldedit.math.BitMath.fixSign26;
 
@@ -68,44 +70,44 @@ public class BlockMap extends AbstractMap<BlockVector3, BaseBlock> {
      * Stores blocks by sub-dividing them into smaller groups.
      * A block location is 26 bits long for x + z, and usually
      * 8 bits for y, although mods such as cubic chunks may
-     * expand this to infinite. We support up to 12 bits of y.
+     * expand this to infinite. We support up to 32 bits of y.
      *
-     * Each group uses 14 bits of x + z, and 4 bits of y.
-     * This allows us to fit the group location neatly into a single int.
-     * We store Y in the top bits, Z in the middle bits, and X in the low bits.
-     *
-     * This means that each group has 12 bits of x + z, and 8 bits of y.
+     * Grouping key stores 20 bits x + z, 24 bits y.
+     * Inner key stores 6 bits x + z, 8 bits y.
+     * Order (lowest to highest) is x-z-y.
      */
 
 
-    private static int toGroupKey(BlockVector3 location) {
-        BlockVector3.checkLongPackable(location);
-        return ((location.getX() >>> 12) & BITS_14)
-            | (((location.getZ() >>> 12) & BITS_14) << 14)
-            | (((location.getY() >>> 8) & BITS_4) << (14 + 14));
+    private static long toGroupKey(BlockVector3 location) {
+        return ((location.getX() >>> 6) & BITS_20)
+            | (((location.getZ() >>> 6) & BITS_20) << 20)
+            | (((location.getY() >>> 8) & BITS_24) << (20 + 20));
     }
 
     private static int toInnerKey(BlockVector3 location) {
-        return (location.getX() & BITS_12)
-            | ((location.getZ() & BITS_12) << 12)
-            | ((location.getY() & BITS_8) << (12 + 12));
+        return (location.getX() & BITS_6)
+            | ((location.getZ() & BITS_6) << 6)
+            | ((location.getY() & BITS_8) << (6 + 6));
     }
 
-    private static final int GROUP_X = BITS_14;
-    private static final int GROUP_Z = BITS_14 << 14;
-    private static final int GROUP_Y = BITS_4 << (14 + 14);
-    private static final int INNER_X = BITS_12;
-    private static final int INNER_Z = BITS_12 << 12;
-    private static final int INNER_Y = BITS_8 << (12 + 12);
+    private static final long GROUP_X = BITS_20;
+    private static final long GROUP_Z = BITS_20 << 20;
+    private static final long GROUP_Y = BITS_24 << (20 + 20);
+    private static final int INNER_X = BITS_6;
+    private static final int INNER_Z = BITS_6 << 6;
+    private static final int INNER_Y = BITS_8 << (6 + 6);
 
-    private static BlockVector3 reconstructLocation(int group, int inner) {
-        int x = fixSign26(((group & GROUP_X) << 12) | (inner & INNER_X));
-        int z = fixSign26(((group & GROUP_Z) >>> (14 - 12)) | ((inner & INNER_Z) >>> 12));
-        int y = ((group & GROUP_Y) >>> (14 + 14 - 8)) | ((inner & INNER_Y) >>> (12 + 12));
+    private static BlockVector3 reconstructLocation(long group, int inner) {
+        int groupX = (int) ((group & GROUP_X) << 6);
+        int x = fixSign26(groupX | (inner & INNER_X));
+        int groupZ = (int) ((group & GROUP_Z) >>> (20 - 6));
+        int z = fixSign26(groupZ | ((inner & INNER_Z) >>> 6));
+        int groupY = (int) ((group & GROUP_Y) >>> (20 + 20 - 8));
+        int y = groupY | ((inner & INNER_Y) >>> (6 + 6));
         return BlockVector3.at(x, y, z);
     }
 
-    private final Int2ObjectMap<SubBlockMap> maps = new Int2ObjectOpenHashMap<>(64, 1f);
+    private final Long2ObjectMap<SubBlockMap> maps = new Long2ObjectOpenHashMap<>(4, 1f);
     private Set<Entry<BlockVector3, BaseBlock>> entrySet;
     private Collection<BaseBlock> values;
 
@@ -116,11 +118,11 @@ public class BlockMap extends AbstractMap<BlockVector3, BaseBlock> {
         putAll(source);
     }
 
-    private SubBlockMap getOrCreateMap(int groupKey) {
+    private SubBlockMap getOrCreateMap(long groupKey) {
         return maps.computeIfAbsent(groupKey, k -> new SubBlockMap());
     }
 
-    private SubBlockMap getOrEmptyMap(int groupKey) {
+    private SubBlockMap getOrEmptyMap(long groupKey) {
         return maps.getOrDefault(groupKey, SubBlockMap.EMPTY);
     }
 
@@ -128,7 +130,7 @@ public class BlockMap extends AbstractMap<BlockVector3, BaseBlock> {
      * Apply the function the the map at {@code groupKey}, and if the function empties the map,
      * delete it from {@code maps}.
      */
-    private <R> R cleanlyModifyMap(int groupKey, Function<Int2ObjectMap<BaseBlock>, R> func) {
+    private <R> R cleanlyModifyMap(long groupKey, Function<Int2ObjectMap<BaseBlock>, R> func) {
         SubBlockMap map = maps.get(groupKey);
         if (map != null) {
             R result = func.apply(map);
@@ -231,9 +233,9 @@ public class BlockMap extends AbstractMap<BlockVector3, BaseBlock> {
                 public Iterator<Entry<BlockVector3, BaseBlock>> iterator() {
                     return new AbstractIterator<Entry<BlockVector3, BaseBlock>>() {
 
-                        private final ObjectIterator<Int2ObjectMap.Entry<SubBlockMap>> primaryIterator
-                            = Int2ObjectMaps.fastIterator(maps);
-                        private int currentGroupKey;
+                        private final ObjectIterator<Long2ObjectMap.Entry<SubBlockMap>> primaryIterator
+                            = Long2ObjectMaps.fastIterator(maps);
+                        private long currentGroupKey;
                         private ObjectIterator<Int2ObjectMap.Entry<BaseBlock>> secondaryIterator;
 
                         @Override
@@ -243,8 +245,8 @@ public class BlockMap extends AbstractMap<BlockVector3, BaseBlock> {
                                     return endOfData();
                                 }
 
-                                Int2ObjectMap.Entry<SubBlockMap> next = primaryIterator.next();
-                                currentGroupKey = next.getIntKey();
+                                Long2ObjectMap.Entry<SubBlockMap> next = primaryIterator.next();
+                                currentGroupKey = next.getLongKey();
                                 secondaryIterator = Int2ObjectMaps.fastIterator(next.getValue());
                             }
                             Int2ObjectMap.Entry<BaseBlock> next = secondaryIterator.next();
@@ -264,12 +266,12 @@ public class BlockMap extends AbstractMap<BlockVector3, BaseBlock> {
 
     private final class LazyEntry implements Map.Entry<BlockVector3, BaseBlock> {
 
-        private final int groupKey;
+        private final long groupKey;
         private final int innerKey;
         private BlockVector3 lazyKey;
         private BaseBlock value;
 
-        private LazyEntry(int groupKey, int innerKey, BaseBlock value) {
+        private LazyEntry(long groupKey, int innerKey, BaseBlock value) {
             this.groupKey = groupKey;
             this.innerKey = innerKey;
             this.value = value;
