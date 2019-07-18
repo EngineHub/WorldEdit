@@ -105,7 +105,7 @@ public class ChunkBatchingExtent extends AbstractBufferingExtent {
                     getExtent().setBlock(position, block);
                     iterator.remove();
                 }
-                return this;
+                return null;
             }
 
             @Override
