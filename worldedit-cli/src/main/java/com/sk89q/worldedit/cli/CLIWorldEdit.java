@@ -228,13 +228,13 @@ public class CLIWorldEdit {
             String line = scanner.nextLine();
             if (line.equalsIgnoreCase("stop")) {
                 commandSender.print("Stopping!");
-                return;
+                break;
             }
             if (line.startsWith("save")) {
                 String[] bits = line.split(" ");
                 if (bits.length == 0) {
                     commandSender.print("Usage: save <filename>");
-                    return;
+                    continue;
                 }
                 World world = platform.getWorlds().get(0);
                 if (world instanceof ClipboardWorld) {
@@ -246,16 +246,17 @@ public class CLIWorldEdit {
                     }
                     if (file == null) {
                         commandSender.printError("Please choose a file.");
-                        return;
+                        continue;
                     }
                     try(ClipboardWriter writer = BuiltInClipboardFormat.SPONGE_SCHEMATIC.getWriter(new FileOutputStream(file))) {
                         writer.write((Clipboard) world);
+                        commandSender.print("Saved to file");
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
                 }
 
-                return;
+                continue;
             }
             WorldEdit.getInstance().getEventBus().post(new CommandEvent(
                     commandSender,
