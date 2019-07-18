@@ -24,6 +24,7 @@ import com.sk89q.worldedit.extent.AbstractBufferingExtent;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.OperationQueue;
+import com.sk89q.worldedit.function.operation.RunContext;
 import com.sk89q.worldedit.function.operation.SetBlockMap;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.util.collection.BlockMap;
@@ -267,7 +268,17 @@ public class MultiStageReorder extends AbstractBufferingExtent implements Reorde
         }
         List<Operation> operations = new ArrayList<>();
         for (PlacementPriority priority : PlacementPriority.values()) {
-            operations.add(new SetBlockMap(getExtent(), stages.get(priority)));
+            BlockMap blocks = stages.get(priority);
+            operations.add(new SetBlockMap(getExtent(), blocks) {
+                @Override
+                public Operation resume(RunContext run) throws WorldEditException {
+                    Operation operation = super.resume(run);
+                    if (operation != null) {
+                        blocks.clear();
+                    }
+                    return operation;
+                }
+            });
         }
 
         return new OperationQueue(operations);
