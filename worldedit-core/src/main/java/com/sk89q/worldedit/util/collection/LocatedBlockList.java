@@ -19,20 +19,19 @@
 
 package com.sk89q.worldedit.util.collection;
 
-import com.google.common.collect.Iterators;
+import com.google.common.collect.AbstractIterator;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.util.LocatedBlock;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
+import it.unimi.dsi.fastutil.longs.LongArrayList;
+import it.unimi.dsi.fastutil.longs.LongListIterator;
 
 import javax.annotation.Nullable;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.function.Predicate;
+import java.util.function.ToLongFunction;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -41,7 +40,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class LocatedBlockList implements Iterable<LocatedBlock> {
 
-    private final Map<BlockVector3, BaseBlock> map = new LinkedHashMap<>(16, 1.5f);
+    private final BlockMap blocks = BlockMap.create();
+    private final LongArrayList order = new LongArrayList();
 
     public LocatedBlockList() {
     }
@@ -58,34 +58,62 @@ public class LocatedBlockList implements Iterable<LocatedBlock> {
     }
 
     public <B extends BlockStateHolder<B>> void add(BlockVector3 location, B block) {
-        map.put(location, block.toBaseBlock());
+        blocks.put(location, block.toBaseBlock());
+        order.add(location.toLongPackedForm());
     }
 
     public boolean containsLocation(BlockVector3 location) {
-        return map.containsKey(location);
+        return blocks.containsKey(location);
     }
 
     public @Nullable BaseBlock get(BlockVector3 location) {
-        return map.get(location);
+        return blocks.get(location);
     }
 
     public int size() {
-        return map.size();
+        return order.size();
     }
 
     public void clear() {
-        map.clear();
+        blocks.clear();
+        order.clear();
     }
 
     @Override
     public Iterator<LocatedBlock> iterator() {
-        return Iterators.transform(map.entrySet().iterator(), e -> new LocatedBlock(e.getKey(), e.getValue()));
+        return new LocatedBlockIterator(order.listIterator(),
+            LongListIterator::hasNext,
+            LongListIterator::nextLong);
     }
 
     public Iterator<LocatedBlock> reverseIterator() {
-        List<LocatedBlock> data = Arrays.asList(Iterators.toArray(iterator(), LocatedBlock.class));
-        Collections.reverse(data);
-        return data.iterator();
+        return new LocatedBlockIterator(order.listIterator(order.size()),
+            LongListIterator::hasPrevious,
+            LongListIterator::previousLong);
+    }
+
+    private final class LocatedBlockIterator extends AbstractIterator<LocatedBlock> {
+
+        private final LongListIterator iterator;
+        private final Predicate<LongListIterator> hasNext;
+        private final ToLongFunction<LongListIterator> next;
+
+        private LocatedBlockIterator(LongListIterator iterator,
+                                     Predicate<LongListIterator> hasNext,
+                                     ToLongFunction<LongListIterator> next) {
+            this.iterator = iterator;
+            this.hasNext = hasNext;
+            this.next = next;
+        }
+
+        @Override
+        protected LocatedBlock computeNext() {
+            if (!hasNext.test(iterator)) {
+                return endOfData();
+            }
+            BlockVector3 position = BlockVector3.fromLongPackedForm(next.applyAsLong(iterator));
+            return new LocatedBlock(position, blocks.get(position));
+        }
     }
 
 }
