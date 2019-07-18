@@ -206,6 +206,8 @@ public class MCEditSchematicReader extends NBTSchematicReader {
             }
             if (values.isEmpty()) {
                 t = null;
+            } else {
+                t = new CompoundTag(values);
             }
 
             if (fixer != null && t != null) {
@@ -378,6 +380,10 @@ public class MCEditSchematicReader extends NBTSchematicReader {
                 return "note_block";
             case "Structure":
                 return "structure_block";
+            case "Chest":
+                return "chest";
+            case "Sign":
+                return "sign";
             default:
                 return id;
         }

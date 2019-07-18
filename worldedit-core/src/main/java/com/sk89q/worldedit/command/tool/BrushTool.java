@@ -92,7 +92,7 @@ public class BrushTool implements TraceTool {
      * @return the mask used to stop block traces
      */
     public @Nullable Mask getTraceMask() {
-        return mask;
+        return this.traceMask;
     }
 
     /**
