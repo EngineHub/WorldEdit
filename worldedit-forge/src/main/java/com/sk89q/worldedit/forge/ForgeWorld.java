@@ -96,6 +96,7 @@ import net.minecraft.world.storage.WorldInfo;
 
 import javax.annotation.Nullable;
 import java.io.File;
+import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.nio.file.Path;
 import java.util.Collections;
@@ -329,19 +330,22 @@ public class ForgeWorld extends AbstractWorld {
 
             MinecraftServer server = originalWorld.getServer();
             SaveHandler saveHandler = new SaveHandler(saveFolder, originalWorld.getSaveHandler().getWorldDirectory().getName(), server, server.getDataFixer());
-            World freshWorld = new ServerWorld(server, server.getBackgroundExecutor(), saveHandler, originalWorld.getWorldInfo(),
-                    originalWorld.dimension.getType(), originalWorld.getProfiler(), new NoOpChunkStatusListener());
+            try (World freshWorld = new ServerWorld(server, server.getBackgroundExecutor(), saveHandler, originalWorld.getWorldInfo(),
+                    originalWorld.dimension.getType(), originalWorld.getProfiler(), new NoOpChunkStatusListener())) {
 
-            // Pre-gen all the chunks
-            // We need to also pull one more chunk in every direction
-            CuboidRegion expandedPreGen = new CuboidRegion(region.getMinimumPoint().subtract(16, 0, 16), region.getMaximumPoint().add(16, 0, 16));
-            for (BlockVector2 chunk : expandedPreGen.getChunks()) {
-                freshWorld.getChunk(chunk.getBlockX(), chunk.getBlockZ());
-            }
+                // Pre-gen all the chunks
+                // We need to also pull one more chunk in every direction
+                CuboidRegion expandedPreGen = new CuboidRegion(region.getMinimumPoint().subtract(16, 0, 16), region.getMaximumPoint().add(16, 0, 16));
+                for (BlockVector2 chunk : expandedPreGen.getChunks()) {
+                    freshWorld.getChunk(chunk.getBlockX(), chunk.getBlockZ());
+                }
 
-            ForgeWorld from = new ForgeWorld(freshWorld);
-            for (BlockVector3 vec : region) {
-                editSession.setBlock(vec, from.getFullBlock(vec));
+                ForgeWorld from = new ForgeWorld(freshWorld);
+                for (BlockVector3 vec : region) {
+                    editSession.setBlock(vec, from.getFullBlock(vec));
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
         } catch (MaxChangedBlocksException e) {
             throw new RuntimeException(e);
