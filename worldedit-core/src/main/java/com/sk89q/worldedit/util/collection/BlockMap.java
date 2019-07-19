@@ -41,11 +41,8 @@ import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-import static com.sk89q.worldedit.math.BitMath.BITS_20;
-import static com.sk89q.worldedit.math.BitMath.BITS_24;
-import static com.sk89q.worldedit.math.BitMath.BITS_6;
-import static com.sk89q.worldedit.math.BitMath.BITS_8;
-import static com.sk89q.worldedit.math.BitMath.fixSign26;
+import static com.sk89q.worldedit.math.BitMath.fixSign;
+import static com.sk89q.worldedit.math.BitMath.mask;
 
 /**
  * A space-efficient map implementation for block locations.
@@ -77,6 +74,10 @@ public class BlockMap extends AbstractMap<BlockVector3, BaseBlock> {
      * Order (lowest to highest) is x-z-y.
      */
 
+    private static final long BITS_24 = mask(24);
+    private static final long BITS_20 = mask(20);
+    private static final int BITS_8 = mask(8);
+    private static final int BITS_6 = mask(6);
 
     private static long toGroupKey(BlockVector3 location) {
         return ((location.getX() >>> 6) & BITS_20)
@@ -99,9 +100,9 @@ public class BlockMap extends AbstractMap<BlockVector3, BaseBlock> {
 
     private static BlockVector3 reconstructLocation(long group, int inner) {
         int groupX = (int) ((group & GROUP_X) << 6);
-        int x = fixSign26(groupX | (inner & INNER_X));
+        int x = fixSign(groupX | (inner & INNER_X), 26);
         int groupZ = (int) ((group & GROUP_Z) >>> (20 - 6));
-        int z = fixSign26(groupZ | ((inner & INNER_Z) >>> 6));
+        int z = fixSign(groupZ | ((inner & INNER_Z) >>> 6), 26);
         int groupY = (int) ((group & GROUP_Y) >>> (20 + 20 - 8));
         int y = groupY | ((inner & INNER_Y) >>> (6 + 6));
         return BlockVector3.at(x, y, z);

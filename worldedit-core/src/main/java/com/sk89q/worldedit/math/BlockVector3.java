@@ -24,8 +24,7 @@ import com.sk89q.worldedit.math.transform.AffineTransform;
 import java.util.Comparator;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.sk89q.worldedit.math.BitMath.BITS_12;
-import static com.sk89q.worldedit.math.BitMath.BITS_26;
+import static com.sk89q.worldedit.math.BitMath.mask;
 import static com.sk89q.worldedit.math.BitMath.unpackX;
 import static com.sk89q.worldedit.math.BitMath.unpackY;
 import static com.sk89q.worldedit.math.BitMath.unpackZ;
@@ -84,6 +83,8 @@ public final class BlockVector3 {
             "Location exceeds long packing limits: %s", location);
     }
 
+    private static final long BITS_26 = mask(26);
+    private static final long BITS_12 = mask(12);
 
     public static BlockVector3 fromLongPackedForm(long packed) {
         return at(unpackX(packed), unpackY(packed), unpackZ(packed));
