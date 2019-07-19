@@ -211,7 +211,12 @@ public class FabricWorld extends AbstractWorld {
 
         if (successful && notifyAndLight) {
             world.getChunkManager().getLightingProvider().enqueueLightUpdate(pos);
+            world.scheduleBlockRender(pos, old, newState);
             world.updateListeners(pos, old, newState, UPDATE | NOTIFY);
+            world.updateNeighbors(pos, newState.getBlock());
+            if (old.hasComparatorOutput()) {
+                world.updateHorizontalAdjacent(pos, newState.getBlock());
+            }
         }
 
         return successful;
@@ -220,7 +225,9 @@ public class FabricWorld extends AbstractWorld {
     @Override
     public boolean notifyAndLightBlock(BlockVector3 position, BlockState previousType) throws WorldEditException {
         BlockPos pos = new BlockPos(position.getX(), position.getY(), position.getZ());
-        getWorld().updateListeners(pos, FabricAdapter.adapt(previousType), getWorld().getBlockState(pos), 1 | 2);
+        net.minecraft.block.BlockState state = getWorld().getBlockState(pos);
+        getWorld().updateListeners(pos, FabricAdapter.adapt(previousType), state, 1 | 2);
+        getWorld().updateNeighbors(pos, state.getBlock());
         return true;
     }
 
