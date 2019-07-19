@@ -218,7 +218,7 @@ public class MultiStageReorder extends AbstractBufferingExtent implements Reorde
             return setDelegateBlock(location, block);
         }
 
-        BlockState existing = getBlock(location);
+        BlockState existing = getExtent().getBlock(location);
         PlacementPriority priority = getPlacementPriority(block);
         PlacementPriority srcPriority = getPlacementPriority(existing);
 
