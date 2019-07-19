@@ -129,5 +129,7 @@ public class ConfigurateConfiguration extends LocalConfiguration {
 
         String type = node.getNode("shell-save-type").getString("").trim();
         shellSaveType = type.equals("") ? null : type;
+
+        extendedYLimit = node.getNode("compat", "extended-y-limit").getBoolean(false);
     }
 }
