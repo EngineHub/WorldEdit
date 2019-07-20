@@ -384,6 +384,20 @@ public class MCEditSchematicReader extends NBTSchematicReader {
                 return "chest";
             case "Sign":
                 return "sign";
+            case "Banner":
+                return "banner";
+            case "Beacon":
+                return "beacon";
+            case "Comparator":
+                return "comparator";
+            case "Dropper":
+                return "dropper";
+            case "Furnace":
+                return "furnace";
+            case "Hopper":
+                return "hopper";
+            case "Skull":
+                return "skull";
             default:
                 return id;
         }
