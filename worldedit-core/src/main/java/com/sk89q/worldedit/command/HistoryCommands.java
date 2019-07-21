@@ -26,6 +26,7 @@ import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.command.util.CommandPermissions;
 import com.sk89q.worldedit.command.util.CommandPermissionsConditionGenerator;
 import com.sk89q.worldedit.entity.Player;
+import com.sk89q.worldedit.extension.platform.Actor;
 import org.enginehub.piston.annotation.Command;
 import org.enginehub.piston.annotation.CommandContainer;
 import org.enginehub.piston.annotation.param.Arg;
@@ -132,9 +133,9 @@ public class HistoryCommands {
         desc = "Clear your history"
     )
     @CommandPermissions("worldedit.history.clear")
-    public void clearHistory(Player player, LocalSession session) {
+    public void clearHistory(Actor actor, LocalSession session) {
         session.clearHistory();
-        player.print("History cleared.");
+        actor.print("History cleared.");
     }
 
 }

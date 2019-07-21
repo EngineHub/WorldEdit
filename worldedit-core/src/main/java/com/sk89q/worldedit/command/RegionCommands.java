@@ -418,7 +418,7 @@ public class RegionCommands {
     )
     @CommandPermissions("worldedit.region.deform")
     @Logging(ALL)
-    public int deform(Player player, LocalSession session, EditSession editSession,
+    public int deform(Actor actor, LocalSession session, EditSession editSession,
                       @Selection Region region,
                       @Arg(desc = "The expression to use", variable = true)
                           List<String> expression,
@@ -433,7 +433,7 @@ public class RegionCommands {
             zero = Vector3.ZERO;
             unit = Vector3.ONE;
         } else if (offset) {
-            zero = session.getPlacementPosition(player).toVector3();
+            zero = session.getPlacementPosition(actor).toVector3();
             unit = Vector3.ONE;
         } else {
             final Vector3 min = region.getMinimumPoint().toVector3();
@@ -449,11 +449,13 @@ public class RegionCommands {
 
         try {
             final int affected = editSession.deformRegion(region, zero, unit, String.join(" ", expression), session.getTimeout());
-            player.findFreePosition();
-            player.print(affected + " block(s) have been deformed.");
+            if (actor instanceof Player) {
+                ((Player) actor).findFreePosition();
+            }
+            actor.print(affected + " block(s) have been deformed.");
             return affected;
         } catch (ExpressionException e) {
-            player.printError(e.getMessage());
+            actor.printError(e.getMessage());
             return 0;
         }
     }

@@ -26,6 +26,7 @@ import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.command.util.Logging;
 import com.sk89q.worldedit.command.util.PermissionCondition;
 import com.sk89q.worldedit.entity.Player;
+import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.internal.annotation.Direction;
 import com.sk89q.worldedit.internal.annotation.MultiDirection;
 import com.sk89q.worldedit.internal.command.CommandRegistrationHandler;
@@ -34,6 +35,7 @@ import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.RegionOperationException;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
+import com.sk89q.worldedit.world.World;
 import org.enginehub.piston.Command;
 import org.enginehub.piston.CommandManager;
 import org.enginehub.piston.CommandManagerService;
@@ -120,7 +122,7 @@ public class ExpandCommands {
         desc = "Expand the selection area"
     )
     @Logging(REGION)
-    public void expand(Player player, LocalSession session,
+    public void expand(Actor actor, World world, LocalSession session,
                        @Arg(desc = "Amount to expand the selection by, can be `vert` to expand to the whole vertical column")
                            int amount,
                        @Arg(desc = "Amount to expand the selection by in the other direction", def = "0")
@@ -128,7 +130,7 @@ public class ExpandCommands {
                        @Arg(desc = "Direction to expand", def = Direction.AIM)
                        @MultiDirection
                            List<BlockVector3> direction) throws WorldEditException {
-        Region region = session.getSelection(player.getWorld());
+        Region region = session.getSelection(world);
         int oldSize = region.getArea();
 
         if (reverseAmount == 0) {
@@ -141,12 +143,12 @@ public class ExpandCommands {
             }
         }
 
-        session.getRegionSelector(player.getWorld()).learnChanges();
+        session.getRegionSelector(world).learnChanges();
         int newSize = region.getArea();
 
-        session.getRegionSelector(player.getWorld()).explainRegionAdjust(player, session);
+        session.getRegionSelector(world).explainRegionAdjust(actor, session);
 
-        player.print("Region expanded " + (newSize - oldSize) + " block(s).");
+        actor.print("Region expanded " + (newSize - oldSize) + " block(s).");
     }
 
 }
