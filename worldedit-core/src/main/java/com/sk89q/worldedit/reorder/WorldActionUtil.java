@@ -17,39 +17,31 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.reorder.arrange;
+package com.sk89q.worldedit.reorder;
 
-/**
- * Arranger that delegates to another if enabled, otherwise just passes on the data.
- */
-public final class OptionalArranger extends ForwardingArranger {
+import com.sk89q.worldedit.action.BlockWorldAction;
+import com.sk89q.worldedit.action.ChunkWorldAction;
+import com.sk89q.worldedit.action.WorldAction;
+import com.sk89q.worldedit.math.BlockVector3;
 
-    public static OptionalArranger wrap(Arranger delegate) {
-        return new OptionalArranger(delegate);
-    }
+import javax.annotation.Nullable;
 
-    private final Arranger delegate;
-    private boolean enabled;
+final class WorldActionUtil {
 
-    private OptionalArranger(Arranger delegate) {
-        this.delegate = delegate;
-    }
+    static final BlockVector3 MIN_VECTOR = BlockVector3.at(
+        Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE
+    );
 
-    public boolean isEnabled() {
-        return enabled;
-    }
-
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
-
-    @Override
-    public void rearrange(ArrangerContext context) {
-        if (enabled) {
-            delegate.rearrange(context);
-        } else {
-            super.rearrange(context);
+    @Nullable
+    static BlockVector3 worldActionAsBlockVector3(WorldAction wa) {
+        if (wa instanceof BlockWorldAction) {
+            return ((BlockWorldAction) wa).getPosition();
+        } else if (wa instanceof ChunkWorldAction) {
+            return ((ChunkWorldAction) wa).getPosition().toBlockVector3().shl(4);
         }
+        return null;
     }
 
+    private WorldActionUtil() {
+    }
 }

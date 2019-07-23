@@ -20,8 +20,6 @@
 package com.sk89q.worldedit.reorder.arrange;
 
 import com.sk89q.worldedit.action.WorldAction;
-import com.sk89q.worldedit.reorder.buffer.MutableWorldActionBuffer;
-import com.sk89q.worldedit.reorder.buffer.WorldActionBuffer;
 
 /**
  * (Re-)Arranges world actions.
@@ -33,18 +31,10 @@ import com.sk89q.worldedit.reorder.buffer.WorldActionBuffer;
 public interface Arranger {
 
     /**
-     * Re-arrange the given actions.
-     *
-     * @param context the context
-     * @param buffer the new actions to arrange
-     */
-    void onWrite(ArrangerContext context, MutableWorldActionBuffer buffer);
-
-    /**
-     * Called when a group of actions ends.
+     * Re-arrange the given group of actions.
      *
      * @param context the context
      */
-    void onFlush(ArrangerContext context);
+    void rearrange(ArrangerContext context);
 
 }

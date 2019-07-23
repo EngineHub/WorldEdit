@@ -33,7 +33,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * Performs side-effects at a block location.
  */
-public final class PerformSideEffects implements BlockWorldAction {
+public final class PerformSideEffects implements SideEffectWorldAction {
 
     public static PerformSideEffects create(BlockVector3 location) {
         return create(location, SideEffect.getDefault());
@@ -56,10 +56,12 @@ public final class PerformSideEffects implements BlockWorldAction {
         return position;
     }
 
+    @Override
     public ImmutableSet<SideEffect> getSideEffects() {
         return sideEffects;
     }
 
+    @Override
     public PerformSideEffects withSideEffects(Collection<SideEffect> sideEffects) {
         return new PerformSideEffects(position, sideEffects);
     }

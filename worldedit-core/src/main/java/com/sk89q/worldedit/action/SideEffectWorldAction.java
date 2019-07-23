@@ -17,21 +17,16 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.reorder.arrange;
+package com.sk89q.worldedit.action;
 
-/**
- * Each unique instance of this interface corresponds to a unique entry in the attribute map of a
- * pipeline.
- */
-public interface AttributeKey<T> {
+import com.google.common.collect.ImmutableSet;
 
-    static <T> AttributeKey<T> create(String toString) {
-        return new AttributeKey<T>() {
-            @Override
-            public String toString() {
-                return toString;
-            }
-        };
-    }
+import java.util.Collection;
+
+public interface SideEffectWorldAction extends BlockWorldAction {
+
+    ImmutableSet<SideEffect> getSideEffects();
+
+    SideEffectWorldAction withSideEffects(Collection<SideEffect> sideEffects);
 
 }

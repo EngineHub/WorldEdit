@@ -102,10 +102,10 @@ import com.sk89q.worldedit.reorder.FastModeArranger;
 import com.sk89q.worldedit.reorder.FastReorderArranger;
 import com.sk89q.worldedit.reorder.MultiStageReorderArranger;
 import com.sk89q.worldedit.reorder.arrange.Arranger;
+import com.sk89q.worldedit.reorder.arrange.ArrangerPipeline;
 import com.sk89q.worldedit.reorder.arrange.DelegatingArranger;
 import com.sk89q.worldedit.reorder.arrange.ForwardingArranger;
 import com.sk89q.worldedit.reorder.arrange.OptionalArranger;
-import com.sk89q.worldedit.reorder.arrange.WorldActionOutputStream;
 import com.sk89q.worldedit.reorder.arrange.WorldArranger;
 import com.sk89q.worldedit.util.Countable;
 import com.sk89q.worldedit.util.Direction;
@@ -249,7 +249,7 @@ public class EditSession implements Extent, AutoCloseable {
                 new ChunkLoadingArranger(),
                 new WorldArranger(world)
             );
-            extent = new ArrangerExtent(world, WorldActionOutputStream.create(arrangers));
+            extent = new ArrangerExtent(world, ArrangerPipeline.create(arrangers));
             extent = survivalExtent = new SurvivalModeExtent(extent, world);
             extent = quirkExtent = new BlockQuirkExtent(extent, world);
             extent = cacheExtent = new LastAccessExtentCache(extent);

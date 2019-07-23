@@ -20,7 +20,6 @@
 package com.sk89q.worldedit.reorder.arrange;
 
 import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.reorder.buffer.WorldActionBuffer;
 import com.sk89q.worldedit.world.World;
 
 /**
@@ -35,18 +34,14 @@ public class WorldArranger implements Arranger {
     }
 
     @Override
-    public void onWrite(ArrangerContext context, WorldActionBuffer buffer) {
-        while (buffer.hasRemaining()) {
+    public void rearrange(ArrangerContext context) {
+        for (int i = 0; i < context.getActionCount(); i++) {
             try {
-                buffer.get().apply(world);
+                context.getAction(i).apply(world);
             } catch (WorldEditException e) {
                 throw new RuntimeException(e);
             }
         }
-    }
-
-    @Override
-    public void onFlush(ArrangerContext context) {
     }
 
 }

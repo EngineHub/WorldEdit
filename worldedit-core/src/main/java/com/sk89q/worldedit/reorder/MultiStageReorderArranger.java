@@ -20,15 +20,12 @@
 package com.sk89q.worldedit.reorder;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Maps;
 import com.sk89q.worldedit.action.BlockPlacement;
 import com.sk89q.worldedit.action.WorldAction;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.reorder.arrange.Arranger;
 import com.sk89q.worldedit.reorder.arrange.ArrangerContext;
-import com.sk89q.worldedit.reorder.arrange.SimpleAttributeKey;
-import com.sk89q.worldedit.reorder.buffer.MutableArrayWorldActionBuffer;
-import com.sk89q.worldedit.reorder.buffer.MutableWorldActionBuffer;
-import com.sk89q.worldedit.reorder.buffer.WorldActionBuffer;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockCategories;
 import com.sk89q.worldedit.world.block.BlockState;
@@ -36,7 +33,8 @@ import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.block.BlockTypes;
 
-import java.util.ArrayList;
+import javax.annotation.Nullable;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -161,47 +159,74 @@ public final class MultiStageReorderArranger implements Arranger {
         return priorityMap.getOrDefault(block.getBlockType(), PlacementPriority.STATIC);
     }
 
-    private static final SimpleAttributeKey<Map<PlacementPriority, List<BlockPlacement>>> STAGES =
-        SimpleAttributeKey.create("stages", () -> {
-            Map<PlacementPriority, List<BlockPlacement>> stages = new HashMap<>();
-            for (PlacementPriority priority : PlacementPriority.values()) {
-                stages.put(priority, new ArrayList<>());
-            }
-            return stages;
-        });
-    private static final SimpleAttributeKey<Boolean> IMMEDIATE_PENDING =
-        SimpleAttributeKey.create("immediatePending", () -> false);
-
-    @Override
-    public void onWrite(ArrangerContext context, WorldActionBuffer buffer) {
-        Map<PlacementPriority, List<BlockPlacement>> stages = STAGES.get(context);
-        MutableWorldActionBuffer copy = MutableArrayWorldActionBuffer.allocate(buffer.remaining());
-        while (buffer.hasRemaining()) {
-            WorldAction placement = buffer.get();
-            if (placement instanceof BlockPlacement) {
-                BlockPlacement bp = (BlockPlacement) placement;
-                BlockPlacement immediate = reorder(stages, bp);
-                if (immediate != null) {
-                    copy.put(immediate);
-                }
-            } else {
-                copy.put(placement);
-            }
+    @Nullable
+    private static PlacementPriority worldActionPriority(WorldAction wa) {
+        if (wa instanceof BlockPlacement) {
+            return getPlacementPriority(((BlockPlacement) wa).getBlock());
         }
-        copy.flip();
-        if (copy.hasRemaining()) {
-            context.write(copy);
-            IMMEDIATE_PENDING.set(context, true);
-        }
+        return null;
     }
 
-    private BlockPlacement reorder(Map<PlacementPriority, List<BlockPlacement>> stages, BlockPlacement placement) {
+    private static final Comparator<PlacementPriority> PRIORITY_OR_FIRST
+        = Comparator.nullsFirst(Comparator.naturalOrder());
+    private static final Comparator<WorldAction> WA_PRIORITY_OR_FIRST =
+        Comparator.comparing(MultiStageReorderArranger::worldActionPriority, PRIORITY_OR_FIRST);
+
+    @Override
+    public void rearrange(ArrangerContext context) {
+        if (context.getActionCount() == 0) {
+            context.markGroup(0, 0);
+            return;
+        }
+        List<WorldAction> buffer = context.getActionWriteList();
+        buffer.sort(WA_PRIORITY_OR_FIRST);
+
+        // now we can just loop over the sorted list, and insert into the appropriate places
+        int split = 0;
+        for (int i = 0; i < buffer.size(); i++) {
+            WorldAction action = buffer.get(i);
+            if (action instanceof BlockPlacement) {
+                Map.Entry<PlacementPriority, WorldAction> clearAction =
+                    getClearAction((BlockPlacement) action);
+                if (clearAction != null) {
+                    sortedInsert(buffer, split, clearAction.getValue(), clearAction.getKey());
+                    i++;
+                    split++;
+                }
+            }
+        }
+        context.markGroup(0, context.getActionCount());
+    }
+
+    // specialized binary-search-and-insert
+    // we know we always start from the front, and can never insert after
+    private void sortedInsert(List<WorldAction> buffer, int split,
+                              WorldAction element, PlacementPriority priority) {
+        int left, right, mid;
+
+        left = 0;
+        right = split;
+
+        while (left < right) {
+            mid = (left + right) / 2;
+            int result = PRIORITY_OR_FIRST.compare(worldActionPriority(buffer.get(mid)), priority);
+
+            if (result > 0) {
+                right = mid;
+            } else {
+                left = mid + 1;
+            }
+        }
+
+        buffer.add(left, element);
+    }
+
+    private Map.Entry<PlacementPriority, WorldAction> getClearAction(BlockPlacement placement) {
         BlockVector3 location = placement.getPosition();
         BaseBlock block = placement.getBlock();
         BlockState existing = placement.getOldBlock().toImmutableState();
         PlacementPriority priority = getPlacementPriority(block);
         PlacementPriority srcPriority = getPlacementPriority(existing);
-        BlockPlacement immediate = null;
 
         if (srcPriority != PlacementPriority.STATIC) {
             BaseBlock replacement = (block.getBlockType().getMaterial().isAir() ? block : BlockTypes.AIR.getDefaultState()).toBaseBlock();
@@ -209,37 +234,15 @@ public final class MultiStageReorderArranger implements Arranger {
 
             switch (srcPriority) {
                 case FINAL:
-                    // we can push this out earlier
-                    immediate = replBp;
-                    break;
+                    return Maps.immutableEntry(PlacementPriority.CLEAR_FINAL, replBp);
                 case PHYSICS:
-                    stages.get(PlacementPriority.CLEAR_PHYSICS).add(replBp);
-                    break;
+                    return Maps.immutableEntry(PlacementPriority.CLEAR_PHYSICS, replBp);
                 case BLOCK_DEPENDENT:
-                    stages.get(PlacementPriority.CLEAR_BLOCK_DEPENDENT).add(replBp);
-                    break;
+                    return Maps.immutableEntry(PlacementPriority.CLEAR_BLOCK_DEPENDENT, replBp);
             }
         }
 
-        stages.get(priority).add(placement);
-        return immediate;
-    }
-
-    @Override
-    public void onFlush(ArrangerContext context) {
-        if (IMMEDIATE_PENDING.get(context)) {
-            context.flush();
-            IMMEDIATE_PENDING.set(context, false);
-        }
-        Map<PlacementPriority, List<BlockPlacement>> stages = STAGES.get(context);
-        for (PlacementPriority priority : PlacementPriority.values()) {
-            List<BlockPlacement> blocks = stages.get(priority);
-            context.write(MutableArrayWorldActionBuffer.wrap(
-                blocks.toArray(new WorldAction[0])
-            ));
-            context.flush();
-            blocks.clear();
-        }
+        return null;
     }
 
 }

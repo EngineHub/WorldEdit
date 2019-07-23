@@ -19,22 +19,17 @@
 
 package com.sk89q.worldedit.reorder;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
-import com.sk89q.worldedit.action.BlockPlacement;
-import com.sk89q.worldedit.action.ChunkRelight;
 import com.sk89q.worldedit.action.PerformSideEffects;
 import com.sk89q.worldedit.action.SideEffect;
+import com.sk89q.worldedit.action.SideEffectWorldAction;
 import com.sk89q.worldedit.action.WorldAction;
 import com.sk89q.worldedit.reorder.arrange.Arranger;
 import com.sk89q.worldedit.reorder.arrange.ArrangerContext;
-import com.sk89q.worldedit.reorder.arrange.SimpleAttributeKey;
-import com.sk89q.worldedit.reorder.buffer.MutableArrayWorldActionBuffer;
-import com.sk89q.worldedit.reorder.buffer.MutableWorldActionBuffer;
-import com.sk89q.worldedit.reorder.buffer.WorldActionBuffer;
-import com.sk89q.worldedit.util.collection.BlockMap;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -42,55 +37,25 @@ import java.util.Set;
  */
 public final class DelayedLightingArranger implements Arranger {
 
-    private static final SimpleAttributeKey<BlockMap<Boolean>> NEED_RELIGHT
-        = SimpleAttributeKey.create("dirtyChunks", BlockMap::create);
     private static final Set<SideEffect> LIGHT = ImmutableSet.of(SideEffect.LIGHT);
 
     @Override
-    public void onWrite(ArrangerContext context, WorldActionBuffer buffer) {
-        BlockMap<Boolean> needRelight = NEED_RELIGHT.get(context);
-        MutableWorldActionBuffer copy = MutableArrayWorldActionBuffer.allocate(buffer.remaining());
-        while (buffer.hasRemaining()) {
-            WorldAction placement = buffer.get();
-            if (placement instanceof BlockPlacement) {
-                BlockPlacement bp = (BlockPlacement) placement;
-                if (bp.getSideEffects().contains(SideEffect.LIGHT)) {
-                    bp = bp.withSideEffects(removeLight(bp.getSideEffects()));
-                    needRelight.put(bp.getPosition(), true);
+    public void rearrange(ArrangerContext context) {
+        int initialCount = context.getActionCount();
+        for (int i = 0; i < initialCount; i++) {
+            WorldAction action = context.getAction(i);
+            if (action instanceof SideEffectWorldAction) {
+                SideEffectWorldAction se = (SideEffectWorldAction) action;
+                if (se.getSideEffects().contains(SideEffect.LIGHT)) {
+                    List<WorldAction> actions = context.getActionWriteList();
+                    actions.set(i, se.withSideEffects(
+                        Sets.difference(se.getSideEffects(), LIGHT)
+                    ));
+                    actions.add(PerformSideEffects.create(se.getPosition(), LIGHT));
                 }
-                copy.put(bp);
-            } else if (placement instanceof PerformSideEffects) {
-                PerformSideEffects pse = (PerformSideEffects) placement;
-                if (pse.getSideEffects().contains(SideEffect.LIGHT)) {
-                    pse = pse.withSideEffects(removeLight(pse.getSideEffects()));
-                    needRelight.put(pse.getPosition(), true);
-                }
-                if (pse.getSideEffects().size() > 0) {
-                    copy.put(pse);
-                }
-            } else {
-                copy.put(placement);
             }
         }
-        copy.flip();
-        context.write(copy);
+        context.markGroup(0, context.getActionCount());
     }
 
-    private Set<SideEffect> removeLight(Set<SideEffect> sideEffects) {
-        return Sets.filter(sideEffects, se -> se != SideEffect.LIGHT);
-    }
-
-    @Override
-    public void onFlush(ArrangerContext context) {
-        BlockMap<Boolean> needRelight = NEED_RELIGHT.get(context);
-        if (!needRelight.isEmpty()) {
-            context.write(MutableArrayWorldActionBuffer.wrap(
-                needRelight.keySet().stream()
-                    .map(x -> PerformSideEffects.create(x, LIGHT))
-                    .toArray(WorldAction[]::new)
-            ));
-            needRelight.clear();
-        }
-        context.flush();
-    }
 }

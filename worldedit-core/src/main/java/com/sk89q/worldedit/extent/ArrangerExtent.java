@@ -22,59 +22,40 @@ package com.sk89q.worldedit.extent;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.action.BlockPlacement;
 import com.sk89q.worldedit.action.SideEffect;
+import com.sk89q.worldedit.action.WorldAction;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.RunContext;
 import com.sk89q.worldedit.math.BlockVector3;
-import com.sk89q.worldedit.reorder.arrange.WorldActionOutputStream;
-import com.sk89q.worldedit.reorder.buffer.MutableArrayWorldActionBuffer;
-import com.sk89q.worldedit.reorder.buffer.MutableWorldActionBuffer;
+import com.sk89q.worldedit.reorder.arrange.ArrangerPipeline;
 import com.sk89q.worldedit.util.collection.BlockMap;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Extent that hands off block placements to a {@link WorldActionOutputStream}.
+ * Extent that hands off block placements to a {@link ArrangerPipeline}.
  */
 public class ArrangerExtent extends AbstractDelegateExtent {
 
     private static final int BUFFER_AMOUNT = 1 << 16;
 
     private final BlockMap<BaseBlock> blockMap = BlockMap.createForBaseBlock();
-    private final WorldActionOutputStream outputStream;
-    private MutableWorldActionBuffer buffer;
+    private final ArrangerPipeline pipeline;
+    private List<WorldAction> actions = new ArrayList<>();
 
-    public ArrangerExtent(Extent extent, WorldActionOutputStream outputStream) {
+    public ArrangerExtent(Extent extent, ArrangerPipeline pipeline) {
         super(extent);
-        this.outputStream = outputStream;
-    }
-
-    private MutableWorldActionBuffer buffer() {
-        if (buffer == null) {
-            buffer = MutableArrayWorldActionBuffer.allocate(BUFFER_AMOUNT);
-        }
-        return buffer;
+        this.pipeline = pipeline;
     }
 
     @Override
     public <T extends BlockStateHolder<T>> boolean setBlock(BlockVector3 location, T block) throws WorldEditException {
-        MutableWorldActionBuffer b = buffer();
-        b.put(BlockPlacement.create(location, getExtent().getFullBlock(location),
+        actions.add(BlockPlacement.create(location, getExtent().getFullBlock(location),
             block.toBaseBlock(), SideEffect.getDefault()));
 
-        // current buffer is full, pipe it and start a new buffer
-        if (!b.hasRemaining()) {
-            flushBuffer();
-        }
-
         return true;
-    }
-
-    private void flushBuffer() {
-        buffer.flip();
-        outputStream.write(buffer);
-        buffer = null;
     }
 
     @Override
@@ -82,10 +63,11 @@ public class ArrangerExtent extends AbstractDelegateExtent {
         return new Operation() {
             @Override
             public Operation resume(RunContext run) {
-                if (buffer != null) {
-                    flushBuffer();
-                }
-                outputStream.flush();
+                // ensure that GC can free the list when the pipeline stops
+                // referencing it
+                List<WorldAction> actionCopy = actions;
+                actions = new ArrayList<>();
+                pipeline.rearrange(actionCopy);
                 return null;
             }
 

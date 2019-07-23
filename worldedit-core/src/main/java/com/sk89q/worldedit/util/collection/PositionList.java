@@ -23,7 +23,7 @@ import com.sk89q.worldedit.math.BlockVector3;
 
 import java.util.Iterator;
 
-interface PositionList {
+public interface PositionList {
 
     static PositionList create(boolean extendedYLimit) {
         if (extendedYLimit) {

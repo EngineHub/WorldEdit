@@ -19,8 +19,6 @@
 
 package com.sk89q.worldedit.reorder.arrange;
 
-import com.sk89q.worldedit.reorder.buffer.WorldActionBuffer;
-
 /**
  * Delegates to another arranger, which may be changed on the fly.
  */
@@ -41,12 +39,8 @@ public final class DelegatingArranger implements Arranger {
     }
 
     @Override
-    public void onWrite(ArrangerContext context, WorldActionBuffer buffer) {
-        delegate.onWrite(context, buffer);
+    public void rearrange(ArrangerContext context) {
+        delegate.rearrange(context);
     }
 
-    @Override
-    public void onFlush(ArrangerContext context) {
-        delegate.onFlush(context);
-    }
 }

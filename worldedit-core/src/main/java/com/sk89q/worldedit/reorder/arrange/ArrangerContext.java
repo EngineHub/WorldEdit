@@ -19,14 +19,51 @@
 
 package com.sk89q.worldedit.reorder.arrange;
 
+import com.sk89q.worldedit.action.WorldAction;
+
+import java.util.List;
 import java.util.function.Supplier;
 
-public interface ArrangerContext extends WorldActionOutputStream {
+public interface ArrangerContext {
 
-    <T> T attr(AttributeKey<T> key);
+    /**
+     * Get the number of actions in the current group.
+     *
+     * @return the number of actions
+     */
+    int getActionCount();
 
-    <T> T attrOrInit(AttributeKey<T> key, Supplier<T> init);
+    /**
+     * Get the action at the index within the current group.
+     *
+     * @param i the index
+     * @return the action at that index
+     */
+    WorldAction getAction(int i);
 
-    <T> void attr(AttributeKey<T> key, T value);
+    /**
+     * Returns the list for writing changes.
+     *
+     * <p>
+     * DO NOT call this for simple reads, re-groupings, etc.
+     * It can have a large impact on WorldEdit's memory footprint.
+     * </p>
+     *
+     * @return a list for adding actions
+     */
+    List<WorldAction> getActionWriteList();
+
+    /**
+     * Mark a range of actions as a single group for the next arranger.
+     *
+     * <p>
+     * This will cause the next arranger to be triggered with this group of data
+     * as its input for re-arranging.
+     * </p>
+     *
+     * @param start the start of the group, inclusive
+     * @param end the end of the group, exclusive
+     */
+    void markGroup(int start, int end);
 
 }

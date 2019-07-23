@@ -19,71 +19,49 @@
 
 package com.sk89q.worldedit.reorder;
 
-import com.sk89q.worldedit.math.BlockVector3;
-import com.sk89q.worldedit.action.BlockWorldAction;
 import com.sk89q.worldedit.action.WorldAction;
+import com.sk89q.worldedit.math.BlockVector2;
+import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.math.RegionOptimizedComparator;
 import com.sk89q.worldedit.reorder.arrange.Arranger;
 import com.sk89q.worldedit.reorder.arrange.ArrangerContext;
-import com.sk89q.worldedit.reorder.arrange.WorldActionOutputStream;
-import com.sk89q.worldedit.reorder.arrange.SimpleAttributeKey;
-import com.sk89q.worldedit.reorder.buffer.MutableArrayWorldActionBuffer;
-import com.sk89q.worldedit.reorder.buffer.MutableWorldActionBuffer;
-import com.sk89q.worldedit.reorder.buffer.WorldActionBuffer;
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
-import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 
 public final class ChunkBatchingArranger implements Arranger {
 
-    private static final SimpleAttributeKey<Map<BlockVector3, List<BlockWorldAction>>>
-        CHUNK_STORAGE = SimpleAttributeKey.create("chunkStorage", Object2ObjectOpenHashMap::new);
-    private static final SimpleAttributeKey<Boolean> IMMEDIATE_PENDING
-        = SimpleAttributeKey.create("immediatePending", () -> false);
+    private static final Comparator<WorldAction> WORLD_ACTION_COMPARATOR =
+        Comparator.comparing(WorldActionUtil::worldActionAsBlockVector3,
+            RegionOptimizedComparator.INSTANCE);
 
     @Override
-    public void onWrite(ArrangerContext stream, WorldActionBuffer buffer) {
-        // for actions we don't batch:
-        List<WorldAction> immediateTransfer = new ArrayList<>();
-        Map<BlockVector3, List<BlockWorldAction>> chunkStorage = CHUNK_STORAGE.get(stream);
-        while (buffer.hasRemaining()) {
-            WorldAction next = buffer.get();
-            if (!(next instanceof BlockWorldAction)) {
-                immediateTransfer.add(next);
+    public void rearrange(ArrangerContext context) {
+        if (context.getActionCount() == 0) {
+            context.markGroup(0, 0);
+            return;
+        }
+        List<WorldAction> actions = context.getActionWriteList();
+        actions.sort(WORLD_ACTION_COMPARATOR);
+        BlockVector2 chunkPos = null;
+        int groupStart = 0;
+        for (int i = 0; i < actions.size(); i++) {
+            BlockVector3 blockPos = WorldActionUtil.worldActionAsBlockVector3(actions.get(i));
+            if (blockPos == null) {
+                blockPos = WorldActionUtil.MIN_VECTOR;
+            }
+            BlockVector2 thisCp = blockPos.toBlockVector2().shr(4);
+            if (chunkPos == null) {
+                chunkPos = thisCp;
                 continue;
             }
-            BlockWorldAction bwa = (BlockWorldAction) next;
-            BlockVector3 chunkKey = bwa.getPosition().shr(4);
-            List<BlockWorldAction> chunkMap = chunkStorage.computeIfAbsent(chunkKey,
-                k -> new ObjectArrayList<>());
-            chunkMap.add(bwa);
+            if (!chunkPos.equals(thisCp)) {
+                chunkPos = thisCp;
+                context.markGroup(groupStart, i);
+                groupStart = i;
+            }
         }
-        if (immediateTransfer.size() > 0) {
-            stream.write(MutableArrayWorldActionBuffer.wrap(
-                immediateTransfer.toArray(new WorldAction[0])
-            ));
-            IMMEDIATE_PENDING.set(stream, true);
-        }
+        context.markGroup(groupStart, actions.size());
     }
 
-    private void write(WorldActionOutputStream stream, List<BlockWorldAction> chunkMap) {
-        MutableWorldActionBuffer data = MutableArrayWorldActionBuffer.allocate(chunkMap.size());
-        chunkMap.toArray(data.array());
-        stream.write(data);
-        // flush after each chunk, to mark it as a group
-        stream.flush();
-    }
-
-    @Override
-    public void onFlush(ArrangerContext stream) {
-        if (IMMEDIATE_PENDING.get(stream)) {
-            // flush immediate first
-            stream.flush();
-            IMMEDIATE_PENDING.set(stream, false);
-        }
-        // write & flush chunks
-        CHUNK_STORAGE.get(stream).forEach((chunkKey, chunkMap) -> write(stream, chunkMap));
-    }
 }

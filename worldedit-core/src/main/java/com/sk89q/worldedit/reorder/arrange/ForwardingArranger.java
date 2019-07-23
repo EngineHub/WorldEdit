@@ -19,8 +19,6 @@
 
 package com.sk89q.worldedit.reorder.arrange;
 
-import com.sk89q.worldedit.reorder.buffer.WorldActionBuffer;
-
 /**
  * An arranger that simply forwards changes to the next in line.
  */
@@ -36,12 +34,8 @@ public class ForwardingArranger implements Arranger {
     }
 
     @Override
-    public void onWrite(ArrangerContext context, WorldActionBuffer buffer) {
-        context.write(buffer);
+    public void rearrange(ArrangerContext context) {
+        context.markGroup(0, context.getActionCount());
     }
 
-    @Override
-    public void onFlush(ArrangerContext context) {
-        context.flush();
-    }
 }

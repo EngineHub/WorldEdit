@@ -24,9 +24,6 @@ import com.sk89q.worldedit.action.BlockPlacement;
 import com.sk89q.worldedit.action.WorldAction;
 import com.sk89q.worldedit.reorder.arrange.Arranger;
 import com.sk89q.worldedit.reorder.arrange.ArrangerContext;
-import com.sk89q.worldedit.reorder.buffer.MutableArrayWorldActionBuffer;
-import com.sk89q.worldedit.reorder.buffer.MutableWorldActionBuffer;
-import com.sk89q.worldedit.reorder.buffer.WorldActionBuffer;
 
 /**
  * Implements "fast mode" which may skip physics, lighting, etc.
@@ -34,26 +31,17 @@ import com.sk89q.worldedit.reorder.buffer.WorldActionBuffer;
 public final class FastModeArranger implements Arranger {
 
     @Override
-    public void onWrite(ArrangerContext context, WorldActionBuffer buffer) {
-        MutableWorldActionBuffer copy = MutableArrayWorldActionBuffer.allocate(buffer.remaining());
-        while (buffer.hasRemaining()) {
-            WorldAction placement = buffer.get();
-            if (placement instanceof BlockPlacement) {
-                BlockPlacement bp = (BlockPlacement) placement;
+    public void rearrange(ArrangerContext context) {
+        for (int i = 0; i < context.getActionCount(); i++) {
+            WorldAction action = context.getAction(i);
+            if (action instanceof BlockPlacement) {
+                BlockPlacement bp = (BlockPlacement) action;
                 if (bp.getSideEffects().size() > 0) {
-                    bp = bp.withSideEffects(ImmutableSet.of());
+                    context.getActionWriteList().set(i, bp.withSideEffects(ImmutableSet.of()));
                 }
-                copy.put(bp);
-            } else {
-                copy.put(placement);
             }
         }
-        copy.flip();
-        context.write(copy);
+        context.markGroup(0, context.getActionCount());
     }
 
-    @Override
-    public void onFlush(ArrangerContext context) {
-        context.flush();
-    }
 }

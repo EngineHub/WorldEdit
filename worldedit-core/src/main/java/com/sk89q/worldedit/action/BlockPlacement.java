@@ -34,7 +34,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * Represents the placement of a block.
  */
-public final class BlockPlacement implements BlockWorldAction {
+public final class BlockPlacement implements SideEffectWorldAction {
 
     public static BlockPlacement create(BlockVector3 location, BaseBlock oldBlock, BaseBlock block) {
         return create(location, oldBlock, block, SideEffect.getDefault());
@@ -69,10 +69,12 @@ public final class BlockPlacement implements BlockWorldAction {
         return block;
     }
 
+    @Override
     public ImmutableSet<SideEffect> getSideEffects() {
         return sideEffects;
     }
 
+    @Override
     public BlockPlacement withSideEffects(Collection<SideEffect> sideEffects) {
         return new BlockPlacement(position, oldBlock, block, sideEffects);
     }

@@ -17,13 +17,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.reorder.buffer;
+package com.sk89q.worldedit;
 
-public interface ReadOnlyWorldActionBuffer extends WorldActionBuffer {
-
-    @Override
-    default boolean isReadOnly() {
-        return true;
-    }
-
+public class WorldActionUtil {
 }

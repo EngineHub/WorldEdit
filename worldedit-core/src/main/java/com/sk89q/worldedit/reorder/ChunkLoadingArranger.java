@@ -19,43 +19,38 @@
 
 package com.sk89q.worldedit.reorder;
 
-import com.sk89q.worldedit.action.BlockWorldAction;
 import com.sk89q.worldedit.action.ChunkLoad;
-import com.sk89q.worldedit.action.ChunkWorldAction;
-import com.sk89q.worldedit.action.WorldAction;
 import com.sk89q.worldedit.math.BlockVector2;
+import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.reorder.arrange.Arranger;
 import com.sk89q.worldedit.reorder.arrange.ArrangerContext;
-import com.sk89q.worldedit.reorder.buffer.MutableArrayWorldActionBuffer;
-import com.sk89q.worldedit.reorder.buffer.WorldActionBuffer;
-
-import java.util.HashSet;
-import java.util.Set;
 
 public class ChunkLoadingArranger implements Arranger {
 
     @Override
-    public void onWrite(ArrangerContext context, WorldActionBuffer buffer) {
-        Set<BlockVector2> chunkLoads = new HashSet<>();
-        while (buffer.hasRemaining()) {
-            WorldAction next = buffer.get();
-            if (next instanceof ChunkWorldAction && !(next instanceof ChunkLoad)) {
-                chunkLoads.add(((ChunkWorldAction) next).getPosition());
-            } else if (next instanceof BlockWorldAction) {
-                chunkLoads.add(((BlockWorldAction) next).getPosition().toBlockVector2().shr(4));
+    public void rearrange(ArrangerContext context) {
+        BlockVector2 chunkPos = null;
+        int start = 0;
+        for (int i = 0; i < context.getActionCount(); i++) {
+            BlockVector3 blockPos = WorldActionUtil.worldActionAsBlockVector3(context.getAction(i));
+            if (blockPos == null) {
+                continue;
+            }
+            BlockVector2 thisCp = blockPos.toBlockVector2().shr(4);
+            if (chunkPos == null) {
+                chunkPos = thisCp;
+                continue;
+            }
+            if (!chunkPos.equals(thisCp)) {
+                context.getActionWriteList().add(start, ChunkLoad.create(chunkPos));
+                chunkPos = thisCp;
+                i++; // account for add
+                start = i;
             }
         }
-        buffer.flip();
-        if (chunkLoads.size() > 0) {
-            context.write(MutableArrayWorldActionBuffer.wrap(
-                chunkLoads.stream().map(ChunkLoad::create).toArray(WorldAction[]::new)
-            ));
+        if (chunkPos != null) {
+            context.getActionWriteList().add(start, ChunkLoad.create(chunkPos));
         }
-        context.write(buffer);
-    }
-
-    @Override
-    public void onFlush(ArrangerContext context) {
-        context.flush();
+        context.markGroup(0, context.getActionCount());
     }
 }

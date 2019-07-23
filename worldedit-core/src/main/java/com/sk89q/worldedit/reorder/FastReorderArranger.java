@@ -20,57 +20,35 @@
 package com.sk89q.worldedit.reorder;
 
 import com.google.common.collect.ImmutableSet;
-import com.sk89q.worldedit.action.BlockPlacement;
 import com.sk89q.worldedit.action.PerformSideEffects;
+import com.sk89q.worldedit.action.SideEffectWorldAction;
 import com.sk89q.worldedit.action.WorldAction;
 import com.sk89q.worldedit.reorder.arrange.Arranger;
 import com.sk89q.worldedit.reorder.arrange.ArrangerContext;
-import com.sk89q.worldedit.reorder.arrange.SimpleAttributeKey;
-import com.sk89q.worldedit.reorder.buffer.MutableArrayWorldActionBuffer;
-import com.sk89q.worldedit.reorder.buffer.MutableWorldActionBuffer;
-import com.sk89q.worldedit.reorder.buffer.WorldActionBuffer;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Implements post-simulation re-ordering, which performs all side-effects
- * upon flush.
+ * after the group is done.
  */
 public final class FastReorderArranger implements Arranger {
 
-    private static final SimpleAttributeKey<List<PerformSideEffects>> DELAYED_EFFECTS
-        = SimpleAttributeKey.create("delayedEffects", ArrayList::new);
-
     @Override
-    public void onWrite(ArrangerContext context, WorldActionBuffer buffer) {
-        List<PerformSideEffects> sideEffects = DELAYED_EFFECTS.get(context);
-        MutableWorldActionBuffer copy = MutableArrayWorldActionBuffer.allocate(buffer.remaining());
-        while (buffer.hasRemaining()) {
-            WorldAction placement = buffer.get();
-            if (placement instanceof BlockPlacement) {
-                BlockPlacement bp = (BlockPlacement) placement;
-                if (bp.getSideEffects().size() > 0) {
-                    sideEffects.add(PerformSideEffects.create(bp.getPosition(), bp.getSideEffects()));
-                    bp = bp.withSideEffects(ImmutableSet.of());
+    public void rearrange(ArrangerContext context) {
+        int initialCount = context.getActionCount();
+        for (int i = 0; i < initialCount; i++) {
+            WorldAction action = context.getAction(i);
+            if (action instanceof SideEffectWorldAction) {
+                SideEffectWorldAction se = (SideEffectWorldAction) action;
+                if (se.getSideEffects().size() > 0) {
+                    List<WorldAction> actions = context.getActionWriteList();
+                    actions.set(i, se.withSideEffects(ImmutableSet.of()));
+                    actions.add(PerformSideEffects.create(se.getPosition(), se.getSideEffects()));
                 }
-                copy.put(bp);
-            } else {
-                copy.put(placement);
             }
         }
-        copy.flip();
-        context.write(copy);
+        context.markGroup(0, context.getActionCount());
     }
 
-    @Override
-    public void onFlush(ArrangerContext context) {
-        List<PerformSideEffects> sideEffects = DELAYED_EFFECTS.get(context);
-        if (!sideEffects.isEmpty()) {
-            context.write(MutableArrayWorldActionBuffer.wrap(
-                sideEffects.toArray(new WorldAction[0])
-            ));
-        }
-        context.flush();
-    }
 }
