@@ -21,24 +21,31 @@ package com.sk89q.worldedit.util.collection;
 
 import com.google.common.collect.AbstractIterator;
 import com.sk89q.worldedit.math.BlockVector3;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntIterator;
+import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntListIterator;
 
 import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
 
 class VectorPositionList implements PositionList {
 
-    private final List<BlockVector3> delegate = new ObjectArrayList<>();
+    private final IntList delegate = new IntArrayList();
 
     @Override
     public BlockVector3 get(int index) {
-        return delegate.get(index);
+        int ri = index * 3;
+        return BlockVector3.at(
+            delegate.getInt(ri),
+            delegate.getInt(ri + 1),
+            delegate.getInt(ri + 2));
     }
 
     @Override
     public void add(BlockVector3 vector) {
-        delegate.add(vector);
+        delegate.add(vector.getX());
+        delegate.add(vector.getY());
+        delegate.add(vector.getZ());
     }
 
     @Override
@@ -53,18 +60,38 @@ class VectorPositionList implements PositionList {
 
     @Override
     public Iterator<BlockVector3> iterator() {
-        return delegate.iterator();
+        return new AbstractIterator<BlockVector3>() {
+
+            private final IntIterator iterator = delegate.iterator();
+
+            @Override
+            protected BlockVector3 computeNext() {
+                if (!iterator.hasNext()) {
+                    return endOfData();
+                }
+                return BlockVector3.at(
+                    iterator.nextInt(),
+                    iterator.nextInt(),
+                    iterator.nextInt());
+            }
+        };
     }
 
     @Override
     public Iterator<BlockVector3> reverseIterator() {
         return new AbstractIterator<BlockVector3>() {
 
-            private final ListIterator<BlockVector3> iterator = delegate.listIterator(size());
+            private final IntListIterator iterator = delegate.listIterator(delegate.size());
 
             @Override
             protected BlockVector3 computeNext() {
-                return iterator.hasPrevious() ? iterator.previous() : endOfData();
+                if (!iterator.hasPrevious()) {
+                    return endOfData();
+                }
+                return BlockVector3.at(
+                    iterator.previousInt(),
+                    iterator.previousInt(),
+                    iterator.previousInt());
             }
         };
     }
