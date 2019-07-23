@@ -19,7 +19,7 @@
 
 package com.sk89q.worldedit.math;
 
-public class BitMath {
+public final class BitMath {
 
     public static int mask(int bits) {
         return ~(~0 << bits);
