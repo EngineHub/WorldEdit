@@ -223,13 +223,7 @@ public class ForgeWorld extends AbstractWorld {
         }
 
         if (successful) {
-            int flags = buildUpdateFlags(sideEffects);
-            if (flags != 0) {
-                world.markAndNotifyBlock(pos, chunk, old, newState, flags);
-            }
-            if (sideEffects.contains(SideEffect.LIGHT)) {
-                world.getChunkProvider().getLightManager().checkBlock(pos);
-            }
+            applySideEffectsMc(sideEffects, world, chunk, pos, old, newState);
         }
 
         return successful;
@@ -246,16 +240,23 @@ public class ForgeWorld extends AbstractWorld {
         BlockPos pos = new BlockPos(x, y, z);
         OptionalInt stateId = BlockStateIdAccess.getBlockStateId(previousType);
         net.minecraft.block.BlockState prevState = stateId.isPresent() ? Block.getStateById(stateId.getAsInt()) : ForgeAdapter.adapt(previousType);
+        net.minecraft.block.BlockState newState = chunk.getBlockState(pos);
 
+        applySideEffectsMc(sideEffects, world, chunk, pos, prevState, newState);
+        return true;
+    }
+
+    private void applySideEffectsMc(Collection<SideEffect> sideEffects, World world,
+                                    Chunk chunk, BlockPos pos,
+                                    net.minecraft.block.BlockState prevState,
+                                    net.minecraft.block.BlockState newState) {
         int flags = buildUpdateFlags(sideEffects);
         if (flags != 0) {
-            world.markAndNotifyBlock(pos, chunk, prevState, chunk.getBlockState(pos), flags);
+            world.markAndNotifyBlock(pos, chunk, prevState, newState, flags);
         }
-        if (sideEffects.contains(SideEffect.LIGHT)) {
+        if (sideEffects.contains(SideEffect.LIGHT) && prevState.getLightValue() != newState.getLightValue()) {
             world.getChunkProvider().getLightManager().checkBlock(pos);
         }
-
-        return true;
     }
 
     @Override
