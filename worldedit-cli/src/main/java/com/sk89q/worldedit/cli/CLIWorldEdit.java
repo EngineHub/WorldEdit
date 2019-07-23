@@ -31,7 +31,6 @@ import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.extent.clipboard.io.BuiltInClipboardFormat;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormat;
-import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormats;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardReader;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardWriter;
 import com.sk89q.worldedit.registry.state.Property;
@@ -46,7 +45,6 @@ import com.sk89q.worldedit.world.entity.EntityType;
 import com.sk89q.worldedit.world.item.ItemCategory;
 import com.sk89q.worldedit.world.item.ItemType;
 import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Options;
 import org.slf4j.Logger;
@@ -55,6 +53,8 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.SequenceInputStream;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -223,8 +223,8 @@ public class CLIWorldEdit {
         return ":shrug:";
     }
 
-    public void run() {
-        Scanner scanner = new Scanner(System.in);
+    public void run(InputStream inputStream) {
+        Scanner scanner = new Scanner(inputStream);
         while (scanner.hasNextLine()) {
             String line = scanner.nextLine();
             if (line.equalsIgnoreCase("stop")) {
@@ -239,7 +239,7 @@ public class CLIWorldEdit {
                 }
                 World world = platform.getWorlds().get(0);
                 if (world instanceof ClipboardWorld) {
-                    File file = null;
+                    File file;
                     if (bits.length >= 2) {
                         file = new File(bits[1]);
                     } else {
@@ -264,19 +264,23 @@ public class CLIWorldEdit {
                     line
             ));
         }
+        scanner.close();
     }
 
     public static void main(String[] args) {
         Options options = new Options();
-        options.addRequiredOption("f", "file", false, "The file to load in. Either a schematic, or a level.dat in a world folder.");
-        CommandLineParser parser = new DefaultParser();
+        options.addOption("f", "file", true, "The file to load in. Either a schematic, or a level.dat in a world folder.");
+        options.addOption("s", "script", true, "A file containing a list of commands to run. Newline separated.");
         int exitCode = 0;
 
         CLIWorldEdit app = new CLIWorldEdit();
         app.onInitialized();
 
+        InputStream inputStream = System.in;
+
         try {
-            CommandLine cmd = parser.parse(options, args);
+            CommandLine cmd = new DefaultParser().parse(options, args);
+
             String fileArg = cmd.getOptionValue('f');
             File file;
             if (fileArg == null) {
@@ -287,39 +291,51 @@ public class CLIWorldEdit {
             if (file == null) {
                 throw new IllegalArgumentException("A file must be provided!");
             }
-            if (file.getName().endsWith(".dat")) {
-
+            if (file.getName().endsWith("level.dat")) {
+                throw new IllegalArgumentException("level.dat file support is unfinished.");
             } else if (file.getName().endsWith(".schem")) {
-                ClipboardFormat format = ClipboardFormats.findByFile(file);
-                if (format == null) {
-                    throw new IOException("Unknown clipboard format for file.");
-                }
-                ClipboardReader clipboardReader = format
+                ClipboardFormat format = BuiltInClipboardFormat.SPONGE_SCHEMATIC;
+                ClipboardReader dataVersionReader = format
                         .getReader(Files.newInputStream(file.toPath(), StandardOpenOption.READ));
-                int dataVersion = clipboardReader.getDataVersion()
+                int dataVersion = dataVersionReader.getDataVersion()
                         .orElseThrow(() -> new IllegalArgumentException("Failed to obtain data version from schematic."));
+                dataVersionReader.close();
                 app.platform.setDataVersion(dataVersion);
                 app.onStarted();
-                ClipboardWorld world = new ClipboardWorld(
-                        format.getReader(Files.newInputStream(file.toPath(), StandardOpenOption.READ)).read(),
-                        file.getName()
-                );
-                app.platform.addWorld(world);
-                WorldEdit.getInstance().getSessionManager().get(app.commandSender).setWorldOverride(world);
+                try (ClipboardReader clipboardReader = format.getReader(Files.newInputStream(file.toPath(), StandardOpenOption.READ))) {
+                    ClipboardWorld world = new ClipboardWorld(
+                            clipboardReader.read(),
+                            file.getName()
+                    );
+                    app.platform.addWorld(world);
+                    WorldEdit.getInstance().getSessionManager().get(app.commandSender).setWorldOverride(world);
+                }
             } else {
                 throw new IllegalArgumentException("Unknown file provided!");
             }
 
-            app.run();
+            String scriptFile = cmd.getOptionValue('s');
+            if (scriptFile != null) {
+                File scriptFileHandle = new File(scriptFile);
+                if (!scriptFileHandle.exists()) {
+                    throw new IllegalArgumentException("Could not find given script file.");
+                }
+                inputStream = new SequenceInputStream(Files.newInputStream(scriptFileHandle.toPath(), StandardOpenOption.READ), inputStream);
+            }
+
+            app.run(inputStream);
         } catch (Exception e) {
             e.printStackTrace();
             exitCode = 1;
         } finally {
             app.onStopped();
+            try {
+                inputStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
-        if (exitCode != 0) {
-            System.exit(exitCode);
-        }
+        System.exit(exitCode);
     }
 }
