@@ -17,13 +17,36 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.reorder.buffer;
+package com.sk89q.worldedit.reorder.arrange;
 
-public interface ReadOnlyPlacementBuffer extends PlacementBuffer {
+import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.reorder.buffer.WorldActionBuffer;
+import com.sk89q.worldedit.world.World;
+
+/**
+ * Applies the changes to a world.
+ */
+public class WorldArranger implements Arranger {
+
+    private final World world;
+
+    public WorldArranger(World world) {
+        this.world = world;
+    }
 
     @Override
-    default boolean isReadOnly() {
-        return true;
+    public void onWrite(ArrangerContext context, WorldActionBuffer buffer) {
+        while (buffer.hasRemaining()) {
+            try {
+                buffer.get().apply(world);
+            } catch (WorldEditException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    @Override
+    public void onFlush(ArrangerContext context) {
     }
 
 }

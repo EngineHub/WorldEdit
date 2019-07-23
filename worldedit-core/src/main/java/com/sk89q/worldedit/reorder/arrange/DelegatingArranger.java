@@ -17,22 +17,36 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.extent.reorder;
+package com.sk89q.worldedit.reorder.arrange;
 
-import com.sk89q.worldedit.extent.Extent;
-import com.sk89q.worldedit.reorder.arrange.Arranger;
+import com.sk89q.worldedit.reorder.buffer.WorldActionBuffer;
 
 /**
- * An interface for {@link Extent}s that are meant to reorder changes so
- * that they are more successful.
- *
- * <p>For example, torches in Minecraft need to be placed on a block. A smart
- * reordering implementation might place the torch after the block has
- * been placed.</p>
- *
- * @deprecated Register an {@link Arranger} instead.
+ * Delegates to another arranger, which may be changed on the fly.
  */
-@Deprecated
-public interface ReorderingExtent extends Extent {
+public final class DelegatingArranger implements Arranger {
 
+    private volatile Arranger delegate;
+
+    public DelegatingArranger(Arranger delegate) {
+        this.delegate = delegate;
+    }
+
+    public Arranger getDelegate() {
+        return delegate;
+    }
+
+    public void setDelegate(Arranger delegate) {
+        this.delegate = delegate;
+    }
+
+    @Override
+    public void onWrite(ArrangerContext context, WorldActionBuffer buffer) {
+        delegate.onWrite(context, buffer);
+    }
+
+    @Override
+    public void onFlush(ArrangerContext context) {
+        delegate.onFlush(context);
+    }
 }

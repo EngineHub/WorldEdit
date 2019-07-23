@@ -22,6 +22,7 @@ package com.sk89q.worldedit.bukkit;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.action.SideEffect;
 import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.bukkit.adapter.BukkitImplAdapter;
@@ -55,6 +56,7 @@ import javax.annotation.Nullable;
 import java.lang.ref.WeakReference;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
@@ -437,7 +439,9 @@ public class BukkitWorld extends AbstractWorld {
     }
 
     @Override
-    public <B extends BlockStateHolder<B>> boolean setBlock(BlockVector3 position, B block, boolean notifyAndLight) throws WorldEditException {
+    public <B extends BlockStateHolder<B>> boolean setBlock(BlockVector3 position, B block, Collection<SideEffect> sideEffects) throws WorldEditException {
+        // TODO re-write adapter
+        boolean notifyAndLight = sideEffects.contains(SideEffect.LIGHT) && sideEffects.contains(SideEffect.NOTIFY_NEIGHBORS);
         BukkitImplAdapter adapter = WorldEditPlugin.getInstance().getBukkitImplAdapter();
         if (adapter != null) {
             try {
@@ -470,11 +474,15 @@ public class BukkitWorld extends AbstractWorld {
     }
 
     @Override
-    public boolean notifyAndLightBlock(BlockVector3 position, com.sk89q.worldedit.world.block.BlockState previousType) throws WorldEditException {
+    public boolean applySideEffects(BlockVector3 position, com.sk89q.worldedit.world.block.BlockState previousType, Collection<SideEffect> sideEffects) throws WorldEditException {
+        // TODO re-write adapter
         BukkitImplAdapter adapter = WorldEditPlugin.getInstance().getBukkitImplAdapter();
         if (adapter != null) {
-            adapter.notifyAndLightBlock(BukkitAdapter.adapt(getWorld(), position), previousType);
-            return true;
+            boolean notifyAndLight = sideEffects.contains(SideEffect.LIGHT) && sideEffects.contains(SideEffect.NOTIFY_NEIGHBORS);
+            if (notifyAndLight) {
+                adapter.notifyAndLightBlock(BukkitAdapter.adapt(getWorld(), position), previousType);
+                return true;
+            }
         }
 
         return false;

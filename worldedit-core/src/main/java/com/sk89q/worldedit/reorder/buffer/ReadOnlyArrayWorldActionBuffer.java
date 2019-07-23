@@ -19,29 +19,29 @@
 
 package com.sk89q.worldedit.reorder.buffer;
 
-import com.sk89q.worldedit.util.LocatedBlock;
+import com.sk89q.worldedit.action.WorldAction;
 
-public class ReadOnlyArrayPlacementBuffer extends SharedArrayPlacementBuffer implements ReadOnlyPlacementBuffer {
+public class ReadOnlyArrayWorldActionBuffer extends SharedArrayWorldActionBuffer implements ReadOnlyWorldActionBuffer {
 
-    ReadOnlyArrayPlacementBuffer(LocatedBlock[] array, int offset, int capacity) {
+    ReadOnlyArrayWorldActionBuffer(WorldAction[] array, int offset, int capacity) {
         super(array, offset, capacity);
     }
 
     @Override
-    public ReadOnlyArrayPlacementBuffer asReadOnlyBuffer() {
+    public ReadOnlyArrayWorldActionBuffer asReadOnlyBuffer() {
         return duplicate();
     }
 
     @Override
-    public ReadOnlyArrayPlacementBuffer duplicate() {
-        return new ReadOnlyArrayPlacementBuffer(
+    public ReadOnlyArrayWorldActionBuffer duplicate() {
+        return new ReadOnlyArrayWorldActionBuffer(
             array, offset, capacity
         ).limit(limit).position(position);
     }
 
     @Override
-    public ReadOnlyArrayPlacementBuffer slice() {
-        return new ReadOnlyArrayPlacementBuffer(
+    public ReadOnlyArrayWorldActionBuffer slice() {
+        return new ReadOnlyArrayWorldActionBuffer(
             array, offset + position, remaining()
         );
     }
@@ -49,43 +49,43 @@ public class ReadOnlyArrayPlacementBuffer extends SharedArrayPlacementBuffer imp
     // Return value overrides:
 
     @Override
-    public ReadOnlyArrayPlacementBuffer clear() {
-        ReadOnlyPlacementBuffer.super.clear();
+    public ReadOnlyArrayWorldActionBuffer clear() {
+        ReadOnlyWorldActionBuffer.super.clear();
         return this;
     }
 
     @Override
-    public ReadOnlyArrayPlacementBuffer flip() {
-        ReadOnlyPlacementBuffer.super.flip();
+    public ReadOnlyArrayWorldActionBuffer flip() {
+        ReadOnlyWorldActionBuffer.super.flip();
         return this;
     }
 
     @Override
-    public ReadOnlyArrayPlacementBuffer rewind() {
-        ReadOnlyPlacementBuffer.super.rewind();
+    public ReadOnlyArrayWorldActionBuffer rewind() {
+        ReadOnlyWorldActionBuffer.super.rewind();
         return this;
     }
 
     @Override
-    public ReadOnlyArrayPlacementBuffer get(LocatedBlock[] out) {
-        ReadOnlyPlacementBuffer.super.get(out);
+    public ReadOnlyArrayWorldActionBuffer get(WorldAction[] out) {
+        ReadOnlyWorldActionBuffer.super.get(out);
         return this;
     }
 
     @Override
-    public ReadOnlyArrayPlacementBuffer position(int position) {
+    public ReadOnlyArrayWorldActionBuffer position(int position) {
         super.position(position);
         return this;
     }
 
     @Override
-    public ReadOnlyArrayPlacementBuffer limit(int limit) {
+    public ReadOnlyArrayWorldActionBuffer limit(int limit) {
         super.limit(limit);
         return this;
     }
 
     @Override
-    public ReadOnlyArrayPlacementBuffer get(LocatedBlock[] out, int offset, int length) {
+    public ReadOnlyArrayWorldActionBuffer get(WorldAction[] out, int offset, int length) {
         super.get(out, offset, length);
         return this;
     }

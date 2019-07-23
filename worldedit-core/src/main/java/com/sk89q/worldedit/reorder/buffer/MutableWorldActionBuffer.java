@@ -19,9 +19,9 @@
 
 package com.sk89q.worldedit.reorder.buffer;
 
-import com.sk89q.worldedit.util.LocatedBlock;
+import com.sk89q.worldedit.action.WorldAction;
 
-public interface MutablePlacementBuffer extends PlacementBuffer {
+public interface MutableWorldActionBuffer extends WorldActionBuffer {
 
     @Override
     default boolean isReadOnly() {
@@ -41,7 +41,7 @@ public interface MutablePlacementBuffer extends PlacementBuffer {
      * @return the backing array, if present
      * @throws UnsupportedOperationException if there is no backing array
      */
-    LocatedBlock[] array();
+    WorldAction[] array();
 
     /**
      * If this implementation {@linkplain #hasArray() has an array}, returns the offset into the
@@ -56,48 +56,48 @@ public interface MutablePlacementBuffer extends PlacementBuffer {
     /**
      * Relative {@code put} method. Increments the position by one after inserting the element.
      *
-     * @param placement the element to insert
+     * @param worldAction the element to insert
      * @return {@code this}
      */
-    PlacementBuffer put(LocatedBlock placement);
+    WorldActionBuffer put(WorldAction worldAction);
 
     /**
      * Relative bulk {@code put} method. Increments the position by {@code other.length} after
      * inserting the elements.
      *
-     * @param placements the elements to insert
+     * @param worldActions the elements to insert
      * @return {@code this}
      */
-    default PlacementBuffer put(LocatedBlock[] placements) {
-        return put(placements, 0, placements.length);
+    default WorldActionBuffer put(WorldAction[] worldActions) {
+        return put(worldActions, 0, worldActions.length);
     }
 
     /**
      * Relative bulk {@code put} method. Increments the position by {@code length} after
      * inserting the elements.
      *
-     * @param placements the elements to insert
+     * @param worldActions the elements to insert
      * @param offset the offset to start from
      * @param length the number of elements to copy
      * @return {@code this}
      */
-    PlacementBuffer put(LocatedBlock[] placements, int offset, int length);
+    WorldActionBuffer put(WorldAction[] worldActions, int offset, int length);
 
     /**
      * Relative bulk {@code put} method. Increments the position by {@code other.remaining()} after
      * inserting the elements.
      *
-     * @param placements the elements to insert
+     * @param buffer the elements to insert
      * @return {@code this}
      */
-    PlacementBuffer put(PlacementBuffer placements);
+    WorldActionBuffer put(WorldActionBuffer buffer);
 
     /**
      * Absolute {@code put} method.
      *
-     * @param placement the element to insert
+     * @param worldAction the element to insert
      * @return {@code this}
      */
-    PlacementBuffer put(int index, LocatedBlock placement);
+    WorldActionBuffer put(int index, WorldAction worldAction);
 
 }

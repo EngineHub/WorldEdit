@@ -19,8 +19,6 @@
 
 package com.sk89q.worldedit.fabric;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -29,6 +27,7 @@ import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.action.SideEffect;
 import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.entity.BaseEntity;
@@ -95,9 +94,11 @@ import net.minecraft.world.gen.feature.SpruceTreeFeature;
 import net.minecraft.world.gen.feature.SwampTreeFeature;
 import net.minecraft.world.level.LevelProperties;
 
+import javax.annotation.Nullable;
 import java.io.File;
 import java.lang.ref.WeakReference;
 import java.nio.file.Path;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -107,7 +108,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
-import javax.annotation.Nullable;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * An adapter to Minecraft worlds for WorldEdit.
@@ -177,8 +178,17 @@ public class FabricWorld extends AbstractWorld {
         return null;
     }
 
+    private int buildUpdateFlags(Collection<SideEffect> sideEffects) {
+        int flags = 0;
+        if (sideEffects.contains(SideEffect.NOTIFY_NEIGHBORS)) {
+            flags |= UPDATE;
+            flags |= NOTIFY;
+        }
+        return flags;
+    }
+
     @Override
-    public <B extends BlockStateHolder<B>> boolean setBlock(BlockVector3 position, B block, boolean notifyAndLight) throws WorldEditException {
+    public <B extends BlockStateHolder<B>> boolean setBlock(BlockVector3 position, B block, Collection<SideEffect> sideEffects) throws WorldEditException {
         checkNotNull(position);
         checkNotNull(block);
 
@@ -209,18 +219,34 @@ public class FabricWorld extends AbstractWorld {
             }
         }
 
-        if (successful && notifyAndLight) {
-            world.getChunkManager().getLightingProvider().enqueueLightUpdate(pos);
-            world.updateListeners(pos, old, newState, UPDATE | NOTIFY);
+        if (successful) {
+            int flags = buildUpdateFlags(sideEffects);
+            if (flags != 0) {
+                world.updateListeners(pos, old, newState, flags);
+            }
+            if (sideEffects.contains(SideEffect.LIGHT)) {
+                world.getChunkManager().getLightingProvider().enqueueLightUpdate(pos);
+            }
         }
 
         return successful;
     }
 
     @Override
-    public boolean notifyAndLightBlock(BlockVector3 position, BlockState previousType) throws WorldEditException {
-        BlockPos pos = new BlockPos(position.getX(), position.getY(), position.getZ());
-        getWorld().updateListeners(pos, FabricAdapter.adapt(previousType), getWorld().getBlockState(pos), 1 | 2);
+    public boolean applySideEffects(BlockVector3 position, BlockState previousType, Collection<SideEffect> sideEffects) throws WorldEditException {
+        World world = getWorldChecked();
+        BlockPos pos = new BlockPos(position.getBlockX(), position.getBlockY(), position.getBlockZ());
+
+        int flags = buildUpdateFlags(sideEffects);
+        if (flags != 0) {
+            OptionalInt stateId = BlockStateIdAccess.getBlockStateId(previousType);
+            net.minecraft.block.BlockState previousState = stateId.isPresent() ? Block.getStateFromRawId(stateId.getAsInt()) : FabricAdapter.adapt(previousType);
+            world.updateListeners(pos, previousState, world.getBlockState(pos), flags);
+        }
+        if (sideEffects.contains(SideEffect.LIGHT)) {
+            world.getChunkManager().getLightingProvider().enqueueLightUpdate(pos);
+        }
+
         return true;
     }
 

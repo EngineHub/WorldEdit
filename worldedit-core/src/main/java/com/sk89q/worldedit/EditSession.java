@@ -19,9 +19,11 @@
 
 package com.sk89q.worldedit;
 
+import com.google.common.collect.ImmutableList;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.event.extent.EditSessionEvent;
+import com.sk89q.worldedit.extent.ArrangerExtent;
 import com.sk89q.worldedit.extent.ChangeSetExtent;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.extent.MaskingExtent;
@@ -30,13 +32,9 @@ import com.sk89q.worldedit.extent.buffer.ForgetfulExtentBuffer;
 import com.sk89q.worldedit.extent.cache.LastAccessExtentCache;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
 import com.sk89q.worldedit.extent.inventory.BlockBagExtent;
-import com.sk89q.worldedit.extent.reorder.ChunkBatchingExtent;
-import com.sk89q.worldedit.extent.reorder.MultiStageReorder;
 import com.sk89q.worldedit.extent.validation.BlockChangeLimiter;
 import com.sk89q.worldedit.extent.validation.DataValidatorExtent;
 import com.sk89q.worldedit.extent.world.BlockQuirkExtent;
-import com.sk89q.worldedit.extent.world.ChunkLoadingExtent;
-import com.sk89q.worldedit.extent.world.FastModeExtent;
 import com.sk89q.worldedit.extent.world.SurvivalModeExtent;
 import com.sk89q.worldedit.function.GroundFunction;
 import com.sk89q.worldedit.function.RegionMaskingFilter;
@@ -97,6 +95,18 @@ import com.sk89q.worldedit.regions.shape.ArbitraryBiomeShape;
 import com.sk89q.worldedit.regions.shape.ArbitraryShape;
 import com.sk89q.worldedit.regions.shape.RegionShape;
 import com.sk89q.worldedit.regions.shape.WorldEditExpressionEnvironment;
+import com.sk89q.worldedit.reorder.ChunkBatchingArranger;
+import com.sk89q.worldedit.reorder.ChunkLoadingArranger;
+import com.sk89q.worldedit.reorder.DelayedLightingArranger;
+import com.sk89q.worldedit.reorder.FastModeArranger;
+import com.sk89q.worldedit.reorder.FastReorderArranger;
+import com.sk89q.worldedit.reorder.MultiStageReorderArranger;
+import com.sk89q.worldedit.reorder.arrange.Arranger;
+import com.sk89q.worldedit.reorder.arrange.DelegatingArranger;
+import com.sk89q.worldedit.reorder.arrange.ForwardingArranger;
+import com.sk89q.worldedit.reorder.arrange.OptionalArranger;
+import com.sk89q.worldedit.reorder.arrange.WorldActionOutputStream;
+import com.sk89q.worldedit.reorder.arrange.WorldArranger;
 import com.sk89q.worldedit.util.Countable;
 import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.util.TreeGenerator;
@@ -123,6 +133,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -149,6 +160,12 @@ public class EditSession implements Extent, AutoCloseable {
      */
     public enum Stage {
         BEFORE_HISTORY,
+        /**
+         * @deprecated Re-ordering cannot be skipped any more, as it is not
+         * part of the extent system. Please disable the reordering for the
+         * entire edit session instead.
+         */
+        @Deprecated
         BEFORE_REORDER,
         BEFORE_CHANGE
     }
@@ -180,20 +197,22 @@ public class EditSession implements Extent, AutoCloseable {
     protected final World world;
     private final ChangeSet changeSet = new BlockOptimizedHistory();
 
-    private @Nullable FastModeExtent fastModeExtent;
+    private final List<Arranger> arrangers;
+    private @Nullable DelegatingArranger reorderArranger;
+    private @Nullable OptionalArranger chunkBatchingArranger;
+    private @Nullable OptionalArranger delayedLightingArranger;
+    private @Nullable OptionalArranger fastModeArranger;
+
+    private @Nullable ArrangerExtent arrangerExtent;
     private final SurvivalModeExtent survivalExtent;
-    private @Nullable ChunkBatchingExtent chunkBatchingExtent;
-    private @Nullable ChunkLoadingExtent chunkLoadingExtent;
     private @Nullable LastAccessExtentCache cacheExtent;
     private @Nullable BlockQuirkExtent quirkExtent;
     private @Nullable DataValidatorExtent validator;
     private final BlockBagExtent blockBagExtent;
-    private final MultiStageReorder reorderExtent;
     private @Nullable ChangeSetExtent changeSetExtent;
     private final MaskingExtent maskingExtent;
     private final BlockChangeLimiter changeLimiter;
 
-    private final Extent bypassReorderHistory;
     private final Extent bypassHistory;
     private final Extent bypassNone;
 
@@ -203,13 +222,13 @@ public class EditSession implements Extent, AutoCloseable {
 
     /**
      * Construct the object with a maximum number of blocks and a block bag.
-     *
      * @param eventBus the event bus
      * @param world the world
      * @param maxBlocks the maximum number of blocks that can be changed, or -1 to use no limit
      * @param blockBag an optional {@link BlockBag} to use, otherwise null
      * @param event the event to call with the extent
      */
+    @SuppressWarnings("deprecation") // for BEFORE_REORDER
     EditSession(EventBus eventBus, World world, int maxBlocks, @Nullable BlockBag blockBag, EditSessionEvent event) {
         checkNotNull(eventBus);
         checkArgument(maxBlocks >= -1, "maxBlocks >= -1 required");
@@ -221,18 +240,24 @@ public class EditSession implements Extent, AutoCloseable {
             Extent extent;
 
             // These extents are ALWAYS used
-            extent = fastModeExtent = new FastModeExtent(world, false);
+            // Arranger order is Reorder-ChunkBatching-DelayedLighting-FastMode-ChunkLoading-World
+            arrangers = ImmutableList.of(
+                reorderArranger = new DelegatingArranger(ForwardingArranger.getInstance()),
+                chunkBatchingArranger = OptionalArranger.wrap(new ChunkBatchingArranger()),
+                delayedLightingArranger = OptionalArranger.wrap(new DelayedLightingArranger()),
+                fastModeArranger = OptionalArranger.wrap(new FastModeArranger()),
+                new ChunkLoadingArranger(),
+                new WorldArranger(world)
+            );
+            extent = new ArrangerExtent(world, WorldActionOutputStream.create(arrangers));
             extent = survivalExtent = new SurvivalModeExtent(extent, world);
             extent = quirkExtent = new BlockQuirkExtent(extent, world);
-            extent = chunkLoadingExtent = new ChunkLoadingExtent(extent, world);
             extent = cacheExtent = new LastAccessExtentCache(extent);
             extent = wrapExtent(extent, eventBus, event, Stage.BEFORE_CHANGE);
             extent = validator = new DataValidatorExtent(extent, world);
             extent = blockBagExtent = new BlockBagExtent(extent, blockBag);
 
-            // This extent can be skipped by calling rawSetBlock()
-            extent = reorderExtent = new MultiStageReorder(extent, false);
-            extent = chunkBatchingExtent = new ChunkBatchingExtent(extent);
+            // These extents can be skipped by calling rawSetBlock()
             extent = wrapExtent(extent, eventBus, event, Stage.BEFORE_REORDER);
 
             // These extents can be skipped by calling smartSetBlock()
@@ -241,17 +266,15 @@ public class EditSession implements Extent, AutoCloseable {
             extent = changeLimiter = new BlockChangeLimiter(extent, maxBlocks);
             extent = wrapExtent(extent, eventBus, event, Stage.BEFORE_HISTORY);
 
-            this.bypassReorderHistory = blockBagExtent;
-            this.bypassHistory = reorderExtent;
+            this.bypassHistory = blockBagExtent;
             this.bypassNone = extent;
         } else {
+            arrangers = ImmutableList.of();
             Extent extent = new NullExtent();
             extent = survivalExtent = new SurvivalModeExtent(extent, NullWorld.getInstance());
             extent = blockBagExtent = new BlockBagExtent(extent, blockBag);
-            extent = reorderExtent = new MultiStageReorder(extent, false);
             extent = maskingExtent = new MaskingExtent(extent, Masks.alwaysTrue());
             extent = changeLimiter = new BlockChangeLimiter(extent, maxBlocks);
-            this.bypassReorderHistory = extent;
             this.bypassHistory = extent;
             this.bypassNone = extent;
         }
@@ -268,16 +291,13 @@ public class EditSession implements Extent, AutoCloseable {
 
     // pkg private for TracedEditSession only, may later become public API
     boolean commitRequired() {
-        if (reorderExtent != null && reorderExtent.commitRequired()) {
+        if (reorderArranger != null && reorderArranger.getDelegate() != ForwardingArranger.getInstance()) {
             return true;
         }
-        if (chunkBatchingExtent != null && chunkBatchingExtent.commitRequired()) {
-            return true;
-        }
-        if (fastModeExtent != null && fastModeExtent.commitRequired()) {
-            return true;
-        }
-        return false;
+        return Stream.of(arrangers)
+            .filter(OptionalArranger.class::isInstance)
+            .map(OptionalArranger.class::cast)
+            .anyMatch(OptionalArranger::isEnabled);
     }
 
     /**
@@ -287,6 +307,7 @@ public class EditSession implements Extent, AutoCloseable {
      */
     public void enableStandardMode() {
         setBatchingChunks(true);
+        setDelayingLighting(true);
     }
 
     /**
@@ -295,11 +316,8 @@ public class EditSession implements Extent, AutoCloseable {
      * @param reorderMode The reorder mode
      */
     public void setReorderMode(ReorderMode reorderMode) {
-        if (reorderMode == ReorderMode.FAST && fastModeExtent == null) {
-            throw new IllegalArgumentException("An EditSession without a fast mode tried to use it for reordering!");
-        }
-        if (reorderMode == ReorderMode.MULTI_STAGE && reorderExtent == null) {
-            throw new IllegalArgumentException("An EditSession without a reorder extent tried to use it for reordering!");
+        if (reorderMode != ReorderMode.NONE && reorderArranger == null) {
+            throw new IllegalArgumentException("EditSession has no re-order handler!");
         }
         if (commitRequired()) {
             flushSession();
@@ -308,23 +326,14 @@ public class EditSession implements Extent, AutoCloseable {
         this.reorderMode = reorderMode;
         switch (reorderMode) {
             case MULTI_STAGE:
-                if (fastModeExtent != null) {
-                    fastModeExtent.setPostEditSimulationEnabled(false);
-                }
-                reorderExtent.setEnabled(true);
+                reorderArranger.setDelegate(new MultiStageReorderArranger());
                 break;
             case FAST:
-                fastModeExtent.setPostEditSimulationEnabled(true);
-                if (reorderExtent != null) {
-                    reorderExtent.setEnabled(false);
-                }
+                reorderArranger.setDelegate(new FastReorderArranger());
                 break;
             case NONE:
-                if (fastModeExtent != null) {
-                    fastModeExtent.setPostEditSimulationEnabled(false);
-                }
-                if (reorderExtent != null) {
-                    reorderExtent.setEnabled(false);
+                if (reorderArranger != null) {
+                    reorderArranger.setDelegate(ForwardingArranger.getInstance());
                 }
                 break;
         }
@@ -384,7 +393,9 @@ public class EditSession implements Extent, AutoCloseable {
      */
     @Deprecated
     public boolean isQueueEnabled() {
-        return reorderMode == ReorderMode.MULTI_STAGE && reorderExtent.isEnabled();
+        return reorderMode == ReorderMode.MULTI_STAGE
+            && reorderArranger != null
+            && reorderArranger.getDelegate() instanceof MultiStageReorderArranger;
     }
 
     /**
@@ -452,8 +463,11 @@ public class EditSession implements Extent, AutoCloseable {
      * @param enabled true to enable
      */
     public void setFastMode(boolean enabled) {
-        if (fastModeExtent != null) {
-            fastModeExtent.setEnabled(enabled);
+        if (fastModeArranger != null) {
+            fastModeArranger.setEnabled(enabled);
+        }
+        if (enabled) {
+            setDelayingLighting(true);
         }
     }
 
@@ -466,7 +480,25 @@ public class EditSession implements Extent, AutoCloseable {
      * @return true if enabled
      */
     public boolean hasFastMode() {
-        return fastModeExtent != null && fastModeExtent.isEnabled();
+        return fastModeArranger != null && fastModeArranger.isEnabled();
+    }
+
+    public boolean isDelayingLighting() {
+        return delayedLightingArranger != null && delayedLightingArranger.isEnabled();
+    }
+
+    /**
+     * Sets whether delayed lighting is enabled.
+     *
+     * <p>Delayed lighting will delay light updates for after
+     * all blocks are set.</p>
+     *
+     * @param enabled true to enable
+     */
+    public void setDelayingLighting(boolean enabled) {
+        if (delayedLightingArranger != null) {
+            delayedLightingArranger.setEnabled(enabled);
+        }
     }
 
     /**
@@ -503,7 +535,7 @@ public class EditSession implements Extent, AutoCloseable {
      * @return whether chunk batching is enabled
      */
     public boolean isBatchingChunks() {
-        return chunkBatchingExtent != null && chunkBatchingExtent.isEnabled();
+        return chunkBatchingArranger != null && chunkBatchingArranger.isEnabled();
     }
 
     /**
@@ -513,7 +545,7 @@ public class EditSession implements Extent, AutoCloseable {
      * @param batchingChunks {@code true} to enable, {@code false} to disable
      */
     public void setBatchingChunks(boolean batchingChunks) {
-        if (chunkBatchingExtent == null) {
+        if (chunkBatchingArranger == null) {
             if (batchingChunks) {
                 throw new UnsupportedOperationException("Chunk batching not supported by this session.");
             }
@@ -522,7 +554,7 @@ public class EditSession implements Extent, AutoCloseable {
         if (!batchingChunks && isBatchingChunks()) {
             flushSession();
         }
-        chunkBatchingExtent.setEnabled(batchingChunks);
+        chunkBatchingArranger.setEnabled(batchingChunks);
     }
 
     /**
@@ -537,8 +569,8 @@ public class EditSession implements Extent, AutoCloseable {
             flushSession();
         }
         setReorderMode(ReorderMode.NONE);
-        if (chunkBatchingExtent != null) {
-            chunkBatchingExtent.setEnabled(false);
+        if (chunkBatchingArranger != null) {
+            chunkBatchingArranger.setEnabled(false);
         }
     }
 
@@ -618,14 +650,14 @@ public class EditSession implements Extent, AutoCloseable {
      * @return whether the block changed
      * @throws WorldEditException thrown on a set error
      */
+    @SuppressWarnings("deprecation")
     public <B extends BlockStateHolder<B>> boolean setBlock(BlockVector3 position, B block, Stage stage) throws WorldEditException {
         switch (stage) {
             case BEFORE_HISTORY:
                 return bypassNone.setBlock(position, block);
             case BEFORE_CHANGE:
-                return bypassHistory.setBlock(position, block);
             case BEFORE_REORDER:
-                return bypassReorderHistory.setBlock(position, block);
+                return bypassHistory.setBlock(position, block);
         }
 
         throw new RuntimeException("New enum entry added that is unhandled here");
@@ -637,7 +669,10 @@ public class EditSession implements Extent, AutoCloseable {
      * @param position the position to set the block at
      * @param block the block
      * @return whether the block changed
+     * @deprecated Block re-ordering is now always used if enabled, this method is no
+     * different from {@link #smartSetBlock(BlockVector3, BlockStateHolder)}.
      */
+    @Deprecated
     public <B extends BlockStateHolder<B>> boolean rawSetBlock(BlockVector3 position, B block) {
         try {
             return setBlock(position, block, Stage.BEFORE_CHANGE);
@@ -655,7 +690,7 @@ public class EditSession implements Extent, AutoCloseable {
      */
     public <B extends BlockStateHolder<B>> boolean smartSetBlock(BlockVector3 position, B block) {
         try {
-            return setBlock(position, block, Stage.BEFORE_REORDER);
+            return setBlock(position, block, Stage.BEFORE_CHANGE);
         } catch (WorldEditException e) {
             throw new RuntimeException("Unexpected exception", e);
         }

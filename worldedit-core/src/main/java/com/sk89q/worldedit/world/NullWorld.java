@@ -28,6 +28,7 @@ import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.Vector3;
+import com.sk89q.worldedit.action.SideEffect;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.TreeGenerator.TreeType;
@@ -40,10 +41,10 @@ import com.sk89q.worldedit.world.block.BlockTypes;
 import com.sk89q.worldedit.world.weather.WeatherType;
 import com.sk89q.worldedit.world.weather.WeatherTypes;
 
+import javax.annotation.Nullable;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-
-import javax.annotation.Nullable;
 
 /**
  * A null implementation of {@link World} that drops all changes and
@@ -62,12 +63,12 @@ public class NullWorld extends AbstractWorld {
     }
 
     @Override
-    public <B extends BlockStateHolder<B>> boolean setBlock(BlockVector3 position, B block, boolean notifyAndLight) throws WorldEditException {
+    public <B extends BlockStateHolder<B>> boolean setBlock(BlockVector3 position, B block, Collection<SideEffect> sideEffects) throws WorldEditException {
         return false;
     }
 
     @Override
-    public boolean notifyAndLightBlock(BlockVector3 position, BlockState previousType) throws WorldEditException {
+    public boolean applySideEffects(BlockVector3 position, BlockState previousType, Collection<SideEffect> sideEffects) throws WorldEditException {
         return false;
     }
 

@@ -27,6 +27,7 @@ import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.action.SideEffect;
 import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.entity.BaseEntity;
@@ -72,6 +73,7 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.IChunk;
 import net.minecraft.world.chunk.ServerChunkProvider;
+import net.minecraft.world.chunk.ServerWorldLightManager;
 import net.minecraft.world.chunk.listener.IChunkStatusListener;
 import net.minecraft.world.gen.feature.BigBrownMushroomFeature;
 import net.minecraft.world.gen.feature.BigMushroomFeatureConfig;
@@ -99,6 +101,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.nio.file.Path;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -178,8 +181,17 @@ public class ForgeWorld extends AbstractWorld {
         return null;
     }
 
+    private int buildUpdateFlags(Collection<SideEffect> sideEffects) {
+        int flags = 0;
+        if (sideEffects.contains(SideEffect.NOTIFY_NEIGHBORS)) {
+            flags |= UPDATE;
+            flags |= NOTIFY;
+        }
+        return flags;
+    }
+
     @Override
-    public <B extends BlockStateHolder<B>> boolean setBlock(BlockVector3 position, B block, boolean notifyAndLight) throws WorldEditException {
+    public <B extends BlockStateHolder<B>> boolean setBlock(BlockVector3 position, B block, Collection<SideEffect> sideEffects) throws WorldEditException {
         checkNotNull(position);
         checkNotNull(block);
 
@@ -210,18 +222,39 @@ public class ForgeWorld extends AbstractWorld {
             }
         }
 
-        if (successful && notifyAndLight) {
-            world.getChunkProvider().getLightManager().checkBlock(pos);
-            world.markAndNotifyBlock(pos, chunk, old, newState, UPDATE | NOTIFY);
+        if (successful) {
+            int flags = buildUpdateFlags(sideEffects);
+            if (flags != 0) {
+                world.markAndNotifyBlock(pos, chunk, old, newState, flags);
+            }
+            if (sideEffects.contains(SideEffect.LIGHT)) {
+                world.getChunkProvider().getLightManager().checkBlock(pos);
+            }
         }
 
         return successful;
     }
 
     @Override
-    public boolean notifyAndLightBlock(BlockVector3 position, BlockState previousType) throws WorldEditException {
-        BlockPos pos = new BlockPos(position.getX(), position.getY(), position.getZ());
-        getWorld().notifyBlockUpdate(pos, ForgeAdapter.adapt(previousType), getWorld().getBlockState(pos), 1 | 2);
+    public boolean applySideEffects(BlockVector3 position, BlockState previousType, Collection<SideEffect> sideEffects) throws WorldEditException {
+        World world = getWorldChecked();
+        int x = position.getBlockX();
+        int y = position.getBlockY();
+        int z = position.getBlockZ();
+
+        Chunk chunk = world.getChunk(x >> 4, z >> 4);
+        BlockPos pos = new BlockPos(x, y, z);
+        OptionalInt stateId = BlockStateIdAccess.getBlockStateId(previousType);
+        net.minecraft.block.BlockState prevState = stateId.isPresent() ? Block.getStateById(stateId.getAsInt()) : ForgeAdapter.adapt(previousType);
+
+        int flags = buildUpdateFlags(sideEffects);
+        if (flags != 0) {
+            world.markAndNotifyBlock(pos, chunk, prevState, chunk.getBlockState(pos), flags);
+        }
+        if (sideEffects.contains(SideEffect.LIGHT)) {
+            world.getChunkProvider().getLightManager().checkBlock(pos);
+        }
+
         return true;
     }
 

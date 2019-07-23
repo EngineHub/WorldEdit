@@ -17,22 +17,23 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.extent.reorder;
+package com.sk89q.worldedit.action;
 
-import com.sk89q.worldedit.extent.Extent;
-import com.sk89q.worldedit.reorder.arrange.Arranger;
+import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.world.World;
 
 /**
- * An interface for {@link Extent}s that are meant to reorder changes so
- * that they are more successful.
+ * An action that can be applied to a world.
  *
- * <p>For example, torches in Minecraft need to be placed on a block. A smart
- * reordering implementation might place the torch after the block has
- * been placed.</p>
- *
- * @deprecated Register an {@link Arranger} instead.
+ * <p>
+ * It is recommended to use one of the existing implementations, since it
+ * will automatically be understood by the standard placement Arrangers,
+ * but any subclass is allowed.
+ * </p>
  */
-@Deprecated
-public interface ReorderingExtent extends Extent {
+@FunctionalInterface
+public interface WorldAction {
+
+    void apply(World world) throws WorldEditException;
 
 }

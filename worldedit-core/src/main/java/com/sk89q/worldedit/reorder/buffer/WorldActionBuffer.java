@@ -19,16 +19,16 @@
 
 package com.sk89q.worldedit.reorder.buffer;
 
-import com.sk89q.worldedit.util.LocatedBlock;
+import com.sk89q.worldedit.action.WorldAction;
 
 import java.nio.ByteBuffer;
 
 /**
- * Similar to {@link ByteBuffer}, but for block placements.
+ * Similar to {@link ByteBuffer}, but for world actions.
  *
  * Many of the conditions for arguments are the same as with {@link ByteBuffer}.
  */
-public interface PlacementBuffer {
+public interface WorldActionBuffer {
 
     /**
      * The maximum number of elements this buffer can hold.
@@ -48,7 +48,7 @@ public interface PlacementBuffer {
      * @param position the new position
      * @return {@code this}
      */
-    PlacementBuffer position(int position);
+    WorldActionBuffer position(int position);
 
     /**
      * The current limit of the buffer.
@@ -63,14 +63,14 @@ public interface PlacementBuffer {
      * @param limit the new limit
      * @return {@code this}
      */
-    PlacementBuffer limit(int limit);
+    WorldActionBuffer limit(int limit);
 
     /**
      * Set the position to zero and the limit to the {@linkplain #capacity() capacity}.
      *
      * @return {@code this}
      */
-    default PlacementBuffer clear() {
+    default WorldActionBuffer clear() {
         position(0);
         limit(capacity());
         return this;
@@ -81,7 +81,7 @@ public interface PlacementBuffer {
      *
      * @return {@code this}
      */
-    default PlacementBuffer flip() {
+    default WorldActionBuffer flip() {
         limit(position());
         position(0);
         return this;
@@ -92,7 +92,7 @@ public interface PlacementBuffer {
      *
      * @return {@code this}
      */
-    default PlacementBuffer rewind() {
+    default WorldActionBuffer rewind() {
         position(0);
         return this;
     }
@@ -115,7 +115,7 @@ public interface PlacementBuffer {
      * {@code true} if the buffer is read-only.
      *
      * Note: If this returns {@code true}, it is NOT safe to cast this to
-     * {@link ReadOnlyPlacementBuffer}. That interface is currently only a convenience for
+     * {@link ReadOnlyWorldActionBuffer}. That interface is currently only a convenience for
      * implementors, not a required interface.
      */
     boolean isReadOnly();
@@ -127,14 +127,14 @@ public interface PlacementBuffer {
      * If this buffer is {@linkplain #isReadOnly() read-only}, this is equivalent to
      * {@link #duplicate()}.
      */
-    ReadOnlyPlacementBuffer asReadOnlyBuffer();
+    ReadOnlyWorldActionBuffer asReadOnlyBuffer();
 
     /**
      * Relative {@code get} method. Increments position by one after retrieving the element.
      *
      * @return the element
      */
-    LocatedBlock get();
+    WorldAction get();
 
     /**
      * Absolute {@code get} method.
@@ -142,7 +142,7 @@ public interface PlacementBuffer {
      * @param index the index of the element to retrieve
      * @return the element
      */
-    LocatedBlock get(int index);
+    WorldAction get(int index);
 
     /**
      * Relative bulk {@code get} method. Increments position by {@code out.length} after copying
@@ -151,7 +151,7 @@ public interface PlacementBuffer {
      * @param out the output array
      * @return {@code this}
      */
-    default PlacementBuffer get(LocatedBlock[] out) {
+    default WorldActionBuffer get(WorldAction[] out) {
         return get(out, 0, out.length);
     }
 
@@ -162,7 +162,7 @@ public interface PlacementBuffer {
      * @param out the output array
      * @return {@code this}
      */
-    PlacementBuffer get(LocatedBlock[] out, int offset, int length);
+    WorldActionBuffer get(WorldAction[] out, int offset, int length);
 
     /**
      * Duplicate this buffer. Returns a new buffer with the same capacity, limit, and position.
@@ -170,7 +170,7 @@ public interface PlacementBuffer {
      *
      * @return the new buffer
      */
-    PlacementBuffer duplicate();
+    WorldActionBuffer duplicate();
 
     /**
      * Slice this buffer. Returns a new buffer with a capacity and limit equal to
@@ -179,6 +179,6 @@ public interface PlacementBuffer {
      *
      * @return the new buffer
      */
-    PlacementBuffer slice();
+    WorldActionBuffer slice();
 
 }

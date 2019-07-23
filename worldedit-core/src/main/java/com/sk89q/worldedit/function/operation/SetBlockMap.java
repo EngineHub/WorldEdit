@@ -34,9 +34,9 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class SetBlockMap implements Operation {
 
     private final Extent extent;
-    private final BlockMap blocks;
+    private final BlockMap<BaseBlock> blocks;
 
-    public SetBlockMap(Extent extent, BlockMap blocks) {
+    public SetBlockMap(Extent extent, BlockMap<BaseBlock> blocks) {
         this.extent = checkNotNull(extent);
         this.blocks = checkNotNull(blocks);
     }

@@ -19,7 +19,7 @@
 
 package com.sk89q.worldedit.reorder.buffer;
 
-import com.sk89q.worldedit.util.LocatedBlock;
+import com.sk89q.worldedit.action.WorldAction;
 
 import static com.sk89q.worldedit.reorder.buffer.BufferConditions.checkBounds;
 import static com.sk89q.worldedit.reorder.buffer.BufferConditions.checkIndex;
@@ -29,14 +29,14 @@ import static com.sk89q.worldedit.reorder.buffer.BufferConditions.checkWithin;
 /**
  * Shared implementation between mutable + read-only implementation.
  */
-abstract class SharedArrayPlacementBuffer implements PlacementBuffer {
-    protected final LocatedBlock[] array;
+abstract class SharedArrayWorldActionBuffer implements WorldActionBuffer {
+    protected final WorldAction[] array;
     protected final int offset;
     protected final int capacity;
     protected int position;
     protected int limit;
 
-    SharedArrayPlacementBuffer(LocatedBlock[] array, int offset, int capacity) {
+    SharedArrayWorldActionBuffer(WorldAction[] array, int offset, int capacity) {
         this.array = array;
         this.offset = offset;
         this.capacity = capacity;
@@ -51,7 +51,7 @@ abstract class SharedArrayPlacementBuffer implements PlacementBuffer {
         return position;
     }
 
-    public SharedArrayPlacementBuffer position(int position) {
+    public SharedArrayWorldActionBuffer position(int position) {
         this.position = checkWithin(position, limit);
         return this;
     }
@@ -60,20 +60,20 @@ abstract class SharedArrayPlacementBuffer implements PlacementBuffer {
         return limit;
     }
 
-    public SharedArrayPlacementBuffer limit(int limit) {
+    public SharedArrayWorldActionBuffer limit(int limit) {
         this.limit = checkWithin(limit, capacity);
         return this;
     }
 
-    public LocatedBlock get() {
+    public WorldAction get() {
         return array[checkReadPosition(position++, limit) + offset];
     }
 
-    public LocatedBlock get(int index) {
+    public WorldAction get(int index) {
         return array[checkIndex(index, limit) + offset];
     }
 
-    public SharedArrayPlacementBuffer get(LocatedBlock[] out, int offset, int length) {
+    public SharedArrayWorldActionBuffer get(WorldAction[] out, int offset, int length) {
         checkBounds(out.length, offset, length);
         checkReadPosition(length, remaining());
         System.arraycopy(array, position + this.offset,

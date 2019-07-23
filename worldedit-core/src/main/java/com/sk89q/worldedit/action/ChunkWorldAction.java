@@ -17,30 +17,18 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.reorder.arrange;
+package com.sk89q.worldedit.action;
 
-import com.sk89q.worldedit.reorder.buffer.PlacementBuffer;
+import com.sk89q.worldedit.math.BlockVector2;
 
 /**
- * Output interface for placements.
+ * An action that affects a single chunk.
  */
-public interface PlacementOutputStream {
+public interface ChunkWorldAction extends WorldAction {
 
     /**
-     * Store or pass the given buffer to the next Arranger.
-     *
-     * <p>
-     * To ensure all data is written to the next Arranger, you <strong>must</strong> call
-     * {@link #flush()}!
-     * </p>
-     *
-     * @param buffer the placement buffer
+     * The position of the chunk this action affects.
      */
-    void write(PlacementBuffer buffer);
-
-    /**
-     * Flush stored buffers to the next Arranger.
-     */
-    void flush();
+    BlockVector2 getPosition();
 
 }

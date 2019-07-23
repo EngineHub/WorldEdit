@@ -19,32 +19,35 @@
 
 package com.sk89q.worldedit.reorder.arrange;
 
-import com.sk89q.worldedit.action.WorldAction;
-import com.sk89q.worldedit.reorder.buffer.MutableWorldActionBuffer;
-import com.sk89q.worldedit.reorder.buffer.WorldActionBuffer;
+import java.util.function.Supplier;
 
 /**
- * (Re-)Arranges world actions.
- *
- * <p>
- * Arrangers may additionally replace the {@link WorldAction} objects they receive.
- * </p>
+ * Simple implementation of {@link AttributeKey} that adds default-initialization.
  */
-public interface Arranger {
+public class SimpleAttributeKey<T> implements AttributeKey<T> {
 
-    /**
-     * Re-arrange the given actions.
-     *
-     * @param context the context
-     * @param buffer the new actions to arrange
-     */
-    void onWrite(ArrangerContext context, MutableWorldActionBuffer buffer);
+    public static <T> SimpleAttributeKey<T> create(String toString, Supplier<T> initializer) {
+        return new SimpleAttributeKey<>(toString, initializer);
+    }
 
-    /**
-     * Called when a group of actions ends.
-     *
-     * @param context the context
-     */
-    void onFlush(ArrangerContext context);
+    private final String toString;
+    private final Supplier<T> initializer;
 
+    private SimpleAttributeKey(String toString, Supplier<T> initializer) {
+        this.toString = toString;
+        this.initializer = initializer;
+    }
+
+    public T get(ArrangerContext ctx) {
+        return ctx.attrOrInit(this, initializer);
+    }
+
+    public void set(ArrangerContext ctx, T value) {
+        ctx.attr(this, value);
+    }
+
+    @Override
+    public String toString() {
+        return toString;
+    }
 }

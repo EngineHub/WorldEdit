@@ -19,33 +19,19 @@
 
 package com.sk89q.worldedit.reorder.arrange;
 
-import java.util.List;
-
 /**
- * A sequential list of Arrangers.
- *
- * <p>
- * The last Arranger <strong>MUST</strong> not touch its output stream.
- * Instead, it should handle the actual placements.
- * </p>
+ * Each unique instance of this interface corresponds to a unique entry in the attribute map of a
+ * pipeline.
  */
-public interface ArrangerPipeline {
+public interface AttributeKey<T> {
 
-    static ArrangerPipeline create() {
-        return new ArrangerPipelineImpl();
+    static <T> AttributeKey<T> create(String toString) {
+        return new AttributeKey<T>() {
+            @Override
+            public String toString() {
+                return toString;
+            }
+        };
     }
-
-    /**
-     * The list of Arrangers. Use this to add to the pipeline.
-     *
-     * @return a mutable list of Arrangers
-     */
-    List<Arranger> arrangers();
-
-    /**
-     * Create a new stream to write messages to. It will use the Arrangers listed at this
-     * moment, copying them into the stream object.
-     */
-    PlacementOutputStream openStream();
 
 }

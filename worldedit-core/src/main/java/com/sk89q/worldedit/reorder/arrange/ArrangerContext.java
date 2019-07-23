@@ -17,22 +17,16 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.extent.reorder;
+package com.sk89q.worldedit.reorder.arrange;
 
-import com.sk89q.worldedit.extent.Extent;
-import com.sk89q.worldedit.reorder.arrange.Arranger;
+import java.util.function.Supplier;
 
-/**
- * An interface for {@link Extent}s that are meant to reorder changes so
- * that they are more successful.
- *
- * <p>For example, torches in Minecraft need to be placed on a block. A smart
- * reordering implementation might place the torch after the block has
- * been placed.</p>
- *
- * @deprecated Register an {@link Arranger} instead.
- */
-@Deprecated
-public interface ReorderingExtent extends Extent {
+public interface ArrangerContext extends WorldActionOutputStream {
+
+    <T> T attr(AttributeKey<T> key);
+
+    <T> T attrOrInit(AttributeKey<T> key, Supplier<T> init);
+
+    <T> void attr(AttributeKey<T> key, T value);
 
 }

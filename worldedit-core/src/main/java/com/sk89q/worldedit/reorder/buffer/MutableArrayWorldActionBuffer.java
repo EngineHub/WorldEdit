@@ -19,29 +19,30 @@
 
 package com.sk89q.worldedit.reorder.buffer;
 
-import com.sk89q.worldedit.util.LocatedBlock;
+import com.sk89q.worldedit.action.BlockPlacement;
+import com.sk89q.worldedit.action.WorldAction;
 
 import static com.sk89q.worldedit.reorder.buffer.BufferConditions.checkBounds;
 import static com.sk89q.worldedit.reorder.buffer.BufferConditions.checkIndex;
 import static com.sk89q.worldedit.reorder.buffer.BufferConditions.checkWritePosition;
 
-public class MutableArrayPlacementBuffer extends SharedArrayPlacementBuffer implements MutablePlacementBuffer {
+public class MutableArrayWorldActionBuffer extends SharedArrayWorldActionBuffer implements MutableWorldActionBuffer {
 
-    public static MutableArrayPlacementBuffer allocate(int size) {
-        return wrap(new LocatedBlock[size]);
+    public static MutableArrayWorldActionBuffer allocate(int size) {
+        return wrap(new BlockPlacement[size]);
     }
 
-    public static MutableArrayPlacementBuffer wrap(LocatedBlock[] blocks) {
-        return new MutableArrayPlacementBuffer(blocks, 0, blocks.length);
+    public static MutableArrayWorldActionBuffer wrap(WorldAction[] blocks) {
+        return new MutableArrayWorldActionBuffer(blocks, 0, blocks.length);
     }
 
-    public static MutableArrayPlacementBuffer wrap(LocatedBlock[] blocks, int offset, int length) {
-        return new MutableArrayPlacementBuffer(blocks, 0, blocks.length)
+    public static MutableArrayWorldActionBuffer wrap(WorldAction[] blocks, int offset, int length) {
+        return new MutableArrayWorldActionBuffer(blocks, 0, blocks.length)
             .position(offset)
             .limit(length);
     }
 
-    private MutableArrayPlacementBuffer(LocatedBlock[] array, int offset, int capacity) {
+    private MutableArrayWorldActionBuffer(WorldAction[] array, int offset, int capacity) {
         super(array, offset, capacity);
     }
 
@@ -56,7 +57,7 @@ public class MutableArrayPlacementBuffer extends SharedArrayPlacementBuffer impl
     }
 
     @Override
-    public LocatedBlock[] array() {
+    public WorldAction[] array() {
         return array;
     }
 
@@ -66,65 +67,65 @@ public class MutableArrayPlacementBuffer extends SharedArrayPlacementBuffer impl
     }
 
     @Override
-    public ReadOnlyArrayPlacementBuffer asReadOnlyBuffer() {
-        return new ReadOnlyArrayPlacementBuffer(
+    public ReadOnlyArrayWorldActionBuffer asReadOnlyBuffer() {
+        return new ReadOnlyArrayWorldActionBuffer(
             array, offset, capacity
         ).limit(limit).position(position);
     }
 
     @Override
-    public MutableArrayPlacementBuffer put(LocatedBlock placement) {
-        array[checkWritePosition(position++, limit) + offset] = placement;
+    public MutableArrayWorldActionBuffer put(WorldAction worldAction) {
+        array[checkWritePosition(position++, limit) + offset] = worldAction;
         return this;
     }
 
     @Override
-    public MutableArrayPlacementBuffer put(LocatedBlock[] placements, int offset, int length) {
-        checkBounds(placements.length, offset, length);
+    public MutableArrayWorldActionBuffer put(WorldAction[] worldActions, int offset, int length) {
+        checkBounds(worldActions.length, offset, length);
         checkWritePosition(length, remaining());
-        System.arraycopy(placements, offset,
+        System.arraycopy(worldActions, offset,
             array, position + this.offset, length);
         position += length;
         return this;
     }
 
     @Override
-    public MutableArrayPlacementBuffer put(PlacementBuffer placements) {
-        int remaining = placements.remaining();
+    public MutableArrayWorldActionBuffer put(WorldActionBuffer buffer) {
+        int remaining = buffer.remaining();
         checkWritePosition(remaining, remaining());
-        if (placements instanceof MutablePlacementBuffer) {
-            MutablePlacementBuffer mut = (MutablePlacementBuffer) placements;
+        if (buffer instanceof MutableWorldActionBuffer) {
+            MutableWorldActionBuffer mut = (MutableWorldActionBuffer) buffer;
             if (mut.hasArray()) {
-                LocatedBlock[] oa = mut.array();
+                WorldAction[] oa = mut.array();
                 int oo = mut.arrayOffset();
-                System.arraycopy(oa, placements.position() + oo,
+                System.arraycopy(oa, buffer.position() + oo,
                     array, position + offset, remaining);
-                mut.position(placements.position() + remaining);
+                mut.position(buffer.position() + remaining);
                 position += remaining;
                 return this;
             }
         }
-        placements.get(array, position + offset, remaining);
+        buffer.get(array, position + offset, remaining);
         position += remaining;
         return this;
     }
 
     @Override
-    public MutableArrayPlacementBuffer put(int index, LocatedBlock placement) {
-        array[checkIndex(index, limit) + offset] = placement;
+    public MutableArrayWorldActionBuffer put(int index, WorldAction worldAction) {
+        array[checkIndex(index, limit) + offset] = worldAction;
         return this;
     }
 
     @Override
-    public MutableArrayPlacementBuffer duplicate() {
-        return new MutableArrayPlacementBuffer(
+    public MutableArrayWorldActionBuffer duplicate() {
+        return new MutableArrayWorldActionBuffer(
             array, offset, capacity
         ).limit(limit).position(position);
     }
 
     @Override
-    public MutableArrayPlacementBuffer slice() {
-        return new MutableArrayPlacementBuffer(
+    public MutableArrayWorldActionBuffer slice() {
+        return new MutableArrayWorldActionBuffer(
             array, offset + position, remaining()
         );
     }
@@ -132,49 +133,49 @@ public class MutableArrayPlacementBuffer extends SharedArrayPlacementBuffer impl
     // Return value overrides:
 
     @Override
-    public MutableArrayPlacementBuffer put(LocatedBlock[] placement) {
-        MutablePlacementBuffer.super.put(placement);
+    public MutableArrayWorldActionBuffer put(WorldAction[] worldAction) {
+        MutableWorldActionBuffer.super.put(worldAction);
         return this;
     }
 
     @Override
-    public MutableArrayPlacementBuffer clear() {
-        MutablePlacementBuffer.super.clear();
+    public MutableArrayWorldActionBuffer clear() {
+        MutableWorldActionBuffer.super.clear();
         return this;
     }
 
     @Override
-    public MutableArrayPlacementBuffer flip() {
-        MutablePlacementBuffer.super.flip();
+    public MutableArrayWorldActionBuffer flip() {
+        MutableWorldActionBuffer.super.flip();
         return this;
     }
 
     @Override
-    public MutableArrayPlacementBuffer rewind() {
-        MutablePlacementBuffer.super.rewind();
+    public MutableArrayWorldActionBuffer rewind() {
+        MutableWorldActionBuffer.super.rewind();
         return this;
     }
 
     @Override
-    public MutableArrayPlacementBuffer get(LocatedBlock[] out) {
-        MutablePlacementBuffer.super.get(out);
+    public MutableArrayWorldActionBuffer get(WorldAction[] out) {
+        MutableWorldActionBuffer.super.get(out);
         return this;
     }
 
     @Override
-    public MutableArrayPlacementBuffer position(int position) {
+    public MutableArrayWorldActionBuffer position(int position) {
         super.position(position);
         return this;
     }
 
     @Override
-    public MutableArrayPlacementBuffer limit(int limit) {
+    public MutableArrayWorldActionBuffer limit(int limit) {
         super.limit(limit);
         return this;
     }
 
     @Override
-    public MutableArrayPlacementBuffer get(LocatedBlock[] out, int offset, int length) {
+    public MutableArrayWorldActionBuffer get(WorldAction[] out, int offset, int length) {
         super.get(out, offset, length);
         return this;
     }

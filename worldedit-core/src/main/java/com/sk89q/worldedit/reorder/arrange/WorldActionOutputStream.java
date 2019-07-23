@@ -19,32 +19,38 @@
 
 package com.sk89q.worldedit.reorder.arrange;
 
-import com.sk89q.worldedit.action.WorldAction;
-import com.sk89q.worldedit.reorder.buffer.MutableWorldActionBuffer;
 import com.sk89q.worldedit.reorder.buffer.WorldActionBuffer;
 
+import java.util.Arrays;
+
 /**
- * (Re-)Arranges world actions.
- *
- * <p>
- * Arrangers may additionally replace the {@link WorldAction} objects they receive.
- * </p>
+ * Output interface for world actions.
  */
-public interface Arranger {
+public interface WorldActionOutputStream {
+
+    static WorldActionOutputStream create(Arranger... arrangers) {
+        return create(Arrays.asList(arrangers));
+    }
+
+    static WorldActionOutputStream create(Iterable<Arranger> arrangers) {
+        return ArrangerContextImpl.newStream(arrangers);
+    }
 
     /**
-     * Re-arrange the given actions.
+     * Store or pass the given buffer to the next Arranger.
      *
-     * @param context the context
-     * @param buffer the new actions to arrange
+     * <p>
+     * To ensure all data is written to the next Arranger, you <strong>must</strong> call
+     * {@link #flush()}!
+     * </p>
+     *
+     * @param buffer the action buffer
      */
-    void onWrite(ArrangerContext context, MutableWorldActionBuffer buffer);
+    void write(WorldActionBuffer buffer);
 
     /**
-     * Called when a group of actions ends.
-     *
-     * @param context the context
+     * Flush stored buffers to the next Arranger.
      */
-    void onFlush(ArrangerContext context);
+    void flush();
 
 }
