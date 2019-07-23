@@ -504,7 +504,7 @@ public class LocalSession {
     public BlockVector3 getPlacementPosition(Actor actor) throws IncompleteRegionException {
         checkNotNull(actor);
         if (!placeAtPos1) {
-            if (actor.isPlayer() && actor instanceof Player) {
+            if (actor instanceof Player) {
                 return ((Player) actor).getBlockIn().toVector().toBlockPoint();
             } else {
                 throw new IncompleteRegionException();

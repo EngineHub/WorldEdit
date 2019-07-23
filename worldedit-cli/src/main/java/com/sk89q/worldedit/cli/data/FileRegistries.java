@@ -33,18 +33,18 @@ import java.util.Map;
 
 public class FileRegistries {
 
-    private CLIWorldEdit program;
+    private CLIWorldEdit app;
     private Gson gson = new GsonBuilder().create();
 
     private DataFile dataFile;
 
-    public FileRegistries(CLIWorldEdit program) {
-        this.program = program;
+    public FileRegistries(CLIWorldEdit app) {
+        this.app = app;
     }
 
     public void loadDataFiles() {
         try {
-            URL url = ResourceLoader.getResource(FileRegistries.class, program.getPlatform().getDataVersion() + ".json");
+            URL url = ResourceLoader.getResource(FileRegistries.class, app.getPlatform().getDataVersion() + ".json");
             this.dataFile = gson.fromJson(Resources.toString(url, StandardCharsets.UTF_8), DataFile.class);
         } catch (IOException e) {
             throw new RuntimeException("The provided file is not compatible with this version of WorldEdit-CLI. Please update or report this.");

@@ -27,7 +27,7 @@ import com.sk89q.worldedit.session.SessionKey;
 import com.sk89q.worldedit.util.auth.AuthorizationException;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.serializer.plain.PlainComponentSerializer;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 import java.io.File;
 import java.util.UUID;
@@ -39,14 +39,14 @@ public class CLICommandSender implements Actor {
      */
     private static final UUID DEFAULT_ID = UUID.fromString("a233eb4b-4cab-42cd-9fd9-7e7b9a3f74be");
 
-    private CLIWorldEdit plugin;
-    private Logger sender;
+    private final CLIWorldEdit app;
+    private final Logger sender;
 
-    public CLICommandSender(CLIWorldEdit plugin, Logger sender) {
-        checkNotNull(plugin);
+    public CLICommandSender(CLIWorldEdit app, Logger sender) {
+        checkNotNull(app);
         checkNotNull(sender);
 
-        this.plugin = plugin;
+        this.app = app;
         this.sender = sender;
     }
 

@@ -49,8 +49,8 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Options;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -67,7 +67,7 @@ import java.util.Scanner;
  */
 public class CLIWorldEdit {
 
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LoggerFactory.getLogger(CLIWorldEdit.class);
 
     public static CLIWorldEdit inst;
 
@@ -106,8 +106,9 @@ public class CLIWorldEdit {
                                 ).toImmutableState();
                                 BlockState defaultState = input.getBlockType().getAllStates().get(0);
                                 for (Map.Entry<Property<?>, Object> propertyObjectEntry : state.getStates().entrySet()) {
-                                    //noinspection unchecked
-                                    defaultState = defaultState.with((Property<Object>) propertyObjectEntry.getKey(), propertyObjectEntry.getValue());
+                                    @SuppressWarnings("unchecked")
+                                    Property<Object> prop = (Property<Object>) propertyObjectEntry.getKey();
+                                    defaultState = defaultState.with(prop, propertyObjectEntry.getValue());
                                 }
                                 return defaultState;
                             } catch (InputParseException e) {
@@ -214,7 +215,7 @@ public class CLIWorldEdit {
     }
 
     /**
-     * Get the version of the WorldEdit-for-Forge implementation.
+     * Get the version of the WorldEdit-CLI implementation.
      *
      * @return a version string
      */
@@ -224,7 +225,7 @@ public class CLIWorldEdit {
 
     public void run() {
         Scanner scanner = new Scanner(System.in);
-        while (scanner.hasNext()) {
+        while (scanner.hasNextLine()) {
             String line = scanner.nextLine();
             if (line.equalsIgnoreCase("stop")) {
                 commandSender.print("Stopping!");
@@ -269,9 +270,10 @@ public class CLIWorldEdit {
         Options options = new Options();
         options.addRequiredOption("f", "file", false, "The file to load in. Either a schematic, or a level.dat in a world folder.");
         CommandLineParser parser = new DefaultParser();
+        int exitCode = 0;
 
-        CLIWorldEdit worldEdit = new CLIWorldEdit();
-        worldEdit.onInitialized();
+        CLIWorldEdit app = new CLIWorldEdit();
+        app.onInitialized();
 
         try {
             CommandLine cmd = parser.parse(options, args);
@@ -296,23 +298,28 @@ public class CLIWorldEdit {
                         .getReader(Files.newInputStream(file.toPath(), StandardOpenOption.READ));
                 int dataVersion = clipboardReader.getDataVersion()
                         .orElseThrow(() -> new IllegalArgumentException("Failed to obtain data version from schematic."));
-                worldEdit.platform.setDataVersion(dataVersion);
-                worldEdit.onStarted();
+                app.platform.setDataVersion(dataVersion);
+                app.onStarted();
                 ClipboardWorld world = new ClipboardWorld(
                         format.getReader(Files.newInputStream(file.toPath(), StandardOpenOption.READ)).read(),
                         file.getName()
                 );
-                worldEdit.platform.addWorld(world);
-                WorldEdit.getInstance().getSessionManager().get(worldEdit.commandSender).setWorldOverride(world);
+                app.platform.addWorld(world);
+                WorldEdit.getInstance().getSessionManager().get(app.commandSender).setWorldOverride(world);
             } else {
                 throw new IllegalArgumentException("Unknown file provided!");
             }
 
-            worldEdit.run();
+            app.run();
         } catch (Exception e) {
             e.printStackTrace();
+            exitCode = 1;
         } finally {
-            worldEdit.onStopped();
+            app.onStopped();
+        }
+
+        if (exitCode != 0) {
+            System.exit(exitCode);
         }
     }
 }

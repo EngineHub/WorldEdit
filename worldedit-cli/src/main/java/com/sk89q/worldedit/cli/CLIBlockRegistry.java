@@ -19,6 +19,8 @@
 
 package com.sk89q.worldedit.cli;
 
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
 import com.sk89q.worldedit.cli.data.FileRegistries;
 import com.sk89q.worldedit.registry.state.BooleanProperty;
 import com.sk89q.worldedit.registry.state.DirectionalProperty;
@@ -29,7 +31,6 @@ import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.registry.BundledBlockRegistry;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -63,11 +64,10 @@ public class CLIBlockRegistry extends BundledBlockRegistry {
     @Nullable
     @Override
     public Map<String, ? extends Property<?>> getProperties(BlockType blockType) {
-        Map<String, FileRegistries.BlockProperty> properties = CLIWorldEdit.inst.getFileRegistries().getDataFile().blocks.get(blockType.getId()).properties;
-        Map<String, Property<?>> worldEditProperties = new HashMap<>();
-
-        properties.forEach((name, prop) -> worldEditProperties.put(name, createProperty(prop.type, name, prop.values)));
-
-        return worldEditProperties;
+        Map<String, FileRegistries.BlockProperty> properties =
+                CLIWorldEdit.inst.getFileRegistries().getDataFile().blocks.get(blockType.getId()).properties;
+        return ImmutableMap.copyOf(Maps.transformEntries(properties,
+                (Maps.EntryTransformer<String, FileRegistries.BlockProperty, Property<?>>)
+                        (key, value) -> createProperty(value.type, key, value.values)));
     }
 }

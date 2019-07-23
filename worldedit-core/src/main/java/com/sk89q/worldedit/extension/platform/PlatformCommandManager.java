@@ -226,21 +226,13 @@ public final class PlatformCommandManager {
                 context -> {
                     LocalSession localSession = context.injectedValue(Key.of(LocalSession.class))
                             .orElseThrow(() -> new IllegalStateException("No LocalSession"));
-                    return context.injectedValue(Key.of(Actor.class))
-                            .map(actor -> {
+                    return context.injectedValue(Key.of(World.class))
+                            .map(world -> {
                                 try {
-                                    World world;
-                                    if (localSession.hasWorldOverride()) {
-                                        world = localSession.getWorldOverride();
-                                    } else if (actor.isPlayer() && actor instanceof Player) {
-                                        world = ((Player) actor).getWorld();
-                                    } else {
-                                        throw new MissingWorldException();
-                                    }
                                     return localSession.getSelection(world);
-                                } catch (MissingWorldException | IncompleteRegionException e) {
+                                } catch (IncompleteRegionException e) {
                                     exceptionConverter.convert(e);
-                                    throw new AssertionError("Should have thrown a new exception.");
+                                    throw new AssertionError("Should have thrown a new exception.", e);
                                 }
                             });
                 });
@@ -271,7 +263,7 @@ public final class PlatformCommandManager {
                                     }
                                 } catch (MissingWorldException e) {
                                     exceptionConverter.convert(e);
-                                    throw new AssertionError("Should have thrown a new exception.");
+                                    throw new AssertionError("Should have thrown a new exception.", e);
                                 }
                             });
                 });

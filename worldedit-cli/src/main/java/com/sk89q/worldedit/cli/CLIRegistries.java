@@ -34,7 +34,7 @@ public class CLIRegistries extends BundledRegistries {
     /**
      * Create a new instance.
      */
-    CLIRegistries() {
+    private CLIRegistries() {
     }
 
     @Override

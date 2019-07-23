@@ -6,10 +6,8 @@ applyShadowConfiguration()
 dependencies {
     "compile"(project(":worldedit-core"))
     "compile"("org.apache.logging.log4j:log4j-core:2.8.1")
-    "compile"( "org.apache.logging.log4j:log4j-slf4j-impl:2.8.1")
-    "compile"( "commons-cli:commons-cli:1.4")
-
-    "testCompile"("org.mockito:mockito-core:1.9.0-rc1")
+    "compile"("org.apache.logging.log4j:log4j-slf4j-impl:2.8.1")
+    "compile"("commons-cli:commons-cli:1.4")
 }
 
 tasks.named<Jar>("jar") {
