@@ -19,9 +19,9 @@
 
 package com.sk89q.worldedit.entity;
 
+import com.sk89q.worldedit.extension.platform.Locatable;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.util.Faceted;
-import com.sk89q.worldedit.util.Location;
 
 import javax.annotation.Nullable;
 
@@ -33,7 +33,7 @@ import javax.annotation.Nullable;
  * instance of an entity, but a {@link BaseEntity} can be created from
  * this entity by calling {@link #getState()}.</p>
  */
-public interface Entity extends Faceted {
+public interface Entity extends Faceted, Locatable {
 
     /**
      * Get a copy of the entity's state.
@@ -46,28 +46,6 @@ public interface Entity extends Faceted {
      */
     @Nullable
     BaseEntity getState();
-
-    /**
-     * Get the location of this entity.
-     *
-     * @return the location of the entity
-     */
-    Location getLocation();
-
-    /**
-     * Sets the location of this entity.
-     *
-     * @param location the new location of the entity
-     * @return if the teleport worked
-     */
-    boolean setLocation(Location location);
-
-    /**
-     * Get the extent that this entity is on.
-     *
-     * @return the extent
-     */
-    Extent getExtent();
 
     /**
      * Remove this entity from it container.

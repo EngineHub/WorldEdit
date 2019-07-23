@@ -34,6 +34,7 @@ import com.sk89q.worldedit.command.util.Logging;
 import com.sk89q.worldedit.command.util.WorldEditAsyncCommandBuilder;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
+import com.sk89q.worldedit.extension.platform.Locatable;
 import com.sk89q.worldedit.extension.platform.permission.ActorSelectorLimits;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.function.block.BlockDistributionCounter;
@@ -111,8 +112,8 @@ public class SelectionCommands {
         Location pos;
         if (coordinates != null) {
             pos = new Location(world, coordinates.toVector3());
-        } else if (actor.isPlayer() && actor instanceof Player) {
-            pos = ((Player) actor).getBlockIn();
+        } else if (actor instanceof Locatable) {
+            pos = ((Locatable) actor).getBlockLocation();
         } else {
             actor.printError("You must provide coordinates as console.");
             return;
@@ -139,8 +140,8 @@ public class SelectionCommands {
         Location pos;
         if (coordinates != null) {
             pos = new Location(world, coordinates.toVector3());
-        } else if (actor.isPlayer() && actor instanceof Player) {
-            pos = ((Player) actor).getBlockIn();
+        } else if (actor instanceof Locatable) {
+            pos = ((Locatable) actor).getBlockLocation();
         } else {
             actor.printError("You must provide coordinates as console.");
             return;
@@ -236,7 +237,7 @@ public class SelectionCommands {
                     : ChunkStore.toChunk(coordinates.toBlockVector3());
             } else {
                 // use player loc
-                min2D = ChunkStore.toChunk(player.getBlockIn().toVector().toBlockPoint());
+                min2D = ChunkStore.toChunk(player.getBlockLocation().toVector().toBlockPoint());
             }
 
             min = BlockVector3.at(min2D.getBlockX() * 16, 0, min2D.getBlockZ() * 16);

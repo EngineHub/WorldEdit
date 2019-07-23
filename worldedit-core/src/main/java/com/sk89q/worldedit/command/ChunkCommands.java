@@ -80,7 +80,7 @@ public class ChunkCommands {
     )
     @CommandPermissions("worldedit.chunkinfo")
     public void chunkInfo(Player player) {
-        Location pos = player.getBlockIn();
+        Location pos = player.getBlockLocation();
         int chunkX = (int) Math.floor(pos.getBlockX() / 16.0);
         int chunkZ = (int) Math.floor(pos.getBlockZ() / 16.0);
 

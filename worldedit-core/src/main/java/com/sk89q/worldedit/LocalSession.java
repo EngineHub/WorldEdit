@@ -34,6 +34,7 @@ import com.sk89q.worldedit.command.tool.SinglePickaxe;
 import com.sk89q.worldedit.command.tool.Tool;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
+import com.sk89q.worldedit.extension.platform.Locatable;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.internal.cui.CUIEvent;
@@ -504,8 +505,8 @@ public class LocalSession {
     public BlockVector3 getPlacementPosition(Actor actor) throws IncompleteRegionException {
         checkNotNull(actor);
         if (!placeAtPos1) {
-            if (actor instanceof Player) {
-                return ((Player) actor).getBlockIn().toVector().toBlockPoint();
+            if (actor instanceof Locatable) {
+                return ((Locatable) actor).getBlockLocation().toVector().toBlockPoint();
             } else {
                 throw new IncompleteRegionException();
             }
