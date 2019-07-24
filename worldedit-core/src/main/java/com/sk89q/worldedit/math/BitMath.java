@@ -38,7 +38,7 @@ public final class BitMath {
     }
 
     public static int extractSigned(long i, int shift, int bits) {
-        return fixSign((int) i >> shift & mask(bits), bits);
+        return fixSign((int) (i >> shift) & mask(bits), bits);
     }
 
     public static int fixSign(int i, int bits) {
