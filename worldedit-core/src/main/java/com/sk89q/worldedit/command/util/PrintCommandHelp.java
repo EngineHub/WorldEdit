@@ -67,11 +67,11 @@ public class PrintCommandHelp {
         return mapping.orElse(null);
     }
 
-    public static void help(List<String> commandPath, int page, boolean listSubCommands, WorldEdit we, Actor actor) throws InvalidComponentException {
-        CommandManager manager = we.getPlatformManager().getPlatformCommandManager().getCommandManager();
+    public static void help(List<String> commandPath, int page, boolean listSubCommands,
+                            CommandManager manager, Actor actor, String helpRootCommand) throws InvalidComponentException {
 
         if (commandPath.isEmpty()) {
-            printCommands(page, manager.getAllCommands(), actor, ImmutableList.of());
+            printCommands(page, manager.getAllCommands(), actor, ImmutableList.of(), helpRootCommand);
             return;
         }
 
@@ -93,7 +93,7 @@ public class PrintCommandHelp {
                     toCommandString(visited), subCommand));
                 // full help for single command
                 CommandUsageBox box = new CommandUsageBox(visited, visited.stream()
-                        .map(Command::getName).collect(Collectors.joining(" ")));
+                        .map(Command::getName).collect(Collectors.joining(" ")), helpRootCommand);
                 actor.print(box.create());
                 return;
             }
@@ -105,7 +105,7 @@ public class PrintCommandHelp {
                 actor.printError(String.format("The sub-command '%s' under '%s' could not be found.",
                     subCommand, toCommandString(visited)));
                 // list subcommands for currentCommand
-                printCommands(page, getSubCommands(Iterables.getLast(visited)).values().stream(), actor, visited);
+                printCommands(page, getSubCommands(Iterables.getLast(visited)).values().stream(), actor, visited, helpRootCommand);
                 return;
             }
         }
@@ -114,10 +114,10 @@ public class PrintCommandHelp {
 
         if (subCommands.isEmpty() || !listSubCommands) {
             // Create the message
-            CommandUsageBox box = new CommandUsageBox(visited, toCommandString(visited));
+            CommandUsageBox box = new CommandUsageBox(visited, toCommandString(visited), helpRootCommand);
             actor.print(box.create());
         } else {
-            printCommands(page, subCommands.values().stream(), actor, visited);
+            printCommands(page, subCommands.values().stream(), actor, visited, helpRootCommand);
         }
     }
 
@@ -126,7 +126,7 @@ public class PrintCommandHelp {
     }
 
     private static void printCommands(int page, Stream<Command> commandStream, Actor actor,
-                                      List<Command> commandList) throws InvalidComponentException {
+                                      List<Command> commandList, String helpRootCommand) throws InvalidComponentException {
         // Get a list of aliases
         List<Command> commands = commandStream
             .sorted(byCleanName())
@@ -135,7 +135,8 @@ public class PrintCommandHelp {
         String used = commandList.isEmpty() ? null : toCommandString(commandList);
         CommandListBox box = new CommandListBox(
                 (used == null ? "Help" : "Subcommands: " + used),
-                "//help -s -p %page%" + (used == null ? "" : " " + used));
+                helpRootCommand + " -s -p %page%" + (used == null ? "" : " " + used),
+                helpRootCommand);
         if (!actor.isPlayer()) {
             box.formatForConsole();
         }
