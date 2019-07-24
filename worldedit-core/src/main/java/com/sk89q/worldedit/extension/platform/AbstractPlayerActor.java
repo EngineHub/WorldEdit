@@ -430,51 +430,62 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
         }
     }
 
+    private boolean canPassThroughBlock(Location curBlock) {
+        BlockVector3 blockPos = curBlock.toVector().toBlockPoint();
+        BlockState block = curBlock.getExtent().getBlock(blockPos);
+        return !block.getBlockType().getMaterial().isMovementBlocker();
+    }
+
     /**
-     * Get the player's view yaw.
-     *
-     * @return yaw
+     * Advances the block target block until the current block is a wall
+     * @return true if a wall is found
      */
-
-    @Override
-    public boolean passThroughForwardWall(int range) {
-        int searchDist = 0;
-        TargetBlock hitBlox = new TargetBlock(this, range, 0.2);
-        Extent world = getLocation().getExtent();
-        Location block;
-        boolean firstBlock = true;
-        int freeToFind = 2;
-        boolean inFree = false;
-
-        while ((block = hitBlox.getNextBlock()) != null) {
-            boolean free = !world.getBlock(block.toVector().toBlockPoint()).getBlockType().getMaterial().isMovementBlocker();
-
-            if (firstBlock) {
-                firstBlock = false;
-
-                if (!free) {
-                    --freeToFind;
-                    continue;
-                }
-            }
-
-            ++searchDist;
-            if (searchDist > 20) {
-                return false;
-            }
-
-            if (inFree != free) {
-                if (free) {
-                    --freeToFind;
-                }
-            }
-
-            if (freeToFind == 0) {
-                setOnGround(block);
+    private boolean advanceToWall(TargetBlock hitBlox) {
+        Location curBlock;
+        while ((curBlock = hitBlox.getCurrentBlock()) != null) {
+            if (!canPassThroughBlock(curBlock)) {
                 return true;
             }
 
-            inFree = free;
+            hitBlox.getNextBlock();
+        }
+
+        return false;
+    }
+
+    /**
+     * Advances the block target block until the current block is a free
+     * @return true if a free spot is found
+     */
+    private boolean advanceToFree(TargetBlock hitBlox) {
+        Location curBlock;
+        while ((curBlock = hitBlox.getCurrentBlock()) != null) {
+            if (canPassThroughBlock(curBlock)) {
+                return true;
+            }
+
+            hitBlox.getNextBlock();
+        }
+
+        return false;
+    }
+
+    @Override
+    public boolean passThroughForwardWall(int range) {
+        TargetBlock hitBlox = new TargetBlock(this, range, 0.2);
+
+        if (!advanceToWall(hitBlox)) {
+            return false;
+        }
+
+        if (!advanceToFree(hitBlox)) {
+            return false;
+        }
+
+        Location foundBlock = hitBlox.getCurrentBlock();
+        if (foundBlock != null) {
+            setOnGround(foundBlock);
+            return true;
         }
 
         return false;
