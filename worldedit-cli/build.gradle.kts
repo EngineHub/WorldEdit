@@ -12,18 +12,22 @@ dependencies {
 
 tasks.named<Jar>("jar") {
     manifest {
-        attributes("WorldEdit-Version" to project.version)
+        attributes(
+                "WorldEdit-Version" to project.version,
+                "Main-Class" to "com.sk89q.worldedit.cli.CLIWorldEdit"
+        )
     }
 }
 
 tasks.named<ShadowJar>("shadowJar") {
     dependencies {
-        relocate("org.slf4j", "com.sk89q.worldedit.slf4j")
-        relocate("org.apache.logging.slf4j", "com.sk89q.worldedit.log4jbridge")
-
-        include(dependency("org.slf4j:slf4j-api"))
-        include(dependency("commons-cli:commons-cli:1.4"))
-        include(dependency("org.apache.logging.log4j:log4j-core"))
-        include(dependency("org.apache.logging.log4j:log4j-slf4j-impl"))
+        include { true }
     }
+    minimize {
+        exclude { true }
+    }
+}
+
+tasks.named("assemble").configure {
+    dependsOn("shadowJar")
 }
