@@ -65,13 +65,11 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.world.ServerWorld;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.AbstractChunkProvider;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.IChunk;
-import net.minecraft.world.chunk.ServerChunkProvider;
 import net.minecraft.world.chunk.listener.IChunkStatusListener;
 import net.minecraft.world.gen.feature.BigBrownMushroomFeature;
 import net.minecraft.world.gen.feature.BigMushroomFeatureConfig;
@@ -91,6 +89,8 @@ import net.minecraft.world.gen.feature.ShrubFeature;
 import net.minecraft.world.gen.feature.SwampTreeFeature;
 import net.minecraft.world.gen.feature.TallTaigaTreeFeature;
 import net.minecraft.world.gen.feature.TreeFeature;
+import net.minecraft.world.server.ServerChunkProvider;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraft.world.storage.SaveHandler;
 import net.minecraft.world.storage.WorldInfo;
 
@@ -583,15 +583,15 @@ public class ForgeWorld extends AbstractWorld {
 
     private static class NoOpChunkStatusListener implements IChunkStatusListener {
         @Override
-        public void func_219509_a(ChunkPos chunkPos) {
+        public void start(ChunkPos chunkPos) {
         }
 
         @Override
-        public void func_219508_a(ChunkPos chunkPos, @Nullable ChunkStatus chunkStatus) {
+        public void statusChanged(ChunkPos chunkPos, @Nullable ChunkStatus chunkStatus) {
         }
 
         @Override
-        public void func_219510_b() {
+        public void stop() {
         }
     }
 }
