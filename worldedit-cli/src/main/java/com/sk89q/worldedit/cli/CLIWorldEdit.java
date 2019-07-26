@@ -56,11 +56,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.SequenceInputStream;
 import java.io.UncheckedIOException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.jar.Manifest;
 
 /**
  * The CLI implementation of WorldEdit.
@@ -74,6 +77,7 @@ public class CLIWorldEdit {
     private CLIPlatform platform;
     private CLIConfiguration config;
     private Path workingDir;
+    private String version;
 
     private Actor commandSender;
 
@@ -220,7 +224,10 @@ public class CLIWorldEdit {
      * @return a version string
      */
     String getInternalVersion() {
-        return ":shrug:";
+        if (version == null) {
+            version = getClass().getPackage().getImplementationVersion();
+        }
+        return version;
     }
 
     public void run(InputStream inputStream) {

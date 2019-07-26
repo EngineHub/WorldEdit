@@ -13,7 +13,7 @@ dependencies {
 tasks.named<Jar>("jar") {
     manifest {
         attributes(
-                "WorldEdit-Version" to project.version,
+                "Implementation-Version" to project.version,
                 "Main-Class" to "com.sk89q.worldedit.cli.CLIWorldEdit"
         )
     }
