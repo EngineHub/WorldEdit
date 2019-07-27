@@ -58,6 +58,7 @@ import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -161,7 +162,7 @@ public class BukkitWorld extends AbstractWorld {
 
     @Override
     public String getId() {
-        return getWorld().getName().replace(" ", "_").toLowerCase();
+        return getWorld().getName().replace(" ", "_").toLowerCase(Locale.ROOT);
     }
 
     @Override
