@@ -523,7 +523,8 @@ public class UtilityCommands {
                          int page,
                      @Arg(desc = "The command to retrieve help for", def = "", variable = true)
                          List<String> command) throws WorldEditException {
-        PrintCommandHelp.help(command, page, listSubCommands, we, actor);
+        PrintCommandHelp.help(command, page, listSubCommands,
+                we.getPlatformManager().getPlatformCommandManager().getCommandManager(), actor, "//help");
     }
 
 }

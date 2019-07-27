@@ -45,9 +45,10 @@ public class CommandUsageBox extends TextComponentProducer {
      *
      * @param commands the commands to describe
      * @param commandString the commands that were used, such as "/we" or "/brush sphere"
+     * @param helpRootCommand the command used to get subcommand help
      */
-    public CommandUsageBox(List<Command> commands, String commandString) throws InvalidComponentException {
-        this(commands, commandString, null);
+    public CommandUsageBox(List<Command> commands, String commandString, String helpRootCommand) throws InvalidComponentException {
+        this(commands, commandString, helpRootCommand, null);
     }
 
     /**
@@ -55,15 +56,18 @@ public class CommandUsageBox extends TextComponentProducer {
      *
      * @param commands the commands to describe
      * @param commandString the commands that were used, such as "/we" or "/brush sphere"
+     * @param helpRootCommand the command used to get subcommand help
      * @param parameters list of parameters to use
      */
-    public CommandUsageBox(List<Command> commands, String commandString, @Nullable CommandParameters parameters) throws InvalidComponentException {
+    public CommandUsageBox(List<Command> commands, String commandString, String helpRootCommand,
+                           @Nullable CommandParameters parameters) throws InvalidComponentException {
         checkNotNull(commands);
         checkNotNull(commandString);
-        attachCommandUsage(commands, commandString);
+        checkNotNull(helpRootCommand);
+        attachCommandUsage(commands, commandString, helpRootCommand);
     }
 
-    private void attachCommandUsage(List<Command> commands, String commandString) {
+    private void attachCommandUsage(List<Command> commands, String commandString, String helpRootCommand) {
         TextComponentProducer boxContent = new TextComponentProducer()
             .append(HelpGenerator.create(commands).getFullHelp());
         if (getSubCommands(Iterables.getLast(commands)).size() > 0) {
@@ -73,7 +77,7 @@ public class CommandUsageBox extends TextComponentProducer {
                     .append(TextComponent.builder("List Subcommands")
                         .color(ColorConfig.getMainText())
                         .decoration(TextDecoration.ITALIC, true)
-                        .clickEvent(ClickEvent.runCommand("//help -s " + commandString))
+                        .clickEvent(ClickEvent.runCommand(helpRootCommand + " -s " + commandString))
                         .hoverEvent(HoverEvent.showText(TextComponent.of("List all subcommands of this command")))
                         .build())
                     .build());

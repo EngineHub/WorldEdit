@@ -26,6 +26,7 @@ import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.command.util.CommandPermissions;
 import com.sk89q.worldedit.command.util.CommandPermissionsConditionGenerator;
 import com.sk89q.worldedit.command.util.Logging;
+import com.sk89q.worldedit.command.util.WorldEditAsyncCommandBuilder;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.internal.anvil.ChunkDeleter;
 import com.sk89q.worldedit.internal.anvil.ChunkDeletionInfo;
@@ -34,6 +35,7 @@ import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.formatting.component.PaginationBox;
+import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.event.ClickEvent;
 import com.sk89q.worldedit.util.formatting.text.format.TextColor;
@@ -50,8 +52,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.sk89q.worldedit.command.util.Logging.LogMode.REGION;
@@ -93,11 +95,11 @@ public class ChunkCommands {
     @CommandPermissions("worldedit.listchunks")
     public void listChunks(Player player, LocalSession session,
                             @ArgFlag(name = 'p', desc = "Page number.", def = "1") int page) throws WorldEditException {
-        Set<BlockVector2> chunks = session.getSelection(player.getWorld()).getChunks();
+        final Region region = session.getSelection(player.getWorld());
 
-        PaginationBox paginationBox = PaginationBox.fromStrings("Selected Chunks", "/listchunks -p %page%",
-                chunks.stream().map(BlockVector2::toString).collect(Collectors.toList()));
-        player.print(paginationBox.create(page));
+        WorldEditAsyncCommandBuilder.createAndSendMessage(player,
+                () -> new ChunkListPaginationBox(region).create(page),
+                "Listing chunks for " + player.getName());
     }
 
     @Command(
@@ -134,8 +136,8 @@ public class ChunkCommands {
         newBatch.backup = true;
         final Region selection = session.getSelection(player.getWorld());
         if (selection instanceof CuboidRegion) {
-            newBatch.minChunk = BlockVector2.at(selection.getMinimumPoint().getBlockX() >> 4, selection.getMinimumPoint().getBlockZ() >> 4);
-            newBatch.maxChunk = BlockVector2.at(selection.getMaximumPoint().getBlockX() >> 4, selection.getMaximumPoint().getBlockZ() >> 4);
+            newBatch.minChunk = selection.getMinimumPoint().shr(4).toBlockVector2();
+            newBatch.maxChunk = selection.getMaximumPoint().shr(4).toBlockVector2();
         } else {
             // this has a possibility to OOM for very large selections still
             Set<BlockVector2> chunks = selection.getChunks();
@@ -168,4 +170,27 @@ public class ChunkCommands {
                         .clickEvent(ClickEvent.of(ClickEvent.Action.SUGGEST_COMMAND, "/stop"))));
     }
 
+    private static class ChunkListPaginationBox extends PaginationBox {
+        //private final Region region;
+        private final List<BlockVector2> chunks;
+
+        ChunkListPaginationBox(Region region) {
+            super("Selected Chunks", "/listchunks -p %page%");
+            // TODO make efficient/streamable/calculable implementations of this
+            // for most region types, so we can just store the region and random-access get one page of chunks
+            // (this is non-trivial for some types of selections...)
+            //this.region = region.clone();
+            this.chunks = new ArrayList<>(region.getChunks());
+        }
+
+        @Override
+        public Component getComponent(int number) {
+            return TextComponent.of(chunks.get(number).toString());
+        }
+
+        @Override
+        public int getComponentsSize() {
+            return chunks.size();
+        }
+    }
 }

@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.command;
 
+import com.google.common.base.Strings;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
@@ -56,16 +57,19 @@ import com.sk89q.worldedit.regions.selector.SphereRegionSelector;
 import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.util.Countable;
 import com.sk89q.worldedit.util.Location;
-import com.sk89q.worldedit.util.formatting.component.BlockDistributionResult;
 import com.sk89q.worldedit.util.formatting.component.CommandListBox;
+import com.sk89q.worldedit.util.formatting.component.InvalidComponentException;
 import com.sk89q.worldedit.util.formatting.component.PaginationBox;
 import com.sk89q.worldedit.util.formatting.component.SubtleFormat;
 import com.sk89q.worldedit.util.formatting.component.TextComponentProducer;
+import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.event.ClickEvent;
+import com.sk89q.worldedit.util.formatting.text.event.HoverEvent;
 import com.sk89q.worldedit.util.formatting.text.format.TextColor;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BlockState;
+import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.item.ItemType;
 import com.sk89q.worldedit.world.item.ItemTypes;
 import com.sk89q.worldedit.world.storage.ChunkStore;
@@ -570,7 +574,7 @@ public class SelectionCommands {
             }
             case LIST:
             default:
-                CommandListBox box = new CommandListBox("Selection modes", null);
+                CommandListBox box = new CommandListBox("Selection modes", null, null);
                 box.setHidingHelp(true);
                 TextComponentProducer contents = box.getContents();
                 contents.append(SubtleFormat.wrap("Select one of the modes below:")).newline();
@@ -608,4 +612,62 @@ public class SelectionCommands {
         session.dispatchCUISelection(player);
     }
 
+    private static class BlockDistributionResult extends PaginationBox {
+
+        private final List<Countable<BlockState>> distribution;
+        private final int totalBlocks;
+        private final boolean separateStates;
+
+        BlockDistributionResult(List<Countable<BlockState>> distribution, boolean separateStates) {
+            super("Block Distribution", "//distr -p %page%" + (separateStates ? " -d" : ""));
+            this.distribution = distribution;
+            // note: doing things like region.getArea is inaccurate for non-cuboids.
+            this.totalBlocks = distribution.stream().mapToInt(Countable::getAmount).sum();
+            this.separateStates = separateStates;
+            setComponentsPerPage(7);
+        }
+
+        @Override
+        public Component getComponent(int number) {
+            Countable<BlockState> c = distribution.get(number);
+            TextComponent.Builder line = TextComponent.builder();
+
+            final int count = c.getAmount();
+
+            final double perc = count / (double) totalBlocks * 100;
+            final int maxDigits = (int) (Math.log10(totalBlocks) + 1);
+            final int curDigits = (int) (Math.log10(count) + 1);
+            line.append(String.format("%s%.3f%%  ", perc < 10 ? "  " : "", perc), TextColor.GOLD);
+            final int space = maxDigits - curDigits;
+            String pad = Strings.repeat(" ", space == 0 ? 2 : 2 * space + 1);
+            line.append(String.format("%s%s", count, pad), TextColor.YELLOW);
+
+            final BlockState state = c.getID();
+            final BlockType blockType = state.getBlockType();
+            TextComponent blockName = TextComponent.of(blockType.getName(), TextColor.LIGHT_PURPLE);
+            TextComponent toolTip;
+            if (separateStates && state != blockType.getDefaultState()) {
+                toolTip = TextComponent.of(state.getAsString(), TextColor.GRAY);
+                blockName = blockName.append(TextComponent.of("*", TextColor.LIGHT_PURPLE));
+            } else {
+                toolTip = TextComponent.of(blockType.getId(), TextColor.GRAY);
+            }
+            blockName = blockName.hoverEvent(HoverEvent.of(HoverEvent.Action.SHOW_TEXT, toolTip));
+            line.append(blockName);
+
+            return line.build();
+        }
+
+        @Override
+        public int getComponentsSize() {
+            return distribution.size();
+        }
+
+        @Override
+        public Component create(int page) throws InvalidComponentException {
+            super.getContents().append(TextComponent.of("Total Block Count: " + totalBlocks, TextColor.GRAY))
+                    .append(TextComponent.newline());
+            return super.create(page);
+        }
+    }
 }
