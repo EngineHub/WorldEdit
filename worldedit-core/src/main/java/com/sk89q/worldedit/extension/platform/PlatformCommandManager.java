@@ -243,8 +243,8 @@ public final class PlatformCommandManager {
                     LocalSession localSession = context.injectedValue(Key.of(LocalSession.class))
                             .orElseThrow(() -> new IllegalStateException("No LocalSession"));
                     return context.injectedValue(Key.of(Actor.class))
-                            .map(player -> {
-                                EditSession editSession = localSession.createEditSession(player);
+                            .map(actor -> {
+                                EditSession editSession = localSession.createEditSession(actor);
                                 editSession.enableStandardMode();
                                 return editSession;
                             });
@@ -258,8 +258,8 @@ public final class PlatformCommandManager {
                                 try {
                                     if (localSession.hasWorldOverride()) {
                                         return localSession.getWorldOverride();
-                                    } else if (actor.isPlayer() && actor instanceof Player) {
-                                        return ((Player) actor).getWorld();
+                                    } else if (actor instanceof Locatable && ((Locatable) actor).getExtent() instanceof World) {
+                                        return (World) ((Locatable) actor).getExtent();
                                     } else {
                                         throw new MissingWorldException();
                                     }

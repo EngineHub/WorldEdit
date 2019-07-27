@@ -19,43 +19,38 @@
 
 package com.sk89q.worldedit.bukkit;
 
-import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.sk89q.worldedit.extension.platform.AbstractNonPlayerActor;
+import com.sk89q.worldedit.extension.platform.Locatable;
+import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.session.SessionKey;
+import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.auth.AuthorizationException;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.adapter.bukkit.TextAdapter;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
+import org.bukkit.Material;
+import org.bukkit.command.BlockCommandSender;
 
 import java.util.UUID;
 
 import javax.annotation.Nullable;
 
-public class BukkitCommandSender extends AbstractNonPlayerActor {
+public class BukkitBlockCommandSender extends AbstractNonPlayerActor implements Locatable {
 
-    /**
-     * One time generated ID.
-     */
-    private static final UUID DEFAULT_ID = UUID.fromString("a233eb4b-4cab-42cd-9fd9-7e7b9a3f74be");
+    private final BlockCommandSender sender;
+    private final WorldEditPlugin plugin;
+    private final Location location;
+    private final UUID uuid;
 
-    private CommandSender sender;
-    private WorldEditPlugin plugin;
-
-    public BukkitCommandSender(WorldEditPlugin plugin, CommandSender sender) {
+    public BukkitBlockCommandSender(WorldEditPlugin plugin, BlockCommandSender sender) {
         checkNotNull(plugin);
         checkNotNull(sender);
-        checkArgument(!(sender instanceof Player), "Cannot wrap a player");
 
         this.plugin = plugin;
         this.sender = sender;
-    }
-
-    @Override
-    public UUID getUniqueId() {
-        return DEFAULT_ID;
+        this.location = BukkitAdapter.adapt(sender.getBlock().getLocation());
+        this.uuid = new UUID(location.toVector().toBlockPoint().hashCode(), location.getExtent().hashCode());
     }
 
     @Override
@@ -97,17 +92,40 @@ public class BukkitCommandSender extends AbstractNonPlayerActor {
     }
 
     @Override
+    public Location getLocation() {
+        return this.location;
+    }
+
+    @Override
+    public boolean setLocation(Location location) {
+        return false;
+    }
+
+    @Override
+    public Extent getExtent() {
+        return this.location.getExtent();
+    }
+
+    @Override
+    public UUID getUniqueId() {
+        return uuid;
+    }
+
+    @Override
     public String[] getGroups() {
         return new String[0];
     }
 
     @Override
-    public boolean hasPermission(String perm) {
-        return true;
+    public void checkPermission(String permission) throws AuthorizationException {
+        if (!hasPermission(permission)) {
+            throw new AuthorizationException();
+        }
     }
 
     @Override
-    public void checkPermission(String permission) throws AuthorizationException {
+    public boolean hasPermission(String permission) {
+        return sender.hasPermission(permission);
     }
 
     @Override
@@ -121,17 +139,19 @@ public class BukkitCommandSender extends AbstractNonPlayerActor {
 
             @Override
             public boolean isActive() {
-                return true;
+                return sender.getBlock().getType() == Material.COMMAND_BLOCK
+                        || sender.getBlock().getType() == Material.CHAIN_COMMAND_BLOCK
+                        || sender.getBlock().getType() == Material.REPEATING_COMMAND_BLOCK;
             }
 
             @Override
             public boolean isPersistent() {
-                return true;
+                return false;
             }
 
             @Override
             public UUID getUniqueId() {
-                return DEFAULT_ID;
+                return uuid;
             }
         };
     }

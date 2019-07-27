@@ -913,8 +913,8 @@ public class LocalSession {
         World world = null;
         if (hasWorldOverride()) {
             world = getWorldOverride();
-        } else if (actor.isPlayer() && actor instanceof Player) {
-            world = ((Player) actor).getWorld();
+        } else if (actor instanceof Locatable && ((Locatable) actor).getExtent() instanceof World) {
+            world = (World) ((Locatable) actor).getExtent();
         }
 
         // Create an edit session
