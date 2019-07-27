@@ -160,6 +160,11 @@ public class BukkitWorld extends AbstractWorld {
     }
 
     @Override
+    public String getId() {
+        return getWorld().getName().replace(" ", "_").toLowerCase();
+    }
+
+    @Override
     public Path getStoragePath() {
         return getWorld().getWorldFolder().toPath();
     }

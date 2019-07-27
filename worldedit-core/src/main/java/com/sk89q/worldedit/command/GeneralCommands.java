@@ -33,6 +33,7 @@ import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.util.formatting.component.PaginationBox;
 import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.item.ItemType;
 import org.enginehub.piston.annotation.Command;
 import org.enginehub.piston.annotation.CommandContainer;
@@ -179,6 +180,21 @@ public class GeneralCommands {
             session.setUseServerCUI(true);
             session.updateServerCUI(player);
             player.print("Server CUI enabled. This only supports cuboid regions, with a maximum size of 32x32x32.");
+        }
+    }
+
+    @Command(
+        name = "/world",
+        desc = "Sets the world override"
+    )
+    @CommandPermissions("worldedit.world")
+    public void world(Actor actor, LocalSession session,
+            @Arg(desc = "The world override", def = "") World world) {
+        session.setWorldOverride(world);
+        if (world == null) {
+            actor.print("Removed world override.");
+        } else {
+            actor.print("Set the world override to " + world.getId() + ". (Use //world to go back to default)");
         }
     }
 

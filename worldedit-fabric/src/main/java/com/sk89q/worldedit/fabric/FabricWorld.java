@@ -100,6 +100,7 @@ import java.lang.ref.WeakReference;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.Random;
@@ -166,6 +167,13 @@ public class FabricWorld extends AbstractWorld {
     @Override
     public String getName() {
         return getWorld().getLevelProperties().getLevelName();
+    }
+
+    @Override
+    public String getId() {
+        return getWorld().getLevelProperties().getLevelName()
+                .replace(" ", "_").toLowerCase(Locale.ROOT)
+                + getWorld().dimension.getType().getSuffix();
     }
 
     @Override

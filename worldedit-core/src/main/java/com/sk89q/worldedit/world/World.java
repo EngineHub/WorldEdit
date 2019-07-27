@@ -31,6 +31,7 @@ import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.regions.Region;
+import com.sk89q.worldedit.registry.Keyed;
 import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.util.TreeGenerator;
 import com.sk89q.worldedit.world.block.BlockState;
@@ -44,7 +45,7 @@ import java.nio.file.Path;
 /**
  * Represents a world (dimension).
  */
-public interface World extends Extent {
+public interface World extends Extent, Keyed {
 
     /**
      * Get the name of the world.

@@ -39,6 +39,7 @@ import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 
 import java.util.List;
+import java.util.Locale;
 
 import javax.annotation.Nullable;
 
@@ -55,6 +56,11 @@ public class ClipboardWorld extends AbstractWorld implements Clipboard {
     @Override
     public String getName() {
         return this.name;
+    }
+
+    @Override
+    public String getId() {
+        return getName().replace(" ", "_").toLowerCase(Locale.ROOT);
     }
 
     @Override
