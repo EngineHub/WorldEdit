@@ -51,7 +51,7 @@ public final class SuggestionHelper {
         if (tag.isEmpty() || tag.equals("#")) {
             return Stream.of("##", "##*");
         }
-        if (tag.startsWith("#")) {
+        if (tag.startsWith("##")) {
             if (tag.equals("##")) {
                 return Stream.concat(Stream.of("##*"), getNamespacedRegistrySuggestions(BlockCategory.REGISTRY, tag.substring(2)).map(s -> "##" + s));
             } else if (tag.equals("##*") && allowRandom) {
