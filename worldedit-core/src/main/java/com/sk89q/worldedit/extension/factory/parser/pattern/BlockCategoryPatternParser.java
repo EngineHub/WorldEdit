@@ -23,7 +23,6 @@ import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.command.util.SuggestionHelper;
 import com.sk89q.worldedit.extension.input.InputParseException;
 import com.sk89q.worldedit.extension.input.ParserContext;
-import com.sk89q.worldedit.function.pattern.BlockPattern;
 import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.function.pattern.RandomPattern;
 import com.sk89q.worldedit.internal.registry.InputParser;
@@ -70,10 +69,10 @@ public class BlockCategoryPatternParser extends InputParser<Pattern> {
 
         if (anyState) {
             blocks.stream().flatMap(blockType -> blockType.getAllStates().stream()).forEach(state ->
-                randomPattern.add(new BlockPattern(state), 1.0));
+                randomPattern.add(state, 1.0));
         } else {
             for (BlockType blockType : blocks) {
-                randomPattern.add(new BlockPattern(blockType.getDefaultState()), 1.0);
+                randomPattern.add(blockType.getDefaultState(), 1.0);
             }
         }
 

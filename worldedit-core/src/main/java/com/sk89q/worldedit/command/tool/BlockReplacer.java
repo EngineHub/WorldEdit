@@ -27,7 +27,6 @@ import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
-import com.sk89q.worldedit.function.pattern.BlockPattern;
 import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.util.Location;
@@ -57,7 +56,7 @@ public class BlockReplacer implements DoubleActionBlockTool {
             try {
                 editSession.disableBuffering();
                 BlockVector3 position = clicked.toVector().toBlockPoint();
-                editSession.setBlock(position, pattern.apply(position));
+                editSession.setBlock(position, pattern);
             } catch (MaxChangedBlocksException ignored) {
             } finally {
                 session.remember(editSession);
@@ -77,7 +76,7 @@ public class BlockReplacer implements DoubleActionBlockTool {
         BaseBlock targetBlock = player.getWorld().getFullBlock(clicked.toVector().toBlockPoint());
 
         if (targetBlock != null) {
-            pattern = new BlockPattern(targetBlock);
+            pattern = targetBlock;
             player.print("Replacer tool switched to: " + targetBlock.getBlockType().getName());
         }
 

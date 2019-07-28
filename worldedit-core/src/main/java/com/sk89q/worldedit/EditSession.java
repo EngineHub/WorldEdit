@@ -62,7 +62,6 @@ import com.sk89q.worldedit.function.operation.ForwardExtentCopy;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.OperationQueue;
 import com.sk89q.worldedit.function.operation.Operations;
-import com.sk89q.worldedit.function.pattern.BlockPattern;
 import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.function.pattern.WaterloggedRemover;
 import com.sk89q.worldedit.function.util.RegionOffset;
@@ -820,7 +819,7 @@ public class EditSession implements Extent, AutoCloseable {
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
     public <B extends BlockStateHolder<B>> int fillXZ(BlockVector3 origin, B block, double radius, int depth, boolean recursive) throws MaxChangedBlocksException {
-        return fillXZ(origin, new BlockPattern(block), radius, depth, recursive);
+        return fillXZ(origin, (Pattern) block, radius, depth, recursive);
     }
 
     /**
@@ -885,8 +884,7 @@ public class EditSession implements Extent, AutoCloseable {
                 getWorld(), // Causes clamping of Y range
                 position.add(-apothem + 1, 0, -apothem + 1),
                 position.add(apothem - 1, height - 1, apothem - 1));
-        Pattern pattern = new BlockPattern(BlockTypes.AIR.getDefaultState());
-        return setBlocks(region, pattern);
+        return setBlocks(region, BlockTypes.AIR.getDefaultState());
     }
 
     /**
@@ -907,8 +905,7 @@ public class EditSession implements Extent, AutoCloseable {
                 getWorld(), // Causes clamping of Y range
                 position.add(-apothem + 1, 0, -apothem + 1),
                 position.add(apothem - 1, -height + 1, apothem - 1));
-        Pattern pattern = new BlockPattern(BlockTypes.AIR.getDefaultState());
-        return setBlocks(region, pattern);
+        return setBlocks(region, BlockTypes.AIR.getDefaultState());
     }
 
     /**
@@ -929,8 +926,7 @@ public class EditSession implements Extent, AutoCloseable {
                 getWorld(), // Causes clamping of Y range
                 position.add(adjustment.multiply(-1)),
                 position.add(adjustment));
-        Pattern pattern = new BlockPattern(BlockTypes.AIR.getDefaultState());
-        return replaceBlocks(region, mask, pattern);
+        return replaceBlocks(region, mask, BlockTypes.AIR.getDefaultState());
     }
 
     /**
@@ -942,7 +938,7 @@ public class EditSession implements Extent, AutoCloseable {
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
     public <B extends BlockStateHolder<B>> int setBlocks(Region region, B block) throws MaxChangedBlocksException {
-        return setBlocks(region, new BlockPattern(block));
+        return setBlocks(region, (Pattern) block);
     }
 
     /**
@@ -974,7 +970,7 @@ public class EditSession implements Extent, AutoCloseable {
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
     public <B extends BlockStateHolder<B>> int replaceBlocks(Region region, Set<BaseBlock> filter, B replacement) throws MaxChangedBlocksException {
-        return replaceBlocks(region, filter, new BlockPattern(replacement));
+        return replaceBlocks(region, filter, (Pattern) replacement);
     }
 
     /**
@@ -1046,7 +1042,7 @@ public class EditSession implements Extent, AutoCloseable {
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
     public <B extends BlockStateHolder<B>> int makeCuboidFaces(Region region, B block) throws MaxChangedBlocksException {
-        return makeCuboidFaces(region, new BlockPattern(block));
+        return makeCuboidFaces(region, block);
     }
 
     /**
@@ -1098,7 +1094,7 @@ public class EditSession implements Extent, AutoCloseable {
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
     public <B extends BlockStateHolder<B>> int makeCuboidWalls(Region region, B block) throws MaxChangedBlocksException {
-        return makeCuboidWalls(region, new BlockPattern(block));
+        return makeCuboidWalls(region, (Pattern) block);
     }
 
     /**
@@ -1165,7 +1161,7 @@ public class EditSession implements Extent, AutoCloseable {
     public <B extends BlockStateHolder<B>> int overlayCuboidBlocks(Region region, B block) throws MaxChangedBlocksException {
         checkNotNull(block);
 
-        return overlayCuboidBlocks(region, new BlockPattern(block));
+        return overlayCuboidBlocks(region, (Pattern) block);
     }
 
     /**
@@ -1255,7 +1251,7 @@ public class EditSession implements Extent, AutoCloseable {
         // Remove the original blocks
         Pattern pattern = replacement != null ?
                 replacement :
-                new BlockPattern(BlockTypes.AIR.getDefaultState());
+                BlockTypes.AIR.getDefaultState();
         BlockReplace remove = new BlockReplace(this, pattern);
 
         // Copy to a buffer so we don't destroy our original before we can copy all the blocks from it
@@ -1334,7 +1330,7 @@ public class EditSession implements Extent, AutoCloseable {
         if (waterlogged) {
             replace = new BlockReplace(this, new WaterloggedRemover(this));
         } else {
-            replace = new BlockReplace(this, new BlockPattern(BlockTypes.AIR.getDefaultState()));
+            replace = new BlockReplace(this, BlockTypes.AIR.getDefaultState());
         }
         RecursiveVisitor visitor = new RecursiveVisitor(mask, replace);
 
@@ -1376,7 +1372,7 @@ public class EditSession implements Extent, AutoCloseable {
                 blockMask
         );
 
-        BlockReplace replace = new BlockReplace(this, new BlockPattern(fluid.getDefaultState()));
+        BlockReplace replace = new BlockReplace(this, fluid.getDefaultState());
         NonRisingVisitor visitor = new NonRisingVisitor(mask, replace);
 
         // Around the origin in a 3x3 block
