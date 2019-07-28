@@ -24,8 +24,10 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.extent.AbstractDelegateExtent;
 import com.sk89q.worldedit.extent.Extent;
+import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.world.World;
+import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 
 /**
@@ -66,5 +68,13 @@ public class ChunkLoadingExtent extends AbstractDelegateExtent {
             world.checkLoadedChunk(location);
         }
         return super.setBlock(location, block);
+    }
+
+    @Override
+    public boolean setBiome(BlockVector2 position, BiomeType biome) {
+        if (enabled) {
+            world.checkLoadedChunk(position.toBlockVector3());
+        }
+        return super.setBiome(position, biome);
     }
 }
