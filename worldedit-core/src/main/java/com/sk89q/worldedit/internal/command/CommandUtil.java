@@ -21,6 +21,7 @@ package com.sk89q.worldedit.internal.command;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Iterators;
 import com.sk89q.worldedit.extension.platform.PlatformCommandManager;
 import com.sk89q.worldedit.internal.util.Substring;
 import com.sk89q.worldedit.util.formatting.text.Component;
@@ -65,7 +66,9 @@ public class CommandUtil {
      * Fix {@code suggestions} to replace the last space-separated word in {@code arguments}.
      */
     public static List<String> fixSuggestions(String arguments, List<Substring> suggestions) {
-        Substring lastArg = Iterables.getLast(CommandArgParser.spaceSplit(arguments));
+        Substring lastArg = Iterables.getLast(
+            CommandArgParser.spaceSplit(arguments)
+        );
         return suggestions.stream()
             .map(suggestion -> CommandUtil.suggestLast(lastArg, suggestion))
             .filter(Optional::isPresent)

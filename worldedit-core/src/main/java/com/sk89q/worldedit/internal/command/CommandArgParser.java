@@ -31,6 +31,10 @@ import java.util.stream.Stream;
 
 public class CommandArgParser {
 
+    public static CommandArgParser forArgString(String argString) {
+        return new CommandArgParser(spaceSplit(argString));
+    }
+
     public static ImmutableList<Substring> spaceSplit(String string) {
         ImmutableList.Builder<Substring> result = ImmutableList.builder();
         int index = 0;
@@ -79,14 +83,14 @@ public class CommandArgParser {
             if (strPart.endsWith("\"") && strPart.length() > 1) {
                 currentArg.add(Substring.wrap(
                         strPart.substring(1, strPart.length() - 1),
-                        part.getStart(), part.getEnd()
+                        part.getStart() + 1, part.getEnd() - 1
                 ));
                 finishArg();
             } else {
                 state = State.QUOTE;
                 currentArg.add(Substring.wrap(
                         strPart.substring(1),
-                        part.getStart(), part.getEnd()
+                        part.getStart() + 1, part.getEnd()
                 ));
             }
         } else {
@@ -100,7 +104,7 @@ public class CommandArgParser {
             state = State.NORMAL;
             currentArg.add(Substring.wrap(
                 part.getSubstring().substring(0, part.getSubstring().length() - 1),
-                part.getStart(), part.getEnd()
+                part.getStart(), part.getEnd() - 1
             ));
             finishArg();
         } else {
