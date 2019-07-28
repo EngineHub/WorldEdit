@@ -21,7 +21,6 @@ package com.sk89q.worldedit.internal.command;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Iterators;
 import com.sk89q.worldedit.extension.platform.PlatformCommandManager;
 import com.sk89q.worldedit.internal.util.Substring;
 import com.sk89q.worldedit.util.formatting.text.Component;
@@ -70,10 +69,21 @@ public class CommandUtil {
             CommandArgParser.spaceSplit(arguments)
         );
         return suggestions.stream()
+            // Re-map suggestions to only operate on the last non-quoted word
+            .map(CommandUtil::onlyOnLastQuotedWord)
             .map(suggestion -> CommandUtil.suggestLast(lastArg, suggestion))
             .filter(Optional::isPresent)
             .map(Optional::get)
             .collect(toList());
+    }
+
+    private static Substring onlyOnLastQuotedWord(Substring suggestion) {
+        String substr = suggestion.getSubstring();
+        int sp = substr.lastIndexOf(' ');
+        if (sp < 0) {
+            return suggestion;
+        }
+        return Substring.wrap(substr.substring(sp + 1), suggestion.getStart() + sp + 1, suggestion.getEnd());
     }
 
     /**
@@ -81,7 +91,7 @@ public class CommandUtil {
      * possible.
      */
     private static Optional<String> suggestLast(Substring last, Substring suggestion) {
-        if (suggestion.getStart() == last.getEnd()) {
+        if (suggestion.getStart() == last.getEnd() && !last.getSubstring().equals("\"")) {
             // this suggestion is for the next argument.
             if (last.getSubstring().isEmpty()) {
                 return Optional.of(suggestion.getSubstring());
