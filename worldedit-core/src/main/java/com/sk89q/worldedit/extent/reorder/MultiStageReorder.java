@@ -20,7 +20,7 @@
 package com.sk89q.worldedit.extent.reorder;
 
 import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.extent.AbstractDelegateExtent;
+import com.sk89q.worldedit.extent.AbstractBufferingExtent;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.OperationQueue;
@@ -36,13 +36,17 @@ import com.sk89q.worldedit.world.block.BlockTypes;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 
 /**
  * Re-orders blocks into several stages.
  */
-public class MultiStageReorder extends AbstractDelegateExtent implements ReorderingExtent {
+public class MultiStageReorder extends AbstractBufferingExtent implements ReorderingExtent {
 
     private static final Map<BlockType, PlacementPriority> priorityMap = new HashMap<>();
 
@@ -139,6 +143,7 @@ public class MultiStageReorder extends AbstractDelegateExtent implements Reorder
         priorityMap.put(BlockTypes.MOVING_PISTON, PlacementPriority.FINAL);
     }
 
+    private final Set<BlockVector3> containedBlocks = new HashSet<>();
     private Map<PlacementPriority, LocatedBlockList> stages = new HashMap<>();
 
     private boolean enabled;
@@ -212,7 +217,7 @@ public class MultiStageReorder extends AbstractDelegateExtent implements Reorder
     @Override
     public <B extends BlockStateHolder<B>> boolean setBlock(BlockVector3 location, B block) throws WorldEditException {
         if (!enabled) {
-            return super.setBlock(location, block);
+            return setDelegateBlock(location, block);
         }
 
         BlockState existing = getBlock(location);
@@ -240,7 +245,19 @@ public class MultiStageReorder extends AbstractDelegateExtent implements Reorder
         }
 
         stages.get(priority).add(location, block);
+        containedBlocks.add(location);
         return !existing.equalsFuzzy(block);
+    }
+
+    @Override
+    protected Optional<BaseBlock> getBufferedBlock(BlockVector3 position) {
+        if (!containedBlocks.contains(position)) {
+            return Optional.empty();
+        }
+        return stages.values().stream()
+            .map(blocks -> blocks.get(position))
+            .filter(Objects::nonNull)
+            .findAny();
     }
 
     @Override

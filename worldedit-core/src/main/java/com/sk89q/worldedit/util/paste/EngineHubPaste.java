@@ -19,8 +19,9 @@
 
 package com.sk89q.worldedit.util.paste;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.sk89q.worldedit.util.net.HttpRequest;
-import org.json.simple.JSONValue;
 
 import java.io.IOException;
 import java.net.URL;
@@ -32,6 +33,8 @@ import java.util.regex.Pattern;
 public class EngineHubPaste implements Paster {
 
     private static final Pattern URL_PATTERN = Pattern.compile("https?://.+$");
+
+    private static final Gson GSON = new Gson();
 
     @Override
     public Callable<URL> paste(String content) {
@@ -59,10 +62,10 @@ public class EngineHubPaste implements Paster {
                     .returnContent()
                     .asString("UTF-8").trim();
 
-            Object object = JSONValue.parse(result);
-            if (object instanceof Map) {
-                @SuppressWarnings("unchecked")
-                String urlString = String.valueOf(((Map<Object, Object>) object).get("url"));
+            Map<Object, Object> object = GSON.fromJson(result, new TypeToken<Map<Object, Object>>() {
+            }.getType());
+            if (object != null) {
+                String urlString = String.valueOf(object.get("url"));
                 Matcher m = URL_PATTERN.matcher(urlString);
 
                 if (m.matches()) {

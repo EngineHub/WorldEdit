@@ -335,7 +335,11 @@ public class BukkitAdapter {
      * @return WorldEdit EntityType
      */
     public static EntityType adapt(org.bukkit.entity.EntityType entityType) {
-        return EntityTypes.get(entityType.getName().toLowerCase(Locale.ROOT));
+        final String name = entityType.getName();
+        if (name == null) {
+            return null;
+        }
+        return EntityTypes.get(name.toLowerCase(Locale.ROOT));
     }
 
     public static org.bukkit.entity.EntityType adapt(EntityType entityType) {

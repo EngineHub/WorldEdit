@@ -107,7 +107,7 @@ public class ForgePlayer extends AbstractPlayerActor {
     }
 
     @Override
-    public com.sk89q.worldedit.world.World getWorld() {
+    public World getWorld() {
         return ForgeWorldEdit.inst.getWorld(this.player.world);
     }
 
@@ -187,6 +187,19 @@ public class ForgePlayer extends AbstractPlayerActor {
     @Override
     public <T> T getFacet(Class<? extends T> cls) {
         return null;
+    }
+
+    @Override
+    public boolean isAllowedToFly() {
+        return player.abilities.allowFlying;
+    }
+
+    @Override
+    public void setFlying(boolean flying) {
+        if (player.abilities.isFlying != flying) {
+            player.abilities.isFlying = flying;
+            player.sendPlayerAbilities();
+        }
     }
 
     @Override

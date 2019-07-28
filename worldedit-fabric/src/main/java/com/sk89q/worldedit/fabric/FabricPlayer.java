@@ -106,7 +106,7 @@ public class FabricPlayer extends AbstractPlayerActor {
     }
 
     @Override
-    public com.sk89q.worldedit.world.World getWorld() {
+    public World getWorld() {
         return FabricWorldEdit.inst.getWorld(this.player.world);
     }
 
@@ -186,6 +186,19 @@ public class FabricPlayer extends AbstractPlayerActor {
     @Override
     public <T> T getFacet(Class<? extends T> cls) {
         return null;
+    }
+
+    @Override
+    public boolean isAllowedToFly() {
+        return player.abilities.allowFlying;
+    }
+
+    @Override
+    public void setFlying(boolean flying) {
+        if (player.abilities.flying != flying) {
+            player.abilities.flying = flying;
+            player.sendAbilitiesUpdate();
+        }
     }
 
     @Override

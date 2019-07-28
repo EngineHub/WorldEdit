@@ -19,26 +19,26 @@
 
 package com.sk89q.wepif;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 import org.bukkit.Server;
 import org.bukkit.plugin.PluginManager;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class DinnerPermsResolverTest {
     private DinnerPermsResolver resolver;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         Server server = mock(Server.class);
         when(server.getPluginManager()).thenReturn(mock(PluginManager.class));
         resolver = new DinnerPermsResolver(server);
     }
-    
+
     @Test
     public void testBasicResolving() {
         final TestOfflinePermissible permissible = new TestOfflinePermissible();
@@ -49,7 +49,7 @@ public class DinnerPermsResolverTest {
         assertFalse(resolver.hasPermission(permissible, "completely.unrelated"));
         permissible.clearPermissions();
     }
-    
+
     @Test
     public void testBasicWildcardResolution() {
         final TestOfflinePermissible permissible = new TestOfflinePermissible();
@@ -59,7 +59,7 @@ public class DinnerPermsResolverTest {
         assertTrue(resolver.hasPermission(permissible, "commandbook.spawnmob.spider.skeleton"));
         permissible.clearPermissions();
     }
-    
+
     @Test
     public void testNegatingNodes() {
         final TestOfflinePermissible permissible = new TestOfflinePermissible();
@@ -67,16 +67,16 @@ public class DinnerPermsResolverTest {
         permissible.setPermission("commandbook.cuteasianboys", false);
         permissible.setPermission("commandbook.warp.*", false);
         permissible.setPermission("commandbook.warp.create", true);
-        
+
         assertTrue(resolver.hasPermission(permissible, "commandbook.motd"));
         assertFalse(resolver.hasPermission(permissible, "commandbook.cuteasianboys"));
         assertFalse(resolver.hasPermission(permissible, "commandbook.warp.remove"));
         assertTrue(resolver.hasPermission(permissible, "commandbook.warp.create"));
-        
+
         permissible.clearPermissions();
     }
-    
-    
+
+
     @Test
     public void testInGroup() {
         final TestOfflinePermissible permissible = new TestOfflinePermissible();

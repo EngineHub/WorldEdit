@@ -111,7 +111,7 @@ public class SpongeSchematicReader extends NBTSchematicReader {
             } else if (dataVersion < liveDataVersion) {
                 fixer = platform.getDataFixer();
                 if (fixer != null) {
-                    log.info("Schematic was made in an older Minecraft version ({} < {}), will attempt DFU.",
+                    log.debug("Schematic was made in an older Minecraft version ({} < {}), will attempt DFU.",
                             dataVersion, liveDataVersion);
                 } else {
                     log.info("Schematic was made in an older Minecraft version ({} < {}), but DFU is not available. Data may be incompatible.",

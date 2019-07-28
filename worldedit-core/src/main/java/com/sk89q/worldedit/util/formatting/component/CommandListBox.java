@@ -32,14 +32,16 @@ public class CommandListBox extends PaginationBox {
 
     private List<CommandEntry> commands = Lists.newArrayList();
     private boolean hideHelp;
+    private String helpCommand;
 
     /**
      * Create a new box.
      *
      * @param title the title
      */
-    public CommandListBox(String title, String pageCommand) {
+    public CommandListBox(String title, String pageCommand, String helpCommand) {
         super(title, pageCommand);
+        this.helpCommand = helpCommand;
     }
 
     @Override
@@ -72,7 +74,7 @@ public class CommandListBox extends PaginationBox {
         this.hideHelp = hideHelp;
     }
 
-    private static class CommandEntry {
+    private class CommandEntry {
         private final String alias;
         private final Component description;
         private final String insertion;
@@ -87,7 +89,7 @@ public class CommandListBox extends PaginationBox {
             TextComponentProducer line = new TextComponentProducer();
             if (!hideHelp) {
                 line.append(SubtleFormat.wrap("? ")
-                        .clickEvent(ClickEvent.of(ClickEvent.Action.RUN_COMMAND, "//help " + insertion))
+                        .clickEvent(ClickEvent.of(ClickEvent.Action.RUN_COMMAND, CommandListBox.this.helpCommand + " " + insertion))
                         .hoverEvent(HoverEvent.of(HoverEvent.Action.SHOW_TEXT, TextComponent.of("Additional Help"))));
             }
             TextComponent command = TextComponent.of(alias, TextColor.GOLD);

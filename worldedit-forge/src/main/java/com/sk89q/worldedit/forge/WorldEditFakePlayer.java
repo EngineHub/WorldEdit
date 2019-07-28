@@ -21,7 +21,7 @@ package com.sk89q.worldedit.forge;
 
 import com.mojang.authlib.GameProfile;
 import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.world.ServerWorld;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.util.FakePlayer;
 
 import javax.annotation.Nullable;

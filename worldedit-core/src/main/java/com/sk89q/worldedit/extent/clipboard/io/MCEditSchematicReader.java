@@ -206,6 +206,8 @@ public class MCEditSchematicReader extends NBTSchematicReader {
             }
             if (values.isEmpty()) {
                 t = null;
+            } else {
+                t = new CompoundTag(values);
             }
 
             if (fixer != null && t != null) {
@@ -378,6 +380,24 @@ public class MCEditSchematicReader extends NBTSchematicReader {
                 return "note_block";
             case "Structure":
                 return "structure_block";
+            case "Chest":
+                return "chest";
+            case "Sign":
+                return "sign";
+            case "Banner":
+                return "banner";
+            case "Beacon":
+                return "beacon";
+            case "Comparator":
+                return "comparator";
+            case "Dropper":
+                return "dropper";
+            case "Furnace":
+                return "furnace";
+            case "Hopper":
+                return "hopper";
+            case "Skull":
+                return "skull";
             default:
                 return id;
         }

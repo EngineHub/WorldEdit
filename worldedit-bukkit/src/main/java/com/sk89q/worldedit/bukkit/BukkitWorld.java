@@ -316,15 +316,16 @@ public class BukkitWorld extends AbstractWorld {
 
     @Override
     public boolean equals(Object other) {
-        if (worldRef.get() == null) {
+        final World ref = worldRef.get();
+        if (ref == null) {
             return false;
         } else if (other == null) {
             return false;
         } else if ((other instanceof BukkitWorld)) {
             World otherWorld = ((BukkitWorld) other).worldRef.get();
-            return otherWorld != null && otherWorld.equals(getWorld());
+            return ref.equals(otherWorld);
         } else if (other instanceof com.sk89q.worldedit.world.World) {
-            return ((com.sk89q.worldedit.world.World) other).getName().equals(getName());
+            return ((com.sk89q.worldedit.world.World) other).getName().equals(ref.getName());
         } else {
             return false;
         }
