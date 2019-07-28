@@ -23,29 +23,36 @@ import com.google.common.collect.ImmutableList;
 import com.sk89q.worldedit.internal.util.Substring;
 import org.junit.jupiter.api.Test;
 
-import static com.sk89q.worldedit.internal.command.CommandArgParser.spaceSplit;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class CommandArgParserTest {
+class CommandArgParserTest {
+
+    private static List<Substring> argParse(String s) {
+        return CommandArgParser.forArgString(s).parseArgs().collect(Collectors.toList());
+    }
+
     @Test
-    public void testSpaceSplit() {
+    void testArgumentParsing() {
         assertEquals(ImmutableList.of(
             Substring.wrap("", 0, 0)
-        ), spaceSplit(""));
+        ), argParse(""));
         assertEquals(ImmutableList.of(
             Substring.wrap("ab", 0, 2)
-        ), spaceSplit("ab"));
+        ), argParse("ab"));
         assertEquals(ImmutableList.of(
             Substring.wrap("", 0, 0),
             Substring.wrap("", 1, 1)
-        ), spaceSplit(" "));
+        ), argParse(" "));
         assertEquals(ImmutableList.of(
             Substring.wrap("a", 0, 1),
             Substring.wrap("", 2, 2)
-        ), spaceSplit("a "));
+        ), argParse("a "));
         assertEquals(ImmutableList.of(
             Substring.wrap("a", 0, 1),
             Substring.wrap("b", 2, 3)
-        ), spaceSplit("a b"));
+        ), argParse("a b"));
     }
 }

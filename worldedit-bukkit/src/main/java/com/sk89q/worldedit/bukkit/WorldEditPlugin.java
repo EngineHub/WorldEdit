@@ -335,7 +335,7 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
         // code of WorldEdit expects it
         String[] split = new String[args.length + 1];
         System.arraycopy(args, 0, split, 1, args.length);
-        split[0] = "/" + cmd.getName();
+        split[0] = "/" + commandLabel;
 
         CommandEvent event = new CommandEvent(wrapCommandSender(sender), Joiner.on(" ").join(split));
         getWorldEdit().getEventBus().post(event);
@@ -349,7 +349,7 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
         // code of WorldEdit expects it
         String[] split = new String[args.length + 1];
         System.arraycopy(args, 0, split, 1, args.length);
-        split[0] = "/" + cmd.getName();
+        split[0] = "/" + commandLabel;
 
         String arguments = Joiner.on(" ").join(split);
         CommandSuggestionEvent event = new CommandSuggestionEvent(wrapCommandSender(sender), arguments);

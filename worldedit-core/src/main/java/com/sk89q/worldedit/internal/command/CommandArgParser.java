@@ -31,6 +31,10 @@ import java.util.stream.Stream;
 
 public class CommandArgParser {
 
+    public static CommandArgParser forArgString(String argString) {
+        return new CommandArgParser(spaceSplit(argString));
+    }
+
     public static ImmutableList<Substring> spaceSplit(String string) {
         ImmutableList.Builder<Substring> result = ImmutableList.builder();
         int index = 0;
@@ -67,16 +71,28 @@ public class CommandArgParser {
                     handleQuote(nextPart);
             }
         }
+        if (currentArg.size() > 0) {
+            finishArg(); // force finish "hanging" args
+        }
         return args.build();
     }
 
     private void handleNormal(Substring part) {
-        if (part.getSubstring().startsWith("\"")) {
-            state = State.QUOTE;
-            currentArg.add(Substring.wrap(
-                part.getSubstring().substring(1),
-                part.getStart(), part.getEnd()
-            ));
+        final String strPart = part.getSubstring();
+        if (strPart.startsWith("\"")) {
+            if (strPart.endsWith("\"") && strPart.length() > 1) {
+                currentArg.add(Substring.wrap(
+                        strPart.substring(1, strPart.length() - 1),
+                        part.getStart() + 1, part.getEnd() - 1
+                ));
+                finishArg();
+            } else {
+                state = State.QUOTE;
+                currentArg.add(Substring.wrap(
+                        strPart.substring(1),
+                        part.getStart() + 1, part.getEnd()
+                ));
+            }
         } else {
             currentArg.add(part);
             finishArg();
@@ -88,7 +104,7 @@ public class CommandArgParser {
             state = State.NORMAL;
             currentArg.add(Substring.wrap(
                 part.getSubstring().substring(0, part.getSubstring().length() - 1),
-                part.getStart(), part.getEnd()
+                part.getStart(), part.getEnd() - 1
             ));
             finishArg();
         } else {

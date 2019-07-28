@@ -49,11 +49,12 @@ public final class SuggestionHelper {
 
     public static Stream<String> getBlockCategorySuggestions(String tag, boolean allowRandom) {
         if (tag.isEmpty() || tag.equals("#")) {
-            return Stream.of("##", "##*");
+            return allowRandom ? Stream.of("##", "##*") : Stream.of("##");
         }
-        if (tag.startsWith("#")) {
+        if (tag.startsWith("##")) {
             if (tag.equals("##")) {
-                return Stream.concat(Stream.of("##*"), getNamespacedRegistrySuggestions(BlockCategory.REGISTRY, tag.substring(2)).map(s -> "##" + s));
+                return Stream.concat(allowRandom ? Stream.of("##*") : Stream.empty(),
+                        getNamespacedRegistrySuggestions(BlockCategory.REGISTRY, tag.substring(2)).map(s -> "##" + s));
             } else if (tag.equals("##*") && allowRandom) {
                 return getNamespacedRegistrySuggestions(BlockCategory.REGISTRY, tag.substring(3)).map(s -> "##*" + s);
             } else {
