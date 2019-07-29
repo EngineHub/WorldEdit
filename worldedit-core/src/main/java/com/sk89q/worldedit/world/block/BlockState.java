@@ -28,7 +28,6 @@ import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.internal.block.BlockStateIdAccess;
-import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.world.registry.BlockRegistry;
 
@@ -205,11 +204,6 @@ public class BlockState implements BlockStateHolder<BlockState> {
 
     @Override
     public BaseBlock toBaseBlock() {
-        return this.emptyBaseBlock;
-    }
-
-    @Override
-    public BaseBlock apply(BlockVector3 position) {
         return this.emptyBaseBlock;
     }
 

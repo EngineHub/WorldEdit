@@ -25,7 +25,6 @@ import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.jnbt.StringTag;
 import com.sk89q.jnbt.Tag;
 import com.sk89q.worldedit.blocks.TileEntityBlock;
-import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.registry.state.Property;
 
 import java.util.Map;
@@ -164,11 +163,6 @@ public class BaseBlock implements BlockStateHolder<BaseBlock>, TileEntityBlock {
 
     @Override
     public BaseBlock toBaseBlock() {
-        return this;
-    }
-
-    @Override
-    public BaseBlock apply(BlockVector3 position) {
         return this;
     }
 
