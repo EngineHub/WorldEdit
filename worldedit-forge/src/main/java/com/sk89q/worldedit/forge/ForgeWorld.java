@@ -118,31 +118,7 @@ public class ForgeWorld extends AbstractWorld {
     ForgeWorld(World world) {
         checkNotNull(world);
         this.worldRef = new WeakReference<World>(world);
-
-// start hacky stuff
-        if (!checkedMinY) {
-            checkForMinHeight();
-        }
-        if (getMinYMethod != null) {
-            try {
-                minY = (int) getMinYMethod.invoke(world);
-            } catch (IllegalAccessException | InvocationTargetException ignored) {
-            }
-        }
     }
-
-    private static Method getMinYMethod;
-    private static boolean checkedMinY;
-    private int minY = super.getMinY();
-
-    private static void checkForMinHeight() {
-        checkedMinY = true;
-        try {
-            getMinYMethod = World.class.getMethod("getMinHeight");
-        } catch (NoSuchMethodException ignored) {
-        }
-    }
-// end hacky stuff
 
     /**
      * Get the underlying handle to the world.
@@ -181,7 +157,9 @@ public class ForgeWorld extends AbstractWorld {
 
     @Override
     public int getMinY() {
-        return minY;
+        // Note: this method gets overwritten by cubic chunks.
+        // Existence of this method here signals that this version of WorldEdit is aware of it
+        return 0;
     }
 
     @Override
