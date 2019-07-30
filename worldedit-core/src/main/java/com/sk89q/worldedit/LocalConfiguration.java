@@ -82,6 +82,7 @@ public abstract class LocalConfiguration {
     public Set<Integer> disallowedBlocks = new HashSet<Integer>();
     public int defaultChangeLimit = -1;
     public int maxChangeLimit = -1;
+    public int defaultVerticalSize = 256;
     public int defaultMaxPolygonalPoints = -1;
     public int maxPolygonalPoints = 20;
     public int defaultMaxPolyhedronPoints = -1;

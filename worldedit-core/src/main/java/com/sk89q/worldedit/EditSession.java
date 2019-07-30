@@ -766,7 +766,7 @@ public class EditSession implements Extent {
         MaskIntersection mask = new MaskIntersection(
                 new RegionMask(new EllipsoidRegion(null, origin, new Vector(radius, radius, radius))),
                 new BoundedHeightMask(
-                        Math.max(origin.getBlockY() - depth + 1, 0),
+                        Math.max(origin.getBlockY() - depth + 1, getWorld().getMinY()),
                         Math.min(getWorld().getMaxY(), origin.getBlockY())),
                 Masks.negate(new ExistingBlockMask(this)));
 
@@ -1560,8 +1560,24 @@ public class EditSession implements Extent {
      * @param radius the radius
      * @return number of blocks affected
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
+     * @deprecated Use {@link #thaw(Vector, double, int)}
      */
+    @Deprecated
     public int thaw(Vector position, double radius)
+            throws MaxChangedBlocksException {
+        return thaw(position, radius, WorldEdit.getInstance().getConfiguration().defaultVerticalSize);
+    }
+
+    /**
+     * Thaw blocks in a radius.
+     *
+     * @param position the position
+     * @param radius the radius
+     * @param vertSize the vertical size (up and down)
+     * @return number of blocks affected
+     * @throws MaxChangedBlocksException thrown if too many blocks are changed
+     */
+    public int thaw(Vector position, double radius, int vertSize)
             throws MaxChangedBlocksException {
         int affected = 0;
         double radiusSq = radius * radius;
@@ -1573,6 +1589,10 @@ public class EditSession implements Extent {
         BaseBlock air = new BaseBlock(0);
         BaseBlock water = new BaseBlock(BlockID.STATIONARY_WATER);
 
+        final int centerY = Math.max(getWorld().getMinY(), Math.min(getWorld().getMaxY(), oy));
+        final int minY = Math.max(getWorld().getMinY(), centerY - vertSize);
+        final int maxY = Math.min(getWorld().getMaxY(), centerY + vertSize);
+
         int ceilRadius = (int) Math.ceil(radius);
         for (int x = ox - ceilRadius; x <= ox + ceilRadius; ++x) {
             for (int z = oz - ceilRadius; z <= oz + ceilRadius; ++z) {
@@ -1580,7 +1600,7 @@ public class EditSession implements Extent {
                     continue;
                 }
 
-                for (int y = world.getMaxY(); y >= 1; --y) {
+                for (int y = maxY; y >= minY; --y) {
                     Vector pt = new Vector(x, y, z);
                     int id = getBlockType(pt);
 
@@ -1619,8 +1639,23 @@ public class EditSession implements Extent {
      * @param radius a radius
      * @return number of blocks affected
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
+     * @deprecated Use {@link #simulateSnow(Vector, double, int)}
      */
+    @Deprecated
     public int simulateSnow(Vector position, double radius) throws MaxChangedBlocksException {
+        return simulateSnow(position, radius, WorldEdit.getInstance().getConfiguration().defaultVerticalSize);
+    }
+
+    /**
+     * Make snow in a radius.
+     *
+     * @param position a position
+     * @param radius a radius
+     * @param vertSize the vertical size (up and down)
+     * @return number of blocks affected
+     * @throws MaxChangedBlocksException thrown if too many blocks are changed
+     */
+    public int simulateSnow(Vector position, double radius, int vertSize) throws MaxChangedBlocksException {
         int affected = 0;
         double radiusSq = radius * radius;
 
@@ -1631,6 +1666,10 @@ public class EditSession implements Extent {
         BaseBlock ice = new BaseBlock(BlockID.ICE);
         BaseBlock snow = new BaseBlock(BlockID.SNOW);
 
+        final int centerY = Math.max(getWorld().getMinY(), Math.min(getWorld().getMaxY(), oy));
+        final int minY = Math.max(getWorld().getMinY(), centerY - vertSize);
+        final int maxY = Math.min(getWorld().getMaxY(), centerY + vertSize);
+
         int ceilRadius = (int) Math.ceil(radius);
         for (int x = ox - ceilRadius; x <= ox + ceilRadius; ++x) {
             for (int z = oz - ceilRadius; z <= oz + ceilRadius; ++z) {
@@ -1638,7 +1677,7 @@ public class EditSession implements Extent {
                     continue;
                 }
 
-                for (int y = world.getMaxY(); y >= 1; --y) {
+                for (int y = maxY; y >= minY; --y) {
                     Vector pt = new Vector(x, y, z);
                     int id = getBlockType(pt);
 
@@ -1686,7 +1725,7 @@ public class EditSession implements Extent {
      * @param radius a radius
      * @return number of blocks affected
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
-     * @deprecated Use {@link #green(Vector, double, boolean)}.
+     * @deprecated Use {@link #green(Vector, double, int, boolean)}.
      */
     @Deprecated
     public int green(Vector position, double radius) throws MaxChangedBlocksException {
@@ -1701,8 +1740,25 @@ public class EditSession implements Extent {
      * @param onlyNormalDirt only affect normal dirt (data value 0)
      * @return number of blocks affected
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
+     * @deprecated Use {@link #green(Vector, double, int, boolean)}.
      */
+    @Deprecated
     public int green(Vector position, double radius, boolean onlyNormalDirt)
+            throws MaxChangedBlocksException {
+        return green(position, radius, WorldEdit.getInstance().getConfiguration().defaultVerticalSize, onlyNormalDirt);
+    }
+
+    /**
+     * Make dirt green.
+     *
+     * @param position a position
+     * @param radius a radius
+     * @param vertSize the vertical size (up and down)
+     * @param onlyNormalDirt only affect normal dirt (data value 0)
+     * @return number of blocks affected
+     * @throws MaxChangedBlocksException thrown if too many blocks are changed
+     */
+    public int green(Vector position, double radius, int vertSize, boolean onlyNormalDirt)
             throws MaxChangedBlocksException {
         int affected = 0;
         final double radiusSq = radius * radius;
@@ -1713,6 +1769,10 @@ public class EditSession implements Extent {
 
         final BaseBlock grass = new BaseBlock(BlockID.GRASS);
 
+        final int centerY = Math.max(getWorld().getMinY(), Math.min(getWorld().getMaxY(), oy));
+        final int minY = Math.max(getWorld().getMinY(), centerY - vertSize);
+        final int maxY = Math.min(getWorld().getMaxY(), centerY + vertSize);
+
         final int ceilRadius = (int) Math.ceil(radius);
         for (int x = ox - ceilRadius; x <= ox + ceilRadius; ++x) {
             for (int z = oz - ceilRadius; z <= oz + ceilRadius; ++z) {
@@ -1720,7 +1780,7 @@ public class EditSession implements Extent {
                     continue;
                 }
 
-                loop: for (int y = world.getMaxY(); y >= 1; --y) {
+                loop: for (int y = maxY; y >= minY; --y) {
                     final Vector pt = new Vector(x, y, z);
                     final int id = getBlockType(pt);
                     final int data = getBlockData(pt);

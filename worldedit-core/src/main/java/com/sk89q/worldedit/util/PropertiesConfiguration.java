@@ -85,6 +85,7 @@ public class PropertiesConfiguration extends LocalConfiguration {
         disallowedBlocks = getIntSet("disallowed-blocks", defaultDisallowedBlocks);
         defaultChangeLimit = getInt("default-max-changed-blocks", defaultChangeLimit);
         maxChangeLimit = getInt("max-changed-blocks", maxChangeLimit);
+        defaultVerticalSize = getInt("default-vertical-size", defaultVerticalSize);
         defaultMaxPolygonalPoints = getInt("default-max-polygon-points", defaultMaxPolygonalPoints);
         maxPolygonalPoints = getInt("max-polygon-points", maxPolygonalPoints);
         defaultMaxPolyhedronPoints = getInt("default-max-polyhedron-points", defaultMaxPolyhedronPoints);

@@ -28,7 +28,6 @@ import com.sk89q.minecraft.util.commands.Logging;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.Vector2D;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
@@ -195,7 +194,7 @@ public class SelectionCommands {
 
     @Command(
         aliases = { "/chunk" },
-        usage = "[x,z coordinates]",
+        usage = "[x,z or x,y,z coordinates]",
         flags = "sc",
         desc = "Set the selection to your current chunk.",
         help =
@@ -205,7 +204,8 @@ public class SelectionCommands {
             "Specifying coordinates will use those instead of your\n"+
             "current position. Use -c to specify chunk coordinates,\n" +
             "otherwise full coordinates will be implied.\n" +
-            "(for example, the coordinates 5,5 are the same as -c 0,0)",
+            "(for example, the coordinates 5,5 are the same as -c 0,0).\n" +
+            "Y coordinate specifies 256-blocks tall section (for higher worlds)",
         min = 0,
         max = 1
     )
@@ -218,37 +218,45 @@ public class SelectionCommands {
         if (args.hasFlag('s')) {
             Region region = session.getSelection(world);
 
-            final Vector2D min2D = ChunkStore.toChunk(region.getMinimumPoint());
-            final Vector2D max2D = ChunkStore.toChunk(region.getMaximumPoint());
+            final int minChunkY = Math.floorDiv(world.getMinY(), 256);
+            final int maxChunkY = Math.floorDiv(world.getMaxY(), 256);
 
-            min = new Vector(min2D.getBlockX() * 16, world.getMinY(), min2D.getBlockZ() * 16);
-            max = new Vector(max2D.getBlockX() * 16 + 15, world.getMaxY(), max2D.getBlockZ() * 16 + 15);
+            final Vector minChunk = ChunkStore.toChunk3d(region.getMinimumPoint()).clampY(minChunkY, maxChunkY);
+            final Vector maxChunk = ChunkStore.toChunk3d(region.getMaximumPoint()).clampY(minChunkY, maxChunkY);
+
+            min = minChunk.multiply(16, 256, 16);
+            max = maxChunk.multiply(16, 256, 16).add(15, 255, 15);
 
             player.print("Chunks selected: ("
-                    + min2D.getBlockX() + ", " + min2D.getBlockZ() + ") - ("
-                    + max2D.getBlockX() + ", " + max2D.getBlockZ() + ")");
+                    + minChunk.getBlockX() + ", " + minChunk.getBlockY() + ", " + minChunk.getBlockZ() + ") - ("
+                    + maxChunk.getBlockX() + ", " + maxChunk.getBlockY() + ", " + maxChunk.getBlockZ() + ")");
         } else {
-            final Vector2D min2D;
+            final Vector minChunk;
             if (args.argsLength() == 1) {
                 // coords specified
                 String[] coords = args.getString(0).split(",");
-                if (coords.length != 2) {
+                if (coords.length != 2 && coords.length != 3) {
                     throw new InsufficientArgumentsException("Invalid coordinates specified.");
                 }
                 int x = Integer.parseInt(coords[0]);
+                int y = 0;
                 int z = Integer.parseInt(coords[1]);
-                Vector2D pos = new Vector2D(x, z);
-                min2D = (args.hasFlag('c')) ? pos : ChunkStore.toChunk(pos.toVector());
+                if (coords.length == 3) {
+                    y = z;
+                    z = Integer.parseInt(coords[2]);
+                }
+                Vector pos = new Vector(x, y, z);
+                minChunk = (args.hasFlag('c')) ? pos : ChunkStore.toChunk3d(pos);
             } else {
                 // use player loc
-                min2D = ChunkStore.toChunk(player.getBlockIn());
+                minChunk = ChunkStore.toChunk3d(player.getBlockIn());
             }
 
-            min = new Vector(min2D.getBlockX() * 16, world.getMinY(), min2D.getBlockZ() * 16);
-            max = min.add(15, world.getMaxY(), 15);
+            min = new Vector(minChunk.getBlockX() * 16, minChunk.getY() * 256, minChunk.getBlockZ() * 16);
+            max = min.add(15, 255, 15);
 
             player.print("Chunk selected: "
-                    + min2D.getBlockX() + ", " + min2D.getBlockZ());
+                    + minChunk.getBlockX() + ", " + minChunk.getBlockY() + ", " + minChunk.getBlockZ());
         }
 
         final CuboidRegionSelector selector;
@@ -316,9 +324,13 @@ public class SelectionCommands {
             Region region = session.getSelection(player.getWorld());
             try {
                 int oldSize = region.getArea();
+                int expandSize = we.getConfiguration().defaultVerticalSize;
+                if (args.argsLength() > 1) {
+                    expandSize = args.getInteger(1);
+                }
                 region.expand(
-                        new Vector(0, (player.getWorld().getMaxY() + 1), 0),
-                        new Vector(0, -(player.getWorld().getMaxY() + 1), 0));
+                        new Vector(0, expandSize, 0),
+                        new Vector(0, -expandSize, 0));
                 session.getRegionSelector(player.getWorld()).learnChanges();
                 int newSize = region.getArea();
                 session.getRegionSelector(player.getWorld()).explainRegionAdjust(player, session);

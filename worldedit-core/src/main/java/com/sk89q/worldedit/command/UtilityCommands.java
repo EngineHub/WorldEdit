@@ -204,8 +204,7 @@ public class UtilityCommands {
         
         int size = args.argsLength() > 0 ? Math.max(1, args.getInteger(0)) : 1;
         we.checkMaxRadius(size);
-        World world = player.getWorld();
-        int height = args.argsLength() > 1 ? Math.min((world.getMaxY() + 1), args.getInteger(1) + 2) : (world.getMaxY() + 1);
+        int height = args.argsLength() > 1 ? args.getInteger(1) + 2 : we.getConfiguration().defaultVerticalSize;
 
         int affected = editSession.removeAbove(
                 session.getPlacementPosition(player), size, height);
@@ -225,8 +224,7 @@ public class UtilityCommands {
 
         int size = args.argsLength() > 0 ? Math.max(1, args.getInteger(0)) : 1;
         we.checkMaxRadius(size);
-        World world = player.getWorld();
-        int height = args.argsLength() > 1 ? Math.min((world.getMaxY() + 1), args.getInteger(1) + 2) : (world.getMaxY() + 1);
+        int height = args.argsLength() > 1 ? args.getInteger(1) + 2 : we.getConfiguration().defaultVerticalSize;
 
         int affected = editSession.removeBelow(session.getPlacementPosition(player), size, height);
         player.print(affected + " block(s) have been removed.");
@@ -290,54 +288,57 @@ public class UtilityCommands {
 
     @Command(
         aliases = { "/snow", "snow" },
-        usage = "[radius]",
+        usage = "[radius] [vertical-size]",
         desc = "Simulates snow",
         min = 0,
-        max = 1
+        max = 2
     )
     @CommandPermissions("worldedit.snow")
     @Logging(PLACEMENT)
     public void snow(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
 
         double size = args.argsLength() > 0 ? Math.max(1, args.getDouble(0)) : 10;
+        int ySize = args.argsLength() > 1 ? Math.max(1, args.getInteger(1)) : we.getConfiguration().defaultVerticalSize;
 
-        int affected = editSession.simulateSnow(session.getPlacementPosition(player), size);
+        int affected = editSession.simulateSnow(session.getPlacementPosition(player), size, ySize);
         player.print(affected + " surfaces covered. Let it snow~");
     }
 
     @Command(
         aliases = {"/thaw", "thaw"},
-        usage = "[radius]",
+        usage = "[radius] [vertical-size]",
         desc = "Thaws the area",
         min = 0,
-        max = 1
+        max = 2
     )
     @CommandPermissions("worldedit.thaw")
     @Logging(PLACEMENT)
     public void thaw(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
 
         double size = args.argsLength() > 0 ? Math.max(1, args.getDouble(0)) : 10;
+        int ySize = args.argsLength() > 1 ? Math.max(1, args.getInteger(1)) : we.getConfiguration().defaultVerticalSize;
 
-        int affected = editSession.thaw(session.getPlacementPosition(player), size);
+        int affected = editSession.thaw(session.getPlacementPosition(player), size, ySize);
         player.print(affected + " surfaces thawed.");
     }
 
     @Command(
         aliases = { "/green", "green" },
-        usage = "[radius]",
+        usage = "[radius] [vertical-size]",
         desc = "Greens the area",
         flags = "f",
         min = 0,
-        max = 1
+        max = 2
     )
     @CommandPermissions("worldedit.green")
     @Logging(PLACEMENT)
     public void green(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
 
         final double size = args.argsLength() > 0 ? Math.max(1, args.getDouble(0)) : 10;
+        int ySize = args.argsLength() > 1 ? Math.max(1, args.getInteger(1)) : we.getConfiguration().defaultVerticalSize;
         final boolean onlyNormalDirt = !args.hasFlag('f');
 
-        final int affected = editSession.green(session.getPlacementPosition(player), size, onlyNormalDirt);
+        final int affected = editSession.green(session.getPlacementPosition(player), size, ySize, onlyNormalDirt);
         player.print(affected + " surfaces greened.");
     }
 

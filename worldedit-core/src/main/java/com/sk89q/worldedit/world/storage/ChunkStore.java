@@ -21,6 +21,7 @@ package com.sk89q.worldedit.world.storage;
 
 import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.jnbt.Tag;
+import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.BlockVector2D;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.Vector2D;
@@ -55,6 +56,20 @@ public abstract class ChunkStore {
         int chunkZ = (int) Math.floor(position.getBlockZ() / 16.0);
 
         return new BlockVector2D(chunkX, chunkZ);
+    }
+
+    /**
+     * Convert a position to a chunk, with Y representing 256-blocks tall sections
+     *
+     * @param position the position
+     * @return chunk coordinates
+     */
+    public static BlockVector toChunk3d(Vector position) {
+        int chunkX = (int) Math.floor(position.getBlockX() / 16.0);
+        int chunkY = (int) Math.floor(position.getBlockY() / 256.0);
+        int chunkZ = (int) Math.floor(position.getBlockZ() / 16.0);
+
+        return new BlockVector(chunkX, chunkY, chunkZ);
     }
 
     /**

@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.extension.platform;
 
+import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.util.auth.AuthorizationException;
 import com.sk89q.worldedit.BlockWorldVector;
 import com.sk89q.worldedit.LocalPlayer;
@@ -100,9 +101,11 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
         int origY = y;
         int z = searchPos.getBlockZ();
 
+        int maxY = Math.min(world.getMaxY(), y + WorldEdit.getInstance().getConfiguration().defaultVerticalSize) + 2;
+
         byte free = 0;
 
-        while (y <= world.getMaxY() + 2) {
+        while (y <= maxY) {
             if (BlockType.canPassThrough(world.getBlock(new Vector(x, y, z)))) {
                 ++free;
             } else {
@@ -131,7 +134,8 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
         int y = Math.max(0, searchPos.getBlockY());
         int z = searchPos.getBlockZ();
 
-        while (y >= 0) {
+        int minY = Math.max(getWorld().getMinY(), y - WorldEdit.getInstance().getConfiguration().defaultVerticalSize);
+        while (y >= minY) {
             final Vector pos = new Vector(x, y, z);
             final int id = world.getBlockType(pos);
             final int data = world.getBlockData(pos);
@@ -160,7 +164,9 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
         byte free = 0;
         byte spots = 0;
 
-        while (y <= world.getMaxY() + 2) {
+        int maxY = Math.min(world.getMaxY(), y + WorldEdit.getInstance().getConfiguration().defaultVerticalSize) + 2;
+
+        while (y <= maxY) {
             if (BlockType.canPassThrough(world.getBlock(new Vector(x, y, z)))) {
                 ++free;
             } else {
@@ -200,7 +206,9 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
 
         byte free = 0;
 
-        while (y >= 1) {
+        int minY = Math.max(getWorld().getMinY() + 1, y - WorldEdit.getInstance().getConfiguration().defaultVerticalSize);
+
+        while (y >= minY) {
             if (BlockType.canPassThrough(world.getBlock(new Vector(x, y, z)))) {
                 ++free;
             } else {
@@ -254,7 +262,9 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
             return false;
         }
 
-        while (y <= world.getMaxY()) {
+        int maxY = Math.min(world.getMaxY(), y + WorldEdit.getInstance().getConfiguration().defaultVerticalSize);
+
+        while (y <= maxY) {
             // Found a ceiling!
             if (!BlockType.canPassThrough(world.getBlock(new Vector(x, y, z)))) {
                 int platformY = Math.max(initialY, y - 3 - clearance);
