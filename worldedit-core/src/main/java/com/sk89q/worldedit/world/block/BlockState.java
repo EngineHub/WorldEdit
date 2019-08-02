@@ -27,7 +27,6 @@ import com.google.common.collect.Table;
 import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.extension.platform.Capability;
-import com.sk89q.worldedit.internal.block.BlockStateIdAccess;
 import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.world.registry.BlockRegistry;
 
@@ -38,7 +37,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.OptionalInt;
 import java.util.Set;
 
 /**
@@ -47,13 +45,8 @@ import java.util.Set;
 @SuppressWarnings("unchecked")
 public class BlockState implements BlockStateHolder<BlockState> {
 
-    static {
-        BlockStateIdAccess.setBlockStateStateId(x -> x.internalId);
-    }
-
     private final BlockType blockType;
     private final Map<Property<?>, Object> values;
-    private OptionalInt internalId = OptionalInt.empty();
 
     private BaseBlock emptyBaseBlock;
 
@@ -64,12 +57,6 @@ public class BlockState implements BlockStateHolder<BlockState> {
         this.blockType = blockType;
         this.values = new LinkedHashMap<>();
         this.emptyBaseBlock = new BaseBlock(this);
-    }
-
-    BlockState initializeId(BlockRegistry registry) {
-        this.internalId = registry.getInternalBlockStateId(this);
-        BlockStateIdAccess.register(this);
-        return this;
     }
 
     static Map<Map<Property<?>, Object>, BlockState> generateStateMap(BlockType blockType) {
@@ -94,14 +81,13 @@ public class BlockState implements BlockStateHolder<BlockState> {
                     valueMap.put(property, value);
                     stateMaker.setState(property, value);
                 }
-                stateMaker.initializeId(registry);
                 stateMap.put(valueMap, stateMaker);
             }
         }
 
         if (stateMap.isEmpty()) {
             // No properties.
-            stateMap.put(new LinkedHashMap<>(), new BlockState(blockType).initializeId(registry));
+            stateMap.put(new LinkedHashMap<>(), new BlockState(blockType));
         }
 
         for (BlockState state : stateMap.values()) {
@@ -114,11 +100,11 @@ public class BlockState implements BlockStateHolder<BlockState> {
     private void populate(Map<Map<Property<?>, Object>, BlockState> stateMap) {
         final Table<Property<?>, Object, BlockState> states = HashBasedTable.create();
 
-        for(final Map.Entry<Property<?>, Object> entry : this.values.entrySet()) {
+        for (final Map.Entry<Property<?>, Object> entry : this.values.entrySet()) {
             final Property<Object> property = (Property<Object>) entry.getKey();
 
             property.getValues().forEach(value -> {
-                if(value != entry.getValue()) {
+                if (value != entry.getValue()) {
                     BlockState modifiedState = stateMap.get(this.withValue(property, value));
                     if (modifiedState != null) {
                         states.put(property, value, modifiedState);

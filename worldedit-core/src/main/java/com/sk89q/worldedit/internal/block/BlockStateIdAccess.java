@@ -19,57 +19,46 @@
 
 package com.sk89q.worldedit.internal.block;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import com.sk89q.worldedit.world.block.BlockState;
 
 import javax.annotation.Nullable;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.OptionalInt;
 
 import static com.google.common.base.Preconditions.checkState;
 
 public final class BlockStateIdAccess {
 
-    private BlockStateIdAccess() {
-    }
-
-    public interface Provider {
-
-        OptionalInt getBlockStateId(BlockState holder);
-    }
-
-    private static Provider blockStateStateId;
-
-    public static void setBlockStateStateId(Provider blockStateStateId) {
-        BlockStateIdAccess.blockStateStateId = blockStateStateId;
-    }
+    private static final BiMap<BlockState, Integer> ASSIGNED_IDS = HashBiMap.create(2 << 13);
 
     public static OptionalInt getBlockStateId(BlockState holder) {
-        return blockStateStateId.getBlockStateId(holder);
+        Integer value = ASSIGNED_IDS.get(holder);
+        return value == null ? OptionalInt.empty() : OptionalInt.of(value);
     }
 
     public static @Nullable BlockState getBlockStateById(int id) {
-        return id < blockStates.length ? blockStates[id] : null;
+        return ASSIGNED_IDS.inverse().get(id);
     }
 
-    private static BlockState[] blockStates = new BlockState[2 << 13];
-
-    public static void register(BlockState blockState) {
-        OptionalInt id = getBlockStateId(blockState);
+    public static void register(BlockState blockState, OptionalInt id) {
         if (id.isPresent()) {
             int i = id.getAsInt();
-            if (i >= blockStates.length) {
-                int curLength = blockStates.length;
-                do {
-                    curLength += curLength >> 1;
-                } while (i >= curLength);
-                blockStates = Arrays.copyOf(blockStates, curLength);
-            }
-            BlockState existing = blockStates[i];
+            BlockState existing = ASSIGNED_IDS.inverse().get(i);
             checkState(existing == null || existing == blockState,
                 "BlockState %s is using the same block ID (%s) as BlockState %s",
                 blockState, i, existing);
-            blockStates[i] = blockState;
+            ASSIGNED_IDS.put(blockState, i);
         }
+    }
+
+    public static void clear() {
+        ASSIGNED_IDS.clear();
+    }
+
+    private BlockStateIdAccess() {
     }
 
 }
