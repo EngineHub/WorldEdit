@@ -54,6 +54,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -177,7 +178,8 @@ public class MCEditSchematicReader extends NBTSchematicReader {
         }
 
         // Need to pull out tile entities
-        List<Tag> tileEntities = requireTag(schematic, "TileEntities", ListTag.class).getValue();
+        final ListTag tileEntityTag = getTag(schematic, "TileEntities", ListTag.class);
+        List<Tag> tileEntities = tileEntityTag == null ? new ArrayList<>() : tileEntityTag.getValue();
         Map<BlockVector3, Map<String, Tag>> tileEntitiesMap = new HashMap<>();
         Map<BlockVector3, BlockState> blockStates = new HashMap<>();
 
@@ -245,7 +247,7 @@ public class MCEditSchematicReader extends NBTSchematicReader {
                             byte data = blockData[index];
                             int combined = block << 8 | data;
                             if (unknownBlocks.add(combined)) {
-                                log.warn("Unknown block when pasting schematic: "
+                                log.warn("Unknown block when loading schematic: "
                                         + block + ":" + data + ". Please report this issue.");
                             }
                         }
