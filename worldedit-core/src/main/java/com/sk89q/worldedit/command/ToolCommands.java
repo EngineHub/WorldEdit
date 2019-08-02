@@ -37,10 +37,10 @@ import com.sk89q.worldedit.command.tool.TreePlanter;
 import com.sk89q.worldedit.command.util.CommandPermissions;
 import com.sk89q.worldedit.command.util.CommandPermissionsConditionGenerator;
 import com.sk89q.worldedit.entity.Player;
-import com.sk89q.worldedit.function.pattern.BlockPattern;
 import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.util.HandSide;
 import com.sk89q.worldedit.util.TreeGenerator;
+import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.item.ItemType;
 import org.enginehub.piston.annotation.Command;
 import org.enginehub.piston.annotation.CommandContainer;
@@ -209,11 +209,11 @@ public class ToolCommands {
         player.print("Long-range building tool bound to " + itemStack.getType().getName() + ".");
         String primaryName = "pattern";
         String secondaryName = "pattern";
-        if (primary instanceof BlockPattern) {
-            primaryName = ((BlockPattern) primary).getBlock().getBlockType().getName();
+        if (primary instanceof BlockStateHolder) {
+            primaryName = ((BlockStateHolder<?>) primary).getBlockType().getName();
         }
-        if (secondary instanceof BlockPattern) {
-            secondaryName = ((BlockPattern) secondary).getBlock().getBlockType().getName();
+        if (secondary instanceof BlockStateHolder) {
+            secondaryName = ((BlockStateHolder<?>) secondary).getBlockType().getName();
         }
         player.print("Left-click set to " + primaryName + "; right-click set to "
                 + secondaryName + ".");

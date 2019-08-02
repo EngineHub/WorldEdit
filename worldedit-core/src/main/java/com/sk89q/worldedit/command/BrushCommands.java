@@ -47,7 +47,6 @@ import com.sk89q.worldedit.function.factory.Paint;
 import com.sk89q.worldedit.function.mask.BlockTypeMask;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.function.operation.Operation;
-import com.sk89q.worldedit.function.pattern.BlockPattern;
 import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.factory.RegionFactory;
@@ -207,8 +206,7 @@ public class BrushCommands {
         worldEdit.checkMaxBrushRadius(radius);
 
         BrushTool tool = session.getBrushTool(player.getItemInHand(HandSide.MAIN_HAND).getType());
-        Pattern fill = new BlockPattern(BlockTypes.AIR.getDefaultState());
-        tool.setFill(fill);
+        tool.setFill(BlockTypes.AIR.getDefaultState());
         tool.setSize(radius);
         tool.setMask(new BlockTypeMask(new RequestExtent(), BlockTypes.FIRE));
         tool.setBrush(new SphereBrush(), "worldedit.brush.ex");

@@ -20,13 +20,15 @@
 package com.sk89q.worldedit.world.block;
 
 import com.sk89q.jnbt.CompoundTag;
+import com.sk89q.worldedit.function.pattern.Pattern;
+import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.registry.state.Property;
 
 import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public interface BlockStateHolder<B extends BlockStateHolder<B>> {
+public interface BlockStateHolder<B extends BlockStateHolder<B>> extends Pattern {
 
     /**
      * Get the block type
@@ -88,6 +90,11 @@ public interface BlockStateHolder<B extends BlockStateHolder<B>> {
      * @return The BaseBlock
      */
     BaseBlock toBaseBlock(CompoundTag compoundTag);
+
+    @Override
+    default BaseBlock apply(BlockVector3 position) {
+        return toBaseBlock();
+    }
 
     default String getAsString() {
         if (getStates().isEmpty()) {
