@@ -28,7 +28,9 @@ import com.sk89q.worldedit.session.SessionKey;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.auth.AuthorizationException;
 import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.adapter.bukkit.TextAdapter;
+import com.sk89q.worldedit.util.formatting.text.format.TextColor;
 import org.bukkit.Material;
 import org.bukkit.command.BlockCommandSender;
 
@@ -68,21 +70,21 @@ public class BukkitBlockCommandSender extends AbstractNonPlayerActor implements 
     @Override
     public void print(String msg) {
         for (String part : msg.split("\n")) {
-            sender.sendMessage("\u00A7d" + part);
+            print(TextComponent.of(part, TextColor.LIGHT_PURPLE));
         }
     }
 
     @Override
     public void printDebug(String msg) {
         for (String part : msg.split("\n")) {
-            sender.sendMessage("\u00A77" + part);
+            print(TextComponent.of(part, TextColor.GRAY));
         }
     }
 
     @Override
     public void printError(String msg) {
         for (String part : msg.split("\n")) {
-            sender.sendMessage("\u00A7c" + part);
+            print(TextComponent.of(part, TextColor.RED));
         }
     }
 

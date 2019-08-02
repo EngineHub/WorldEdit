@@ -34,6 +34,7 @@ import org.enginehub.piston.inject.Key;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class WorldConverter implements ArgumentConverter<World> {
 
@@ -54,10 +55,14 @@ public class WorldConverter implements ArgumentConverter<World> {
         return this.choices;
     }
 
+    private Stream<? extends World> getWorlds() {
+        return WorldEdit.getInstance().getPlatformManager()
+                .queryCapability(Capability.GAME_HOOKS).getWorlds().stream();
+    }
+
     @Override
     public List<String> getSuggestions(String input) {
-        return WorldEdit.getInstance().getPlatformManager()
-                .queryCapability(Capability.GAME_HOOKS).getWorlds().stream()
+        return getWorlds()
                 .map(World::getId)
                 .filter(world -> world.startsWith(input))
                 .collect(Collectors.toList());
@@ -65,8 +70,7 @@ public class WorldConverter implements ArgumentConverter<World> {
 
     @Override
     public ConversionResult<World> convert(String s, InjectedValueAccess injectedValueAccess) {
-        World result = WorldEdit.getInstance().getPlatformManager()
-                .queryCapability(Capability.GAME_HOOKS).getWorlds().stream()
+        World result = getWorlds()
                 .filter(world -> world.getId().equals(s))
                 .findAny().orElse(null);
         return result == null

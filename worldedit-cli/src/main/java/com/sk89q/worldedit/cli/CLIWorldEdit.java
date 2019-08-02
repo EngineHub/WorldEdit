@@ -59,6 +59,7 @@ import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.Map;
 import java.util.Scanner;
@@ -153,7 +154,7 @@ public class CLIWorldEdit {
 
     public void onInitialized() {
         // Setup working directory
-        workingDir = new File("worldedit").toPath();
+        workingDir = Paths.get("worldedit");
         if (!Files.exists(workingDir)) {
             try {
                 Files.createDirectory(workingDir);
@@ -212,8 +213,8 @@ public class CLIWorldEdit {
      *
      * @return the working directory
      */
-    public File getWorkingDir() {
-        return this.workingDir.toFile();
+    public Path getWorkingDir() {
+        return this.workingDir;
     }
 
     /**
