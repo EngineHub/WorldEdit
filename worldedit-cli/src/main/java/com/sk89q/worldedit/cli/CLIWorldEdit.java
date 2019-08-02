@@ -34,7 +34,6 @@ import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormat;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardReader;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardWriter;
 import com.sk89q.worldedit.registry.state.Property;
-import com.sk89q.worldedit.util.FileDialogUtil;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.block.BlockCategory;
@@ -50,20 +49,19 @@ import org.apache.commons.cli.Options;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.SequenceInputStream;
 import java.io.UncheckedIOException;
-import java.net.URL;
-import java.net.URLClassLoader;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.Map;
 import java.util.Scanner;
-import java.util.jar.Manifest;
 
 /**
  * The CLI implementation of WorldEdit.
@@ -250,7 +248,7 @@ public class CLIWorldEdit {
                     if (bits.length >= 2) {
                         file = new File(bits[1]);
                     } else {
-                        file = FileDialogUtil.showSaveDialog(new String[]{"schem"});
+                        file = commandSender.openFileSaveDialog(new String[]{"schem"});
                     }
                     if (file == null) {
                         commandSender.printError("Please choose a file.");
@@ -291,7 +289,7 @@ public class CLIWorldEdit {
             String fileArg = cmd.getOptionValue('f');
             File file;
             if (fileArg == null) {
-                file = FileDialogUtil.showOpenDialog(new String[]{"schem", "dat"});
+                file = app.commandSender.openFileOpenDialog(new String[]{"schem", "dat"});
             } else {
                 file = new File(fileArg);
             }
@@ -327,7 +325,10 @@ public class CLIWorldEdit {
                 if (!scriptFileHandle.exists()) {
                     throw new IllegalArgumentException("Could not find given script file.");
                 }
-                inputStream = new SequenceInputStream(Files.newInputStream(scriptFileHandle.toPath(), StandardOpenOption.READ), inputStream);
+                InputStream scriptStream = Files.newInputStream(scriptFileHandle.toPath(), StandardOpenOption.READ);
+                InputStream newLineStream = new ByteArrayInputStream("\n".getBytes(StandardCharsets.UTF_8));
+                // Cleaner to do this than make an Enumeration :(
+                inputStream = new SequenceInputStream(new SequenceInputStream(scriptStream, newLineStream), inputStream);
             }
 
             app.run(inputStream);

@@ -24,6 +24,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.internal.cui.CUIEvent;
 import com.sk89q.worldedit.session.SessionKey;
+import com.sk89q.worldedit.util.FileDialogUtil;
 import com.sk89q.worldedit.util.auth.AuthorizationException;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.serializer.plain.PlainComponentSerializer;
@@ -124,12 +125,12 @@ public class CLICommandSender implements Actor {
 
     @Override
     public File openFileOpenDialog(String[] extensions) {
-        return null;
+        return FileDialogUtil.showOpenDialog(extensions);
     }
 
     @Override
     public File openFileSaveDialog(String[] extensions) {
-        return null;
+        return FileDialogUtil.showSaveDialog(extensions);
     }
 
     @Override

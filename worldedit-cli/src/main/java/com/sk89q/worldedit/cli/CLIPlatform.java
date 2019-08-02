@@ -33,6 +33,8 @@ import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.annotation.Nullable;
 
@@ -42,6 +44,8 @@ class CLIPlatform extends AbstractPlatform {
     private int dataVersion = -1;
 
     private final List<World> worlds = new ArrayList<>();
+    private final Timer timer = new Timer();
+    private int lastTimerId = 0;
 
     CLIPlatform(CLIWorldEdit app) {
         this.app = app;
@@ -54,7 +58,7 @@ class CLIPlatform extends AbstractPlatform {
 
     @Override
     public int getDataVersion() {
-        return dataVersion;
+        return this.dataVersion;
     }
 
     public void setDataVersion(int dataVersion) {
@@ -78,12 +82,21 @@ class CLIPlatform extends AbstractPlatform {
 
     @Override
     public int schedule(long delay, long period, Runnable task) {
-        return -1;
+        this.timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                task.run();
+                if (period >= 0) {
+                    timer.schedule(this, period);
+                }
+            }
+        }, delay);
+        return this.lastTimerId++;
     }
 
     @Override
     public List<? extends World> getWorlds() {
-        return worlds;
+        return this.worlds;
     }
 
     @Nullable
@@ -95,7 +108,10 @@ class CLIPlatform extends AbstractPlatform {
     @Nullable
     @Override
     public World matchWorld(World world) {
-        return null;
+        return this.worlds.stream()
+                .filter(w -> w.getId().equals(world.getId()))
+                .findAny()
+                .orElse(null);
     }
 
     @Override

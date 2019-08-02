@@ -22,7 +22,6 @@ package com.sk89q.worldedit.cli;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.registry.BlockCategoryRegistry;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
