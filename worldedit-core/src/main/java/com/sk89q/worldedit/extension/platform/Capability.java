@@ -19,6 +19,11 @@
 
 package com.sk89q.worldedit.extension.platform;
 
+import com.sk89q.worldedit.internal.block.BlockStateIdAccess;
+import com.sk89q.worldedit.world.block.BlockState;
+import com.sk89q.worldedit.world.block.BlockType;
+import com.sk89q.worldedit.world.registry.BlockRegistry;
+
 /**
  * A collection of capabilities that a {@link Platform} may support.
  */
@@ -73,7 +78,22 @@ public enum Capability {
     /**
      * The capability of a platform to perform modifications to a world.
      */
-    WORLD_EDITING;
+    WORLD_EDITING {
+        @Override
+        void initialize(PlatformManager platformManager, Platform platform) {
+            BlockRegistry blockRegistry = platform.getRegistries().getBlockRegistry();
+            for (BlockType type : BlockType.REGISTRY) {
+                for (BlockState state : type.getAllStates()) {
+                    BlockStateIdAccess.register(state, blockRegistry.getInternalBlockStateId(state));
+                }
+            }
+        }
+
+        @Override
+        void unload(PlatformManager platformManager, Platform platform) {
+            BlockStateIdAccess.clear();
+        }
+    };
 
     void initialize(PlatformManager platformManager, Platform platform) {
 
