@@ -34,6 +34,7 @@ import com.sk89q.worldedit.function.block.BlockReplace;
 import com.sk89q.worldedit.function.generator.FloraGenerator;
 import com.sk89q.worldedit.function.mask.ExistingBlockMask;
 import com.sk89q.worldedit.function.mask.Mask;
+import com.sk89q.worldedit.function.mask.MaskIntersection;
 import com.sk89q.worldedit.function.mask.NoiseFilter2D;
 import com.sk89q.worldedit.function.operation.Operations;
 import com.sk89q.worldedit.function.pattern.Pattern;
@@ -56,6 +57,7 @@ import com.sk89q.worldedit.util.TreeGenerator.TreeType;
 import org.enginehub.piston.annotation.Command;
 import org.enginehub.piston.annotation.CommandContainer;
 import org.enginehub.piston.annotation.param.Arg;
+import org.enginehub.piston.annotation.param.ArgFlag;
 import org.enginehub.piston.annotation.param.Switch;
 
 import java.util.ArrayList;
@@ -293,10 +295,27 @@ public class RegionCommands {
                     @Switch(name = 's', desc = "Shift the selection to the target location")
                         boolean moveSelection,
                     @Switch(name = 'a', desc = "Ignore air blocks")
-                        boolean ignoreAirBlocks) throws WorldEditException {
+                        boolean ignoreAirBlocks,
+                    @Switch(name = 'e', desc = "Also copy entities")
+                        boolean copyEntities,
+                    @Switch(name = 'b', desc = "Also copy biomes")
+                        boolean copyBiomes,
+                    @ArgFlag(name = 'm', desc = "Set the include mask, non-matching blocks become air", def = "")
+                        Mask mask) throws WorldEditException {
         checkCommandArgument(count >= 1, "Count must be >= 1");
 
-        int affected = editSession.moveRegion(region, direction, count, !ignoreAirBlocks, replace);
+        Mask combinedMask;
+        if (ignoreAirBlocks) {
+            if (mask == null) {
+                combinedMask = new ExistingBlockMask(editSession);
+            } else {
+                combinedMask = new MaskIntersection(mask, new ExistingBlockMask(editSession));
+            }
+        } else {
+            combinedMask = mask;
+        }
+
+        int affected = editSession.moveRegion(region, direction, count, copyEntities, copyBiomes, combinedMask, replace);
 
         if (moveSelection) {
             try {
@@ -329,8 +348,26 @@ public class RegionCommands {
                      @Switch(name = 's', desc = "Shift the selection to the last stacked copy")
                          boolean moveSelection,
                      @Switch(name = 'a', desc = "Ignore air blocks")
-                         boolean ignoreAirBlocks) throws WorldEditException {
-        int affected = editSession.stackCuboidRegion(region, direction, count, !ignoreAirBlocks);
+                         boolean ignoreAirBlocks,
+                     @Switch(name = 'e', desc = "Also copy entities")
+                         boolean copyEntities,
+                     @Switch(name = 'b', desc = "Also copy biomes")
+                         boolean copyBiomes,
+                     @ArgFlag(name = 'm', desc = "Set the include mask, non-matching blocks become air", def = "")
+                         Mask mask) throws WorldEditException {
+
+        Mask combinedMask;
+        if (ignoreAirBlocks) {
+            if (mask == null) {
+                combinedMask = new ExistingBlockMask(editSession);
+            } else {
+                combinedMask = new MaskIntersection(mask, new ExistingBlockMask(editSession));
+            }
+        } else {
+            combinedMask = mask;
+        }
+
+        int affected = editSession.stackCuboidRegion(region, direction, count, copyEntities, copyBiomes, combinedMask);
 
         if (moveSelection) {
             try {
