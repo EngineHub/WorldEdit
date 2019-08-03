@@ -24,6 +24,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.function.FlatRegionFunction;
+import com.sk89q.worldedit.function.pattern.BiomePattern;
 import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.world.biome.BiomeType;
 
@@ -33,7 +34,7 @@ import com.sk89q.worldedit.world.biome.BiomeType;
 public class BiomeReplace implements FlatRegionFunction {
 
     private final Extent extent;
-    private BiomeType biome;
+    private BiomePattern biome;
 
     /**
      * Create a new instance.
@@ -42,15 +43,25 @@ public class BiomeReplace implements FlatRegionFunction {
      * @param biome a biome
      */
     public BiomeReplace(Extent extent, BiomeType biome) {
+        this(extent, (BiomePattern) biome);
+    }
+
+    /**
+     * Create a new instance.
+     *
+     * @param extent the extent to apply this function to
+     * @param pattern the biome pattern to set
+     */
+    public BiomeReplace(Extent extent, BiomePattern pattern) {
         checkNotNull(extent);
-        checkNotNull(biome);
+        checkNotNull(pattern);
         this.extent = extent;
-        this.biome = biome;
+        this.biome = pattern;
     }
 
     @Override
     public boolean apply(BlockVector2 position) throws WorldEditException {
-        return extent.setBiome(position, biome);
+        return extent.setBiome(position, biome.apply(position));
     }
 
 }

@@ -40,6 +40,7 @@ import com.sk89q.worldedit.extent.world.FastModeExtent;
 import com.sk89q.worldedit.extent.world.SurvivalModeExtent;
 import com.sk89q.worldedit.function.GroundFunction;
 import com.sk89q.worldedit.function.RegionMaskingFilter;
+import com.sk89q.worldedit.function.biome.BiomeReplace;
 import com.sk89q.worldedit.function.block.BlockDistributionCounter;
 import com.sk89q.worldedit.function.block.BlockReplace;
 import com.sk89q.worldedit.function.block.Counter;
@@ -66,6 +67,7 @@ import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.function.pattern.WaterloggedRemover;
 import com.sk89q.worldedit.function.util.RegionOffset;
 import com.sk89q.worldedit.function.visitor.DownwardVisitor;
+import com.sk89q.worldedit.function.visitor.FlatRegionVisitor;
 import com.sk89q.worldedit.function.visitor.LayerVisitor;
 import com.sk89q.worldedit.function.visitor.NonRisingVisitor;
 import com.sk89q.worldedit.function.visitor.RecursiveVisitor;
@@ -1206,7 +1208,8 @@ public class EditSession implements Extent, AutoCloseable {
     }
 
     /**
-     * Stack a cuboid region.
+     * Stack a cuboid region. For compatibility, entities are copied by biomes are not.
+     * Use {@link #stackCuboidRegion(Region, BlockVector3, int, boolean, boolean, Mask)} to fine tune.
      *
      * @param region the region to stack
      * @param dir the direction to stack
@@ -1216,6 +1219,23 @@ public class EditSession implements Extent, AutoCloseable {
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
     public int stackCuboidRegion(Region region, BlockVector3 dir, int count, boolean copyAir) throws MaxChangedBlocksException {
+        return stackCuboidRegion(region, dir, count, true, false, copyAir ? null : new ExistingBlockMask(this));
+    }
+
+    /**
+     * Stack a cuboid region.
+     *
+     * @param region the region to stack
+     * @param dir the direction to stack
+     * @param count the number of times to stack
+     * @param copyEntities true to copy entities
+     * @param copyBiomes true to copy biomes
+     * @param mask source mask for the operation (only matching blocks are copied)
+     * @return number of blocks affected
+     * @throws MaxChangedBlocksException thrown if too many blocks are changed
+     */
+    public int stackCuboidRegion(Region region, BlockVector3 dir, int count,
+                                 boolean copyEntities, boolean copyBiomes, Mask mask) throws MaxChangedBlocksException {
         checkNotNull(region);
         checkNotNull(dir);
         checkArgument(count >= 1, "count >= 1 required");
@@ -1225,8 +1245,10 @@ public class EditSession implements Extent, AutoCloseable {
         ForwardExtentCopy copy = new ForwardExtentCopy(this, region, this, to);
         copy.setRepetitions(count);
         copy.setTransform(new AffineTransform().translate(dir.multiply(size)));
-        if (!copyAir) {
-            copy.setSourceMask(new ExistingBlockMask(this));
+        copy.setCopyingEntities(copyEntities);
+        copy.setCopyingBiomes(copyBiomes);
+        if (mask != null) {
+            copy.setSourceMask(mask);
         }
         Operations.completeLegacy(copy);
         return copy.getAffected();
@@ -1244,9 +1266,29 @@ public class EditSession implements Extent, AutoCloseable {
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
     public int moveRegion(Region region, BlockVector3 dir, int distance, boolean copyAir, Pattern replacement) throws MaxChangedBlocksException {
+        return moveRegion(region, dir, distance, true, false, copyAir ? new ExistingBlockMask(this) : null, replacement);
+    }
+
+    /**
+     * Move the blocks in a region a certain direction.
+     *
+     * @param region the region to move
+     * @param dir the direction
+     * @param distance the distance to move
+     * @param moveEntities true to move entities
+     * @param copyBiomes true to copy biomes (source biome is unchanged)
+     * @param mask source mask for the operation (only matching blocks are moved)
+     * @param replacement the replacement pattern to fill in after moving, or null to use air
+     * @return number of blocks moved
+     * @throws MaxChangedBlocksException thrown if too many blocks are changed
+     * @throws IllegalArgumentException thrown if the region is not a flat region, but copyBiomes is true
+     */
+    public int moveRegion(Region region, BlockVector3 dir, int distance,
+                          boolean moveEntities, boolean copyBiomes, Mask mask, Pattern replacement) throws MaxChangedBlocksException {
         checkNotNull(region);
         checkNotNull(dir);
         checkArgument(distance >= 1, "distance >= 1 required");
+        checkArgument(!copyBiomes || region instanceof FlatRegion, "can't copy biomes from non-flat region");
 
         BlockVector3 to = region.getMinimumPoint();
 
@@ -1261,9 +1303,13 @@ public class EditSession implements Extent, AutoCloseable {
         ForwardExtentCopy copy = new ForwardExtentCopy(this, region, buffer, to);
         copy.setTransform(new AffineTransform().translate(dir.multiply(distance)));
         copy.setSourceFunction(remove); // Remove
-        copy.setRemovingEntities(true);
-        if (!copyAir) {
-            copy.setSourceMask(new ExistingBlockMask(this));
+
+        copy.setCopyingEntities(moveEntities);
+        copy.setRemovingEntities(moveEntities);
+        copy.setCopyingBiomes(copyBiomes);
+
+        if (mask != null) {
+            copy.setSourceMask(mask);
         }
 
         // Then we need to copy the buffer to the world
@@ -1271,6 +1317,13 @@ public class EditSession implements Extent, AutoCloseable {
         RegionVisitor visitor = new RegionVisitor(buffer.asRegion(), replace);
 
         OperationQueue operation = new OperationQueue(copy, visitor);
+
+        if (copyBiomes) {
+            BiomeReplace biomeReplace = new BiomeReplace(this, buffer);
+            FlatRegionVisitor biomeVisitor = new FlatRegionVisitor((FlatRegion) buffer.asRegion(), biomeReplace);
+            operation.offer(biomeVisitor);
+        }
+
         Operations.completeLegacy(operation);
 
         return copy.getAffected();
