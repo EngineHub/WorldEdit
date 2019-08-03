@@ -258,6 +258,7 @@ public class ForgeWorld extends AbstractWorld {
             return false;
         }
         chunk.getBiomes()[((position.getBlockZ() & 0xF) << 4 | position.getBlockX() & 0xF)] = ForgeAdapter.adapt(biome);
+        chunk.setModified(true);
         return true;
     }
 
