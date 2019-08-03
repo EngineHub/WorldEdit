@@ -28,13 +28,10 @@ import com.sk89q.worldedit.extension.input.InputParseException;
 import com.sk89q.worldedit.extension.input.ParserContext;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Platform;
-import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.extent.clipboard.io.BuiltInClipboardFormat;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormat;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardReader;
-import com.sk89q.worldedit.extent.clipboard.io.ClipboardWriter;
 import com.sk89q.worldedit.registry.state.Property;
-import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.block.BlockCategory;
 import com.sk89q.worldedit.world.block.BlockState;
@@ -51,7 +48,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.SequenceInputStream;
@@ -229,48 +225,31 @@ public class CLIWorldEdit {
         return version;
     }
 
-    public void run(InputStream inputStream) {
-        Scanner scanner = new Scanner(inputStream);
-        while (scanner.hasNextLine()) {
-            String line = scanner.nextLine();
-            if (line.equalsIgnoreCase("stop")) {
-                commandSender.print("Stopping!");
-                break;
-            }
-            if (line.startsWith("save")) {
-                String[] bits = line.split(" ");
-                if (bits.length == 0) {
-                    commandSender.print("Usage: save <filename>");
-                    continue;
-                }
-                World world = platform.getWorlds().get(0);
-                if (world instanceof ClipboardWorld) {
-                    File file;
-                    if (bits.length >= 2) {
-                        file = new File(bits[1]);
-                    } else {
-                        file = commandSender.openFileSaveDialog(new String[]{"schem"});
-                    }
-                    if (file == null) {
-                        commandSender.printError("Please choose a file.");
-                        continue;
-                    }
-                    try(ClipboardWriter writer = BuiltInClipboardFormat.SPONGE_SCHEMATIC.getWriter(new FileOutputStream(file))) {
-                        writer.write((Clipboard) world);
-                        commandSender.print("Saved to file");
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
+    public void saveAllWorlds(boolean force) {
+        platform.getWorlds().stream()
+                .filter(world -> world instanceof CLIWorld)
+                .forEach(world -> ((CLIWorld) world).save(force));
+    }
 
-                continue;
+    public void run(InputStream inputStream) {
+        try (Scanner scanner = new Scanner(inputStream)) {
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine();
+                if (line.equals("stop")) {
+                    commandSender.print("Stopping!");
+                    break;
+                }
+                CommandEvent event = new CommandEvent(commandSender, line);
+                WorldEdit.getInstance().getEventBus().post(event);
+                if (!event.isCancelled()) {
+                    commandSender.printError("Unknown command!");
+                } else {
+                    saveAllWorlds(false);
+                }
             }
-            WorldEdit.getInstance().getEventBus().post(new CommandEvent(
-                    commandSender,
-                    line
-            ));
+        } finally {
+            saveAllWorlds(false);
         }
-        scanner.close();
     }
 
     public static void main(String[] args) {
@@ -310,6 +289,7 @@ public class CLIWorldEdit {
                 app.onStarted();
                 try (ClipboardReader clipboardReader = format.getReader(Files.newInputStream(file.toPath(), StandardOpenOption.READ))) {
                     ClipboardWorld world = new ClipboardWorld(
+                            file,
                             clipboardReader.read(),
                             file.getName()
                     );

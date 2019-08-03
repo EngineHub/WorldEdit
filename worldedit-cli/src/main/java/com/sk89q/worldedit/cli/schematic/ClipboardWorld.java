@@ -23,9 +23,12 @@ import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseItemStack;
+import com.sk89q.worldedit.cli.CLIWorld;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
+import com.sk89q.worldedit.extent.clipboard.io.BuiltInClipboardFormat;
+import com.sk89q.worldedit.extent.clipboard.io.ClipboardWriter;
 import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.Vector3;
@@ -38,17 +41,24 @@ import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 
 import javax.annotation.Nullable;
 
-public class ClipboardWorld extends AbstractWorld implements Clipboard {
+public class ClipboardWorld extends AbstractWorld implements Clipboard, CLIWorld {
 
+    private final File file;
     private final Clipboard clipboard;
     private final String name;
 
-    public ClipboardWorld(Clipboard clipboard, String name) {
+    private boolean dirty = false;
+
+    public ClipboardWorld(File file, Clipboard clipboard, String name) {
+        this.file = file;
         this.clipboard = clipboard;
         this.name = name;
     }
@@ -66,6 +76,7 @@ public class ClipboardWorld extends AbstractWorld implements Clipboard {
     @Override
     public <B extends BlockStateHolder<B>> boolean setBlock(BlockVector3 position, B block, boolean notifyAndLight)
             throws WorldEditException {
+        dirty = true;
         return clipboard.setBlock(position, block);
     }
 
@@ -121,6 +132,7 @@ public class ClipboardWorld extends AbstractWorld implements Clipboard {
     @Nullable
     @Override
     public Entity createEntity(Location location, BaseEntity entity) {
+        dirty = true;
         return clipboard.createEntity(location, entity);
     }
 
@@ -141,6 +153,7 @@ public class ClipboardWorld extends AbstractWorld implements Clipboard {
 
     @Override
     public boolean setBiome(BlockVector2 position, BiomeType biome) {
+        dirty = true;
         return clipboard.setBiome(position, biome);
     }
 
@@ -162,6 +175,7 @@ public class ClipboardWorld extends AbstractWorld implements Clipboard {
     @Override
     public void setOrigin(BlockVector3 origin) {
         clipboard.setOrigin(origin);
+        dirty = true;
     }
 
     @Override
@@ -177,5 +191,27 @@ public class ClipboardWorld extends AbstractWorld implements Clipboard {
     @Override
     public BlockVector3 getMinimumPoint() {
         return clipboard.getMinimumPoint();
+    }
+
+    @Override
+    public void save(boolean force) {
+        if (dirty || force) {
+            try (ClipboardWriter writer = BuiltInClipboardFormat.SPONGE_SCHEMATIC.getWriter(new FileOutputStream(file))) {
+                writer.write(this);
+                dirty = false;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Override
+    public boolean isDirty() {
+        return this.dirty;
+    }
+
+    @Override
+    public void setDirty(boolean dirty) {
+        this.dirty = dirty;
     }
 }
