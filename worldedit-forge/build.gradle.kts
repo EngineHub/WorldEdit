@@ -13,7 +13,7 @@ applyShadowConfiguration()
 
 val minecraftVersion = "1.14.4"
 val mappingsMinecraftVersion = "1.14.3"
-val forgeVersion = "28.0.34"
+val forgeVersion = "28.0.45"
 
 configurations.all {
     resolutionStrategy {
