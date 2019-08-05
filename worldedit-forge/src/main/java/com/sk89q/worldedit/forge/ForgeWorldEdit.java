@@ -232,8 +232,8 @@ public class ForgeWorldEdit {
         }
 
         WorldEdit we = WorldEdit.getInstance();
-        ForgePlayer player = adaptPlayer((ServerPlayerEntity) event.getEntityPlayer());
-        ForgeWorld world = getWorld(event.getEntityPlayer().world);
+        ForgePlayer player = adaptPlayer((ServerPlayerEntity) event.getPlayer());
+        ForgeWorld world = getWorld(event.getPlayer().world);
 
         if (event instanceof PlayerInteractEvent.LeftClickEmpty) {
             we.handleArmSwing(player); // this event cannot be canceled
