@@ -205,6 +205,7 @@ public class GenerationCommands {
                          @Arg(desc = "The density of the forest, between 0 and 100", def = "5")
                              double density) throws WorldEditException {
         checkCommandArgument(0 <= density && density <= 100, "Density must be between 0 and 100");
+        worldEdit.checkMaxRadius(size);
         density /= 100;
         int affected = editSession.makeForest(session.getPlacementPosition(player), size, density, type);
         player.print(affected + " trees created.");
@@ -220,6 +221,7 @@ public class GenerationCommands {
     public int pumpkins(Player player, LocalSession session, EditSession editSession,
                         @Arg(desc = "The size of the patch", def = "10")
                             int size) throws WorldEditException {
+        worldEdit.checkMaxRadius(size);
         int affected = editSession.makePumpkinPatches(session.getPlacementPosition(player), size);
         player.print(affected + " pumpkin patches created.");
         return affected;
@@ -252,8 +254,8 @@ public class GenerationCommands {
                            int size,
                        @Switch(name = 'h', desc = "Make a hollow pyramid")
                            boolean hollow) throws WorldEditException {
-        BlockVector3 pos = session.getPlacementPosition(player);
         worldEdit.checkMaxRadius(size);
+        BlockVector3 pos = session.getPlacementPosition(player);
         int affected = editSession.makePyramid(pos, pattern, size, !hollow);
         player.findFreePosition();
         player.print(affected + " block(s) have been created.");
