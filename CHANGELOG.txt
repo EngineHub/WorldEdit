@@ -1,3 +1,19 @@
+7.0.1 Release Candidate 2
+- Improve //thru (and navwand) in some cases
+- Fix error when /up was used below the world
+- Fix /up -f using glass anyway.
+- Fix suggestions for quoted strings
+- Improve suggestions for mask intersections
+- Fix setting biomes in unloaded chunks
+- BlockStateHolder now extends Pattern (API enhancement)
+- Skip invalid blocks when schematic versions are mismatched
+- Add -e/-b/-m flags to stack and move, just as copy/paste have
+- Fix //center for selections with even-sized height
+- (Fabric) Fix setting tile entities
+- (Forge) Update to latest Forge builds (28.0.45+ required!)
+- (Fabric/Forge Single-player) Fix wrong blocks being used when switching
+between worlds generated at different times/with different mods
+
 7.0.1 Release Candidate 1
 - Improve //naturalize over large areas
 - Fixed //restore with 1.14 worlds
