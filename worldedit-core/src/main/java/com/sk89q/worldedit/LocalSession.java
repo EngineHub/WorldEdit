@@ -326,6 +326,9 @@ public class LocalSession {
         if (selector.getWorld() == null || !selector.getWorld().equals(world)) {
             selector.setWorld(world);
             selector.clear();
+            if (hasWorldOverride() && !world.equals(getWorldOverride())) {
+                setWorldOverride(null);
+            }
         }
         return selector;
     }
@@ -341,6 +344,9 @@ public class LocalSession {
         checkNotNull(selector);
         selector.setWorld(world);
         this.selector = selector;
+        if (hasWorldOverride() && !world.equals(getWorldOverride())) {
+            setWorldOverride(null);
+        }
     }
 
     /**
