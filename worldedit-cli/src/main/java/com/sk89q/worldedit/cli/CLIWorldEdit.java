@@ -159,6 +159,7 @@ public class CLIWorldEdit {
             }
         }
 
+        this.commandSender = new CLICommandSender(this, LOGGER);
         this.platform = new CLIPlatform(this);
         LOGGER.info("WorldEdit CLI (version " + getInternalVersion() + ") is loaded");
     }
@@ -171,7 +172,6 @@ public class CLIWorldEdit {
 
         config = new CLIConfiguration(this);
         config.load();
-        commandSender = new CLICommandSender(this, LOGGER);
 
         WorldEdit.getInstance().getEventBus().post(new PlatformReadyEvent());
     }
@@ -269,7 +269,10 @@ public class CLIWorldEdit {
             String fileArg = cmd.getOptionValue('f');
             File file;
             if (fileArg == null) {
-                file = app.commandSender.openFileOpenDialog(new String[]{"schem", "dat"});
+                String[] formats = new String[ClipboardFormats.getFileExtensionArray().length + 1];
+                System.arraycopy(ClipboardFormats.getFileExtensionArray(), 0, formats, 0, ClipboardFormats.getFileExtensionArray().length);
+                formats[formats.length - 1] = "dat";
+                file = app.commandSender.openFileOpenDialog(formats);
             } else {
                 file = new File(fileArg);
             }
