@@ -53,7 +53,7 @@ public class ForestGenerator implements RegionFunction {
         BlockState block = editSession.getBlock(position);
         BlockType t = block.getBlockType();
 
-        if (t == BlockTypes.GRASS_BLOCK || t == BlockTypes.DIRT) {
+        if (t == BlockTypes.GRASS_BLOCK || t == BlockTypes.DIRT || t == BlockTypes.PODZOL || t == BlockTypes.COARSE_DIRT) {
             return treeType.generate(editSession, position.add(0, 1, 0));
         } else if (t.getMaterial().isReplacedDuringPlacement()) {
             // since the implementation's tree generators generally don't generate in non-air spots,
