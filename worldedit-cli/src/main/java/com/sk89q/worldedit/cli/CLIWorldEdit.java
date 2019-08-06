@@ -57,6 +57,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Scanner;
 
@@ -269,8 +270,7 @@ public class CLIWorldEdit {
             String fileArg = cmd.getOptionValue('f');
             File file;
             if (fileArg == null) {
-                String[] formats = new String[ClipboardFormats.getFileExtensionArray().length + 1];
-                System.arraycopy(ClipboardFormats.getFileExtensionArray(), 0, formats, 0, ClipboardFormats.getFileExtensionArray().length);
+                String[] formats = Arrays.copyOf(ClipboardFormats.getFileExtensionArray(), ClipboardFormats.getFileExtensionArray().length + 1);
                 formats[formats.length - 1] = "dat";
                 file = app.commandSender.openFileOpenDialog(formats);
             } else {
