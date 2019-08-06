@@ -22,7 +22,7 @@ package com.sk89q.worldedit.cli;
 public interface CLIWorld {
 
     /**
-     * Saves this world back to file.
+     * Saves this world back to file if dirty or forced.
      *
      * @param force Force a save
      */

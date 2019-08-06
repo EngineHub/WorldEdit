@@ -28,8 +28,8 @@ import com.sk89q.worldedit.extension.input.InputParseException;
 import com.sk89q.worldedit.extension.input.ParserContext;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Platform;
-import com.sk89q.worldedit.extent.clipboard.io.BuiltInClipboardFormat;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormat;
+import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormats;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardReader;
 import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.world.biome.BiomeType;
@@ -278,26 +278,28 @@ public class CLIWorldEdit {
             }
             if (file.getName().endsWith("level.dat")) {
                 throw new IllegalArgumentException("level.dat file support is unfinished.");
-            } else if (file.getName().endsWith(".schem")) {
-                ClipboardFormat format = BuiltInClipboardFormat.SPONGE_SCHEMATIC;
-                ClipboardReader dataVersionReader = format
-                        .getReader(Files.newInputStream(file.toPath(), StandardOpenOption.READ));
-                int dataVersion = dataVersionReader.getDataVersion()
-                        .orElseThrow(() -> new IllegalArgumentException("Failed to obtain data version from schematic."));
-                dataVersionReader.close();
-                app.platform.setDataVersion(dataVersion);
-                app.onStarted();
-                try (ClipboardReader clipboardReader = format.getReader(Files.newInputStream(file.toPath(), StandardOpenOption.READ))) {
-                    ClipboardWorld world = new ClipboardWorld(
-                            file,
-                            clipboardReader.read(),
-                            file.getName()
-                    );
-                    app.platform.addWorld(world);
-                    WorldEdit.getInstance().getSessionManager().get(app.commandSender).setWorldOverride(world);
-                }
             } else {
-                throw new IllegalArgumentException("Unknown file provided!");
+                ClipboardFormat format = ClipboardFormats.findByFile(file);
+                if (format != null) {
+                    ClipboardReader dataVersionReader = format
+                            .getReader(Files.newInputStream(file.toPath(), StandardOpenOption.READ));
+                    int dataVersion = dataVersionReader.getDataVersion()
+                            .orElseThrow(() -> new IllegalArgumentException("Failed to obtain data version from schematic."));
+                    dataVersionReader.close();
+                    app.platform.setDataVersion(dataVersion);
+                    app.onStarted();
+                    try (ClipboardReader clipboardReader = format.getReader(Files.newInputStream(file.toPath(), StandardOpenOption.READ))) {
+                        ClipboardWorld world = new ClipboardWorld(
+                                file,
+                                clipboardReader.read(),
+                                file.getName()
+                        );
+                        app.platform.addWorld(world);
+                        WorldEdit.getInstance().getSessionManager().get(app.commandSender).setWorldOverride(world);
+                    }
+                } else {
+                    throw new IllegalArgumentException("Unknown file provided!");
+                }
             }
 
             String scriptFile = cmd.getOptionValue('s');

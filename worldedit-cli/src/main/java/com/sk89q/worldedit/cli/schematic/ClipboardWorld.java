@@ -27,7 +27,7 @@ import com.sk89q.worldedit.cli.CLIWorld;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
-import com.sk89q.worldedit.extent.clipboard.io.BuiltInClipboardFormat;
+import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormats;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardWriter;
 import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.math.BlockVector3;
@@ -196,7 +196,7 @@ public class ClipboardWorld extends AbstractWorld implements Clipboard, CLIWorld
     @Override
     public void save(boolean force) {
         if (dirty || force) {
-            try (ClipboardWriter writer = BuiltInClipboardFormat.SPONGE_SCHEMATIC.getWriter(new FileOutputStream(file))) {
+            try (ClipboardWriter writer = ClipboardFormats.findByFile(file).getWriter(new FileOutputStream(file))) {
                 writer.write(this);
                 dirty = false;
             } catch (IOException e) {
