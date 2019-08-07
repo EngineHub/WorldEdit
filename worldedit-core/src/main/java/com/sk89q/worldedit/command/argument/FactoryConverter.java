@@ -29,10 +29,13 @@ import com.sk89q.worldedit.extension.input.InputParseException;
 import com.sk89q.worldedit.extension.input.ParserContext;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extent.Extent;
+import com.sk89q.worldedit.extent.transform.BlockTransformExtent;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.internal.annotation.ClipboardMask;
 import com.sk89q.worldedit.internal.registry.AbstractFactory;
+import com.sk89q.worldedit.math.transform.Transform;
+import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.session.request.RequestExtent;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
@@ -68,7 +71,15 @@ public class FactoryConverter<T> implements ArgumentConverter<T> {
                 new FactoryConverter<>(worldEdit, WorldEdit::getMaskFactory, "mask",
                         context -> {
                             try {
-                                context.setExtent(context.getSession().getClipboard().getClipboard());
+                                ClipboardHolder holder = context.getSession().getClipboard();
+                                Transform transform = holder.getTransform();
+                                Extent target;
+                                if (transform.isIdentity()) {
+                                    target = holder.getClipboard();
+                                } else {
+                                    target = new BlockTransformExtent(holder.getClipboard(), transform);
+                                }
+                                context.setExtent(target);
                             } catch (EmptyClipboardException e) {
                                 throw new IllegalStateException(e);
                             }
