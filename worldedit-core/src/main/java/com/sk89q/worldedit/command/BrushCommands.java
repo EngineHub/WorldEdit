@@ -48,6 +48,7 @@ import com.sk89q.worldedit.function.mask.BlockTypeMask;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.pattern.Pattern;
+import com.sk89q.worldedit.internal.annotation.ClipboardMask;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.factory.RegionFactory;
 import com.sk89q.worldedit.session.ClipboardHolder;
@@ -156,6 +157,7 @@ public class BrushCommands {
                                @Switch(name = 'b', desc = "Paste biomes if available")
                                    boolean pasteBiomes,
                                @ArgFlag(name = 'm', desc = "Skip blocks matching this mask in the clipboard", def = "")
+                               @ClipboardMask
                                    Mask sourceMask) throws WorldEditException {
         ClipboardHolder holder = session.getClipboard();
         Clipboard clipboard = holder.getClipboard();

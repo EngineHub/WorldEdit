@@ -19,6 +19,8 @@
 
 package com.sk89q.worldedit.command.argument;
 
+import com.google.auto.value.AutoAnnotation;
+import com.sk89q.worldedit.EmptyClipboardException;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.blocks.BaseItem;
@@ -29,7 +31,9 @@ import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.function.pattern.Pattern;
+import com.sk89q.worldedit.internal.annotation.ClipboardMask;
 import com.sk89q.worldedit.internal.registry.AbstractFactory;
+import com.sk89q.worldedit.session.request.RequestExtent;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.world.World;
@@ -42,29 +46,48 @@ import org.enginehub.piston.inject.InjectedValueAccess;
 import org.enginehub.piston.inject.Key;
 
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class FactoryConverter<T> implements ArgumentConverter<T> {
 
+    @AutoAnnotation
+    private static ClipboardMask clipboardMask() {
+        return new AutoAnnotation_FactoryConverter_clipboardMask();
+    }
+
     public static void register(WorldEdit worldEdit, CommandManager commandManager) {
         commandManager.registerConverter(Key.of(Pattern.class),
-            new FactoryConverter<>(worldEdit, WorldEdit::getPatternFactory, "pattern"));
+            new FactoryConverter<>(worldEdit, WorldEdit::getPatternFactory, "pattern", c -> {}));
         commandManager.registerConverter(Key.of(Mask.class),
-            new FactoryConverter<>(worldEdit, WorldEdit::getMaskFactory, "mask"));
+            new FactoryConverter<>(worldEdit, WorldEdit::getMaskFactory, "mask", c -> {}));
         commandManager.registerConverter(Key.of(BaseItem.class),
-            new FactoryConverter<>(worldEdit, WorldEdit::getItemFactory, "item"));
+            new FactoryConverter<>(worldEdit, WorldEdit::getItemFactory, "item", c -> {}));
+
+        commandManager.registerConverter(Key.of(Mask.class, clipboardMask()),
+                new FactoryConverter<>(worldEdit, WorldEdit::getMaskFactory, "mask",
+                        context -> {
+                            try {
+                                context.setExtent(context.getSession().getClipboard().getClipboard());
+                            } catch (EmptyClipboardException e) {
+                                throw new IllegalStateException(e);
+                            }
+                        }));
     }
 
     private final WorldEdit worldEdit;
     private final Function<WorldEdit, AbstractFactory<T>> factoryExtractor;
     private final String description;
+    private final Consumer<ParserContext> contextTweaker;
 
     private FactoryConverter(WorldEdit worldEdit,
                              Function<WorldEdit, AbstractFactory<T>> factoryExtractor,
-                             String description) {
+                             String description,
+                             Consumer<ParserContext> contextTweaker) {
         this.worldEdit = worldEdit;
         this.factoryExtractor = factoryExtractor;
         this.description = description;
+        this.contextTweaker = contextTweaker;
     }
 
     @Override
@@ -80,9 +103,12 @@ public class FactoryConverter<T> implements ArgumentConverter<T> {
             if (extent instanceof World) {
                 parserContext.setWorld((World) extent);
             }
+            parserContext.setExtent(new RequestExtent());
         }
         parserContext.setSession(session);
         parserContext.setRestricted(true);
+
+        contextTweaker.accept(parserContext);
 
         try {
             return SuccessfulConversion.fromSingle(

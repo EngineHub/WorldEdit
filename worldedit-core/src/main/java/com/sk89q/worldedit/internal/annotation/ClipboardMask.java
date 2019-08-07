@@ -17,32 +17,21 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.extension.factory.parser.mask;
+package com.sk89q.worldedit.internal.annotation;
 
-import com.google.common.collect.ImmutableList;
-import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.extension.input.ParserContext;
-import com.sk89q.worldedit.function.mask.ExistingBlockMask;
 import com.sk89q.worldedit.function.mask.Mask;
-import com.sk89q.worldedit.internal.registry.SimpleInputParser;
+import org.enginehub.piston.inject.InjectAnnotation;
 
-import java.util.List;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-public class ExistingMaskParser extends SimpleInputParser<Mask> {
-
-    private final List<String> aliases = ImmutableList.of("#existing");
-
-    public ExistingMaskParser(WorldEdit worldEdit) {
-        super(worldEdit);
-    }
-
-    @Override
-    public List<String> getMatchedAliases() {
-        return aliases;
-    }
-
-    @Override
-    public Mask parseFromSimpleInput(String input, ParserContext context) {
-        return new ExistingBlockMask(context.getExtent());
-    }
+/**
+ * Annotates a {@link Mask} parameter to use the clipboard as the extent instead of target World/EditSession.
+ */
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.PARAMETER)
+@InjectAnnotation
+public @interface ClipboardMask {
 }
