@@ -19,7 +19,6 @@
 
 package com.sk89q.worldedit.command.argument;
 
-import com.google.auto.value.AutoAnnotation;
 import com.sk89q.worldedit.EmptyClipboardException;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
@@ -48,26 +47,22 @@ import org.enginehub.piston.converter.SuccessfulConversion;
 import org.enginehub.piston.inject.InjectedValueAccess;
 import org.enginehub.piston.inject.Key;
 
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class FactoryConverter<T> implements ArgumentConverter<T> {
 
-    @AutoAnnotation
-    private static ClipboardMask clipboardMask() {
-        return new AutoAnnotation_FactoryConverter_clipboardMask();
-    }
-
     public static void register(WorldEdit worldEdit, CommandManager commandManager) {
         commandManager.registerConverter(Key.of(Pattern.class),
-            new FactoryConverter<>(worldEdit, WorldEdit::getPatternFactory, "pattern", c -> {}));
+            new FactoryConverter<>(worldEdit, WorldEdit::getPatternFactory, "pattern", null));
         commandManager.registerConverter(Key.of(Mask.class),
-            new FactoryConverter<>(worldEdit, WorldEdit::getMaskFactory, "mask", c -> {}));
+            new FactoryConverter<>(worldEdit, WorldEdit::getMaskFactory, "mask", null));
         commandManager.registerConverter(Key.of(BaseItem.class),
-            new FactoryConverter<>(worldEdit, WorldEdit::getItemFactory, "item", c -> {}));
+            new FactoryConverter<>(worldEdit, WorldEdit::getItemFactory, "item", null));
 
-        commandManager.registerConverter(Key.of(Mask.class, clipboardMask()),
+        commandManager.registerConverter(Key.of(Mask.class, ClipboardMask.class),
                 new FactoryConverter<>(worldEdit, WorldEdit::getMaskFactory, "mask",
                         context -> {
                             try {
@@ -89,12 +84,12 @@ public class FactoryConverter<T> implements ArgumentConverter<T> {
     private final WorldEdit worldEdit;
     private final Function<WorldEdit, AbstractFactory<T>> factoryExtractor;
     private final String description;
-    private final Consumer<ParserContext> contextTweaker;
+    @Nullable private final Consumer<ParserContext> contextTweaker;
 
     private FactoryConverter(WorldEdit worldEdit,
                              Function<WorldEdit, AbstractFactory<T>> factoryExtractor,
                              String description,
-                             Consumer<ParserContext> contextTweaker) {
+                             @Nullable Consumer<ParserContext> contextTweaker) {
         this.worldEdit = worldEdit;
         this.factoryExtractor = factoryExtractor;
         this.description = description;
@@ -119,7 +114,9 @@ public class FactoryConverter<T> implements ArgumentConverter<T> {
         parserContext.setSession(session);
         parserContext.setRestricted(true);
 
-        contextTweaker.accept(parserContext);
+        if (contextTweaker != null) {
+            contextTweaker.accept(parserContext);
+        }
 
         try {
             return SuccessfulConversion.fromSingle(
