@@ -669,7 +669,7 @@ public final class WorldEdit {
             engine = new RhinoCraftScriptEngine();
         } catch (NoClassDefFoundError ignored) {
             player.printError("Failed to find an installed script engine.");
-            player.printError("Please see https://worldedit.readthedocs.io/en/latest/usage/other/craftscripts/");
+            player.printError("Please see https://worldedit.enginehub.org/en/latest/usage/other/craftscripts/");
             return;
         }
 
