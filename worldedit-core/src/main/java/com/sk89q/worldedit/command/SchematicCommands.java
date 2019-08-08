@@ -434,7 +434,7 @@ public class SchematicCommands {
                     .content("")
                     .append(TextComponent.of("[L]")
                             .color(TextColor.GOLD)
-                            .clickEvent(ClickEvent.of(ClickEvent.Action.RUN_COMMAND, "/schem load " + path))
+                            .clickEvent(ClickEvent.of(ClickEvent.Action.RUN_COMMAND, "/schem load \"" + path + "\""))
                             .hoverEvent(HoverEvent.of(HoverEvent.Action.SHOW_TEXT, TextComponent.of("Click to load"))))
                     .append(TextComponent.space())
                     .append(TextComponent.of(path)
