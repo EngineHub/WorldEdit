@@ -70,14 +70,18 @@ public class CommandUtil {
         );
         return suggestions.stream()
             // Re-map suggestions to only operate on the last non-quoted word
-            .map(CommandUtil::onlyOnLastQuotedWord)
-            .map(suggestion -> CommandUtil.suggestLast(lastArg, suggestion))
+            .map(suggestion -> onlyOnLastQuotedWord(lastArg, suggestion))
+            .map(suggestion -> suggestLast(lastArg, suggestion))
             .filter(Optional::isPresent)
             .map(Optional::get)
             .collect(toList());
     }
 
-    private static Substring onlyOnLastQuotedWord(Substring suggestion) {
+    private static Substring onlyOnLastQuotedWord(Substring lastArg, Substring suggestion) {
+        if (suggestion.getSubstring().startsWith(lastArg.getSubstring())) {
+            // This is already fine.
+            return suggestion;
+        }
         String substr = suggestion.getSubstring();
         int sp = substr.lastIndexOf(' ');
         if (sp < 0) {

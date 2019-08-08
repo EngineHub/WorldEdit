@@ -21,6 +21,8 @@ package com.sk89q.worldedit.internal.util;
 
 import java.util.Objects;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
 /**
  * An explicit substring. Provides the range from which it was taken.
  */
@@ -31,7 +33,7 @@ public final class Substring {
      * a Substring.
      */
     public static Substring from(String original, int start) {
-        return wrap(original.substring(start), start, original.length());
+        return new Substring(original.substring(start), start, original.length());
     }
 
     /**
@@ -39,13 +41,15 @@ public final class Substring {
      * a Substring.
      */
     public static Substring from(String original, int start, int end) {
-        return wrap(original.substring(start, end), start, end);
+        return new Substring(original.substring(start, end), start, end);
     }
 
     /**
      * Wrap the given parameters into a Substring instance.
      */
     public static Substring wrap(String substring, int start, int end) {
+        checkArgument(0 <= start, "Start must be greater than or equal to zero");
+        checkArgument(start <= end, "End must be greater than or equal to start");
         return new Substring(substring, start, end);
     }
 
