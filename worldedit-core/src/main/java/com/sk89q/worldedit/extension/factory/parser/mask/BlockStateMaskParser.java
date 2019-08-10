@@ -26,7 +26,6 @@ import com.sk89q.worldedit.extension.input.ParserContext;
 import com.sk89q.worldedit.function.mask.BlockStateMask;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.internal.registry.InputParser;
-import com.sk89q.worldedit.session.request.RequestExtent;
 
 import java.util.stream.Stream;
 
@@ -53,7 +52,7 @@ public class BlockStateMaskParser extends InputParser<Mask> {
         boolean strict = input.charAt(1) == '=';
         String states = input.substring(2 + (strict ? 1 : 0), input.length() - 1);
         try {
-            return new BlockStateMask(new RequestExtent(),
+            return new BlockStateMask(context.getExtent(),
                     Splitter.on(',').omitEmptyStrings().trimResults().withKeyValueSeparator('=').split(states),
                     strict);
         } catch (Exception e) {

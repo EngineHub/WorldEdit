@@ -48,6 +48,7 @@ import com.sk89q.worldedit.function.mask.BlockTypeMask;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.pattern.Pattern;
+import com.sk89q.worldedit.internal.annotation.ClipboardMask;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.factory.RegionFactory;
 import com.sk89q.worldedit.session.ClipboardHolder;
@@ -156,9 +157,13 @@ public class BrushCommands {
                                @Switch(name = 'b', desc = "Paste biomes if available")
                                    boolean pasteBiomes,
                                @ArgFlag(name = 'm', desc = "Skip blocks matching this mask in the clipboard", def = "")
+                               @ClipboardMask
                                    Mask sourceMask) throws WorldEditException {
         ClipboardHolder holder = session.getClipboard();
+
         Clipboard clipboard = holder.getClipboard();
+        ClipboardHolder newHolder = new ClipboardHolder(clipboard);
+        newHolder.setTransform(holder.getTransform());
 
         BlockVector3 size = clipboard.getDimensions();
 
@@ -167,7 +172,7 @@ public class BrushCommands {
         worldEdit.checkMaxBrushRadius(size.getBlockZ() / 2D - 1);
 
         BrushTool tool = session.getBrushTool(player.getItemInHand(HandSide.MAIN_HAND).getType());
-        tool.setBrush(new ClipboardBrush(holder, ignoreAir, usingOrigin, pasteEntities, pasteBiomes, sourceMask), "worldedit.brush.clipboard");
+        tool.setBrush(new ClipboardBrush(newHolder, ignoreAir, usingOrigin, pasteEntities, pasteBiomes, sourceMask), "worldedit.brush.clipboard");
 
         player.print("Clipboard brush shape equipped.");
     }

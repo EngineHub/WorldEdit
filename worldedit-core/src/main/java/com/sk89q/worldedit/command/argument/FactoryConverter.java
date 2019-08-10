@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.command.argument;
 
+import com.sk89q.worldedit.EmptyClipboardException;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.blocks.BaseItem;
@@ -27,9 +28,14 @@ import com.sk89q.worldedit.extension.input.InputParseException;
 import com.sk89q.worldedit.extension.input.ParserContext;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extent.Extent;
+import com.sk89q.worldedit.extent.transform.BlockTransformExtent;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.function.pattern.Pattern;
+import com.sk89q.worldedit.internal.annotation.ClipboardMask;
 import com.sk89q.worldedit.internal.registry.AbstractFactory;
+import com.sk89q.worldedit.math.transform.Transform;
+import com.sk89q.worldedit.session.ClipboardHolder;
+import com.sk89q.worldedit.session.request.RequestExtent;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.world.World;
@@ -41,30 +47,53 @@ import org.enginehub.piston.converter.SuccessfulConversion;
 import org.enginehub.piston.inject.InjectedValueAccess;
 import org.enginehub.piston.inject.Key;
 
+import javax.annotation.Nullable;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class FactoryConverter<T> implements ArgumentConverter<T> {
 
     public static void register(WorldEdit worldEdit, CommandManager commandManager) {
         commandManager.registerConverter(Key.of(Pattern.class),
-            new FactoryConverter<>(worldEdit, WorldEdit::getPatternFactory, "pattern"));
+            new FactoryConverter<>(worldEdit, WorldEdit::getPatternFactory, "pattern", null));
         commandManager.registerConverter(Key.of(Mask.class),
-            new FactoryConverter<>(worldEdit, WorldEdit::getMaskFactory, "mask"));
+            new FactoryConverter<>(worldEdit, WorldEdit::getMaskFactory, "mask", null));
         commandManager.registerConverter(Key.of(BaseItem.class),
-            new FactoryConverter<>(worldEdit, WorldEdit::getItemFactory, "item"));
+            new FactoryConverter<>(worldEdit, WorldEdit::getItemFactory, "item", null));
+
+        commandManager.registerConverter(Key.of(Mask.class, ClipboardMask.class),
+                new FactoryConverter<>(worldEdit, WorldEdit::getMaskFactory, "mask",
+                        context -> {
+                            try {
+                                ClipboardHolder holder = context.getSession().getClipboard();
+                                Transform transform = holder.getTransform();
+                                Extent target;
+                                if (transform.isIdentity()) {
+                                    target = holder.getClipboard();
+                                } else {
+                                    target = new BlockTransformExtent(holder.getClipboard(), transform);
+                                }
+                                context.setExtent(target);
+                            } catch (EmptyClipboardException e) {
+                                throw new IllegalStateException(e);
+                            }
+                        }));
     }
 
     private final WorldEdit worldEdit;
     private final Function<WorldEdit, AbstractFactory<T>> factoryExtractor;
     private final String description;
+    @Nullable private final Consumer<ParserContext> contextTweaker;
 
     private FactoryConverter(WorldEdit worldEdit,
                              Function<WorldEdit, AbstractFactory<T>> factoryExtractor,
-                             String description) {
+                             String description,
+                             @Nullable Consumer<ParserContext> contextTweaker) {
         this.worldEdit = worldEdit;
         this.factoryExtractor = factoryExtractor;
         this.description = description;
+        this.contextTweaker = contextTweaker;
     }
 
     @Override
@@ -80,9 +109,14 @@ public class FactoryConverter<T> implements ArgumentConverter<T> {
             if (extent instanceof World) {
                 parserContext.setWorld((World) extent);
             }
+            parserContext.setExtent(new RequestExtent());
         }
         parserContext.setSession(session);
         parserContext.setRestricted(true);
+
+        if (contextTweaker != null) {
+            contextTweaker.accept(parserContext);
+        }
 
         try {
             return SuccessfulConversion.fromSingle(
