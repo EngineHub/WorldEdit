@@ -19,28 +19,26 @@
 
 package com.sk89q.worldedit.world.block;
 
-import static com.google.common.base.Preconditions.checkArgument;
-
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Iterables;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.registry.Keyed;
 import com.sk89q.worldedit.registry.NamespacedRegistry;
 import com.sk89q.worldedit.registry.state.Property;
+import com.sk89q.worldedit.util.concurrency.LazyReference;
 import com.sk89q.worldedit.world.item.ItemType;
 import com.sk89q.worldedit.world.item.ItemTypes;
 import com.sk89q.worldedit.world.registry.BlockMaterial;
 import com.sk89q.worldedit.world.registry.LegacyMapper;
 
-import java.util.ArrayList;
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
-import javax.annotation.Nullable;
+import static com.google.common.base.Preconditions.checkArgument;
 
 public class BlockType implements Keyed {
 
@@ -48,11 +46,18 @@ public class BlockType implements Keyed {
 
     private final String id;
     private final Function<BlockState, BlockState> values;
-    private final AtomicReference<BlockState> defaultState = new AtomicReference<>();
-    private final AtomicReference<FuzzyBlockState> emptyFuzzy = new AtomicReference<>();
-    private final AtomicReference<Map<String, ? extends Property<?>>> properties = new AtomicReference<>();
-    private final AtomicReference<BlockMaterial> blockMaterial = new AtomicReference<>();
-    private final AtomicReference<Map<Map<Property<?>, Object>, BlockState>> blockStatesMap = new AtomicReference<>();
+    private final LazyReference<BlockState> defaultState
+        = LazyReference.from(this::computeDefaultState);
+    private final LazyReference<FuzzyBlockState> emptyFuzzy
+        = LazyReference.from(() -> new FuzzyBlockState(this));
+    private final LazyReference<Map<String, ? extends Property<?>>> properties
+        = LazyReference.from(() -> ImmutableMap.copyOf(WorldEdit.getInstance().getPlatformManager()
+        .queryCapability(Capability.GAME_HOOKS).getRegistries().getBlockRegistry().getProperties(this)));
+    private final LazyReference<BlockMaterial> blockMaterial
+        = LazyReference.from(() -> WorldEdit.getInstance().getPlatformManager()
+        .queryCapability(Capability.GAME_HOOKS).getRegistries().getBlockRegistry().getMaterial(this));
+    private final LazyReference<Map<Map<Property<?>, Object>, BlockState>> blockStatesMap
+        = LazyReference.from(() -> BlockState.generateStateMap(this));
 
     public BlockType(String id) {
         this(id, null);
@@ -67,24 +72,16 @@ public class BlockType implements Keyed {
         this.values = values;
     }
 
-    private <T> T updateField(AtomicReference<T> field, Supplier<T> value) {
-        T result = field.get();
-        if (result == null) {
-            // swap in new value, if someone doesn't beat us
-            T update = value.get();
-            if (field.compareAndSet(null, update)) {
-                // use ours
-                result = update;
-            } else {
-                // update to real value
-                result = field.get();
-            }
+    private BlockState computeDefaultState() {
+        BlockState defaultState = Iterables.getFirst(getBlockStatesMap().values(), null);
+        if (values != null) {
+            defaultState = values.apply(defaultState);
         }
-        return result;
+        return defaultState;
     }
 
     private Map<Map<Property<?>, Object>, BlockState> getBlockStatesMap() {
-        return updateField(blockStatesMap, () -> BlockState.generateStateMap(this));
+        return blockStatesMap.getValue();
     }
 
     /**
@@ -117,8 +114,7 @@ public class BlockType implements Keyed {
      * @return The properties map
      */
     public Map<String, ? extends Property<?>> getPropertyMap() {
-        return updateField(properties, () -> ImmutableMap.copyOf(WorldEdit.getInstance().getPlatformManager()
-                .queryCapability(Capability.GAME_HOOKS).getRegistries().getBlockRegistry().getProperties(this)));
+        return properties.getValue();
     }
 
     /**
@@ -150,17 +146,11 @@ public class BlockType implements Keyed {
      * @return The default state
      */
     public BlockState getDefaultState() {
-        return updateField(defaultState, () -> {
-            BlockState defaultState = new ArrayList<>(getBlockStatesMap().values()).get(0);
-            if (values != null) {
-                defaultState = values.apply(defaultState);
-            }
-            return defaultState;
-        });
+        return defaultState.getValue();
     }
 
     public FuzzyBlockState getFuzzyMatcher() {
-        return updateField(emptyFuzzy, () -> new FuzzyBlockState(this));
+        return emptyFuzzy.getValue();
     }
 
     /**
@@ -208,8 +198,7 @@ public class BlockType implements Keyed {
      * @return The material
      */
     public BlockMaterial getMaterial() {
-        return updateField(blockMaterial, () -> WorldEdit.getInstance().getPlatformManager()
-                .queryCapability(Capability.GAME_HOOKS).getRegistries().getBlockRegistry().getMaterial(this));
+        return blockMaterial.getValue();
     }
 
     /**

@@ -24,9 +24,10 @@ import com.sk89q.worldedit.extent.AbstractBufferingExtent;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.OperationQueue;
-import com.sk89q.worldedit.function.operation.SetLocatedBlocks;
+import com.sk89q.worldedit.function.operation.RunContext;
+import com.sk89q.worldedit.function.operation.SetBlockMap;
 import com.sk89q.worldedit.math.BlockVector3;
-import com.sk89q.worldedit.util.collection.LocatedBlockList;
+import com.sk89q.worldedit.util.collection.BlockMap;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockCategories;
 import com.sk89q.worldedit.world.block.BlockState;
@@ -36,12 +37,10 @@ import com.sk89q.worldedit.world.block.BlockTypes;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 
 /**
  * Re-orders blocks into several stages.
@@ -143,8 +142,7 @@ public class MultiStageReorder extends AbstractBufferingExtent implements Reorde
         priorityMap.put(BlockTypes.MOVING_PISTON, PlacementPriority.FINAL);
     }
 
-    private final Set<BlockVector3> containedBlocks = new HashSet<>();
-    private Map<PlacementPriority, LocatedBlockList> stages = new HashMap<>();
+    private Map<PlacementPriority, BlockMap> stages = new HashMap<>();
 
     private boolean enabled;
 
@@ -178,7 +176,7 @@ public class MultiStageReorder extends AbstractBufferingExtent implements Reorde
         this.enabled = enabled;
 
         for (PlacementPriority priority : PlacementPriority.values()) {
-            stages.put(priority, new LocatedBlockList());
+            stages.put(priority, BlockMap.create());
         }
     }
 
@@ -220,7 +218,7 @@ public class MultiStageReorder extends AbstractBufferingExtent implements Reorde
             return setDelegateBlock(location, block);
         }
 
-        BlockState existing = getBlock(location);
+        BlockState existing = getExtent().getBlock(location);
         PlacementPriority priority = getPlacementPriority(block);
         PlacementPriority srcPriority = getPlacementPriority(existing);
 
@@ -229,13 +227,13 @@ public class MultiStageReorder extends AbstractBufferingExtent implements Reorde
 
             switch (srcPriority) {
                 case FINAL:
-                    stages.get(PlacementPriority.CLEAR_FINAL).add(location, replacement);
+                    stages.get(PlacementPriority.CLEAR_FINAL).put(location, replacement);
                     break;
                 case LATE:
-                    stages.get(PlacementPriority.CLEAR_LATE).add(location, replacement);
+                    stages.get(PlacementPriority.CLEAR_LATE).put(location, replacement);
                     break;
                 case LAST:
-                    stages.get(PlacementPriority.CLEAR_LAST).add(location, replacement);
+                    stages.get(PlacementPriority.CLEAR_LAST).put(location, replacement);
                     break;
             }
 
@@ -244,16 +242,12 @@ public class MultiStageReorder extends AbstractBufferingExtent implements Reorde
             }
         }
 
-        stages.get(priority).add(location, block);
-        containedBlocks.add(location);
+        stages.get(priority).put(location, block.toBaseBlock());
         return !existing.equalsFuzzy(block);
     }
 
     @Override
     protected Optional<BaseBlock> getBufferedBlock(BlockVector3 position) {
-        if (!containedBlocks.contains(position)) {
-            return Optional.empty();
-        }
         return stages.values().stream()
             .map(blocks -> blocks.get(position))
             .filter(Objects::nonNull)
@@ -267,7 +261,17 @@ public class MultiStageReorder extends AbstractBufferingExtent implements Reorde
         }
         List<Operation> operations = new ArrayList<>();
         for (PlacementPriority priority : PlacementPriority.values()) {
-            operations.add(new SetLocatedBlocks(getExtent(), stages.get(priority)));
+            BlockMap blocks = stages.get(priority);
+            operations.add(new SetBlockMap(getExtent(), blocks) {
+                @Override
+                public Operation resume(RunContext run) throws WorldEditException {
+                    Operation operation = super.resume(run);
+                    if (operation == null) {
+                        blocks.clear();
+                    }
+                    return operation;
+                }
+            });
         }
 
         return new OperationQueue(operations);

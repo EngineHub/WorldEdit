@@ -26,9 +26,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Table;
 import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.registry.state.Property;
-import com.sk89q.worldedit.world.registry.BlockRegistry;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -60,7 +58,6 @@ public class BlockState implements BlockStateHolder<BlockState> {
     }
 
     static Map<Map<Property<?>, Object>, BlockState> generateStateMap(BlockType blockType) {
-        BlockRegistry registry = WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.WORLD_EDITING).getRegistries().getBlockRegistry();
         Map<Map<Property<?>, Object>, BlockState> stateMap = new LinkedHashMap<>();
         List<? extends Property<?>> properties = blockType.getProperties();
 

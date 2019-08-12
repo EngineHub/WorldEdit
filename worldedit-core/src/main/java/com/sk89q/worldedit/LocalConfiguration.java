@@ -75,6 +75,7 @@ public abstract class LocalConfiguration {
     public int butcherMaxRadius = -1;
     public boolean allowSymlinks = false;
     public boolean serverSideCUI = true;
+    public boolean extendedYLimit = false;
 
     protected String[] getDefaultDisallowedBlocks() {
         List<BlockType> blockTypes = Lists.newArrayList(

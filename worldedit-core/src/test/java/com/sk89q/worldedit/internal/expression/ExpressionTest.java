@@ -27,9 +27,9 @@ import com.sk89q.worldedit.internal.expression.parser.ParserException;
 import com.sk89q.worldedit.internal.expression.runtime.EvaluationException;
 import com.sk89q.worldedit.internal.expression.runtime.ExpressionEnvironment;
 import com.sk89q.worldedit.internal.expression.runtime.ExpressionTimeoutException;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import static java.lang.Math.atan2;
 import static java.lang.Math.sin;
@@ -37,17 +37,26 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class ExpressionTest {
+
+    private Platform mockPlat = mock(Platform.class);
+
     @BeforeEach
     public void setup() {
-        Platform mockPlat = Mockito.mock(Platform.class);
-        Mockito.when(mockPlat.getConfiguration()).thenReturn(new LocalConfiguration() {
+        when(mockPlat.getConfiguration()).thenReturn(new LocalConfiguration() {
             @Override
             public void load() {
             }
         });
         WorldEdit.getInstance().getPlatformManager().register(mockPlat);
+    }
+
+    @AfterEach
+    public void tearDown() {
+        WorldEdit.getInstance().getPlatformManager().unregister(mockPlat);
     }
 
     @Test
