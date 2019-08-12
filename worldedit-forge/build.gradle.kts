@@ -11,8 +11,9 @@ plugins {
 applyPlatformAndCoreConfiguration()
 applyShadowConfiguration()
 
-val minecraftVersion = "1.14.3"
-val forgeVersion = "27.0.13"
+val minecraftVersion = "1.14.4"
+val mappingsMinecraftVersion = "1.14.3"
+val forgeVersion = "28.0.45"
 
 configurations.all {
     resolutionStrategy {
@@ -25,14 +26,12 @@ dependencies {
     "compile"("org.apache.logging.log4j:log4j-slf4j-impl:2.11.2")
 
     "minecraft"("net.minecraftforge:forge:$minecraftVersion-$forgeVersion")
-
-    "testCompile"("org.mockito:mockito-core:1.9.0-rc1")
 }
 
 configure<UserDevExtension> {
     mappings(mapOf(
             "channel" to "snapshot",
-            "version" to "20190626-$minecraftVersion"
+            "version" to "20190801-$mappingsMinecraftVersion"
     ))
 
     runs {

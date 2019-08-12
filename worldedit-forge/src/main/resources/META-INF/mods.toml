@@ -5,7 +5,7 @@ loaderVersion="[24,)"
 # A URL to refer people to when problems occur with this mod
 issueTrackerURL="https://discord.gg/enginehub"
 # A URL for the "homepage" for this mod, displayed in the mod UI
-displayURL="http://wiki.sk89q.com/wiki/WorldEdit/"
+displayURL="https://worldedit.enginehub.org/"
 # A file name (in the root of the mod JAR) containing a logo for display
 logoFile="worldedit-icon.png"
 # A text field displayed in the mod UI

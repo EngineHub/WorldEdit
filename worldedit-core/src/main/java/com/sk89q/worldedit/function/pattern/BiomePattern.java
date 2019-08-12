@@ -17,21 +17,21 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.command.tool.brush;
+package com.sk89q.worldedit.function.pattern;
 
-import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.MaxChangedBlocksException;
-import com.sk89q.worldedit.function.pattern.Pattern;
-import com.sk89q.worldedit.math.BlockVector3;
-import com.sk89q.worldedit.world.block.BlockTypes;
+import com.sk89q.worldedit.math.BlockVector2;
+import com.sk89q.worldedit.world.biome.BiomeType;
 
-public class SphereBrush implements Brush {
+/**
+ * Returns a {@link BiomeType} for a given position.
+ */
+public interface BiomePattern {
 
-    @Override
-    public void build(EditSession editSession, BlockVector3 position, Pattern pattern, double size) throws MaxChangedBlocksException {
-        if (pattern == null) {
-            pattern = BlockTypes.COBBLESTONE.getDefaultState();
-        }
-        editSession.makeSphere(position, pattern, size, size, size, true);
-    }
+    /**
+     * Return a {@link BiomeType} for the given position.
+     *
+     * @param position the position
+     * @return a block
+     */
+    BiomeType apply(BlockVector2 position);
 }

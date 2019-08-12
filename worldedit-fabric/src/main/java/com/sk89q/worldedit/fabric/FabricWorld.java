@@ -202,16 +202,25 @@ public class FabricWorld extends AbstractWorld {
                 CompoundTag tag = ((BaseBlock) block).getNbtData();
                 if (tag != null) {
                     net.minecraft.nbt.CompoundTag nativeTag = NBTConverter.toNative(tag);
-                    nativeTag.putString("id", ((BaseBlock) block).getNbtId());
-                    TileEntityUtils.setTileEntity(world, position, nativeTag);
-                    successful = true; // update if TE changed as well
+                    BlockEntity tileEntity = getWorld().getWorldChunk(pos).getBlockEntity(pos);
+                    if (tileEntity != null) {
+                        tileEntity.fromTag(nativeTag);
+                        tileEntity.setPos(pos);
+                        tileEntity.setWorld(world);
+                        successful = true; // update if TE changed as well
+                    }
                 }
             }
         }
 
         if (successful && notifyAndLight) {
             world.getChunkManager().getLightingProvider().enqueueLightUpdate(pos);
+            world.scheduleBlockRender(pos, old, newState);
             world.updateListeners(pos, old, newState, UPDATE | NOTIFY);
+            world.updateNeighbors(pos, newState.getBlock());
+            if (old.hasComparatorOutput()) {
+                world.updateHorizontalAdjacent(pos, newState.getBlock());
+            }
         }
 
         return successful;
@@ -220,7 +229,9 @@ public class FabricWorld extends AbstractWorld {
     @Override
     public boolean notifyAndLightBlock(BlockVector3 position, BlockState previousType) throws WorldEditException {
         BlockPos pos = new BlockPos(position.getX(), position.getY(), position.getZ());
-        getWorld().updateListeners(pos, FabricAdapter.adapt(previousType), getWorld().getBlockState(pos), 1 | 2);
+        net.minecraft.block.BlockState state = getWorld().getBlockState(pos);
+        getWorld().updateListeners(pos, FabricAdapter.adapt(previousType), state, 1 | 2);
+        getWorld().updateNeighbors(pos, state.getBlock());
         return true;
     }
 
@@ -496,7 +507,9 @@ public class FabricWorld extends AbstractWorld {
         BlockEntity tile = ((WorldChunk) getWorld().getChunk(pos)).getBlockEntity(pos, WorldChunk.CreationType.CHECK);
 
         if (tile != null) {
-            return getBlock(position).toBaseBlock(NBTConverter.fromNative(TileEntityUtils.copyNbtData(tile)));
+            net.minecraft.nbt.CompoundTag tag = new net.minecraft.nbt.CompoundTag();
+            tile.toTag(tag);
+            return getBlock(position).toBaseBlock(NBTConverter.fromNative(tag));
         } else {
             return getBlock(position).toBaseBlock();
         }

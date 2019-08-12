@@ -57,10 +57,6 @@ public class PermissionsResolverManager implements PermissionsResolver {
             "#   into WEPIF, paste it into http://yaml-online-parser.appspot.com/\r\n" +
             "#   and see if it gives \"ERROR:\".\r\n" +
             "# - Lines starting with # are comments and so they are ignored.\r\n" +
-            "#\r\n" +
-            "# About Configuration Permissions\r\n" +
-            "# - See http://wiki.sk89q.com/wiki/WorldEdit/Permissions/Bukkit\r\n" +
-            "# - Now with multiworld support (see example)\r\n" +
             "\r\n";
 
     private static PermissionsResolverManager instance;

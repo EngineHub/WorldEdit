@@ -26,9 +26,9 @@ applyShadowConfiguration()
 
 apply(plugin = "fabric-loom")
 
-val minecraftVersion = "1.14.3"
-val fabricVersion = "0.3.0+build.187"
-val yarnMappings = "1.14.3+build.1"
+val minecraftVersion = "1.14.4"
+val fabricVersion = "0.3.0+build.200"
+val yarnMappings = "1.14.4+build.1"
 val loaderVersion = "0.4.8+build.155"
 
 configurations.all {

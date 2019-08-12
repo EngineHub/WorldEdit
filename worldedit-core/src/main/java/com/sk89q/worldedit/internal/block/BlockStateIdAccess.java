@@ -19,11 +19,12 @@
 
 package com.sk89q.worldedit.internal.block;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.registry.BlockRegistry;
 
 import javax.annotation.Nullable;
-import java.util.Arrays;
 import java.util.BitSet;
 import java.util.OptionalInt;
 
@@ -31,26 +32,15 @@ import static com.google.common.base.Preconditions.checkState;
 
 public final class BlockStateIdAccess {
 
-    private BlockStateIdAccess() {
-    }
-
-    public interface Provider {
-
-        OptionalInt getBlockStateId(BlockState holder);
-    }
-
-    private static Provider blockStateStateId;
-
-    public static void setBlockStateStateId(Provider blockStateStateId) {
-        BlockStateIdAccess.blockStateStateId = blockStateStateId;
-    }
+    private static final BiMap<BlockState, Integer> ASSIGNED_IDS = HashBiMap.create(2 << 13);
 
     public static OptionalInt getBlockStateId(BlockState holder) {
-        return blockStateStateId.getBlockStateId(holder);
+        Integer value = ASSIGNED_IDS.get(holder);
+        return value == null ? OptionalInt.empty() : OptionalInt.of(value);
     }
 
     public static @Nullable BlockState getBlockStateById(int id) {
-        return id < blockStates.length ? blockStates[id] : null;
+        return ASSIGNED_IDS.inverse().get(id);
     }
 
     /**
@@ -60,31 +50,28 @@ public final class BlockStateIdAccess {
      * since it's useful for other entries as well.
      * @return an unused ID in WorldEdit's ID tracker
      */
-    public static int provideUnusedWorldEditId() {
+    private static int provideUnusedWorldEditId() {
         return usedIds.nextClearBit(0);
     }
 
-    private static BlockState[] blockStates = new BlockState[2 << 13];
     private static final BitSet usedIds = new BitSet();
 
-    public static void register(BlockState blockState) {
-        OptionalInt id = getBlockStateId(blockState);
-        if (id.isPresent()) {
-            int i = id.getAsInt();
-            if (i >= blockStates.length) {
-                int curLength = blockStates.length;
-                do {
-                    curLength += curLength >> 1;
-                } while (i >= curLength);
-                blockStates = Arrays.copyOf(blockStates, curLength);
-            }
-            BlockState existing = blockStates[i];
-            checkState(existing == null || existing == blockState,
-                "BlockState %s is using the same block ID (%s) as BlockState %s",
-                blockState, i, existing);
-            blockStates[i] = blockState;
-            usedIds.set(i);
-        }
+    public static void register(BlockState blockState, OptionalInt id) {
+        int i = id.orElseGet(BlockStateIdAccess::provideUnusedWorldEditId);
+        BlockState existing = ASSIGNED_IDS.inverse().get(i);
+        checkState(existing == null || existing == blockState,
+            "BlockState %s is using the same block ID (%s) as BlockState %s",
+            blockState, i, existing);
+        ASSIGNED_IDS.put(blockState, i);
+        usedIds.set(i);
+    }
+
+    public static void clear() {
+        ASSIGNED_IDS.clear();
+        usedIds.clear();
+    }
+
+    private BlockStateIdAccess() {
     }
 
 }

@@ -65,12 +65,29 @@ public class CommandUtil {
      * Fix {@code suggestions} to replace the last space-separated word in {@code arguments}.
      */
     public static List<String> fixSuggestions(String arguments, List<Substring> suggestions) {
-        Substring lastArg = Iterables.getLast(CommandArgParser.spaceSplit(arguments));
+        Substring lastArg = Iterables.getLast(
+            CommandArgParser.spaceSplit(arguments)
+        );
         return suggestions.stream()
-            .map(suggestion -> CommandUtil.suggestLast(lastArg, suggestion))
+            // Re-map suggestions to only operate on the last non-quoted word
+            .map(suggestion -> onlyOnLastQuotedWord(lastArg, suggestion))
+            .map(suggestion -> suggestLast(lastArg, suggestion))
             .filter(Optional::isPresent)
             .map(Optional::get)
             .collect(toList());
+    }
+
+    private static Substring onlyOnLastQuotedWord(Substring lastArg, Substring suggestion) {
+        if (suggestion.getSubstring().startsWith(lastArg.getSubstring())) {
+            // This is already fine.
+            return suggestion;
+        }
+        String substr = suggestion.getSubstring();
+        int sp = substr.lastIndexOf(' ');
+        if (sp < 0) {
+            return suggestion;
+        }
+        return Substring.wrap(substr.substring(sp + 1), suggestion.getStart() + sp + 1, suggestion.getEnd());
     }
 
     /**
@@ -78,7 +95,7 @@ public class CommandUtil {
      * possible.
      */
     private static Optional<String> suggestLast(Substring last, Substring suggestion) {
-        if (suggestion.getStart() == last.getEnd()) {
+        if (suggestion.getStart() == last.getEnd() && !last.getSubstring().equals("\"")) {
             // this suggestion is for the next argument.
             if (last.getSubstring().isEmpty()) {
                 return Optional.of(suggestion.getSubstring());

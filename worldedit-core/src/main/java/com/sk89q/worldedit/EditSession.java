@@ -40,6 +40,7 @@ import com.sk89q.worldedit.extent.world.FastModeExtent;
 import com.sk89q.worldedit.extent.world.SurvivalModeExtent;
 import com.sk89q.worldedit.function.GroundFunction;
 import com.sk89q.worldedit.function.RegionMaskingFilter;
+import com.sk89q.worldedit.function.biome.BiomeReplace;
 import com.sk89q.worldedit.function.block.BlockDistributionCounter;
 import com.sk89q.worldedit.function.block.BlockReplace;
 import com.sk89q.worldedit.function.block.Counter;
@@ -62,11 +63,11 @@ import com.sk89q.worldedit.function.operation.ForwardExtentCopy;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.OperationQueue;
 import com.sk89q.worldedit.function.operation.Operations;
-import com.sk89q.worldedit.function.pattern.BlockPattern;
 import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.function.pattern.WaterloggedRemover;
 import com.sk89q.worldedit.function.util.RegionOffset;
 import com.sk89q.worldedit.function.visitor.DownwardVisitor;
+import com.sk89q.worldedit.function.visitor.FlatRegionVisitor;
 import com.sk89q.worldedit.function.visitor.LayerVisitor;
 import com.sk89q.worldedit.function.visitor.NonRisingVisitor;
 import com.sk89q.worldedit.function.visitor.RecursiveVisitor;
@@ -820,7 +821,7 @@ public class EditSession implements Extent, AutoCloseable {
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
     public <B extends BlockStateHolder<B>> int fillXZ(BlockVector3 origin, B block, double radius, int depth, boolean recursive) throws MaxChangedBlocksException {
-        return fillXZ(origin, new BlockPattern(block), radius, depth, recursive);
+        return fillXZ(origin, (Pattern) block, radius, depth, recursive);
     }
 
     /**
@@ -885,8 +886,7 @@ public class EditSession implements Extent, AutoCloseable {
                 getWorld(), // Causes clamping of Y range
                 position.add(-apothem + 1, 0, -apothem + 1),
                 position.add(apothem - 1, height - 1, apothem - 1));
-        Pattern pattern = new BlockPattern(BlockTypes.AIR.getDefaultState());
-        return setBlocks(region, pattern);
+        return setBlocks(region, BlockTypes.AIR.getDefaultState());
     }
 
     /**
@@ -907,8 +907,7 @@ public class EditSession implements Extent, AutoCloseable {
                 getWorld(), // Causes clamping of Y range
                 position.add(-apothem + 1, 0, -apothem + 1),
                 position.add(apothem - 1, -height + 1, apothem - 1));
-        Pattern pattern = new BlockPattern(BlockTypes.AIR.getDefaultState());
-        return setBlocks(region, pattern);
+        return setBlocks(region, BlockTypes.AIR.getDefaultState());
     }
 
     /**
@@ -929,8 +928,7 @@ public class EditSession implements Extent, AutoCloseable {
                 getWorld(), // Causes clamping of Y range
                 position.add(adjustment.multiply(-1)),
                 position.add(adjustment));
-        Pattern pattern = new BlockPattern(BlockTypes.AIR.getDefaultState());
-        return replaceBlocks(region, mask, pattern);
+        return replaceBlocks(region, mask, BlockTypes.AIR.getDefaultState());
     }
 
     /**
@@ -942,7 +940,7 @@ public class EditSession implements Extent, AutoCloseable {
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
     public <B extends BlockStateHolder<B>> int setBlocks(Region region, B block) throws MaxChangedBlocksException {
-        return setBlocks(region, new BlockPattern(block));
+        return setBlocks(region, (Pattern) block);
     }
 
     /**
@@ -974,7 +972,7 @@ public class EditSession implements Extent, AutoCloseable {
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
     public <B extends BlockStateHolder<B>> int replaceBlocks(Region region, Set<BaseBlock> filter, B replacement) throws MaxChangedBlocksException {
-        return replaceBlocks(region, filter, new BlockPattern(replacement));
+        return replaceBlocks(region, filter, (Pattern) replacement);
     }
 
     /**
@@ -1032,8 +1030,10 @@ public class EditSession implements Extent, AutoCloseable {
         Region centerRegion = new CuboidRegion(
                 getWorld(), // Causes clamping of Y range
                 BlockVector3.at(((int) center.getX()), ((int) center.getY()), ((int) center.getZ())),
-                BlockVector3.at(MathUtils.roundHalfUp(center.getX()),
-                            center.getY(), MathUtils.roundHalfUp(center.getZ())));
+                BlockVector3.at(
+                        MathUtils.roundHalfUp(center.getX()),
+                        MathUtils.roundHalfUp(center.getY()),
+                        MathUtils.roundHalfUp(center.getZ())));
         return setBlocks(centerRegion, pattern);
     }
 
@@ -1046,7 +1046,7 @@ public class EditSession implements Extent, AutoCloseable {
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
     public <B extends BlockStateHolder<B>> int makeCuboidFaces(Region region, B block) throws MaxChangedBlocksException {
-        return makeCuboidFaces(region, new BlockPattern(block));
+        return makeCuboidFaces(region, block);
     }
 
     /**
@@ -1098,7 +1098,7 @@ public class EditSession implements Extent, AutoCloseable {
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
     public <B extends BlockStateHolder<B>> int makeCuboidWalls(Region region, B block) throws MaxChangedBlocksException {
-        return makeCuboidWalls(region, new BlockPattern(block));
+        return makeCuboidWalls(region, (Pattern) block);
     }
 
     /**
@@ -1165,7 +1165,7 @@ public class EditSession implements Extent, AutoCloseable {
     public <B extends BlockStateHolder<B>> int overlayCuboidBlocks(Region region, B block) throws MaxChangedBlocksException {
         checkNotNull(block);
 
-        return overlayCuboidBlocks(region, new BlockPattern(block));
+        return overlayCuboidBlocks(region, (Pattern) block);
     }
 
     /**
@@ -1208,7 +1208,8 @@ public class EditSession implements Extent, AutoCloseable {
     }
 
     /**
-     * Stack a cuboid region.
+     * Stack a cuboid region. For compatibility, entities are copied by biomes are not.
+     * Use {@link #stackCuboidRegion(Region, BlockVector3, int, boolean, boolean, Mask)} to fine tune.
      *
      * @param region the region to stack
      * @param dir the direction to stack
@@ -1218,6 +1219,23 @@ public class EditSession implements Extent, AutoCloseable {
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
     public int stackCuboidRegion(Region region, BlockVector3 dir, int count, boolean copyAir) throws MaxChangedBlocksException {
+        return stackCuboidRegion(region, dir, count, true, false, copyAir ? null : new ExistingBlockMask(this));
+    }
+
+    /**
+     * Stack a cuboid region.
+     *
+     * @param region the region to stack
+     * @param dir the direction to stack
+     * @param count the number of times to stack
+     * @param copyEntities true to copy entities
+     * @param copyBiomes true to copy biomes
+     * @param mask source mask for the operation (only matching blocks are copied)
+     * @return number of blocks affected
+     * @throws MaxChangedBlocksException thrown if too many blocks are changed
+     */
+    public int stackCuboidRegion(Region region, BlockVector3 dir, int count,
+                                 boolean copyEntities, boolean copyBiomes, Mask mask) throws MaxChangedBlocksException {
         checkNotNull(region);
         checkNotNull(dir);
         checkArgument(count >= 1, "count >= 1 required");
@@ -1227,8 +1245,10 @@ public class EditSession implements Extent, AutoCloseable {
         ForwardExtentCopy copy = new ForwardExtentCopy(this, region, this, to);
         copy.setRepetitions(count);
         copy.setTransform(new AffineTransform().translate(dir.multiply(size)));
-        if (!copyAir) {
-            copy.setSourceMask(new ExistingBlockMask(this));
+        copy.setCopyingEntities(copyEntities);
+        copy.setCopyingBiomes(copyBiomes);
+        if (mask != null) {
+            copy.setSourceMask(mask);
         }
         Operations.completeLegacy(copy);
         return copy.getAffected();
@@ -1246,16 +1266,36 @@ public class EditSession implements Extent, AutoCloseable {
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
     public int moveRegion(Region region, BlockVector3 dir, int distance, boolean copyAir, Pattern replacement) throws MaxChangedBlocksException {
+        return moveRegion(region, dir, distance, true, false, copyAir ? new ExistingBlockMask(this) : null, replacement);
+    }
+
+    /**
+     * Move the blocks in a region a certain direction.
+     *
+     * @param region the region to move
+     * @param dir the direction
+     * @param distance the distance to move
+     * @param moveEntities true to move entities
+     * @param copyBiomes true to copy biomes (source biome is unchanged)
+     * @param mask source mask for the operation (only matching blocks are moved)
+     * @param replacement the replacement pattern to fill in after moving, or null to use air
+     * @return number of blocks moved
+     * @throws MaxChangedBlocksException thrown if too many blocks are changed
+     * @throws IllegalArgumentException thrown if the region is not a flat region, but copyBiomes is true
+     */
+    public int moveRegion(Region region, BlockVector3 dir, int distance,
+                          boolean moveEntities, boolean copyBiomes, Mask mask, Pattern replacement) throws MaxChangedBlocksException {
         checkNotNull(region);
         checkNotNull(dir);
         checkArgument(distance >= 1, "distance >= 1 required");
+        checkArgument(!copyBiomes || region instanceof FlatRegion, "can't copy biomes from non-flat region");
 
         BlockVector3 to = region.getMinimumPoint();
 
         // Remove the original blocks
         Pattern pattern = replacement != null ?
                 replacement :
-                new BlockPattern(BlockTypes.AIR.getDefaultState());
+                BlockTypes.AIR.getDefaultState();
         BlockReplace remove = new BlockReplace(this, pattern);
 
         // Copy to a buffer so we don't destroy our original before we can copy all the blocks from it
@@ -1263,9 +1303,13 @@ public class EditSession implements Extent, AutoCloseable {
         ForwardExtentCopy copy = new ForwardExtentCopy(this, region, buffer, to);
         copy.setTransform(new AffineTransform().translate(dir.multiply(distance)));
         copy.setSourceFunction(remove); // Remove
-        copy.setRemovingEntities(true);
-        if (!copyAir) {
-            copy.setSourceMask(new ExistingBlockMask(this));
+
+        copy.setCopyingEntities(moveEntities);
+        copy.setRemovingEntities(moveEntities);
+        copy.setCopyingBiomes(copyBiomes);
+
+        if (mask != null) {
+            copy.setSourceMask(mask);
         }
 
         // Then we need to copy the buffer to the world
@@ -1273,6 +1317,13 @@ public class EditSession implements Extent, AutoCloseable {
         RegionVisitor visitor = new RegionVisitor(buffer.asRegion(), replace);
 
         OperationQueue operation = new OperationQueue(copy, visitor);
+
+        if (copyBiomes) {
+            BiomeReplace biomeReplace = new BiomeReplace(this, buffer);
+            FlatRegionVisitor biomeVisitor = new FlatRegionVisitor((FlatRegion) buffer.asRegion(), biomeReplace);
+            operation.offer(biomeVisitor);
+        }
+
         Operations.completeLegacy(operation);
 
         return copy.getAffected();
@@ -1334,7 +1385,7 @@ public class EditSession implements Extent, AutoCloseable {
         if (waterlogged) {
             replace = new BlockReplace(this, new WaterloggedRemover(this));
         } else {
-            replace = new BlockReplace(this, new BlockPattern(BlockTypes.AIR.getDefaultState()));
+            replace = new BlockReplace(this, BlockTypes.AIR.getDefaultState());
         }
         RecursiveVisitor visitor = new RecursiveVisitor(mask, replace);
 
@@ -1376,7 +1427,7 @@ public class EditSession implements Extent, AutoCloseable {
                 blockMask
         );
 
-        BlockReplace replace = new BlockReplace(this, new BlockPattern(fluid.getDefaultState()));
+        BlockReplace replace = new BlockReplace(this, fluid.getDefaultState());
         NonRisingVisitor visitor = new NonRisingVisitor(mask, replace);
 
         // Around the origin in a 3x3 block

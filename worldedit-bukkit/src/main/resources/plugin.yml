@@ -3,6 +3,3 @@ main: com.sk89q.worldedit.bukkit.WorldEditPlugin
 version: "${internalVersion}"
 load: STARTUP
 api-version: 1.13
-
-# Permissions aren't here. Read http://wiki.sk89q.com/wiki/WEPIF/DinnerPerms
-# for how WorldEdit permissions actually work.

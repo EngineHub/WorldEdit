@@ -17,21 +17,21 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.command.tool.brush;
+package com.sk89q.worldedit.internal.annotation;
 
-import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.MaxChangedBlocksException;
-import com.sk89q.worldedit.function.pattern.Pattern;
-import com.sk89q.worldedit.math.BlockVector3;
-import com.sk89q.worldedit.world.block.BlockTypes;
+import com.sk89q.worldedit.function.mask.Mask;
+import org.enginehub.piston.inject.InjectAnnotation;
 
-public class SphereBrush implements Brush {
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-    @Override
-    public void build(EditSession editSession, BlockVector3 position, Pattern pattern, double size) throws MaxChangedBlocksException {
-        if (pattern == null) {
-            pattern = BlockTypes.COBBLESTONE.getDefaultState();
-        }
-        editSession.makeSphere(position, pattern, size, size, size, true);
-    }
+/**
+ * Annotates a {@link Mask} parameter to use the clipboard as the extent instead of target World/EditSession.
+ */
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.PARAMETER)
+@InjectAnnotation
+public @interface ClipboardMask {
 }

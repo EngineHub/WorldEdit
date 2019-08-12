@@ -54,7 +54,7 @@ public class BukkitImplLoader {
             "** will be blank, and so on. There will be no support for entity\n" +
             "** and block property-related functions.\n" +
             "**\n" +
-            "** Please see https://worldedit.rtfd.io/en/latest/faq/#bukkit-adapters\n" +
+            "** Please see https://worldedit.enginehub.org/en/latest/faq/#bukkit-adapters\n" +
             "**********************************************\n";
 
     /**

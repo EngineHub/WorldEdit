@@ -19,6 +19,8 @@
 
 package com.sk89q.worldedit.session;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
@@ -55,8 +57,6 @@ import java.util.TimerTask;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 /**
  * Session manager for WorldEdit.
  *
@@ -68,11 +68,12 @@ public class SessionManager {
 
     public static int EXPIRATION_GRACE = 10 * 60 * 1000;
     private static final int FLUSH_PERIOD = 1000 * 30;
-    private static final ListeningExecutorService executorService = MoreExecutors.listeningDecorator(EvenMoreExecutors.newBoundedCachedThreadPool(0, 1, 5));
+    private static final ListeningExecutorService executorService = MoreExecutors.listeningDecorator(
+            EvenMoreExecutors.newBoundedCachedThreadPool(0, 1, 5, "WorldEdit Session Saver - %s"));
     private static final Logger log = LoggerFactory.getLogger(SessionManager.class);
     private static boolean warnedInvalidTool;
 
-    private final Timer timer = new Timer();
+    private final Timer timer = new Timer("WorldEdit Session Manager");
     private final WorldEdit worldEdit;
     private final Map<UUID, SessionHolder> sessions = new HashMap<>();
     private SessionStore store = new VoidStore();

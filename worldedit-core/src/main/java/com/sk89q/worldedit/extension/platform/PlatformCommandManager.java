@@ -431,7 +431,7 @@ public final class PlatformCommandManager {
     }
 
     private Stream<Substring> parseArgs(String input) {
-        return new CommandArgParser(CommandArgParser.spaceSplit(input.substring(1))).parseArgs();
+        return CommandArgParser.forArgString(input.substring(1)).parseArgs();
     }
 
     @Subscribe

@@ -29,7 +29,6 @@ import com.sk89q.worldedit.function.mask.Masks;
 import com.sk89q.worldedit.function.mask.OffsetMask;
 import com.sk89q.worldedit.internal.registry.InputParser;
 import com.sk89q.worldedit.math.BlockVector3;
-import com.sk89q.worldedit.session.request.RequestExtent;
 
 import java.util.stream.Stream;
 
@@ -62,7 +61,7 @@ public class OffsetMaskParser extends InputParser<Mask> {
         if (input.length() > 1) {
             submask = worldEdit.getMaskFactory().parseFromInput(input.substring(1), context);
         } else {
-            submask = new ExistingBlockMask(new RequestExtent());
+            submask = new ExistingBlockMask(context.getExtent());
         }
         OffsetMask offsetMask = new OffsetMask(submask, BlockVector3.at(0, firstChar == '>' ? -1 : 1, 0));
         return new MaskIntersection(offsetMask, Masks.negate(submask));

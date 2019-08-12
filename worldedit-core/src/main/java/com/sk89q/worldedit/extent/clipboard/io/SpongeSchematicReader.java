@@ -48,6 +48,7 @@ import com.sk89q.worldedit.world.DataFixer;
 import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.biome.BiomeTypes;
 import com.sk89q.worldedit.world.block.BlockState;
+import com.sk89q.worldedit.world.block.BlockTypes;
 import com.sk89q.worldedit.world.entity.EntityType;
 import com.sk89q.worldedit.world.entity.EntityTypes;
 import com.sk89q.worldedit.world.storage.NBTConversions;
@@ -111,7 +112,7 @@ public class SpongeSchematicReader extends NBTSchematicReader {
             } else if (dataVersion < liveDataVersion) {
                 fixer = platform.getDataFixer();
                 if (fixer != null) {
-                    log.info("Schematic was made in an older Minecraft version ({} < {}), will attempt DFU.",
+                    log.debug("Schematic was made in an older Minecraft version ({} < {}), will attempt DFU.",
                             dataVersion, liveDataVersion);
                 } else {
                     log.info("Schematic was made in an older Minecraft version ({} < {}), but DFU is not available. Data may be incompatible.",
@@ -184,8 +185,8 @@ public class SpongeSchematicReader extends NBTSchematicReader {
             try {
                 state = WorldEdit.getInstance().getBlockFactory().parseFromInput(palettePart, parserContext).toImmutableState();
             } catch (InputParseException e) {
-                throw new IOException("Invalid BlockState in palette: " + palettePart +
-                        ". Are you missing a mod or using a schematic made in a newer version of Minecraft?");
+                log.warn("Invalid BlockState in palette: " + palettePart + ". Block will be replaced with air.");
+                state = BlockTypes.AIR.getDefaultState();
             }
             palette.put(id, state);
         }

@@ -103,7 +103,8 @@ public final class CommandWrapper {
             // Ensure there is a space!
             if (suggestion.getStart() == suggestion.getEnd()
                 && suggestion.getEnd() == builder.getInput().length()
-                && !builder.getInput().endsWith(" ")) {
+                && !builder.getInput().endsWith(" ")
+                && !builder.getInput().endsWith("\"")) {
                 suggestionText = " " + suggestionText;
             }
             result.add(new Suggestion(

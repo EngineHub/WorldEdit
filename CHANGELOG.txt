@@ -1,3 +1,44 @@
+7.0.1
+- Fix source masks using EdiSession instead of clipboard
+- Fix bug with spaces in suggestions
+- Fix schematic list box loading schematics with spaces in path
+- Improve //thru (and navwand) in some cases
+- Fix error when /up was used below the world
+- Fix /up -f using glass anyway.
+- Fix suggestions for quoted strings
+- Improve suggestions for mask intersections
+- Fix setting biomes in unloaded chunks
+- BlockStateHolder now extends Pattern (API enhancement)
+- Skip invalid blocks when schematic versions are mismatched
+- Add -e/-b/-m flags to stack and move, just as copy/paste have
+- Fix //center for selections with even-sized height
+- (Fabric) Fix setting tile entities
+- (Forge) Update to latest Forge builds (28.0.45+ required!)
+- (Fabric/Forge Single-player) Fix wrong blocks being used when switching
+between worlds generated at different times/with different mods
+- Improve //naturalize over large areas
+- Fixed //restore with 1.14 worlds
+- Added item brush support to WorldEdit for Bukkit (Formerly just Forge)
+- Create an internal state ID mapping for performance
+- Improve rotation for some blocks
+- Added .self permission node to undo/redo to only allow undoing and redoing own history
+- Improve sponge schematic implementation
+- Re-add the delchunks command
+- Added 1.14 blocks, items, tags, etc to the API (Remains compatible with 1.13)
+- Made the navigation and selection wands normal tools that can be rebound per-user with //selwand and //navwand
+- Added //wand -n to get the navigation wand
+- Improved movement of paintings
+- Allow command suggestions for selectors
+- Allow block replacer to work with tile entities
+- Fixed pasting leashed entities
+- Fixed setting player heads with names
+- Added a mask flag to //count
+- Setup pagination for //distr
+- Fixed an entity-related error being caused by plugins improperly using Spigot
+- Fixed gravity brush
+- Modify chunk batching for performance
+- Further legacy schematic loading improvements
+
 7.0.0
 See https://matthewmiller.dev/blog/introducing-worldedit-7/ for a friendlier explanation of some new features
 

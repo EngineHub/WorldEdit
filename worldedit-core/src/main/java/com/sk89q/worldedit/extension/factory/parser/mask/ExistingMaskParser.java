@@ -25,7 +25,6 @@ import com.sk89q.worldedit.extension.input.ParserContext;
 import com.sk89q.worldedit.function.mask.ExistingBlockMask;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.internal.registry.SimpleInputParser;
-import com.sk89q.worldedit.session.request.RequestExtent;
 
 import java.util.List;
 
@@ -44,6 +43,6 @@ public class ExistingMaskParser extends SimpleInputParser<Mask> {
 
     @Override
     public Mask parseFromSimpleInput(String input, ParserContext context) {
-        return new ExistingBlockMask(new RequestExtent());
+        return new ExistingBlockMask(context.getExtent());
     }
 }

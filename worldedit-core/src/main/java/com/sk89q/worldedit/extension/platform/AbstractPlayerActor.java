@@ -19,7 +19,10 @@
 
 package com.sk89q.worldedit.extension.platform;
 
+import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.NotABlockException;
+import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extent.Extent;
@@ -32,6 +35,7 @@ import com.sk89q.worldedit.util.HandSide;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.TargetBlock;
 import com.sk89q.worldedit.util.auth.AuthorizationException;
+import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
@@ -173,7 +177,7 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
                 if (spots == 2) {
                     final BlockVector3 platform = BlockVector3.at(x, y - 2, z);
                     final BlockState block = world.getBlock(platform);
-                    final com.sk89q.worldedit.world.block.BlockType type = block.getBlockType();
+                    final BlockType type = block.getBlockType();
 
                     // Don't get put in lava!
                     if (type == BlockTypes.LAVA) {
@@ -259,6 +263,13 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
             // Found a ceiling!
             if (world.getBlock(BlockVector3.at(x, y, z)).getBlockType().getMaterial().isMovementBlocker()) {
                 int platformY = Math.max(initialY, y - 3 - clearance);
+                if (platformY < initialY) { // if ==, they already have the given clearance, if <, clearance is too large
+                    printError("Not enough space above you!");
+                    return false;
+                } else if (platformY == initialY) {
+                    printError("You're already at the ceiling.");
+                    return false;
+                }
                 floatAt(x, platformY + 1, z, alwaysGlass);
                 return true;
             }
@@ -302,25 +313,49 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
 
     @Override
     public void floatAt(int x, int y, int z, boolean alwaysGlass) {
-        try {
+        if (alwaysGlass || !isAllowedToFly()) {
             BlockVector3 spot = BlockVector3.at(x, y - 1, z);
-            if (!getLocation().getExtent().getBlock(spot).getBlockType().getMaterial().isMovementBlocker()) {
-                getLocation().getExtent().setBlock(spot, BlockTypes.GLASS.getDefaultState());
+            final World world = getWorld();
+            if (!world.getBlock(spot).getBlockType().getMaterial().isMovementBlocker()) {
+                try (EditSession session = WorldEdit.getInstance().getEditSessionFactory().getEditSession(world, 1, this)) {
+                    session.setBlock(spot, BlockTypes.GLASS.getDefaultState());
+                } catch (MaxChangedBlocksException ignored) {
+                }
             }
-        } catch (WorldEditException e) {
-            e.printStackTrace();
+        } else {
+            setFlying(true);
         }
         setPosition(Vector3.at(x + 0.5, y, z + 0.5));
     }
 
+    /**
+     * Check whether the player is allowed to fly.
+     *
+     * @return true if allowed flight
+     */
+    protected boolean isAllowedToFly() {
+        return false;
+    }
+
+    /**
+     * Set whether the player is currently flying.
+     *
+     * @param flying true to fly
+     */
+    protected void setFlying(boolean flying) {
+    }
+
+
     @Override
     public Location getBlockIn() {
-        return getLocation().setPosition(getLocation().toVector().floor());
+        final Location location = getLocation();
+        return location.setPosition(location.toVector().floor());
     }
 
     @Override
     public Location getBlockOn() {
-        return getLocation().setPosition(getLocation().setY(getLocation().getY() - 1).toVector().floor());
+        final Location location = getLocation();
+        return location.setPosition(location.setY(location.getY() - 1).toVector().floor());
     }
 
     @Override
@@ -369,15 +404,16 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
 
     @Override
     public Direction getCardinalDirection(int yawOffset) {
-        if (getLocation().getPitch() > 67.5) {
+        final Location location = getLocation();
+        if (location.getPitch() > 67.5) {
             return Direction.DOWN;
         }
-        if (getLocation().getPitch() < -67.5) {
+        if (location.getPitch() < -67.5) {
             return Direction.UP;
         }
 
         // From hey0's code
-        double rot = (getLocation().getYaw() + yawOffset) % 360; //let's use real yaw now
+        double rot = (location.getYaw() + yawOffset) % 360; //let's use real yaw now
         if (rot < 0) {
             rot += 360.0;
         }
@@ -394,51 +430,62 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
         }
     }
 
+    private boolean canPassThroughBlock(Location curBlock) {
+        BlockVector3 blockPos = curBlock.toVector().toBlockPoint();
+        BlockState block = curBlock.getExtent().getBlock(blockPos);
+        return !block.getBlockType().getMaterial().isMovementBlocker();
+    }
+
     /**
-     * Get the player's view yaw.
-     *
-     * @return yaw
+     * Advances the block target block until the current block is a wall
+     * @return true if a wall is found
      */
-
-    @Override
-    public boolean passThroughForwardWall(int range) {
-        int searchDist = 0;
-        TargetBlock hitBlox = new TargetBlock(this, range, 0.2);
-        Extent world = getLocation().getExtent();
-        Location block;
-        boolean firstBlock = true;
-        int freeToFind = 2;
-        boolean inFree = false;
-
-        while ((block = hitBlox.getNextBlock()) != null) {
-            boolean free = !world.getBlock(block.toVector().toBlockPoint()).getBlockType().getMaterial().isMovementBlocker();
-
-            if (firstBlock) {
-                firstBlock = false;
-
-                if (!free) {
-                    --freeToFind;
-                    continue;
-                }
-            }
-
-            ++searchDist;
-            if (searchDist > 20) {
-                return false;
-            }
-
-            if (inFree != free) {
-                if (free) {
-                    --freeToFind;
-                }
-            }
-
-            if (freeToFind == 0) {
-                setOnGround(block);
+    private boolean advanceToWall(TargetBlock hitBlox) {
+        Location curBlock;
+        while ((curBlock = hitBlox.getCurrentBlock()) != null) {
+            if (!canPassThroughBlock(curBlock)) {
                 return true;
             }
 
-            inFree = free;
+            hitBlox.getNextBlock();
+        }
+
+        return false;
+    }
+
+    /**
+     * Advances the block target block until the current block is a free
+     * @return true if a free spot is found
+     */
+    private boolean advanceToFree(TargetBlock hitBlox) {
+        Location curBlock;
+        while ((curBlock = hitBlox.getCurrentBlock()) != null) {
+            if (canPassThroughBlock(curBlock)) {
+                return true;
+            }
+
+            hitBlox.getNextBlock();
+        }
+
+        return false;
+    }
+
+    @Override
+    public boolean passThroughForwardWall(int range) {
+        TargetBlock hitBlox = new TargetBlock(this, range, 0.2);
+
+        if (!advanceToWall(hitBlox)) {
+            return false;
+        }
+
+        if (!advanceToFree(hitBlox)) {
+            return false;
+        }
+
+        Location foundBlock = hitBlox.getCurrentBlock();
+        if (foundBlock != null) {
+            setOnGround(foundBlock);
+            return true;
         }
 
         return false;
@@ -446,7 +493,8 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
 
     @Override
     public void setPosition(Vector3 pos) {
-        setPosition(pos, getLocation().getPitch(), getLocation().getYaw());
+        final Location location = getLocation();
+        setPosition(pos, location.getPitch(), location.getYaw());
     }
 
     @Override

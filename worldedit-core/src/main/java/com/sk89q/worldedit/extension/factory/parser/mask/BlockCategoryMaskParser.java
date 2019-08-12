@@ -26,7 +26,6 @@ import com.sk89q.worldedit.extension.input.ParserContext;
 import com.sk89q.worldedit.function.mask.BlockCategoryMask;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.internal.registry.InputParser;
-import com.sk89q.worldedit.session.request.RequestExtent;
 import com.sk89q.worldedit.world.block.BlockCategory;
 
 import java.util.Locale;
@@ -54,7 +53,7 @@ public class BlockCategoryMaskParser extends InputParser<Mask> {
         if (category == null) {
             throw new InputParseException("Unrecognised tag '" + input.substring(2) + '\'');
         } else {
-            return new BlockCategoryMask(new RequestExtent(), category);
+            return new BlockCategoryMask(context.getExtent(), category);
         }
     }
 }

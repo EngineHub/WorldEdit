@@ -17,21 +17,24 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.command.tool.brush;
+package com.sk89q.worldedit.regions;
 
-import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.MaxChangedBlocksException;
-import com.sk89q.worldedit.function.pattern.Pattern;
-import com.sk89q.worldedit.math.BlockVector3;
-import com.sk89q.worldedit.world.block.BlockTypes;
+import com.sk89q.worldedit.world.World;
 
-public class SphereBrush implements Brush {
+public abstract class AbstractFlatRegion extends AbstractRegion implements FlatRegion {
+
+    protected AbstractFlatRegion(World world) {
+        super(world);
+    }
 
     @Override
-    public void build(EditSession editSession, BlockVector3 position, Pattern pattern, double size) throws MaxChangedBlocksException {
-        if (pattern == null) {
-            pattern = BlockTypes.COBBLESTONE.getDefaultState();
-        }
-        editSession.makeSphere(position, pattern, size, size, size, true);
+    public int getMinimumY() {
+        return getMinimumPoint().getBlockY();
     }
+
+    @Override
+    public int getMaximumY() {
+        return getMaximumPoint().getBlockY();
+    }
+
 }
