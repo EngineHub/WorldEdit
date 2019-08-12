@@ -1,4 +1,7 @@
-7.0.1 Release Candidate 2
+7.0.1
+- Fix source masks using EdiSession instead of clipboard
+- Fix bug with spaces in suggestions
+- Fix schematic list box loading schematics with spaces in path
 - Improve //thru (and navwand) in some cases
 - Fix error when /up was used below the world
 - Fix /up -f using glass anyway.
@@ -13,8 +16,6 @@
 - (Forge) Update to latest Forge builds (28.0.45+ required!)
 - (Fabric/Forge Single-player) Fix wrong blocks being used when switching
 between worlds generated at different times/with different mods
-
-7.0.1 Release Candidate 1
 - Improve //naturalize over large areas
 - Fixed //restore with 1.14 worlds
 - Added item brush support to WorldEdit for Bukkit (Formerly just Forge)
@@ -33,7 +34,7 @@ between worlds generated at different times/with different mods
 - Fixed setting player heads with names
 - Added a mask flag to //count
 - Setup pagination for //distr
-- Fixed an entity-related error being caused by plugins improperly using Spigot.
+- Fixed an entity-related error being caused by plugins improperly using Spigot
 - Fixed gravity brush
 - Modify chunk batching for performance
 - Further legacy schematic loading improvements
