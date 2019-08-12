@@ -184,13 +184,8 @@ public class EditSession implements Extent, AutoCloseable {
     private @Nullable FastModeExtent fastModeExtent;
     private final SurvivalModeExtent survivalExtent;
     private @Nullable ChunkBatchingExtent chunkBatchingExtent;
-    private @Nullable ChunkLoadingExtent chunkLoadingExtent;
-    private @Nullable LastAccessExtentCache cacheExtent;
-    private @Nullable BlockQuirkExtent quirkExtent;
-    private @Nullable DataValidatorExtent validator;
     private final BlockBagExtent blockBagExtent;
     private final MultiStageReorder reorderExtent;
-    private @Nullable ChangeSetExtent changeSetExtent;
     private final MaskingExtent maskingExtent;
     private final BlockChangeLimiter changeLimiter;
 
@@ -224,27 +219,25 @@ public class EditSession implements Extent, AutoCloseable {
             // These extents are ALWAYS used
             extent = fastModeExtent = new FastModeExtent(world, false);
             extent = survivalExtent = new SurvivalModeExtent(extent, world);
-            extent = quirkExtent = new BlockQuirkExtent(extent, world);
-            extent = chunkLoadingExtent = new ChunkLoadingExtent(extent, world);
-            extent = cacheExtent = new LastAccessExtentCache(extent);
-            extent = wrapExtent(extent, eventBus, event, Stage.BEFORE_CHANGE);
-            extent = validator = new DataValidatorExtent(extent, world);
+            extent = new BlockQuirkExtent(extent, world);
+            extent = new ChunkLoadingExtent(extent, world);
+            extent = new LastAccessExtentCache(extent);
             extent = blockBagExtent = new BlockBagExtent(extent, blockBag);
+            extent = wrapExtent(extent, eventBus, event, Stage.BEFORE_CHANGE);
+            this.bypassReorderHistory = new DataValidatorExtent(extent, world);
 
             // This extent can be skipped by calling rawSetBlock()
             extent = reorderExtent = new MultiStageReorder(extent, false);
             extent = chunkBatchingExtent = new ChunkBatchingExtent(extent);
             extent = wrapExtent(extent, eventBus, event, Stage.BEFORE_REORDER);
+            this.bypassHistory = new DataValidatorExtent(extent, world);
 
             // These extents can be skipped by calling smartSetBlock()
-            extent = changeSetExtent = new ChangeSetExtent(extent, changeSet);
+            extent = new ChangeSetExtent(extent, changeSet);
             extent = maskingExtent = new MaskingExtent(extent, Masks.alwaysTrue());
             extent = changeLimiter = new BlockChangeLimiter(extent, maxBlocks);
             extent = wrapExtent(extent, eventBus, event, Stage.BEFORE_HISTORY);
-
-            this.bypassReorderHistory = blockBagExtent;
-            this.bypassHistory = reorderExtent;
-            this.bypassNone = extent;
+            this.bypassNone = new DataValidatorExtent(extent, world);
         } else {
             Extent extent = new NullExtent();
             extent = survivalExtent = new SurvivalModeExtent(extent, NullWorld.getInstance());
