@@ -14,4 +14,5 @@ dependencies {
     "implementation"(project(":worldedit-libs:core:ap"))
     "implementation"(project(":worldedit-core"))
     "implementation"(kotlin("stdlib-jdk8"))
+    "implementation"(kotlin("reflect"))
 }
