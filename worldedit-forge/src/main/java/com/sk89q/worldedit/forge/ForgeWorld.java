@@ -93,6 +93,7 @@ import net.minecraft.world.server.ServerChunkProvider;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraft.world.storage.SaveHandler;
 import net.minecraft.world.storage.WorldInfo;
+import net.minecraftforge.common.DimensionManager;
 
 import javax.annotation.Nullable;
 import java.io.File;
@@ -167,6 +168,11 @@ public class ForgeWorld extends AbstractWorld {
     @Override
     public String getName() {
         return getWorld().getWorldInfo().getWorldName();
+    }
+
+    @Override
+    public String getId() {
+        return DimensionManager.getRegistry().getKey(getWorld().dimension.getType()).toString();
     }
 
     @Override

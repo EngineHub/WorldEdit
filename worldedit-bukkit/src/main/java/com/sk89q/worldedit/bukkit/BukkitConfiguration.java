@@ -32,6 +32,7 @@ import java.io.File;
 public class BukkitConfiguration extends YAMLConfiguration {
 
     public boolean noOpPermissions = false;
+    public boolean commandBlockSupport = false;
     @Unreported private final WorldEditPlugin plugin;
 
     public BukkitConfiguration(YAMLProcessor config, WorldEditPlugin plugin) {
@@ -43,6 +44,7 @@ public class BukkitConfiguration extends YAMLConfiguration {
     public void load() {
         super.load();
         noOpPermissions = config.getBoolean("no-op-permissions", false);
+        commandBlockSupport = config.getBoolean("command-block-support", false);
         migrateLegacyFolders();
     }
 

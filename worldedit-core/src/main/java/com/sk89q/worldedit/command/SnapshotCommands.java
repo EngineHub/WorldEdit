@@ -28,12 +28,14 @@ import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.command.util.CommandPermissions;
 import com.sk89q.worldedit.command.util.CommandPermissionsConditionGenerator;
 import com.sk89q.worldedit.entity.Player;
+import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.util.formatting.component.PaginationBox;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.event.ClickEvent;
 import com.sk89q.worldedit.util.formatting.text.event.HoverEvent;
 import com.sk89q.worldedit.util.formatting.text.format.TextColor;
+import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.snapshot.InvalidSnapshotException;
 import com.sk89q.worldedit.world.snapshot.Snapshot;
 import com.sk89q.worldedit.world.storage.MissingWorldException;
@@ -67,24 +69,24 @@ public class SnapshotCommands {
         desc = "List snapshots"
     )
     @CommandPermissions("worldedit.snapshots.list")
-    public void list(Player player,
+    public void list(Actor actor, World world,
                      @ArgFlag(name = 'p', desc = "Page of results to return", def = "1")
                          int page) throws WorldEditException {
 
         LocalConfiguration config = we.getConfiguration();
 
         if (config.snapshotRepo == null) {
-            player.printError("Snapshot/backup restore is not configured.");
+            actor.printError("Snapshot/backup restore is not configured.");
             return;
         }
 
         try {
-            List<Snapshot> snapshots = config.snapshotRepo.getSnapshots(true, player.getWorld().getName());
+            List<Snapshot> snapshots = config.snapshotRepo.getSnapshots(true, world.getName());
 
             if (!snapshots.isEmpty()) {
-                player.print(new SnapshotListBox(player.getWorld().getName(), snapshots).create(page));
+                actor.print(new SnapshotListBox(world.getName(), snapshots).create(page));
             } else {
-                player.printError("No snapshots are available. See console for details.");
+                actor.printError("No snapshots are available. See console for details.");
 
                 // Okay, let's toss some debugging information!
                 File dir = config.snapshotRepo.getDirectory();
@@ -99,7 +101,7 @@ public class SnapshotCommands {
                 }
             }
         } catch (MissingWorldException ex) {
-            player.printError("No snapshots were found for this world.");
+            actor.printError("No snapshots were found for this world.");
         }
     }
 
@@ -108,37 +110,37 @@ public class SnapshotCommands {
         desc = "Choose a snapshot to use"
     )
     @CommandPermissions("worldedit.snapshots.restore")
-    public void use(Player player, LocalSession session,
+    public void use(Actor actor, World world, LocalSession session,
                     @Arg(desc = "Snapeshot to use")
                         String name) throws WorldEditException {
 
         LocalConfiguration config = we.getConfiguration();
 
         if (config.snapshotRepo == null) {
-            player.printError("Snapshot/backup restore is not configured.");
+            actor.printError("Snapshot/backup restore is not configured.");
             return;
         }
 
         // Want the latest snapshot?
         if (name.equalsIgnoreCase("latest")) {
             try {
-                Snapshot snapshot = config.snapshotRepo.getDefaultSnapshot(player.getWorld().getName());
+                Snapshot snapshot = config.snapshotRepo.getDefaultSnapshot(world.getName());
 
                 if (snapshot != null) {
                     session.setSnapshot(null);
-                    player.print("Now using newest snapshot.");
+                    actor.print("Now using newest snapshot.");
                 } else {
-                    player.printError("No snapshots were found.");
+                    actor.printError("No snapshots were found.");
                 }
             } catch (MissingWorldException ex) {
-                player.printError("No snapshots were found for this world.");
+                actor.printError("No snapshots were found for this world.");
             }
         } else {
             try {
                 session.setSnapshot(config.snapshotRepo.getSnapshot(name));
-                player.print("Snapshot set to: " + name);
+                actor.print("Snapshot set to: " + name);
             } catch (InvalidSnapshotException e) {
-                player.printError("That snapshot does not exist or is not available.");
+                actor.printError("That snapshot does not exist or is not available.");
             }
         }
     }
@@ -148,36 +150,36 @@ public class SnapshotCommands {
         desc = "Choose the snapshot based on the list id"
     )
     @CommandPermissions("worldedit.snapshots.restore")
-    public void sel(Player player, LocalSession session,
+    public void sel(Actor actor, World world, LocalSession session,
                     @Arg(desc = "The list ID to select")
                         int index) throws WorldEditException {
         LocalConfiguration config = we.getConfiguration();
 
         if (config.snapshotRepo == null) {
-            player.printError("Snapshot/backup restore is not configured.");
+            actor.printError("Snapshot/backup restore is not configured.");
             return;
         }
 
         if (index < 1) {
-            player.printError("Invalid index, must be equal or higher then 1.");
+            actor.printError("Invalid index, must be equal or higher then 1.");
             return;
         }
 
         try {
-            List<Snapshot> snapshots = config.snapshotRepo.getSnapshots(true, player.getWorld().getName());
+            List<Snapshot> snapshots = config.snapshotRepo.getSnapshots(true, world.getName());
             if (snapshots.size() < index) {
-                player.printError("Invalid index, must be between 1 and " + snapshots.size() + ".");
+                actor.printError("Invalid index, must be between 1 and " + snapshots.size() + ".");
                 return;
             }
             Snapshot snapshot = snapshots.get(index - 1);
             if (snapshot == null) {
-                player.printError("That snapshot does not exist or is not available.");
+                actor.printError("That snapshot does not exist or is not available.");
                 return;
             }
             session.setSnapshot(snapshot);
-            player.print("Snapshot set to: " + snapshot.getName());
+            actor.print("Snapshot set to: " + snapshot.getName());
         } catch (MissingWorldException e) {
-            player.printError("No snapshots were found for this world.");
+            actor.printError("No snapshots were found for this world.");
         }
     }
 
@@ -186,29 +188,29 @@ public class SnapshotCommands {
         desc = "Choose the nearest snapshot before a date"
     )
     @CommandPermissions("worldedit.snapshots.restore")
-    public void before(Player player, LocalSession session,
+    public void before(Actor actor, World world, LocalSession session,
                        @Arg(desc = "The soonest date that may be used")
                            ZonedDateTime date) throws WorldEditException {
 
         LocalConfiguration config = we.getConfiguration();
 
         if (config.snapshotRepo == null) {
-            player.printError("Snapshot/backup restore is not configured.");
+            actor.printError("Snapshot/backup restore is not configured.");
             return;
         }
 
         try {
-            Snapshot snapshot = config.snapshotRepo.getSnapshotBefore(date, player.getWorld().getName());
+            Snapshot snapshot = config.snapshotRepo.getSnapshotBefore(date, world.getName());
 
             if (snapshot == null) {
-                player.printError("Couldn't find a snapshot before "
+                actor.printError("Couldn't find a snapshot before "
                     + dateFormat.withZone(session.getTimeZone()).format(date) + ".");
             } else {
                 session.setSnapshot(snapshot);
-                player.print("Snapshot set to: " + snapshot.getName());
+                actor.print("Snapshot set to: " + snapshot.getName());
             }
         } catch (MissingWorldException ex) {
-            player.printError("No snapshots were found for this world.");
+            actor.printError("No snapshots were found for this world.");
         }
     }
 
@@ -217,28 +219,28 @@ public class SnapshotCommands {
         desc = "Choose the nearest snapshot after a date"
     )
     @CommandPermissions("worldedit.snapshots.restore")
-    public void after(Player player, LocalSession session,
+    public void after(Actor actor, World world, LocalSession session,
                       @Arg(desc = "The soonest date that may be used")
                           ZonedDateTime date) throws WorldEditException {
 
         LocalConfiguration config = we.getConfiguration();
 
         if (config.snapshotRepo == null) {
-            player.printError("Snapshot/backup restore is not configured.");
+            actor.printError("Snapshot/backup restore is not configured.");
             return;
         }
 
         try {
-            Snapshot snapshot = config.snapshotRepo.getSnapshotAfter(date, player.getWorld().getName());
+            Snapshot snapshot = config.snapshotRepo.getSnapshotAfter(date, world.getName());
             if (snapshot == null) {
-                player.printError("Couldn't find a snapshot after "
+                actor.printError("Couldn't find a snapshot after "
                     + dateFormat.withZone(session.getTimeZone()).format(date) + ".");
             } else {
                 session.setSnapshot(snapshot);
-                player.print("Snapshot set to: " + snapshot.getName());
+                actor.print("Snapshot set to: " + snapshot.getName());
             }
         } catch (MissingWorldException ex) {
-            player.printError("No snapshots were found for this world.");
+            actor.printError("No snapshots were found for this world.");
         }
     }
 

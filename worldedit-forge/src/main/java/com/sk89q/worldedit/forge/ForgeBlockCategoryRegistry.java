@@ -19,7 +19,6 @@
 
 package com.sk89q.worldedit.forge;
 
-import com.sk89q.worldedit.registry.Category;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.registry.BlockCategoryRegistry;
 import net.minecraft.tags.BlockTags;
@@ -37,10 +36,5 @@ public class ForgeBlockCategoryRegistry implements BlockCategoryRegistry {
         return Optional.ofNullable(BlockTags.getCollection().get(new ResourceLocation(category)))
                 .map(Tag::getAllElements).orElse(Collections.emptySet())
                 .stream().map(ForgeAdapter::adapt).collect(Collectors.toSet());
-    }
-
-    @Override
-    public Set<BlockType> getAll(Category<BlockType> category) {
-        return getCategorisedByName(category.getId());
     }
 }

@@ -34,6 +34,7 @@ import com.sk89q.worldedit.command.tool.SinglePickaxe;
 import com.sk89q.worldedit.command.tool.Tool;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
+import com.sk89q.worldedit.extension.platform.Locatable;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.internal.cui.CUIEvent;
@@ -100,6 +101,7 @@ public class LocalSession {
     private transient BlockVector3 cuiTemporaryBlock;
     private transient EditSession.ReorderMode reorderMode = EditSession.ReorderMode.MULTI_STAGE;
     private transient List<Countable<BlockState>> lastDistribution;
+    private transient World worldOverride;
 
     // Saved properties
     private String lastScript;
@@ -226,21 +228,21 @@ public class LocalSession {
      * Performs an undo.
      *
      * @param newBlockBag a new block bag
-     * @param player the player
+     * @param actor the actor
      * @return whether anything was undone
      */
-    public EditSession undo(@Nullable BlockBag newBlockBag, Player player) {
-        checkNotNull(player);
+    public EditSession undo(@Nullable BlockBag newBlockBag, Actor actor) {
+        checkNotNull(actor);
         --historyPointer;
         if (historyPointer >= 0) {
             EditSession editSession = history.get(historyPointer);
             try (EditSession newEditSession = WorldEdit.getInstance().getEditSessionFactory()
-                    .getEditSession(editSession.getWorld(), -1, newBlockBag, player)) {
+                    .getEditSession(editSession.getWorld(), -1, newBlockBag, actor)) {
                 newEditSession.enableStandardMode();
                 newEditSession.setReorderMode(reorderMode);
                 newEditSession.setFastMode(fastMode);
                 if (newEditSession.getSurvivalExtent() != null) {
-                    newEditSession.getSurvivalExtent().setStripNbt(!player.hasPermission("worldedit.setnbt"));
+                    newEditSession.getSurvivalExtent().setStripNbt(!actor.hasPermission("worldedit.setnbt"));
                 }
                 editSession.undo(newEditSession);
             }
@@ -255,20 +257,20 @@ public class LocalSession {
      * Performs a redo
      *
      * @param newBlockBag a new block bag
-     * @param player the player
+     * @param actor the actor
      * @return whether anything was redone
      */
-    public EditSession redo(@Nullable BlockBag newBlockBag, Player player) {
-        checkNotNull(player);
+    public EditSession redo(@Nullable BlockBag newBlockBag, Actor actor) {
+        checkNotNull(actor);
         if (historyPointer < history.size()) {
             EditSession editSession = history.get(historyPointer);
             try (EditSession newEditSession = WorldEdit.getInstance().getEditSessionFactory()
-                    .getEditSession(editSession.getWorld(), -1, newBlockBag, player)) {
+                    .getEditSession(editSession.getWorld(), -1, newBlockBag, actor)) {
                 newEditSession.enableStandardMode();
                 newEditSession.setReorderMode(reorderMode);
                 newEditSession.setFastMode(fastMode);
                 if (newEditSession.getSurvivalExtent() != null) {
-                    newEditSession.getSurvivalExtent().setStripNbt(!player.hasPermission("worldedit.setnbt"));
+                    newEditSession.getSurvivalExtent().setStripNbt(!actor.hasPermission("worldedit.setnbt"));
                 }
                 editSession.redo(newEditSession);
             }
@@ -277,6 +279,19 @@ public class LocalSession {
         }
 
         return null;
+    }
+
+    public boolean hasWorldOverride() {
+        return this.worldOverride != null;
+    }
+
+    @Nullable
+    public World getWorldOverride() {
+        return this.worldOverride;
+    }
+
+    public void setWorldOverride(@Nullable World worldOverride) {
+        this.worldOverride = worldOverride;
     }
 
     /**
@@ -311,6 +326,9 @@ public class LocalSession {
         if (selector.getWorld() == null || !selector.getWorld().equals(world)) {
             selector.setWorld(world);
             selector.clear();
+            if (hasWorldOverride() && !world.equals(getWorldOverride())) {
+                setWorldOverride(null);
+            }
         }
         return selector;
     }
@@ -326,6 +344,9 @@ public class LocalSession {
         checkNotNull(selector);
         selector.setWorld(world);
         this.selector = selector;
+        if (hasWorldOverride() && !world.equals(getWorldOverride())) {
+            setWorldOverride(null);
+        }
     }
 
     /**
@@ -483,14 +504,18 @@ public class LocalSession {
      * Get the position use for commands that take a center point
      * (i.e. //forestgen, etc.).
      *
-     * @param player the player
+     * @param actor the actor
      * @return the position to use
      * @throws IncompleteRegionException thrown if a region is not fully selected
      */
-    public BlockVector3 getPlacementPosition(Player player) throws IncompleteRegionException {
-        checkNotNull(player);
+    public BlockVector3 getPlacementPosition(Actor actor) throws IncompleteRegionException {
+        checkNotNull(actor);
         if (!placeAtPos1) {
-            return player.getBlockIn().toVector().toBlockPoint();
+            if (actor instanceof Locatable) {
+                return ((Locatable) actor).getBlockLocation().toVector().toBlockPoint();
+            } else {
+                throw new IncompleteRegionException();
+            }
         }
 
         return selector.getPrimaryPosition();
@@ -653,9 +678,9 @@ public class LocalSession {
     /**
      * Tell the player the WorldEdit version.
      *
-     * @param player the player
+     * @param actor the actor
      */
-    public void tellVersion(Actor player) {
+    public void tellVersion(Actor actor) {
     }
 
     public boolean shouldUseServerCUI() {
@@ -885,25 +910,38 @@ public class LocalSession {
     /**
      * Construct a new edit session.
      *
-     * @param player the player
+     * @param actor the actor
      * @return an edit session
      */
-    public EditSession createEditSession(Player player) {
-        checkNotNull(player);
+    public EditSession createEditSession(Actor actor) {
+        checkNotNull(actor);
 
-        BlockBag blockBag = getBlockBag(player);
+        World world = null;
+        if (hasWorldOverride()) {
+            world = getWorldOverride();
+        } else if (actor instanceof Locatable && ((Locatable) actor).getExtent() instanceof World) {
+            world = (World) ((Locatable) actor).getExtent();
+        }
 
         // Create an edit session
-        EditSession editSession = WorldEdit.getInstance().getEditSessionFactory()
-                .getEditSession(player.isPlayer() ? player.getWorld() : null,
-                        getBlockChangeLimit(), blockBag, player);
+        EditSession editSession;
+        if (actor.isPlayer() && actor instanceof Player) {
+            BlockBag blockBag = getBlockBag((Player) actor);
+            editSession = WorldEdit.getInstance().getEditSessionFactory().getEditSession(
+                    world,
+                    getBlockChangeLimit(), blockBag, actor
+            );
+        } else {
+            editSession = WorldEdit.getInstance().getEditSessionFactory()
+                    .getEditSession(world, getBlockChangeLimit());
+        }
         Request.request().setEditSession(editSession);
 
         editSession.setFastMode(fastMode);
         editSession.setReorderMode(reorderMode);
         editSession.setMask(mask);
         if (editSession.getSurvivalExtent() != null) {
-            editSession.getSurvivalExtent().setStripNbt(!player.hasPermission("worldedit.setnbt"));
+            editSession.getSurvivalExtent().setStripNbt(!actor.hasPermission("worldedit.setnbt"));
         }
 
         return editSession;

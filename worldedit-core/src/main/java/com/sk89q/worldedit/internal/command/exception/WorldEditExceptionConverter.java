@@ -27,6 +27,7 @@ import com.sk89q.worldedit.InvalidItemException;
 import com.sk89q.worldedit.MaxBrushRadiusException;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.MaxRadiusException;
+import com.sk89q.worldedit.MissingWorldException;
 import com.sk89q.worldedit.UnknownDirectionException;
 import com.sk89q.worldedit.UnknownItemException;
 import com.sk89q.worldedit.WorldEdit;
@@ -79,6 +80,11 @@ public class WorldEditExceptionConverter extends ExceptionConverterHelper {
     @ExceptionMatch
     public void convert(IncompleteRegionException e) throws CommandException {
         throw newCommandException("Make a region selection first.", e);
+    }
+
+    @ExceptionMatch
+    public void convert(MissingWorldException e) throws CommandException {
+        throw newCommandException("You need to provide a world (Try //world)", e);
     }
 
     @ExceptionMatch

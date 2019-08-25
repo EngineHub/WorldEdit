@@ -36,10 +36,7 @@ import com.sk89q.worldedit.command.util.Logging;
 import com.sk89q.worldedit.command.util.PrintCommandHelp;
 import com.sk89q.worldedit.command.util.WorldEditAsyncCommandBuilder;
 import com.sk89q.worldedit.entity.Entity;
-import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
-import com.sk89q.worldedit.extension.platform.Capability;
-import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.function.EntityFunction;
 import com.sk89q.worldedit.function.mask.BlockTypeMask;
 import com.sk89q.worldedit.function.mask.ExistingBlockMask;
@@ -49,7 +46,6 @@ import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.function.visitor.EntityVisitor;
 import com.sk89q.worldedit.internal.expression.Expression;
 import com.sk89q.worldedit.internal.expression.ExpressionException;
-import com.sk89q.worldedit.internal.expression.runtime.EvaluationException;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.CylinderRegion;
@@ -90,7 +86,7 @@ public class UtilityCommands {
     )
     @CommandPermissions("worldedit.fill")
     @Logging(PLACEMENT)
-    public int fill(Player player, LocalSession session, EditSession editSession,
+    public int fill(Actor actor, LocalSession session, EditSession editSession,
                     @Arg(desc = "The blocks to fill with")
                         Pattern pattern,
                     @Arg(desc = "The radius to fill in")
@@ -101,9 +97,9 @@ public class UtilityCommands {
         we.checkMaxRadius(radius);
         depth = Math.max(1, depth);
 
-        BlockVector3 pos = session.getPlacementPosition(player);
+        BlockVector3 pos = session.getPlacementPosition(actor);
         int affected = editSession.fillXZ(pos, pattern, radius, depth, false);
-        player.print(affected + " block(s) have been created.");
+        actor.print(affected + " block(s) have been created.");
         return affected;
     }
 
@@ -113,7 +109,7 @@ public class UtilityCommands {
     )
     @CommandPermissions("worldedit.fill.recursive")
     @Logging(PLACEMENT)
-    public int fillr(Player player, LocalSession session, EditSession editSession,
+    public int fillr(Actor actor, LocalSession session, EditSession editSession,
                      @Arg(desc = "The blocks to fill with")
                          Pattern pattern,
                      @Arg(desc = "The radius to fill in")
@@ -125,9 +121,9 @@ public class UtilityCommands {
         depth = depth == null ? Integer.MAX_VALUE : Math.max(1, depth);
         we.checkMaxRadius(radius);
 
-        BlockVector3 pos = session.getPlacementPosition(player);
+        BlockVector3 pos = session.getPlacementPosition(actor);
         int affected = editSession.fillXZ(pos, pattern, radius, depth, true);
-        player.print(affected + " block(s) have been created.");
+        actor.print(affected + " block(s) have been created.");
         return affected;
     }
 
@@ -137,7 +133,7 @@ public class UtilityCommands {
     )
     @CommandPermissions("worldedit.drain")
     @Logging(PLACEMENT)
-    public int drain(Player player, LocalSession session, EditSession editSession,
+    public int drain(Actor actor, LocalSession session, EditSession editSession,
                      @Arg(desc = "The radius to drain")
                          double radius,
                      @Switch(name = 'w', desc = "Also un-waterlog blocks")
@@ -145,8 +141,8 @@ public class UtilityCommands {
         radius = Math.max(0, radius);
         we.checkMaxRadius(radius);
         int affected = editSession.drainArea(
-            session.getPlacementPosition(player), radius, waterlogged);
-        player.print(affected + " block(s) have been changed.");
+            session.getPlacementPosition(actor), radius, waterlogged);
+        actor.print(affected + " block(s) have been changed.");
         return affected;
     }
 
@@ -157,13 +153,13 @@ public class UtilityCommands {
     )
     @CommandPermissions("worldedit.fixlava")
     @Logging(PLACEMENT)
-    public int fixLava(Player player, LocalSession session, EditSession editSession,
+    public int fixLava(Actor actor, LocalSession session, EditSession editSession,
                        @Arg(desc = "The radius to fix in")
                            double radius) throws WorldEditException {
         radius = Math.max(0, radius);
         we.checkMaxRadius(radius);
-        int affected = editSession.fixLiquid(session.getPlacementPosition(player), radius, BlockTypes.LAVA);
-        player.print(affected + " block(s) have been changed.");
+        int affected = editSession.fixLiquid(session.getPlacementPosition(actor), radius, BlockTypes.LAVA);
+        actor.print(affected + " block(s) have been changed.");
         return affected;
     }
 
@@ -174,13 +170,13 @@ public class UtilityCommands {
     )
     @CommandPermissions("worldedit.fixwater")
     @Logging(PLACEMENT)
-    public int fixWater(Player player, LocalSession session, EditSession editSession,
+    public int fixWater(Actor actor, LocalSession session, EditSession editSession,
                         @Arg(desc = "The radius to fix in")
                             double radius) throws WorldEditException {
         radius = Math.max(0, radius);
         we.checkMaxRadius(radius);
-        int affected = editSession.fixLiquid(session.getPlacementPosition(player), radius, BlockTypes.WATER);
-        player.print(affected + " block(s) have been changed.");
+        int affected = editSession.fixLiquid(session.getPlacementPosition(actor), radius, BlockTypes.WATER);
+        actor.print(affected + " block(s) have been changed.");
         return affected;
     }
 
@@ -191,18 +187,17 @@ public class UtilityCommands {
     )
     @CommandPermissions("worldedit.removeabove")
     @Logging(PLACEMENT)
-    public int removeAbove(Player player, LocalSession session, EditSession editSession,
+    public int removeAbove(Actor actor, World world, LocalSession session, EditSession editSession,
                            @Arg(desc = "The apothem of the square to remove from", def = "1")
                                int size,
                            @Arg(desc = "The maximum height above you to remove from", def = "")
                                Integer height) throws WorldEditException {
         size = Math.max(1, size);
         we.checkMaxRadius(size);
-        World world = player.getWorld();
         height = height != null ? Math.min((world.getMaxY() + 1), height + 1) : (world.getMaxY() + 1);
 
-        int affected = editSession.removeAbove(session.getPlacementPosition(player), size, height);
-        player.print(affected + " block(s) have been removed.");
+        int affected = editSession.removeAbove(session.getPlacementPosition(actor), size, height);
+        actor.print(affected + " block(s) have been removed.");
         return affected;
     }
 
@@ -213,18 +208,17 @@ public class UtilityCommands {
     )
     @CommandPermissions("worldedit.removebelow")
     @Logging(PLACEMENT)
-    public int removeBelow(Player player, LocalSession session, EditSession editSession,
+    public int removeBelow(Actor actor, World world, LocalSession session, EditSession editSession,
                            @Arg(desc = "The apothem of the square to remove from", def = "1")
                                int size,
                            @Arg(desc = "The maximum height below you to remove from", def = "")
                                Integer height) throws WorldEditException {
         size = Math.max(1, size);
         we.checkMaxRadius(size);
-        World world = player.getWorld();
         height = height != null ? Math.min((world.getMaxY() + 1), height + 1) : (world.getMaxY() + 1);
 
-        int affected = editSession.removeBelow(session.getPlacementPosition(player), size, height);
-        player.print(affected + " block(s) have been removed.");
+        int affected = editSession.removeBelow(session.getPlacementPosition(actor), size, height);
+        actor.print(affected + " block(s) have been removed.");
         return affected;
     }
 
@@ -235,7 +229,7 @@ public class UtilityCommands {
     )
     @CommandPermissions("worldedit.removenear")
     @Logging(PLACEMENT)
-    public int removeNear(Player player, LocalSession session, EditSession editSession,
+    public int removeNear(Actor actor, LocalSession session, EditSession editSession,
                           @Arg(desc = "The mask of blocks to remove")
                               Mask mask,
                           @Arg(desc = "The radius of the square to remove from", def = "50")
@@ -243,8 +237,8 @@ public class UtilityCommands {
         radius = Math.max(1, radius);
         we.checkMaxRadius(radius);
 
-        int affected = editSession.removeNear(session.getPlacementPosition(player), mask, radius);
-        player.print(affected + " block(s) have been removed.");
+        int affected = editSession.removeNear(session.getPlacementPosition(actor), mask, radius);
+        actor.print(affected + " block(s) have been removed.");
         return affected;
     }
 
@@ -255,7 +249,7 @@ public class UtilityCommands {
     )
     @CommandPermissions("worldedit.replacenear")
     @Logging(PLACEMENT)
-    public int replaceNear(Player player, LocalSession session, EditSession editSession,
+    public int replaceNear(Actor actor, World world, LocalSession session, EditSession editSession,
                            @Arg(desc = "The radius of the square to remove in")
                                int radius,
                            @Arg(desc = "The mask matching blocks to remove", def = "")
@@ -265,17 +259,17 @@ public class UtilityCommands {
         radius = Math.max(1, radius);
         we.checkMaxRadius(radius);
 
-        BlockVector3 base = session.getPlacementPosition(player);
+        BlockVector3 base = session.getPlacementPosition(actor);
         BlockVector3 min = base.subtract(radius, radius, radius);
         BlockVector3 max = base.add(radius, radius, radius);
-        Region region = new CuboidRegion(player.getWorld(), min, max);
+        Region region = new CuboidRegion(world, min, max);
 
         if (from == null) {
             from = new ExistingBlockMask(editSession);
         }
 
         int affected = editSession.replaceBlocks(region, from, to);
-        player.print(affected + " block(s) have been replaced.");
+        actor.print(affected + " block(s) have been replaced.");
         return affected;
     }
 
@@ -286,14 +280,14 @@ public class UtilityCommands {
     )
     @CommandPermissions("worldedit.snow")
     @Logging(PLACEMENT)
-    public int snow(Player player, LocalSession session, EditSession editSession,
+    public int snow(Actor actor, LocalSession session, EditSession editSession,
                     @Arg(desc = "The radius of the circle to snow in", def = "10")
                         double size) throws WorldEditException {
         size = Math.max(1, size);
         we.checkMaxRadius(size);
 
-        int affected = editSession.simulateSnow(session.getPlacementPosition(player), size);
-        player.print(affected + " surface(s) covered. Let it snow~");
+        int affected = editSession.simulateSnow(session.getPlacementPosition(actor), size);
+        actor.print(affected + " surface(s) covered. Let it snow~");
         return affected;
     }
 
@@ -304,14 +298,14 @@ public class UtilityCommands {
     )
     @CommandPermissions("worldedit.thaw")
     @Logging(PLACEMENT)
-    public int thaw(Player player, LocalSession session, EditSession editSession,
+    public int thaw(Actor actor, LocalSession session, EditSession editSession,
                     @Arg(desc = "The radius of the circle to thaw in", def = "10")
                         double size) throws WorldEditException {
         size = Math.max(1, size);
         we.checkMaxRadius(size);
 
-        int affected = editSession.thaw(session.getPlacementPosition(player), size);
-        player.print(affected + " surface(s) thawed.");
+        int affected = editSession.thaw(session.getPlacementPosition(actor), size);
+        actor.print(affected + " surface(s) thawed.");
         return affected;
     }
 
@@ -322,7 +316,7 @@ public class UtilityCommands {
     )
     @CommandPermissions("worldedit.green")
     @Logging(PLACEMENT)
-    public int green(Player player, LocalSession session, EditSession editSession,
+    public int green(Actor actor, LocalSession session, EditSession editSession,
                      @Arg(desc = "The radius of the circle to convert in", def = "10")
                          double size,
                      @Switch(name = 'f', desc = "Also convert coarse dirt")
@@ -331,8 +325,8 @@ public class UtilityCommands {
         we.checkMaxRadius(size);
         final boolean onlyNormalDirt = !convertCoarse;
 
-        final int affected = editSession.green(session.getPlacementPosition(player), size, onlyNormalDirt);
-        player.print(affected + " surface(s) greened.");
+        final int affected = editSession.green(session.getPlacementPosition(actor), size, onlyNormalDirt);
+        actor.print(affected + " surface(s) greened.");
         return affected;
     }
 
@@ -343,7 +337,7 @@ public class UtilityCommands {
     )
     @CommandPermissions("worldedit.extinguish")
     @Logging(PLACEMENT)
-    public void extinguish(Player player, LocalSession session, EditSession editSession,
+    public void extinguish(Actor actor, LocalSession session, EditSession editSession,
                            @Arg(desc = "The radius of the square to remove in", def = "")
                                Integer radius) throws WorldEditException {
 
@@ -354,8 +348,8 @@ public class UtilityCommands {
         we.checkMaxRadius(size);
 
         Mask mask = new BlockTypeMask(editSession, BlockTypes.FIRE);
-        int affected = editSession.removeNear(session.getPlacementPosition(player), mask, size);
-        player.print(affected + " block(s) have been removed.");
+        int affected = editSession.removeNear(session.getPlacementPosition(actor), mask, size);
+        actor.print(affected + " block(s) have been removed.");
     }
 
     @Command(
@@ -384,7 +378,6 @@ public class UtilityCommands {
                        @Switch(name = 'r', desc = "Also destroy armor stands")
                            boolean killArmorStands) throws WorldEditException {
         LocalConfiguration config = we.getConfiguration();
-        Player player = actor instanceof Player ? (Player) actor : null;
 
         if (radius == null) {
             radius = config.butcherDefaultRadius;
@@ -410,7 +403,7 @@ public class UtilityCommands {
         flags.or(CreatureButcher.Flags.TAGGED, killWithName, "worldedit.butcher.tagged");
         flags.or(CreatureButcher.Flags.ARMOR_STAND, killArmorStands, "worldedit.butcher.armorstands");
 
-        int killed = killMatchingEntities(radius, player, flags::createFunction);
+        int killed = killMatchingEntities(radius, actor, flags::createFunction);
 
         actor.print("Killed " + killed + (killed != 1 ? " mobs" : " mob") + (radius < 0 ? "" : " in a radius of " + radius) + ".");
 
@@ -429,43 +422,32 @@ public class UtilityCommands {
                           EntityRemover remover,
                       @Arg(desc = "The radius of the cuboid to remove from")
                           int radius) throws WorldEditException {
-        Player player = actor instanceof Player ? (Player) actor : null;
-
         if (radius < -1) {
             actor.printError("Use -1 to remove all entities in loaded chunks");
             return 0;
         }
 
-        int removed = killMatchingEntities(radius, player, remover::createFunction);
+        int removed = killMatchingEntities(radius, actor, remover::createFunction);
 
         actor.print("Marked " + removed + (removed != 1 ? " entities" : " entity") + " for removal.");
         return removed;
     }
 
-    private int killMatchingEntities(Integer radius, Player player, Supplier<EntityFunction> func) throws IncompleteRegionException, MaxChangedBlocksException {
+    private int killMatchingEntities(Integer radius, Actor actor, Supplier<EntityFunction> func) throws IncompleteRegionException,
+            MaxChangedBlocksException {
         List<EntityVisitor> visitors = new ArrayList<>();
-        LocalSession session = null;
-        EditSession editSession = null;
 
-        if (player != null) {
-            session = we.getSessionManager().get(player);
-            BlockVector3 center = session.getPlacementPosition(player);
-            editSession = session.createEditSession(player);
-            List<? extends Entity> entities;
-            if (radius >= 0) {
-                CylinderRegion region = CylinderRegion.createRadius(editSession, center, radius);
-                entities = editSession.getEntities(region);
-            } else {
-                entities = editSession.getEntities();
-            }
-            visitors.add(new EntityVisitor(entities.iterator(), func.get()));
+        LocalSession session = we.getSessionManager().get(actor);
+        BlockVector3 center = session.getPlacementPosition(actor);
+        EditSession editSession = session.createEditSession(actor);
+        List<? extends Entity> entities;
+        if (radius >= 0) {
+            CylinderRegion region = CylinderRegion.createRadius(editSession, center, radius);
+            entities = editSession.getEntities(region);
         } else {
-            Platform platform = we.getPlatformManager().queryCapability(Capability.WORLD_EDITING);
-            for (World world : platform.getWorlds()) {
-                List<? extends Entity> entities = world.getEntities();
-                visitors.add(new EntityVisitor(entities.iterator(), func.get()));
-            }
+            entities = editSession.getEntities();
         }
+        visitors.add(new EntityVisitor(entities.iterator(), func.get()));
 
         int killed = 0;
         for (EntityVisitor visitor : visitors) {
@@ -473,10 +455,8 @@ public class UtilityCommands {
             killed += visitor.getAffected();
         }
 
-        if (editSession != null) {
-            session.remember(editSession);
-            editSession.flushSession();
-        }
+        session.remember(editSession);
+        editSession.flushSession();
         return killed;
     }
 

@@ -27,9 +27,10 @@ import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.command.util.CommandPermissions;
 import com.sk89q.worldedit.command.util.CommandPermissionsConditionGenerator;
 import com.sk89q.worldedit.command.util.Logging;
-import com.sk89q.worldedit.entity.Player;
+import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.world.DataException;
+import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.snapshot.InvalidSnapshotException;
 import com.sk89q.worldedit.world.snapshot.Snapshot;
 import com.sk89q.worldedit.world.snapshot.SnapshotRestore;
@@ -60,25 +61,25 @@ public class SnapshotUtilCommands {
     )
     @Logging(REGION)
     @CommandPermissions("worldedit.snapshots.restore")
-    public void restore(Player player, LocalSession session, EditSession editSession,
+    public void restore(Actor actor, World world, LocalSession session, EditSession editSession,
                         @Arg(name = "snapshot", desc = "The snapshot to restore", def = "")
                             String snapshotName) throws WorldEditException {
 
         LocalConfiguration config = we.getConfiguration();
 
         if (config.snapshotRepo == null) {
-            player.printError("Snapshot/backup restore is not configured.");
+            actor.printError("Snapshot/backup restore is not configured.");
             return;
         }
 
-        Region region = session.getSelection(player.getWorld());
+        Region region = session.getSelection(world);
         Snapshot snapshot;
 
         if (snapshotName != null) {
             try {
                 snapshot = config.snapshotRepo.getSnapshot(snapshotName);
             } catch (InvalidSnapshotException e) {
-                player.printError("That snapshot does not exist or is not available.");
+                actor.printError("That snapshot does not exist or is not available.");
                 return;
             }
         } else {
@@ -88,10 +89,10 @@ public class SnapshotUtilCommands {
         // No snapshot set?
         if (snapshot == null) {
             try {
-                snapshot = config.snapshotRepo.getDefaultSnapshot(player.getWorld().getName());
+                snapshot = config.snapshotRepo.getDefaultSnapshot(world.getName());
 
                 if (snapshot == null) {
-                    player.printError("No snapshots were found. See console for details.");
+                    actor.printError("No snapshots were found. See console for details.");
 
                     // Okay, let's toss some debugging information!
                     File dir = config.snapshotRepo.getDirectory();
@@ -108,7 +109,7 @@ public class SnapshotUtilCommands {
                     return;
                 }
             } catch (MissingWorldException ex) {
-                player.printError("No snapshots were found for this world.");
+                actor.printError("No snapshots were found for this world.");
                 return;
             }
         }
@@ -118,9 +119,9 @@ public class SnapshotUtilCommands {
         // Load chunk store
         try {
             chunkStore = snapshot.getChunkStore();
-            player.print("Snapshot '" + snapshot.getName() + "' loaded; now restoring...");
+            actor.print("Snapshot '" + snapshot.getName() + "' loaded; now restoring...");
         } catch (DataException | IOException e) {
-            player.printError("Failed to load snapshot: " + e.getMessage());
+            actor.printError("Failed to load snapshot: " + e.getMessage());
             return;
         }
 
@@ -134,15 +135,15 @@ public class SnapshotUtilCommands {
             if (restore.hadTotalFailure()) {
                 String error = restore.getLastErrorMessage();
                 if (!restore.getMissingChunks().isEmpty()) {
-                    player.printError("Chunks were not present in snapshot.");
+                    actor.printError("Chunks were not present in snapshot.");
                 } else if (error != null) {
-                    player.printError("Errors prevented any blocks from being restored.");
-                    player.printError("Last error: " + error);
+                    actor.printError("Errors prevented any blocks from being restored.");
+                    actor.printError("Last error: " + error);
                 } else {
-                    player.printError("No chunks could be loaded. (Bad archive?)");
+                    actor.printError("No chunks could be loaded. (Bad archive?)");
                 }
             } else {
-                player.print(String.format("Restored; %d "
+                actor.print(String.format("Restored; %d "
                         + "missing chunks and %d other errors.",
                         restore.getMissingChunks().size(),
                         restore.getErrorChunks().size()));

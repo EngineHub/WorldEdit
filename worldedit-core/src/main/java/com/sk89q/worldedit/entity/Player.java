@@ -191,8 +191,12 @@ public interface Player extends Entity, Actor {
      * Get the point of the block that is being stood in.
      *
      * @return point
+     * @deprecated Use Locatable#getBlockLocation
      */
-    Location getBlockIn();
+    @Deprecated
+    default Location getBlockIn() {
+        return getBlockLocation();
+    }
 
     /**
      * Get the point of the block that is being stood upon.
@@ -280,13 +284,6 @@ public interface Player extends Entity, Actor {
      * @param yaw the yaw (left/right) of the player's view in degrees
      */
     void setPosition(Vector3 pos, float pitch, float yaw);
-
-    /**
-     * Move the player.
-     *
-     * @param pos where to move them
-     */
-    void setPosition(Vector3 pos);
 
     /**
      * Sends a fake block to the client.

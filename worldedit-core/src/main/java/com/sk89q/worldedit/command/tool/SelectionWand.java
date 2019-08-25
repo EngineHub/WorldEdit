@@ -34,8 +34,8 @@ public class SelectionWand implements DoubleActionBlockTool {
     @Override
     public boolean actSecondary(Platform server, LocalConfiguration config, Player player, LocalSession session, Location clicked) {
         RegionSelector selector = session.getRegionSelector(player.getWorld());
-
         BlockVector3 blockPoint = clicked.toVector().toBlockPoint();
+
         if (selector.selectPrimary(blockPoint, ActorSelectorLimits.forActor(player))) {
             selector.explainPrimarySelection(player, session, blockPoint);
         }
@@ -46,6 +46,7 @@ public class SelectionWand implements DoubleActionBlockTool {
     public boolean actPrimary(Platform server, LocalConfiguration config, Player player, LocalSession session, Location clicked) {
         RegionSelector selector = session.getRegionSelector(player.getWorld());
         BlockVector3 blockPoint = clicked.toVector().toBlockPoint();
+
         if (selector.selectSecondary(blockPoint, ActorSelectorLimits.forActor(player))) {
             selector.explainSecondarySelection(player, session, blockPoint);
         }

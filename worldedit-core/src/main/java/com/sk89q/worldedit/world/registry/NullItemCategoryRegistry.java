@@ -19,7 +19,6 @@
 
 package com.sk89q.worldedit.world.registry;
 
-import com.sk89q.worldedit.registry.Category;
 import com.sk89q.worldedit.world.item.ItemType;
 
 import java.util.Collections;
@@ -29,11 +28,6 @@ public class NullItemCategoryRegistry implements ItemCategoryRegistry {
 
     @Override
     public Set<ItemType> getCategorisedByName(String category) {
-        return Collections.emptySet();
-    }
-
-    @Override
-    public Set<ItemType> getAll(final Category<ItemType> category) {
         return Collections.emptySet();
     }
 }

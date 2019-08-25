@@ -56,6 +56,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Tag;
 import org.bukkit.block.Biome;
+import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
@@ -432,6 +433,8 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
     public Actor wrapCommandSender(CommandSender sender) {
         if (sender instanceof Player) {
             return wrapPlayer((Player) sender);
+        } else if (config.commandBlockSupport && sender instanceof BlockCommandSender) {
+            return new BukkitBlockCommandSender(this, (BlockCommandSender) sender);
         }
 
         return new BukkitCommandSender(this, sender);

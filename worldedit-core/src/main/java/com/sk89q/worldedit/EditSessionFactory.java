@@ -21,8 +21,8 @@ package com.sk89q.worldedit;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.event.extent.EditSessionEvent;
+import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
 import com.sk89q.worldedit.util.eventbus.EventBus;
 import com.sk89q.worldedit.world.World;
@@ -65,10 +65,10 @@ public class EditSessionFactory {
      *
      * @param world the world
      * @param maxBlocks the maximum number of blocks that can be changed, or -1 to use no limit
-     * @param player the player that the {@link EditSession} is for
+     * @param actor the actor that the {@link EditSession} is for
      * @return an instance
      */
-    public EditSession getEditSession(World world, int maxBlocks, Player player) {
+    public EditSession getEditSession(World world, int maxBlocks, Actor actor) {
 
         //  ============ READ ME ============
 
@@ -114,10 +114,10 @@ public class EditSessionFactory {
      * @param world the world
      * @param maxBlocks the maximum number of blocks that can be changed, or -1 to use no limit
      * @param blockBag an optional {@link BlockBag} to use, otherwise null
-     * @param player the player that the {@link EditSession} is for
+     * @param actor the actor that the {@link EditSession} is for
      * @return an instance
      */
-    public EditSession getEditSession(World world, int maxBlocks, BlockBag blockBag, Player player) {
+    public EditSession getEditSession(World world, int maxBlocks, BlockBag blockBag, Actor actor) {
 
         //  ============ READ ME ============
 
@@ -156,8 +156,8 @@ public class EditSessionFactory {
         }
 
         @Override
-        public EditSession getEditSession(World world, int maxBlocks, Player player) {
-            return getEditSession(world, maxBlocks, null, player);
+        public EditSession getEditSession(World world, int maxBlocks, Actor actor) {
+            return getEditSession(world, maxBlocks, null, actor);
         }
 
         @Override
@@ -166,11 +166,11 @@ public class EditSessionFactory {
         }
 
         @Override
-        public EditSession getEditSession(World world, int maxBlocks, BlockBag blockBag, Player player) {
+        public EditSession getEditSession(World world, int maxBlocks, BlockBag blockBag, Actor actor) {
             if (WorldEdit.getInstance().getConfiguration().traceUnflushedSessions) {
-                return new TracedEditSession(eventBus, world, maxBlocks, blockBag, new EditSessionEvent(world, player, maxBlocks, null));
+                return new TracedEditSession(eventBus, world, maxBlocks, blockBag, new EditSessionEvent(world, actor, maxBlocks, null));
             }
-            return new EditSession(eventBus, world, maxBlocks, blockBag, new EditSessionEvent(world, player, maxBlocks, null));
+            return new EditSession(eventBus, world, maxBlocks, blockBag, new EditSessionEvent(world, actor, maxBlocks, null));
         }
 
     }

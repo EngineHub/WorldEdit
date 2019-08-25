@@ -33,6 +33,7 @@ import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.util.formatting.component.PaginationBox;
 import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.item.ItemType;
 import org.enginehub.piston.annotation.Command;
 import org.enginehub.piston.annotation.CommandContainer;
@@ -72,23 +73,23 @@ public class GeneralCommands {
         desc = "Modify block change limit"
     )
     @CommandPermissions("worldedit.limit")
-    public void limit(Player player, LocalSession session,
+    public void limit(Actor actor, LocalSession session,
                       @Arg(desc = "The limit to set", def = "")
                           Integer limit) {
 
         LocalConfiguration config = worldEdit.getConfiguration();
-        boolean mayDisable = player.hasPermission("worldedit.limit.unrestricted");
+        boolean mayDisable = actor.hasPermission("worldedit.limit.unrestricted");
 
         limit = limit == null ? config.defaultChangeLimit : Math.max(-1, limit);
         if (!mayDisable && config.maxChangeLimit > -1) {
             if (limit > config.maxChangeLimit) {
-                player.printError("Your maximum allowable limit is " + config.maxChangeLimit + ".");
+                actor.printError("Your maximum allowable limit is " + config.maxChangeLimit + ".");
                 return;
             }
         }
 
         session.setBlockChangeLimit(limit);
-        player.print("Block change limit set to " + limit + "."
+        actor.print("Block change limit set to " + limit + "."
                 + (limit == config.defaultChangeLimit ? "" : " (Use //limit to go back to the default.)"));
     }
 
@@ -97,22 +98,22 @@ public class GeneralCommands {
         desc = "Modify evaluation timeout time."
     )
     @CommandPermissions("worldedit.timeout")
-    public void timeout(Player player, LocalSession session,
+    public void timeout(Actor actor, LocalSession session,
                         @Arg(desc = "The timeout time to set", def = "")
                             Integer limit) {
         LocalConfiguration config = worldEdit.getConfiguration();
-        boolean mayDisable = player.hasPermission("worldedit.timeout.unrestricted");
+        boolean mayDisable = actor.hasPermission("worldedit.timeout.unrestricted");
 
         limit = limit == null ? config.calculationTimeout : Math.max(-1, limit);
         if (!mayDisable && config.maxCalculationTimeout > -1) {
             if (limit > config.maxCalculationTimeout) {
-                player.printError("Your maximum allowable timeout is " + config.maxCalculationTimeout + " ms.");
+                actor.printError("Your maximum allowable timeout is " + config.maxCalculationTimeout + " ms.");
                 return;
             }
         }
 
         session.setTimeout(limit);
-        player.print("Timeout time set to " + limit + " ms."
+        actor.print("Timeout time set to " + limit + " ms."
                 + (limit == config.calculationTimeout ? "" : " (Use //timeout to go back to the default.)"));
     }
 
@@ -121,21 +122,21 @@ public class GeneralCommands {
         desc = "Toggle fast mode"
     )
     @CommandPermissions("worldedit.fast")
-    public void fast(Player player, LocalSession session,
+    public void fast(Actor actor, LocalSession session,
                      @Arg(desc = "The new fast mode state", def = "")
                         Boolean fastMode) {
         boolean hasFastMode = session.hasFastMode();
         if (fastMode != null && fastMode == hasFastMode) {
-            player.printError("Fast mode already " + (fastMode ? "enabled" : "disabled") + ".");
+            actor.printError("Fast mode already " + (fastMode ? "enabled" : "disabled") + ".");
             return;
         }
 
         if (hasFastMode) {
             session.setFastMode(false);
-            player.print("Fast mode disabled.");
+            actor.print("Fast mode disabled.");
         } else {
             session.setFastMode(true);
-            player.print("Fast mode enabled. Lighting in the affected chunks may be wrong and/or you may need to rejoin to see changes.");
+            actor.print("Fast mode enabled. Lighting in the affected chunks may be wrong and/or you may need to rejoin to see changes.");
         }
     }
 
@@ -144,14 +145,14 @@ public class GeneralCommands {
         desc = "Sets the reorder mode of WorldEdit"
     )
     @CommandPermissions("worldedit.reorder")
-    public void reorderMode(Player player, LocalSession session,
+    public void reorderMode(Actor actor, LocalSession session,
                             @Arg(desc = "The reorder mode", def = "")
                                 EditSession.ReorderMode reorderMode) {
         if (reorderMode == null) {
-            player.print("The reorder mode is " + session.getReorderMode().getDisplayName());
+            actor.print("The reorder mode is " + session.getReorderMode().getDisplayName());
         } else {
             session.setReorderMode(reorderMode);
-            player.print("The reorder mode is now " + session.getReorderMode().getDisplayName());
+            actor.print("The reorder mode is now " + session.getReorderMode().getDisplayName());
         }
     }
 
@@ -183,20 +184,35 @@ public class GeneralCommands {
     }
 
     @Command(
+        name = "/world",
+        desc = "Sets the world override"
+    )
+    @CommandPermissions("worldedit.world")
+    public void world(Actor actor, LocalSession session,
+            @Arg(desc = "The world override", def = "") World world) {
+        session.setWorldOverride(world);
+        if (world == null) {
+            actor.print("Removed world override.");
+        } else {
+            actor.print("Set the world override to " + world.getId() + ". (Use //world to go back to default)");
+        }
+    }
+
+    @Command(
         name = "gmask",
         aliases = {"/gmask"},
         desc = "Set the global mask"
     )
     @CommandPermissions("worldedit.global-mask")
-    public void gmask(Player player, LocalSession session,
+    public void gmask(Actor actor, LocalSession session,
                       @Arg(desc = "The mask to set", def = "")
                           Mask mask) {
         if (mask == null) {
             session.setMask(null);
-            player.print("Global mask disabled.");
+            actor.print("Global mask disabled.");
         } else {
             session.setMask(mask);
-            player.print("Global mask set.");
+            actor.print("Global mask set.");
         }
     }
 
