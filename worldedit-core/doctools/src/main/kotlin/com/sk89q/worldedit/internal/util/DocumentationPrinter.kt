@@ -262,7 +262,8 @@ Other Permissions
                     postfix = ")",
                     transform = { "``$prefix$it``" })
         }
-        cmdOutput.appendln().appendln()
+        cmdOutput.appendln()
+        cmdOutput.appendln("    :class: command-topic").appendln()
         cmdOutput.appendln("""
             |    .. csv-table::
             |        :widths: 8, 15
