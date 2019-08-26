@@ -60,7 +60,9 @@ class DocumentationPrinter private constructor() {
 
     private suspend inline fun <reified T> SequenceScope<String>.yieldAllCommandsIn() {
         val sourceFile = Paths.get("worldedit-core/src/main/java/" + T::class.qualifiedName!!.replace('.', '/') + ".java")
-        require(Files.exists(sourceFile)) { "Source not found for ${T::class.qualifiedName}"}
+        require(Files.exists(sourceFile)) {
+            "Source not found for ${T::class.qualifiedName}, looked at ${sourceFile.toAbsolutePath()}"
+        }
         Files.newBufferedReader(sourceFile).useLines { lines ->
             var inCommand = false
             for (line in lines) {
@@ -267,7 +269,7 @@ Other Permissions
         """.trimMargin())
         cmdOutput.appendln()
         for ((k, v) in entries) {
-            val rstSafe = v.replace("\"", "\\\"").replace("\n", "\n" + "    ".repeat(2))
+            val rstSafe = v.trim().replace("\"", "\\\"").replace("\n", "\n" + "    ".repeat(2))
                 .lineSequence().map { line -> line.ifBlank { "" } }.joinToString(separator = "\n")
             cmdOutput.append("    ".repeat(2))
                     .append(k)
