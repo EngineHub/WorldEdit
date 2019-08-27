@@ -54,7 +54,7 @@ public class EngineHubPaste implements Paster {
             form.add("content", content);
             form.add("from", "enginehub");
 
-            URL url = HttpRequest.url("http://paste.enginehub.org/paste");
+            URL url = HttpRequest.url("https://paste.enginehub.org/paste");
             String result = HttpRequest.post(url)
                     .bodyForm(form)
                     .execute()
