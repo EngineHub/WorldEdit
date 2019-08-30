@@ -57,6 +57,7 @@ class DocumentationPrinter private constructor() {
             .map { it.name to it }.toList().toMap()
     private val cmdOutput = StringBuilder()
     private val permsOutput = StringBuilder()
+    private val matchedCommands = mutableSetOf<String>()
 
     private suspend inline fun <reified T> SequenceScope<String>.yieldAllCommandsIn() {
         val sourceFile = Paths.get("worldedit-core/src/main/java/" + T::class.qualifiedName!!.replace('.', '/') + ".java")
@@ -93,7 +94,7 @@ class DocumentationPrinter private constructor() {
 
         dumpSection("Selection Commands") {
             yieldAllCommandsIn<SelectionCommands>()
-            yieldAllCommandsIn<ExpandCommands>()
+            yield("/expand")
         }
 
         dumpSection("Region Commands") {
@@ -144,6 +145,9 @@ class DocumentationPrinter private constructor() {
         }
 
         writeFooter()
+
+        val missingCommands = commands.keys.filterNot { it in matchedCommands }
+        require(missingCommands.isEmpty()) { "Missing commands: $missingCommands" }
     }
 
     private fun writeHeader() {
@@ -214,6 +218,7 @@ Other Permissions
 
         val prefix = TextConfig.getCommandPrefix()
         val commands = sequence(addCommandNames).map { this.commands.getValue(it) }.toList()
+        matchedCommands.addAll(commands.map { it.name })
 
         cmdsToPerms(commands, prefix)
 
