@@ -110,6 +110,9 @@ public class FactoryConverter<T> implements ArgumentConverter<T> {
                 parserContext.setWorld((World) extent);
             }
             parserContext.setExtent(new RequestExtent());
+        } else if (session.hasWorldOverride()) {
+            parserContext.setWorld(session.getWorldOverride());
+            parserContext.setExtent(new RequestExtent());
         }
         parserContext.setSession(session);
         parserContext.setRestricted(true);
