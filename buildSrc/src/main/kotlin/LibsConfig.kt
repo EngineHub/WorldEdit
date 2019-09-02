@@ -33,6 +33,7 @@ fun Project.applyLibrariesConfiguration() {
             exclude(dependency("com.google.guava:guava"))
             exclude(dependency("com.google.code.gson:gson"))
             exclude(dependency("org.checkerframework:checker-qual"))
+            exclude(dependency("org.slf4j:slf4j-api"))
         }
 
         relocate("net.kyori.text", "com.sk89q.worldedit.util.formatting.text")

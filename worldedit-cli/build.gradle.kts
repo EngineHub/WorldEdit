@@ -24,7 +24,7 @@ tasks.named<ShadowJar>("shadowJar") {
         include { true }
     }
     minimize {
-        exclude { true }
+        exclude(dependency("org.apache.logging.log4j:log4j-core"))
     }
 }
 
