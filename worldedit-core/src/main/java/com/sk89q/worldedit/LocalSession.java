@@ -102,6 +102,7 @@ public class LocalSession {
     private transient EditSession.ReorderMode reorderMode = EditSession.ReorderMode.MULTI_STAGE;
     private transient List<Countable<BlockState>> lastDistribution;
     private transient World worldOverride;
+    private transient boolean tickingWatchdog = false;
 
     // Saved properties
     private String lastScript;
@@ -292,6 +293,14 @@ public class LocalSession {
 
     public void setWorldOverride(@Nullable World worldOverride) {
         this.worldOverride = worldOverride;
+    }
+
+    public boolean isTickingWatchdog() {
+        return tickingWatchdog;
+    }
+
+    public void setTickingWatchdog(boolean tickingWatchdog) {
+        this.tickingWatchdog = tickingWatchdog;
     }
 
     /**
@@ -951,6 +960,7 @@ public class LocalSession {
         if (editSession.getSurvivalExtent() != null) {
             editSession.getSurvivalExtent().setStripNbt(!actor.hasPermission("worldedit.setnbt"));
         }
+        editSession.setTickingWatchdog(tickingWatchdog);
 
         return editSession;
     }

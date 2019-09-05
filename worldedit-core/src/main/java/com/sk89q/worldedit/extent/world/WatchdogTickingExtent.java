@@ -38,7 +38,12 @@ import javax.annotation.Nullable;
  */
 public class WatchdogTickingExtent extends AbstractDelegateExtent {
 
+    // Number of operations we run per tick to the watchdog
+    private static final int OPS_PER_TICK = 100;
+
     private final Watchdog watchdog;
+    private boolean enabled;
+    private int ops;
 
     /**
      * Create a new instance.
@@ -51,22 +56,40 @@ public class WatchdogTickingExtent extends AbstractDelegateExtent {
         this.watchdog = watchdog;
     }
 
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    private void onOperation() {
+        if (enabled) {
+            ops++;
+            if (ops == OPS_PER_TICK) {
+                watchdog.tick();
+                ops = 0;
+            }
+        }
+    }
+
     @Override
     public <T extends BlockStateHolder<T>> boolean setBlock(BlockVector3 location, T block) throws WorldEditException {
-        watchdog.tick();
+        onOperation();
         return super.setBlock(location, block);
     }
 
     @Nullable
     @Override
     public Entity createEntity(Location location, BaseEntity entity) {
-        watchdog.tick();
+        onOperation();
         return super.createEntity(location, entity);
     }
 
     @Override
     public boolean setBiome(BlockVector2 position, BiomeType biome) {
-        watchdog.tick();
+        onOperation();
         return super.setBiome(position, biome);
     }
 }

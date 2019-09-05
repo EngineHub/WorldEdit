@@ -21,6 +21,7 @@ package com.sk89q.worldedit.command.argument;
 
 import com.google.common.collect.ImmutableSet;
 import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.command.util.HookMode;
 import com.sk89q.worldedit.util.TreeGenerator;
 import org.enginehub.piston.CommandManager;
 import org.enginehub.piston.converter.ArgumentConverter;
@@ -46,6 +47,8 @@ public final class EnumConverter {
             full(EditSession.ReorderMode.class,
                 r -> ImmutableSet.of(r.getDisplayName()),
                 null));
+        commandManager.registerConverter(Key.of(HookMode.class),
+            basic(HookMode.class));
     }
 
     private static <E extends Enum<E>> ArgumentConverter<E> basic(Class<E> enumClass) {

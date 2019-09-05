@@ -34,6 +34,7 @@ import net.minecraft.SharedConstants;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.dedicated.DedicatedServer;
+import net.minecraft.server.dedicated.MinecraftDedicatedServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
@@ -64,8 +65,8 @@ class FabricPlatform extends AbstractPlatform implements MultiUserPlatform {
         this.mod = mod;
         this.server = server;
         this.dataFixer = new FabricDataFixer(getDataVersion());
-        this.watchdog = server instanceof DedicatedServer
-            ? new FabricWatchdog((MixinMinecraftServer) (Object) server) : null;
+        this.watchdog = server instanceof MinecraftDedicatedServer
+            ? new FabricWatchdog((MinecraftDedicatedServer) server) : null;
     }
 
     boolean isHookingEvents() {

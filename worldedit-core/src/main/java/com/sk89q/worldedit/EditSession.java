@@ -191,6 +191,7 @@ public class EditSession implements Extent, AutoCloseable {
     private final MultiStageReorder reorderExtent;
     private final MaskingExtent maskingExtent;
     private final BlockChangeLimiter changeLimiter;
+    private final List<WatchdogTickingExtent> watchdogExtents = new ArrayList<>(2);
 
     private final Extent bypassReorderHistory;
     private final Extent bypassHistory;
@@ -225,7 +226,9 @@ public class EditSession implements Extent, AutoCloseable {
             extent = fastModeExtent = new FastModeExtent(world, false);
             if (watchdog != null) {
                 // Reset watchdog before world placement
-                extent = new WatchdogTickingExtent(extent, watchdog);
+                WatchdogTickingExtent watchdogExtent = new WatchdogTickingExtent(extent, watchdog);
+                extent = watchdogExtent;
+                watchdogExtents.add(watchdogExtent);
             }
             extent = survivalExtent = new SurvivalModeExtent(extent, world);
             extent = new BlockQuirkExtent(extent, world);
@@ -242,7 +245,9 @@ public class EditSession implements Extent, AutoCloseable {
             if (watchdog != null) {
                 // reset before buffering extents, since they may buffer all changes
                 // before the world-placement reset can happen, and still cause halts
-                extent = new WatchdogTickingExtent(extent, watchdog);
+                WatchdogTickingExtent watchdogExtent = new WatchdogTickingExtent(extent, watchdog);
+                extent = watchdogExtent;
+                watchdogExtents.add(watchdogExtent);
             }
             this.bypassHistory = new DataValidatorExtent(extent, world);
 
@@ -547,6 +552,24 @@ public class EditSession implements Extent, AutoCloseable {
         setReorderMode(ReorderMode.NONE);
         if (chunkBatchingExtent != null) {
             chunkBatchingExtent.setEnabled(false);
+        }
+    }
+
+    /**
+     * Check if this session will tick the watchdog.
+     *
+     * @return {@code true} if any watchdog extent is enabled
+     */
+    public boolean isTickingWatchdog() {
+        return watchdogExtents.stream().anyMatch(WatchdogTickingExtent::isEnabled);
+    }
+
+    /**
+     * Set all watchdog extents to the given mode.
+     */
+    public void setTickingWatchdog(boolean active) {
+        for (WatchdogTickingExtent extent : watchdogExtents) {
+            extent.setEnabled(active);
         }
     }
 

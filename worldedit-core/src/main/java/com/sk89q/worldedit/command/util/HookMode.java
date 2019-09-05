@@ -17,23 +17,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.fabric;
+package com.sk89q.worldedit.command.util;
 
-import com.sk89q.worldedit.extension.platform.Watchdog;
-import com.sk89q.worldedit.fabric.mixin.MixinMinecraftServer;
-import net.minecraft.server.dedicated.MinecraftDedicatedServer;
-import net.minecraft.util.SystemUtil;
-
-class FabricWatchdog implements Watchdog {
-
-    private final MinecraftDedicatedServer server;
-
-    FabricWatchdog(MinecraftDedicatedServer server) {
-        this.server = server;
-    }
-
-    @Override
-    public void tick() {
-        ((MixinMinecraftServer) (Object) server).timeReference = SystemUtil.getMeasuringTimeMs();
-    }
+public enum HookMode {
+    ACTIVE, INACTIVE
 }
