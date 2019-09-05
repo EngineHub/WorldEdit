@@ -63,6 +63,19 @@ public interface BukkitImplAdapter {
     DataFixer getDataFixer();
 
     /**
+     * @return {@code true} if {@link #tickWatchdog()} is implemented
+     */
+    default boolean supportsWatchdog() {
+        return false;
+    }
+
+    /**
+     * Tick the server watchdog, if possible.
+     */
+    default void tickWatchdog() {
+    }
+
+    /**
      * Get the block at the given location.
      *
      * @param location the location

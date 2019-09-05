@@ -34,6 +34,8 @@ configure<UserDevExtension> {
             "version" to "20190913-$mappingsMinecraftVersion"
     ))
 
+    accessTransformer(file("src/main/resources/META-INF/accesstransformer.cfg"))
+
     runs {
         val runConfig = Action<RunConfig> {
             properties(mapOf(

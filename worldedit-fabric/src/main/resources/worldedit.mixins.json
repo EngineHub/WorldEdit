@@ -3,7 +3,8 @@
     "package": "com.sk89q.worldedit.fabric.mixin",
     "compatibilityLevel": "JAVA_8",
     "mixins": [
-        "MixinServerPlayerEntity"
+        "MixinServerPlayerEntity",
+        "MixinMinecraftServer"
     ],
     "server": [
     ],

@@ -22,6 +22,8 @@ package com.sk89q.worldedit;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.event.extent.EditSessionEvent;
+import com.sk89q.worldedit.extension.platform.Capability;
+import com.sk89q.worldedit.extension.platform.Watchdog;
 import com.sk89q.worldedit.extent.ChangeSetExtent;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.extent.MaskingExtent;
@@ -38,6 +40,7 @@ import com.sk89q.worldedit.extent.world.BlockQuirkExtent;
 import com.sk89q.worldedit.extent.world.ChunkLoadingExtent;
 import com.sk89q.worldedit.extent.world.FastModeExtent;
 import com.sk89q.worldedit.extent.world.SurvivalModeExtent;
+import com.sk89q.worldedit.extent.world.WatchdogTickingExtent;
 import com.sk89q.worldedit.function.GroundFunction;
 import com.sk89q.worldedit.function.RegionMaskingFilter;
 import com.sk89q.worldedit.function.biome.BiomeReplace;
@@ -214,10 +217,16 @@ public class EditSession implements Extent, AutoCloseable {
         this.world = world;
 
         if (world != null) {
+            Watchdog watchdog = WorldEdit.getInstance().getPlatformManager()
+                .queryCapability(Capability.GAME_HOOKS).getWatchdog();
             Extent extent;
 
             // These extents are ALWAYS used
             extent = fastModeExtent = new FastModeExtent(world, false);
+            if (watchdog != null) {
+                // Reset watchdog before world placement
+                extent = new WatchdogTickingExtent(extent, watchdog);
+            }
             extent = survivalExtent = new SurvivalModeExtent(extent, world);
             extent = new BlockQuirkExtent(extent, world);
             extent = new ChunkLoadingExtent(extent, world);
@@ -230,6 +239,11 @@ public class EditSession implements Extent, AutoCloseable {
             extent = reorderExtent = new MultiStageReorder(extent, false);
             extent = chunkBatchingExtent = new ChunkBatchingExtent(extent);
             extent = wrapExtent(extent, eventBus, event, Stage.BEFORE_REORDER);
+            if (watchdog != null) {
+                // reset before buffering extents, since they may buffer all changes
+                // before the world-placement reset can happen, and still cause halts
+                extent = new WatchdogTickingExtent(extent, watchdog);
+            }
             this.bypassHistory = new DataValidatorExtent(extent, world);
 
             // These extents can be skipped by calling smartSetBlock()

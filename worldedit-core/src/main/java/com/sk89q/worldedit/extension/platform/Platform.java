@@ -84,6 +84,15 @@ public interface Platform {
     int schedule(long delay, long period, Runnable task);
 
     /**
+     * Get the watchdog service.
+     *
+     * @return the watchdog service, or {@code null} if none
+     */
+    default @Nullable Watchdog getWatchdog() {
+        return null;
+    }
+
+    /**
      * Get a list of available or loaded worlds.
      *
      * @return a list of worlds
