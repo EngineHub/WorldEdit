@@ -19,14 +19,14 @@
 
 package com.sk89q.jnbt;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.io.Closeable;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
 import java.util.Map;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * This class writes <strong>NBT</strong>, or <strong>Named Binary Tag</strong>
@@ -128,6 +128,9 @@ public final class NBTOutputStream implements Closeable {
             break;
         case NBTConstants.TYPE_INT_ARRAY:
             writeIntArrayTagPayload((IntArrayTag) tag);
+            break;
+        case NBTConstants.TYPE_LONG_ARRAY:
+            writeLongArrayTagPayload((LongArrayTag) tag);
             break;
         default:
             throw new IOException("Invalid tag type: " + type + ".");
@@ -284,6 +287,14 @@ public final class NBTOutputStream implements Closeable {
         for (int aData : data) {
             os.writeInt(aData);
         } 
+    }
+
+    private void writeLongArrayTagPayload(LongArrayTag tag) throws IOException {
+        long[] data = tag.getValue();
+        os.writeInt(data.length);
+        for (long aData : data) {
+            os.writeLong(aData);
+        }
     }
 
     @Override

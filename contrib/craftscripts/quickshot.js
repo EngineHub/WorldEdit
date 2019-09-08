@@ -20,11 +20,11 @@
 importPackage(Packages.com.sk89q.worldedit);
 importPackage(Packages.com.sk89q.worldedit.blocks);
 
-var torchDirs = {}
-torchDirs[PlayerDirection.NORTH] = [2, 4];
-torchDirs[PlayerDirection.SOUTH] = [1, 3];
-torchDirs[PlayerDirection.WEST] = [3, 2];
-torchDirs[PlayerDirection.EAST] = [4, 1];
+var torchDirs = {};
+torchDirs[Direction.NORTH] = [2, 4];
+torchDirs[Direction.SOUTH] = [1, 3];
+torchDirs[Direction.WEST] = [3, 2];
+torchDirs[Direction.EAST] = [4, 1];
 
 var pitches = {
     "f#": 0,

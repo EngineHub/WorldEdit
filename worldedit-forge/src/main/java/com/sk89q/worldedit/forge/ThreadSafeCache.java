@@ -19,10 +19,11 @@
 
 package com.sk89q.worldedit.forge;
 
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.gameevent.TickEvent;
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.server.MinecraftServer;
+import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -54,19 +55,19 @@ public class ThreadSafeCache {
         long now = System.currentTimeMillis();
 
         if (now - lastRefresh > REFRESH_DELAY) {
-            Set<UUID> onlineIds = new HashSet<UUID>();
+            Set<UUID> onlineIds = new HashSet<>();
 
-            if (FMLCommonHandler.instance().getMinecraftServerInstance() == null) {
+            MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
+            if (server == null) {
                 return;
             }
-            for (Object object : FMLCommonHandler.instance().getMinecraftServerInstance().getConfigurationManager().playerEntityList) {
-                if (object != null) {
-                    EntityPlayerMP player = (EntityPlayerMP) object;
+            for (ServerPlayerEntity player : server.getPlayerList().getPlayers()) {
+                if (player != null) {
                     onlineIds.add(player.getUniqueID());
                 }
             }
 
-            this.onlineIds = new CopyOnWriteArraySet<UUID>(onlineIds);
+            this.onlineIds = new CopyOnWriteArraySet<>(onlineIds);
 
             lastRefresh = now;
         }

@@ -14,6 +14,9 @@
   <allow pkg="gnu.trove"/>
   <allow pkg="com.google.gson"/>
   <allow pkg="net.royawesome.jlibnoise"/>
+  <allow pkg="org.json.simple" />
+  <allow pkg="org.slf4j"/>
+  <allow pkg="org.enginehub"/>
 
   <subpackage name="util.yaml">
     <allow pkg="org.yaml.snakeyaml"/>
@@ -30,29 +33,59 @@
     <allow pkg="com.nijiko"/>
     <allow pkg="com.nijikokun"/>
     <allow pkg="ru.tehkode"/>
+    <allow pkg="net.milkbowl"/>
   </subpackage>
 
   <subpackage name="worldedit">
     <allow pkg="org.mozilla.javascript"/>
     <allow pkg="de.schlichtherle"/>
+    <allow pkg="com.google.auto"/>
+    <allow pkg="it.unimi.dsi.fastutil"/>
 
     <subpackage name="bukkit">
       <allow pkg="org.bukkit"/>
-      <allow pkg="net.minecraft.server"/>
+      <allow pkg="org.bstats.bukkit"/>
+      <allow pkg="io.papermc.lib"/>
     </subpackage>
 
-    <subpackage name="spout">
-      <allow pkg="org.spout"/>
-      <allow pkg="org.jboss.netty"/>
-      <allow pkg="org.apache"/>
+    <subpackage name="cli">
+      <allow pkg="org.apache.logging.log4j"/>
+      <allow pkg="org.apache.commons.cli" />
     </subpackage>
 
     <subpackage name="forge">
       <allow pkg="cpw"/>
       <allow pkg="net.minecraft"/>
       <allow pkg="net.minecraftforge"/>
+      <allow pkg="com.mojang.authlib"/>
       <allow pkg="org.apache.logging.log4j"/>
       <allow pkg="org.lwjgl"/>
+      <allow pkg="io.netty.buffer"/>
+      <allow pkg="org.spongepowered.api" />
+      <allow pkg="com.mojang.brigadier" />
+      <allow pkg="com.mojang.datafixers" />
+    </subpackage>
+
+    <subpackage name="fabric">
+      <allow pkg="net.minecraft"/>
+      <allow pkg="net.fabricmc"/>
+      <allow pkg="com.mojang.authlib"/>
+      <allow pkg="org.apache.logging.log4j"/>
+      <allow pkg="org.lwjgl"/>
+      <allow pkg="io.netty.buffer"/>
+      <allow pkg="org.spongepowered" />
+      <allow pkg="com.mojang.brigadier" />
+      <allow pkg="com.mojang.datafixers" />
+    </subpackage>
+
+    <subpackage name="sponge">
+      <allow pkg="net.minecraft"/>
+      <allow pkg="com.google.inject" />
+      <allow pkg="com.flowpowered.math" />
+      <allow pkg="org.spongepowered.api" />
+      <allow pkg="org.slf4j" />
+      <allow pkg="org.bstats.sponge"/>
+      <allow pkg="ninja.leaping.configurate" />
     </subpackage>
   </subpackage>
 </import-control>

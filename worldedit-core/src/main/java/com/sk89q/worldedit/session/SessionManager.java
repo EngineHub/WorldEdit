@@ -19,6 +19,8 @@
 
 package com.sk89q.worldedit.session;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
@@ -26,13 +28,23 @@ import com.google.common.util.concurrent.MoreExecutors;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.command.tool.InvalidToolBindException;
+import com.sk89q.worldedit.command.tool.NavigationWand;
+import com.sk89q.worldedit.command.tool.SelectionWand;
+import com.sk89q.worldedit.command.tool.Tool;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.event.platform.ConfigurationLoadEvent;
+import com.sk89q.worldedit.session.request.Request;
 import com.sk89q.worldedit.session.storage.JsonFileSessionStore;
 import com.sk89q.worldedit.session.storage.SessionStore;
 import com.sk89q.worldedit.session.storage.VoidStore;
 import com.sk89q.worldedit.util.concurrency.EvenMoreExecutors;
 import com.sk89q.worldedit.util.eventbus.Subscribe;
+import com.sk89q.worldedit.world.gamemode.GameModes;
+import com.sk89q.worldedit.world.item.ItemType;
+import com.sk89q.worldedit.world.item.ItemTypes;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import java.io.File;
@@ -44,10 +56,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
 import java.util.concurrent.Callable;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Session manager for WorldEdit.
@@ -58,13 +66,16 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class SessionManager {
 
-    public static int EXPIRATION_GRACE = 600000;
+    public static int EXPIRATION_GRACE = 10 * 60 * 1000;
     private static final int FLUSH_PERIOD = 1000 * 30;
-    private static final ListeningExecutorService executorService = MoreExecutors.listeningDecorator(EvenMoreExecutors.newBoundedCachedThreadPool(0, 1, 5));
-    private static final Logger log = Logger.getLogger(SessionManager.class.getCanonicalName());
-    private final Timer timer = new Timer();
+    private static final ListeningExecutorService executorService = MoreExecutors.listeningDecorator(
+            EvenMoreExecutors.newBoundedCachedThreadPool(0, 1, 5, "WorldEdit Session Saver - %s"));
+    private static final Logger log = LoggerFactory.getLogger(SessionManager.class);
+    private static boolean warnedInvalidTool;
+
+    private final Timer timer = new Timer("WorldEdit Session Manager");
     private final WorldEdit worldEdit;
-    private final Map<UUID, SessionHolder> sessions = new HashMap<UUID, SessionHolder>();
+    private final Map<UUID, SessionHolder> sessions = new HashMap<>();
     private SessionStore store = new VoidStore();
 
     /**
@@ -102,7 +113,7 @@ public class SessionManager {
         checkNotNull(name);
         for (SessionHolder holder : sessions.values()) {
             String test = holder.key.getName();
-            if (test != null && name.equals(test)) {
+            if (name.equals(test)) {
                 return holder.session;
             }
         }
@@ -147,38 +158,38 @@ public class SessionManager {
                 session = store.load(getKey(sessionKey));
                 session.postLoad();
             } catch (IOException e) {
-                log.log(Level.WARNING, "Failed to load saved session", e);
+                log.warn("Failed to load saved session", e);
                 session = new LocalSession();
             }
+            Request.request().setSession(session);
 
             session.setConfiguration(config);
             session.setBlockChangeLimit(config.defaultChangeLimit);
-
-            // Remember the session if the session is still active
-            if (sessionKey.isActive()) {
-                sessions.put(getKey(owner), new SessionHolder(sessionKey, session));
+            session.setTimeout(config.calculationTimeout);
+            try {
+                if (owner.hasPermission("worldedit.selection.pos")) {
+                    setDefaultWand(session.getWandItem(), config.wandItem, session, new SelectionWand());
+                }
+                if (owner.hasPermission("worldedit.navigation.jumpto.tool") || owner.hasPermission("worldedit.navigation.thru.tool")) {
+                    setDefaultWand(session.getNavWandItem(), config.navigationWand, session, new NavigationWand());
+                }
+            } catch (InvalidToolBindException e) {
+                if (!warnedInvalidTool) {
+                    warnedInvalidTool = true;
+                    log.warn("Invalid wand tool set in config. Tool will not be assigned: " + e.getItemType());
+                }
             }
+
+            // Remember the session regardless of if it's currently active or not.
+            // And have the SessionTracker FLUSH inactive sessions.
+            sessions.put(getKey(owner), new SessionHolder(sessionKey, session));
         }
 
-        // Set the limit on the number of blocks that an operation can
-        // change at once, or don't if the owner has an override or there
-        // is no limit. There is also a default limit
-        int currentChangeLimit = session.getBlockChangeLimit();
-
-        if (!owner.hasPermission("worldedit.limit.unrestricted") && config.maxChangeLimit > -1) {
-            // If the default limit is infinite but there is a maximum
-            // limit, make sure to not have it be overridden
-            if (config.defaultChangeLimit < 0) {
-                if (currentChangeLimit < 0 || currentChangeLimit > config.maxChangeLimit) {
-                    session.setBlockChangeLimit(config.maxChangeLimit);
-                }
-            } else {
-                // Bound the change limit
-                int maxChangeLimit = config.maxChangeLimit;
-                if (currentChangeLimit == -1 || currentChangeLimit > maxChangeLimit) {
-                    session.setBlockChangeLimit(maxChangeLimit);
-                }
-            }
+        if (shouldBoundLimit(owner, "worldedit.limit.unrestricted", session.getBlockChangeLimit(), config.maxChangeLimit)) {
+            session.setBlockChangeLimit(config.maxChangeLimit);
+        }
+        if (shouldBoundLimit(owner, "worldedit.timeout.unrestricted", session.getTimeout(), config.maxCalculationTimeout)) {
+            session.setTimeout(config.maxCalculationTimeout);
         }
 
         // Have the session use inventory if it's enabled and the owner
@@ -186,9 +197,30 @@ public class SessionManager {
         session.setUseInventory(config.useInventory
                 && !(config.useInventoryOverride
                 && (owner.hasPermission("worldedit.inventory.unrestricted")
-                || (config.useInventoryCreativeOverride && (!(owner instanceof Player) || ((Player) owner).hasCreativeMode())))));
+                || (config.useInventoryCreativeOverride && (!(owner instanceof Player) || ((Player) owner).getGameMode() == GameModes.CREATIVE)))));
 
         return session;
+    }
+
+    private boolean shouldBoundLimit(SessionOwner owner, String permission, int currentLimit, int maxLimit) {
+        if (maxLimit > -1) { // if max is finite
+            return (currentLimit < 0 || currentLimit > maxLimit) // make sure current is finite and less than max
+                    && !owner.hasPermission(permission); // unless user has unlimited permission
+        }
+        return false;
+    }
+
+    private void setDefaultWand(String sessionItem, String configItem, LocalSession session, Tool wand) throws InvalidToolBindException {
+        ItemType wandItem = null;
+        if (sessionItem != null) {
+            wandItem = ItemTypes.get(sessionItem);
+        }
+        if (wandItem == null) {
+            wandItem = ItemTypes.get(configItem);
+        }
+        if (wandItem != null) {
+            session.setTool(wandItem, wand);
+        }
     }
 
     /**
@@ -204,30 +236,27 @@ public class SessionManager {
             return Futures.immediateFuture(sessions);
         }
 
-        return executorService.submit(new Callable<Object>() {
-            @Override
-            public Object call() throws Exception {
-                Exception exception = null;
+        return executorService.submit((Callable<Object>) () -> {
+            Exception exception = null;
 
-                for (Map.Entry<SessionKey, LocalSession> entry : sessions.entrySet()) {
-                    SessionKey key = entry.getKey();
+            for (Map.Entry<SessionKey, LocalSession> entry : sessions.entrySet()) {
+                SessionKey key = entry.getKey();
 
-                    if (key.isPersistent()) {
-                        try {
-                            store.save(getKey(key), entry.getValue());
-                        } catch (IOException e) {
-                            log.log(Level.WARNING, "Failed to write session for UUID " + getKey(key), e);
-                            exception = e;
-                        }
+                if (key.isPersistent()) {
+                    try {
+                        store.save(getKey(key), entry.getValue());
+                    } catch (IOException e) {
+                        log.warn("Failed to write session for UUID " + getKey(key), e);
+                        exception = e;
                     }
                 }
-
-                if (exception != null) {
-                    throw exception;
-                }
-
-                return sessions;
             }
+
+            if (exception != null) {
+                throw exception;
+            }
+
+            return sessions;
         });
     }
 
@@ -249,12 +278,7 @@ public class SessionManager {
      * @return the key object
      */
     protected UUID getKey(SessionKey key) {
-        String forcedKey = System.getProperty("worldedit.session.uuidOverride");
-        if (forcedKey != null) {
-            return UUID.fromString(forcedKey);
-        } else {
-            return key.getUniqueId();
-        }
+        return key.getUniqueId();
     }
 
     /**
@@ -268,10 +292,48 @@ public class SessionManager {
     }
 
     /**
+     * Called to unload this session manager.
+     */
+    public synchronized void unload() {
+        clear();
+        timer.cancel();
+    }
+
+    /**
      * Remove all sessions.
      */
     public synchronized void clear() {
+        saveChangedSessions();
         sessions.clear();
+    }
+
+    private synchronized void saveChangedSessions() {
+        long now = System.currentTimeMillis();
+        Iterator<SessionHolder> it = sessions.values().iterator();
+        Map<SessionKey, LocalSession> saveQueue = new HashMap<>();
+
+        while (it.hasNext()) {
+            SessionHolder stored = it.next();
+            if (stored.key.isActive()) {
+                stored.lastActive = now;
+
+                if (stored.session.compareAndResetDirty()) {
+                    saveQueue.put(stored.key, stored.session);
+                }
+            } else {
+                if (now - stored.lastActive > EXPIRATION_GRACE) {
+                    if (stored.session.compareAndResetDirty()) {
+                        saveQueue.put(stored.key, stored.session);
+                    }
+
+                    it.remove();
+                }
+            }
+        }
+
+        if (!saveQueue.isEmpty()) {
+            commit(saveQueue);
+        }
     }
 
     @Subscribe
@@ -284,7 +346,7 @@ public class SessionManager {
     /**
      * Stores the owner of a session, the session, and the last active time.
      */
-    private static class SessionHolder {
+    private static final class SessionHolder {
         private final SessionKey key;
         private final LocalSession session;
         private long lastActive = System.currentTimeMillis();
@@ -303,32 +365,7 @@ public class SessionManager {
         @Override
         public void run() {
             synchronized (SessionManager.this) {
-                long now = System.currentTimeMillis();
-                Iterator<SessionHolder> it = sessions.values().iterator();
-                Map<SessionKey, LocalSession> saveQueue = new HashMap<SessionKey, LocalSession>();
-
-                while (it.hasNext()) {
-                    SessionHolder stored = it.next();
-                    if (stored.key.isActive()) {
-                        stored.lastActive = now;
-
-                        if (stored.session.compareAndResetDirty()) {
-                            saveQueue.put(stored.key, stored.session);
-                        }
-                    } else {
-                        if (now - stored.lastActive > EXPIRATION_GRACE) {
-                            if (stored.session.compareAndResetDirty()) {
-                                saveQueue.put(stored.key, stored.session);
-                            }
-
-                            it.remove();
-                        }
-                    }
-                }
-
-                if (!saveQueue.isEmpty()) {
-                    commit(saveQueue);
-                }
+                saveChangedSessions();
             }
         }
     }

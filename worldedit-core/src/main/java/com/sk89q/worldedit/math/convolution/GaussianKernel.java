@@ -19,8 +19,6 @@
 
 package com.sk89q.worldedit.math.convolution;
 
-import java.awt.image.Kernel;
-
 /**
  * A Gaussian Kernel generator (2D bellcurve).
  */

@@ -54,8 +54,8 @@ public interface Identifiable {
      * C - Switch
      * </pre>
      */
-    public abstract char id();
+    char id();
 
-    public int getPosition();
+    int getPosition();
 
 }

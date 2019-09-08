@@ -19,12 +19,12 @@
 
 package com.sk89q.jnbt;
 
-import javax.annotation.Nullable;
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.util.Collections;
 import java.util.List;
-import java.util.NoSuchElementException;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import javax.annotation.Nullable;
 
 /**
  * The {@code TAG_List} tag.
@@ -79,11 +79,10 @@ public final class ListTag extends Tag {
      */
     @Nullable
     public Tag getIfExists(int index) {
-        try {
-            return value.get(index);
-        } catch (NoSuchElementException e) {
+        if (index >= value.size()) {
             return null;
         }
+        return value.get(index);
     }
 
     /**

@@ -19,15 +19,13 @@
 
 package com.sk89q.worldedit.command;
 
-import com.sk89q.minecraft.util.commands.Command;
-import com.sk89q.minecraft.util.commands.CommandPermissions;
-import com.sk89q.minecraft.util.commands.Logging;
+import com.google.common.collect.Lists;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalSession;
-import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.entity.Player;
+import com.sk89q.worldedit.command.util.CommandPermissions;
+import com.sk89q.worldedit.command.util.CommandPermissionsConditionGenerator;
+import com.sk89q.worldedit.command.util.Logging;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extent.clipboard.BlockArrayClipboard;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
@@ -37,222 +35,202 @@ import com.sk89q.worldedit.function.operation.ForwardExtentCopy;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.Operations;
 import com.sk89q.worldedit.function.pattern.Pattern;
+import com.sk89q.worldedit.internal.annotation.ClipboardMask;
 import com.sk89q.worldedit.internal.annotation.Direction;
 import com.sk89q.worldedit.internal.annotation.Selection;
+import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.math.transform.AffineTransform;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.RegionSelector;
 import com.sk89q.worldedit.regions.selector.CuboidRegionSelector;
 import com.sk89q.worldedit.session.ClipboardHolder;
-import com.sk89q.worldedit.util.command.binding.Switch;
-import com.sk89q.worldedit.util.command.parametric.Optional;
+import com.sk89q.worldedit.world.World;
+import org.enginehub.piston.annotation.Command;
+import org.enginehub.piston.annotation.CommandContainer;
+import org.enginehub.piston.annotation.param.Arg;
+import org.enginehub.piston.annotation.param.ArgFlag;
+import org.enginehub.piston.annotation.param.Switch;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.sk89q.minecraft.util.commands.Logging.LogMode.PLACEMENT;
-import static com.sk89q.minecraft.util.commands.Logging.LogMode.REGION;
+import java.util.List;
+
+import static com.sk89q.worldedit.command.util.Logging.LogMode.PLACEMENT;
+import static com.sk89q.worldedit.command.util.Logging.LogMode.REGION;
 
 /**
  * Clipboard commands.
  */
+@CommandContainer(superTypes = CommandPermissionsConditionGenerator.Registration.class)
 public class ClipboardCommands {
 
-    private final WorldEdit worldEdit;
-
-    /**
-     * Create a new instance.
-     *
-     * @param worldEdit reference to WorldEdit
-     */
-    public ClipboardCommands(WorldEdit worldEdit) {
-        checkNotNull(worldEdit);
-        this.worldEdit = worldEdit;
-    }
-
     @Command(
-        aliases = { "/copy" },
-        flags = "em",
-        desc = "Copy the selection to the clipboard",
-        help = "Copy the selection to the clipboard\n" +
-                "Flags:\n" +
-                "  -e controls whether entities are copied\n" +
-                "  -m sets a source mask so that excluded blocks become air\n" +
-                "WARNING: Pasting entities cannot yet be undone!",
-        min = 0,
-        max = 0
+        name = "/copy",
+        desc = "Copy the selection to the clipboard"
     )
     @CommandPermissions("worldedit.clipboard.copy")
-    public void copy(Player player, LocalSession session, EditSession editSession,
-                     @Selection Region region, @Switch('e') boolean copyEntities,
-                     @Switch('m') Mask mask) throws WorldEditException {
-
+    public void copy(Actor actor, LocalSession session, EditSession editSession,
+                     @Selection Region region,
+                     @Switch(name = 'e', desc = "Also copy entities")
+                         boolean copyEntities,
+                     @Switch(name = 'b', desc = "Also copy biomes")
+                         boolean copyBiomes,
+                     @ArgFlag(name = 'm', desc = "Set the include mask, non-matching blocks become air", def = "")
+                         Mask mask) throws WorldEditException {
         BlockArrayClipboard clipboard = new BlockArrayClipboard(region);
-        clipboard.setOrigin(session.getPlacementPosition(player));
+        clipboard.setOrigin(session.getPlacementPosition(actor));
         ForwardExtentCopy copy = new ForwardExtentCopy(editSession, region, clipboard, region.getMinimumPoint());
+        copy.setCopyingEntities(copyEntities);
+        copy.setCopyingBiomes(copyBiomes);
         if (mask != null) {
             copy.setSourceMask(mask);
         }
         Operations.completeLegacy(copy);
-        session.setClipboard(new ClipboardHolder(clipboard, editSession.getWorld().getWorldData()));
+        session.setClipboard(new ClipboardHolder(clipboard));
 
-        player.print(region.getArea() + " block(s) were copied.");
+        List<String> messages = Lists.newArrayList();
+        copy.addStatusMessages(messages);
+        messages.forEach(actor::print);
     }
 
     @Command(
-        aliases = { "/cut" },
-        flags = "em",
-        usage = "[leave-id]",
-        desc = "Cut the selection to the clipboard",
-        help = "Copy the selection to the clipboard\n" +
-                "Flags:\n" +
-                "  -e controls whether entities are copied\n" +
-                "  -m sets a source mask so that excluded blocks become air\n" +
-                "WARNING: Cutting and pasting entities cannot yet be undone!",
-        min = 0,
-        max = 1
+        name = "/cut",
+        desc = "Cut the selection to the clipboard"
     )
     @CommandPermissions("worldedit.clipboard.cut")
     @Logging(REGION)
-    public void cut(Player player, LocalSession session, EditSession editSession,
-                    @Selection Region region, @Optional("air") Pattern leavePattern, @Switch('e') boolean copyEntities,
-                    @Switch('m') Mask mask) throws WorldEditException {
+    public void cut(Actor actor, LocalSession session, EditSession editSession,
+                    @Selection Region region,
+                    @Arg(desc = "Pattern to leave in place of the selection", def = "air")
+                        Pattern leavePattern,
+                    @Switch(name = 'e', desc = "Also cut entities")
+                        boolean copyEntities,
+                    @Switch(name = 'b', desc = "Also copy biomes, source biomes are unaffected")
+                        boolean copyBiomes,
+                    @ArgFlag(name = 'm', desc = "Set the exclude mask, non-matching blocks become air", def = "")
+                        Mask mask) throws WorldEditException {
 
         BlockArrayClipboard clipboard = new BlockArrayClipboard(region);
-        clipboard.setOrigin(session.getPlacementPosition(player));
+        clipboard.setOrigin(session.getPlacementPosition(actor));
         ForwardExtentCopy copy = new ForwardExtentCopy(editSession, region, clipboard, region.getMinimumPoint());
         copy.setSourceFunction(new BlockReplace(editSession, leavePattern));
+        copy.setCopyingEntities(copyEntities);
+        copy.setRemovingEntities(true);
+        copy.setCopyingBiomes(copyBiomes);
         if (mask != null) {
             copy.setSourceMask(mask);
         }
         Operations.completeLegacy(copy);
-        session.setClipboard(new ClipboardHolder(clipboard, editSession.getWorld().getWorldData()));
+        session.setClipboard(new ClipboardHolder(clipboard));
 
-        player.print(region.getArea() + " block(s) were copied.");
+        List<String> messages = Lists.newArrayList();
+        copy.addStatusMessages(messages);
+        messages.forEach(actor::print);
     }
 
     @Command(
-        aliases = { "/paste" },
-        usage = "",
-        flags = "sao",
-        desc = "Paste the clipboard's contents",
-        help =
-            "Pastes the clipboard's contents.\n" +
-            "Flags:\n" +
-            "  -a skips air blocks\n" +
-            "  -o pastes at the original position\n" +
-            "  -s selects the region after pasting",
-        min = 0,
-        max = 0
+        name = "/paste",
+        desc = "Paste the clipboard's contents"
     )
     @CommandPermissions("worldedit.clipboard.paste")
     @Logging(PLACEMENT)
-    public void paste(Player player, LocalSession session, EditSession editSession,
-                      @Switch('a') boolean ignoreAirBlocks, @Switch('o') boolean atOrigin,
-                      @Switch('s') boolean selectPasted) throws WorldEditException {
+    public void paste(Actor actor, World world, LocalSession session, EditSession editSession,
+                      @Switch(name = 'a', desc = "Skip air blocks")
+                          boolean ignoreAirBlocks,
+                      @Switch(name = 'o', desc = "Paste at the original position")
+                          boolean atOrigin,
+                      @Switch(name = 's', desc = "Select the region after pasting")
+                          boolean selectPasted,
+                      @Switch(name = 'e', desc = "Paste entities if available")
+                          boolean pasteEntities,
+                      @Switch(name = 'b', desc = "Paste biomes if available")
+                          boolean pasteBiomes,
+                      @ArgFlag(name = 'm', desc = "Only paste blocks matching this mask", def = "")
+                      @ClipboardMask
+                          Mask sourceMask) throws WorldEditException {
 
         ClipboardHolder holder = session.getClipboard();
         Clipboard clipboard = holder.getClipboard();
         Region region = clipboard.getRegion();
 
-        Vector to = atOrigin ? clipboard.getOrigin() : session.getPlacementPosition(player);
+        BlockVector3 to = atOrigin ? clipboard.getOrigin() : session.getPlacementPosition(actor);
         Operation operation = holder
-                .createPaste(editSession, editSession.getWorld().getWorldData())
+                .createPaste(editSession)
                 .to(to)
                 .ignoreAirBlocks(ignoreAirBlocks)
+                .copyBiomes(pasteBiomes)
+                .copyEntities(pasteEntities)
+                .maskSource(sourceMask)
                 .build();
         Operations.completeLegacy(operation);
 
         if (selectPasted) {
-            Vector max = to.add(region.getMaximumPoint().subtract(region.getMinimumPoint()));
-            RegionSelector selector = new CuboidRegionSelector(player.getWorld(), to, max);
-            session.setRegionSelector(player.getWorld(), selector);
+            BlockVector3 clipboardOffset = clipboard.getRegion().getMinimumPoint().subtract(clipboard.getOrigin());
+            Vector3 realTo = to.toVector3().add(holder.getTransform().apply(clipboardOffset.toVector3()));
+            Vector3 max = realTo.add(holder.getTransform().apply(region.getMaximumPoint().subtract(region.getMinimumPoint()).toVector3()));
+            RegionSelector selector = new CuboidRegionSelector(world, realTo.toBlockPoint(), max.toBlockPoint());
+            session.setRegionSelector(world, selector);
             selector.learnChanges();
-            selector.explainRegionAdjust(player, session);
+            selector.explainRegionAdjust(actor, session);
         }
 
-        player.print("The clipboard has been pasted at " + to);
+        actor.print("The clipboard has been pasted at " + to);
+        List<String> messages = Lists.newArrayList();
+        operation.addStatusMessages(messages);
+        messages.forEach(actor::print);
     }
 
     @Command(
-        aliases = { "/rotate" },
-        usage = "<y-axis> [<x-axis>] [<z-axis>]",
+        name = "/rotate",
         desc = "Rotate the contents of the clipboard",
-        help = "Non-destructively rotate the contents of the clipboard.\n" +
-               "Angles are provided in degrees and a positive angle will result in a clockwise rotation. " +
-               "Multiple rotations can be stacked. Interpolation is not performed so angles should be a multiple of 90 degrees.\n"
+        descFooter = "Non-destructively rotate the contents of the clipboard.\n" +
+            "Angles are provided in degrees and a positive angle will result in a clockwise rotation. " +
+            "Multiple rotations can be stacked. Interpolation is not performed so angles should be a multiple of 90 degrees.\n"
     )
     @CommandPermissions("worldedit.clipboard.rotate")
-    public void rotate(Player player, LocalSession session, Double yRotate, @Optional Double xRotate, @Optional Double zRotate) throws WorldEditException {
-        if ((yRotate != null && Math.abs(yRotate % 90) > 0.001) ||
-                xRotate != null && Math.abs(xRotate % 90) > 0.001 ||
-                zRotate != null && Math.abs(zRotate % 90) > 0.001) {
-            player.printDebug("Note: Interpolation is not yet supported, so angles that are multiples of 90 is recommended.");
+    public void rotate(Actor actor, LocalSession session,
+                       @Arg(desc = "Amount to rotate on the y-axis")
+                           double yRotate,
+                       @Arg(desc = "Amount to rotate on the x-axis", def = "0")
+                           double xRotate,
+                       @Arg(desc = "Amount to rotate on the z-axis", def = "0")
+                           double zRotate) throws WorldEditException {
+        if (Math.abs(yRotate % 90) > 0.001 ||
+            Math.abs(xRotate % 90) > 0.001 ||
+            Math.abs(zRotate % 90) > 0.001) {
+            actor.printDebug("Note: Interpolation is not yet supported, so angles that are multiples of 90 is recommended.");
         }
 
         ClipboardHolder holder = session.getClipboard();
         AffineTransform transform = new AffineTransform();
-        transform = transform.rotateY(-(yRotate != null ? yRotate : 0));
-        transform = transform.rotateX(-(xRotate != null ? xRotate : 0));
-        transform = transform.rotateZ(-(zRotate != null ? zRotate : 0));
+        transform = transform.rotateY(-yRotate);
+        transform = transform.rotateX(-xRotate);
+        transform = transform.rotateZ(-zRotate);
         holder.setTransform(holder.getTransform().combine(transform));
-        player.print("The clipboard copy has been rotated.");
+        actor.print("The clipboard copy has been rotated.");
     }
 
     @Command(
-        aliases = { "/flip" },
-        usage = "[<direction>]",
-        desc = "Flip the contents of the clipboard",
-        help =
-            "Flips the contents of the clipboard across the point from which the copy was made.\n",
-        min = 0,
-        max = 1
+        name = "/flip",
+        desc = "Flip the contents of the clipboard across the origin"
     )
     @CommandPermissions("worldedit.clipboard.flip")
-    public void flip(Player player, LocalSession session, EditSession editSession,
-                     @Optional(Direction.AIM) @Direction Vector direction) throws WorldEditException {
+    public void flip(Actor actor, LocalSession session,
+                     @Arg(desc = "The direction to flip, defaults to look direction.", def = Direction.AIM)
+                     @Direction BlockVector3 direction) throws WorldEditException {
         ClipboardHolder holder = session.getClipboard();
-        Clipboard clipboard = holder.getClipboard();
         AffineTransform transform = new AffineTransform();
-        transform = transform.scale(direction.positive().multiply(-2).add(1, 1, 1));
+        transform = transform.scale(direction.abs().multiply(-2).add(1, 1, 1).toVector3());
         holder.setTransform(holder.getTransform().combine(transform));
-        player.print("The clipboard copy has been flipped.");
+        actor.print("The clipboard copy has been flipped.");
     }
 
     @Command(
-        aliases = { "/load" },
-        usage = "<filename>",
-        desc = "Load a schematic into your clipboard",
-        min = 0,
-        max = 1
-    )
-    @Deprecated
-    @CommandPermissions("worldedit.clipboard.load")
-    public void load(Actor actor) {
-        actor.printError("This command is no longer used. See //schematic load.");
-    }
-
-    @Command(
-        aliases = { "/save" },
-        usage = "<filename>",
-        desc = "Save a schematic into your clipboard",
-        min = 0,
-        max = 1
-    )
-    @Deprecated
-    @CommandPermissions("worldedit.clipboard.save")
-    public void save(Actor actor) {
-        actor.printError("This command is no longer used. See //schematic save.");
-    }
-
-    @Command(
-        aliases = { "clearclipboard" },
-        usage = "",
-        desc = "Clear your clipboard",
-        min = 0,
-        max = 0
+        name = "clearclipboard",
+        desc = "Clear your clipboard"
     )
     @CommandPermissions("worldedit.clipboard.clear")
-    public void clearClipboard(Player player, LocalSession session, EditSession editSession) throws WorldEditException {
+    public void clearClipboard(Actor actor, LocalSession session) throws WorldEditException {
         session.setClipboard(null);
-        player.print("Clipboard cleared.");
+        actor.print("Clipboard cleared.");
     }
 }

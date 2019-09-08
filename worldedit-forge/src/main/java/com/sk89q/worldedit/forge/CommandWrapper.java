@@ -19,59 +19,103 @@
 
 package com.sk89q.worldedit.forge;
 
-import com.sk89q.worldedit.util.command.CommandMapping;
-import net.minecraft.command.CommandBase;
-import net.minecraft.command.ICommand;
-import net.minecraft.command.ICommandSender;
+import com.google.common.collect.ImmutableList;
+import com.mojang.brigadier.Command;
+import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.StringArgumentType;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.context.StringRange;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.suggestion.Suggestion;
+import com.mojang.brigadier.suggestion.Suggestions;
+import com.mojang.brigadier.suggestion.SuggestionsBuilder;
+import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.event.platform.CommandSuggestionEvent;
+import com.sk89q.worldedit.extension.platform.Actor;
+import com.sk89q.worldedit.internal.util.Substring;
+import net.minecraft.command.CommandSource;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import org.enginehub.piston.inject.InjectedValueStore;
+import org.enginehub.piston.inject.Key;
+import org.enginehub.piston.inject.MapBackedValueStore;
 
-import javax.annotation.Nullable;
-import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Predicate;
 
-public class CommandWrapper extends CommandBase {
-    private CommandMapping command;
+import static net.minecraft.command.Commands.argument;
+import static net.minecraft.command.Commands.literal;
 
-    protected CommandWrapper(CommandMapping command) {
-        this.command = command;
+public final class CommandWrapper {
+    private CommandWrapper() {
     }
 
-    @Override
-    public String getCommandName() {
-        return command.getPrimaryAlias();
-    }
-
-    @Override
-    public List<String> getCommandAliases() {
-        return Arrays.asList(command.getAllAliases());
-    }
-
-    @Override
-    public void processCommand(ICommandSender var1, String[] var2) {}
-
-    @Override
-    public String getCommandUsage(ICommandSender icommandsender) {
-        return "/" + command.getPrimaryAlias() + " " + command.getDescription().getUsage();
-    }
-
-    @Override
-    public int getRequiredPermissionLevel() {
-        return 0;
-    }
-
-    @Override
-    public boolean canCommandSenderUseCommand(ICommandSender sender) {
-        return true;
-    }
-
-    @Override
-    public int compareTo(@Nullable
-    Object o) {
-        if (o == null) {
-            return 0;
-        } else if (o instanceof ICommand) {
-            return super.compareTo((ICommand) o);
-        } else {
-            return 0;
+    public static void register(CommandDispatcher<CommandSource> dispatcher, org.enginehub.piston.Command command) {
+        ImmutableList.Builder<String> aliases = ImmutableList.builder();
+        aliases.add(command.getName()).addAll(command.getAliases());
+        for (String alias : aliases.build()) {
+            LiteralArgumentBuilder<CommandSource> base = literal(alias).executes(FAKE_COMMAND)
+                .then(argument("args", StringArgumentType.greedyString())
+                    .suggests(CommandWrapper::suggest)
+                    .executes(FAKE_COMMAND));
+            if (command.getCondition() != org.enginehub.piston.Command.Condition.TRUE) {
+                base.requires(requirementsFor(command));
+            }
+            dispatcher.register(base);
         }
     }
+
+    public static final Command<CommandSource> FAKE_COMMAND = ctx -> {
+        if (ctx.getSource().getWorld().isRemote) {
+            return 0;
+        }
+        return 1;
+    };
+
+    private static Predicate<CommandSource> requirementsFor(org.enginehub.piston.Command mapping) {
+        return ctx -> {
+            final Entity entity = ctx.getEntity();
+            if (!(entity instanceof ServerPlayerEntity)) return true;
+            final Actor actor = ForgeAdapter.adaptPlayer(((ServerPlayerEntity) entity));
+            InjectedValueStore store = MapBackedValueStore.create();
+            store.injectValue(Key.of(Actor.class), context -> Optional.of(actor));
+            return mapping.getCondition().satisfied(store);
+        };
+    }
+
+    private static CompletableFuture<Suggestions> suggest(CommandContext<CommandSource> context,
+                                                          SuggestionsBuilder builder) throws CommandSyntaxException {
+        CommandSuggestionEvent event = new CommandSuggestionEvent(
+            ForgeAdapter.adaptPlayer(context.getSource().asPlayer()),
+            builder.getInput()
+        );
+        WorldEdit.getInstance().getEventBus().post(event);
+        List<Substring> suggestions = event.getSuggestions();
+
+        ImmutableList.Builder<Suggestion> result = ImmutableList.builder();
+
+        for (Substring suggestion : suggestions) {
+            String suggestionText = suggestion.getSubstring();
+            // If at end, we are actually suggesting the next argument
+            // Ensure there is a space!
+            if (suggestion.getStart() == suggestion.getEnd()
+                && suggestion.getEnd() == builder.getInput().length()
+                && !builder.getInput().endsWith(" ")
+                && !builder.getInput().endsWith("\"")) {
+                suggestionText = " " + suggestionText;
+            }
+            result.add(new Suggestion(
+                StringRange.between(suggestion.getStart(), suggestion.getEnd()),
+                suggestionText
+            ));
+        }
+
+        return CompletableFuture.completedFuture(
+            Suggestions.create(builder.getInput(), result.build())
+        );
+    }
+
 }

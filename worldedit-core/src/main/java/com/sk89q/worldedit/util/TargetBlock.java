@@ -19,11 +19,15 @@
 
 package com.sk89q.worldedit.util;
 
-import com.sk89q.worldedit.*;
-import com.sk89q.worldedit.blocks.BlockID;
-import com.sk89q.worldedit.blocks.BlockType;
 import com.sk89q.worldedit.entity.Player;
-import com.sk89q.worldedit.internal.LocalWorldAdapter;
+import com.sk89q.worldedit.function.mask.ExistingBlockMask;
+import com.sk89q.worldedit.function.mask.Mask;
+import com.sk89q.worldedit.function.mask.SolidBlockMask;
+import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.math.Vector3;
+import com.sk89q.worldedit.world.World;
+
+import javax.annotation.Nullable;
 
 /**
  * This class uses an inefficient method to figure out what block a player
@@ -34,46 +38,73 @@ import com.sk89q.worldedit.internal.LocalWorldAdapter;
  */
 public class TargetBlock {
 
-    private LocalWorld world;
+    private final World world;
+
     private int maxDistance;
     private double checkDistance, curDistance;
-    private Vector targetPos = new Vector();
-    private Vector targetPosDouble = new Vector();
-    private Vector prevPos = new Vector();
-    private Vector offset = new Vector();
+    private BlockVector3 targetPos = BlockVector3.ZERO;
+    private Vector3 targetPosDouble = Vector3.ZERO;
+    private BlockVector3 prevPos = BlockVector3.ZERO;
+    private Vector3 offset = Vector3.ZERO;
+
+    // the mask which dictates when to stop a trace - defaults to stopping at non-air blocks
+    private Mask stopMask;
+    // the mask which dictates when to stop a solid block trace - default to BlockMaterial#isMovementBlocker
+    private Mask solidMask;
 
     /**
      * Constructor requiring a player, uses default values
      * 
      * @param player player to work with
      */
-    public TargetBlock(LocalPlayer player) {
-        this.world = LocalWorldAdapter.adapt(player.getWorld());
-        this.setValues(player.getPosition(), player.getYaw(), player.getPitch(),
+    public TargetBlock(Player player) {
+        this.world = player.getWorld();
+        this.setValues(player.getLocation().toVector(), player.getLocation().getYaw(), player.getLocation().getPitch(),
                 300, 1.65, 0.2);
+        this.stopMask = new ExistingBlockMask(world);
+        this.solidMask = new SolidBlockMask(world);
     }
 
     /**
      * Constructor requiring a player, max distance and a checking distance
      *
-     * @param player LocalPlayer to work with
-     * @param maxDistance how far it checks for blocks
-     * @param checkDistance how often to check for blocks, the smaller the more precise
-     */
-    public TargetBlock(LocalPlayer player, int maxDistance, double checkDistance) {
-        this((Player) player, maxDistance, checkDistance);
-    }
-
-    /**
-     * Constructor requiring a player, max distance and a checking distance
-     *
-     * @param player LocalPlayer to work with
+     * @param player Player to work with
      * @param maxDistance how far it checks for blocks
      * @param checkDistance how often to check for blocks, the smaller the more precise
      */
     public TargetBlock(Player player, int maxDistance, double checkDistance) {
-        this.world = LocalWorldAdapter.adapt(player.getWorld());
-        this.setValues(player.getPosition(), player.getYaw(), player.getPitch(), maxDistance, 1.65, checkDistance);
+        this.world = player.getWorld();
+        this.setValues(player.getLocation().toVector(), player.getLocation().getYaw(), player.getLocation().getPitch(), maxDistance, 1.65, checkDistance);
+        this.stopMask = new ExistingBlockMask(world);
+        this.solidMask = new SolidBlockMask(world);
+    }
+
+    /**
+     * Set the mask used for determine where to stop traces.
+     * Setting to null will restore the default.
+     *
+     * @param stopMask the mask used to stop traces
+     */
+    public void setStopMask(@Nullable Mask stopMask) {
+        if (stopMask == null) {
+            this.stopMask = new ExistingBlockMask(world);
+        } else {
+            this.stopMask = stopMask;
+        }
+    }
+
+    /**
+     * Set the mask used for determine where to stop solid block traces.
+     * Setting to null will restore the default.
+     *
+     * @param solidMask the mask used to stop solid block traces
+     */
+    public void setSolidMask(@Nullable Mask solidMask) {
+        if (solidMask == null) {
+            this.solidMask = new SolidBlockMask(world);
+        } else {
+            this.solidMask = solidMask;
+        }
     }
 
     /**
@@ -86,17 +117,16 @@ public class TargetBlock {
      * @param viewHeight where the view is positioned in y-axis
      * @param checkDistance how often to check for blocks, the smaller the more precise
      */
-    private void setValues(Vector loc, double xRotation, double yRotation,
-            int maxDistance, double viewHeight, double checkDistance) {
+    private void setValues(Vector3 loc, double xRotation, double yRotation, int maxDistance, double viewHeight, double checkDistance) {
         this.maxDistance = maxDistance;
         this.checkDistance = checkDistance;
         this.curDistance = 0;
         xRotation = (xRotation + 90) % 360;
-        yRotation = yRotation * -1;
+        yRotation *= -1;
 
         double h = (checkDistance * Math.cos(Math.toRadians(yRotation)));
 
-        offset = new Vector((h * Math.cos(Math.toRadians(xRotation))),
+        offset = Vector3.at((h * Math.cos(Math.toRadians(xRotation))),
                             (checkDistance * Math.sin(Math.toRadians(yRotation))),
                             (h * Math.sin(Math.toRadians(xRotation))));
 
@@ -111,22 +141,22 @@ public class TargetBlock {
      * 
      * @return Block
      */
-    public BlockWorldVector getAnyTargetBlock() {
+    public Location getAnyTargetBlock() {
         boolean searchForLastBlock = true;
-        BlockWorldVector lastBlock = null;
+        Location lastBlock = null;
         while (getNextBlock() != null) {
-            if (world.getBlockType(getCurrentBlock()) == BlockID.AIR) {
+            if (stopMask.test(targetPos)) {
+                break;
+            } else {
                 if (searchForLastBlock) {
                     lastBlock = getCurrentBlock();
                     if (lastBlock.getBlockY() <= 0 || lastBlock.getBlockY() >= world.getMaxY()) {
                         searchForLastBlock = false;
                     }
                 }
-            } else {
-                break;
             }
         }
-        BlockWorldVector currentBlock = getCurrentBlock();
+        Location currentBlock = getCurrentBlock();
         return (currentBlock != null ? currentBlock : lastBlock);
     }
 
@@ -136,8 +166,9 @@ public class TargetBlock {
      * 
      * @return Block
      */
-    public BlockWorldVector getTargetBlock() {
-        while (getNextBlock() != null && world.getBlockType(getCurrentBlock()) == 0) ;
+    public Location getTargetBlock() {
+        //noinspection StatementWithEmptyBody
+        while (getNextBlock() != null && !stopMask.test(targetPos)) ;
         return getCurrentBlock();
     }
 
@@ -147,8 +178,9 @@ public class TargetBlock {
      * 
      * @return Block
      */
-    public BlockWorldVector getSolidTargetBlock() {
-        while (getNextBlock() != null && BlockType.canPassThrough(world.getBlock(getCurrentBlock()))) ;
+    public Location getSolidTargetBlock() {
+        //noinspection StatementWithEmptyBody
+        while (getNextBlock() != null && !solidMask.test(targetPos)) ;
         return getCurrentBlock();
     }
 
@@ -157,7 +189,7 @@ public class TargetBlock {
      * 
      * @return next block position
      */
-    public BlockWorldVector getNextBlock() {
+    public Location getNextBlock() {
         prevPos = targetPos;
         do {
             curDistance += checkDistance;
@@ -175,7 +207,7 @@ public class TargetBlock {
             return null;
         }
 
-        return new BlockWorldVector(world, targetPos);
+        return new Location(world, targetPos.toVector3());
     }
 
     /**
@@ -183,11 +215,11 @@ public class TargetBlock {
      * 
      * @return block position
      */
-    public BlockWorldVector getCurrentBlock() {
+    public Location getCurrentBlock() {
         if (curDistance > maxDistance) {
             return null;
         } else {
-            return new BlockWorldVector(world, targetPos);
+            return new Location(world, targetPos.toVector3());
         }
     }
 
@@ -196,18 +228,23 @@ public class TargetBlock {
      * 
      * @return block position
      */
-    public BlockWorldVector getPreviousBlock() {
-        return new BlockWorldVector(world, prevPos);
+    public Location getPreviousBlock() {
+        return new Location(world, prevPos.toVector3());
     }
 
-    public WorldVectorFace getAnyTargetBlockFace() {
+    public Location getAnyTargetBlockFace() {
         getAnyTargetBlock();
-        return WorldVectorFace.getWorldVectorFace(world, getCurrentBlock(), getPreviousBlock());
+        Location current = getCurrentBlock();
+        if (current != null)
+            return current.setDirection(current.toVector().subtract(getPreviousBlock().toVector()));
+        else
+            return new Location(world, targetPos.toVector3(), Float.NaN, Float.NaN);
     }
 
-    public WorldVectorFace getTargetBlockFace() {
-        getAnyTargetBlock();
-        return WorldVectorFace.getWorldVectorFace(world, getCurrentBlock(), getPreviousBlock());
+    public Location getTargetBlockFace() {
+        getTargetBlock();
+        if (getCurrentBlock() == null) return null;
+        return getCurrentBlock().setDirection(getCurrentBlock().toVector().subtract(getPreviousBlock().toVector()));
     }
 
 }

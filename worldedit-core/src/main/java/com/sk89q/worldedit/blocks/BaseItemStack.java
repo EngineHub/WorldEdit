@@ -19,6 +19,9 @@
 
 package com.sk89q.worldedit.blocks;
 
+import com.sk89q.jnbt.CompoundTag;
+import com.sk89q.worldedit.world.item.ItemType;
+
 /**
  * Represents a stack of BaseItems.
  *
@@ -29,34 +32,34 @@ public class BaseItemStack extends BaseItem {
     private int amount = 1;
 
     /**
-     * Construct the object with default stack size of one, with data value of 0.
+     * Construct the object with default stack size of one, with damage value of 0.
      *
-     * @param id with data value of 0.
+     * @param itemType The item type
      */
-    public BaseItemStack(int id) {
-        super(id);
+    public BaseItemStack(ItemType itemType) {
+        super(itemType);
     }
 
     /**
      * Construct the object.
      *
-     * @param id type ID
+     * @param itemType The item type
      * @param amount amount in the stack
      */
-    public BaseItemStack(int id, int amount) {
-        super(id);
+    public BaseItemStack(ItemType itemType, int amount) {
+        super(itemType);
         this.amount = amount;
     }
 
     /**
      * Construct the object.
      *
-     * @param id type ID
+     * @param id The item type
+     * @param tag Tag value
      * @param amount amount in the stack
-     * @param data data value
      */
-    public BaseItemStack(int id, int amount, short data) {
-        super(id, data);
+    public BaseItemStack(ItemType id, CompoundTag tag, int amount) {
+        super(id, tag);
         this.amount = amount;
     }
 

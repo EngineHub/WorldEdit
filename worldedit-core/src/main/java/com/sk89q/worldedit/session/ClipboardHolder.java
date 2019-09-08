@@ -19,20 +19,18 @@
 
 package com.sk89q.worldedit.session;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.math.transform.Identity;
 import com.sk89q.worldedit.math.transform.Transform;
-import com.sk89q.worldedit.world.registry.WorldData;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Holds the clipboard and the current transform on the clipboard.
  */
 public class ClipboardHolder {
 
-    private final WorldData worldData;
     private final Clipboard clipboard;
     private Transform transform = new Identity();
 
@@ -40,22 +38,10 @@ public class ClipboardHolder {
      * Create a new instance with the given clipboard.
      *
      * @param clipboard the clipboard
-     * @param worldData the mapping of blocks, entities, and so on
      */
-    public ClipboardHolder(Clipboard clipboard, WorldData worldData) {
+    public ClipboardHolder(Clipboard clipboard) {
         checkNotNull(clipboard);
-        checkNotNull(worldData);
         this.clipboard = clipboard;
-        this.worldData = worldData;
-    }
-
-    /**
-     * Get the mapping used for blocks, entities, and so on.
-     *
-     * @return the mapping
-     */
-    public WorldData getWorldData() {
-        return worldData;
     }
 
     /**
@@ -94,8 +80,8 @@ public class ClipboardHolder {
      *
      * @return a builder
      */
-    public PasteBuilder createPaste(Extent targetExtent, WorldData targetWorldData) {
-        return new PasteBuilder(this, targetExtent, targetWorldData);
+    public PasteBuilder createPaste(Extent targetExtent) {
+        return new PasteBuilder(this, targetExtent);
     }
 
 }

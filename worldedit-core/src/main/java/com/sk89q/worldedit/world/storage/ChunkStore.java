@@ -21,26 +21,36 @@ package com.sk89q.worldedit.world.storage;
 
 import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.jnbt.Tag;
-import com.sk89q.worldedit.BlockVector2D;
-import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.Vector2D;
+import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.extension.platform.Capability;
+import com.sk89q.worldedit.extension.platform.Platform;
+import com.sk89q.worldedit.math.BlockVector2;
+import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.world.DataException;
+import com.sk89q.worldedit.world.DataFixer;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.chunk.AnvilChunk;
+import com.sk89q.worldedit.world.chunk.AnvilChunk13;
 import com.sk89q.worldedit.world.chunk.Chunk;
 import com.sk89q.worldedit.world.chunk.OldChunk;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.util.Map;
 
 /**
  * Represents chunk storage mechanisms.
  */
-public abstract class ChunkStore {
+public abstract class ChunkStore implements Closeable {
 
     /**
-     * >> to chunk
-     * << from chunk
+     * The DataVersion for Minecraft 1.13
+     */
+    private static final int DATA_VERSION_MC_1_13 = 1519;
+
+    /**
+     * {@code >>} - to chunk
+     * {@code <<} - from chunk
      */
     public static final int CHUNK_SHIFTS = 4;
 
@@ -50,11 +60,8 @@ public abstract class ChunkStore {
      * @param position the position
      * @return chunk coordinates
      */
-    public static BlockVector2D toChunk(Vector position) {
-        int chunkX = (int) Math.floor(position.getBlockX() / 16.0);
-        int chunkZ = (int) Math.floor(position.getBlockZ() / 16.0);
-
-        return new BlockVector2D(chunkX, chunkZ);
+    public static BlockVector2 toChunk(BlockVector3 position) {
+        return BlockVector2.at(position.getX() >> CHUNK_SHIFTS, position.getZ() >> CHUNK_SHIFTS);
     }
 
     /**
@@ -65,7 +72,7 @@ public abstract class ChunkStore {
      * @throws DataException thrown on data error
      * @throws IOException thrown on I/O error
      */
-    public abstract CompoundTag getChunkTag(Vector2D position, World world) throws DataException, IOException;
+    public abstract CompoundTag getChunkTag(BlockVector2 position, World world) throws DataException, IOException;
 
     /**
      * Get a chunk at a location.
@@ -76,8 +83,42 @@ public abstract class ChunkStore {
      * @throws DataException thrown on data error
      * @throws IOException thrown on I/O error
      */
-    public Chunk getChunk(Vector2D position, World world) throws DataException, IOException {
-        CompoundTag tag = getChunkTag(position, world);
+    public Chunk getChunk(BlockVector2 position, World world) throws DataException, IOException {
+        CompoundTag rootTag = getChunkTag(position, world);
+
+        Map<String, Tag> children = rootTag.getValue();
+        CompoundTag tag = null;
+
+        // Find Level tag
+        for (Map.Entry<String, Tag> entry : children.entrySet()) {
+            if (entry.getKey().equals("Level")) {
+                if (entry.getValue() instanceof CompoundTag) {
+                    tag = (CompoundTag) entry.getValue();
+                    break;
+                } else {
+                    throw new ChunkStoreException("CompoundTag expected for 'Level'; got " + entry.getValue().getClass().getName());
+                }
+            }
+        }
+
+        if (tag == null) {
+            throw new ChunkStoreException("Missing root 'Level' tag");
+        }
+
+        int dataVersion = rootTag.getInt("DataVersion");
+        if (dataVersion == 0) dataVersion = -1;
+        final Platform platform = WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.WORLD_EDITING);
+        final int currentDataVersion = platform.getDataVersion();
+        if (tag.getValue().containsKey("Sections") &&  dataVersion < currentDataVersion) { // only fix up MCA format, DFU doesn't support MCR chunks
+            final DataFixer dataFixer = platform.getDataFixer();
+            if (dataFixer != null) {
+                return new AnvilChunk13((CompoundTag) dataFixer.fixUp(DataFixer.FixTypes.CHUNK, rootTag, dataVersion).getValue().get("Level"));
+            }
+        }
+        if (dataVersion >= DATA_VERSION_MC_1_13) {
+            return new AnvilChunk13(tag);
+        }
+
         Map<String, Tag> tags = tag.getValue();
         if (tags.containsKey("Sections")) {
             return new AnvilChunk(world, tag);
@@ -86,11 +127,7 @@ public abstract class ChunkStore {
         return new OldChunk(world, tag);
     }
 
-    /**
-     * Close resources.
-     *
-     * @throws IOException on I/O error
-     */
+    @Override
     public void close() throws IOException {
     }
 

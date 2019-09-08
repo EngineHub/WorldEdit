@@ -21,8 +21,10 @@ package com.sk89q.worldedit.extension.platform;
 
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.entity.Player;
-import com.sk89q.worldedit.util.command.Dispatcher;
+import com.sk89q.worldedit.world.DataFixer;
 import com.sk89q.worldedit.world.World;
+import com.sk89q.worldedit.world.registry.Registries;
+import org.enginehub.piston.CommandManager;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -37,18 +39,31 @@ import java.util.Map;
 public interface Platform {
 
     /**
-     * Resolves an item name to its ID.
+     * Gets the registry holder.
      *
-     * @param name The name to look up
-     * @return The id that corresponds to the name, or -1 if no such ID exists
+     * @return The registry holder
      */
-    int resolveItem(String name);
+    Registries getRegistries();
+
+    /**
+     * Gets the Minecraft data version being used by the platform.
+     *
+     * @return the data version
+     */
+    int getDataVersion();
+
+    /**
+     * Get a DataFixer capable of upgrading old data.
+     *
+     * @return a data fixer, or null if not supported by this platform
+     */
+    DataFixer getDataFixer();
 
     /**
      * Checks if a mob type is valid.
      *
      * @param type The mob type name to check
-     * @return Whether the name is a valid mod bype
+     * @return Whether the name is a valid mod type
      */
     boolean isValidMobType(String type);
 
@@ -96,11 +111,11 @@ public interface Platform {
     @Nullable World matchWorld(World world);
 
     /**
-     * Register the commands contained within the given command dispatcher.
+     * Register the commands contained within the given command manager.
      *
-     * @param dispatcher the dispatcher
+     * @param commandManager the command manager
      */
-    void registerCommands(Dispatcher dispatcher);
+    void registerCommands(CommandManager commandManager);
 
     /**
      * Register game hooks.

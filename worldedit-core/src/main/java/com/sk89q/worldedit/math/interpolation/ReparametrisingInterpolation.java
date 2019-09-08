@@ -21,12 +21,13 @@
 
 package com.sk89q.worldedit.math.interpolation;
 
-import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.math.Vector3;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.TreeMap;
-import java.util.logging.Logger;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -38,11 +39,11 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class ReparametrisingInterpolation implements Interpolation {
 
-    private static final Logger log = Logger.getLogger(ReparametrisingInterpolation.class.getCanonicalName());
+    private static final Logger log = LoggerFactory.getLogger(ReparametrisingInterpolation.class);
 
     private final Interpolation baseInterpolation;
     private double totalArcLength;
-    private final TreeMap<Double, Double> cache = new TreeMap<Double, Double>();
+    private final TreeMap<Double, Double> cache = new TreeMap<>();
 
     public ReparametrisingInterpolation(Interpolation baseInterpolation) {
         checkNotNull(baseInterpolation);
@@ -65,7 +66,7 @@ public class ReparametrisingInterpolation implements Interpolation {
     }
 
     @Override
-    public Vector getPosition(double position) {
+    public Vector3 getPosition(double position) {
         if (position > 1)
             return null;
 
@@ -73,7 +74,7 @@ public class ReparametrisingInterpolation implements Interpolation {
     }
 
     @Override
-    public Vector get1stDerivative(double position) {
+    public Vector3 get1stDerivative(double position) {
         if (position > 1)
             return null;
 
@@ -102,7 +103,7 @@ public class ReparametrisingInterpolation implements Interpolation {
 
         Entry<Double, Double> ceilingEntry = cache.ceilingEntry(arc);
         if (ceilingEntry == null) {
-            log.warning("Error in arcToParameter: no ceiling entry for " + arc + " found!");
+            log.warn("Error in arcToParameter: no ceiling entry for " + arc + " found!");
             return 0;
         }
         final double rightArc = ceilingEntry.getKey();

@@ -19,7 +19,10 @@
 
 package com.sk89q.util;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -32,7 +35,7 @@ public final class StringUtil {
 
     /**
      * Trim a string if it is longer than a certain length.
-     *  
+     *
      * @param str the stirng
      * @param len the length to trim to
      * @return a new string
@@ -47,7 +50,7 @@ public final class StringUtil {
 
     /**
      * Join an array of strings into a string.
-     * 
+     *
      * @param str the string array
      * @param delimiter the delimiter
      * @param initialIndex the initial index to start form
@@ -66,7 +69,7 @@ public final class StringUtil {
 
     /**
      * Join an array of strings into a string.
-     * 
+     *
      * @param str the string array
      * @param delimiter the delimiter
      * @param initialIndex the initial index to start form
@@ -90,7 +93,7 @@ public final class StringUtil {
 
     /**
      * Join an array of strings into a string.
-     * 
+     *
      * @param str the string array
      * @param delimiter the delimiter
      * @return a new string
@@ -101,7 +104,7 @@ public final class StringUtil {
 
     /**
      * Join an array of strings into a string.
-     * 
+     *
      * @param str an array of objects
      * @param delimiter the delimiter
      * @param initialIndex the initial index to start form
@@ -120,7 +123,7 @@ public final class StringUtil {
 
     /**
      * Join an array of strings into a string.
-     * 
+     *
      * @param str a list of integers
      * @param delimiter the delimiter
      * @param initialIndex the initial index to start form
@@ -217,7 +220,7 @@ public final class StringUtil {
          * calculated). (Note that the arrays aren't really copied anymore, just
          * switched...this is clearly much better than cloning an array or doing
          * a System.arraycopy() each time through the outer loop.)
-         * 
+         *
          * Effectively, the difference between the two implementations is this
          * one does not cause an out of memory condition when calculating the LD
          * over two very large strings.
@@ -272,7 +275,7 @@ public final class StringUtil {
     }
 
     public static <T extends Enum<?>> T lookup(Map<String, T> lookup, String name, boolean fuzzy) {
-        String testName = name.replaceAll("[ _]", "").toLowerCase();
+        String testName = name.replaceAll("[ _]", "").toLowerCase(Locale.ROOT);
 
         T type = lookup.get(testName);
         if (type != null) {
@@ -300,5 +303,32 @@ public final class StringUtil {
         }
 
         return type;
+    }
+
+    public static List<String> parseListInQuotes(String[] input, char delimiter, char quoteOpen, char quoteClose) {
+        return parseListInQuotes(input, delimiter, quoteOpen, quoteClose, false);
+    }
+
+    public static List<String> parseListInQuotes(String[] input, char delimiter, char quoteOpen, char quoteClose, boolean appendLeftover) {
+       List<String> parsableBlocks = new ArrayList<>();
+        StringBuilder buffer = new StringBuilder();
+        for (String split : input) {
+            if (split.indexOf(quoteOpen) != -1 && split.indexOf(quoteClose) == -1) {
+                buffer.append(split).append(delimiter);
+            } else if (split.indexOf(quoteClose) != -1 && split.indexOf(quoteOpen) == -1) {
+                buffer.append(split);
+                parsableBlocks.add(buffer.toString());
+                buffer = new StringBuilder();
+            } else if (buffer.length() == 0) {
+                parsableBlocks.add(split);
+            } else {
+                buffer.append(split).append(delimiter);
+            }
+        }
+        if (appendLeftover && buffer.length() != 0) {
+            parsableBlocks.add(buffer.delete(buffer.length() - 1, buffer.length()).toString());
+        }
+
+        return parsableBlocks;
     }
 }

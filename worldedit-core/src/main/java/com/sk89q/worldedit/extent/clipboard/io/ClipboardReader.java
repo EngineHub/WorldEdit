@@ -20,24 +20,32 @@
 package com.sk89q.worldedit.extent.clipboard.io;
 
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
-import com.sk89q.worldedit.world.registry.WorldData;
 
+import java.io.Closeable;
 import java.io.IOException;
+import java.util.OptionalInt;
 
 /**
  * Reads {@code Clipboard}s.
  *
  * @see Clipboard
  */
-public interface ClipboardReader {
+public interface ClipboardReader extends Closeable {
 
     /**
      * Read a {@code Clipboard}.
      *
-     * @param data the world data space to convert the blocks to
      * @return the read clipboard
      * @throws IOException thrown on I/O error
      */
-    Clipboard read(WorldData data) throws IOException;
+    Clipboard read() throws IOException;
 
+    /**
+     * Get the DataVersion from a file (if possible).
+     *
+     * @return The data version, or empty
+     */
+    default OptionalInt getDataVersion() {
+        return OptionalInt.empty();
+    }
 }

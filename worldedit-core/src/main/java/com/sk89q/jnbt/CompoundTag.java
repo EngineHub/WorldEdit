@@ -72,7 +72,7 @@ public final class CompoundTag extends Tag {
      * @return the builder
      */
     public CompoundTagBuilder createBuilder() {
-        return new CompoundTagBuilder(new HashMap<String, Tag>(value));
+        return new CompoundTagBuilder(new HashMap<>(value));
     }
 
     /**
@@ -314,6 +314,24 @@ public final class CompoundTag extends Tag {
             }
         } else {
             return Collections.emptyList();
+        }
+    }
+
+    /**
+     * Get a {@code long[]} named with the given key.
+     *
+     * <p>If the key does not exist or its value is not an long array tag,
+     * then an empty array will be returned.</p>
+     *
+     * @param key the key
+     * @return an int array
+     */
+    public long[] getLongArray(String key) {
+        Tag tag = value.get(key);
+        if (tag instanceof LongArrayTag) {
+            return ((LongArrayTag) tag).getValue();
+        } else {
+            return new long[0];
         }
     }
 

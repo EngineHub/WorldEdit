@@ -19,14 +19,16 @@
 
 package com.sk89q.worldedit.extent.world;
 
-import com.sk89q.worldedit.Vector;
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.extent.AbstractDelegateExtent;
 import com.sk89q.worldedit.extent.Extent;
+import com.sk89q.worldedit.math.BlockVector2;
+import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.world.World;
-
-import static com.google.common.base.Preconditions.checkNotNull;
+import com.sk89q.worldedit.world.biome.BiomeType;
+import com.sk89q.worldedit.world.block.BlockStateHolder;
 
 /**
  * Automatically loads chunks when blocks are accessed.
@@ -61,8 +63,18 @@ public class ChunkLoadingExtent extends AbstractDelegateExtent {
     }
 
     @Override
-    public boolean setBlock(Vector location, BaseBlock block) throws WorldEditException {
-        world.checkLoadedChunk(location);
+    public <B extends BlockStateHolder<B>> boolean setBlock(BlockVector3 location, B block) throws WorldEditException {
+        if (enabled) {
+            world.checkLoadedChunk(location);
+        }
         return super.setBlock(location, block);
+    }
+
+    @Override
+    public boolean setBiome(BlockVector2 position, BiomeType biome) {
+        if (enabled) {
+            world.checkLoadedChunk(position.toBlockVector3());
+        }
+        return super.setBiome(position, biome);
     }
 }

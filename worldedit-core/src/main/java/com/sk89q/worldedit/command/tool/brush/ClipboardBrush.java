@@ -21,36 +21,56 @@ package com.sk89q.worldedit.command.tool.brush;
 
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
-import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
+import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.Operations;
 import com.sk89q.worldedit.function.pattern.Pattern;
+import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.session.ClipboardHolder;
 
 public class ClipboardBrush implements Brush {
 
-    private ClipboardHolder holder;
-    private boolean ignoreAirBlocks;
-    private boolean usingOrigin;
+    private final ClipboardHolder holder;
+    private final boolean ignoreAirBlocks;
+    private final boolean usingOrigin;
+    private final boolean pasteEntities;
+    private final boolean pasteBiomes;
+    private final Mask sourceMask;
 
     public ClipboardBrush(ClipboardHolder holder, boolean ignoreAirBlocks, boolean usingOrigin) {
         this.holder = holder;
         this.ignoreAirBlocks = ignoreAirBlocks;
         this.usingOrigin = usingOrigin;
+        this.pasteBiomes = false;
+        this.pasteEntities = false;
+        this.sourceMask = null;
+    }
+
+    public ClipboardBrush(ClipboardHolder holder, boolean ignoreAirBlocks, boolean usingOrigin, boolean pasteEntities,
+                          boolean pasteBiomes, Mask sourceMask) {
+        this.holder = holder;
+        this.ignoreAirBlocks = ignoreAirBlocks;
+        this.usingOrigin = usingOrigin;
+        this.pasteEntities = pasteEntities;
+        this.pasteBiomes = pasteBiomes;
+        this.sourceMask = sourceMask;
     }
 
     @Override
-    public void build(EditSession editSession, Vector position, Pattern pattern, double size) throws MaxChangedBlocksException {
+    public void build(EditSession editSession, BlockVector3 position, Pattern pattern, double size) throws MaxChangedBlocksException {
         Clipboard clipboard = holder.getClipboard();
         Region region = clipboard.getRegion();
-        Vector centerOffset = region.getCenter().subtract(clipboard.getOrigin());
+        BlockVector3 centerOffset = region.getCenter().toBlockPoint().subtract(clipboard.getOrigin());
 
         Operation operation = holder
-                .createPaste(editSession, editSession.getWorld().getWorldData())
+                .createPaste(editSession)
                 .to(usingOrigin ? position : position.subtract(centerOffset))
                 .ignoreAirBlocks(ignoreAirBlocks)
+                .copyEntities(pasteEntities)
+                .copyBiomes(pasteBiomes)
+                .maskSource(sourceMask)
                 .build();
 
         Operations.completeLegacy(operation);

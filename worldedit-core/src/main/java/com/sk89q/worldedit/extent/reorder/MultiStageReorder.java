@@ -19,33 +19,151 @@
 
 package com.sk89q.worldedit.extent.reorder;
 
-import com.google.common.collect.Iterators;
-import com.sk89q.worldedit.BlockVector;
-import com.sk89q.worldedit.PlayerDirection;
-import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.blocks.BlockID;
-import com.sk89q.worldedit.blocks.BlockType;
-import com.sk89q.worldedit.extent.AbstractDelegateExtent;
+import com.sk89q.worldedit.extent.AbstractBufferingExtent;
 import com.sk89q.worldedit.extent.Extent;
-import com.sk89q.worldedit.function.operation.BlockMapEntryPlacer;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.OperationQueue;
 import com.sk89q.worldedit.function.operation.RunContext;
-import com.sk89q.worldedit.util.collection.TupleArrayList;
+import com.sk89q.worldedit.function.operation.SetBlockMap;
+import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.util.collection.BlockMap;
+import com.sk89q.worldedit.world.block.BaseBlock;
+import com.sk89q.worldedit.world.block.BlockCategories;
+import com.sk89q.worldedit.world.block.BlockState;
+import com.sk89q.worldedit.world.block.BlockStateHolder;
+import com.sk89q.worldedit.world.block.BlockType;
+import com.sk89q.worldedit.world.block.BlockTypes;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 
 /**
  * Re-orders blocks into several stages.
  */
-public class MultiStageReorder extends AbstractDelegateExtent implements ReorderingExtent {
+public class MultiStageReorder extends AbstractBufferingExtent implements ReorderingExtent {
 
-    private TupleArrayList<BlockVector, BaseBlock> stage1 = new TupleArrayList<BlockVector, BaseBlock>();
-    private TupleArrayList<BlockVector, BaseBlock> stage2 = new TupleArrayList<BlockVector, BaseBlock>();
-    private TupleArrayList<BlockVector, BaseBlock> stage3 = new TupleArrayList<BlockVector, BaseBlock>();
+    private static final Map<BlockType, PlacementPriority> priorityMap = new HashMap<>();
+
+    static {
+        // Late
+        priorityMap.put(BlockTypes.WATER, PlacementPriority.LATE);
+        priorityMap.put(BlockTypes.LAVA, PlacementPriority.LATE);
+        priorityMap.put(BlockTypes.SAND, PlacementPriority.LATE);
+        priorityMap.put(BlockTypes.GRAVEL, PlacementPriority.LATE);
+
+        // Late
+        BlockCategories.SAPLINGS.getAll().forEach(type -> priorityMap.put(type, PlacementPriority.LAST));
+        BlockCategories.FLOWER_POTS.getAll().forEach(type -> priorityMap.put(type, PlacementPriority.LAST));
+        BlockCategories.BUTTONS.getAll().forEach(type -> priorityMap.put(type, PlacementPriority.LAST));
+        BlockCategories.ANVIL.getAll().forEach(type -> priorityMap.put(type, PlacementPriority.LAST));
+        BlockCategories.WOODEN_PRESSURE_PLATES.getAll().forEach(type -> priorityMap.put(type, PlacementPriority.LAST));
+        BlockCategories.CARPETS.getAll().forEach(type -> priorityMap.put(type, PlacementPriority.LAST));
+        BlockCategories.RAILS.getAll().forEach(type -> priorityMap.put(type, PlacementPriority.LAST));
+        BlockCategories.BEDS.getAll().forEach(type -> priorityMap.put(type, PlacementPriority.LAST));
+        BlockCategories.SMALL_FLOWERS.getAll().forEach(type -> priorityMap.put(type, PlacementPriority.LAST));
+        priorityMap.put(BlockTypes.BLACK_BED, PlacementPriority.LAST);
+        priorityMap.put(BlockTypes.BLUE_BED, PlacementPriority.LAST);
+        priorityMap.put(BlockTypes.BROWN_BED, PlacementPriority.LAST);
+        priorityMap.put(BlockTypes.CYAN_BED, PlacementPriority.LAST);
+        priorityMap.put(BlockTypes.GRAY_BED, PlacementPriority.LAST);
+        priorityMap.put(BlockTypes.GREEN_BED, PlacementPriority.LAST);
+        priorityMap.put(BlockTypes.LIGHT_BLUE_BED, PlacementPriority.LAST);
+        priorityMap.put(BlockTypes.LIGHT_GRAY_BED, PlacementPriority.LAST);
+        priorityMap.put(BlockTypes.LIME_BED, PlacementPriority.LAST);
+        priorityMap.put(BlockTypes.MAGENTA_BED, PlacementPriority.LAST);
+        priorityMap.put(BlockTypes.ORANGE_BED, PlacementPriority.LAST);
+        priorityMap.put(BlockTypes.PINK_BED, PlacementPriority.LAST);
+        priorityMap.put(BlockTypes.PURPLE_BED, PlacementPriority.LAST);
+        priorityMap.put(BlockTypes.RED_BED, PlacementPriority.LAST);
+        priorityMap.put(BlockTypes.WHITE_BED, PlacementPriority.LAST);
+        priorityMap.put(BlockTypes.YELLOW_BED, PlacementPriority.LAST);
+        priorityMap.put(BlockTypes.GRASS, PlacementPriority.LAST);
+        priorityMap.put(BlockTypes.TALL_GRASS, PlacementPriority.LAST);
+        priorityMap.put(BlockTypes.ROSE_BUSH, PlacementPriority.LAST);
+        priorityMap.put(BlockTypes.DANDELION, PlacementPriority.LAST);
+        priorityMap.put(BlockTypes.BROWN_MUSHROOM, PlacementPriority.LAST);
+        priorityMap.put(BlockTypes.RED_MUSHROOM, PlacementPriority.LAST);
+        priorityMap.put(BlockTypes.FERN, PlacementPriority.LAST);
+        priorityMap.put(BlockTypes.LARGE_FERN, PlacementPriority.LAST);
+        priorityMap.put(BlockTypes.OXEYE_DAISY, PlacementPriority.LAST);
+        priorityMap.put(BlockTypes.AZURE_BLUET, PlacementPriority.LAST);
+        priorityMap.put(BlockTypes.TORCH, PlacementPriority.LAST);
+        priorityMap.put(BlockTypes.WALL_TORCH, PlacementPriority.LAST);
+        priorityMap.put(BlockTypes.FIRE, PlacementPriority.LAST);
+        priorityMap.put(BlockTypes.REDSTONE_WIRE, PlacementPriority.LAST);
+        priorityMap.put(BlockTypes.CARROTS, PlacementPriority.LAST);
+        priorityMap.put(BlockTypes.POTATOES, PlacementPriority.LAST);
+        priorityMap.put(BlockTypes.WHEAT, PlacementPriority.LAST);
+        priorityMap.put(BlockTypes.BEETROOTS, PlacementPriority.LAST);
+        priorityMap.put(BlockTypes.COCOA, PlacementPriority.LAST);
+        priorityMap.put(BlockTypes.LADDER, PlacementPriority.LAST);
+        priorityMap.put(BlockTypes.LEVER, PlacementPriority.LAST);
+        priorityMap.put(BlockTypes.REDSTONE_TORCH, PlacementPriority.LAST);
+        priorityMap.put(BlockTypes.REDSTONE_WALL_TORCH, PlacementPriority.LAST);
+        priorityMap.put(BlockTypes.SNOW, PlacementPriority.LAST);
+        priorityMap.put(BlockTypes.NETHER_PORTAL, PlacementPriority.LAST);
+        priorityMap.put(BlockTypes.END_PORTAL, PlacementPriority.LAST);
+        priorityMap.put(BlockTypes.REPEATER, PlacementPriority.LAST);
+        priorityMap.put(BlockTypes.VINE, PlacementPriority.LAST);
+        priorityMap.put(BlockTypes.LILY_PAD, PlacementPriority.LAST);
+        priorityMap.put(BlockTypes.NETHER_WART, PlacementPriority.LAST);
+        priorityMap.put(BlockTypes.PISTON, PlacementPriority.LAST);
+        priorityMap.put(BlockTypes.STICKY_PISTON, PlacementPriority.LAST);
+        priorityMap.put(BlockTypes.TRIPWIRE_HOOK, PlacementPriority.LAST);
+        priorityMap.put(BlockTypes.TRIPWIRE, PlacementPriority.LAST);
+        priorityMap.put(BlockTypes.STONE_PRESSURE_PLATE, PlacementPriority.LAST);
+        priorityMap.put(BlockTypes.HEAVY_WEIGHTED_PRESSURE_PLATE, PlacementPriority.LAST);
+        priorityMap.put(BlockTypes.LIGHT_WEIGHTED_PRESSURE_PLATE, PlacementPriority.LAST);
+        priorityMap.put(BlockTypes.COMPARATOR, PlacementPriority.LAST);
+        priorityMap.put(BlockTypes.IRON_TRAPDOOR, PlacementPriority.LAST);
+        priorityMap.put(BlockTypes.ACACIA_TRAPDOOR, PlacementPriority.LAST);
+        priorityMap.put(BlockTypes.BIRCH_TRAPDOOR, PlacementPriority.LAST);
+        priorityMap.put(BlockTypes.DARK_OAK_TRAPDOOR, PlacementPriority.LAST);
+        priorityMap.put(BlockTypes.JUNGLE_TRAPDOOR, PlacementPriority.LAST);
+        priorityMap.put(BlockTypes.OAK_TRAPDOOR, PlacementPriority.LAST);
+        priorityMap.put(BlockTypes.SPRUCE_TRAPDOOR, PlacementPriority.LAST);
+        priorityMap.put(BlockTypes.DAYLIGHT_DETECTOR, PlacementPriority.LAST);
+        priorityMap.put(BlockTypes.CAKE, PlacementPriority.LAST);
+
+        // Final
+        BlockCategories.DOORS.getAll().forEach(type -> priorityMap.put(type, PlacementPriority.FINAL));
+        BlockCategories.BANNERS.getAll().forEach(type -> priorityMap.put(type, PlacementPriority.FINAL));
+        BlockCategories.SIGNS.getAll().forEach(type -> priorityMap.put(type, PlacementPriority.FINAL));
+        priorityMap.put(BlockTypes.SIGN, PlacementPriority.FINAL);
+        priorityMap.put(BlockTypes.WALL_SIGN, PlacementPriority.FINAL);
+        priorityMap.put(BlockTypes.CACTUS, PlacementPriority.FINAL);
+        priorityMap.put(BlockTypes.SUGAR_CANE, PlacementPriority.FINAL);
+        priorityMap.put(BlockTypes.PISTON_HEAD, PlacementPriority.FINAL);
+        priorityMap.put(BlockTypes.MOVING_PISTON, PlacementPriority.FINAL);
+    }
+
+    private Map<PlacementPriority, BlockMap> stages = new HashMap<>();
+
     private boolean enabled;
+
+    public enum PlacementPriority {
+        CLEAR_FINAL,
+        CLEAR_LAST,
+        CLEAR_LATE,
+        FIRST,
+        LATE,
+        LAST,
+        FINAL
+    }
+
+    /**
+     * Create a new instance when the re-ordering is enabled.
+     *
+     * @param extent the extent
+     */
+    public MultiStageReorder(Extent extent) {
+        this(extent, true);
+    }
 
     /**
      * Create a new instance.
@@ -56,15 +174,10 @@ public class MultiStageReorder extends AbstractDelegateExtent implements Reorder
     public MultiStageReorder(Extent extent, boolean enabled) {
         super(extent);
         this.enabled = enabled;
-    }
 
-    /**
-     * Create a new instance when the re-ordering is enabled.
-     *
-     * @param extent the extent
-     */
-    public MultiStageReorder(Extent extent) {
-        this(extent, true);
+        for (PlacementPriority priority : PlacementPriority.values()) {
+            stages.put(priority, BlockMap.create());
+        }
     }
 
     /**
@@ -85,134 +198,82 @@ public class MultiStageReorder extends AbstractDelegateExtent implements Reorder
         this.enabled = enabled;
     }
 
+    public boolean commitRequired() {
+        return enabled;
+    }
+
+    /**
+     * Gets the stage priority of the block.
+     *
+     * @param block The block
+     * @return The priority
+     */
+    private <B extends BlockStateHolder<B>> PlacementPriority getPlacementPriority(B block) {
+        return priorityMap.getOrDefault(block.getBlockType(), PlacementPriority.FIRST);
+    }
+
     @Override
-    public boolean setBlock(Vector location, BaseBlock block) throws WorldEditException {
-        BaseBlock lazyBlock = getLazyBlock(location);
-
+    public <B extends BlockStateHolder<B>> boolean setBlock(BlockVector3 location, B block) throws WorldEditException {
         if (!enabled) {
-            return super.setBlock(location, block);
+            return setDelegateBlock(location, block);
         }
 
-        if (BlockType.shouldPlaceLast(block.getType())) {
-            // Place torches, etc. last
-            stage2.put(location.toBlockVector(), block);
-            return !(lazyBlock.getType() == block.getType() && lazyBlock.getData() == block.getData());
-        } else if (BlockType.shouldPlaceFinal(block.getType())) {
-            // Place signs, reed, etc even later
-            stage3.put(location.toBlockVector(), block);
-            return !(lazyBlock.getType() == block.getType() && lazyBlock.getData() == block.getData());
-        } else if (BlockType.shouldPlaceLast(lazyBlock.getType())) {
-            // Destroy torches, etc. first
-            super.setBlock(location, new BaseBlock(BlockID.AIR));
-            return super.setBlock(location, block);
-        } else {
-            stage1.put(location.toBlockVector(), block);
-            return !(lazyBlock.getType() == block.getType() && lazyBlock.getData() == block.getData());
+        BlockState existing = getExtent().getBlock(location);
+        PlacementPriority priority = getPlacementPriority(block);
+        PlacementPriority srcPriority = getPlacementPriority(existing);
+
+        if (srcPriority != PlacementPriority.FIRST) {
+            BaseBlock replacement = (block.getBlockType().getMaterial().isAir() ? block : BlockTypes.AIR.getDefaultState()).toBaseBlock();
+
+            switch (srcPriority) {
+                case FINAL:
+                    stages.get(PlacementPriority.CLEAR_FINAL).put(location, replacement);
+                    break;
+                case LATE:
+                    stages.get(PlacementPriority.CLEAR_LATE).put(location, replacement);
+                    break;
+                case LAST:
+                    stages.get(PlacementPriority.CLEAR_LAST).put(location, replacement);
+                    break;
+            }
+
+            if (block.getBlockType().getMaterial().isAir()) {
+                return !existing.equalsFuzzy(block);
+            }
         }
+
+        stages.get(priority).put(location, block.toBaseBlock());
+        return !existing.equalsFuzzy(block);
+    }
+
+    @Override
+    protected Optional<BaseBlock> getBufferedBlock(BlockVector3 position) {
+        return stages.values().stream()
+            .map(blocks -> blocks.get(position))
+            .filter(Objects::nonNull)
+            .findAny();
     }
 
     @Override
     public Operation commitBefore() {
-        return new OperationQueue(
-                new BlockMapEntryPlacer(
-                        getExtent(),
-                        Iterators.concat(stage1.iterator(), stage2.iterator())),
-                new Stage3Committer());
-    }
-
-    private class Stage3Committer implements Operation {
-
-        @Override
-        public Operation resume(RunContext run) throws WorldEditException {
-            Extent extent = getExtent();
-
-            final Set<BlockVector> blocks = new HashSet<BlockVector>();
-            final Map<BlockVector, BaseBlock> blockTypes = new HashMap<BlockVector, BaseBlock>();
-            for (Map.Entry<BlockVector, BaseBlock> entry : stage3) {
-                final BlockVector pt = entry.getKey();
-                blocks.add(pt);
-                blockTypes.put(pt, entry.getValue());
-            }
-
-            while (!blocks.isEmpty()) {
-                BlockVector current = blocks.iterator().next();
-                if (!blocks.contains(current)) {
-                    continue;
-                }
-
-                final Deque<BlockVector> walked = new LinkedList<BlockVector>();
-
-                while (true) {
-                    walked.addFirst(current);
-
-                    assert (blockTypes.containsKey(current));
-
-                    final BaseBlock baseBlock = blockTypes.get(current);
-
-                    final int type = baseBlock.getType();
-                    final int data = baseBlock.getData();
-
-                    switch (type) {
-                        case BlockID.WOODEN_DOOR:
-                        case BlockID.IRON_DOOR:
-                            if ((data & 0x8) == 0) {
-                                // Deal with lower door halves being attached to the floor AND the upper half
-                                BlockVector upperBlock = current.add(0, 1, 0).toBlockVector();
-                                if (blocks.contains(upperBlock) && !walked.contains(upperBlock)) {
-                                    walked.addFirst(upperBlock);
-                                }
-                            }
-                            break;
-
-                        case BlockID.MINECART_TRACKS:
-                        case BlockID.POWERED_RAIL:
-                        case BlockID.DETECTOR_RAIL:
-                        case BlockID.ACTIVATOR_RAIL:
-                            // Here, rails are hardcoded to be attached to the block below them.
-                            // They're also attached to the block they're ascending towards via BlockType.getAttachment.
-                            BlockVector lowerBlock = current.add(0, -1, 0).toBlockVector();
-                            if (blocks.contains(lowerBlock) && !walked.contains(lowerBlock)) {
-                                walked.addFirst(lowerBlock);
-                            }
-                            break;
-                    }
-
-                    final PlayerDirection attachment = BlockType.getAttachment(type, data);
-                    if (attachment == null) {
-                        // Block is not attached to anything => we can place it
-                        break;
-                    }
-
-                    current = current.add(attachment.vector()).toBlockVector();
-
-                    if (!blocks.contains(current)) {
-                        // We ran outside the remaining set => assume we can place blocks on this
-                        break;
-                    }
-
-                    if (walked.contains(current)) {
-                        // Cycle detected => This will most likely go wrong, but there's nothing we can do about it.
-                        break;
-                    }
-                }
-
-                for (BlockVector pt : walked) {
-                    extent.setBlock(pt, blockTypes.get(pt));
-                    blocks.remove(pt);
-                }
-            }
-
-            stage1.clear();
-            stage2.clear();
-            stage3.clear();
-
+        if (!commitRequired()) {
             return null;
         }
-
-        @Override
-        public void cancel() {
+        List<Operation> operations = new ArrayList<>();
+        for (PlacementPriority priority : PlacementPriority.values()) {
+            BlockMap blocks = stages.get(priority);
+            operations.add(new SetBlockMap(getExtent(), blocks) {
+                @Override
+                public Operation resume(RunContext run) throws WorldEditException {
+                    Operation operation = super.resume(run);
+                    if (operation == null) {
+                        blocks.clear();
+                    }
+                    return operation;
+                }
+            });
         }
 
+        return new OperationQueue(operations);
     }
-
 }

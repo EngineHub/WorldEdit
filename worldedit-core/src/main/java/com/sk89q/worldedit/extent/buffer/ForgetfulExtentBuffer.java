@@ -19,46 +19,53 @@
 
 package com.sk89q.worldedit.extent.buffer;
 
-import com.sk89q.worldedit.BlockVector;
-import com.sk89q.worldedit.Vector;
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.extent.AbstractDelegateExtent;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.function.mask.Mask;
+import com.sk89q.worldedit.function.mask.Mask2D;
 import com.sk89q.worldedit.function.mask.Masks;
+import com.sk89q.worldedit.function.pattern.BiomePattern;
 import com.sk89q.worldedit.function.pattern.Pattern;
-import com.sk89q.worldedit.regions.AbstractRegion;
+import com.sk89q.worldedit.math.BlockVector2;
+import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.regions.AbstractFlatRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.RegionOperationException;
+import com.sk89q.worldedit.world.biome.BiomeType;
+import com.sk89q.worldedit.world.biome.BiomeTypes;
+import com.sk89q.worldedit.world.block.BaseBlock;
+import com.sk89q.worldedit.world.block.BlockStateHolder;
+import com.sk89q.worldedit.world.block.BlockTypes;
 
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Buffers changes to an {@link Extent} and allows later retrieval for
  * actual application of the changes.
  *
  * <p>This buffer will not attempt to return results from the buffer when
- * accessor methods (such as {@link #getBlock(Vector)}) are called.</p>
+ * accessor methods (such as {@link #getBlock(BlockVector3)}) are called.</p>
  */
-public class ForgetfulExtentBuffer extends AbstractDelegateExtent implements Pattern {
+public class ForgetfulExtentBuffer extends AbstractDelegateExtent implements Pattern, BiomePattern {
 
-    private static final BaseBlock AIR = new BaseBlock(BlockID.AIR);
-
-    private final Map<BlockVector, BaseBlock> buffer = new LinkedHashMap<BlockVector, BaseBlock>();
+    private final Map<BlockVector3, BaseBlock> buffer = new LinkedHashMap<>();
+    private final Map<BlockVector2, BiomeType> biomeBuffer = new LinkedHashMap<>();
     private final Mask mask;
-    private Vector min = null;
-    private Vector max = null;
+    private final Mask2D biomeMask;
+    private BlockVector3 min = null;
+    private BlockVector2 min2d = null;
+    private BlockVector3 max = null;
+    private BlockVector2 max2d = null;
 
     /**
      * Create a new extent buffer that will buffer every change.
      *
-     * @param delegate the delegate extent for {@link Extent#getBlock(Vector)}, etc. calls
+     * @param delegate the delegate extent for {@link Extent#getBlock(BlockVector3)}, etc. calls
      */
     public ForgetfulExtentBuffer(Extent delegate) {
         this(delegate, Masks.alwaysTrue());
@@ -68,35 +75,35 @@ public class ForgetfulExtentBuffer extends AbstractDelegateExtent implements Pat
      * Create a new extent buffer that will buffer changes that meet the criteria
      * of the given mask.
      *
-     * @param delegate the delegate extent for {@link Extent#getBlock(Vector)}, etc. calls
+     * @param delegate the delegate extent for {@link Extent#getBlock(BlockVector3)}, etc. calls
      * @param mask the mask
      */
     public ForgetfulExtentBuffer(Extent delegate, Mask mask) {
         super(delegate);
-        checkNotNull(delegate);
         checkNotNull(mask);
         this.mask = mask;
+        Mask2D bmask = mask.toMask2D();
+        this.biomeMask = bmask == null ? Masks.alwaysTrue2D() : bmask;
     }
 
     @Override
-    public boolean setBlock(Vector location, BaseBlock block) throws WorldEditException {
+    public <B extends BlockStateHolder<B>> boolean setBlock(BlockVector3 location, B block) throws WorldEditException {
         // Update minimum
         if (min == null) {
             min = location;
         } else {
-            min = Vector.getMinimum(min, location);
+            min = min.getMinimum(location);
         }
 
         // Update maximum
         if (max == null) {
             max = location;
         } else {
-            max = Vector.getMaximum(max, location);
+            max = max.getMaximum(location);
         }
 
-        BlockVector blockVector = location.toBlockVector();
-        if (mask.test(blockVector)) {
-            buffer.put(blockVector, block);
+        if (mask.test(location)) {
+            buffer.put(location, block.toBaseBlock());
             return true;
         } else {
             return getExtent().setBlock(location, block);
@@ -104,12 +111,46 @@ public class ForgetfulExtentBuffer extends AbstractDelegateExtent implements Pat
     }
 
     @Override
-    public BaseBlock apply(Vector pos) {
-        BaseBlock block = buffer.get(pos.toBlockVector());
+    public boolean setBiome(BlockVector2 position, BiomeType biome) {
+        // Update minimum
+        if (min2d == null) {
+            min2d = position;
+        } else {
+            min2d = min2d.getMinimum(position);
+        }
+
+        // Update maximum
+        if (max2d == null) {
+            max2d = position;
+        } else {
+            max2d = max2d.getMaximum(position);
+        }
+
+        if (biomeMask.test(position)) {
+            biomeBuffer.put(position, biome);
+            return true;
+        } else {
+            return getExtent().setBiome(position, biome);
+        }
+    }
+
+    @Override
+    public BaseBlock apply(BlockVector3 pos) {
+        BaseBlock block = buffer.get(pos);
         if (block != null) {
             return block;
         } else {
-            return AIR;
+            return BlockTypes.AIR.getDefaultState().toBaseBlock();
+        }
+    }
+
+    @Override
+    public BiomeType apply(BlockVector2 pos) {
+        BiomeType biome = biomeBuffer.get(pos);
+        if (biome != null) {
+            return biome;
+        } else {
+            return BiomeTypes.OCEAN;
         }
     }
 
@@ -119,35 +160,40 @@ public class ForgetfulExtentBuffer extends AbstractDelegateExtent implements Pat
      * @return a region
      */
     public Region asRegion() {
-        return new AbstractRegion(null) {
+        return new AbstractFlatRegion(null) {
             @Override
-            public Vector getMinimumPoint() {
-                return min != null ? min : new Vector();
+            public BlockVector3 getMinimumPoint() {
+                return min != null ? min : BlockVector3.ZERO;
             }
 
             @Override
-            public Vector getMaximumPoint() {
-                return max != null ? max : new Vector();
+            public BlockVector3 getMaximumPoint() {
+                return max != null ? max : BlockVector3.ZERO;
             }
 
             @Override
-            public void expand(Vector... changes) throws RegionOperationException {
+            public void expand(BlockVector3... changes) throws RegionOperationException {
                 throw new UnsupportedOperationException("Cannot change the size of this region");
             }
 
             @Override
-            public void contract(Vector... changes) throws RegionOperationException {
+            public void contract(BlockVector3... changes) throws RegionOperationException {
                 throw new UnsupportedOperationException("Cannot change the size of this region");
             }
 
             @Override
-            public boolean contains(Vector position) {
-                return buffer.containsKey(position.toBlockVector());
+            public boolean contains(BlockVector3 position) {
+                return buffer.containsKey(position);
             }
 
             @Override
-            public Iterator<BlockVector> iterator() {
+            public Iterator<BlockVector3> iterator() {
                 return buffer.keySet().iterator();
+            }
+
+            @Override
+            public Iterable<BlockVector2> asFlatRegion() {
+                return biomeBuffer.keySet();
             }
         };
     }

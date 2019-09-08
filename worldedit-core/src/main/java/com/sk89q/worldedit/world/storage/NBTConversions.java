@@ -19,11 +19,11 @@
 
 package com.sk89q.worldedit.world.storage;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.sk89q.jnbt.ListTag;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.util.Location;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Utility methods for working with NBT data used in Minecraft.
@@ -52,7 +52,7 @@ public final class NBTConversions {
         return new Location(
                 extent,
                 positionTag.asDouble(0), positionTag.asDouble(1), positionTag.asDouble(2),
-                (float) directionTag.asDouble(0), (float) directionTag.asDouble(1));
+                directionTag.getFloat(0), directionTag.getFloat(1));
     }
 
 }

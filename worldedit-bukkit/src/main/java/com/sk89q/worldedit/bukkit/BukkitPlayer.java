@@ -20,32 +20,45 @@
 package com.sk89q.worldedit.bukkit;
 
 import com.sk89q.util.StringUtil;
-import com.sk89q.worldedit.LocalPlayer;
-import com.sk89q.worldedit.LocalWorld;
-import com.sk89q.worldedit.ServerInterface;
-import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.WorldVector;
-import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.blocks.BaseItemStack;
+import com.sk89q.worldedit.bukkit.adapter.BukkitImplAdapter;
 import com.sk89q.worldedit.entity.BaseEntity;
+import com.sk89q.worldedit.extension.platform.AbstractPlayerActor;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
 import com.sk89q.worldedit.internal.cui.CUIEvent;
+import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.session.SessionKey;
+import com.sk89q.worldedit.util.HandSide;
+import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.world.World;
+import com.sk89q.worldedit.world.block.BaseBlock;
+import com.sk89q.worldedit.world.block.BlockStateHolder;
+import com.sk89q.worldedit.world.block.BlockTypes;
+import com.sk89q.worldedit.world.gamemode.GameMode;
+import com.sk89q.worldedit.world.gamemode.GameModes;
+import com.sk89q.worldedit.util.formatting.text.adapter.bukkit.TextAdapter;
 import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import javax.annotation.Nullable;
+import java.util.Locale;
 import java.util.UUID;
 
-public class BukkitPlayer extends LocalPlayer {
+import javax.annotation.Nullable;
+
+public class BukkitPlayer extends AbstractPlayerActor {
 
     private Player player;
     private WorldEditPlugin plugin;
 
-    public BukkitPlayer(WorldEditPlugin plugin, ServerInterface server, Player player) {
+    public BukkitPlayer(Player player) {
+        this(WorldEditPlugin.getInstance(), player);
+    }
+
+    public BukkitPlayer(WorldEditPlugin plugin, Player player) {
         this.plugin = plugin;
         this.player = player;
     }
@@ -56,15 +69,19 @@ public class BukkitPlayer extends LocalPlayer {
     }
 
     @Override
-    public int getItemInHand() {
-        ItemStack itemStack = player.getItemInHand();
-        return itemStack != null ? itemStack.getTypeId() : 0;
+    public BaseItemStack getItemInHand(HandSide handSide) {
+        ItemStack itemStack = handSide == HandSide.MAIN_HAND
+                ? player.getInventory().getItemInMainHand()
+                : player.getInventory().getItemInOffHand();
+        return BukkitAdapter.adapt(itemStack);
     }
 
     @Override
-    public BaseBlock getBlockInHand() throws WorldEditException {
-        ItemStack itemStack = player.getItemInHand();
-        return BukkitUtil.toBlock(getWorld(), itemStack);
+    public BaseBlock getBlockInHand(HandSide handSide) throws WorldEditException {
+        ItemStack itemStack = handSide == HandSide.MAIN_HAND
+                ? player.getInventory().getItemInMainHand()
+                : player.getInventory().getItemInOffHand();
+        return BukkitAdapter.asBlockState(itemStack).toBaseBlock();
     }
 
     @Override
@@ -73,25 +90,13 @@ public class BukkitPlayer extends LocalPlayer {
     }
 
     @Override
-    public WorldVector getPosition() {
-        Location loc = player.getLocation();
-        return new WorldVector(BukkitUtil.getLocalWorld(loc.getWorld()),
-                loc.getX(), loc.getY(), loc.getZ());
+    public String getDisplayName() {
+        return player.getDisplayName();
     }
 
     @Override
-    public double getPitch() {
-        return player.getLocation().getPitch();
-    }
-
-    @Override
-    public double getYaw() {
-        return player.getLocation().getYaw();
-    }
-
-    @Override
-    public void giveItem(int type, int amt) {
-        player.getInventory().addItem(new ItemStack(type, amt));
+    public void giveItem(BaseItemStack itemStack) {
+        player.getInventory().addItem(BukkitAdapter.adapt(itemStack));
     }
 
     @Override
@@ -123,7 +128,12 @@ public class BukkitPlayer extends LocalPlayer {
     }
 
     @Override
-    public void setPosition(Vector pos, float pitch, float yaw) {
+    public void print(Component component) {
+        TextAdapter.sendComponent(player, component);
+    }
+
+    @Override
+    public void setPosition(Vector3 pos, float pitch, float yaw) {
         player.teleport(new Location(player.getWorld(), pos.getX(), pos.getY(),
                 pos.getZ(), yaw, pitch));
     }
@@ -139,6 +149,16 @@ public class BukkitPlayer extends LocalPlayer {
     }
 
     @Override
+    public GameMode getGameMode() {
+        return GameModes.get(player.getGameMode().name().toLowerCase(Locale.ROOT));
+    }
+
+    @Override
+    public void setGameMode(GameMode gameMode) {
+        player.setGameMode(org.bukkit.GameMode.valueOf(gameMode.getId().toUpperCase(Locale.ROOT)));
+    }
+
+    @Override
     public boolean hasPermission(String perm) {
         return (!plugin.getLocalConfiguration().noOpPermissions && player.isOp())
                 || plugin.getPermissionsResolver().hasPermission(
@@ -146,8 +166,8 @@ public class BukkitPlayer extends LocalPlayer {
     }
 
     @Override
-    public LocalWorld getWorld() {
-        return BukkitUtil.getLocalWorld(player.getWorld());
+    public World getWorld() {
+        return BukkitAdapter.adapt(player.getWorld());
     }
 
     @Override
@@ -165,19 +185,13 @@ public class BukkitPlayer extends LocalPlayer {
     }
 
     @Override
-    public boolean hasCreativeMode() {
-        return player.getGameMode() == GameMode.CREATIVE;
+    public boolean isAllowedToFly() {
+        return player.getAllowFlight();
     }
 
     @Override
-    public void floatAt(int x, int y, int z, boolean alwaysGlass) {
-        if (alwaysGlass || !player.getAllowFlight()) {
-            super.floatAt(x, y, z, alwaysGlass);
-            return;
-        }
-
-        setPosition(new Vector(x + 0.5, y, z + 0.5));
-        player.setFlying(true);
+    public void setFlying(boolean flying) {
+        player.setFlying(flying);
     }
 
     @Override
@@ -188,12 +202,17 @@ public class BukkitPlayer extends LocalPlayer {
     @Override
     public com.sk89q.worldedit.util.Location getLocation() {
         Location nativeLocation = player.getLocation();
-        Vector position = BukkitUtil.toVector(nativeLocation);
+        Vector3 position = BukkitAdapter.asVector(nativeLocation);
         return new com.sk89q.worldedit.util.Location(
                 getWorld(),
                 position,
                 nativeLocation.getYaw(),
                 nativeLocation.getPitch());
+    }
+
+    @Override
+    public boolean setLocation(com.sk89q.worldedit.util.Location location) {
+        return player.teleport(BukkitAdapter.adapt(location));
     }
 
     @Nullable
@@ -235,7 +254,7 @@ public class BukkitPlayer extends LocalPlayer {
             // CopyOnWrite list for the list of players, but the Bukkit
             // specification doesn't require thread safety (though the
             // spec is extremely incomplete)
-            return Bukkit.getServer().getPlayerExact(name) != null;
+            return Bukkit.getServer().getPlayer(uuid) != null;
         }
 
         @Override
@@ -245,4 +264,22 @@ public class BukkitPlayer extends LocalPlayer {
 
     }
 
+    @Override
+    public <B extends BlockStateHolder<B>> void sendFakeBlock(BlockVector3 pos, B block) {
+        Location loc = new Location(player.getWorld(), pos.getX(), pos.getY(), pos.getZ());
+        if (block == null) {
+            player.sendBlockChange(loc, player.getWorld().getBlockAt(loc).getBlockData());
+        } else {
+            player.sendBlockChange(loc, BukkitAdapter.adapt(block));
+            if (block instanceof BaseBlock && ((BaseBlock) block).hasNbtData()) {
+                BukkitImplAdapter adapter = WorldEditPlugin.getInstance().getBukkitImplAdapter();
+                if (adapter != null) {
+                    adapter.sendFakeNBT(player, pos, ((BaseBlock) block).getNbtData());
+                    if (block.getBlockType() == BlockTypes.STRUCTURE_BLOCK) {
+                        adapter.sendFakeOP(player);
+                    }
+                }
+            }
+        }
+    }
 }

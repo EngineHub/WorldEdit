@@ -21,6 +21,8 @@ package com.sk89q.worldedit.bukkit;
 
 import com.sk89q.util.yaml.YAMLProcessor;
 import com.sk89q.worldedit.util.YAMLConfiguration;
+import com.sk89q.worldedit.util.report.Unreported;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 
@@ -30,10 +32,11 @@ import java.io.File;
 public class BukkitConfiguration extends YAMLConfiguration {
 
     public boolean noOpPermissions = false;
-    private final WorldEditPlugin plugin;
+    public boolean commandBlockSupport = false;
+    @Unreported private final WorldEditPlugin plugin;
 
     public BukkitConfiguration(YAMLProcessor config, WorldEditPlugin plugin) {
-        super(config, plugin.getLogger());
+        super(config, LoggerFactory.getLogger(plugin.getLogger().getName()));
         this.plugin = plugin;
     }
 
@@ -41,6 +44,7 @@ public class BukkitConfiguration extends YAMLConfiguration {
     public void load() {
         super.load();
         noOpPermissions = config.getBoolean("no-op-permissions", false);
+        commandBlockSupport = config.getBoolean("command-block-support", false);
         migrateLegacyFolders();
     }
 

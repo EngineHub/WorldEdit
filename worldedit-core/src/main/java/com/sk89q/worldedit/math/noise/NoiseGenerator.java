@@ -19,8 +19,8 @@
 
 package com.sk89q.worldedit.math.noise;
 
-import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.Vector2D;
+import com.sk89q.worldedit.math.Vector2;
+import com.sk89q.worldedit.math.Vector3;
 
 /**
  * Generates noise in a deterministic or non-deterministic manner.
@@ -34,7 +34,7 @@ public interface NoiseGenerator {
      * @param position the position
      * @return a noise value between 0 (inclusive) and 1 (inclusive)
      */
-    float noise(Vector2D position);
+    float noise(Vector2 position);
 
     /**
      * Get the noise value for the given position. The returned value may
@@ -43,6 +43,6 @@ public interface NoiseGenerator {
      * @param position the position
      * @return a noise value between 0 (inclusive) and 1 (inclusive)
      */
-    float noise(Vector position);
+    float noise(Vector3 position);
 
 }

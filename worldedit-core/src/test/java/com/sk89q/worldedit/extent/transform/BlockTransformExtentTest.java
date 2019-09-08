@@ -19,59 +19,50 @@
 
 package com.sk89q.worldedit.extent.transform;
 
-import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.blocks.BlockData;
-import com.sk89q.worldedit.blocks.BlockType;
 import com.sk89q.worldedit.math.transform.AffineTransform;
 import com.sk89q.worldedit.math.transform.Transform;
-import com.sk89q.worldedit.world.registry.BlockRegistry;
-import com.sk89q.worldedit.world.registry.LegacyBlockRegistry;
-import org.junit.Before;
-import org.junit.Test;
+import com.sk89q.worldedit.world.block.BlockState;
+import com.sk89q.worldedit.world.block.BlockType;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
+@Disabled("A platform is currently required to get properties, preventing this test.")
 public class BlockTransformExtentTest {
 
     private static final Transform ROTATE_90 = new AffineTransform().rotateY(-90);
     private static final Transform ROTATE_NEG_90 = new AffineTransform().rotateY(90);
-    private final Set<BlockType> ignored = new HashSet<BlockType>();
+    private final Set<BlockType> ignored = new HashSet<>();
 
-    @Before
-    public void setUp() throws Exception {
-        ignored.add(BlockType.BED); // Broken in existing rotation code?
-        ignored.add(BlockType.WOODEN_DOOR); // Complicated
-        ignored.add(BlockType.IRON_DOOR); // Complicated
-        ignored.add(BlockType.END_PORTAL); // Not supported in existing rotation code
+    @BeforeEach
+    public void setUp() {
+        BlockType.REGISTRY.register("worldedit:test", new BlockType("worldedit:test"));
     }
 
     @Test
-    public void testTransform() throws Exception {
-        BlockRegistry blockRegistry = new LegacyBlockRegistry();
-        for (BlockType type : BlockType.values()) {
+    public void testTransform() {
+        for (BlockType type : BlockType.REGISTRY.values()) {
             if (ignored.contains(type)) {
                 continue;
             }
 
-            BaseBlock orig = new BaseBlock(type.getID());
-            for (int i = 1; i < 4; i++) {
-                BaseBlock rotated = BlockTransformExtent.transform(new BaseBlock(orig), ROTATE_90, blockRegistry);
-                BaseBlock reference = new BaseBlock(orig.getType(), BlockData.rotate90(orig.getType(), orig.getData()));
-                assertThat(type + "#" + type.getID() + " rotated " + (90 * i) + " degrees did not match BlockData.rotate90()'s expected result", rotated, equalTo(reference));
-                orig = rotated;
-            }
+            BlockState base = type.getDefaultState();
+            BlockState rotated = base;
 
-            orig = new BaseBlock(type.getID());
-            for (int i = 0; i < 4; i++) {
-                BaseBlock rotated = BlockTransformExtent.transform(new BaseBlock(orig), ROTATE_NEG_90, blockRegistry);
-                BaseBlock reference = new BaseBlock(orig.getType(), BlockData.rotate90Reverse(orig.getType(), orig.getData()));
-                assertThat(type + "#" + type.getID() + " rotated " + (-90 * i) + " degrees did not match BlockData.rotate90Reverse()'s expected result", rotated, equalTo(reference));
-                orig = rotated;
+            for (int i = 1; i < 4; i++) {
+                rotated = BlockTransformExtent.transform(base, ROTATE_90);
             }
+            assertEquals(base, rotated);
+            rotated = base;
+            for (int i = 1; i < 4; i++) {
+                rotated = BlockTransformExtent.transform(base, ROTATE_NEG_90);
+            }
+            assertEquals(base, rotated);
         }
     }
 }

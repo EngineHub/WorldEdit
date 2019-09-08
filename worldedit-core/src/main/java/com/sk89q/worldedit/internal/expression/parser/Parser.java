@@ -92,7 +92,7 @@ public class Parser {
     }
 
     private RValue parseStatements(boolean singleStatement) throws ParserException {
-        List<RValue> statements = new ArrayList<RValue>();
+        List<RValue> statements = new ArrayList<>();
         loop: while (position < tokens.size()) {
             boolean expectSemicolon = false;
 
@@ -227,8 +227,8 @@ public class Parser {
                 case 's': // switch
                     ++position;
                     final RValue parameter = parseBracket();
-                    final List<Double> values = new ArrayList<Double>();
-                    final List<RValue> caseStatements = new ArrayList<RValue>();
+                    final List<Double> values = new ArrayList<>();
+                    final List<RValue> caseStatements = new ArrayList<>();
                     RValue defaultCase = null;
 
                     consumeCharacter('{');
@@ -310,7 +310,7 @@ public class Parser {
     }
 
     private RValue parseExpression(boolean canBeEmpty) throws ParserException {
-        LinkedList<Identifiable> halfProcessed = new LinkedList<Identifiable>();
+        LinkedList<Identifiable> halfProcessed = new LinkedList<>();
 
         // process brackets, numbers, functions, variables and detect prefix operators
         boolean expressionStart = true;
@@ -397,7 +397,7 @@ public class Parser {
                 return Functions.getFunction(identifierToken.getPosition(), identifierToken.value);
             }
 
-            List<RValue> args = new ArrayList<RValue>();
+            List<RValue> args = new ArrayList<>();
 
             loop: while (true) {
                 args.add(parseExpression(false));

@@ -67,12 +67,6 @@ public class Countable<T> implements Comparable<Countable<T>> {
 
     @Override
     public int compareTo(Countable<T> other) {
-        if (amount > other.amount) {
-            return 1;
-        } else if (amount == other.amount) {
-            return 0;
-        } else {
-            return -1;
-        }
+        return Integer.compare(amount, other.amount);
     }
 }

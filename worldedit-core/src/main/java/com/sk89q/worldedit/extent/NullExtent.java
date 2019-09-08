@@ -19,20 +19,25 @@
 
 package com.sk89q.worldedit.extent;
 
-import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.Vector2D;
 import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.function.operation.Operation;
-import com.sk89q.worldedit.util.Location;
+import com.sk89q.worldedit.math.BlockVector2;
+import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.Region;
-import com.sk89q.worldedit.world.biome.BaseBiome;
+import com.sk89q.worldedit.util.Location;
+import com.sk89q.worldedit.world.biome.BiomeType;
+import com.sk89q.worldedit.world.biome.BiomeTypes;
+import com.sk89q.worldedit.world.block.BaseBlock;
+import com.sk89q.worldedit.world.block.BlockState;
+import com.sk89q.worldedit.world.block.BlockStateHolder;
+import com.sk89q.worldedit.world.block.BlockTypes;
 
-import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
+
+import javax.annotation.Nullable;
 
 /**
  * An extent that returns air blocks for all blocks and does not
@@ -40,16 +45,14 @@ import java.util.List;
  */
 public class NullExtent implements Extent {
 
-    private final Vector nullPoint = new Vector(0, 0, 0);
-
     @Override
-    public Vector getMinimumPoint() {
-        return nullPoint;
+    public BlockVector3 getMinimumPoint() {
+        return BlockVector3.ZERO;
     }
 
     @Override
-    public Vector getMaximumPoint() {
-        return nullPoint;
+    public BlockVector3 getMaximumPoint() {
+        return BlockVector3.ZERO;
     }
 
     @Override
@@ -69,28 +72,27 @@ public class NullExtent implements Extent {
     }
 
     @Override
-    public BaseBlock getBlock(Vector position) {
-        return new BaseBlock(0);
+    public BlockState getBlock(BlockVector3 position) {
+        return BlockTypes.AIR.getDefaultState();
     }
 
     @Override
-    public BaseBlock getLazyBlock(Vector position) {
-        return new BaseBlock(0);
-    }
-
-    @Nullable
-    @Override
-    public BaseBiome getBiome(Vector2D position) {
-        return null;
+    public BaseBlock getFullBlock(BlockVector3 position) {
+        return getBlock(position).toBaseBlock();
     }
 
     @Override
-    public boolean setBlock(Vector position, BaseBlock block) throws WorldEditException {
+    public BiomeType getBiome(BlockVector2 position) {
+        return BiomeTypes.THE_VOID;
+    }
+
+    @Override
+    public <B extends BlockStateHolder<B>> boolean setBlock(BlockVector3 position, B block) throws WorldEditException {
         return false;
     }
 
     @Override
-    public boolean setBiome(Vector2D position, BaseBiome biome) {
+    public boolean setBiome(BlockVector2 position, BiomeType biome) {
         return false;
     }
 

@@ -19,21 +19,24 @@
 
 package com.sk89q.worldedit.function.entity;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.jnbt.CompoundTagBuilder;
-import com.sk89q.worldedit.Vector;
+import com.sk89q.jnbt.Tag;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.function.EntityFunction;
 import com.sk89q.worldedit.internal.helper.MCDirections;
+import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.math.transform.Transform;
 import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.util.Direction.Flag;
 import com.sk89q.worldedit.util.Location;
-
-import static com.google.common.base.Preconditions.checkNotNull;
+import com.sk89q.worldedit.world.entity.EntityTypes;
 
 /**
  * Copies entities provided to the function to the provided destination
@@ -42,8 +45,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class ExtentEntityCopy implements EntityFunction {
 
     private final Extent destination;
-    private final Vector from;
-    private final Vector to;
+    private final Vector3 from;
+    private final Vector3 to;
     private final Transform transform;
     private boolean removing;
 
@@ -55,7 +58,7 @@ public class ExtentEntityCopy implements EntityFunction {
      * @param to the destination position
      * @param transform the transformation to apply to both position and orientation
      */
-    public ExtentEntityCopy(Vector from, Extent destination, Vector to, Transform transform) {
+    public ExtentEntityCopy(Vector3 from, Extent destination, Vector3 to, Transform transform) {
         checkNotNull(from);
         checkNotNull(destination);
         checkNotNull(to);
@@ -90,14 +93,23 @@ public class ExtentEntityCopy implements EntityFunction {
         if (state != null) {
             Location newLocation;
             Location location = entity.getLocation();
+            // If the entity has stored the location in the NBT data, we use that location
+            CompoundTag tag = state.getNbtData();
+            boolean hasTilePosition = tag != null && tag.containsKey("TileX") && tag.containsKey("TileY") && tag.containsKey("TileZ");
+            if (hasTilePosition) {
+                location = location.setPosition(Vector3.at(tag.asInt("TileX"), tag.asInt("TileY"), tag.asInt("TileZ")).add(0.5, 0.5, 0.5));
+            }
 
-            Vector pivot = from.round().add(0.5, 0.5, 0.5);
-            Vector newPosition = transform.apply(location.toVector().subtract(pivot));
-            Vector newDirection;
+            Vector3 pivot = from.round().add(0.5, 0.5, 0.5);
+            Vector3 newPosition = transform.apply(location.toVector().subtract(pivot));
+            if (hasTilePosition) {
+                newPosition = newPosition.subtract(0.5, 0.5, 0.5);
+            }
+            Vector3 newDirection;
 
             newDirection = transform.isIdentity() ?
                     entity.getLocation().getDirection()
-                    : transform.apply(location.getDirection()).subtract(transform.apply(Vector.ZERO)).normalize();
+                    : transform.apply(location.getDirection()).subtract(transform.apply(Vector3.ZERO)).normalize();
             newLocation = new Location(destination, newPosition.add(to.round().add(0.5, 0.5, 0.5)), newDirection);
 
             // Some entities store their position data in NBT
@@ -127,38 +139,54 @@ public class ExtentEntityCopy implements EntityFunction {
         CompoundTag tag = state.getNbtData();
 
         if (tag != null) {
+            // Handle leashed entities
+            Tag leashTag = tag.getValue().get("Leash");
+            if (leashTag instanceof CompoundTag) {
+                CompoundTag leashCompound = (CompoundTag) leashTag;
+                if (leashCompound.containsKey("X")) { // leashed to a fence
+                    Vector3 tilePosition = Vector3.at(leashCompound.asInt("X"), leashCompound.asInt("Y"), leashCompound.asInt("Z"));
+                    BlockVector3 newLeash = transform.apply(tilePosition.subtract(from)).add(to).toBlockPoint();
+                    return new BaseEntity(state.getType(), tag.createBuilder()
+                            .put("Leash", leashCompound.createBuilder()
+                                .putInt("X", newLeash.getBlockX())
+                                .putInt("Y", newLeash.getBlockY())
+                                .putInt("Z", newLeash.getBlockZ())
+                                .build()
+                            ).build());
+                }
+            }
+
             // Handle hanging entities (paintings, item frames, etc.)
             boolean hasTilePosition = tag.containsKey("TileX") && tag.containsKey("TileY") && tag.containsKey("TileZ");
-            boolean hasDirection = tag.containsKey("Direction");
-            boolean hasLegacyDirection = tag.containsKey("Dir");
+            boolean hasFacing = tag.containsKey("Facing");
 
             if (hasTilePosition) {
-                Vector tilePosition = new Vector(tag.asInt("TileX"), tag.asInt("TileY"), tag.asInt("TileZ"));
-                Vector newTilePosition = transform.apply(tilePosition.subtract(from)).add(to);
+                Vector3 tilePosition = Vector3.at(tag.asInt("TileX"), tag.asInt("TileY"), tag.asInt("TileZ"));
+                BlockVector3 newTilePosition = transform.apply(tilePosition.subtract(from)).add(to).toBlockPoint();
 
                 CompoundTagBuilder builder = tag.createBuilder()
                         .putInt("TileX", newTilePosition.getBlockX())
                         .putInt("TileY", newTilePosition.getBlockY())
                         .putInt("TileZ", newTilePosition.getBlockZ());
 
-                if (hasDirection || hasLegacyDirection) {
-                    int d = hasDirection ? tag.asInt("Direction") : MCDirections.fromLegacyHanging((byte) tag.asInt("Dir"));
-                    Direction direction = MCDirections.fromHanging(d);
+                if (hasFacing) {
+                    boolean isPainting = state.getType() == EntityTypes.PAINTING; // Paintings have different facing values
+                    Direction direction = isPainting ? MCDirections.fromHorizontalHanging(tag.asInt("Facing")) : MCDirections.fromHanging(tag.asInt("Facing"));
 
                     if (direction != null) {
-                        Vector vector = transform.apply(direction.toVector()).subtract(transform.apply(Vector.ZERO)).normalize();
+                        Vector3 vector = transform.apply(direction.toVector()).subtract(transform.apply(Vector3.ZERO)).normalize();
                         Direction newDirection = Direction.findClosest(vector, Flag.CARDINAL);
 
-                        builder.putByte("Direction", (byte) MCDirections.toHanging(newDirection));
-                        builder.putByte("Dir", MCDirections.toLegacyHanging(MCDirections.toHanging(newDirection)));
+                        if (newDirection != null) {
+                            builder.putByte("Facing", (byte) (isPainting ? MCDirections.toHorizontalHanging(newDirection) : MCDirections.toHanging(newDirection)));
+                        }
                     }
                 }
 
-                return new BaseEntity(state.getTypeId(), builder.build());
+                return new BaseEntity(state.getType(), builder.build());
             }
         }
 
         return state;
     }
-
 }

@@ -19,22 +19,26 @@
 
 package com.sk89q.worldedit.command.tool;
 
-import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.LocalConfiguration;
+import com.sk89q.worldedit.LocalSession;
+import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Platform;
-import com.sk89q.worldedit.util.*;
+import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.util.Location;
+import com.sk89q.worldedit.util.TreeGenerator;
 
 /**
  * Plants a tree.
  */
 public class TreePlanter implements BlockTool {
 
-    private TreeGenerator gen;
+    private TreeGenerator.TreeType treeType;
 
-    public TreePlanter(TreeGenerator gen) {
-        this.gen = gen;
+    public TreePlanter(TreeGenerator.TreeType treeType) {
+        this.treeType = treeType;
     }
 
     @Override
@@ -45,25 +49,26 @@ public class TreePlanter implements BlockTool {
     @Override
     public boolean actPrimary(Platform server, LocalConfiguration config, Player player, LocalSession session, Location clicked) {
 
-        EditSession editSession = session.createEditSession(player);
+        try (EditSession editSession = session.createEditSession(player)) {
+            try {
+                boolean successful = false;
 
-        try {
-            boolean successful = false;
-            
-            for (int i = 0; i < 10; i++) {
-                if (gen.generate(editSession, clicked.toVector().add(0, 1, 0))) {
-                    successful = true;
-                    break;
+                final BlockVector3 pos = clicked.toVector().add(0, 1, 0).toBlockPoint();
+                for (int i = 0; i < 10; i++) {
+                    if (treeType.generate(editSession, pos)) {
+                        successful = true;
+                        break;
+                    }
                 }
+
+                if (!successful) {
+                    player.printError("A tree can't go there.");
+                }
+            } catch (MaxChangedBlocksException e) {
+                player.printError("Max. blocks changed reached.");
+            } finally {
+                session.remember(editSession);
             }
-            
-            if (!successful) {
-                player.printError("A tree can't go there.");
-            }
-        } catch (MaxChangedBlocksException e) {
-            player.printError("Max. blocks changed reached.");
-        } finally {
-            session.remember(editSession);
         }
 
         return true;

@@ -20,11 +20,12 @@
 package com.sk89q.worldedit.regions.shape;
 
 import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.Vector2D;
+import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.FlatRegion;
 import com.sk89q.worldedit.regions.Region;
-import com.sk89q.worldedit.world.biome.BaseBiome;
+import com.sk89q.worldedit.world.biome.BiomeType;
+import com.sk89q.worldedit.world.biome.BiomeTypes;
 
 /**
  * Generates solid and hollow shapes according to materials returned by the
@@ -48,19 +49,19 @@ public abstract class ArbitraryBiomeShape {
             this.extent = new CuboidRegion(extent.getWorld(), extent.getMinimumPoint(), extent.getMaximumPoint());
         }
 
-        Vector2D min = extent.getMinimumPoint().toVector2D();
-        Vector2D max = extent.getMaximumPoint().toVector2D();
+        BlockVector2 min = extent.getMinimumPoint().toBlockVector2();
+        BlockVector2 max = extent.getMaximumPoint().toBlockVector2();
 
         cacheOffsetX = min.getBlockX() - 1;
         cacheOffsetZ = min.getBlockZ() - 1;
 
-        cacheSizeX = (int) (max.getX() - cacheOffsetX + 2);
-        cacheSizeZ = (int) (max.getZ() - cacheOffsetZ + 2);
+        cacheSizeX = max.getX() - cacheOffsetX + 2;
+        cacheSizeZ = max.getZ() - cacheOffsetZ + 2;
 
-        cache = new BaseBiome[cacheSizeX * cacheSizeZ];
+        cache = new BiomeType[cacheSizeX * cacheSizeZ];
     }
 
-    protected Iterable<Vector2D> getExtent() {
+    protected Iterable<BlockVector2> getExtent() {
         return extent.asFlatRegion();
     }
 
@@ -71,7 +72,7 @@ public abstract class ArbitraryBiomeShape {
      * OUTSIDE = outside
      * else = inside
      */
-    private final BaseBiome[] cache;
+    private final BiomeType[] cache;
 
     /**
      * Override this function to specify the shape to generate.
@@ -81,17 +82,17 @@ public abstract class ArbitraryBiomeShape {
      * @param defaultBaseBiome The default biome for the current column.
      * @return material to place or null to not place anything.
      */
-    protected abstract BaseBiome getBiome(int x, int z, BaseBiome defaultBaseBiome);
+    protected abstract BiomeType getBiome(int x, int z, BiomeType defaultBaseBiome);
 
-    private BaseBiome getBiomeCached(int x, int z, BaseBiome baseBiome) {
+    private BiomeType getBiomeCached(int x, int z, BiomeType baseBiome) {
         final int index = (z - cacheOffsetZ) + (x - cacheOffsetX) * cacheSizeZ;
 
-        final BaseBiome cacheEntry = cache[index];
+        final BiomeType cacheEntry = cache[index];
         if (cacheEntry == null) {// unknown, fetch material
-            final BaseBiome material = getBiome(x, z, baseBiome);
+            final BiomeType material = getBiome(x, z, baseBiome);
             if (material == null) {
                 // outside
-                cache[index] = OUTSIDE;
+                cache[index] = BiomeTypes.THE_VOID;
                 return null;
             }
 
@@ -99,7 +100,7 @@ public abstract class ArbitraryBiomeShape {
             return material;
         }
 
-        if (cacheEntry == OUTSIDE) {
+        if (cacheEntry == BiomeTypes.THE_VOID) {
             // outside
             return null;
         }
@@ -107,16 +108,16 @@ public abstract class ArbitraryBiomeShape {
         return cacheEntry;
     }
 
-    private boolean isInsideCached(int x, int z, BaseBiome baseBiome) {
+    private boolean isInsideCached(int x, int z, BiomeType baseBiome) {
         final int index = (z - cacheOffsetZ) + (x - cacheOffsetX) * cacheSizeZ;
 
-        final BaseBiome cacheEntry = cache[index];
+        final BiomeType cacheEntry = cache[index];
         if (cacheEntry == null) {
             // unknown block, meaning they must be outside the extent at this stage, but might still be inside the shape
             return getBiomeCached(x, z, baseBiome) != null;
         }
 
-        return cacheEntry != OUTSIDE;
+        return cacheEntry != BiomeTypes.THE_VOID;
     }
 
     /**
@@ -127,16 +128,16 @@ public abstract class ArbitraryBiomeShape {
      * @param hollow Specifies whether to generate a hollow shape.
      * @return number of affected blocks.
      */
-    public int generate(EditSession editSession, BaseBiome baseBiome, boolean hollow) {
+    public int generate(EditSession editSession, BiomeType baseBiome, boolean hollow) {
         int affected = 0;
 
-        for (Vector2D position : getExtent()) {
+        for (BlockVector2 position : getExtent()) {
             int x = position.getBlockX();
             int z = position.getBlockZ();
 
             if (!hollow) {
-                final BaseBiome material = getBiome(x, z, baseBiome);
-                if (material != OUTSIDE) {
+                final BiomeType material = getBiome(x, z, baseBiome);
+                if (material != null && material != BiomeTypes.THE_VOID) {
                     editSession.getWorld().setBiome(position, material);
                     ++affected;
                 }
@@ -144,7 +145,7 @@ public abstract class ArbitraryBiomeShape {
                 continue;
             }
 
-            final BaseBiome material = getBiomeCached(x, z, baseBiome);
+            final BiomeType material = getBiomeCached(x, z, baseBiome);
             if (material == null) {
                 continue;
             }
@@ -179,17 +180,5 @@ public abstract class ArbitraryBiomeShape {
 
         return affected;
     }
-
-    private static final BaseBiome OUTSIDE = new BaseBiome(0) {
-        @Override
-        public int hashCode() {
-            return 0;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            return this == o;
-        }
-    };
 
 }

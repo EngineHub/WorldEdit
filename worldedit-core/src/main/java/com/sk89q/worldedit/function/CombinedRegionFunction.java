@@ -19,19 +19,22 @@
 
 package com.sk89q.worldedit.function;
 
-import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.WorldEditException;
-
-import java.util.*;
-
 import static com.google.common.base.Preconditions.checkNotNull;
+
+import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.math.BlockVector3;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Executes several region functions in order.
  */
 public class CombinedRegionFunction implements RegionFunction {
 
-    private final List<RegionFunction> functions = new ArrayList<RegionFunction>();
+    private final List<RegionFunction> functions = new ArrayList<>();
 
     /**
      * Create a combined region function.
@@ -78,7 +81,7 @@ public class CombinedRegionFunction implements RegionFunction {
     }
 
     @Override
-    public boolean apply(Vector position) throws WorldEditException {
+    public boolean apply(BlockVector3 position) throws WorldEditException {
         boolean ret = false;
         for (RegionFunction function : functions) {
             if (function.apply(position)) {

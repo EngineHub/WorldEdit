@@ -19,19 +19,20 @@
 
 package com.sk89q.worldedit.bukkit;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.sk89q.worldedit.bukkit.adapter.BukkitImplAdapter;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.entity.Player;
-import com.sk89q.worldedit.entity.metadata.EntityType;
+import com.sk89q.worldedit.entity.metadata.EntityProperties;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.NullWorld;
 
-import javax.annotation.Nullable;
 import java.lang.ref.WeakReference;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import javax.annotation.Nullable;
 
 /**
  * An adapter to adapt a Bukkit entity into a WorldEdit one.
@@ -47,7 +48,7 @@ class BukkitEntity implements Entity {
      */
     BukkitEntity(org.bukkit.entity.Entity entity) {
         checkNotNull(entity);
-        this.entityRef = new WeakReference<org.bukkit.entity.Entity>(entity);
+        this.entityRef = new WeakReference<>(entity);
     }
 
     @Override
@@ -67,6 +68,16 @@ class BukkitEntity implements Entity {
             return BukkitAdapter.adapt(entity.getLocation());
         } else {
             return new Location(NullWorld.getInstance());
+        }
+    }
+
+    @Override
+    public boolean setLocation(Location location) {
+        org.bukkit.entity.Entity entity = entityRef.get();
+        if (entity != null) {
+            return entity.teleport(BukkitAdapter.adapt(location));
+        } else {
+            return false;
         }
     }
 
@@ -105,8 +116,8 @@ class BukkitEntity implements Entity {
     @Override
     public <T> T getFacet(Class<? extends T> cls) {
         org.bukkit.entity.Entity entity = entityRef.get();
-        if (entity != null && EntityType.class.isAssignableFrom(cls)) {
-            return (T) new BukkitEntityType(entity);
+        if (entity != null && EntityProperties.class.isAssignableFrom(cls)) {
+            return (T) new BukkitEntityProperties(entity);
         } else {
             return null;
         }

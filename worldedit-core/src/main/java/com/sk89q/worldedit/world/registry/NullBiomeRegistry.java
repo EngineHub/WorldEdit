@@ -19,12 +19,10 @@
 
 package com.sk89q.worldedit.world.registry;
 
-import com.sk89q.worldedit.world.biome.BaseBiome;
 import com.sk89q.worldedit.world.biome.BiomeData;
+import com.sk89q.worldedit.world.biome.BiomeType;
 
 import javax.annotation.Nullable;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * A biome registry that knows nothing.
@@ -39,18 +37,7 @@ public class NullBiomeRegistry implements BiomeRegistry {
 
     @Nullable
     @Override
-    public BaseBiome createFromId(int id) {
-        return null;
-    }
-
-    @Override
-    public List<BaseBiome> getBiomes() {
-        return Collections.emptyList();
-    }
-
-    @Nullable
-    @Override
-    public BiomeData getData(BaseBiome biome) {
+    public BiomeData getData(BiomeType biome) {
         return null;
     }
 

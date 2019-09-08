@@ -19,22 +19,28 @@
 
 package com.sk89q.worldedit.command.tool;
 
-import com.sk89q.worldedit.*;
-import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.blocks.BlockID;
+import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.LocalConfiguration;
+import com.sk89q.worldedit.LocalSession;
+import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Platform;
+import com.sk89q.worldedit.function.mask.Mask;
+import com.sk89q.worldedit.function.pattern.Pattern;
+import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.util.Location;
+import com.sk89q.worldedit.world.block.BaseBlock;
 
 /**
  * A tool that can place (or remove) blocks at a distance.
  */
 public class LongRangeBuildTool extends BrushTool implements DoubleActionTraceTool {
 
-    BaseBlock primary;
-    BaseBlock secondary;
+    private Pattern primary;
+    private Pattern secondary;
 
-    public LongRangeBuildTool(BaseBlock primary, BaseBlock secondary) {
+    public LongRangeBuildTool(Pattern secondary, Pattern primary) {
         super("worldedit.tool.lrbuild");
         this.primary = primary;
         this.secondary = secondary;
@@ -47,17 +53,19 @@ public class LongRangeBuildTool extends BrushTool implements DoubleActionTraceTo
 
     @Override
     public boolean actSecondary(Platform server, LocalConfiguration config, Player player, LocalSession session) {
-        WorldVectorFace pos = getTargetFace(player);
+        Location pos = getTargetFace(player);
         if (pos == null) return false;
-        EditSession eS = session.createEditSession(player);
-        try {
-            if (secondary.getType() == BlockID.AIR) {
-                eS.setBlock(pos, secondary);
+        try (EditSession eS = session.createEditSession(player)) {
+            eS.disableBuffering();
+            BlockVector3 blockPoint = pos.toVector().toBlockPoint();
+            BaseBlock applied = secondary.apply(blockPoint);
+            if (applied.getBlockType().getMaterial().isAir()) {
+                eS.setBlock(blockPoint, secondary);
             } else {
-                eS.setBlock(pos.getFaceVector(), secondary);
+                eS.setBlock(pos.toVector().subtract(pos.getDirection()).toBlockPoint(), secondary);
             }
             return true;
-        } catch (MaxChangedBlocksException e) {
+        } catch (MaxChangedBlocksException ignored) {
             // one block? eat it
         }
         return false;
@@ -66,25 +74,32 @@ public class LongRangeBuildTool extends BrushTool implements DoubleActionTraceTo
 
     @Override
     public boolean actPrimary(Platform server, LocalConfiguration config, Player player, LocalSession session) {
-        WorldVectorFace pos = getTargetFace(player);
+        Location pos = getTargetFace(player);
         if (pos == null) return false;
-        EditSession eS = session.createEditSession(player);
-        try {
-            if (primary.getType() == BlockID.AIR) {
-                eS.setBlock(pos, primary);
+        try (EditSession eS = session.createEditSession(player)) {
+            eS.disableBuffering();
+            BlockVector3 blockPoint = pos.toVector().toBlockPoint();
+            BaseBlock applied = primary.apply(blockPoint);
+            if (applied.getBlockType().getMaterial().isAir()) {
+                eS.setBlock(blockPoint, primary);
             } else {
-                eS.setBlock(pos.getFaceVector(), primary);
+                eS.setBlock(pos.toVector().subtract(pos.getDirection()).toBlockPoint(), primary);
             }
             return true;
-        } catch (MaxChangedBlocksException e) {
+        } catch (MaxChangedBlocksException ignored) {
             // one block? eat it
         }
         return false;
     }
 
-    public WorldVectorFace getTargetFace(Player player) {
-        WorldVectorFace target = null;
-        target = player.getBlockTraceFace(getRange(), true);
+    private Location getTargetFace(Player player) {
+        Location target;
+        Mask mask = getTraceMask();
+        if (this.range > -1) {
+            target = player.getBlockTrace(getRange(), true, mask);
+        } else {
+            target = player.getBlockTrace(MAX_RANGE, false, mask);
+        }
 
         if (target == null) {
             player.printError("No block in sight!");

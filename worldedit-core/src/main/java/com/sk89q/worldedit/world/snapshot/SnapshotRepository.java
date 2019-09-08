@@ -26,10 +26,13 @@ import com.sk89q.worldedit.world.storage.MissingWorldException;
 import javax.annotation.Nullable;
 import java.io.File;
 import java.io.FilenameFilter;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * A repository contains zero or more snapshots.
@@ -37,7 +40,7 @@ import java.util.List;
 public class SnapshotRepository {
 
     protected File dir;
-    protected List<SnapshotDateParser> dateParsers = new ArrayList<SnapshotDateParser>();
+    protected List<SnapshotDateParser> dateParsers = new ArrayList<>();
 
     /**
      * Create a new instance of a repository.
@@ -71,19 +74,16 @@ public class SnapshotRepository {
      * @return a list of snapshots
      */
     public List<Snapshot> getSnapshots(boolean newestFirst, String worldName) throws MissingWorldException {
-        FilenameFilter filter = new FilenameFilter() {
-            @Override
-            public boolean accept(File dir, String name) {
-                File f = new File(dir, name);
-                return isValidSnapshot(f);
-            }
+        FilenameFilter filter = (dir, name) -> {
+            File f = new File(dir, name);
+            return isValidSnapshot(f);
         };
 
         File[] snapshotFiles = dir.listFiles();
         if (snapshotFiles == null) {
             throw new MissingWorldException(worldName);
         }
-        List<Snapshot> list = new ArrayList<Snapshot>(snapshotFiles.length);
+        List<Snapshot> list = new ArrayList<>(snapshotFiles.length);
 
         for (File file : snapshotFiles) {
             if (isValidSnapshot(file)) {
@@ -102,7 +102,7 @@ public class SnapshotRepository {
         }
 
         if (newestFirst) {
-            Collections.sort(list, Collections.reverseOrder());
+            list.sort(Collections.reverseOrder());
         } else {
             Collections.sort(list);
         }
@@ -117,12 +117,12 @@ public class SnapshotRepository {
      * @return a snapshot or null
      */
     @Nullable
-    public Snapshot getSnapshotAfter(Calendar date, String world) throws MissingWorldException {
+    public Snapshot getSnapshotAfter(ZonedDateTime date, String world) throws MissingWorldException {
         List<Snapshot> snapshots = getSnapshots(true, world);
         Snapshot last = null;
 
         for (Snapshot snapshot : snapshots) {
-            if (snapshot.getDate() != null && snapshot.getDate().before(date)) {
+            if (snapshot.getDate() != null && snapshot.getDate().compareTo(date) < 0) {
                 return last;
             }
 
@@ -139,12 +139,12 @@ public class SnapshotRepository {
      * @return a snapshot or null
      */
     @Nullable
-    public Snapshot getSnapshotBefore(Calendar date, String world) throws MissingWorldException {
+    public Snapshot getSnapshotBefore(ZonedDateTime date, String world) throws MissingWorldException {
         List<Snapshot> snapshots = getSnapshots(false, world);
         Snapshot last = null;
 
         for (Snapshot snapshot : snapshots) {
-            if (snapshot.getDate().after(date)) {
+            if (snapshot.getDate().compareTo(date) > 0) {
                 return last;
             }
 
@@ -163,7 +163,7 @@ public class SnapshotRepository {
         for (SnapshotDateParser parser : dateParsers) {
             Calendar date = parser.detectDate(snapshot.getFile());
             if (date != null) {
-                snapshot.setDate(date);
+                snapshot.setDate(date.toInstant().atZone(ZoneOffset.UTC));
                 return;
             }
         }
@@ -209,11 +209,17 @@ public class SnapshotRepository {
             return false;
         }
 
-        return (file.isDirectory() && (new File(file, "level.dat")).exists())
-                || (file.isFile() && (file.getName().toLowerCase().endsWith(".zip")
-                || file.getName().toLowerCase().endsWith(".tar.bz2")
-                || file.getName().toLowerCase().endsWith(".tar.gz")
-                || file.getName().toLowerCase().endsWith(".tar")));
+        if (file.isDirectory() && new File(file, "level.dat").exists()) {
+            return true;
+        }
+        if (file.isFile()) {
+            String lowerCaseFileName = file.getName().toLowerCase(Locale.ROOT);
+            return lowerCaseFileName.endsWith(".zip")
+                || lowerCaseFileName.endsWith(".tar.bz2")
+                || lowerCaseFileName.endsWith(".tar.gz")
+                || lowerCaseFileName.endsWith(".tar");
+        }
+        return false;
     }
 
     /**

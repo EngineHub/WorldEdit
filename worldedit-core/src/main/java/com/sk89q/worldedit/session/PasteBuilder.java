@@ -19,17 +19,19 @@
 
 package com.sk89q.worldedit.session;
 
-import com.sk89q.worldedit.Vector;
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.extent.transform.BlockTransformExtent;
 import com.sk89q.worldedit.function.mask.ExistingBlockMask;
+import com.sk89q.worldedit.function.mask.Mask;
+import com.sk89q.worldedit.function.mask.MaskIntersection;
+import com.sk89q.worldedit.function.mask.Masks;
 import com.sk89q.worldedit.function.operation.ForwardExtentCopy;
 import com.sk89q.worldedit.function.operation.Operation;
+import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.transform.Transform;
-import com.sk89q.worldedit.world.registry.WorldData;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Builds an operation to paste the contents of a clipboard.
@@ -37,30 +39,28 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class PasteBuilder {
 
     private final Clipboard clipboard;
-    private final WorldData worldData;
     private final Transform transform;
     private final Extent targetExtent;
-    private final WorldData targetWorldData;
 
-    private Vector to = new Vector();
+    private Mask sourceMask = Masks.alwaysTrue();
+
+    private BlockVector3 to = BlockVector3.ZERO;
     private boolean ignoreAirBlocks;
+    private boolean copyEntities = true; // default because it used to be this way
+    private boolean copyBiomes;
 
     /**
      * Create a new instance.
      *
      * @param holder the clipboard holder
      * @param targetExtent an extent
-     * @param targetWorldData world data of the target
      */
-    PasteBuilder(ClipboardHolder holder, Extent targetExtent, WorldData targetWorldData) {
+    PasteBuilder(ClipboardHolder holder, Extent targetExtent) {
         checkNotNull(holder);
         checkNotNull(targetExtent);
-        checkNotNull(targetWorldData);
         this.clipboard = holder.getClipboard();
-        this.worldData = holder.getWorldData();
         this.transform = holder.getTransform();
         this.targetExtent = targetExtent;
-        this.targetWorldData = targetWorldData;
     }
 
     /**
@@ -69,8 +69,25 @@ public class PasteBuilder {
      * @param to the target location
      * @return this builder instance
      */
-    public PasteBuilder to(Vector to) {
+    public PasteBuilder to(BlockVector3 to) {
         this.to = to;
+        return this;
+    }
+
+    /**
+     * Set a custom mask of blocks to ignore from the source.
+     * This provides a more flexible alternative to {@link #ignoreAirBlocks(boolean)}, for example
+     * one might want to ignore structure void if copying a Minecraft Structure, etc.
+     *
+     * @param sourceMask
+     * @return this builder instance
+     */
+    public PasteBuilder maskSource(Mask sourceMask) {
+        if (sourceMask == null) {
+            this.sourceMask = Masks.alwaysTrue();
+            return this;
+        }
+        this.sourceMask = sourceMask;
         return this;
     }
 
@@ -85,17 +102,45 @@ public class PasteBuilder {
     }
 
     /**
+     * Set whether the copy should include source entities.
+     * Note that this is true by default for legacy reasons.
+     *
+     * @param copyEntities
+     * @return this builder instance
+     */
+    public PasteBuilder copyEntities(boolean copyEntities) {
+        this.copyEntities = copyEntities;
+        return this;
+    }
+
+    /**
+     * Set whether the copy should include source biomes (if available).
+     *
+     * @param copyBiomes
+     * @return this builder instance
+     */
+    public PasteBuilder copyBiomes(boolean copyBiomes) {
+        this.copyBiomes = copyBiomes;
+        return this;
+    }
+
+    /**
      * Build the operation.
      *
      * @return the operation
      */
     public Operation build() {
-        BlockTransformExtent extent = new BlockTransformExtent(clipboard, transform, targetWorldData.getBlockRegistry());
+        BlockTransformExtent extent = new BlockTransformExtent(clipboard, transform);
         ForwardExtentCopy copy = new ForwardExtentCopy(extent, clipboard.getRegion(), clipboard.getOrigin(), targetExtent, to);
         copy.setTransform(transform);
         if (ignoreAirBlocks) {
-            copy.setSourceMask(new ExistingBlockMask(clipboard));
+            copy.setSourceMask(sourceMask == Masks.alwaysTrue() ? new ExistingBlockMask(clipboard)
+                    : new MaskIntersection(sourceMask, new ExistingBlockMask(clipboard)));
+        } else {
+            copy.setSourceMask(sourceMask);
         }
+        copy.setCopyingEntities(copyEntities);
+        copy.setCopyingBiomes(copyBiomes && clipboard.hasBiomes());
         return copy;
     }
 

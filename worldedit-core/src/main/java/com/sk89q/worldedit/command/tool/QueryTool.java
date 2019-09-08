@@ -22,11 +22,19 @@ package com.sk89q.worldedit.command.tool;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
-import com.sk89q.worldedit.blocks.*;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Platform;
+import com.sk89q.worldedit.internal.block.BlockStateIdAccess;
+import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.util.Location;
+import com.sk89q.worldedit.util.formatting.text.TextComponent;
+import com.sk89q.worldedit.util.formatting.text.event.HoverEvent;
+import com.sk89q.worldedit.util.formatting.text.format.TextColor;
 import com.sk89q.worldedit.world.World;
+import com.sk89q.worldedit.world.block.BaseBlock;
+
+import java.util.OptionalInt;
 
 /**
  * Looks up information about a block.
@@ -39,30 +47,28 @@ public class QueryTool implements BlockTool {
     }
 
     @Override
-    public boolean actPrimary(Platform server, LocalConfiguration config, Player player, LocalSession session, com.sk89q.worldedit.util.Location clicked) {
+    public boolean actPrimary(Platform server, LocalConfiguration config, Player player, LocalSession session, Location clicked) {
 
         World world = (World) clicked.getExtent();
         EditSession editSession = session.createEditSession(player);
-        BaseBlock block = (editSession).rawGetBlock(clicked.toVector());
-        BlockType type = BlockType.fromID(block.getType());
+        BlockVector3 blockPoint = clicked.toVector().toBlockPoint();
+        BaseBlock block = editSession.getFullBlock(blockPoint);
 
-        player.print("\u00A79@" + clicked.toVector() + ": " + "\u00A7e"
-                + "#" + block.getType() + "\u00A77" + " ("
-                + (type == null ? "Unknown" : type.getName()) + ") "
-                + "\u00A7f"
-                + "[" + block.getData() + "]" + " (" + world.getBlockLightLevel(clicked.toVector()) + "/" + world.getBlockLightLevel(clicked.toVector().add(0, 1, 0)) + ")");
-
-        if (block instanceof MobSpawnerBlock) {
-            player.printRaw("\u00A7e" + "Mob Type: "
-                    + ((MobSpawnerBlock) block).getMobType());
-        } else if (block instanceof NoteBlock) {
-            player.printRaw("\u00A7e" + "Note block: "
-                    + ((NoteBlock) block).getNote());
-        } else if (block.getType() == BlockID.CLOTH) {
-            // Should never be null
-            player.printRaw("\u00A7e" + "Color: "
-                    + ClothColor.fromID(block.getData()).getName());
+        TextComponent.Builder builder = TextComponent.builder();
+        builder.append(TextComponent.of("@" + clicked.toVector().toBlockPoint() + ": ", TextColor.BLUE));
+        builder.append(TextComponent.of(block.getBlockType().getName(), TextColor.YELLOW));
+        builder.append(TextComponent.of(" (" + block + ") ", TextColor.GRAY)
+                .hoverEvent(HoverEvent.of(HoverEvent.Action.SHOW_TEXT, TextComponent.of("Block state"))));
+        final OptionalInt internalId = BlockStateIdAccess.getBlockStateId(block.toImmutableState());
+        if (internalId.isPresent()) {
+            builder.append(TextComponent.of(" (" + internalId.getAsInt() + ") ", TextColor.DARK_GRAY)
+                .hoverEvent(HoverEvent.of(HoverEvent.Action.SHOW_TEXT, TextComponent.of("Internal ID"))));
         }
+        builder.append(TextComponent.of(" (" + world.getBlockLightLevel(blockPoint) + "/"
+                    + world.getBlockLightLevel(blockPoint.add(0, 1, 0)) + ")", TextColor.WHITE)
+                .hoverEvent(HoverEvent.of(HoverEvent.Action.SHOW_TEXT, TextComponent.of("Block Light/Light Above"))));
+
+        player.print(builder.build());
 
         return true;
     }

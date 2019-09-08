@@ -26,11 +26,11 @@ import com.sk89q.worldedit.world.DataException;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Enumeration;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
-import java.util.Enumeration;
 
 /**
  * Represents the chunk store used by Minecraft alpha but zipped.
@@ -76,7 +76,7 @@ public class ZippedMcRegionChunkStore extends McRegionChunkStore {
     protected InputStream getInputStream(String name, String worldName) throws IOException, DataException {
         // Detect subfolder for the world's files
         if (folder != null) {
-            if (!folder.equals("")) {
+            if (!folder.isEmpty()) {
                 name = folder + "/" + name;
             }
         } else {
@@ -86,7 +86,8 @@ public class ZippedMcRegionChunkStore extends McRegionChunkStore {
                 // Check for world
                 if (testEntry.getName().startsWith(worldName + "/")) {
                     if (pattern.matcher(testEntry.getName()).matches()) { // does entry end in .mca
-                        folder = testEntry.getName().substring(0, testEntry.getName().lastIndexOf("/"));
+                        folder = testEntry.getName().substring(0, testEntry.getName().lastIndexOf('/'));
+                        if (folder.endsWith("poi")) continue;
                         name = folder + "/" + name;
                         break;
                     }
@@ -102,7 +103,14 @@ public class ZippedMcRegionChunkStore extends McRegionChunkStore {
 
         ZipEntry entry = getEntry(name);
         if (entry == null) {
-            throw new MissingChunkException();
+            if (name.endsWith(".mca")) { // try old mcr format
+                entry = getEntry(name.replace(".mca", ".mcr"));
+                if (entry == null) {
+                    throw new MissingChunkException();
+                }
+            } else {
+                throw new MissingChunkException();
+            }
         }
         try {
             return zip.getInputStream(entry);
@@ -136,7 +144,7 @@ public class ZippedMcRegionChunkStore extends McRegionChunkStore {
 
             ZipEntry testEntry = e.nextElement();
 
-            if (testEntry.getName().matches(".*\\.mcr$") || testEntry.getName().matches(".*\\.mca$")) { // TODO: does this need a separate class?
+            if (testEntry.getName().matches(".*\\.mcr$") || testEntry.getName().matches(".*\\.mca$")) {
                 return true;
             }
         }

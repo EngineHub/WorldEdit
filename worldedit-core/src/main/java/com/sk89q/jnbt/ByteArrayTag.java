@@ -19,6 +19,8 @@
 
 package com.sk89q.jnbt;
 
+import java.util.Locale;
+
 /**
  * The {@code TAG_Byte_Array} tag.
  */
@@ -45,7 +47,7 @@ public final class ByteArrayTag extends Tag {
     public String toString() {
         StringBuilder hex = new StringBuilder();
         for (byte b : value) {
-            String hexDigits = Integer.toHexString(b).toUpperCase();
+            String hexDigits = Integer.toHexString(b).toUpperCase(Locale.ROOT);
             if (hexDigits.length() == 1) {
                 hex.append("0");
             }

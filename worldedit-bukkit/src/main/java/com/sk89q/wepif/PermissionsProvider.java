@@ -22,19 +22,19 @@ package com.sk89q.wepif;
 import org.bukkit.OfflinePlayer;
 
 public interface PermissionsProvider {
-    public boolean hasPermission(String name, String permission);
+    boolean hasPermission(String name, String permission);
 
-    public boolean hasPermission(String worldName, String name, String permission);
+    boolean hasPermission(String worldName, String name, String permission);
 
-    public boolean inGroup(String player, String group);
+    boolean inGroup(String player, String group);
 
-    public String[] getGroups(String player);
+    String[] getGroups(String player);
 
-    public boolean hasPermission(OfflinePlayer player, String permission);
+    boolean hasPermission(OfflinePlayer player, String permission);
 
-    public boolean hasPermission(String worldName, OfflinePlayer player, String permission);
+    boolean hasPermission(String worldName, OfflinePlayer player, String permission);
 
-    public boolean inGroup(OfflinePlayer player, String group);
+    boolean inGroup(OfflinePlayer player, String group);
 
-    public String[] getGroups(OfflinePlayer player);
+    String[] getGroups(OfflinePlayer player);
 }

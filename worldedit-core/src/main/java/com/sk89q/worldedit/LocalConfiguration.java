@@ -19,12 +19,17 @@
 
 package com.sk89q.worldedit;
 
-import com.sk89q.worldedit.blocks.BlockID;
-import com.sk89q.worldedit.blocks.ItemID;
+import com.google.common.collect.Lists;
+import com.sk89q.worldedit.util.logging.LogFormat;
+import com.sk89q.worldedit.world.block.BlockType;
+import com.sk89q.worldedit.world.block.BlockTypes;
+import com.sk89q.worldedit.world.registry.LegacyMapper;
 import com.sk89q.worldedit.world.snapshot.SnapshotRepository;
 
 import java.io.File;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -32,53 +37,9 @@ import java.util.Set;
  */
 public abstract class LocalConfiguration {
 
-    protected static final int[] defaultDisallowedBlocks = new int[] {
-                // dangerous stuff (physics/drops items)
-                BlockID.SAPLING,
-                BlockID.BED,
-                BlockID.POWERED_RAIL,
-                BlockID.DETECTOR_RAIL,
-                BlockID.LONG_GRASS,
-                BlockID.DEAD_BUSH,
-                BlockID.PISTON_EXTENSION,
-                BlockID.PISTON_MOVING_PIECE,
-                BlockID.YELLOW_FLOWER,
-                BlockID.RED_FLOWER,
-                BlockID.BROWN_MUSHROOM,
-                BlockID.RED_MUSHROOM,
-                BlockID.TNT,
-                BlockID.TORCH,
-                BlockID.FIRE,
-                BlockID.REDSTONE_WIRE,
-                BlockID.CROPS,
-                BlockID.MINECART_TRACKS,
-                BlockID.LEVER,
-                BlockID.REDSTONE_TORCH_OFF,
-                BlockID.REDSTONE_TORCH_ON,
-                BlockID.REDSTONE_REPEATER_OFF,
-                BlockID.REDSTONE_REPEATER_ON,
-                BlockID.STONE_BUTTON,
-                BlockID.CACTUS,
-                BlockID.REED,
-                // ores and stuff
-                BlockID.BEDROCK,
-                BlockID.GOLD_ORE,
-                BlockID.IRON_ORE,
-                BlockID.COAL_ORE,
-                BlockID.DIAMOND_ORE,
-
-                // @TODO rethink what should be disallowed by default
-                // Gold and iron can be legitimately obtained, but were set to disallowed by
-                // default. Diamond and coal can't be legitimately obtained. Sponges,
-                // portals, snow, and locked chests also can't, but are allowed. None of
-                // these blocks poses any immediate threat. Most of the blocks (in the first
-                // section) are disallowed because people will accidentally set a huge area
-                // of them, triggering physics and a million item drops, lagging the server.
-                // Doors also have this effect, but are not disallowed.
-            };
-
     public boolean profile = false;
-    public Set<Integer> disallowedBlocks = new HashSet<Integer>();
+    public boolean traceUnflushedSessions = false;
+    public Set<String> disallowedBlocks = new HashSet<>();
     public int defaultChangeLimit = -1;
     public int maxChangeLimit = -1;
     public int defaultMaxPolygonalPoints = -1;
@@ -92,25 +53,96 @@ public abstract class LocalConfiguration {
     public int maxBrushRadius = 6;
     public boolean logCommands = false;
     public String logFile = "";
-    public boolean registerHelp = true; // what is the point of this, it's not even used
-    public int wandItem = ItemID.WOOD_AXE;
+    public String logFormat = LogFormat.DEFAULT_FORMAT;
+    public boolean registerHelp = true; // unused
+    public String wandItem = "minecraft:wooden_axe";
     public boolean superPickaxeDrop = true;
     public boolean superPickaxeManyDrop = true;
-    public boolean noDoubleSlash = false;
     public boolean useInventory = false;
     public boolean useInventoryOverride = false;
     public boolean useInventoryCreativeOverride = false;
     public boolean navigationUseGlass = true;
-    public int navigationWand = ItemID.COMPASS;
+    public String navigationWand = "minecraft:compass";
     public int navigationWandMaxDistance = 50;
     public int scriptTimeout = 3000;
-    public Set<Integer> allowedDataCycleBlocks = new HashSet<Integer>();
+    public int calculationTimeout = 100;
+    public int maxCalculationTimeout = 300;
+    public Set<String> allowedDataCycleBlocks = new HashSet<>();
     public String saveDir = "schematics";
     public String scriptsDir = "craftscripts";
-    public boolean showHelpInfo = true;
+    public boolean showHelpInfo = true; // unused
     public int butcherDefaultRadius = -1;
     public int butcherMaxRadius = -1;
     public boolean allowSymlinks = false;
+    public boolean serverSideCUI = true;
+    public boolean extendedYLimit = false;
+
+    protected String[] getDefaultDisallowedBlocks() {
+        List<BlockType> blockTypes = Lists.newArrayList(
+                BlockTypes.OAK_SAPLING,
+                BlockTypes.JUNGLE_SAPLING,
+                BlockTypes.DARK_OAK_SAPLING,
+                BlockTypes.SPRUCE_SAPLING,
+                BlockTypes.BIRCH_SAPLING,
+                BlockTypes.ACACIA_SAPLING,
+                BlockTypes.BLACK_BED,
+                BlockTypes.BLUE_BED,
+                BlockTypes.BROWN_BED,
+                BlockTypes.CYAN_BED,
+                BlockTypes.GRAY_BED,
+                BlockTypes.GREEN_BED,
+                BlockTypes.LIGHT_BLUE_BED,
+                BlockTypes.LIGHT_GRAY_BED,
+                BlockTypes.LIME_BED,
+                BlockTypes.MAGENTA_BED,
+                BlockTypes.ORANGE_BED,
+                BlockTypes.PINK_BED,
+                BlockTypes.PURPLE_BED,
+                BlockTypes.RED_BED,
+                BlockTypes.WHITE_BED,
+                BlockTypes.YELLOW_BED,
+                BlockTypes.POWERED_RAIL,
+                BlockTypes.DETECTOR_RAIL,
+                BlockTypes.GRASS,
+                BlockTypes.DEAD_BUSH,
+                BlockTypes.MOVING_PISTON,
+                BlockTypes.PISTON_HEAD,
+                BlockTypes.SUNFLOWER,
+                BlockTypes.ROSE_BUSH,
+                BlockTypes.DANDELION,
+                BlockTypes.POPPY,
+                BlockTypes.BROWN_MUSHROOM,
+                BlockTypes.RED_MUSHROOM,
+                BlockTypes.TNT,
+                BlockTypes.TORCH,
+                BlockTypes.FIRE,
+                BlockTypes.REDSTONE_WIRE,
+                BlockTypes.WHEAT,
+                BlockTypes.POTATOES,
+                BlockTypes.CARROTS,
+                BlockTypes.MELON_STEM,
+                BlockTypes.PUMPKIN_STEM,
+                BlockTypes.BEETROOTS,
+                BlockTypes.RAIL,
+                BlockTypes.LEVER,
+                BlockTypes.REDSTONE_TORCH,
+                BlockTypes.REDSTONE_WALL_TORCH,
+                BlockTypes.REPEATER,
+                BlockTypes.COMPARATOR,
+                BlockTypes.STONE_BUTTON,
+                BlockTypes.BIRCH_BUTTON,
+                BlockTypes.ACACIA_BUTTON,
+                BlockTypes.DARK_OAK_BUTTON,
+                BlockTypes.JUNGLE_BUTTON,
+                BlockTypes.OAK_BUTTON,
+                BlockTypes.SPRUCE_BUTTON,
+                BlockTypes.CACTUS,
+                BlockTypes.SUGAR_CANE,
+                // ores and stuff
+                BlockTypes.BEDROCK
+        );
+        return blockTypes.stream().filter(Objects::nonNull).map(BlockType::getId).toArray(String[]::new);
+    }
 
     /**
      * Load the configuration.
@@ -124,6 +156,25 @@ public abstract class LocalConfiguration {
      */
     public File getWorkingDirectory() {
         return new File(".");
+    }
+
+    public String convertLegacyItem(String legacy) {
+        String item = legacy;
+        try {
+            String[] splitter = item.split(":", 2);
+            int id = 0;
+            byte data = 0;
+            if (splitter.length == 1) {
+                id = Integer.parseInt(item);
+            } else {
+                id = Integer.parseInt(splitter[0]);
+                data = Byte.parseByte(splitter[1]);
+            }
+            item = LegacyMapper.getInstance().getItemFromLegacy(id, data).getId();
+        } catch (Throwable e) {
+        }
+
+        return item;
     }
 
 }

@@ -19,7 +19,7 @@
 
 package com.sk89q.worldedit.function.mask;
 
-import com.sk89q.worldedit.Vector2D;
+import com.sk89q.worldedit.math.BlockVector2;
 
 /**
  * Tests whether a given vector meets a criteria.
@@ -32,6 +32,6 @@ public interface Mask2D {
      * @param vector the vector to test
      * @return true if the criteria is met
      */
-    boolean test(Vector2D vector);
+    boolean test(BlockVector2 vector);
 
 }

@@ -26,14 +26,18 @@ import com.sk89q.worldedit.internal.expression.runtime.Conditional;
 import com.sk89q.worldedit.internal.expression.runtime.Operators;
 import com.sk89q.worldedit.internal.expression.runtime.RValue;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Map;
 
 /**
  * Helper classfor Parser. Contains processors for statements and operators.
  */
 public final class ParserProcessors {
 
-    private static final Map<String, String> unaryOpMap = new HashMap<String, String>();
+    private static final Map<String, String> unaryOpMap = new HashMap<>();
 
     private static final Map<String, String>[] binaryOpMapsLA;
     private static final Map<String, String>[] binaryOpMapsRA;
@@ -111,7 +115,7 @@ public final class ParserProcessors {
                 break;
 
             default:
-                Map<String, String> m = lBinaryOpMapsLA[i] = new HashMap<String, String>();
+                Map<String, String> m = lBinaryOpMapsLA[i] = new HashMap<>();
                 for (final Object[] element : a) {
                     m.put((String) element[0], (String) element[1]);
                 }
@@ -133,7 +137,7 @@ public final class ParserProcessors {
                 break;
 
             default:
-                Map<String, String> m = lBinaryOpMapsRA[i] = new HashMap<String, String>();
+                Map<String, String> m = lBinaryOpMapsRA[i] = new HashMap<>();
                 for (final Object[] element : a) {
                     m.put((String) element[0], (String) element[1]);
                 }
@@ -153,8 +157,8 @@ public final class ParserProcessors {
             return processUnaryOps(input);
         }
 
-        LinkedList<Identifiable> lhs = new LinkedList<Identifiable>();
-        LinkedList<Identifiable> rhs = new LinkedList<Identifiable>();
+        LinkedList<Identifiable> lhs = new LinkedList<>();
+        LinkedList<Identifiable> rhs = new LinkedList<>();
         String operator = null;
 
         for (Iterator<Identifiable> it = input.descendingIterator(); it.hasNext();) {
@@ -195,8 +199,8 @@ public final class ParserProcessors {
             return processTernaryOps(input);
         }
 
-        LinkedList<Identifiable> lhs = new LinkedList<Identifiable>();
-        LinkedList<Identifiable> rhs = new LinkedList<Identifiable>();
+        LinkedList<Identifiable> lhs = new LinkedList<>();
+        LinkedList<Identifiable> rhs = new LinkedList<>();
         String operator = null;
 
         for (Identifiable identifiable : input) {
@@ -232,9 +236,9 @@ public final class ParserProcessors {
     }
 
     private static RValue processTernaryOps(LinkedList<Identifiable> input) throws ParserException {
-        LinkedList<Identifiable> lhs = new LinkedList<Identifiable>();
-        LinkedList<Identifiable> mhs = new LinkedList<Identifiable>();
-        LinkedList<Identifiable> rhs = new LinkedList<Identifiable>();
+        LinkedList<Identifiable> lhs = new LinkedList<>();
+        LinkedList<Identifiable> mhs = new LinkedList<>();
+        LinkedList<Identifiable> rhs = new LinkedList<>();
 
         int partsFound = 0;
         int conditionalsFound = 0;
@@ -290,7 +294,7 @@ public final class ParserProcessors {
     private static RValue processUnaryOps(LinkedList<Identifiable> input) throws ParserException {
         // Preprocess postfix operators into unary operators
         final Identifiable center;
-        LinkedList<UnaryOperator> postfixes = new LinkedList<UnaryOperator>();
+        LinkedList<UnaryOperator> postfixes = new LinkedList<>();
         do {
             if (input.isEmpty()) {
                 throw new ParserException(-1, "Expression missing.");

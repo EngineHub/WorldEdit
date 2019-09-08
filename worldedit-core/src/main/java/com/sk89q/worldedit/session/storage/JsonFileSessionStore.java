@@ -26,6 +26,8 @@ import com.google.gson.JsonParseException;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.util.gson.GsonUtil;
 import com.sk89q.worldedit.util.io.Closer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -35,8 +37,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.UUID;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -47,7 +47,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class JsonFileSessionStore implements SessionStore {
 
-    private static final Logger log = Logger.getLogger(JsonFileSessionStore.class.getCanonicalName());
+    private static final Logger log = LoggerFactory.getLogger(JsonFileSessionStore.class);
     private final Gson gson;
     private final File dir;
 
@@ -61,7 +61,7 @@ public class JsonFileSessionStore implements SessionStore {
 
         if (!dir.isDirectory()) {
             if (!dir.mkdirs()) {
-                log.log(Level.WARNING, "Failed to create directory '" + dir.getPath() + "' for sessions");
+                log.warn("Failed to create directory '" + dir.getPath() + "' for sessions");
             }
         }
 
@@ -85,8 +85,7 @@ public class JsonFileSessionStore implements SessionStore {
     @Override
     public LocalSession load(UUID id) throws IOException {
         File file = getPath(id);
-        Closer closer = Closer.create();
-        try {
+        try (Closer closer = Closer.create()) {
             FileReader fr = closer.register(new FileReader(file));
             BufferedReader br = closer.register(new BufferedReader(fr));
             return gson.fromJson(br, LocalSession.class);
@@ -94,11 +93,6 @@ public class JsonFileSessionStore implements SessionStore {
             throw new IOException(e);
         } catch (FileNotFoundException e) {
             return new LocalSession();
-        } finally {
-            try {
-                closer.close();
-            } catch (IOException ignored) {
-            }
         }
     }
 
@@ -106,29 +100,23 @@ public class JsonFileSessionStore implements SessionStore {
     public void save(UUID id, LocalSession session) throws IOException {
         File finalFile = getPath(id);
         File tempFile = new File(finalFile.getParentFile(), finalFile.getName() + ".tmp");
-        Closer closer = Closer.create();
 
-        try {
+        try (Closer closer = Closer.create()) {
             FileWriter fr = closer.register(new FileWriter(tempFile));
             BufferedWriter bw = closer.register(new BufferedWriter(fr));
             gson.toJson(session, bw);
         } catch (JsonIOException e) {
             throw new IOException(e);
-        } finally {
-            try {
-                closer.close();
-            } catch (IOException ignored) {
-            }
         }
 
         if (finalFile.exists()) {
             if (!finalFile.delete()) {
-                log.log(Level.WARNING, "Failed to delete " + finalFile.getPath() + " so the .tmp file can replace it");
+                log.warn("Failed to delete " + finalFile.getPath() + " so the .tmp file can replace it");
             }
         }
 
         if (!tempFile.renameTo(finalFile)) {
-            log.log(Level.WARNING, "Failed to rename temporary session file to " + finalFile.getPath());
+            log.warn("Failed to rename temporary session file to " + finalFile.getPath());
         }
     }
 

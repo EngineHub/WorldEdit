@@ -19,25 +19,33 @@
 
 package com.sk89q.worldedit.world;
 
-import com.sk89q.worldedit.BlockVector2D;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
-import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.function.mask.Mask;
+import com.sk89q.worldedit.math.BlockVector2;
+import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.regions.Region;
+import com.sk89q.worldedit.registry.Keyed;
+import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.util.TreeGenerator;
-import com.sk89q.worldedit.util.TreeGenerator.TreeType;
-import com.sk89q.worldedit.world.registry.WorldData;
+import com.sk89q.worldedit.world.block.BlockState;
+import com.sk89q.worldedit.world.block.BlockStateHolder;
+import com.sk89q.worldedit.world.block.BlockType;
+import com.sk89q.worldedit.world.weather.WeatherType;
+
+import javax.annotation.Nullable;
+import java.nio.file.Path;
 
 /**
  * Represents a world (dimension).
  */
-public interface World extends Extent {
+public interface World extends Extent, Keyed {
 
     /**
      * Get the name of the world.
@@ -47,28 +55,20 @@ public interface World extends Extent {
     String getName();
 
     /**
+     * Get the folder in which this world is stored. May return null if unknown
+     * or if this world is not serialized to disk.
+     *
+     * @return world storage path
+     */
+    @Nullable
+    Path getStoragePath();
+
+    /**
      * Get the maximum Y.
      *
      * @return the maximum Y
      */
     int getMaxY();
-
-    /**
-     * Checks whether the given block ID is a valid block ID.
-     *
-     * @param id the block ID
-     * @return true if the block ID is a valid one
-     */
-    boolean isValidBlockType(int id);
-
-    /**
-     * Checks whether the given block ID uses data values for differentiating
-     * types of blocks.
-     *
-     * @param id the block ID
-     * @return true if the block uses data values
-     */
-    boolean usesBlockData(int id);
 
     /**
      * Create a mask that matches all liquids.
@@ -81,19 +81,16 @@ public interface World extends Extent {
     Mask createLiquidMask();
 
     /**
-     * @deprecated Use {@link #getLazyBlock(Vector)}
+     * Use the given item on the block at the given location on the given side.
+     *
+     * @param item The item
+     * @param face The face
+     * @return Whether it succeeded
      */
-    @Deprecated
-    int getBlockType(Vector pt);
+    boolean useItem(BlockVector3 position, BaseItem item, Direction face);
 
     /**
-     * @deprecated Use {@link #getLazyBlock(Vector)}
-     */
-    @Deprecated
-    int getBlockData(Vector pt);
-
-    /**
-     * Similar to {@link Extent#setBlock(Vector, BaseBlock)} but a
+     * Similar to {@link Extent#setBlock(BlockVector3, BlockStateHolder)} but a
      * {@code notifyAndLight} parameter indicates whether adjacent blocks
      * should be notified that changes have been made and lighting operations
      * should be executed.
@@ -110,25 +107,17 @@ public interface World extends Extent {
      * @param notifyAndLight true to to notify and light
      * @return true if the block was successfully set (return value may not be accurate)
      */
-    boolean setBlock(Vector position, BaseBlock block, boolean notifyAndLight) throws WorldEditException;
+    <B extends BlockStateHolder<B>> boolean setBlock(BlockVector3 position, B block, boolean notifyAndLight) throws WorldEditException;
 
     /**
-     * @deprecated Use {@link #setBlock(Vector, BaseBlock)}
+     * Notifies the simulation that the block at the given location has
+     * been changed and it must be re-lighted (and issue other events).
+     *
+     * @param position position of the block
+     * @param previousType the type of the previous block that was there
+     * @return true if the block was successfully notified
      */
-    @Deprecated
-    boolean setBlockType(Vector position, int type);
-
-    /**
-     * @deprecated Use {@link #setBlock(Vector, BaseBlock)}
-     */
-    @Deprecated
-    void setBlockData(Vector position, int data);
-
-    /**
-     * @deprecated Use {@link #setBlock(Vector, BaseBlock)}
-     */
-    @Deprecated
-    boolean setTypeIdAndData(Vector position, int type, int data);
+    boolean notifyAndLightBlock(BlockVector3 position, BlockState previousType) throws WorldEditException;
 
     /**
      * Get the light level at the given block.
@@ -136,7 +125,7 @@ public interface World extends Extent {
      * @param position the position
      * @return the light level (0-15)
      */
-    int getBlockLightLevel(Vector position);
+    int getBlockLightLevel(BlockVector3 position);
 
     /**
      * Clear a chest's contents.
@@ -144,7 +133,7 @@ public interface World extends Extent {
      * @param position the position
      * @return true if the container was cleared
      */
-    boolean clearContainerBlockContents(Vector position);
+    boolean clearContainerBlockContents(BlockVector3 position);
 
     /**
      * Drop an item at the given position.
@@ -153,23 +142,23 @@ public interface World extends Extent {
      * @param item the item to drop
      * @param count the number of individual stacks to drop (number of item entities)
      */
-    void dropItem(Vector position, BaseItemStack item, int count);
+    void dropItem(Vector3 position, BaseItemStack item, int count);
 
     /**
      * Drop one stack of the item at the given position.
      *
      * @param position the position
      * @param item the item to drop
-     * @see #dropItem(Vector, BaseItemStack, int) shortcut method to specify the number of stacks
+     * @see #dropItem(Vector3, BaseItemStack, int) shortcut method to specify the number of stacks
      */
-    void dropItem(Vector position, BaseItemStack item);
+    void dropItem(Vector3 position, BaseItemStack item);
 
     /**
      * Simulate a block being mined at the given position.
      *
      * @param position the position
      */
-    void simulateBlockMine(Vector position);
+    void simulateBlockMine(BlockVector3 position);
 
     /**
      * Regenerate an area.
@@ -189,49 +178,19 @@ public interface World extends Extent {
      * @return true if generation was successful
      * @throws MaxChangedBlocksException thrown if too many blocks were changed
      */
-    boolean generateTree(TreeGenerator.TreeType type, EditSession editSession, Vector position) throws MaxChangedBlocksException;
-
-    /**
-     * @deprecated Use {@link #generateTree(TreeType, EditSession, Vector)}
-     */
-    @Deprecated
-    boolean generateTree(EditSession editSession, Vector position) throws MaxChangedBlocksException;
-
-    /**
-     * @deprecated Use {@link #generateTree(TreeType, EditSession, Vector)}
-     */
-    @Deprecated
-    boolean generateBigTree(EditSession editSession, Vector position) throws MaxChangedBlocksException;
-
-    /**
-     * @deprecated Use {@link #generateTree(TreeType, EditSession, Vector)}
-     */
-    @Deprecated
-    boolean generateBirchTree(EditSession editSession, Vector position) throws MaxChangedBlocksException;
-
-    /**
-     * @deprecated Use {@link #generateTree(TreeType, EditSession, Vector)}
-     */
-    @Deprecated
-    boolean generateRedwoodTree(EditSession editSession, Vector position) throws MaxChangedBlocksException;
-
-    /**
-     * @deprecated Use {@link #generateTree(TreeType, EditSession, Vector)}
-     */
-    @Deprecated
-    boolean generateTallRedwoodTree(EditSession editSession, Vector position) throws MaxChangedBlocksException;
+    boolean generateTree(TreeGenerator.TreeType type, EditSession editSession, BlockVector3 position) throws MaxChangedBlocksException;
 
     /**
      * Load the chunk at the given position if it isn't loaded.
      *
      * @param position the position
      */
-    void checkLoadedChunk(Vector position);
+    void checkLoadedChunk(BlockVector3 position);
 
     /**
      * Fix the given chunks after fast mode was used.
      *
-     * <p>Fast mode makes calls to {@link #setBlock(Vector, BaseBlock, boolean)}
+     * <p>Fast mode makes calls to {@link #setBlock(BlockVector3, BlockStateHolder, boolean)}
      * with {@code false} for the {@code notifyAndLight} parameter, which
      * may causes lighting errors to accumulate. Use of this method, if
      * it is implemented by the underlying world, corrects those lighting
@@ -239,14 +198,14 @@ public interface World extends Extent {
      *
      * @param chunks a list of chunk coordinates to fix
      */
-    void fixAfterFastMode(Iterable<BlockVector2D> chunks);
+    void fixAfterFastMode(Iterable<BlockVector2> chunks);
 
     /**
      * Relight the given chunks if possible.
      *
      * @param chunks a list of chunk coordinates to fix
      */
-    void fixLighting(Iterable<BlockVector2D> chunks);
+    void fixLighting(Iterable<BlockVector2> chunks);
 
     /**
      * Play the given effect.
@@ -256,25 +215,54 @@ public interface World extends Extent {
      * @param data the effect data
      * @return true if the effect was played
      */
-    boolean playEffect(Vector position, int type, int data);
+    boolean playEffect(Vector3 position, int type, int data);
 
     /**
      * Queue a block break effect.
      *
      * @param server the server
      * @param position the position
-     * @param blockId the block ID
+     * @param blockType the block type
      * @param priority the priority
      * @return true if the effect was played
      */
-    boolean queueBlockBreakEffect(Platform server, Vector position, int blockId, double priority);
+    boolean queueBlockBreakEffect(Platform server, BlockVector3 position, BlockType blockType, double priority);
 
     /**
-     * Get the data for blocks and so on for this world.
+     * Gets the weather type of the world.
      *
-     * @return the world data
+     * @return The weather
      */
-    WorldData getWorldData();
+    WeatherType getWeather();
+
+    /**
+     * Gets the remaining weather duration.
+     *
+     * @return The weather duration
+     */
+    long getRemainingWeatherDuration();
+
+    /**
+     * Sets the weather type of the world.
+     *
+     * @param weatherType The weather type
+     */
+    void setWeather(WeatherType weatherType);
+
+    /**
+     * Sets the weather type of the world.
+     *
+     * @param weatherType The weather type
+     * @param duration The duration of the weather
+     */
+    void setWeather(WeatherType weatherType, long duration);
+
+    /**
+     * Gets the spawn position of this world.
+     *
+     * @return The spawn position
+     */
+    BlockVector3 getSpawnPosition();
 
     @Override
     boolean equals(Object other);

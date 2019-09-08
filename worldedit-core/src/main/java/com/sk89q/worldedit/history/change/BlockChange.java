@@ -19,13 +19,14 @@
 
 package com.sk89q.worldedit.history.change;
 
-import com.sk89q.worldedit.BlockVector;
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.history.UndoContext;
-
-import static com.google.common.base.Preconditions.checkNotNull;
+import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.world.block.BaseBlock;
+import com.sk89q.worldedit.world.block.BlockStateHolder;
 
 /**
  * Represents a block change that may be undone or replayed.
@@ -36,7 +37,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class BlockChange implements Change {
 
-    private final BlockVector position;
+    private final BlockVector3 position;
     private final BaseBlock previous;
     private final BaseBlock current;
 
@@ -47,13 +48,13 @@ public class BlockChange implements Change {
      * @param previous the previous block
      * @param current the current block
      */
-    public BlockChange(BlockVector position, BaseBlock previous, BaseBlock current) {
+    public <BP extends BlockStateHolder<BP>, BC extends BlockStateHolder<BC>> BlockChange(BlockVector3 position, BP previous, BC current) {
         checkNotNull(position);
         checkNotNull(previous);
         checkNotNull(current);
         this.position = position;
-        this.previous = previous;
-        this.current = current;
+        this.previous = previous.toBaseBlock();
+        this.current = current.toBaseBlock();
     }
 
     /**
@@ -61,7 +62,7 @@ public class BlockChange implements Change {
      *
      * @return the position
      */
-    public BlockVector getPosition() {
+    public BlockVector3 getPosition() {
         return position;
     }
 

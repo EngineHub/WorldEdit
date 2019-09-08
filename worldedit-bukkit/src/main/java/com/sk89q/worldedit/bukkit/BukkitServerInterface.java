@@ -22,21 +22,19 @@ package com.sk89q.worldedit.bukkit;
 import com.sk89q.bukkit.util.CommandInfo;
 import com.sk89q.bukkit.util.CommandRegistration;
 import com.sk89q.worldedit.LocalConfiguration;
-import com.sk89q.worldedit.LocalWorld;
-import com.sk89q.worldedit.ServerInterface;
+import com.sk89q.worldedit.command.util.PermissionCondition;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.extension.platform.MultiUserPlatform;
 import com.sk89q.worldedit.extension.platform.Preference;
-import com.sk89q.worldedit.util.command.CommandMapping;
-import com.sk89q.worldedit.util.command.Description;
-import com.sk89q.worldedit.util.command.Dispatcher;
+import com.sk89q.worldedit.world.DataFixer;
+import com.sk89q.worldedit.world.registry.Registries;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.entity.EntityType;
+import org.enginehub.piston.CommandManager;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -44,18 +42,20 @@ import java.util.Collection;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-public class BukkitServerInterface extends ServerInterface implements MultiUserPlatform {
+import static com.sk89q.worldedit.bukkit.BukkitTextAdapter.reduceToText;
+
+public class BukkitServerInterface implements MultiUserPlatform {
     public Server server;
     public WorldEditPlugin plugin;
     private CommandRegistration dynamicCommands;
-    private BukkitBiomeRegistry biomes;
     private boolean hookingEvents;
 
     public BukkitServerInterface(WorldEditPlugin plugin, Server server) {
         this.plugin = plugin;
         this.server = server;
-        this.biomes = new BukkitBiomeRegistry();
         dynamicCommands = new CommandRegistration(plugin);
     }
 
@@ -64,14 +64,32 @@ public class BukkitServerInterface extends ServerInterface implements MultiUserP
     }
 
     @Override
-    public int resolveItem(String name) {
-        Material mat = Material.matchMaterial(name);
-        return mat == null ? 0 : mat.getId();
+    public Registries getRegistries() {
+        return BukkitRegistries.getInstance();
+    }
+
+    @Override
+    public int getDataVersion() {
+        if (plugin.getBukkitImplAdapter() != null) {
+            return plugin.getBukkitImplAdapter().getDataVersion();
+        }
+        return -1;
+    }
+
+    @Override
+    public DataFixer getDataFixer() {
+        if (plugin.getBukkitImplAdapter() != null) {
+            return plugin.getBukkitImplAdapter().getDataFixer();
+        }
+        return null;
     }
 
     @Override
     public boolean isValidMobType(String type) {
-        final EntityType entityType = EntityType.fromName(type);
+        if (!type.startsWith("minecraft:")) {
+            return false;
+        }
+        final EntityType entityType = EntityType.fromName(type.substring(10));
         return entityType != null && entityType.isAlive();
     }
 
@@ -86,12 +104,12 @@ public class BukkitServerInterface extends ServerInterface implements MultiUserP
     }
 
     @Override
-    public List<LocalWorld> getWorlds() {
+    public List<com.sk89q.worldedit.world.World> getWorlds() {
         List<World> worlds = server.getWorlds();
-        List<LocalWorld> ret = new ArrayList<LocalWorld>(worlds.size());
+        List<com.sk89q.worldedit.world.World> ret = new ArrayList<>(worlds.size());
 
         for (World world : worlds) {
-            ret.add(BukkitUtil.getLocalWorld(world));
+            ret.add(BukkitAdapter.adapt(world));
         }
 
         return ret;
@@ -104,7 +122,7 @@ public class BukkitServerInterface extends ServerInterface implements MultiUserP
             return player;
         } else {
             org.bukkit.entity.Player bukkitPlayer = server.getPlayerExact(player.getName());
-            return bukkitPlayer != null ? new BukkitPlayer(plugin, this, bukkitPlayer) : null;
+            return bukkitPlayer != null ? WorldEditPlugin.getInstance().wrapPlayer(bukkitPlayer) : null;
         }
     }
 
@@ -120,20 +138,25 @@ public class BukkitServerInterface extends ServerInterface implements MultiUserP
     }
 
     @Override
-    public void registerCommands(Dispatcher dispatcher) {
-        List<CommandInfo> toRegister = new ArrayList<CommandInfo>();
+    public void registerCommands(CommandManager dispatcher) {
         BukkitCommandInspector inspector = new BukkitCommandInspector(plugin, dispatcher);
-        
-        for (CommandMapping command : dispatcher.getCommands()) {
-            Description description = command.getDescription();
-            List<String> permissions = description.getPermissions();
-            String[] permissionsArray = new String[permissions.size()];
-            permissions.toArray(permissionsArray);
 
-            toRegister.add(new CommandInfo(description.getUsage(), description.getShortDescription(), command.getAllAliases(), inspector, permissionsArray));
-        }
+        dynamicCommands.register(dispatcher.getAllCommands()
+            .map(command -> {
+                String[] permissionsArray = command.getCondition()
+                    .as(PermissionCondition.class)
+                    .map(PermissionCondition::getPermissions)
+                    .map(s -> s.toArray(new String[0]))
+                    .orElseGet(() -> new String[0]);
 
-        dynamicCommands.register(toRegister);
+                String[] aliases = Stream.concat(
+                    Stream.of(command.getName()),
+                    command.getAliases().stream()
+                ).toArray(String[]::new);
+                return new CommandInfo(reduceToText(command.getUsage()),
+                    reduceToText(command.getDescription()), aliases,
+                    inspector, permissionsArray);
+            }).collect(Collectors.toList()));
     }
 
     @Override
@@ -163,7 +186,7 @@ public class BukkitServerInterface extends ServerInterface implements MultiUserP
 
     @Override
     public Map<Capability, Preference> getCapabilities() {
-        Map<Capability, Preference> capabilities = new EnumMap<Capability, Preference>(Capability.class);
+        Map<Capability, Preference> capabilities = new EnumMap<>(Capability.class);
         capabilities.put(Capability.CONFIGURATION, Preference.NORMAL);
         capabilities.put(Capability.WORLDEDIT_CUI, Preference.NORMAL);
         capabilities.put(Capability.GAME_HOOKS, Preference.PREFERRED);
@@ -179,9 +202,9 @@ public class BukkitServerInterface extends ServerInterface implements MultiUserP
 
     @Override
     public Collection<Actor> getConnectedUsers() {
-        List<Actor> users = new ArrayList<Actor>();
+        List<Actor> users = new ArrayList<>();
         for (org.bukkit.entity.Player player : Bukkit.getServer().getOnlinePlayers()) {
-            users.add(new BukkitPlayer(plugin, this, player));
+            users.add(WorldEditPlugin.getInstance().wrapPlayer(player));
         }
         return users;
     }

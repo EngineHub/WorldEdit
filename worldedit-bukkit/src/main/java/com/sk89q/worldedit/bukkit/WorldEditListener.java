@@ -21,22 +21,27 @@
 
 package com.sk89q.worldedit.bukkit;
 
-import com.sk89q.util.StringUtil;
-import com.sk89q.worldedit.LocalPlayer;
 import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.WorldVector;
-import com.sk89q.worldedit.internal.LocalWorldAdapter;
+import com.sk89q.worldedit.entity.Player;
+import com.sk89q.worldedit.extension.platform.Actor;
+import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.World;
-import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.event.Event.Result;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.bukkit.event.player.PlayerCommandSendEvent;
 import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.EquipmentSlot;
+import org.enginehub.piston.CommandManager;
+import org.enginehub.piston.inject.InjectedValueStore;
+import org.enginehub.piston.inject.Key;
+import org.enginehub.piston.inject.MapBackedValueStore;
+
+import java.util.Optional;
 
 /**
  * Handles all events thrown in relation to a Player
@@ -44,13 +49,6 @@ import org.bukkit.event.player.PlayerInteractEvent;
 public class WorldEditListener implements Listener {
 
     private WorldEditPlugin plugin;
-    private boolean ignoreLeftClickAir = false;
-
-    /**
-     * Called when a player plays an animation, such as an arm swing
-     *
-     * @param event Relevant event details
-     */
 
     /**
      * Construct the object;
@@ -68,37 +66,21 @@ public class WorldEditListener implements Listener {
         }
 
         // this will automatically refresh their session, we don't have to do anything
-        WorldEdit.getInstance().getSession(plugin.wrapPlayer(event.getPlayer()));
+        WorldEdit.getInstance().getSessionManager().get(plugin.wrapPlayer(event.getPlayer()));
     }
 
-    /**
-     * Called when a player attempts to use a command
-     *
-     * @param event Relevant event details
-     */
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
-    public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
-        String[] split = event.getMessage().split(" ");
-
-        if (split.length > 0) {
-            split[0] = split[0].substring(1);
-            split = plugin.getWorldEdit().getPlatformManager().getCommandManager().commandDetection(split);
-        }
-
-        final String newMessage = "/" + StringUtil.joinString(split, " ");
-
-        if (!newMessage.equals(event.getMessage())) {
-            event.setMessage(newMessage);
-            plugin.getServer().getPluginManager().callEvent(event);
-
-            if (!event.isCancelled()) {
-                if (!event.getMessage().isEmpty()) {
-                    plugin.getServer().dispatchCommand(event.getPlayer(), event.getMessage().substring(1));
-                }
-
-                event.setCancelled(true);
-            }
-        }
+    public void onPlayerCommandSend(PlayerCommandSendEvent event) {
+        InjectedValueStore store = MapBackedValueStore.create();
+        store.injectValue(Key.of(Actor.class), context ->
+            Optional.of(plugin.wrapCommandSender(event.getPlayer())));
+        CommandManager commandManager = plugin.getWorldEdit().getPlatformManager().getPlatformCommandManager().getCommandManager();
+        event.getCommands().removeIf(name ->
+            // remove if in the manager and not satisfied
+            commandManager.getCommand(name)
+                .filter(command -> !command.getCondition().satisfied(store))
+                .isPresent()
+        );
     }
 
     /**
@@ -116,14 +98,18 @@ public class WorldEditListener implements Listener {
             return;
         }
 
-        final LocalPlayer player = plugin.wrapPlayer(event.getPlayer());
+        if (event.getHand() == EquipmentSlot.OFF_HAND) {
+            return;
+        }
+
+        final Player player = plugin.wrapPlayer(event.getPlayer());
         final World world = player.getWorld();
         final WorldEdit we = plugin.getWorldEdit();
 
         Action action = event.getAction();
         if (action == Action.LEFT_CLICK_BLOCK) {
             final Block clickedBlock = event.getClickedBlock();
-            final WorldVector pos = new WorldVector(LocalWorldAdapter.adapt(world), clickedBlock.getX(), clickedBlock.getY(), clickedBlock.getZ());
+            final Location pos = new Location(world, clickedBlock.getX(), clickedBlock.getY(), clickedBlock.getZ());
 
             if (we.handleBlockLeftClick(player, pos)) {
                 event.setCancelled(true);
@@ -133,32 +119,15 @@ public class WorldEditListener implements Listener {
                 event.setCancelled(true);
             }
 
-            if (!ignoreLeftClickAir) {
-                final int taskId = Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-                    @Override
-                    public void run() {
-                        ignoreLeftClickAir = false;
-                    }
-                }, 2);
-
-                if (taskId != -1) {
-                    ignoreLeftClickAir = true;
-                }
-            }
         } else if (action == Action.LEFT_CLICK_AIR) {
-            if (ignoreLeftClickAir) {
-                return;
-            }
 
             if (we.handleArmSwing(player)) {
                 event.setCancelled(true);
             }
 
-
         } else if (action == Action.RIGHT_CLICK_BLOCK) {
             final Block clickedBlock = event.getClickedBlock();
-            final WorldVector pos = new WorldVector(LocalWorldAdapter.adapt(world), clickedBlock.getX(),
-                    clickedBlock.getY(), clickedBlock.getZ());
+            final Location pos = new Location(world, clickedBlock.getX(), clickedBlock.getY(), clickedBlock.getZ());
 
             if (we.handleBlockRightClick(player, pos)) {
                 event.setCancelled(true);

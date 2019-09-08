@@ -19,15 +19,16 @@
 
 package com.sk89q.wepif;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import com.sk89q.util.yaml.YAMLNode;
 import com.sk89q.util.yaml.YAMLProcessor;
 import org.bukkit.OfflinePlayer;
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
 
 public class ConfigurationPermissionsResolver implements PermissionsResolver {
     private YAMLProcessor config;
@@ -52,13 +53,13 @@ public class ConfigurationPermissionsResolver implements PermissionsResolver {
 
     @Override
     public void load() {
-        userGroups = new HashMap<String, Set<String>>();
-        userPermissionsCache = new HashMap<String, Set<String>>();
-        defaultPermissionsCache = new HashSet<String>();
+        userGroups = new HashMap<>();
+        userPermissionsCache = new HashMap<>();
+        defaultPermissionsCache = new HashSet<>();
 
-        Map<String, Set<String>> userGroupPermissions = new HashMap<String, Set<String>>();
+        Map<String, Set<String>> userGroupPermissions = new HashMap<>();
 
-        List<String> groupKeys = config.getStringList("permissions.groups", null);
+        List<String> groupKeys = config.getKeys("permissions.groups");
 
         if (groupKeys != null) {
             for (String key : groupKeys) {
@@ -66,7 +67,7 @@ public class ConfigurationPermissionsResolver implements PermissionsResolver {
                         config.getStringList("permissions.groups." + key + ".permissions", null);
 
                 if (!permissions.isEmpty()) {
-                    Set<String> groupPerms = new HashSet<String>(permissions);
+                    Set<String> groupPerms = new HashSet<>(permissions);
                     userGroupPermissions.put(key, groupPerms);
 
                     if (key.equals("default")) {
@@ -76,11 +77,11 @@ public class ConfigurationPermissionsResolver implements PermissionsResolver {
             }
         }
 
-        List<String> userKeys = config.getStringList("permissions.users", null);
+        List<String> userKeys = config.getKeys("permissions.users");
 
         if (userKeys != null) {
             for (String key : userKeys) {
-                Set<String> permsCache = new HashSet<String>();
+                Set<String> permsCache = new HashSet<>();
 
                 List<String> permissions =
                         config.getStringList("permissions.users." + key + ".permissions", null);
@@ -102,8 +103,8 @@ public class ConfigurationPermissionsResolver implements PermissionsResolver {
                     }
                 }
 
-                userPermissionsCache.put(key.toLowerCase(), permsCache);
-                userGroups.put(key.toLowerCase(), new HashSet<String>(groups));
+                userPermissionsCache.put(key.toLowerCase(Locale.ROOT), permsCache);
+                userGroups.put(key.toLowerCase(Locale.ROOT), new HashSet<>(groups));
             }
         }
     }
@@ -117,7 +118,7 @@ public class ConfigurationPermissionsResolver implements PermissionsResolver {
             }
         }
 
-        Set<String> perms = userPermissionsCache.get(player.toLowerCase());
+        Set<String> perms = userPermissionsCache.get(player.toLowerCase(Locale.ROOT));
         if (perms == null) {
             return defaultPermissionsCache.contains(permission)
                     || defaultPermissionsCache.contains("*");
@@ -134,7 +135,7 @@ public class ConfigurationPermissionsResolver implements PermissionsResolver {
 
     @Override
     public boolean inGroup(String player, String group) {
-        Set<String> groups = userGroups.get(player.toLowerCase());
+        Set<String> groups = userGroups.get(player.toLowerCase(Locale.ROOT));
         if (groups == null) {
             return false;
         }
@@ -144,12 +145,12 @@ public class ConfigurationPermissionsResolver implements PermissionsResolver {
 
     @Override
     public String[] getGroups(String player) {
-        Set<String> groups = userGroups.get(player.toLowerCase());
+        Set<String> groups = userGroups.get(player.toLowerCase(Locale.ROOT));
         if (groups == null) {
             return new String[0];
         }
 
-        return groups.toArray(new String[groups.size()]);
+        return groups.toArray(new String[0]);
     }
 
     @Override

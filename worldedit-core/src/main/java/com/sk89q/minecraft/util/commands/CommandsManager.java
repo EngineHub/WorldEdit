@@ -20,6 +20,8 @@
 package com.sk89q.minecraft.util.commands;
 
 import com.sk89q.util.StringUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -28,10 +30,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Manager for handling commands. This allows you to easily process commands,
@@ -60,10 +61,11 @@ import java.util.logging.Logger;
  * @param <T> command sender class
  */
 @SuppressWarnings("ProtectedField")
+@Deprecated
 public abstract class CommandsManager<T> {
 
     protected static final Logger logger =
-            Logger.getLogger(CommandsManager.class.getCanonicalName());
+            LoggerFactory.getLogger(CommandsManager.class);
 
     /**
      * Mapping of commands (including aliases) with a description. Root
@@ -72,18 +74,18 @@ public abstract class CommandsManager<T> {
      * the key of the command name (one for each alias) with the
      * method.
      */
-    protected Map<Method, Map<String, Method>> commands = new HashMap<Method, Map<String, Method>>();
+    protected Map<Method, Map<String, Method>> commands = new HashMap<>();
 
     /**
      * Used to store the instances associated with a method.
      */
-    protected Map<Method, Object> instances = new HashMap<Method, Object>();
+    protected Map<Method, Object> instances = new HashMap<>();
 
     /**
      * Mapping of commands (not including aliases) with a description. This
      * is only for top level commands.
      */
-    protected Map<String, String> descs = new HashMap<String, String>();
+    protected Map<String, String> descs = new HashMap<>();
 
     /**
      * Stores the injector used to getInstance.
@@ -94,7 +96,7 @@ public abstract class CommandsManager<T> {
      * Mapping of commands (not including aliases) with a description. This
      * is only for top level commands.
      */
-    protected Map<String, String> helpMessages = new HashMap<String, String>();
+    protected Map<String, String> helpMessages = new HashMap<>();
 
     /**
      * Register an class that contains commands (denoted by {@link Command}.
@@ -141,12 +143,8 @@ public abstract class CommandsManager<T> {
                 Object obj = getInjector().getInstance(cls);
                 return registerMethods(cls, parent, obj);
             }
-        } catch (InvocationTargetException e) {
-            logger.log(Level.SEVERE, "Failed to register commands", e);
-        } catch (IllegalAccessException e) {
-            logger.log(Level.SEVERE, "Failed to register commands", e);
-        } catch (InstantiationException e) {
-            logger.log(Level.SEVERE, "Failed to register commands", e);
+        } catch (InvocationTargetException | InstantiationException | IllegalAccessException e) {
+            logger.error("Failed to register commands", e);
         }
         return null;
     }
@@ -161,14 +159,14 @@ public abstract class CommandsManager<T> {
      */
     private List<Command> registerMethods(Class<?> cls, Method parent, Object obj) {
         Map<String, Method> map;
-        List<Command> registered = new ArrayList<Command>();
+        List<Command> registered = new ArrayList<>();
 
         // Make a new hash map to cache the commands for this class
         // as looking up methods via reflection is fairly slow
         if (commands.containsKey(parent)) {
             map = commands.get(parent);
         } else {
-            map = new HashMap<String, Method>();
+            map = new HashMap<>();
             commands.put(parent, map);
         }
 
@@ -257,7 +255,7 @@ public abstract class CommandsManager<T> {
      * @return true if the command exists
      */
     public boolean hasCommand(String command) {
-        return commands.get(null).containsKey(command.toLowerCase());
+        return commands.get(null).containsKey(command.toLowerCase(Locale.ROOT));
     }
 
     /**
@@ -359,7 +357,7 @@ public abstract class CommandsManager<T> {
 
         command.append("<");
 
-        Set<String> allowedCommands = new HashSet<String>();
+        Set<String> allowedCommands = new HashSet<>();
 
         for (Map.Entry<String, Method> entry : map.entrySet()) {
             Method childMethod = entry.getValue();
@@ -437,7 +435,7 @@ public abstract class CommandsManager<T> {
         String cmdName = args[level];
 
         Map<String, Method> map = commands.get(parent);
-        Method method = map.get(cmdName.toLowerCase());
+        Method method = map.get(cmdName.toLowerCase(Locale.ROOT));
 
         if (method == null) {
             if (parent == null) { // Root
@@ -479,10 +477,10 @@ public abstract class CommandsManager<T> {
             String[] newArgs = new String[args.length - level];
             System.arraycopy(args, level, newArgs, 0, args.length - level);
 
-            final Set<Character> valueFlags = new HashSet<Character>();
+            final Set<Character> valueFlags = new HashSet<>();
 
             char[] flags = cmd.flags().toCharArray();
-            Set<Character> newFlags = new HashSet<Character>();
+            Set<Character> newFlags = new HashSet<>();
             for (int i = 0; i < flags.length; ++i) {
                 if (flags.length > i + 1 && flags[i + 1] == ':') {
                     valueFlags.add(flags[i]);
@@ -526,10 +524,8 @@ public abstract class CommandsManager<T> {
     public void invokeMethod(Method parent, String[] args, T player, Method method, Object instance, Object[] methodArgs, int level) throws CommandException {
         try {
             method.invoke(instance, methodArgs);
-        } catch (IllegalArgumentException e) {
-            logger.log(Level.SEVERE, "Failed to execute command", e);
-        } catch (IllegalAccessException e) {
-            logger.log(Level.SEVERE, "Failed to execute command", e);
+        } catch (IllegalArgumentException | IllegalAccessException e) {
+            logger.error("Failed to execute command", e);
         } catch (InvocationTargetException e) {
             if (e.getCause() instanceof CommandException) {
                 throw (CommandException) e.getCause();

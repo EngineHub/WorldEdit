@@ -19,21 +19,49 @@
 
 package com.sk89q.worldedit.internal.expression;
 
+import com.sk89q.worldedit.LocalConfiguration;
+import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.internal.expression.lexer.LexerException;
 import com.sk89q.worldedit.internal.expression.parser.ParserException;
 import com.sk89q.worldedit.internal.expression.runtime.EvaluationException;
 import com.sk89q.worldedit.internal.expression.runtime.ExpressionEnvironment;
-import org.junit.Test;
+import com.sk89q.worldedit.internal.expression.runtime.ExpressionTimeoutException;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import static java.lang.Math.atan2;
 import static java.lang.Math.sin;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class ExpressionTest {
+
+    private Platform mockPlat = mock(Platform.class);
+
+    @BeforeEach
+    public void setup() {
+        when(mockPlat.getConfiguration()).thenReturn(new LocalConfiguration() {
+            @Override
+            public void load() {
+            }
+        });
+        WorldEdit.getInstance().getPlatformManager().register(mockPlat);
+    }
+
+    @AfterEach
+    public void tearDown() {
+        WorldEdit.getInstance().getPlatformManager().unregister(mockPlat);
+    }
+
     @Test
     public void testEvaluate() throws ExpressionException {
-        // check 
+        // check
         assertEquals(1 - 2 + 3, simpleEval("1 - 2 + 3"), 0);
 
         // check unary ops
@@ -46,66 +74,56 @@ public class ExpressionTest {
         assertEquals(atan2(3, 4), simpleEval("atan2(3, 4)"), 0);
 
         // check variables
-        assertEquals(8, compile("foo+bar", "foo", "bar").evaluate(5, 3), 0);
+        assertEquals(8, compile("foo+bar", "foo", "bar").evaluate(5D, 3D), 0);
     }
 
     @Test
-    public void testErrors() throws ExpressionException {
-        // test lexer errors
-        try {
-            compile("#");
-            fail("Error expected");
-        } catch (LexerException e) {
-            assertEquals("Error position", 0, e.getPosition());
-        }
-
-        // test parser errors
-        try {
-            compile("x");
-            fail("Error expected");
-        } catch (ParserException e) {
-            assertEquals("Error position", 0, e.getPosition());
-        }
-        try {
-            compile("x()");
-            fail("Error expected");
-        } catch (ParserException e) {
-            assertEquals("Error position", 0, e.getPosition());
-        }
-        try {
-            compile("(");
-            fail("Error expected");
-        } catch (ParserException ignored) {}
-        try {
-            compile("x(");
-            fail("Error expected");
-        } catch (ParserException ignored) {}
-
-        // test overloader errors
-        try {
-            compile("atan2(1)");
-            fail("Error expected");
-        } catch (ParserException e) {
-            assertEquals("Error position", 0, e.getPosition());
-        }
-        try {
-            compile("atan2(1, 2, 3)");
-            fail("Error expected");
-        } catch (ParserException e) {
-            assertEquals("Error position", 0, e.getPosition());
-        }
-        try {
-            compile("rotate(1, 2, 3)");
-            fail("Error expected");
-        } catch (ParserException e) {
-            assertEquals("Error position", 0, e.getPosition());
-        }
+    public void testErrors() {
+        assertAll(
+            // test lexer errors
+            () -> {
+                LexerException e = assertThrows(LexerException.class,
+                    () -> compile("#"));
+                assertEquals(0, e.getPosition(), "Error position");
+            },
+            // test parser errors
+            () -> {
+                ParserException e = assertThrows(ParserException.class,
+                    () -> compile("x"));
+                assertEquals(0, e.getPosition(), "Error position");
+            },
+            () -> {
+                ParserException e = assertThrows(ParserException.class,
+                    () -> compile("x()"));
+                assertEquals(0, e.getPosition(), "Error position");
+            },
+            () -> assertThrows(ParserException.class,
+                () -> compile("(")),
+            () -> assertThrows(ParserException.class,
+                () -> compile("x(")),
+            // test overloader errors
+            () -> {
+                ParserException e = assertThrows(ParserException.class,
+                    () -> compile("atan2(1)"));
+                assertEquals(0, e.getPosition(), "Error position");
+            },
+            () -> {
+                ParserException e = assertThrows(ParserException.class,
+                    () -> compile("atan2(1, 2, 3)"));
+                assertEquals(0, e.getPosition(), "Error position");
+            },
+            () -> {
+                ParserException e = assertThrows(ParserException.class,
+                    () -> compile("rotate(1, 2, 3)"));
+                assertEquals(0, e.getPosition(), "Error position");
+            }
+        );
     }
 
     @Test
     public void testAssign() throws ExpressionException {
         Expression foo = compile("{a=x} b=y; c=z", "x", "y", "z", "a", "b", "c");
-        foo.evaluate(2, 3, 5);
+        foo.evaluate(2D, 3D, 5D);
         assertEquals(2, foo.getVariable("a", false).getValue(), 0);
         assertEquals(3, foo.getVariable("b", false).getValue(), 0);
         assertEquals(5, foo.getVariable("c", false).getValue(), 0);
@@ -118,13 +136,13 @@ public class ExpressionTest {
 
         // test 'dangling else'
         final Expression expression1 = compile("if (1) if (0) x=4; else y=5;", "x", "y");
-        expression1.evaluate(1, 2);
+        expression1.evaluate(1D, 2D);
         assertEquals(1, expression1.getVariable("x", false).getValue(), 0);
         assertEquals(5, expression1.getVariable("y", false).getValue(), 0);
 
         // test if the if construct is correctly recognized as a statement
         final Expression expression2 = compile("if (0) if (1) x=5; y=4;", "x", "y");
-        expression2.evaluate(1, 2);
+        expression2.evaluate(1D, 2D);
         assertEquals(4, expression2.getVariable("y", false).getValue(), 0);
     }
 
@@ -160,6 +178,14 @@ public class ExpressionTest {
         assertEquals(1, simpleEval("!query(3,4,5,3,2)"), 0);
         assertEquals(1, simpleEval("!queryAbs(3,4,5,10,40)"), 0);
         assertEquals(1, simpleEval("!queryRel(3,4,5,100,200)"), 0);
+    }
+
+    @Test
+    public void testTimeout() {
+        ExpressionTimeoutException e = assertThrows(ExpressionTimeoutException.class,
+            () -> simpleEval("for(i=0;i<256;i++){for(j=0;j<256;j++){for(k=0;k<256;k++){for(l=0;l<256;l++){ln(pi)}}}}"),
+            "Loop was not stopped.");
+        assertTrue(e.getMessage().contains("Calculations exceeded time limit"));
     }
 
     private double simpleEval(String expressionString) throws ExpressionException {

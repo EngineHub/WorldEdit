@@ -20,13 +20,14 @@
 package com.sk89q.worldedit.scripting;
 
 import java.util.Map;
+
 import javax.script.ScriptException;
 
 public interface CraftScriptEngine {
-    public void setTimeLimit(int milliseconds);
+    void setTimeLimit(int milliseconds);
 
-    public int getTimeLimit();
+    int getTimeLimit();
 
-    public Object evaluate(String script, String filename, Map<String, Object> args)
+    Object evaluate(String script, String filename, Map<String, Object> args)
             throws ScriptException, Throwable;
 }

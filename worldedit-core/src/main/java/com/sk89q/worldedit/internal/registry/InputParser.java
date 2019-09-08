@@ -20,8 +20,10 @@
 package com.sk89q.worldedit.internal.registry;
 
 import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.extension.input.ParserContext;
 import com.sk89q.worldedit.extension.input.InputParseException;
+import com.sk89q.worldedit.extension.input.ParserContext;
+
+import java.util.stream.Stream;
 
 /**
  * Input parser interface for {@link AbstractFactory}.
@@ -39,4 +41,12 @@ public abstract class InputParser<E> {
 
     public abstract E parseFromInput(String input, ParserContext context) throws InputParseException;
 
+    /**
+     * Gets a stream of suggestions of input to this parser.
+     *
+     * @return a stream of suggestions
+     */
+    public Stream<String> getSuggestions(String input) {
+        return Stream.empty();
+    }
 }

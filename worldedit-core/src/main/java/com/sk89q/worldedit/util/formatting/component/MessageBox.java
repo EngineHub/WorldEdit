@@ -19,56 +19,76 @@
 
 package com.sk89q.worldedit.util.formatting.component;
 
-import com.sk89q.worldedit.util.formatting.ColorCodeBuilder;
-import com.sk89q.worldedit.util.formatting.Style;
-import com.sk89q.worldedit.util.formatting.StyledFragment;
-
 import static com.google.common.base.Preconditions.checkNotNull;
+
+import com.google.common.base.Strings;
+import com.google.common.collect.Sets;
+import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.util.formatting.text.TextComponent;
+import com.sk89q.worldedit.util.formatting.text.format.TextColor;
+import com.sk89q.worldedit.util.formatting.text.format.TextDecoration;
 
 /**
  * Makes for a box with a border above and below.
  */
-public class MessageBox extends StyledFragment {
+public class MessageBox extends TextComponentProducer {
 
-    private final StyledFragment contents = new StyledFragment();
+    private static final int GUARANTEED_NO_WRAP_CHAT_PAGE_WIDTH = 47;
+
+    private TextComponentProducer contents;
 
     /**
      * Create a new box.
      */
-    public MessageBox(String title) {
+    public MessageBox(String title, TextComponentProducer contents) {
         checkNotNull(title);
 
-        int leftOver = ColorCodeBuilder.GUARANTEED_NO_WRAP_CHAT_PAGE_WIDTH - title.length() - 2;
-        int leftSide = (int) Math.floor(leftOver * 1.0/3);
-        int rightSide = (int) Math.floor(leftOver * 2.0/3);
-        if (leftSide > 0) {
-            createFragment(Style.YELLOW).append(createBorder(leftSide));
-        }
-        append(" ");
-        append(title);
-        append(" ");
-        if (rightSide > 0) {
-            createFragment(Style.YELLOW).append(createBorder(rightSide));
-        }
-        newLine();
-        append(contents);
+        append(centerAndBorder(TextComponent.of(title))).newline();
+        this.contents = contents;
     }
 
-    private String createBorder(int count) {
-        StringBuilder builder = new StringBuilder();
-        for (int i = 0; i < count; i++) {
-            builder.append("-");
+    protected Component centerAndBorder(TextComponent text) {
+        TextComponentProducer line = new TextComponentProducer();
+        int leftOver = GUARANTEED_NO_WRAP_CHAT_PAGE_WIDTH - getLength(text);
+        int side = (int) Math.floor(leftOver / 2.0);
+        if (side > 0) {
+            if (side > 1) {
+                line.append(createBorder(side - 1));
+            }
+            line.append(TextComponent.space());
         }
-        return builder.toString();
+        line.append(text);
+        if (side > 0) {
+            line.append(TextComponent.space());
+            if (side > 1) {
+                line.append(createBorder(side - 1));
+            }
+        }
+        return line.create();
+    }
+
+    private static int getLength(TextComponent text) {
+        return text.content().length() + text.children().stream().filter(c -> c instanceof TextComponent)
+                .mapToInt(c -> getLength((TextComponent) c)).sum();
+    }
+
+    private TextComponent createBorder(int count) {
+        return TextComponent.of(Strings.repeat("-", count),
+                TextColor.YELLOW, Sets.newHashSet(TextDecoration.STRIKETHROUGH));
     }
 
     /**
-     * Get the internal contents.
-     * 
-     * @return the contents
+     * Gets the message box contents producer.
+     *
+     * @return The contents producer
      */
-    public StyledFragment getContents() {
+    public TextComponentProducer getContents() {
         return contents;
     }
 
+    @Override
+    public TextComponent create() {
+        append(contents.create());
+        return super.create();
+    }
 }

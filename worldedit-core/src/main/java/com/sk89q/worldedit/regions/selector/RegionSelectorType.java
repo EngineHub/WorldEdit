@@ -36,7 +36,7 @@ public enum RegionSelectorType {
 
     private final Class<? extends RegionSelector> selectorClass;
 
-    private RegionSelectorType(Class<? extends RegionSelector> selectorClass) {
+    RegionSelectorType(Class<? extends RegionSelector> selectorClass) {
         this.selectorClass = selectorClass;
     }
 
@@ -57,9 +57,7 @@ public enum RegionSelectorType {
     public RegionSelector createSelector() {
         try {
             return getSelectorClass().newInstance();
-        } catch (InstantiationException e) {
-            throw new RuntimeException("Could not create selector", e);
-        } catch (IllegalAccessException e) {
+        } catch (InstantiationException | IllegalAccessException e) {
             throw new RuntimeException("Could not create selector", e);
         }
     }

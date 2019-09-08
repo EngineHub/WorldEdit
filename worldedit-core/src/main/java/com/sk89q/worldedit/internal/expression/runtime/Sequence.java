@@ -71,7 +71,7 @@ public class Sequence extends Node {
 
     @Override
     public RValue optimize() throws EvaluationException {
-        final List<RValue> newSequence = new ArrayList<RValue>();
+        final List<RValue> newSequence = new ArrayList<>();
 
         RValue droppedLast = null;
         for (RValue invokable : sequence) {

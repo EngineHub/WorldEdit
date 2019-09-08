@@ -19,13 +19,13 @@
 
 package com.sk89q.worldedit.function.visitor;
 
-import com.sk89q.worldedit.Vector;
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.sk89q.worldedit.function.RegionFunction;
 import com.sk89q.worldedit.function.mask.Mask;
+import com.sk89q.worldedit.math.BlockVector3;
 
 import java.util.Collection;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Visits adjacent points on the same X-Z plane as long as the points
@@ -51,17 +51,17 @@ public class DownwardVisitor extends RecursiveVisitor {
 
         this.baseY = baseY;
 
-        Collection<Vector> directions = getDirections();
+        Collection<BlockVector3> directions = getDirections();
         directions.clear();
-        directions.add(new Vector(1, 0, 0));
-        directions.add(new Vector(-1, 0, 0));
-        directions.add(new Vector(0, 0, 1));
-        directions.add(new Vector(0, 0, -1));
-        directions.add(new Vector(0, -1, 0));
+        directions.add(BlockVector3.UNIT_X);
+        directions.add(BlockVector3.UNIT_MINUS_X);
+        directions.add(BlockVector3.UNIT_Z);
+        directions.add(BlockVector3.UNIT_MINUS_Z);
+        directions.add(BlockVector3.UNIT_MINUS_Y);
     }
 
     @Override
-    protected boolean isVisitable(Vector from, Vector to) {
+    protected boolean isVisitable(BlockVector3 from, BlockVector3 to) {
         int fromY = from.getBlockY();
         return (fromY == baseY || to.subtract(from).getBlockY() < 0) && super.isVisitable(from, to);
     }

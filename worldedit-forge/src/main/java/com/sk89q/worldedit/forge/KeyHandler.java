@@ -19,27 +19,28 @@
 
 package com.sk89q.worldedit.forge;
 
-import com.sk89q.worldedit.forge.gui.GuiHandler;
-import cpw.mods.fml.client.registry.ClientRegistry;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.gameevent.InputEvent.KeyInputEvent;
+import com.sk89q.worldedit.forge.gui.GuiReferenceCard;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
-import org.lwjgl.input.Keyboard;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraftforge.client.event.InputEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
+import org.lwjgl.glfw.GLFW;
 
 public class KeyHandler {
 
-    private static Minecraft mc = Minecraft.getMinecraft();
-    private static KeyBinding mainKey = new KeyBinding("WorldEdit Reference", Keyboard.KEY_L, "WorldEdit");
+    private static Minecraft mc = Minecraft.getInstance();
+    private static KeyBinding mainKey = new KeyBinding("WorldEdit Reference", GLFW.GLFW_KEY_L, "WorldEdit");
 
     public KeyHandler() {
         ClientRegistry.registerKeyBinding(mainKey);
     }
 
     @SubscribeEvent
-    public void onKey(KeyInputEvent evt) {
-        if (mc.thePlayer != null && mc.theWorld != null && mainKey.isPressed()) {
-            mc.thePlayer.openGui(ForgeWorldEdit.inst, GuiHandler.REFERENCE_ID, mc.theWorld, 0, 0, 0);
+    public void onKey(InputEvent.KeyInputEvent evt) {
+        if (mc.player != null && mc.world != null && mainKey.isPressed()) {
+            mc.displayGuiScreen(new GuiReferenceCard(new StringTextComponent("WorldEdit Reference")));
         }
     }
 

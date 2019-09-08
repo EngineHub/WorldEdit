@@ -19,45 +19,65 @@
 
 package com.sk89q.worldedit.util.logging;
 
-import java.util.logging.Formatter;
-import java.util.logging.LogRecord;
-import java.util.logging.Level;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.Date;
+import java.util.logging.Formatter;
+import java.util.logging.LogRecord;
 
 /**
  * A standard logging format for WorldEdit.
  */
 public class LogFormat extends Formatter {
+    public static final String DEFAULT_FORMAT = "[%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS %4$s]: %5$s%6$s%n";
+    private final Date dat = new Date();
+    private final String format;
+
+    public LogFormat() {
+        this(null);
+    }
+
+    public LogFormat(String format) {
+        if (format == null || format.isEmpty()) {
+            format = DEFAULT_FORMAT;
+        }
+        try {
+            //noinspection ResultOfMethodCallIgnored
+            String.format(format, new Date(), "", "", "", "", "");
+        } catch (IllegalArgumentException var3) {
+            format = DEFAULT_FORMAT;
+        }
+        this.format = format;
+    }
+
     @Override
     public String format(LogRecord record) {
-        StringBuilder text = new StringBuilder();
-        Level level = record.getLevel();
-
-        if (level == Level.FINEST) {
-            text.append("[FINEST] ");
-        } else if (level == Level.FINER) {
-            text.append("[FINER] ");
-        } else if (level == Level.FINE) {
-            text.append("[FINE] ");
-        } else if (level == Level.INFO) {
-            text.append("[INFO] ");
-        } else if (level == Level.WARNING) {
-            text.append("[WARNING] ");
-        } else if (level == Level.SEVERE) {
-            text.append("[SEVERE] ");
+        dat.setTime(record.getMillis());
+        String source;
+        if (record.getSourceClassName() != null) {
+            source = record.getSourceClassName();
+            if (record.getSourceMethodName() != null) {
+                source += " " + record.getSourceMethodName();
+            }
+        } else {
+            source = record.getLoggerName();
         }
-
-        text.append(record.getMessage());
-        text.append("\r\n");
-
-        Throwable t = record.getThrown();
-        if (t != null) {
-            StringWriter writer = new StringWriter();
-            t.printStackTrace(new PrintWriter(writer));
-            text.append(writer);
+        String message = formatMessage(record);
+        String throwable = "";
+        if (record.getThrown() != null) {
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            pw.println();
+            record.getThrown().printStackTrace(pw);
+            pw.close();
+            throwable = sw.toString();
         }
-
-        return text.toString();
+        return String.format(format,
+                dat,
+                source,
+                record.getLoggerName(),
+                record.getLevel().getName(),
+                message,
+                throwable);
     }
 }

@@ -19,64 +19,64 @@
 
 package com.sk89q.worldedit.regions.shape;
 
-import com.sk89q.worldedit.BlockVector;
-import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.internal.expression.runtime.ExpressionEnvironment;
+import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.math.Vector3;
 
 public class WorldEditExpressionEnvironment implements ExpressionEnvironment {
 
-    private final Vector unit;
-    private final Vector zero2;
-    private Vector current = new Vector();
-    private EditSession editSession;
+    private final Vector3 unit;
+    private final Vector3 zero2;
+    private Vector3 current = Vector3.ZERO;
+    private Extent extent;
 
-    public WorldEditExpressionEnvironment(EditSession editSession, Vector unit, Vector zero) {
-        this.editSession = editSession;
+    public WorldEditExpressionEnvironment(Extent extent, Vector3 unit, Vector3 zero) {
+        this.extent = extent;
         this.unit = unit;
         this.zero2 = zero.add(0.5, 0.5, 0.5);
     }
 
-    public BlockVector toWorld(double x, double y, double z) {
+    public BlockVector3 toWorld(double x, double y, double z) {
         // unscale, unoffset, round-nearest
-        return new Vector(x, y, z).multiply(unit).add(zero2).toBlockPoint();
+        return Vector3.at(x, y, z).multiply(unit).add(zero2).toBlockPoint();
     }
 
-    public Vector toWorldRel(double x, double y, double z) {
+    public Vector3 toWorldRel(double x, double y, double z) {
         return current.add(x, y, z);
     }
 
     @Override
     public int getBlockType(double x, double y, double z) {
-        return editSession.getBlockType(toWorld(x, y, z));
+        return extent.getBlock(toWorld(x, y, z)).getBlockType().getLegacyId();
     }
 
     @Override
     public int getBlockData(double x, double y, double z) {
-        return editSession.getBlockData(toWorld(x, y, z));
+        return 0;
     }
 
     @Override
     public int getBlockTypeAbs(double x, double y, double z) {
-        return editSession.getBlockType(new Vector(x, y, z));
+        return extent.getBlock(BlockVector3.at(x, y, z)).getBlockType().getLegacyId();
     }
 
     @Override
     public int getBlockDataAbs(double x, double y, double z) {
-        return editSession.getBlockData(new Vector(x, y, z));
+        return 0;
     }
 
     @Override
     public int getBlockTypeRel(double x, double y, double z) {
-        return editSession.getBlockType(toWorldRel(x, y, z));
+        return extent.getBlock(toWorldRel(x, y, z).toBlockPoint()).getBlockType().getLegacyId();
     }
 
     @Override
     public int getBlockDataRel(double x, double y, double z) {
-        return editSession.getBlockData(toWorldRel(x, y, z));
+        return 0;
     }
 
-    public void setCurrentBlock(Vector current) {
+    public void setCurrentBlock(Vector3 current) {
         this.current = current;
     }
 

@@ -19,9 +19,11 @@
 
 package com.sk89q.worldedit.function.operation;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.sk89q.worldedit.WorldEditException;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import java.util.List;
 
 /**
  * Executes a delegete operation, but returns to another operation upon
@@ -55,6 +57,12 @@ public class DelegateOperation implements Operation {
     public void cancel() {
         delegate.cancel();
         original.cancel();
+    }
+
+    @Override
+    public void addStatusMessages(List<String> messages) {
+        original.addStatusMessages(messages);
+        delegate.addStatusMessages(messages);
     }
 
 }

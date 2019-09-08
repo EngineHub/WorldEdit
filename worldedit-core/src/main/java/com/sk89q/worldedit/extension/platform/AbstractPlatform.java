@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.extension.platform;
 
+import com.sk89q.worldedit.world.DataFixer;
 import com.sk89q.worldedit.world.World;
 
 import java.util.Collections;
@@ -39,4 +40,8 @@ public abstract class AbstractPlatform implements Platform {
         return Collections.emptyList();
     }
 
+    @Override
+    public DataFixer getDataFixer() {
+        return null;
+    }
 }

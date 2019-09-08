@@ -19,32 +19,15 @@
 
 package com.sk89q.worldedit.world.registry;
 
-import com.sk89q.worldedit.world.biome.BaseBiome;
 import com.sk89q.worldedit.world.biome.BiomeData;
+import com.sk89q.worldedit.world.biome.BiomeType;
 
 import javax.annotation.Nullable;
-import java.util.List;
 
 /**
  * Provides information on biomes.
  */
 public interface BiomeRegistry {
-
-    /**
-     * Create a new biome given its biome ID.
-     *
-     * @param id its biome ID
-     * @return a new biome or null if it can't be created
-     */
-    @Nullable
-    BaseBiome createFromId(int id);
-
-    /**
-     * Get a list of available biomes.
-     *
-     * @return a list of biomes
-     */
-    List<BaseBiome> getBiomes();
 
     /**
      * Get data about a biome.
@@ -53,6 +36,6 @@ public interface BiomeRegistry {
      * @return a data object or null if information is not known
      */
     @Nullable
-    BiomeData getData(BaseBiome biome);
+    BiomeData getData(BiomeType biome);
 
 }

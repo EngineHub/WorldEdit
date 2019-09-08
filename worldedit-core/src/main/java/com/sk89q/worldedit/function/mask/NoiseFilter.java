@@ -19,13 +19,13 @@
 
 package com.sk89q.worldedit.function.mask;
 
-import com.sk89q.worldedit.Vector;
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
+
+import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.noise.NoiseGenerator;
 
 import javax.annotation.Nullable;
-
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * A mask that uses a noise generator and returns true whenever the noise
@@ -80,13 +80,13 @@ public class NoiseFilter extends AbstractMask {
      */
     public void setDensity(double density) {
         checkArgument(density >= 0, "density must be >= 0");
-        checkArgument(density <= 1, "density must be >= 1");
+        checkArgument(density <= 1, "density must be <= 1");
         this.density = density;
     }
 
     @Override
-    public boolean test(Vector vector) {
-        return noiseGenerator.noise(vector) <= density;
+    public boolean test(BlockVector3 vector) {
+        return noiseGenerator.noise(vector.toVector3()) <= density;
     }
 
     @Nullable

@@ -1,3 +1,0 @@
-rootProject.name = 'worldedit'
-
-include 'worldedit-core', 'worldedit-bukkit', 'worldedit-forge'

@@ -19,17 +19,24 @@
 
 package com.sk89q.worldedit.util;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Sets;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
-import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.blocks.BlockID;
+import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.world.block.BlockState;
+import com.sk89q.worldedit.world.block.BlockStateHolder;
+import com.sk89q.worldedit.world.block.BlockTypes;
 
-import javax.annotation.Nullable;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
+
+import javax.annotation.Nullable;
 
 /**
  * Tree generator.
@@ -44,7 +51,7 @@ public class TreeGenerator {
         MEGA_REDWOOD("Large spruce tree", "largespruce", "megaredwood"),
         RANDOM_REDWOOD("Random spruce tree", "randspruce", "randredwood", "randomredwood", "anyredwood") {
             @Override
-            public boolean generate(EditSession editSession, Vector pos) throws MaxChangedBlocksException {
+            public boolean generate(EditSession editSession, BlockVector3 pos) throws MaxChangedBlocksException {
                 TreeType[] choices = { REDWOOD, TALL_REDWOOD, MEGA_REDWOOD };
                 return choices[TreeGenerator.RANDOM.nextInt(choices.length)].generate(editSession, pos);
             }
@@ -53,22 +60,22 @@ public class TreeGenerator {
         TALL_BIRCH("Tall birch tree", "tallbirch"),
         RANDOM_BIRCH("Random birch tree", "randbirch", "randombirch") {
             @Override
-            public boolean generate(EditSession editSession, Vector pos) throws MaxChangedBlocksException {
+            public boolean generate(EditSession editSession, BlockVector3 pos) throws MaxChangedBlocksException {
                 TreeType[] choices = { BIRCH, TALL_BIRCH };
                 return choices[TreeGenerator.RANDOM.nextInt(choices.length)].generate(editSession, pos);
             }
         },
         JUNGLE("Jungle tree", "jungle"),
-        SMALL_JUNGLE("Small jungle tree", "shortjungle", "smalljungle"),
-        SHORT_JUNGLE("Short jungle tree") {
+        SMALL_JUNGLE("Small jungle tree", "smalljungle"),
+        SHORT_JUNGLE("Short jungle tree", "shortjungle") {
             @Override
-            public boolean generate(EditSession editSession, Vector pos) throws MaxChangedBlocksException {
+            public boolean generate(EditSession editSession, BlockVector3 pos) throws MaxChangedBlocksException {
                 return SMALL_JUNGLE.generate(editSession, pos);
             }
         },
         RANDOM_JUNGLE("Random jungle tree", "randjungle", "randomjungle") {
             @Override
-            public boolean generate(EditSession editSession, Vector pos) throws MaxChangedBlocksException {
+            public boolean generate(EditSession editSession, BlockVector3 pos) throws MaxChangedBlocksException {
                 TreeType[] choices = { JUNGLE, SMALL_JUNGLE };
                 return choices[TreeGenerator.RANDOM.nextInt(choices.length)].generate(editSession, pos);
             }
@@ -78,7 +85,7 @@ public class TreeGenerator {
         BROWN_MUSHROOM("Brown mushroom", "brownmushroom", "browngiantmushroom"),
         RANDOM_MUSHROOM("Random mushroom", "randmushroom", "randommushroom") {
             @Override
-            public boolean generate(EditSession editSession, Vector pos) throws MaxChangedBlocksException {
+            public boolean generate(EditSession editSession, BlockVector3 pos) throws MaxChangedBlocksException {
                 TreeType[] choices = { RED_MUSHROOM, BROWN_MUSHROOM };
                 return choices[TreeGenerator.RANDOM.nextInt(choices.length)].generate(editSession, pos);
             }
@@ -88,14 +95,14 @@ public class TreeGenerator {
         DARK_OAK("Dark oak tree", "darkoak"),
         PINE("Pine tree", "pine") {
             @Override
-            public boolean generate(EditSession editSession, Vector pos) throws MaxChangedBlocksException {
+            public boolean generate(EditSession editSession, BlockVector3 pos) throws MaxChangedBlocksException {
                 makePineTree(editSession, pos);
                 return true;
             }
         },
         RANDOM("Random tree", "rand", "random") {
             @Override
-            public boolean generate(EditSession editSession, Vector pos) throws MaxChangedBlocksException {
+            public boolean generate(EditSession editSession, BlockVector3 pos) throws MaxChangedBlocksException {
                 TreeType[] choices = TreeType.values();
                 return choices[TreeGenerator.RANDOM.nextInt(choices.length)].generate(editSession, pos);
             }
@@ -104,25 +111,37 @@ public class TreeGenerator {
         /**
          * Stores a map of the names for fast access.
          */
-        private static final Map<String, TreeType> lookup = new HashMap<String, TreeType>();
+        private static final Map<String, TreeType> lookup = new HashMap<>();
+        private static final Set<String> primaryAliases = Sets.newHashSet();
 
         private final String name;
-        private final String[] lookupKeys;
+        public final ImmutableList<String> lookupKeys;
 
         static {
             for (TreeType type : EnumSet.allOf(TreeType.class)) {
                 for (String key : type.lookupKeys) {
                     lookup.put(key, type);
                 }
+                if (type.lookupKeys.size() > 0) {
+                    primaryAliases.add(type.lookupKeys.get(0));
+                }
             }
         }
 
         TreeType(String name, String... lookupKeys) {
             this.name = name;
-            this.lookupKeys = lookupKeys;
+            this.lookupKeys = ImmutableList.copyOf(lookupKeys);
         }
 
-        public boolean generate(EditSession editSession, Vector pos) throws MaxChangedBlocksException {
+        public static Set<String> getAliases() {
+            return Collections.unmodifiableSet(lookup.keySet());
+        }
+
+        public static Set<String> getPrimaryAliases() {
+            return Collections.unmodifiableSet(primaryAliases);
+        }
+
+        public boolean generate(EditSession editSession, BlockVector3 pos) throws MaxChangedBlocksException {
             return editSession.getWorld().generateTree(this, editSession, pos);
         }
 
@@ -143,52 +162,31 @@ public class TreeGenerator {
          */
         @Nullable
         public static TreeType lookup(String name) {
-            return lookup.get(name.toLowerCase());
+            return lookup.get(name.toLowerCase(Locale.ROOT));
         }
     }
 
+    private TreeGenerator() {
+    }
+
     private static final Random RANDOM = new Random();
-
-    private TreeType type;
-
-    /**
-     * Construct the tree generator with a tree type.
-     *
-     * @param type the tree type
-     */
-    @Deprecated
-    public TreeGenerator(TreeType type) {
-        this.type = type;
-    }
-
-    /**
-     * Generate a tree.
-     *
-     * @param editSession the edit session
-     * @param position the position to generate the tree at
-     * @return true if generation was successful
-     * @throws MaxChangedBlocksException
-     */
-    public boolean generate(EditSession editSession, Vector position) throws MaxChangedBlocksException {
-        return type.generate(editSession, position);
-    }
 
      /**
      * Makes a terrible looking pine tree.
      *
      * @param basePosition the base position
      */
-    private static void makePineTree(EditSession editSession, Vector basePosition)
+    private static void makePineTree(EditSession editSession, BlockVector3 basePosition)
             throws MaxChangedBlocksException {
         int trunkHeight = (int) Math.floor(Math.random() * 2) + 3;
         int height = (int) Math.floor(Math.random() * 5) + 8;
 
-        BaseBlock logBlock = new BaseBlock(BlockID.LOG);
-        BaseBlock leavesBlock = new BaseBlock(BlockID.LEAVES);
+        BlockState logBlock = BlockTypes.OAK_LOG.getDefaultState();
+        BlockState leavesBlock = BlockTypes.OAK_LEAVES.getDefaultState();
 
         // Create trunk
         for (int i = 0; i < trunkHeight; ++i) {
-            if (!editSession.setBlockIfAir(basePosition.add(0, i, 0), logBlock)) {
+            if (!setBlockIfAir(editSession, basePosition.add(0, i, 0), logBlock)) {
                 return;
             }
         }
@@ -198,38 +196,38 @@ public class TreeGenerator {
 
         // Create tree + leaves
         for (int i = 0; i < height; ++i) {
-            editSession.setBlockIfAir(basePosition.add(0, i, 0), logBlock);
+            setBlockIfAir(editSession, basePosition.add(0, i, 0), logBlock);
 
             // Less leaves at these levels
             double chance = ((i == 0 || i == height - 1) ? 0.6 : 1);
 
             // Inner leaves
-            editSession.setChanceBlockIfAir(basePosition.add(-1, i, 0), leavesBlock, chance);
-            editSession.setChanceBlockIfAir(basePosition.add(1, i, 0), leavesBlock, chance);
-            editSession.setChanceBlockIfAir(basePosition.add(0, i, -1), leavesBlock, chance);
-            editSession.setChanceBlockIfAir(basePosition.add(0, i, 1), leavesBlock, chance);
-            editSession.setChanceBlockIfAir(basePosition.add(1, i, 1), leavesBlock, chance);
-            editSession.setChanceBlockIfAir(basePosition.add(-1, i, 1), leavesBlock, chance);
-            editSession.setChanceBlockIfAir(basePosition.add(1, i, -1), leavesBlock, chance);
-            editSession.setChanceBlockIfAir(basePosition.add(-1, i, -1), leavesBlock, chance);
+            setChanceBlockIfAir(editSession, basePosition.add(-1, i, 0), leavesBlock, chance);
+            setChanceBlockIfAir(editSession, basePosition.add(1, i, 0), leavesBlock, chance);
+            setChanceBlockIfAir(editSession, basePosition.add(0, i, -1), leavesBlock, chance);
+            setChanceBlockIfAir(editSession, basePosition.add(0, i, 1), leavesBlock, chance);
+            setChanceBlockIfAir(editSession, basePosition.add(1, i, 1), leavesBlock, chance);
+            setChanceBlockIfAir(editSession, basePosition.add(-1, i, 1), leavesBlock, chance);
+            setChanceBlockIfAir(editSession, basePosition.add(1, i, -1), leavesBlock, chance);
+            setChanceBlockIfAir(editSession, basePosition.add(-1, i, -1), leavesBlock, chance);
 
             if (!(i == 0 || i == height - 1)) {
                 for (int j = -2; j <= 2; ++j) {
-                    editSession.setChanceBlockIfAir(basePosition.add(-2, i, j), leavesBlock, 0.6);
+                    setChanceBlockIfAir(editSession, basePosition.add(-2, i, j), leavesBlock, 0.6);
                 }
                 for (int j = -2; j <= 2; ++j) {
-                    editSession.setChanceBlockIfAir(basePosition.add(2, i, j), leavesBlock, 0.6);
+                    setChanceBlockIfAir(editSession, basePosition.add(2, i, j), leavesBlock, 0.6);
                 }
                 for (int j = -2; j <= 2; ++j) {
-                    editSession.setChanceBlockIfAir(basePosition.add(j, i, -2), leavesBlock, 0.6);
+                    setChanceBlockIfAir(editSession, basePosition.add(j, i, -2), leavesBlock, 0.6);
                 }
                 for (int j = -2; j <= 2; ++j) {
-                    editSession.setChanceBlockIfAir(basePosition.add(j, i, 2), leavesBlock, 0.6);
+                    setChanceBlockIfAir(editSession, basePosition.add(j, i, 2), leavesBlock, 0.6);
                 }
             }
         }
 
-        editSession.setBlockIfAir(basePosition.add(0, height, 0), leavesBlock);
+        setBlockIfAir(editSession, basePosition.add(0, height, 0), leavesBlock);
     }
 
     /**
@@ -244,4 +242,30 @@ public class TreeGenerator {
         return TreeType.lookup(type);
     }
 
+    /**
+     * Set a block (only if a previous block was not there) if {@link Math#random()}
+     * returns a number less than the given probability.
+     *
+     * @param position the position
+     * @param block the block
+     * @param probability a probability between 0 and 1, inclusive
+     * @return whether a block was changed
+     * @throws MaxChangedBlocksException thrown if too many blocks are changed
+     */
+    private static <B extends BlockStateHolder<B>> boolean setChanceBlockIfAir(EditSession session, BlockVector3 position, B block, double probability)
+            throws MaxChangedBlocksException {
+        return Math.random() <= probability && setBlockIfAir(session, position, block);
+    }
+
+    /**
+     * Set a block only if there's no block already there.
+     *
+     * @param position the position
+     * @param block the block to set
+     * @return if block was changed
+     * @throws MaxChangedBlocksException thrown if too many blocks are changed
+     */
+    private static <B extends BlockStateHolder<B>> boolean setBlockIfAir(EditSession session, BlockVector3 position, B block) throws MaxChangedBlocksException {
+        return session.getBlock(position).getBlockType().getMaterial().isAir() && session.setBlock(position, block);
+    }
 }

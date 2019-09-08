@@ -22,14 +22,13 @@ package com.sk89q.worldedit.world.storage;
 import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.jnbt.NBTInputStream;
 import com.sk89q.jnbt.Tag;
-import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.world.DataException;
 import com.sk89q.worldedit.world.World;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Map;
 import java.util.zip.GZIPInputStream;
 
 /**
@@ -46,7 +45,7 @@ public abstract class LegacyChunkStore extends ChunkStore {
      * @param separator folder separator character
      * @return pathname
      */
-    public static String getFilename(Vector2D position, String separator) {
+    public static String getFilename(BlockVector2 position, String separator) {
         int x = position.getBlockX();
         int z = position.getBlockZ();
 
@@ -65,12 +64,12 @@ public abstract class LegacyChunkStore extends ChunkStore {
      * @param position chunk position
      * @return pathname
      */
-    public static String getFilename(Vector2D position) {
+    public static String getFilename(BlockVector2 position) {
         return getFilename(position, File.separator);
     }
 
     @Override
-    public CompoundTag getChunkTag(Vector2D position, World world) throws DataException, IOException {
+    public CompoundTag getChunkTag(BlockVector2 position, World world) throws DataException, IOException {
         int x = position.getBlockX();
         int z = position.getBlockZ();
 
@@ -80,40 +79,16 @@ public abstract class LegacyChunkStore extends ChunkStore {
                 + "." + Integer.toString(z, 36) + ".dat";
 
         InputStream stream = getInputStream(folder1, folder2, filename);
-        NBTInputStream nbt = new NBTInputStream(
-                new GZIPInputStream(stream));
         Tag tag;
 
-        try {
+        try (NBTInputStream nbt = new NBTInputStream(new GZIPInputStream(stream))) {
             tag = nbt.readNamedTag().getTag();
             if (!(tag instanceof CompoundTag)) {
                 throw new ChunkStoreException("CompoundTag expected for chunk; got "
                         + tag.getClass().getName());
             }
 
-            Map<String, Tag> children = ((CompoundTag) tag).getValue();
-            CompoundTag rootTag = null;
-
-            // Find Level tag
-            for (Map.Entry<String, Tag> entry : children.entrySet()) {
-                if (entry.getKey().equals("Level")) {
-                    if (entry.getValue() instanceof CompoundTag) {
-                        rootTag = (CompoundTag) entry.getValue();
-                        break;
-                    } else {
-                        throw new ChunkStoreException("CompoundTag expected for 'Level'; got "
-                                + entry.getValue().getClass().getName());
-                    }
-                }
-            }
-
-            if (rootTag == null) {
-                throw new ChunkStoreException("Missing root 'Level' tag");
-            }
-
-            return rootTag;
-        } finally {
-            nbt.close();
+            return (CompoundTag) tag;
         }
     }
 

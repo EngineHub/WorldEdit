@@ -19,8 +19,9 @@
 
 package com.sk89q.worldedit.math.transform;
 
-import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.MathUtils;
+import com.sk89q.worldedit.math.Vector3;
 
 /**
  * An affine transform.
@@ -116,7 +117,7 @@ public class AffineTransform implements Transform {
             return false;
         if (m11 != 1)
             return false;
-        if (m22 != 0)
+        if (m22 != 1)
             return false;
         if (m01 != 0)
             return false;
@@ -165,7 +166,7 @@ public class AffineTransform implements Transform {
         double det = this.determinant();
         return new AffineTransform(
                 (m11 * m22 - m21 * m12) / det,
-                (m21 * m01 - m01 * m22) / det,
+                (m21 * m02 - m01 * m22) / det,
                 (m01 * m12 - m11 * m02) / det,
                 (m01 * (m22 * m13 - m12 * m23) + m02 * (m11 * m23 - m21 * m13)
                         - m03 * (m11 * m22 - m21 * m12)) / det,
@@ -236,7 +237,11 @@ public class AffineTransform implements Transform {
                 n20, n21, n22, n23);
     }
 
-    public AffineTransform translate(Vector vec) {
+    public AffineTransform translate(Vector3 vec) {
+        return translate(vec.getX(), vec.getY(), vec.getZ());
+    }
+
+    public AffineTransform translate(BlockVector3 vec) {
         return translate(vec.getX(), vec.getY(), vec.getZ());
     }
 
@@ -282,13 +287,13 @@ public class AffineTransform implements Transform {
         return concatenate(new AffineTransform(sx, 0, 0, 0, 0, sy, 0, 0, 0, 0, sz, 0));
     }
 
-    public AffineTransform scale(Vector vec) {
+    public AffineTransform scale(Vector3 vec) {
         return scale(vec.getX(), vec.getY(), vec.getZ());
     }
 
     @Override
-    public Vector apply(Vector vector) {
-        return new Vector(
+    public Vector3 apply(Vector3 vector) {
+        return Vector3.at(
                 vector.getX() * m00 + vector.getY() * m01 + vector.getZ() * m02 + m03,
                 vector.getX() * m10 + vector.getY() * m11 + vector.getZ() * m12 + m13,
                 vector.getX() * m20 + vector.getY() * m21 + vector.getZ() * m22 + m23);

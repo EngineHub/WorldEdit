@@ -19,21 +19,31 @@
 
 package com.sk89q.worldedit.internal.expression;
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.internal.expression.lexer.Lexer;
 import com.sk89q.worldedit.internal.expression.lexer.tokens.Token;
 import com.sk89q.worldedit.internal.expression.parser.Parser;
 import com.sk89q.worldedit.internal.expression.runtime.Constant;
 import com.sk89q.worldedit.internal.expression.runtime.EvaluationException;
 import com.sk89q.worldedit.internal.expression.runtime.ExpressionEnvironment;
+import com.sk89q.worldedit.internal.expression.runtime.ExpressionTimeoutException;
 import com.sk89q.worldedit.internal.expression.runtime.Functions;
 import com.sk89q.worldedit.internal.expression.runtime.RValue;
 import com.sk89q.worldedit.internal.expression.runtime.ReturnException;
 import com.sk89q.worldedit.internal.expression.runtime.Variable;
+import com.sk89q.worldedit.session.request.Request;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 /**
  * Compiles and evaluates expressions.
@@ -41,7 +51,7 @@ import java.util.Stack;
  * <p>Supported operators:</p>
  *
  * <ul>
- *     <li>Logical: &&, ||, ! (unary)</li>
+ *     <li>Logical: &amp;&amp;, ||, ! (unary)</li>
  *     <li>Bitwise: ~ (unary), &gt;&gt;, &lt;&lt;</li>
  *     <li>Arithmetic: +, -, *, /, % (modulo), ^ (power), - (unary), --, ++ (prefix only)</li>
  *     <li>Comparison: &lt;=, &gt;=, &gt;, &lt;, ==, !=, ~= (near)</li>
@@ -68,9 +78,14 @@ import java.util.Stack;
  */
 public class Expression {
 
-    private static final ThreadLocal<Stack<Expression>> instance = new ThreadLocal<Stack<Expression>>();
+    private static final ThreadLocal<Stack<Expression>> instance = new ThreadLocal<>();
+    private static final ExecutorService evalThread = Executors.newCachedThreadPool(
+            new ThreadFactoryBuilder()
+                    .setDaemon(true)
+                    .setNameFormat("worldedit-expression-eval-%d")
+                    .build());
 
-    private final Map<String, RValue> variables = new HashMap<String, RValue>();
+    private final Map<String, RValue> variables = new HashMap<>();
     private final String[] variableNames;
     private RValue root;
     private final Functions functions = new Functions();
@@ -103,6 +118,10 @@ public class Expression {
     }
 
     public double evaluate(double... values) throws EvaluationException {
+        return evaluate(values, WorldEdit.getInstance().getConfiguration().calculationTimeout);
+    }
+
+    public double evaluate(double[] values, int timeout) throws EvaluationException {
         for (int i = 0; i < values.length; ++i) {
             final String variableName = variableNames[i];
             final RValue invokable = variables.get(variableName);
@@ -113,11 +132,53 @@ public class Expression {
             ((Variable) invokable).value = values[i];
         }
 
+        try {
+            if (timeout < 0) {
+                return evaluateRoot();
+            }
+            return evaluateRootTimed(timeout);
+        } catch (ReturnException e) {
+            return e.getValue();
+        } // other evaluation exceptions are thrown out of this method
+    }
+
+    private double evaluateRootTimed(int timeout) throws EvaluationException {
+        Request request = Request.request();
+        Future<Double> result = evalThread.submit(() -> {
+            Request local = Request.request();
+            local.setSession(request.getSession());
+            local.setWorld(request.getWorld());
+            local.setEditSession(request.getEditSession());
+            try {
+                return Expression.this.evaluateRoot();
+            } finally {
+                Request.reset();
+            }
+        });
+        try {
+            return result.get(timeout, TimeUnit.MILLISECONDS);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException(e);
+        } catch (TimeoutException e) {
+            result.cancel(true);
+            throw new ExpressionTimeoutException("Calculations exceeded time limit.");
+        } catch (ExecutionException e) {
+            Throwable cause = e.getCause();
+            if (cause instanceof EvaluationException) {
+                throw (EvaluationException) cause;
+            }
+            if (cause instanceof RuntimeException) {
+                throw (RuntimeException) cause;
+            }
+            throw new RuntimeException(cause);
+        }
+    }
+
+    private Double evaluateRoot() throws EvaluationException {
         pushInstance();
         try {
             return root.getValue();
-        } catch (ReturnException e) {
-            return e.getValue();
         } finally {
             popInstance();
         }
@@ -146,20 +207,20 @@ public class Expression {
     }
 
     private void pushInstance() {
-        Stack<Expression> foo = instance.get();
-        if (foo == null) {
-            instance.set(foo = new Stack<Expression>());
+        Stack<Expression> threadLocalExprStack = instance.get();
+        if (threadLocalExprStack == null) {
+            instance.set(threadLocalExprStack = new Stack<>());
         }
 
-        foo.push(this);
+        threadLocalExprStack.push(this);
     }
 
     private void popInstance() {
-        Stack<Expression> foo = instance.get();
+        Stack<Expression> threadLocalExprStack = instance.get();
 
-        foo.pop();
+        threadLocalExprStack.pop();
 
-        if (foo.isEmpty()) {
+        if (threadLocalExprStack.isEmpty()) {
             instance.set(null);
         }
     }

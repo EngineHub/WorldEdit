@@ -19,34 +19,41 @@
 
 package com.sk89q.worldedit.command;
 
-import com.sk89q.minecraft.util.commands.Command;
-import com.sk89q.minecraft.util.commands.CommandPermissions;
-import com.sk89q.minecraft.util.commands.Logging;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalSession;
-import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.command.util.CommandPermissions;
+import com.sk89q.worldedit.command.util.CommandPermissionsConditionGenerator;
+import com.sk89q.worldedit.command.util.Logging;
 import com.sk89q.worldedit.entity.Player;
+import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.function.pattern.Pattern;
-import com.sk89q.worldedit.function.pattern.Patterns;
+import com.sk89q.worldedit.internal.annotation.Radii;
 import com.sk89q.worldedit.internal.annotation.Selection;
 import com.sk89q.worldedit.internal.expression.ExpressionException;
+import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.regions.Region;
-import com.sk89q.worldedit.util.TreeGenerator;
 import com.sk89q.worldedit.util.TreeGenerator.TreeType;
-import com.sk89q.worldedit.util.command.binding.Range;
-import com.sk89q.worldedit.util.command.binding.Switch;
-import com.sk89q.worldedit.util.command.binding.Text;
-import com.sk89q.worldedit.util.command.parametric.Optional;
-import com.sk89q.worldedit.world.biome.BaseBiome;
+import com.sk89q.worldedit.world.biome.BiomeType;
+import org.enginehub.piston.annotation.Command;
+import org.enginehub.piston.annotation.CommandContainer;
+import org.enginehub.piston.annotation.param.Arg;
+import org.enginehub.piston.annotation.param.Switch;
+
+import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static com.sk89q.minecraft.util.commands.Logging.LogMode.*;
+import static com.sk89q.worldedit.command.util.Logging.LogMode.ALL;
+import static com.sk89q.worldedit.command.util.Logging.LogMode.PLACEMENT;
+import static com.sk89q.worldedit.command.util.Logging.LogMode.POSITION;
+import static com.sk89q.worldedit.internal.command.CommandUtil.checkCommandArgument;
 
 /**
  * Commands for the generation of shapes and other objects.
  */
+@CommandContainer(superTypes = CommandPermissionsConditionGenerator.Registration.class)
 public class GenerationCommands {
 
     private final WorldEdit worldEdit;
@@ -62,320 +69,323 @@ public class GenerationCommands {
     }
 
     @Command(
-        aliases = { "/hcyl" },
-        usage = "<pattern> <radius>[,<radius>] [height]",
-        desc = "Generates a hollow cylinder.",
-        help =
-            "Generates a hollow cylinder.\n" +
-            "By specifying 2 radii, separated by a comma,\n" +
-            "you can generate elliptical cylinders.\n" +
-            "The 1st radius is north/south, the 2nd radius is east/west.",
-        min = 2,
-        max = 3
+        name = "/hcyl",
+        desc = "Generates a hollow cylinder."
     )
     @CommandPermissions("worldedit.generation.cylinder")
     @Logging(PLACEMENT)
-    public void hcyl(Player player, LocalSession session, EditSession editSession, Pattern pattern, String radiusString, @Optional("1") int height) throws WorldEditException {
-        cyl(player, session, editSession, pattern, radiusString, height, true);
+    public int hcyl(Actor actor, LocalSession session, EditSession editSession,
+                    @Arg(desc = "The pattern of blocks to generate")
+                        Pattern pattern,
+                    @Arg(desc = "The radii of the cylinder. 1st is N/S, 2nd is E/W")
+                    @Radii(2)
+                        List<Double> radii,
+                    @Arg(desc = "The height of the cylinder", def = "1")
+                        int height) throws WorldEditException {
+        return cyl(actor, session, editSession, pattern, radii, height, true);
     }
 
     @Command(
-        aliases = { "/cyl" },
-        usage = "<block> <radius>[,<radius>] [height]",
-        flags = "h",
-        desc = "Generates a cylinder.",
-        help =
-            "Generates a cylinder.\n" +
-            "By specifying 2 radii, separated by a comma,\n" +
-            "you can generate elliptical cylinders.\n" +
-            "The 1st radius is north/south, the 2nd radius is east/west.",
-        min = 2,
-        max = 3
+        name = "/cyl",
+        desc = "Generates a cylinder."
     )
     @CommandPermissions("worldedit.generation.cylinder")
     @Logging(PLACEMENT)
-    public void cyl(Player player, LocalSession session, EditSession editSession, Pattern pattern, String radiusString, @Optional("1") int height, @Switch('h') boolean hollow) throws WorldEditException {
-        String[] radii = radiusString.split(",");
+    public int cyl(Actor actor, LocalSession session, EditSession editSession,
+                   @Arg(desc = "The pattern of blocks to generate")
+                       Pattern pattern,
+                   @Arg(desc = "The radii of the cylinder. 1st is N/S, 2nd is E/W")
+                   @Radii(2)
+                       List<Double> radii,
+                   @Arg(desc = "The height of the cylinder", def = "1")
+                       int height,
+                   @Switch(name = 'h', desc = "Make a hollow cylinder")
+                       boolean hollow) throws WorldEditException {
         final double radiusX, radiusZ;
-        switch (radii.length) {
+        switch (radii.size()) {
         case 1:
-            radiusX = radiusZ = Math.max(1, Double.parseDouble(radii[0]));
+            radiusX = radiusZ = Math.max(1, radii.get(0));
             break;
 
         case 2:
-            radiusX = Math.max(1, Double.parseDouble(radii[0]));
-            radiusZ = Math.max(1, Double.parseDouble(radii[1]));
+            radiusX = Math.max(1, radii.get(0));
+            radiusZ = Math.max(1, radii.get(1));
             break;
 
         default:
-            player.printError("You must either specify 1 or 2 radius values.");
-            return;
+            actor.printError("You must either specify 1 or 2 radius values.");
+            return 0;
         }
 
         worldEdit.checkMaxRadius(radiusX);
         worldEdit.checkMaxRadius(radiusZ);
         worldEdit.checkMaxRadius(height);
 
-        Vector pos = session.getPlacementPosition(player);
-        int affected = editSession.makeCylinder(pos, Patterns.wrap(pattern), radiusX, radiusZ, height, !hollow);
-        player.print(affected + " block(s) have been created.");
+        BlockVector3 pos = session.getPlacementPosition(actor);
+        int affected = editSession.makeCylinder(pos, pattern, radiusX, radiusZ, height, !hollow);
+        actor.print(affected + " block(s) have been created.");
+        return affected;
     }
 
     @Command(
-        aliases = { "/hsphere" },
-        usage = "<block> <radius>[,<radius>,<radius>] [raised?]",
-        desc = "Generates a hollow sphere.",
-        help =
-            "Generates a hollow sphere.\n" +
-            "By specifying 3 radii, separated by commas,\n" +
-            "you can generate an ellipsoid. The order of the ellipsoid radii\n" +
-            "is north/south, up/down, east/west.",
-        min = 2,
-        max = 3
+        name = "/hsphere",
+        desc = "Generates a hollow sphere."
     )
     @CommandPermissions("worldedit.generation.sphere")
     @Logging(PLACEMENT)
-    public void hsphere(Player player, LocalSession session, EditSession editSession, Pattern pattern, String radiusString, @Optional("false") boolean raised) throws WorldEditException {
-        sphere(player, session, editSession, pattern, radiusString, raised, true);
+    public int hsphere(Actor actor, LocalSession session, EditSession editSession,
+                       @Arg(desc = "The pattern of blocks to generate")
+                           Pattern pattern,
+                       @Arg(desc = "The radii of the sphere. Order is N/S, U/D, E/W")
+                       @Radii(3)
+                           List<Double> radii,
+                       @Switch(name = 'r', desc = "Raise the bottom of the sphere to the placement position")
+                           boolean raised) throws WorldEditException {
+        return sphere(actor, session, editSession, pattern, radii, raised, true);
     }
 
     @Command(
-        aliases = { "/sphere" },
-        usage = "<block> <radius>[,<radius>,<radius>] [raised?]",
-        flags = "h",
-        desc = "Generates a filled sphere.",
-        help =
-            "Generates a filled sphere.\n" +
-            "By specifying 3 radii, separated by commas,\n" +
-            "you can generate an ellipsoid. The order of the ellipsoid radii\n" +
-            "is north/south, up/down, east/west.",
-        min = 2,
-        max = 3
+        name = "/sphere",
+        desc = "Generates a filled sphere."
     )
     @CommandPermissions("worldedit.generation.sphere")
     @Logging(PLACEMENT)
-    public void sphere(Player player, LocalSession session, EditSession editSession, Pattern pattern, String radiusString, @Optional("false") boolean raised, @Switch('h') boolean hollow) throws WorldEditException {
-        String[] radii = radiusString.split(",");
+    public int sphere(Actor actor, LocalSession session, EditSession editSession,
+                      @Arg(desc = "The pattern of blocks to generate")
+                          Pattern pattern,
+                      @Arg(desc = "The radii of the sphere. Order is N/S, U/D, E/W")
+                      @Radii(3)
+                          List<Double> radii,
+                      @Switch(name = 'r', desc = "Raise the bottom of the sphere to the placement position")
+                          boolean raised,
+                      @Switch(name = 'h', desc = "Make a hollow sphere")
+                          boolean hollow) throws WorldEditException {
         final double radiusX, radiusY, radiusZ;
-        switch (radii.length) {
+        switch (radii.size()) {
         case 1:
-            radiusX = radiusY = radiusZ = Math.max(1, Double.parseDouble(radii[0]));
+            radiusX = radiusY = radiusZ = Math.max(0, radii.get(0));
             break;
 
         case 3:
-            radiusX = Math.max(1, Double.parseDouble(radii[0]));
-            radiusY = Math.max(1, Double.parseDouble(radii[1]));
-            radiusZ = Math.max(1, Double.parseDouble(radii[2]));
+            radiusX = Math.max(0, radii.get(0));
+            radiusY = Math.max(0, radii.get(1));
+            radiusZ = Math.max(0, radii.get(2));
             break;
 
         default:
-            player.printError("You must either specify 1 or 3 radius values.");
-            return;
+            actor.printError("You must either specify 1 or 3 radius values.");
+            return 0;
         }
 
         worldEdit.checkMaxRadius(radiusX);
         worldEdit.checkMaxRadius(radiusY);
         worldEdit.checkMaxRadius(radiusZ);
 
-        Vector pos = session.getPlacementPosition(player);
+        BlockVector3 pos = session.getPlacementPosition(actor);
         if (raised) {
-            pos = pos.add(0, radiusY, 0);
+            pos = pos.add(0, (int) radiusY, 0);
         }
 
-        int affected = editSession.makeSphere(pos, Patterns.wrap(pattern), radiusX, radiusY, radiusZ, !hollow);
-        player.findFreePosition();
-        player.print(affected + " block(s) have been created.");
+        int affected = editSession.makeSphere(pos, pattern, radiusX, radiusY, radiusZ, !hollow);
+        if (actor instanceof Player) {
+            ((Player) actor).findFreePosition();
+        }
+        actor.print(affected + " block(s) have been created.");
+        return affected;
     }
 
     @Command(
-        aliases = { "forestgen" },
-        usage = "[size] [type] [density]",
-        desc = "Generate a forest",
-        min = 0,
-        max = 3
+        name = "forestgen",
+        desc = "Generate a forest"
     )
     @CommandPermissions("worldedit.generation.forest")
     @Logging(POSITION)
-    @SuppressWarnings("deprecation")
-    public void forestGen(Player player, LocalSession session, EditSession editSession, @Optional("10") int size, @Optional("tree") TreeType type, @Optional("5") double density) throws WorldEditException {
-        density = density / 100;
-        int affected = editSession.makeForest(session.getPlacementPosition(player), size, density, new TreeGenerator(type));
-        player.print(affected + " trees created.");
+    public int forestGen(Actor actor, LocalSession session, EditSession editSession,
+                         @Arg(desc = "The size of the forest, in blocks", def = "10")
+                             int size,
+                         @Arg(desc = "The type of forest", def = "tree")
+                             TreeType type,
+                         @Arg(desc = "The density of the forest, between 0 and 100", def = "5")
+                             double density) throws WorldEditException {
+        checkCommandArgument(0 <= density && density <= 100, "Density must be between 0 and 100");
+        worldEdit.checkMaxRadius(size);
+        density /= 100;
+        int affected = editSession.makeForest(session.getPlacementPosition(actor), size, density, type);
+        actor.print(affected + " trees created.");
+        return affected;
     }
 
     @Command(
-        aliases = { "pumpkins" },
-        usage = "[size]",
-        desc = "Generate pumpkin patches",
-        min = 0,
-        max = 1
+        name = "pumpkins",
+        desc = "Generate pumpkin patches"
     )
     @CommandPermissions("worldedit.generation.pumpkins")
     @Logging(POSITION)
-    public void pumpkins(Player player, LocalSession session, EditSession editSession, @Optional("10") int apothem) throws WorldEditException {
-        int affected = editSession.makePumpkinPatches(session.getPlacementPosition(player), apothem);
-        player.print(affected + " pumpkin patches created.");
-    }
-
-    @Command(
-            aliases = { "/hpyramid" },
-            usage = "<block> <size>",
-            desc = "Generate a hollow pyramid",
-            min = 2,
-            max = 2
-    )
-    @CommandPermissions("worldedit.generation.pyramid")
-    @Logging(PLACEMENT)
-    public void hollowPyramid(Player player, LocalSession session, EditSession editSession, Pattern pattern, @Range(min = 1) int size) throws WorldEditException {
-        pyramid(player, session, editSession, pattern, size, true);
-    }
-
-    @Command(
-        aliases = { "/pyramid" },
-        usage = "<block> <size>",
-        flags = "h",
-        desc = "Generate a filled pyramid",
-        min = 2,
-        max = 2
-    )
-    @CommandPermissions("worldedit.generation.pyramid")
-    @Logging(PLACEMENT)
-    public void pyramid(Player player, LocalSession session, EditSession editSession, Pattern pattern, @Range(min = 1) int size, @Switch('h') boolean hollow) throws WorldEditException {
-        Vector pos = session.getPlacementPosition(player);
+    public int pumpkins(Actor actor, LocalSession session, EditSession editSession,
+                        @Arg(desc = "The size of the patch", def = "10")
+                            int size) throws WorldEditException {
         worldEdit.checkMaxRadius(size);
-        int affected = editSession.makePyramid(pos, Patterns.wrap(pattern), size, !hollow);
-        player.findFreePosition();
-        player.print(affected + " block(s) have been created.");
+        int affected = editSession.makePumpkinPatches(session.getPlacementPosition(actor), size);
+        actor.print(affected + " pumpkin patches created.");
+        return affected;
     }
 
     @Command(
-        aliases = { "/generate", "/gen", "/g" },
-        usage = "<block> <expression>",
+        name = "/hpyramid",
+        desc = "Generate a hollow pyramid"
+    )
+    @CommandPermissions("worldedit.generation.pyramid")
+    @Logging(PLACEMENT)
+    public int hollowPyramid(Actor actor, LocalSession session, EditSession editSession,
+                             @Arg(desc = "The pattern of blocks to set")
+                                 Pattern pattern,
+                             @Arg(desc = "The size of the pyramid")
+                                 int size) throws WorldEditException {
+        return pyramid(actor, session, editSession, pattern, size, true);
+    }
+
+    @Command(
+        name = "/pyramid",
+        desc = "Generate a filled pyramid"
+    )
+    @CommandPermissions("worldedit.generation.pyramid")
+    @Logging(PLACEMENT)
+    public int pyramid(Actor actor, LocalSession session, EditSession editSession,
+                       @Arg(desc = "The pattern of blocks to set")
+                           Pattern pattern,
+                       @Arg(desc = "The size of the pyramid")
+                           int size,
+                       @Switch(name = 'h', desc = "Make a hollow pyramid")
+                           boolean hollow) throws WorldEditException {
+        worldEdit.checkMaxRadius(size);
+        BlockVector3 pos = session.getPlacementPosition(actor);
+        int affected = editSession.makePyramid(pos, pattern, size, !hollow);
+        if (actor instanceof Player) {
+            ((Player) actor).findFreePosition();
+        }
+        actor.print(affected + " block(s) have been created.");
+        return affected;
+    }
+
+    @Command(
+        name = "/generate",
+        aliases = { "/gen", "/g" },
         desc = "Generates a shape according to a formula.",
-        help =
-            "Generates a shape according to a formula that is expected to\n" +
-            "return positive numbers (true) if the point is inside the shape\n" +
-            "Optionally set type/data to the desired block.\n" +
-            "Flags:\n" +
-            "  -h to generate a hollow shape\n" +
-            "  -r to use raw minecraft coordinates\n" +
-            "  -o is like -r, except offset from placement.\n" +
-            "  -c is like -r, except offset selection center.\n" +
-            "If neither -r nor -o is given, the selection is mapped to -1..1\n" +
-            "See also tinyurl.com/wesyntax.",
-        flags = "hroc",
-        min = 2,
-        max = -1
+        descFooter = "See also https://tinyurl.com/weexpr."
     )
     @CommandPermissions("worldedit.generation.shape")
     @Logging(ALL)
-    public void generate(Player player, LocalSession session, EditSession editSession,
-                         @Selection Region region,
-                         Pattern pattern,
-                         @Text String expression,
-                         @Switch('h') boolean hollow,
-                         @Switch('r') boolean useRawCoords,
-                         @Switch('o') boolean offset,
-                         @Switch('c') boolean offsetCenter) throws WorldEditException {
+    public int generate(Actor actor, LocalSession session, EditSession editSession,
+                        @Selection Region region,
+                        @Arg(desc = "The pattern of blocks to set")
+                            Pattern pattern,
+                        @Arg(desc = "Expression to test block placement locations and set block type", variable = true)
+                            List<String> expression,
+                        @Switch(name = 'h', desc = "Generate a hollow shape")
+                            boolean hollow,
+                        @Switch(name = 'r', desc = "Use the game's coordinate origin")
+                            boolean useRawCoords,
+                        @Switch(name = 'o', desc = "Use the placement's coordinate origin")
+                            boolean offset,
+                        @Switch(name = 'c', desc = "Use the selection's center as origin")
+                            boolean offsetCenter) throws WorldEditException {
 
-        final Vector zero;
-        Vector unit;
+        final Vector3 zero;
+        Vector3 unit;
 
         if (useRawCoords) {
-            zero = Vector.ZERO;
-            unit = Vector.ONE;
+            zero = Vector3.ZERO;
+            unit = Vector3.ONE;
         } else if (offset) {
-            zero = session.getPlacementPosition(player);
-            unit = Vector.ONE;
+            zero = session.getPlacementPosition(actor).toVector3();
+            unit = Vector3.ONE;
         } else if (offsetCenter) {
-            final Vector min = region.getMinimumPoint();
-            final Vector max = region.getMaximumPoint();
+            final Vector3 min = region.getMinimumPoint().toVector3();
+            final Vector3 max = region.getMaximumPoint().toVector3();
 
             zero = max.add(min).multiply(0.5);
-            unit = Vector.ONE;
+            unit = Vector3.ONE;
         } else {
-            final Vector min = region.getMinimumPoint();
-            final Vector max = region.getMaximumPoint();
+            final Vector3 min = region.getMinimumPoint().toVector3();
+            final Vector3 max = region.getMaximumPoint().toVector3();
 
             zero = max.add(min).multiply(0.5);
             unit = max.subtract(zero);
 
-            if (unit.getX() == 0) unit = unit.setX(1.0);
-            if (unit.getY() == 0) unit = unit.setY(1.0);
-            if (unit.getZ() == 0) unit = unit.setZ(1.0);
+            if (unit.getX() == 0) unit = unit.withX(1.0);
+            if (unit.getY() == 0) unit = unit.withY(1.0);
+            if (unit.getZ() == 0) unit = unit.withZ(1.0);
         }
 
         try {
-            final int affected = editSession.makeShape(region, zero, unit, Patterns.wrap(pattern), expression, hollow);
-            player.findFreePosition();
-            player.print(affected + " block(s) have been created.");
+            final int affected = editSession.makeShape(region, zero, unit, pattern, String.join(" ", expression), hollow, session.getTimeout());
+            if (actor instanceof Player) {
+                ((Player) actor).findFreePosition();
+            }
+            actor.print(affected + " block(s) have been created.");
+            return affected;
         } catch (ExpressionException e) {
-            player.printError(e.getMessage());
+            actor.printError(e.getMessage());
+            return 0;
         }
     }
 
     @Command(
-        aliases = { "/generatebiome", "/genbiome", "/gb" },
-        usage = "<block> <expression>",
+        name = "/generatebiome",
+        aliases = { "/genbiome", "/gb" },
         desc = "Sets biome according to a formula.",
-        help =
-            "Generates a shape according to a formula that is expected to\n" +
-            "return positive numbers (true) if the point is inside the shape\n" +
-            "Optionally set type/data to the desired block.\n" +
-            "Flags:\n" +
-            "  -h to generate a hollow shape\n" +
-            "  -r to use raw minecraft coordinates\n" +
-            "  -o is like -r, except offset from placement.\n" +
-            "  -c is like -r, except offset selection center.\n" +
-            "If neither -r nor -o is given, the selection is mapped to -1..1\n" +
-            "See also tinyurl.com/wesyntax.",
-        flags = "hroc",
-        min = 2,
-        max = -1
+        descFooter = "See also https://tinyurl.com/weexpr."
     )
-    @CommandPermissions({"worldedit.generation.shape", "worldedit.biome.set"})
+    @CommandPermissions("worldedit.generation.shape.biome")
     @Logging(ALL)
-    public void generateBiome(Player player, LocalSession session, EditSession editSession,
-                              @Selection Region region,
-                              BaseBiome target,
-                              @Text String expression,
-                              @Switch('h') boolean hollow,
-                              @Switch('r') boolean useRawCoords,
-                              @Switch('o') boolean offset,
-                              @Switch('c') boolean offsetCenter) throws WorldEditException {
-        final Vector zero;
-        Vector unit;
+    public int generateBiome(Actor actor, LocalSession session, EditSession editSession,
+                             @Selection Region region,
+                             @Arg(desc = "The biome type to set")
+                                 BiomeType target,
+                             @Arg(desc = "Expression to test block placement locations and set biome type", variable = true)
+                                 List<String> expression,
+                             @Switch(name = 'h', desc = "Generate a hollow shape")
+                                 boolean hollow,
+                             @Switch(name = 'r', desc = "Use the game's coordinate origin")
+                                 boolean useRawCoords,
+                             @Switch(name = 'o', desc = "Use the placement's coordinate origin")
+                                 boolean offset,
+                             @Switch(name = 'c', desc = "Use the selection's center as origin")
+                                 boolean offsetCenter) throws WorldEditException {
+        final Vector3 zero;
+        Vector3 unit;
 
         if (useRawCoords) {
-            zero = Vector.ZERO;
-            unit = Vector.ONE;
+            zero = Vector3.ZERO;
+            unit = Vector3.ONE;
         } else if (offset) {
-            zero = session.getPlacementPosition(player);
-            unit = Vector.ONE;
+            zero = session.getPlacementPosition(actor).toVector3();
+            unit = Vector3.ONE;
         } else if (offsetCenter) {
-            final Vector min = region.getMinimumPoint();
-            final Vector max = region.getMaximumPoint();
+            final Vector3 min = region.getMinimumPoint().toVector3();
+            final Vector3 max = region.getMaximumPoint().toVector3();
 
             zero = max.add(min).multiply(0.5);
-            unit = Vector.ONE;
+            unit = Vector3.ONE;
         } else {
-            final Vector min = region.getMinimumPoint();
-            final Vector max = region.getMaximumPoint();
+            final Vector3 min = region.getMinimumPoint().toVector3();
+            final Vector3 max = region.getMaximumPoint().toVector3();
 
             zero = max.add(min).multiply(0.5);
             unit = max.subtract(zero);
 
-            if (unit.getX() == 0) unit = unit.setX(1.0);
-            if (unit.getY() == 0) unit = unit.setY(1.0);
-            if (unit.getZ() == 0) unit = unit.setZ(1.0);
+            if (unit.getX() == 0) unit = unit.withX(1.0);
+            if (unit.getY() == 0) unit = unit.withY(1.0);
+            if (unit.getZ() == 0) unit = unit.withZ(1.0);
         }
 
         try {
-            final int affected = editSession.makeBiomeShape(region, zero, unit, target, expression, hollow);
-            player.findFreePosition();
-            player.print("" + affected + " columns affected.");
+            final int affected = editSession.makeBiomeShape(region, zero, unit, target, String.join(" ", expression), hollow, session.getTimeout());
+            actor.print("" + affected + " columns affected.");
+            return affected;
         } catch (ExpressionException e) {
-            player.printError(e.getMessage());
+            actor.printError(e.getMessage());
+            return 0;
         }
     }
 

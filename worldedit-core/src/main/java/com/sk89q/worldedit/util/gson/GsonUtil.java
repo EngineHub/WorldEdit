@@ -19,8 +19,10 @@
 
 package com.sk89q.worldedit.util.gson;
 
+import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.math.Vector3;
 
 /**
  * Utility methods for Google's GSON library.
@@ -37,8 +39,13 @@ public final class GsonUtil {
      */
     public static GsonBuilder createBuilder() {
         GsonBuilder gsonBuilder = new GsonBuilder();
-        gsonBuilder.registerTypeAdapter(Vector.class, new VectorAdapter());
+        gsonBuilder.registerTypeAdapter(Vector3.class, new VectorAdapter());
+        gsonBuilder.registerTypeAdapter(BlockVector3.class, new BlockVectorAdapter());
         return gsonBuilder;
     }
 
+    private static final Gson gson = new Gson();
+    public static String stringValue(String s) {
+        return gson.toJson(s);
+    }
 }

@@ -30,7 +30,7 @@ public interface CUIRegion {
      * value supplied by getProtocolVersion().
      * 
      */
-    public void describeCUI(LocalSession session, Actor player);
+    void describeCUI(LocalSession session, Actor player);
     
     /**
      * Sends CUI events describing the region for
@@ -38,7 +38,7 @@ public interface CUIRegion {
      * supplied by getProtocolVersion().
      * 
      */
-    public void describeLegacyCUI(LocalSession session, Actor player);
+    void describeLegacyCUI(LocalSession session, Actor player);
     
     /**
      * Returns the CUI version that is required to send
@@ -47,14 +47,14 @@ public interface CUIRegion {
      * 
      * @return the protocol version
      */
-    public int getProtocolVersion();
+    int getProtocolVersion();
     
     /**
      * Returns the type ID to send to CUI in the selection event.
      *
      * @return the type ID
      */
-    public String getTypeID();
+    String getTypeID();
     
     /**
      * Returns the type ID to send to CUI in the selection
@@ -62,5 +62,5 @@ public interface CUIRegion {
      * 
      * @return the legacy type ID
      */
-    public String getLegacyTypeID();
+    String getLegacyTypeID();
 }

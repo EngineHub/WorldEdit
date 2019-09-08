@@ -19,9 +19,10 @@
 
 package com.sk89q.worldedit.world.snapshot;
 
-import javax.annotation.Nullable;
 import java.io.File;
 import java.util.Calendar;
+
+import javax.annotation.Nullable;
 
 /**
  * A name parser attempts to make sense of a filename for a snapshot.
@@ -35,6 +36,6 @@ public interface SnapshotDateParser {
      * @return date or null
      */
     @Nullable
-    public Calendar detectDate(File file);
+    Calendar detectDate(File file);
 
 }

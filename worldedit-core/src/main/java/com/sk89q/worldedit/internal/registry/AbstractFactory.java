@@ -19,15 +19,17 @@
 
 package com.sk89q.worldedit.internal.registry;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.extension.input.ParserContext;
 import com.sk89q.worldedit.extension.input.InputParseException;
 import com.sk89q.worldedit.extension.input.NoMatchException;
+import com.sk89q.worldedit.extension.input.ParserContext;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-
-import static com.google.common.base.Preconditions.checkNotNull;
+import java.util.stream.Collectors;
 
 /**
  * An abstract implementation of a factory for internal usage.
@@ -38,16 +40,30 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public abstract class AbstractFactory<E> {
 
     protected final WorldEdit worldEdit;
-    protected final List<InputParser<E>> parsers = new ArrayList<InputParser<E>>();
+    private final List<InputParser<E>> parsers = new ArrayList<>();
 
     /**
      * Create a new factory.
      *
      * @param worldEdit the WorldEdit instance
+     * @param defaultParser the parser to fall back to
      */
-    protected AbstractFactory(WorldEdit worldEdit) {
+    protected AbstractFactory(WorldEdit worldEdit, InputParser<E> defaultParser) {
         checkNotNull(worldEdit);
+        checkNotNull(defaultParser);
         this.worldEdit = worldEdit;
+        this.parsers.add(defaultParser);
+    }
+
+    /**
+     * Gets an immutable list of parsers.
+     *
+     * To add parsers, use the register method.
+     *
+     * @return the parsers
+     */
+    public List<InputParser<E>> getParsers() {
+        return Collections.unmodifiableList(parsers);
     }
 
     public E parseFromInput(String input, ParserContext context) throws InputParseException {
@@ -64,4 +80,20 @@ public abstract class AbstractFactory<E> {
         throw new NoMatchException("No match for '" + input + "'");
     }
 
+    public List<String> getSuggestions(String input) {
+        return parsers.stream().flatMap(
+                p -> p.getSuggestions(input)
+        ).collect(Collectors.toList());
+    }
+
+    /**
+     * Registers an InputParser to this factory
+     *
+     * @param inputParser The input parser
+     */
+    public void register(InputParser<E> inputParser) {
+        checkNotNull(inputParser);
+
+        parsers.add(parsers.size() - 1, inputParser);
+    }
 }

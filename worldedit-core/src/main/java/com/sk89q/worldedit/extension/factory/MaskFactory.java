@@ -20,8 +20,29 @@
 package com.sk89q.worldedit.extension.factory;
 
 import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.extension.factory.parser.mask.BiomeMaskParser;
+import com.sk89q.worldedit.extension.factory.parser.mask.BlockCategoryMaskParser;
+import com.sk89q.worldedit.extension.factory.parser.mask.BlockStateMaskParser;
+import com.sk89q.worldedit.extension.factory.parser.mask.BlocksMaskParser;
+import com.sk89q.worldedit.extension.factory.parser.mask.ExistingMaskParser;
+import com.sk89q.worldedit.extension.factory.parser.mask.ExpressionMaskParser;
+import com.sk89q.worldedit.extension.factory.parser.mask.LazyRegionMaskParser;
+import com.sk89q.worldedit.extension.factory.parser.mask.NegateMaskParser;
+import com.sk89q.worldedit.extension.factory.parser.mask.NoiseMaskParser;
+import com.sk89q.worldedit.extension.factory.parser.mask.OffsetMaskParser;
+import com.sk89q.worldedit.extension.factory.parser.mask.RegionMaskParser;
+import com.sk89q.worldedit.extension.factory.parser.mask.SolidMaskParser;
+import com.sk89q.worldedit.extension.input.InputParseException;
+import com.sk89q.worldedit.extension.input.NoMatchException;
+import com.sk89q.worldedit.extension.input.ParserContext;
 import com.sk89q.worldedit.function.mask.Mask;
+import com.sk89q.worldedit.function.mask.MaskIntersection;
 import com.sk89q.worldedit.internal.registry.AbstractFactory;
+import com.sk89q.worldedit.internal.registry.InputParser;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * A registry of known {@link Mask}s. Provides methods to instantiate
@@ -38,9 +59,58 @@ public final class MaskFactory extends AbstractFactory<Mask> {
      * @param worldEdit the WorldEdit instance
      */
     public MaskFactory(WorldEdit worldEdit) {
-        super(worldEdit);
+        super(worldEdit, new BlocksMaskParser(worldEdit));
 
-        parsers.add(new DefaultMaskParser(worldEdit));
+        register(new ExistingMaskParser(worldEdit));
+        register(new SolidMaskParser(worldEdit));
+        register(new LazyRegionMaskParser(worldEdit));
+        register(new RegionMaskParser(worldEdit));
+        register(new OffsetMaskParser(worldEdit));
+        register(new NoiseMaskParser(worldEdit));
+        register(new BlockStateMaskParser(worldEdit));
+        register(new NegateMaskParser(worldEdit));
+        register(new ExpressionMaskParser(worldEdit));
+
+        register(new BlockCategoryMaskParser(worldEdit));
+        register(new BiomeMaskParser(worldEdit));
+    }
+
+    @Override
+    public List<String> getSuggestions(String input) {
+        final String[] split = input.split(" ");
+        if (split.length > 1) {
+            String prev = input.substring(0, input.lastIndexOf(" ")) + " ";
+            return super.getSuggestions(split[split.length -1]).stream().map(s -> prev + s).collect(Collectors.toList());
+        }
+        return super.getSuggestions(input);
+    }
+
+    @Override
+    public Mask parseFromInput(String input, ParserContext context) throws InputParseException {
+        List<Mask> masks = new ArrayList<>();
+
+        for (String component : input.split(" ")) {
+            if (component.isEmpty()) {
+                continue;
+            }
+
+            for (InputParser<Mask> parser : getParsers()) {
+                Mask match = parser.parseFromInput(component, context);
+
+                if (match != null) {
+                    masks.add(match);
+                }
+            }
+        }
+
+        switch (masks.size()) {
+            case 0:
+                throw new NoMatchException("No match for '" + input + "'");
+            case 1:
+                return masks.get(0);
+            default:
+                return new MaskIntersection(masks);
+        }
     }
 
 }

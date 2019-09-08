@@ -45,7 +45,7 @@ public class Switch extends Node implements RValue {
     }
 
     private static Map<Double, Integer> invertList(List<Double> values) {
-        Map<Double, Integer> valueMap = new HashMap<Double, Integer>();
+        Map<Double, Integer> valueMap = new HashMap<>();
         for (int i = 0; i < values.size(); ++i) {
             valueMap.put(values.get(i), i);
         }
@@ -124,7 +124,7 @@ public class Switch extends Node implements RValue {
     @Override
     public RValue optimize() throws EvaluationException {
         final RValue optimizedParameter = parameter.optimize();
-        final List<RValue> newSequence = new ArrayList<RValue>();
+        final List<RValue> newSequence = new ArrayList<>();
 
         if (optimizedParameter instanceof Constant) {
             final double parameter = optimizedParameter.getValue();
@@ -165,9 +165,9 @@ public class Switch extends Node implements RValue {
             return new Switch(getPosition(), optimizedParameter, Collections.singletonMap(parameter, 0), newSequence, null);
         }
 
-        final Map<Double, Integer> newValueMap = new HashMap<Double, Integer>();
+        final Map<Double, Integer> newValueMap = new HashMap<>();
 
-        Map<Integer, Double> backMap = new HashMap<Integer, Double>();
+        Map<Integer, Double> backMap = new HashMap<>();
         for (Entry<Double, Integer> entry : valueMap.entrySet()) {
             backMap.put(entry.getValue(), entry.getKey());
         }

@@ -21,7 +21,7 @@ package com.sk89q.worldedit.internal.cui;
 
 public interface CUIEvent {
 
-    public String getTypeId();
+    String getTypeId();
 
-    public String[] getParameters();
+    String[] getParameters();
 }

@@ -19,16 +19,17 @@
 
 package com.sk89q.minecraft.util.commands;
 
-import javax.annotation.Nullable;
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import javax.annotation.Nullable;
 
 public class CommandException extends Exception {
 
-    private List<String> commandStack = new ArrayList<String>();
+    private List<String> commandStack = new ArrayList<>();
 
     public CommandException() {
         super();

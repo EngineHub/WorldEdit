@@ -19,8 +19,9 @@
 
 package com.sk89q.worldedit.extent.clipboard;
 
-import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.extent.Extent;
+import com.sk89q.worldedit.math.BlockVector2;
+import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.Region;
 
 /**
@@ -42,20 +43,31 @@ public interface Clipboard extends Extent {
      *
      * @return the dimensions
      */
-    Vector getDimensions();
+    BlockVector3 getDimensions();
 
     /**
      * Get the origin point from which the copy was made from.
      *
      * @return the origin
      */
-    Vector getOrigin();
+    BlockVector3 getOrigin();
 
     /**
      * Set the origin point from which the copy was made from.
      *
      * @param origin the origin
      */
-    void setOrigin(Vector origin);
+    void setOrigin(BlockVector3 origin);
 
+    /**
+     * Returns true if the clipboard has biome data. This can be checked since {@link Extent#getBiome(BlockVector2)}
+     * strongly suggests returning {@link com.sk89q.worldedit.world.biome.BiomeTypes#OCEAN} instead of {@code null}
+     * if biomes aren't present. However, it might not be desired to set areas to ocean if the clipboard is defaulting
+     * to ocean, instead of having biomes explicitly set.
+     *
+     * @return true if the clipboard has biome data set
+     */
+    default boolean hasBiomes() {
+        return false;
+    }
 }

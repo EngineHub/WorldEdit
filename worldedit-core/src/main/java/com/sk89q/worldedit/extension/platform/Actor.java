@@ -23,6 +23,7 @@ import com.sk89q.worldedit.internal.cui.CUIEvent;
 import com.sk89q.worldedit.session.SessionOwner;
 import com.sk89q.worldedit.util.Identifiable;
 import com.sk89q.worldedit.util.auth.Subject;
+import com.sk89q.worldedit.util.formatting.text.Component;
 
 import java.io.File;
 
@@ -37,6 +38,15 @@ public interface Actor extends Identifiable, SessionOwner, Subject {
      * @return String
      */
     String getName();
+
+    /**
+     * Gets the display name of the actor. This can be a nickname, and is not guaranteed to be unique.
+     *
+     * @return The display name
+     */
+    default String getDisplayName() {
+        return getName();
+    }
 
     /**
      * Print a message.
@@ -65,6 +75,13 @@ public interface Actor extends Identifiable, SessionOwner, Subject {
      * @param msg The error message text
      */
     void printError(String msg);
+
+    /**
+     * Print a {@link Component}.
+     *
+     * @param component The component to print
+     */
+    void print(Component component);
 
     /**
      * Returns true if the actor can destroy bedrock.

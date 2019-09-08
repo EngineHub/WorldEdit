@@ -21,20 +21,21 @@ package com.sk89q.worldedit.util.io;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Throwables;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.Closeable;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.ArrayDeque;
 import java.util.Deque;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.zip.ZipFile;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class Closer implements Closeable {
 
-    private static final Logger logger = Logger.getLogger(Closer.class.getCanonicalName());
+    private static final Logger logger = LoggerFactory.getLogger(Closer.class);
 
     /**
      * The suppressor implementation to use for the current Java version.
@@ -54,7 +55,8 @@ public final class Closer implements Closeable {
     final Suppressor suppressor;
 
     // only need space for 2 elements in most cases, so try to use the smallest array possible
-    private final Deque<Closeable> stack = new ArrayDeque<Closeable>(4);
+    private final Deque<Closeable> stack = new ArrayDeque<>(4);
+    private final Deque<ZipFile> zipStack = new ArrayDeque<>(4);
     private Throwable thrown;
 
     @VisibleForTesting Closer(Suppressor suppressor) {
@@ -74,6 +76,17 @@ public final class Closer implements Closeable {
     }
 
     /**
+     * Registers the given {@code zipFile} to be closed when this {@code Closer} is
+     * {@linkplain #close closed}.
+     *
+     * @return the given {@code closeable}
+     */
+    public <Z extends ZipFile> Z register(Z zipFile) {
+        zipStack.push(zipFile);
+        return zipFile;
+    }
+
+    /**
      * Stores the given throwable and rethrows it. It will be rethrown as is if it is an
      * {@code IOException}, {@code RuntimeException} or {@code Error}. Otherwise, it will be rethrown
      * wrapped in a {@code RuntimeException}. <b>Note:</b> Be sure to declare all of the checked
@@ -89,7 +102,8 @@ public final class Closer implements Closeable {
     public RuntimeException rethrow(Throwable e) throws IOException {
         thrown = e;
         Throwables.propagateIfPossible(e, IOException.class);
-        throw Throwables.propagate(e);
+        Throwables.throwIfUnchecked(e);
+        throw new RuntimeException(e);
     }
 
     /**
@@ -111,7 +125,8 @@ public final class Closer implements Closeable {
         thrown = e;
         Throwables.propagateIfPossible(e, IOException.class);
         Throwables.propagateIfPossible(e, declaredType);
-        throw Throwables.propagate(e);
+        Throwables.throwIfUnchecked(e);
+        throw new RuntimeException(e);
     }
 
     /**
@@ -134,7 +149,8 @@ public final class Closer implements Closeable {
         thrown = e;
         Throwables.propagateIfPossible(e, IOException.class);
         Throwables.propagateIfPossible(e, declaredType1, declaredType2);
-        throw Throwables.propagate(e);
+        Throwables.throwIfUnchecked(e);
+        throw new RuntimeException(e);
     }
 
     /**
@@ -161,6 +177,18 @@ public final class Closer implements Closeable {
                 }
             }
         }
+        while (!zipStack.isEmpty()) {
+            ZipFile zipFile = zipStack.pop();
+            try {
+                zipFile.close();
+            } catch (Throwable e) {
+                if (throwable == null) {
+                    throwable = e;
+                } else {
+                    suppressor.suppress(zipFile, throwable, e);
+                }
+            }
+        }
 
         if (thrown == null && throwable != null) {
             Throwables.propagateIfPossible(throwable, IOException.class);
@@ -177,7 +205,7 @@ public final class Closer implements Closeable {
          * the given closeable. {@code thrown} is the exception that is actually being thrown from the
          * method. Implementations of this method should not throw under any circumstances.
          */
-        void suppress(Closeable closeable, Throwable thrown, Throwable suppressed);
+        void suppress(Object closeable, Throwable thrown, Throwable suppressed);
     }
 
     /**
@@ -188,9 +216,9 @@ public final class Closer implements Closeable {
         static final LoggingSuppressor INSTANCE = new LoggingSuppressor();
 
         @Override
-        public void suppress(Closeable closeable, Throwable thrown, Throwable suppressed) {
+        public void suppress(Object closeable, Throwable thrown, Throwable suppressed) {
             // log to the same place as Closeables
-            logger.log(Level.WARNING, "Suppressing exception thrown when closing " + closeable, suppressed);
+            logger.warn("Suppressing exception thrown when closing " + closeable, suppressed);
         }
     }
 
@@ -217,7 +245,7 @@ public final class Closer implements Closeable {
         }
 
         @Override
-        public void suppress(Closeable closeable, Throwable thrown, Throwable suppressed) {
+        public void suppress(Object closeable, Throwable thrown, Throwable suppressed) {
             // ensure no exceptions from addSuppressed
             if (thrown == suppressed) {
                 return;

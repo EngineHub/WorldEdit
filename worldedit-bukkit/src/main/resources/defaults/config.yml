@@ -1,22 +1,22 @@
 #
-# WorldEdit's configuration file
+# WorldEdit's Configuration File
 #
 # About editing this file:
-# - DO NOT USE TABS. You MUST use spaces or Bukkit will complain. If
-#   you use an editor like Notepad++ (recommended for Windows users), you
-#   must configure it to "replace tabs with spaces." In Notepad++, this can
-#   be changed in Settings > Preferences > Language Menu.
-# - Don't get rid of the indents. They are indented so some entries are
-#   in categories (like "max-blocks-changed" is in the "limits"
+# - DO NOT USE TABS. You MUST use spaces or Bukkit will complain and post
+#   errors. If you use an editor, like Notepad++ (recommended for Windows 
+#   users), you must configure it to "replace tabs with spaces."
+#   This can be changed in Settings > Preferences > Language Menu.
+# - Don't get rid of indentations. They are indented so some entries that are
+#   in categories, like "max-blocks-changed", are placed in the "limits"
 #   category.
 # - If you want to check the format of this file before putting it
 #   into WorldEdit, paste it into http://yaml-online-parser.appspot.com/
-#   and see if it gives "ERROR:".
-# - Lines starting with # are commentsand so they are ignored.
+#   and see if it gives you "ERROR:".
+# - Lines starting with # are comments, so they are ignored.
+# - If you want to allow blocks, make sure to change "disallowed-blocks" to []
 #
 
 limits:
-    allow-extra-data-values: false
     max-blocks-changed:
         default: -1
         maximum: -1
@@ -29,7 +29,67 @@ limits:
     butcher-radius:
         default: -1
         maximum: -1
-    disallowed-blocks: [6, 7, 14, 15, 16, 26, 27, 28, 29, 39, 31, 32, 33, 34, 36, 37, 38, 39, 40, 46, 50, 51, 56, 59, 69, 73, 74, 75, 76, 77, 81, 83]
+    disallowed-blocks:
+    - "minecraft:oak_sapling"
+    - "minecraft:jungle_sapling"
+    - "minecraft:dark_oak_sapling:"
+    - "minecraft:spruce_sapling"
+    - "minecraft:birch_sapling"
+    - "minecraft:acacia_sapling"
+    - "minecraft:black_bed"
+    - "minecraft:blue_bed"
+    - "minecraft:brown_bed"
+    - "minecraft:cyan_bed"
+    - "minecraft:gray_bed"
+    - "minecraft:green_bed"
+    - "minecraft:light_blue_bed"
+    - "minecraft:light_gray_bed"
+    - "minecraft:lime_bed"
+    - "minecraft:magenta_bed"
+    - "minecraft:orange_bed"
+    - "minecraft:pink_bed"
+    - "minecraft:purple_bed"
+    - "minecraft:red_bed"
+    - "minecraft:white_bed"
+    - "minecraft:yellow_bed"
+    - "minecraft:powered_rail"
+    - "minecraft:detector_rail"
+    - "minecraft:grass"
+    - "minecraft:dead_bush"
+    - "minecraft:moving_piston"
+    - "minecraft:piston_head"
+    - "minecraft:sunflower"
+    - "minecraft:rose_bush"
+    - "minecraft:dandelion"
+    - "minecraft:poppy"
+    - "minecraft:brown_mushroom"
+    - "minecraft:red_mushroom"
+    - "minecraft:tnt"
+    - "minecraft:torch"
+    - "minecraft:fire"
+    - "minecraft:redstone_wire"
+    - "minecraft:wheat"
+    - "minecraft:potatoes"
+    - "minecraft:carrots"
+    - "minecraft:melon_stem"
+    - "minecraft:pumpkin_stem"
+    - "minecraft:beetroots"
+    - "minecraft:rail"
+    - "minecraft:lever"
+    - "minecraft:redstone_torch"
+    - "minecraft:redstone_wall_torch"
+    - "minecraft:repeater"
+    - "minecraft:comparator"
+    - "minecraft:stone_button"
+    - "minecraft:birch_button"
+    - "minecraft:acacia_button"
+    - "minecraft:dark_oak_button"
+    - "minecraft:jungle_button"
+    - "minecraft:oak_button"
+    - "minecraft:spruce_button"
+    - "minecraft:cactus"
+    - "minecraft:sugar_cane"
+    - "minecraft:bedrock"
 
 use-inventory:
     enable: false
@@ -39,6 +99,17 @@ use-inventory:
 logging:
     log-commands: false
     file: worldedit.log
+    # The format of custom log message. This is java general format string (java.util.Formatter). Arguments are:
+    #   1$ : date - a Date object representing event time of the log record.
+    #   2$ : source - a string representing the caller, if available; otherwise, the logger's name.
+    #   3$ : logger - the logger's name.
+    #   4$ : level - the log level.
+    #   5$ : message - the formatted log message returned from the Formatter.formatMessage(LogRecord) method. It uses java.text formatting and does not use the java.util.Formatter format argument.
+    #   6$ : thrown - a string representing the throwable associated with the log record and its backtrace beginning with a newline character, if any; otherwise, an empty string.
+    # For details see:
+    #   https://docs.oracle.com/javase/8/docs/api/java/util/Formatter.html
+    #   https://docs.oracle.com/javase/8/docs/api/java/util/logging/SimpleFormatter.html#format-java.util.logging.LogRecord-
+    format: "[%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS %4$s]: %5$s%6$s%n"
 
 super-pickaxe:
     drop-items: true
@@ -48,7 +119,7 @@ snapshots:
     directory:
 
 navigation-wand:
-    item: 345
+    item: minecraft:compass
     max-distance: 100
 
 scripting:
@@ -65,9 +136,17 @@ history:
     size: 15
     expiration: 10
 
-wand-item: 271
+calculation:
+    timeout: 100
+
+debugging:
+    trace-unflushed-sessions: false
+
+wand-item: minecraft:wooden_axe
 shell-save-type:
 no-double-slash: false
 no-op-permissions: false
 debug: false
 show-help-on-first-use: true
+server-side-cui: true
+command-block-support: false

@@ -19,11 +19,9 @@
 
 package com.sk89q.worldedit.world.registry;
 
-import com.sk89q.worldedit.blocks.BlockMaterial;
-
 class SimpleBlockMaterial implements BlockMaterial {
 
-    private boolean renderedAsNormalBlock;
+    private boolean isAir;
     private boolean fullCube;
     private boolean opaque;
     private boolean powerSource;
@@ -32,27 +30,24 @@ class SimpleBlockMaterial implements BlockMaterial {
     private float hardness;
     private float resistance;
     private float slipperiness;
-    private boolean grassBlocking;
-    private float ambientOcclusionLightValue;
-    private int lightOpacity;
     private int lightValue;
     private boolean fragileWhenPushed;
     private boolean unpushable;
-    private boolean adventureModeExempt;
     private boolean ticksRandomly;
-    private boolean usingNeighborLight;
     private boolean movementBlocker;
     private boolean burnable;
     private boolean toolRequired;
     private boolean replacedDuringPlacement;
+    private boolean isTranslucent;
+    private boolean hasContainer;
 
     @Override
-    public boolean isRenderedAsNormalBlock() {
-        return renderedAsNormalBlock;
+    public boolean isAir() {
+        return this.isAir;
     }
 
-    public void setRenderedAsNormalBlock(boolean renderedAsNormalBlock) {
-        this.renderedAsNormalBlock = renderedAsNormalBlock;
+    public void setIsAir(boolean isAir) {
+        this.isAir = isAir;
     }
 
     @Override
@@ -128,33 +123,6 @@ class SimpleBlockMaterial implements BlockMaterial {
     }
 
     @Override
-    public boolean isGrassBlocking() {
-        return grassBlocking;
-    }
-
-    public void setGrassBlocking(boolean grassBlocking) {
-        this.grassBlocking = grassBlocking;
-    }
-
-    @Override
-    public float getAmbientOcclusionLightValue() {
-        return ambientOcclusionLightValue;
-    }
-
-    public void setAmbientOcclusionLightValue(float ambientOcclusionLightValue) {
-        this.ambientOcclusionLightValue = ambientOcclusionLightValue;
-    }
-
-    @Override
-    public int getLightOpacity() {
-        return lightOpacity;
-    }
-
-    public void setLightOpacity(int lightOpacity) {
-        this.lightOpacity = lightOpacity;
-    }
-
-    @Override
     public int getLightValue() {
         return lightValue;
     }
@@ -182,30 +150,12 @@ class SimpleBlockMaterial implements BlockMaterial {
     }
 
     @Override
-    public boolean isAdventureModeExempt() {
-        return adventureModeExempt;
-    }
-
-    public void setAdventureModeExempt(boolean adventureModeExempt) {
-        this.adventureModeExempt = adventureModeExempt;
-    }
-
-    @Override
     public boolean isTicksRandomly() {
         return ticksRandomly;
     }
 
     public void setTicksRandomly(boolean ticksRandomly) {
         this.ticksRandomly = ticksRandomly;
-    }
-
-    @Override
-    public boolean isUsingNeighborLight() {
-        return usingNeighborLight;
-    }
-
-    public void setUsingNeighborLight(boolean usingNeighborLight) {
-        this.usingNeighborLight = usingNeighborLight;
     }
 
     @Override
@@ -240,7 +190,25 @@ class SimpleBlockMaterial implements BlockMaterial {
         return replacedDuringPlacement;
     }
 
+    public void setTranslucent(boolean isTranslucent) {
+        this.isTranslucent = isTranslucent;
+    }
+
+    @Override
+    public boolean isTranslucent() {
+        return this.isTranslucent;
+    }
+
     public void setReplacedDuringPlacement(boolean replacedDuringPlacement) {
         this.replacedDuringPlacement = replacedDuringPlacement;
+    }
+
+    @Override
+    public boolean hasContainer() {
+        return this.hasContainer;
+    }
+
+    public void setHasContainer(boolean hasContainer) {
+        this.hasContainer = hasContainer;
     }
 }

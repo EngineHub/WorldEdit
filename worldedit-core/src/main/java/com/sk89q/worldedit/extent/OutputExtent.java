@@ -19,12 +19,12 @@
 
 package com.sk89q.worldedit.extent;
 
-import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.Vector2D;
 import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.function.operation.Operation;
-import com.sk89q.worldedit.world.biome.BaseBiome;
+import com.sk89q.worldedit.math.BlockVector2;
+import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.world.biome.BiomeType;
+import com.sk89q.worldedit.world.block.BlockStateHolder;
 
 import javax.annotation.Nullable;
 
@@ -35,8 +35,8 @@ public interface OutputExtent {
 
     /**
      * Change the block at the given location to the given block. The operation may
-     * not tie the given {@link BaseBlock} to the world, so future changes to the
-     * {@link BaseBlock} do not affect the world until this method is called again.
+     * not tie the given {@link BlockStateHolder} to the world, so future changes to the
+     * {@link BlockStateHolder} do not affect the world until this method is called again.
      *
      * <p>The return value of this method indicates whether the change was probably
      * successful. It may not be successful if, for example, the location is out
@@ -50,7 +50,7 @@ public interface OutputExtent {
      * @return true if the block was successfully set (return value may not be accurate)
      * @throws WorldEditException thrown on an error
      */
-    boolean setBlock(Vector position, BaseBlock block) throws WorldEditException;
+    <T extends BlockStateHolder<T>> boolean setBlock(BlockVector3 position, T block) throws WorldEditException;
 
     /**
      * Set the biome.
@@ -59,7 +59,7 @@ public interface OutputExtent {
      * @param biome the biome to set to
      * @return true if the biome was successfully set (return value may not be accurate)
      */
-    boolean setBiome(Vector2D position, BaseBiome biome);
+    boolean setBiome(BlockVector2 position, BiomeType biome);
 
     /**
      * Return an {@link Operation} that should be called to tie up loose ends

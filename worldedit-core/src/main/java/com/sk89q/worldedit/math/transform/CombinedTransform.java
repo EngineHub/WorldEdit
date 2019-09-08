@@ -19,14 +19,14 @@
 
 package com.sk89q.worldedit.math.transform;
 
-import com.sk89q.worldedit.Vector;
+import static com.google.common.base.Preconditions.checkNotNull;
+
+import com.sk89q.worldedit.math.Vector3;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Combines several transforms in order.
@@ -66,7 +66,7 @@ public class CombinedTransform implements Transform {
     }
 
     @Override
-    public Vector apply(Vector vector) {
+    public Vector3 apply(Vector3 vector) {
         for (Transform transform : transforms) {
             vector = transform.apply(vector);
         }
@@ -75,7 +75,7 @@ public class CombinedTransform implements Transform {
 
     @Override
     public Transform inverse() {
-        List<Transform> list = new ArrayList<Transform>();
+        List<Transform> list = new ArrayList<>();
         for (int i = transforms.length - 1; i >= 0; i--) {
             list.add(transforms[i].inverse());
         }

@@ -20,18 +20,19 @@
 package com.sk89q.worldedit.command.tool;
 
 import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.world.item.ItemType;
 
 public class InvalidToolBindException extends WorldEditException {
 
-    private int itemId;
+    private ItemType item;
 
-    public InvalidToolBindException(int itemId, String msg) {
+    public InvalidToolBindException(ItemType item, String msg) {
         super(msg);
-        this.itemId = itemId;
+        this.item = item;
     }
 
-    public int getItemId() {
-        return itemId;
+    public ItemType getItemType() {
+        return this.item;
     }
 
 }

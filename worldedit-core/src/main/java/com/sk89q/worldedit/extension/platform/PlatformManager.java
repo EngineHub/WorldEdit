@@ -21,10 +21,7 @@ package com.sk89q.worldedit.extension.platform;
 
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
-import com.sk89q.worldedit.ServerInterface;
-import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.WorldVector;
 import com.sk89q.worldedit.command.tool.BlockTool;
 import com.sk89q.worldedit.command.tool.DoubleActionBlockTool;
 import com.sk89q.worldedit.command.tool.DoubleActionTraceTool;
@@ -38,11 +35,16 @@ import com.sk89q.worldedit.event.platform.PlatformInitializeEvent;
 import com.sk89q.worldedit.event.platform.PlatformReadyEvent;
 import com.sk89q.worldedit.event.platform.PlayerInputEvent;
 import com.sk89q.worldedit.extension.platform.permission.ActorSelectorLimits;
-import com.sk89q.worldedit.internal.ServerInterfaceAdapter;
+import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.regions.RegionSelector;
+import com.sk89q.worldedit.session.request.Request;
+import com.sk89q.worldedit.util.HandSide;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.eventbus.Subscribe;
 import com.sk89q.worldedit.world.World;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -52,8 +54,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -65,12 +65,12 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class PlatformManager {
 
-    private static final Logger logger = Logger.getLogger(PlatformManager.class.getCanonicalName());
+    private static final Logger logger = LoggerFactory.getLogger(PlatformManager.class);
 
     private final WorldEdit worldEdit;
-    private final CommandManager commandManager;
-    private final List<Platform> platforms = new ArrayList<Platform>();
-    private final Map<Capability, Platform> preferences = new EnumMap<Capability, Platform>(Capability.class);
+    private final PlatformCommandManager platformCommandManager;
+    private final List<Platform> platforms = new ArrayList<>();
+    private final Map<Capability, Platform> preferences = new EnumMap<>(Capability.class);
     private @Nullable String firstSeenVersion;
     private final AtomicBoolean initialized = new AtomicBoolean();
     private final AtomicBoolean configured = new AtomicBoolean();
@@ -83,7 +83,7 @@ public class PlatformManager {
     public PlatformManager(WorldEdit worldEdit) {
         checkNotNull(worldEdit);
         this.worldEdit = worldEdit;
-        this.commandManager = new CommandManager(worldEdit, this);
+        this.platformCommandManager = new PlatformCommandManager(worldEdit, this);
 
         // Register this instance for events
         worldEdit.getEventBus().register(this);
@@ -97,7 +97,7 @@ public class PlatformManager {
     public synchronized void register(Platform platform) {
         checkNotNull(platform);
 
-        logger.log(Level.FINE, "Got request to register " + platform.getClass() + " with WorldEdit [" + super.toString() + "]");
+        logger.info("Got request to register " + platform.getClass() + " with WorldEdit [" + super.toString() + "]");
 
         // Just add the platform to the list of platforms: we'll pick favorites
         // once all the platforms have been loaded
@@ -106,7 +106,7 @@ public class PlatformManager {
         // Make sure that versions are in sync
         if (firstSeenVersion != null) {
             if (!firstSeenVersion.equals(platform.getVersion())) {
-                logger.log(Level.WARNING, "Multiple ports of WorldEdit are installed but they report different versions ({0} and {1}). " +
+                logger.warn("Multiple ports of WorldEdit are installed but they report different versions ({} and {}). " +
                                 "If these two versions are truly different, then you may run into unexpected crashes and errors.",
                         new Object[]{ firstSeenVersion, platform.getVersion() });
             }
@@ -129,7 +129,7 @@ public class PlatformManager {
         boolean removed = platforms.remove(platform);
 
         if (removed) {
-            logger.log(Level.FINE, "Unregistering " + platform.getClass().getCanonicalName() + " from WorldEdit");
+            logger.info("Unregistering " + platform.getClass().getCanonicalName() + " from WorldEdit");
 
             boolean choosePreferred = false;
 
@@ -166,6 +166,14 @@ public class PlatformManager {
         if (platform != null) {
             return platform;
         } else {
+            if (preferences.isEmpty()) {
+                // Use the first available if preferences have not been decided yet.
+                if (platforms.isEmpty()) {
+                    // No platforms registered, this is being called too early!
+                    throw new NoCapablePlatformException("No platforms have been registered yet! Please wait until WorldEdit is initialized.");
+                }
+                return platforms.get(0);
+            }
             throw new NoCapablePlatformException("No platform was found supporting " + capability.name());
         }
     }
@@ -218,7 +226,7 @@ public class PlatformManager {
      * @return a list of platforms
      */
     public synchronized List<Platform> getPlatforms() {
-        return new ArrayList<Platform>(platforms);
+        return new ArrayList<>(platforms);
     }
 
     /**
@@ -269,8 +277,8 @@ public class PlatformManager {
      *
      * @return the command manager
      */
-    public CommandManager getCommandManager() {
-        return commandManager;
+    public PlatformCommandManager getPlatformCommandManager() {
+        return platformCommandManager;
     }
 
     /**
@@ -285,17 +293,6 @@ public class PlatformManager {
         return queryCapability(Capability.CONFIGURATION).getConfiguration();
     }
 
-    /**
-     * Return a legacy {@link ServerInterface}.
-     *
-     * @return a {@link ServerInterface}
-     * @throws IllegalStateException if no platform has been registered
-     */
-    @SuppressWarnings("deprecation")
-    public ServerInterface getServerInterface() throws IllegalStateException {
-        return ServerInterfaceAdapter.adapt(queryCapability(Capability.USER_COMMANDS));
-    }
-
     @Subscribe
     public void handlePlatformReady(PlatformReadyEvent event) {
         choosePreferred();
@@ -304,7 +301,6 @@ public class PlatformManager {
         }
     }
 
-    @SuppressWarnings("deprecation")
     @Subscribe
     public void handleBlockInteract(BlockInteractEvent event) {
         // Create a proxy actor with a potentially different world for
@@ -312,153 +308,95 @@ public class PlatformManager {
         Actor actor = createProxyActor(event.getCause());
 
         Location location = event.getLocation();
-        Vector vector = location.toVector();
 
         // At this time, only handle interaction from players
-        if (actor instanceof Player) {
-            Player player = (Player) actor;
-            LocalSession session = worldEdit.getSessionManager().get(actor);
+        if (!(actor instanceof Player)) {
+            return;
+        }
+        Player player = (Player) actor;
+        LocalSession session = worldEdit.getSessionManager().get(actor);
 
+        Request.reset();
+        Request.request().setSession(session);
+        Request.request().setWorld(player.getWorld());
+
+        try {
             if (event.getType() == Interaction.HIT) {
-                if (player.getItemInHand() == getConfiguration().wandItem) {
-                    if (!session.isToolControlEnabled()) {
-                        return;
-                    }
-
-                    if (!actor.hasPermission("worldedit.selection.pos")) {
-                        return;
-                    }
-
-                    RegionSelector selector = session.getRegionSelector(player.getWorld());
-
-                    if (selector.selectPrimary(location.toVector(), ActorSelectorLimits.forActor(player))) {
-                        selector.explainPrimarySelection(actor, session, vector);
-                    }
-
-                    event.setCancelled(true);
-                    return;
-                }
-
-                if (player.isHoldingPickAxe() && session.hasSuperPickAxe()) {
+                // superpickaxe is special because its primary interaction is a left click, not a right click
+                // in addition, it is implicitly bound to all pickaxe items, not just a single tool item
+                if (session.hasSuperPickAxe() && player.isHoldingPickAxe()) {
                     final BlockTool superPickaxe = session.getSuperPickaxe();
                     if (superPickaxe != null && superPickaxe.canUse(player)) {
-                        event.setCancelled(superPickaxe.actPrimary(queryCapability(Capability.WORLD_EDITING), getConfiguration(), player, session, location));
+                        if (superPickaxe.actPrimary(queryCapability(Capability.WORLD_EDITING),
+                                getConfiguration(), player, session, location)) {
+                            event.setCancelled(true);
+                        }
                         return;
                     }
                 }
 
-                Tool tool = session.getTool(player.getItemInHand());
-                if (tool != null && tool instanceof DoubleActionBlockTool) {
-                    if (tool.canUse(player)) {
-                        ((DoubleActionBlockTool) tool).actSecondary(queryCapability(Capability.WORLD_EDITING), getConfiguration(), player, session, location);
+                Tool tool = session.getTool(player.getItemInHand(HandSide.MAIN_HAND).getType());
+                if (tool instanceof DoubleActionBlockTool && tool.canUse(player)) {
+                    if (((DoubleActionBlockTool) tool).actSecondary(queryCapability(Capability.WORLD_EDITING),
+                            getConfiguration(), player, session, location)) {
                         event.setCancelled(true);
                     }
                 }
 
             } else if (event.getType() == Interaction.OPEN) {
-                if (player.getItemInHand() == getConfiguration().wandItem) {
-                    if (!session.isToolControlEnabled()) {
-                        return;
-                    }
-
-                    if (!actor.hasPermission("worldedit.selection.pos")) {
-                        return;
-                    }
-
-                    RegionSelector selector = session.getRegionSelector(player.getWorld());
-                    if (selector.selectSecondary(vector, ActorSelectorLimits.forActor(player))) {
-                        selector.explainSecondarySelection(actor, session, vector);
-                    }
-
-                    event.setCancelled(true);
-                    return;
-                }
-
-                Tool tool = session.getTool(player.getItemInHand());
-                if (tool != null && tool instanceof BlockTool) {
-                    if (tool.canUse(player)) {
-                        ((BlockTool) tool).actPrimary(queryCapability(Capability.WORLD_EDITING), getConfiguration(), player, session, location);
+                Tool tool = session.getTool(player.getItemInHand(HandSide.MAIN_HAND).getType());
+                if (tool instanceof BlockTool && tool.canUse(player)) {
+                    if (((BlockTool) tool).actPrimary(queryCapability(Capability.WORLD_EDITING),
+                            getConfiguration(), player, session, location)) {
                         event.setCancelled(true);
                     }
                 }
             }
+        } finally {
+            Request.reset();
         }
     }
 
-    @SuppressWarnings("deprecation")
     @Subscribe
     public void handlePlayerInput(PlayerInputEvent event) {
         // Create a proxy actor with a potentially different world for
         // making changes to the world
         Player player = createProxyActor(event.getPlayer());
+        LocalSession session = worldEdit.getSessionManager().get(player);
+        Request.reset();
+        Request.request().setSession(session);
+        Request.request().setWorld(player.getWorld());
 
-        switch (event.getInputType()) {
-            case PRIMARY: {
-                if (player.getItemInHand() == getConfiguration().navigationWand) {
-                    if (getConfiguration().navigationWandMaxDistance <= 0) {
+        try {
+            switch (event.getInputType()) {
+                case PRIMARY: {
+                    Tool tool = session.getTool(player.getItemInHand(HandSide.MAIN_HAND).getType());
+                    if (tool instanceof DoubleActionTraceTool && tool.canUse(player)) {
+                        if (((DoubleActionTraceTool) tool).actSecondary(queryCapability(Capability.WORLD_EDITING),
+                                getConfiguration(), player, session)) {
+                            event.setCancelled(true);
+                        }
                         return;
                     }
 
-                    if (!player.hasPermission("worldedit.navigation.jumpto.tool")) {
-                        return;
-                    }
-
-                    WorldVector pos = player.getSolidBlockTrace(getConfiguration().navigationWandMaxDistance);
-                    if (pos != null) {
-                        player.findFreePosition(pos);
-                    } else {
-                        player.printError("No block in sight (or too far)!");
-                    }
-
-                    event.setCancelled(true);
-                    return;
+                    break;
                 }
 
-                LocalSession session = worldEdit.getSessionManager().get(player);
-
-                Tool tool = session.getTool(player.getItemInHand());
-                if (tool != null && tool instanceof DoubleActionTraceTool) {
-                    if (tool.canUse(player)) {
-                        ((DoubleActionTraceTool) tool).actSecondary(queryCapability(Capability.WORLD_EDITING), getConfiguration(), player, session);
-                        event.setCancelled(true);
+                case SECONDARY: {
+                    Tool tool = session.getTool(player.getItemInHand(HandSide.MAIN_HAND).getType());
+                    if (tool instanceof TraceTool && tool.canUse(player)) {
+                        if (((TraceTool) tool).actPrimary(queryCapability(Capability.WORLD_EDITING),
+                                getConfiguration(), player, session)) {
+                            event.setCancelled(true);
+                        }
                         return;
                     }
-                }
 
-                break;
+                    break;
+                }
             }
-
-            case SECONDARY: {
-                if (player.getItemInHand() == getConfiguration().navigationWand) {
-                    if (getConfiguration().navigationWandMaxDistance <= 0) {
-                        return;
-                    }
-
-                    if (!player.hasPermission("worldedit.navigation.thru.tool")) {
-                        return;
-                    }
-
-                    if (!player.passThroughForwardWall(40)) {
-                        player.printError("Nothing to pass through!");
-                    }
-
-                    event.setCancelled(true);
-                    return;
-                }
-
-                LocalSession session = worldEdit.getSessionManager().get(player);
-
-                Tool tool = session.getTool(player.getItemInHand());
-                if (tool != null && tool instanceof TraceTool) {
-                    if (tool.canUse(player)) {
-                        ((TraceTool) tool).actPrimary(queryCapability(Capability.WORLD_EDITING), getConfiguration(), player, session);
-                        event.setCancelled(true);
-                        return;
-                    }
-                }
-
-                break;
-            }
+        } finally {
+            Request.reset();
         }
     }
 

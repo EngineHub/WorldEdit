@@ -27,13 +27,13 @@ import java.util.regex.Pattern;
 
 public class YYMMDDHHIISSParser implements SnapshotDateParser {
 
-    protected Pattern patt =
+    private Pattern datePattern =
             Pattern.compile("([0-9]+)[^0-9]?([0-9]+)[^0-9]?([0-9]+)[^0-9]?"
-                    + "([0-9]+)[^0-9]?([0-9]+)[^0-9]?([0-9]+)");
+                    + "([0-9]+)[^0-9]?([0-9]+)[^0-9]?([0-9]+)(\\..*)?");
 
     @Override
     public Calendar detectDate(File file) {
-        Matcher matcher = patt.matcher(file.getName());
+        Matcher matcher = datePattern.matcher(file.getName());
         if (matcher.matches()) {
             int year = Integer.parseInt(matcher.group(1));
             int month = Integer.parseInt(matcher.group(2));

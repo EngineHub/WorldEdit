@@ -19,21 +19,26 @@
 
 package com.sk89q.worldedit.extension.platform;
 
-import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.WorldVector;
+import static com.google.common.base.Preconditions.checkNotNull;
+
+import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
 import com.sk89q.worldedit.internal.cui.CUIEvent;
+import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.session.SessionKey;
+import com.sk89q.worldedit.util.HandSide;
 import com.sk89q.worldedit.util.Location;
+import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.world.World;
-
-import javax.annotation.Nullable;
+import com.sk89q.worldedit.world.block.BlockStateHolder;
+import com.sk89q.worldedit.world.gamemode.GameMode;
 
 import java.util.UUID;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import javax.annotation.Nullable;
 
 class PlayerProxy extends AbstractPlayerActor {
 
@@ -59,13 +64,13 @@ class PlayerProxy extends AbstractPlayerActor {
     }
 
     @Override
-    public int getItemInHand() {
-        return basePlayer.getItemInHand();
+    public BaseItemStack getItemInHand(HandSide handSide) {
+        return basePlayer.getItemInHand(handSide);
     }
 
     @Override
-    public void giveItem(int type, int amount) {
-        basePlayer.giveItem(type, amount);
+    public void giveItem(BaseItemStack itemStack) {
+        basePlayer.giveItem(itemStack);
     }
 
     @Override
@@ -79,6 +84,11 @@ class PlayerProxy extends AbstractPlayerActor {
     }
 
     @Override
+    public String getDisplayName() {
+        return basePlayer.getDisplayName();
+    }
+
+    @Override
     public BaseEntity getState() {
         throw new UnsupportedOperationException("Can't getState() on a player");
     }
@@ -89,22 +99,12 @@ class PlayerProxy extends AbstractPlayerActor {
     }
 
     @Override
-    public WorldVector getPosition() {
-        return basePlayer.getPosition();
+    public boolean setLocation(Location location) {
+        return basePlayer.setLocation(location);
     }
 
     @Override
-    public double getPitch() {
-        return basePlayer.getPitch();
-    }
-
-    @Override
-    public double getYaw() {
-        return basePlayer.getYaw();
-    }
-
-    @Override
-    public void setPosition(Vector pos, float pitch, float yaw) {
+    public void setPosition(Vector3 pos, float pitch, float yaw) {
         basePlayer.setPosition(pos, pitch, yaw);
     }
 
@@ -134,6 +134,11 @@ class PlayerProxy extends AbstractPlayerActor {
     }
 
     @Override
+    public void print(Component component) {
+        basePlayer.print(component);
+    }
+
+    @Override
     public String[] getGroups() {
         return permActor.getGroups();
     }
@@ -157,5 +162,25 @@ class PlayerProxy extends AbstractPlayerActor {
     @Override
     public SessionKey getSessionKey() {
         return basePlayer.getSessionKey();
+    }
+
+    @Override
+    public GameMode getGameMode() {
+        return basePlayer.getGameMode();
+    }
+
+    @Override
+    public void setGameMode(GameMode gameMode) {
+        basePlayer.setGameMode(gameMode);
+    }
+
+    @Override
+    public <B extends BlockStateHolder<B>> void sendFakeBlock(BlockVector3 pos, B block) {
+        basePlayer.sendFakeBlock(pos, block);
+    }
+
+    @Override
+    public void floatAt(int x, int y, int z, boolean alwaysGlass) {
+        basePlayer.floatAt(x, y, z, alwaysGlass);
     }
 }

@@ -24,11 +24,11 @@ import com.sk89q.worldedit.world.DataException;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Enumeration;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
-import java.util.Enumeration;
 
 /**
  * Represents the chunk store used by Minecraft alpha but zipped.
@@ -82,7 +82,7 @@ public class ZippedLegacyChunkStore extends LegacyChunkStore {
 
         // Detect subfolder for the world's files
         if (folder != null) {
-            if (!folder.equals("")) {
+            if (!folder.isEmpty()) {
                 file = folder + "/" + file;
             }
         } else {

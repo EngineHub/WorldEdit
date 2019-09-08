@@ -19,16 +19,16 @@
 
 package com.sk89q.worldedit.function.block;
 
-import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.blocks.BlockID;
-import com.sk89q.worldedit.function.LayerFunction;
-import com.sk89q.worldedit.masks.BlockMask;
-import com.sk89q.worldedit.masks.Mask;
-
 import static com.google.common.base.Preconditions.checkNotNull;
+
+import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.function.LayerFunction;
+import com.sk89q.worldedit.function.mask.BlockTypeMask;
+import com.sk89q.worldedit.function.mask.Mask;
+import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.world.block.BlockState;
+import com.sk89q.worldedit.world.block.BlockTypes;
 
 /**
  * Makes a layer of grass on top, three layers of dirt below, and smooth stone
@@ -38,10 +38,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class Naturalizer implements LayerFunction {
 
     private final EditSession editSession;
-    private final BaseBlock grass = new BaseBlock(BlockID.GRASS);
-    private final BaseBlock dirt = new BaseBlock(BlockID.DIRT);
-    private final BaseBlock stone = new BaseBlock(BlockID.STONE);
-    private final Mask mask = new BlockMask(grass, dirt, stone);
+    private final Mask mask;
     private int affected = 0;
 
     /**
@@ -52,6 +49,7 @@ public class Naturalizer implements LayerFunction {
     public Naturalizer(EditSession editSession) {
         checkNotNull(editSession);
         this.editSession = editSession;
+        this.mask = new BlockTypeMask(editSession, BlockTypes.GRASS_BLOCK, BlockTypes.DIRT, BlockTypes.STONE);
     }
 
     /**
@@ -64,25 +62,39 @@ public class Naturalizer implements LayerFunction {
     }
 
     @Override
-    public boolean isGround(Vector position) {
-        return mask.matches(editSession, position);
+    public boolean isGround(BlockVector3 position) {
+        return mask.test(position);
+    }
+
+    private BlockState getTargetBlock(int depth) {
+        switch (depth) {
+            case 0:
+                return BlockTypes.GRASS_BLOCK.getDefaultState();
+            case 1:
+            case 2:
+            case 3:
+                return BlockTypes.DIRT.getDefaultState();
+            default:
+                return BlockTypes.STONE.getDefaultState();
+        }
+    }
+
+    private boolean naturalize(BlockVector3 position, int depth) throws WorldEditException {
+        BlockState block = editSession.getBlock(position);
+        BlockState targetBlock = getTargetBlock(depth);
+
+        if (block.equalsFuzzy(targetBlock)) {
+            return false;
+        }
+
+        return editSession.setBlock(position, targetBlock);
     }
 
     @Override
-    public boolean apply(Vector position, int depth) throws WorldEditException {
-        if (mask.matches(editSession, position)) {
-            affected++;
-            switch (depth) {
-                case 0:
-                    editSession.setBlock(position, grass);
-                    break;
-                case 1:
-                case 2:
-                case 3:
-                    editSession.setBlock(position, dirt);
-                    break;
-                default:
-                    editSession.setBlock(position, stone);
+    public boolean apply(BlockVector3 position, int depth) throws WorldEditException {
+        if (mask.test(position)) {
+            if (naturalize(position, depth)) {
+                ++affected;
             }
         }
 

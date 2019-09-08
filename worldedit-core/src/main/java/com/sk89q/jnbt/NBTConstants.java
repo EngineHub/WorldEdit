@@ -31,7 +31,7 @@ public final class NBTConstants {
     public static final int TYPE_END = 0, TYPE_BYTE = 1, TYPE_SHORT = 2,
             TYPE_INT = 3, TYPE_LONG = 4, TYPE_FLOAT = 5, TYPE_DOUBLE = 6,
             TYPE_BYTE_ARRAY = 7, TYPE_STRING = 8, TYPE_LIST = 9,
-            TYPE_COMPOUND = 10, TYPE_INT_ARRAY = 11;
+            TYPE_COMPOUND = 10, TYPE_INT_ARRAY = 11, TYPE_LONG_ARRAY = 12;
 
     /**
      * Default private constructor.
@@ -73,6 +73,8 @@ public final class NBTConstants {
             return CompoundTag.class;
         case TYPE_INT_ARRAY:
             return IntArrayTag.class;
+        case TYPE_LONG_ARRAY:
+            return LongArrayTag.class;
         default:
             throw new IllegalArgumentException("Unknown tag type ID of " + id);
         }

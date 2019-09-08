@@ -32,6 +32,7 @@ public class UnknownDirectionException extends WorldEditException {
      * @param dir the input that was tried
      */
     public UnknownDirectionException(String dir) {
+        super("Unknown direction: " + dir);
         this.dir = dir;
     }
 

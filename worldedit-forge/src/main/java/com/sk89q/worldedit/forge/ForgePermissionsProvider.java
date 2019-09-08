@@ -19,18 +19,17 @@
 
 package com.sk89q.worldedit.forge;
 
-import cpw.mods.fml.common.FMLCommonHandler;
-import net.minecraft.command.ICommand;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.world.WorldSettings.GameType;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.world.GameType;
+import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
 public interface ForgePermissionsProvider {
 
-    public boolean hasPermission(EntityPlayerMP player, String permission);
+    boolean hasPermission(ServerPlayerEntity player, String permission);
 
-    public void registerPermission(ICommand command, String permission);
+    void registerPermission(String permission);
 
-    public static class VanillaPermissionsProvider implements ForgePermissionsProvider {
+    class VanillaPermissionsProvider implements ForgePermissionsProvider {
 
         private ForgePlatform platform;
 
@@ -39,14 +38,28 @@ public interface ForgePermissionsProvider {
         }
 
         @Override
-        public boolean hasPermission(EntityPlayerMP player, String permission) {
+        public boolean hasPermission(ServerPlayerEntity player, String permission) {
             ForgeConfiguration configuration = platform.getConfiguration();
             return configuration.cheatMode ||
-                    FMLCommonHandler.instance().getMinecraftServerInstance().getConfigurationManager().func_152596_g(player.getGameProfile()) ||
-                    (configuration.creativeEnable && player.theItemInWorldManager.getGameType() == GameType.CREATIVE);
+                    ServerLifecycleHooks.getCurrentServer().getPlayerList().canSendCommands(player.getGameProfile()) ||
+                    (configuration.creativeEnable && player.interactionManager.getGameType() == GameType.CREATIVE);
         }
 
         @Override
-        public void registerPermission(ICommand command, String permission) {}
+        public void registerPermission(String permission) {}
     }
+
+    // TODO Re-add when Sponge for 1.14 is out
+//    class SpongePermissionsProvider implements ForgePermissionsProvider {
+//
+//        @Override
+//        public boolean hasPermission(EntityPlayerMP player, String permission) {
+//            return ((Player) player).hasPermission(permission);
+//        }
+//
+//        @Override
+//        public void registerPermission(ICommand command, String permission) {
+//
+//        }
+//    }
 }

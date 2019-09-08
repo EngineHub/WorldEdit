@@ -19,28 +19,30 @@
 
 package com.sk89q.worldedit.function.mask;
 
-import com.sk89q.worldedit.extent.Extent;
-import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.blocks.BaseBlock;
+import static com.google.common.base.Preconditions.checkNotNull;
 
-import javax.annotation.Nullable;
+import com.sk89q.worldedit.extent.Extent;
+import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.world.block.BaseBlock;
+import com.sk89q.worldedit.world.block.BlockState;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import javax.annotation.Nullable;
 
 /**
  * A mask that checks whether blocks at the given positions are matched by
  * a block in a list.
  *
- * <p>This mask checks for both an exact block ID and data value match, as well
- * for a block with the same ID but a data value of -1.</p>
+ * <p>This mask checks for both an exact block type and state value match,
+ * respecting fuzzy status of the BlockState.</p>
  */
 public class BlockMask extends AbstractExtentMask {
 
-    private final Set<BaseBlock> blocks = new HashSet<BaseBlock>();
+    private final Set<BaseBlock> blocks = new HashSet<>();
 
     /**
      * Create a new block mask.
@@ -93,9 +95,15 @@ public class BlockMask extends AbstractExtentMask {
     }
 
     @Override
-    public boolean test(Vector vector) {
-        BaseBlock block = getExtent().getBlock(vector);
-        return blocks.contains(block) || blocks.contains(new BaseBlock(block.getType(), -1));
+    public boolean test(BlockVector3 vector) {
+        BlockState block = getExtent().getBlock(vector);
+        for (BaseBlock testBlock : blocks) {
+            if (testBlock.equalsFuzzy(block)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     @Nullable

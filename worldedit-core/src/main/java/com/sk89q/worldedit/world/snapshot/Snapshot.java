@@ -22,11 +22,20 @@
 package com.sk89q.worldedit.world.snapshot;
 
 import com.sk89q.worldedit.world.DataException;
-import com.sk89q.worldedit.world.storage.*;
+import com.sk89q.worldedit.world.storage.ChunkStore;
+import com.sk89q.worldedit.world.storage.FileLegacyChunkStore;
+import com.sk89q.worldedit.world.storage.FileMcRegionChunkStore;
+import com.sk89q.worldedit.world.storage.TrueZipLegacyChunkStore;
+import com.sk89q.worldedit.world.storage.TrueZipMcRegionChunkStore;
+import com.sk89q.worldedit.world.storage.ZippedLegacyChunkStore;
+import com.sk89q.worldedit.world.storage.ZippedMcRegionChunkStore;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.io.IOException;
-import java.util.Calendar;
-import java.util.logging.Logger;
+import java.time.ZonedDateTime;
+import java.util.Locale;
 import java.util.zip.ZipFile;
 
 /**
@@ -34,11 +43,11 @@ import java.util.zip.ZipFile;
  */
 public class Snapshot implements Comparable<Snapshot> {
 
-    protected static Logger logger = Logger.getLogger(Snapshot.class.getCanonicalName());
+    protected static Logger logger = LoggerFactory.getLogger(Snapshot.class);
 
     protected File file;
     protected String name;
-    protected Calendar date;
+    protected ZonedDateTime date;
 
     /**
      * Construct a snapshot restoration operation.
@@ -75,7 +84,8 @@ public class Snapshot implements Comparable<Snapshot> {
      * @throws DataException
      */
     private ChunkStore internalGetChunkStore() throws IOException, DataException {
-        if (file.getName().toLowerCase().endsWith(".zip")) {
+        String lowerCaseFileName = file.getName().toLowerCase(Locale.ROOT);
+        if (lowerCaseFileName.endsWith(".zip")) {
             try {
                 ChunkStore chunkStore = new TrueZipMcRegionChunkStore(file);
 
@@ -93,9 +103,9 @@ public class Snapshot implements Comparable<Snapshot> {
 
                 return chunkStore;
             }
-        } else if (file.getName().toLowerCase().endsWith(".tar.bz2")
-                || file.getName().toLowerCase().endsWith(".tar.gz")
-                || file.getName().toLowerCase().endsWith(".tar")) {
+        } else if (lowerCaseFileName.endsWith(".tar.bz2")
+                || lowerCaseFileName.endsWith(".tar.gz")
+                || lowerCaseFileName.endsWith(".tar")) {
             try {
                 ChunkStore chunkStore = new TrueZipMcRegionChunkStore(file);
 
@@ -125,13 +135,15 @@ public class Snapshot implements Comparable<Snapshot> {
      */
     public boolean containsWorld(String worldname) {
         try {
-            if (file.getName().toLowerCase().endsWith(".zip")) {
-                ZipFile entry = new ZipFile(file);
-                return (entry.getEntry(worldname) != null
-                || entry.getEntry(worldname + "/level.dat") != null);
-            } else if (file.getName().toLowerCase().endsWith(".tar.bz2")
-                    || file.getName().toLowerCase().endsWith(".tar.gz")
-                    || file.getName().toLowerCase().endsWith(".tar")) {
+            String lowerCaseFileName = file.getName().toLowerCase(Locale.ROOT);
+            if (lowerCaseFileName.endsWith(".zip")) {
+                try (ZipFile entry = new ZipFile(file)) {
+                    return (entry.getEntry(worldname) != null
+                            || entry.getEntry(worldname + "/level.dat") != null);
+                }
+            } else if (lowerCaseFileName.endsWith(".tar.bz2")
+                    || lowerCaseFileName.endsWith(".tar.gz")
+                    || lowerCaseFileName.endsWith(".tar")) {
                 try {
                     de.schlichtherle.util.zip.ZipFile entry = new de.schlichtherle.util.zip.ZipFile(file);
 
@@ -176,7 +188,7 @@ public class Snapshot implements Comparable<Snapshot> {
      *
      * @return date for the snapshot
      */
-    public Calendar getDate() {
+    public ZonedDateTime getDate() {
         return date;
     }
 
@@ -185,7 +197,7 @@ public class Snapshot implements Comparable<Snapshot> {
      *
      * @param date the date of the snapshot
      */
-    public void setDate(Calendar date) {
+    public void setDate(ZonedDateTime date) {
         this.date = date;
     }
 
@@ -193,7 +205,7 @@ public class Snapshot implements Comparable<Snapshot> {
     public int compareTo(Snapshot o) {
         if (o.date == null || date == null) {
             // Remove the folder from the name
-            int i = name.indexOf("/"), j = o.name.indexOf("/");
+            int i = name.indexOf('/'), j = o.name.indexOf('/');
             return name.substring((i > 0 ? 0 : i)).compareTo(o.name.substring((j > 0 ? 0 : j)));
         } else {
             return date.compareTo(o.date);

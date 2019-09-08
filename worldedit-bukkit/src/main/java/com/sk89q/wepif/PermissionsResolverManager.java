@@ -27,6 +27,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.event.server.PluginEnableEvent;
 import org.bukkit.plugin.Plugin;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,8 +37,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class PermissionsResolverManager implements PermissionsResolver {
 
@@ -57,10 +57,6 @@ public class PermissionsResolverManager implements PermissionsResolver {
             "#   into WEPIF, paste it into http://yaml-online-parser.appspot.com/\r\n" +
             "#   and see if it gives \"ERROR:\".\r\n" +
             "# - Lines starting with # are comments and so they are ignored.\r\n" +
-            "#\r\n" +
-            "# About Configuration Permissions\r\n" +
-            "# - See http://wiki.sk89q.com/wiki/WorldEdit/Permissions/Bukkit\r\n" +
-            "# - Now with multiworld support (see example)\r\n" +
             "\r\n";
 
     private static PermissionsResolverManager instance;
@@ -85,8 +81,8 @@ public class PermissionsResolverManager implements PermissionsResolver {
     private Server server;
     private PermissionsResolver permissionResolver;
     private YAMLProcessor config;
-    private Logger logger = Logger.getLogger(getClass().getCanonicalName());
-    private List<Class<? extends PermissionsResolver>> enabledResolvers = new ArrayList<Class<? extends PermissionsResolver>>();
+    private Logger logger = LoggerFactory.getLogger(getClass());
+    private List<Class<? extends PermissionsResolver>> enabledResolvers = new ArrayList<>();
 
     @SuppressWarnings("unchecked")
     protected Class<? extends PermissionsResolver>[] availableResolvers = new Class[] {
@@ -95,6 +91,7 @@ public class PermissionsResolverManager implements PermissionsResolver {
             bPermissionsResolver.class,
             GroupManagerResolver.class,
             NijiPermissionsResolver.class,
+            VaultResolver.class,
             DinnerPermsResolver.class,
             FlatFilePermissionsResolver.class
     };
@@ -118,7 +115,7 @@ public class PermissionsResolverManager implements PermissionsResolver {
                     break;
                 }
             } catch (Throwable e) {
-                logger.log(Level.WARNING, "Error in factory method for " + resolverClass.getSimpleName(), e);
+                logger.warn("Error in factory method for " + resolverClass.getSimpleName(), e);
                 continue;
             }
         }
@@ -194,14 +191,14 @@ public class PermissionsResolverManager implements PermissionsResolver {
             try {
                 file.createNewFile();
             } catch (IOException e) {
-                logger.log(Level.WARNING, "Failed to create new configuration file", e);
+                logger.warn("Failed to create new configuration file", e);
             }
         }
         config = new YAMLProcessor(file, false, YAMLFormat.EXTENDED);
         try {
             config.load();
         } catch (IOException e) {
-            logger.log(Level.WARNING, "Error loading WEPIF configuration", e);
+            logger.warn("Error loading WEPIF configuration", e);
         }
         List<String> keys = config.getKeys(null);
         config.setHeader(CONFIG_HEADER);
@@ -213,7 +210,7 @@ public class PermissionsResolverManager implements PermissionsResolver {
 
         if (!keys.contains("resolvers")) {
             //List<String> resolverKeys = config.getKeys("resolvers");
-            List<String> resolvers = new ArrayList<String>();
+            List<String> resolvers = new ArrayList<>();
             for (Class<?> clazz : availableResolvers) {
                 resolvers.add(clazz.getSimpleName());
             }
@@ -221,7 +218,7 @@ public class PermissionsResolverManager implements PermissionsResolver {
             config.setProperty("resolvers.enabled", resolvers);
             isUpdated = true;
         } else {
-            List<String> disabledResolvers = config.getStringList("resolvers.disabled", new ArrayList<String>());
+            List<String> disabledResolvers = config.getStringList("resolvers.disabled", new ArrayList<>());
             List<String> stagedEnabled = config.getStringList("resolvers.enabled", null);
             for (Iterator<String> i = stagedEnabled.iterator(); i.hasNext();) {
                 String nextName = i.next();
@@ -231,7 +228,7 @@ public class PermissionsResolverManager implements PermissionsResolver {
                 } catch (ClassNotFoundException e) {}
 
                 if (next == null || !PermissionsResolver.class.isAssignableFrom(next)) {
-                    logger.warning("WEPIF: Invalid or unknown class found in enabled resolvers: "
+                    logger.warn("WEPIF: Invalid or unknown class found in enabled resolvers: "
                             + nextName + ". Moving to disabled resolvers list.");
                     i.remove();
                     disabledResolvers.add(nextName);
@@ -283,7 +280,8 @@ public class PermissionsResolverManager implements PermissionsResolver {
             if (plugin instanceof PermissionsProvider) {
                 setPluginPermissionsResolver(plugin);
             } else if ("permissions".equalsIgnoreCase(name) || "permissionsex".equalsIgnoreCase(name)
-                    || "bpermissions".equalsIgnoreCase(name) || "groupmanager".equalsIgnoreCase(name)) {
+                    || "bpermissions".equalsIgnoreCase(name) || "groupmanager".equalsIgnoreCase(name)
+                    || "vault".equalsIgnoreCase(name)) {
                 load();
             }
         }
@@ -294,7 +292,8 @@ public class PermissionsResolverManager implements PermissionsResolver {
 
             if (event.getPlugin() instanceof PermissionsProvider
                     || "permissions".equalsIgnoreCase(name) || "permissionsex".equalsIgnoreCase(name)
-                    || "bpermissions".equalsIgnoreCase(name) || "groupmanager".equalsIgnoreCase(name)) {
+                    || "bpermissions".equalsIgnoreCase(name) || "groupmanager".equalsIgnoreCase(name)
+                    || "vault".equalsIgnoreCase(name)) {
                 load();
             }
         }

@@ -19,6 +19,8 @@
 
 package com.sk89q.jnbt;
 
+import java.util.Locale;
+
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
@@ -48,7 +50,7 @@ public final class IntArrayTag extends Tag {
     public String toString() {
         StringBuilder hex = new StringBuilder();
         for (int b : value) {
-            String hexDigits = Integer.toHexString(b).toUpperCase();
+            String hexDigits = Integer.toHexString(b).toUpperCase(Locale.ROOT);
             if (hexDigits.length() == 1) {
                 hex.append("0");
             }

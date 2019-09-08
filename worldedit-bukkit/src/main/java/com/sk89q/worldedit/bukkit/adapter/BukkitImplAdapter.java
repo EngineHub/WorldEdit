@@ -19,12 +19,26 @@
 
 package com.sk89q.worldedit.bukkit.adapter;
 
-import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.jnbt.CompoundTag;
+import com.sk89q.worldedit.blocks.BaseItem;
+import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.entity.BaseEntity;
+import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.registry.state.Property;
+import com.sk89q.worldedit.util.Direction;
+import com.sk89q.worldedit.world.DataFixer;
+import com.sk89q.worldedit.world.block.BaseBlock;
+import com.sk89q.worldedit.world.block.BlockState;
+import com.sk89q.worldedit.world.block.BlockStateHolder;
+import com.sk89q.worldedit.world.block.BlockType;
 import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.block.Biome;
+import org.bukkit.World;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+
+import java.util.Map;
+import java.util.OptionalInt;
 
 import javax.annotation.Nullable;
 
@@ -34,44 +48,19 @@ import javax.annotation.Nullable;
 public interface BukkitImplAdapter {
 
     /**
-     * Get the block ID for the given material.
+     * Get the Minecraft data version for the current world data.
      *
-     * <p>Returns 0 if it is not known or it doesn't exist.</p>
-     *
-     * @param material the material
-     * @return the block ID
+     * @return the data version
      */
-    int getBlockId(Material material);
+    int getDataVersion();
 
     /**
-     * Get the material for the given block ID.
+     * Get a data fixer, or null if not supported
      *
-     * <p>Returns {@link Material#AIR} if it is not known or it doesn't exist.</p>
-     *
-     * @param id the block ID
-     * @return the material
+     * @return the data fixer
      */
-    Material getMaterial(int id);
-
-    /**
-     * Get the biome ID for the given biome.
-     *
-     * <p>Returns 0 if it is not known or it doesn't exist.</p>
-     *
-     * @param biome biome
-     * @return the biome ID
-     */
-    int getBiomeId(Biome biome);
-
-    /**
-     * Get the biome ID for the given biome ID..
-     *
-     * <p>Returns {@link Biome#OCEAN} if it is not known or it doesn't exist.</p>
-     *
-     * @param id the biome ID
-     * @return the biome
-     */
-    Biome getBiome(int id);
+    @Nullable
+    DataFixer getDataFixer();
 
     /**
      * Get the block at the given location.
@@ -89,7 +78,16 @@ public interface BukkitImplAdapter {
      * @param notifyAndLight notify and light if set
      * @return true if a block was likely changed
      */
-    boolean setBlock(Location location, BaseBlock state, boolean notifyAndLight);
+    boolean setBlock(Location location, BlockStateHolder<?> state, boolean notifyAndLight);
+
+    /**
+     * Notifies the simulation that the block at the given location has
+     * been changed and it must be re-lighted (and issue other events).
+     *
+     * @param position position of the block
+     * @param previousType the type of the previous block that was there
+     */
+    void notifyAndLightBlock(Location position, BlockState previousType);
 
     /**
      * Get the state for the given entity.
@@ -110,5 +108,68 @@ public interface BukkitImplAdapter {
     @Nullable
     Entity createEntity(Location location, BaseEntity state);
 
+    /**
+     * Get a map of {@code string -> property}.
+     *
+     * @param blockType The block type
+     * @return The properties map
+     */
+    Map<String, ? extends Property<?>> getProperties(BlockType blockType);
 
+    /**
+     * Send the given NBT data to the player.
+     *
+     * @param player The player
+     * @param pos The position
+     * @param nbtData The NBT Data
+     */
+    void sendFakeNBT(Player player, BlockVector3 pos, CompoundTag nbtData);
+
+    /**
+     * Make the client think it has operator status.
+     * This does not give them any operator capabilities.
+     *
+     * @param player The player
+     */
+    void sendFakeOP(Player player);
+
+    /**
+     * Simulates a player using an item.
+     *
+     * @param world the world
+     * @param position the location
+     * @param item the item to be used
+     * @param face the direction in which to "face" when using the item
+     * @return whether the usage was successful
+     */
+    default boolean simulateItemUse(World world, BlockVector3 position, BaseItem item, Direction face) {
+        return false;
+    }
+
+    /**
+     * Create a Bukkit ItemStack with NBT, if available.
+     *
+     * @param item the WorldEdit BaseItemStack to adapt
+     * @return the Bukkit ItemStack
+     */
+    ItemStack adapt(BaseItemStack item);
+
+    /**
+     * Create a WorldEdit ItemStack with NBT, if available.
+     *
+     * @param itemStack the Bukkit ItemStack to adapt
+     * @return the WorldEdit BaseItemStack
+     */
+    BaseItemStack adapt(ItemStack itemStack);
+
+
+    /**
+     * Retrieve the internal ID for a given state, if possible.
+     *
+     * @param state The block state
+     * @return the internal ID of the state
+     */
+    default OptionalInt getInternalBlockStateId(BlockState state) {
+        return OptionalInt.empty();
+    }
 }

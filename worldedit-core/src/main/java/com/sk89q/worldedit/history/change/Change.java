@@ -20,8 +20,8 @@
 package com.sk89q.worldedit.history.change;
 
 import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.history.changeset.ChangeSet;
 import com.sk89q.worldedit.history.UndoContext;
+import com.sk89q.worldedit.history.changeset.ChangeSet;
 
 /**
  * Describes a change that can be undone or re-applied.

@@ -37,6 +37,20 @@ public interface ChangeSet {
     void add(Change change);
 
     /**
+     * Whether or not the ChangeSet is recording changes.
+     *
+     * @return whether or not the ChangeSet is set to record changes
+     */
+    boolean isRecordingChanges();
+
+    /**
+     * Tell the change set whether to record changes or not.
+     *
+     * @param recordChanges whether to record changes or not
+     */
+    void setRecordChanges(boolean recordChanges);
+
+    /**
      * Get a backward directed iterator that can be used for undo.
      *
      * <p>The iterator may return the changes out of order, as long as the final

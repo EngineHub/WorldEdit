@@ -19,18 +19,17 @@
 
 package com.sk89q.worldedit.regions;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.google.common.collect.Iterators;
-import com.sk89q.worldedit.BlockVector;
-import com.sk89q.worldedit.LocalWorld;
-import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.world.World;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * An intersection of several other regions. Any location that is contained in one
@@ -43,7 +42,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class RegionIntersection extends AbstractRegion {
 
-    private final List<Region> regions = new ArrayList<Region>();
+    private final List<Region> regions = new ArrayList<>();
 
     /**
      * Create a new instance with the included list of regions.
@@ -69,13 +68,11 @@ public class RegionIntersection extends AbstractRegion {
      * @param world   the world
      * @param regions a list of regions, which is copied
      */
-    public RegionIntersection(LocalWorld world, List<Region> regions) {
+    public RegionIntersection(World world, List<Region> regions) {
         super(world);
         checkNotNull(regions);
         checkArgument(!regions.isEmpty(), "empty region list is not supported");
-        for (Region region : regions) {
-            this.regions.add(region);
-        }
+        this.regions.addAll(regions);
     }
 
     /**
@@ -84,7 +81,7 @@ public class RegionIntersection extends AbstractRegion {
      * @param world   the world
      * @param regions an array of regions, which is copied
      */
-    public RegionIntersection(LocalWorld world, Region... regions) {
+    public RegionIntersection(World world, Region... regions) {
         super(world);
         checkNotNull(regions);
         checkArgument(regions.length > 0, "empty region list is not supported");
@@ -92,37 +89,37 @@ public class RegionIntersection extends AbstractRegion {
     }
 
     @Override
-    public Vector getMinimumPoint() {
-        Vector minimum = regions.get(0).getMinimumPoint();
+    public BlockVector3 getMinimumPoint() {
+        BlockVector3 minimum = regions.get(0).getMinimumPoint();
         for (int i = 1; i < regions.size(); i++) {
-            minimum = Vector.getMinimum(regions.get(i).getMinimumPoint(), minimum);
+            minimum = regions.get(i).getMinimumPoint().getMinimum(minimum);
         }
         return minimum;
     }
 
     @Override
-    public Vector getMaximumPoint() {
-        Vector maximum = regions.get(0).getMaximumPoint();
+    public BlockVector3 getMaximumPoint() {
+        BlockVector3 maximum = regions.get(0).getMaximumPoint();
         for (int i = 1; i < regions.size(); i++) {
-            maximum = Vector.getMaximum(regions.get(i).getMaximumPoint(), maximum);
+            maximum = regions.get(i).getMaximumPoint().getMaximum(maximum);
         }
         return maximum;
     }
 
     @Override
-    public void expand(Vector... changes) throws RegionOperationException {
+    public void expand(BlockVector3... changes) throws RegionOperationException {
         checkNotNull(changes);
         throw new RegionOperationException("Cannot expand a region intersection");
     }
 
     @Override
-    public void contract(Vector... changes) throws RegionOperationException {
+    public void contract(BlockVector3... changes) throws RegionOperationException {
         checkNotNull(changes);
         throw new RegionOperationException("Cannot contract a region intersection");
     }
 
     @Override
-    public boolean contains(Vector position) {
+    public boolean contains(BlockVector3 position) {
         checkNotNull(position);
 
         for (Region region : regions) {
@@ -134,10 +131,10 @@ public class RegionIntersection extends AbstractRegion {
         return false;
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings({"unchecked"})
     @Override
-    public Iterator<BlockVector> iterator() {
-        Iterator<BlockVector>[] iterators = (Iterator<BlockVector>[]) new Iterator[regions.size()];
+    public Iterator<BlockVector3> iterator() {
+        Iterator<BlockVector3>[] iterators = (Iterator<BlockVector3>[]) new Iterator[regions.size()];
         for (int i = 0; i < regions.size(); i++) {
             iterators[i] = regions.get(i).iterator();
         }

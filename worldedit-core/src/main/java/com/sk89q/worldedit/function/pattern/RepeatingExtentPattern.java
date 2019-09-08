@@ -19,19 +19,20 @@
 
 package com.sk89q.worldedit.function.pattern;
 
-import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.extent.Extent;
-
 import static com.google.common.base.Preconditions.checkNotNull;
+
+import com.sk89q.worldedit.extent.Extent;
+import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.world.block.BaseBlock;
 
 /**
  * Returns the blocks from {@link Extent}, repeating when out of bounds.
  */
-public class RepeatingExtentPattern extends AbstractPattern {
+public class RepeatingExtentPattern extends AbstractExtentPattern {
 
-    private Extent extent;
-    private Vector offset;
+    private final BlockVector3 size;
+    private BlockVector3 origin;
+    private BlockVector3 offset;
 
     /**
      * Create a new instance.
@@ -39,28 +40,11 @@ public class RepeatingExtentPattern extends AbstractPattern {
      * @param extent the extent
      * @param offset the offset
      */
-    public RepeatingExtentPattern(Extent extent, Vector offset) {
-        setExtent(extent);
+    public RepeatingExtentPattern(Extent extent, BlockVector3 origin, BlockVector3 offset) {
+        super(extent);
+        setOrigin(origin);
         setOffset(offset);
-    }
-
-    /**
-     * Get the extent.
-     *
-     * @return the extent
-     */
-    public Extent getExtent() {
-        return extent;
-    }
-
-    /**
-     * Set the extent.
-     *
-     * @param extent the extent
-     */
-    public void setExtent(Extent extent) {
-        checkNotNull(extent);
-        this.extent = extent;
+        size = extent.getMaximumPoint().subtract(extent.getMinimumPoint()).add(1, 1, 1);
     }
 
     /**
@@ -68,7 +52,7 @@ public class RepeatingExtentPattern extends AbstractPattern {
      *
      * @return the offset
      */
-    public Vector getOffset() {
+    public BlockVector3 getOffset() {
         return offset;
     }
 
@@ -77,19 +61,37 @@ public class RepeatingExtentPattern extends AbstractPattern {
      *
      * @param offset the offset
      */
-    public void setOffset(Vector offset) {
+    public void setOffset(BlockVector3 offset) {
         checkNotNull(offset);
         this.offset = offset;
     }
 
+    /**
+     * Get the origin.
+     *
+     * @return the origin
+     */
+    public BlockVector3 getOrigin() {
+        return origin;
+    }
+
+    /**
+     * Set the origin.
+     *
+     * @param origin the origin
+     */
+    public void setOrigin(BlockVector3 origin) {
+        checkNotNull(origin);
+        this.origin = origin;
+    }
+
     @Override
-    public BaseBlock apply(Vector position) {
-        Vector base = position.add(offset);
-        Vector size = extent.getMaximumPoint().subtract(extent.getMinimumPoint()).add(1, 1, 1);
-        int x = base.getBlockX() % size.getBlockX();
-        int y = base.getBlockY() % size.getBlockY();
-        int z = base.getBlockZ() % size.getBlockZ();
-        return extent.getBlock(new Vector(x, y, z));
+    public BaseBlock apply(BlockVector3 position) {
+        BlockVector3 base = position.add(offset);
+        int x = Math.abs(base.getBlockX()) % size.getBlockX();
+        int y = Math.abs(base.getBlockY()) % size.getBlockY();
+        int z = Math.abs(base.getBlockZ()) % size.getBlockZ();
+        return getExtent().getFullBlock(BlockVector3.at(x, y, z).add(origin));
     }
 
 }

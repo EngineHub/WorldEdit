@@ -19,10 +19,10 @@
 
 package com.sk89q.worldedit.math.transform;
 
-import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.math.Vector3;
 
 /**
- * Makes a transformation of {@link Vector}s.
+ * Makes a transformation of {@link Vector3}s.
  */
 public interface Transform {
 
@@ -41,7 +41,7 @@ public interface Transform {
      * @param input the input
      * @return the result
      */
-    Vector apply(Vector input);
+    Vector3 apply(Vector3 input);
 
     /**
      * Create a new inverse transform.

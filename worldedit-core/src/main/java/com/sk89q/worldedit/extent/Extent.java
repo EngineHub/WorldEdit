@@ -19,14 +19,15 @@
 
 package com.sk89q.worldedit.extent;
 
-import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
-import com.sk89q.worldedit.util.Location;
+import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.Region;
+import com.sk89q.worldedit.util.Location;
+
+import java.util.List;
 
 import javax.annotation.Nullable;
-import java.util.List;
 
 /**
  * A world, portion of a world, clipboard, or other object that can have blocks
@@ -45,7 +46,7 @@ public interface Extent extends InputExtent, OutputExtent {
      *
      * @return the minimum point
      */
-    Vector getMinimumPoint();
+    BlockVector3 getMinimumPoint();
 
     /**
      * Get the maximum point in the extent.
@@ -55,7 +56,7 @@ public interface Extent extends InputExtent, OutputExtent {
      *
      * @return the maximum point
      */
-    Vector getMaximumPoint();
+    BlockVector3 getMaximumPoint();
 
     /**
      * Get a list of all entities within the given region.

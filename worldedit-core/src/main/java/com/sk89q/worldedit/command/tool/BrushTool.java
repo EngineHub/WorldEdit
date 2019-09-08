@@ -19,9 +19,12 @@
 
 package com.sk89q.worldedit.command.tool;
 
-import com.sk89q.worldedit.*;
-import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.blocks.BlockID;
+import static com.google.common.base.Preconditions.checkNotNull;
+
+import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.LocalConfiguration;
+import com.sk89q.worldedit.LocalSession;
+import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.command.tool.brush.Brush;
 import com.sk89q.worldedit.command.tool.brush.SphereBrush;
 import com.sk89q.worldedit.entity.Player;
@@ -30,11 +33,10 @@ import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.function.mask.MaskIntersection;
-import com.sk89q.worldedit.function.pattern.BlockPattern;
 import com.sk89q.worldedit.function.pattern.Pattern;
-import com.sk89q.worldedit.session.request.Request;
+import com.sk89q.worldedit.util.Location;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import javax.annotation.Nullable;
 
 /**
  * Builds a shape at the place being looked at.
@@ -44,8 +46,10 @@ public class BrushTool implements TraceTool {
     protected static int MAX_RANGE = 500;
     protected int range = -1;
     private Mask mask = null;
+    private Mask traceMask = null;
     private Brush brush = new SphereBrush();
-    private Pattern material = new BlockPattern(new BaseBlock(BlockID.COBBLESTONE));
+    @Nullable
+    private Pattern material;
     private double size = 1;
     private String permission;
 
@@ -83,6 +87,24 @@ public class BrushTool implements TraceTool {
     }
 
     /**
+     * Get the mask used for identifying where to stop traces.
+     *
+     * @return the mask used to stop block traces
+     */
+    public @Nullable Mask getTraceMask() {
+        return this.traceMask;
+    }
+
+    /**
+     * Set the block mask used for identifying where to stop traces.
+     *
+     * @param traceMask the mask used to stop block traces
+     */
+    public void setTraceMask(@Nullable Mask traceMask) {
+        this.traceMask = traceMask;
+    }
+
+    /**
      * Set the brush.
      * 
      * @param brush tbe brush
@@ -107,16 +129,16 @@ public class BrushTool implements TraceTool {
      * 
      * @param material the material
      */
-    public void setFill(Pattern material) {
+    public void setFill(@Nullable Pattern material) {
         this.material = material;
     }
 
     /**
      * Get the material.
-     * 
+     *
      * @return the material
      */
-    public Pattern getMaterial() {
+    @Nullable public Pattern getMaterial() {
         return material;
     }
 
@@ -158,8 +180,7 @@ public class BrushTool implements TraceTool {
 
     @Override
     public boolean actPrimary(Platform server, LocalConfiguration config, Player player, LocalSession session) {
-        WorldVector target = null;
-        target = player.getBlockTrace(getRange(), true);
+        Location target = player.getBlockTrace(getRange(), true, traceMask);
 
         if (target == null) {
             player.printError("No block in sight!");
@@ -168,31 +189,32 @@ public class BrushTool implements TraceTool {
 
         BlockBag bag = session.getBlockBag(player);
 
-        EditSession editSession = session.createEditSession(player);
-        Request.request().setEditSession(editSession);
-        if (mask != null) {
-            Mask existingMask = editSession.getMask();
+        try (EditSession editSession = session.createEditSession(player)) {
+            if (mask != null) {
+                Mask existingMask = editSession.getMask();
 
-            if (existingMask == null) {
-                editSession.setMask(mask);
-            } else if (existingMask instanceof MaskIntersection) {
-                ((MaskIntersection) existingMask).add(mask);
-            } else {
-                MaskIntersection newMask = new MaskIntersection(existingMask);
-                newMask.add(mask);
-                editSession.setMask(newMask);
+                if (existingMask == null) {
+                    editSession.setMask(mask);
+                } else if (existingMask instanceof MaskIntersection) {
+                    ((MaskIntersection) existingMask).add(mask);
+                } else {
+                    MaskIntersection newMask = new MaskIntersection(existingMask);
+                    newMask.add(mask);
+                    editSession.setMask(newMask);
+                }
             }
-        }
 
-        try {
-            brush.build(editSession, target, material, size);
-        } catch (MaxChangedBlocksException e) {
-            player.printError("Max blocks change limit reached.");
+            try {
+                brush.build(editSession, target.toVector().toBlockPoint(), material, size);
+            } catch (MaxChangedBlocksException e) {
+                player.printError("Max blocks change limit reached.");
+            } finally {
+                session.remember(editSession);
+            }
         } finally {
             if (bag != null) {
                 bag.flushChanges();
             }
-            session.remember(editSession);
         }
 
         return true;

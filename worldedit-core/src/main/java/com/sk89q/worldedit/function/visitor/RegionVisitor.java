@@ -19,12 +19,14 @@
 
 package com.sk89q.worldedit.function.visitor;
 
-import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.RegionFunction;
+import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.RunContext;
+import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.Region;
+
+import java.util.List;
 
 /**
  * Utility class to apply region functions to {@link com.sk89q.worldedit.regions.Region}.
@@ -51,7 +53,7 @@ public class RegionVisitor implements Operation {
 
     @Override
     public Operation resume(RunContext run) throws WorldEditException {
-        for (Vector pt : region) {
+        for (BlockVector3 pt : region) {
             if (function.apply(pt)) {
                 affected++;
             }
@@ -62,6 +64,11 @@ public class RegionVisitor implements Operation {
 
     @Override
     public void cancel() {
+    }
+
+    @Override
+    public void addStatusMessages(List<String> messages) {
+        messages.add(getAffected() + " blocks affected");
     }
 
 }

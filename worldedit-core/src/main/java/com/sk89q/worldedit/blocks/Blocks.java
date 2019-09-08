@@ -19,7 +19,13 @@
 
 package com.sk89q.worldedit.blocks;
 
+import com.google.common.collect.Maps;
+import com.sk89q.worldedit.registry.state.Property;
+import com.sk89q.worldedit.world.block.BlockStateHolder;
+import com.sk89q.worldedit.world.block.BlockType;
+
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * Block-related utility methods.
@@ -36,9 +42,9 @@ public final class Blocks {
      * @param o the block
      * @return true if the collection contains the given block
      */
-    public static boolean containsFuzzy(Collection<? extends BaseBlock> collection, BaseBlock o) {
+    public static <B extends BlockStateHolder<B>> boolean containsFuzzy(Collection<? extends BlockStateHolder<?>> collection, B o) {
         // Allow masked data in the searchBlocks to match various types
-        for (BaseBlock b : collection) {
+        for (BlockStateHolder<?> b : collection) {
             if (b.equalsFuzzy(o)) {
                 return true;
             }
@@ -46,4 +52,28 @@ public final class Blocks {
         return false;
     }
 
+    /**
+     * Parses a string->string map to find the matching Property and values for the given BlockType.
+     *
+     * @param states the desired states and values
+     * @param type the block type to get properties and values for
+     * @return a property->value map
+     */
+    public static Map<Property<Object>, Object> resolveProperties(Map<String, String> states, BlockType type) {
+        Map<String, ? extends Property<?>> existing = type.getPropertyMap();
+        Map<Property<Object>, Object> newMap = Maps.newHashMap();
+        states.forEach((key, value) -> {
+            @SuppressWarnings("unchecked")
+            Property<Object> prop = (Property<Object>) existing.get(key);
+            if (prop == null) return;
+            Object val = null;
+            try {
+                val = prop.getValueFor(value);
+            } catch (IllegalArgumentException ignored) {
+            }
+            if (val == null) return;
+            newMap.put(prop, val);
+        });
+        return newMap;
+    }
 }

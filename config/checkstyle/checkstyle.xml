@@ -5,8 +5,9 @@
 <module name="Checker">
   <!-- Tabs are strictly banned -->
   <module name="FileTabCharacter"/>
-
+  <module name="SuppressWarningsFilter" />
   <module name="TreeWalker">
+    <module name="SuppressWarningsHolder" /> <!-- allows for @SuppressWarnings annotation -->
     <!-- Important basics -->
     <!-- <module name="PackageDeclaration"/> Unlikely that we would miss this in a PR -->
     <module name="OuterTypeFilename"/> <!-- TypeName -> TypeName.java -->
@@ -27,7 +28,6 @@
       <property name="max" value="2"/>
     </module>
     <module name="SuperFinalize"/> <!-- We don't actually use this -->
-    <module name="JUnitTestCase"/> <!-- Checks tearDown(), setUp() etc. -->
 
     <!-- Style -->
     <module name="LeftCurly"> <!-- Left brace never goes on another line -->
@@ -53,12 +53,19 @@
     <!-- <module name="PackageName"/> Unlikely that we would miss this in a PR -->
     <module name="ParameterName"/>
     <!-- <module name="TypeName"/> Unlikely that we would miss this in a PR -->
+    <!-- Validate assignment operators -->
+    <module name="WhitespaceAround">
+      <property name="tokens" value="ASSIGN"/>
+    </module>
+    <!-- Validate String.to(Lower|Upper)Case() calls include Locale argument -->
+    <module name="Regexp">
+      <property name="message" value="Case-conversion calls must include an explicit Locale"/>
+      <property name="format" value="(?!Character)\.to(Lower|Upper)Case\(\)"/>
+      <property name="illegalPattern" value="true"/>
+    </module>
   </module>
-
-  <!-- Require the header, something that many people forget and we hate to fix -->
-  <!-- You should configure the header in your IDE -->
-  <module name="Header">
-    <property name="headerFile" value="${basedir}/config/checkstyle/header.txt"/>
-    <property name="fileExtensions" value="java"/>
+  <!-- Validate that command annotations are formatted correctly -->
+  <module name="RegexpMultiline">
+    <property name="format" value="^( +)@(Arg|Switch|Command)\(.*?\n\1 {5,}"/>
   </module>
 </module>

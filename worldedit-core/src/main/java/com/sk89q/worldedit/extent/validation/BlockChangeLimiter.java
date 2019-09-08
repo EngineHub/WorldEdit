@@ -19,14 +19,14 @@
 
 package com.sk89q.worldedit.extent.validation;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
 import com.sk89q.worldedit.MaxChangedBlocksException;
-import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.extent.AbstractDelegateExtent;
 import com.sk89q.worldedit.extent.Extent;
-
-import static com.google.common.base.Preconditions.checkArgument;
+import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.world.block.BlockStateHolder;
 
 /**
  * Limits the number of blocks that can be changed before a
@@ -41,7 +41,7 @@ public class BlockChangeLimiter extends AbstractDelegateExtent {
      * Create a new instance.
      *
      * @param extent the extent
-     * @param limit the limit (>= 0) or -1 for no limit
+     * @param limit the limit (&gt;= 0) or -1 for no limit
      */
     public BlockChangeLimiter(Extent extent, int limit) {
         super(extent);
@@ -51,7 +51,7 @@ public class BlockChangeLimiter extends AbstractDelegateExtent {
     /**
      * Get the limit.
      *
-     * @return the limit (>= 0) or -1 for no limit
+     * @return the limit (&gt;= 0) or -1 for no limit
      */
     public int getLimit() {
         return limit;
@@ -60,7 +60,7 @@ public class BlockChangeLimiter extends AbstractDelegateExtent {
     /**
      * Set the limit.
      *
-     * @param limit the limit (>= 0) or -1 for no limit
+     * @param limit the limit (&gt;= 0) or -1 for no limit
      */
     public void setLimit(int limit) {
         checkArgument(limit >= -1, "limit >= -1 required");
@@ -77,7 +77,7 @@ public class BlockChangeLimiter extends AbstractDelegateExtent {
     }
 
     @Override
-    public boolean setBlock(Vector location, BaseBlock block) throws WorldEditException {
+    public <B extends BlockStateHolder<B>> boolean setBlock(BlockVector3 location, B block) throws WorldEditException {
         if (limit >= 0) {
             if (count >= limit) {
                 throw new MaxChangedBlocksException(limit);

@@ -19,124 +19,190 @@
 
 package com.sk89q.worldedit.forge;
 
-import com.google.common.base.Joiner;
+import com.mojang.brigadier.ParseResults;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.WorldVector;
-import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.event.platform.PlatformReadyEvent;
 import com.sk89q.worldedit.extension.platform.Platform;
-import com.sk89q.worldedit.internal.LocalWorldAdapter;
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.Mod;
-import cpw.mods.fml.common.Mod.EventHandler;
-import cpw.mods.fml.common.Mod.Instance;
-import cpw.mods.fml.common.SidedProxy;
-import cpw.mods.fml.common.event.FMLInitializationEvent;
-import cpw.mods.fml.common.event.FMLPostInitializationEvent;
-import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import cpw.mods.fml.common.event.FMLServerAboutToStartEvent;
-import cpw.mods.fml.common.event.FMLServerStartedEvent;
-import cpw.mods.fml.common.event.FMLServerStoppingEvent;
-import cpw.mods.fml.common.eventhandler.Event.Result;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
+import com.sk89q.worldedit.forge.net.handler.InternalPacketHandler;
+import com.sk89q.worldedit.forge.net.handler.WECUIPacketHandler;
+import com.sk89q.worldedit.forge.net.packet.LeftClickAirEventMessage;
+import com.sk89q.worldedit.forge.proxy.ClientProxy;
+import com.sk89q.worldedit.forge.proxy.CommonProxy;
+import com.sk89q.worldedit.forge.proxy.ServerProxy;
+import com.sk89q.worldedit.internal.anvil.ChunkDeleter;
+import com.sk89q.worldedit.util.Location;
+import com.sk89q.worldedit.world.biome.BiomeType;
+import com.sk89q.worldedit.world.block.BlockCategory;
+import com.sk89q.worldedit.world.block.BlockType;
+import com.sk89q.worldedit.world.entity.EntityType;
+import com.sk89q.worldedit.world.item.ItemCategory;
+import com.sk89q.worldedit.world.item.ItemType;
+import net.minecraft.command.CommandSource;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.tags.ItemTags;
+import net.minecraft.util.Hand;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.CommandEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent.LeftClickEmpty;
+import net.minecraftforge.eventbus.api.Event;
+import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.DistExecutor;
+import net.minecraftforge.fml.ModContainer;
+import net.minecraftforge.fml.ModLoadingContext;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.event.server.FMLServerAboutToStartEvent;
+import net.minecraftforge.fml.event.server.FMLServerStartedEvent;
+import net.minecraftforge.fml.event.server.FMLServerStoppingEvent;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fml.loading.FMLPaths;
+import net.minecraftforge.registries.ForgeRegistries;
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
-import java.util.Map;
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static net.minecraftforge.event.entity.player.PlayerInteractEvent.Action;
+import static com.sk89q.worldedit.forge.ForgeAdapter.adaptPlayer;
+import static com.sk89q.worldedit.internal.anvil.ChunkDeleter.DELCHUNKS_FILE_NAME;
 
 /**
  * The Forge implementation of WorldEdit.
  */
-@Mod(modid = ForgeWorldEdit.MOD_ID, name = "WorldEdit", version = "%VERSION%", acceptableRemoteVersions = "*")
+@Mod(ForgeWorldEdit.MOD_ID)
 public class ForgeWorldEdit {
 
-    public static Logger logger;
+    private static final Logger LOGGER = LogManager.getLogger();
     public static final String MOD_ID = "worldedit";
-    public static final String CUI_PLUGIN_CHANNEL = "WECUI";
+    public static final String CUI_PLUGIN_CHANNEL = "cui";
 
     private ForgePermissionsProvider provider;
 
-    @Instance(MOD_ID)
     public static ForgeWorldEdit inst;
 
-    @SidedProxy(serverSide = "com.sk89q.worldedit.forge.CommonProxy", clientSide = "com.sk89q.worldedit.forge.ClientProxy")
-    public static CommonProxy proxy;
+    public static CommonProxy proxy = DistExecutor.runForDist(() -> ClientProxy::new, () -> ServerProxy::new);
 
     private ForgePlatform platform;
     private ForgeConfiguration config;
-    private File workingDir;
+    private Path workingDir;
 
-    @EventHandler
-    public void preInit(FMLPreInitializationEvent event) {
-        logger = event.getModLog();
-        // Setup working directory
-        workingDir = new File(event.getModConfigurationDirectory() + File.separator + "worldedit");
-        workingDir.mkdir();
+    private ModContainer container;
 
-        config = new ForgeConfiguration(this);
-        config.load();
+    public ForgeWorldEdit() {
+        inst = this;
 
-        FMLCommonHandler.instance().bus().register(ThreadSafeCache.getInstance());
-    }
+        IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
+        modBus.addListener(this::init);
 
-    @EventHandler
-    public void init(FMLInitializationEvent event) {
+        MinecraftForge.EVENT_BUS.register(ThreadSafeCache.getInstance());
         MinecraftForge.EVENT_BUS.register(this);
-        proxy.registerHandlers();
     }
 
-    @EventHandler
-    public void postInit(FMLPostInitializationEvent event) {
-        logger.info("WorldEdit for Forge (version " + getInternalVersion() + ") is loaded");
-    }
+    private void init(FMLCommonSetupEvent event) {
+        this.container = ModLoadingContext.get().getActiveContainer();
 
-    @EventHandler
-    public void serverAboutToStart(FMLServerAboutToStartEvent event) {
-        if (this.platform != null) {
-            logger.warn("FMLServerStartingEvent occurred when FMLServerStoppingEvent hasn't");
-            WorldEdit.getInstance().getPlatformManager().unregister(platform);
+        // Setup working directory
+        workingDir = FMLPaths.CONFIGDIR.get().resolve("worldedit");
+        if (!Files.exists(workingDir)) {
+            try {
+                Files.createDirectory(workingDir);
+            } catch (IOException e) {
+                throw new UncheckedIOException(e);
+            }
         }
 
-        ForgeBiomeRegistry.populate();
+        WECUIPacketHandler.init();
+        InternalPacketHandler.init();
+        proxy.registerHandlers();
 
+        LOGGER.info("WorldEdit for Forge (version " + getInternalVersion() + ") is loaded");
+    }
+
+    private void setupPlatform() {
         this.platform = new ForgePlatform(this);
 
         WorldEdit.getInstance().getPlatformManager().register(platform);
+
+//  TODO      if (ModList.get().isLoaded("sponge")) {
+//            this.provider = new ForgePermissionsProvider.SpongePermissionsProvider();
+//        } else {
         this.provider = new ForgePermissionsProvider.VanillaPermissionsProvider(platform);
+//        }
     }
 
-    @EventHandler
-    public void serverStopping(FMLServerStoppingEvent event) {
-        WorldEdit.getInstance().getPlatformManager().unregister(platform);
-    }
-
-    @EventHandler
-    public void serverStarted(FMLServerStartedEvent event) {
-        WorldEdit.getInstance().getEventBus().post(new PlatformReadyEvent());
+    private void setupRegistries() {
+        // Blocks
+        for (ResourceLocation name : ForgeRegistries.BLOCKS.getKeys()) {
+            if (BlockType.REGISTRY.get(name.toString()) == null) {
+                BlockType.REGISTRY.register(name.toString(), new BlockType(name.toString(),
+                    input -> ForgeAdapter.adapt(ForgeAdapter.adapt(input.getBlockType()).getDefaultState())));
+            }
+        }
+        // Items
+        for (ResourceLocation name : ForgeRegistries.ITEMS.getKeys()) {
+            if (ItemType.REGISTRY.get(name.toString()) == null) {
+                ItemType.REGISTRY.register(name.toString(), new ItemType(name.toString()));
+            }
+        }
+        // Entities
+        for (ResourceLocation name : ForgeRegistries.ENTITIES.getKeys()) {
+            if (EntityType.REGISTRY.get(name.toString()) == null) {
+                EntityType.REGISTRY.register(name.toString(), new EntityType(name.toString()));
+            }
+        }
+        // Biomes
+        for (ResourceLocation name : ForgeRegistries.BIOMES.getKeys()) {
+            if (BiomeType.REGISTRY.get(name.toString()) == null) {
+                BiomeType.REGISTRY.register(name.toString(), new BiomeType(name.toString()));
+            }
+        }
+        // Tags
+        for (ResourceLocation name : BlockTags.getCollection().getRegisteredTags()) {
+            if (BlockCategory.REGISTRY.get(name.toString()) == null) {
+                BlockCategory.REGISTRY.register(name.toString(), new BlockCategory(name.toString()));
+            }
+        }
+        for (ResourceLocation name : ItemTags.getCollection().getRegisteredTags()) {
+            if (ItemCategory.REGISTRY.get(name.toString()) == null) {
+                ItemCategory.REGISTRY.register(name.toString(), new ItemCategory(name.toString()));
+            }
+        }
     }
 
     @SubscribeEvent
-    public void onCommandEvent(CommandEvent event) {
-        if ((event.sender instanceof EntityPlayerMP)) {
-            if (((EntityPlayerMP) event.sender).worldObj.isRemote) return;
-            String[] split = new String[event.parameters.length + 1];
-            System.arraycopy(event.parameters, 0, split, 1, event.parameters.length);
-            split[0] = event.command.getCommandName();
-            com.sk89q.worldedit.event.platform.CommandEvent weEvent =
-                    new com.sk89q.worldedit.event.platform.CommandEvent(wrap((EntityPlayerMP) event.sender), Joiner.on(" ").join(split));
-            WorldEdit.getInstance().getEventBus().post(weEvent);
+    public void serverAboutToStart(FMLServerAboutToStartEvent event) {
+        final Path delChunks = workingDir.resolve(DELCHUNKS_FILE_NAME);
+        if (Files.exists(delChunks)) {
+            ChunkDeleter.runFromFile(delChunks, true);
         }
+    }
+
+    @SubscribeEvent
+    public void serverStopping(FMLServerStoppingEvent event) {
+        WorldEdit worldEdit = WorldEdit.getInstance();
+        worldEdit.getSessionManager().unload();
+        worldEdit.getPlatformManager().unregister(platform);
+    }
+
+    @SubscribeEvent
+    public void serverStarted(FMLServerStartedEvent event) {
+        setupPlatform();
+        setupRegistries();
+
+        config = new ForgeConfiguration(this);
+        config.load();
+        WorldEdit.getInstance().getEventBus().post(new PlatformReadyEvent());
     }
 
     @SubscribeEvent
@@ -145,59 +211,77 @@ public class ForgeWorldEdit {
             return;
         }
 
-        if (!platform.isHookingEvents()) return; // We have to be told to catch these events
+        if (!platform.isHookingEvents())
+            return; // We have to be told to catch these events
 
-        if (event.useItem == Result.DENY || event.entity.worldObj.isRemote) return;
+        if (event.getWorld().isRemote && event instanceof LeftClickEmpty) {
+            // catch LCE, pass it to server
+            InternalPacketHandler.getHandler().sendToServer(new LeftClickAirEventMessage());
+            return;
+        }
+
+        boolean isLeftDeny = event instanceof PlayerInteractEvent.LeftClickBlock
+                && ((PlayerInteractEvent.LeftClickBlock) event)
+                        .getUseItem() == Event.Result.DENY;
+        boolean isRightDeny =
+                event instanceof PlayerInteractEvent.RightClickBlock
+                        && ((PlayerInteractEvent.RightClickBlock) event)
+                                .getUseItem() == Event.Result.DENY;
+        if (isLeftDeny || isRightDeny || event.getEntity().world.isRemote || event.getHand() == Hand.OFF_HAND) {
+            return;
+        }
 
         WorldEdit we = WorldEdit.getInstance();
-        ForgePlayer player = wrap((EntityPlayerMP) event.entityPlayer);
-        ForgeWorld world = getWorld(event.entityPlayer.worldObj);
+        ForgePlayer player = adaptPlayer((ServerPlayerEntity) event.getPlayer());
+        ForgeWorld world = getWorld(event.getPlayer().world);
 
-        Action action = event.action;
-        switch (action) {
-            case LEFT_CLICK_BLOCK: {
-                WorldVector pos = new WorldVector(LocalWorldAdapter.adapt(world), event.x, event.y, event.z);
+        if (event instanceof PlayerInteractEvent.LeftClickEmpty) {
+            we.handleArmSwing(player); // this event cannot be canceled
+        } else if (event instanceof PlayerInteractEvent.LeftClickBlock) {
+            Location pos = new Location(world, event.getPos().getX(), event.getPos().getY(), event.getPos().getZ());
 
-                if (we.handleBlockLeftClick(player, pos)) {
-                    event.setCanceled(true);
-                }
-
-                if (we.handleArmSwing(player)) {
-                    event.setCanceled(true);
-                }
-
-                break;
+            if (we.handleBlockLeftClick(player, pos)) {
+                event.setCanceled(true);
             }
-            case RIGHT_CLICK_BLOCK: {
-                WorldVector pos = new WorldVector(LocalWorldAdapter.adapt(world), event.x, event.y, event.z);
 
-                if (we.handleBlockRightClick(player, pos)) {
-                    event.setCanceled(true);
-                }
-
-                if (we.handleRightClick(player)) {
-                    event.setCanceled(true);
-                }
-
-                break;
+            if (we.handleArmSwing(player)) {
+                event.setCanceled(true);
             }
-            case RIGHT_CLICK_AIR: {
-                if (we.handleRightClick(player)) {
-                    event.setCanceled(true);
-                }
+        } else if (event instanceof PlayerInteractEvent.RightClickBlock) {
+            Location pos = new Location(world, event.getPos().getX(), event.getPos().getY(), event.getPos().getZ());
 
-                break;
+            if (we.handleBlockRightClick(player, pos)) {
+                event.setCanceled(true);
+            }
+
+            if (we.handleRightClick(player)) {
+                event.setCanceled(true);
+            }
+        } else if (event instanceof PlayerInteractEvent.RightClickItem) {
+            if (we.handleRightClick(player)) {
+                event.setCanceled(true);
             }
         }
     }
 
-    public static ItemStack toForgeItemStack(BaseItemStack item) {
-        ItemStack ret = new ItemStack(Item.getItemById(item.getType()), item.getAmount(), item.getData());
-        for (Map.Entry<Integer, Integer> entry : item.getEnchantments().entrySet()) {
-            ret.addEnchantment(net.minecraft.enchantment.Enchantment.enchantmentsList[((Integer) entry.getKey())], (Integer) entry.getValue());
+    @SubscribeEvent
+    public void onCommandEvent(CommandEvent event) throws CommandSyntaxException {
+        ParseResults<CommandSource> parseResults = event.getParseResults();
+        if (!(parseResults.getContext().getSource().getEntity() instanceof ServerPlayerEntity)) {
+            return;
         }
-
-        return ret;
+        ServerPlayerEntity player = parseResults.getContext().getSource().asPlayer();
+        if (player.world.isRemote()) {
+            return;
+        }
+        if (parseResults.getContext().getCommand() != CommandWrapper.FAKE_COMMAND) {
+            return;
+        }
+        event.setCanceled(true);
+        WorldEdit.getInstance().getEventBus().post(new com.sk89q.worldedit.event.platform.CommandEvent(
+            adaptPlayer(parseResults.getContext().getSource().asPlayer()),
+            parseResults.getReader().getString()
+        ));
     }
 
     /**
@@ -210,25 +294,14 @@ public class ForgeWorldEdit {
     }
 
     /**
-     * Get the WorldEdit proxy for the given player.
-     *
-     * @param player the player
-     * @return the WorldEdit player
-     */
-    public ForgePlayer wrap(EntityPlayerMP player) {
-        checkNotNull(player);
-        return new ForgePlayer(platform, player);
-    }
-
-    /**
      * Get the session for a player.
      *
      * @param player the player
      * @return the session
      */
-    public LocalSession getSession(EntityPlayerMP player) {
+    public LocalSession getSession(ServerPlayerEntity player) {
         checkNotNull(player);
-        return WorldEdit.getInstance().getSessionManager().get(wrap(player));
+        return WorldEdit.getInstance().getSessionManager().get(adaptPlayer(player));
     }
 
     /**
@@ -257,7 +330,7 @@ public class ForgeWorldEdit {
      * @return the working directory
      */
     public File getWorkingDir() {
-        return this.workingDir;
+        return this.workingDir.toFile();
     }
 
     /**
@@ -266,7 +339,7 @@ public class ForgeWorldEdit {
      * @return a version string
      */
     String getInternalVersion() {
-        return ForgeWorldEdit.class.getAnnotation(Mod.class).version();
+        return container.getModInfo().getVersion().toString();
     }
 
     public void setPermissionsProvider(ForgePermissionsProvider provider) {

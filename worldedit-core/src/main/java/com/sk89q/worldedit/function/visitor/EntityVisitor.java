@@ -19,6 +19,8 @@
 
 package com.sk89q.worldedit.function.visitor;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.function.EntityFunction;
@@ -26,8 +28,7 @@ import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.RunContext;
 
 import java.util.Iterator;
-
-import static com.google.common.base.Preconditions.checkNotNull;
+import java.util.List;
 
 /**
  * Visits entities as provided by an {@code Iterator}.
@@ -73,6 +74,11 @@ public class EntityVisitor implements Operation {
 
     @Override
     public void cancel() {
+    }
+
+    @Override
+    public void addStatusMessages(List<String> messages) {
+        messages.add(getAffected() + " entities affected");
     }
 
 }

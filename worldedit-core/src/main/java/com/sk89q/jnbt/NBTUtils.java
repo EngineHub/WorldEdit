@@ -19,12 +19,12 @@
 
 package com.sk89q.jnbt;
 
-import com.sk89q.worldedit.Vector;
+import static com.google.common.base.Preconditions.checkNotNull;
+
+import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.world.storage.InvalidFormatException;
 
 import java.util.Map;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * A class which contains NBT-related utility methods.
@@ -69,6 +69,8 @@ public final class NBTUtils {
             return "TAG_String";
         } else if (clazz.equals(IntArrayTag.class)) {
             return "TAG_Int_Array";
+        } else if (clazz.equals(LongArrayTag.class)) {
+            return "TAG_Long_Array";
         } else {
             throw new IllegalArgumentException("Invalid tag classs ("
                     + clazz.getName() + ").");
@@ -107,6 +109,8 @@ public final class NBTUtils {
             return NBTConstants.TYPE_STRING;
         } else if (clazz.equals(IntArrayTag.class)) {
             return NBTConstants.TYPE_INT_ARRAY;
+        } else if (clazz.equals(LongArrayTag.class)) {
+            return NBTConstants.TYPE_LONG_ARRAY;
         } else {
             throw new IllegalArgumentException("Invalid tag classs ("
                     + clazz.getName() + ").");
@@ -146,6 +150,8 @@ public final class NBTUtils {
             return CompoundTag.class;
         case NBTConstants.TYPE_INT_ARRAY:
             return IntArrayTag.class;
+        case NBTConstants.TYPE_LONG_ARRAY:
+            return LongArrayTag.class;
         default:
             throw new IllegalArgumentException("Invalid tag type : " + type
                     + ".");
@@ -161,9 +167,9 @@ public final class NBTUtils {
      * @param listTag the list tag
      * @return a vector
      */
-    public static Vector toVector(ListTag listTag) {
+    public static Vector3 toVector(ListTag listTag) {
         checkNotNull(listTag);
-        return new Vector(listTag.asDouble(0), listTag.asDouble(1), listTag.asDouble(2));
+        return Vector3.at(listTag.asDouble(0), listTag.asDouble(1), listTag.asDouble(2));
     }
 
     /**

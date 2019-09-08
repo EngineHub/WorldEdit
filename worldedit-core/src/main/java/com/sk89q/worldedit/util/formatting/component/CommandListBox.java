@@ -19,29 +19,88 @@
 
 package com.sk89q.worldedit.util.formatting.component;
 
-import com.sk89q.worldedit.util.formatting.Style;
+import com.google.common.collect.Lists;
+import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.util.formatting.text.TextComponent;
+import com.sk89q.worldedit.util.formatting.text.event.ClickEvent;
+import com.sk89q.worldedit.util.formatting.text.event.HoverEvent;
+import com.sk89q.worldedit.util.formatting.text.format.TextColor;
 
-public class CommandListBox extends MessageBox {
+import java.util.List;
 
-    private boolean first = true;
+public class CommandListBox extends PaginationBox {
+
+    private List<CommandEntry> commands = Lists.newArrayList();
+    private boolean hideHelp;
+    private String helpCommand;
 
     /**
      * Create a new box.
      *
      * @param title the title
      */
-    public CommandListBox(String title) {
-        super(title);
+    public CommandListBox(String title, String pageCommand, String helpCommand) {
+        super(title, pageCommand);
+        this.helpCommand = helpCommand;
     }
 
-    public CommandListBox appendCommand(String alias, String description) {
-        if (!first) {
-            getContents().newLine();
+    @Override
+    public Component getComponent(int number) {
+        return commands.get(number).createComponent(hideHelp);
+    }
+
+    @Override
+    public int getComponentsSize() {
+        return commands.size();
+    }
+
+    public void appendCommand(String alias, Component description) {
+        appendCommand(alias, description, null);
+    }
+
+    public void appendCommand(String alias, String description, String insertion) {
+        appendCommand(alias, TextComponent.of(description), insertion);
+    }
+
+    public void appendCommand(String alias, Component description, String insertion) {
+        commands.add(new CommandEntry(alias, description, insertion));
+    }
+
+    public boolean isHidingHelp() {
+        return hideHelp;
+    }
+
+    public void setHidingHelp(boolean hideHelp) {
+        this.hideHelp = hideHelp;
+    }
+
+    private class CommandEntry {
+        private final String alias;
+        private final Component description;
+        private final String insertion;
+
+        CommandEntry(String alias, Component description, String insertion) {
+            this.alias = alias;
+            this.description = description;
+            this.insertion = insertion;
         }
-        getContents().createFragment(Style.YELLOW_DARK).append(alias).append(": ");
-        getContents().append(description);
-        first = false;
-        return this;
-    }
 
+        Component createComponent(boolean hideHelp) {
+            TextComponentProducer line = new TextComponentProducer();
+            if (!hideHelp) {
+                line.append(SubtleFormat.wrap("? ")
+                        .clickEvent(ClickEvent.of(ClickEvent.Action.RUN_COMMAND, CommandListBox.this.helpCommand + " " + insertion))
+                        .hoverEvent(HoverEvent.of(HoverEvent.Action.SHOW_TEXT, TextComponent.of("Additional Help"))));
+            }
+            TextComponent command = TextComponent.of(alias, TextColor.GOLD);
+            if (insertion == null) {
+                line.append(command);
+            } else {
+                line.append(command
+                        .clickEvent(ClickEvent.of(ClickEvent.Action.SUGGEST_COMMAND, insertion))
+                        .hoverEvent(HoverEvent.of(HoverEvent.Action.SHOW_TEXT, TextComponent.of("Click to select"))));
+            }
+            return line.append(TextComponent.of(": ")).append(description).create();
+        }
+    }
 }

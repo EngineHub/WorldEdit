@@ -19,7 +19,7 @@
 
 package com.sk89q.worldedit.regions.selector.limit;
 
-import com.google.common.base.Optional;
+import java.util.Optional;
 
 /**
  * No limits at all.
@@ -33,12 +33,12 @@ public class PermissiveSelectorLimits implements SelectorLimits {
 
     @Override
     public Optional<Integer> getPolygonVertexLimit() {
-        return Optional.absent();
+        return Optional.empty();
     }
 
     @Override
     public Optional<Integer> getPolyhedronVertexLimit() {
-        return Optional.absent();
+        return Optional.empty();
     }
 
     /**

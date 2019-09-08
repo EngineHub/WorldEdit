@@ -21,12 +21,13 @@ package com.sk89q.worldedit.util;
 
 import com.sk89q.util.StringUtil;
 
-import javax.swing.*;
-import javax.swing.filechooser.FileFilter;
 import java.io.File;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileFilter;
 
 public final class FileDialogUtil {
     private FileDialogUtil() {
@@ -69,7 +70,7 @@ public final class FileDialogUtil {
         private String desc;
 
         private ExtensionFilter(String[] exts) {
-            this.exts = new HashSet<String>(Arrays.asList(exts));
+            this.exts = new HashSet<>(Arrays.asList(exts));
 
             desc = StringUtil.joinString(exts, ",");
         }
@@ -84,7 +85,7 @@ public final class FileDialogUtil {
             if (index == -1 || index == path.length() - 1) {
                 return false;
             } else {
-                return exts.contains(path.indexOf(index + 1));
+                return exts.contains(path.substring(index + 1));
             }
         }
 

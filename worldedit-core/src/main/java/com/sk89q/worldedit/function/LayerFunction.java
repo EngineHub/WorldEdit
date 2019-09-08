@@ -19,9 +19,9 @@
 
 package com.sk89q.worldedit.function;
 
-import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.function.visitor.LayerVisitor;
+import com.sk89q.worldedit.math.BlockVector3;
 
 /**
  * A function that takes a position and a depth.
@@ -35,7 +35,7 @@ public interface LayerFunction {
      * @param position return whether the given block is the ground
      * @return true if the search should stop
      */
-    boolean isGround(Vector position);
+    boolean isGround(BlockVector3 position);
 
     /**
      * Apply the function to the given position.
@@ -48,5 +48,5 @@ public interface LayerFunction {
      * @return true whether this method should be called for further layers
      * @throws WorldEditException thrown on an error
      */
-    boolean apply(Vector position, int depth) throws WorldEditException;
+    boolean apply(BlockVector3 position, int depth) throws WorldEditException;
 }

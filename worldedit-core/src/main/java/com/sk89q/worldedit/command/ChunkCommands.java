@@ -19,161 +19,180 @@
 
 package com.sk89q.worldedit.command;
 
-import com.sk89q.minecraft.util.commands.Command;
-import com.sk89q.minecraft.util.commands.CommandContext;
-import com.sk89q.minecraft.util.commands.CommandPermissions;
-import com.sk89q.minecraft.util.commands.Logging;
-import com.sk89q.worldedit.*;
+import com.google.gson.JsonIOException;
+import com.sk89q.worldedit.LocalSession;
+import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.command.util.CommandPermissions;
+import com.sk89q.worldedit.command.util.CommandPermissionsConditionGenerator;
+import com.sk89q.worldedit.command.util.Logging;
+import com.sk89q.worldedit.command.util.WorldEditAsyncCommandBuilder;
 import com.sk89q.worldedit.entity.Player;
-import com.sk89q.worldedit.math.MathUtils;
+import com.sk89q.worldedit.extension.platform.Actor;
+import com.sk89q.worldedit.internal.anvil.ChunkDeleter;
+import com.sk89q.worldedit.internal.anvil.ChunkDeletionInfo;
+import com.sk89q.worldedit.math.BlockVector2;
+import com.sk89q.worldedit.regions.CuboidRegion;
+import com.sk89q.worldedit.regions.Region;
+import com.sk89q.worldedit.util.Location;
+import com.sk89q.worldedit.util.formatting.component.PaginationBox;
+import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.util.formatting.text.TextComponent;
+import com.sk89q.worldedit.util.formatting.text.event.ClickEvent;
+import com.sk89q.worldedit.util.formatting.text.format.TextColor;
+import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.storage.LegacyChunkStore;
 import com.sk89q.worldedit.world.storage.McRegionChunkStore;
+import org.enginehub.piston.annotation.Command;
+import org.enginehub.piston.annotation.CommandContainer;
+import org.enginehub.piston.annotation.param.ArgFlag;
+import org.enginehub.piston.exception.StopExecutionException;
 
-import java.io.FileOutputStream;
+import java.io.File;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static com.sk89q.minecraft.util.commands.Logging.LogMode.REGION;
+import static com.sk89q.worldedit.command.util.Logging.LogMode.REGION;
+import static com.sk89q.worldedit.internal.anvil.ChunkDeleter.DELCHUNKS_FILE_NAME;
 
 /**
  * Commands for working with chunks.
  */
+@CommandContainer(superTypes = CommandPermissionsConditionGenerator.Registration.class)
 public class ChunkCommands {
 
     private final WorldEdit worldEdit;
-    
+
     public ChunkCommands(WorldEdit worldEdit) {
         checkNotNull(worldEdit);
         this.worldEdit = worldEdit;
     }
 
     @Command(
-        aliases = { "chunkinfo" },
-        usage = "",
-        desc = "Get information about the chunk that you are inside",
-        min = 0,
-        max = 0
+        name = "chunkinfo",
+        desc = "Get information about the chunk you're inside"
     )
     @CommandPermissions("worldedit.chunkinfo")
-    public void chunkInfo(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
-        Vector pos = player.getBlockIn();
+    public void chunkInfo(Player player) {
+        Location pos = player.getBlockLocation();
         int chunkX = (int) Math.floor(pos.getBlockX() / 16.0);
         int chunkZ = (int) Math.floor(pos.getBlockZ() / 16.0);
 
-        String folder1 = Integer.toString(MathUtils.divisorMod(chunkX, 64), 36);
-        String folder2 = Integer.toString(MathUtils.divisorMod(chunkZ, 64), 36);
-        String filename = "c." + Integer.toString(chunkX, 36)
-                + "." + Integer.toString(chunkZ, 36) + ".dat";
-
+        final BlockVector2 chunkPos = BlockVector2.at(chunkX, chunkZ);
         player.print("Chunk: " + chunkX + ", " + chunkZ);
-        player.print("Old format: " + folder1 + "/" + folder2 + "/" + filename);
-        player.print("McRegion: region/" + McRegionChunkStore.getFilename(
-                new Vector2D(chunkX, chunkZ)));
+        player.print("Old format: " + LegacyChunkStore.getFilename(chunkPos));
+        player.print("McRegion: region/" + McRegionChunkStore.getFilename(chunkPos));
     }
 
     @Command(
-        aliases = { "listchunks" },
-        usage = "",
-        desc = "List chunks that your selection includes",
-        min = 0,
-        max = 0
+        name = "listchunks",
+        desc = "List chunks that your selection includes"
     )
     @CommandPermissions("worldedit.listchunks")
-    public void listChunks(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
-        Set<Vector2D> chunks = session.getSelection(player.getWorld()).getChunks();
+    public void listChunks(Actor actor, World world, LocalSession session,
+                            @ArgFlag(name = 'p', desc = "Page number.", def = "1") int page) throws WorldEditException {
+        final Region region = session.getSelection(world);
 
-        for (Vector2D chunk : chunks) {
-            player.print(LegacyChunkStore.getFilename(chunk));
-        }
+        WorldEditAsyncCommandBuilder.createAndSendMessage(actor,
+                () -> new ChunkListPaginationBox(region).create(page),
+                "Listing chunks for " + actor.getName());
     }
 
     @Command(
-        aliases = { "delchunks" },
-        usage = "",
-        desc = "Delete chunks that your selection includes",
-        min = 0,
-        max = 0
+        name = "delchunks",
+        desc = "Delete chunks that your selection includes"
     )
     @CommandPermissions("worldedit.delchunks")
     @Logging(REGION)
-    public void deleteChunks(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
-        player.print("Note that this command does not yet support the mcregion format.");
-        LocalConfiguration config = worldEdit.getConfiguration();
-
-        Set<Vector2D> chunks = session.getSelection(player.getWorld()).getChunks();
-        FileOutputStream out = null;
-
-        if (config.shellSaveType == null) {
-            player.printError("Shell script type must be configured: 'bat' or 'bash' expected.");
-        } else if (config.shellSaveType.equalsIgnoreCase("bat")) {
-            try {
-                out = new FileOutputStream("worldedit-delchunks.bat");
-                OutputStreamWriter writer = new OutputStreamWriter(out, "UTF-8");
-                writer.write("@ECHO off\r\n");
-                writer.write("ECHO This batch file was generated by WorldEdit.\r\n");
-                writer.write("ECHO It contains a list of chunks that were in the selected region\r\n");
-                writer.write("ECHO at the time that the /delchunks command was used. Run this file\r\n");
-                writer.write("ECHO in order to delete the chunk files listed in this file.\r\n");
-                writer.write("ECHO.\r\n");
-                writer.write("PAUSE\r\n");
-
-                for (Vector2D chunk : chunks) {
-                    String filename = LegacyChunkStore.getFilename(chunk);
-                    writer.write("ECHO " + filename + "\r\n");
-                    writer.write("DEL \"world/" + filename + "\"\r\n");
-                }
-
-                writer.write("ECHO Complete.\r\n");
-                writer.write("PAUSE\r\n");
-                writer.close();
-                player.print("worldedit-delchunks.bat written. Run it when no one is near the region.");
-            } catch (IOException e) {
-                player.printError("Error occurred: " + e.getMessage());
-            } finally {
-                if (out != null) {
-                    try {
-                        out.close();
-                    } catch (IOException ignored) { }
-                }
-            }
-        } else if (config.shellSaveType.equalsIgnoreCase("bash")) {
-            try {
-                out = new FileOutputStream("worldedit-delchunks.sh");
-                OutputStreamWriter writer = new OutputStreamWriter(out, "UTF-8");
-                writer.write("#!/bin/bash\n");
-                writer.write("echo This shell file was generated by WorldEdit.\n");
-                writer.write("echo It contains a list of chunks that were in the selected region\n");
-                writer.write("echo at the time that the /delchunks command was used. Run this file\n");
-                writer.write("echo in order to delete the chunk files listed in this file.\n");
-                writer.write("echo\n");
-                writer.write("read -p \"Press any key to continue...\"\n");
-
-                for (Vector2D chunk : chunks) {
-                    String filename = LegacyChunkStore.getFilename(chunk);
-                    writer.write("echo " + filename + "\n");
-                    writer.write("rm \"world/" + filename + "\"\n");
-                }
-
-                writer.write("echo Complete.\n");
-                writer.write("read -p \"Press any key to continue...\"\n");
-                writer.close();
-                player.print("worldedit-delchunks.sh written. Run it when no one is near the region.");
-                player.print("You will have to chmod it to be executable.");
-            } catch (IOException e) {
-                player.printError("Error occurred: " + e.getMessage());
-            } finally {
-                if (out != null) {
-                    try {
-                        out.close();
-                    } catch (IOException ignored) {
-                    }
-                }
-            }
-        } else {
-            player.printError("Shell script type must be configured: 'bat' or 'bash' expected.");
+    public void deleteChunks(Actor actor, World world, LocalSession session,
+                                @ArgFlag(name = 'o', desc = "Only delete chunks older than the specified time.", def = "")
+                                    ZonedDateTime beforeTime) throws WorldEditException {
+        Path worldDir = world.getStoragePath();
+        if (worldDir == null) {
+            throw new StopExecutionException(TextComponent.of("Couldn't find world folder for this world."));
         }
+
+        File chunkFile = worldEdit.getWorkingDirectoryFile(DELCHUNKS_FILE_NAME);
+        Path chunkPath = chunkFile.toPath();
+        ChunkDeletionInfo currentInfo = null;
+        if (Files.exists(chunkPath)) {
+            try {
+                currentInfo = ChunkDeleter.readInfo(chunkFile.toPath());
+            } catch (IOException e) {
+                throw new StopExecutionException(TextComponent.of("Error reading existing chunk file."));
+            }
+        }
+        if (currentInfo == null) {
+            currentInfo = new ChunkDeletionInfo();
+            currentInfo.batches = new ArrayList<>();
+        }
+
+        ChunkDeletionInfo.ChunkBatch newBatch = new ChunkDeletionInfo.ChunkBatch();
+        newBatch.worldPath = worldDir.toAbsolutePath().normalize().toString();
+        newBatch.backup = true;
+        final Region selection = session.getSelection(world);
+        if (selection instanceof CuboidRegion) {
+            newBatch.minChunk = selection.getMinimumPoint().shr(4).toBlockVector2();
+            newBatch.maxChunk = selection.getMaximumPoint().shr(4).toBlockVector2();
+        } else {
+            // this has a possibility to OOM for very large selections still
+            Set<BlockVector2> chunks = selection.getChunks();
+            newBatch.chunks = new ArrayList<>(chunks);
+        }
+        if (beforeTime != null) {
+            newBatch.deletionPredicates = new ArrayList<>();
+            ChunkDeletionInfo.DeletionPredicate timePred = new ChunkDeletionInfo.DeletionPredicate();
+            timePred.property = "modification";
+            timePred.comparison = "<";
+            timePred.value = String.valueOf((int) beforeTime.toOffsetDateTime().toEpochSecond());
+            newBatch.deletionPredicates.add(timePred);
+        }
+        currentInfo.batches.add(newBatch);
+
+        try {
+            ChunkDeleter.writeInfo(currentInfo, chunkPath);
+        } catch (IOException | JsonIOException e) {
+            throw new StopExecutionException(TextComponent.of("Failed to write chunk list: " + e.getMessage()));
+        }
+
+        actor.print(String.format("%d chunk(s) have been marked for deletion the next time the server starts.",
+                newBatch.getChunkCount()));
+        if (currentInfo.batches.size() > 1) {
+            actor.printDebug(String.format("%d chunks total marked for deletion. (May have overlaps).",
+                    currentInfo.batches.stream().mapToInt(ChunkDeletionInfo.ChunkBatch::getChunkCount).sum()));
+        }
+        actor.print(TextComponent.of("You can mark more chunks for deletion, or to stop now, run: ", TextColor.LIGHT_PURPLE)
+                .append(TextComponent.of("/stop", TextColor.AQUA)
+                        .clickEvent(ClickEvent.of(ClickEvent.Action.SUGGEST_COMMAND, "/stop"))));
     }
 
+    private static class ChunkListPaginationBox extends PaginationBox {
+        //private final Region region;
+        private final List<BlockVector2> chunks;
+
+        ChunkListPaginationBox(Region region) {
+            super("Selected Chunks", "/listchunks -p %page%");
+            // TODO make efficient/streamable/calculable implementations of this
+            // for most region types, so we can just store the region and random-access get one page of chunks
+            // (this is non-trivial for some types of selections...)
+            //this.region = region.clone();
+            this.chunks = new ArrayList<>(region.getChunks());
+        }
+
+        @Override
+        public Component getComponent(int number) {
+            return TextComponent.of(chunks.get(number).toString());
+        }
+
+        @Override
+        public int getComponentsSize() {
+            return chunks.size();
+        }
+    }
 }

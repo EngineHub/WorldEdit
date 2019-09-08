@@ -19,11 +19,11 @@
 
 package com.sk89q.worldedit.util.eventbus;
 
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
-
-import static java.lang.annotation.ElementType.*;
-import static java.lang.annotation.RetentionPolicy.*;
 
 /**
  * Used to mark methods as event handlers.

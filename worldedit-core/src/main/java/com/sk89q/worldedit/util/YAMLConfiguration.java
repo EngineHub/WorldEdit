@@ -19,16 +19,17 @@
 
 package com.sk89q.worldedit.util;
 
+import com.google.common.collect.Lists;
 import com.sk89q.util.yaml.YAMLProcessor;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.session.SessionManager;
+import com.sk89q.worldedit.util.report.Unreported;
 import com.sk89q.worldedit.world.snapshot.SnapshotRepository;
+import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.util.HashSet;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * A less simple implementation of {@link LocalConfiguration}
@@ -36,8 +37,8 @@ import java.util.logging.Logger;
  */
 public class YAMLConfiguration extends LocalConfiguration {
 
-    protected final YAMLProcessor config;
-    protected final Logger logger;
+    @Unreported protected final YAMLProcessor config;
+    @Unreported protected final Logger logger;
 
     public YAMLConfiguration(YAMLProcessor config, Logger logger) {
         this.config = config;
@@ -49,11 +50,12 @@ public class YAMLConfiguration extends LocalConfiguration {
         try {
             config.load();
         } catch (IOException e) {
-            logger.log(Level.WARNING, "Error loading WorldEdit configuration", e);
+            logger.warn("Error loading WorldEdit configuration", e);
         }
 
         profile = config.getBoolean("debug", profile);
-        wandItem = config.getInt("wand-item", wandItem);
+        traceUnflushedSessions = config.getBoolean("debugging.trace-unflushed-sessions", traceUnflushedSessions);
+        wandItem = convertLegacyItem(config.getString("wand-item", wandItem));
 
         defaultChangeLimit = Math.max(-1, config.getInt(
                 "limits.max-blocks-changed.default", defaultChangeLimit));
@@ -76,19 +78,18 @@ public class YAMLConfiguration extends LocalConfiguration {
         butcherDefaultRadius = Math.max(-1, config.getInt("limits.butcher-radius.default", butcherDefaultRadius));
         butcherMaxRadius = Math.max(-1, config.getInt("limits.butcher-radius.maximum", butcherMaxRadius));
 
-        disallowedBlocks = new HashSet<Integer>(config.getIntList("limits.disallowed-blocks", null));
-        allowedDataCycleBlocks = new HashSet<Integer>(config.getIntList("limits.allowed-data-cycle-blocks", null));
+        disallowedBlocks = new HashSet<>(config.getStringList("limits.disallowed-blocks", Lists.newArrayList(getDefaultDisallowedBlocks())));
+        allowedDataCycleBlocks = new HashSet<>(config.getStringList("limits.allowed-data-cycle-blocks", null));
 
         registerHelp = config.getBoolean("register-help", true);
         logCommands = config.getBoolean("logging.log-commands", logCommands);
         logFile = config.getString("logging.file", logFile);
+        logFormat = config.getString("logging.format", logFormat);
 
         superPickaxeDrop = config.getBoolean("super-pickaxe.drop-items",
                 superPickaxeDrop);
         superPickaxeManyDrop = config.getBoolean(
                 "super-pickaxe.many-drop-items", superPickaxeManyDrop);
-
-        noDoubleSlash = config.getBoolean("no-double-slash", noDoubleSlash);
 
         useInventory = config.getBoolean("use-inventory.enable", useInventory);
         useInventoryOverride = config.getBoolean("use-inventory.allow-override",
@@ -96,12 +97,15 @@ public class YAMLConfiguration extends LocalConfiguration {
         useInventoryCreativeOverride = config.getBoolean("use-inventory.creative-mode-overrides",
                 useInventoryCreativeOverride);
 
-        navigationWand = config.getInt("navigation-wand.item", navigationWand);
+        navigationWand = convertLegacyItem(config.getString("navigation-wand.item", navigationWand));
         navigationWandMaxDistance = config.getInt("navigation-wand.max-distance", navigationWandMaxDistance);
         navigationUseGlass = config.getBoolean("navigation.use-glass", navigationUseGlass);
 
         scriptTimeout = config.getInt("scripting.timeout", scriptTimeout);
         scriptsDir = config.getString("scripting.dir", scriptsDir);
+
+        calculationTimeout = config.getInt("calculation.timeout", calculationTimeout);
+        maxCalculationTimeout = config.getInt("calculation.max-timeout", maxCalculationTimeout);
 
         saveDir = config.getString("saving.dir", saveDir);
 
@@ -110,6 +114,7 @@ public class YAMLConfiguration extends LocalConfiguration {
         SessionManager.EXPIRATION_GRACE = config.getInt("history.expiration", 10) * 60 * 1000;
 
         showHelpInfo = config.getBoolean("show-help-on-first-use", true);
+        serverSideCUI = config.getBoolean("server-side-cui", true);
 
         String snapshotsDir = config.getString("snapshots.directory", "");
         if (!snapshotsDir.isEmpty()) {
@@ -117,8 +122,9 @@ public class YAMLConfiguration extends LocalConfiguration {
         }
 
         String type = config.getString("shell-save-type", "").trim();
-        shellSaveType = type.equals("") ? null : type;
+        shellSaveType = type.isEmpty() ? null : type;
 
+        extendedYLimit = config.getBoolean("compat.extended-y-limit", false);
     }
 
     public void unload() {

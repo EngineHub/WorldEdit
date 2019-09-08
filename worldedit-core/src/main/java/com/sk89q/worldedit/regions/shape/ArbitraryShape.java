@@ -19,13 +19,12 @@
 
 package com.sk89q.worldedit.regions.shape;
 
-import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
-import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.patterns.Pattern;
+import com.sk89q.worldedit.function.pattern.Pattern;
+import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.Region;
+import com.sk89q.worldedit.world.block.BaseBlock;
 
 /**
  * Generates solid and hollow shapes according to materials returned by the
@@ -34,44 +33,42 @@ import com.sk89q.worldedit.regions.Region;
 public abstract class ArbitraryShape {
 
     protected final Region extent;
+
     private int cacheOffsetX;
     private int cacheOffsetY;
     private int cacheOffsetZ;
-    @SuppressWarnings("FieldCanBeLocal")
     private int cacheSizeX;
     private int cacheSizeY;
     private int cacheSizeZ;
 
+    /**
+     * Cache entires:
+     * 0 = unknown
+     * -1 = outside
+     * 1 = inside
+     */
+    private final byte[] cache;
+
     public ArbitraryShape(Region extent) {
         this.extent = extent;
 
-        Vector min = extent.getMinimumPoint();
-        Vector max = extent.getMaximumPoint();
+        BlockVector3 min = extent.getMinimumPoint();
+        BlockVector3 max = extent.getMaximumPoint();
 
         cacheOffsetX = min.getBlockX() - 1;
         cacheOffsetY = min.getBlockY() - 1;
         cacheOffsetZ = min.getBlockZ() - 1;
 
-        cacheSizeX = (int) (max.getX() - cacheOffsetX + 2);
-        cacheSizeY = (int) (max.getY() - cacheOffsetY + 2);
-        cacheSizeZ = (int) (max.getZ() - cacheOffsetZ + 2);
+        cacheSizeX = max.getX() - cacheOffsetX + 2;
+        cacheSizeY = max.getY() - cacheOffsetY + 2;
+        cacheSizeZ = max.getZ() - cacheOffsetZ + 2;
 
-        cache = new short[cacheSizeX * cacheSizeY * cacheSizeZ];
+        cache = new byte[cacheSizeX * cacheSizeY * cacheSizeZ];
     }
 
     protected Region getExtent() {
         return extent;
     }
-
-
-    /**
-     * Cache entries:
-     * 0 = unknown
-     * -1 = outside
-     * -2 = inside but type and data 0
-     * > 0 = inside, value = (type | (data << 8)), not handling data < 0
-     */
-    private final short[] cache;
 
     /**
      * Override this function to specify the shape to generate.
@@ -83,59 +80,6 @@ public abstract class ArbitraryShape {
      * @return material to place or null to not place anything.
      */
     protected abstract BaseBlock getMaterial(int x, int y, int z, BaseBlock defaultMaterial);
-
-    private BaseBlock getMaterialCached(int x, int y, int z, Pattern pattern) {
-        final int index = (y - cacheOffsetY) + (z - cacheOffsetZ) * cacheSizeY + (x - cacheOffsetX) * cacheSizeY * cacheSizeZ;
-
-        final short cacheEntry = cache[index];
-        switch (cacheEntry) {
-        case 0:
-            // unknown, fetch material
-            final BaseBlock material = getMaterial(x, y, z, pattern.next(new BlockVector(x, y, z)));
-            if (material == null) {
-                // outside
-                cache[index] = -1;
-                return null;
-            }
-
-            short newCacheEntry = (short) (material.getType() | ((material.getData() + 1) << 8));
-            if (newCacheEntry == 0) {
-                // type and data 0
-                newCacheEntry = -2;
-            }
-
-            cache[index] = newCacheEntry;
-            return material;
-
-        case -1:
-            // outside
-            return null;
-
-        case -2:
-            // type and data 0
-            return new BaseBlock(0, 0);
-        }
-
-        return new BaseBlock(cacheEntry & 255, ((cacheEntry >> 8) - 1) & 15);
-    }
-
-    private boolean isInsideCached(int x, int y, int z, Pattern pattern) {
-        final int index = (y - cacheOffsetY) + (z - cacheOffsetZ) * cacheSizeY + (x - cacheOffsetX) * cacheSizeY * cacheSizeZ;
-
-        switch (cache[index]) {
-        case 0:
-            // unknown block, meaning they must be outside the extent at this stage, but might still be inside the shape
-            return getMaterialCached(x, y, z, pattern) != null;
-
-        case -1:
-            // outside
-            return false;
-
-        default:
-            // inside
-            return true;
-        }
-    }
 
     /**
      * Generates the shape.
@@ -149,13 +93,13 @@ public abstract class ArbitraryShape {
     public int generate(EditSession editSession, Pattern pattern, boolean hollow) throws MaxChangedBlocksException {
         int affected = 0;
 
-        for (BlockVector position : getExtent()) {
+        for (BlockVector3 position : getExtent()) {
             int x = position.getBlockX();
             int y = position.getBlockY();
             int z = position.getBlockZ();
 
             if (!hollow) {
-                final BaseBlock material = getMaterial(x, y, z, pattern.next(position));
+                BaseBlock material = getMaterial(x, y, z, pattern.apply(position));
                 if (material != null && editSession.setBlock(position, material)) {
                     ++affected;
                 }
@@ -163,8 +107,10 @@ public abstract class ArbitraryShape {
                 continue;
             }
 
-            final BaseBlock material = getMaterialCached(x, y, z, pattern);
+            BaseBlock material = getMaterial(x, y, z, pattern.apply(position));
             if (material == null) {
+                final int index = (y - cacheOffsetY) + (z - cacheOffsetZ) * cacheSizeY + (x - cacheOffsetX) * cacheSizeY * cacheSizeZ;
+                cache[index] = -1;
                 continue;
             }
 
@@ -206,6 +152,29 @@ public abstract class ArbitraryShape {
         }
 
         return affected;
+    }
+
+    private boolean isInsideCached(int x, int y, int z, Pattern pattern) {
+        final int index = (y - cacheOffsetY) + (z - cacheOffsetZ) * cacheSizeY + (x - cacheOffsetX) * cacheSizeY * cacheSizeZ;
+
+        switch (cache[index]) {
+            case 0:
+                BaseBlock mat = getMaterial(x, y, z, pattern.apply(BlockVector3.at(x, y, z)));
+                if (mat == null) {
+                    cache[index] = -1;
+                    return false;
+                }
+                cache[index] = 1;
+                return true;
+
+            case -1:
+                // outside
+                return false;
+
+            default:
+                // inside
+                return true;
+        }
     }
 
 }

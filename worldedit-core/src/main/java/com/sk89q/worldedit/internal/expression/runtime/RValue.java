@@ -28,10 +28,10 @@ import com.sk89q.worldedit.internal.expression.parser.ParserException;
  */
 public interface RValue extends Identifiable {
 
-    public double getValue() throws EvaluationException;
+    double getValue() throws EvaluationException;
 
-    public RValue optimize() throws EvaluationException;
+    RValue optimize() throws EvaluationException;
 
-    public RValue bindVariables(Expression expression, boolean preferLValue) throws ParserException;
+    RValue bindVariables(Expression expression, boolean preferLValue) throws ParserException;
 
 }

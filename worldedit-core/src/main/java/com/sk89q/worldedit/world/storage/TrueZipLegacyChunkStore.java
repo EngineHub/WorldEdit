@@ -88,7 +88,7 @@ public class TrueZipLegacyChunkStore extends LegacyChunkStore {
 
         // Detect subfolder for the world's files
         if (folder != null) {
-            if (!folder.equals("")) {
+            if (!folder.isEmpty()) {
                 file = folder + "/" + file;
             }
         } else {

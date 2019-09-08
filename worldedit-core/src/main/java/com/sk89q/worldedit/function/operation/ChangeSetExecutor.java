@@ -19,14 +19,15 @@
 
 package com.sk89q.worldedit.function.operation;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.history.UndoContext;
 import com.sk89q.worldedit.history.change.Change;
 import com.sk89q.worldedit.history.changeset.ChangeSet;
-import com.sk89q.worldedit.history.UndoContext;
 
 import java.util.Iterator;
-
-import static com.google.common.base.Preconditions.checkNotNull;
+import java.util.List;
 
 /**
  * Performs an undo or redo from a given {@link ChangeSet}.
@@ -77,6 +78,10 @@ public class ChangeSetExecutor implements Operation {
 
     @Override
     public void cancel() {
+    }
+
+    @Override
+    public void addStatusMessages(List<String> messages) {
     }
 
     /**
