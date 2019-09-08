@@ -26,11 +26,13 @@ import com.sk89q.worldedit.world.storage.MissingWorldException;
 import javax.annotation.Nullable;
 import java.io.File;
 import java.io.FilenameFilter;
+import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -39,6 +41,7 @@ import java.util.Locale;
  */
 public class SnapshotRepository {
 
+    private final SnapshotDateParser fileNameDateParser = new YYMMDDHHIISSParser();
     protected File dir;
     protected List<SnapshotDateParser> dateParsers = new ArrayList<>();
 
@@ -53,7 +56,7 @@ public class SnapshotRepository {
         // If folder doesn't exist, make it
         dir.mkdirs();
 
-        dateParsers.add(new YYMMDDHHIISSParser());
+        dateParsers.add(fileNameDateParser);
         dateParsers.add(new ModificationTimerParser());
     }
 
@@ -93,11 +96,26 @@ public class SnapshotRepository {
                     list.add(snapshot);
                 }
             } else if (file.isDirectory()) {
-                for (String name : file.list(filter)) {
-                    if (file.getName().equalsIgnoreCase(worldName) || name.equalsIgnoreCase(worldName)) {
+                if (file.getName().equalsIgnoreCase(worldName)) {
+                    // <world>/<date>
+                    for (String name : file.list(filter)) {
                         Snapshot snapshot = new Snapshot(this, file.getName() + "/" + name);
                         detectDate(snapshot);
                         list.add(snapshot);
+                    }
+                } else {
+                    Calendar date = fileNameDateParser.detectDate(file);
+                    if (date != null) {
+                        // <date>/<world>
+                        ZonedDateTime zdt = ZonedDateTime.ofInstant(
+                            date.toInstant(),
+                            ZoneOffset.UTC
+                        );
+                        for (String name : file.list((dir, name) -> name.equalsIgnoreCase(worldName))) {
+                            Snapshot snapshot = new Snapshot(this, file.getName() + "/" + name);
+                            snapshot.setDate(zdt);
+                            list.add(snapshot);
+                        }
                     }
                 }
             }
