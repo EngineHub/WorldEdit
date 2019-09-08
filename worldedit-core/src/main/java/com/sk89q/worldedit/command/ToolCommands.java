@@ -225,7 +225,6 @@ public class ToolCommands {
 
     @Command(
         name = "command",
-        aliases = {"command"},
         desc = "Command tool"
     )
     @CommandPermissions({"worldedit.tool.command", "worldedit.scripting.execute"})
