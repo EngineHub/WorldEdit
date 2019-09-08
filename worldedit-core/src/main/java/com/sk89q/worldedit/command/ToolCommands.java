@@ -26,6 +26,7 @@ import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.command.tool.BlockDataCyler;
 import com.sk89q.worldedit.command.tool.BlockReplacer;
+import com.sk89q.worldedit.command.tool.CommandTool;
 import com.sk89q.worldedit.command.tool.DistanceWand;
 import com.sk89q.worldedit.command.tool.FloatingTreeRemover;
 import com.sk89q.worldedit.command.tool.FloodFillTool;
@@ -45,6 +46,9 @@ import com.sk89q.worldedit.world.item.ItemType;
 import org.enginehub.piston.annotation.Command;
 import org.enginehub.piston.annotation.CommandContainer;
 import org.enginehub.piston.annotation.param.Arg;
+
+import java.io.File;
+import java.util.List;
 
 @CommandContainer(superTypes = CommandPermissionsConditionGenerator.Registration.class)
 public class ToolCommands {
@@ -220,16 +224,27 @@ public class ToolCommands {
     }
 
     @Command(
-            aliases = { "command" },
-            usage = "<script> <args>",
-            desc = "Command tool",
-            min = 1,
-            max = -1
+        name = "command",
+        aliases = {"command"},
+        desc = "Command tool"
     )
-    @CommandPermissions("worldedit.tool.command")
-    public void command(Player player, LocalSession session, EditSession editSession, CommandContext args) throws WorldEditException {
+    @CommandPermissions({"worldedit.tool.command", "worldedit.scripting.execute"})
+    public void command(Player player, LocalSession session,
+                        @Arg(desc = "Filename of the CraftScript to load")
+                            String filename,
+                        @Arg(desc = "Arguments to the CraftScript", def = "", variable = true)
+                            List<String> args) throws WorldEditException {
+        if (!player.hasPermission("worldedit.scripting.execute." + filename)) {
+            player.printError("You don't have permission to use that script.");
+            return;
+        }
+        ItemType item = player.getItemInHand(HandSide.MAIN_HAND).getType();
 
-        session.setTool(player.getItemInHand(), new CommandTool(args));
-        player.print(args.getString(0) + " tool bound to " + ItemType.toHeldName(player.getItemInHand()) + ".");
+        File dir = we.getWorkingDirectoryFile(we.getConfiguration().scriptsDir);
+        File f = we.getSafeOpenFile(player, dir, filename, "js", "js");
+
+        session.setTool(item, new CommandTool(filename, f, args));
+        String fullCommand = filename + " " + String.join(" ", args);
+        player.print("Command '" + fullCommand + "' tool bound to " + item.getName() + ".");
     }
 }

@@ -19,37 +19,45 @@
 
 package com.sk89q.worldedit.command.tool;
 
-import com.sk89q.minecraft.util.commands.CommandContext;
-import com.sk89q.worldedit.*;
-import com.sk89q.worldedit.command.ScriptingCommands;
+import com.sk89q.worldedit.LocalConfiguration;
+import com.sk89q.worldedit.LocalSession;
+import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Platform;
+import com.sk89q.worldedit.util.Location;
+
+import java.io.File;
+import java.util.List;
+import java.util.stream.Stream;
 
 public class CommandTool implements BlockTool {
 
-    private CommandContext args;
-    private ScriptingCommands commands;
+    private final String filename;
+    private final File file;
+    private final List<String> args;
 
-    public CommandTool(CommandContext args) {
+    public CommandTool(String filename, File file, List<String> args) {
+        this.filename = filename;
+        this.file = file;
         this.args = args;
-        WorldEdit worldEdit = WorldEdit.getInstance();
-        this.commands = new ScriptingCommands(worldEdit);
     }
 
     @Override
     public boolean canUse(Actor player) {
-        return player.hasPermission("worldedit.tool.command");
+        return player.hasPermission("worldedit.tool.command")
+            && player.hasPermission("worldedit.scripting.execute")
+            && player.hasPermission("worldedit.scripting.execute." + filename);
     }
 
     @Override
-    public boolean actPrimary(Platform server, LocalConfiguration config, Player player, LocalSession session, com.sk89q.worldedit.util.Location clicked) {
-
-        EditSession editSession = session.createEditSession(player);
+    public boolean actPrimary(Platform server, LocalConfiguration config, Player player, LocalSession session, Location clicked) {
         try {
-            commands.execute(player, session, editSession, args);
+            WorldEdit.getInstance().runScript(player, file, Stream.concat(Stream.of(filename), args.stream())
+                .toArray(String[]::new));
         } catch (WorldEditException e) {
-            player.printError(e.toString());
+            return false;
         }
         return true;
     }
