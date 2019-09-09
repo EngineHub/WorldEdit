@@ -33,16 +33,19 @@ import java.util.Set;
 
 public class GravityBrush implements Brush {
 
-    private final boolean fullHeight;
+    private final boolean overrideHeight;
+    private final int heightOffset;
 
-    public GravityBrush(boolean fullHeight) {
-        this.fullHeight = fullHeight;
+    public GravityBrush(Integer heightOffset) {
+        this.overrideHeight = heightOffset != null;
+        this.heightOffset = heightOffset != null ? heightOffset : Integer.MIN_VALUE;
     }
 
     @Override
     public void build(EditSession editSession, BlockVector3 position, Pattern pattern, double size) throws MaxChangedBlocksException {
-        double yMax = fullHeight ? editSession.getWorld().getMaxY() : position.getY() + size;
-        double yMin = Math.max(position.getY() - size, 0);
+        double sizeOffset = overrideHeight ? heightOffset : size;
+        double yMax = Math.min(position.getY() + sizeOffset, editSession.getWorld().getMaxY());
+        double yMin = Math.max(position.getY() - sizeOffset, editSession.getWorld().getMinY());
         LocatedBlockList column = new LocatedBlockList();
         Set<BlockVector3> removedBlocks = new LinkedHashSet<>();
         for (double x = position.getX() - size; x <= position.getX() + size; x++) {

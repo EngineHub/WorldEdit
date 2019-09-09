@@ -32,7 +32,7 @@ import javax.annotation.Nullable;
 /**
  * This class uses an inefficient method to figure out what block a player
  * is looking towards.
- * 
+ *
  * <p>Originally written by toi. It was ported to WorldEdit and trimmed down by
  * sk89q. Thanks to Raphfrk for optimization of toi's original class.</p>
  */
@@ -54,7 +54,7 @@ public class TargetBlock {
 
     /**
      * Constructor requiring a player, uses default values
-     * 
+     *
      * @param player player to work with
      */
     public TargetBlock(Player player) {
@@ -109,7 +109,7 @@ public class TargetBlock {
 
     /**
      * Set the values, all constructors uses this function
-     * 
+     *
      * @param loc location of the view
      * @param xRotation the X rotation
      * @param yRotation the Y rotation
@@ -138,7 +138,7 @@ public class TargetBlock {
     /**
      * Returns any block at the sight. Returns null if out of range or if no
      * viable target was found. Will try to return the last valid air block it finds.
-     * 
+     *
      * @return Block
      */
     public Location getAnyTargetBlock() {
@@ -150,7 +150,8 @@ public class TargetBlock {
             } else {
                 if (searchForLastBlock) {
                     lastBlock = getCurrentBlock();
-                    if (lastBlock.getBlockY() <= 0 || lastBlock.getBlockY() >= world.getMaxY()) {
+                    if (lastBlock.getBlockY() <= world.getMinY()
+                        || lastBlock.getBlockY() >= world.getMaxY()) {
                         searchForLastBlock = false;
                     }
                 }
@@ -163,7 +164,7 @@ public class TargetBlock {
     /**
      * Returns the block at the sight. Returns null if out of range or if no
      * viable target was found
-     * 
+     *
      * @return Block
      */
     public Location getTargetBlock() {
@@ -175,7 +176,7 @@ public class TargetBlock {
     /**
      * Returns the block at the sight. Returns null if out of range or if no
      * viable target was found
-     * 
+     *
      * @return Block
      */
     public Location getSolidTargetBlock() {
@@ -186,7 +187,7 @@ public class TargetBlock {
 
     /**
      * Get next block
-     * 
+     *
      * @return next block position
      */
     public Location getNextBlock() {
@@ -212,7 +213,7 @@ public class TargetBlock {
 
     /**
      * Returns the current block along the line of vision
-     * 
+     *
      * @return block position
      */
     public Location getCurrentBlock() {
@@ -225,7 +226,7 @@ public class TargetBlock {
 
     /**
      * Returns the previous block in the aimed path
-     * 
+     *
      * @return block position
      */
     public Location getPreviousBlock() {

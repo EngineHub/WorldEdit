@@ -52,7 +52,7 @@ public class DataValidatorExtent extends AbstractDelegateExtent {
     public <B extends BlockStateHolder<B>> boolean setBlock(BlockVector3 location, B block) throws WorldEditException {
         final int y = location.getBlockY();
         final BlockType type = block.getBlockType();
-        if (y < 0 || y > world.getMaxY()) {
+        if (y < world.getMinY() || y > world.getMaxY()) {
             return false;
         }
 

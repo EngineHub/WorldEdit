@@ -64,6 +64,13 @@ public interface World extends Extent, Keyed {
     Path getStoragePath();
 
     /**
+     * Get the minimum Y.
+     *
+     * @return the minimum Y
+     */
+    int getMinY();
+
+    /**
      * Get the maximum Y.
      *
      * @return the maximum Y

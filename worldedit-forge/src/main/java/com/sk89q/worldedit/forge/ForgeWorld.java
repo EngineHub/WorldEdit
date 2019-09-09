@@ -477,6 +477,12 @@ public class ForgeWorld extends AbstractWorld {
     }
 
     @Override
+    public int getMinY() {
+        // Note: This method exists to be re-written by mods that vary world height
+        return 0;
+    }
+
+    @Override
     public int getMaxY() {
         return getWorld().getMaxHeight() - 1;
     }
