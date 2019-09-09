@@ -21,11 +21,17 @@ package com.sk89q.worldedit.internal.command;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
+import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.PlatformCommandManager;
 import com.sk89q.worldedit.internal.util.Substring;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
+import com.sk89q.worldedit.util.formatting.text.event.ClickEvent;
+import com.sk89q.worldedit.util.formatting.text.format.TextColor;
+import com.sk89q.worldedit.util.formatting.text.format.TextDecoration;
 import org.enginehub.piston.Command;
+import org.enginehub.piston.CommandParameters;
+import org.enginehub.piston.NoInputCommandParameters;
 import org.enginehub.piston.exception.CommandException;
 import org.enginehub.piston.inject.InjectedValueAccess;
 import org.enginehub.piston.inject.Key;
@@ -42,6 +48,63 @@ import static com.google.common.base.Preconditions.checkState;
 import static java.util.stream.Collectors.toList;
 
 public class CommandUtil {
+
+    private static Component makeDeprecatedFooter(Component newCommand) {
+        return TextComponent.builder("This command is deprecated. Use ", TextColor.GOLD)
+            .decoration(TextDecoration.ITALIC, true)
+            .append(newCommand)
+            .append(" instead.")
+            .build();
+    }
+
+    public interface NewCommandGenerator {
+
+        String newCommand(Command oldCommand, CommandParameters oldParameters);
+
+    }
+
+    public static Command deprecate(Command command, String reason,
+                                    NewCommandGenerator newCommandGenerator) {
+        Component deprecatedWarning = makeDeprecatedFooter(
+            newCommandSuggestion(newCommandGenerator,
+                NoInputCommandParameters.builder().build(),
+                command)
+        );
+        return command.toBuilder()
+            .action(parameters ->
+                deprecatedCommandWarning(parameters, command, reason, newCommandGenerator))
+            .footer(command.getFooter()
+                .map(existingFooter -> existingFooter
+                    .append(TextComponent.newline()).append(deprecatedWarning))
+                .orElse(deprecatedWarning))
+            .build();
+    }
+
+    private static int deprecatedCommandWarning(
+        CommandParameters parameters,
+        Command command,
+        String reason,
+        NewCommandGenerator generator
+    ) throws Exception {
+        parameters.injectedValue(Key.of(Actor.class))
+            .ifPresent(actor -> {
+                Component suggestion = newCommandSuggestion(generator, parameters, command);
+                actor.print(TextComponent.of(reason + ". Please use ", TextColor.GOLD)
+                    .append(suggestion)
+                    .append(TextComponent.of(" instead."))
+                );
+            });
+        return command.getAction().run(parameters);
+    }
+
+    private static Component newCommandSuggestion(NewCommandGenerator generator,
+                                                  CommandParameters parameters,
+                                                  Command command) {
+        String suggestedCommand = generator.newCommand(command, parameters);
+        return TextComponent.of(suggestedCommand)
+            .decoration(TextDecoration.UNDERLINED, true)
+            .clickEvent(ClickEvent.suggestCommand(suggestedCommand));
+    }
 
     public static Map<String, Command> getSubCommands(Command currentCommand) {
         return currentCommand.getParts().stream()

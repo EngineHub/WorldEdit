@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.command;
 
+import com.google.common.collect.Collections2;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
@@ -38,16 +39,82 @@ import com.sk89q.worldedit.command.util.CommandPermissions;
 import com.sk89q.worldedit.command.util.CommandPermissionsConditionGenerator;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.function.pattern.Pattern;
+import com.sk89q.worldedit.internal.command.CommandRegistrationHandler;
+import com.sk89q.worldedit.internal.command.CommandUtil;
 import com.sk89q.worldedit.util.HandSide;
 import com.sk89q.worldedit.util.TreeGenerator;
+import com.sk89q.worldedit.util.formatting.text.TextComponent;
+import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.item.ItemType;
+import org.enginehub.piston.CommandManager;
+import org.enginehub.piston.CommandManagerService;
+import org.enginehub.piston.CommandMetadata;
+import org.enginehub.piston.CommandParameters;
 import org.enginehub.piston.annotation.Command;
 import org.enginehub.piston.annotation.CommandContainer;
 import org.enginehub.piston.annotation.param.Arg;
+import org.enginehub.piston.part.SubCommandPart;
+
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @CommandContainer(superTypes = CommandPermissionsConditionGenerator.Registration.class)
 public class ToolCommands {
+
+    public static void register(CommandRegistrationHandler registration,
+                                CommandManager commandManager,
+                                CommandManagerService commandManagerService,
+                                WorldEdit worldEdit) {
+        // Collect the tool commands
+        CommandManager collect = commandManagerService.newCommandManager();
+
+        registration.register(
+            collect,
+            ToolCommandsRegistration.builder(),
+            new ToolCommands(worldEdit)
+        );
+
+        // Register deprecated global commands
+        Set<org.enginehub.piston.Command> commands = collect.getAllCommands()
+            .collect(Collectors.toSet());
+        for (org.enginehub.piston.Command command : commands) {
+            commandManager.register(CommandUtil.deprecate(
+                command, "Using global tool names is deprecated " +
+                "and will be removed in WorldEdit 8", ToolCommands::asNonGlobal
+            ));
+        }
+
+        // Remove aliases with / in them, since it doesn't make sense for sub-commands.
+        Set<org.enginehub.piston.Command> nonGlobalCommands = commands.stream()
+            .map(command ->
+                command.toBuilder().aliases(
+                    Collections2.filter(command.getAliases(), alias -> !alias.startsWith("/"))
+                ).build()
+            )
+            .collect(Collectors.toSet());
+        commandManager.register("tool", command -> {
+            command.addPart(SubCommandPart.builder(
+                TranslatableComponent.of("tool"),
+                TextComponent.of("The tool to bind")
+            )
+                .withCommands(nonGlobalCommands)
+                .required()
+                .build());
+            command.description(TextComponent.of("Binds a tool to the item in your hand"));
+        });
+    }
+
+    private static String asNonGlobal(org.enginehub.piston.Command oldCommand,
+                                      CommandParameters oldParameters) {
+        String name = Optional.ofNullable(oldParameters.getMetadata())
+            .map(CommandMetadata::getCalledName)
+            .filter(n -> !n.startsWith("/"))
+            .orElseGet(oldCommand::getName);
+        return "/tool " + name;
+    }
+
     private final WorldEdit we;
 
     public ToolCommands(WorldEdit we) {
@@ -65,8 +132,8 @@ public class ToolCommands {
     }
 
     @Command(
-        name = "/selwand",
-        aliases = "selwand",
+        name = "selwand",
+        aliases = "/selwand",
         desc = "Selection wand tool"
     )
     @CommandPermissions("worldedit.setwand")
@@ -78,8 +145,8 @@ public class ToolCommands {
     }
 
     @Command(
-        name = "/navwand",
-        aliases = "navwand",
+        name = "navwand",
+        aliases = "/navwand",
         desc = "Navigation wand tool"
     )
     @CommandPermissions("worldedit.setwand")
