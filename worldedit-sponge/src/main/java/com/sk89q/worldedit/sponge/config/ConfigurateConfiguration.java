@@ -69,6 +69,8 @@ public class ConfigurateConfiguration extends LocalConfiguration {
         defaultChangeLimit = Math.max(-1, node.getNode("limits", "max-blocks-changed", "default").getInt(defaultChangeLimit));
         maxChangeLimit = Math.max(-1, node.getNode("limits", "max-blocks-changed", "maximum").getInt(maxChangeLimit));
 
+        defaultVerticalHeight = Math.max(1, node.getNode("limits", "vertical-height", "default").getInt(defaultVerticalHeight));
+
         defaultMaxPolygonalPoints = Math.max(-1, node.getNode("limits", "max-polygonal-points", "default").getInt(defaultMaxPolygonalPoints));
         maxPolygonalPoints = Math.max(-1, node.getNode("limits", "max-polygonal-points", "maximum").getInt(maxPolygonalPoints));
 
