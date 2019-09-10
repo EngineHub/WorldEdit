@@ -83,6 +83,15 @@ public class BrushCommands {
     }
 
     @Command(
+        name = "none",
+        aliases = "unbind",
+        desc = "Unbind a bound brush from your current item"
+    )
+    void none(Player player, LocalSession session) throws WorldEditException {
+        ToolCommands.setToolNone(player, session, "Brush");
+    }
+
+    @Command(
         name = "sphere",
         aliases = { "s" },
         desc = "Choose the sphere brush"

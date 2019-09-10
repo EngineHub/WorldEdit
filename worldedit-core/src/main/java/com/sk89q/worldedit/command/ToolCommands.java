@@ -30,6 +30,7 @@ import com.sk89q.worldedit.command.tool.BlockReplacer;
 import com.sk89q.worldedit.command.tool.DistanceWand;
 import com.sk89q.worldedit.command.tool.FloatingTreeRemover;
 import com.sk89q.worldedit.command.tool.FloodFillTool;
+import com.sk89q.worldedit.command.tool.InvalidToolBindException;
 import com.sk89q.worldedit.command.tool.LongRangeBuildTool;
 import com.sk89q.worldedit.command.tool.NavigationWand;
 import com.sk89q.worldedit.command.tool.QueryTool;
@@ -80,6 +81,12 @@ public class ToolCommands {
         Set<org.enginehub.piston.Command> commands = collect.getAllCommands()
             .collect(Collectors.toSet());
         for (org.enginehub.piston.Command command : commands) {
+            if (command.getAliases().contains("unbind")) {
+                // Don't register new /tool unbind alias
+                command = command.toBuilder().aliases(
+                    Collections2.filter(command.getAliases(), alias -> !"unbind".equals(alias))
+                ).build();
+            }
             commandManager.register(CommandUtil.deprecate(
                 command, "Using global tool names is deprecated " +
                 "and will be removed in WorldEdit 8", ToolCommands::asNonGlobal
@@ -115,6 +122,12 @@ public class ToolCommands {
         return "/tool " + name;
     }
 
+    static void setToolNone(Player player, LocalSession session, String type)
+        throws InvalidToolBindException {
+        session.setTool(player.getItemInHand(HandSide.MAIN_HAND).getType(), null);
+        player.print(type + " unbound from your current item.");
+    }
+
     private final WorldEdit we;
 
     public ToolCommands(WorldEdit we) {
@@ -123,12 +136,11 @@ public class ToolCommands {
 
     @Command(
         name = "none",
+        aliases = "unbind",
         desc = "Unbind a bound tool from your current item"
     )
     public void none(Player player, LocalSession session) throws WorldEditException {
-
-        session.setTool(player.getItemInHand(HandSide.MAIN_HAND).getType(), null);
-        player.print("Tool unbound from your current item.");
+        setToolNone(player, session, "Tool");
     }
 
     @Command(
