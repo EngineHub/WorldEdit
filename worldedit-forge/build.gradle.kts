@@ -13,7 +13,7 @@ applyShadowConfiguration()
 
 val minecraftVersion = "1.14.4"
 val mappingsMinecraftVersion = "1.14.3"
-val forgeVersion = "28.0.95"
+val forgeVersion = "28.1.0"
 
 configurations.all {
     resolutionStrategy {
@@ -31,7 +31,7 @@ dependencies {
 configure<UserDevExtension> {
     mappings(mapOf(
             "channel" to "snapshot",
-            "version" to "20190801-$mappingsMinecraftVersion"
+            "version" to "20190913-$mappingsMinecraftVersion"
     ))
 
     runs {
