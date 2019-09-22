@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     `kotlin-dsl`
     kotlin("jvm") version embeddedKotlinVersion
@@ -9,6 +11,14 @@ repositories {
     maven {
         name = "Forge Maven"
         url = uri("https://files.minecraftforge.net/maven")
+    }
+    maven {
+        name = "Fabric"
+        url = uri("https://maven.fabricmc.net/")
+    }
+    maven {
+        name = "sponge"
+        url = uri("https://repo.spongepowered.org/maven")
     }
 }
 
@@ -23,6 +33,14 @@ configurations.all {
     }
 }
 
+val properties = Properties().also { props ->
+    project.projectDir.resolveSibling("gradle.properties").bufferedReader().use {
+        props.load(it)
+    }
+}
+val loomVersion: String = properties.getProperty("loom.version")
+val mixinVersion: String = properties.getProperty("mixin.version")
+
 dependencies {
     implementation(gradleApi())
     implementation("gradle.plugin.net.minecrell:licenser:0.4.1")
@@ -33,4 +51,6 @@ dependencies {
     implementation("org.jfrog.buildinfo:build-info-extractor-gradle:4.9.7")
     implementation("gradle.plugin.org.spongepowered:spongegradle:0.9.0")
     implementation("net.minecraftforge.gradle:ForgeGradle:3.0.141")
+    implementation("net.fabricmc:fabric-loom:$loomVersion")
+    implementation("net.fabricmc:sponge-mixin:$mixinVersion")
 }

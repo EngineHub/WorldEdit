@@ -1,25 +1,6 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import net.fabricmc.loom.task.RemapJarTask
 
-buildscript {
-    repositories {
-        jcenter()
-        maven {
-            name = "Fabric"
-            url = uri("https://maven.fabricmc.net/")
-        }
-        maven {
-            name = "sponge"
-            url = uri("https://repo.spongepowered.org/maven")
-        }
-    }
-
-    dependencies {
-        "classpath"("net.fabricmc:fabric-loom:0.2.5-SNAPSHOT")
-        "classpath"("org.spongepowered:mixin:0.7.11-SNAPSHOT")
-    }
-}
-
 applyPlatformAndCoreConfiguration()
 applyShadowConfiguration()
 
@@ -52,6 +33,11 @@ dependencies {
         "include"(it)
         "modImplementation"(it)
     }
+
+    // Hook these up manually, because Fabric doesn't seem to quite do it properly.
+    "compileClasspath"("net.fabricmc:sponge-mixin:${project.versions.mixin}")
+    "annotationProcessor"("net.fabricmc:sponge-mixin:${project.versions.mixin}")
+    "annotationProcessor"("net.fabricmc:fabric-loom:${project.versions.loom}")
 
     "testCompile"("org.mockito:mockito-core:1.9.0-rc1")
 }
