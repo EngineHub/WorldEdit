@@ -19,8 +19,6 @@
 
 package com.sk89q.worldedit.extension.platform;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.reflect.TypeToken;
@@ -64,7 +62,6 @@ import com.sk89q.worldedit.command.SnapshotUtilCommandsRegistration;
 import com.sk89q.worldedit.command.SuperPickaxeCommands;
 import com.sk89q.worldedit.command.SuperPickaxeCommandsRegistration;
 import com.sk89q.worldedit.command.ToolCommands;
-import com.sk89q.worldedit.command.ToolCommandsRegistration;
 import com.sk89q.worldedit.command.ToolUtilCommands;
 import com.sk89q.worldedit.command.ToolUtilCommandsRegistration;
 import com.sk89q.worldedit.command.UtilityCommands;
@@ -140,6 +137,8 @@ import java.util.logging.Level;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Handles the registration and invocation of commands.
@@ -399,11 +398,7 @@ public final class PlatformCommandManager {
             SnapshotUtilCommandsRegistration.builder(),
             new SnapshotUtilCommands(worldEdit)
         );
-        this.registration.register(
-            commandManager,
-            ToolCommandsRegistration.builder(),
-            new ToolCommands(worldEdit)
-        );
+        ToolCommands.register(registration, commandManager, commandManagerService, worldEdit);
         this.registration.register(
             commandManager,
             ToolUtilCommandsRegistration.builder(),
