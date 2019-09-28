@@ -29,7 +29,10 @@
 
     "depends": {
         "fabricloader": ">=0.4.0",
-        "fabric": "*"
+        "fabric-api-base": "*",
+        "fabric-events-lifecycle-v0": "*",
+        "fabric-events-interaction-v0": "*",
+        "fabric-networking-v0": "*"
     },
     "mixins": [
         "worldedit.mixins.json"
