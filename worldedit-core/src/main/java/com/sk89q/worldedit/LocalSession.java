@@ -521,6 +521,14 @@ public class LocalSession {
         return selector.getPrimaryPosition();
     }
 
+    public void setPlaceAtPos1(boolean placeAtPos1) {
+        this.placeAtPos1 = placeAtPos1;
+    }
+
+    public boolean isPlaceAtPos1() {
+        return placeAtPos1;
+    }
+
     /**
      * Toggle placement position.
      *

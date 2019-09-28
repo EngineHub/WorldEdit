@@ -34,6 +34,7 @@ import com.sk89q.worldedit.command.tool.SelectionWand;
 import com.sk89q.worldedit.command.tool.Tool;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.event.platform.ConfigurationLoadEvent;
+import com.sk89q.worldedit.extension.platform.Locatable;
 import com.sk89q.worldedit.session.request.Request;
 import com.sk89q.worldedit.session.storage.JsonFileSessionStore;
 import com.sk89q.worldedit.session.storage.SessionStore;
@@ -198,6 +199,11 @@ public class SessionManager {
                 && !(config.useInventoryOverride
                 && (owner.hasPermission("worldedit.inventory.unrestricted")
                 || (config.useInventoryCreativeOverride && (!(owner instanceof Player) || ((Player) owner).getGameMode() == GameModes.CREATIVE)))));
+
+        // Force non-locatable actors to use placeAtPos1
+        if (!(owner instanceof Locatable)) {
+            session.setPlaceAtPos1(true);
+        }
 
         return session;
     }
