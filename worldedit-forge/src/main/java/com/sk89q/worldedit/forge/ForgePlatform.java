@@ -32,6 +32,7 @@ import com.sk89q.worldedit.world.registry.Registries;
 import net.minecraft.command.Commands;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.dedicated.DedicatedServer;
 import net.minecraft.server.management.PlayerList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SharedConstants;
@@ -56,12 +57,15 @@ class ForgePlatform extends AbstractPlatform implements MultiUserPlatform {
     private final ForgeWorldEdit mod;
     private final MinecraftServer server;
     private final ForgeDataFixer dataFixer;
+    private final @Nullable ForgeWatchdog watchdog;
     private boolean hookingEvents = false;
 
     ForgePlatform(ForgeWorldEdit mod) {
         this.mod = mod;
         this.server = ServerLifecycleHooks.getCurrentServer();
         this.dataFixer = new ForgeDataFixer(getDataVersion());
+        this.watchdog = server instanceof DedicatedServer
+            ? new ForgeWatchdog((DedicatedServer) server) : null;
     }
 
     boolean isHookingEvents() {
@@ -96,6 +100,12 @@ class ForgePlatform extends AbstractPlatform implements MultiUserPlatform {
     @Override
     public int schedule(long delay, long period, Runnable task) {
         return -1;
+    }
+
+    @Override
+    @Nullable
+    public ForgeWatchdog getWatchdog() {
+        return watchdog;
     }
 
     @Override

@@ -26,10 +26,12 @@ import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.command.util.CommandPermissions;
 import com.sk89q.worldedit.command.util.CommandPermissionsConditionGenerator;
+import com.sk89q.worldedit.command.util.HookMode;
 import com.sk89q.worldedit.command.util.WorldEditAsyncCommandBuilder;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.input.DisallowedUsageException;
 import com.sk89q.worldedit.extension.platform.Actor;
+import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.util.formatting.component.PaginationBox;
 import com.sk89q.worldedit.util.formatting.text.Component;
@@ -196,6 +198,29 @@ public class GeneralCommands {
         } else {
             actor.print("Set the world override to " + world.getId() + ". (Use //world to go back to default)");
         }
+    }
+
+    @Command(
+        name = "/watchdog",
+        desc = "Changes watchdog hook state.",
+        descFooter = "This is dependent on platform implementation. " +
+            "Not all platforms support watchdog hooks, or contain a watchdog."
+    )
+    @CommandPermissions("worldedit.watchdog")
+    public void watchdog(Actor actor, LocalSession session,
+                         @Arg(desc = "The mode to set the watchdog hook to", def = "")
+                             HookMode hookMode) {
+        if (WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.GAME_HOOKS).getWatchdog() == null) {
+            actor.printError("This platform has no watchdog hook.");
+            return;
+        }
+        boolean previousMode = session.isTickingWatchdog();
+        if (hookMode != null && (hookMode == HookMode.ACTIVE) == previousMode) {
+            actor.printError("Watchdog hook already " + (previousMode ? "active" : "inactive") + ".");
+            return;
+        }
+        session.setTickingWatchdog(!previousMode);
+        actor.print("Watchdog hook now " + (previousMode ? "inactive" : "active") + ".");
     }
 
     @Command(

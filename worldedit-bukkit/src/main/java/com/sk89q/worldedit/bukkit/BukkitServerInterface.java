@@ -28,6 +28,8 @@ import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.extension.platform.MultiUserPlatform;
 import com.sk89q.worldedit.extension.platform.Preference;
+import com.sk89q.worldedit.extension.platform.Watchdog;
+import com.sk89q.worldedit.util.concurrency.LazyReference;
 import com.sk89q.worldedit.world.DataFixer;
 import com.sk89q.worldedit.world.registry.Registries;
 import org.bukkit.Bukkit;
@@ -52,6 +54,14 @@ public class BukkitServerInterface implements MultiUserPlatform {
     public WorldEditPlugin plugin;
     private CommandRegistration dynamicCommands;
     private boolean hookingEvents;
+    private final LazyReference<Watchdog> watchdog = LazyReference.from(() -> {
+        if (plugin.getBukkitImplAdapter() != null) {
+            return plugin.getBukkitImplAdapter().supportsWatchdog()
+                ? new BukkitWatchdog(plugin.getBukkitImplAdapter())
+                : null;
+        }
+        return null;
+    });
 
     public BukkitServerInterface(WorldEditPlugin plugin, Server server) {
         this.plugin = plugin;
@@ -101,6 +111,11 @@ public class BukkitServerInterface implements MultiUserPlatform {
     @Override
     public int schedule(long delay, long period, Runnable task) {
         return Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, task, delay, period);
+    }
+
+    @Override
+    public Watchdog getWatchdog() {
+        return watchdog.getValue();
     }
 
     @Override
