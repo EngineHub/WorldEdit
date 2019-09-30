@@ -26,7 +26,7 @@ import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.extension.platform.MultiUserPlatform;
 import com.sk89q.worldedit.extension.platform.Preference;
-import com.sk89q.worldedit.fabric.mixin.MixinMinecraftServer;
+import com.sk89q.worldedit.extension.platform.Watchdog;
 import com.sk89q.worldedit.world.DataFixer;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.registry.Registries;
@@ -58,7 +58,7 @@ class FabricPlatform extends AbstractPlatform implements MultiUserPlatform {
     private final FabricWorldEdit mod;
     private final MinecraftServer server;
     private final FabricDataFixer dataFixer;
-    private final @Nullable FabricWatchdog watchdog;
+    private final @Nullable Watchdog watchdog;
     private boolean hookingEvents = false;
 
     FabricPlatform(FabricWorldEdit mod, MinecraftServer server) {
@@ -66,7 +66,7 @@ class FabricPlatform extends AbstractPlatform implements MultiUserPlatform {
         this.server = server;
         this.dataFixer = new FabricDataFixer(getDataVersion());
         this.watchdog = server instanceof MinecraftDedicatedServer
-            ? new FabricWatchdog((MinecraftDedicatedServer) server) : null;
+            ? (Watchdog) server : null;
     }
 
     boolean isHookingEvents() {
@@ -105,7 +105,7 @@ class FabricPlatform extends AbstractPlatform implements MultiUserPlatform {
 
     @Override
     @Nullable
-    public FabricWatchdog getWatchdog() {
+    public Watchdog getWatchdog() {
         return watchdog;
     }
 

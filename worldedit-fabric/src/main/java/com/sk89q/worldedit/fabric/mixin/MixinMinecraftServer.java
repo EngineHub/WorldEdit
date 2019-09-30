@@ -19,21 +19,26 @@
 
 package com.sk89q.worldedit.fabric.mixin;
 
+import com.sk89q.worldedit.extension.platform.Watchdog;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.ServerTask;
-import net.minecraft.server.command.CommandOutput;
 import net.minecraft.util.NonBlockingThreadExecutor;
-import net.minecraft.util.snooper.SnooperListener;
+import net.minecraft.util.SystemUtil;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(MinecraftServer.class)
-public abstract class MixinMinecraftServer extends NonBlockingThreadExecutor<ServerTask> implements SnooperListener, CommandOutput, AutoCloseable, Runnable {
+public abstract class MixinMinecraftServer extends NonBlockingThreadExecutor implements Watchdog {
 
     public MixinMinecraftServer(String name) {
         super(name);
     }
 
     @Shadow
-    public long timeReference;
+    private long timeReference;
+
+    @Override
+    public void tick() {
+        timeReference = SystemUtil.getMeasuringTimeMs();
+    }
+
 }
