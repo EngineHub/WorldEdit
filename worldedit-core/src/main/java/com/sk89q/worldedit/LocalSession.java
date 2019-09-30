@@ -239,12 +239,7 @@ public class LocalSession {
             EditSession editSession = history.get(historyPointer);
             try (EditSession newEditSession = WorldEdit.getInstance().getEditSessionFactory()
                     .getEditSession(editSession.getWorld(), -1, newBlockBag, actor)) {
-                newEditSession.enableStandardMode();
-                newEditSession.setReorderMode(reorderMode);
-                newEditSession.setFastMode(fastMode);
-                if (newEditSession.getSurvivalExtent() != null) {
-                    newEditSession.getSurvivalExtent().setStripNbt(!actor.hasPermission("worldedit.setnbt"));
-                }
+                prepareEditingExtents(editSession, actor);
                 editSession.undo(newEditSession);
             }
             return editSession;
@@ -267,12 +262,7 @@ public class LocalSession {
             EditSession editSession = history.get(historyPointer);
             try (EditSession newEditSession = WorldEdit.getInstance().getEditSessionFactory()
                     .getEditSession(editSession.getWorld(), -1, newBlockBag, actor)) {
-                newEditSession.enableStandardMode();
-                newEditSession.setReorderMode(reorderMode);
-                newEditSession.setFastMode(fastMode);
-                if (newEditSession.getSurvivalExtent() != null) {
-                    newEditSession.getSurvivalExtent().setStripNbt(!actor.hasPermission("worldedit.setnbt"));
-                }
+                prepareEditingExtents(editSession, actor);
                 editSession.redo(newEditSession);
             }
             ++historyPointer;
@@ -954,15 +944,19 @@ public class LocalSession {
         }
         Request.request().setEditSession(editSession);
 
+        editSession.setMask(mask);
+        prepareEditingExtents(editSession, actor);
+
+        return editSession;
+    }
+
+    private void prepareEditingExtents(EditSession editSession, Actor actor) {
         editSession.setFastMode(fastMode);
         editSession.setReorderMode(reorderMode);
-        editSession.setMask(mask);
         if (editSession.getSurvivalExtent() != null) {
             editSession.getSurvivalExtent().setStripNbt(!actor.hasPermission("worldedit.setnbt"));
         }
         editSession.setTickingWatchdog(tickingWatchdog);
-
-        return editSession;
     }
 
     /**
