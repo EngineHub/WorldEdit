@@ -20,6 +20,7 @@
 package com.sk89q.worldedit.fabric.mixin;
 
 import com.sk89q.worldedit.extension.platform.Watchdog;
+import net.minecraft.server.ServerTask;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.NonBlockingThreadExecutor;
 import net.minecraft.util.SystemUtil;
@@ -27,7 +28,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(MinecraftServer.class)
-public abstract class MixinMinecraftServer extends NonBlockingThreadExecutor implements Watchdog {
+public abstract class MixinMinecraftServer extends NonBlockingThreadExecutor<ServerTask> implements Watchdog {
 
     public MixinMinecraftServer(String name) {
         super(name);
