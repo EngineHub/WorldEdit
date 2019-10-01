@@ -47,7 +47,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.sk89q.worldedit.bukkit.BukkitTextAdapter.reduceToText;
+import static com.sk89q.worldedit.util.formatting.WorldEditText.reduceToText;
 
 public class BukkitServerInterface implements MultiUserPlatform {
     public Server server;

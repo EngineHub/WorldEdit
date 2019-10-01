@@ -24,7 +24,6 @@ import com.sk89q.worldedit.WorldEdit
 import com.sk89q.worldedit.command.BiomeCommands
 import com.sk89q.worldedit.command.ChunkCommands
 import com.sk89q.worldedit.command.ClipboardCommands
-import com.sk89q.worldedit.command.ExpandCommands
 import com.sk89q.worldedit.command.GeneralCommands
 import com.sk89q.worldedit.command.GenerationCommands
 import com.sk89q.worldedit.command.HistoryCommands
@@ -37,11 +36,12 @@ import com.sk89q.worldedit.command.ToolCommands
 import com.sk89q.worldedit.command.ToolUtilCommands
 import com.sk89q.worldedit.command.UtilityCommands
 import com.sk89q.worldedit.command.util.PermissionCondition
+import com.sk89q.worldedit.util.formatting.WorldEditText
 import com.sk89q.worldedit.util.formatting.text.TextComponent
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent
 import com.sk89q.worldedit.util.formatting.text.serializer.plain.PlainComponentSerializer
 import org.enginehub.piston.Command
-import org.enginehub.piston.TextConfig
+import org.enginehub.piston.config.TextConfig
 import org.enginehub.piston.part.SubCommandPart
 import org.enginehub.piston.util.HelpGenerator
 import java.nio.file.Files
@@ -216,7 +216,7 @@ Other Permissions
     private fun dumpSection(title: String, addCommandNames: suspend SequenceScope<String>.() -> Unit) {
         cmdOutput.append("\n").append(title).append("\n").append(Strings.repeat("~", title.length)).append("\n")
 
-        val prefix = TextConfig.getCommandPrefix()
+        val prefix = WorldEditText.reduceToText(TextConfig.commandPrefixValue())
         val commands = sequence(addCommandNames).map { this.commands.getValue(it) }.toList()
         matchedCommands.addAll(commands.map { it.name })
 

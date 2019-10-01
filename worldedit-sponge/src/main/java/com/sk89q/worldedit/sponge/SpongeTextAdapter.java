@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.sponge;
 
+import com.sk89q.worldedit.util.formatting.WorldEditText;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.serializer.gson.GsonComponentSerializer;
 import org.spongepowered.api.text.Text;
@@ -27,6 +28,7 @@ import org.spongepowered.api.text.serializer.TextSerializers;
 public class SpongeTextAdapter {
 
     public static Text convert(Component component) {
+        component = WorldEditText.format(component);
         return TextSerializers.JSON.deserialize(GsonComponentSerializer.INSTANCE.serialize(component));
     }
 

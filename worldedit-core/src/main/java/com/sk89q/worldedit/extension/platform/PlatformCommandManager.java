@@ -106,7 +106,8 @@ import com.sk89q.worldedit.util.logging.LogFormat;
 import com.sk89q.worldedit.world.World;
 import org.enginehub.piston.Command;
 import org.enginehub.piston.CommandManager;
-import org.enginehub.piston.TextConfig;
+import org.enginehub.piston.config.ConfigHolder;
+import org.enginehub.piston.config.TextConfig;
 import org.enginehub.piston.converter.ArgumentConverters;
 import org.enginehub.piston.exception.CommandException;
 import org.enginehub.piston.exception.CommandExecutionException;
@@ -151,10 +152,6 @@ public final class PlatformCommandManager {
     private static final Logger log = LoggerFactory.getLogger(PlatformCommandManager.class);
     private static final java.util.logging.Logger COMMAND_LOG =
         java.util.logging.Logger.getLogger("com.sk89q.worldedit.CommandLog");
-
-    static {
-        TextConfig.setCommandPrefix("/");
-    }
 
     private final WorldEdit worldEdit;
     private final PlatformManager platformManager;
