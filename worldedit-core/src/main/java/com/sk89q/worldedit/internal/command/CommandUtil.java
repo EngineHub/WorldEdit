@@ -42,6 +42,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static com.google.common.base.Preconditions.checkState;
@@ -49,11 +50,15 @@ import static java.util.stream.Collectors.toList;
 
 public class CommandUtil {
 
+    private static final Component DEPRECATION_MARKER = TextComponent.of("This command is deprecated.");
+
     private static Component makeDeprecatedFooter(Component newCommand) {
-        return TextComponent.builder("This command is deprecated. Use ", TextColor.GOLD)
-            .decoration(TextDecoration.ITALIC, true)
-            .append(newCommand)
-            .append(" instead.")
+        return TextComponent.builder()
+            .append(DEPRECATION_MARKER)
+            .append(TextComponent.builder(" Use ", TextColor.GOLD)
+                .decoration(TextDecoration.ITALIC, true)
+                .append(newCommand)
+                .append(" instead."))
             .build();
     }
 
@@ -78,6 +83,54 @@ public class CommandUtil {
                     .append(TextComponent.newline()).append(deprecatedWarning))
                 .orElse(deprecatedWarning))
             .build();
+    }
+
+    public static Optional<Component> footerWithoutDeprecation(Command command) {
+        return command.getFooter()
+            .filter(footer -> anyComponent(footer, Predicate.isEqual(DEPRECATION_MARKER)))
+            .map(footer -> Optional.of(
+                replaceDeprecation(footer)
+            ))
+            .orElseGet(command::getFooter);
+    }
+
+    public static Optional<Component> deprecationWarning(Command command) {
+        return command.getFooter()
+            .map(CommandUtil::extractDeprecation)
+            .orElseGet(command::getFooter);
+    }
+
+    public static boolean isDeprecated(Command command) {
+        return command.getFooter()
+            .filter(footer -> anyComponent(footer, Predicate.isEqual(DEPRECATION_MARKER)))
+            .isPresent();
+    }
+
+    private static boolean anyComponent(Component component, Predicate<Component> test) {
+        return test.test(component) || component.children().stream()
+            .anyMatch(x -> anyComponent(x, test));
+    }
+
+    private static Component replaceDeprecation(Component component) {
+        if (component.children().stream().anyMatch(Predicate.isEqual(DEPRECATION_MARKER))) {
+            return TextComponent.empty();
+        }
+        return component.children(
+            component.children().stream()
+                .map(CommandUtil::replaceDeprecation)
+                .collect(toList())
+        );
+    }
+
+    private static Optional<Component> extractDeprecation(Component component) {
+        if (component.children().stream().anyMatch(Predicate.isEqual(DEPRECATION_MARKER))) {
+            return Optional.of(component);
+        }
+        return component.children().stream()
+            .map(CommandUtil::extractDeprecation)
+            .filter(Optional::isPresent)
+            .map(Optional::get)
+            .findAny();
     }
 
     private static int deprecatedCommandWarning(

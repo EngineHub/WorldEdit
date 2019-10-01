@@ -36,10 +36,9 @@ import com.sk89q.worldedit.command.ToolCommands
 import com.sk89q.worldedit.command.ToolUtilCommands
 import com.sk89q.worldedit.command.UtilityCommands
 import com.sk89q.worldedit.command.util.PermissionCondition
+import com.sk89q.worldedit.internal.command.CommandUtil
 import com.sk89q.worldedit.util.formatting.WorldEditText
 import com.sk89q.worldedit.util.formatting.text.TextComponent
-import com.sk89q.worldedit.util.formatting.text.TranslatableComponent
-import com.sk89q.worldedit.util.formatting.text.serializer.plain.PlainComponentSerializer
 import org.enginehub.piston.Command
 import org.enginehub.piston.config.TextConfig
 import org.enginehub.piston.part.SubCommandPart
@@ -52,7 +51,6 @@ import kotlin.streams.toList
 class DocumentationPrinter private constructor() {
 
     private val nameRegex = Regex("name = \"(.+?)\"")
-    private val serializer = PlainComponentSerializer({ "" }, TranslatableComponent::key)
     private val commands = WorldEdit.getInstance().platformManager.platformCommandManager.commandManager.allCommands
             .map { it.name to it }.toList().toMap()
     private val cmdOutput = StringBuilder()
@@ -111,6 +109,7 @@ class DocumentationPrinter private constructor() {
         }
 
         dumpSection("Tool Commands") {
+            yield("tool")
             yieldAllCommandsIn<ToolCommands>()
             yieldAllCommandsIn<ToolUtilCommands>()
         }
@@ -269,6 +268,12 @@ Other Permissions
         }
         cmdOutput.appendln()
         cmdOutput.appendln("    :class: command-topic").appendln()
+        CommandUtil.deprecationWarning(command).ifPresent { warning ->
+            cmdOutput.appendln("""
+                |    .. WARNING::
+                |        ${WorldEditText.reduceToText(warning)}
+            """.trimMargin())
+        }
         cmdOutput.appendln("""
             |    .. csv-table::
             |        :widths: 8, 15
@@ -292,27 +297,28 @@ Other Permissions
     private fun commandTableEntries(command: Command, parents: Stream<Command>): Map<String, String> {
         return sequence {
             val desc = command.description.run {
+                val footer = CommandUtil.footerWithoutDeprecation(command)
                 when {
-                    command.footer.isPresent -> append(
-                            TextComponent.builder("\n\n").append(command.footer.get())
+                    footer.isPresent -> append(
+                            TextComponent.builder("\n\n").append(footer.get())
                     )
                     else -> this
                 }
             }
-            yield("**Description**" to serializer.serialize(desc))
+            yield("**Description**" to WorldEditText.reduceToText(desc))
             val cond = command.condition
             if (cond is PermissionCondition && cond.permissions.isNotEmpty()) {
                 val perms = cond.permissions.joinToString(", ") { "``$it``" }
                 yield("**Permissions**" to perms)
             }
-            val usage = serializer.serialize(HelpGenerator.create(Stream.concat(parents, Stream.of(command)).toList()).usage)
+            val usage = WorldEditText.reduceToText(HelpGenerator.create(Stream.concat(parents, Stream.of(command)).toList()).usage)
             yield("**Usage**" to "``$usage``")
 
             // Part descriptions
             command.parts.filterNot { it is SubCommandPart }
                     .forEach {
-                        val title = "\u2001\u2001``" + serializer.serialize(it.textRepresentation) + "``"
-                        yield(title to serializer.serialize(it.description))
+                        val title = "\u2001\u2001``" + WorldEditText.reduceToText(it.textRepresentation) + "``"
+                        yield(title to WorldEditText.reduceToText(it.description))
                     }
         }.toMap()
     }
