@@ -52,13 +52,14 @@ public class CommandUtil {
 
     private static final Component DEPRECATION_MARKER = TextComponent.of("This command is deprecated.");
 
-    private static Component makeDeprecatedFooter(Component newCommand) {
+    private static Component makeDeprecatedFooter(String reason, Component newCommand) {
         return TextComponent.builder()
             .append(DEPRECATION_MARKER)
-            .append(TextComponent.builder(" Use ", TextColor.GOLD)
-                .decoration(TextDecoration.ITALIC, true)
-                .append(newCommand)
-                .append(" instead."))
+            .append(" " + reason + ".")
+            .append(TextComponent.newline())
+            .append(TextComponent.of("Use ", TextColor.GOLD, TextDecoration.ITALIC))
+            .append(newCommand)
+            .append(TextComponent.of(" instead.", TextColor.GOLD, TextDecoration.ITALIC))
             .build();
     }
 
@@ -71,6 +72,7 @@ public class CommandUtil {
     public static Command deprecate(Command command, String reason,
                                     NewCommandGenerator newCommandGenerator) {
         Component deprecatedWarning = makeDeprecatedFooter(
+            reason,
             newCommandSuggestion(newCommandGenerator,
                 NoInputCommandParameters.builder().build(),
                 command)

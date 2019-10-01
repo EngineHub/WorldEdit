@@ -37,7 +37,6 @@ import com.sk89q.worldedit.command.ToolUtilCommands
 import com.sk89q.worldedit.command.UtilityCommands
 import com.sk89q.worldedit.command.util.PermissionCondition
 import com.sk89q.worldedit.internal.command.CommandUtil
-import com.sk89q.worldedit.util.formatting.WorldEditText
 import com.sk89q.worldedit.util.formatting.text.TextComponent
 import org.enginehub.piston.Command
 import org.enginehub.piston.config.TextConfig
@@ -215,7 +214,7 @@ Other Permissions
     private fun dumpSection(title: String, addCommandNames: suspend SequenceScope<String>.() -> Unit) {
         cmdOutput.append("\n").append(title).append("\n").append(Strings.repeat("~", title.length)).append("\n")
 
-        val prefix = WorldEditText.reduceToText(TextConfig.commandPrefixValue())
+        val prefix = reduceToRst(TextConfig.commandPrefixValue())
         val commands = sequence(addCommandNames).map { this.commands.getValue(it) }.toList()
         matchedCommands.addAll(commands.map { it.name })
 
@@ -271,7 +270,7 @@ Other Permissions
         CommandUtil.deprecationWarning(command).ifPresent { warning ->
             cmdOutput.appendln("""
                 |    .. WARNING::
-                |        ${WorldEditText.reduceToText(warning)}
+                |        ${reduceToRst(warning).makeRstSafe("\n\n")}
             """.trimMargin())
         }
         cmdOutput.appendln("""
@@ -280,8 +279,7 @@ Other Permissions
         """.trimMargin())
         cmdOutput.appendln()
         for ((k, v) in entries) {
-            val rstSafe = v.trim().replace("\"", "\\\"").replace("\n", "\n" + "    ".repeat(2))
-                .lineSequence().map { line -> line.ifBlank { "" } }.joinToString(separator = "\n")
+            val rstSafe = v.makeRstSafe("\n")
             cmdOutput.append("    ".repeat(2))
                     .append(k)
                     .append(",")
@@ -291,6 +289,12 @@ Other Permissions
         }
         cmdOutput.appendln()
     }
+
+    private fun String.makeRstSafe(lineJoiner: String) = trim()
+        .replace("\"", "\\\"").replace("\n", "\n" + "    ".repeat(2))
+        .lineSequence()
+        .map { line -> line.ifBlank { "" } }
+        .joinToString(separator = lineJoiner)
 
     private fun linkSafe(text: String) = text.replace(" ", "-")
 
@@ -305,20 +309,20 @@ Other Permissions
                     else -> this
                 }
             }
-            yield("**Description**" to WorldEditText.reduceToText(desc))
+            yield("**Description**" to reduceToRst(desc))
             val cond = command.condition
             if (cond is PermissionCondition && cond.permissions.isNotEmpty()) {
                 val perms = cond.permissions.joinToString(", ") { "``$it``" }
                 yield("**Permissions**" to perms)
             }
-            val usage = WorldEditText.reduceToText(HelpGenerator.create(Stream.concat(parents, Stream.of(command)).toList()).usage)
+            val usage = reduceToRst(HelpGenerator.create(Stream.concat(parents, Stream.of(command)).toList()).usage)
             yield("**Usage**" to "``$usage``")
 
             // Part descriptions
             command.parts.filterNot { it is SubCommandPart }
                     .forEach {
-                        val title = "\u2001\u2001``" + WorldEditText.reduceToText(it.textRepresentation) + "``"
-                        yield(title to WorldEditText.reduceToText(it.description))
+                        val title = "\u2001\u2001``" + reduceToRst(it.textRepresentation) + "``"
+                        yield(title to reduceToRst(it.description))
                     }
         }.toMap()
     }
@@ -330,13 +334,15 @@ Other Permissions
          */
         @JvmStatic
         fun main(args: Array<String>) {
-            val printer = DocumentationPrinter()
+            try {
+                val printer = DocumentationPrinter()
 
-            printer.writeAllCommands()
-            writeOutput("commands.rst", printer.cmdOutput.toString())
-            writeOutput("permissions.rst", printer.permsOutput.toString())
-
-            WorldEdit.getInstance().sessionManager.unload()
+                printer.writeAllCommands()
+                writeOutput("commands.rst", printer.cmdOutput.toString())
+                writeOutput("permissions.rst", printer.permsOutput.toString())
+            } finally {
+                WorldEdit.getInstance().sessionManager.unload()
+            }
         }
 
         private fun writeOutput(file: String, output: String) {
