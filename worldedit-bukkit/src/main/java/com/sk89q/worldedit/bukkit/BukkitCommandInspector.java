@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Optional;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static com.sk89q.worldedit.bukkit.BukkitTextAdapter.reduceToText;
+import static com.sk89q.worldedit.util.formatting.WorldEditText.reduceToText;
 
 class BukkitCommandInspector implements CommandInspector {
 

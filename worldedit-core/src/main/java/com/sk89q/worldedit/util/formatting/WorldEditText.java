@@ -17,32 +17,29 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.bukkit;
+package com.sk89q.worldedit.util.formatting;
 
 import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
-import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
+import org.enginehub.piston.config.ConfigHolder;
+import org.enginehub.piston.config.TextConfig;
+import org.enginehub.piston.util.TextHelper;
 
-public class BukkitTextAdapter {
+public class WorldEditText {
+    public static final ConfigHolder CONFIG_HOLDER = ConfigHolder.create();
+
+    static {
+        CONFIG_HOLDER.getConfig(TextConfig.commandPrefix()).setValue("/");
+    }
+
+    public static Component format(Component component) {
+        return CONFIG_HOLDER.replace(component);
+    }
 
     public static String reduceToText(Component component) {
-        StringBuilder text = new StringBuilder();
-        appendTextTo(text, component);
-        return text.toString();
+        return TextHelper.reduceToText(format(component));
     }
 
-    private static void appendTextTo(StringBuilder builder, Component component) {
-        if (component instanceof TextComponent) {
-            builder.append(((TextComponent) component).content());
-        } else if (component instanceof TranslatableComponent) {
-            builder.append(((TranslatableComponent) component).key());
-        }
-        for (Component child : component.children()) {
-            appendTextTo(builder, child);
-        }
-    }
-
-    private BukkitTextAdapter() {
+    private WorldEditText() {
     }
 
 }

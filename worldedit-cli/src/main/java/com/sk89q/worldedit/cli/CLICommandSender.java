@@ -26,6 +26,7 @@ import com.sk89q.worldedit.internal.cui.CUIEvent;
 import com.sk89q.worldedit.session.SessionKey;
 import com.sk89q.worldedit.util.FileDialogUtil;
 import com.sk89q.worldedit.util.auth.AuthorizationException;
+import com.sk89q.worldedit.util.formatting.WorldEditText;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.serializer.plain.PlainComponentSerializer;
 import org.slf4j.Logger;
@@ -96,7 +97,7 @@ public class CLICommandSender implements Actor {
 
     @Override
     public void print(Component component) {
-        print(PlainComponentSerializer.INSTANCE.serialize(component));
+        print(PlainComponentSerializer.INSTANCE.serialize(WorldEditText.format(component)));
     }
 
     @Override
