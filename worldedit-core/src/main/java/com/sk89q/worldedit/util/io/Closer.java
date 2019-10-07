@@ -87,6 +87,27 @@ public final class Closer implements Closeable {
     }
 
     /**
+     * Call {@link #rethrow(Throwable)} with the given exception, but before throwing the exception,
+     * also close this Closer. Exceptions from closing are added to {@code t} as suppressed
+     * exceptions.
+     *
+     * @param t the throwable that should be re-thrown
+     * @throws IOException if {@code t} is an IOException, or one occurs
+     */
+    public RuntimeException rethrowAndClose(Throwable t) throws IOException {
+        // bit of a hack here
+        try {
+            throw rethrow(t);
+        } finally {
+            try {
+                close();
+            } catch (Throwable closeThrown) {
+                t.addSuppressed(closeThrown);
+            }
+        }
+    }
+
+    /**
      * Stores the given throwable and rethrows it. It will be rethrown as is if it is an
      * {@code IOException}, {@code RuntimeException} or {@code Error}. Otherwise, it will be rethrown
      * wrapped in a {@code RuntimeException}. <b>Note:</b> Be sure to declare all of the checked

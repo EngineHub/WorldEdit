@@ -20,8 +20,6 @@
 package com.sk89q.worldedit.world.storage;
 
 import com.sk89q.jnbt.CompoundTag;
-import com.sk89q.jnbt.NBTInputStream;
-import com.sk89q.jnbt.Tag;
 import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.world.DataException;
 import com.sk89q.worldedit.world.World;
@@ -36,7 +34,7 @@ public abstract class McRegionChunkStore extends ChunkStore {
 
     /**
      * Get the filename of a region file.
-     * 
+     *
      * @param position chunk position
      * @return the filename
      */
@@ -67,24 +65,16 @@ public abstract class McRegionChunkStore extends ChunkStore {
 
     @Override
     public CompoundTag getChunkTag(BlockVector2 position, World world) throws DataException, IOException {
-        McRegionReader reader = getReader(position, world.getName());
+        return ChunkStoreHelper.readCompoundTag(() -> {
+            McRegionReader reader = getReader(position, world.getName());
 
-        InputStream stream = reader.getChunkInputStream(position);
-        Tag tag;
-
-        try (NBTInputStream nbt = new NBTInputStream(stream)) {
-            tag = nbt.readNamedTag().getTag();
-            if (!(tag instanceof CompoundTag)) {
-                throw new ChunkStoreException("CompoundTag expected for chunk; got " + tag.getClass().getName());
-            }
-
-            return (CompoundTag) tag;
-        }
+            return reader.getChunkInputStream(position);
+        });
     }
 
     /**
      * Get the input stream for a chunk file.
-     * 
+     *
      * @param name the name of the chunk file
      * @param worldName the world name
      * @return an input stream

@@ -42,6 +42,10 @@
     <allow pkg="com.google.auto"/>
     <allow pkg="it.unimi.dsi.fastutil"/>
 
+    <subpackage name="util.io.file">
+      <allow pkg="net.java.truevfs"/>
+    </subpackage>
+
     <subpackage name="bukkit">
       <allow pkg="org.bukkit"/>
       <allow pkg="org.bstats.bukkit"/>
