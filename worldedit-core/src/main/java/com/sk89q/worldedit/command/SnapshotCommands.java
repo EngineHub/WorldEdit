@@ -111,7 +111,7 @@ public class SnapshotCommands {
     )
     @CommandPermissions("worldedit.snapshots.restore")
     public void use(Actor actor, World world, LocalSession session,
-                    @Arg(desc = "Snapeshot to use")
+                    @Arg(desc = "Snapshot to use")
                         String name) throws WorldEditException {
 
         LocalConfiguration config = we.getConfiguration();
