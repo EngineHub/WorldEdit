@@ -21,6 +21,7 @@ package com.sk89q.worldedit.world.snapshot.experimental;
 
 import com.google.common.collect.ComparisonChain;
 
+import java.net.URI;
 import java.time.ZonedDateTime;
 import java.util.Objects;
 
@@ -29,20 +30,27 @@ import java.util.Objects;
  */
 public final class SnapshotInfo implements Comparable<SnapshotInfo> {
 
-    public static SnapshotInfo create(SnapshotName name, ZonedDateTime dateTime) {
+    public static SnapshotInfo create(URI name, ZonedDateTime dateTime) {
         return new SnapshotInfo(name, dateTime);
     }
 
-    private final SnapshotName name;
+    private final URI name;
     private final ZonedDateTime dateTime;
 
-    private SnapshotInfo(SnapshotName name, ZonedDateTime dateTime) {
+    private SnapshotInfo(URI name, ZonedDateTime dateTime) {
         this.name = name;
         this.dateTime = dateTime;
     }
 
-    public SnapshotName getName() {
+    public URI getName() {
         return name;
+    }
+
+    public String getDisplayName() {
+        if (name.getScheme().equals("file")) {
+            return name.getPath().substring(1);
+        }
+        return name.toString();
     }
 
     public ZonedDateTime getDateTime() {
@@ -75,7 +83,7 @@ public final class SnapshotInfo implements Comparable<SnapshotInfo> {
     public int compareTo(SnapshotInfo o) {
         return ComparisonChain.start()
             .compare(dateTime, o.dateTime)
-            .compare(name.getDisplayName(), o.name.getDisplayName(), String.CASE_INSENSITIVE_ORDER)
+            .compare(name, o.name)
             .result();
     }
 }

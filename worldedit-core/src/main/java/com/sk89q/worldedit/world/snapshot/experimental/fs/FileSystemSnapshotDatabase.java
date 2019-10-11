@@ -20,23 +20,28 @@
 package com.sk89q.worldedit.world.snapshot.experimental.fs;
 
 import com.google.common.collect.ImmutableList;
+import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.util.function.IORunnable;
+import com.sk89q.worldedit.util.io.Closer;
 import com.sk89q.worldedit.util.io.file.ArchiveNioSupports;
+import com.sk89q.worldedit.util.io.file.MorePaths;
 import com.sk89q.worldedit.util.time.FileNameDateTimeParser;
 import com.sk89q.worldedit.util.time.ModificationDateTimeParser;
 import com.sk89q.worldedit.util.time.SnapshotDateTimeParser;
 import com.sk89q.worldedit.world.snapshot.experimental.Snapshot;
 import com.sk89q.worldedit.world.snapshot.experimental.SnapshotDatabase;
 import com.sk89q.worldedit.world.snapshot.experimental.SnapshotInfo;
-import com.sk89q.worldedit.world.snapshot.experimental.SnapshotName;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.net.URI;
 import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.ZonedDateTime;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -78,41 +83,78 @@ public class FileSystemSnapshotDatabase implements SnapshotDatabase {
         this.root = root.toAbsolutePath();
     }
 
-    private SnapshotInfo createSnapshotInfo(Path snapshotFile) {
-        SnapshotName name = new FileSystemSnapshotName(root.relativize(snapshotFile), null);
-        return SnapshotInfo.create(name, tryParseDate(snapshotFile));
+    private SnapshotInfo createSnapshotInfo(Path fullPath, Path realPath) {
+        return SnapshotInfo.create(MorePaths.toRelativeUri(fullPath), tryParseDate(realPath));
     }
 
-    private Snapshot createSnapshot(Path snapshotFile, @Nullable IORunnable closeCallback) {
+    private Snapshot createSnapshot(Path fullPath, Path realPath, @Nullable IORunnable closeCallback) {
         return new FolderSnapshot(
-            createSnapshotInfo(snapshotFile), snapshotFile, closeCallback
+            createSnapshotInfo(fullPath, realPath), realPath, closeCallback
         );
     }
 
+    public Path getRoot() {
+        return root;
+    }
+
     @Override
-    public Optional<Snapshot> getSnapshot(SnapshotName name) throws IOException {
-        if (!(name instanceof FileSystemSnapshotName)) {
+    public Optional<Snapshot> getSnapshot(URI name) throws IOException {
+        if (!name.getScheme().equals("file")) {
             return Optional.empty();
         }
-        FileSystemSnapshotName fsName = (FileSystemSnapshotName) name;
-        Optional<Snapshot> result = tryRegularFileSnapshot(fsName);
+        Path rawResolved = root.resolve(name.getPath());
+        if (!Files.exists(rawResolved)) {
+            return Optional.empty();
+        }
+        // Catch trickery with paths:
+        Path realPath = rawResolved.toRealPath();
+        if (!realPath.startsWith(root)) {
+            return Optional.empty();
+        }
+        Optional<Snapshot> result = tryRegularFileSnapshot(root.relativize(realPath), realPath);
         if (result.isPresent()) {
             return result;
         }
-        if (!Files.isDirectory(fsName.getFile()) || fsName.getInternalPath() != null) {
-            // We never provide names like this.
+        if (!Files.isDirectory(realPath)) {
             return Optional.empty();
         }
-        return Optional.of(createSnapshot(fsName.getFile(), null));
+        return Optional.of(createSnapshot(root.relativize(realPath), realPath, null));
     }
 
-    private Optional<Snapshot> tryRegularFileSnapshot(FileSystemSnapshotName name) throws IOException {
-        if (Files.isDirectory(name.getFile()) || name.getInternalPath() == null) {
-            return Optional.empty();
+    private Optional<Snapshot> tryRegularFileSnapshot(Path fullPath, Path realPath) throws IOException {
+        Closer closer = Closer.create();
+        Path relative = root.relativize(realPath);
+        Iterator<Path> iterator = null;
+        try {
+            while (true) {
+                if (iterator == null) {
+                    iterator = MorePaths.iterParents(relative).iterator();
+                }
+                if (!iterator.hasNext()) {
+                    return Optional.empty();
+                }
+                Path next = iterator.next();
+                if (!Files.isRegularFile(next)) {
+                    // This will never be it.
+                    continue;
+                }
+                Optional<FileSystem> fs = ArchiveNioSupports.tryOpenAsDir(next);
+                if (fs.isPresent()) {
+                    closer.register(fs.get());
+                    // Switch path to path inside the archive
+                    relative = fs.get().getPath(next.relativize(relative).toString());
+                    iterator = null;
+                    // Check if it exists, if so open snapshot
+                    if (Files.exists(relative)) {
+                        return Optional.of(createSnapshot(fullPath, relative, closer::close));
+                    }
+                    // Otherwise, we may have more archives to open.
+                    // Keep searching!
+                }
+            }
+        } catch (Throwable t) {
+            throw closer.rethrowAndClose(t);
         }
-
-        return ArchiveNioSupports.tryOpenAsDir(name.getFile())
-            .map(fs -> createSnapshot(fs.getPath(name.getInternalPath()), fs::close));
     }
 
     @Override
@@ -134,52 +176,66 @@ public class FileSystemSnapshotDatabase implements SnapshotDatabase {
            with some files, e.g. world.qux.zip/world.qux is invalid, but world.qux.zip/world isn't.
          */
         return Stream.of(
-            listWorldEntries(root, worldName),
-            listTimestampedEntries(root, worldName)
+            listWorldEntries(Paths.get(""), root, worldName),
+            listTimestampedEntries(Paths.get(""), root, worldName)
         ).flatMap(Function.identity());
     }
 
-    private Stream<Snapshot> listWorldEntries(Path root, String worldName) throws IOException {
+    private Stream<Snapshot> listWorldEntries(Path fullPath, Path root, String worldName) throws IOException {
+        WorldEdit.logger.info("World check in: {}", root);
         return Files.list(root)
             .flatMap(candidate -> {
+                WorldEdit.logger.info("World trying: {}", candidate);
                 // Try world directory
                 if (candidate.getFileName().toString().equalsIgnoreCase(worldName)) {
                     // Direct
                     if (Files.exists(candidate.resolve("level.dat"))) {
-                        return Stream.of(createSnapshot(candidate, null));
+                        WorldEdit.logger.info("Direct!");
+                        return Stream.of(createSnapshot(
+                            fullPath.resolve(candidate.getFileName()), candidate, null
+                        ));
                     }
                     // Container for time-stamped entries
                     try {
-                        return listTimestampedEntries(candidate, worldName);
+                        return listTimestampedEntries(
+                            fullPath.resolve(candidate.getFileName()), candidate, worldName
+                        );
                     } catch (IOException e) {
                         throw new UncheckedIOException(e);
                     }
                 }
                 // Try world archive
                 if (Files.isRegularFile(candidate) && candidate.startsWith(worldName + ".")) {
+                    WorldEdit.logger.info("Archive!");
                     try {
                         return tryRegularFileSnapshot(
-                            new FileSystemSnapshotName(candidate, "/")
+                            fullPath.resolve(candidate.getFileName()), candidate
                         ).map(Stream::of).orElse(null);
                     } catch (IOException e) {
                         throw new UncheckedIOException(e);
                     }
                 }
+                WorldEdit.logger.info("Nothing!");
                 return null;
             });
     }
 
-    private Stream<Snapshot> listTimestampedEntries(Path root, String worldName) throws IOException {
+    private Stream<Snapshot> listTimestampedEntries(Path fullPath, Path root, String worldName) throws IOException {
+        WorldEdit.logger.info("Timestamp check in: {}", root);
         return Files.list(root)
             .filter(candidate -> {
                 ZonedDateTime date = FileNameDateTimeParser.getInstance().detectDateTime(candidate);
                 return date != null;
             })
             .flatMap(candidate -> {
+                WorldEdit.logger.info("Timestamp trying: {}", candidate);
                 // Try timestamped directory
                 if (Files.isDirectory(candidate)) {
+                    WorldEdit.logger.info("Timestamped directory");
                     try {
-                        return listWorldEntries(candidate, worldName);
+                        return listWorldEntries(
+                            fullPath.resolve(candidate.getFileName()), candidate, worldName
+                        );
                     } catch (IOException e) {
                         throw new UncheckedIOException(e);
                     }
@@ -188,9 +244,15 @@ public class FileSystemSnapshotDatabase implements SnapshotDatabase {
                 try {
                     Optional<FileSystem> fs = ArchiveNioSupports.tryOpenAsDir(candidate);
                     if (!fs.isPresent()) {
+                        WorldEdit.logger.info("Nothing!");
                         return null;
                     }
-                    return listWorldEntries(fs.get().getPath("/"), worldName);
+                    WorldEdit.logger.info("Timestamped archive!");
+                    return listWorldEntries(
+                        fullPath.resolve(candidate.getFileName()),
+                        fs.get().getPath("/"),
+                        worldName
+                    );
                 } catch (IOException e) {
                     throw new UncheckedIOException(e);
                 }

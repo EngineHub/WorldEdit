@@ -117,9 +117,8 @@ public class YAMLConfiguration extends LocalConfiguration {
         serverSideCUI = config.getBoolean("server-side-cui", true);
 
         String snapshotsDir = config.getString("snapshots.directory", "");
-        if (!snapshotsDir.isEmpty()) {
-            snapshotRepo = new SnapshotRepository(snapshotsDir);
-        }
+        boolean experimentalSnapshots = config.getBoolean("snapshots.experimental", false);
+        initializeSnapshotConfiguration(snapshotsDir, experimentalSnapshots);
 
         String type = config.getString("shell-save-type", "").trim();
         shellSaveType = type.isEmpty() ? null : type;

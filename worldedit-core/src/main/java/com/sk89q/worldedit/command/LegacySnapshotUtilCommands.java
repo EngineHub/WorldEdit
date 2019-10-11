@@ -29,85 +29,91 @@ import com.sk89q.worldedit.command.util.CommandPermissionsConditionGenerator;
 import com.sk89q.worldedit.command.util.Logging;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.regions.Region;
+import com.sk89q.worldedit.world.DataException;
 import com.sk89q.worldedit.world.World;
-import com.sk89q.worldedit.world.snapshot.experimental.Snapshot;
-import com.sk89q.worldedit.world.snapshot.experimental.SnapshotRestore;
+import com.sk89q.worldedit.world.snapshot.InvalidSnapshotException;
+import com.sk89q.worldedit.world.snapshot.Snapshot;
+import com.sk89q.worldedit.world.snapshot.SnapshotRestore;
+import com.sk89q.worldedit.world.storage.ChunkStore;
+import com.sk89q.worldedit.world.storage.MissingWorldException;
 import org.enginehub.piston.annotation.Command;
 import org.enginehub.piston.annotation.CommandContainer;
 import org.enginehub.piston.annotation.param.Arg;
 
+import java.io.File;
 import java.io.IOException;
-import java.net.URI;
-import java.util.Optional;
-import java.util.stream.Stream;
 
 import static com.sk89q.worldedit.command.SnapshotCommands.checkSnapshotsConfigured;
-import static com.sk89q.worldedit.command.SnapshotCommands.resolveSnapshotName;
 import static com.sk89q.worldedit.command.util.Logging.LogMode.REGION;
 
-@CommandContainer(superTypes = CommandPermissionsConditionGenerator.Registration.class)
-public class SnapshotUtilCommands {
+class LegacySnapshotUtilCommands {
 
     private final WorldEdit we;
-    private final LegacySnapshotUtilCommands legacy;
 
-    public SnapshotUtilCommands(WorldEdit we) {
+    LegacySnapshotUtilCommands(WorldEdit we) {
         this.we = we;
-        this.legacy = new LegacySnapshotUtilCommands(we);
     }
 
-    @Command(
-        name = "restore",
-        aliases = { "/restore" },
-        desc = "Restore the selection from a snapshot"
-    )
-    @Logging(REGION)
-    @CommandPermissions("worldedit.snapshots.restore")
-    public void restore(Actor actor, World world, LocalSession session, EditSession editSession,
-                        @Arg(name = "snapshot", desc = "The snapshot to restore", def = "")
-                            String snapshotName) throws WorldEditException, IOException {
+    void restore(Actor actor, World world, LocalSession session, EditSession editSession,
+                 String snapshotName) throws WorldEditException {
         LocalConfiguration config = we.getConfiguration();
-        checkSnapshotsConfigured(config);
-
-        if (config.snapshotRepo != null) {
-            legacy.restore(actor, world, session, editSession, snapshotName);
-            return;
-        }
 
         Region region = session.getSelection(world);
         Snapshot snapshot;
 
         if (snapshotName != null) {
-            URI uri = resolveSnapshotName(config, snapshotName);
-            Optional<Snapshot> snapOpt = config.snapshotDatabase.getSnapshot(uri);
-            if (!snapOpt.isPresent()) {
+            try {
+                snapshot = config.snapshotRepo.getSnapshot(snapshotName);
+            } catch (InvalidSnapshotException e) {
                 actor.printError("That snapshot does not exist or is not available.");
                 return;
             }
-            snapshot = snapOpt.get();
         } else {
-            snapshot = session.getSnapshotExperimental();
+            snapshot = session.getSnapshot();
         }
 
         // No snapshot set?
         if (snapshot == null) {
-            try (Stream<Snapshot> snapshotStream =
-                     config.snapshotDatabase.getSnapshotsNewestFirst(world.getName())) {
-                snapshot = snapshotStream
-                    .findFirst().orElse(null);
-            }
+            try {
+                snapshot = config.snapshotRepo.getDefaultSnapshot(world.getName());
 
-            if (snapshot == null) {
-                actor.printError("No snapshots were found for world " +
-                    "'" + world.getName() + "'");
+                if (snapshot == null) {
+                    actor.printError("No snapshots were found. See console for details.");
+
+                    // Okay, let's toss some debugging information!
+                    File dir = config.snapshotRepo.getDirectory();
+
+                    try {
+                        WorldEdit.logger.info("WorldEdit found no snapshots: looked in: "
+                                + dir.getCanonicalPath());
+                    } catch (IOException e) {
+                        WorldEdit.logger.info("WorldEdit found no snapshots: looked in "
+                                + "(NON-RESOLVABLE PATH - does it exist?): "
+                                + dir.getPath());
+                    }
+
+                    return;
+                }
+            } catch (MissingWorldException ex) {
+                actor.printError("No snapshots were found for this world.");
                 return;
             }
         }
-        actor.print("Snapshot '" + snapshot.getInfo().getDisplayName() + "' loaded; now restoring...");
+
+        ChunkStore chunkStore;
+
+        // Load chunk store
+        try {
+            chunkStore = snapshot.getChunkStore();
+            actor.print("Snapshot '" + snapshot.getName() + "' loaded; now restoring...");
+        } catch (DataException | IOException e) {
+            actor.printError("Failed to load snapshot: " + e.getMessage());
+            return;
+        }
 
         try {
             // Restore snapshot
-            SnapshotRestore restore = new SnapshotRestore(snapshot, editSession, region);
+            SnapshotRestore restore = new SnapshotRestore(chunkStore, editSession, region);
             //player.print(restore.getChunksAffected() + " chunk(s) will be loaded.");
 
             restore.restore();
@@ -130,7 +136,7 @@ public class SnapshotUtilCommands {
             }
         } finally {
             try {
-                snapshot.close();
+                chunkStore.close();
             } catch (IOException ignored) {
             }
         }

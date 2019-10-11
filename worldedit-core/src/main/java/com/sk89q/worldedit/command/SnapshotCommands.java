@@ -27,7 +27,6 @@ import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.command.util.CommandPermissions;
 import com.sk89q.worldedit.command.util.CommandPermissionsConditionGenerator;
-import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.util.formatting.component.PaginationBox;
 import com.sk89q.worldedit.util.formatting.text.Component;
@@ -36,19 +35,25 @@ import com.sk89q.worldedit.util.formatting.text.event.ClickEvent;
 import com.sk89q.worldedit.util.formatting.text.event.HoverEvent;
 import com.sk89q.worldedit.util.formatting.text.format.TextColor;
 import com.sk89q.worldedit.world.World;
-import com.sk89q.worldedit.world.snapshot.InvalidSnapshotException;
-import com.sk89q.worldedit.world.snapshot.Snapshot;
-import com.sk89q.worldedit.world.storage.MissingWorldException;
+import com.sk89q.worldedit.world.snapshot.experimental.Snapshot;
+import com.sk89q.worldedit.world.snapshot.experimental.fs.FileSystemSnapshotDatabase;
 import org.enginehub.piston.annotation.Command;
 import org.enginehub.piston.annotation.CommandContainer;
 import org.enginehub.piston.annotation.param.Arg;
 import org.enginehub.piston.annotation.param.ArgFlag;
+import org.enginehub.piston.exception.StopExecutionException;
 
-import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.toList;
 
 /**
  * Snapshot commands.
@@ -59,49 +64,75 @@ public class SnapshotCommands {
     private static final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss z");
 
     private final WorldEdit we;
+    private final LegacySnapshotCommands legacy;
 
     public SnapshotCommands(WorldEdit we) {
         this.we = we;
+        this.legacy = new LegacySnapshotCommands(we);
     }
+
+    static void checkSnapshotsConfigured(LocalConfiguration localConfiguration) {
+        if (!localConfiguration.snapshotsConfigured) {
+            throw new StopExecutionException(TextComponent.of(
+                "Snapshot/backup restore is not configured."
+            ));
+        }
+    }
+
+    static URI resolveSnapshotName(LocalConfiguration config, String name) {
+        if (!name.contains("://")) {
+            if (config.snapshotDatabase instanceof FileSystemSnapshotDatabase) {
+                String newName = name;
+                while (newName.startsWith("/")) {
+                    newName = newName.substring(1);
+                }
+                return ((FileSystemSnapshotDatabase) config.snapshotDatabase).getRoot()
+                    .resolve(newName).toUri();
+            }
+        }
+        return URI.create(name);
+    }
+
 
     @Command(
         name = "list",
         desc = "List snapshots"
     )
     @CommandPermissions("worldedit.snapshots.list")
-    public void list(Actor actor, World world,
+    void list(Actor actor, World world,
                      @ArgFlag(name = 'p', desc = "Page of results to return", def = "1")
-                         int page) throws WorldEditException {
-
+                         int page) throws WorldEditException, IOException {
         LocalConfiguration config = we.getConfiguration();
+        checkSnapshotsConfigured(config);
 
-        if (config.snapshotRepo == null) {
-            actor.printError("Snapshot/backup restore is not configured.");
+        if (config.snapshotRepo != null) {
+            legacy.list(actor, world, page);
             return;
         }
 
-        try {
-            List<Snapshot> snapshots = config.snapshotRepo.getSnapshots(true, world.getName());
+        List<Snapshot> snapshots;
+        try (Stream<Snapshot> snapshotStream =
+                 config.snapshotDatabase.getSnapshotsNewestFirst(world.getName())) {
+            snapshots = snapshotStream
+                .collect(toList());
+        }
 
-            if (!snapshots.isEmpty()) {
-                actor.print(new SnapshotListBox(world.getName(), snapshots).create(page));
-            } else {
-                actor.printError("No snapshots are available. See console for details.");
+        if (!snapshots.isEmpty()) {
+            actor.print(new SnapshotListBox(world.getName(), snapshots).create(page));
+        } else {
+            actor.printError("No snapshots were found for world '" + world.getName() + "'");
 
-                // Okay, let's toss some debugging information!
-                File dir = config.snapshotRepo.getDirectory();
-
-                try {
-                    WorldEdit.logger.info("WorldEdit found no snapshots: looked in: "
-                            + dir.getCanonicalPath());
-                } catch (IOException e) {
-                    WorldEdit.logger.info("WorldEdit found no snapshots: looked in "
-                            + "(NON-RESOLVABLE PATH - does it exist?): "
-                            + dir.getPath());
+            if (config.snapshotDatabase instanceof FileSystemSnapshotDatabase) {
+                FileSystemSnapshotDatabase db = (FileSystemSnapshotDatabase) config.snapshotDatabase;
+                Path root = db.getRoot();
+                if (Files.isDirectory(root)) {
+                    WorldEdit.logger.info("No snapshots were found for world '"
+                        + world.getName() + "'; looked in " + root.toRealPath());
+                } else {
+                    WorldEdit.logger.info("No snapshots were found for world '"
+                        + world.getName() + "'; " + root.toRealPath() + " is not a directory");
                 }
             }
-        } catch (MissingWorldException ex) {
-            actor.printError("No snapshots were found for this world.");
         }
     }
 
@@ -110,36 +141,45 @@ public class SnapshotCommands {
         desc = "Choose a snapshot to use"
     )
     @CommandPermissions("worldedit.snapshots.restore")
-    public void use(Actor actor, World world, LocalSession session,
-                    @Arg(desc = "Snapeshot to use")
-                        String name) throws WorldEditException {
-
+    void use(Actor actor, World world, LocalSession session,
+                    @Arg(desc = "Snapshot to use")
+                        String name) throws IOException {
         LocalConfiguration config = we.getConfiguration();
+        checkSnapshotsConfigured(config);
 
-        if (config.snapshotRepo == null) {
-            actor.printError("Snapshot/backup restore is not configured.");
+        if (config.snapshotRepo != null) {
+            legacy.use(actor, world, session, name);
             return;
         }
 
         // Want the latest snapshot?
         if (name.equalsIgnoreCase("latest")) {
-            try {
-                Snapshot snapshot = config.snapshotRepo.getDefaultSnapshot(world.getName());
+            Snapshot snapshot;
+            try (Stream<Snapshot> snapshotStream =
+                     config.snapshotDatabase.getSnapshotsNewestFirst(world.getName())) {
+                snapshot = snapshotStream
+                    .findFirst().orElse(null);
+            }
 
-                if (snapshot != null) {
-                    session.setSnapshot(null);
-                    actor.print("Now using newest snapshot.");
-                } else {
-                    actor.printError("No snapshots were found.");
+            if (snapshot != null) {
+                if (session.getSnapshotExperimental() != null) {
+                    session.getSnapshotExperimental().close();
                 }
-            } catch (MissingWorldException ex) {
+                session.setSnapshot(null);
+                actor.print("Now using newest snapshot.");
+            } else {
                 actor.printError("No snapshots were found for this world.");
             }
         } else {
-            try {
-                session.setSnapshot(config.snapshotRepo.getSnapshot(name));
+            URI uri = resolveSnapshotName(config, name);
+            Optional<Snapshot> snapshot = config.snapshotDatabase.getSnapshot(uri);
+            if (snapshot.isPresent()) {
+                if (session.getSnapshotExperimental() != null) {
+                    session.getSnapshotExperimental().close();
+                }
+                session.setSnapshotExperimental(snapshot.get());
                 actor.print("Snapshot set to: " + name);
-            } catch (InvalidSnapshotException e) {
+            } else {
                 actor.printError("That snapshot does not exist or is not available.");
             }
         }
@@ -150,37 +190,42 @@ public class SnapshotCommands {
         desc = "Choose the snapshot based on the list id"
     )
     @CommandPermissions("worldedit.snapshots.restore")
-    public void sel(Actor actor, World world, LocalSession session,
+    void sel(Actor actor, World world, LocalSession session,
                     @Arg(desc = "The list ID to select")
-                        int index) throws WorldEditException {
+                        int index) throws IOException {
         LocalConfiguration config = we.getConfiguration();
+        checkSnapshotsConfigured(config);
 
-        if (config.snapshotRepo == null) {
-            actor.printError("Snapshot/backup restore is not configured.");
+        if (config.snapshotRepo != null) {
+            legacy.sel(actor, world, session, index);
             return;
         }
 
         if (index < 1) {
-            actor.printError("Invalid index, must be equal or higher then 1.");
+            actor.printError("Invalid index, must be greater than or equal to 1.");
             return;
         }
 
-        try {
-            List<Snapshot> snapshots = config.snapshotRepo.getSnapshots(true, world.getName());
-            if (snapshots.size() < index) {
-                actor.printError("Invalid index, must be between 1 and " + snapshots.size() + ".");
-                return;
-            }
-            Snapshot snapshot = snapshots.get(index - 1);
-            if (snapshot == null) {
-                actor.printError("That snapshot does not exist or is not available.");
-                return;
-            }
-            session.setSnapshot(snapshot);
-            actor.print("Snapshot set to: " + snapshot.getName());
-        } catch (MissingWorldException e) {
-            actor.printError("No snapshots were found for this world.");
+        List<Snapshot> snapshots;
+        try (Stream<Snapshot> snapshotStream =
+                 config.snapshotDatabase.getSnapshotsNewestFirst(world.getName())) {
+            snapshots = snapshotStream
+                .collect(toList());
         }
+        if (snapshots.size() < index) {
+            actor.printError("Invalid index, must be between 1 and " + snapshots.size() + ".");
+            return;
+        }
+        Snapshot snapshot = snapshots.get(index - 1);
+        if (snapshot == null) {
+            actor.printError("That snapshot does not exist or is not available.");
+            return;
+        }
+        if (session.getSnapshotExperimental() != null) {
+            session.getSnapshotExperimental().close();
+        }
+        session.setSnapshotExperimental(snapshot);
+        actor.print("Snapshot set to: " + snapshot.getInfo().getDisplayName());
     }
 
     @Command(
@@ -188,29 +233,33 @@ public class SnapshotCommands {
         desc = "Choose the nearest snapshot before a date"
     )
     @CommandPermissions("worldedit.snapshots.restore")
-    public void before(Actor actor, World world, LocalSession session,
+    void before(Actor actor, World world, LocalSession session,
                        @Arg(desc = "The soonest date that may be used")
-                           ZonedDateTime date) throws WorldEditException {
-
+                           ZonedDateTime date) throws IOException {
         LocalConfiguration config = we.getConfiguration();
+        checkSnapshotsConfigured(config);
 
-        if (config.snapshotRepo == null) {
-            actor.printError("Snapshot/backup restore is not configured.");
+        if (config.snapshotRepo != null) {
+            legacy.before(actor, world, session, date);
             return;
         }
 
-        try {
-            Snapshot snapshot = config.snapshotRepo.getSnapshotBefore(date, world.getName());
+        Snapshot snapshot;
+        try (Stream<Snapshot> snapshotStream =
+                 config.snapshotDatabase.getSnapshotsNewestFirst(world.getName())) {
+            snapshot = snapshotStream
+                .findFirst().orElse(null);
+        }
 
-            if (snapshot == null) {
-                actor.printError("Couldn't find a snapshot before "
-                    + dateFormat.withZone(session.getTimeZone()).format(date) + ".");
-            } else {
-                session.setSnapshot(snapshot);
-                actor.print("Snapshot set to: " + snapshot.getName());
+        if (snapshot == null) {
+            actor.printError("Couldn't find a snapshot before "
+                + dateFormat.withZone(session.getTimeZone()).format(date) + ".");
+        } else {
+            if (session.getSnapshotExperimental() != null) {
+                session.getSnapshotExperimental().close();
             }
-        } catch (MissingWorldException ex) {
-            actor.printError("No snapshots were found for this world.");
+            session.setSnapshotExperimental(snapshot);
+            actor.print("Snapshot set to: " + snapshot.getInfo().getDisplayName());
         }
     }
 
@@ -219,28 +268,32 @@ public class SnapshotCommands {
         desc = "Choose the nearest snapshot after a date"
     )
     @CommandPermissions("worldedit.snapshots.restore")
-    public void after(Actor actor, World world, LocalSession session,
+    void after(Actor actor, World world, LocalSession session,
                       @Arg(desc = "The soonest date that may be used")
-                          ZonedDateTime date) throws WorldEditException {
-
+                          ZonedDateTime date) throws IOException {
         LocalConfiguration config = we.getConfiguration();
+        checkSnapshotsConfigured(config);
 
-        if (config.snapshotRepo == null) {
-            actor.printError("Snapshot/backup restore is not configured.");
+        if (config.snapshotRepo != null) {
+            legacy.after(actor, world, session, date);
             return;
         }
 
-        try {
-            Snapshot snapshot = config.snapshotRepo.getSnapshotAfter(date, world.getName());
-            if (snapshot == null) {
-                actor.printError("Couldn't find a snapshot after "
-                    + dateFormat.withZone(session.getTimeZone()).format(date) + ".");
-            } else {
-                session.setSnapshot(snapshot);
-                actor.print("Snapshot set to: " + snapshot.getName());
+        Snapshot snapshot;
+        try (Stream<Snapshot> snapshotStream =
+                 config.snapshotDatabase.getSnapshotsNewestFirst(world.getName())) {
+            snapshot = snapshotStream
+                .findFirst().orElse(null);
+        }
+        if (snapshot == null) {
+            actor.printError("Couldn't find a snapshot after "
+                + dateFormat.withZone(session.getTimeZone()).format(date) + ".");
+        } else {
+            if (session.getSnapshotExperimental() != null) {
+                session.getSnapshotExperimental().close();
             }
-        } catch (MissingWorldException ex) {
-            actor.printError("No snapshots were found for this world.");
+            session.setSnapshotExperimental(snapshot);
+            actor.print("Snapshot set to: " + snapshot.getInfo().getDisplayName());
         }
     }
 
@@ -255,10 +308,11 @@ public class SnapshotCommands {
         @Override
         public Component getComponent(int number) {
             final Snapshot snapshot = snapshots.get(number);
+            String displayName = snapshot.getInfo().getDisplayName();
             return TextComponent.of(number + 1 + ". ", TextColor.GOLD)
-                    .append(TextComponent.of(snapshot.getName(), TextColor.LIGHT_PURPLE)
-                            .hoverEvent(HoverEvent.of(HoverEvent.Action.SHOW_TEXT, TextComponent.of("Click to use")))
-                            .clickEvent(ClickEvent.of(ClickEvent.Action.RUN_COMMAND, "/snap use " + snapshot.getName())));
+                .append(TextComponent.builder(displayName, TextColor.LIGHT_PURPLE)
+                    .hoverEvent(HoverEvent.showText(TextComponent.of("Click to use")))
+                    .clickEvent(ClickEvent.runCommand("/snap use " + displayName)));
         }
 
         @Override

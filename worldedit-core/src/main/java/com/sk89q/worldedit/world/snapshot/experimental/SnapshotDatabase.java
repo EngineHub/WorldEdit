@@ -20,6 +20,7 @@
 package com.sk89q.worldedit.world.snapshot.experimental;
 
 import java.io.IOException;
+import java.net.URI;
 import java.time.ZonedDateTime;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -37,7 +38,7 @@ public interface SnapshotDatabase {
      * @param name the name of the snapshot
      * @return the snapshot if available
      */
-    Optional<Snapshot> getSnapshot(SnapshotName name) throws IOException;
+    Optional<Snapshot> getSnapshot(URI name) throws IOException;
 
     /**
      * Get all snapshots by world, unsorted. The stream should be
@@ -48,10 +49,18 @@ public interface SnapshotDatabase {
      */
     Stream<Snapshot> getSnapshots(String worldName) throws IOException;
 
+    default Stream<Snapshot> getSnapshotsNewestFirst(String worldName) throws IOException {
+        return getSnapshots(worldName).sorted(SnapshotComparator.getInstance());
+    }
+
+    default Stream<Snapshot> getSnapshotsOldestFirst(String worldName) throws IOException {
+        return getSnapshots(worldName).sorted(SnapshotComparator.getInstance().reversed());
+    }
+
     default Stream<Snapshot> getSnapshotsBefore(String worldName, ZonedDateTime date) throws IOException {
         return takeWhile(
             // sorted from oldest -> newest, so all `before` are at the front
-            getSnapshots(worldName).sorted(SnapshotComparator.getInstance().reversed()),
+            getSnapshotsOldestFirst(worldName),
             snap -> snap.getInfo().getDateTime().isBefore(date)
         );
     }
@@ -59,7 +68,7 @@ public interface SnapshotDatabase {
     default Stream<Snapshot> getSnapshotsAfter(String worldName, ZonedDateTime date) throws IOException {
         return takeWhile(
             // sorted from newest -> oldest, so all `after` are at the front
-            getSnapshots(worldName).sorted(SnapshotComparator.getInstance()),
+            getSnapshotsNewestFirst(worldName),
             snap -> snap.getInfo().getDateTime().isAfter(date)
         );
     }

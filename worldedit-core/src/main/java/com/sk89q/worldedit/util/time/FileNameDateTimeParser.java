@@ -19,12 +19,18 @@
 
 package com.sk89q.worldedit.util.time;
 
+import com.google.common.collect.Streams;
+import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.util.io.file.MorePaths;
+
 import javax.annotation.Nullable;
 import java.nio.file.Path;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 /**
  * Parses date-times by looking at the file name. File names without a time
@@ -74,8 +80,13 @@ public class FileNameDateTimeParser implements SnapshotDateTimeParser {
     @Nullable
     @Override
     public ZonedDateTime detectDateTime(Path path) {
-        Matcher matcher = BASIC_FILTER.matcher(path.getFileName().toString());
-        if (matcher.find()) {
+        // Make this perform a little better:
+        Matcher matcher = Streams.findLast(
+            StreamSupport.stream(MorePaths.optimizedSpliterator(path), false)
+                .map(p -> BASIC_FILTER.matcher(p.toString()))
+                .filter(Matcher::find)
+        ).orElse(null);
+        if (matcher != null) {
             int year = matchAndParseOrZero(matcher, "year");
             int month = matchAndParseOrZero(matcher, "month");
             int day = matchAndParseOrZero(matcher, "day");

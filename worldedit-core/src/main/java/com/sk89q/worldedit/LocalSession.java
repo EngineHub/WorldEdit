@@ -53,7 +53,7 @@ import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.item.ItemType;
-import com.sk89q.worldedit.world.snapshot.Snapshot;
+import com.sk89q.worldedit.world.snapshot.experimental.Snapshot;
 
 import javax.annotation.Nullable;
 import java.time.ZoneId;
@@ -92,7 +92,8 @@ public class LocalSession {
     private transient int maxBlocksChanged = -1;
     private transient int maxTimeoutTime;
     private transient boolean useInventory;
-    private transient Snapshot snapshot;
+    private transient com.sk89q.worldedit.world.snapshot.Snapshot snapshot;
+    private transient Snapshot snapshotExperimental;
     private transient boolean hasCUISupport = false;
     private transient int cuiVersion = -1;
     private transient boolean fastMode = false;
@@ -554,22 +555,40 @@ public class LocalSession {
     }
 
     /**
+     * Get the legacy snapshot that has been selected.
+     *
+     * @return the legacy snapshot
+     */
+    @Nullable
+    public com.sk89q.worldedit.world.snapshot.Snapshot getSnapshot() {
+        return snapshot;
+    }
+
+    /**
+     * Select a legacy snapshot.
+     *
+     * @param snapshot a legacy snapshot
+     */
+    public void setSnapshot(@Nullable com.sk89q.worldedit.world.snapshot.Snapshot snapshot) {
+        this.snapshot = snapshot;
+    }
+
+    /**
      * Get the snapshot that has been selected.
      *
      * @return the snapshot
      */
-    @Nullable
-    public Snapshot getSnapshot() {
-        return snapshot;
+    public @Nullable Snapshot getSnapshotExperimental() {
+        return snapshotExperimental;
     }
 
     /**
      * Select a snapshot.
      *
-     * @param snapshot a snapshot
+     * @param snapshotExperimental a snapshot
      */
-    public void setSnapshot(@Nullable Snapshot snapshot) {
-        this.snapshot = snapshot;
+    public void setSnapshotExperimental(@Nullable Snapshot snapshotExperimental) {
+        this.snapshotExperimental = snapshotExperimental;
     }
 
     /**
