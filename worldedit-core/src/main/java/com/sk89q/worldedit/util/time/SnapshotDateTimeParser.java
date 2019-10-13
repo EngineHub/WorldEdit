@@ -32,6 +32,10 @@ public interface SnapshotDateTimeParser {
     /**
      * Attempt to detect an ZonedDateTime from a path.
      *
+     * <p>
+     * The path is not guaranteed to exist.
+     * </p>
+     *
      * @param path the path
      * @return date-time, if it can be parsed
      */

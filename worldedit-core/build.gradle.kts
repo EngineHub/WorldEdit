@@ -30,6 +30,8 @@ dependencies {
     "annotationProcessor"("com.google.guava:guava:21.0")
     "compileOnly"("com.google.auto.value:auto-value-annotations:${Versions.AUTO_VALUE}")
     "annotationProcessor"("com.google.auto.value:auto-value:${Versions.AUTO_VALUE}")
+    "testImplementation"("ch.qos.logback:logback-core:${Versions.LOGBACK}")
+    "testImplementation"("ch.qos.logback:logback-classic:${Versions.LOGBACK}")
 }
 
 tasks.withType<JavaCompile>().configureEach {

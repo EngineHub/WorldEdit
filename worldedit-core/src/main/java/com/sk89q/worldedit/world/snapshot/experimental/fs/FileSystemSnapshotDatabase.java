@@ -20,7 +20,6 @@
 package com.sk89q.worldedit.world.snapshot.experimental.fs;
 
 import com.google.common.collect.ImmutableList;
-import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.util.function.IORunnable;
 import com.sk89q.worldedit.util.io.Closer;
 import com.sk89q.worldedit.util.io.file.ArchiveNioSupports;
@@ -31,12 +30,14 @@ import com.sk89q.worldedit.util.time.SnapshotDateTimeParser;
 import com.sk89q.worldedit.world.snapshot.experimental.Snapshot;
 import com.sk89q.worldedit.world.snapshot.experimental.SnapshotDatabase;
 import com.sk89q.worldedit.world.snapshot.experimental.SnapshotInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.net.URI;
-import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -56,6 +57,8 @@ import static com.google.common.base.Preconditions.checkArgument;
  */
 public class FileSystemSnapshotDatabase implements SnapshotDatabase {
 
+    private static final Logger logger = LoggerFactory.getLogger(FileSystemSnapshotDatabase.class);
+
     private static final List<SnapshotDateTimeParser> DATE_TIME_PARSERS =
         new ImmutableList.Builder<SnapshotDateTimeParser>()
             .add(FileNameDateTimeParser.getInstance())
@@ -64,11 +67,15 @@ public class FileSystemSnapshotDatabase implements SnapshotDatabase {
             .build();
 
     public static ZonedDateTime tryParseDate(Path path) {
+        return tryParseDateInternal(path)
+            .orElseThrow(() -> new IllegalStateException("Could not detect date of " + path));
+    }
+
+    private static Optional<ZonedDateTime> tryParseDateInternal(Path path) {
         return DATE_TIME_PARSERS.stream()
             .map(parser -> parser.detectDateTime(path))
             .filter(Objects::nonNull)
-            .findFirst()
-            .orElseThrow(() -> new IllegalStateException("Could not detect date of " + path));
+            .findFirst();
     }
 
     public static FileSystemSnapshotDatabase maybeCreate(Path root) throws IOException {
@@ -84,7 +91,9 @@ public class FileSystemSnapshotDatabase implements SnapshotDatabase {
     }
 
     private SnapshotInfo createSnapshotInfo(Path fullPath, Path realPath) {
-        return SnapshotInfo.create(MorePaths.toRelativeUri(fullPath), tryParseDate(realPath));
+        // Try full for parsing out of file name, real for parsing mod time.
+        ZonedDateTime date = tryParseDateInternal(fullPath).orElseGet(() -> tryParseDate(realPath));
+        return SnapshotInfo.create(MorePaths.toRelativeUri(fullPath), date);
     }
 
     private Snapshot createSnapshot(Path fullPath, Path realPath, @Nullable IORunnable closeCallback) {
@@ -99,15 +108,12 @@ public class FileSystemSnapshotDatabase implements SnapshotDatabase {
 
     @Override
     public Optional<Snapshot> getSnapshot(URI name) throws IOException {
-        if (!name.getScheme().equals("file")) {
+        if (!name.getScheme().equals(root.getFileSystem().provider().getScheme())) {
             return Optional.empty();
         }
         Path rawResolved = root.resolve(name.getPath());
-        if (!Files.exists(rawResolved)) {
-            return Optional.empty();
-        }
         // Catch trickery with paths:
-        Path realPath = rawResolved.toRealPath();
+        Path realPath = rawResolved.normalize();
         if (!realPath.startsWith(root)) {
             return Optional.empty();
         }
@@ -128,21 +134,25 @@ public class FileSystemSnapshotDatabase implements SnapshotDatabase {
         try {
             while (true) {
                 if (iterator == null) {
-                    iterator = MorePaths.iterParents(relative).iterator();
+                    iterator = MorePaths.iterPaths(relative).iterator();
                 }
                 if (!iterator.hasNext()) {
                     return Optional.empty();
                 }
-                Path next = iterator.next();
+                Path relativeNext = iterator.next();
+                Path next = root.resolve(relativeNext);
                 if (!Files.isRegularFile(next)) {
                     // This will never be it.
                     continue;
                 }
-                Optional<FileSystem> fs = ArchiveNioSupports.tryOpenAsDir(next);
-                if (fs.isPresent()) {
-                    closer.register(fs.get());
+                Optional<Path> newRootOpt = ArchiveNioSupports.tryOpenAsDir(next);
+                if (newRootOpt.isPresent()) {
+                    Path newRoot = newRootOpt.get();
+                    if (newRoot.getFileSystem() != FileSystems.getDefault()) {
+                        closer.register(newRoot.getFileSystem());
+                    }
                     // Switch path to path inside the archive
-                    relative = fs.get().getPath(next.relativize(relative).toString());
+                    relative = newRoot.resolve(relativeNext.relativize(relative).toString());
                     iterator = null;
                     // Check if it exists, if so open snapshot
                     if (Files.exists(relative)) {
@@ -182,59 +192,60 @@ public class FileSystemSnapshotDatabase implements SnapshotDatabase {
     }
 
     private Stream<Snapshot> listWorldEntries(Path fullPath, Path root, String worldName) throws IOException {
-        WorldEdit.logger.info("World check in: {}", root);
+        logger.debug("World check in: {}", root);
         return Files.list(root)
             .flatMap(candidate -> {
-                WorldEdit.logger.info("World trying: {}", candidate);
+                logger.debug("World trying: {}", candidate);
                 // Try world directory
                 if (candidate.getFileName().toString().equalsIgnoreCase(worldName)) {
                     // Direct
                     if (Files.exists(candidate.resolve("level.dat"))) {
-                        WorldEdit.logger.info("Direct!");
+                        logger.debug("Direct!");
                         return Stream.of(createSnapshot(
-                            fullPath.resolve(candidate.getFileName()), candidate, null
+                            fullPath.resolve(candidate.getFileName().toString()), candidate, null
                         ));
                     }
                     // Container for time-stamped entries
                     try {
                         return listTimestampedEntries(
-                            fullPath.resolve(candidate.getFileName()), candidate, worldName
+                            fullPath.resolve(candidate.getFileName().toString()), candidate, worldName
                         );
                     } catch (IOException e) {
                         throw new UncheckedIOException(e);
                     }
                 }
                 // Try world archive
-                if (Files.isRegularFile(candidate) && candidate.startsWith(worldName + ".")) {
-                    WorldEdit.logger.info("Archive!");
+                if (Files.isRegularFile(candidate)
+                    && candidate.getFileName().toString().startsWith(worldName + ".")) {
+                    logger.debug("Archive!");
                     try {
                         return tryRegularFileSnapshot(
-                            fullPath.resolve(candidate.getFileName()), candidate
+                            fullPath.resolve(candidate.getFileName().toString()), candidate
                         ).map(Stream::of).orElse(null);
                     } catch (IOException e) {
                         throw new UncheckedIOException(e);
                     }
                 }
-                WorldEdit.logger.info("Nothing!");
+                logger.debug("Nothing!");
                 return null;
             });
     }
 
     private Stream<Snapshot> listTimestampedEntries(Path fullPath, Path root, String worldName) throws IOException {
-        WorldEdit.logger.info("Timestamp check in: {}", root);
+        logger.debug("Timestamp check in: {}", root);
         return Files.list(root)
             .filter(candidate -> {
                 ZonedDateTime date = FileNameDateTimeParser.getInstance().detectDateTime(candidate);
                 return date != null;
             })
             .flatMap(candidate -> {
-                WorldEdit.logger.info("Timestamp trying: {}", candidate);
+                logger.debug("Timestamp trying: {}", candidate);
                 // Try timestamped directory
                 if (Files.isDirectory(candidate)) {
-                    WorldEdit.logger.info("Timestamped directory");
+                    logger.debug("Timestamped directory");
                     try {
                         return listWorldEntries(
-                            fullPath.resolve(candidate.getFileName()), candidate, worldName
+                            fullPath.resolve(candidate.getFileName().toString()), candidate, worldName
                         );
                     } catch (IOException e) {
                         throw new UncheckedIOException(e);
@@ -242,15 +253,15 @@ public class FileSystemSnapshotDatabase implements SnapshotDatabase {
                 }
                 // Otherwise archive, get it as a directory & unpack it
                 try {
-                    Optional<FileSystem> fs = ArchiveNioSupports.tryOpenAsDir(candidate);
-                    if (!fs.isPresent()) {
-                        WorldEdit.logger.info("Nothing!");
+                    Optional<Path> newRoot = ArchiveNioSupports.tryOpenAsDir(candidate);
+                    if (!newRoot.isPresent()) {
+                        logger.debug("Nothing!");
                         return null;
                     }
-                    WorldEdit.logger.info("Timestamped archive!");
+                    logger.debug("Timestamped archive!");
                     return listWorldEntries(
-                        fullPath.resolve(candidate.getFileName()),
-                        fs.get().getPath("/"),
+                        fullPath.resolve(candidate.getFileName().toString()),
+                        newRoot.get(),
                         worldName
                     );
                 } catch (IOException e) {

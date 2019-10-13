@@ -39,6 +39,9 @@ public class ModificationDateTimeParser implements SnapshotDateTimeParser {
 
     @Override
     public ZonedDateTime detectDateTime(Path path) {
+        if (!Files.exists(path)) {
+            return null;
+        }
         try {
             return Files.getLastModifiedTime(path).toInstant().atZone(ZoneId.systemDefault());
         } catch (IOException e) {

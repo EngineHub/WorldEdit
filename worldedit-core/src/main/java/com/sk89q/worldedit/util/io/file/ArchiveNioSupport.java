@@ -33,8 +33,8 @@ public interface ArchiveNioSupport {
      * Try to open the given archive as a file system.
      *
      * @param archive the archive to open
-     * @return the file system for the archive, if available
+     * @return the path for the root of the archive, if available
      */
-    Optional<FileSystem> tryOpenAsDir(Path archive) throws IOException;
+    Optional<Path> tryOpenAsDir(Path archive) throws IOException;
 
 }

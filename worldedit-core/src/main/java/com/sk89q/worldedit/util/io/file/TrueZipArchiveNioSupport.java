@@ -24,6 +24,7 @@ import com.google.common.collect.ImmutableSet;
 import net.java.truevfs.access.TArchiveDetector;
 import net.java.truevfs.access.TPath;
 
+import java.io.IOException;
 import java.nio.file.FileSystem;
 import java.nio.file.Path;
 import java.util.Optional;
@@ -48,12 +49,15 @@ public final class TrueZipArchiveNioSupport implements ArchiveNioSupport {
     }
 
     @Override
-    public Optional<FileSystem> tryOpenAsDir(Path archive) {
+    public Optional<Path> tryOpenAsDir(Path archive) throws IOException {
         String fileName = archive.getFileName().toString();
         int dot = fileName.indexOf('.');
         if (dot < 0 || dot >= fileName.length() || !ALLOWED_EXTENSIONS.contains(fileName.substring(dot + 1))) {
             return Optional.empty();
         }
-        return Optional.of(new TPath(archive).getFileSystem());
+        TPath root = new TPath(archive).getFileSystem().getPath("/");
+        return Optional.of(ArchiveNioSupports.skipRootSameName(
+            root, fileName.substring(0, dot)
+        ));
     }
 }

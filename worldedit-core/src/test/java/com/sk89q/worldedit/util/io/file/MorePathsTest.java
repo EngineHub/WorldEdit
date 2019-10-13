@@ -19,7 +19,6 @@
 
 package com.sk89q.worldedit.util.io.file;
 
-import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.Test;
 
 import java.nio.file.Path;
@@ -39,16 +38,16 @@ class MorePathsTest {
     @Test
     void testRelative() {
         assertEquals(
-            paths("a", "a/b"),
-            MorePaths.iterParents(Paths.get("a/b/c")).collect(toList())
+            paths("a", "a/b", "a/b/c"),
+            MorePaths.iterPaths(Paths.get("a/b/c")).collect(toList())
         );
     }
 
     @Test
     void testAbsolute() {
         assertEquals(
-            paths("/a", "/a/b"),
-            MorePaths.iterParents(Paths.get("/a/b/c")).collect(toList())
+            paths("/a", "/a/b", "/a/b/c"),
+            MorePaths.iterPaths(Paths.get("/a/b/c")).collect(toList())
         );
     }
 
@@ -56,15 +55,15 @@ class MorePathsTest {
     void testEmpty() {
         assertEquals(
             paths(),
-            MorePaths.iterParents(Paths.get("")).collect(toList())
+            MorePaths.iterPaths(Paths.get("")).collect(toList())
         );
     }
 
     @Test
     void testJustFile() {
         assertEquals(
-            paths(),
-            MorePaths.iterParents(Paths.get("a")).collect(toList())
+            paths("a"),
+            MorePaths.iterPaths(Paths.get("a")).collect(toList())
         );
     }
 }

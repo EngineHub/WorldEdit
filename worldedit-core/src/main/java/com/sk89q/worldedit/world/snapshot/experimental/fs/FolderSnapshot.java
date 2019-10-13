@@ -93,7 +93,7 @@ public class FolderSnapshot implements Snapshot {
                 new GZIPInputStream(Files.newInputStream(chunkFile))
             );
         }
-        Path regionFile = getFolder().resolve(McRegionChunkStore.getFilename(pos));
+        Path regionFile = getFolder().resolve("region").resolve(McRegionChunkStore.getFilename(pos));
         if (!Files.exists(regionFile)) {
             throw new MissingChunkException();
         }

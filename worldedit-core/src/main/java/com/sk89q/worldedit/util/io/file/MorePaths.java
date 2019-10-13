@@ -35,17 +35,18 @@ import static com.google.common.base.Preconditions.checkArgument;
 public class MorePaths {
 
     /**
-     * Starting with the first path element, add elements until reaching the parent of this path.
+     * Starting with the first path element, add elements until reaching this path.
      */
-    public static Stream<Path> iterParents(Path path) {
-        return IntStream.range(1, path.getNameCount())
+    public static Stream<Path> iterPaths(Path path) {
+        return IntStream.range(1, path.getNameCount() + 1)
             .mapToObj(end -> {
                 Path subPath = path.subpath(0, end);
                 if (path.isAbsolute()) {
                     subPath = Paths.get("/").resolve(subPath);
                 }
                 return subPath;
-            });
+            })
+            .filter(p -> !p.toString().isEmpty());
     }
 
     /**

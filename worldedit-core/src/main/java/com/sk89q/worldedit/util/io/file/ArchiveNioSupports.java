@@ -23,10 +23,12 @@ import com.google.common.collect.ImmutableList;
 
 import java.io.IOException;
 import java.nio.file.FileSystem;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
 import java.util.ServiceLoader;
+import java.util.stream.Stream;
 
 public class ArchiveNioSupports {
 
@@ -44,14 +46,43 @@ public class ArchiveNioSupports {
             .build();
     }
 
-    public static Optional<FileSystem> tryOpenAsDir(Path archive) throws IOException {
+    public static Optional<Path> tryOpenAsDir(Path archive) throws IOException {
         for (ArchiveNioSupport support : SUPPORTS) {
-            Optional<FileSystem> fs = support.tryOpenAsDir(archive);
+            Optional<Path> fs = support.tryOpenAsDir(archive);
             if (fs.isPresent()) {
                 return fs;
             }
         }
         return Optional.empty();
+    }
+
+    /**
+     * If root contains a folder with the same name as {@code name}, and no regular files,
+     * returns the path to that folder. Otherwise, return the root path.
+     *
+     * <p>
+     * This method is used to provide equal outputs for archives that do and do not contain
+     * their name as part of their root folder.
+     * </p>
+     *
+     * @param root the root path
+     * @param name the name that might exist inside root
+     * @return the corrected path
+     */
+    public static Path skipRootSameName(Path root, String name) throws IOException {
+        Path innerDir = root.resolve(name);
+        if (Files.isDirectory(innerDir)) {
+            try (Stream<Path> files = Files.list(root)) {
+                // The reason we check this, is that macOS creates a __MACOSX directory inside
+                // its zip files. We want to allow this to pass if that exists, or a similar
+                // mechanism, but fail if there are regular files, since that indicates that
+                // it may not be the right thing to do.
+                if (files.allMatch(Files::isDirectory)) {
+                    return innerDir;
+                }
+            }
+        }
+        return root;
     }
 
     private ArchiveNioSupports() {
