@@ -59,6 +59,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Function;
 import java.util.stream.IntStream;
 import java.util.zip.GZIPInputStream;
@@ -98,6 +99,16 @@ class FileSystemSnapshotDatabaseTest {
         Files.createFile(worldDir.resolve("level.dat"));
         Files.createDirectory(worldDir.resolve("region"));
         Files.write(worldDir.resolve("region").resolve("r.0.0.mca"), REGION_DATA);
+        return worldDir;
+    }
+
+    private static Path putDimWorldIn(Path directory, String worldName, int dim) throws IOException {
+        Path worldDir = directory.resolve(worldName);
+        Files.createDirectories(worldDir);
+        Files.createFile(worldDir.resolve("level.dat"));
+        Path dimFolder = worldDir.resolve("DIM" + dim).resolve("region");
+        Files.createDirectories(dimFolder);
+        Files.write(dimFolder.resolve("r.0.0.mca"), REGION_DATA);
         return worldDir;
     }
 
@@ -337,6 +348,33 @@ class FileSystemSnapshotDatabaseTest {
         @BeforeEach
         void setUp() throws IOException {
             Path worldFolder = putWorldIn(db.getRoot(), WORLD_ALPHA);
+            Files.setLastModifiedTime(worldFolder, FileTime.from(TIME_ONE.toInstant()));
+        }
+
+        @DisplayName("returns a valid snapshot")
+        @Test
+        void returnValidSnapshot() throws IOException, DataException {
+            Snapshot snapshot = requireSnapshot(WORLD_ALPHA);
+            assertValidSnapshot(TIME_ONE, snapshot);
+        }
+
+        @DisplayName("lists a valid snapshot")
+        @Test
+        void listValidSnapshot() throws IOException, DataException {
+            Snapshot snapshot = requireListsSnapshot(WORLD_ALPHA);
+            assertValidSnapshot(TIME_ONE, snapshot);
+        }
+
+    }
+
+    @DisplayName("with a world-only directory (DIM)")
+    @Nested
+    class WorldOnlyDirDim {
+
+        @BeforeEach
+        void setUp() throws IOException {
+            int dim = ThreadLocalRandom.current().nextInt();
+            Path worldFolder = putDimWorldIn(db.getRoot(), WORLD_ALPHA, dim);
             Files.setLastModifiedTime(worldFolder, FileTime.from(TIME_ONE.toInstant()));
         }
 

@@ -37,6 +37,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Stream;
 import java.util.zip.GZIPInputStream;
 
 import static com.google.common.base.Preconditions.checkState;
@@ -51,24 +55,39 @@ import static com.google.common.base.Preconditions.checkState;
  */
 public class FolderSnapshot implements Snapshot {
 
-    private static boolean isLegacyFolder(Path folder) {
+    /**
+     * Object used by {@code getRegionFolder(Path)} to indicate that the path does not exist.
+     */
+    private static final Object NOT_FOUND_TOKEN = new Object();
+
+    private static Object getRegionFolder(Path folder) throws IOException {
         Path regionDir = folder.resolve("region");
         if (Files.exists(regionDir)) {
             checkState(Files.isDirectory(regionDir), "Region folder is actually a file");
-            return false;
+            return regionDir;
         }
-        return true;
+        // Might be in a DIM* folder
+        try (Stream<Path> paths = Files.list(folder)) {
+            return paths
+                .filter(Files::isDirectory)
+                .filter(p -> p.getFileName().toString().startsWith("DIM"))
+                .map(p -> p.resolve("region"))
+                .filter(Files::isDirectory)
+                .findFirst()
+                .map(x -> (Object) x)
+                // Or not.
+                .orElse(NOT_FOUND_TOKEN);
+        }
     }
 
     private final SnapshotInfo info;
     private final Path folder;
-    private final boolean isLegacy;
+    private final AtomicReference<Object> regionFolder = new AtomicReference<>();
     private final @Nullable IORunnable closeCallback;
 
     public FolderSnapshot(SnapshotInfo info, Path folder, @Nullable IORunnable closeCallback) {
         this.info = info;
         this.folder = folder;
-        this.isLegacy = isLegacyFolder(folder);
         this.closeCallback = closeCallback;
     }
 
@@ -81,10 +100,25 @@ public class FolderSnapshot implements Snapshot {
         return info;
     }
 
+    private Optional<Path> getRegionFolder() throws IOException {
+        Object regFolder = regionFolder.get();
+        if (regFolder == null) {
+            Object update = getRegionFolder(folder);
+            if (!regionFolder.compareAndSet(null, update)) {
+                // failed race, get existing value
+                regFolder = regionFolder.get();
+            } else {
+                regFolder = update;
+            }
+        }
+        return regFolder == NOT_FOUND_TOKEN ? Optional.empty() : Optional.of((Path) regFolder);
+    }
+
     @Override
     public CompoundTag getChunkTag(BlockVector3 position) throws DataException, IOException {
         BlockVector2 pos = position.toBlockVector2();
-        if (this.isLegacy) {
+        Optional<Path> regFolder = getRegionFolder();
+        if (!regFolder.isPresent()) {
             Path chunkFile = getFolder().resolve(LegacyChunkStore.getFilename(pos, "/"));
             if (!Files.exists(chunkFile)) {
                 throw new MissingChunkException();
@@ -93,7 +127,7 @@ public class FolderSnapshot implements Snapshot {
                 new GZIPInputStream(Files.newInputStream(chunkFile))
             );
         }
-        Path regionFile = getFolder().resolve("region").resolve(McRegionChunkStore.getFilename(pos));
+        Path regionFile = regFolder.get().resolve(McRegionChunkStore.getFilename(pos));
         if (!Files.exists(regionFile)) {
             throw new MissingChunkException();
         }
