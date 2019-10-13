@@ -37,6 +37,7 @@ import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.serializer.TextSerializers;
 
 import java.io.File;
+import java.util.Locale;
 import java.util.UUID;
 
 import javax.annotation.Nullable;
@@ -94,7 +95,7 @@ public class SpongeCommandSender implements Actor {
 
     @Override
     public void print(Component component) {
-        TextAdapter.sendComponent(sender, WorldEditText.format(component));
+        TextAdapter.sendComponent(sender, WorldEditText.format(component, getLocale()));
     }
 
     private void sendColorized(String msg, TextColor formatting) {
@@ -139,6 +140,11 @@ public class SpongeCommandSender implements Actor {
 
     @Override
     public void dispatchCUIEvent(CUIEvent event) {
+    }
+
+    @Override
+    public Locale getLocale() {
+        return Locale.US;
     }
 
     @Override

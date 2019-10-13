@@ -54,17 +54,17 @@ public abstract class CommandAdapter implements CommandCallable {
     @Override
     public Optional<Text> getShortDescription(CommandSource source) {
         return Optional.of(command.getDescription())
-            .map(SpongeTextAdapter::convert);
+            .map(desc -> SpongeTextAdapter.convert(desc, source.getLocale()));
     }
 
     @Override
     public Optional<Text> getHelp(CommandSource source) {
         return Optional.of(command.getFullHelp())
-            .map(SpongeTextAdapter::convert);
+            .map(help -> SpongeTextAdapter.convert(help, source.getLocale()));
     }
 
     @Override
     public Text getUsage(CommandSource source) {
-        return convert(command.getUsage());
+        return convert(command.getUsage(), source.getLocale());
     }
 }

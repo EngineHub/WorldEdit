@@ -32,9 +32,11 @@ import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.adapter.bukkit.TextAdapter;
 import com.sk89q.worldedit.util.formatting.text.format.TextColor;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.BlockCommandSender;
 
+import java.util.Locale;
 import java.util.UUID;
 
 import javax.annotation.Nullable;
@@ -91,7 +93,12 @@ public class BukkitBlockCommandSender extends AbstractNonPlayerActor implements 
 
     @Override
     public void print(Component component) {
-        TextAdapter.sendComponent(sender, WorldEditText.format(component));
+        TextAdapter.sendComponent(sender, WorldEditText.format(component, getLocale()));
+    }
+
+    @Override
+    public Locale getLocale() {
+        return Locale.US;
     }
 
     @Override

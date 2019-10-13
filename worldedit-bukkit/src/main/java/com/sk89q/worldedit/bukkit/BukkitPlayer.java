@@ -20,6 +20,7 @@
 package com.sk89q.worldedit.bukkit;
 
 import com.sk89q.util.StringUtil;
+import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.bukkit.adapter.BukkitImplAdapter;
@@ -33,13 +34,13 @@ import com.sk89q.worldedit.session.SessionKey;
 import com.sk89q.worldedit.util.HandSide;
 import com.sk89q.worldedit.util.formatting.WorldEditText;
 import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.util.formatting.text.adapter.bukkit.TextAdapter;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.block.BlockTypes;
 import com.sk89q.worldedit.world.gamemode.GameMode;
 import com.sk89q.worldedit.world.gamemode.GameModes;
-import com.sk89q.worldedit.util.formatting.text.adapter.bukkit.TextAdapter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -130,7 +131,7 @@ public class BukkitPlayer extends AbstractPlayerActor {
 
     @Override
     public void print(Component component) {
-        TextAdapter.sendComponent(player, WorldEditText.format(component));
+        TextAdapter.sendComponent(player, WorldEditText.format(component, getLocale()));
     }
 
     @Override
@@ -214,6 +215,11 @@ public class BukkitPlayer extends AbstractPlayerActor {
     @Override
     public boolean setLocation(com.sk89q.worldedit.util.Location location) {
         return player.teleport(BukkitAdapter.adapt(location));
+    }
+
+    @Override
+    public Locale getLocale() {
+        return Locale.forLanguageTag(player.getLocale().replace('_', '-'));
     }
 
     @Nullable

@@ -55,6 +55,7 @@ import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 
 import java.io.IOException;
+import java.util.Locale;
 import java.util.UUID;
 
 import javax.annotation.Nullable;
@@ -153,7 +154,7 @@ public class ForgePlayer extends AbstractPlayerActor {
 
     @Override
     public void print(Component component) {
-        this.player.sendMessage(ITextComponent.Serializer.fromJson(GsonComponentSerializer.INSTANCE.serialize(WorldEditText.format(component))));
+        this.player.sendMessage(ITextComponent.Serializer.fromJson(GsonComponentSerializer.INSTANCE.serialize(WorldEditText.format(component, getLocale()))));
     }
 
     private void sendColorized(String msg, TextFormatting formatting) {
@@ -201,6 +202,11 @@ public class ForgePlayer extends AbstractPlayerActor {
             player.abilities.isFlying = flying;
             player.sendPlayerAbilities();
         }
+    }
+
+    @Override
+    public Locale getLocale() {
+        return Locale.forLanguageTag(player.language.replace('_', '-'));
     }
 
     @Override

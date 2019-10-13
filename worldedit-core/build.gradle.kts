@@ -1,11 +1,14 @@
 import net.minecrell.gradle.licenser.LicenseExtension
 import org.gradle.plugins.ide.idea.model.IdeaModel
+import com.mendhak.gradlecrowdin.DownloadTranslationsTask
+import com.mendhak.gradlecrowdin.UploadSourceFileTask
 
 plugins {
     id("java-library")
     id("net.ltgt.apt-eclipse")
     id("net.ltgt.apt-idea")
     id("antlr")
+    id("com.mendhak.gradlecrowdin")
 }
 
 applyPlatformAndCoreConfiguration()
@@ -82,5 +85,34 @@ sourceSets {
         resources {
             srcDir("src/main/resources")
         }
+    }
+}
+
+val crowdinApiKey = "crowdin_apikey"
+
+fun Project.applyPlatformCrowdInConfig() {
+    if (!project.hasProperty(crowdinApiKey)) ext[crowdinApiKey] = ""
+
+    apply(plugin = "com.mendhak.gradlecrowdin")
+
+    tasks.named<UploadSourceFileTask>("crowdinUpload") {
+        apiKey = crowdinApiKey
+        projectId = "worldedit-core"
+        files = arrayOf(
+            object {
+                var name = "strings.json"
+                var source = "$projectDir/src/main/resources/lang/strings.json"
+            }
+        )
+    }
+
+    tasks.named<DownloadTranslationsTask>("crowdinDownload") {
+        apiKey = crowdinApiKey
+        destination = "$projectDir/src/main/resources/lang"
+        projectId = "worldedit-core"
+    }
+
+    tasks.named("processResources").configure {
+        dependsOn("crowdinDownload")
     }
 }

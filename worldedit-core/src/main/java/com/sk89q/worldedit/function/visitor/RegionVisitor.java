@@ -19,14 +19,19 @@
 
 package com.sk89q.worldedit.function.visitor;
 
+import static com.sk89q.worldedit.util.translation.LocalisationHelpers.pluraliseI18n;
+
+import com.google.common.collect.Lists;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.function.RegionFunction;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.RunContext;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.Region;
-
-import java.util.List;
+import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.util.formatting.text.TextComponent;
+import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
+import com.sk89q.worldedit.util.formatting.text.format.TextColor;
 
 /**
  * Utility class to apply region functions to {@link com.sk89q.worldedit.regions.Region}.
@@ -67,8 +72,11 @@ public class RegionVisitor implements Operation {
     }
 
     @Override
-    public void addStatusMessages(List<String> messages) {
-        messages.add(getAffected() + " blocks affected");
+    public Iterable<Component> getStatusMessages() {
+        return Lists.newArrayList(TranslatableComponent.of(
+                pluraliseI18n("worldedit.operation.affected.block", getAffected()),
+                TextComponent.of(getAffected())
+        ).color(TextColor.LIGHT_PURPLE));
     }
 
 }

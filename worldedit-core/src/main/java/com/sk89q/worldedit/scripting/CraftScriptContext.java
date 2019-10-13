@@ -32,6 +32,7 @@ import com.sk89q.worldedit.extension.input.ParserContext;
 import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.session.request.Request;
+import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.io.file.FilenameException;
 import com.sk89q.worldedit.world.block.BaseBlock;
 
@@ -114,7 +115,7 @@ public class CraftScriptContext extends CraftScriptEnvironment {
      * @param message a message
      */
     public void print(String message) {
-        player.print(message);
+        player.printInfo(TextComponent.of(message));
     }
 
     /**
@@ -123,16 +124,16 @@ public class CraftScriptContext extends CraftScriptEnvironment {
      * @param message a message
      */
     public void error(String message) {
-        player.printError(message);
+        player.printError(TextComponent.of(message));
     }
 
     /**
-     * Print an raw message to the user.
+     * Print a raw message to the user.
      * 
      * @param message a message
      */
     public void printRaw(String message) {
-        player.printRaw(message);
+        player.print(TextComponent.of(message));
     }
 
     /**

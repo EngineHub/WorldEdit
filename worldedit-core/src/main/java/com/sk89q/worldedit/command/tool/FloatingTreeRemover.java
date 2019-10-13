@@ -29,6 +29,7 @@ import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.util.Location;
+import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BlockCategories;
 import com.sk89q.worldedit.world.block.BlockState;
@@ -72,7 +73,7 @@ public class FloatingTreeRemover implements BlockTool {
         final BlockState state = world.getBlock(clicked.toVector().toBlockPoint());
 
         if (!isTreeBlock(state.getBlockType())) {
-            player.printError("That's not a tree.");
+            player.printError(TranslatableComponent.of("worldedit.tool.deltree.not-tree"));
             return true;
         }
 
@@ -80,7 +81,7 @@ public class FloatingTreeRemover implements BlockTool {
             try {
                 final Set<BlockVector3> blockSet = bfs(world, clicked.toVector().toBlockPoint());
                 if (blockSet == null) {
-                    player.printError("That's not a floating tree.");
+                    player.printError(TranslatableComponent.of("worldedit.tool.deltree.not-floating"));
                     return true;
                 }
 
@@ -91,7 +92,7 @@ public class FloatingTreeRemover implements BlockTool {
                     }
                 }
             } catch (MaxChangedBlocksException e) {
-                player.printError("Max blocks change limit reached.");
+                player.printError(TranslatableComponent.of("worldedit.tool.max-block-changes"));
             } finally {
                 session.remember(editSession);
             }
