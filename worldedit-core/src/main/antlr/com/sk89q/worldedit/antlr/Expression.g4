@@ -79,17 +79,17 @@ allStatements : statements EOF ;
 statements : statement+ ;
 
 statement
-    : block
-    | ifStatement
-    | whileStatement
-    | doStatement
-    | forStatement
-    | breakStatement
-    | continueStatement
-    | returnStatement
-    | switchStatement
-    | expressionStatement
-    | SEMI_COLON
+    : block # BlockStmt
+    | ifStatement # IfStmt
+    | whileStatement # WhileStmt
+    | doStatement # DoStmt
+    | forStatement # ForStmt
+    | breakStatement # BreakStmt
+    | continueStatement # ContinueStmt
+    | returnStatement # ReturnStmt
+    | switchStatement # SwitchStmt
+    | expressionStatement # ExpressionStmt
+    | SEMI_COLON # EmptyStmt
     ;
 
 block : '{' statements '}' ;
@@ -118,28 +118,27 @@ returnStatement : RETURN expression? ;
 switchStatement : SWITCH '(' expression ')' '{' (switchLabel ':' statements )+ '}' ;
 
 switchLabel
-    : CASE constantExpression
-    | DEFAULT
+    : CASE constantExpression # Case
+    | DEFAULT # Default
     ;
 
 expressionStatement : expression SEMI_COLON ;
 
 expression
-    : constantExpression
-    | functionCall
-    | identifierExpression
-    | '(' expression ')'
-    | unaryOp expression
-    | identifierExpression binaryAssignOp expression
-    | expression binaryOp expression
-    | expression postUnaryOp
+    : unaryOp expression # UnaryExpr
+    | expression binaryOp expression # BinaryExpr
+    | expression postUnaryOp # PostUnaryExpr
+    | ID binaryAssignOp expression # AssignExpr
+    | expression '?' expression ':' expression # TernaryExpr
+    | functionCall # FunctionCallExpr
+    | constantExpression # ConstantExpr
+    | ID # IdExpr
+    | '(' expression ')' # WrappedExpr
     ;
 
 constantExpression : NUMBER ;
 
 functionCall : ID '(' (expression ( ',' expression )*)? ')' ;
-
-identifierExpression : ID ;
 
 unaryOp
     : MINUS
