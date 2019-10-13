@@ -36,13 +36,22 @@ public class MessageBox extends TextComponentProducer {
     private static final int GUARANTEED_NO_WRAP_CHAT_PAGE_WIDTH = 47;
 
     private TextComponentProducer contents;
+    private TextColor borderColor;
 
     /**
      * Create a new box.
      */
     public MessageBox(String title, TextComponentProducer contents) {
+        this(title, contents, TextColor.YELLOW);
+    }
+
+    /**
+     * Create a new box.
+     */
+    public MessageBox(String title, TextComponentProducer contents, TextColor borderColor) {
         checkNotNull(title);
 
+        this.borderColor = borderColor;
         append(centerAndBorder(TextComponent.of(title))).newline();
         this.contents = contents;
     }
@@ -74,7 +83,7 @@ public class MessageBox extends TextComponentProducer {
 
     private TextComponent createBorder(int count) {
         return TextComponent.of(Strings.repeat("-", count),
-                TextColor.YELLOW, Sets.newHashSet(TextDecoration.STRIKETHROUGH));
+                borderColor, Sets.newHashSet(TextDecoration.STRIKETHROUGH));
     }
 
     /**

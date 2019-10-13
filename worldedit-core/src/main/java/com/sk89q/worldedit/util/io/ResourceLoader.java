@@ -40,4 +40,17 @@ public class ResourceLoader {
         }
         return url;
     }
+
+    public static URL getResourceRoot(String name) throws IOException {
+        URL url = ResourceLoader.class.getResource("/" + name);
+        if (url == null) {
+            try {
+                return new URL("modjar://worldedit/" + name);
+            } catch (Exception e) {
+                // Not forge.
+            }
+            throw new IOException("Could not find " + name);
+        }
+        return url;
+    }
 }

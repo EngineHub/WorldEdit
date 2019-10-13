@@ -17,36 +17,26 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.function.operation;
+package com.sk89q.worldedit.util.translation;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+public class LocalisationHelpers {
 
-import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.extent.Extent;
-import com.sk89q.worldedit.util.LocatedBlock;
-
-import java.util.List;
-
-public class SetLocatedBlocks implements Operation {
-
-    private final Extent extent;
-    private final Iterable<LocatedBlock> blocks;
-
-    public SetLocatedBlocks(Extent extent, Iterable<LocatedBlock> blocks) {
-        this.extent = checkNotNull(extent);
-        this.blocks = checkNotNull(blocks);
+    private LocalisationHelpers() {
     }
 
-    @Override
-    public Operation resume(RunContext run) throws WorldEditException {
-        for (LocatedBlock block : blocks) {
-            extent.setBlock(block.getLocation(), block.getBlock());
+    /**
+     * Turn a translation key into a ".singular" or ".plural"
+     * depending on what the given number is.
+     *
+     * @param translationKey The base translation key
+     * @param number The number
+     * @return The key with .plural or .singular appended
+     */
+    public static String pluraliseI18n(String translationKey, float number) {
+        if (number == 1) {
+            return translationKey + ".singular";
+        } else {
+            return translationKey + ".plural";
         }
-        return null;
     }
-
-    @Override
-    public void cancel() {
-    }
-
 }

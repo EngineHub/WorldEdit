@@ -20,8 +20,12 @@
 package com.sk89q.worldedit.function.operation;
 
 import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.util.formatting.text.TextComponent;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * An task that may be split into multiple steps to be run sequentially
@@ -56,7 +60,22 @@ public interface Operation {
      * of the operation.
      *
      * @param messages The list to add messages to
+     * @deprecated Will be removed in WorldEdit 8.0 - use the Component variant
      */
-    void addStatusMessages(List<String> messages);
+    @Deprecated
+    default void addStatusMessages(List<String> messages) {
+    }
 
+    /**
+     * Gets an iterable of messages that describe the current status of the
+     * operation.
+     *
+     * @return The status messages
+     */
+    default Iterable<Component> getStatusMessages() {
+        // TODO Remove legacy code WorldEdit 8.0.0
+        List<String> oldMessages = new ArrayList<>();
+        addStatusMessages(oldMessages);
+        return oldMessages.stream().map(TextComponent::of).collect(Collectors.toList());
+    }
 }

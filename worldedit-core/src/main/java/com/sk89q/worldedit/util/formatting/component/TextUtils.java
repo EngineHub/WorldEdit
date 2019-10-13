@@ -17,32 +17,33 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.util.formatting;
+package com.sk89q.worldedit.util.formatting.component;
 
-import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.util.formatting.text.Component;
-import org.enginehub.piston.config.ConfigHolder;
-import org.enginehub.piston.config.TextConfig;
-import org.enginehub.piston.util.TextHelper;
+import com.sk89q.worldedit.util.formatting.text.TextComponent;
 
-import java.util.Locale;
+import java.util.List;
 
-public class WorldEditText {
-    public static final ConfigHolder CONFIG_HOLDER = ConfigHolder.create();
+public class TextUtils {
 
-    static {
-        CONFIG_HOLDER.getConfig(TextConfig.commandPrefix()).setValue("/");
+    private TextUtils() {
     }
 
-    public static Component format(Component component, Locale locale) {
-        return CONFIG_HOLDER.replace(WorldEdit.getInstance().getTranslationManager().convertText(component, locale));
+    /**
+     * Join an array of components with a joiner component.
+     *
+     * @param components The components to join
+     * @param joiner The joiner component
+     * @return The joined component
+     */
+    public static Component join(List<Component> components, Component joiner) {
+        TextComponent.Builder builder = TextComponent.builder();
+        for (int i = 0; i < components.size(); i++) {
+            builder.append(components.get(i));
+            if (i < components.size() - 1) {
+                builder.append(joiner);
+            }
+        }
+        return builder.build();
     }
-
-    public static String reduceToText(Component component, Locale locale) {
-        return TextHelper.reduceToText(format(component, locale));
-    }
-
-    private WorldEditText() {
-    }
-
 }

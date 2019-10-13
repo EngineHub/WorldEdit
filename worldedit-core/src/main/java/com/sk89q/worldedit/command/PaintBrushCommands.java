@@ -61,24 +61,24 @@ import static org.enginehub.piston.part.CommandParts.arg;
 @CommandContainer(superTypes = CommandPermissionsConditionGenerator.Registration.class)
 public class PaintBrushCommands {
 
-    private static final CommandArgument REGION_FACTORY = arg(TranslatableComponent.of("shape"), TextComponent.of("The shape of the region"))
+    private static final CommandArgument REGION_FACTORY = arg(TranslatableComponent.of("shape"), TranslatableComponent.of("worldedit.brush.paint.shape"))
         .defaultsTo(ImmutableList.of())
         .ofTypes(ImmutableList.of(Key.of(RegionFactory.class)))
         .build();
 
-    private static final CommandArgument RADIUS = arg(TranslatableComponent.of("radius"), TextComponent.of("The size of the brush"))
+    private static final CommandArgument RADIUS = arg(TranslatableComponent.of("radius"), TranslatableComponent.of("worldedit.brush.paint.size"))
         .defaultsTo(ImmutableList.of("5"))
         .ofTypes(ImmutableList.of(Key.of(double.class)))
         .build();
 
-    private static final CommandArgument DENSITY = arg(TranslatableComponent.of("density"), TextComponent.of("The density of the brush"))
+    private static final CommandArgument DENSITY = arg(TranslatableComponent.of("density"), TranslatableComponent.of("worldedit.brush.paint.density"))
         .defaultsTo(ImmutableList.of("20"))
         .ofTypes(ImmutableList.of(Key.of(double.class)))
         .build();
 
     public static void register(CommandManagerService service, CommandManager commandManager, CommandRegistrationHandler registration) {
         commandManager.register("paint", builder -> {
-            builder.description(TextComponent.of("Paint brush, apply a function to a surface"));
+            builder.description(TranslatableComponent.of("worldedit.brush.paint.description"));
             builder.action(org.enginehub.piston.Command.Action.NULL_ACTION);
 
             CommandManager manager = service.newCommandManager();
@@ -91,7 +91,7 @@ public class PaintBrushCommands {
             builder.condition(new PermissionCondition(ImmutableSet.of("worldedit.brush.paint")));
 
             builder.addParts(REGION_FACTORY, RADIUS, DENSITY);
-            builder.addPart(SubCommandPart.builder(TranslatableComponent.of("type"), TextComponent.of("Type of brush to use"))
+            builder.addPart(SubCommandPart.builder(TranslatableComponent.of("type"), TranslatableComponent.of("worldedit.brush.paint.type"))
                 .withCommands(manager.getAllCommands().collect(Collectors.toList()))
                 .required()
                 .build());
@@ -131,8 +131,7 @@ public class PaintBrushCommands {
                      @Direction(includeDiagonals = true)
                          com.sk89q.worldedit.util.Direction direction) throws WorldEditException {
         player.print(TextComponent.builder().append("WARNING: ", TextColor.RED, TextDecoration.BOLD)
-                .append("This brush simulates item usages. Its effects may not work on all platforms, may not be undo-able," +
-                        " and may cause strange interactions with other mods/plugins. Use at your own risk.").build());
+                .append(TranslatableComponent.of("worldedit.brush.paint.item.warning")).build());
         setPaintBrush(parameters, player, localSession, new ItemUseFactory(item, direction));
     }
 

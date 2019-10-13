@@ -43,6 +43,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -172,8 +173,9 @@ public class BukkitServerInterface implements MultiUserPlatform {
                     Stream.of(command.getName()),
                     command.getAliases().stream()
                 ).toArray(String[]::new);
-                return new CommandInfo(reduceToText(command.getUsage()),
-                    reduceToText(command.getDescription()), aliases,
+                // TODO Handle localisation correctly
+                return new CommandInfo(reduceToText(command.getUsage(), Locale.US),
+                    reduceToText(command.getDescription(), Locale.US), aliases,
                     inspector, permissionsArray);
             }).collect(Collectors.toList()));
     }

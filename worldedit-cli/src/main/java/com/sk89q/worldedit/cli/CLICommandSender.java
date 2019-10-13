@@ -32,6 +32,7 @@ import com.sk89q.worldedit.util.formatting.text.serializer.plain.PlainComponentS
 import org.slf4j.Logger;
 
 import java.io.File;
+import java.util.Locale;
 import java.util.UUID;
 
 public class CLICommandSender implements Actor {
@@ -97,7 +98,7 @@ public class CLICommandSender implements Actor {
 
     @Override
     public void print(Component component) {
-        print(PlainComponentSerializer.INSTANCE.serialize(WorldEditText.format(component)));
+        print(PlainComponentSerializer.INSTANCE.serialize(WorldEditText.format(component, getLocale())));
     }
 
     @Override
@@ -136,6 +137,11 @@ public class CLICommandSender implements Actor {
 
     @Override
     public void dispatchCUIEvent(CUIEvent event) {
+    }
+
+    @Override
+    public Locale getLocale() {
+        return Locale.getDefault();
     }
 
     @Override

@@ -24,8 +24,10 @@ import com.sk89q.worldedit.session.SessionOwner;
 import com.sk89q.worldedit.util.Identifiable;
 import com.sk89q.worldedit.util.auth.Subject;
 import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.util.formatting.text.format.TextColor;
 
 import java.io.File;
+import java.util.Locale;
 
 /**
  * An object that can perform actions in WorldEdit.
@@ -52,29 +54,64 @@ public interface Actor extends Identifiable, SessionOwner, Subject {
      * Print a message.
      *
      * @param msg The message text
+     * @deprecated Use component-based functions (print)
      */
+    @Deprecated
     void printRaw(String msg);
 
     /**
      * Print a WorldEdit message.
      *
      * @param msg The message text
+     * @deprecated Use component-based functions (printDebug)
      */
+    @Deprecated
     void printDebug(String msg);
 
     /**
      * Print a WorldEdit message.
      *
      * @param msg The message text
+     * @deprecated Use component-based functions (printInfo)
      */
+    @Deprecated
     void print(String msg);
 
     /**
      * Print a WorldEdit error.
      *
      * @param msg The error message text
+     * @deprecated Use component-based functions (printError)
      */
+    @Deprecated
     void printError(String msg);
+
+    /**
+     * Print a WorldEdit error.
+     *
+     * @param component The component to print
+     */
+    default void printError(Component component) {
+        print(component.color(TextColor.RED));
+    }
+
+    /**
+     * Print a WorldEdit message.
+     *
+     * @param component The component to print
+     */
+    default void printInfo(Component component) {
+        print(component.color(TextColor.LIGHT_PURPLE));
+    }
+
+    /**
+     * Print a WorldEdit message.
+     *
+     * @param component The component to print
+     */
+    default void printDebug(Component component) {
+        print(component.color(TextColor.GRAY));
+    }
 
     /**
      * Print a {@link Component}.
@@ -120,4 +157,10 @@ public interface Actor extends Identifiable, SessionOwner, Subject {
      */
     void dispatchCUIEvent(CUIEvent event);
 
+    /**
+     * Get the locale of this actor.
+     *
+     * @return The locale
+     */
+    Locale getLocale();
 }

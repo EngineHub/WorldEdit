@@ -45,17 +45,20 @@ import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.RegionSelector;
 import com.sk89q.worldedit.regions.selector.CuboidRegionSelector;
 import com.sk89q.worldedit.session.ClipboardHolder;
+import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.world.World;
+import com.sk89q.worldedit.util.formatting.text.TextComponent;
+import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import org.enginehub.piston.annotation.Command;
 import org.enginehub.piston.annotation.CommandContainer;
 import org.enginehub.piston.annotation.param.Arg;
 import org.enginehub.piston.annotation.param.ArgFlag;
 import org.enginehub.piston.annotation.param.Switch;
 
-import java.util.List;
-
 import static com.sk89q.worldedit.command.util.Logging.LogMode.PLACEMENT;
 import static com.sk89q.worldedit.command.util.Logging.LogMode.REGION;
+
+import java.util.List;
 
 /**
  * Clipboard commands.
@@ -87,9 +90,7 @@ public class ClipboardCommands {
         Operations.completeLegacy(copy);
         session.setClipboard(new ClipboardHolder(clipboard));
 
-        List<String> messages = Lists.newArrayList();
-        copy.addStatusMessages(messages);
-        messages.forEach(actor::print);
+        copy.getStatusMessages().forEach(actor::print);
     }
 
     @Command(
@@ -122,9 +123,7 @@ public class ClipboardCommands {
         Operations.completeLegacy(copy);
         session.setClipboard(new ClipboardHolder(clipboard));
 
-        List<String> messages = Lists.newArrayList();
-        copy.addStatusMessages(messages);
-        messages.forEach(actor::print);
+        copy.getStatusMessages().forEach(actor::print);
     }
 
     @Command(
@@ -153,7 +152,7 @@ public class ClipboardCommands {
         ClipboardHolder holder = session.getClipboard();
         Clipboard clipboard = holder.getClipboard();
         Region region = clipboard.getRegion();
-        List<String> messages = Lists.newArrayList();
+        List<Component> messages = Lists.newArrayList();
 
         BlockVector3 to = atOrigin ? clipboard.getOrigin() : session.getPlacementPosition(actor);
         if (!onlySelect) {
@@ -166,7 +165,7 @@ public class ClipboardCommands {
                     .maskSource(sourceMask)
                     .build();
             Operations.completeLegacy(operation);
-            operation.addStatusMessages(messages);
+            messages.addAll(Lists.newArrayList(operation.getStatusMessages()));
         }
 
         if (selectPasted || onlySelect) {
@@ -180,9 +179,9 @@ public class ClipboardCommands {
         }
 
         if (onlySelect) {
-            actor.print("Selected clipboard paste region.");
+            actor.printInfo(TranslatableComponent.of("worldedit.paste.selected"));
         } else {
-            actor.print("The clipboard has been pasted at " + to);
+            actor.printInfo(TranslatableComponent.of("worldedit.paste.pasted", TextComponent.of(to.toString())));
         }
         messages.forEach(actor::print);
     }
@@ -205,7 +204,7 @@ public class ClipboardCommands {
         if (Math.abs(yRotate % 90) > 0.001 ||
             Math.abs(xRotate % 90) > 0.001 ||
             Math.abs(zRotate % 90) > 0.001) {
-            actor.printDebug("Note: Interpolation is not yet supported, so angles that are multiples of 90 is recommended.");
+            actor.printDebug(TranslatableComponent.of("worldedit.rotate.no-interpolation"));
         }
 
         ClipboardHolder holder = session.getClipboard();
@@ -214,7 +213,7 @@ public class ClipboardCommands {
         transform = transform.rotateX(-xRotate);
         transform = transform.rotateZ(-zRotate);
         holder.setTransform(holder.getTransform().combine(transform));
-        actor.print("The clipboard copy has been rotated.");
+        actor.printInfo(TranslatableComponent.of("worldedit.rotate.rotated"));
     }
 
     @Command(
@@ -229,7 +228,7 @@ public class ClipboardCommands {
         AffineTransform transform = new AffineTransform();
         transform = transform.scale(direction.abs().multiply(-2).add(1, 1, 1).toVector3());
         holder.setTransform(holder.getTransform().combine(transform));
-        actor.print("The clipboard copy has been flipped.");
+        actor.printInfo(TranslatableComponent.of("worldedit.flip.flipped"));
     }
 
     @Command(
@@ -239,6 +238,6 @@ public class ClipboardCommands {
     @CommandPermissions("worldedit.clipboard.clear")
     public void clearClipboard(Actor actor, LocalSession session) throws WorldEditException {
         session.setClipboard(null);
-        actor.print("Clipboard cleared.");
+        actor.printInfo(TranslatableComponent.of("worldedit.clearclipboard.cleared"));
     }
 }

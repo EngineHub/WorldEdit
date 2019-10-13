@@ -55,7 +55,7 @@ public final class AsyncCommandBuilder<T> {
     @Nullable
     private String description;
     @Nullable
-    private String delayMessage;
+    private Component delayMessage;
 
     @Nullable
     private Component successMessage;
@@ -84,7 +84,12 @@ public final class AsyncCommandBuilder<T> {
         return this;
     }
 
+    @Deprecated
     public AsyncCommandBuilder<T> sendMessageAfterDelay(String message) {
+        return sendMessageAfterDelay(TextComponent.of(checkNotNull(message)));
+    }
+
+    public AsyncCommandBuilder<T> sendMessageAfterDelay(Component message) {
         this.delayMessage = checkNotNull(message);
         return this;
     }

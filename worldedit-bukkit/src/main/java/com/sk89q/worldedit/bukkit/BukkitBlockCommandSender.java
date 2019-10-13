@@ -36,9 +36,8 @@ import org.bukkit.Material;
 import org.bukkit.command.BlockCommandSender;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Locale;
 import java.util.UUID;
-
-import javax.annotation.Nullable;
 
 public class BukkitBlockCommandSender extends AbstractNonPlayerActor implements Locatable {
 
@@ -94,7 +93,12 @@ public class BukkitBlockCommandSender extends AbstractNonPlayerActor implements 
 
     @Override
     public void print(Component component) {
-        TextAdapter.sendComponent(sender, WorldEditText.format(component));
+        TextAdapter.sendComponent(sender, WorldEditText.format(component, getLocale()));
+    }
+
+    @Override
+    public Locale getLocale() {
+        return Locale.US;
     }
 
     @Override

@@ -25,6 +25,7 @@ import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.util.Location;
+import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 
 public class NavigationWand implements DoubleActionTraceTool {
     @Override
@@ -40,7 +41,7 @@ public class NavigationWand implements DoubleActionTraceTool {
         if (pos != null) {
             player.findFreePosition(pos);
         } else {
-            player.printError("No block in sight (or too far)!");
+            player.printError(TranslatableComponent.of("worldedit.jumpto.none"));
         }
         return true;
     }
@@ -56,7 +57,7 @@ public class NavigationWand implements DoubleActionTraceTool {
         }
 
         if (!player.passThroughForwardWall(Math.max(1, maxDist - 10))) {
-            player.printError("Nothing to pass through (or too far)!");
+            player.printError(TranslatableComponent.of("worldedit.thru.obstructed"));
         }
         return true;
     }

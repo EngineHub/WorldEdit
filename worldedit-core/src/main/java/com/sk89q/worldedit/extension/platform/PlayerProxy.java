@@ -36,6 +36,7 @@ import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.gamemode.GameMode;
 
+import java.util.Locale;
 import java.util.UUID;
 
 import javax.annotation.Nullable;
@@ -182,5 +183,10 @@ class PlayerProxy extends AbstractPlayerActor {
     @Override
     public void floatAt(int x, int y, int z, boolean alwaysGlass) {
         basePlayer.floatAt(x, y, z, alwaysGlass);
+    }
+
+    @Override
+    public Locale getLocale() {
+        return basePlayer.getLocale();
     }
 }

@@ -20,13 +20,20 @@
 package com.sk89q.worldedit.function.visitor;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.sk89q.worldedit.util.translation.LocalisationHelpers.pluraliseI18n;
 
+import com.google.common.collect.Lists;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.function.EntityFunction;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.RunContext;
+import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.util.formatting.text.TextComponent;
+import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
+import com.sk89q.worldedit.util.formatting.text.format.TextColor;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -77,8 +84,11 @@ public class EntityVisitor implements Operation {
     }
 
     @Override
-    public void addStatusMessages(List<String> messages) {
-        messages.add(getAffected() + " entities affected");
+    public Iterable<Component> getStatusMessages() {
+        return Lists.newArrayList(TranslatableComponent.of(
+                pluraliseI18n("worldedit.operation.affected.entity", getAffected()),
+                TextComponent.of(getAffected())
+        ).color(TextColor.LIGHT_PURPLE));
     }
 
 }
