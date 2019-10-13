@@ -80,7 +80,7 @@ class FileSystemSnapshotDatabaseTest {
     private static final String WORLD_BETA = "World Beta";
 
     private static final DateTimeFormatter FORMATTER =
-        DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH_mm_ss");
     private static final ZonedDateTime TIME_ONE = Instant.parse("2018-01-01T12:00:00.00Z")
         .atZone(ZoneId.systemDefault());
     private static final ZonedDateTime TIME_TWO = TIME_ONE.minusDays(1);
