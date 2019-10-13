@@ -37,7 +37,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
@@ -68,16 +67,29 @@ public class FolderSnapshot implements Snapshot {
         }
         // Might be in a DIM* folder
         try (Stream<Path> paths = Files.list(folder)) {
-            return paths
+            Optional<Path> path = paths
                 .filter(Files::isDirectory)
                 .filter(p -> p.getFileName().toString().startsWith("DIM"))
                 .map(p -> p.resolve("region"))
                 .filter(Files::isDirectory)
-                .findFirst()
-                .map(x -> (Object) x)
-                // Or not.
-                .orElse(NOT_FOUND_TOKEN);
+                .findFirst();
+            if (path.isPresent()) {
+                return path.get();
+            }
         }
+        // Might be its own region folder, check if the appropriate files exist
+        try (Stream<Path> paths = Files.list(folder)) {
+            if (paths
+                .filter(Files::isRegularFile)
+                .anyMatch(p -> {
+                    String fileName = p.getFileName().toString();
+                    return fileName.startsWith("r") &&
+                        (fileName.endsWith(".mca") || fileName.endsWith(".mcr"));
+                })) {
+                return folder;
+            }
+        }
+        return NOT_FOUND_TOKEN;
     }
 
     private final SnapshotInfo info;
@@ -87,7 +99,9 @@ public class FolderSnapshot implements Snapshot {
 
     public FolderSnapshot(SnapshotInfo info, Path folder, @Nullable IORunnable closeCallback) {
         this.info = info;
-        this.folder = folder;
+        // This is required to force TrueVfs to properly resolve parents.
+        // Kinda odd, but whatever works.
+        this.folder = folder.toAbsolutePath();
         this.closeCallback = closeCallback;
     }
 
@@ -129,7 +143,13 @@ public class FolderSnapshot implements Snapshot {
         }
         Path regionFile = regFolder.get().resolve(McRegionChunkStore.getFilename(pos));
         if (!Files.exists(regionFile)) {
-            throw new MissingChunkException();
+            // Try mcr as well
+            regionFile = regionFile.resolveSibling(
+                regionFile.getFileName().toString().replace(".mca", ".mcr")
+            );
+            if (!Files.exists(regionFile)) {
+                throw new MissingChunkException();
+            }
         }
         try (InputStream stream = Files.newInputStream(regionFile)) {
             McRegionReader regionReader = new McRegionReader(stream);

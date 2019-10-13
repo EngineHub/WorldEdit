@@ -22,7 +22,7 @@ package com.sk89q.worldedit.world.snapshot.experimental.fs;
 import com.google.common.collect.ImmutableList;
 import com.sk89q.worldedit.util.function.IORunnable;
 import com.sk89q.worldedit.util.io.Closer;
-import com.sk89q.worldedit.util.io.file.ArchiveNioSupports;
+import com.sk89q.worldedit.util.io.file.ArchiveNioSupport;
 import com.sk89q.worldedit.util.io.file.MorePaths;
 import com.sk89q.worldedit.util.time.FileNameDateTimeParser;
 import com.sk89q.worldedit.util.time.ModificationDateTimeParser;
@@ -78,16 +78,21 @@ public class FileSystemSnapshotDatabase implements SnapshotDatabase {
             .findFirst();
     }
 
-    public static FileSystemSnapshotDatabase maybeCreate(Path root) throws IOException {
+    public static FileSystemSnapshotDatabase maybeCreate(
+        Path root,
+        ArchiveNioSupport archiveNioSupport
+    ) throws IOException {
         Files.createDirectories(root);
-        return new FileSystemSnapshotDatabase(root);
+        return new FileSystemSnapshotDatabase(root, archiveNioSupport);
     }
 
     private final Path root;
+    private final ArchiveNioSupport archiveNioSupport;
 
-    public FileSystemSnapshotDatabase(Path root) {
+    public FileSystemSnapshotDatabase(Path root, ArchiveNioSupport archiveNioSupport) {
         checkArgument(Files.isDirectory(root), "Database root is not a directory");
         this.root = root.toAbsolutePath();
+        this.archiveNioSupport = archiveNioSupport;
     }
 
     private SnapshotInfo createSnapshotInfo(Path fullPath, Path realPath) {
@@ -129,6 +134,7 @@ public class FileSystemSnapshotDatabase implements SnapshotDatabase {
 
     private Optional<Snapshot> tryRegularFileSnapshot(Path fullPath, Path realPath) throws IOException {
         Closer closer = Closer.create();
+        Path root = this.root;
         Path relative = root.relativize(realPath);
         Iterator<Path> iterator = null;
         try {
@@ -145,14 +151,14 @@ public class FileSystemSnapshotDatabase implements SnapshotDatabase {
                     // This will never be it.
                     continue;
                 }
-                Optional<Path> newRootOpt = ArchiveNioSupports.tryOpenAsDir(next);
+                Optional<Path> newRootOpt = archiveNioSupport.tryOpenAsDir(next);
                 if (newRootOpt.isPresent()) {
-                    Path newRoot = newRootOpt.get();
-                    if (newRoot.getFileSystem() != FileSystems.getDefault()) {
-                        closer.register(newRoot.getFileSystem());
+                    root = newRootOpt.get();
+                    if (root.getFileSystem() != FileSystems.getDefault()) {
+                        closer.register(root.getFileSystem());
                     }
                     // Switch path to path inside the archive
-                    relative = newRoot.resolve(relativeNext.relativize(relative).toString());
+                    relative = root.resolve(relativeNext.relativize(relative).toString());
                     iterator = null;
                     // Check if it exists, if so open snapshot
                     if (Files.exists(relative)) {
@@ -197,18 +203,19 @@ public class FileSystemSnapshotDatabase implements SnapshotDatabase {
             .flatMap(candidate -> {
                 logger.debug("World trying: {}", candidate);
                 // Try world directory
-                if (candidate.getFileName().toString().equalsIgnoreCase(worldName)) {
+                String fileName = candidate.getFileName().toString();
+                if (isSameDirectoryName(fileName, worldName)) {
                     // Direct
                     if (Files.exists(candidate.resolve("level.dat"))) {
                         logger.debug("Direct!");
                         return Stream.of(createSnapshot(
-                            fullPath.resolve(candidate.getFileName().toString()), candidate, null
+                            fullPath.resolve(fileName), candidate, null
                         ));
                     }
                     // Container for time-stamped entries
                     try {
                         return listTimestampedEntries(
-                            fullPath.resolve(candidate.getFileName().toString()), candidate, worldName
+                            fullPath.resolve(fileName), candidate, worldName
                         );
                     } catch (IOException e) {
                         throw new UncheckedIOException(e);
@@ -216,11 +223,11 @@ public class FileSystemSnapshotDatabase implements SnapshotDatabase {
                 }
                 // Try world archive
                 if (Files.isRegularFile(candidate)
-                    && candidate.getFileName().toString().startsWith(worldName + ".")) {
+                    && fileName.startsWith(worldName + ".")) {
                     logger.debug("Archive!");
                     try {
                         return tryRegularFileSnapshot(
-                            fullPath.resolve(candidate.getFileName().toString()), candidate
+                            fullPath.resolve(fileName), candidate
                         ).map(Stream::of).orElse(null);
                     } catch (IOException e) {
                         throw new UncheckedIOException(e);
@@ -229,6 +236,13 @@ public class FileSystemSnapshotDatabase implements SnapshotDatabase {
                 logger.debug("Nothing!");
                 return null;
             });
+    }
+
+    private boolean isSameDirectoryName(String fileName, String worldName) {
+        if (fileName.lastIndexOf('/') == fileName.length() - 1) {
+            fileName = fileName.substring(0, fileName.length() - 1);
+        }
+        return fileName.equalsIgnoreCase(worldName);
     }
 
     private Stream<Snapshot> listTimestampedEntries(Path fullPath, Path root, String worldName) throws IOException {
@@ -253,7 +267,7 @@ public class FileSystemSnapshotDatabase implements SnapshotDatabase {
                 }
                 // Otherwise archive, get it as a directory & unpack it
                 try {
-                    Optional<Path> newRoot = ArchiveNioSupports.tryOpenAsDir(candidate);
+                    Optional<Path> newRoot = archiveNioSupport.tryOpenAsDir(candidate);
                     if (!newRoot.isPresent()) {
                         logger.debug("Nothing!");
                         return null;

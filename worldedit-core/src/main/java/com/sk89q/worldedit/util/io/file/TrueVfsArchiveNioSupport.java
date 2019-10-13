@@ -25,19 +25,15 @@ import net.java.truevfs.access.TArchiveDetector;
 import net.java.truevfs.access.TPath;
 
 import java.io.IOException;
-import java.nio.file.FileSystem;
 import java.nio.file.Path;
 import java.util.Optional;
 import java.util.Set;
 
-/**
- * Despite the name, also handles loading tarballs.
- */
-public final class TrueZipArchiveNioSupport implements ArchiveNioSupport {
+public final class TrueVfsArchiveNioSupport implements ArchiveNioSupport {
 
-    private static final TrueZipArchiveNioSupport INSTANCE = new TrueZipArchiveNioSupport();
+    private static final TrueVfsArchiveNioSupport INSTANCE = new TrueVfsArchiveNioSupport();
 
-    public static TrueZipArchiveNioSupport getInstance() {
+    public static TrueVfsArchiveNioSupport getInstance() {
         return INSTANCE;
     }
 
@@ -45,7 +41,7 @@ public final class TrueZipArchiveNioSupport implements ArchiveNioSupport {
         Splitter.on('|').split(TArchiveDetector.ALL.getExtensions())
     );
 
-    private TrueZipArchiveNioSupport() {
+    private TrueVfsArchiveNioSupport() {
     }
 
     @Override

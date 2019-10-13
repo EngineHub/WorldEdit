@@ -42,7 +42,7 @@ public class MorePaths {
             .mapToObj(end -> {
                 Path subPath = path.subpath(0, end);
                 if (path.isAbsolute()) {
-                    subPath = Paths.get("/").resolve(subPath);
+                    subPath = subPath.getFileSystem().getPath("/").resolve(subPath);
                 }
                 return subPath;
             })

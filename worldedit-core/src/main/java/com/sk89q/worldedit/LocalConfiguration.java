@@ -20,6 +20,7 @@
 package com.sk89q.worldedit;
 
 import com.google.common.collect.Lists;
+import com.sk89q.worldedit.util.io.file.ArchiveNioSupports;
 import com.sk89q.worldedit.util.logging.LogFormat;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.block.BlockTypes;
@@ -176,7 +177,10 @@ public abstract class LocalConfiguration {
         if (!directory.isEmpty()) {
             if (experimental) {
                 try {
-                    snapshotDatabase = FileSystemSnapshotDatabase.maybeCreate(Paths.get(directory));
+                    snapshotDatabase = FileSystemSnapshotDatabase.maybeCreate(
+                        Paths.get(directory),
+                        ArchiveNioSupports.combined()
+                    );
                     snapshotsConfigured = true;
                 } catch (IOException e) {
                     LOGGER.warn("Failed to open snapshotDatabase", e);

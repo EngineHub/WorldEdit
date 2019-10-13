@@ -22,7 +22,6 @@ package com.sk89q.worldedit.util.io.file;
 import com.google.common.collect.ImmutableList;
 
 import java.io.IOException;
-import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -37,7 +36,7 @@ public class ArchiveNioSupports {
     static {
         ImmutableList.Builder<ArchiveNioSupport> builder = ImmutableList.builder();
         try {
-            builder.add(TrueZipArchiveNioSupport.getInstance());
+            builder.add(TrueVfsArchiveNioSupport.getInstance());
         } catch (NoClassDefFoundError ignore) {
             // No TrueVFS available. That's OK.
         }
@@ -54,6 +53,16 @@ public class ArchiveNioSupports {
             }
         }
         return Optional.empty();
+    }
+
+    private static final ArchiveNioSupport COMBINED = ArchiveNioSupports::tryOpenAsDir;
+
+    /**
+     * Get an {@link ArchiveNioSupport} that combines all known instances.
+     * @return a combined {@link ArchiveNioSupport} instance
+     */
+    public static ArchiveNioSupport combined() {
+        return COMBINED;
     }
 
     /**
