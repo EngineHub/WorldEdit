@@ -50,11 +50,11 @@ public interface SnapshotDatabase {
     Stream<Snapshot> getSnapshots(String worldName) throws IOException;
 
     default Stream<Snapshot> getSnapshotsNewestFirst(String worldName) throws IOException {
-        return getSnapshots(worldName).sorted(SnapshotComparator.getInstance());
+        return getSnapshots(worldName).sorted(SnapshotComparator.getInstance().reversed());
     }
 
     default Stream<Snapshot> getSnapshotsOldestFirst(String worldName) throws IOException {
-        return getSnapshots(worldName).sorted(SnapshotComparator.getInstance().reversed());
+        return getSnapshots(worldName).sorted(SnapshotComparator.getInstance());
     }
 
     default Stream<Snapshot> getSnapshotsBefore(String worldName, ZonedDateTime date) throws IOException {

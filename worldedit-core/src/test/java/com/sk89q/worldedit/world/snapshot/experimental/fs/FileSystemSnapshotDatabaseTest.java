@@ -60,7 +60,7 @@ class FileSystemSnapshotDatabaseTest {
     private static final String WORLD_BETA = "World Beta";
 
     private static final DateTimeFormatter FORMATTER =
-        DateTimeFormatter.ofPattern("YYYY-MM-dd HH:mm:ss");
+        DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     private static final ZonedDateTime TIME_ONE = Instant.parse("2018-01-01T12:00:00.00Z")
         .atZone(ZoneId.systemDefault());
     private static final ZonedDateTime TIME_TWO = TIME_ONE.minusDays(1);
@@ -204,7 +204,7 @@ class FileSystemSnapshotDatabaseTest {
         });
     }
 
-    @DisplayName("Makes the root directory absolute if needed")
+    @DisplayName("makes the root directory absolute if needed")
     @Test
     void rootIsAbsoluteDir() throws IOException {
         Path relative = path("relative");
@@ -239,6 +239,78 @@ class FileSystemSnapshotDatabaseTest {
         assertEquals(CHUNK_DATA.toString(), snapshot.getChunkTag(CHUNK_POS).toString());
     }
 
+    @DisplayName("with two timestamped world directory snapshots")
+    @Nested
+    class TwoTimestampedWorldDir {
+
+        private Path timestampedDirA;
+        private Path timestampedDirB;
+
+        @BeforeEach
+        void setUp() throws IOException {
+            timestampedDirA = putTimestampDir(db.getRoot(), TIME_ONE);
+            timestampedDirB = putTimestampDir(db.getRoot(), TIME_TWO);
+            putWorldIn(timestampedDirA, WORLD_ALPHA);
+            putWorldIn(timestampedDirB, WORLD_ALPHA);
+        }
+
+        @DisplayName("lists both snapshots in order (newest first)")
+        @Test
+        void listsBothSnapshotsInOrderNewFirst() throws IOException, DataException {
+            List<Snapshot> snapshots = db.getSnapshotsNewestFirst(WORLD_ALPHA).collect(toList());
+            assertEquals(2, snapshots.size());
+            assertValidSnapshot(TIME_ONE, snapshots.get(0));
+            assertValidSnapshot(TIME_TWO, snapshots.get(1));
+        }
+
+        @DisplayName("lists both snapshots in order (oldest first)")
+        @Test
+        void listsBothSnapshotsInOrderOldFirst() throws IOException, DataException {
+            List<Snapshot> snapshots = db.getSnapshotsOldestFirst(WORLD_ALPHA).collect(toList());
+            assertEquals(2, snapshots.size());
+            assertValidSnapshot(TIME_TWO, snapshots.get(0));
+            assertValidSnapshot(TIME_ONE, snapshots.get(1));
+        }
+
+        @DisplayName("lists only 1 if getting AFTER 2")
+        @Test
+        void listsOneIfGetAfterTwo() throws IOException, DataException {
+            List<Snapshot> snapshots = db.getSnapshotsAfter(WORLD_ALPHA, TIME_TWO).collect(toList());
+            assertEquals(1, snapshots.size());
+            assertValidSnapshot(TIME_ONE, snapshots.get(0));
+        }
+
+        @DisplayName("lists only 2 if getting BEFORE 1")
+        @Test
+        void listsTwoIfGetBeforeOne() throws IOException, DataException {
+            List<Snapshot> snapshots = db.getSnapshotsBefore(WORLD_ALPHA, TIME_ONE).collect(toList());
+            assertEquals(1, snapshots.size());
+            assertValidSnapshot(TIME_TWO, snapshots.get(0));
+        }
+
+        @DisplayName("lists both if AFTER time before 2")
+        @Test
+        void listsBothIfAfterNearTwo() throws IOException, DataException {
+            List<Snapshot> snapshots = db.getSnapshotsAfter(WORLD_ALPHA, TIME_TWO.minusSeconds(1))
+                .collect(toList());
+            assertEquals(2, snapshots.size());
+            // sorted newest first
+            assertValidSnapshot(TIME_ONE, snapshots.get(0));
+            assertValidSnapshot(TIME_TWO, snapshots.get(1));
+        }
+
+        @DisplayName("lists both if BEFORE time after 1")
+        @Test
+        void listsBothIfBeforeNearOne() throws IOException, DataException {
+            List<Snapshot> snapshots = db.getSnapshotsBefore(WORLD_ALPHA, TIME_ONE.plusSeconds(1))
+                .collect(toList());
+            assertEquals(2, snapshots.size());
+            // sorted oldest first
+            assertValidSnapshot(TIME_TWO, snapshots.get(0));
+            assertValidSnapshot(TIME_ONE, snapshots.get(1));
+        }
+    }
+
     @DisplayName("with a world-only directory")
     @Nested
     class WorldOnlyDir {
@@ -261,6 +333,48 @@ class FileSystemSnapshotDatabaseTest {
         void listValidSnapshot() throws IOException, DataException {
             Snapshot snapshot = requireListsSnapshot(WORLD_ALPHA);
             assertValidSnapshot(TIME_ONE, snapshot);
+        }
+
+    }
+
+    @DisplayName("with two world-only directories")
+    @Nested
+    class TwoWorldOnlyDir {
+
+        @BeforeEach
+        void setUp() throws IOException {
+            Path worldFolderA = putWorldIn(db.getRoot(), WORLD_ALPHA);
+            Files.setLastModifiedTime(worldFolderA, FileTime.from(TIME_ONE.toInstant()));
+            Path worldFolderB = putWorldIn(db.getRoot(), WORLD_BETA);
+            Files.setLastModifiedTime(worldFolderB, FileTime.from(TIME_TWO.toInstant()));
+        }
+
+        @DisplayName("returns a valid snapshot for " + WORLD_ALPHA)
+        @Test
+        void returnValidSnapshotA() throws IOException, DataException {
+            Snapshot snapshot = requireSnapshot(WORLD_ALPHA);
+            assertValidSnapshot(TIME_ONE, snapshot);
+        }
+
+        @DisplayName("returns a valid snapshot for " + WORLD_BETA)
+        @Test
+        void returnValidSnapshotB() throws IOException, DataException {
+            Snapshot snapshot = requireSnapshot(WORLD_BETA);
+            assertValidSnapshot(TIME_TWO, snapshot);
+        }
+
+        @DisplayName("list a valid snapshot for " + WORLD_ALPHA)
+        @Test
+        void listValidSnapshotA() throws IOException, DataException {
+            Snapshot snapshot = requireListsSnapshot(WORLD_ALPHA);
+            assertValidSnapshot(TIME_ONE, snapshot);
+        }
+
+        @DisplayName("list a valid snapshot for " + WORLD_BETA)
+        @Test
+        void listValidSnapshotB() throws IOException, DataException {
+            Snapshot snapshot = requireListsSnapshot(WORLD_BETA);
+            assertValidSnapshot(TIME_TWO, snapshot);
         }
 
     }
