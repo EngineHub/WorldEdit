@@ -90,29 +90,25 @@ sourceSets {
 
 val crowdinApiKey = "crowdin_apikey"
 
-fun Project.applyPlatformCrowdInConfig() {
-    if (!project.hasProperty(crowdinApiKey)) ext[crowdinApiKey] = ""
+if (!project.hasProperty(crowdinApiKey)) ext[crowdinApiKey] = ""
 
-    apply(plugin = "com.mendhak.gradlecrowdin")
+tasks.named<UploadSourceFileTask>("crowdinUpload") {
+    apiKey = "${project.property(crowdinApiKey)}"
+    projectId = "worldedit-core"
+    files = arrayOf(
+        object {
+            var name = "strings.json"
+            var source = "$projectDir/src/main/resources/lang/strings.json"
+        }
+    )
+}
 
-    tasks.named<UploadSourceFileTask>("crowdinUpload") {
-        apiKey = crowdinApiKey
-        projectId = "worldedit-core"
-        files = arrayOf(
-            object {
-                var name = "strings.json"
-                var source = "$projectDir/src/main/resources/lang/strings.json"
-            }
-        )
-    }
+tasks.named<DownloadTranslationsTask>("crowdinDownload") {
+    apiKey = "${project.property(crowdinApiKey)}"
+    destination = "$projectDir/src/main/resources/lang"
+    projectId = "worldedit-core"
+}
 
-    tasks.named<DownloadTranslationsTask>("crowdinDownload") {
-        apiKey = crowdinApiKey
-        destination = "$projectDir/src/main/resources/lang"
-        projectId = "worldedit-core"
-    }
-
-    tasks.named("processResources").configure {
-        dependsOn("crowdinDownload")
-    }
+tasks.named("processResources").configure {
+    dependsOn("crowdinDownload")
 }
