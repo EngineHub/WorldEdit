@@ -37,7 +37,7 @@ import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Stream;
 
-import static com.sk89q.worldedit.world.snapshot.experimental.fs.FileSystemSnapshotDatabaseTest.CHUNK_DATA;
+import static com.sk89q.worldedit.world.snapshot.experimental.fs.FileSystemSnapshotDatabaseTest.CHUNK_TAG;
 import static com.sk89q.worldedit.world.snapshot.experimental.fs.FileSystemSnapshotDatabaseTest.CHUNK_POS;
 import static com.sk89q.worldedit.world.snapshot.experimental.fs.FileSystemSnapshotDatabaseTest.TIME_ONE;
 import static com.sk89q.worldedit.world.snapshot.experimental.fs.FileSystemSnapshotDatabaseTest.TIME_TWO;
@@ -82,6 +82,15 @@ enum FSSDTestType {
         @Override
         List<DynamicTest> getTests(FSSDContext context) throws IOException {
             Path worldFolder = EntryMaker.WORLD_NO_REGION_DIR
+                .createEntry(context.db.getRoot(), WORLD_ALPHA);
+            Files.setLastModifiedTime(worldFolder, FileTime.from(TIME_ONE.toInstant()));
+            return singleSnapTest(context, WORLD_ALPHA, TIME_ONE);
+        }
+    },
+    WORLD_LEGACY_DIR {
+        @Override
+        List<DynamicTest> getTests(FSSDContext context) throws IOException {
+            Path worldFolder = EntryMaker.WORLD_LEGACY_DIR
                 .createEntry(context.db.getRoot(), WORLD_ALPHA);
             Files.setLastModifiedTime(worldFolder, FileTime.from(TIME_ONE.toInstant()));
             return singleSnapTest(context, WORLD_ALPHA, TIME_ONE);
@@ -269,10 +278,10 @@ enum FSSDTestType {
                                             Snapshot snapshot) throws IOException, DataException {
         assertEquals(time, snapshot.getInfo().getDateTime());
         // MCA file
-        assertEquals(CHUNK_DATA.toString(), snapshot.getChunkTag(CHUNK_POS).toString());
+        assertEquals(CHUNK_TAG.toString(), snapshot.getChunkTag(CHUNK_POS).toString());
         // MCR file
         BlockVector3 offsetChunkPos = CHUNK_POS.add(32, 0, 32);
-        assertEquals(CHUNK_DATA.toString(), snapshot.getChunkTag(offsetChunkPos).toString());
+        assertEquals(CHUNK_TAG.toString(), snapshot.getChunkTag(offsetChunkPos).toString());
     }
 
     abstract List<? extends DynamicNode> getTests(FSSDContext context) throws IOException;

@@ -20,6 +20,7 @@
 package com.sk89q.worldedit.world.snapshot.experimental.fs;
 
 import com.google.common.collect.ImmutableMap;
+import com.sk89q.worldedit.world.storage.LegacyChunkStore;
 
 import java.io.IOException;
 import java.net.URI;
@@ -29,6 +30,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.ZonedDateTime;
 
+import static com.sk89q.worldedit.world.snapshot.experimental.fs.FileSystemSnapshotDatabaseTest.CHUNK_DATA;
+import static com.sk89q.worldedit.world.snapshot.experimental.fs.FileSystemSnapshotDatabaseTest.CHUNK_POS;
 import static com.sk89q.worldedit.world.snapshot.experimental.fs.FileSystemSnapshotDatabaseTest.FORMATTER;
 import static com.sk89q.worldedit.world.snapshot.experimental.fs.FileSystemSnapshotDatabaseTest.REGION_DATA;
 
@@ -85,6 +88,22 @@ interface EntryMaker<T> {
         Files.createFile(worldDir.resolve("level.dat"));
         Files.write(worldDir.resolve("r.0.0.mca"), REGION_DATA);
         Files.write(worldDir.resolve("r.1.1.mcr"), REGION_DATA);
+        return worldDir;
+    };
+    EntryMaker<String> WORLD_LEGACY_DIR = (directory, worldName) -> {
+        Path worldDir = directory.resolve(worldName);
+        Files.createDirectories(worldDir);
+        Files.createFile(worldDir.resolve("level.dat"));
+        Path chunkFile = worldDir.resolve(LegacyChunkStore.getFilename(
+            CHUNK_POS.toBlockVector2(), "/"
+        ));
+        Files.createDirectories(chunkFile.getParent());
+        Files.write(chunkFile, CHUNK_DATA);
+        chunkFile = worldDir.resolve(LegacyChunkStore.getFilename(
+            CHUNK_POS.add(32, 0, 32).toBlockVector2(), "/"
+        ));
+        Files.createDirectories(chunkFile.getParent());
+        Files.write(chunkFile, CHUNK_DATA);
         return worldDir;
     };
     EntryMaker<String> WORLD_ARCHIVE = (directory, worldName) -> {

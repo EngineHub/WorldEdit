@@ -38,6 +38,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
@@ -54,6 +55,7 @@ import java.util.function.Function;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.DynamicContainer.dynamicContainer;
@@ -62,7 +64,8 @@ import static org.junit.jupiter.api.DynamicContainer.dynamicContainer;
 class FileSystemSnapshotDatabaseTest {
 
     static byte[] REGION_DATA;
-    static CompoundTag CHUNK_DATA;
+    static byte[] CHUNK_DATA;
+    static CompoundTag CHUNK_TAG;
     static BlockVector3 CHUNK_POS;
     static final String WORLD_ALPHA = "World Alpha";
     static final String WORLD_BETA = "World Beta";
@@ -79,16 +82,28 @@ class FileSystemSnapshotDatabaseTest {
              GZIPInputStream gzIn = new GZIPInputStream(in)) {
             REGION_DATA = ByteStreams.toByteArray(gzIn);
         }
-        // Find the single chunk
         McRegionReader reader = new McRegionReader(new ByteArrayInputStream(REGION_DATA));
-        BlockVector2 chunkPos = IntStream.range(0, 32).mapToObj(
-            x -> IntStream.range(0, 32).filter(z -> reader.hasChunk(x, z))
-                .mapToObj(z -> BlockVector2.at(x, z))
-        ).flatMap(Function.identity())
-            .findAny()
-            .orElseThrow(() -> new AssertionError("No chunk in region file."));
-        CHUNK_DATA = ChunkStoreHelper.readCompoundTag(() -> reader.getChunkInputStream(chunkPos));
-        CHUNK_POS = chunkPos.toBlockVector3();
+        try {
+            // Find the single chunk
+            BlockVector2 chunkPos = IntStream.range(0, 32).mapToObj(
+                x -> IntStream.range(0, 32).filter(z -> reader.hasChunk(x, z))
+                    .mapToObj(z -> BlockVector2.at(x, z))
+            ).flatMap(Function.identity())
+                .findAny()
+                .orElseThrow(() -> new AssertionError("No chunk in region file."));
+            ByteArrayOutputStream cap = new ByteArrayOutputStream();
+            try (InputStream in = reader.getChunkInputStream(chunkPos);
+                 GZIPOutputStream gzOut = new GZIPOutputStream(cap)) {
+                ByteStreams.copy(in, gzOut);
+            }
+            CHUNK_DATA = cap.toByteArray();
+            CHUNK_TAG = ChunkStoreHelper.readCompoundTag(() -> new GZIPInputStream(
+                new ByteArrayInputStream(CHUNK_DATA)
+            ));
+            CHUNK_POS = chunkPos.toBlockVector3();
+        } finally {
+            reader.close();
+        }
     }
 
     private static Path newTempDb() throws IOException {
