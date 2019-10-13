@@ -53,9 +53,9 @@ enum FSSDTestType {
         @Override
         List<DynamicTest> getTests(FSSDContext context) {
             return ImmutableList.of(
-                dynamicTest("returns an empty stream from getSnapshots(worldName)",
+                dynamicTest("return an empty stream from getSnapshots(worldName)",
                     () -> context.db.getSnapshots(WORLD_ALPHA)),
-                dynamicTest("returns an empty optional from getSnapshot(name)",
+                dynamicTest("return an empty optional from getSnapshot(name)",
                     () -> context.db.getSnapshot(context.nameUri(WORLD_ALPHA)))
             );
         }
@@ -187,33 +187,33 @@ enum FSSDTestType {
                 .createEntry(root, TIME_TWO);
             EntryMaker.WORLD_DIR.createEntry(timestampedDirB, WORLD_ALPHA);
             return ImmutableList.of(
-                dynamicTest("lists both snapshots in order (newest first)", () -> {
+                dynamicTest("list both snapshots in order (newest first)", () -> {
                     List<Snapshot> snapshots = context.db
                         .getSnapshotsNewestFirst(WORLD_ALPHA).collect(toList());
                     assertEquals(2, snapshots.size());
                     assertValidSnapshot(TIME_ONE, snapshots.get(0));
                     assertValidSnapshot(TIME_TWO, snapshots.get(1));
                 }),
-                dynamicTest("lists both snapshots in order (oldest first)", () -> {
+                dynamicTest("list both snapshots in order (oldest first)", () -> {
                     List<Snapshot> snapshots = context.db
                         .getSnapshotsOldestFirst(WORLD_ALPHA).collect(toList());
                     assertEquals(2, snapshots.size());
                     assertValidSnapshot(TIME_TWO, snapshots.get(0));
                     assertValidSnapshot(TIME_ONE, snapshots.get(1));
                 }),
-                dynamicTest("lists only 1 if getting AFTER 2", () -> {
+                dynamicTest("list only 1 if getting AFTER 2", () -> {
                     List<Snapshot> snapshots = context.db
                         .getSnapshotsAfter(WORLD_ALPHA, TIME_TWO).collect(toList());
                     assertEquals(1, snapshots.size());
                     assertValidSnapshot(TIME_ONE, snapshots.get(0));
                 }),
-                dynamicTest("lists only 2 if getting BEFORE 1", () -> {
+                dynamicTest("list only 2 if getting BEFORE 1", () -> {
                     List<Snapshot> snapshots = context.db
                         .getSnapshotsBefore(WORLD_ALPHA, TIME_ONE).collect(toList());
                     assertEquals(1, snapshots.size());
                     assertValidSnapshot(TIME_TWO, snapshots.get(0));
                 }),
-                dynamicTest("lists both if AFTER time before 2", () -> {
+                dynamicTest("list both if AFTER time before 2", () -> {
                     List<Snapshot> snapshots = context.db
                         .getSnapshotsAfter(WORLD_ALPHA, TIME_TWO.minusSeconds(1))
                         .collect(toList());
@@ -222,7 +222,7 @@ enum FSSDTestType {
                     assertValidSnapshot(TIME_ONE, snapshots.get(0));
                     assertValidSnapshot(TIME_TWO, snapshots.get(1));
                 }),
-                dynamicTest("lists both if BEFORE time after 1", () -> {
+                dynamicTest("list both if BEFORE time after 1", () -> {
                         List<Snapshot> snapshots = context.db
                             .getSnapshotsBefore(WORLD_ALPHA, TIME_ONE.plusSeconds(1))
                             .collect(toList());
@@ -254,11 +254,11 @@ enum FSSDTestType {
     private static List<DynamicTest> singleSnapTest(FSSDContext context, String name,
                                                     ZonedDateTime time) {
         return ImmutableList.of(
-            dynamicTest("returns a valid snapshot for " + name, () -> {
+            dynamicTest("return a valid snapshot for " + name, () -> {
                 Snapshot snapshot = context.requireSnapshot(name);
                 assertValidSnapshot(time, snapshot);
             }),
-            dynamicTest("lists a valid snapshot for " + name, () -> {
+            dynamicTest("list a valid snapshot for " + name, () -> {
                 Snapshot snapshot = context.requireListsSnapshot(name);
                 assertValidSnapshot(time, snapshot);
             })

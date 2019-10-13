@@ -132,9 +132,9 @@ class FileSystemSnapshotDatabaseTest {
         }
     }
 
-    @DisplayName("layouts")
+    @DisplayName("with a specific NIO support:")
     @TestFactory
-    Stream<DynamicNode> layouts() {
+    Stream<DynamicNode> withSpecificNioSupport() {
         return Stream.of(
             ZipArchiveNioSupport.getInstance(), TrueVfsArchiveNioSupport.getInstance()
         )
@@ -147,7 +147,10 @@ class FileSystemSnapshotDatabaseTest {
                             throw new UncheckedIOException(e);
                         }
                     });
-                return dynamicContainer(nioSupport.getClass().getSimpleName(), nodes);
+                return dynamicContainer(
+                    nioSupport.getClass().getSimpleName() + ", can, for format:",
+                    nodes
+                );
             });
     }
 
