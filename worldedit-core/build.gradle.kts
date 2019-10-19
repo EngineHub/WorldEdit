@@ -1,3 +1,4 @@
+import net.minecrell.gradle.licenser.LicenseExtension
 import org.gradle.plugins.ide.idea.model.IdeaModel
 
 plugins {
@@ -50,6 +51,15 @@ tasks.named<AntlrTask>("generateGrammarSource").configure {
         "-visitor", "-package", pkg,
         "-Xexact-output-dir"
     )
+}
+
+configure<LicenseExtension> {
+    exclude {
+        it.file.startsWith(project.buildDir)
+    }
+}
+tasks.withType<Checkstyle>().configureEach {
+    exclude("com/sk89q/worldedit/antlr/**/*.java")
 }
 
 // Give intellij info about where ANTLR code comes from
