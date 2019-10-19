@@ -17,18 +17,21 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.internal.expression.runtime;
+package com.sk89q.worldedit.internal.expression;
 
 /**
- * Represents a way to access blocks in a world. Has to accept non-rounded coordinates.
+ * Thrown when a break or continue is encountered.
+ * Loop constructs catch this exception.
  */
-public interface ExpressionEnvironment {
+public class BreakException extends RuntimeException {
 
-    int getBlockType(double x, double y, double z);
-    int getBlockData(double x, double y, double z);
-    int getBlockTypeAbs(double x, double y, double z);
-    int getBlockDataAbs(double x, double y, double z);
-    int getBlockTypeRel(double x, double y, double z);
-    int getBlockDataRel(double x, double y, double z);
+    public final boolean doContinue;
+
+    public BreakException(boolean doContinue) {
+        super(doContinue ? "'continue' encountered outside a loop" : "'break' encountered outside a loop",
+            null, true, false);
+
+        this.doContinue = doContinue;
+    }
 
 }

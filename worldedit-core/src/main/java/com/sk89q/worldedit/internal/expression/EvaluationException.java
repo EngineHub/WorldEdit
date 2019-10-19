@@ -17,33 +17,33 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.internal.expression.lexer;
+package com.sk89q.worldedit.internal.expression;
 
 import com.sk89q.worldedit.internal.expression.ExpressionException;
 
 /**
- * Thrown when the lexer encounters a problem.
+ * Thrown when there's a problem during expression evaluation.
  */
-public class LexerException extends ExpressionException {
+public class EvaluationException extends ExpressionException {
 
-    public LexerException(int position) {
+    public EvaluationException(int position) {
         super(position, getPrefix(position));
     }
 
-    public LexerException(int position, String message, Throwable cause) {
+    public EvaluationException(int position, String message, Throwable cause) {
         super(position, getPrefix(position) + ": " + message, cause);
     }
 
-    public LexerException(int position, String message) {
+    public EvaluationException(int position, String message) {
         super(position, getPrefix(position) + ": " + message);
     }
 
-    public LexerException(int position, Throwable cause) {
+    public EvaluationException(int position, Throwable cause) {
         super(position, getPrefix(position), cause);
     }
 
     private static String getPrefix(int position) {
-        return position < 0 ? "Lexer error" : ("Lexer error at " + (position + 1));
+        return position < 0 ? "Evaluation error" : ("Evaluation error at " + (position + 1));
     }
 
 }

@@ -17,28 +17,18 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.internal.expression.lexer.tokens;
+package com.sk89q.worldedit.internal.expression;
 
 /**
- * A keyword.
+ * Represents a way to access blocks in a world. Has to accept non-rounded coordinates.
  */
-public class KeywordToken extends Token {
+public interface ExpressionEnvironment {
 
-    public final String value;
-
-    public KeywordToken(int position, String value) {
-        super(position);
-        this.value = value;
-    }
-
-    @Override
-    public char id() {
-        return 'k';
-    }
-
-    @Override
-    public String toString() {
-        return "KeywordToken(" + value + ")";
-    }
+    int getBlockType(double x, double y, double z);
+    int getBlockData(double x, double y, double z);
+    int getBlockTypeAbs(double x, double y, double z);
+    int getBlockDataAbs(double x, double y, double z);
+    int getBlockTypeRel(double x, double y, double z);
+    int getBlockDataRel(double x, double y, double z);
 
 }

@@ -17,22 +17,15 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.internal.expression.runtime;
+package com.sk89q.worldedit.internal.expression;
 
-import com.sk89q.worldedit.internal.expression.Expression;
-import com.sk89q.worldedit.internal.expression.parser.ParserException;
+import org.antlr.v4.runtime.BaseErrorListener;
+import org.antlr.v4.runtime.RecognitionException;
+import org.antlr.v4.runtime.Recognizer;
 
-/**
- * A value that can be used on the left side of an assignment.
- */
-public interface LValue extends RValue {
-
-    double assign(double value) throws EvaluationException;
-
+class LexerErrorListener extends BaseErrorListener {
     @Override
-    LValue optimize() throws EvaluationException;
-
-    @Override
-    LValue bindVariables(Expression expression, boolean preferLValue) throws ParserException;
-
+    public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol, int line, int charPositionInLine, String msg, RecognitionException e) {
+        throw new LexerException(charPositionInLine, msg);
+    }
 }

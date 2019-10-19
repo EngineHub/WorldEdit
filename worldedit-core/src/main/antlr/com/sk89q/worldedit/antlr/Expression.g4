@@ -79,107 +79,158 @@ allStatements : statements EOF ;
 statements : statement+ ;
 
 statement
-    : block # BlockStmt
-    | ifStatement # IfStmt
-    | whileStatement # WhileStmt
-    | doStatement # DoStmt
-    | forStatement # ForStmt
-    | breakStatement # BreakStmt
-    | continueStatement # ContinueStmt
-    | returnStatement # ReturnStmt
-    | switchStatement # SwitchStmt
-    | expressionStatement # ExpressionStmt
-    | SEMI_COLON # EmptyStmt
+    : ( block
+      | ifStatement
+      | whileStatement
+      | doStatement
+      | forStatement
+      | simpleForStatement
+      | breakStatement
+      | continueStatement
+      | returnStatement
+      | switchStatement
+      | expressionStatement
+      | emptyStatement
+      ) SEMI_COLON?
     ;
 
 block : '{' statements '}' ;
 
-ifStatement : IF '(' expression ')' statement ( ELSE statement ) ;
+ifStatement : IF '(' condition=expression ')' trueBranch=statement ( ELSE falseBranch=statement )? ;
 
-whileStatement : WHILE '(' expression ')' statement ;
+whileStatement : WHILE '(' condition=expression ')' body=statement ;
 
-doStatement : DO statement WHILE '(' expression ')' SEMI_COLON ;
+doStatement : DO body=statement WHILE '(' condition=expression ')' ;
 
+// C-Style for loop
 forStatement
-    : FOR '('
-        // C-style for loop
-        ( expression ';' expression ';' expression
-        // Range for loop
-        | ID ASSIGN ID ',' ID
-        )
-      ')' statement ;
+    : FOR '(' init=expression ';' condition=expression ';' update=expression ')' body=statement ;
+
+// Range for loop
+simpleForStatement
+    : FOR '(' counter=ID ASSIGN first=expression ',' last=expression ')' body=statement ;
 
 breakStatement : BREAK ;
 
 continueStatement : CONTINUE ;
 
-returnStatement : RETURN expression? ;
+returnStatement : RETURN value=expression? ;
 
-switchStatement : SWITCH '(' expression ')' '{' (switchLabel ':' statements )+ '}' ;
+switchStatement : SWITCH '(' target=expression ')' '{' (labels+=switchLabel ':' bodies+=statements )+ '}' ;
 
 switchLabel
-    : CASE constantExpression # Case
+    : CASE constant=constantExpression # Case
     | DEFAULT # Default
     ;
 
-expressionStatement : expression SEMI_COLON ;
+expressionStatement : expression ;
 
-expression
-    : unaryOp expression # UnaryExpr
-    | expression binaryOp expression # BinaryExpr
-    | expression postUnaryOp # PostUnaryExpr
-    | ID binaryAssignOp expression # AssignExpr
-    | expression '?' expression ':' expression # TernaryExpr
-    | functionCall # FunctionCallExpr
+emptyStatement: SEMI_COLON ;
+
+expression : assignmentExpression ;
+
+assignmentExpression
+	:	conditionalExpression
+	|	assignment
+	;
+
+assignment
+	:	target=ID assignmentOperator source=expression
+	;
+
+assignmentOperator
+    : ASSIGN
+    | POWER_ASSIGN
+    | TIMES_ASSIGN
+    | DIVIDE_ASSIGN
+    | MODULO_ASSIGN
+    | PLUS_ASSIGN
+    | MINUS_ASSIGN
+    ;
+
+conditionalExpression
+	:	conditionalOrExpression # CEFallthrough
+	|	condition=conditionalOrExpression QUESTION_MARK
+	    trueBranch=expression COLON falseBranch=conditionalExpression # TernaryExpr
+	;
+
+conditionalOrExpression
+	:	conditionalAndExpression # COFallthrough
+	|	left=conditionalOrExpression OR_SC right=conditionalAndExpression # ConditionalOrExpr
+	;
+
+conditionalAndExpression
+	:	equalityExpression # CAFallthrough
+	|	left=conditionalAndExpression AND_SC right=equalityExpression # ConditionalAndExpr
+	;
+
+equalityExpression
+	:	relationalExpression # EqFallthrough
+	|	left=equalityExpression
+	    op=
+	    ( EQUAL
+	    | NOT_EQUAL
+	    | NEAR
+	    ) right=relationalExpression # EqualityExpr
+	;
+
+relationalExpression
+	:	shiftExpression # ReFallthrough
+	|	left=relationalExpression
+	    op=
+	    ( LESS_THAN
+	    | GREATER_THAN
+	    | LESS_THAN_OR_EQUAL
+	    | GREATER_THAN_OR_EQUAL
+	    ) right=shiftExpression # RelationalExpr
+	;
+
+shiftExpression
+	:	additiveExpression # ShFallthrough
+	|	left=shiftExpression op=( LEFT_SHIFT | RIGHT_SHIFT ) right=additiveExpression # ShiftExpr
+	;
+
+additiveExpression
+	:	multiplicativeExpression # AdFallthrough
+	|	left=additiveExpression op=( PLUS | MINUS ) right=multiplicativeExpression # AddExpr
+	;
+
+multiplicativeExpression
+	:	powerExpression # MuFallthrough
+	|	left=multiplicativeExpression
+	    op=
+	    ( TIMES
+	    | DIVIDE
+	    | MODULO
+	    ) right=powerExpression # MultiplicativeExpr
+	;
+
+powerExpression
+	:	unaryExpression # PwFallthrough
+	|	left=powerExpression POWER right=unaryExpression # PowerExpr
+	;
+
+unaryExpression
+	:	op=( INCREMENT | DECREMENT ) target=ID # PreCrementExpr
+	|	op=( PLUS | MINUS ) expr=unaryExpression # PlusMinusExpr
+	|	postfixExpression # UaFallthrough
+    |	COMPLEMENT expr=unaryExpression # ComplementExpr
+    |	EXCLAMATION_MARK expr=unaryExpression # NotExpr
+	;
+
+postfixExpression
+	:	unprioritizedExpression # PoFallthrough
+	|   target=ID op=( INCREMENT | DECREMENT) # PostCrementExpr
+	|   expr=postfixExpression op=EXCLAMATION_MARK # PostfixExpr
+	;
+
+unprioritizedExpression
+    : functionCall # FunctionCallExpr
     | constantExpression # ConstantExpr
-    | ID # IdExpr
+    | source=ID # IdExpr
     | '(' expression ')' # WrappedExpr
     ;
 
 constantExpression : NUMBER ;
 
-functionCall : ID '(' (expression ( ',' expression )*)? ')' ;
-
-unaryOp
-    : MINUS
-    | EXCLAMATION_MARK
-    | COMPLEMENT
-    | INCREMENT
-    | DECREMENT
-    ;
-
-postUnaryOp
-    : INCREMENT
-    | DECREMENT
-    | EXCLAMATION_MARK
-    ;
-
-binaryOp
-    : POWER
-    | TIMES
-    | DIVIDE
-    | MODULO
-    | PLUS
-    | MINUS
-    | LEFT_SHIFT
-    | RIGHT_SHIFT
-    | LESS_THAN
-    | GREATER_THAN
-    | LESS_THAN_OR_EQUAL
-    | GREATER_THAN_OR_EQUAL
-    | EQUAL
-    | NOT_EQUAL
-    | NEAR
-    | AND_SC
-    | OR_SC
-    ;
-
-binaryAssignOp
-    : ASSIGN
-    | PLUS_ASSIGN
-    | MINUS_ASSIGN
-    | TIMES_ASSIGN
-    | DIVIDE_ASSIGN
-    | MODULO_ASSIGN
-    | POWER_ASSIGN
-    ;
+functionCall : name=ID '(' (args+=expression ( ',' args+=expression )*)? ')' ;
