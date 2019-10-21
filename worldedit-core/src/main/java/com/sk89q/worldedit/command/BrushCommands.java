@@ -290,7 +290,7 @@ public class BrushCommands {
             maxRadius = Math.max(config.maxBrushRadius, config.butcherMaxRadius);
         }
         if (radius > maxRadius) {
-            player.printError("Maximum allowed brush radius: " + maxRadius);
+            player.printError(TranslatableComponent.of("worldedit.bruch.radius-too-large", TextComponent.of(maxRadius)));
             return;
         }
 

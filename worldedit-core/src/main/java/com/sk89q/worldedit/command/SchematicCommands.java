@@ -46,6 +46,7 @@ import com.sk89q.worldedit.util.formatting.component.ErrorFormat;
 import com.sk89q.worldedit.util.formatting.component.PaginationBox;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
+import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.util.formatting.text.event.ClickEvent;
 import com.sk89q.worldedit.util.formatting.text.event.HoverEvent;
 import com.sk89q.worldedit.util.formatting.text.format.TextColor;
@@ -112,7 +113,7 @@ public class SchematicCommands {
                 ClipboardFormats.getFileExtensionArray());
 
         if (!f.exists()) {
-            actor.printError("Schematic " + filename + " does not exist!");
+            actor.printError(TranslatableComponent.of("worldedit.schematic.load.does-not-exist", TextComponent.of(filename)));
             return;
         }
 
@@ -121,7 +122,7 @@ public class SchematicCommands {
             format = ClipboardFormats.findByAlias(formatName);
         }
         if (format == null) {
-            actor.printError("Unknown schematic format: " + formatName);
+            actor.printError(TranslatableComponent.of("worldedit.schematic.unknown-format", TextComponent.of(formatName)));
             return;
         }
 
@@ -156,7 +157,7 @@ public class SchematicCommands {
 
         ClipboardFormat format = ClipboardFormats.findByAlias(formatName);
         if (format == null) {
-            actor.printError("Unknown schematic format: " + formatName);
+            actor.printError(TranslatableComponent.of("worldedit.schematic.unknown-format", TextComponent.of(formatName)));
             return;
         }
 
@@ -168,7 +169,7 @@ public class SchematicCommands {
                 throw new StopExecutionException(TextComponent.of("That schematic already exists!"));
             }
             if (!allowOverwrite) {
-                actor.printError("That schematic already exists. Use the -f flag to overwrite it.");
+                actor.printError(TranslatableComponent.of("worldedit.schematic.save.already-exists"));
                 return;
             }
         }
@@ -177,8 +178,8 @@ public class SchematicCommands {
         File parent = f.getParentFile();
         if (parent != null && !parent.exists()) {
             if (!parent.mkdirs()) {
-                throw new StopExecutionException(TextComponent.of(
-                        "Could not create folder for schematics!"));
+                throw new StopExecutionException(TranslatableComponent.of(
+                        "worldedit.schematic.save.failed-directory"));
             }
         }
 
@@ -209,16 +210,16 @@ public class SchematicCommands {
                 dir, filename, "schematic", ClipboardFormats.getFileExtensionArray());
 
         if (!f.exists()) {
-            actor.printError("Schematic " + filename + " does not exist!");
+            actor.printError(TranslatableComponent.of("worldedit.schematic.delete.does-not-exist", TextComponent.of(filename)));
             return;
         }
 
         if (!f.delete()) {
-            actor.printError("Deletion of " + filename + " failed! Maybe it is read-only.");
+            actor.printError(TranslatableComponent.of("worldedit.schematic.delete.failed", TextComponent.of(filename)));
             return;
         }
 
-        actor.print(filename + " has been deleted.");
+        actor.printInfo(TranslatableComponent.of("worldedit.schematic.delete.deleted", TextComponent.of(filename)));
         try {
             log.info(actor.getName() + " deleted " + f.getCanonicalPath());
         } catch (IOException e) {
@@ -233,7 +234,7 @@ public class SchematicCommands {
     )
     @CommandPermissions("worldedit.schematic.formats")
     public void formats(Actor actor) {
-        actor.print("Available clipboard formats (Name: Lookup names)");
+        actor.printInfo(TranslatableComponent.of("worldedit.schematic.formats.title"));
         StringBuilder builder;
         boolean first = true;
         for (ClipboardFormat format : ClipboardFormats.getAll()) {
@@ -247,7 +248,7 @@ public class SchematicCommands {
                 first = false;
             }
             first = true;
-            actor.print(builder.toString());
+            actor.printInfo(TextComponent.of(builder.toString()));
         }
     }
 

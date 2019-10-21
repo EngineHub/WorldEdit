@@ -116,7 +116,7 @@ public class ExpandCommands {
                     TranslatableComponent.of(pluraliseI18n("worldedit.expand.expanded.vert", changeSize), TextComponent.of(changeSize))
             );
         } catch (RegionOperationException e) {
-            player.printError(e.getMessage());
+            player.printError(TextComponent.of(e.getMessage()));
         }
     }
 
