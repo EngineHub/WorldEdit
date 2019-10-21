@@ -203,9 +203,9 @@ public class GeneralCommands {
             @Arg(desc = "The world override", def = "") World world) {
         session.setWorldOverride(world);
         if (world == null) {
-            actor.print("Removed world override.");
+            actor.printInfo(TranslatableComponent.of("worldedit.world.remove"));
         } else {
-            actor.print("Set the world override to " + world.getId() + ". (Use //world to go back to default)");
+            actor.printInfo(TranslatableComponent.of("worldedit.world.set", TextComponent.of(world.getId())));
         }
     }
 
@@ -220,16 +220,16 @@ public class GeneralCommands {
                          @Arg(desc = "The mode to set the watchdog hook to", def = "")
                              HookMode hookMode) {
         if (WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.GAME_HOOKS).getWatchdog() == null) {
-            actor.printError("This platform has no watchdog hook.");
+            actor.printError(TranslatableComponent.of("worldedit.watchdog.no-hook"));
             return;
         }
         boolean previousMode = session.isTickingWatchdog();
         if (hookMode != null && (hookMode == HookMode.ACTIVE) == previousMode) {
-            actor.printError("Watchdog hook already " + (previousMode ? "active" : "inactive") + ".");
+            actor.printError(TranslatableComponent.of(previousMode ? "worldedit.help.already-active" : "worldedit.help.already-inactive"));
             return;
         }
         session.setTickingWatchdog(!previousMode);
-        actor.print("Watchdog hook now " + (previousMode ? "inactive" : "active") + ".");
+        actor.printInfo(TranslatableComponent.of(previousMode ? "worldedit.help.now-inactive" : "worldedit.help.now-active"));
     }
 
     @Command(
