@@ -225,11 +225,11 @@ public class GeneralCommands {
         }
         boolean previousMode = session.isTickingWatchdog();
         if (hookMode != null && (hookMode == HookMode.ACTIVE) == previousMode) {
-            actor.printError(TranslatableComponent.of(previousMode ? "worldedit.help.already-active" : "worldedit.help.already-inactive"));
+            actor.printError(TranslatableComponent.of(previousMode ? "worldedit.watchdog.already-active" : "worldedit.watchdog.already-inactive"));
             return;
         }
         session.setTickingWatchdog(!previousMode);
-        actor.printInfo(TranslatableComponent.of(previousMode ? "worldedit.help.now-inactive" : "worldedit.help.now-active"));
+        actor.printInfo(TranslatableComponent.of(previousMode ? "worldedit.watchdog.now-inactive" : "worldedit.watchdog.now-active"));
     }
 
     @Command(
