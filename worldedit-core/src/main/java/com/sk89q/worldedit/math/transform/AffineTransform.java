@@ -153,7 +153,7 @@ public class AffineTransform implements Transform {
      *
      * @return the determinant of the transform.
      */
-    private double determinant() {
+    public double determinant() {
         return m00 * (m11 * m22 - m12 * m21) - m01 * (m10 * m22 - m20 * m12)
                 + m02 * (m10 * m21 - m20 * m11);
     }
