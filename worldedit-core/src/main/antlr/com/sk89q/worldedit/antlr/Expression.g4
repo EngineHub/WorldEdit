@@ -130,13 +130,13 @@ emptyStatement: SEMI_COLON ;
 expression : assignmentExpression ;
 
 assignmentExpression
-	:	conditionalExpression
-	|	assignment
-	;
+    : conditionalExpression
+    | assignment
+    ;
 
 assignment
-	:	target=ID assignmentOperator source=expression
-	;
+    : target=ID assignmentOperator source=expression
+    ;
 
 assignmentOperator
     : ASSIGN
@@ -149,80 +149,80 @@ assignmentOperator
     ;
 
 conditionalExpression
-	:	conditionalOrExpression # CEFallthrough
-	|	condition=conditionalOrExpression QUESTION_MARK
-	    trueBranch=expression COLON falseBranch=conditionalExpression # TernaryExpr
-	;
+    : conditionalOrExpression # CEFallthrough
+    | condition=conditionalOrExpression QUESTION_MARK
+      trueBranch=expression COLON falseBranch=conditionalExpression # TernaryExpr
+    ;
 
 conditionalOrExpression
-	:	conditionalAndExpression # COFallthrough
-	|	left=conditionalOrExpression OR_SC right=conditionalAndExpression # ConditionalOrExpr
-	;
+    : conditionalAndExpression # COFallthrough
+    | left=conditionalOrExpression OR_SC right=conditionalAndExpression # ConditionalOrExpr
+    ;
 
 conditionalAndExpression
-	:	equalityExpression # CAFallthrough
-	|	left=conditionalAndExpression AND_SC right=equalityExpression # ConditionalAndExpr
-	;
+    : equalityExpression # CAFallthrough
+    | left=conditionalAndExpression AND_SC right=equalityExpression # ConditionalAndExpr
+    ;
 
 equalityExpression
-	:	relationalExpression # EqFallthrough
-	|	left=equalityExpression
-	    op=
-	    ( EQUAL
-	    | NOT_EQUAL
-	    | NEAR
-	    ) right=relationalExpression # EqualityExpr
-	;
+    : relationalExpression # EqFallthrough
+    | left=equalityExpression
+      op=
+      ( EQUAL
+      | NOT_EQUAL
+      | NEAR
+      ) right=relationalExpression # EqualityExpr
+    ;
 
 relationalExpression
-	:	shiftExpression # ReFallthrough
-	|	left=relationalExpression
-	    op=
-	    ( LESS_THAN
-	    | GREATER_THAN
-	    | LESS_THAN_OR_EQUAL
-	    | GREATER_THAN_OR_EQUAL
-	    ) right=shiftExpression # RelationalExpr
-	;
+    : shiftExpression # ReFallthrough
+    | left=relationalExpression
+      op=
+      ( LESS_THAN
+      | GREATER_THAN
+      | LESS_THAN_OR_EQUAL
+      | GREATER_THAN_OR_EQUAL
+      ) right=shiftExpression # RelationalExpr
+    ;
 
 shiftExpression
-	:	additiveExpression # ShFallthrough
-	|	left=shiftExpression op=( LEFT_SHIFT | RIGHT_SHIFT ) right=additiveExpression # ShiftExpr
-	;
+    : additiveExpression # ShFallthrough
+    | left=shiftExpression op=( LEFT_SHIFT | RIGHT_SHIFT ) right=additiveExpression # ShiftExpr
+    ;
 
 additiveExpression
-	:	multiplicativeExpression # AdFallthrough
-	|	left=additiveExpression op=( PLUS | MINUS ) right=multiplicativeExpression # AddExpr
-	;
+    : multiplicativeExpression # AdFallthrough
+    | left=additiveExpression op=( PLUS | MINUS ) right=multiplicativeExpression # AddExpr
+    ;
 
 multiplicativeExpression
-	:	powerExpression # MuFallthrough
-	|	left=multiplicativeExpression
-	    op=
-	    ( TIMES
-	    | DIVIDE
-	    | MODULO
-	    ) right=powerExpression # MultiplicativeExpr
-	;
+    : powerExpression # MuFallthrough
+    | left=multiplicativeExpression
+      op=
+      ( TIMES
+      | DIVIDE
+      | MODULO
+      ) right=powerExpression # MultiplicativeExpr
+    ;
 
 powerExpression
-	:	unaryExpression # PwFallthrough
-	|	left=powerExpression POWER right=unaryExpression # PowerExpr
-	;
+    : unaryExpression # PwFallthrough
+    | left=powerExpression POWER right=unaryExpression # PowerExpr
+    ;
 
 unaryExpression
-	:	op=( INCREMENT | DECREMENT ) target=ID # PreCrementExpr
-	|	op=( PLUS | MINUS ) expr=unaryExpression # PlusMinusExpr
-	|	postfixExpression # UaFallthrough
-    |	COMPLEMENT expr=unaryExpression # ComplementExpr
-    |	EXCLAMATION_MARK expr=unaryExpression # NotExpr
-	;
+    : op=( INCREMENT | DECREMENT ) target=ID # PreCrementExpr
+    | op=( PLUS | MINUS ) expr=unaryExpression # PlusMinusExpr
+    | postfixExpression # UaFallthrough
+    | COMPLEMENT expr=unaryExpression # ComplementExpr
+    | EXCLAMATION_MARK expr=unaryExpression # NotExpr
+    ;
 
 postfixExpression
-	:	unprioritizedExpression # PoFallthrough
-	|   target=ID op=( INCREMENT | DECREMENT) # PostCrementExpr
-	|   expr=postfixExpression op=EXCLAMATION_MARK # PostfixExpr
-	;
+    : unprioritizedExpression # PoFallthrough
+    | target=ID op=( INCREMENT | DECREMENT) # PostCrementExpr
+    | expr=postfixExpression op=EXCLAMATION_MARK # PostfixExpr
+    ;
 
 unprioritizedExpression
     : functionCall # FunctionCallExpr
