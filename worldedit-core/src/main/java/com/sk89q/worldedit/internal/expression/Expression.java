@@ -74,11 +74,12 @@ import java.util.concurrent.TimeoutException;
 public class Expression {
 
     private static final ThreadLocal<Stack<Expression>> instance = new ThreadLocal<>();
-    private static final ExecutorService evalThread = Executors.newCachedThreadPool(
-            new ThreadFactoryBuilder()
-                    .setDaemon(true)
-                    .setNameFormat("worldedit-expression-eval-%d")
-                    .build());
+    private static final ExecutorService evalThread = Executors.newFixedThreadPool(
+        Runtime.getRuntime().availableProcessors(),
+        new ThreadFactoryBuilder()
+            .setDaemon(true)
+            .setNameFormat("worldedit-expression-eval-%d")
+            .build());
 
     private final SlotTable slots = new SlotTable();
     private final List<String> providedSlots;
