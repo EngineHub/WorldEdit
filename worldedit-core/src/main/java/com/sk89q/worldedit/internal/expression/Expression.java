@@ -37,6 +37,7 @@ import java.lang.invoke.MethodHandle;
 import java.util.List;
 import java.util.Objects;
 import java.util.Stack;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -141,6 +142,7 @@ public class Expression {
     }
 
     private double evaluateRootTimed(int timeout) throws EvaluationException {
+        CountDownLatch startLatch = new CountDownLatch(1);
         Request request = Request.request();
         Future<Double> result = evalThread.submit(() -> {
             Request local = Request.request();
@@ -148,12 +150,14 @@ public class Expression {
             local.setWorld(request.getWorld());
             local.setEditSession(request.getEditSession());
             try {
+                startLatch.countDown();
                 return Expression.this.evaluateRoot();
             } finally {
                 Request.reset();
             }
         });
         try {
+            startLatch.await();
             return result.get(timeout, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
