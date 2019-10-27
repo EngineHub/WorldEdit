@@ -51,7 +51,7 @@ public class SuperPickaxeCommands {
     public void single(Player player, LocalSession session) throws WorldEditException {
         session.setSuperPickaxe(new SinglePickaxe());
         session.enableSuperPickAxe();
-        player.printInfo(TranslatableComponent.of("worldedit.superpickaxe.mode.single"));
+        player.printInfo(TranslatableComponent.of("worldedit.tool.superpickaxe.mode.single"));
     }
 
     @Command(
@@ -72,7 +72,7 @@ public class SuperPickaxeCommands {
 
         session.setSuperPickaxe(new AreaPickaxe(range));
         session.enableSuperPickAxe();
-        player.printInfo(TranslatableComponent.of("worldedit.superpickaxe.mode.area"));
+        player.printInfo(TranslatableComponent.of("worldedit.tool.superpickaxe.mode.area"));
     }
 
     @Command(
@@ -94,6 +94,6 @@ public class SuperPickaxeCommands {
 
         session.setSuperPickaxe(new RecursivePickaxe(range));
         session.enableSuperPickAxe();
-        player.printInfo(TranslatableComponent.of("worldedit.superpickaxe.mode.recursive"));
+        player.printInfo(TranslatableComponent.of("worldedit.tool.superpickaxe.mode.recursive"));
     }
 }

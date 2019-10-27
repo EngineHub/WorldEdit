@@ -48,7 +48,6 @@ import java.util.List;
 
 import static com.sk89q.worldedit.command.util.Logging.LogMode.REGION;
 import static com.sk89q.worldedit.internal.command.CommandUtil.requireIV;
-import static com.sk89q.worldedit.util.translation.LocalisationHelpers.pluraliseI18n;
 
 /**
  * Extracted from {@link SelectionCommands} to allow importing of {@link Command}.

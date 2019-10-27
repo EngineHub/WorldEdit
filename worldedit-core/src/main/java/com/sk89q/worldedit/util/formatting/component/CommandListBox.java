@@ -58,6 +58,7 @@ public class CommandListBox extends PaginationBox {
         appendCommand(alias, description, null);
     }
 
+    @Deprecated
     public void appendCommand(String alias, String description, String insertion) {
         appendCommand(alias, TextComponent.of(description), insertion);
     }

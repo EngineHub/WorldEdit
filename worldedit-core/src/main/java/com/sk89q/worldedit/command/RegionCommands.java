@@ -75,7 +75,6 @@ import static com.sk89q.worldedit.internal.command.CommandUtil.checkCommandArgum
 import static com.sk89q.worldedit.regions.Regions.asFlatRegion;
 import static com.sk89q.worldedit.regions.Regions.maximumBlockY;
 import static com.sk89q.worldedit.regions.Regions.minimumBlockY;
-import static com.sk89q.worldedit.util.translation.LocalisationHelpers.pluraliseI18n;
 
 /**
  * Commands that operate on regions.

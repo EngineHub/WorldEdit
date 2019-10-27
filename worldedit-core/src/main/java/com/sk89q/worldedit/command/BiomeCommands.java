@@ -66,7 +66,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.sk89q.worldedit.command.util.Logging.LogMode.REGION;
-import static com.sk89q.worldedit.util.translation.LocalisationHelpers.pluraliseI18n;
 
 /**
  * Implements biome-related commands such as "/biomelist".
