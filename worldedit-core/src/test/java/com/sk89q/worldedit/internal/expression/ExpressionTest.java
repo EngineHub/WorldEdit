@@ -19,11 +19,6 @@
 
 package com.sk89q.worldedit.internal.expression;
 
-import com.sk89q.worldedit.LocalConfiguration;
-import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.extension.platform.Platform;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.Duration;
@@ -34,27 +29,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
-public class ExpressionTest {
-
-    private Platform mockPlat = mock(Platform.class);
-
-    @BeforeEach
-    public void setup() {
-        when(mockPlat.getConfiguration()).thenReturn(new LocalConfiguration() {
-            @Override
-            public void load() {
-            }
-        });
-        WorldEdit.getInstance().getPlatformManager().register(mockPlat);
-    }
-
-    @AfterEach
-    public void tearDown() {
-        WorldEdit.getInstance().getPlatformManager().unregister(mockPlat);
-    }
+class ExpressionTest extends BaseExpressionTest {
 
     @Test
     public void testEvaluate() throws ExpressionException {
@@ -192,47 +168,4 @@ public class ExpressionTest {
         assertTrue(e.getMessage().contains("Calculations exceeded time limit"));
     }
 
-    private double simpleEval(String expressionString) throws ExpressionException {
-        final Expression expression = compile(expressionString);
-
-        expression.setEnvironment(new ExpressionEnvironment() {
-            @Override
-            public int getBlockType(double x, double y, double z) {
-                return (int) x;
-            }
-
-            @Override
-            public int getBlockData(double x, double y, double z) {
-                return (int) y;
-            }
-
-            @Override
-            public int getBlockTypeAbs(double x, double y, double z) {
-                return (int) x*10;
-            }
-
-            @Override
-            public int getBlockDataAbs(double x, double y, double z) {
-                return (int) y*10;
-            }
-
-            @Override
-            public int getBlockTypeRel(double x, double y, double z) {
-                return (int) x*100;
-            }
-
-            @Override
-            public int getBlockDataRel(double x, double y, double z) {
-                return (int) y*100;
-            }
-        });
-
-        return expression.evaluate();
-    }
-
-    private Expression compile(String expressionString, String... variableNames) throws ExpressionException {
-        final Expression expression = Expression.compile(expressionString, variableNames);
-        expression.optimize();
-        return expression;
-    }
 }
