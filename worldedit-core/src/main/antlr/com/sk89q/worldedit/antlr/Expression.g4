@@ -63,7 +63,7 @@ fragment EXP_CHAR : [eE] ;
 fragment DECIMAL : '.' DIGIT+ ( EXP_CHAR SIGN? DIGIT+ )? ;
 
 // All numbers are treated the same. No int/dec divide.
-NUMBER : SIGN? ( DIGIT+ DECIMAL? | DECIMAL ) ;
+NUMBER : ( DIGIT+ DECIMAL? | DECIMAL ) ;
 
 ID : [A-Za-z] [0-9A-Za-z_]* ;
 

@@ -75,6 +75,11 @@ public class ExpressionTest {
     }
 
     @Test
+    void testTightTokenization() {
+        assertEquals(4, simpleEval("3+1"), 0);
+    }
+
+    @Test
     public void testErrors() {
         // test lexer errors
         {
