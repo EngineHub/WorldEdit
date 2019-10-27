@@ -189,7 +189,7 @@ public abstract class BreadthFirstSearch implements Operation {
     @Override
     public Iterable<Component> getStatusMessages() {
         return Lists.newArrayList(TranslatableComponent.of(
-                pluraliseI18n("worldedit.operation.affected.block", getAffected()),
+                "worldedit.operation.affected.block",
                 TextComponent.of(getAffected())
         ).color(TextColor.LIGHT_PURPLE));
     }

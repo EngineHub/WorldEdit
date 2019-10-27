@@ -167,7 +167,7 @@ public class BiomeCommands {
                 return TextComponent.of(biome.getId());
             }
         }).collect(Collectors.toList());
-        player.printInfo(TranslatableComponent.of(pluraliseI18n(messageKey, biomes.size()), TextUtils.join(components, TextComponent.of(", "))));
+        player.printInfo(TranslatableComponent.of(messageKey, TextUtils.join(components, TextComponent.of(", "))));
     }
 
     @Command(
@@ -201,7 +201,7 @@ public class BiomeCommands {
         Operations.completeLegacy(visitor);
 
         player.printInfo(TranslatableComponent.of(
-                pluraliseI18n("worldedit.setbiome.changed", visitor.getAffected()),
+                "worldedit.setbiome.changed",
                 TextComponent.of(visitor.getAffected())
         ));
     }

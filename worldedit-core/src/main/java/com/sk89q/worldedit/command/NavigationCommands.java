@@ -86,7 +86,7 @@ public class NavigationCommands {
         if (ascentLevels == 0) {
             player.printError(TranslatableComponent.of("worldedit.ascend.obstructed"));
         } else {
-            player.printInfo(TranslatableComponent.of(pluraliseI18n("worldedit.ascend.moved", ascentLevels), TextComponent.of(ascentLevels)));
+            player.printInfo(TranslatableComponent.of("worldedit.ascend.moved", TextComponent.of(ascentLevels)));
         }
     }
 
@@ -109,7 +109,7 @@ public class NavigationCommands {
         if (descentLevels == 0) {
             player.printError(TranslatableComponent.of("worldedit.descend.obstructed"));
         } else {
-            player.printInfo(TranslatableComponent.of(pluraliseI18n("worldedit.descend.moved", descentLevels), TextComponent.of(descentLevels)));
+            player.printInfo(TranslatableComponent.of("worldedit.descend.moved", TextComponent.of(descentLevels)));
         }
     }
 
