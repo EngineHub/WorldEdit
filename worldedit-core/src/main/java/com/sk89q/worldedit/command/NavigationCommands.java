@@ -36,7 +36,6 @@ import org.enginehub.piston.annotation.param.Switch;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.sk89q.worldedit.command.util.Logging.LogMode.POSITION;
-import static com.sk89q.worldedit.util.translation.LocalisationHelpers.pluraliseI18n;
 
 /**
  * Commands for moving the player around.

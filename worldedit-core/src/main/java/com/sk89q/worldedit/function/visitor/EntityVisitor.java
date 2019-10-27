@@ -20,7 +20,6 @@
 package com.sk89q.worldedit.function.visitor;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static com.sk89q.worldedit.util.translation.LocalisationHelpers.pluraliseI18n;
 
 import com.google.common.collect.Lists;
 import com.sk89q.worldedit.WorldEditException;
@@ -33,9 +32,7 @@ import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.util.formatting.text.format.TextColor;
 
-import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 
 /**
  * Visits entities as provided by an {@code Iterator}.

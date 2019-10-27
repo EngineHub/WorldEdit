@@ -21,7 +21,6 @@ package com.sk89q.worldedit.function.operation;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
-import static com.sk89q.worldedit.util.translation.LocalisationHelpers.pluraliseI18n;
 
 import com.google.common.collect.Lists;
 import com.sk89q.worldedit.WorldEditException;
