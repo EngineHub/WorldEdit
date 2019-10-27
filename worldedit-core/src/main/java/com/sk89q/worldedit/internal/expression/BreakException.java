@@ -25,9 +25,12 @@ package com.sk89q.worldedit.internal.expression;
  */
 public class BreakException extends RuntimeException {
 
+    public static final BreakException BREAK = new BreakException(false);
+    public static final BreakException CONTINUE = new BreakException(true);
+
     public final boolean doContinue;
 
-    public BreakException(boolean doContinue) {
+    private BreakException(boolean doContinue) {
         super(doContinue ? "'continue' encountered outside a loop" : "'break' encountered outside a loop",
             null, true, false);
 

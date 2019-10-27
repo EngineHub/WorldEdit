@@ -238,12 +238,12 @@ class EvaluatingVisitor extends ExpressionBaseVisitor<Double> {
 
     @Override
     public Double visitBreakStatement(ExpressionParser.BreakStatementContext ctx) {
-        throw new BreakException(false);
+        throw BreakException.BREAK;
     }
 
     @Override
     public Double visitContinueStatement(ExpressionParser.ContinueStatementContext ctx) {
-        throw new BreakException(true);
+        throw BreakException.CONTINUE;
     }
 
     @Override

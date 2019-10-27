@@ -19,8 +19,6 @@
 
 package com.sk89q.worldedit.internal.expression;
 
-import com.sk89q.worldedit.internal.expression.ExpressionException;
-
 /**
  * Thrown when there's a problem during expression evaluation.
  */

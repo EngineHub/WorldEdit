@@ -26,6 +26,7 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.antlr.ExpressionLexer;
 import com.sk89q.worldedit.antlr.ExpressionParser;
+import com.sk89q.worldedit.internal.expression.invoke.ExpressionCompiler;
 import com.sk89q.worldedit.session.request.Request;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
@@ -83,9 +84,10 @@ public class Expression {
 
     private final SlotTable slots = new SlotTable();
     private final List<String> providedSlots;
-    private ExpressionParser.AllStatementsContext root;
+    private final ExpressionParser.AllStatementsContext root;
     private final SetMultimap<String, MethodHandle> functions = Functions.getFunctionMap();
     private ExpressionEnvironment environment;
+    private final CompiledExpression compiledExpression;
 
     public static Expression compile(String expression, String... variableNames) throws ExpressionException {
         return new Expression(expression, variableNames);
@@ -119,6 +121,7 @@ public class Expression {
             throw new ParserException(parser.getState(), e);
         }
         ParseTreeWalker.DEFAULT.walk(new ExpressionValidator(slots.keySet(), functions), root);
+        this.compiledExpression = new ExpressionCompiler().compileExpression(root, functions);
     }
 
     public double evaluate(double... values) throws EvaluationException {
@@ -177,7 +180,7 @@ public class Expression {
     private Double evaluateRoot() throws EvaluationException {
         pushInstance();
         try {
-            return root.accept(new EvaluatingVisitor(slots, functions));
+            return compiledExpression.execute(new ExecutionData(slots, functions));
         } finally {
             popInstance();
         }
