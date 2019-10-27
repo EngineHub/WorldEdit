@@ -92,7 +92,6 @@ class ExpressionTest extends BaseExpressionTest {
         {
             ExpressionException e = assertThrows(ExpressionException.class,
                 () -> compile("rotate(1, 2, 3)"));
-            e.printStackTrace();
             assertEquals(7, e.getPosition(), "Error position");
         }
 
