@@ -113,7 +113,7 @@ public class ExpandCommands {
             session.getRegionSelector(player.getWorld()).explainRegionAdjust(player, session);
             int changeSize = newSize - oldSize;
             player.printInfo(
-                    TranslatableComponent.of(pluraliseI18n("worldedit.expand.expanded.vert", changeSize), TextComponent.of(changeSize))
+                    TranslatableComponent.of("worldedit.expand.expanded.vert", TextComponent.of(changeSize))
             );
         } catch (RegionOperationException e) {
             player.printError(TextComponent.of(e.getMessage()));
@@ -152,7 +152,7 @@ public class ExpandCommands {
         session.getRegionSelector(world).explainRegionAdjust(actor, session);
 
         int changeSize = newSize - oldSize;
-        actor.printInfo(TranslatableComponent.of(pluraliseI18n("worldedit.expand.expanded", changeSize), TextComponent.of(changeSize)));
+        actor.printInfo(TranslatableComponent.of("worldedit.expand.expanded", TextComponent.of(changeSize)));
     }
 
 }

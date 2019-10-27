@@ -87,7 +87,7 @@ public class FlatRegionVisitor implements Operation {
     @Override
     public Iterable<Component> getStatusMessages() {
         return Lists.newArrayList(TranslatableComponent.of(
-                pluraliseI18n("worldedit.operation.affected.column", getAffected()),
+                "worldedit.operation.affected.column",
                 TextComponent.of(getAffected())
         ).color(TextColor.LIGHT_PURPLE));
     }
