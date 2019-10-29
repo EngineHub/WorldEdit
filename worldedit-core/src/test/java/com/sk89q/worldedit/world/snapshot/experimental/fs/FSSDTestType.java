@@ -26,6 +26,7 @@ import com.sk89q.worldedit.world.snapshot.experimental.Snapshot;
 import org.junit.jupiter.api.DynamicNode;
 import org.junit.jupiter.api.DynamicTest;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.FileSystems;
@@ -126,12 +127,12 @@ enum FSSDTestType {
             return ImmutableList.of(
                 dynamicContainer("world dir",
                     singleSnapTest(context,
-                        root.relativize(timestampedDir) + "/" + WORLD_ALPHA,
+                        root.relativize(timestampedDir) + File.separator + WORLD_ALPHA,
                         TIME_ONE)
                 ),
                 dynamicContainer("world archive",
                     singleSnapTest(context,
-                        root.relativize(timestampedDir) + "/" + WORLD_BETA + ".zip",
+                        root.relativize(timestampedDir) + File.separator + WORLD_BETA + ".zip",
                         TIME_ONE)
                 )
             );
@@ -155,7 +156,7 @@ enum FSSDTestType {
             return ImmutableList.of(
                 dynamicContainer("world dir",
                     singleSnapTest(context,
-                        root.relativize(timestampedArchive) + "/" + WORLD_ALPHA,
+                        root.relativize(timestampedArchive) + File.separator + WORLD_ALPHA,
                         TIME_ONE)
                 )
             );
@@ -174,12 +175,12 @@ enum FSSDTestType {
             return ImmutableList.of(
                 dynamicContainer("world dir",
                     singleSnapTest(context,
-                        root.relativize(timestampedDirA) + "/" + WORLD_ALPHA,
+                        root.relativize(timestampedDirA) + File.separator + WORLD_ALPHA,
                         TIME_ONE)
                 ),
                 dynamicContainer("world archive",
                     singleSnapTest(context,
-                        root.relativize(timestampedDirB) + "/" + WORLD_BETA + ".zip",
+                        root.relativize(timestampedDirB) + File.separator + WORLD_BETA + ".zip",
                         TIME_ONE)
                 )
             );
