@@ -46,7 +46,7 @@ class MorePathsTest {
     @Test
     void testAbsolute() {
         assertEquals(
-            paths("/a", "/a/b", "/a/b/c"),
+            paths("/", "/a", "/a/b", "/a/b/c"),
             MorePaths.iterPaths(Paths.get("/a/b/c")).collect(toList())
         );
     }
@@ -54,7 +54,7 @@ class MorePathsTest {
     @Test
     void testEmpty() {
         assertEquals(
-            paths(),
+            paths(""),
             MorePaths.iterPaths(Paths.get("")).collect(toList())
         );
     }

@@ -19,10 +19,13 @@
 
 package com.sk89q.worldedit.util.io.file;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Streams;
 
 import java.nio.file.Path;
+import java.util.ArrayDeque;
 import java.util.Arrays;
+import java.util.Deque;
 import java.util.Spliterator;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -33,15 +36,15 @@ public class MorePaths {
      * Starting with the first path element, add elements until reaching this path.
      */
     public static Stream<Path> iterPaths(Path path) {
-        return IntStream.range(1, path.getNameCount() + 1)
-            .mapToObj(end -> {
-                Path subPath = path.subpath(0, end);
-                if (path.isAbsolute()) {
-                    subPath = subPath.getFileSystem().getPath("/").resolve(subPath);
-                }
-                return subPath;
-            })
-            .filter(p -> !p.toString().isEmpty());
+        Deque<Path> parents = new ArrayDeque<>(path.getNameCount());
+        // Push parents to the front of the stack, so the "root" is at the front
+        Path next = path;
+        while (next != null) {
+            parents.addFirst(next);
+            next = next.getParent();
+        }
+        // now just iterate straight over them
+        return ImmutableList.copyOf(parents).stream();
     }
 
     /**
