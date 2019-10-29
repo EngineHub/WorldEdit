@@ -33,6 +33,11 @@ import static com.sk89q.worldedit.util.collection.MoreStreams.takeWhile;
 public interface SnapshotDatabase {
 
     /**
+     * Get the URI scheme handled by this database.
+     */
+    String getScheme();
+
+    /**
      * Get a snapshot by name.
      *
      * @param name the name of the snapshot

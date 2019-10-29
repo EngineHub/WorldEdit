@@ -20,6 +20,7 @@
 package com.sk89q.worldedit.world.snapshot.experimental.fs;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.net.UrlEscapers;
 import com.sk89q.worldedit.util.function.IORunnable;
 import com.sk89q.worldedit.util.io.Closer;
 import com.sk89q.worldedit.util.io.file.ArchiveNioSupport;
@@ -59,6 +60,8 @@ public class FileSystemSnapshotDatabase implements SnapshotDatabase {
 
     private static final Logger logger = LoggerFactory.getLogger(FileSystemSnapshotDatabase.class);
 
+    private static final String SCHEME = "snapfs";
+
     private static final List<SnapshotDateTimeParser> DATE_TIME_PARSERS =
         new ImmutableList.Builder<SnapshotDateTimeParser>()
             .add(FileNameDateTimeParser.getInstance())
@@ -76,6 +79,10 @@ public class FileSystemSnapshotDatabase implements SnapshotDatabase {
             .map(parser -> parser.detectDateTime(path))
             .filter(Objects::nonNull)
             .findFirst();
+    }
+
+    public static URI createUri(String name) {
+        return URI.create(SCHEME + ":" + UrlEscapers.urlFragmentEscaper().escape(name));
     }
 
     public static FileSystemSnapshotDatabase maybeCreate(
@@ -98,7 +105,7 @@ public class FileSystemSnapshotDatabase implements SnapshotDatabase {
     private SnapshotInfo createSnapshotInfo(Path fullPath, Path realPath) {
         // Try full for parsing out of file name, real for parsing mod time.
         ZonedDateTime date = tryParseDateInternal(fullPath).orElseGet(() -> tryParseDate(realPath));
-        return SnapshotInfo.create(MorePaths.toRelativeUri(fullPath), date);
+        return SnapshotInfo.create(createUri(fullPath.toString()), date);
     }
 
     private Snapshot createSnapshot(Path fullPath, Path realPath, @Nullable IORunnable closeCallback) {
@@ -112,11 +119,17 @@ public class FileSystemSnapshotDatabase implements SnapshotDatabase {
     }
 
     @Override
+    public String getScheme() {
+        return SCHEME;
+    }
+
+    @Override
     public Optional<Snapshot> getSnapshot(URI name) throws IOException {
-        if (!name.getScheme().equals(root.getFileSystem().provider().getScheme())) {
+        if (!name.getScheme().equals(SCHEME)) {
             return Optional.empty();
         }
-        Path rawResolved = root.resolve(name.getPath());
+        // drop the / in the path to make it absolute
+        Path rawResolved = root.resolve(name.getSchemeSpecificPart());
         // Catch trickery with paths:
         Path realPath = rawResolved.normalize();
         if (!realPath.startsWith(root)) {

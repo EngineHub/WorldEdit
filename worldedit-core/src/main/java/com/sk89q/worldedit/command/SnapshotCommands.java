@@ -86,8 +86,7 @@ public class SnapshotCommands {
                 while (newName.startsWith("/")) {
                     newName = newName.substring(1);
                 }
-                return ((FileSystemSnapshotDatabase) config.snapshotDatabase).getRoot()
-                    .resolve(newName).toUri();
+                return FileSystemSnapshotDatabase.createUri(newName);
             }
         }
         return URI.create(name);

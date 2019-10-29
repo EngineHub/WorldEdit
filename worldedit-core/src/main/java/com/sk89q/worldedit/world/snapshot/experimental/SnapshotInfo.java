@@ -47,8 +47,9 @@ public final class SnapshotInfo implements Comparable<SnapshotInfo> {
     }
 
     public String getDisplayName() {
-        if (name.getScheme().equals("file")) {
-            return name.getPath().substring(1);
+        if (name.getScheme().equals("snapfs")) {
+            // Stored raw as the scheme specific part
+            return name.getSchemeSpecificPart();
         }
         return name.toString();
     }

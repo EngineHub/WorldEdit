@@ -55,7 +55,7 @@ class FSSDContext {
     }
 
     URI nameUri(String name) {
-        return db.getRoot().resolve(name).toUri();
+        return FileSystemSnapshotDatabase.createUri(name);
     }
 
     Snapshot requireSnapshot(String name) throws IOException {
