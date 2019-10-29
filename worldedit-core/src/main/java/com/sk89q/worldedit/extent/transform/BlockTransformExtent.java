@@ -174,7 +174,7 @@ public class BlockTransformExtent extends AbstractDelegateExtent {
                         } else if ("right".equals(value)) {
                             newValue = "left";
                         }
-                        if (newValue != null) {
+                        if (newValue != null && enumProp.getValues().contains(newValue)) {
                             result = result.with(enumProp, newValue);
                         }
                     }
@@ -193,7 +193,7 @@ public class BlockTransformExtent extends AbstractDelegateExtent {
                         } else if ("inner_right".equals(value)) {
                             newValue = "inner_left";
                         }
-                        if (newValue != null) {
+                        if (newValue != null && enumProp.getValues().contains(newValue)) {
                             result = result.with(enumProp, newValue);
                         }
                     }
