@@ -373,9 +373,9 @@ public class RegionCommands {
 
         if (moveSelection) {
             try {
-                final BlockVector3 size = region.getMaximumPoint().subtract(region.getMinimumPoint());
+                final BlockVector3 size = region.getMaximumPoint().subtract(region.getMinimumPoint()).add(1, 1, 1);
 
-                final BlockVector3 shiftVector = direction.toVector3().multiply(count * (Math.abs(direction.dot(size)) + 1)).toBlockPoint();
+                final BlockVector3 shiftVector = direction.multiply(size).multiply(count);
                 region.shift(shiftVector);
 
                 session.getRegionSelector(world).learnChanges();
