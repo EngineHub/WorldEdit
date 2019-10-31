@@ -65,6 +65,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.world.WorldInitEvent;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -496,6 +497,10 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
             int firstSpace = buffer.indexOf(' ');
             if (firstSpace < 0) return;
             final String label = buffer.substring(0, firstSpace);
+            Plugin owner = server.getDynamicCommands().getCommandOwner(label);
+            if (owner != WorldEditPlugin.this) {
+                return;
+            }
             final Optional<org.enginehub.piston.Command> command
                     = WorldEdit.getInstance().getPlatformManager().getPlatformCommandManager().getCommandManager().getCommand(label);
             if (!command.isPresent()) return;
