@@ -289,7 +289,7 @@ public class GeneralCommands {
         }
 
         WorldEditAsyncCommandBuilder.createAndSendMessage(actor, new ItemSearcher(search, blocksOnly, itemsOnly, page),
-                "(Please wait... searching items.)");
+                TranslatableComponent.of("worldedit.searchitem.searching"));
     }
 
     private static class ItemSearcher implements Callable<Component> {

@@ -53,6 +53,7 @@
     "worldedit.toggleplace.player": "Now placing at the block you stand in.",
     "worldedit.searchitem.too-short": "Enter a longer search string (len > 2).",
     "worldedit.searchitem.b-and-i": "You cannot use both the 'b' and 'i' flags simultaneously.",
+    "worldedit.searchitem.searching": "(Please wait... searching items.)",
     "worldedit.watchdog.no-hook": "This platform has no watchdog hook.",
     "worldedit.watchdog.active.already": "Watchdog hook already active.",
     "worldedit.watchdog.inactive.already": "Watchdog hook already inactive.",
@@ -83,11 +84,18 @@
     "worldedit.restore.block-place-error": "Last error: {0}",
 
     "worldedit.snapshot.use.newest": "Now using newest snapshot.",
+    "worldedit.snapshot.use": "Snapshot set to: {0}",
+    "worldedit.snapshot.none-before": "Couldn't find a snapshot before {0}.",
+    "worldedit.snapshot.none-after": "Couldn't find a snapshot after {0}.",
+    "worldedit.snapshot.index-above-0": "Invalid index, must be equal or higher then 1.",
+    "worldedit.snapshot.index-oob": "Invalid index, must be between 1 and {0}.",
 
     "worldedit.schematic.unknown-format": "Unknown schematic format: {0}.",
     "worldedit.schematic.load.does-not-exist": "Schematic {0} does not exist!",
+    "worldedit.schematic.load.loading": "(Please wait... loading schematic.)",
     "worldedit.schematic.save.already-exists": "That schematic already exists. Use the -f flag to overwrite it.",
     "worldedit.schematic.save.failed-directory": "Could not create folder for schematics!",
+    "worldedit.schematic.save.saving": "(Please wait... saving schematic.)",
     "worldedit.schematic.delete.does-not-exist": "Schematic {0} does not exist!",
     "worldedit.schematic.delete.failed": "Deletion of {0} failed! Is it read-only?",
     "worldedit.schematic.delete.deleted": "{0} has been deleted.",
@@ -133,6 +141,11 @@
     "worldedit.select.convex.limit-message": "{0} points maximum.",
     "worldedit.select.convex.description": "Select a convex polyhedral",
     "worldedit.select.default-set": "Your default region selector is now {0}.",
+
+    "worldedit.chunkinfo.chunk": "Chunk: {0}, {1}",
+    "worldedit.chunkinfo.old-filename": "Old format: {0}",
+    "worldedit.chunkinfo.mcregion-filename": "McRegion: region/{0}",
+    "worldedit.listchunks.listfor": "Listing chunks for: {0}",
 
     "worldedit.drain.drained": "{0} blocks have been drained.",
     "worldedit.fill.created": "{0} blocks have been filled.",
@@ -215,8 +228,12 @@
     "worldedit.version.version": "WorldEdit version {0}",
 
     "worldedit.command.time-elapsed": "{0}s elapsed (history: {1} changed; {2} blocks/sec).",
+    "worldedit.command.permissions": "You are not permitted to do that. Are you in the right mode?",
+    "worldedit.command.player-only": "This command must be used with a player.",
+    "worldedit.command.error.report": "Please report this error: [See console]",
     "worldedit.pastebin.uploading": "(Please wait... sending output to pastebin...)",
     "worldedit.session.cant-find-session": "Unable to find session for {0}",
+    "worldedit.platform.no-file-dialog": "File dialogs are not supported in your environment.",
 
     "worldedit.tool.max-block-changes": "Max blocks change limit reached.",
     "worldedit.tool.no-block": "No block in sight!",
@@ -259,6 +276,15 @@
     "worldedit.tool.size.set": "Brush size set.",
     "worldedit.tool.tracemask.set": "Trace mask set.",
     "worldedit.tool.tracemask.disabled": "Trace mask disabled.",
+
+    "worldedit.execute.script-permissions": "You don't have permission to use that script.",
+    "worldedit.executelast.no-script": "Use /cs with a script name first.",
+    "worldedit.script.read-error": "Script read error: {0}",
+    "worldedit.script.unsupported": "Only .js scripts are currently supported",
+    "worldedit.script.file-not-found": "Script does not exist: {0}",
+    "worldedit.script.no-script-engine": "Failed to find an installed script engine.\nPlease see https://worldedit.enginehub.org/en/latest/usage/other/craftscripts/",
+    "worldedit.script.failed": "Failed to execute: {0}",
+    "worldedit.script.failed-console": "Failed to execute (see console): {0}",
 
     "worldedit.operation.affected.biome": "{0} biomes affected",
     "worldedit.operation.affected.block": "{0} blocks affected",

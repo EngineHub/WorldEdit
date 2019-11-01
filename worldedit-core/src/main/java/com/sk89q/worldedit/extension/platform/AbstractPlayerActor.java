@@ -35,6 +35,7 @@ import com.sk89q.worldedit.util.HandSide;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.TargetBlock;
 import com.sk89q.worldedit.util.auth.AuthorizationException;
+import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;
@@ -490,13 +491,13 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
 
     @Override
     public File openFileOpenDialog(String[] extensions) {
-        printError("File dialogs are not supported in your environment.");
+        printError(TranslatableComponent.of("worldedit.platform.no-file-dialog"));
         return null;
     }
 
     @Override
     public File openFileSaveDialog(String[] extensions) {
-        printError("File dialogs are not supported in your environment.");
+        printError(TranslatableComponent.of("worldedit.platform.no-file-dialog"));
         return null;
     }
 
@@ -545,7 +546,6 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
 
     }
 
-    @SuppressWarnings("CloneDoesntCallSuperClone")
     @Override
     public Object clone() throws CloneNotSupportedException {
         throw new CloneNotSupportedException("Not supported");
