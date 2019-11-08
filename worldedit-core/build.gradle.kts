@@ -26,7 +26,6 @@ dependencies {
     "compile"("com.google.code.gson:gson:2.8.0")
     "compile"("org.slf4j:slf4j-api:1.7.26")
     "compile"("it.unimi.dsi:fastutil:8.2.1")
-    "compile"("org.ow2.asm:asm:6.2")
 
     val antlrVersion = "4.7.2"
     "antlr"("org.antlr:antlr4:$antlrVersion")
