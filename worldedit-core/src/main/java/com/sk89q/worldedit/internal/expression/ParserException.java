@@ -17,34 +17,31 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.internal.expression.runtime;
+package com.sk89q.worldedit.internal.expression;
 
 /**
- * A break or continue statement.
+ * Thrown when the parser encounters a problem.
  */
-public class Break extends Node {
+public class ParserException extends ExpressionException {
 
-    boolean doContinue;
-
-    public Break(int position, boolean doContinue) {
-        super(position);
-
-        this.doContinue = doContinue;
+    public ParserException(int position) {
+        super(position, getPrefix(position));
     }
 
-    @Override
-    public double getValue() throws EvaluationException {
-        throw new BreakException(doContinue);
+    public ParserException(int position, String message, Throwable cause) {
+        super(position, getPrefix(position) + ": " + message, cause);
     }
 
-    @Override
-    public char id() {
-        return 'b';
+    public ParserException(int position, String message) {
+        super(position, getPrefix(position) + ": " + message);
     }
 
-    @Override
-    public String toString() {
-        return doContinue ? "continue" : "break";
+    public ParserException(int position, Throwable cause) {
+        super(position, getPrefix(position), cause);
+    }
+
+    private static String getPrefix(int position) {
+        return position < 0 ? "Parser error" : ("Parser error at " + (position + 1));
     }
 
 }

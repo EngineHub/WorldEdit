@@ -17,38 +17,15 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.internal.expression.runtime;
+package com.sk89q.worldedit.internal.expression;
 
-import com.sk89q.worldedit.internal.expression.Expression;
-import com.sk89q.worldedit.internal.expression.parser.ParserException;
+import org.antlr.v4.runtime.BaseErrorListener;
+import org.antlr.v4.runtime.RecognitionException;
+import org.antlr.v4.runtime.Recognizer;
 
-/**
- * A node in the execution tree of an expression.
- */
-public abstract class Node implements RValue {
-
-    private final int position;
-
-    public Node(int position) {
-        this.position = position;
-    }
-
+class ParserErrorListener extends BaseErrorListener {
     @Override
-    public abstract String toString();
-
-    @Override
-    public RValue optimize() throws EvaluationException {
-        return this;
+    public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol, int line, int charPositionInLine, String msg, RecognitionException e) {
+        throw new ParserException(charPositionInLine, msg);
     }
-
-    @Override
-    public final int getPosition() {
-        return position;
-    }
-
-    @Override
-    public RValue bindVariables(Expression expression, boolean preferLValue) throws ParserException {
-        return this;
-    }
-
 }

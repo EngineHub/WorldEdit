@@ -17,44 +17,31 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.internal.expression.runtime;
-
-import com.sk89q.worldedit.internal.expression.Expression;
-import com.sk89q.worldedit.internal.expression.parser.ParserException;
+package com.sk89q.worldedit.internal.expression;
 
 /**
- * A return statement.
+ * Thrown when the lexer encounters a problem.
  */
-public class Return extends Node {
+public class LexerException extends ExpressionException {
 
-    RValue value;
-
-    public Return(int position, RValue value) {
-        super(position);
-
-        this.value = value;
+    public LexerException(int position) {
+        super(position, getPrefix(position));
     }
 
-    @Override
-    public double getValue() throws EvaluationException {
-        throw new ReturnException(value.getValue());
+    public LexerException(int position, String message, Throwable cause) {
+        super(position, getPrefix(position) + ": " + message, cause);
     }
 
-    @Override
-    public char id() {
-        return 'r';
+    public LexerException(int position, String message) {
+        super(position, getPrefix(position) + ": " + message);
     }
 
-    @Override
-    public String toString() {
-        return "return " + value;
+    public LexerException(int position, Throwable cause) {
+        super(position, getPrefix(position), cause);
     }
 
-    @Override
-    public RValue bindVariables(Expression expression, boolean preferLValue) throws ParserException {
-        value = value.bindVariables(expression, false);
-
-        return this;
+    private static String getPrefix(int position) {
+        return position < 0 ? "Lexer error" : ("Lexer error at " + (position + 1));
     }
 
 }

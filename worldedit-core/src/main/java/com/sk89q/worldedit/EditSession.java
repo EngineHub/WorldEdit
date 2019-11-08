@@ -80,8 +80,8 @@ import com.sk89q.worldedit.history.changeset.BlockOptimizedHistory;
 import com.sk89q.worldedit.history.changeset.ChangeSet;
 import com.sk89q.worldedit.internal.expression.Expression;
 import com.sk89q.worldedit.internal.expression.ExpressionException;
-import com.sk89q.worldedit.internal.expression.runtime.ExpressionTimeoutException;
-import com.sk89q.worldedit.internal.expression.runtime.RValue;
+import com.sk89q.worldedit.internal.expression.ExpressionTimeoutException;
+import com.sk89q.worldedit.internal.expression.LocalSlot.Variable;
 import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.MathUtils;
@@ -1989,8 +1989,10 @@ public class EditSession implements Extent, AutoCloseable {
         final Expression expression = Expression.compile(expressionString, "x", "y", "z", "type", "data");
         expression.optimize();
 
-        final RValue typeVariable = expression.getVariable("type", false);
-        final RValue dataVariable = expression.getVariable("data", false);
+        final Variable typeVariable = expression.getSlots().getVariable("type")
+            .orElseThrow(IllegalStateException::new);
+        final Variable dataVariable = expression.getSlots().getVariable("data")
+            .orElseThrow(IllegalStateException::new);
 
         final WorldEditExpressionEnvironment environment = new WorldEditExpressionEnvironment(this, unit, zero);
         expression.setEnvironment(environment);
@@ -2052,9 +2054,12 @@ public class EditSession implements Extent, AutoCloseable {
         final Expression expression = Expression.compile(expressionString, "x", "y", "z");
         expression.optimize();
 
-        final RValue x = expression.getVariable("x", false);
-        final RValue y = expression.getVariable("y", false);
-        final RValue z = expression.getVariable("z", false);
+        final Variable x = expression.getSlots().getVariable("x")
+            .orElseThrow(IllegalStateException::new);
+        final Variable y = expression.getSlots().getVariable("y")
+            .orElseThrow(IllegalStateException::new);
+        final Variable z = expression.getSlots().getVariable("z")
+            .orElseThrow(IllegalStateException::new);
 
         final WorldEditExpressionEnvironment environment = new WorldEditExpressionEnvironment(this, unit, zero);
         expression.setEnvironment(environment);

@@ -23,7 +23,7 @@ package com.sk89q.worldedit.internal.expression;
  * Thrown when there's a problem during any stage of the expression
  * compilation or evaluation.
  */
-public class ExpressionException extends Exception {
+public class ExpressionException extends RuntimeException {
 
     private final int position;
 
