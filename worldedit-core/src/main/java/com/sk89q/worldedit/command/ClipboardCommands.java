@@ -140,6 +140,8 @@ public class ClipboardCommands {
                           boolean atOrigin,
                       @Switch(name = 's', desc = "Select the region after pasting")
                           boolean selectPasted,
+                      @Switch(name = 'n', desc = "No paste, select only. (Implies -s)")
+                          boolean onlySelect,
                       @Switch(name = 'e', desc = "Paste entities if available")
                           boolean pasteEntities,
                       @Switch(name = 'b', desc = "Paste biomes if available")
@@ -151,19 +153,23 @@ public class ClipboardCommands {
         ClipboardHolder holder = session.getClipboard();
         Clipboard clipboard = holder.getClipboard();
         Region region = clipboard.getRegion();
+        List<String> messages = Lists.newArrayList();
 
         BlockVector3 to = atOrigin ? clipboard.getOrigin() : session.getPlacementPosition(actor);
-        Operation operation = holder
-                .createPaste(editSession)
-                .to(to)
-                .ignoreAirBlocks(ignoreAirBlocks)
-                .copyBiomes(pasteBiomes)
-                .copyEntities(pasteEntities)
-                .maskSource(sourceMask)
-                .build();
-        Operations.completeLegacy(operation);
+        if (!onlySelect) {
+            Operation operation = holder
+                    .createPaste(editSession)
+                    .to(to)
+                    .ignoreAirBlocks(ignoreAirBlocks)
+                    .copyBiomes(pasteBiomes)
+                    .copyEntities(pasteEntities)
+                    .maskSource(sourceMask)
+                    .build();
+            Operations.completeLegacy(operation);
+            operation.addStatusMessages(messages);
+        }
 
-        if (selectPasted) {
+        if (selectPasted || onlySelect) {
             BlockVector3 clipboardOffset = clipboard.getRegion().getMinimumPoint().subtract(clipboard.getOrigin());
             Vector3 realTo = to.toVector3().add(holder.getTransform().apply(clipboardOffset.toVector3()));
             Vector3 max = realTo.add(holder.getTransform().apply(region.getMaximumPoint().subtract(region.getMinimumPoint()).toVector3()));
@@ -173,9 +179,11 @@ public class ClipboardCommands {
             selector.explainRegionAdjust(actor, session);
         }
 
-        actor.print("The clipboard has been pasted at " + to);
-        List<String> messages = Lists.newArrayList();
-        operation.addStatusMessages(messages);
+        if (onlySelect) {
+            actor.print("Selected clipboard paste region.");
+        } else {
+            actor.print("The clipboard has been pasted at " + to);
+        }
         messages.forEach(actor::print);
     }
 
