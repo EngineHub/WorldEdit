@@ -458,8 +458,8 @@ public class SelectionCommands {
 
             actor.printInfo(TranslatableComponent.of("worldedit.size.type", TextComponent.of(session.getRegionSelector(world).getTypeName())));
 
-            for (String line : session.getRegionSelector(world).getInformationLines()) {
-                actor.printInfo(TextComponent.of(line));
+            for (Component line : session.getRegionSelector(world).getSelectionInfoLines()) {
+                actor.print(line);
             }
         }
         BlockVector3 size = region.getMaximumPoint()
@@ -531,7 +531,7 @@ public class SelectionCommands {
                     BlockDistributionResult res = new BlockDistributionResult(distribution, separateStates);
                     if (!actor.isPlayer()) res.formatForConsole();
                     return res.create(finalPage);
-                }, null);
+                }, (Component) null);
     }
 
     @Command(

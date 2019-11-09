@@ -24,9 +24,12 @@ import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.selector.limit.SelectorLimits;
+import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.world.World;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 
@@ -154,6 +157,17 @@ public interface RegionSelector {
      * 
      * @return a list of lines describing the region
      */
+    @Deprecated
     List<String> getInformationLines();
 
+    /**
+     * Get lines of information about the selection.
+     *
+     * @return a list of lines describing the region.
+     */
+    default List<Component> getSelectionInfoLines() {
+        return getInformationLines().stream()
+                .map(TextComponent::of)
+                .collect(Collectors.toList());
+    }
 }
