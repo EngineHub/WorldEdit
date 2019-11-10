@@ -408,7 +408,8 @@ public class BukkitAdapter {
         checkNotNull(blockData);
         int cacheKey =
                 WorldEditPlugin.getInstance().getBukkitImplAdapter() != null
-                        ? WorldEditPlugin.getInstance().getBukkitImplAdapter().getInternalBlockStateId(blockData).orElse(blockData.getAsString().hashCode())
+                        ? WorldEditPlugin.getInstance().getBukkitImplAdapter().getInternalBlockStateId(blockData)
+                            .orElseGet(() -> blockData.getAsString().hashCode())
                         : blockData.getAsString().hashCode();
         return blockStateCache.computeIfAbsent(cacheKey, new IntFunction<BlockState>() {
             @Nullable
