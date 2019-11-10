@@ -33,6 +33,7 @@ import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.block.BlockType;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -175,6 +176,9 @@ public interface BukkitImplAdapter {
      */
     BaseItemStack adapt(ItemStack itemStack);
 
+    default OptionalInt getInternalBlockStateId(BlockData data) {
+        return OptionalInt.empty();
+    }
 
     /**
      * Retrieve the internal ID for a given state, if possible.

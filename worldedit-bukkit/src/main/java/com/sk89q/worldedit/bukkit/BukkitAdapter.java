@@ -45,6 +45,8 @@ import com.sk89q.worldedit.world.gamemode.GameMode;
 import com.sk89q.worldedit.world.gamemode.GameModes;
 import com.sk89q.worldedit.world.item.ItemType;
 import com.sk89q.worldedit.world.item.ItemTypes;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Biome;
@@ -52,10 +54,12 @@ import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.IntFunction;
 
 import javax.annotation.Nullable;
 
@@ -349,6 +353,9 @@ public class BukkitAdapter {
         return org.bukkit.entity.EntityType.fromName(entityType.getId().substring(10));
     }
 
+    private static EnumMap<Material, BlockType> materialBlockTypeCache = new EnumMap<>(Material.class);
+    private static EnumMap<Material, ItemType> materialItemTypeCache = new EnumMap<>(Material.class);
+
     /**
      * Converts a Material to a BlockType
      *
@@ -360,7 +367,13 @@ public class BukkitAdapter {
         if (!material.isBlock()) {
             throw new IllegalArgumentException(material.getKey().toString() + " is not a block!");
         }
-        return BlockTypes.get(material.getKey().toString());
+        return materialBlockTypeCache.computeIfAbsent(material, new Function<Material, BlockType>() {
+            @Nullable
+            @Override
+            public BlockType apply(@Nullable Material input) {
+                return BlockTypes.get(material.getKey().toString());
+            }
+        });
     }
 
     /**
@@ -374,10 +387,16 @@ public class BukkitAdapter {
         if (!material.isItem()) {
             throw new IllegalArgumentException(material.getKey().toString() + " is not an item!");
         }
-        return ItemTypes.get(material.getKey().toString());
+        return materialItemTypeCache.computeIfAbsent(material, new Function<Material, ItemType>() {
+            @Nullable
+            @Override
+            public ItemType apply(@Nullable Material input) {
+                return ItemTypes.get(material.getKey().toString());
+            }
+        });
     }
 
-    private static Map<String, BlockState> blockStateCache = new HashMap<>();
+    private static Int2ObjectMap<BlockState> blockStateCache = new Int2ObjectOpenHashMap<>();
 
     /**
      * Create a WorldEdit BlockState from a Bukkit BlockData
@@ -387,12 +406,16 @@ public class BukkitAdapter {
      */
     public static BlockState adapt(BlockData blockData) {
         checkNotNull(blockData);
-        return blockStateCache.computeIfAbsent(blockData.getAsString(), new Function<String, BlockState>() {
+        int cacheKey =
+                WorldEditPlugin.getInstance().getBukkitImplAdapter() != null
+                        ? WorldEditPlugin.getInstance().getBukkitImplAdapter().getInternalBlockStateId(blockData).orElse(blockData.getAsString().hashCode())
+                        : blockData.getAsString().hashCode();
+        return blockStateCache.computeIfAbsent(cacheKey, new IntFunction<BlockState>() {
             @Nullable
             @Override
-            public BlockState apply(@Nullable String input) {
+            public BlockState apply(int input) {
                 try {
-                    return WorldEdit.getInstance().getBlockFactory().parseFromInput(input, TO_BLOCK_CONTEXT).toImmutableState();
+                    return WorldEdit.getInstance().getBlockFactory().parseFromInput(blockData.getAsString(), TO_BLOCK_CONTEXT).toImmutableState();
                 } catch (InputParseException e) {
                     e.printStackTrace();
                     return null;
