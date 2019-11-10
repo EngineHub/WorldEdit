@@ -80,6 +80,7 @@ import org.enginehub.piston.annotation.CommandContainer;
 import org.enginehub.piston.annotation.param.Arg;
 import org.enginehub.piston.annotation.param.ArgFlag;
 import org.enginehub.piston.annotation.param.Switch;
+import org.enginehub.piston.exception.StopExecutionException;
 
 import java.util.List;
 import java.util.Optional;
@@ -206,7 +207,7 @@ public class SelectionCommands {
     )
     @Logging(POSITION)
     @CommandPermissions("worldedit.selection.chunk")
-    public void chunk(Player player, LocalSession session,
+    public void chunk(Actor actor, World world, LocalSession session,
                       @Arg(desc = "The chunk to select", def = "")
                           BlockVector2 coordinates,
                       @Switch(name = 's', desc = "Expand your selection to encompass all chunks that are part of it")
@@ -215,7 +216,6 @@ public class SelectionCommands {
                           boolean useChunkCoordinates) throws WorldEditException {
         final BlockVector3 min;
         final BlockVector3 max;
-        final World world = player.getWorld();
         if (expandSelection) {
             Region region = session.getSelection(world);
 
@@ -225,7 +225,7 @@ public class SelectionCommands {
             min = BlockVector3.at(min2D.getBlockX() * 16, 0, min2D.getBlockZ() * 16);
             max = BlockVector3.at(max2D.getBlockX() * 16 + 15, world.getMaxY(), max2D.getBlockZ() * 16 + 15);
 
-            player.print("Chunks selected: ("
+            actor.print("Chunks selected: ("
                     + min2D.getBlockX() + ", " + min2D.getBlockZ() + ") - ("
                     + max2D.getBlockX() + ", " + max2D.getBlockZ() + ")");
         } else {
@@ -237,13 +237,17 @@ public class SelectionCommands {
                     : ChunkStore.toChunk(coordinates.toBlockVector3());
             } else {
                 // use player loc
-                min2D = ChunkStore.toChunk(player.getBlockLocation().toVector().toBlockPoint());
+                if (actor instanceof Locatable) {
+                    min2D = ChunkStore.toChunk(((Locatable) actor).getBlockLocation().toVector().toBlockPoint());
+                } else {
+                    throw new StopExecutionException(TextComponent.of("A player or coordinates are required."));
+                }
             }
 
             min = BlockVector3.at(min2D.getBlockX() * 16, 0, min2D.getBlockZ() * 16);
             max = min.add(15, world.getMaxY(), 15);
 
-            player.print("Chunk selected: "
+            actor.print("Chunk selected: "
                     + min2D.getBlockX() + ", " + min2D.getBlockZ());
         }
 
@@ -253,11 +257,11 @@ public class SelectionCommands {
         } else {
             selector = new CuboidRegionSelector(world);
         }
-        selector.selectPrimary(min, ActorSelectorLimits.forActor(player));
-        selector.selectSecondary(max, ActorSelectorLimits.forActor(player));
+        selector.selectPrimary(min, ActorSelectorLimits.forActor(actor));
+        selector.selectSecondary(max, ActorSelectorLimits.forActor(actor));
         session.setRegionSelector(world, selector);
 
-        session.dispatchCUISelection(player);
+        session.dispatchCUISelection(actor);
 
     }
 
@@ -433,7 +437,7 @@ public class SelectionCommands {
         desc = "Get information about the selection"
     )
     @CommandPermissions("worldedit.selection.size")
-    public void size(Player player, LocalSession session,
+    public void size(Actor actor, World world, LocalSession session,
                      @Switch(name = 'c', desc = "Get clipboard info instead")
                          boolean clipboardInfo) throws WorldEditException {
         Region region;
@@ -443,23 +447,23 @@ public class SelectionCommands {
             region = clipboard.getRegion();
 
             BlockVector3 origin = clipboard.getOrigin();
-            player.print("Offset: " + origin);
+            actor.print("Offset: " + origin);
         } else {
-            region = session.getSelection(player.getWorld());
+            region = session.getSelection(world);
 
-            player.print("Type: " + session.getRegionSelector(player.getWorld()).getTypeName());
+            actor.print("Type: " + session.getRegionSelector(world).getTypeName());
 
-            for (String line : session.getRegionSelector(player.getWorld()).getInformationLines()) {
-                player.print(line);
+            for (String line : session.getRegionSelector(world).getInformationLines()) {
+                actor.print(line);
             }
         }
         BlockVector3 size = region.getMaximumPoint()
                 .subtract(region.getMinimumPoint())
                 .add(1, 1, 1);
 
-        player.print("Size: " + size);
-        player.print("Cuboid distance: " + region.getMaximumPoint().distance(region.getMinimumPoint()));
-        player.print("# of blocks: " + region.getArea());
+        actor.print("Size: " + size);
+        actor.print("Cuboid distance: " + region.getMaximumPoint().distance(region.getMinimumPoint()));
+        actor.print("# of blocks: " + region.getArea());
     }
 
 
@@ -468,11 +472,11 @@ public class SelectionCommands {
         desc = "Counts the number of blocks matching a mask"
     )
     @CommandPermissions("worldedit.analysis.count")
-    public void count(Player player, LocalSession session, EditSession editSession,
+    public void count(Actor actor, World world, LocalSession session, EditSession editSession,
                       @Arg(desc = "The mask of blocks to match")
                           Mask mask) throws WorldEditException {
-        int count = editSession.countBlocks(session.getSelection(player.getWorld()), mask);
-        player.print("Counted: " + count);
+        int count = editSession.countBlocks(session.getSelection(world), mask);
+        actor.print("Counted: " + count);
     }
 
     @Command(
@@ -480,7 +484,7 @@ public class SelectionCommands {
         desc = "Get the distribution of blocks in the selection"
     )
     @CommandPermissions("worldedit.analysis.distr")
-    public void distr(Player player, LocalSession session,
+    public void distr(Actor actor, World world, LocalSession session,
                       @Switch(name = 'c', desc = "Get the distribution of the clipboard instead")
                           boolean clipboardDistr,
                       @Switch(name = 'd', desc = "Separate blocks by state")
@@ -497,8 +501,8 @@ public class SelectionCommands {
                 Operations.completeBlindly(visitor);
                 distribution = count.getDistribution();
             } else {
-                try (EditSession editSession = session.createEditSession(player)) {
-                    distribution = editSession.getBlockDistribution(session.getSelection(player.getWorld()), separateStates);
+                try (EditSession editSession = session.createEditSession(actor)) {
+                    distribution = editSession.getBlockDistribution(session.getSelection(world), separateStates);
                 }
             }
             session.setLastDistribution(distribution);
@@ -506,19 +510,23 @@ public class SelectionCommands {
         } else {
             distribution = session.getLastDistribution();
             if (distribution == null) {
-                player.printError("No previous distribution.");
+                actor.printError("No previous distribution.");
                 return;
             }
         }
 
         if (distribution.isEmpty()) {  // *Should* always be false
-            player.printError("No blocks counted.");
+            actor.printError("No blocks counted.");
             return;
         }
 
         final int finalPage = page;
-        WorldEditAsyncCommandBuilder.createAndSendMessage(player,
-                () -> new BlockDistributionResult(distribution, separateStates).create(finalPage), null);
+        WorldEditAsyncCommandBuilder.createAndSendMessage(actor,
+                () -> {
+                    BlockDistributionResult res = new BlockDistributionResult(distribution, separateStates);
+                    if (!actor.isPlayer()) res.formatForConsole();
+                    return res.create(finalPage);
+                }, null);
     }
 
     @Command(
