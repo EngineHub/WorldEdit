@@ -312,6 +312,14 @@ public class AffineTransform implements Transform {
         }
     }
 
+    /**
+     * Returns if this affine transform is representing a horizontal flip.
+     */
+    public boolean isHorizontalFlip() {
+        // use the determinant of the x-z submatrix to check if this is a horizontal flip
+        return m00 * m22 - m02 * m20 < 0;
+    }
+
     @Override
     public String toString() {
         return String.format("Affine[%g %g %g %g, %g %g %g %g, %g %g %g %g]}", m00, m01, m02, m03, m10, m11, m12, m13, m20, m21, m22, m23);
