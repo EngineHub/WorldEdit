@@ -153,7 +153,7 @@ public class AffineTransform implements Transform {
      *
      * @return the determinant of the transform.
      */
-    public double determinant() {
+    private double determinant() {
         return m00 * (m11 * m22 - m12 * m21) - m01 * (m10 * m22 - m20 * m12)
                 + m02 * (m10 * m21 - m20 * m11);
     }
@@ -310,6 +310,14 @@ public class AffineTransform implements Transform {
         } else {
             return new CombinedTransform(this, other);
         }
+    }
+
+    /**
+     * Returns if this affine transform is representing a horizontal flip.
+     */
+    public boolean isHorizontalFlip() {
+        // use the determinant of the x-z submatrix to check if this is a horizontal flip
+        return m00 * m22 - m02 * m20 < 0;
     }
 
     @Override

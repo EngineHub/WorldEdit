@@ -165,8 +165,7 @@ public class BlockTransformExtent extends AbstractDelegateExtent {
                     }
                 } else if (property.getName().equals("type") && transform instanceof AffineTransform) {
                     // chests
-                    double determinant = ((AffineTransform) transform).determinant();
-                    if (determinant < 0) {
+                    if (((AffineTransform) transform).isHorizontalFlip()) {
                         String value = (String) block.getState(property);
                         String newValue = null;
                         if ("left".equals(value)) {
@@ -180,8 +179,7 @@ public class BlockTransformExtent extends AbstractDelegateExtent {
                     }
                 } else if (property.getName().equals("shape") && transform instanceof AffineTransform) {
                     // stairs
-                    double determinant = ((AffineTransform) transform).determinant();
-                    if (determinant < 0) {
+                    if (((AffineTransform) transform).isHorizontalFlip()) {
                         String value = (String) block.getState(property);
                         String newValue = null;
                         if ("outer_left".equals(value)) {
