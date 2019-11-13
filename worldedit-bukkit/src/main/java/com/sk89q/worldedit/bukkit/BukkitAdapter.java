@@ -59,6 +59,8 @@ import java.util.EnumMap;
 import java.util.Locale;
 import java.util.Objects;
 
+import javax.annotation.Nullable;
+
 /**
  * Adapts between Bukkit and WorldEdit equivalent objects.
  */
@@ -358,11 +360,9 @@ public class BukkitAdapter {
      * @param material The material
      * @return The blocktype
      */
+    @Nullable
     public static BlockType asBlockType(Material material) {
         checkNotNull(material);
-        if (!material.isBlock()) {
-            throw new IllegalArgumentException(material.getKey().toString() + " is not a block!");
-        }
         return materialBlockTypeCache.computeIfAbsent(material, (Function<Material, BlockType>) input -> BlockTypes.get(material.getKey().toString()));
     }
 
@@ -372,11 +372,9 @@ public class BukkitAdapter {
      * @param material The material
      * @return The itemtype
      */
+    @Nullable
     public static ItemType asItemType(Material material) {
         checkNotNull(material);
-        if (!material.isItem()) {
-            throw new IllegalArgumentException(material.getKey().toString() + " is not an item!");
-        }
         return materialItemTypeCache.computeIfAbsent(material, (Function<Material, ItemType>) input -> ItemTypes.get(material.getKey().toString()));
     }
 
