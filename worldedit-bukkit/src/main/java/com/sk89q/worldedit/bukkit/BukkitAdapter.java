@@ -21,7 +21,6 @@ package com.sk89q.worldedit.bukkit;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import com.google.common.base.Function;
 import com.sk89q.worldedit.NotABlockException;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
@@ -56,7 +55,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 
 import javax.annotation.Nullable;
@@ -363,7 +364,7 @@ public class BukkitAdapter {
     @Nullable
     public static BlockType asBlockType(Material material) {
         checkNotNull(material);
-        return materialBlockTypeCache.computeIfAbsent(material, (Function<Material, BlockType>) input -> BlockTypes.get(material.getKey().toString()));
+        return materialBlockTypeCache.computeIfAbsent(material, input -> BlockTypes.get(material.getKey().toString()));
     }
 
     /**
@@ -375,10 +376,11 @@ public class BukkitAdapter {
     @Nullable
     public static ItemType asItemType(Material material) {
         checkNotNull(material);
-        return materialItemTypeCache.computeIfAbsent(material, (Function<Material, ItemType>) input -> ItemTypes.get(material.getKey().toString()));
+        return materialItemTypeCache.computeIfAbsent(material, input -> ItemTypes.get(material.getKey().toString()));
     }
 
     private static Int2ObjectMap<BlockState> blockStateCache = new Int2ObjectOpenHashMap<>();
+    private static Map<String, BlockState> blockStateStringCache = new HashMap<>();
 
     /**
      * Create a WorldEdit BlockState from a Bukkit BlockData
@@ -388,19 +390,29 @@ public class BukkitAdapter {
      */
     public static BlockState adapt(BlockData blockData) {
         checkNotNull(blockData);
-        int cacheKey =
-                WorldEditPlugin.getInstance().getBukkitImplAdapter() != null
-                        ? WorldEditPlugin.getInstance().getBukkitImplAdapter().getInternalBlockStateId(blockData)
-                            .orElseGet(() -> blockData.getAsString().hashCode())
-                        : blockData.getAsString().hashCode();
-        return blockStateCache.computeIfAbsent(cacheKey, input -> {
-            try {
-                return WorldEdit.getInstance().getBlockFactory().parseFromInput(blockData.getAsString(), TO_BLOCK_CONTEXT).toImmutableState();
-            } catch (InputParseException e) {
-                e.printStackTrace();
-                return null;
-            }
-        });
+
+        if (WorldEditPlugin.getInstance().getBukkitImplAdapter() == null) {
+            return blockStateStringCache.computeIfAbsent(blockData.getAsString(), input -> {
+                try {
+                    return WorldEdit.getInstance().getBlockFactory().parseFromInput(input, TO_BLOCK_CONTEXT).toImmutableState();
+                } catch (InputParseException e) {
+                    e.printStackTrace();
+                    return null;
+                }
+            });
+        } else {
+            return blockStateCache.computeIfAbsent(
+                    WorldEditPlugin.getInstance().getBukkitImplAdapter().getInternalBlockStateId(blockData).orElseGet(
+                            () -> blockData.getAsString().hashCode()
+                    ), input -> {
+                        try {
+                            return WorldEdit.getInstance().getBlockFactory().parseFromInput(blockData.getAsString(), TO_BLOCK_CONTEXT).toImmutableState();
+                        } catch (InputParseException e) {
+                            e.printStackTrace();
+                            return null;
+                        }
+                    });
+        }
     }
 
     private static Int2ObjectMap<BlockData> blockDataCache = new Int2ObjectOpenHashMap<>();
@@ -413,7 +425,8 @@ public class BukkitAdapter {
      */
     public static <B extends BlockStateHolder<B>> BlockData adapt(B block) {
         checkNotNull(block);
-        int cacheKey = BlockStateIdAccess.getBlockStateId(block.toImmutableState()).orElse(block.hashCode());
+        // Should never not have an ID for this BlockState.
+        int cacheKey = BlockStateIdAccess.getBlockStateId(block.toImmutableState()).orElseGet(block::hashCode);
         return blockDataCache.computeIfAbsent(cacheKey, input -> Bukkit.createBlockData(block.getAsString())).clone();
     }
 
