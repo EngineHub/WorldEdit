@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.regions;
 
+import com.google.common.collect.Lists;
 import com.sk89q.worldedit.IncompleteRegionException;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.extension.platform.Actor;
@@ -158,7 +159,9 @@ public interface RegionSelector {
      * @return a list of lines describing the region
      */
     @Deprecated
-    List<String> getInformationLines();
+    default List<String> getInformationLines() {
+        return Lists.newArrayList();
+    };
 
     /**
      * Get lines of information about the selection.
