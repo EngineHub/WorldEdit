@@ -85,20 +85,26 @@ public class TranslationManager {
     }
 
     private Optional<Map<String, String>> loadTranslationFile(String filename) {
+        Map<String, String> baseTranslations;
+
+        try {
+            baseTranslations = parseTranslationFile(ResourceLoader.getResourceRoot("lang/" + filename));
+        } catch (IOException e) {
+            // Seem to be missing base. If the user has provided a file use that.
+            baseTranslations = new HashMap<>();
+        }
+
         File localFile = worldEdit.getWorkingDirectoryFile("lang/" + filename);
         if (localFile.exists()) {
             try {
-                return Optional.of(parseTranslationFile(localFile));
+                baseTranslations.putAll(parseTranslationFile(localFile));
             } catch (IOException e) {
-                return Optional.empty();
-            }
-        } else {
-            try {
-                return Optional.of(parseTranslationFile(ResourceLoader.getResourceRoot("lang/" + filename)));
-            } catch (IOException e) {
-                return Optional.empty();
+                // Failed to parse custom language file. Worth printing.
+                e.printStackTrace();
             }
         }
+
+        return baseTranslations.size() == 0 ? Optional.empty() : Optional.of(baseTranslations);
     }
 
     private boolean tryLoadTranslations(Locale locale) {

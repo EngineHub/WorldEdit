@@ -106,7 +106,7 @@ public class BiomeCommands {
                             })
                             .collect(Collectors.toList()));
              return paginationBox.create(page);
-        }, null);
+        }, (Component) null);
     }
 
     @Command(
