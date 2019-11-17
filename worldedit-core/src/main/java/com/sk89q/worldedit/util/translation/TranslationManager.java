@@ -76,12 +76,17 @@ public class TranslationManager {
         this.defaultLocale = defaultLocale;
     }
 
+    private Map<String, String> filterTranslations(Map<String, String> translations) {
+        translations.entrySet().removeIf(entry -> entry.getValue().isEmpty());
+        return translations;
+    }
+
     private Map<String, String> parseTranslationFile(File file) throws IOException {
-        return gson.fromJson(Files.toString(file, StandardCharsets.UTF_8), STRING_MAP_TYPE);
+        return filterTranslations(gson.fromJson(Files.toString(file, StandardCharsets.UTF_8), STRING_MAP_TYPE));
     }
 
     private Map<String, String> parseTranslationFile(URL file) throws IOException {
-        return gson.fromJson(Resources.toString(file, StandardCharsets.UTF_8), STRING_MAP_TYPE);
+        return filterTranslations(gson.fromJson(Resources.toString(file, StandardCharsets.UTF_8), STRING_MAP_TYPE));
     }
 
     private Optional<Map<String, String>> loadTranslationFile(String filename) {
@@ -112,12 +117,18 @@ public class TranslationManager {
             return false;
         }
         checkedLocales.add(locale);
+        // Make a copy of the default language file
+        Map<String, String> baseTranslations = new HashMap<>();
+        if (!locale.equals(defaultLocale)) {
+            baseTranslations.putAll(getTranslationMap(defaultLocale));
+        }
         Optional<Map<String, String>> langData = loadTranslationFile(locale.getLanguage() + "-" + locale.getCountry() + "/strings.json");
         if (!langData.isPresent()) {
             langData = loadTranslationFile(locale.getLanguage() + "/strings.json");
         }
         if (langData.isPresent()) {
-            translationMap.put(locale, langData.get());
+            baseTranslations.putAll(langData.get());
+            translationMap.put(locale, baseTranslations);
             return true;
         }
         if (locale.equals(defaultLocale)) {
