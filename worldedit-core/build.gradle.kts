@@ -95,20 +95,20 @@ if (project.hasProperty(crowdinApiKey)) {
         apiKey = "${project.property(crowdinApiKey)}"
         projectId = "worldedit-core"
         files = arrayOf(
-                object {
-                    var name = "strings.json"
-                    var source = "$projectDir/src/main/resources/lang/strings.json"
-                }
+            object {
+                var name = "strings.json"
+                var source = "${file("src/main/resources/lang/strings.json")}"
+            }
         )
     }
 
     tasks.named<DownloadTranslationsTask>("crowdinDownload") {
         apiKey = "${project.property(crowdinApiKey)}"
-        destination = "$projectDir/src/main/resources/lang"
+        destination = "${file("build/resources/main/lang")}"
         projectId = "worldedit-core"
     }
 
-    tasks.named("processResources").configure {
+    tasks.named("classes").configure {
         dependsOn("crowdinDownload")
     }
 }

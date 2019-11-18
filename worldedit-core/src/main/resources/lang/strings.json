@@ -37,7 +37,7 @@
     "worldedit.drawsel.enabled.already": "Server CUI already enabled.",
     "worldedit.limit.too-high": "Your maximum allowable limit is {0}.",
     "worldedit.limit.set": "Block change limit set to {0}.",
-    "worldedit.limit.return-to-default": " (Use //limit to go back to the default.)",
+    "worldedit.limit.return-to-default": "(Use //limit to go back to the default.)",
     "worldedit.timeout.too-high": "Your maximum allowable timeout is {0}ms.",
     "worldedit.timeout.set": "Timeout time set to {0} ms.",
     "worldedit.timeout.return-to-default": " (Use //timeout to go back to the default.)",
@@ -52,7 +52,7 @@
     "worldedit.toggleplace.pos1": "Now placing at pos #1.",
     "worldedit.toggleplace.player": "Now placing at the block you stand in.",
     "worldedit.searchitem.too-short": "Enter a longer search string (len > 2).",
-    "worldedit.searchitem.b-and-i": "You cannot use both the 'b' and 'i' flags simultaneously.",
+    "worldedit.searchitem.either-b-or-i": "You cannot use both the 'b' and 'i' flags simultaneously.",
     "worldedit.searchitem.searching": "(Please wait... searching items.)",
     "worldedit.watchdog.no-hook": "This platform has no watchdog hook.",
     "worldedit.watchdog.active.already": "Watchdog hook already active.",
@@ -323,5 +323,8 @@
 
     "worldedit.help.command-not-found": "The command '{0}' could not be found.",
     "worldedit.help.no-subcommands": "'{0}' has no sub-commands. (Maybe '{1}' is for a parameter?)",
-    "worldedit.help.subcommand-not-found": "The sub-command '{0}' under '{1}' could not be found."
+    "worldedit.help.subcommand-not-found": "The sub-command '{0}' under '{1}' could not be found.",
+
+    "worldedit.cli.stopping": "Stopping!",
+    "worldedit.cli.unknown-command": "Unknown command!"
 }

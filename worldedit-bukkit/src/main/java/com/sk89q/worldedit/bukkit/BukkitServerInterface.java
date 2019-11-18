@@ -22,6 +22,7 @@ package com.sk89q.worldedit.bukkit;
 import com.sk89q.bukkit.util.CommandInfo;
 import com.sk89q.bukkit.util.CommandRegistration;
 import com.sk89q.worldedit.LocalConfiguration;
+import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.command.util.PermissionCondition;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
@@ -174,8 +175,8 @@ public class BukkitServerInterface implements MultiUserPlatform {
                     command.getAliases().stream()
                 ).toArray(String[]::new);
                 // TODO Handle localisation correctly
-                return new CommandInfo(reduceToText(command.getUsage(), Locale.US),
-                    reduceToText(command.getDescription(), Locale.US), aliases,
+                return new CommandInfo(reduceToText(command.getUsage(), WorldEdit.getInstance().getConfiguration().defaultLocale),
+                    reduceToText(command.getDescription(), WorldEdit.getInstance().getConfiguration().defaultLocale), aliases,
                     inspector, permissionsArray);
             }).collect(Collectors.toList()));
     }

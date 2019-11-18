@@ -96,7 +96,7 @@ public class GeneralCommands {
         session.setBlockChangeLimit(limit);
         Component component = TextComponent.empty().append(TranslatableComponent.of("worldedit.limit.set", TextComponent.of(limit)));
         if (limit != config.defaultChangeLimit) {
-            component.append(TranslatableComponent.of("worldedit.limit.return-to-default", TextColor.GRAY));
+            component.append(TextComponent.space()).append(TranslatableComponent.of("worldedit.limit.return-to-default", TextColor.GRAY));
         }
         actor.printInfo(component);
     }
@@ -180,7 +180,8 @@ public class GeneralCommands {
         }
         boolean useServerCui = session.shouldUseServerCUI();
         if (drawSelection != null && drawSelection == useServerCui) {
-            player.printError(TranslatableComponent.of(useServerCui ? "worldedit.drawsel.enabled.already" : "worldedit.drawsel.disabled.already"));
+            player.printError(TranslatableComponent.of("worldedit.drawsel." + (useServerCui ? "enabled" : "disabled") + ".already"));
+
             return;
         }
         if (useServerCui) {
@@ -284,7 +285,7 @@ public class GeneralCommands {
             return;
         }
         if (blocksOnly && itemsOnly) {
-            actor.printError(TranslatableComponent.of("worldedit.searchitem.b-and-i"));
+            actor.printError(TranslatableComponent.of("worldedit.searchitem.either-b-or-i"));
             return;
         }
 

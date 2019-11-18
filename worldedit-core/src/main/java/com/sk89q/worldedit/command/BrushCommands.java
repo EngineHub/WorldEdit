@@ -118,7 +118,7 @@ public class BrushCommands {
             tool.setBrush(new SphereBrush(), "worldedit.brush.sphere");
         }
 
-        player.printInfo(TranslatableComponent.of("worldedit.brush.sphere.equip", TextComponent.of((int) radius)));
+        player.printInfo(TranslatableComponent.of("worldedit.brush.sphere.equip", TextComponent.of(String.format("%.0f", radius))));
     }
 
     @Command(

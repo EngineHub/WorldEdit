@@ -29,6 +29,7 @@ import com.sk89q.worldedit.world.snapshot.SnapshotRepository;
 import java.io.File;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Set;
 
@@ -76,6 +77,8 @@ public abstract class LocalConfiguration {
     public boolean allowSymlinks = false;
     public boolean serverSideCUI = true;
     public boolean extendedYLimit = false;
+    public String defaultLocaleName = "default";
+    public Locale defaultLocale = Locale.getDefault();
 
     protected String[] getDefaultDisallowedBlocks() {
         List<BlockType> blockTypes = Lists.newArrayList(

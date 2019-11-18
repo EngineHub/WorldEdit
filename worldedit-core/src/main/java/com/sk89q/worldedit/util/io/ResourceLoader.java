@@ -27,16 +27,19 @@ public class ResourceLoader {
     private ResourceLoader() {
     }
 
+    private static URL getResourceForgeHack(String location) throws IOException {
+        return new URL("modjar://worldedit/" + location);
+    }
+
     public static URL getResource(Class clazz, String name) throws IOException {
         URL url = clazz.getResource(name);
         if (url == null) {
             try {
-                return new URL("modjar://worldedit/" + clazz.getName().substring(0, clazz.getName().lastIndexOf('.')).replace(".", "/") + "/"
-                        + name);
+                return getResourceForgeHack(clazz.getName().substring(0, clazz.getName().lastIndexOf('.')).replace(".", "/")
+                        + "/" + name);
             } catch (Exception e) {
-                // Not forge.
+                throw new IOException("Could not find " + name);
             }
-            throw new IOException("Could not find " + name);
         }
         return url;
     }
@@ -45,11 +48,10 @@ public class ResourceLoader {
         URL url = ResourceLoader.class.getResource("/" + name);
         if (url == null) {
             try {
-                return new URL("modjar://worldedit/" + name);
+                return getResourceForgeHack(name);
             } catch (Exception e) {
-                // Not forge.
+                throw new IOException("Could not find " + name);
             }
-            throw new IOException("Could not find " + name);
         }
         return url;
     }

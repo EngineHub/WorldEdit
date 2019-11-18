@@ -22,6 +22,7 @@ package com.sk89q.worldedit.bukkit;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.extension.platform.AbstractNonPlayerActor;
 import com.sk89q.worldedit.session.SessionKey;
 import com.sk89q.worldedit.util.auth.AuthorizationException;
@@ -114,7 +115,7 @@ public class BukkitCommandSender extends AbstractNonPlayerActor {
 
     @Override
     public Locale getLocale() {
-        return Locale.US;
+        return WorldEdit.getInstance().getConfiguration().defaultLocale;
     }
 
     @Override

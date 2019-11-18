@@ -20,6 +20,7 @@
 package com.sk89q.worldedit.bukkit;
 
 import com.sk89q.bukkit.util.CommandInspector;
+import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.extension.platform.Actor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -53,7 +54,7 @@ class BukkitCommandInspector implements CommandInspector {
     public String getShortText(Command command) {
         Optional<org.enginehub.piston.Command> mapping = dispatcher.getCommand(command.getName());
         if (mapping.isPresent()) {
-            return reduceToText(mapping.get().getDescription(), Locale.US);
+            return reduceToText(mapping.get().getDescription(), WorldEdit.getInstance().getConfiguration().defaultLocale);
         } else {
             logger.warn("BukkitCommandInspector doesn't know how about the command '" + command + "'");
             return "Help text not available";
@@ -64,7 +65,7 @@ class BukkitCommandInspector implements CommandInspector {
     public String getFullText(Command command) {
         Optional<org.enginehub.piston.Command> mapping = dispatcher.getCommand(command.getName());
         if (mapping.isPresent()) {
-            return reduceToText(mapping.get().getFullHelp(), Locale.US);
+            return reduceToText(mapping.get().getFullHelp(), WorldEdit.getInstance().getConfiguration().defaultLocale);
         } else {
             logger.warn("BukkitCommandInspector doesn't know how about the command '" + command + "'");
             return "Help text not available";
