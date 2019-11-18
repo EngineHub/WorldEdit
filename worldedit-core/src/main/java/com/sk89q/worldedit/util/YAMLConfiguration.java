@@ -30,6 +30,7 @@ import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.Locale;
 
 /**
  * A less simple implementation of {@link LocalConfiguration}
@@ -125,6 +126,13 @@ public class YAMLConfiguration extends LocalConfiguration {
         shellSaveType = type.isEmpty() ? null : type;
 
         extendedYLimit = config.getBoolean("compat.extended-y-limit", false);
+
+        defaultLocaleName = config.getString("default-locale", defaultLocaleName);
+        if (defaultLocaleName.equals("default")) {
+            defaultLocale = Locale.getDefault();
+        } else {
+            defaultLocale = Locale.forLanguageTag(defaultLocaleName.replace('_', '-'));
+        }
     }
 
     public void unload() {

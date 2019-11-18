@@ -30,7 +30,10 @@ import com.sk89q.worldedit.util.formatting.text.renderer.FriendlyComponentRender
 import com.sk89q.worldedit.util.io.ResourceLoader;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -81,19 +84,15 @@ public class TranslationManager {
         return translations;
     }
 
-    private Map<String, String> parseTranslationFile(File file) throws IOException {
-        return filterTranslations(gson.fromJson(Files.toString(file, StandardCharsets.UTF_8), STRING_MAP_TYPE));
-    }
-
-    private Map<String, String> parseTranslationFile(URL file) throws IOException {
-        return filterTranslations(gson.fromJson(Resources.toString(file, StandardCharsets.UTF_8), STRING_MAP_TYPE));
+    private Map<String, String> parseTranslationFile(InputStream inputStream) {
+        return filterTranslations(gson.fromJson(new InputStreamReader(inputStream), STRING_MAP_TYPE));
     }
 
     private Optional<Map<String, String>> loadTranslationFile(String filename) {
         Map<String, String> baseTranslations;
 
         try {
-            baseTranslations = parseTranslationFile(ResourceLoader.getResourceRoot("lang/" + filename));
+            baseTranslations = parseTranslationFile(ResourceLoader.getResourceRoot("lang/" + filename).openStream());
         } catch (IOException e) {
             // Seem to be missing base. If the user has provided a file use that.
             baseTranslations = new HashMap<>();
@@ -102,7 +101,7 @@ public class TranslationManager {
         File localFile = worldEdit.getWorkingDirectoryFile("lang/" + filename);
         if (localFile.exists()) {
             try {
-                baseTranslations.putAll(parseTranslationFile(localFile));
+                baseTranslations.putAll(parseTranslationFile(new FileInputStream(localFile)));
             } catch (IOException e) {
                 // Failed to parse custom language file. Worth printing.
                 e.printStackTrace();

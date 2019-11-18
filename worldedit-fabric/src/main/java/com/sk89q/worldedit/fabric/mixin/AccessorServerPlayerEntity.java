@@ -26,6 +26,6 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 @Mixin(ServerPlayerEntity.class)
 public interface AccessorServerPlayerEntity {
 
-    @Accessor("clientLanguage")
+    @Accessor
     String getClientLanguage();
 }

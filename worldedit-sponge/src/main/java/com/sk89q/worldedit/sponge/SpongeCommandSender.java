@@ -22,6 +22,7 @@ package com.sk89q.worldedit.sponge;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.internal.cui.CUIEvent;
 import com.sk89q.worldedit.session.SessionKey;
@@ -144,7 +145,7 @@ public class SpongeCommandSender implements Actor {
 
     @Override
     public Locale getLocale() {
-        return Locale.US;
+        return WorldEdit.getInstance().getConfiguration().defaultLocale;
     }
 
     @Override

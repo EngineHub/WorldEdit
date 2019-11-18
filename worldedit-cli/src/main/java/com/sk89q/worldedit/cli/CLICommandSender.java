@@ -21,6 +21,7 @@ package com.sk89q.worldedit.cli;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.internal.cui.CUIEvent;
 import com.sk89q.worldedit.session.SessionKey;
@@ -141,7 +142,7 @@ public class CLICommandSender implements Actor {
 
     @Override
     public Locale getLocale() {
-        return Locale.getDefault();
+        return WorldEdit.getInstance().getConfiguration().defaultLocale;
     }
 
     @Override
