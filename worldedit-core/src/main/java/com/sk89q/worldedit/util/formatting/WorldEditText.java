@@ -35,7 +35,7 @@ public class WorldEditText {
     }
 
     public static Component format(Component component, Locale locale) {
-        return CONFIG_HOLDER.replace(WorldEdit.getInstance().getTranslationManager().convertText(component, locale));
+        return WorldEdit.getInstance().getTranslationManager().convertText(CONFIG_HOLDER.replace(component), locale);
     }
 
     public static String reduceToText(Component component, Locale locale) {
