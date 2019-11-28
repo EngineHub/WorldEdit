@@ -83,8 +83,7 @@ public final class LegacyMapper {
             throw new IOException("Could not find legacy.json");
         }
         String data = Resources.toString(url, Charset.defaultCharset());
-        LegacyDataFile dataFile = gson.fromJson(data, new TypeToken<LegacyDataFile>() {
-        }.getType());
+        LegacyDataFile dataFile = gson.fromJson(data, new TypeToken<LegacyDataFile>() {}.getType());
 
         DataFixer fixer = WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.WORLD_EDITING).getDataFixer();
         ParserContext parserContext = new ParserContext();
