@@ -96,19 +96,32 @@ public final class LegacyMapper {
             final String value = blockEntry.getValue();
             blockEntries.put(id, value);
 
-            try {
-                if (fixer != null) {
+            BlockState state = null;
+
+            // if fixer is available, try using that first, as some old blocks that were renamed share names with new blocks
+            if (fixer != null) {
+                try {
                     String newEntry = fixer.fixUp(DataFixer.FixTypes.BLOCK_STATE, value, 1631);
-                    BlockState state = WorldEdit.getInstance().getBlockFactory().parseFromInput(newEntry, parserContext).toImmutableState();
-                    blockToStringMap.put(state, id);
-                    stringToBlockMap.put(id, state);
-                } else {
-                    BlockState state = WorldEdit.getInstance().getBlockFactory().parseFromInput(value, parserContext).toImmutableState();
-                    blockToStringMap.put(state, id);
-                    stringToBlockMap.put(id, state);
+                    state = WorldEdit.getInstance().getBlockFactory().parseFromInput(newEntry, parserContext).toImmutableState();
+                } catch (InputParseException e) {
                 }
-            } catch (InputParseException e) {
+            }
+
+            // if it's still null, the fixer was unavailable or failed
+            if (state == null) {
+                try {
+                    state = WorldEdit.getInstance().getBlockFactory().parseFromInput(value, parserContext).toImmutableState();
+                } catch (InputParseException e) {
+                }
+            }
+
+            // if it's still null, both fixer and default failed
+            if (state == null) {
                 log.warn("Unknown block: " + value);
+            } else {
+                // it's not null so one of them succeeded, now use it
+                blockToStringMap.put(state, id);
+                stringToBlockMap.put(id, state);
             }
         }
 
