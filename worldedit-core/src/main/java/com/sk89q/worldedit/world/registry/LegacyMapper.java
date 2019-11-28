@@ -26,6 +26,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.extension.factory.BlockFactory;
 import com.sk89q.worldedit.extension.input.InputParseException;
 import com.sk89q.worldedit.extension.input.ParserContext;
 import com.sk89q.worldedit.extension.platform.Capability;
@@ -97,12 +98,13 @@ public final class LegacyMapper {
             blockEntries.put(id, value);
 
             BlockState state = null;
+            BlockFactory blockFactory = WorldEdit.getInstance().getBlockFactory();
 
             // if fixer is available, try using that first, as some old blocks that were renamed share names with new blocks
             if (fixer != null) {
                 try {
                     String newEntry = fixer.fixUp(DataFixer.FixTypes.BLOCK_STATE, value, 1631);
-                    state = WorldEdit.getInstance().getBlockFactory().parseFromInput(newEntry, parserContext).toImmutableState();
+                    state = blockFactory.parseFromInput(newEntry, parserContext).toImmutableState();
                 } catch (InputParseException e) {
                 }
             }
@@ -110,7 +112,7 @@ public final class LegacyMapper {
             // if it's still null, the fixer was unavailable or failed
             if (state == null) {
                 try {
-                    state = WorldEdit.getInstance().getBlockFactory().parseFromInput(value, parserContext).toImmutableState();
+                    state = blockFactory.parseFromInput(value, parserContext).toImmutableState();
                 } catch (InputParseException e) {
                 }
             }
