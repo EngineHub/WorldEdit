@@ -83,7 +83,8 @@ public final class LegacyMapper {
             throw new IOException("Could not find legacy.json");
         }
         String data = Resources.toString(url, Charset.defaultCharset());
-        LegacyDataFile dataFile = gson.fromJson(data, new TypeToken<LegacyDataFile>() {}.getType());
+        LegacyDataFile dataFile = gson.fromJson(data, new TypeToken<LegacyDataFile>() {
+        }.getType());
 
         DataFixer fixer = WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.WORLD_EDITING).getDataFixer();
         ParserContext parserContext = new ParserContext();
@@ -95,25 +96,20 @@ public final class LegacyMapper {
             String id = blockEntry.getKey();
             final String value = blockEntry.getValue();
             blockEntries.put(id, value);
+
             try {
-                BlockState state = WorldEdit.getInstance().getBlockFactory().parseFromInput(value, parserContext).toImmutableState();
-                blockToStringMap.put(state, id);
-                stringToBlockMap.put(id, state);
-            } catch (InputParseException e) {
-                boolean fixed = false;
                 if (fixer != null) {
                     String newEntry = fixer.fixUp(DataFixer.FixTypes.BLOCK_STATE, value, 1631);
-                    try {
-                        BlockState state = WorldEdit.getInstance().getBlockFactory().parseFromInput(newEntry, parserContext).toImmutableState();
-                        blockToStringMap.put(state, id);
-                        stringToBlockMap.put(id, state);
-                        fixed = true;
-                    } catch (InputParseException ignored) {
-                    }
+                    BlockState state = WorldEdit.getInstance().getBlockFactory().parseFromInput(newEntry, parserContext).toImmutableState();
+                    blockToStringMap.put(state, id);
+                    stringToBlockMap.put(id, state);
+                } else {
+                    BlockState state = WorldEdit.getInstance().getBlockFactory().parseFromInput(value, parserContext).toImmutableState();
+                    blockToStringMap.put(state, id);
+                    stringToBlockMap.put(id, state);
                 }
-                if (!fixed) {
-                    log.warn("Unknown block: " + value);
-                }
+            } catch (InputParseException e) {
+                log.warn("Unknown block: " + value);
             }
         }
 
