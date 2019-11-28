@@ -26,6 +26,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.extension.factory.BlockFactory;
 import com.sk89q.worldedit.extension.input.InputParseException;
 import com.sk89q.worldedit.extension.input.ParserContext;
 import com.sk89q.worldedit.extension.platform.Capability;
@@ -95,25 +96,34 @@ public final class LegacyMapper {
             String id = blockEntry.getKey();
             final String value = blockEntry.getValue();
             blockEntries.put(id, value);
-            try {
-                BlockState state = WorldEdit.getInstance().getBlockFactory().parseFromInput(value, parserContext).toImmutableState();
+
+            BlockState state = null;
+            BlockFactory blockFactory = WorldEdit.getInstance().getBlockFactory();
+
+            // if fixer is available, try using that first, as some old blocks that were renamed share names with new blocks
+            if (fixer != null) {
+                try {
+                    String newEntry = fixer.fixUp(DataFixer.FixTypes.BLOCK_STATE, value, 1631);
+                    state = blockFactory.parseFromInput(newEntry, parserContext).toImmutableState();
+                } catch (InputParseException e) {
+                }
+            }
+
+            // if it's still null, the fixer was unavailable or failed
+            if (state == null) {
+                try {
+                    state = blockFactory.parseFromInput(value, parserContext).toImmutableState();
+                } catch (InputParseException e) {
+                }
+            }
+
+            // if it's still null, both fixer and default failed
+            if (state == null) {
+                log.warn("Unknown block: " + value);
+            } else {
+                // it's not null so one of them succeeded, now use it
                 blockToStringMap.put(state, id);
                 stringToBlockMap.put(id, state);
-            } catch (InputParseException e) {
-                boolean fixed = false;
-                if (fixer != null) {
-                    String newEntry = fixer.fixUp(DataFixer.FixTypes.BLOCK_STATE, value, 1631);
-                    try {
-                        BlockState state = WorldEdit.getInstance().getBlockFactory().parseFromInput(newEntry, parserContext).toImmutableState();
-                        blockToStringMap.put(state, id);
-                        stringToBlockMap.put(id, state);
-                        fixed = true;
-                    } catch (InputParseException ignored) {
-                    }
-                }
-                if (!fixed) {
-                    log.warn("Unknown block: " + value);
-                }
             }
         }
 
