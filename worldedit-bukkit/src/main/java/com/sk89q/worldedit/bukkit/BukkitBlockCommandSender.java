@@ -53,7 +53,7 @@ public class BukkitBlockCommandSender extends AbstractNonPlayerActor implements 
         this.plugin = plugin;
         this.sender = sender;
         this.location = BukkitAdapter.adapt(sender.getBlock().getLocation());
-        this.uuid = new UUID(location.toVector().toBlockPoint().hashCode(), location.getExtent().hashCode());
+        this.uuid = new UUID("COMMAND_BLOCK".hashCode(), sender.getName().hashCode());
     }
 
     @Override
@@ -149,7 +149,7 @@ public class BukkitBlockCommandSender extends AbstractNonPlayerActor implements 
 
             @Override
             public boolean isPersistent() {
-                return false;
+                return true;
             }
 
             @Override
