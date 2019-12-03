@@ -41,6 +41,8 @@ import javax.annotation.Nullable;
 
 public class BukkitBlockCommandSender extends AbstractNonPlayerActor implements Locatable {
 
+    private static final String SESSION_PREFIX = "CMDBLK";
+
     private final BlockCommandSender sender;
     private final WorldEditPlugin plugin;
     private final Location location;
@@ -53,7 +55,7 @@ public class BukkitBlockCommandSender extends AbstractNonPlayerActor implements 
         this.plugin = plugin;
         this.sender = sender;
         this.location = BukkitAdapter.adapt(sender.getBlock().getLocation());
-        this.uuid = new UUID("COMMAND_BLOCK".hashCode(), sender.getName().hashCode());
+        this.uuid = UUID.nameUUIDFromBytes((SESSION_PREFIX + sender.getName()).getBytes());
     }
 
     @Override
