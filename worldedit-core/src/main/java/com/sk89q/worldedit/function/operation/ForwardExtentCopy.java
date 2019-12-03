@@ -22,6 +22,7 @@ package com.sk89q.worldedit.function.operation;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.entity.Entity;
@@ -51,7 +52,6 @@ import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.util.formatting.text.format.TextColor;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -343,15 +343,14 @@ public class ForwardExtentCopy implements Operation {
 
     @Override
     public Iterable<Component> getStatusMessages() {
-        List<Component> messages = new ArrayList<>();
-        messages.add(TranslatableComponent.of("worldedit.operation.affected.block",
-                TextComponent.of(affectedBlocks)).color(TextColor.LIGHT_PURPLE));
-        messages.add(TranslatableComponent.of("worldedit.operation.affected.biome",
-                TextComponent.of(affectedBiomeCols)).color(TextColor.LIGHT_PURPLE));
-        messages.add(TranslatableComponent.of("worldedit.operation.affected.entity",
-                TextComponent.of(affectedEntities)).color(TextColor.LIGHT_PURPLE));
-
-        return messages;
+        return ImmutableList.of(
+            TranslatableComponent.of("worldedit.operation.affected.block",
+                    TextComponent.of(affectedBlocks)).color(TextColor.LIGHT_PURPLE),
+            TranslatableComponent.of("worldedit.operation.affected.biome",
+                    TextComponent.of(affectedBiomeCols)).color(TextColor.LIGHT_PURPLE),
+            TranslatableComponent.of("worldedit.operation.affected.entity",
+                    TextComponent.of(affectedEntities)).color(TextColor.LIGHT_PURPLE)
+        );
     }
 
 }

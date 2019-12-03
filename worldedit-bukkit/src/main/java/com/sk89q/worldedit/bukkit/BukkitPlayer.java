@@ -33,6 +33,7 @@ import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.session.SessionKey;
 import com.sk89q.worldedit.util.HandSide;
 import com.sk89q.worldedit.util.formatting.WorldEditText;
+import com.sk89q.worldedit.util.formatting.component.TextUtils;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.adapter.bukkit.TextAdapter;
 import com.sk89q.worldedit.world.World;
@@ -219,7 +220,7 @@ public class BukkitPlayer extends AbstractPlayerActor {
 
     @Override
     public Locale getLocale() {
-        return Locale.forLanguageTag(player.getLocale().replace('_', '-'));
+        return TextUtils.getLocaleByMinecraftTag(player.getLocale());
     }
 
     @Nullable

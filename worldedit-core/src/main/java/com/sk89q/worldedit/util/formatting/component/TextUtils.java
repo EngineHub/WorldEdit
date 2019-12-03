@@ -23,6 +23,7 @@ import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 
 import java.util.List;
+import java.util.Locale;
 
 public class TextUtils {
 
@@ -45,5 +46,15 @@ public class TextUtils {
             }
         }
         return builder.build();
+    }
+
+    /**
+     * Gets a Java Locale object by the Minecraft locale tag.
+     *
+     * @param locale The Minecraft locale tag
+     * @return A Java locale
+     */
+    public static Locale getLocaleByMinecraftTag(String locale) {
+        return Locale.forLanguageTag(locale.replace('_', '-'));
     }
 }

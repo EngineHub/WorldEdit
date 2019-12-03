@@ -19,8 +19,6 @@
 
 package com.sk89q.worldedit.util.translation;
 
-import com.google.common.io.Files;
-import com.google.common.io.Resources;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
@@ -35,15 +33,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Handles translations for the plugin.
@@ -62,7 +58,7 @@ public class TranslationManager {
     private static final Gson gson = new GsonBuilder().create();
     private static final Type STRING_MAP_TYPE = new TypeToken<Map<String, String>>() {}.getType();
 
-    private final Map<Locale, Map<String, String>> translationMap = new HashMap<>();
+    private final Map<Locale, Map<String, String>> translationMap = new ConcurrentHashMap<>();
     private final FriendlyComponentRenderer<Locale> friendlyComponentRenderer = FriendlyComponentRenderer.from(
             (locale, key) -> new MessageFormat(getTranslationMap(locale).getOrDefault(key, key), locale));
     private Locale defaultLocale = Locale.ENGLISH;
@@ -95,7 +91,7 @@ public class TranslationManager {
             baseTranslations = parseTranslationFile(ResourceLoader.getResourceRoot("lang/" + filename).openStream());
         } catch (IOException e) {
             // Seem to be missing base. If the user has provided a file use that.
-            baseTranslations = new HashMap<>();
+            baseTranslations = new ConcurrentHashMap<>();
         }
 
         File localFile = worldEdit.getWorkingDirectoryFile("lang/" + filename);
@@ -117,7 +113,7 @@ public class TranslationManager {
         }
         checkedLocales.add(locale);
         // Make a copy of the default language file
-        Map<String, String> baseTranslations = new HashMap<>();
+        Map<String, String> baseTranslations = new ConcurrentHashMap<>();
         if (!locale.equals(defaultLocale)) {
             baseTranslations.putAll(getTranslationMap(defaultLocale));
         }

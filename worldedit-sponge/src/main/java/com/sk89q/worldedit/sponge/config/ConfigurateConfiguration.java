@@ -34,7 +34,6 @@ import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.util.HashSet;
-import java.util.Locale;
 
 public class ConfigurateConfiguration extends LocalConfiguration {
 
@@ -132,11 +131,6 @@ public class ConfigurateConfiguration extends LocalConfiguration {
         shellSaveType = type.equals("") ? null : type;
 
         extendedYLimit = node.getNode("compat", "extended-y-limit").getBoolean(false);
-        defaultLocaleName = node.getNode("default-locale").getString(defaultLocaleName);
-        if (defaultLocaleName.equals("default")) {
-            defaultLocale = Locale.getDefault();
-        } else {
-            defaultLocale = Locale.forLanguageTag(defaultLocaleName.replace('_', '-'));
-        }
+        setDefaultLocaleName(node.getNode("default-locale").getString(defaultLocaleName));
     }
 }

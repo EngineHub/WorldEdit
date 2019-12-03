@@ -39,7 +39,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Locale;
 import java.util.Properties;
 import java.util.Set;
 
@@ -120,12 +119,7 @@ public class PropertiesConfiguration extends LocalConfiguration {
         allowSymlinks = getBool("allow-symbolic-links", allowSymlinks);
         serverSideCUI = getBool("server-side-cui", serverSideCUI);
         extendedYLimit = getBool("extended-y-limit", extendedYLimit);
-        defaultLocaleName = getString("default-locale", defaultLocaleName);
-        if (defaultLocaleName.equals("default")) {
-            defaultLocale = Locale.getDefault();
-        } else {
-            defaultLocale = Locale.forLanguageTag(defaultLocaleName.replace('_', '-'));
-        }
+        setDefaultLocaleName(getString("default-locale", defaultLocaleName));
 
         LocalSession.MAX_HISTORY_SIZE = Math.max(15, getInt("history-size", 15));
 

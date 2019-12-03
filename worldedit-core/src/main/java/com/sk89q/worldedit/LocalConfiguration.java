@@ -20,6 +20,7 @@
 package com.sk89q.worldedit;
 
 import com.google.common.collect.Lists;
+import com.sk89q.worldedit.util.formatting.component.TextUtils;
 import com.sk89q.worldedit.util.logging.LogFormat;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.block.BlockTypes;
@@ -180,4 +181,12 @@ public abstract class LocalConfiguration {
         return item;
     }
 
+    public void setDefaultLocaleName(String localeName) {
+        this.defaultLocaleName = localeName;
+        if (localeName.equals("default")) {
+            this.defaultLocale = Locale.getDefault();
+        } else {
+            this.defaultLocale = TextUtils.getLocaleByMinecraftTag(localeName);
+        }
+    }
 }
