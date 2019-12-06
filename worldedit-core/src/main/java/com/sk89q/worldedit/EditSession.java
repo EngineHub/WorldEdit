@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit;
 
+import com.google.common.collect.Lists;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.event.extent.EditSessionEvent;
@@ -2173,6 +2174,25 @@ public class EditSession implements Extent, AutoCloseable {
         }
 
         return affected;
+    }
+
+    /**
+     * Draws a line (out of blocks) between two vectors.
+     *
+     * @param pattern The block pattern used to draw the line.
+     * @param pos1 One of the points that define the line.
+     * @param pos2 The other point that defines the line.
+     * @param radius The radius (thickness) of the line.
+     * @param filled If false, only a shell will be generated.
+     *
+     * @return number of blocks affected
+     * @throws MaxChangedBlocksException thrown if too many blocks are changed
+     * 
+     * @see #drawLine(Pattern, List, double, boolean) 
+     */
+    public int drawLine(Pattern pattern, BlockVector3 pos1, BlockVector3 pos2, double radius, boolean filled)
+            throws MaxChangedBlocksException {
+        return drawLine(pattern, Lists.newArrayList(pos1,pos2), radius, filled);
     }
 
     /**
