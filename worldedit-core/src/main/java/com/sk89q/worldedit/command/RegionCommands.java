@@ -112,7 +112,7 @@ public class RegionCommands {
 
     @Command(
         name = "/line",
-        desc = "Draws a line between cuboid selection corners or convex polyhedral selection vertices",
+        desc = "Draws line segments between cuboid selection corners or convex polyhedral selection vertices",
         descFooter = "Can only be used with a cuboid selection or a convex polyhedral selection"
     )
     @CommandPermissions("worldedit.region.line")
