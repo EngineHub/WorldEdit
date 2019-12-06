@@ -134,11 +134,10 @@ public class RegionCommands {
 
         List<BlockVector3> vectors;
 
-        if(region instanceof CuboidRegion) {
+        if (region instanceof CuboidRegion) {
             CuboidRegion cuboidregion = (CuboidRegion) region;
             vectors = Lists.newArrayList(cuboidregion.getPos1(), cuboidregion.getPos2());
-        }
-        else {
+        } else {
             ConvexPolyhedralRegion convexregion = (ConvexPolyhedralRegion) region;
             vectors = new ArrayList<>(convexregion.getVertices());
         }
