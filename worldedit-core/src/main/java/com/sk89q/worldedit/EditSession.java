@@ -19,7 +19,7 @@
 
 package com.sk89q.worldedit;
 
-import com.google.common.collect.Lists;
+import com.google.common.collect.ImmutableList;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.event.extent.EditSessionEvent;
@@ -2187,12 +2187,12 @@ public class EditSession implements Extent, AutoCloseable {
      *
      * @return number of blocks affected
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
-     * 
-     * @see #drawLine(Pattern, List, double, boolean) 
+     *
+     * @see #drawLine(Pattern, List, double, boolean)
      */
     public int drawLine(Pattern pattern, BlockVector3 pos1, BlockVector3 pos2, double radius, boolean filled)
             throws MaxChangedBlocksException {
-        return drawLine(pattern, Lists.newArrayList(pos1,pos2), radius, filled);
+        return drawLine(pattern, ImmutableList.of(pos1, pos2), radius, filled);
     }
 
     /**
@@ -2212,9 +2212,6 @@ public class EditSession implements Extent, AutoCloseable {
         Set<BlockVector3> vset = new HashSet<>();
 
         for (int i = 0; vectors.size() != 0 && i < vectors.size() - 1; i++) {
-
-            boolean notdrawn = true;
-
             BlockVector3 pos1 = vectors.get(i);
             BlockVector3 pos2 = vectors.get(i + 1);
 
@@ -2225,10 +2222,11 @@ public class EditSession implements Extent, AutoCloseable {
 
             if (dx + dy + dz == 0) {
                 vset.add(BlockVector3.at(tipx, tipy, tipz));
-                notdrawn = false;
+                continue;
             }
 
-            if (Math.max(Math.max(dx, dy), dz) == dx && notdrawn) {
+            int dMax = Math.max(Math.max(dx, dy), dz);
+            if (dMax == dx) {
                 for (int domstep = 0; domstep <= dx; domstep++) {
                     tipx = x1 + domstep * (x2 - x1 > 0 ? 1 : -1);
                     tipy = (int) Math.round(y1 + domstep * ((double) dy) / ((double) dx) * (y2 - y1 > 0 ? 1 : -1));
@@ -2236,10 +2234,7 @@ public class EditSession implements Extent, AutoCloseable {
 
                     vset.add(BlockVector3.at(tipx, tipy, tipz));
                 }
-                notdrawn = false;
-            }
-
-            if (Math.max(Math.max(dx, dy), dz) == dy && notdrawn) {
+            } else if (dMax == dy) {
                 for (int domstep = 0; domstep <= dy; domstep++) {
                     tipy = y1 + domstep * (y2 - y1 > 0 ? 1 : -1);
                     tipx = (int) Math.round(x1 + domstep * ((double) dx) / ((double) dy) * (x2 - x1 > 0 ? 1 : -1));
@@ -2247,10 +2242,7 @@ public class EditSession implements Extent, AutoCloseable {
 
                     vset.add(BlockVector3.at(tipx, tipy, tipz));
                 }
-                notdrawn = false;
-            }
-
-            if (Math.max(Math.max(dx, dy), dz) == dz && notdrawn) {
+            } else /* if (dMax == dz) */ {
                 for (int domstep = 0; domstep <= dz; domstep++) {
                     tipz = z1 + domstep * (z2 - z1 > 0 ? 1 : -1);
                     tipy = (int) Math.round(y1 + domstep * ((double) dy) / ((double) dz) * (y2-y1>0 ? 1 : -1));
@@ -2258,7 +2250,6 @@ public class EditSession implements Extent, AutoCloseable {
 
                     vset.add(BlockVector3.at(tipx, tipy, tipz));
                 }
-                notdrawn = false;
             }
         }
 

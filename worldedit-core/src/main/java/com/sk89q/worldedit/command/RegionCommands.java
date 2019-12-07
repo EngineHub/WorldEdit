@@ -20,6 +20,7 @@
 package com.sk89q.worldedit.command;
 
 import com.google.common.base.Joiner;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalSession;
@@ -135,11 +136,11 @@ public class RegionCommands {
         List<BlockVector3> vectors;
 
         if (region instanceof CuboidRegion) {
-            CuboidRegion cuboidregion = (CuboidRegion) region;
-            vectors = Lists.newArrayList(cuboidregion.getPos1(), cuboidregion.getPos2());
+            CuboidRegion cuboidRegion = (CuboidRegion) region;
+            vectors = ImmutableList.of(cuboidRegion.getPos1(), cuboidRegion.getPos2());
         } else {
-            ConvexPolyhedralRegion convexregion = (ConvexPolyhedralRegion) region;
-            vectors = new ArrayList<>(convexregion.getVertices());
+            ConvexPolyhedralRegion convexRegion = (ConvexPolyhedralRegion) region;
+            vectors = ImmutableList.copyOf(convexRegion.getVertices());
         }
 
         int blocksChanged = editSession.drawLine(pattern, vectors, thickness, !shell);
