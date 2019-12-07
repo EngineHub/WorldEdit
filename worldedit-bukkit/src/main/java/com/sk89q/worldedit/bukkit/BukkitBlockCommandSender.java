@@ -35,11 +35,14 @@ import com.sk89q.worldedit.util.formatting.text.format.TextColor;
 import org.bukkit.Material;
 import org.bukkit.command.BlockCommandSender;
 
+import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 import javax.annotation.Nullable;
 
 public class BukkitBlockCommandSender extends AbstractNonPlayerActor implements Locatable {
+
+    private static final String UUID_PREFIX = "CMD";
 
     private final BlockCommandSender sender;
     private final WorldEditPlugin plugin;
@@ -53,7 +56,7 @@ public class BukkitBlockCommandSender extends AbstractNonPlayerActor implements 
         this.plugin = plugin;
         this.sender = sender;
         this.location = BukkitAdapter.adapt(sender.getBlock().getLocation());
-        this.uuid = new UUID(location.toVector().toBlockPoint().hashCode(), location.getExtent().hashCode());
+        this.uuid = UUID.nameUUIDFromBytes((UUID_PREFIX + sender.getName()).getBytes(StandardCharsets.UTF_8));
     }
 
     @Override
@@ -134,7 +137,6 @@ public class BukkitBlockCommandSender extends AbstractNonPlayerActor implements 
     @Override
     public SessionKey getSessionKey() {
         return new SessionKey() {
-            @Nullable
             @Override
             public String getName() {
                 return sender.getName();
@@ -149,7 +151,7 @@ public class BukkitBlockCommandSender extends AbstractNonPlayerActor implements 
 
             @Override
             public boolean isPersistent() {
-                return false;
+                return true;
             }
 
             @Override
