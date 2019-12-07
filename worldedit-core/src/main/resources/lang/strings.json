@@ -182,6 +182,7 @@
     "worldedit.replace.replaced": "{0} blocks have been replaced.",
     "worldedit.stack.changed": "{0} blocks changed. Undo with //undo",
     "worldedit.regen.regenerated": "Region regenerated.",
+    "worldedit.regen.failed": "Unable to regenerate chunks. Check console for details.",
     "worldedit.walls.changed": "{0} blocks have been changed.",
     "worldedit.faces.changed": "{0} blocks have been changed.",
     "worldedit.overlay.overlaid": "{0} blocks have been overlaid.",

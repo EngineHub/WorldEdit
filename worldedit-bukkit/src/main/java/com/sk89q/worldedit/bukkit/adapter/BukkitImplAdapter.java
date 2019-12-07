@@ -20,10 +20,12 @@
 package com.sk89q.worldedit.bukkit.adapter;
 
 import com.sk89q.jnbt.CompoundTag;
+import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.world.DataFixer;
@@ -188,5 +190,16 @@ public interface BukkitImplAdapter {
      */
     default OptionalInt getInternalBlockStateId(BlockState state) {
         return OptionalInt.empty();
+    }
+
+    /**
+     * Regenerate a region in the given world, so it appears "as new".
+     * @param world the world to regen in
+     * @param region the region to regen
+     * @param session the session to use for setting blocks
+     * @return true on success, false on failure
+     */
+    default boolean regenerate(World world, Region region, EditSession session) {
+        throw new UnsupportedOperationException("This adapter does not support regeneration.");
     }
 }
