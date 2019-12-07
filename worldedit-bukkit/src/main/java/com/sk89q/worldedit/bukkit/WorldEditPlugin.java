@@ -338,7 +338,11 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
             commandLabel = commandLabel.substring(plSep + 1);
         }
 
-        String arguments = Joiner.on(" ").appendTo(new StringBuilder("/").append(commandLabel).append(" "), args).toString();
+        StringBuilder sb = new StringBuilder("/").append(commandLabel);
+        if (args.length > 0) {
+            sb.append(" ");
+        }
+        String arguments = Joiner.on(" ").appendTo(sb, args).toString();
         CommandEvent event = new CommandEvent(wrapCommandSender(sender), arguments);
         getWorldEdit().getEventBus().post(event);
 
@@ -352,7 +356,11 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
             commandLabel = commandLabel.substring(plSep + 1);
         }
 
-        String arguments = Joiner.on(" ").appendTo(new StringBuilder("/").append(commandLabel).append(" "), args).toString();
+        StringBuilder sb = new StringBuilder("/").append(commandLabel);
+        if (args.length > 0) {
+            sb.append(" ");
+        }
+        String arguments = Joiner.on(" ").appendTo(sb, args).toString();
         CommandSuggestionEvent event = new CommandSuggestionEvent(wrapCommandSender(sender), arguments);
         getWorldEdit().getEventBus().post(event);
         return CommandUtil.fixSuggestions(arguments, event.getSuggestions());
