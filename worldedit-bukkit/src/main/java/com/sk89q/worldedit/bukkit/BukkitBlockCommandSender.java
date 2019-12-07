@@ -137,7 +137,6 @@ public class BukkitBlockCommandSender extends AbstractNonPlayerActor implements 
     @Override
     public SessionKey getSessionKey() {
         return new SessionKey() {
-            @Nullable
             @Override
             public String getName() {
                 return sender.getName();

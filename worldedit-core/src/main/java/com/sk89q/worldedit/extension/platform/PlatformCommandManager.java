@@ -458,6 +458,10 @@ public final class PlatformCommandManager {
             .map(Substring::getSubstring)
             .toArray(String[]::new);
 
+        if (split[0].startsWith("worldedit:")) {
+            split[0] = split[0].substring("worldedit:".length());
+        }
+
         // No command found!
         if (!commandManager.containsCommand(split[0])) {
             return;
