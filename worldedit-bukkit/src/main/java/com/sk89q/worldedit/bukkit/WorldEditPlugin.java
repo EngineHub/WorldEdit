@@ -333,13 +333,13 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
-        // Add the command to the array because the underlying command handling
-        // code of WorldEdit expects it
-        String[] split = new String[args.length + 1];
-        System.arraycopy(args, 0, split, 1, args.length);
-        split[0] = "/" + cmd.getName();
+        int plSep = commandLabel.indexOf(":");
+        if (plSep >= 0 && plSep < commandLabel.length() + 1) {
+            commandLabel = commandLabel.substring(plSep + 1);
+        }
 
-        CommandEvent event = new CommandEvent(wrapCommandSender(sender), Joiner.on(" ").join(split));
+        String arguments = Joiner.on(" ").appendTo(new StringBuilder("/").append(commandLabel).append(" "), args).toString();
+        CommandEvent event = new CommandEvent(wrapCommandSender(sender), arguments);
         getWorldEdit().getEventBus().post(event);
 
         return true;
@@ -347,13 +347,12 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command cmd, String commandLabel, String[] args) {
-        // Add the command to the array because the underlying command handling
-        // code of WorldEdit expects it
-        String[] split = new String[args.length + 1];
-        System.arraycopy(args, 0, split, 1, args.length);
-        split[0] = "/" + cmd.getName();
+        int plSep = commandLabel.indexOf(":");
+        if (plSep >= 0 && plSep < commandLabel.length() + 1) {
+            commandLabel = commandLabel.substring(plSep + 1);
+        }
 
-        String arguments = Joiner.on(" ").join(split);
+        String arguments = Joiner.on(" ").appendTo(new StringBuilder("/").append(commandLabel).append(" "), args).toString();
         CommandSuggestionEvent event = new CommandSuggestionEvent(wrapCommandSender(sender), arguments);
         getWorldEdit().getEventBus().post(event);
         return CommandUtil.fixSuggestions(arguments, event.getSuggestions());
@@ -496,15 +495,15 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
             String buffer = event.getBuffer();
             int firstSpace = buffer.indexOf(' ');
             if (firstSpace < 0) return;
-            String label = buffer.substring(0, firstSpace);
+            String label = buffer.substring(1, firstSpace);
             Plugin owner = server.getDynamicCommands().getCommandOwner(label);
             if (owner != WorldEditPlugin.this) {
                 return;
             }
             int plSep = label.indexOf(":");
             if (plSep >= 0 && plSep < label.length() + 1) {
-                label = "/" + label.substring(plSep + 1);
-                buffer = "/" + buffer.substring(plSep + 1);
+                label = label.substring(plSep + 1);
+                buffer = "/" + buffer.substring(plSep + 2);
             }
             final Optional<org.enginehub.piston.Command> command
                     = WorldEdit.getInstance().getPlatformManager().getPlatformCommandManager().getCommandManager().getCommand(label);

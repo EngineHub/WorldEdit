@@ -56,7 +56,7 @@ public class CommandRegistration {
 
     public Plugin getCommandOwner(String label) {
         if (serverCommandMap == null) return null;
-        Command command = serverCommandMap.getCommand(label.substring(1));
+        Command command = serverCommandMap.getCommand(label);
         if (command instanceof PluginIdentifiableCommand) {
             return ((PluginIdentifiableCommand) command).getPlugin();
         }
