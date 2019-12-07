@@ -20,6 +20,7 @@
 package com.sk89q.worldedit.command;
 
 import com.google.common.base.Joiner;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalSession;
@@ -112,8 +113,8 @@ public class RegionCommands {
 
     @Command(
         name = "/line",
-        desc = "Draws a line segment between cuboid selection corners",
-        descFooter = "Can only be used with a cuboid selection"
+        desc = "Draws line segments between cuboid selection corners or convex polyhedral selection vertices",
+        descFooter = "Can only be used with a cuboid selection or a convex polyhedral selection"
     )
     @CommandPermissions("worldedit.region.line")
     @Logging(REGION)
@@ -125,16 +126,24 @@ public class RegionCommands {
                         int thickness,
                     @Switch(name = 'h', desc = "Generate only a shell")
                         boolean shell) throws WorldEditException {
-        if (!(region instanceof CuboidRegion)) {
-            actor.printError("//line only works with cuboid selections");
+        if (!((region instanceof CuboidRegion) || (region instanceof ConvexPolyhedralRegion))) {
+            actor.printError("//line only works with cuboid selections or convex polyhedral selections");
             return 0;
         }
         checkCommandArgument(thickness >= 0, "Thickness must be >= 0");
 
-        CuboidRegion cuboidregion = (CuboidRegion) region;
-        BlockVector3 pos1 = cuboidregion.getPos1();
-        BlockVector3 pos2 = cuboidregion.getPos2();
-        int blocksChanged = editSession.drawLine(pattern, pos1, pos2, thickness, !shell);
+
+        List<BlockVector3> vectors;
+
+        if (region instanceof CuboidRegion) {
+            CuboidRegion cuboidRegion = (CuboidRegion) region;
+            vectors = ImmutableList.of(cuboidRegion.getPos1(), cuboidRegion.getPos2());
+        } else {
+            ConvexPolyhedralRegion convexRegion = (ConvexPolyhedralRegion) region;
+            vectors = ImmutableList.copyOf(convexRegion.getVertices());
+        }
+
+        int blocksChanged = editSession.drawLine(pattern, vectors, thickness, !shell);
 
         actor.print(blocksChanged + " block(s) have been changed.");
         return blocksChanged;

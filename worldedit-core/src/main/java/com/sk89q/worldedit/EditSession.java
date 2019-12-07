@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit;
 
+import com.google.common.collect.ImmutableList;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.event.extent.EditSessionEvent;
@@ -2186,54 +2187,70 @@ public class EditSession implements Extent, AutoCloseable {
      *
      * @return number of blocks affected
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
+     *
+     * @see #drawLine(Pattern, List, double, boolean)
      */
     public int drawLine(Pattern pattern, BlockVector3 pos1, BlockVector3 pos2, double radius, boolean filled)
             throws MaxChangedBlocksException {
+        return drawLine(pattern, ImmutableList.of(pos1, pos2), radius, filled);
+    }
+
+    /**
+     * Draws a line (out of blocks) between two or more vectors.
+     *
+     * @param pattern The block pattern used to draw the line.
+     * @param vectors the list of vectors to draw the line between
+     * @param radius The radius (thickness) of the line.
+     * @param filled If false, only a shell will be generated.
+     *
+     * @return number of blocks affected
+     * @throws MaxChangedBlocksException thrown if too many blocks are changed
+     */
+    public int drawLine(Pattern pattern, List<BlockVector3> vectors, double radius, boolean filled)
+            throws MaxChangedBlocksException {
 
         Set<BlockVector3> vset = new HashSet<>();
-        boolean notdrawn = true;
 
-        int x1 = pos1.getBlockX(), y1 = pos1.getBlockY(), z1 = pos1.getBlockZ();
-        int x2 = pos2.getBlockX(), y2 = pos2.getBlockY(), z2 = pos2.getBlockZ();
-        int tipx = x1, tipy = y1, tipz = z1;
-        int dx = Math.abs(x2 - x1), dy = Math.abs(y2 - y1), dz = Math.abs(z2 - z1);
+        for (int i = 0; vectors.size() != 0 && i < vectors.size() - 1; i++) {
+            BlockVector3 pos1 = vectors.get(i);
+            BlockVector3 pos2 = vectors.get(i + 1);
 
-        if (dx + dy + dz == 0) {
-            vset.add(BlockVector3.at(tipx, tipy, tipz));
-            notdrawn = false;
-        }
+            int x1 = pos1.getBlockX(), y1 = pos1.getBlockY(), z1 = pos1.getBlockZ();
+            int x2 = pos2.getBlockX(), y2 = pos2.getBlockY(), z2 = pos2.getBlockZ();
+            int tipx = x1, tipy = y1, tipz = z1;
+            int dx = Math.abs(x2 - x1), dy = Math.abs(y2 - y1), dz = Math.abs(z2 - z1);
 
-        if (Math.max(Math.max(dx, dy), dz) == dx && notdrawn) {
-            for (int domstep = 0; domstep <= dx; domstep++) {
-                tipx = x1 + domstep * (x2 - x1 > 0 ? 1 : -1);
-                tipy = (int) Math.round(y1 + domstep * ((double) dy) / ((double) dx) * (y2 - y1 > 0 ? 1 : -1));
-                tipz = (int) Math.round(z1 + domstep * ((double) dz) / ((double) dx) * (z2 - z1 > 0 ? 1 : -1));
-
+            if (dx + dy + dz == 0) {
                 vset.add(BlockVector3.at(tipx, tipy, tipz));
+                continue;
             }
-            notdrawn = false;
-        }
 
-        if (Math.max(Math.max(dx, dy), dz) == dy && notdrawn) {
-            for (int domstep = 0; domstep <= dy; domstep++) {
-                tipy = y1 + domstep * (y2 - y1 > 0 ? 1 : -1);
-                tipx = (int) Math.round(x1 + domstep * ((double) dx) / ((double) dy) * (x2 - x1 > 0 ? 1 : -1));
-                tipz = (int) Math.round(z1 + domstep * ((double) dz) / ((double) dy) * (z2 - z1 > 0 ? 1 : -1));
+            int dMax = Math.max(Math.max(dx, dy), dz);
+            if (dMax == dx) {
+                for (int domstep = 0; domstep <= dx; domstep++) {
+                    tipx = x1 + domstep * (x2 - x1 > 0 ? 1 : -1);
+                    tipy = (int) Math.round(y1 + domstep * ((double) dy) / ((double) dx) * (y2 - y1 > 0 ? 1 : -1));
+                    tipz = (int) Math.round(z1 + domstep * ((double) dz) / ((double) dx) * (z2 - z1 > 0 ? 1 : -1));
 
-                vset.add(BlockVector3.at(tipx, tipy, tipz));
+                    vset.add(BlockVector3.at(tipx, tipy, tipz));
+                }
+            } else if (dMax == dy) {
+                for (int domstep = 0; domstep <= dy; domstep++) {
+                    tipy = y1 + domstep * (y2 - y1 > 0 ? 1 : -1);
+                    tipx = (int) Math.round(x1 + domstep * ((double) dx) / ((double) dy) * (x2 - x1 > 0 ? 1 : -1));
+                    tipz = (int) Math.round(z1 + domstep * ((double) dz) / ((double) dy) * (z2 - z1 > 0 ? 1 : -1));
+
+                    vset.add(BlockVector3.at(tipx, tipy, tipz));
+                }
+            } else /* if (dMax == dz) */ {
+                for (int domstep = 0; domstep <= dz; domstep++) {
+                    tipz = z1 + domstep * (z2 - z1 > 0 ? 1 : -1);
+                    tipy = (int) Math.round(y1 + domstep * ((double) dy) / ((double) dz) * (y2-y1>0 ? 1 : -1));
+                    tipx = (int) Math.round(x1 + domstep * ((double) dx) / ((double) dz) * (x2-x1>0 ? 1 : -1));
+
+                    vset.add(BlockVector3.at(tipx, tipy, tipz));
+                }
             }
-            notdrawn = false;
-        }
-
-        if (Math.max(Math.max(dx, dy), dz) == dz && notdrawn) {
-            for (int domstep = 0; domstep <= dz; domstep++) {
-                tipz = z1 + domstep * (z2 - z1 > 0 ? 1 : -1);
-                tipy = (int) Math.round(y1 + domstep * ((double) dy) / ((double) dz) * (y2-y1>0 ? 1 : -1));
-                tipx = (int) Math.round(x1 + domstep * ((double) dx) / ((double) dz) * (x2-x1>0 ? 1 : -1));
-
-                vset.add(BlockVector3.at(tipx, tipy, tipz));
-            }
-            notdrawn = false;
         }
 
         vset = getBallooned(vset, radius);
