@@ -69,6 +69,9 @@ public interface Operation {
     default void addStatusMessages(List<String> messages) {
     }
 
+    /**
+     * This is an internal field, and should not be touched.
+     */
     Set<String> warnedDeprecatedClasses = new HashSet<>();
 
     /**
