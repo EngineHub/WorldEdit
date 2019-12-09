@@ -20,6 +20,7 @@
 package com.sk89q.worldedit;
 
 import com.google.common.collect.Lists;
+import com.sk89q.worldedit.util.formatting.component.TextUtils;
 import com.sk89q.worldedit.util.io.file.ArchiveNioSupports;
 import com.sk89q.worldedit.util.logging.LogFormat;
 import com.sk89q.worldedit.world.block.BlockType;
@@ -36,6 +37,7 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Set;
 
@@ -87,6 +89,8 @@ public abstract class LocalConfiguration {
     public boolean allowSymlinks = false;
     public boolean serverSideCUI = true;
     public boolean extendedYLimit = false;
+    public String defaultLocaleName = "default";
+    public Locale defaultLocale = Locale.getDefault();
 
     protected String[] getDefaultDisallowedBlocks() {
         List<BlockType> blockTypes = Lists.newArrayList(
@@ -211,4 +215,12 @@ public abstract class LocalConfiguration {
         return item;
     }
 
+    public void setDefaultLocaleName(String localeName) {
+        this.defaultLocaleName = localeName;
+        if (localeName.equals("default")) {
+            this.defaultLocale = Locale.getDefault();
+        } else {
+            this.defaultLocale = TextUtils.getLocaleByMinecraftTag(localeName);
+        }
+    }
 }

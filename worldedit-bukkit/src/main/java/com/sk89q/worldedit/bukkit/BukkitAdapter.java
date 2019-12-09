@@ -21,7 +21,6 @@ package com.sk89q.worldedit.bukkit;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import com.google.common.base.Function;
 import com.sk89q.worldedit.NotABlockException;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
@@ -29,6 +28,7 @@ import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.extension.input.InputParseException;
 import com.sk89q.worldedit.extension.input.ParserContext;
+import com.sk89q.worldedit.internal.block.BlockStateIdAccess;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.util.Location;
@@ -45,6 +45,8 @@ import com.sk89q.worldedit.world.gamemode.GameMode;
 import com.sk89q.worldedit.world.gamemode.GameModes;
 import com.sk89q.worldedit.world.item.ItemType;
 import com.sk89q.worldedit.world.item.ItemTypes;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Biome;
@@ -52,6 +54,7 @@ import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -349,18 +352,19 @@ public class BukkitAdapter {
         return org.bukkit.entity.EntityType.fromName(entityType.getId().substring(10));
     }
 
+    private static EnumMap<Material, BlockType> materialBlockTypeCache = new EnumMap<>(Material.class);
+    private static EnumMap<Material, ItemType> materialItemTypeCache = new EnumMap<>(Material.class);
+
     /**
      * Converts a Material to a BlockType
      *
      * @param material The material
      * @return The blocktype
      */
+    @Nullable
     public static BlockType asBlockType(Material material) {
         checkNotNull(material);
-        if (!material.isBlock()) {
-            throw new IllegalArgumentException(material.getKey().toString() + " is not a block!");
-        }
-        return BlockTypes.get(material.getKey().toString());
+        return materialBlockTypeCache.computeIfAbsent(material, input -> BlockTypes.get(material.getKey().toString()));
     }
 
     /**
@@ -369,15 +373,14 @@ public class BukkitAdapter {
      * @param material The material
      * @return The itemtype
      */
+    @Nullable
     public static ItemType asItemType(Material material) {
         checkNotNull(material);
-        if (!material.isItem()) {
-            throw new IllegalArgumentException(material.getKey().toString() + " is not an item!");
-        }
-        return ItemTypes.get(material.getKey().toString());
+        return materialItemTypeCache.computeIfAbsent(material, input -> ItemTypes.get(material.getKey().toString()));
     }
 
-    private static Map<String, BlockState> blockStateCache = new HashMap<>();
+    private static Int2ObjectMap<BlockState> blockStateCache = new Int2ObjectOpenHashMap<>();
+    private static Map<String, BlockState> blockStateStringCache = new HashMap<>();
 
     /**
      * Create a WorldEdit BlockState from a Bukkit BlockData
@@ -387,21 +390,32 @@ public class BukkitAdapter {
      */
     public static BlockState adapt(BlockData blockData) {
         checkNotNull(blockData);
-        return blockStateCache.computeIfAbsent(blockData.getAsString(), new Function<String, BlockState>() {
-            @Nullable
-            @Override
-            public BlockState apply(@Nullable String input) {
+
+        if (WorldEditPlugin.getInstance().getBukkitImplAdapter() == null) {
+            return blockStateStringCache.computeIfAbsent(blockData.getAsString(), input -> {
                 try {
                     return WorldEdit.getInstance().getBlockFactory().parseFromInput(input, TO_BLOCK_CONTEXT).toImmutableState();
                 } catch (InputParseException e) {
                     e.printStackTrace();
                     return null;
                 }
-            }
-        });
+            });
+        } else {
+            return blockStateCache.computeIfAbsent(
+                    WorldEditPlugin.getInstance().getBukkitImplAdapter().getInternalBlockStateId(blockData).orElseGet(
+                            () -> blockData.getAsString().hashCode()
+                    ), input -> {
+                        try {
+                            return WorldEdit.getInstance().getBlockFactory().parseFromInput(blockData.getAsString(), TO_BLOCK_CONTEXT).toImmutableState();
+                        } catch (InputParseException e) {
+                            e.printStackTrace();
+                            return null;
+                        }
+                    });
+        }
     }
 
-    private static Map<String, BlockData> blockDataCache = new HashMap<>();
+    private static Int2ObjectMap<BlockData> blockDataCache = new Int2ObjectOpenHashMap<>();
 
     /**
      * Create a Bukkit BlockData from a WorldEdit BlockStateHolder
@@ -411,13 +425,9 @@ public class BukkitAdapter {
      */
     public static <B extends BlockStateHolder<B>> BlockData adapt(B block) {
         checkNotNull(block);
-        return blockDataCache.computeIfAbsent(block.getAsString(), new Function<String, BlockData>() {
-            @Nullable
-            @Override
-            public BlockData apply(@Nullable String input) {
-                return Bukkit.createBlockData(block.getAsString());
-            }
-        }).clone();
+        // Should never not have an ID for this BlockState.
+        int cacheKey = BlockStateIdAccess.getBlockStateId(block.toImmutableState()).orElseGet(block::hashCode);
+        return blockDataCache.computeIfAbsent(cacheKey, input -> Bukkit.createBlockData(block.getAsString())).clone();
     }
 
     /**

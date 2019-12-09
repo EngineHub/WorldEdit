@@ -25,10 +25,12 @@ import com.sk89q.worldedit.util.formatting.text.serializer.gson.GsonComponentSer
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
 
+import java.util.Locale;
+
 public class SpongeTextAdapter {
 
-    public static Text convert(Component component) {
-        component = WorldEditText.format(component);
+    public static Text convert(Component component, Locale locale) {
+        component = WorldEditText.format(component, locale);
         return TextSerializers.JSON.deserialize(GsonComponentSerializer.INSTANCE.serialize(component));
     }
 

@@ -7,9 +7,10 @@ import com.sk89q.worldedit.util.formatting.text.TranslatableComponent
 import com.sk89q.worldedit.util.formatting.text.event.ClickEvent
 import com.sk89q.worldedit.util.formatting.text.format.TextDecoration
 import org.enginehub.piston.util.TextHelper
+import java.util.Locale
 
 fun reduceToRst(component: Component): String {
-    val formatted = WorldEditText.format(component)
+    val formatted = WorldEditText.format(component, Locale.US)
     return formatAsRst(formatted).toString()
 }
 

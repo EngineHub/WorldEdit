@@ -21,8 +21,10 @@ package com.sk89q.bukkit.util;
 
 import com.sk89q.util.ReflectionUtil;
 import org.bukkit.Bukkit;
+import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandMap;
+import org.bukkit.command.PluginIdentifiableCommand;
 import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.plugin.Plugin;
 
@@ -40,6 +42,7 @@ public class CommandRegistration {
 
     protected final Plugin plugin;
     protected final CommandExecutor executor;
+    private CommandMap serverCommandMap;
     private CommandMap fallbackCommands;
 
     public CommandRegistration(Plugin plugin) {
@@ -49,6 +52,15 @@ public class CommandRegistration {
     public CommandRegistration(Plugin plugin, CommandExecutor executor) {
         this.plugin = plugin;
         this.executor = executor;
+    }
+
+    public Plugin getCommandOwner(String label) {
+        if (serverCommandMap == null) return null;
+        Command command = serverCommandMap.getCommand(label);
+        if (command instanceof PluginIdentifiableCommand) {
+            return ((PluginIdentifiableCommand) command).getPlugin();
+        }
+        return null;
     }
 
     public boolean register(List<CommandInfo> registered) {
@@ -66,16 +78,21 @@ public class CommandRegistration {
     }
 
     public CommandMap getCommandMap() {
+        if (serverCommandMap != null) {
+            return serverCommandMap;
+        }
+        if (fallbackCommands != null) {
+            return fallbackCommands;
+        }
+
         CommandMap commandMap = ReflectionUtil.getField(plugin.getServer().getPluginManager(), "commandMap");
         if (commandMap == null) {
-            if (fallbackCommands != null) {
-                commandMap = fallbackCommands;
-            } else {
-                Bukkit.getServer().getLogger().severe(plugin.getDescription().getName() +
-                        ": Could not retrieve server CommandMap, using fallback instead!");
-                fallbackCommands = commandMap = new SimpleCommandMap(Bukkit.getServer());
-                Bukkit.getServer().getPluginManager().registerEvents(new FallbackRegistrationListener(fallbackCommands), plugin);
-            }
+            Bukkit.getServer().getLogger().severe(plugin.getDescription().getName() +
+                    ": Could not retrieve server CommandMap, using fallback instead!");
+            fallbackCommands = commandMap = new SimpleCommandMap(Bukkit.getServer());
+            Bukkit.getServer().getPluginManager().registerEvents(new FallbackRegistrationListener(fallbackCommands), plugin);
+        } else {
+            serverCommandMap = commandMap;
         }
         return commandMap;
     }

@@ -21,6 +21,7 @@ package com.sk89q.worldedit.bukkit;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.extension.platform.AbstractNonPlayerActor;
 import com.sk89q.worldedit.extension.platform.Locatable;
 import com.sk89q.worldedit.extent.Extent;
@@ -35,11 +36,13 @@ import com.sk89q.worldedit.util.formatting.text.format.TextColor;
 import org.bukkit.Material;
 import org.bukkit.command.BlockCommandSender;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Locale;
 import java.util.UUID;
 
-import javax.annotation.Nullable;
-
 public class BukkitBlockCommandSender extends AbstractNonPlayerActor implements Locatable {
+
+    private static final String UUID_PREFIX = "CMD";
 
     private final BlockCommandSender sender;
     private final WorldEditPlugin plugin;
@@ -53,7 +56,7 @@ public class BukkitBlockCommandSender extends AbstractNonPlayerActor implements 
         this.plugin = plugin;
         this.sender = sender;
         this.location = BukkitAdapter.adapt(sender.getBlock().getLocation());
-        this.uuid = new UUID(location.toVector().toBlockPoint().hashCode(), location.getExtent().hashCode());
+        this.uuid = UUID.nameUUIDFromBytes((UUID_PREFIX + sender.getName()).getBytes(StandardCharsets.UTF_8));
     }
 
     @Override
@@ -91,7 +94,12 @@ public class BukkitBlockCommandSender extends AbstractNonPlayerActor implements 
 
     @Override
     public void print(Component component) {
-        TextAdapter.sendComponent(sender, WorldEditText.format(component));
+        TextAdapter.sendComponent(sender, WorldEditText.format(component, getLocale()));
+    }
+
+    @Override
+    public Locale getLocale() {
+        return WorldEdit.getInstance().getConfiguration().defaultLocale;
     }
 
     @Override
@@ -134,7 +142,6 @@ public class BukkitBlockCommandSender extends AbstractNonPlayerActor implements 
     @Override
     public SessionKey getSessionKey() {
         return new SessionKey() {
-            @Nullable
             @Override
             public String getName() {
                 return sender.getName();
@@ -149,7 +156,7 @@ public class BukkitBlockCommandSender extends AbstractNonPlayerActor implements 
 
             @Override
             public boolean isPersistent() {
-                return false;
+                return true;
             }
 
             @Override

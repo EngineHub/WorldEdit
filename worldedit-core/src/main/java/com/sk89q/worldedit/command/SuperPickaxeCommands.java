@@ -29,6 +29,8 @@ import com.sk89q.worldedit.command.tool.SinglePickaxe;
 import com.sk89q.worldedit.command.util.CommandPermissions;
 import com.sk89q.worldedit.command.util.CommandPermissionsConditionGenerator;
 import com.sk89q.worldedit.entity.Player;
+import com.sk89q.worldedit.util.formatting.text.TextComponent;
+import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import org.enginehub.piston.annotation.Command;
 import org.enginehub.piston.annotation.CommandContainer;
 import org.enginehub.piston.annotation.param.Arg;
@@ -49,7 +51,7 @@ public class SuperPickaxeCommands {
     public void single(Player player, LocalSession session) throws WorldEditException {
         session.setSuperPickaxe(new SinglePickaxe());
         session.enableSuperPickAxe();
-        player.print("Mode changed. Left click with a pickaxe. // to disable.");
+        player.printInfo(TranslatableComponent.of("worldedit.tool.superpickaxe.mode.single"));
     }
 
     @Command(
@@ -64,13 +66,13 @@ public class SuperPickaxeCommands {
         LocalConfiguration config = we.getConfiguration();
 
         if (range > config.maxSuperPickaxeSize) {
-            player.printError("Maximum range: " + config.maxSuperPickaxeSize);
+            player.printError(TranslatableComponent.of("worldedit.superpickaxe.max-range", TextComponent.of(config.maxSuperPickaxeSize)));
             return;
         }
 
         session.setSuperPickaxe(new AreaPickaxe(range));
         session.enableSuperPickAxe();
-        player.print("Mode changed. Left click with a pickaxe. // to disable.");
+        player.printInfo(TranslatableComponent.of("worldedit.tool.superpickaxe.mode.area"));
     }
 
     @Command(
@@ -86,12 +88,12 @@ public class SuperPickaxeCommands {
         LocalConfiguration config = we.getConfiguration();
 
         if (range > config.maxSuperPickaxeSize) {
-            player.printError("Maximum range: " + config.maxSuperPickaxeSize);
+            player.printError(TranslatableComponent.of("worldedit.superpickaxe.max-range", TextComponent.of(config.maxSuperPickaxeSize)));
             return;
         }
 
         session.setSuperPickaxe(new RecursivePickaxe(range));
         session.enableSuperPickAxe();
-        player.print("Mode changed. Left click with a pickaxe. // to disable.");
+        player.printInfo(TranslatableComponent.of("worldedit.tool.superpickaxe.mode.recursive"));
     }
 }

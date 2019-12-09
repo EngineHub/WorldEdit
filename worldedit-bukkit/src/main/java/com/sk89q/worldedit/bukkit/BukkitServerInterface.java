@@ -22,6 +22,7 @@ package com.sk89q.worldedit.bukkit;
 import com.sk89q.bukkit.util.CommandInfo;
 import com.sk89q.bukkit.util.CommandRegistration;
 import com.sk89q.worldedit.LocalConfiguration;
+import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.command.util.PermissionCondition;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
@@ -43,6 +44,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -67,6 +69,10 @@ public class BukkitServerInterface implements MultiUserPlatform {
         this.plugin = plugin;
         this.server = server;
         dynamicCommands = new CommandRegistration(plugin);
+    }
+
+    CommandRegistration getDynamicCommands() {
+        return dynamicCommands;
     }
 
     boolean isHookingEvents() {
@@ -168,8 +174,9 @@ public class BukkitServerInterface implements MultiUserPlatform {
                     Stream.of(command.getName()),
                     command.getAliases().stream()
                 ).toArray(String[]::new);
-                return new CommandInfo(reduceToText(command.getUsage()),
-                    reduceToText(command.getDescription()), aliases,
+                // TODO Handle localisation correctly
+                return new CommandInfo(reduceToText(command.getUsage(), WorldEdit.getInstance().getConfiguration().defaultLocale),
+                    reduceToText(command.getDescription(), WorldEdit.getInstance().getConfiguration().defaultLocale), aliases,
                     inspector, permissionsArray);
             }).collect(Collectors.toList()));
     }

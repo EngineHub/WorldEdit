@@ -30,6 +30,8 @@ import com.sk89q.worldedit.extent.inventory.BlockBag;
 import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.util.Location;
+import com.sk89q.worldedit.util.formatting.text.TextComponent;
+import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.world.block.BaseBlock;
 
 /**
@@ -77,7 +79,7 @@ public class BlockReplacer implements DoubleActionBlockTool {
 
         if (targetBlock != null) {
             pattern = targetBlock;
-            player.print("Replacer tool switched to: " + targetBlock.getBlockType().getName());
+            player.printInfo(TranslatableComponent.of("worldedit.tool.repl.switched", TextComponent.of(targetBlock.getBlockType().getName())));
         }
 
         return true;

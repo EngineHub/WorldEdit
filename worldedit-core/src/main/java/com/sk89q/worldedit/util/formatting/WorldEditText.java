@@ -19,10 +19,13 @@
 
 package com.sk89q.worldedit.util.formatting;
 
+import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import org.enginehub.piston.config.ConfigHolder;
 import org.enginehub.piston.config.TextConfig;
 import org.enginehub.piston.util.TextHelper;
+
+import java.util.Locale;
 
 public class WorldEditText {
     public static final ConfigHolder CONFIG_HOLDER = ConfigHolder.create();
@@ -31,12 +34,12 @@ public class WorldEditText {
         CONFIG_HOLDER.getConfig(TextConfig.commandPrefix()).setValue("/");
     }
 
-    public static Component format(Component component) {
-        return CONFIG_HOLDER.replace(component);
+    public static Component format(Component component, Locale locale) {
+        return WorldEdit.getInstance().getTranslationManager().convertText(CONFIG_HOLDER.replace(component), locale);
     }
 
-    public static String reduceToText(Component component) {
-        return TextHelper.reduceToText(format(component));
+    public static String reduceToText(Component component, Locale locale) {
+        return TextHelper.reduceToText(format(component, locale));
     }
 
     private WorldEditText() {

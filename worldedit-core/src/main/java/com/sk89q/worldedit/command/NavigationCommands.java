@@ -27,6 +27,8 @@ import com.sk89q.worldedit.command.util.CommandPermissionsConditionGenerator;
 import com.sk89q.worldedit.command.util.Logging;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.util.Location;
+import com.sk89q.worldedit.util.formatting.text.TextComponent;
+import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import org.enginehub.piston.annotation.Command;
 import org.enginehub.piston.annotation.CommandContainer;
 import org.enginehub.piston.annotation.param.Arg;
@@ -61,7 +63,7 @@ public class NavigationCommands {
     @CommandPermissions("worldedit.navigation.unstuck")
     public void unstuck(Player player) throws WorldEditException {
         player.findFreePosition();
-        player.print("There you go!");
+        player.printInfo(TranslatableComponent.of("worldedit.unstuck.moved"));
     }
 
     @Command(
@@ -81,9 +83,9 @@ public class NavigationCommands {
             }
         }
         if (ascentLevels == 0) {
-            player.printError("No free spot above you found.");
+            player.printError(TranslatableComponent.of("worldedit.ascend.obstructed"));
         } else {
-            player.print((ascentLevels != 1) ? "Ascended " + ascentLevels + " levels." : "Ascended a level.");
+            player.printInfo(TranslatableComponent.of("worldedit.ascend.moved", TextComponent.of(ascentLevels)));
         }
     }
 
@@ -104,9 +106,9 @@ public class NavigationCommands {
             }
         }
         if (descentLevels == 0) {
-            player.printError("No free spot below you found.");
+            player.printError(TranslatableComponent.of("worldedit.descend.obstructed"));
         } else {
-            player.print((descentLevels != 1) ? "Descended " + descentLevels + " levels." : "Descended a level.");
+            player.printInfo(TranslatableComponent.of("worldedit.descend.moved", TextComponent.of(descentLevels)));
         }
     }
 
@@ -127,9 +129,9 @@ public class NavigationCommands {
 
         boolean alwaysGlass = getAlwaysGlass(forceFlight, forceGlass);
         if (player.ascendToCeiling(clearance, alwaysGlass)) {
-            player.print("Whoosh!");
+            player.printInfo(TranslatableComponent.of("worldedit.ceil.moved"));
         } else {
-            player.printError("No free spot above you found.");
+            player.printError(TranslatableComponent.of("worldedit.ceil.obstructed"));
         }
     }
 
@@ -140,9 +142,9 @@ public class NavigationCommands {
     @CommandPermissions("worldedit.navigation.thru.command")
     public void thru(Player player) throws WorldEditException {
         if (player.passThroughForwardWall(6)) {
-            player.print("Whoosh!");
+            player.printInfo(TranslatableComponent.of("worldedit.thru.moved"));
         } else {
-            player.printError("No free spot ahead of you found.");
+            player.printError(TranslatableComponent.of("worldedit.thru.obstructed"));
         }
     }
 
@@ -157,9 +159,9 @@ public class NavigationCommands {
         Location pos = player.getSolidBlockTrace(300);
         if (pos != null) {
             player.findFreePosition(pos);
-            player.print("Poof!");
+            player.printInfo(TranslatableComponent.of("worldedit.jumpto.moved"));
         } else {
-            player.printError("No block in sight!");
+            player.printError(TranslatableComponent.of("worldedit.jumpto.none"));
         }
     }
 
@@ -178,9 +180,9 @@ public class NavigationCommands {
                        boolean forceGlass) throws WorldEditException {
         boolean alwaysGlass = getAlwaysGlass(forceFlight, forceGlass);
         if (player.ascendUpwards(distance, alwaysGlass)) {
-            player.print("Whoosh!");
+            player.printInfo(TranslatableComponent.of("worldedit.up.moved"));
         } else {
-            player.printError("You would hit something above you.");
+            player.printError(TranslatableComponent.of("worldedit.up.obstructed"));
         }
     }
 

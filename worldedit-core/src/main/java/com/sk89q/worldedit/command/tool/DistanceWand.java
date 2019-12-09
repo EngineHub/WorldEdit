@@ -28,6 +28,7 @@ import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.RegionSelector;
 import com.sk89q.worldedit.util.Location;
+import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 
 /**
  * A wand that can be used at a distance.
@@ -74,7 +75,7 @@ public class DistanceWand extends BrushTool implements DoubleActionTraceTool {
         }
 
         if (target == null) {
-            player.printError("No block in sight!");
+            player.printError(TranslatableComponent.of("worldedit.tool.no-block"));
             return null;
         }
 

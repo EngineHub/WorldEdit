@@ -24,6 +24,8 @@ import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.RegionSelector;
 import com.sk89q.worldedit.regions.selector.limit.SelectorLimits;
+import com.sk89q.worldedit.util.formatting.text.TextComponent;
+import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.world.World;
 
 import javax.annotation.Nullable;
@@ -129,14 +131,22 @@ public class ExtendingCuboidRegionSelector extends CuboidRegionSelector {
 
     @Override
     public void explainPrimarySelection(Actor player, LocalSession session, BlockVector3 pos) {
-        player.print("Started selection at " + pos + " (" + region.getArea() + ").");
+        player.printInfo(TranslatableComponent.of(
+                "worldedit.selection.extend.explain.primary",
+                TextComponent.of(pos.toString()),
+                TextComponent.of(region.getArea())
+        ));
 
         explainRegionAdjust(player, session);
     }
 
     @Override
     public void explainSecondarySelection(Actor player, LocalSession session, BlockVector3 pos) {
-        player.print("Extended selection to encompass " + pos + " (" + region.getArea() + ").");
+        player.printInfo(TranslatableComponent.of(
+                "worldedit.selection.extend.explain.secondary",
+                TextComponent.of(pos.toString()),
+                TextComponent.of(region.getArea())
+        ));
 
         explainRegionAdjust(player, session);
     }

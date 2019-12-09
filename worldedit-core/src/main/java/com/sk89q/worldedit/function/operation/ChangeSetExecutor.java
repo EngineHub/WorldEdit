@@ -80,10 +80,6 @@ public class ChangeSetExecutor implements Operation {
     public void cancel() {
     }
 
-    @Override
-    public void addStatusMessages(List<String> messages) {
-    }
-
     /**
      * Create a new undo operation.
      *

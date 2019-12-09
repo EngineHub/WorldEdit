@@ -27,6 +27,7 @@ import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.extension.input.InputParseException;
 import com.sk89q.worldedit.extension.input.ParserContext;
 import com.sk89q.worldedit.extension.platform.Actor;
+import com.sk89q.worldedit.extension.platform.Locatable;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.extent.transform.BlockTransformExtent;
 import com.sk89q.worldedit.function.mask.Mask;
@@ -104,8 +105,8 @@ public class FactoryConverter<T> implements ArgumentConverter<T> {
 
         ParserContext parserContext = new ParserContext();
         parserContext.setActor(actor);
-        if (actor instanceof Entity) {
-            Extent extent = ((Entity) actor).getExtent();
+        if (actor instanceof Locatable) {
+            Extent extent = ((Locatable) actor).getExtent();
             if (extent instanceof World) {
                 parserContext.setWorld((World) extent);
             }

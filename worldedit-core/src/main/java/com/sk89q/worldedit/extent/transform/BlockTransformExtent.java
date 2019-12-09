@@ -25,6 +25,7 @@ import com.sk89q.worldedit.extent.AbstractDelegateExtent;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.Vector3;
+import com.sk89q.worldedit.math.transform.AffineTransform;
 import com.sk89q.worldedit.math.transform.Transform;
 import com.sk89q.worldedit.registry.state.BooleanProperty;
 import com.sk89q.worldedit.registry.state.DirectionalProperty;
@@ -160,6 +161,38 @@ public class BlockTransformExtent extends AbstractDelegateExtent {
                             if (axis != null) {
                                 result = result.with(enumProp, axis);
                             }
+                        }
+                    }
+                } else if (property.getName().equals("type") && transform instanceof AffineTransform) {
+                    // chests
+                    if (((AffineTransform) transform).isHorizontalFlip()) {
+                        String value = (String) block.getState(property);
+                        String newValue = null;
+                        if ("left".equals(value)) {
+                            newValue = "right";
+                        } else if ("right".equals(value)) {
+                            newValue = "left";
+                        }
+                        if (newValue != null && enumProp.getValues().contains(newValue)) {
+                            result = result.with(enumProp, newValue);
+                        }
+                    }
+                } else if (property.getName().equals("shape") && transform instanceof AffineTransform) {
+                    // stairs
+                    if (((AffineTransform) transform).isHorizontalFlip()) {
+                        String value = (String) block.getState(property);
+                        String newValue = null;
+                        if ("outer_left".equals(value)) {
+                            newValue = "outer_right";
+                        } else if ("outer_right".equals(value)) {
+                            newValue = "outer_left";
+                        } else if ("inner_left".equals(value)) {
+                            newValue = "inner_right";
+                        } else if ("inner_right".equals(value)) {
+                            newValue = "inner_left";
+                        }
+                        if (newValue != null && enumProp.getValues().contains(newValue)) {
+                            result = result.with(enumProp, newValue);
                         }
                     }
                 }

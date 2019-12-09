@@ -124,6 +124,7 @@ public class PropertiesConfiguration extends LocalConfiguration {
         allowSymlinks = getBool("allow-symbolic-links", allowSymlinks);
         serverSideCUI = getBool("server-side-cui", serverSideCUI);
         extendedYLimit = getBool("extended-y-limit", extendedYLimit);
+        setDefaultLocaleName(getString("default-locale", defaultLocaleName));
 
         LocalSession.MAX_HISTORY_SIZE = Math.max(15, getInt("history-size", 15));
 

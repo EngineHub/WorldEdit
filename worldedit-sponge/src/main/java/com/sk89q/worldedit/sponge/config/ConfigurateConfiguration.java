@@ -130,5 +130,6 @@ public class ConfigurateConfiguration extends LocalConfiguration {
         shellSaveType = type.equals("") ? null : type;
 
         extendedYLimit = node.getNode("compat", "extended-y-limit").getBoolean(false);
+        setDefaultLocaleName(node.getNode("default-locale").getString(defaultLocaleName));
     }
 }

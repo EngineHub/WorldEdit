@@ -22,6 +22,7 @@ package com.sk89q.worldedit.sponge;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.internal.cui.CUIEvent;
 import com.sk89q.worldedit.session.SessionKey;
@@ -37,6 +38,7 @@ import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.serializer.TextSerializers;
 
 import java.io.File;
+import java.util.Locale;
 import java.util.UUID;
 
 import javax.annotation.Nullable;
@@ -94,7 +96,7 @@ public class SpongeCommandSender implements Actor {
 
     @Override
     public void print(Component component) {
-        TextAdapter.sendComponent(sender, WorldEditText.format(component));
+        TextAdapter.sendComponent(sender, WorldEditText.format(component, getLocale()));
     }
 
     private void sendColorized(String msg, TextColor formatting) {
@@ -139,6 +141,11 @@ public class SpongeCommandSender implements Actor {
 
     @Override
     public void dispatchCUIEvent(CUIEvent event) {
+    }
+
+    @Override
+    public Locale getLocale() {
+        return WorldEdit.getInstance().getConfiguration().defaultLocale;
     }
 
     @Override

@@ -128,8 +128,4 @@ public class LayerVisitor implements Operation {
     public void cancel() {
     }
 
-    @Override
-    public void addStatusMessages(List<String> messages) {
-    }
-
 }

@@ -26,7 +26,6 @@ import com.sk89q.worldedit.function.RegionFunction;
 import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.world.block.BlockState;
-import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.block.BlockTypes;
 
 import java.util.Random;
@@ -39,6 +38,7 @@ public class GardenPatchGenerator implements RegionFunction {
     private final Random random = new Random();
     private final EditSession editSession;
     private Pattern plant = getPumpkinPattern();
+    private Pattern leafPattern = BlockTypes.OAK_LEAVES.getDefaultState().with(BlockTypes.OAK_LEAVES.getProperty("persistent"), true);
     private int affected;
 
     /**
@@ -96,7 +96,7 @@ public class GardenPatchGenerator implements RegionFunction {
             }
         }
 
-        setBlockIfAir(editSession, pos, BlockTypes.OAK_LEAVES.getDefaultState());
+        setBlockIfAir(editSession, pos, leafPattern);
         affected++;
 
         int t = random.nextInt(4);
@@ -162,15 +162,12 @@ public class GardenPatchGenerator implements RegionFunction {
             position = position.add(0, 1, 0);
         }
 
-        if (editSession.getBlock(position.add(0, -1, 0)).getBlockType() != BlockTypes.GRASS_BLOCK) {
+        if (!editSession.getBlock(position.add(0, -1, 0)).getBlockType().equals(BlockTypes.GRASS_BLOCK)) {
             return false;
         }
 
-        BlockState leavesBlock = BlockTypes.OAK_LEAVES.getDefaultState();
 
-        if (editSession.getBlock(position).getBlockType().getMaterial().isAir()) {
-            editSession.setBlock(position, leavesBlock);
-        }
+        setBlockIfAir(editSession, position, leafPattern);
 
         placeVine(position, position.add(0, 0, 1));
         placeVine(position, position.add(0, 0, -1));
@@ -193,12 +190,12 @@ public class GardenPatchGenerator implements RegionFunction {
      * Set a block only if there's no block already there.
      *
      * @param position the position
-     * @param block the block to set
+     * @param pattern the pattern to set
      * @return if block was changed
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
-    private static <B extends BlockStateHolder<B>> boolean setBlockIfAir(EditSession session, BlockVector3 position, B block) throws MaxChangedBlocksException {
-        return session.getBlock(position).getBlockType().getMaterial().isAir() && session.setBlock(position, block);
+    private static boolean setBlockIfAir(EditSession session, BlockVector3 position, Pattern pattern) throws MaxChangedBlocksException {
+        return session.getBlock(position).getBlockType().getMaterial().isAir() && session.setBlock(position, pattern);
     }
 
     /**

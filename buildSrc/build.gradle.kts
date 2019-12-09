@@ -53,4 +53,5 @@ dependencies {
     implementation("net.minecraftforge.gradle:ForgeGradle:3.0.143")
     implementation("net.fabricmc:fabric-loom:$loomVersion")
     implementation("net.fabricmc:sponge-mixin:$mixinVersion")
+    implementation("gradle.plugin.com.mendhak.gradlecrowdin:plugin:0.1.0")
 }
