@@ -22,12 +22,15 @@ package com.sk89q.worldedit.bukkit;
 import com.sk89q.bukkit.util.CommandInfo;
 import com.sk89q.bukkit.util.CommandRegistration;
 import com.sk89q.worldedit.LocalConfiguration;
+import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.command.util.PermissionCondition;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.extension.platform.MultiUserPlatform;
 import com.sk89q.worldedit.extension.platform.Preference;
+import com.sk89q.worldedit.extension.platform.Watchdog;
+import com.sk89q.worldedit.util.concurrency.LazyReference;
 import com.sk89q.worldedit.world.DataFixer;
 import com.sk89q.worldedit.world.registry.Registries;
 import org.bukkit.Bukkit;
@@ -41,22 +44,35 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.sk89q.worldedit.bukkit.BukkitTextAdapter.reduceToText;
+import static com.sk89q.worldedit.util.formatting.WorldEditText.reduceToText;
 
 public class BukkitServerInterface implements MultiUserPlatform {
     public Server server;
     public WorldEditPlugin plugin;
     private CommandRegistration dynamicCommands;
     private boolean hookingEvents;
+    private final LazyReference<Watchdog> watchdog = LazyReference.from(() -> {
+        if (plugin.getBukkitImplAdapter() != null) {
+            return plugin.getBukkitImplAdapter().supportsWatchdog()
+                ? new BukkitWatchdog(plugin.getBukkitImplAdapter())
+                : null;
+        }
+        return null;
+    });
 
     public BukkitServerInterface(WorldEditPlugin plugin, Server server) {
         this.plugin = plugin;
         this.server = server;
         dynamicCommands = new CommandRegistration(plugin);
+    }
+
+    CommandRegistration getDynamicCommands() {
+        return dynamicCommands;
     }
 
     boolean isHookingEvents() {
@@ -101,6 +117,11 @@ public class BukkitServerInterface implements MultiUserPlatform {
     @Override
     public int schedule(long delay, long period, Runnable task) {
         return Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, task, delay, period);
+    }
+
+    @Override
+    public Watchdog getWatchdog() {
+        return watchdog.getValue();
     }
 
     @Override
@@ -153,8 +174,9 @@ public class BukkitServerInterface implements MultiUserPlatform {
                     Stream.of(command.getName()),
                     command.getAliases().stream()
                 ).toArray(String[]::new);
-                return new CommandInfo(reduceToText(command.getUsage()),
-                    reduceToText(command.getDescription()), aliases,
+                // TODO Handle localisation correctly
+                return new CommandInfo(reduceToText(command.getUsage(), WorldEdit.getInstance().getConfiguration().defaultLocale),
+                    reduceToText(command.getDescription(), WorldEdit.getInstance().getConfiguration().defaultLocale), aliases,
                     inspector, permissionsArray);
             }).collect(Collectors.toList()));
     }

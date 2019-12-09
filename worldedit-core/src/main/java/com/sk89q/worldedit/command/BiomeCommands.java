@@ -45,6 +45,11 @@ import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.Regions;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.formatting.component.PaginationBox;
+import com.sk89q.worldedit.util.formatting.component.TextUtils;
+import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.util.formatting.text.TextComponent;
+import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
+import com.sk89q.worldedit.util.formatting.text.event.HoverEvent;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.biome.BiomeData;
 import com.sk89q.worldedit.world.biome.BiomeType;
@@ -56,6 +61,7 @@ import org.enginehub.piston.annotation.param.ArgFlag;
 import org.enginehub.piston.annotation.param.Switch;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -100,7 +106,7 @@ public class BiomeCommands {
                             })
                             .collect(Collectors.toList()));
              return paginationBox.create(page);
-        }, null);
+        }, (Component) null);
     }
 
     @Command(
@@ -117,24 +123,24 @@ public class BiomeCommands {
         BiomeRegistry biomeRegistry = WorldEdit.getInstance().getPlatformManager()
                 .queryCapability(Capability.GAME_HOOKS).getRegistries().getBiomeRegistry();
         Set<BiomeType> biomes = new HashSet<>();
-        String qualifier;
+        String messageKey;
 
         if (useLineOfSight) {
             Location blockPosition = player.getBlockTrace(300);
             if (blockPosition == null) {
-                player.printError("No block in sight!");
+                player.printError(TranslatableComponent.of("worldedit.raytrace.noblock"));
                 return;
             }
 
             BiomeType biome = player.getWorld().getBiome(blockPosition.toVector().toBlockPoint().toBlockVector2());
             biomes.add(biome);
 
-            qualifier = "at line of sight point";
+            messageKey = "worldedit.biomeinfo.lineofsight";
         } else if (usePosition) {
             BiomeType biome = player.getWorld().getBiome(player.getLocation().toVector().toBlockPoint().toBlockVector2());
             biomes.add(biome);
 
-            qualifier = "at your position";
+            messageKey = "worldedit.biomeinfo.position";
         } else {
             World world = player.getWorld();
             Region region = session.getSelection(world);
@@ -149,18 +155,18 @@ public class BiomeCommands {
                 }
             }
 
-            qualifier = "in your selection";
+            messageKey = "worldedit.biomeinfo.selection";
         }
 
-        player.print(biomes.size() != 1 ? "Biomes " + qualifier + ":" : "Biome " + qualifier + ":");
-        for (BiomeType biome : biomes) {
+        List<Component> components = biomes.stream().map(biome -> {
             BiomeData data = biomeRegistry.getData(biome);
             if (data != null) {
-                player.print(" " + data.getName());
+                return TextComponent.of(data.getName()).hoverEvent(HoverEvent.showText(TextComponent.of(biome.getId())));
             } else {
-                player.print(" <unknown #" + biome.getId() + ">");
+                return TextComponent.of(biome.getId());
             }
-        }
+        }).collect(Collectors.toList());
+        player.printInfo(TranslatableComponent.of(messageKey, TextUtils.join(components, TextComponent.of(", "))));
     }
 
     @Command(
@@ -193,7 +199,10 @@ public class BiomeCommands {
         FlatRegionVisitor visitor = new FlatRegionVisitor(Regions.asFlatRegion(region), replace);
         Operations.completeLegacy(visitor);
 
-        player.print("Biomes were changed in " + visitor.getAffected() + " columns. You may have to rejoin your game (or close and reopen your world) to see a change.");
+        player.printInfo(TranslatableComponent.of(
+                "worldedit.setbiome.changed",
+                TextComponent.of(visitor.getAffected())
+        ));
     }
 
 }

@@ -31,6 +31,7 @@ import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.session.SessionKey;
 import com.sk89q.worldedit.util.HandSide;
 import com.sk89q.worldedit.util.Location;
+import com.sk89q.worldedit.util.formatting.WorldEditText;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.adapter.spongeapi.TextAdapter;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
@@ -50,6 +51,7 @@ import org.spongepowered.api.text.serializer.TextSerializers;
 import org.spongepowered.api.world.World;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -153,7 +155,7 @@ public class SpongePlayer extends AbstractPlayerActor {
 
     @Override
     public void print(Component component) {
-        TextAdapter.sendComponent(player, component);
+        TextAdapter.sendComponent(player, WorldEditText.format(component, getLocale()));
     }
 
     private void sendColorized(String msg, TextColor formatting) {
@@ -228,6 +230,11 @@ public class SpongePlayer extends AbstractPlayerActor {
 //                }
 //            }
         }
+    }
+
+    @Override
+    public Locale getLocale() {
+        return player.getLocale();
     }
 
     @Override

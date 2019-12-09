@@ -25,6 +25,7 @@ import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.extension.platform.AbstractPlayerActor;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
+import com.sk89q.worldedit.fabric.mixin.AccessorServerPlayerEntity;
 import com.sk89q.worldedit.fabric.net.handler.WECUIPacketHandler;
 import com.sk89q.worldedit.internal.cui.CUIEvent;
 import com.sk89q.worldedit.math.BlockVector3;
@@ -32,6 +33,7 @@ import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.session.SessionKey;
 import com.sk89q.worldedit.util.HandSide;
 import com.sk89q.worldedit.util.Location;
+import com.sk89q.worldedit.util.formatting.WorldEditText;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.serializer.gson.GsonComponentSerializer;
 import com.sk89q.worldedit.world.World;
@@ -55,6 +57,7 @@ import net.minecraft.util.math.BlockPos;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
+import java.util.Locale;
 import java.util.UUID;
 
 public class FabricPlayer extends AbstractPlayerActor {
@@ -128,6 +131,11 @@ public class FabricPlayer extends AbstractPlayerActor {
     }
 
     @Override
+    public Locale getLocale() {
+        return Locale.forLanguageTag(((AccessorServerPlayerEntity) this.player).getClientLanguage().replace("_", "-"));
+    }
+
+    @Override
     public void printRaw(String msg) {
         for (String part : msg.split("\n")) {
             this.player.sendMessage(new LiteralText(part));
@@ -151,7 +159,7 @@ public class FabricPlayer extends AbstractPlayerActor {
 
     @Override
     public void print(Component component) {
-        this.player.sendMessage(Text.Serializer.fromJson(GsonComponentSerializer.INSTANCE.serialize(component)));
+        this.player.sendMessage(Text.Serializer.fromJson(GsonComponentSerializer.INSTANCE.serialize(WorldEditText.format(component, getLocale()))));
     }
 
     private void sendColorized(String msg, Formatting formatting) {

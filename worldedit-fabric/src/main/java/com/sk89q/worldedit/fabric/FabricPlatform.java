@@ -26,12 +26,15 @@ import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.extension.platform.MultiUserPlatform;
 import com.sk89q.worldedit.extension.platform.Preference;
+import com.sk89q.worldedit.extension.platform.Watchdog;
 import com.sk89q.worldedit.world.DataFixer;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.registry.Registries;
 import net.minecraft.SharedConstants;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
+import net.minecraft.server.dedicated.DedicatedServer;
+import net.minecraft.server.dedicated.MinecraftDedicatedServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
@@ -55,12 +58,15 @@ class FabricPlatform extends AbstractPlatform implements MultiUserPlatform {
     private final FabricWorldEdit mod;
     private final MinecraftServer server;
     private final FabricDataFixer dataFixer;
+    private final @Nullable Watchdog watchdog;
     private boolean hookingEvents = false;
 
     FabricPlatform(FabricWorldEdit mod, MinecraftServer server) {
         this.mod = mod;
         this.server = server;
         this.dataFixer = new FabricDataFixer(getDataVersion());
+        this.watchdog = server instanceof MinecraftDedicatedServer
+            ? (Watchdog) server : null;
     }
 
     boolean isHookingEvents() {
@@ -95,6 +101,12 @@ class FabricPlatform extends AbstractPlatform implements MultiUserPlatform {
     @Override
     public int schedule(long delay, long period, Runnable task) {
         return -1;
+    }
+
+    @Override
+    @Nullable
+    public Watchdog getWatchdog() {
+        return watchdog;
     }
 
     @Override

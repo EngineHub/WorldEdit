@@ -19,14 +19,19 @@
 
 package com.sk89q.worldedit.regions;
 
+import com.google.common.collect.Lists;
 import com.sk89q.worldedit.IncompleteRegionException;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.selector.limit.SelectorLimits;
+import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.util.formatting.text.TextComponent;
+import com.sk89q.worldedit.util.formatting.text.format.TextColor;
 import com.sk89q.worldedit.world.World;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 
@@ -54,7 +59,7 @@ public interface RegionSelector {
 
     /**
      * Called when the first point is selected.
-     * 
+     *
      * @param position the position
      * @return true if something changed
      */
@@ -62,7 +67,7 @@ public interface RegionSelector {
 
     /**
      * Called when the second point is selected.
-     * 
+     *
      * @param position the position
      * @return true if something changed
      */
@@ -70,7 +75,7 @@ public interface RegionSelector {
 
     /**
      * Tell the player information about his/her primary selection.
-     * 
+     *
      * @param actor the actor
      * @param session the session
      * @param position position
@@ -97,7 +102,7 @@ public interface RegionSelector {
 
     /**
      * Get the primary position.
-     * 
+     *
      * @return the primary position
      * @throws IncompleteRegionException thrown if a region has not been fully defined
      */
@@ -105,7 +110,7 @@ public interface RegionSelector {
 
     /**
      * Get the selection.
-     * 
+     *
      * @return the created region
      * @throws IncompleteRegionException thrown if a region has not been fully defined
      */
@@ -113,21 +118,21 @@ public interface RegionSelector {
 
     /**
      * Get the region even if it's not fully defined.
-     * 
+     *
      * @return an incomplete region object that is incomplete
      */
     Region getIncompleteRegion();
 
     /**
      * Returns whether the region has been fully defined.
-     * 
+     *
      * @return true if a selection is available
      */
     boolean isDefined();
 
     /**
      * Get the number of blocks inside the region.
-     * 
+     *
      * @return number of blocks, or -1 if undefined
      */
     int getArea();
@@ -144,16 +149,29 @@ public interface RegionSelector {
 
     /**
      * Get a lowercase name of this region selector type.
-     * 
+     *
      * @return a lower case name of the type
      */
     String getTypeName();
 
     /**
      * Get lines of information about the selection.
-     * 
+     *
      * @return a list of lines describing the region
      */
-    List<String> getInformationLines();
+    @Deprecated
+    default List<String> getInformationLines() {
+        return Lists.newArrayList();
+    };
 
+    /**
+     * Get lines of information about the selection.
+     *
+     * @return a list of lines describing the region.
+     */
+    default List<Component> getSelectionInfoLines() {
+        return getInformationLines().stream()
+                .map(line -> TextComponent.of(line, TextColor.LIGHT_PURPLE))
+                .collect(Collectors.toList());
+    }
 }

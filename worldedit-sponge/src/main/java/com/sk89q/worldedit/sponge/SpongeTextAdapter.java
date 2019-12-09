@@ -19,14 +19,18 @@
 
 package com.sk89q.worldedit.sponge;
 
+import com.sk89q.worldedit.util.formatting.WorldEditText;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.serializer.gson.GsonComponentSerializer;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
 
+import java.util.Locale;
+
 public class SpongeTextAdapter {
 
-    public static Text convert(Component component) {
+    public static Text convert(Component component, Locale locale) {
+        component = WorldEditText.format(component, locale);
         return TextSerializers.JSON.deserialize(GsonComponentSerializer.INSTANCE.serialize(component));
     }
 

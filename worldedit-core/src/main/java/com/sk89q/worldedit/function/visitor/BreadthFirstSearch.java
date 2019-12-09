@@ -21,12 +21,17 @@ package com.sk89q.worldedit.function.visitor;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import com.google.common.collect.ImmutableList;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.function.RegionFunction;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.RunContext;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.util.Direction;
+import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.util.formatting.text.TextComponent;
+import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
+import com.sk89q.worldedit.util.formatting.text.format.TextColor;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -119,10 +124,9 @@ public abstract class BreadthFirstSearch implements Operation {
      * @param position the position
      */
     public void visit(BlockVector3 position) {
-        BlockVector3 blockVector = position;
-        if (!visited.contains(blockVector)) {
-            queue.add(blockVector);
-            visited.add(blockVector);
+        if (!visited.contains(position)) {
+            queue.add(position);
+            visited.add(position);
         }
     }
 
@@ -133,11 +137,10 @@ public abstract class BreadthFirstSearch implements Operation {
      * @param to the block under question
      */
     private void visit(BlockVector3 from, BlockVector3 to) {
-        BlockVector3 blockVector = to;
-        if (!visited.contains(blockVector)) {
-            visited.add(blockVector);
+        if (!visited.contains(to)) {
+            visited.add(to);
             if (isVisitable(from, to)) {
-                queue.add(blockVector);
+                queue.add(to);
             }
         }
     }
@@ -183,8 +186,11 @@ public abstract class BreadthFirstSearch implements Operation {
     }
 
     @Override
-    public void addStatusMessages(List<String> messages) {
-        messages.add(getAffected() + " blocks affected");
+    public Iterable<Component> getStatusMessages() {
+        return ImmutableList.of(TranslatableComponent.of(
+                "worldedit.operation.affected.block",
+                TextComponent.of(getAffected())
+        ).color(TextColor.LIGHT_PURPLE));
     }
 
 }

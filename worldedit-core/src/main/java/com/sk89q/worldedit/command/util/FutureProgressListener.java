@@ -24,6 +24,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.sk89q.worldedit.extension.platform.Actor;
+import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.util.formatting.text.TextComponent;
 
 import java.util.Timer;
 
@@ -34,7 +36,12 @@ public class FutureProgressListener implements Runnable {
 
     private final MessageTimerTask task;
 
+    @Deprecated
     public FutureProgressListener(Actor sender, String message) {
+        this(sender, TextComponent.of(message));
+    }
+
+    public FutureProgressListener(Actor sender, Component message) {
         checkNotNull(sender);
         checkNotNull(message);
 
@@ -47,7 +54,12 @@ public class FutureProgressListener implements Runnable {
         task.cancel();
     }
 
+    @Deprecated
     public static void addProgressListener(ListenableFuture<?> future, Actor sender, String message) {
+        future.addListener(new FutureProgressListener(sender, message), MoreExecutors.directExecutor());
+    }
+
+    public static void addProgressListener(ListenableFuture<?> future, Actor sender, Component message) {
         future.addListener(new FutureProgressListener(sender, message), MoreExecutors.directExecutor());
     }
 

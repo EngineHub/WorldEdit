@@ -13,7 +13,7 @@ applyShadowConfiguration()
 
 val minecraftVersion = "1.14.4"
 val mappingsMinecraftVersion = "1.14.3"
-val forgeVersion = "28.0.95"
+val forgeVersion = "28.1.0"
 
 configurations.all {
     resolutionStrategy {
@@ -31,8 +31,10 @@ dependencies {
 configure<UserDevExtension> {
     mappings(mapOf(
             "channel" to "snapshot",
-            "version" to "20190801-$mappingsMinecraftVersion"
+            "version" to "20190913-$mappingsMinecraftVersion"
     ))
+
+    accessTransformer(file("src/main/resources/META-INF/accesstransformer.cfg"))
 
     runs {
         val runConfig = Action<RunConfig> {
@@ -85,9 +87,11 @@ tasks.named<ShadowJar>("shadowJar") {
     dependencies {
         relocate("org.slf4j", "com.sk89q.worldedit.slf4j")
         relocate("org.apache.logging.slf4j", "com.sk89q.worldedit.log4jbridge")
+        relocate("org.antlr.v4", "com.sk89q.worldedit.antlr4")
 
         include(dependency("org.slf4j:slf4j-api"))
         include(dependency("org.apache.logging.log4j:log4j-slf4j-impl"))
+        include(dependency("org.antlr:antlr4-runtime"))
         include(dependency("de.schlichtherle:truezip"))
         include(dependency("org.mozilla:rhino"))
     }

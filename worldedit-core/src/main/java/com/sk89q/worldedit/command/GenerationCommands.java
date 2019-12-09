@@ -36,6 +36,8 @@ import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.TreeGenerator.TreeType;
+import com.sk89q.worldedit.util.formatting.text.TextComponent;
+import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.world.biome.BiomeType;
 import org.enginehub.piston.annotation.Command;
 import org.enginehub.piston.annotation.CommandContainer;
@@ -113,7 +115,7 @@ public class GenerationCommands {
             break;
 
         default:
-            actor.printError("You must either specify 1 or 2 radius values.");
+            actor.printError(TranslatableComponent.of("worldedit.cyl.invalid-radius"));
             return 0;
         }
 
@@ -123,7 +125,7 @@ public class GenerationCommands {
 
         BlockVector3 pos = session.getPlacementPosition(actor);
         int affected = editSession.makeCylinder(pos, pattern, radiusX, radiusZ, height, !hollow);
-        actor.print(affected + " block(s) have been created.");
+        actor.printInfo(TranslatableComponent.of("worldedit.cyl.created", TextComponent.of(affected)));
         return affected;
     }
 
@@ -173,7 +175,7 @@ public class GenerationCommands {
             break;
 
         default:
-            actor.printError("You must either specify 1 or 3 radius values.");
+            actor.printError(TranslatableComponent.of("worldedit.sphere.invalid-radius"));
             return 0;
         }
 
@@ -190,7 +192,7 @@ public class GenerationCommands {
         if (actor instanceof Player) {
             ((Player) actor).findFreePosition();
         }
-        actor.print(affected + " block(s) have been created.");
+        actor.printInfo(TranslatableComponent.of("worldedit.sphere.created", TextComponent.of(affected)));
         return affected;
     }
 
@@ -211,7 +213,7 @@ public class GenerationCommands {
         worldEdit.checkMaxRadius(size);
         density /= 100;
         int affected = editSession.makeForest(session.getPlacementPosition(actor), size, density, type);
-        actor.print(affected + " trees created.");
+        actor.printInfo(TranslatableComponent.of("worldedit.forestgen.created", TextComponent.of(affected)));
         return affected;
     }
 
@@ -226,7 +228,7 @@ public class GenerationCommands {
                             int size) throws WorldEditException {
         worldEdit.checkMaxRadius(size);
         int affected = editSession.makePumpkinPatches(session.getPlacementPosition(actor), size);
-        actor.print(affected + " pumpkin patches created.");
+        actor.printInfo(TranslatableComponent.of("worldedit.pumpkins.created", TextComponent.of(affected)));
         return affected;
     }
 
@@ -263,7 +265,7 @@ public class GenerationCommands {
         if (actor instanceof Player) {
             ((Player) actor).findFreePosition();
         }
-        actor.print(affected + " block(s) have been created.");
+        actor.printInfo(TranslatableComponent.of("worldedit.pyramid.created", TextComponent.of(affected)));
         return affected;
     }
 
@@ -322,10 +324,10 @@ public class GenerationCommands {
             if (actor instanceof Player) {
                 ((Player) actor).findFreePosition();
             }
-            actor.print(affected + " block(s) have been created.");
+            actor.printInfo(TranslatableComponent.of("worldedit.generate.created", TextComponent.of(affected)));
             return affected;
         } catch (ExpressionException e) {
-            actor.printError(e.getMessage());
+            actor.printError(TextComponent.of(e.getMessage()));
             return 0;
         }
     }
@@ -381,10 +383,10 @@ public class GenerationCommands {
 
         try {
             final int affected = editSession.makeBiomeShape(region, zero, unit, target, String.join(" ", expression), hollow, session.getTimeout());
-            actor.print("" + affected + " columns affected.");
+            actor.printInfo(TranslatableComponent.of("worldedit.generatebiome.changed", TextComponent.of(affected)));
             return affected;
         } catch (ExpressionException e) {
-            actor.printError(e.getMessage());
+            actor.printError(TextComponent.of(e.getMessage()));
             return 0;
         }
     }

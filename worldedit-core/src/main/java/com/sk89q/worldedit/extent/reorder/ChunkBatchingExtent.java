@@ -109,10 +109,6 @@ public class ChunkBatchingExtent extends AbstractBufferingExtent {
             @Override
             public void cancel() {
             }
-
-            @Override
-            public void addStatusMessages(List<String> messages) {
-            }
         };
     }
 

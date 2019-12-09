@@ -102,6 +102,7 @@ public class LocalSession {
     private transient EditSession.ReorderMode reorderMode = EditSession.ReorderMode.MULTI_STAGE;
     private transient List<Countable<BlockState>> lastDistribution;
     private transient World worldOverride;
+    private transient boolean tickingWatchdog = false;
 
     // Saved properties
     private String lastScript;
@@ -238,12 +239,7 @@ public class LocalSession {
             EditSession editSession = history.get(historyPointer);
             try (EditSession newEditSession = WorldEdit.getInstance().getEditSessionFactory()
                     .getEditSession(editSession.getWorld(), -1, newBlockBag, actor)) {
-                newEditSession.enableStandardMode();
-                newEditSession.setReorderMode(reorderMode);
-                newEditSession.setFastMode(fastMode);
-                if (newEditSession.getSurvivalExtent() != null) {
-                    newEditSession.getSurvivalExtent().setStripNbt(!actor.hasPermission("worldedit.setnbt"));
-                }
+                prepareEditingExtents(editSession, actor);
                 editSession.undo(newEditSession);
             }
             return editSession;
@@ -266,12 +262,7 @@ public class LocalSession {
             EditSession editSession = history.get(historyPointer);
             try (EditSession newEditSession = WorldEdit.getInstance().getEditSessionFactory()
                     .getEditSession(editSession.getWorld(), -1, newBlockBag, actor)) {
-                newEditSession.enableStandardMode();
-                newEditSession.setReorderMode(reorderMode);
-                newEditSession.setFastMode(fastMode);
-                if (newEditSession.getSurvivalExtent() != null) {
-                    newEditSession.getSurvivalExtent().setStripNbt(!actor.hasPermission("worldedit.setnbt"));
-                }
+                prepareEditingExtents(editSession, actor);
                 editSession.redo(newEditSession);
             }
             ++historyPointer;
@@ -292,6 +283,14 @@ public class LocalSession {
 
     public void setWorldOverride(@Nullable World worldOverride) {
         this.worldOverride = worldOverride;
+    }
+
+    public boolean isTickingWatchdog() {
+        return tickingWatchdog;
+    }
+
+    public void setTickingWatchdog(boolean tickingWatchdog) {
+        this.tickingWatchdog = tickingWatchdog;
     }
 
     /**
@@ -519,6 +518,14 @@ public class LocalSession {
         }
 
         return selector.getPrimaryPosition();
+    }
+
+    public void setPlaceAtPos1(boolean placeAtPos1) {
+        this.placeAtPos1 = placeAtPos1;
+    }
+
+    public boolean isPlaceAtPos1() {
+        return placeAtPos1;
     }
 
     /**
@@ -937,14 +944,19 @@ public class LocalSession {
         }
         Request.request().setEditSession(editSession);
 
+        editSession.setMask(mask);
+        prepareEditingExtents(editSession, actor);
+
+        return editSession;
+    }
+
+    private void prepareEditingExtents(EditSession editSession, Actor actor) {
         editSession.setFastMode(fastMode);
         editSession.setReorderMode(reorderMode);
-        editSession.setMask(mask);
         if (editSession.getSurvivalExtent() != null) {
             editSession.getSurvivalExtent().setStripNbt(!actor.hasPermission("worldedit.setnbt"));
         }
-
-        return editSession;
+        editSession.setTickingWatchdog(tickingWatchdog);
     }
 
     /**

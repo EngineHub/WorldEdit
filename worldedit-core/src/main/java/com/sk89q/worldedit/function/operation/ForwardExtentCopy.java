@@ -22,6 +22,7 @@ package com.sk89q.worldedit.function.operation;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.entity.Entity;
@@ -46,6 +47,10 @@ import com.sk89q.worldedit.math.transform.Identity;
 import com.sk89q.worldedit.math.transform.Transform;
 import com.sk89q.worldedit.regions.FlatRegion;
 import com.sk89q.worldedit.regions.Region;
+import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.util.formatting.text.TextComponent;
+import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
+import com.sk89q.worldedit.util.formatting.text.format.TextColor;
 
 import java.util.List;
 
@@ -337,25 +342,15 @@ public class ForwardExtentCopy implements Operation {
     }
 
     @Override
-    public void addStatusMessages(List<String> messages) {
-        StringBuilder msg = new StringBuilder();
-        msg.append(affectedBlocks).append(" block(s)");
-        if (affectedBiomeCols > 0) {
-            if (affectedEntities > 0) {
-                msg.append(", ");
-            } else {
-                msg.append(" and ");
-            }
-            msg.append(affectedBiomeCols).append(" biome(s)");
-        }
-        if (affectedEntities > 0) {
-            if (affectedBiomeCols > 0) {
-                msg.append(",");
-            }
-            msg.append(" and ").append(affectedEntities).append(" entities(s)");
-        }
-        msg.append(" affected.");
-        messages.add(msg.toString());
+    public Iterable<Component> getStatusMessages() {
+        return ImmutableList.of(
+            TranslatableComponent.of("worldedit.operation.affected.block",
+                    TextComponent.of(affectedBlocks)).color(TextColor.LIGHT_PURPLE),
+            TranslatableComponent.of("worldedit.operation.affected.biome",
+                    TextComponent.of(affectedBiomeCols)).color(TextColor.LIGHT_PURPLE),
+            TranslatableComponent.of("worldedit.operation.affected.entity",
+                    TextComponent.of(affectedEntities)).color(TextColor.LIGHT_PURPLE)
+        );
     }
 
 }

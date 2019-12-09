@@ -101,7 +101,7 @@ public class ExpandCommands {
             .defaultsTo(ImmutableList.of(HeightConverter.DEFAULT_VALUE))
             .build();
         return commandManager.newCommand("vert")
-            .description(TextComponent.of("Vertically expand the selection to world limits."))
+            .description(TranslatableComponent.of("worldedit.expand.description.vert"))
             .action(parameters -> {
                 int height = requireNonNull(parameters.valueOf(heightPart)
                     .asSingle(Key.of(int.class, VertHeight.class)));
@@ -126,10 +126,12 @@ public class ExpandCommands {
             session.getRegionSelector(player.getWorld()).learnChanges();
             int newSize = region.getArea();
             session.getRegionSelector(player.getWorld()).explainRegionAdjust(player, session);
-            player.print("Region expanded " + (newSize - oldSize)
-                + " blocks [top-to-bottom].");
+            int changeSize = newSize - oldSize;
+            player.printInfo(
+                    TranslatableComponent.of("worldedit.expand.expanded.vert", TextComponent.of(changeSize))
+            );
         } catch (RegionOperationException e) {
-            player.printError(e.getMessage());
+            player.printError(TextComponent.of(e.getMessage()));
         }
     }
 
@@ -164,7 +166,8 @@ public class ExpandCommands {
 
         session.getRegionSelector(world).explainRegionAdjust(actor, session);
 
-        actor.print("Region expanded " + (newSize - oldSize) + " block(s).");
+        int changeSize = newSize - oldSize;
+        actor.printInfo(TranslatableComponent.of("worldedit.expand.expanded", TextComponent.of(changeSize)));
     }
 
 }

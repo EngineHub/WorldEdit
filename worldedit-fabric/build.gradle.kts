@@ -1,25 +1,5 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import net.fabricmc.loom.task.RemapJarTask
-import kotlin.reflect.KClass
-
-buildscript {
-    repositories {
-        jcenter()
-        maven {
-            name = "Fabric"
-            url = uri("https://maven.fabricmc.net/")
-        }
-        maven {
-            name = "sponge"
-            url = uri("https://repo.spongepowered.org/maven")
-        }
-    }
-
-    dependencies {
-        "classpath"("net.fabricmc:fabric-loom:0.2.3-SNAPSHOT")
-        "classpath"("org.spongepowered:mixin:0.7.11-SNAPSHOT")
-    }
-}
 
 applyPlatformAndCoreConfiguration()
 applyShadowConfiguration()
@@ -27,9 +7,8 @@ applyShadowConfiguration()
 apply(plugin = "fabric-loom")
 
 val minecraftVersion = "1.14.4"
-val fabricVersion = "0.3.0+build.200"
-val yarnMappings = "1.14.4+build.1"
-val loaderVersion = "0.4.8+build.155"
+val yarnMappings = "1.14.4+build.12"
+val loaderVersion = "0.6.2+build.166"
 
 configurations.all {
     resolutionStrategy {
@@ -45,7 +24,20 @@ dependencies {
     "mappings"("net.fabricmc:yarn:$yarnMappings")
     "modCompile"("net.fabricmc:fabric-loader:$loaderVersion")
 
-    "modCompile"("net.fabricmc.fabric-api:fabric-api:$fabricVersion")
+    listOf(
+        "net.fabricmc.fabric-api:fabric-api-base:0.1.0+2983bc0442",
+        "net.fabricmc.fabric-api:fabric-events-interaction-v0:0.1.1+591e97ae42",
+        "net.fabricmc.fabric-api:fabric-events-lifecycle-v0:0.1.1+591e97ae42",
+        "net.fabricmc.fabric-api:fabric-networking-v0:0.1.3+591e97ae42"
+    ).forEach {
+        "include"(it)
+        "modImplementation"(it)
+    }
+
+    // Hook these up manually, because Fabric doesn't seem to quite do it properly.
+    "compileClasspath"("net.fabricmc:sponge-mixin:${project.versions.mixin}")
+    "annotationProcessor"("net.fabricmc:sponge-mixin:${project.versions.mixin}")
+    "annotationProcessor"("net.fabricmc:fabric-loom:${project.versions.loom}")
 
     "testCompile"("org.mockito:mockito-core:1.9.0-rc1")
 }
@@ -81,9 +73,11 @@ tasks.named<ShadowJar>("shadowJar") {
     dependencies {
         relocate("org.slf4j", "com.sk89q.worldedit.slf4j")
         relocate("org.apache.logging.slf4j", "com.sk89q.worldedit.log4jbridge")
+        relocate("org.antlr.v4", "com.sk89q.worldedit.antlr4")
 
         include(dependency("org.slf4j:slf4j-api"))
         include(dependency("org.apache.logging.log4j:log4j-slf4j-impl"))
+        include(dependency("org.antlr:antlr4-runtime"))
     }
 }
 
@@ -96,16 +90,12 @@ artifacts {
     add("archives", tasks.named("deobfJar"))
 }
 
-// intellij has trouble detecting RemapJarTask as a subclass of Task
-@Suppress("UNCHECKED_CAST")
-val remapJarIntellijHack = RemapJarTask::class as KClass<Task>
-tasks.register("remapShadowJar", remapJarIntellijHack) {
-    (this as RemapJarTask).run {
-        val shadowJar = tasks.getByName<ShadowJar>("shadowJar")
-        dependsOn(shadowJar)
-        setInput(shadowJar.archiveFile)
-        setOutput(shadowJar.archiveFile.get().asFile.absolutePath.replace(Regex("-dev\\.jar$"), ".jar"))
-    }
+tasks.register<RemapJarTask>("remapShadowJar") {
+    val shadowJar = tasks.getByName<ShadowJar>("shadowJar")
+    dependsOn(shadowJar)
+    input.set(shadowJar.archiveFile)
+    archiveFileName.set(shadowJar.archiveFileName.get().replace(Regex("-dev\\.jar$"), ".jar"))
+    addNestedDependencies.set(true)
 }
 
 tasks.named("assemble").configure {

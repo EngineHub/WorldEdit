@@ -21,14 +21,17 @@ package com.sk89q.worldedit.function.visitor;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import com.google.common.collect.ImmutableList;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.function.FlatRegionFunction;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.RunContext;
 import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.regions.FlatRegion;
-
-import java.util.List;
+import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.util.formatting.text.TextComponent;
+import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
+import com.sk89q.worldedit.util.formatting.text.format.TextColor;
 
 /**
  * Applies region functions to columns in a {@link FlatRegion}.
@@ -78,8 +81,11 @@ public class FlatRegionVisitor implements Operation {
     }
 
     @Override
-    public void addStatusMessages(List<String> messages) {
-        messages.add(getAffected() + " columns affected");
+    public Iterable<Component> getStatusMessages() {
+        return ImmutableList.of(TranslatableComponent.of(
+                "worldedit.operation.affected.column",
+                TextComponent.of(getAffected())
+        ).color(TextColor.LIGHT_PURPLE));
     }
 
 }

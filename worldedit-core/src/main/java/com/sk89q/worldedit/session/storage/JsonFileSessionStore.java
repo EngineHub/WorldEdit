@@ -88,7 +88,15 @@ public class JsonFileSessionStore implements SessionStore {
         try (Closer closer = Closer.create()) {
             FileReader fr = closer.register(new FileReader(file));
             BufferedReader br = closer.register(new BufferedReader(fr));
-            return gson.fromJson(br, LocalSession.class);
+            LocalSession session = gson.fromJson(br, LocalSession.class);
+            if (session == null) {
+                log.warn("Loaded a null session from {}, creating new session", file);
+                if (!file.delete()) {
+                    log.warn("Failed to delete corrupted session {}", file);
+                }
+                session = new LocalSession();
+            }
+            return session;
         } catch (JsonParseException e) {
             throw new IOException(e);
         } catch (FileNotFoundException e) {
@@ -98,6 +106,7 @@ public class JsonFileSessionStore implements SessionStore {
 
     @Override
     public void save(UUID id, LocalSession session) throws IOException {
+        checkNotNull(session);
         File finalFile = getPath(id);
         File tempFile = new File(finalFile.getParentFile(), finalFile.getName() + ".tmp");
 
@@ -113,6 +122,10 @@ public class JsonFileSessionStore implements SessionStore {
             if (!finalFile.delete()) {
                 log.warn("Failed to delete " + finalFile.getPath() + " so the .tmp file can replace it");
             }
+        }
+
+        if (tempFile.length() == 0) {
+            throw new IllegalStateException("Gson wrote zero bytes");
         }
 
         if (!tempFile.renameTo(finalFile)) {

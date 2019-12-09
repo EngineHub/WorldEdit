@@ -65,6 +65,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.world.WorldInitEvent;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -332,13 +333,17 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
-        // Add the command to the array because the underlying command handling
-        // code of WorldEdit expects it
-        String[] split = new String[args.length + 1];
-        System.arraycopy(args, 0, split, 1, args.length);
-        split[0] = "/" + commandLabel;
+        int plSep = commandLabel.indexOf(":");
+        if (plSep >= 0 && plSep < commandLabel.length() + 1) {
+            commandLabel = commandLabel.substring(plSep + 1);
+        }
 
-        CommandEvent event = new CommandEvent(wrapCommandSender(sender), Joiner.on(" ").join(split));
+        StringBuilder sb = new StringBuilder("/").append(commandLabel);
+        if (args.length > 0) {
+            sb.append(" ");
+        }
+        String arguments = Joiner.on(" ").appendTo(sb, args).toString();
+        CommandEvent event = new CommandEvent(wrapCommandSender(sender), arguments);
         getWorldEdit().getEventBus().post(event);
 
         return true;
@@ -346,13 +351,16 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command cmd, String commandLabel, String[] args) {
-        // Add the command to the array because the underlying command handling
-        // code of WorldEdit expects it
-        String[] split = new String[args.length + 1];
-        System.arraycopy(args, 0, split, 1, args.length);
-        split[0] = "/" + commandLabel;
+        int plSep = commandLabel.indexOf(":");
+        if (plSep >= 0 && plSep < commandLabel.length() + 1) {
+            commandLabel = commandLabel.substring(plSep + 1);
+        }
 
-        String arguments = Joiner.on(" ").join(split);
+        StringBuilder sb = new StringBuilder("/").append(commandLabel);
+        if (args.length > 0) {
+            sb.append(" ");
+        }
+        String arguments = Joiner.on(" ").appendTo(sb, args).toString();
         CommandSuggestionEvent event = new CommandSuggestionEvent(wrapCommandSender(sender), arguments);
         getWorldEdit().getEventBus().post(event);
         return CommandUtil.fixSuggestions(arguments, event.getSuggestions());
@@ -495,15 +503,24 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
             String buffer = event.getBuffer();
             int firstSpace = buffer.indexOf(' ');
             if (firstSpace < 0) return;
-            final String label = buffer.substring(0, firstSpace);
+            String label = buffer.substring(1, firstSpace);
+            Plugin owner = server.getDynamicCommands().getCommandOwner(label);
+            if (owner != WorldEditPlugin.this) {
+                return;
+            }
+            int plSep = label.indexOf(":");
+            if (plSep >= 0 && plSep < label.length() + 1) {
+                label = label.substring(plSep + 1);
+                buffer = "/" + buffer.substring(plSep + 2);
+            }
             final Optional<org.enginehub.piston.Command> command
                     = WorldEdit.getInstance().getPlatformManager().getPlatformCommandManager().getCommandManager().getCommand(label);
             if (!command.isPresent()) return;
 
-            CommandSuggestionEvent suggestEvent = new CommandSuggestionEvent(wrapCommandSender(event.getSender()), event.getBuffer());
+            CommandSuggestionEvent suggestEvent = new CommandSuggestionEvent(wrapCommandSender(event.getSender()), buffer);
             getWorldEdit().getEventBus().post(suggestEvent);
 
-            event.setCompletions(CommandUtil.fixSuggestions(event.getBuffer(), suggestEvent.getSuggestions()));
+            event.setCompletions(CommandUtil.fixSuggestions(buffer, suggestEvent.getSuggestions()));
             event.setHandled(true);
         }
     }

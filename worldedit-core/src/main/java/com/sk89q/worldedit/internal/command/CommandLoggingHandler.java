@@ -28,6 +28,7 @@ import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.world.World;
 import org.enginehub.piston.CommandParameters;
+import org.enginehub.piston.exception.CommandException;
 import org.enginehub.piston.gen.CommandCallListener;
 import org.enginehub.piston.inject.Key;
 
@@ -73,15 +74,23 @@ public class CommandLoggingHandler implements CommandCallListener, AutoCloseable
             logMode = loggingAnnotation.value();
         }
 
-        Optional<Actor> playerOpt = parameters.injectedValue(Key.of(Actor.class));
-        Optional<World> worldOpt = parameters.injectedValue(Key.of(World.class));
+        Optional<Actor> actorOpt = parameters.injectedValue(Key.of(Actor.class));
 
-        if (!playerOpt.isPresent() || !worldOpt.isPresent()) {
+        if (!actorOpt.isPresent()) {
             return;
         }
+        Actor actor = actorOpt.get();
 
-        Actor actor = playerOpt.get();
-        World world = worldOpt.get();
+        World world;
+        try {
+            Optional<World> worldOpt = parameters.injectedValue(Key.of(World.class));
+            if (!worldOpt.isPresent()) {
+                return;
+            }
+            world = worldOpt.get();
+        } catch (CommandException ex) {
+            return;
+        }
 
         builder.append("WorldEdit: ").append(actor.getName());
         builder.append(" (in \"").append(world.getName()).append("\")");
