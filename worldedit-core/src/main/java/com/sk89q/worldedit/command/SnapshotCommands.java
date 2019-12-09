@@ -31,6 +31,7 @@ import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.util.formatting.component.PaginationBox;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
+import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.util.formatting.text.event.ClickEvent;
 import com.sk89q.worldedit.util.formatting.text.event.HoverEvent;
 import com.sk89q.worldedit.util.formatting.text.format.TextColor;
@@ -73,8 +74,8 @@ public class SnapshotCommands {
 
     static void checkSnapshotsConfigured(LocalConfiguration localConfiguration) {
         if (!localConfiguration.snapshotsConfigured) {
-            throw new StopExecutionException(TextComponent.of(
-                "Snapshot/backup restore is not configured."
+            throw new StopExecutionException(TranslatableComponent.of(
+                "worldedit.restore.not-configured"
             ));
         }
     }
@@ -119,7 +120,10 @@ public class SnapshotCommands {
         if (!snapshots.isEmpty()) {
             actor.print(new SnapshotListBox(world.getName(), snapshots).create(page));
         } else {
-            actor.printError("No snapshots were found for world '" + world.getName() + "'");
+            actor.printError(TranslatableComponent.of(
+                "worldedit.restore.none-for-specific-world",
+                TextComponent.of(world.getName())
+            ));
 
             if (config.snapshotDatabase instanceof FileSystemSnapshotDatabase) {
                 FileSystemSnapshotDatabase db = (FileSystemSnapshotDatabase) config.snapshotDatabase;
@@ -165,9 +169,9 @@ public class SnapshotCommands {
                     session.getSnapshotExperimental().close();
                 }
                 session.setSnapshot(null);
-                actor.print("Now using newest snapshot.");
+                actor.printInfo(TranslatableComponent.of("worldedit.snapshot.use.newest"));
             } else {
-                actor.printError("No snapshots were found for this world.");
+                actor.printError(TranslatableComponent.of("worldedit.restore.none-for-world"));
             }
         } else {
             URI uri = resolveSnapshotName(config, name);
@@ -177,9 +181,11 @@ public class SnapshotCommands {
                     session.getSnapshotExperimental().close();
                 }
                 session.setSnapshotExperimental(snapshot.get());
-                actor.print("Snapshot set to: " + name);
+                actor.printInfo(TranslatableComponent.of(
+                    "worldedit.snapshot.use", TextComponent.of(name)
+                ));
             } else {
-                actor.printError("That snapshot does not exist or is not available.");
+                actor.printError(TranslatableComponent.of("worldedit.restore.not-available"));
             }
         }
     }
@@ -201,7 +207,7 @@ public class SnapshotCommands {
         }
 
         if (index < 1) {
-            actor.printError("Invalid index, must be greater than or equal to 1.");
+            actor.printError(TranslatableComponent.of("worldedit.snapshot.index-above-0"));
             return;
         }
 
@@ -212,19 +218,25 @@ public class SnapshotCommands {
                 .collect(toList());
         }
         if (snapshots.size() < index) {
-            actor.printError("Invalid index, must be between 1 and " + snapshots.size() + ".");
+            actor.printError(TranslatableComponent.of(
+                "worldedit.snapshot.index-oob",
+                TextComponent.of(snapshots.size())
+            ));
             return;
         }
         Snapshot snapshot = snapshots.get(index - 1);
         if (snapshot == null) {
-            actor.printError("That snapshot does not exist or is not available.");
+            actor.printError(TranslatableComponent.of("worldedit.restore.not-available"));
             return;
         }
         if (session.getSnapshotExperimental() != null) {
             session.getSnapshotExperimental().close();
         }
         session.setSnapshotExperimental(snapshot);
-        actor.print("Snapshot set to: " + snapshot.getInfo().getDisplayName());
+        actor.printInfo(TranslatableComponent.of(
+            "worldedit.snapshot.use",
+            TextComponent.of(snapshot.getInfo().getDisplayName())
+        ));
     }
 
     @Command(
@@ -251,14 +263,19 @@ public class SnapshotCommands {
         }
 
         if (snapshot == null) {
-            actor.printError("Couldn't find a snapshot before "
-                + dateFormat.withZone(session.getTimeZone()).format(date) + ".");
+            actor.printError(TranslatableComponent.of(
+                "worldedit.snapshot.none-before",
+                TextComponent.of(dateFormat.withZone(session.getTimeZone()).format(date)))
+            );
         } else {
             if (session.getSnapshotExperimental() != null) {
                 session.getSnapshotExperimental().close();
             }
             session.setSnapshotExperimental(snapshot);
-            actor.print("Snapshot set to: " + snapshot.getInfo().getDisplayName());
+            actor.printInfo(TranslatableComponent.of(
+                "worldedit.snapshot.use",
+                TextComponent.of(snapshot.getInfo().getDisplayName())
+            ));
         }
     }
 
@@ -285,14 +302,19 @@ public class SnapshotCommands {
                 .findFirst().orElse(null);
         }
         if (snapshot == null) {
-            actor.printError("Couldn't find a snapshot after "
-                + dateFormat.withZone(session.getTimeZone()).format(date) + ".");
+            actor.printError(TranslatableComponent.of(
+                "worldedit.snapshot.none-after",
+                TextComponent.of(dateFormat.withZone(session.getTimeZone()).format(date)))
+            );
         } else {
             if (session.getSnapshotExperimental() != null) {
                 session.getSnapshotExperimental().close();
             }
             session.setSnapshotExperimental(snapshot);
-            actor.print("Snapshot set to: " + snapshot.getInfo().getDisplayName());
+            actor.printInfo(TranslatableComponent.of(
+                "worldedit.snapshot.use",
+                TextComponent.of(snapshot.getInfo().getDisplayName())
+            ));
         }
     }
 
