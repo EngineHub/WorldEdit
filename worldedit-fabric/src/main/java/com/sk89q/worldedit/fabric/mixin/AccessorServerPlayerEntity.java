@@ -17,23 +17,15 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.sponge;
+package com.sk89q.worldedit.fabric.mixin;
 
-import com.sk89q.worldedit.util.formatting.WorldEditText;
-import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.serializer.gson.GsonComponentSerializer;
-import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.serializer.TextSerializers;
+import net.minecraft.server.network.ServerPlayerEntity;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.gen.Accessor;
 
-import java.util.Locale;
+@Mixin(ServerPlayerEntity.class)
+public interface AccessorServerPlayerEntity {
 
-public class SpongeTextAdapter {
-
-    public static Text convert(Component component, Locale locale) {
-        component = WorldEditText.format(component, locale);
-        return TextSerializers.JSON.deserialize(GsonComponentSerializer.INSTANCE.serialize(component));
-    }
-
-    private SpongeTextAdapter() {
-    }
+    @Accessor
+    String getClientLanguage();
 }

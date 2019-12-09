@@ -33,6 +33,7 @@ import com.sk89q.worldedit.session.SessionKey;
 import com.sk89q.worldedit.util.HandSide;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.formatting.WorldEditText;
+import com.sk89q.worldedit.util.formatting.component.TextUtils;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.serializer.gson.GsonComponentSerializer;
 import com.sk89q.worldedit.world.World;
@@ -55,6 +56,7 @@ import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 
 import java.io.IOException;
+import java.util.Locale;
 import java.util.UUID;
 
 import javax.annotation.Nullable;
@@ -153,7 +155,7 @@ public class ForgePlayer extends AbstractPlayerActor {
 
     @Override
     public void print(Component component) {
-        this.player.sendMessage(ITextComponent.Serializer.fromJson(GsonComponentSerializer.INSTANCE.serialize(WorldEditText.format(component))));
+        this.player.sendMessage(ITextComponent.Serializer.fromJson(GsonComponentSerializer.INSTANCE.serialize(WorldEditText.format(component, getLocale()))));
     }
 
     private void sendColorized(String msg, TextFormatting formatting) {
@@ -201,6 +203,11 @@ public class ForgePlayer extends AbstractPlayerActor {
             player.abilities.isFlying = flying;
             player.sendPlayerAbilities();
         }
+    }
+
+    @Override
+    public Locale getLocale() {
+        return TextUtils.getLocaleByMinecraftTag(player.language);
     }
 
     @Override

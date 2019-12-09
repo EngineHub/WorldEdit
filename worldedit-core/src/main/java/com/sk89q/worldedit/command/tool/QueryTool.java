@@ -29,6 +29,7 @@ import com.sk89q.worldedit.internal.block.BlockStateIdAccess;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
+import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.util.formatting.text.event.HoverEvent;
 import com.sk89q.worldedit.util.formatting.text.format.TextColor;
 import com.sk89q.worldedit.world.World;
@@ -58,15 +59,15 @@ public class QueryTool implements BlockTool {
         builder.append(TextComponent.of("@" + clicked.toVector().toBlockPoint() + ": ", TextColor.BLUE));
         builder.append(TextComponent.of(block.getBlockType().getName(), TextColor.YELLOW));
         builder.append(TextComponent.of(" (" + block + ") ", TextColor.GRAY)
-                .hoverEvent(HoverEvent.of(HoverEvent.Action.SHOW_TEXT, TextComponent.of("Block state"))));
+                .hoverEvent(HoverEvent.of(HoverEvent.Action.SHOW_TEXT, TranslatableComponent.of("worldedit.tool.info.blockstate.hover"))));
         final OptionalInt internalId = BlockStateIdAccess.getBlockStateId(block.toImmutableState());
         if (internalId.isPresent()) {
             builder.append(TextComponent.of(" (" + internalId.getAsInt() + ") ", TextColor.DARK_GRAY)
-                .hoverEvent(HoverEvent.of(HoverEvent.Action.SHOW_TEXT, TextComponent.of("Internal ID"))));
+                .hoverEvent(HoverEvent.of(HoverEvent.Action.SHOW_TEXT, TranslatableComponent.of("worldedit.tool.info.internalid.hover"))));
         }
         builder.append(TextComponent.of(" (" + world.getBlockLightLevel(blockPoint) + "/"
                     + world.getBlockLightLevel(blockPoint.add(0, 1, 0)) + ")", TextColor.WHITE)
-                .hoverEvent(HoverEvent.of(HoverEvent.Action.SHOW_TEXT, TextComponent.of("Block Light/Light Above"))));
+                .hoverEvent(HoverEvent.of(HoverEvent.Action.SHOW_TEXT, TranslatableComponent.of("worldedit.tool.info.light.hover"))));
 
         player.print(builder.build());
 

@@ -21,13 +21,16 @@ package com.sk89q.worldedit.function.operation;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.util.formatting.text.Component;
 
 import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.Deque;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Executes multiple queues in order.
@@ -105,10 +108,8 @@ public class OperationQueue implements Operation {
     }
 
     @Override
-    public void addStatusMessages(List<String> messages) {
-        for (Operation operation : operations) {
-            operation.addStatusMessages(messages);
-        }
+    public Iterable<Component> getStatusMessages() {
+        return Iterables.concat(operations.stream().map(Operation::getStatusMessages).collect(Collectors.toList()));
     }
 
 }

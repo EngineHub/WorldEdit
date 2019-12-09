@@ -125,6 +125,8 @@ public class YAMLConfiguration extends LocalConfiguration {
         shellSaveType = type.isEmpty() ? null : type;
 
         extendedYLimit = config.getBoolean("compat.extended-y-limit", false);
+
+        setDefaultLocaleName(config.getString("default-locale", defaultLocaleName));
     }
 
     public void unload() {

@@ -27,6 +27,8 @@ import com.sk89q.worldedit.command.util.CommandPermissions;
 import com.sk89q.worldedit.command.util.CommandPermissionsConditionGenerator;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
+import com.sk89q.worldedit.util.formatting.text.TextComponent;
+import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import org.enginehub.piston.annotation.Command;
 import org.enginehub.piston.annotation.CommandContainer;
 import org.enginehub.piston.annotation.param.Arg;
@@ -68,7 +70,7 @@ public class HistoryCommands {
             player.checkPermission("worldedit.history.undo.other");
             undoSession = worldEdit.getSessionManager().findByName(playerName);
             if (undoSession == null) {
-                player.printError("Unable to find session for " + playerName);
+                player.printError(TranslatableComponent.of("worldedit.session.cant-find-session", TextComponent.of(playerName)));
                 return;
             }
         }
@@ -83,9 +85,9 @@ public class HistoryCommands {
             }
         }
         if (timesUndone > 0) {
-            player.print("Undid " + timesUndone + " available edits.");
+            player.printInfo(TranslatableComponent.of("worldedit.undo.undone", TextComponent.of(timesUndone)));
         } else {
-            player.printError("Nothing left to undo.");
+            player.printError(TranslatableComponent.of("worldedit.undo.none"));
         }
     }
 
@@ -106,7 +108,7 @@ public class HistoryCommands {
             player.checkPermission("worldedit.history.redo.other");
             redoSession = worldEdit.getSessionManager().findByName(playerName);
             if (redoSession == null) {
-                player.printError("Unable to find session for " + playerName);
+                player.printError(TranslatableComponent.of("worldedit.session.cant-find-session", TextComponent.of(playerName)));
                 return;
             }
         }
@@ -121,9 +123,9 @@ public class HistoryCommands {
             }
         }
         if (timesRedone > 0) {
-            player.print("Redid " + timesRedone + " available edits.");
+            player.printInfo(TranslatableComponent.of("worldedit.redo.redid", TextComponent.of(timesRedone)));
         } else {
-            player.printError("Nothing left to redo.");
+            player.printError(TranslatableComponent.of("worldedit.redo.none"));
         }
     }
 
@@ -135,7 +137,7 @@ public class HistoryCommands {
     @CommandPermissions("worldedit.history.clear")
     public void clearHistory(Actor actor, LocalSession session) {
         session.clearHistory();
-        actor.print("History cleared.");
+        actor.printInfo(TranslatableComponent.of("worldedit.clearhistory.cleared"));
     }
 
 }

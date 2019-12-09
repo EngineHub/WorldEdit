@@ -22,6 +22,7 @@ package com.sk89q.worldedit.function.factory;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.sk89q.worldedit.util.GuavaUtil.firstNonNull;
 
+import com.google.common.collect.ImmutableList;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
@@ -36,8 +37,10 @@ import com.sk89q.worldedit.internal.expression.ExpressionException;
 import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.regions.NullRegion;
 import com.sk89q.worldedit.regions.Region;
-
-import java.util.List;
+import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.util.formatting.text.TextComponent;
+import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
+import com.sk89q.worldedit.util.formatting.text.format.TextColor;
 
 public class Deform implements Contextual<Operation> {
 
@@ -186,9 +189,11 @@ public class Deform implements Contextual<Operation> {
         public void cancel() {
         }
 
+
         @Override
-        public void addStatusMessages(List<String> messages) {
-            messages.add("deformed using " + expression);
+        public Iterable<Component> getStatusMessages() {
+            return ImmutableList.of(TranslatableComponent.of("worldedit.operation.deform.expression",
+                    TextComponent.of(expression).color(TextColor.LIGHT_PURPLE)));
         }
 
     }

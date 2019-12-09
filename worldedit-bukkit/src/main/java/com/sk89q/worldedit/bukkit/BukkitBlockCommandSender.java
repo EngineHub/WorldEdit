@@ -21,6 +21,7 @@ package com.sk89q.worldedit.bukkit;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.extension.platform.AbstractNonPlayerActor;
 import com.sk89q.worldedit.extension.platform.Locatable;
 import com.sk89q.worldedit.extent.Extent;
@@ -36,9 +37,8 @@ import org.bukkit.Material;
 import org.bukkit.command.BlockCommandSender;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Locale;
 import java.util.UUID;
-
-import javax.annotation.Nullable;
 
 public class BukkitBlockCommandSender extends AbstractNonPlayerActor implements Locatable {
 
@@ -94,7 +94,12 @@ public class BukkitBlockCommandSender extends AbstractNonPlayerActor implements 
 
     @Override
     public void print(Component component) {
-        TextAdapter.sendComponent(sender, WorldEditText.format(component));
+        TextAdapter.sendComponent(sender, WorldEditText.format(component, getLocale()));
+    }
+
+    @Override
+    public Locale getLocale() {
+        return WorldEdit.getInstance().getConfiguration().defaultLocale;
     }
 
     @Override

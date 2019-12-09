@@ -32,6 +32,9 @@ import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.RegionSelector;
 import com.sk89q.worldedit.regions.selector.limit.SelectorLimits;
+import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.util.formatting.text.TextComponent;
+import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.world.World;
 
 import java.util.ArrayList;
@@ -154,9 +157,13 @@ public class CuboidRegionSelector implements RegionSelector, CUIRegion {
         checkNotNull(pos);
 
         if (position1 != null && position2 != null) {
-            player.print("First position set to " + position1 + " (" + region.getArea() + ").");
-        } else {
-            player.print("First position set to " + position1 + ".");
+            player.printInfo(TranslatableComponent.of(
+                    "worldedit.selection.cuboid.explain.primary-area",
+                    TextComponent.of(position1.toString()),
+                    TextComponent.of(region.getArea())
+            ));
+        } else if (position1 != null) {
+            player.printInfo(TranslatableComponent.of("worldedit.selection.cuboid.explain.primary", TextComponent.of(position1.toString())));
         }
 
         session.dispatchCUIEvent(player, new SelectionPointEvent(0, pos, getArea()));
@@ -169,9 +176,13 @@ public class CuboidRegionSelector implements RegionSelector, CUIRegion {
         checkNotNull(pos);
 
         if (position1 != null && position2 != null) {
-            player.print("Second position set to " + position2 + " (" + region.getArea() + ").");
-        } else {
-            player.print("Second position set to " + position2 + ".");
+            player.printInfo(TranslatableComponent.of(
+                    "worldedit.selection.cuboid.explain.secondary-area",
+                    TextComponent.of(position2.toString()),
+                    TextComponent.of(region.getArea())
+            ));
+        } else if (position2 != null) {
+            player.printInfo(TranslatableComponent.of("worldedit.selection.cuboid.explain.secondary", TextComponent.of(position2.toString())));
         }
 
         session.dispatchCUIEvent(player, new SelectionPointEvent(1, pos, getArea()));
@@ -241,15 +252,15 @@ public class CuboidRegionSelector implements RegionSelector, CUIRegion {
     }
 
     @Override
-    public List<String> getInformationLines() {
-        final List<String> lines = new ArrayList<>();
+    public List<Component> getSelectionInfoLines() {
+        final List<Component> lines = new ArrayList<>();
 
         if (position1 != null) {
-            lines.add("Position 1: " + position1);
+            lines.add(TranslatableComponent.of("worldedit.selection.cuboid.info.pos1", TextComponent.of(position1.toString())));
         }
 
         if (position2 != null) {
-            lines.add("Position 2: " + position2);
+            lines.add(TranslatableComponent.of("worldedit.selection.cuboid.info.pos2", TextComponent.of(position2.toString())));
         }
 
         return lines;

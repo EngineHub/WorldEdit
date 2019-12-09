@@ -21,6 +21,7 @@ package com.sk89q.worldedit.cli;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.internal.cui.CUIEvent;
 import com.sk89q.worldedit.session.SessionKey;
@@ -32,6 +33,7 @@ import com.sk89q.worldedit.util.formatting.text.serializer.plain.PlainComponentS
 import org.slf4j.Logger;
 
 import java.io.File;
+import java.util.Locale;
 import java.util.UUID;
 
 public class CLICommandSender implements Actor {
@@ -97,7 +99,7 @@ public class CLICommandSender implements Actor {
 
     @Override
     public void print(Component component) {
-        print(PlainComponentSerializer.INSTANCE.serialize(WorldEditText.format(component)));
+        print(PlainComponentSerializer.INSTANCE.serialize(WorldEditText.format(component, getLocale())));
     }
 
     @Override
@@ -136,6 +138,11 @@ public class CLICommandSender implements Actor {
 
     @Override
     public void dispatchCUIEvent(CUIEvent event) {
+    }
+
+    @Override
+    public Locale getLocale() {
+        return WorldEdit.getInstance().getConfiguration().defaultLocale;
     }
 
     @Override

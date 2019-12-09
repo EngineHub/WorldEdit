@@ -30,9 +30,13 @@ import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.event.platform.ConfigurationLoadEvent;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Capability;
-import com.sk89q.worldedit.extension.platform.NoCapablePlatformException;
 import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.extension.platform.PlatformManager;
+import com.sk89q.worldedit.util.formatting.component.MessageBox;
+import com.sk89q.worldedit.util.formatting.component.TextComponentProducer;
+import com.sk89q.worldedit.util.formatting.text.TextComponent;
+import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
+import com.sk89q.worldedit.util.formatting.text.format.TextColor;
 import com.sk89q.worldedit.util.paste.ActorCallbackPaste;
 import com.sk89q.worldedit.util.report.ConfigReport;
 import com.sk89q.worldedit.util.report.ReportList;
@@ -45,14 +49,13 @@ import org.enginehub.piston.annotation.param.Switch;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.time.zone.ZoneRulesException;
 import java.util.List;
-import java.util.Locale;
 
 @CommandContainer(superTypes = CommandPermissionsConditionGenerator.Registration.class)
 public class WorldEditCommands {
@@ -70,25 +73,31 @@ public class WorldEditCommands {
         desc = "Get WorldEdit version"
     )
     public void version(Actor actor) {
-        actor.print("WorldEdit version " + WorldEdit.getVersion());
-        actor.print("https://github.com/EngineHub/worldedit/");
+        actor.printInfo(TranslatableComponent.of("worldedit.version.version", TextComponent.of(WorldEdit.getVersion())));
+        actor.printInfo(TextComponent.of("https://github.com/EngineHub/WorldEdit/"));
 
         PlatformManager pm = we.getPlatformManager();
 
-        actor.printDebug("----------- Platforms -----------");
+        TextComponentProducer producer = new TextComponentProducer();
         for (Platform platform : pm.getPlatforms()) {
-            actor.printDebug(String.format("* %s (%s)", platform.getPlatformName(), platform.getPlatformVersion()));
+            producer.append(
+                    TextComponent.of("* ", TextColor.GRAY)
+                    .append(TextComponent.of(platform.getPlatformName()))
+                    .append(TextComponent.of("(" + platform.getPlatformVersion() + ")"))
+            ).newline();
         }
+        actor.print(new MessageBox("Platforms", producer, TextColor.GRAY).create());
 
-        actor.printDebug("----------- Capabilities -----------");
+        producer.reset();
         for (Capability capability : Capability.values()) {
-            try {
-                Platform platform = pm.queryCapability(capability);
-                actor.printDebug(String.format("%s: %s", capability.name(), platform != null ? platform.getPlatformName() : "NONE"));
-            } catch (NoCapablePlatformException e) {
-                actor.printDebug(String.format("%s: %s", capability.name(), "NONE"));
-            }
+            Platform platform = pm.queryCapability(capability);
+            producer.append(
+                    TextComponent.of(capability.name(), TextColor.GRAY)
+                    .append(TextComponent.of(": ")
+                    .append(TextComponent.of(platform != null ? platform.getPlatformName() : "NONE")))
+            ).newline();
         }
+        actor.print(new MessageBox("Capabilities", producer, TextColor.GRAY).create());
     }
 
     @Command(
@@ -99,7 +108,7 @@ public class WorldEditCommands {
     public void reload(Actor actor) {
         we.getPlatformManager().queryCapability(Capability.CONFIGURATION).reload();
         we.getEventBus().post(new ConfigurationLoadEvent(we.getPlatformManager().queryCapability(Capability.CONFIGURATION).getConfiguration()));
-        actor.print("Configuration reloaded!");
+        actor.printInfo(TranslatableComponent.of("worldedit.reload.config"));
     }
 
     @Command(
@@ -117,15 +126,15 @@ public class WorldEditCommands {
 
         try {
             File dest = new File(we.getConfiguration().getWorkingDirectory(), "report.txt");
-            Files.write(result, dest, Charset.forName("UTF-8"));
-            actor.print("WorldEdit report written to " + dest.getAbsolutePath());
+            Files.write(result, dest, StandardCharsets.UTF_8);
+            actor.printInfo(TranslatableComponent.of("worldedit.report.written", TextComponent.of(dest.getAbsolutePath())));
         } catch (IOException e) {
-            actor.printError("Failed to write report: " + e.getMessage());
+            actor.printError(TranslatableComponent.of("worldedit.report.error", TextComponent.of(e.getMessage())));
         }
 
         if (pastebin) {
             actor.checkPermission("worldedit.report.pastebin");
-            ActorCallbackPaste.pastebin(we.getSupervisor(), actor, result, "WorldEdit report: %s.report");
+            ActorCallbackPaste.pastebin(we.getSupervisor(), actor, result, TranslatableComponent.builder("worldedit.report.callback"));
         }
     }
 
@@ -148,12 +157,13 @@ public class WorldEditCommands {
         try {
             ZoneId tz = ZoneId.of(timezone);
             session.setTimezone(tz);
-            actor.print("Timezone set for this session to: " + tz.getDisplayName(
-                    TextStyle.FULL, Locale.ENGLISH
-            ));
-            actor.print("The current time in that timezone is: " + dateFormat.format(ZonedDateTime.now(tz)));
+            actor.printInfo(TranslatableComponent.of("worldedit.timezone.set", TextComponent.of(tz.getDisplayName(
+                    TextStyle.FULL, actor.getLocale()
+            ))));
+            actor.print(TranslatableComponent.of("worldedit.timezone.current",
+                    TextComponent.of(dateFormat.withLocale(actor.getLocale()).format(ZonedDateTime.now(tz)))));
         } catch (ZoneRulesException e) {
-            actor.printError("Invalid timezone");
+            actor.printError(TranslatableComponent.of("worldedit.timezone.invalid"));
         }
     }
 
