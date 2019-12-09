@@ -302,7 +302,7 @@ public class SelectionCommands {
     )
     @CommandPermissions("worldedit.wand.toggle")
     public void toggleWand(Player player) {
-        player.print(TextComponent.of("The selection wand is now a normal tool. You can disable it with ")
+        player.printInfo(TextComponent.of("The selection wand is now a normal tool. You can disable it with ")
                 .append(TextComponent.of("/none", TextColor.AQUA).clickEvent(
                         ClickEvent.of(ClickEvent.Action.RUN_COMMAND, "/none")))
                 .append(TextComponent.of(" and rebind it to any item with "))
@@ -373,7 +373,7 @@ public class SelectionCommands {
 
             session.getRegionSelector(world).explainRegionAdjust(actor, session);
 
-            actor.print(TranslatableComponent.of("worldedit.shift.shifted"));
+            actor.printInfo(TranslatableComponent.of("worldedit.shift.shifted"));
         } catch (RegionOperationException e) {
             actor.printError(TextComponent.of(e.getMessage()));
         }
@@ -396,7 +396,7 @@ public class SelectionCommands {
         region.expand(getChangesForEachDir(amount, onlyHorizontal, onlyVertical));
         session.getRegionSelector(world).learnChanges();
         session.getRegionSelector(world).explainRegionAdjust(actor, session);
-        actor.print(TranslatableComponent.of("worldedit.outset.outset"));
+        actor.printInfo(TranslatableComponent.of("worldedit.outset.outset"));
     }
 
     @Command(
@@ -416,7 +416,7 @@ public class SelectionCommands {
         region.contract(getChangesForEachDir(amount, onlyHorizontal, onlyVertical));
         session.getRegionSelector(world).learnChanges();
         session.getRegionSelector(world).explainRegionAdjust(actor, session);
-        actor.print(TranslatableComponent.of("worldedit.inset.inset"));
+        actor.printInfo(TranslatableComponent.of("worldedit.inset.inset"));
     }
 
     private BlockVector3[] getChangesForEachDir(int amount, boolean onlyHorizontal, boolean onlyVertical) {
