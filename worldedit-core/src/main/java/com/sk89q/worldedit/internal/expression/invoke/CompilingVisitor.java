@@ -72,7 +72,6 @@ import static com.sk89q.worldedit.internal.expression.ExpressionHelper.evalExcep
 import static com.sk89q.worldedit.internal.expression.ExpressionHelper.getArgumentHandleName;
 import static com.sk89q.worldedit.internal.expression.ExpressionHelper.resolveFunction;
 import static com.sk89q.worldedit.internal.expression.invoke.ExpressionHandles.CALL_BINARY_OP;
-import static com.sk89q.worldedit.internal.expression.invoke.ExpressionHandles.COMPILED_EXPRESSION_SIG;
 import static com.sk89q.worldedit.internal.expression.invoke.ExpressionHandles.DOUBLE_TO_BOOL;
 import static com.sk89q.worldedit.internal.expression.invoke.ExpressionHandles.IS_NULL;
 import static com.sk89q.worldedit.internal.expression.invoke.ExpressionHandles.NEW_LS_CONSTANT;
@@ -138,7 +137,7 @@ class CompilingVisitor extends ExpressionBaseVisitor<MethodHandle> {
     }
 
     private void checkHandle(MethodHandle mh, ParserRuleContext ctx) {
-        check(mh.type().equals(COMPILED_EXPRESSION_SIG), ctx,
+        check(mh.type().equals(ExpressionHandles.COMPILED_EXPRESSION_SIG), ctx,
             "Incorrect type returned from handler for " + ctx.getClass());
     }
 
@@ -593,7 +592,7 @@ class CompilingVisitor extends ExpressionBaseVisitor<MethodHandle> {
         // Collapse every data into one argument
         int[] permutation = new int[arguments.length];
         return permuteArguments(
-            manyData, COMPILED_EXPRESSION_SIG, permutation
+            manyData, ExpressionHandles.COMPILED_EXPRESSION_SIG, permutation
         );
     }
 
