@@ -160,7 +160,7 @@ public class WorldEditCommands {
             actor.printInfo(TranslatableComponent.of("worldedit.timezone.set", TextComponent.of(tz.getDisplayName(
                     TextStyle.FULL, actor.getLocale()
             ))));
-            actor.print(TranslatableComponent.of("worldedit.timezone.current",
+            actor.printInfo(TranslatableComponent.of("worldedit.timezone.current",
                     TextComponent.of(dateFormat.withLocale(actor.getLocale()).format(ZonedDateTime.now(tz)))));
         } catch (ZoneRulesException e) {
             actor.printError(TranslatableComponent.of("worldedit.timezone.invalid"));
