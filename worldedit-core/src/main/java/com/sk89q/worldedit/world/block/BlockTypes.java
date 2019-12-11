@@ -59,6 +59,8 @@ public final class BlockTypes {
     @Nullable public static final BlockType BARRIER = get("minecraft:barrier");
     @Nullable public static final BlockType BEACON = get("minecraft:beacon");
     @Nullable public static final BlockType BEDROCK = get("minecraft:bedrock");
+    @Nullable public static final BlockType BEE_NEST = get("minecraft:bee_nest");
+    @Nullable public static final BlockType BEEHIVE = get("minecraft:beehive");
     @Nullable public static final BlockType BEETROOTS = get("minecraft:beetroots");
     @Nullable public static final BlockType BELL = get("minecraft:bell");
     @Nullable public static final BlockType BIRCH_BUTTON = get("minecraft:birch_button");
@@ -305,6 +307,8 @@ public final class BlockTypes {
     @Nullable public static final BlockType GRINDSTONE = get("minecraft:grindstone");
     @Nullable public static final BlockType HAY_BLOCK = get("minecraft:hay_block");
     @Nullable public static final BlockType HEAVY_WEIGHTED_PRESSURE_PLATE = get("minecraft:heavy_weighted_pressure_plate");
+    @Nullable public static final BlockType HONEY_BLOCK = get("minecraft:honey_block");
+    @Nullable public static final BlockType HONEYCOMB_BLOCK = get("minecraft:honeycomb_block");
     @Nullable public static final BlockType HOPPER = get("minecraft:hopper");
     @Nullable public static final BlockType HORN_CORAL = get("minecraft:horn_coral");
     @Nullable public static final BlockType HORN_CORAL_BLOCK = get("minecraft:horn_coral_block");
