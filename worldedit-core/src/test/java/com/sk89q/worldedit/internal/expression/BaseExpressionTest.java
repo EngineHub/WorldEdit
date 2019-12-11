@@ -47,6 +47,7 @@ class BaseExpressionTest {
             }
         });
         WorldEdit.getInstance().getPlatformManager().register(mockPlat);
+        WorldEdit.getInstance().getConfiguration().calculationTimeout = 1_000;
     }
 
     @AfterEach
