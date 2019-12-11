@@ -49,7 +49,7 @@ class PropertyAdapter<T extends Comparable<T>> implements Property<T> {
 
     @Override
     public T getValueFor(String string) throws IllegalArgumentException {
-        Optional<T> val = property.getValue(string);
+        Optional<T> val = property.parse(string);
         checkArgument(val.isPresent(), "%s has no value for %s", getName(), string);
         return val.get();
     }

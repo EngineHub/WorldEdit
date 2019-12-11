@@ -45,7 +45,7 @@ import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.state.StateFactory;
+import net.minecraft.state.StateManager;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.StringIdentifiable;
@@ -154,8 +154,8 @@ public final class FabricAdapter {
         return props;
     }
 
-    private static net.minecraft.block.BlockState applyProperties(StateFactory<Block, net.minecraft.block.BlockState> stateContainer,
-            net.minecraft.block.BlockState newState, Map<Property<?>, Object> states) {
+    private static net.minecraft.block.BlockState applyProperties(StateManager<Block, net.minecraft.block.BlockState> stateContainer,
+                                                                  net.minecraft.block.BlockState newState, Map<Property<?>, Object> states) {
         for (Map.Entry<Property<?>, Object> state : states.entrySet()) {
             net.minecraft.state.property.Property property = stateContainer.getProperty(state.getKey().getName());
             Comparable value = (Comparable) state.getValue();
@@ -165,7 +165,7 @@ public final class FabricAdapter {
                 value = adapt(dir);
             } else if (property instanceof net.minecraft.state.property.EnumProperty) {
                 String enumName = (String) value;
-                value = ((net.minecraft.state.property.EnumProperty<?>) property).getValue((String) value).orElseGet(() -> {
+                value = ((net.minecraft.state.property.EnumProperty<?>) property).parse((String) value).orElseGet(() -> {
                     throw new IllegalStateException("Enum property " + property.getName() + " does not contain " + enumName);
                 });
             }
@@ -179,7 +179,7 @@ public final class FabricAdapter {
         Block mcBlock = adapt(blockState.getBlockType());
         net.minecraft.block.BlockState newState = mcBlock.getDefaultState();
         Map<Property<?>, Object> states = blockState.getStates();
-        return applyProperties(mcBlock.getStateFactory(), newState, states);
+        return applyProperties(mcBlock.getStateManager(), newState, states);
     }
 
     public static BlockState adapt(net.minecraft.block.BlockState blockState) {

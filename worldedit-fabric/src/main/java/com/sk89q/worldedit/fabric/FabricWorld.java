@@ -19,8 +19,6 @@
 
 package com.sk89q.worldedit.fabric;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -52,8 +50,6 @@ import com.sk89q.worldedit.world.item.ItemTypes;
 import com.sk89q.worldedit.world.weather.WeatherType;
 import com.sk89q.worldedit.world.weather.WeatherTypes;
 import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.LeavesBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
@@ -71,30 +67,19 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldSaveHandler;
+import net.minecraft.world.biome.DefaultBiomeFeatures;
+import net.minecraft.world.biome.source.BiomeArray;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkManager;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.WorldChunk;
-import net.minecraft.world.gen.feature.BirchTreeFeature;
-import net.minecraft.world.gen.feature.DarkOakTreeFeature;
-import net.minecraft.world.gen.feature.DefaultFeatureConfig;
+import net.minecraft.world.gen.feature.BranchedTreeFeatureConfig;
+import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.Feature;
-import net.minecraft.world.gen.feature.FeatureConfig;
-import net.minecraft.world.gen.feature.HugeBrownMushroomFeature;
-import net.minecraft.world.gen.feature.HugeRedMushroomFeature;
-import net.minecraft.world.gen.feature.JungleGroundBushFeature;
-import net.minecraft.world.gen.feature.JungleTreeFeature;
-import net.minecraft.world.gen.feature.LargeOakTreeFeature;
-import net.minecraft.world.gen.feature.MegaJungleTreeFeature;
-import net.minecraft.world.gen.feature.MegaPineTreeFeature;
 import net.minecraft.world.gen.feature.OakTreeFeature;
-import net.minecraft.world.gen.feature.PineTreeFeature;
-import net.minecraft.world.gen.feature.PlantedFeatureConfig;
-import net.minecraft.world.gen.feature.SavannaTreeFeature;
-import net.minecraft.world.gen.feature.SpruceTreeFeature;
-import net.minecraft.world.gen.feature.SwampTreeFeature;
 import net.minecraft.world.level.LevelProperties;
 
+import javax.annotation.Nullable;
 import java.io.File;
 import java.lang.ref.WeakReference;
 import java.nio.file.Path;
@@ -108,7 +93,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
-import javax.annotation.Nullable;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * An adapter to Minecraft worlds for WorldEdit.
@@ -117,10 +102,6 @@ public class FabricWorld extends AbstractWorld {
 
     private static final Random random = new Random();
     private static final int UPDATE = 1, NOTIFY = 2;
-
-    private static final net.minecraft.block.BlockState JUNGLE_LOG = Blocks.JUNGLE_LOG.getDefaultState();
-    private static final net.minecraft.block.BlockState JUNGLE_LEAF = Blocks.JUNGLE_LEAVES.getDefaultState().with(LeavesBlock.PERSISTENT, Boolean.TRUE);
-    private static final net.minecraft.block.BlockState JUNGLE_SHRUB = Blocks.OAK_LEAVES.getDefaultState().with(LeavesBlock.PERSISTENT, Boolean.TRUE);
 
     private final WeakReference<World> worldRef;
 
@@ -213,8 +194,7 @@ public class FabricWorld extends AbstractWorld {
                     BlockEntity tileEntity = getWorld().getWorldChunk(pos).getBlockEntity(pos);
                     if (tileEntity != null) {
                         tileEntity.fromTag(nativeTag);
-                        tileEntity.setPos(pos);
-                        tileEntity.setWorld(world);
+                        tileEntity.setWorld(world, pos);
                         successful = true; // update if TE changed as well
                     }
                 }
@@ -222,8 +202,8 @@ public class FabricWorld extends AbstractWorld {
         }
 
         if (successful && notifyAndLight) {
-            world.getChunkManager().getLightingProvider().enqueueLightUpdate(pos);
-            world.scheduleBlockRender(pos, old, newState);
+            world.getChunkManager().getLightingProvider().checkBlock(pos);
+            world.checkBlockRerender(pos, old, newState);
             world.updateListeners(pos, old, newState, UPDATE | NOTIFY);
             world.updateNeighbors(pos, newState.getBlock());
             if (old.hasComparatorOutput()) {
@@ -275,7 +255,12 @@ public class FabricWorld extends AbstractWorld {
         if (chunk == null) {
             return false;
         }
-        chunk.getBiomeArray()[((position.getBlockZ() & 0xF) << 4 | position.getBlockX() & 0xF)] = FabricAdapter.adapt(biome);
+        MutableBiomeArray biomeArray = MutableBiomeArray.inject(chunk.getBiomeArray());
+        // Temporary, while biome setting is 2D only
+        for (int i = 0; i < BiomeArray.VERTICAL_BIT_MASK; i++) {
+            biomeArray.setBiome(position.getX(), i, position.getZ(), FabricAdapter.adapt(biome));
+        }
+        chunk.setShouldSave(true);
         return true;
     }
 
@@ -302,11 +287,10 @@ public class FabricWorld extends AbstractWorld {
         ActionResult used = stack.useOnBlock(itemUseContext);
         if (used != ActionResult.SUCCESS) {
             // try activating the block
-            if (getWorld().getBlockState(blockPos).activate(world, fakePlayer, Hand.MAIN_HAND, rayTraceResult)) {
-                used = ActionResult.SUCCESS;
-            } else {
-                used = stack.getItem().use(world, fakePlayer, Hand.MAIN_HAND).getResult();
-            }
+            used = getWorld().getBlockState(blockPos).onUse(world, fakePlayer, Hand.MAIN_HAND, rayTraceResult);
+        }
+        if (used != ActionResult.SUCCESS) {
+            used = stack.use(world, fakePlayer, Hand.MAIN_HAND).getResult();
         }
         return used == ActionResult.SUCCESS;
     }
@@ -372,45 +356,40 @@ public class FabricWorld extends AbstractWorld {
     }
 
     @Nullable
-    private static Feature<? extends FeatureConfig> createTreeFeatureGenerator(TreeType type) {
+    private static ConfiguredFeature<?, ?> createTreeFeatureGenerator(TreeType type) {
         switch (type) {
-            case TREE: return new OakTreeFeature(DefaultFeatureConfig::deserialize, true);
-            case BIG_TREE: return new LargeOakTreeFeature(DefaultFeatureConfig::deserialize, true);
-            case REDWOOD: return new PineTreeFeature(DefaultFeatureConfig::deserialize);
-            case TALL_REDWOOD: return new SpruceTreeFeature(DefaultFeatureConfig::deserialize, true);
-            case BIRCH: return new BirchTreeFeature(DefaultFeatureConfig::deserialize, true, false);
-            case JUNGLE: return new MegaJungleTreeFeature(DefaultFeatureConfig::deserialize, true, 10, 20, JUNGLE_LOG, JUNGLE_LEAF);
-            case SMALL_JUNGLE: return new JungleTreeFeature(DefaultFeatureConfig::deserialize, true, 4 + random.nextInt(7), JUNGLE_LOG, JUNGLE_LEAF, false);
-            case SHORT_JUNGLE: return new JungleTreeFeature(DefaultFeatureConfig::deserialize, true, 4 + random.nextInt(7), JUNGLE_LOG, JUNGLE_LEAF, true);
-            case JUNGLE_BUSH: return new JungleGroundBushFeature(DefaultFeatureConfig::deserialize, JUNGLE_LOG, JUNGLE_SHRUB);
-            case SWAMP: return new SwampTreeFeature(DefaultFeatureConfig::deserialize);
-            case ACACIA: return new SavannaTreeFeature(DefaultFeatureConfig::deserialize, true);
-            case DARK_OAK: return new DarkOakTreeFeature(DefaultFeatureConfig::deserialize, true);
-            case MEGA_REDWOOD: return new MegaPineTreeFeature(DefaultFeatureConfig::deserialize, true, random.nextBoolean());
-            case TALL_BIRCH: return new BirchTreeFeature(DefaultFeatureConfig::deserialize, true, true);
-            case RED_MUSHROOM: return new HugeRedMushroomFeature(PlantedFeatureConfig::deserialize);
-            case BROWN_MUSHROOM: return new HugeBrownMushroomFeature(PlantedFeatureConfig::deserialize);
+            // Based off of the SaplingGenerator class, as well as uses of DefaultBiomeFeatures fields
+            case TREE: return Feature.NORMAL_TREE.configure(DefaultBiomeFeatures.OAK_TREE_CONFIG);
+            case BIG_TREE: return Feature.FANCY_TREE.configure(DefaultBiomeFeatures.FANCY_TREE_CONFIG);
+            case REDWOOD: return Feature.NORMAL_TREE.configure(DefaultBiomeFeatures.SPRUCE_TREE_CONFIG);
+            case TALL_REDWOOD: return Feature.MEGA_SPRUCE_TREE.configure(DefaultBiomeFeatures.MEGA_SPRUCE_TREE_CONFIG);
+            case MEGA_REDWOOD: return Feature.MEGA_SPRUCE_TREE.configure(DefaultBiomeFeatures.MEGA_PINE_TREE_CONFIG);
+            case BIRCH: return Feature.NORMAL_TREE.configure(DefaultBiomeFeatures.BIRCH_TREE_CONFIG);
+            case JUNGLE: return Feature.MEGA_JUNGLE_TREE.configure(DefaultBiomeFeatures.MEGA_JUNGLE_TREE_CONFIG);
+            case SMALL_JUNGLE: return Feature.NORMAL_TREE.configure(DefaultBiomeFeatures.JUNGLE_TREE_CONFIG);
+            case SHORT_JUNGLE: return new OakTreeFeature(BranchedTreeFeatureConfig::deserialize2)
+                .configure(DefaultBiomeFeatures.JUNGLE_SAPLING_TREE_CONFIG);
+            case JUNGLE_BUSH: return Feature.JUNGLE_GROUND_BUSH.configure(DefaultBiomeFeatures.JUNGLE_GROUND_BUSH_CONFIG);
+            case SWAMP: return Feature.NORMAL_TREE.configure(DefaultBiomeFeatures.SWAMP_TREE_CONFIG);
+            case ACACIA: return Feature.ACACIA_TREE.configure(DefaultBiomeFeatures.ACACIA_TREE_CONFIG);
+            case DARK_OAK: return Feature.DARK_OAK_TREE.configure(DefaultBiomeFeatures.DARK_OAK_TREE_CONFIG);
+            case TALL_BIRCH: return Feature.NORMAL_TREE.configure(DefaultBiomeFeatures.LARGE_BIRCH_TREE_CONFIG);
+            case RED_MUSHROOM: return Feature.HUGE_RED_MUSHROOM.configure(DefaultBiomeFeatures.HUGE_RED_MUSHROOM_CONFIG);
+            case BROWN_MUSHROOM: return Feature.HUGE_BROWN_MUSHROOM.configure(DefaultBiomeFeatures.HUGE_BROWN_MUSHROOM_CONFIG);
             case RANDOM: return createTreeFeatureGenerator(TreeType.values()[ThreadLocalRandom.current().nextInt(TreeType.values().length)]);
             default:
                 return null;
         }
     }
 
-    private FeatureConfig createFeatureConfig(TreeType type) {
-        if (type == TreeType.RED_MUSHROOM || type == TreeType.BROWN_MUSHROOM) {
-            return new PlantedFeatureConfig(true);
-        } else {
-            return new DefaultFeatureConfig();
-        }
-    }
-
     @Override
-    public boolean generateTree(TreeType type, EditSession editSession, BlockVector3 position) throws MaxChangedBlocksException {
-        @SuppressWarnings("unchecked")
-        Feature<FeatureConfig> generator = (Feature<FeatureConfig>) createTreeFeatureGenerator(type);
-        return generator != null
-                && generator.generate(getWorld(), getWorld().getChunkManager().getChunkGenerator(), random,
-                FabricAdapter.toBlockPos(position), createFeatureConfig(type));
+    public boolean generateTree(TreeType type, EditSession editSession, BlockVector3 position) {
+        ConfiguredFeature<?, ?> generator = createTreeFeatureGenerator(type);
+        ServerChunkManager chunkManager = (ServerChunkManager) getWorld().getChunkManager();
+        return generator != null && generator.generate(
+            getWorld(), chunkManager.getChunkGenerator(), random,
+            FabricAdapter.toBlockPos(position)
+        );
     }
 
     @Override
@@ -427,7 +406,9 @@ public class FabricWorld extends AbstractWorld {
     public void fixLighting(Iterable<BlockVector2> chunks) {
         World world = getWorld();
         for (BlockVector2 chunk : chunks) {
-            world.getChunkManager().getLightingProvider().suppressLight(new ChunkPos(chunk.getBlockX(), chunk.getBlockZ()), true);
+            world.getChunkManager().getLightingProvider().setLightEnabled(
+                new ChunkPos(chunk.getBlockX(), chunk.getBlockZ()), true
+            );
         }
     }
 

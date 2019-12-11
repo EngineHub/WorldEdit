@@ -19,27 +19,29 @@
 
 package com.sk89q.worldedit.fabric.mixin;
 
-import com.sk89q.worldedit.extension.platform.Watchdog;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.ServerTask;
-import net.minecraft.util.Util;
-import net.minecraft.util.thread.ReentrantThreadExecutor;
+import com.sk89q.worldedit.fabric.MutableBiomeArray;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.source.BiomeArray;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
-@Mixin(MinecraftServer.class)
-public abstract class MixinMinecraftServer extends ReentrantThreadExecutor<ServerTask> implements Watchdog {
-
-    public MixinMinecraftServer(String name) {
-        super(name);
-    }
+@Mixin(BiomeArray.class)
+public abstract class MixinBiomeArray implements MutableBiomeArray {
+    // From BiomeArray
+    private static final int HORIZONTAL_SECTION_COUNT = (int) Math.round(Math.log(16.0D) / Math.log(2.0D)) - 2;
 
     @Shadow
-    private long timeReference;
+    private Biome[] data;
 
     @Override
-    public void tick() {
-        timeReference = Util.getMeasuringTimeMs();
+    public void setBiome(int x, int y, int z, Biome biome) {
+        int l = x & BiomeArray.HORIZONTAL_BIT_MASK;
+        int m = MathHelper.clamp(y, 0, BiomeArray.VERTICAL_BIT_MASK);
+        int n = z & BiomeArray.HORIZONTAL_BIT_MASK;
+        this.data[
+            m << HORIZONTAL_SECTION_COUNT + HORIZONTAL_SECTION_COUNT
+                | n << HORIZONTAL_SECTION_COUNT
+                | l] = biome;
     }
-
 }

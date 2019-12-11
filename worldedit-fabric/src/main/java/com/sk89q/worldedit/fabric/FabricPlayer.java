@@ -94,7 +94,7 @@ public class FabricPlayer extends AbstractPlayerActor {
 
     @Override
     public Location getLocation() {
-        Vector3 position = Vector3.at(this.player.x, this.player.y, this.player.z);
+        Vector3 position = Vector3.at(this.player.getX(), this.player.getY(), this.player.getZ());
         return new Location(
                 FabricWorldEdit.inst.getWorld(this.player.world),
                 position,
