@@ -1,3 +1,28 @@
+7.1.0 Beta 1
+- Significant memory optimisations. Many operations will now require less RAM.
+- Added WorldEdit-CLI, a tool to run headless WorldEdit from the commandline (see https://matthewmiller.dev/blog/introducing-worldeditcli/)
+- Allowed most WorldEdit commands to be run from the console
+- Added //world, to override the world in which WorldEdit is operating (useful for console)
+- Added support for WorldEdit in CommandBlocks (on Spigot/Paper). Double slash commands require using /worldedit:/set due to a Minecraft bug.
+- Fixed the inbuilt pastebin service
+- Added 1.15 support
+- Re-add the /tool command
+- Add /brush none as a shortcut to unbind the brush
+- Add //watchdog, to make WorldEdit keep the server running during edits.
+- Remove FabricAPI requirement of WorldEdit-Fabric
+- Fixed //stack with diagonals
+- Rewrite the expression parser with ANTLR for a grammar and easier changes in the future
+- Fixed pumpkin patches having decaying leaves
+- Fixed /lrbuild not obeying history
+- Added -n flag to //paste to select without pasting
+- Fixed flipping of chests and stairs
+- Improve performance of some API methods on Bukkit by bypassing the Bukkit API
+- Fixed legacy import of some blocks Mojang renamed
+- Added convex polyhedron support to //line
+- Fixed /worldedit: commands on Bukkit
+- Added support for translations
+- Fixed //regen on 1.14+
+
 7.0.1
 - Fix source masks using EdiSession instead of clipboard
 - Fix bug with spaces in suggestions
