@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.util.translation;
 
+import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
@@ -40,6 +41,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+
+import static java.util.stream.Collectors.toMap;
 
 /**
  * Handles translations for the plugin.
@@ -76,8 +79,10 @@ public class TranslationManager {
     }
 
     private Map<String, String> filterTranslations(Map<String, String> translations) {
-        translations.entrySet().removeIf(entry -> entry.getValue().isEmpty());
-        return translations;
+        return translations.entrySet().stream()
+            .filter(e -> !e.getValue().isEmpty())
+            .map(e -> Maps.immutableEntry(e.getKey(), e.getValue().replace("'", "''")))
+            .collect(toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
     private Map<String, String> parseTranslationFile(InputStream inputStream) {

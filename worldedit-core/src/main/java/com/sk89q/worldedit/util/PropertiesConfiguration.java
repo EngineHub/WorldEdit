@@ -27,6 +27,7 @@ import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.util.report.Unreported;
 import com.sk89q.worldedit.world.registry.LegacyMapper;
 import com.sk89q.worldedit.world.snapshot.SnapshotRepository;
+import com.sk89q.worldedit.world.snapshot.experimental.fs.FileSystemSnapshotDatabase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,6 +38,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.UncheckedIOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Properties;
@@ -124,9 +129,8 @@ public class PropertiesConfiguration extends LocalConfiguration {
         LocalSession.MAX_HISTORY_SIZE = Math.max(15, getInt("history-size", 15));
 
         String snapshotsDir = getString("snapshots-dir", "");
-        if (!snapshotsDir.isEmpty()) {
-            snapshotRepo = new SnapshotRepository(snapshotsDir);
-        }
+        boolean experimentalSnapshots = getBool("snapshots-experimental", false);
+        initializeSnapshotConfiguration(snapshotsDir, experimentalSnapshots);
 
         path.getParentFile().mkdirs();
         try (OutputStream output = new FileOutputStream(path)) {

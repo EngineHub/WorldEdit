@@ -45,7 +45,7 @@ tasks.named<Copy>("processResources") {
 
 tasks.named<Jar>("jar") {
     manifest {
-        attributes("Class-Path" to "truezip.jar WorldEdit/truezip.jar js.jar WorldEdit/js.jar",
+        attributes("Class-Path" to CLASSPATH,
                 "WorldEdit-Version" to project.version)
     }
 }

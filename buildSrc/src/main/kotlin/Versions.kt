@@ -7,6 +7,7 @@ object Versions {
     const val AUTO_VALUE = "1.6.5"
     const val JUNIT = "5.5.0"
     const val MOCKITO = "3.0.0"
+    const val LOGBACK = "1.2.3"
 }
 
 // Properties that need a project reference to resolve:

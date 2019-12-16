@@ -114,3 +114,8 @@ fun Project.applyShadowConfiguration() {
         minimize()
     }
 }
+
+val CLASSPATH = listOf("truezip", "truevfs", "js")
+    .map { "$it.jar" }
+    .flatMap { listOf(it, "WorldEdit/$it") }
+    .joinToString(separator = " ")

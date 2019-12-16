@@ -75,6 +75,7 @@
     "worldedit.restore.failed": "Failed to load snapshot: {0}",
     "worldedit.restore.loaded": "Snapshot '{0}' loaded; now restoring...",
     "worldedit.restore.restored": "Restored; {0} missing chunks and {1} other errors.",
+    "worldedit.restore.none-for-specific-world": "No snapshots were found for world '{0}'.",
     "worldedit.restore.none-for-world": "No snapshots were found for this world.",
     "worldedit.restore.none-found": "No snapshots were found.",
     "worldedit.restore.none-found-console": "No snapshots were found. See console for details.",
@@ -87,7 +88,7 @@
     "worldedit.snapshot.use": "Snapshot set to: {0}",
     "worldedit.snapshot.none-before": "Couldn't find a snapshot before {0}.",
     "worldedit.snapshot.none-after": "Couldn't find a snapshot after {0}.",
-    "worldedit.snapshot.index-above-0": "Invalid index, must be equal or higher then 1.",
+    "worldedit.snapshot.index-above-0": "Invalid index, must be greater than or equal to 1.",
     "worldedit.snapshot.index-oob": "Invalid index, must be between 1 and {0}.",
 
     "worldedit.schematic.unknown-format": "Unknown schematic format: {0}.",

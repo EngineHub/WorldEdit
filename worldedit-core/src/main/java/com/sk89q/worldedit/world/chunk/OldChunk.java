@@ -28,7 +28,6 @@ import com.sk89q.jnbt.Tag;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.world.DataException;
-import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockTypes;
@@ -55,13 +54,12 @@ public class OldChunk implements Chunk {
     /**
      * Construct the chunk with a compound tag.
      *
-     * @param world the world
      * @param tag the tag
      * @throws DataException
      */
-    public OldChunk(World world, CompoundTag tag) throws DataException {
+    public OldChunk(CompoundTag tag) throws DataException {
         rootTag = tag;
-        
+
         blocks = NBTUtils.getChildTag(rootTag.getValue(), "Blocks", ByteArrayTag.class).getValue();
         data = NBTUtils.getChildTag(rootTag.getValue(), "Data", ByteArrayTag.class).getValue();
         rootX = NBTUtils.getChildTag(rootTag.getValue(), "xPos", IntTag.class).getValue();

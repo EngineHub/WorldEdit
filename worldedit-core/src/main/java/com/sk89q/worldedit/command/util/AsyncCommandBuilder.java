@@ -166,13 +166,13 @@ public final class AsyncCommandBuilder<T> {
                                 message = converted.getRichMessage();
                             }
                         }
-                        sender.print(failure.append(TextComponent.of(": ")).append(message));
+                        sender.printError(failure.append(TextComponent.of(": ")).append(message));
                     }
                 } else {
                     throw orig;
                 }
             } catch (Throwable unknown) {
-                sender.print(failure.append(TextComponent.of(": Unknown error. Please see console.")));
+                sender.printError(failure.append(TextComponent.of(": Unknown error. Please see console.")));
                 logger.error("Uncaught exception occurred in task: " + description, orig);
             }
         }

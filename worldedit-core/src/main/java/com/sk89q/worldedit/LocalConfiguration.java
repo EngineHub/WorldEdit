@@ -21,13 +21,20 @@ package com.sk89q.worldedit;
 
 import com.google.common.collect.Lists;
 import com.sk89q.worldedit.util.formatting.component.TextUtils;
+import com.sk89q.worldedit.util.io.file.ArchiveNioSupports;
 import com.sk89q.worldedit.util.logging.LogFormat;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.block.BlockTypes;
 import com.sk89q.worldedit.world.registry.LegacyMapper;
 import com.sk89q.worldedit.world.snapshot.SnapshotRepository;
+import com.sk89q.worldedit.world.snapshot.experimental.SnapshotDatabase;
+import com.sk89q.worldedit.world.snapshot.experimental.fs.FileSystemSnapshotDatabase;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -39,6 +46,8 @@ import java.util.Set;
  */
 public abstract class LocalConfiguration {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(LocalConfiguration.class);
+
     public boolean profile = false;
     public boolean traceUnflushedSessions = false;
     public Set<String> disallowedBlocks = new HashSet<>();
@@ -49,7 +58,9 @@ public abstract class LocalConfiguration {
     public int defaultMaxPolyhedronPoints = -1;
     public int maxPolyhedronPoints = 20;
     public String shellSaveType = "";
+    public boolean snapshotsConfigured = false;
     public SnapshotRepository snapshotRepo = null;
+    public SnapshotDatabase snapshotDatabase = null;
     public int maxRadius = -1;
     public int maxSuperPickaxeSize = 5;
     public int maxBrushRadius = 6;
@@ -160,6 +171,29 @@ public abstract class LocalConfiguration {
      */
     public File getWorkingDirectory() {
         return new File(".");
+    }
+
+    public void initializeSnapshotConfiguration(String directory, boolean experimental) {
+        // Reset for reload
+        snapshotRepo = null;
+        snapshotDatabase = null;
+        snapshotsConfigured = false;
+        if (!directory.isEmpty()) {
+            if (experimental) {
+                try {
+                    snapshotDatabase = FileSystemSnapshotDatabase.maybeCreate(
+                        Paths.get(directory),
+                        ArchiveNioSupports.combined()
+                    );
+                    snapshotsConfigured = true;
+                } catch (IOException e) {
+                    LOGGER.warn("Failed to open snapshotDatabase", e);
+                }
+            } else {
+                snapshotRepo = new SnapshotRepository(directory);
+                snapshotsConfigured = true;
+            }
+        }
     }
 
     public String convertLegacyItem(String legacy) {
