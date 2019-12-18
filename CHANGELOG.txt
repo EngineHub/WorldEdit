@@ -23,6 +23,7 @@
 - Added support for translations
 - Fixed //regen on 1.14+
 - Add a experimental new snapshot API / handling, more consistent for various file types. Test it out by switching on `snapshots.experimental`/`snapshots-experimental` in your config file. This will become the default in WE 8.
+- Fixed setting navwand and selwand to none via command not persisting
 
 7.0.1
 - Fix source masks using EdiSession instead of clipboard
