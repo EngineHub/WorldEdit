@@ -53,6 +53,7 @@ import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.item.ItemType;
+import com.sk89q.worldedit.world.item.ItemTypes;
 import com.sk89q.worldedit.world.snapshot.experimental.Snapshot;
 
 import javax.annotation.Nullable;
@@ -65,6 +66,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -653,14 +655,33 @@ public class LocalSession {
             throw new InvalidToolBindException(item, "Blocks can't be used");
         }
         if (tool instanceof SelectionWand) {
-            this.wandItem = item.getId();
-            setDirty();
+            setSingleItemTool(id -> this.wandItem = id, this.wandItem, item);
         } else if (tool instanceof NavigationWand) {
-            this.navWandItem = item.getId();
-            setDirty();
+            setSingleItemTool(id -> this.navWandItem = id, this.navWandItem, item);
+        } else if (tool == null) {
+            // Check if un-setting sel/nav
+            String id = item.getId();
+            if (id.equals(this.wandItem)) {
+                this.wandItem = null;
+                setDirty();
+            } else if (id.equals(this.navWandItem)) {
+                this.navWandItem = null;
+                setDirty();
+            }
         }
 
         this.tools.put(item, tool);
+    }
+
+    private void setSingleItemTool(Consumer<String> setter, @Nullable String itemId, ItemType newItem) {
+        if (itemId != null) {
+            ItemType item = ItemTypes.get(itemId);
+            if (item != null) {
+                this.tools.remove(item);
+            }
+        }
+        setter.accept(newItem.getId());
+        setDirty();
     }
 
     /**
