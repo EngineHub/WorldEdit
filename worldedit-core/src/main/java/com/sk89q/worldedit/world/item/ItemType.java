@@ -23,8 +23,11 @@ import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.registry.Keyed;
 import com.sk89q.worldedit.registry.NamespacedRegistry;
+import com.sk89q.worldedit.util.concurrency.LazyReference;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.block.BlockTypes;
+import com.sk89q.worldedit.world.registry.BlockMaterial;
+import com.sk89q.worldedit.world.registry.ItemMaterial;
 
 import javax.annotation.Nullable;
 
@@ -34,6 +37,9 @@ public class ItemType implements Keyed {
 
     private String id;
     private String name;
+    private final LazyReference<ItemMaterial> itemMaterial
+            = LazyReference.from(() -> WorldEdit.getInstance().getPlatformManager()
+            .queryCapability(Capability.GAME_HOOKS).getRegistries().getItemRegistry().getMaterial(this));
 
     public ItemType(String id) {
         // If it has no namespace, assume minecraft.
@@ -82,6 +88,15 @@ public class ItemType implements Keyed {
     @Nullable
     public BlockType getBlockType() {
         return BlockTypes.get(this.id);
+    }
+
+    /**
+     * Get the material for this ItemType.
+     *
+     * @return The material
+     */
+    public ItemMaterial getMaterial() {
+        return itemMaterial.getValue();
     }
 
     @Override
