@@ -20,21 +20,10 @@
 package com.sk89q.worldedit.internal.expression;
 
 /**
- * Thrown when a break or continue is encountered.
- * Loop constructs catch this exception.
+ * Represents a "compiled" expression.
  */
-public class BreakException extends RuntimeException {
+public interface CompiledExpression {
 
-    public static final BreakException BREAK = new BreakException(false);
-    public static final BreakException CONTINUE = new BreakException(true);
-
-    public final boolean doContinue;
-
-    private BreakException(boolean doContinue) {
-        super(doContinue ? "'continue' encountered outside a loop" : "'break' encountered outside a loop",
-            null, true, false);
-
-        this.doContinue = doContinue;
-    }
+    Double execute(ExecutionData executionData);
 
 }

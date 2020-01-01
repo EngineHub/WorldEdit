@@ -17,24 +17,18 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.internal.expression;
+package com.sk89q.worldedit.internal.expression.invoke;
 
-/**
- * Thrown when a break or continue is encountered.
- * Loop constructs catch this exception.
- */
-public class BreakException extends RuntimeException {
+import org.antlr.v4.runtime.ParserRuleContext;
 
-    public static final BreakException BREAK = new BreakException(false);
-    public static final BreakException CONTINUE = new BreakException(true);
+import java.lang.invoke.MethodHandle;
 
-    public final boolean doContinue;
+class ExecNode {
+    final ParserRuleContext ctx;
+    final MethodHandle handle;
 
-    private BreakException(boolean doContinue) {
-        super(doContinue ? "'continue' encountered outside a loop" : "'break' encountered outside a loop",
-            null, true, false);
-
-        this.doContinue = doContinue;
+    ExecNode(ParserRuleContext ctx, MethodHandle handle) {
+        this.ctx = ctx;
+        this.handle = handle;
     }
-
 }

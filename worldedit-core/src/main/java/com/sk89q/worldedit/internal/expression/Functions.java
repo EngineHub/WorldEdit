@@ -22,6 +22,7 @@ package com.sk89q.worldedit.internal.expression;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSetMultimap;
+import com.google.common.collect.Multimaps;
 import com.google.common.collect.SetMultimap;
 import com.google.common.primitives.Doubles;
 import com.sk89q.worldedit.internal.expression.LocalSlot.Variable;
@@ -36,6 +37,8 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.util.concurrent.ThreadLocalRandom;
 
+import static com.google.common.base.Preconditions.checkState;
+import static java.lang.invoke.MethodHandles.filterReturnValue;
 import static java.lang.invoke.MethodType.methodType;
 
 /**
@@ -56,7 +59,35 @@ final class Functions {
             throw new IllegalStateException(e);
         }
 
-        return ImmutableSetMultimap.copyOf(map);
+        // clean up all the functions
+        return ImmutableSetMultimap.copyOf(
+            Multimaps.transformValues(map, Functions::clean)
+        );
+    }
+
+    private static final MethodHandle DOUBLE_VALUE;
+
+    static {
+        MethodHandles.Lookup lookup = MethodHandles.lookup();
+        try {
+            DOUBLE_VALUE = lookup.findVirtual(Number.class, "doubleValue",
+                methodType(double.class));
+        } catch (NoSuchMethodException | IllegalAccessException e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
+    private static MethodHandle clean(MethodHandle handle) {
+        // box it all first
+        handle = handle.asType(handle.type().wrap());
+        if (handle.type().returnType() != Double.class) {
+            // Ensure that the handle returns a Double, even if originally a Number
+            checkState(Number.class.isAssignableFrom(handle.type().returnType()),
+                "Function does not return a number");
+            handle = handle.asType(handle.type().changeReturnType(Number.class));
+            handle = filterReturnValue(handle, DOUBLE_VALUE);
+        }
+        return handle;
     }
 
     private static void addMathHandles(
