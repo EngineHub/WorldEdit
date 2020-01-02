@@ -19,27 +19,27 @@
 
 package com.sk89q.worldedit.world.registry;
 
-import com.sk89q.worldedit.world.item.ItemType;
+import static com.sk89q.worldedit.util.GuavaUtil.firstNonNull;
 
 import javax.annotation.Nullable;
 
-public interface ItemRegistry {
+public class PassthroughItemMaterial implements ItemMaterial {
 
-    /**
-     * Gets the name for the given item.
-     *
-     * @param itemType the item
-     * @return The name, or null if it's unknown
-     */
-    @Nullable
-    String getName(ItemType itemType);
+    private static final ItemMaterial DEFAULT_MATERIAL = new SimpleItemMaterial(0, 0);
 
-    /**
-     * Get the material for the given item.
-     *
-     * @param itemType the item
-     * @return the material, or null if the material information is not known
-     */
-    @Nullable
-    ItemMaterial getMaterial(ItemType itemType);
+    private final ItemMaterial itemMaterial;
+
+    public PassthroughItemMaterial(@Nullable ItemMaterial material) {
+        this.itemMaterial = firstNonNull(material, DEFAULT_MATERIAL);
+    }
+
+    @Override
+    public int getMaxStackSize() {
+        return itemMaterial.getMaxStackSize();
+    }
+
+    @Override
+    public int getMaxDamage() {
+        return itemMaterial.getMaxDamage();
+    }
 }

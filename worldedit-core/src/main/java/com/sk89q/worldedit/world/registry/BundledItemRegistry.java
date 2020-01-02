@@ -29,19 +29,29 @@ import javax.annotation.Nullable;
  */
 public class BundledItemRegistry implements ItemRegistry {
 
+    private BundledItemData.ItemEntry getEntryById(ItemType itemType) {
+        return BundledItemData.getInstance().findById(itemType.getId());
+    }
+
     @Nullable
     @Override
     public String getName(ItemType itemType) {
-        String id = itemType.getId();
-        BundledItemData.ItemEntry itemEntry = BundledItemData.getInstance().findById(id);
+        BundledItemData.ItemEntry itemEntry = getEntryById(itemType);
         if (itemEntry != null) {
             String localized = itemEntry.localizedName;
             if (localized.equals("Air")) {
+                String id = itemType.getId();
                 int c = id.indexOf(':');
                 return c < 0 ? id : id.substring(c + 1);
             }
             return localized;
         }
         return null;
+    }
+
+    @Nullable
+    @Override
+    public ItemMaterial getMaterial(ItemType itemType) {
+        return new PassthroughItemMaterial(BundledItemData.getInstance().getMaterialById(itemType.getId()));
     }
 }

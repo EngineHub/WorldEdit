@@ -115,6 +115,23 @@ public final class BundledItemData {
     }
 
     /**
+     * Get the material properties for the given item.
+     *
+     * @param id the string ID
+     * @return the material's properties, or null
+     */
+    @Nullable
+    public ItemMaterial getMaterialById(String id) {
+        ItemEntry entry = findById(id);
+        if (entry != null) {
+            // FIXME: This should probably just be part of the JSON itself
+            return new SimpleItemMaterial(entry.maxStackSize, entry.maxDamage);
+        } else {
+            return null;
+        }
+    }
+
+    /**
      * Get a singleton instance of this object.
      *
      * @return the instance

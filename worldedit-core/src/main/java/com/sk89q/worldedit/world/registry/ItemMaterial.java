@@ -19,27 +19,18 @@
 
 package com.sk89q.worldedit.world.registry;
 
-import com.sk89q.worldedit.world.item.ItemType;
-
-import javax.annotation.Nullable;
-
-public interface ItemRegistry {
+public interface ItemMaterial {
+    /**
+     * Gets the the maximum quantity of this item that can be in a single stack.
+     *
+     * @return the maximum quantity
+     */
+    int getMaxStackSize();
 
     /**
-     * Gets the name for the given item.
+     * Gets the the maximum damage this item can take before being broken.
      *
-     * @param itemType the item
-     * @return The name, or null if it's unknown
+     * @return the maximum damage, or 0 if not applicable
      */
-    @Nullable
-    String getName(ItemType itemType);
-
-    /**
-     * Get the material for the given item.
-     *
-     * @param itemType the item
-     * @return the material, or null if the material information is not known
-     */
-    @Nullable
-    ItemMaterial getMaterial(ItemType itemType);
+    int getMaxDamage();
 }

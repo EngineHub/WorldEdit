@@ -19,27 +19,23 @@
 
 package com.sk89q.worldedit.world.registry;
 
-import com.sk89q.worldedit.world.item.ItemType;
+public class SimpleItemMaterial implements ItemMaterial {
 
-import javax.annotation.Nullable;
+    private int maxStackSize;
+    private int maxDamage;
 
-public interface ItemRegistry {
+    public SimpleItemMaterial(int maxStackSize, int maxDamage) {
+        this.maxStackSize = maxStackSize;
+        this.maxDamage = maxDamage;
+    }
 
-    /**
-     * Gets the name for the given item.
-     *
-     * @param itemType the item
-     * @return The name, or null if it's unknown
-     */
-    @Nullable
-    String getName(ItemType itemType);
+    @Override
+    public int getMaxStackSize() {
+        return maxStackSize;
+    }
 
-    /**
-     * Get the material for the given item.
-     *
-     * @param itemType the item
-     * @return the material, or null if the material information is not known
-     */
-    @Nullable
-    ItemMaterial getMaterial(ItemType itemType);
+    @Override
+    public int getMaxDamage() {
+        return maxDamage;
+    }
 }
