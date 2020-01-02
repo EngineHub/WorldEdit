@@ -19,31 +19,27 @@
 
 package com.sk89q.worldedit.world.registry;
 
+import static com.sk89q.worldedit.util.GuavaUtil.firstNonNull;
+
 import javax.annotation.Nullable;
 
 public class PassthroughItemMaterial implements ItemMaterial {
 
-    @Nullable private final ItemMaterial itemMaterial;
+    private static final ItemMaterial DEFAULT_MATERIAL = new SimpleItemMaterial(0, 0);
+
+    private final ItemMaterial itemMaterial;
 
     public PassthroughItemMaterial(@Nullable ItemMaterial material) {
-        this.itemMaterial = material;
+        this.itemMaterial = firstNonNull(material, DEFAULT_MATERIAL);
     }
 
     @Override
     public int getMaxStackSize() {
-        if (itemMaterial == null) {
-            return 0;
-        } else {
-            return itemMaterial.getMaxStackSize();
-        }
+        return itemMaterial.getMaxStackSize();
     }
 
     @Override
     public int getMaxDamage() {
-        if (itemMaterial == null) {
-            return 0;
-        } else {
-            return itemMaterial.getMaxDamage();
-        }
+        return itemMaterial.getMaxDamage();
     }
 }

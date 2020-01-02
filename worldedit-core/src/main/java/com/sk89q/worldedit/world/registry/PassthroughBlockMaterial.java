@@ -21,182 +21,119 @@ package com.sk89q.worldedit.world.registry;
 
 import javax.annotation.Nullable;
 
+import static com.sk89q.worldedit.util.GuavaUtil.firstNonNull;
+
 public class PassthroughBlockMaterial implements BlockMaterial {
 
-    @Nullable private final BlockMaterial blockMaterial;
+    private static final SimpleBlockMaterial DEFAULT_MATERIAL = new SimpleBlockMaterial();
+    static {
+        DEFAULT_MATERIAL.setFullCube(true);
+        DEFAULT_MATERIAL.setOpaque(true);
+        DEFAULT_MATERIAL.setSolid(true);
+        DEFAULT_MATERIAL.setTicksRandomly(true);
+        DEFAULT_MATERIAL.setMovementBlocker(true);
+        DEFAULT_MATERIAL.setBurnable(true);
+        DEFAULT_MATERIAL.setToolRequired(true);
+    }
+
+    private final BlockMaterial blockMaterial;
 
     public PassthroughBlockMaterial(@Nullable BlockMaterial material) {
-        this.blockMaterial = material;
+        this.blockMaterial = firstNonNull(material, DEFAULT_MATERIAL);
     }
 
     @Override
     public boolean isAir() {
-        if (blockMaterial == null) {
-            return false;
-        } else {
-            return blockMaterial.isAir();
-        }
+        return blockMaterial.isAir();
     }
 
     @Override
     public boolean isFullCube() {
-        if (blockMaterial == null) {
-            return true;
-        } else {
-            return blockMaterial.isFullCube();
-        }
+        return blockMaterial.isFullCube();
     }
 
     @Override
     public boolean isOpaque() {
-        if (blockMaterial == null) {
-            return true;
-        } else {
-            return blockMaterial.isOpaque();
-        }
+        return blockMaterial.isOpaque();
     }
 
     @Override
     public boolean isPowerSource() {
-        if (blockMaterial == null) {
-            return false;
-        } else {
-            return blockMaterial.isPowerSource();
-        }
+        return blockMaterial.isPowerSource();
     }
 
     @Override
     public boolean isLiquid() {
-        if (blockMaterial == null) {
-            return false;
-        } else {
-            return blockMaterial.isLiquid();
-        }
+        return blockMaterial.isLiquid();
     }
 
     @Override
     public boolean isSolid() {
-        if (blockMaterial == null) {
-            return true;
-        } else {
-            return blockMaterial.isSolid();
-        }
+        return blockMaterial.isSolid();
     }
 
     @Override
     public float getHardness() {
-        if (blockMaterial == null) {
-            return 0;
-        } else {
-            return blockMaterial.getHardness();
-        }
+        return blockMaterial.getHardness();
     }
 
     @Override
     public float getResistance() {
-        if (blockMaterial == null) {
-            return 0;
-        } else {
-            return blockMaterial.getResistance();
-        }
+        return blockMaterial.getResistance();
     }
 
     @Override
     public float getSlipperiness() {
-        if (blockMaterial == null) {
-            return 0;
-        } else {
-            return blockMaterial.getSlipperiness();
-        }
+        return blockMaterial.getSlipperiness();
     }
 
     @Override
     public int getLightValue() {
-        if (blockMaterial == null) {
-            return 0;
-        } else {
-            return blockMaterial.getLightValue();
-        }
+        return blockMaterial.getLightValue();
     }
 
     @Override
     public boolean isFragileWhenPushed() {
-        if (blockMaterial == null) {
-            return false;
-        } else {
-            return blockMaterial.isFragileWhenPushed();
-        }
+        return blockMaterial.isFragileWhenPushed();
     }
 
     @Override
     public boolean isUnpushable() {
-        if (blockMaterial == null) {
-            return false;
-        } else {
-            return blockMaterial.isUnpushable();
-        }
+        return blockMaterial.isUnpushable();
     }
 
     @Override
     public boolean isTicksRandomly() {
-        if (blockMaterial == null) {
-            return true;
-        } else {
-            return blockMaterial.isTicksRandomly();
-        }
+        return blockMaterial.isTicksRandomly();
     }
 
     @Override
     public boolean isMovementBlocker() {
-        if (blockMaterial == null) {
-            return true;
-        } else {
-            return blockMaterial.isMovementBlocker();
-        }
+        return blockMaterial.isMovementBlocker();
     }
 
     @Override
     public boolean isBurnable() {
-        if (blockMaterial == null) {
-            return true;
-        } else {
-            return blockMaterial.isBurnable();
-        }
+        return blockMaterial.isBurnable();
     }
 
     @Override
     public boolean isToolRequired() {
-        if (blockMaterial == null) {
-            return true;
-        } else {
-            return blockMaterial.isToolRequired();
-        }
+        return blockMaterial.isToolRequired();
     }
 
     @Override
     public boolean isReplacedDuringPlacement() {
-        if (blockMaterial == null) {
-            return false;
-        } else {
-            return blockMaterial.isReplacedDuringPlacement();
-        }
+        return blockMaterial.isReplacedDuringPlacement();
     }
 
     @Override
     public boolean isTranslucent() {
-        if (blockMaterial == null) {
-            return !isOpaque();
-        } else {
-            return blockMaterial.isTranslucent();
-        }
+        return blockMaterial.isTranslucent();
     }
 
     @Override
     public boolean hasContainer() {
-        if (blockMaterial == null) {
-            return false;
-        } else {
-            return blockMaterial.hasContainer();
-        }
+        return blockMaterial.hasContainer();
     }
 }
