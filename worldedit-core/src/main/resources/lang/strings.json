@@ -64,7 +64,7 @@
 
     "worldedit.undo.undone": "Undid {0} available edits.",
     "worldedit.undo.none": "Nothing left to undo.",
-    "worldedit.redo.undone": "Redid {0} available edits.",
+    "worldedit.redo.redone": "Redid {0} available edits.",
     "worldedit.redo.none": "Nothing left to redo.",
     "worldedit.clearhistory.cleared": "History cleared.",
 
