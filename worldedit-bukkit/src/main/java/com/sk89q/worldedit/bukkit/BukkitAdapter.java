@@ -142,6 +142,16 @@ public class BukkitAdapter {
     }
 
     /**
+     * Create a Bukkit CommandSender from a WorldEdit Actor.
+     *
+     * @param actor The WorldEdit actor
+     * @return The Bukkit command sender
+     */
+    public static CommandSender adapt(Actor actor) {
+        return ((BukkitCommandSender) actor).getSender();
+    }
+
+    /**
      * Create a Bukkit Player from a WorldEdit Player.
      *
      * @param player The WorldEdit player

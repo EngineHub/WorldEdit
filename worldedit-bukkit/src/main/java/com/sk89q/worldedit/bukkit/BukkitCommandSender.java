@@ -118,6 +118,10 @@ public class BukkitCommandSender extends AbstractNonPlayerActor {
         return WorldEdit.getInstance().getConfiguration().defaultLocale;
     }
 
+    public CommandSender getSender() {
+        return this.sender;
+    }
+
     @Override
     public SessionKey getSessionKey() {
         return new SessionKey() {
