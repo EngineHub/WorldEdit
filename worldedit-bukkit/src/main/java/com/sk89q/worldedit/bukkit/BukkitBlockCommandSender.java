@@ -139,6 +139,10 @@ public class BukkitBlockCommandSender extends AbstractNonPlayerActor implements 
         return sender.hasPermission(permission);
     }
 
+    public BlockCommandSender getSender() {
+        return this.sender;
+    }
+
     @Override
     public SessionKey getSessionKey() {
         return new SessionKey() {

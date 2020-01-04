@@ -148,6 +148,11 @@ public class BukkitAdapter {
      * @return The Bukkit command sender
      */
     public static CommandSender adapt(Actor actor) {
+        if (actor instanceof com.sk89q.worldedit.entity.Player) {
+            return adapt((com.sk89q.worldedit.entity.Player) actor);
+        } else if (actor instanceof BukkitBlockCommandSender) {
+            return ((BukkitBlockCommandSender) actor).getSender();
+        }
         return ((BukkitCommandSender) actor).getSender();
     }
 
