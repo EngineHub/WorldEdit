@@ -59,6 +59,9 @@ public class BlockType implements Keyed {
     private final LazyReference<Map<Map<Property<?>, Object>, BlockState>> blockStatesMap
         = LazyReference.from(() -> BlockState.generateStateMap(this));
 
+    private final LazyReference<Integer> legacyId = LazyReference.from(() -> computeLegacy(0));
+    private final LazyReference<Integer> legacyData = LazyReference.from(() -> computeLegacy(1));
+
     public BlockType(String id) {
         this(id, null);
     }
@@ -210,12 +213,24 @@ public class BlockType implements Keyed {
      */
     @Deprecated
     public int getLegacyId() {
-        int[] id = LegacyMapper.getInstance().getLegacyFromBlock(this.getDefaultState());
-        if (id != null) {
-            return id[0];
-        } else {
-            return 0;
-        }
+        return legacyId.getValue();
+    }
+
+    /**
+     * Gets the legacy data. Needed for legacy reasons.
+     *
+     * DO NOT USE THIS.
+     *
+     * @return legacy data or 0, if unknown
+     */
+    @Deprecated
+    public int getLegacyData() {
+        return legacyData.getValue();
+    }
+
+    private int computeLegacy(int index) {
+        int[] legacy = LegacyMapper.getInstance().getLegacyFromBlock(this.getDefaultState());
+        return legacy != null ? legacy[index] : 0;
     }
 
     @Override
