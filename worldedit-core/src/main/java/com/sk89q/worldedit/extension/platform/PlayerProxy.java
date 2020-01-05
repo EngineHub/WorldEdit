@@ -155,6 +155,11 @@ class PlayerProxy extends AbstractPlayerActor {
         cuiActor.dispatchCUIEvent(event);
     }
 
+    @Override
+    public void sendAnnouncements() {
+        basePlayer.sendAnnouncements();
+    }
+
     @Nullable
     @Override
     public <T> T getFacet(Class<? extends T> cls) {
