@@ -20,7 +20,6 @@
 package com.sk89q.worldedit.bukkit;
 
 import com.sk89q.util.StringUtil;
-import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.bukkit.adapter.BukkitImplAdapter;
@@ -35,7 +34,11 @@ import com.sk89q.worldedit.util.HandSide;
 import com.sk89q.worldedit.util.formatting.WorldEditText;
 import com.sk89q.worldedit.util.formatting.component.TextUtils;
 import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.util.formatting.text.TextComponent;
+import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.util.formatting.text.adapter.bukkit.TextAdapter;
+import com.sk89q.worldedit.util.formatting.text.event.ClickEvent;
+import com.sk89q.worldedit.util.formatting.text.format.TextColor;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
@@ -221,6 +224,15 @@ public class BukkitPlayer extends AbstractPlayerActor {
     @Override
     public Locale getLocale() {
         return TextUtils.getLocaleByMinecraftTag(player.getLocale());
+    }
+
+    @Override
+    public void sendAnnouncements() {
+        if (WorldEditPlugin.getInstance().getBukkitImplAdapter() == null) {
+            printError(TranslatableComponent.of("worldedit.version.bukkit.unsupported-adapter",
+                    TextComponent.of("https://www.enginehub.org/worldedit/#downloads", TextColor.AQUA)
+                        .clickEvent(ClickEvent.openUrl("https://www.enginehub.org/worldedit/#downloads"))));
+        }
     }
 
     @Nullable

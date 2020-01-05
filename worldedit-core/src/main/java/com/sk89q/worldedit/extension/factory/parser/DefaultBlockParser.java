@@ -173,7 +173,7 @@ public class DefaultBlockParser extends InputParser<BaseBlock> {
                         if (context.getActor() != null) {
                             throw new NoMatchException("Unknown property " + parts[0] + " for block " + type.getId());
                         } else {
-                            WorldEdit.logger.warn("Unknown property " + parts[0] + " for block " + type.getId());
+                            WorldEdit.logger.debug("Unknown property " + parts[0] + " for block " + type.getId());
                         }
                         return Maps.newHashMap();
                     }
