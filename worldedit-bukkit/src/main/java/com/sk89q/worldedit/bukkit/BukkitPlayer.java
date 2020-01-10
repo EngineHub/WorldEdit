@@ -294,8 +294,8 @@ public class BukkitPlayer extends AbstractPlayerActor {
             if (block instanceof BaseBlock && ((BaseBlock) block).hasNbtData()) {
                 BukkitImplAdapter adapter = WorldEditPlugin.getInstance().getBukkitImplAdapter();
                 if (adapter != null) {
-                    adapter.sendFakeNBT(player, pos, ((BaseBlock) block).getNbtData());
                     if (block.getBlockType() == BlockTypes.STRUCTURE_BLOCK) {
+                        adapter.sendFakeNBT(player, pos, ((BaseBlock) block).getNbtData());
                         adapter.sendFakeOP(player);
                     }
                 }
