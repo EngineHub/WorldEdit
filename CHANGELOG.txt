@@ -1,3 +1,15 @@
+7.1.0 Release Candidate 1
+- Improve the expression parser by compiling expressions for performance
+- Made ItemMaterial accessible via the API
+- Added CommandSender adapters to the BukkitAdapter class
+- Added legacy data values to the info tool, and expressions
+- Improve messages when running the wrong WorldEdit version for the MC version
+- Fixed an issue where other plugins could send bad data to clients using the WorldEdit API
+Fixes from 7.1.0 Beta 1:
+- Fixed regen on Spigot modifying world name to plugins hooking WorldEdit
+- Fixed the Java Garbage Collector sometimes breaking regen
+- Fixed translation string for "//redo"
+
 7.1.0 Beta 1
 - Significant memory optimisations. Many operations will now require less RAM.
 - Added WorldEdit-CLI, a tool to run headless WorldEdit from the commandline (see https://matthewmiller.dev/blog/introducing-worldeditcli/)
