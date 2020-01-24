@@ -20,6 +20,7 @@
 package com.sk89q.worldedit.internal.util
 
 import com.google.common.base.Strings
+import com.sk89q.worldedit.LocalConfiguration
 import com.sk89q.worldedit.WorldEdit
 import com.sk89q.worldedit.command.BiomeCommands
 import com.sk89q.worldedit.command.ChunkCommands
@@ -36,6 +37,7 @@ import com.sk89q.worldedit.command.ToolCommands
 import com.sk89q.worldedit.command.ToolUtilCommands
 import com.sk89q.worldedit.command.UtilityCommands
 import com.sk89q.worldedit.command.util.PermissionCondition
+import com.sk89q.worldedit.extension.platform.Platform
 import com.sk89q.worldedit.internal.command.CommandUtil
 import com.sk89q.worldedit.util.formatting.text.TextComponent
 import org.enginehub.piston.Command
@@ -46,6 +48,9 @@ import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.stream.Stream
 import kotlin.streams.toList
+
+import org.mockito.Mockito.mock
+import org.mockito.Mockito.`when`
 
 class DocumentationPrinter private constructor() {
 
@@ -329,12 +334,26 @@ Other Permissions
 
     companion object {
 
+        private val mockPlat = mock<Platform>(Platform::class.java)
+
+        fun setup() {
+            `when`(mockPlat.configuration).thenReturn(object : LocalConfiguration() {
+                override fun load() {}
+            })
+            WorldEdit.getInstance().platformManager.register(mockPlat)
+        }
+
+        fun tearDown() {
+            WorldEdit.getInstance().platformManager.unregister(mockPlat)
+        }
+
         /**
          * Generates documentation.
          */
         @JvmStatic
         fun main(args: Array<String>) {
             try {
+                setup()
                 val printer = DocumentationPrinter()
 
                 printer.writeAllCommands()
@@ -342,6 +361,7 @@ Other Permissions
                 writeOutput("permissions.rst", printer.permsOutput.toString())
             } finally {
                 WorldEdit.getInstance().sessionManager.unload()
+                tearDown()
             }
         }
 

@@ -21,4 +21,5 @@ dependencies {
     "implementation"(project(":worldedit-core"))
     "implementation"(kotlin("stdlib-jdk8"))
     "implementation"(kotlin("reflect"))
+    "implementation"("org.mockito:mockito-core:${Versions.MOCKITO}")
 }
