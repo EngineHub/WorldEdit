@@ -15,7 +15,7 @@ dependencies {
     compile(project(":worldedit-core"))
     compile(project(":worldedit-libs:sponge"))
     compile("org.spongepowered:spongeapi:7.1.0")
-    compile("org.bstats:bstats-sponge:1.5")
+    compile("org.bstats:bstats-sponge:1.7")
     testCompile("org.mockito:mockito-core:1.9.0-rc1")
 }
 
@@ -35,7 +35,7 @@ tasks.named<Jar>("jar") {
 tasks.named<ShadowJar>("shadowJar") {
     dependencies {
         relocate ("org.bstats", "com.sk89q.worldedit.sponge.bstats") {
-            include(dependency("org.bstats:bstats-sponge:1.5"))
+            include(dependency("org.bstats:bstats-sponge:1.7"))
         }
     }
 }
