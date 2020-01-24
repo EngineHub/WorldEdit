@@ -194,7 +194,7 @@ public class FabricWorld extends AbstractWorld {
                     BlockEntity tileEntity = getWorld().getWorldChunk(pos).getBlockEntity(pos);
                     if (tileEntity != null) {
                         tileEntity.fromTag(nativeTag);
-                        tileEntity.setWorld(world, pos);
+                        tileEntity.setLocation(world, pos);
                         successful = true; // update if TE changed as well
                     }
                 }
@@ -278,7 +278,7 @@ public class FabricWorld extends AbstractWorld {
             return false;
         }
         fakePlayer.setStackInHand(Hand.MAIN_HAND, stack);
-        fakePlayer.setPositionAndAngles(position.getBlockX(), position.getBlockY(), position.getBlockZ(),
+        fakePlayer.updatePositionAndAngles(position.getBlockX(), position.getBlockY(), position.getBlockZ(),
                 (float) face.toVector().toYaw(), (float) face.toVector().toPitch());
         final BlockPos blockPos = FabricAdapter.toBlockPos(position);
         final BlockHitResult rayTraceResult = new BlockHitResult(FabricAdapter.toVec3(position),
@@ -367,7 +367,7 @@ public class FabricWorld extends AbstractWorld {
             case BIRCH: return Feature.NORMAL_TREE.configure(DefaultBiomeFeatures.BIRCH_TREE_CONFIG);
             case JUNGLE: return Feature.MEGA_JUNGLE_TREE.configure(DefaultBiomeFeatures.MEGA_JUNGLE_TREE_CONFIG);
             case SMALL_JUNGLE: return Feature.NORMAL_TREE.configure(DefaultBiomeFeatures.JUNGLE_TREE_CONFIG);
-            case SHORT_JUNGLE: return new OakTreeFeature(BranchedTreeFeatureConfig::deserialize2)
+            case SHORT_JUNGLE: return new OakTreeFeature(BranchedTreeFeatureConfig::deserialize)
                 .configure(DefaultBiomeFeatures.JUNGLE_SAPLING_TREE_CONFIG);
             case JUNGLE_BUSH: return Feature.JUNGLE_GROUND_BUSH.configure(DefaultBiomeFeatures.JUNGLE_GROUND_BUSH_CONFIG);
             case SWAMP: return Feature.NORMAL_TREE.configure(DefaultBiomeFeatures.SWAMP_TREE_CONFIG);
@@ -564,7 +564,7 @@ public class FabricWorld extends AbstractWorld {
                 createdEntity.fromTag(tag);
             }
 
-            createdEntity.setPositionAndAngles(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
+            createdEntity.updatePositionAndAngles(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
 
             world.spawnEntity(createdEntity);
             return new FabricEntity(createdEntity);
