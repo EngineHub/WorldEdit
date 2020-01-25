@@ -28,6 +28,7 @@ usage += "§7• §6[thickness] §r: Changes walls' width\n";
 usage += "§6/.s ? §r: Shows help about flags";
 
 help = "Maze Flags :\n";
+help += "§7• §6x §r: Shows how many corridors will be generated\n";
 help += "§7• §6i §r: Adds an entry and an exit\n";
 help += "§7• §6y §r: Places the entry and the exit randomly\n";
 help += "§7• §6f §r: Adds a floor\n";
@@ -76,6 +77,7 @@ else {
     w = Math.ceil(region.getWidth() / (s + wa));
 
     if (flags) {
+        x = flags.search("x") != -1;
         ee = flags.search("i") != -1;
         r = flags.search("y") != -1;
         if (r) ee = true;
@@ -90,245 +92,249 @@ else {
         re = flags.search("r") != -1;
         bl = flags.search("b") != -1;
         if (g || re || bl) so = ee = true;
-    } else ee = r = f = c = e = ao = so = g = re = bl = false;
+    } else x = ee = r = f = c = e = ao = so = g = re = bl = false;
 
-    function id(x, y) {
-        return y * (w + 1) + x;
-    }
-
-    function $x(i) {
-        return i % (w + 1);
-    }
-
-    function $y(i) {
-        return Math.floor(i / (w + 1));
-    }
-
-    function shuffle(arr) {
-        i = arr.length;
-        if (i === 0) return false;
-        while (--i) {
-            j = Math.floor(Math.random() * (i + 1));
-            tempi = arr[i];
-            tempj = arr[j];
-            arr[i] = tempj;
-            arr[j] = tempi;
+    if (x) context.print("Corridors number :");
+    if (x) context.print("§7• §6West » East §r: " + w + "\n§7• §6North » South §r: " + l);
+    else {
+        function id(x, y) {
+            return y * (w + 1) + x;
         }
-    }
 
-    if (f || c) {
-        for (z = 1; z <= wa; z++) for (y = -wa; y <= l * (s + wa) - 1; y++) for (x = -wa; x <= w * (s + wa) - 1; x++) {
-            if (f) sess.setBlock(origin.add(x, -z, y), block);
-            if (c) sess.setBlock(origin.add(x, z - 1 + h, y), block);
+        function $x(i) {
+            return i % (w + 1);
         }
-    }
 
-    stack = [];
-    visited = [];
-    noWallLeft = [];
-    noWallAbove = [];
+        function $y(i) {
+            return Math.floor(i / (w + 1));
+        }
 
-    stack.push(id(Math.floor(Math.random() * w), Math.floor(Math.random() * l)));
-
-    while (stack.length > 0) {
-        cell = stack.pop();
-        x = $x(cell);
-        y = $y(cell);
-        visited[cell] = true;
-        neighbors = [];
-
-        if (x > 0) neighbors.push(id(x - 1, y));
-        if (x < w - 1) neighbors.push(id(x + 1, y));
-        if (y > 0) neighbors.push(id(x, y - 1));
-        if (y < l - 1) neighbors.push(id(x, y + 1));
-
-        shuffle(neighbors);
-
-        while (neighbors.length > 0) {
-            neighbor = neighbors.pop();
-            nx = $x(neighbor);
-            ny = $y(neighbor);
-
-            if (!visited[neighbor]) {
-                stack.push(cell);
-
-                if (y == ny) {
-                    if (nx < x) noWallLeft[cell] = true;
-                    else noWallLeft[neighbor] = true;
-                } else {
-                    if (ny < y) noWallAbove[cell] = true;
-                    else noWallAbove[neighbor] = true;
-                }
-
-                stack.push(neighbor);
-                break;
+        function shuffle(arr) {
+            i = arr.length;
+            if (i === 0) return false;
+            while (--i) {
+                j = Math.floor(Math.random() * (i + 1));
+                tempi = arr[i];
+                tempj = arr[j];
+                arr[i] = tempj;
+                arr[j] = tempi;
             }
         }
-    }
 
-    if (!r) {
-        start = id(0, 0);
-        end = id(w - 1, l - 1);
-    } else {
-        start = id(0, Math.floor(Math.random() * l));
-        end = id(w - 1, Math.floor(Math.random() * l));
-    }
-
-    if (ee) {
-        noWallLeft[start] = true;
-        noWallLeft[end + 1] = true;
-    }
-
-    /*for (y = -1; y < l; y++) {
-        line = "";
-        for (x = 0; x <= w; x++) {
-            cell = id(x, y);
-            a = y >= 0 ? (noWallLeft[cell] ? "_" : "|") : "_";
-            b = x < w ? (noWallAbove[id(x, y + 1)] ? "  " : "_") : "";
-            line += a + b;
-        }
-        context.print(line);
-    }*/
-
-    for (y = 0; y <= l; y++) for (x = 0; x <= w; x++) {
-        cell = id(x, y);
-
-        if (!noWallLeft[cell] && cell != id(x, l)) {
-            if (!ao) {
-                for (z = 0; z < h; z++) for (yi = 0; yi < s; yi++) for (xi = 1; xi <= wa; xi++)
-                    sess.setBlock(origin.add(x * (s + wa) - xi, z, y * (s + wa) + yi), block);
+        if (f || c) {
+            for (z = 1; z <= wa; z++) for (y = -wa; y <= l * (s + wa) - 1; y++) for (x = -wa; x <= w * (s + wa) - 1; x++) {
+                if (f) sess.setBlock(origin.add(x, -z, y), block);
+                if (c) sess.setBlock(origin.add(x, z - 1 + h, y), block);
             }
-        } else if (e && cell != id(x, l)) {
-            for (z = 0; z < h; z++) for (yi = 0; yi < s; yi++) for (xi = 1; xi <= wa; xi++)
-                sess.setBlock(origin.add(x * (s + wa) - xi, z, y * (s + wa) + yi), airBlock);
         }
 
-        if (!noWallAbove[cell] && cell != id(w, y)) {
-            if (!ao) {
-                for (z = 0; z < h; z++) for (yi = 1; yi <= wa; yi++) for (xi = 0; xi < s; xi++)
-                    sess.setBlock(origin.add(x * (s + wa) + xi, z, y * (s + wa) - yi), block);
-            }
-        } else if (e && cell != id(w, y)) {
-            for (z = 0; z < h; z++) for (yi = 1; yi <= wa; yi++) for (xi = 0; xi < s; xi++)
-                sess.setBlock(origin.add(x * (s + wa) + xi, z, y * (s + wa) - yi), airBlock);
-        }
-
-        if (!ao) {
-            for (z = 0; z < h; z++) for (yi = 1; yi <= wa; yi++) for (xi = 1; xi <= wa; xi++)
-                sess.setBlock(origin.add(x * (s + wa) - xi, z, y * (s + wa) - yi), block);
-        }
-
-        if (e && cell != id(x, l) && cell != id(w, y)) {
-            for (z = 0; z < h; z++) for (yi = 0; yi < s; yi++) for (xi = 0; xi < s; xi++)
-                sess.setBlock(origin.add(x * (s + wa) + xi, z, y * (s + wa) + yi), airBlock);
-        }
-    }
-
-    if (so) {
         stack = [];
         visited = [];
-        wrong = [];
+        noWallLeft = [];
+        noWallAbove = [];
 
-        stack.push(start);
+        stack.push(id(Math.floor(Math.random() * w), Math.floor(Math.random() * l)));
 
-        while (cell != end) {
-            if (visited[stack[stack.length - 1]]) wrong[cell] = true;
-
+        while (stack.length > 0) {
             cell = stack.pop();
             x = $x(cell);
             y = $y(cell);
             visited[cell] = true;
             neighbors = [];
 
-            if (noWallLeft[cell] && cell != start) neighbors.push(id(x - 1, y));
-            if (noWallLeft[id(x + 1, y)]) neighbors.push(id(x + 1, y));
-            if (noWallAbove[cell]) neighbors.push(id(x, y - 1));
-            if (noWallAbove[id(x, y + 1)]) neighbors.push(id(x, y + 1));
+            if (x > 0) neighbors.push(id(x - 1, y));
+            if (x < w - 1) neighbors.push(id(x + 1, y));
+            if (y > 0) neighbors.push(id(x, y - 1));
+            if (y < l - 1) neighbors.push(id(x, y + 1));
 
             shuffle(neighbors);
 
             while (neighbors.length > 0) {
                 neighbor = neighbors.pop();
+                nx = $x(neighbor);
+                ny = $y(neighbor);
 
                 if (!visited[neighbor]) {
                     stack.push(cell);
+
+                    if (y == ny) {
+                        if (nx < x) noWallLeft[cell] = true;
+                        else noWallLeft[neighbor] = true;
+                    } else {
+                        if (ny < y) noWallAbove[cell] = true;
+                        else noWallAbove[neighbor] = true;
+                    }
+
                     stack.push(neighbor);
                     break;
                 }
             }
         }
 
+        if (!r) {
+            start = id(0, 0);
+            end = id(w - 1, l - 1);
+        } else {
+            start = id(0, Math.floor(Math.random() * l));
+            end = id(w - 1, Math.floor(Math.random() * l));
+        }
+
+        if (ee) {
+            noWallLeft[start] = true;
+            noWallLeft[end + 1] = true;
+        }
+
+        /*for (y = -1; y < l; y++) {
+            line = "";
+            for (x = 0; x <= w; x++) {
+                cell = id(x, y);
+                a = y >= 0 ? (noWallLeft[cell] ? "_" : "|") : "_";
+                b = x < w ? (noWallAbove[id(x, y + 1)] ? "  " : "_") : "";
+                line += a + b;
+            }
+            context.print(line);
+        }*/
+
         for (y = 0; y <= l; y++) for (x = 0; x <= w; x++) {
             cell = id(x, y);
 
-            if (visited[cell] && !wrong[cell]) {
-                for (yi = 0; yi < s; yi++) for (xi = 0; xi < s; xi++)
-                    sess.setBlock(origin.add(x * (s + wa) + xi, -1, y * (s + wa) + yi), limeWoolBlock);
+            if (!noWallLeft[cell] && cell != id(x, l)) {
+                if (!ao) {
+                    for (z = 0; z < h; z++) for (yi = 0; yi < s; yi++) for (xi = 1; xi <= wa; xi++)
+                        sess.setBlock(origin.add(x * (s + wa) - xi, z, y * (s + wa) + yi), block);
+                }
+            } else if (e && cell != id(x, l)) {
+                for (z = 0; z < h; z++) for (yi = 0; yi < s; yi++) for (xi = 1; xi <= wa; xi++)
+                    sess.setBlock(origin.add(x * (s + wa) - xi, z, y * (s + wa) + yi), airBlock);
             }
 
-            if ((visited[cell] && !wrong[cell] && visited[id(x - 1, y)] && !wrong[id(x - 1, y)] && noWallLeft[cell]) || cell == start || id(x - 1, y) == end) {
-                for (xi = 1; xi <= wa; xi++) for (yi = 0; yi < s; yi++)
-                    sess.setBlock(origin.add(x * (s + wa) - xi, -1, y * (s + wa) + yi), limeWoolBlock);
+            if (!noWallAbove[cell] && cell != id(w, y)) {
+                if (!ao) {
+                    for (z = 0; z < h; z++) for (yi = 1; yi <= wa; yi++) for (xi = 0; xi < s; xi++)
+                        sess.setBlock(origin.add(x * (s + wa) + xi, z, y * (s + wa) - yi), block);
+                }
+            } else if (e && cell != id(w, y)) {
+                for (z = 0; z < h; z++) for (yi = 1; yi <= wa; yi++) for (xi = 0; xi < s; xi++)
+                    sess.setBlock(origin.add(x * (s + wa) + xi, z, y * (s + wa) - yi), airBlock);
             }
 
-            if (visited[cell] && !wrong[cell] && visited[id(x, y - 1)] && !wrong[id(x, y - 1)] && noWallAbove[cell]) {
-                for (xi = 0; xi < s; xi++) for (yi = 1; yi <= wa; yi++)
-                    sess.setBlock(origin.add(x * (s + wa) + xi, -1, y * (s + wa) - yi), limeWoolBlock);
+            if (!ao) {
+                for (z = 0; z < h; z++) for (yi = 1; yi <= wa; yi++) for (xi = 1; xi <= wa; xi++)
+                    sess.setBlock(origin.add(x * (s + wa) - xi, z, y * (s + wa) - yi), block);
             }
 
-            if (g) {
-                if (visited[cell] && !wrong[cell] && (!visited[id(x - 1, y)] || wrong[id(x - 1, y)]) && noWallLeft[cell] && cell != start) {
-                    for (z = 0; z < h; z++) for (xi = 1; xi <= wa; xi++) for (yi = 0; yi < s; yi++)
-                        sess.setBlock(origin.add(x * (s + wa) - xi, z, y * (s + wa) + yi), glassBlock);
-                }
+            if (e && cell != id(x, l) && cell != id(w, y)) {
+                for (z = 0; z < h; z++) for (yi = 0; yi < s; yi++) for (xi = 0; xi < s; xi++)
+                    sess.setBlock(origin.add(x * (s + wa) + xi, z, y * (s + wa) + yi), airBlock);
+            }
+        }
 
-                if ((!visited[cell] || wrong[cell]) && visited[id(x - 1, y)] && !wrong[id(x - 1, y)] && noWallLeft[cell] && id(x - 1, y) != end) {
-                    for (z = 0; z < h; z++) for (xi = 1; xi <= wa; xi++) for (yi = 0; yi < s; yi++)
-                        sess.setBlock(origin.add(x * (s + wa) - xi, z, y * (s + wa) + yi), glassBlock);
-                }
+        if (so) {
+            stack = [];
+            visited = [];
+            wrong = [];
 
-                if (visited[cell] && !wrong[cell] && (!visited[id(x, y - 1)] || wrong[id(x, y - 1)]) && noWallAbove[cell]) {
-                    for (z = 0; z < h; z++) for (xi = 0; xi < s; xi++) for (yi = 1; yi <= wa; yi++)
-                        sess.setBlock(origin.add(x * (s + wa) + xi, z, y * (s + wa) - yi), glassBlock);
-                }
+            stack.push(start);
 
-                if ((!visited[cell] || wrong[cell]) && visited[id(x, y - 1)] && !wrong[id(x, y - 1)] && noWallAbove[cell]) {
-                    for (z = 0; z < h; z++) for (xi = 0; xi < s; xi++) for (yi = 1; yi <= wa; yi++)
-                        sess.setBlock(origin.add(x * (s + wa) + xi, z, y * (s + wa) - yi), glassBlock);
+            while (cell != end) {
+                if (visited[stack[stack.length - 1]]) wrong[cell] = true;
+
+                cell = stack.pop();
+                x = $x(cell);
+                y = $y(cell);
+                visited[cell] = true;
+                neighbors = [];
+
+                if (noWallLeft[cell] && cell != start) neighbors.push(id(x - 1, y));
+                if (noWallLeft[id(x + 1, y)]) neighbors.push(id(x + 1, y));
+                if (noWallAbove[cell]) neighbors.push(id(x, y - 1));
+                if (noWallAbove[id(x, y + 1)]) neighbors.push(id(x, y + 1));
+
+                shuffle(neighbors);
+
+                while (neighbors.length > 0) {
+                    neighbor = neighbors.pop();
+
+                    if (!visited[neighbor]) {
+                        stack.push(cell);
+                        stack.push(neighbor);
+                        break;
+                    }
                 }
             }
 
-            if (re) {
-                if (wrong[cell]) {
+            for (y = 0; y <= l; y++) for (x = 0; x <= w; x++) {
+                cell = id(x, y);
+
+                if (visited[cell] && !wrong[cell]) {
                     for (yi = 0; yi < s; yi++) for (xi = 0; xi < s; xi++)
-                        sess.setBlock(origin.add(x * (s + wa) + xi, -1, y * (s + wa) + yi), redWoolBlock);
+                        sess.setBlock(origin.add(x * (s + wa) + xi, -1, y * (s + wa) + yi), limeWoolBlock);
                 }
 
-                if ((wrong[cell] || wrong[id(x - 1, y)]) && noWallLeft[cell]) {
+                if ((visited[cell] && !wrong[cell] && visited[id(x - 1, y)] && !wrong[id(x - 1, y)] && noWallLeft[cell]) || cell == start || id(x - 1, y) == end) {
                     for (xi = 1; xi <= wa; xi++) for (yi = 0; yi < s; yi++)
-                        sess.setBlock(origin.add(x * (s + wa) - xi, -1, y * (s + wa) + yi), redWoolBlock);
+                        sess.setBlock(origin.add(x * (s + wa) - xi, -1, y * (s + wa) + yi), limeWoolBlock);
                 }
 
-                if ((wrong[cell] || wrong[id(x, y - 1)]) && noWallAbove[cell]) {
+                if (visited[cell] && !wrong[cell] && visited[id(x, y - 1)] && !wrong[id(x, y - 1)] && noWallAbove[cell]) {
                     for (xi = 0; xi < s; xi++) for (yi = 1; yi <= wa; yi++)
-                        sess.setBlock(origin.add(x * (s + wa) + xi, -1, y * (s + wa) - yi), redWoolBlock);
-                }
-            }
-
-            if (bl) {
-                if (!visited[cell] && y < l && x < w) {
-                    for (yi = 0; yi < s; yi++) for (xi = 0; xi < s; xi++)
-                        sess.setBlock(origin.add(x * (s + wa) + xi, -1, y * (s + wa) + yi), blueWoolBlock);
+                        sess.setBlock(origin.add(x * (s + wa) + xi, -1, y * (s + wa) - yi), limeWoolBlock);
                 }
 
-                if ((!visited[cell] || !visited[id(x - 1, y)]) && noWallLeft[cell] && x > 0 && x < w) {
-                    for (xi = 1; xi <= wa; xi++) for (yi = 0; yi < s; yi++)
-                        sess.setBlock(origin.add(x * (s + wa) - xi, -1, y * (s + wa) + yi), blueWoolBlock);
+                if (g) {
+                    if (visited[cell] && !wrong[cell] && (!visited[id(x - 1, y)] || wrong[id(x - 1, y)]) && noWallLeft[cell] && cell != start) {
+                        for (z = 0; z < h; z++) for (xi = 1; xi <= wa; xi++) for (yi = 0; yi < s; yi++)
+                            sess.setBlock(origin.add(x * (s + wa) - xi, z, y * (s + wa) + yi), glassBlock);
+                    }
+
+                    if ((!visited[cell] || wrong[cell]) && visited[id(x - 1, y)] && !wrong[id(x - 1, y)] && noWallLeft[cell] && id(x - 1, y) != end) {
+                        for (z = 0; z < h; z++) for (xi = 1; xi <= wa; xi++) for (yi = 0; yi < s; yi++)
+                            sess.setBlock(origin.add(x * (s + wa) - xi, z, y * (s + wa) + yi), glassBlock);
+                    }
+
+                    if (visited[cell] && !wrong[cell] && (!visited[id(x, y - 1)] || wrong[id(x, y - 1)]) && noWallAbove[cell]) {
+                        for (z = 0; z < h; z++) for (xi = 0; xi < s; xi++) for (yi = 1; yi <= wa; yi++)
+                            sess.setBlock(origin.add(x * (s + wa) + xi, z, y * (s + wa) - yi), glassBlock);
+                    }
+
+                    if ((!visited[cell] || wrong[cell]) && visited[id(x, y - 1)] && !wrong[id(x, y - 1)] && noWallAbove[cell]) {
+                        for (z = 0; z < h; z++) for (xi = 0; xi < s; xi++) for (yi = 1; yi <= wa; yi++)
+                            sess.setBlock(origin.add(x * (s + wa) + xi, z, y * (s + wa) - yi), glassBlock);
+                    }
                 }
 
-                if ((!visited[cell] || !visited[id(x, y - 1)]) && noWallAbove[cell]) {
-                    for (xi = 0; xi < s; xi++) for (yi = 1; yi <= wa; yi++)
-                        sess.setBlock(origin.add(x * (s + wa) + xi, -1, y * (s + wa) - yi), blueWoolBlock);
+                if (re) {
+                    if (wrong[cell]) {
+                        for (yi = 0; yi < s; yi++) for (xi = 0; xi < s; xi++)
+                            sess.setBlock(origin.add(x * (s + wa) + xi, -1, y * (s + wa) + yi), redWoolBlock);
+                    }
+
+                    if ((wrong[cell] || wrong[id(x - 1, y)]) && noWallLeft[cell]) {
+                        for (xi = 1; xi <= wa; xi++) for (yi = 0; yi < s; yi++)
+                            sess.setBlock(origin.add(x * (s + wa) - xi, -1, y * (s + wa) + yi), redWoolBlock);
+                    }
+
+                    if ((wrong[cell] || wrong[id(x, y - 1)]) && noWallAbove[cell]) {
+                        for (xi = 0; xi < s; xi++) for (yi = 1; yi <= wa; yi++)
+                            sess.setBlock(origin.add(x * (s + wa) + xi, -1, y * (s + wa) - yi), redWoolBlock);
+                    }
+                }
+
+                if (bl) {
+                    if (!visited[cell] && y < l && x < w) {
+                        for (yi = 0; yi < s; yi++) for (xi = 0; xi < s; xi++)
+                            sess.setBlock(origin.add(x * (s + wa) + xi, -1, y * (s + wa) + yi), blueWoolBlock);
+                    }
+
+                    if ((!visited[cell] || !visited[id(x - 1, y)]) && noWallLeft[cell] && x > 0 && x < w) {
+                        for (xi = 1; xi <= wa; xi++) for (yi = 0; yi < s; yi++)
+                            sess.setBlock(origin.add(x * (s + wa) - xi, -1, y * (s + wa) + yi), blueWoolBlock);
+                    }
+
+                    if ((!visited[cell] || !visited[id(x, y - 1)]) && noWallAbove[cell]) {
+                        for (xi = 0; xi < s; xi++) for (yi = 1; yi <= wa; yi++)
+                            sess.setBlock(origin.add(x * (s + wa) + xi, -1, y * (s + wa) - yi), blueWoolBlock);
+                    }
                 }
             }
         }
