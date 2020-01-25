@@ -94,9 +94,11 @@ else {
         if (g || re || bl) so = ee = true;
     } else x = ee = r = f = c = e = ao = so = g = re = bl = false;
 
-    if (x) context.print("Corridors number :");
-    if (x) context.print("§7• §6West » East §r: " + w + "\n§7• §6North » South §r: " + l);
-    else {
+    if (x) {
+        context.print("Corridors number :");
+        context.print("§7• §6West » East §r: " + w);
+        context.print("§7• §6North » South §r: " + l);
+    } else {
         function id(x, y) {
             return y * (w + 1) + x;
         }
