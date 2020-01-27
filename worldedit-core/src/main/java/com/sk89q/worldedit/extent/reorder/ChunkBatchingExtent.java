@@ -19,7 +19,6 @@
 
 package com.sk89q.worldedit.extent.reorder;
 
-import com.google.common.collect.ImmutableSortedSet;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.extent.AbstractBufferingExtent;
 import com.sk89q.worldedit.extent.Extent;
