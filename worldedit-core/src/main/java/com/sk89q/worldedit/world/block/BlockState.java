@@ -26,6 +26,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Table;
 import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.internal.block.BlockStateIdAccess;
 import com.sk89q.worldedit.registry.state.Property;
 
 import java.util.Collections;
@@ -43,6 +44,20 @@ import java.util.Set;
 @SuppressWarnings("unchecked")
 public class BlockState implements BlockStateHolder<BlockState> {
 
+    static {
+        BlockStateIdAccess.setBlockStateInternalId(new BlockStateIdAccess.BlockStateInternalId() {
+            @Override
+            public int getInternalId(BlockState blockState) {
+                return blockState.internalId;
+            }
+
+            @Override
+            public void setInternalId(BlockState blockState, int internalId) {
+                blockState.internalId = internalId;
+            }
+        });
+    }
+
     private final BlockType blockType;
     private final Map<Property<?>, Object> values;
 
@@ -50,6 +65,11 @@ public class BlockState implements BlockStateHolder<BlockState> {
 
     // Neighbouring state table.
     private Table<Property<?>, Object, BlockState> states;
+
+    /**
+     * The internal ID of the block state.
+     */
+    private int internalId = BlockStateIdAccess.invalidId();
 
     BlockState(BlockType blockType) {
         this.blockType = blockType;

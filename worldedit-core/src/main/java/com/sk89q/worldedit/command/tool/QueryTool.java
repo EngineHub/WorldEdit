@@ -36,8 +36,6 @@ import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.registry.LegacyMapper;
 
-import java.util.OptionalInt;
-
 /**
  * Looks up information about a block.
  */
@@ -61,9 +59,9 @@ public class QueryTool implements BlockTool {
         builder.append(TextComponent.of(block.getBlockType().getName(), TextColor.YELLOW));
         builder.append(TextComponent.of(" (" + block + ") ", TextColor.GRAY)
                 .hoverEvent(HoverEvent.of(HoverEvent.Action.SHOW_TEXT, TranslatableComponent.of("worldedit.tool.info.blockstate.hover"))));
-        final OptionalInt internalId = BlockStateIdAccess.getBlockStateId(block.toImmutableState());
-        if (internalId.isPresent()) {
-            builder.append(TextComponent.of(" (" + internalId.getAsInt() + ") ", TextColor.DARK_GRAY)
+        final int internalId = BlockStateIdAccess.getBlockStateId(block.toImmutableState());
+        if (BlockStateIdAccess.isValidInternalId(internalId)) {
+            builder.append(TextComponent.of(" (" + internalId+ ") ", TextColor.DARK_GRAY)
                     .hoverEvent(HoverEvent.of(HoverEvent.Action.SHOW_TEXT, TranslatableComponent.of("worldedit.tool.info.internalid.hover"))));
         }
         final int[] legacy = LegacyMapper.getInstance().getLegacyFromBlock(block.toImmutableState());

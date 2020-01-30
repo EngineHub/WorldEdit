@@ -33,6 +33,7 @@ import it.unimi.dsi.fastutil.objects.AbstractObjectSet;
 import it.unimi.dsi.fastutil.objects.ObjectIterator;
 import it.unimi.dsi.fastutil.objects.ObjectSet;
 
+import javax.annotation.Nonnull;
 import java.util.NoSuchElementException;
 import java.util.function.BiFunction;
 
@@ -41,21 +42,22 @@ import java.util.function.BiFunction;
  */
 class Int2BaseBlockMap extends AbstractInt2ObjectMap<BaseBlock> {
 
-    private static boolean hasInt(BlockState b) {
-        return BlockStateIdAccess.getBlockStateId(b).isPresent();
-    }
-
-    private static boolean isUncommon(BaseBlock block) {
-        return block.hasNbtData() || !hasInt(block.toImmutableState());
-    }
-
-    private static int assumeAsInt(BlockState b) {
-        return BlockStateIdAccess.getBlockStateId(b)
-            .orElseThrow(() -> new IllegalStateException("Block state " + b + " did not have an ID"));
+    /**
+     * Given a {@link BaseBlock}, retrieve the internal ID if it's useful,
+     * i.e. the block has no NBT data.
+     *
+     * @param block the block to get the ID for
+     * @return the internal ID, or {@link BlockStateIdAccess#invalidId()} if not useful
+     */
+    private static int optimizedInternalId(BaseBlock block) {
+        if (block.hasNbtData()) {
+            return BlockStateIdAccess.invalidId();
+        }
+        return BlockStateIdAccess.getBlockStateId(block.toImmutableState());
     }
 
     private static BaseBlock assumeAsBlock(int id) {
-        if (id == Integer.MIN_VALUE) {
+        if (!BlockStateIdAccess.isValidInternalId(id)) {
             return null;
         }
         BlockState state = BlockStateIdAccess.getBlockStateById(id);
@@ -65,13 +67,11 @@ class Int2BaseBlockMap extends AbstractInt2ObjectMap<BaseBlock> {
         return state.toBaseBlock();
     }
 
-    static final Int2BaseBlockMap EMPTY = new Int2BaseBlockMap();
-
     private final Int2IntMap commonMap = new Int2IntOpenHashMap(64, 1f);
     private final Int2ObjectMap<BaseBlock> uncommonMap = new Int2ObjectOpenHashMap<>(1, 1f);
 
     {
-        commonMap.defaultReturnValue(Integer.MIN_VALUE);
+        commonMap.defaultReturnValue(BlockStateIdAccess.invalidId());
     }
 
     @Override
@@ -83,6 +83,7 @@ class Int2BaseBlockMap extends AbstractInt2ObjectMap<BaseBlock> {
     public ObjectSet<Entry<BaseBlock>> int2ObjectEntrySet() {
         return new AbstractObjectSet<Entry<BaseBlock>>() {
             @Override
+            @Nonnull
             public ObjectIterator<Entry<BaseBlock>> iterator() {
                 return new ObjectIterator<Entry<BaseBlock>>() {
 
@@ -136,15 +137,17 @@ class Int2BaseBlockMap extends AbstractInt2ObjectMap<BaseBlock> {
     @Override
     public boolean containsValue(Object v) {
         BaseBlock block = (BaseBlock) v;
-        if (isUncommon(block)) {
+        int internalId = optimizedInternalId(block);
+        if (!BlockStateIdAccess.isValidInternalId(internalId)) {
             return uncommonMap.containsValue(block);
         }
-        return commonMap.containsValue(assumeAsInt(block.toImmutableState()));
+        return commonMap.containsValue(internalId);
     }
 
     @Override
     public BaseBlock put(int key, BaseBlock value) {
-        if (isUncommon(value)) {
+        int internalId = optimizedInternalId(value);
+        if (!BlockStateIdAccess.isValidInternalId(internalId)) {
             BaseBlock old = uncommonMap.put(key, value);
             if (old == null) {
                 // ensure common doesn't have the entry too
@@ -153,7 +156,7 @@ class Int2BaseBlockMap extends AbstractInt2ObjectMap<BaseBlock> {
             }
             return old;
         }
-        int oldId = commonMap.put(key, assumeAsInt(value.toImmutableState()));
+        int oldId = commonMap.put(key, internalId);
         return assumeAsBlock(oldId);
     }
 
@@ -172,21 +175,23 @@ class Int2BaseBlockMap extends AbstractInt2ObjectMap<BaseBlock> {
              iter.hasNext(); ) {
             Int2IntMap.Entry next = iter.next();
             BaseBlock value = function.apply(next.getIntKey(), assumeAsBlock(next.getIntValue()));
-            if (isUncommon(value)) {
+            int internalId = optimizedInternalId(value);
+            if (!BlockStateIdAccess.isValidInternalId(internalId)) {
                 uncommonMap.put(next.getIntKey(), value);
                 iter.remove();
             } else {
-                next.setValue(assumeAsInt(value.toImmutableState()));
+                next.setValue(internalId);
             }
         }
         for (ObjectIterator<Entry<BaseBlock>> iter = Int2ObjectMaps.fastIterator(uncommonMap);
              iter.hasNext(); ) {
             Entry<BaseBlock> next = iter.next();
             BaseBlock value = function.apply(next.getIntKey(), next.getValue());
-            if (isUncommon(value)) {
+            int internalId = optimizedInternalId(value);
+            if (!BlockStateIdAccess.isValidInternalId(internalId)) {
                 next.setValue(value);
             } else {
-                commonMap.put(next.getIntKey(), assumeAsInt(value.toImmutableState()));
+                commonMap.put(next.getIntKey(), internalId);
                 iter.remove();
             }
         }
