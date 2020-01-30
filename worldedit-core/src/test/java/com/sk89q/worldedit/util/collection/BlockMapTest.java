@@ -110,7 +110,7 @@ class BlockMapTest {
     private final BaseBlock air = checkNotNull(BlockTypes.AIR).getDefaultState().toBaseBlock();
     private final BaseBlock oakWood = checkNotNull(BlockTypes.OAK_WOOD).getDefaultState().toBaseBlock();
 
-    private BlockMap map = BlockMap.create();
+    private BlockMap<BaseBlock> map = BlockMap.createForBaseBlock();
 
     @BeforeEach
     void setUp() {

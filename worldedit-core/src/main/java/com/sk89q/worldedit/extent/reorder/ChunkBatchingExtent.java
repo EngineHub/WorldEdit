@@ -43,7 +43,7 @@ import java.util.Optional;
  */
 public class ChunkBatchingExtent extends AbstractBufferingExtent {
 
-    private final BlockMap blockMap = BlockMap.create();
+    private final BlockMap<BaseBlock> blockMap = BlockMap.createForBaseBlock();
     private boolean enabled;
 
     public ChunkBatchingExtent(Extent extent) {

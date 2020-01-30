@@ -39,7 +39,7 @@ import java.util.function.BiFunction;
 /**
  * Int-to-BaseBlock map, but with optimizations for common cases.
  */
-class SubBlockMap extends AbstractInt2ObjectMap<BaseBlock> {
+class Int2BaseBlockMap extends AbstractInt2ObjectMap<BaseBlock> {
 
     private static boolean hasInt(BlockState b) {
         return BlockStateIdAccess.getBlockStateId(b).isPresent();
@@ -65,7 +65,7 @@ class SubBlockMap extends AbstractInt2ObjectMap<BaseBlock> {
         return state.toBaseBlock();
     }
 
-    static final SubBlockMap EMPTY = new SubBlockMap();
+    static final Int2BaseBlockMap EMPTY = new Int2BaseBlockMap();
 
     private final Int2IntMap commonMap = new Int2IntOpenHashMap(64, 1f);
     private final Int2ObjectMap<BaseBlock> uncommonMap = new Int2ObjectOpenHashMap<>(1, 1f);
@@ -88,7 +88,7 @@ class SubBlockMap extends AbstractInt2ObjectMap<BaseBlock> {
 
                     private final ObjectIterator<Int2IntMap.Entry> commonIter
                         = Int2IntMaps.fastIterator(commonMap);
-                    private final ObjectIterator<Int2ObjectMap.Entry<BaseBlock>> uncommonIter
+                    private final ObjectIterator<Entry<BaseBlock>> uncommonIter
                         = Int2ObjectMaps.fastIterator(uncommonMap);
 
                     @Override
@@ -114,7 +114,7 @@ class SubBlockMap extends AbstractInt2ObjectMap<BaseBlock> {
 
             @Override
             public int size() {
-                return SubBlockMap.this.size();
+                return Int2BaseBlockMap.this.size();
             }
         };
     }
@@ -179,9 +179,9 @@ class SubBlockMap extends AbstractInt2ObjectMap<BaseBlock> {
                 next.setValue(assumeAsInt(value.toImmutableState()));
             }
         }
-        for (ObjectIterator<Int2ObjectMap.Entry<BaseBlock>> iter = Int2ObjectMaps.fastIterator(uncommonMap);
+        for (ObjectIterator<Entry<BaseBlock>> iter = Int2ObjectMaps.fastIterator(uncommonMap);
              iter.hasNext(); ) {
-            Int2ObjectMap.Entry<BaseBlock> next = iter.next();
+            Entry<BaseBlock> next = iter.next();
             BaseBlock value = function.apply(next.getIntKey(), next.getValue());
             if (isUncommon(value)) {
                 next.setValue(value);

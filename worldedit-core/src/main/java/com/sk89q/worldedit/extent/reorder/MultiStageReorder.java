@@ -142,7 +142,7 @@ public class MultiStageReorder extends AbstractBufferingExtent implements Reorde
         priorityMap.put(BlockTypes.MOVING_PISTON, PlacementPriority.FINAL);
     }
 
-    private Map<PlacementPriority, BlockMap> stages = new HashMap<>();
+    private Map<PlacementPriority, BlockMap<BaseBlock>> stages = new HashMap<>();
 
     private boolean enabled;
 
@@ -176,7 +176,7 @@ public class MultiStageReorder extends AbstractBufferingExtent implements Reorde
         this.enabled = enabled;
 
         for (PlacementPriority priority : PlacementPriority.values()) {
-            stages.put(priority, BlockMap.create());
+            stages.put(priority, BlockMap.createForBaseBlock());
         }
     }
 
@@ -261,7 +261,7 @@ public class MultiStageReorder extends AbstractBufferingExtent implements Reorde
         }
         List<Operation> operations = new ArrayList<>();
         for (PlacementPriority priority : PlacementPriority.values()) {
-            BlockMap blocks = stages.get(priority);
+            BlockMap<BaseBlock> blocks = stages.get(priority);
             operations.add(new SetBlockMap(getExtent(), blocks) {
                 @Override
                 public Operation resume(RunContext run) throws WorldEditException {
