@@ -19,10 +19,9 @@
 
 package com.sk89q.worldedit.internal.block;
 
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.registry.BlockRegistry;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 
 import javax.annotation.Nullable;
 import java.util.BitSet;
@@ -32,15 +31,43 @@ import static com.google.common.base.Preconditions.checkState;
 
 public final class BlockStateIdAccess {
 
-    private static final BiMap<BlockState, Integer> ASSIGNED_IDS = HashBiMap.create(2 << 13);
+    private static final int INVALID_ID = -1;
+    private static final int EXPECTED_BLOCK_COUNT = 2 << 13;
+    private static final Int2ObjectOpenHashMap<BlockState> TO_STATE =
+        new Int2ObjectOpenHashMap<>(EXPECTED_BLOCK_COUNT);
 
-    public static OptionalInt getBlockStateId(BlockState holder) {
-        Integer value = ASSIGNED_IDS.get(holder);
-        return value == null ? OptionalInt.empty() : OptionalInt.of(value);
+    static {
+        TO_STATE.defaultReturnValue(null);
+    }
+
+    public interface BlockStateInternalId {
+        int getInternalId(BlockState blockState);
+        void setInternalId(BlockState blockState, int internalId);
+    }
+
+    private static BlockStateInternalId blockStateInternalId;
+
+    public static void setBlockStateInternalId(BlockStateInternalId blockStateInternalId) {
+        BlockStateIdAccess.blockStateInternalId = blockStateInternalId;
+    }
+
+    /**
+     * @return an internal ID which is never valid
+     */
+    public static int invalidId() {
+        return INVALID_ID;
+    }
+
+    public static boolean isValidInternalId(int internalId) {
+        return internalId != INVALID_ID;
+    }
+
+    public static int getBlockStateId(BlockState holder) {
+        return blockStateInternalId.getInternalId(holder);
     }
 
     public static @Nullable BlockState getBlockStateById(int id) {
-        return ASSIGNED_IDS.inverse().get(id);
+        return TO_STATE.get(id);
     }
 
     /**
@@ -48,6 +75,7 @@ public final class BlockStateIdAccess {
      * {@link BlockRegistry#getInternalBlockStateId(BlockState)} will return
      * {@link OptionalInt#empty()}. In those cases, we will use our own ID system,
      * since it's useful for other entries as well.
+     *
      * @return an unused ID in WorldEdit's ID tracker
      */
     private static int provideUnusedWorldEditId() {
@@ -56,18 +84,22 @@ public final class BlockStateIdAccess {
 
     private static final BitSet usedIds = new BitSet();
 
-    public static void register(BlockState blockState, OptionalInt id) {
-        int i = id.orElseGet(BlockStateIdAccess::provideUnusedWorldEditId);
-        BlockState existing = ASSIGNED_IDS.inverse().get(i);
+    public static void register(BlockState blockState, int id) {
+        int i = isValidInternalId(id) ? id : provideUnusedWorldEditId();
+        BlockState existing = getBlockStateById(id);
         checkState(existing == null || existing == blockState,
             "BlockState %s is using the same block ID (%s) as BlockState %s",
             blockState, i, existing);
-        ASSIGNED_IDS.put(blockState, i);
+        blockStateInternalId.setInternalId(blockState, i);
+        TO_STATE.put(i, blockState);
         usedIds.set(i);
     }
 
     public static void clear() {
-        ASSIGNED_IDS.clear();
+        for (BlockState value : TO_STATE.values()) {
+            blockStateInternalId.setInternalId(value, invalidId());
+        }
+        TO_STATE.clear();
         usedIds.clear();
     }
 

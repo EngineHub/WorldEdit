@@ -453,7 +453,10 @@ public class BukkitAdapter {
     public static <B extends BlockStateHolder<B>> BlockData adapt(B block) {
         checkNotNull(block);
         // Should never not have an ID for this BlockState.
-        int cacheKey = BlockStateIdAccess.getBlockStateId(block.toImmutableState()).orElseGet(block::hashCode);
+        int cacheKey = BlockStateIdAccess.getBlockStateId(block.toImmutableState());
+        if (cacheKey == BlockStateIdAccess.invalidId()) {
+            cacheKey = block.hashCode();
+        }
         return blockDataCache.computeIfAbsent(cacheKey, input -> Bukkit.createBlockData(block.getAsString())).clone();
     }
 

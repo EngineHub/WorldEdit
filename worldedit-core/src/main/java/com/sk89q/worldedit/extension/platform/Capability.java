@@ -84,7 +84,9 @@ public enum Capability {
             BlockRegistry blockRegistry = platform.getRegistries().getBlockRegistry();
             for (BlockType type : BlockType.REGISTRY) {
                 for (BlockState state : type.getAllStates()) {
-                    BlockStateIdAccess.register(state, blockRegistry.getInternalBlockStateId(state));
+                    BlockStateIdAccess.register(state,
+                        blockRegistry.getInternalBlockStateId(state)
+                            .orElse(BlockStateIdAccess.invalidId()));
                 }
             }
         }
