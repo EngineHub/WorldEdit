@@ -103,7 +103,6 @@ import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.OptionalInt;
 import java.util.Random;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ThreadLocalRandom;
@@ -198,8 +197,11 @@ public class ForgeWorld extends AbstractWorld {
         Chunk chunk = world.getChunk(x >> 4, z >> 4);
         BlockPos pos = new BlockPos(x, y, z);
         net.minecraft.block.BlockState old = chunk.getBlockState(pos);
-        OptionalInt stateId = BlockStateIdAccess.getBlockStateId(block.toImmutableState());
-        net.minecraft.block.BlockState newState = stateId.isPresent() ? Block.getStateById(stateId.getAsInt()) : ForgeAdapter.adapt(block.toImmutableState());
+        int stateId = BlockStateIdAccess.getBlockStateId(block.toImmutableState());
+        net.minecraft.block.BlockState newState =
+            BlockStateIdAccess.isValidInternalId(stateId)
+                ? Block.getStateById(stateId)
+                : ForgeAdapter.adapt(block.toImmutableState());
         net.minecraft.block.BlockState successState = chunk.setBlockState(pos, newState, false);
         boolean successful = successState != null;
 

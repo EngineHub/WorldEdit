@@ -123,7 +123,7 @@ class Int2BaseBlockMap extends AbstractInt2ObjectMap<BaseBlock> {
     @Override
     public BaseBlock get(int key) {
         int oldId = commonMap.get(key);
-        if (oldId == Integer.MIN_VALUE) {
+        if (!BlockStateIdAccess.isValidInternalId(oldId)) {
             return uncommonMap.get(key);
         }
         return assumeAsBlock(oldId);
@@ -163,7 +163,7 @@ class Int2BaseBlockMap extends AbstractInt2ObjectMap<BaseBlock> {
     @Override
     public BaseBlock remove(int key) {
         int removed = commonMap.remove(key);
-        if (removed == Integer.MIN_VALUE) {
+        if (!BlockStateIdAccess.isValidInternalId(removed)) {
             return uncommonMap.remove(key);
         }
         return assumeAsBlock(removed);
