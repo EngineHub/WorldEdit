@@ -33,6 +33,7 @@ import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.internal.Constants;
 import com.sk89q.worldedit.internal.block.BlockStateIdAccess;
+import com.sk89q.worldedit.internal.util.BiomeMath;
 import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.Vector3;
@@ -259,7 +260,7 @@ public class FabricWorld extends AbstractWorld {
         }
         MutableBiomeArray biomeArray = MutableBiomeArray.inject(chunk.getBiomeArray());
         // Temporary, while biome setting is 2D only
-        for (int i = 0; i < BiomeArray.VERTICAL_BIT_MASK; i++) {
+        for (int i = 0; i < BiomeMath.VERTICAL_BIT_MASK; i++) {
             biomeArray.setBiome(position.getX(), i, position.getZ(), FabricAdapter.adapt(biome));
         }
         chunk.setShouldSave(true);

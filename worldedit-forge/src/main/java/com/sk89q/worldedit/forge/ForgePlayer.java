@@ -95,7 +95,7 @@ public class ForgePlayer extends AbstractPlayerActor {
 
     @Override
     public Location getLocation() {
-        Vector3 position = Vector3.at(this.player.posX, this.player.posY, this.player.posZ);
+        Vector3 position = Vector3.at(this.player.getPosX(), this.player.getPosY(), this.player.getPosZ());
         return new Location(
                 ForgeWorldEdit.inst.getWorld(this.player.world),
                 position,

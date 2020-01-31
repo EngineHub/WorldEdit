@@ -33,6 +33,7 @@ import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.internal.Constants;
 import com.sk89q.worldedit.internal.block.BlockStateIdAccess;
+import com.sk89q.worldedit.internal.util.BiomeMath;
 import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.Vector3;
@@ -66,29 +67,24 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
+import net.minecraft.world.biome.BiomeContainer;
+import net.minecraft.world.biome.DefaultBiomeFeatures;
 import net.minecraft.world.chunk.AbstractChunkProvider;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.IChunk;
 import net.minecraft.world.chunk.listener.IChunkStatusListener;
+import net.minecraft.world.gen.ChunkGenerator;
 import net.minecraft.world.gen.feature.BigBrownMushroomFeature;
 import net.minecraft.world.gen.feature.BigMushroomFeatureConfig;
 import net.minecraft.world.gen.feature.BigRedMushroomFeature;
-import net.minecraft.world.gen.feature.BigTreeFeature;
-import net.minecraft.world.gen.feature.BirchTreeFeature;
+import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.DarkOakTreeFeature;
 import net.minecraft.world.gen.feature.Feature;
-import net.minecraft.world.gen.feature.IFeatureConfig;
-import net.minecraft.world.gen.feature.JungleTreeFeature;
 import net.minecraft.world.gen.feature.MegaJungleFeature;
 import net.minecraft.world.gen.feature.MegaPineTree;
 import net.minecraft.world.gen.feature.NoFeatureConfig;
-import net.minecraft.world.gen.feature.PointyTaigaTreeFeature;
-import net.minecraft.world.gen.feature.SavannaTreeFeature;
 import net.minecraft.world.gen.feature.ShrubFeature;
-import net.minecraft.world.gen.feature.SwampTreeFeature;
-import net.minecraft.world.gen.feature.TallTaigaTreeFeature;
-import net.minecraft.world.gen.feature.TreeFeature;
 import net.minecraft.world.server.ServerChunkProvider;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraft.world.storage.SaveHandler;
@@ -253,7 +249,7 @@ public class ForgeWorld extends AbstractWorld {
     @Override
     public BiomeType getBiome(BlockVector2 position) {
         checkNotNull(position);
-        return ForgeAdapter.adapt(getWorld().getBiomeBody(new BlockPos(position.getBlockX(), 0, position.getBlockZ())));
+        return ForgeAdapter.adapt(getWorld().getBiome(new BlockPos(position.getBlockX(), 0, position.getBlockZ())));
     }
 
     @Override
@@ -262,10 +258,15 @@ public class ForgeWorld extends AbstractWorld {
         checkNotNull(biome);
 
         IChunk chunk = getWorld().getChunk(position.getBlockX() >> 4, position.getBlockZ() >> 4, ChunkStatus.FULL, false);
-        if (chunk == null) {
+        BiomeContainer container = chunk == null ? null : chunk.getBiomes();
+        if (chunk == null || container == null) {
             return false;
         }
-        chunk.getBiomes()[((position.getBlockZ() & 0xF) << 4 | position.getBlockX() & 0xF)] = ForgeAdapter.adapt(biome);
+        // Temporary, while biome setting is 2D only
+        for (int i = 0; i < BiomeMath.VERTICAL_BIT_MASK; i++) {
+            int idx = BiomeMath.computeBiomeIndex(position.getX(), i, position.getZ());
+            container.biomes[idx] = ForgeAdapter.adapt(biome);
+        }
         chunk.setModified(true);
         return true;
     }
@@ -293,8 +294,10 @@ public class ForgeWorld extends AbstractWorld {
         ActionResultType used = stack.onItemUse(itemUseContext);
         if (used != ActionResultType.SUCCESS) {
             // try activating the block
-            if (getWorld().getBlockState(blockPos).onBlockActivated(world, fakePlayer, Hand.MAIN_HAND, rayTraceResult)) {
-                used = ActionResultType.SUCCESS;
+            ActionResultType resultType = getWorld().getBlockState(blockPos)
+                .onBlockActivated(world, fakePlayer, Hand.MAIN_HAND, rayTraceResult);
+            if (resultType.isSuccessOrConsume()) {
+                used = resultType;
             } else {
                 used = stack.getItem().onItemRightClick(world, fakePlayer, Hand.MAIN_HAND).getType();
             }
@@ -366,45 +369,39 @@ public class ForgeWorld extends AbstractWorld {
     }
 
     @Nullable
-    private static Feature<? extends IFeatureConfig> createTreeFeatureGenerator(TreeType type) {
+    private static ConfiguredFeature<?, ?> createTreeFeatureGenerator(TreeType type) {
         switch (type) {
-            case TREE: return new TreeFeature(NoFeatureConfig::deserialize, true);
-            case BIG_TREE: return new BigTreeFeature(NoFeatureConfig::deserialize, true);
-            case REDWOOD: return new PointyTaigaTreeFeature(NoFeatureConfig::deserialize);
-            case TALL_REDWOOD: return new TallTaigaTreeFeature(NoFeatureConfig::deserialize, true);
-            case BIRCH: return new BirchTreeFeature(NoFeatureConfig::deserialize, true, false);
-            case JUNGLE: return new MegaJungleFeature(NoFeatureConfig::deserialize, true, 10, 20, JUNGLE_LOG, JUNGLE_LEAF);
-            case SMALL_JUNGLE: return new JungleTreeFeature(NoFeatureConfig::deserialize, true, 4 + random.nextInt(7), JUNGLE_LOG, JUNGLE_LEAF, false);
-            case SHORT_JUNGLE: return new JungleTreeFeature(NoFeatureConfig::deserialize, true, 4 + random.nextInt(7), JUNGLE_LOG, JUNGLE_LEAF, true);
-            case JUNGLE_BUSH: return new ShrubFeature(NoFeatureConfig::deserialize, JUNGLE_LOG, JUNGLE_SHRUB);
-            case SWAMP: return new SwampTreeFeature(NoFeatureConfig::deserialize);
-            case ACACIA: return new SavannaTreeFeature(NoFeatureConfig::deserialize, true);
-            case DARK_OAK: return new DarkOakTreeFeature(NoFeatureConfig::deserialize, true);
-            case MEGA_REDWOOD: return new MegaPineTree(NoFeatureConfig::deserialize, true, random.nextBoolean());
-            case TALL_BIRCH: return new BirchTreeFeature(NoFeatureConfig::deserialize, true, true);
-            case RED_MUSHROOM: return new BigRedMushroomFeature(BigMushroomFeatureConfig::deserialize);
-            case BROWN_MUSHROOM: return new BigBrownMushroomFeature(BigMushroomFeatureConfig::deserialize);
-            case RANDOM: return createTreeFeatureGenerator(TreeType.values()[ThreadLocalRandom.current().nextInt(TreeType.values().length)]);
+            // TODO: Fix these after 2020201-1.15.1 mappings are out
+//            case TREE: return Feature.NORMAL_TREE.withConfiguration(DefaultBiomeFeatures.);
+//            case BIG_TREE: return new BigTreeFeature(NoFeatureConfig::deserialize, true);
+//            case REDWOOD: return new PointyTaigaTreeFeature(NoFeatureConfig::deserialize);
+//            case TALL_REDWOOD: return new TallTaigaTreeFeature(NoFeatureConfig::deserialize, true);
+//            case BIRCH: return new BirchTreeFeature(NoFeatureConfig::deserialize, true, false);
+//            case JUNGLE: return new MegaJungleFeature(NoFeatureConfig::deserialize, true, 10, 20, JUNGLE_LOG, JUNGLE_LEAF);
+//            case SMALL_JUNGLE: return new JungleTreeFeature(NoFeatureConfig::deserialize, true, 4 + random.nextInt(7), JUNGLE_LOG, JUNGLE_LEAF, false);
+//            case SHORT_JUNGLE: return new JungleTreeFeature(NoFeatureConfig::deserialize, true, 4 + random.nextInt(7), JUNGLE_LOG, JUNGLE_LEAF, true);
+//            case JUNGLE_BUSH: return new ShrubFeature(NoFeatureConfig::deserialize, JUNGLE_LOG, JUNGLE_SHRUB);
+//            case SWAMP: return new SwampTreeFeature(NoFeatureConfig::deserialize);
+//            case ACACIA: return new SavannaTreeFeature(NoFeatureConfig::deserialize, true);
+//            case DARK_OAK: return new DarkOakTreeFeature(NoFeatureConfig::deserialize, true);
+//            case MEGA_REDWOOD: return new MegaPineTree(NoFeatureConfig::deserialize, true, random.nextBoolean());
+//            case TALL_BIRCH: return new BirchTreeFeature(NoFeatureConfig::deserialize, true, true);
+//            case RED_MUSHROOM: return new BigRedMushroomFeature(BigMushroomFeatureConfig::deserialize);
+//            case BROWN_MUSHROOM: return new BigBrownMushroomFeature(BigMushroomFeatureConfig::deserialize);
+//            case RANDOM: return createTreeFeatureGenerator(TreeType.values()[ThreadLocalRandom.current().nextInt(TreeType.values().length)]);
             default:
                 return null;
         }
     }
 
-    private IFeatureConfig createFeatureConfig(TreeType type) {
-        if (type == TreeType.RED_MUSHROOM || type == TreeType.BROWN_MUSHROOM) {
-            return new BigMushroomFeatureConfig(true);
-        } else {
-            return new NoFeatureConfig();
-        }
-    }
-
     @Override
     public boolean generateTree(TreeType type, EditSession editSession, BlockVector3 position) throws MaxChangedBlocksException {
-        @SuppressWarnings("unchecked")
-        Feature<IFeatureConfig> generator = (Feature<IFeatureConfig>) createTreeFeatureGenerator(type);
+        ConfiguredFeature<?, ?> generator = createTreeFeatureGenerator(type);
+        ChunkGenerator<?> chunkGenerator = ((ServerChunkProvider) getWorld().getChunkProvider())
+            .getChunkGenerator();
         return generator != null
-                && generator.place(getWorld(), getWorld().getChunkProvider().getChunkGenerator(), random,
-                ForgeAdapter.toBlockPos(position), createFeatureConfig(type));
+            && generator.place(getWorld(), chunkGenerator, random,
+            ForgeAdapter.toBlockPos(position));
     }
 
     @Override
@@ -421,7 +418,7 @@ public class ForgeWorld extends AbstractWorld {
     public void fixLighting(Iterable<BlockVector2> chunks) {
         World world = getWorld();
         for (BlockVector2 chunk : chunks) {
-            world.getChunkProvider().getLightManager().func_215571_a(new ChunkPos(chunk.getBlockX(), chunk.getBlockZ()), true);
+            world.getChunkProvider().getLightManager().retainData(new ChunkPos(chunk.getBlockX(), chunk.getBlockZ()), true);
         }
     }
 

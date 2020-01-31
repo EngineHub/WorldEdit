@@ -11,9 +11,9 @@ plugins {
 applyPlatformAndCoreConfiguration()
 applyShadowConfiguration()
 
-val minecraftVersion = "1.14.4"
-val mappingsMinecraftVersion = "1.14.3"
-val forgeVersion = "28.1.0"
+val minecraftVersion = "1.15.2"
+val mappingsMinecraftVersion = "1.15.1"
+val forgeVersion = "31.0.14"
 
 configurations.all {
     resolutionStrategy {
@@ -31,7 +31,7 @@ dependencies {
 configure<UserDevExtension> {
     mappings(mapOf(
             "channel" to "snapshot",
-            "version" to "20190913-$mappingsMinecraftVersion"
+            "version" to "20200131-$mappingsMinecraftVersion"
     ))
 
     accessTransformer(file("src/main/resources/META-INF/accesstransformer.cfg"))

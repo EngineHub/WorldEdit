@@ -7,8 +7,8 @@ applyShadowConfiguration()
 apply(plugin = "fabric-loom")
 
 val minecraftVersion = "1.15.2"
-val yarnMappings = "1.15.2+build.7"
-val loaderVersion = "0.7.6+build.179"
+val yarnMappings = "1.15.2+build.8:v2"
+val loaderVersion = "0.7.6+build.180"
 
 configurations.all {
     resolutionStrategy {
