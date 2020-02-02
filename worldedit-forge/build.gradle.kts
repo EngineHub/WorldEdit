@@ -31,7 +31,7 @@ dependencies {
 configure<UserDevExtension> {
     mappings(mapOf(
             "channel" to "snapshot",
-            "version" to "20200131-$mappingsMinecraftVersion"
+            "version" to "20200201-$mappingsMinecraftVersion"
     ))
 
     accessTransformer(file("src/main/resources/META-INF/accesstransformer.cfg"))

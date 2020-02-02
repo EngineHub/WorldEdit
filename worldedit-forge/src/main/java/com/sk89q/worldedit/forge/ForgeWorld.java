@@ -75,16 +75,8 @@ import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.IChunk;
 import net.minecraft.world.chunk.listener.IChunkStatusListener;
 import net.minecraft.world.gen.ChunkGenerator;
-import net.minecraft.world.gen.feature.BigBrownMushroomFeature;
-import net.minecraft.world.gen.feature.BigMushroomFeatureConfig;
-import net.minecraft.world.gen.feature.BigRedMushroomFeature;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
-import net.minecraft.world.gen.feature.DarkOakTreeFeature;
 import net.minecraft.world.gen.feature.Feature;
-import net.minecraft.world.gen.feature.MegaJungleFeature;
-import net.minecraft.world.gen.feature.MegaPineTree;
-import net.minecraft.world.gen.feature.NoFeatureConfig;
-import net.minecraft.world.gen.feature.ShrubFeature;
 import net.minecraft.world.server.ServerChunkProvider;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraft.world.storage.SaveHandler;
@@ -371,24 +363,23 @@ public class ForgeWorld extends AbstractWorld {
     @Nullable
     private static ConfiguredFeature<?, ?> createTreeFeatureGenerator(TreeType type) {
         switch (type) {
-            // TODO: Fix these after 2020201-1.15.1 mappings are out
-//            case TREE: return Feature.NORMAL_TREE.withConfiguration(DefaultBiomeFeatures.);
-//            case BIG_TREE: return new BigTreeFeature(NoFeatureConfig::deserialize, true);
-//            case REDWOOD: return new PointyTaigaTreeFeature(NoFeatureConfig::deserialize);
-//            case TALL_REDWOOD: return new TallTaigaTreeFeature(NoFeatureConfig::deserialize, true);
-//            case BIRCH: return new BirchTreeFeature(NoFeatureConfig::deserialize, true, false);
-//            case JUNGLE: return new MegaJungleFeature(NoFeatureConfig::deserialize, true, 10, 20, JUNGLE_LOG, JUNGLE_LEAF);
-//            case SMALL_JUNGLE: return new JungleTreeFeature(NoFeatureConfig::deserialize, true, 4 + random.nextInt(7), JUNGLE_LOG, JUNGLE_LEAF, false);
-//            case SHORT_JUNGLE: return new JungleTreeFeature(NoFeatureConfig::deserialize, true, 4 + random.nextInt(7), JUNGLE_LOG, JUNGLE_LEAF, true);
-//            case JUNGLE_BUSH: return new ShrubFeature(NoFeatureConfig::deserialize, JUNGLE_LOG, JUNGLE_SHRUB);
-//            case SWAMP: return new SwampTreeFeature(NoFeatureConfig::deserialize);
-//            case ACACIA: return new SavannaTreeFeature(NoFeatureConfig::deserialize, true);
-//            case DARK_OAK: return new DarkOakTreeFeature(NoFeatureConfig::deserialize, true);
-//            case MEGA_REDWOOD: return new MegaPineTree(NoFeatureConfig::deserialize, true, random.nextBoolean());
-//            case TALL_BIRCH: return new BirchTreeFeature(NoFeatureConfig::deserialize, true, true);
-//            case RED_MUSHROOM: return new BigRedMushroomFeature(BigMushroomFeatureConfig::deserialize);
-//            case BROWN_MUSHROOM: return new BigBrownMushroomFeature(BigMushroomFeatureConfig::deserialize);
-//            case RANDOM: return createTreeFeatureGenerator(TreeType.values()[ThreadLocalRandom.current().nextInt(TreeType.values().length)]);
+            case TREE: return Feature.NORMAL_TREE.withConfiguration(DefaultBiomeFeatures.OAK_TREE_CONFIG);
+            case BIG_TREE: return Feature.FANCY_TREE.withConfiguration(DefaultBiomeFeatures.FANCY_TREE_CONFIG);
+            case REDWOOD: return Feature.NORMAL_TREE.withConfiguration(DefaultBiomeFeatures.SPRUCE_TREE_CONFIG);
+            case TALL_REDWOOD: return Feature.MEGA_SPRUCE_TREE.withConfiguration(DefaultBiomeFeatures.MEGA_SPRUCE_TREE_CONFIG);
+            case MEGA_REDWOOD: return Feature.MEGA_SPRUCE_TREE.withConfiguration(DefaultBiomeFeatures.MEGA_PINE_TREE_CONFIG);
+            case BIRCH: return Feature.NORMAL_TREE.withConfiguration(DefaultBiomeFeatures.BIRCH_TREE_CONFIG);
+            case JUNGLE: return Feature.MEGA_JUNGLE_TREE.withConfiguration(DefaultBiomeFeatures.MEGA_JUNGLE_TREE_CONFIG);
+            case SMALL_JUNGLE: return Feature.NORMAL_TREE.withConfiguration(DefaultBiomeFeatures.JUNGLE_TREE_CONFIG);
+            case SHORT_JUNGLE: return Feature.NORMAL_TREE.withConfiguration(DefaultBiomeFeatures.JUNGLE_SAPLING_TREE_CONFIG);
+            case JUNGLE_BUSH: return Feature.JUNGLE_GROUND_BUSH.withConfiguration(DefaultBiomeFeatures.JUNGLE_GROUND_BUSH_CONFIG);
+            case SWAMP: return Feature.NORMAL_TREE.withConfiguration(DefaultBiomeFeatures.SWAMP_TREE_CONFIG);
+            case ACACIA: return Feature.ACACIA_TREE.withConfiguration(DefaultBiomeFeatures.ACACIA_TREE_CONFIG);
+            case DARK_OAK: return Feature.DARK_OAK_TREE.withConfiguration(DefaultBiomeFeatures.DARK_OAK_TREE_CONFIG);
+            case TALL_BIRCH: return Feature.NORMAL_TREE.withConfiguration(DefaultBiomeFeatures.field_230130_i_);
+            case RED_MUSHROOM: return Feature.HUGE_RED_MUSHROOM.withConfiguration(DefaultBiomeFeatures.BIG_RED_MUSHROOM);
+            case BROWN_MUSHROOM: return Feature.HUGE_BROWN_MUSHROOM.withConfiguration(DefaultBiomeFeatures.BIG_BROWN_MUSHROOM);
+            case RANDOM: return createTreeFeatureGenerator(TreeType.values()[ThreadLocalRandom.current().nextInt(TreeType.values().length)]);
             default:
                 return null;
         }
