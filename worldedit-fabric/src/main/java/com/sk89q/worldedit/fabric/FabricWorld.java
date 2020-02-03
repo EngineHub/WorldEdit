@@ -193,11 +193,16 @@ public class FabricWorld extends AbstractWorld {
             if (block instanceof BaseBlock) {
                 CompoundTag tag = ((BaseBlock) block).getNbtData();
                 if (tag != null) {
+                    tag = tag.createBuilder()
+                        .putInt("x", x)
+                        .putInt("y", y)
+                        .putInt("z", z)
+                        .build();
                     net.minecraft.nbt.CompoundTag nativeTag = NBTConverter.toNative(tag);
                     BlockEntity tileEntity = getWorld().getWorldChunk(pos).getBlockEntity(pos);
                     if (tileEntity != null) {
-                        tileEntity.fromTag(nativeTag);
                         tileEntity.setLocation(world, pos);
+                        tileEntity.fromTag(nativeTag);
                         successful = true; // update if TE changed as well
                     }
                 }
