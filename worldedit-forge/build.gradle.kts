@@ -75,6 +75,9 @@ tasks.named<Copy>("processResources") {
     from(sourceSets["main"].resources.srcDirs) {
         exclude("META-INF/mods.toml")
     }
+
+    // copy from -core resources as well
+    from(project(":worldedit-core").sourceSets["main"].resources.srcDirs)
 }
 
 tasks.named<Jar>("jar") {
