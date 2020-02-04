@@ -105,10 +105,17 @@ if (project.hasProperty(crowdinApiKey)) {
         )
     }
 
-    tasks.named<DownloadTranslationsTask>("crowdinDownload") {
+    val dlTranslationsTask = tasks.named<DownloadTranslationsTask>("crowdinDownload") {
         apiKey = "${project.property(crowdinApiKey)}"
-        destination = "${file("build/resources/main/lang")}"
+        destination = "${buildDir.resolve("crowdin-i18n")}"
         projectId = "worldedit-core"
+    }
+
+    tasks.named<Copy>("processResources") {
+        dependsOn(dlTranslationsTask)
+        from(dlTranslationsTask.get().destination) {
+            into("lang")
+        }
     }
 
     tasks.named("classes").configure {

@@ -77,7 +77,7 @@ tasks.named<Copy>("processResources") {
     }
 
     // copy from -core resources as well
-    from(project(":worldedit-core").sourceSets["main"].resources.srcDirs)
+    from(project(":worldedit-core").tasks.named("processResources"))
 }
 
 tasks.named<Jar>("jar") {
