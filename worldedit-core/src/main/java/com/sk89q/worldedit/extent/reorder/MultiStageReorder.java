@@ -39,8 +39,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
 
 /**
  * Re-orders blocks into several stages.
@@ -247,11 +245,14 @@ public class MultiStageReorder extends AbstractBufferingExtent implements Reorde
     }
 
     @Override
-    protected Optional<BaseBlock> getBufferedBlock(BlockVector3 position) {
-        return stages.values().stream()
-            .map(blocks -> blocks.get(position))
-            .filter(Objects::nonNull)
-            .findAny();
+    protected BaseBlock getBufferedFullBlock(BlockVector3 position) {
+        for (BlockMap<BaseBlock> blocks : stages.values()) {
+            BaseBlock baseBlock = blocks.get(position);
+            if (baseBlock != null) {
+                return baseBlock;
+            }
+        }
+        return null;
     }
 
     @Override

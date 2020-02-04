@@ -32,8 +32,6 @@ import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 
 import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
 
 /**
  * A special extent that batches changes into Minecraft chunks. This helps
@@ -77,8 +75,8 @@ public class ChunkBatchingExtent extends AbstractBufferingExtent {
     }
 
     @Override
-    protected Optional<BaseBlock> getBufferedBlock(BlockVector3 position) {
-        return Optional.ofNullable(blockMap.get(position));
+    protected BaseBlock getBufferedFullBlock(BlockVector3 position) {
+        return blockMap.get(position);
     }
 
     @Override
@@ -94,8 +92,7 @@ public class ChunkBatchingExtent extends AbstractBufferingExtent {
             @Override
             public Operation resume(RunContext run) throws WorldEditException {
                 if (iterator == null) {
-                    iterator = ImmutableSortedSet.copyOf(RegionOptimizedComparator.INSTANCE,
-                        blockMap.keySet()).iterator();
+                    iterator = blockMap.keySet().parallelStream().sorted(RegionOptimizedComparator.INSTANCE).iterator();
                 }
                 while (iterator.hasNext()) {
                     BlockVector3 position = iterator.next();
