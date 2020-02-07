@@ -71,7 +71,7 @@ public abstract class AbstractBufferingExtent extends AbstractDelegateExtent {
 
     @Deprecated
     protected Optional<BaseBlock> getBufferedBlock(BlockVector3 position) {
-        return Optional.empty();
+        throw new IllegalStateException("Invalid BufferingExtent provided. Must override `getBufferedFullBlock(BlockVector3)`.");
     }
 
     /**
@@ -85,7 +85,7 @@ public abstract class AbstractBufferingExtent extends AbstractDelegateExtent {
      */
     @Nullable
     protected BaseBlock getBufferedFullBlock(BlockVector3 position) {
-        return getBufferedBlock(position).orElseThrow(() -> new IllegalStateException("Invalid BufferingExtent provided. Must override `getBufferedFullBlock(BlockVector3)`."));
+        return getBufferedBlock(position).orElse(null);
     }
 
 }
