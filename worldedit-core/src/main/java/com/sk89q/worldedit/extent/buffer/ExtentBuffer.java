@@ -30,7 +30,6 @@ import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 
 import java.util.Map;
-import java.util.Optional;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -67,11 +66,11 @@ public class ExtentBuffer extends AbstractBufferingExtent {
     }
 
     @Override
-    protected Optional<BaseBlock> getBufferedBlock(BlockVector3 position) {
+    protected BaseBlock getBufferedFullBlock(BlockVector3 position) {
         if (mask.test(position)) {
-            return Optional.of(buffer.computeIfAbsent(position, (pos -> getExtent().getFullBlock(pos))));
+            return buffer.computeIfAbsent(position, (pos -> getExtent().getFullBlock(pos)));
         }
-        return Optional.empty();
+        return null;
     }
 
     @Override

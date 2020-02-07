@@ -27,6 +27,8 @@ import com.sk89q.worldedit.world.block.BlockStateHolder;
 
 import java.util.Optional;
 
+import javax.annotation.Nullable;
+
 /**
  * Base extent class for buffering changes between {@link #setBlock(BlockVector3, BlockStateHolder)}
  * and the delegate extent. This class ensures that {@link #getBlock(BlockVector3)} is properly
@@ -51,17 +53,39 @@ public abstract class AbstractBufferingExtent extends AbstractDelegateExtent {
 
     @Override
     public BlockState getBlock(BlockVector3 position) {
-        return getBufferedBlock(position)
-            .map(BaseBlock::toImmutableState)
-            .orElseGet(() -> super.getBlock(position));
+        BaseBlock block = getBufferedFullBlock(position);
+        if (block == null) {
+            return super.getBlock(position);
+        }
+        return block.toImmutableState();
     }
 
     @Override
     public BaseBlock getFullBlock(BlockVector3 position) {
-        return getBufferedBlock(position)
-            .orElseGet(() -> super.getFullBlock(position));
+        BaseBlock block = getBufferedFullBlock(position);
+        if (block == null) {
+            return super.getFullBlock(position);
+        }
+        return block;
     }
 
-    protected abstract Optional<BaseBlock> getBufferedBlock(BlockVector3 position);
+    @Deprecated
+    protected Optional<BaseBlock> getBufferedBlock(BlockVector3 position) {
+        throw new IllegalStateException("Invalid BufferingExtent provided. Must override `getBufferedFullBlock(BlockVector3)`.");
+    }
+
+    //TODO make below abstract
+    /**
+     * Gets a block from the buffer, or null if not buffered.
+     *
+     * This **must** be overridden, and will be abstract in WorldEdit 8.
+     *
+     * @param position The position
+     * @return The buffered block, or null
+     */
+    @Nullable
+    protected BaseBlock getBufferedFullBlock(BlockVector3 position) {
+        return getBufferedBlock(position).orElse(null);
+    }
 
 }

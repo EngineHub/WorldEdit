@@ -74,7 +74,7 @@ import java.util.concurrent.TimeUnit;
  */
 @Plugin(id = SpongeWorldEdit.MOD_ID, name = "WorldEdit",
         description = "WorldEdit is an easy-to-use in-game world editor for Minecraft",
-        url = "http://www.enginehub.org/worldedit")
+        url = "https://enginehub.org/worldedit/")
 public class SpongeWorldEdit {
 
     @Inject
