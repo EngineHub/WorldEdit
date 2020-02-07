@@ -74,11 +74,11 @@ public abstract class AbstractBufferingExtent extends AbstractDelegateExtent {
         throw new IllegalStateException("Invalid BufferingExtent provided. Must override `getBufferedFullBlock(BlockVector3)`.");
     }
 
+    //TODO make below abstract
     /**
      * Gets a block from the buffer, or null if not buffered.
      *
      * This **must** be overridden, and will be abstract in WorldEdit 8.
-     * TODO
      *
      * @param position The position
      * @return The buffered block, or null
