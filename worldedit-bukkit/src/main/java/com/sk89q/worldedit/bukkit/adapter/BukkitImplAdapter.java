@@ -24,6 +24,7 @@ import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.entity.BaseEntity;
+import com.sk89q.worldedit.extent.world.WorldApplyingExtent;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.registry.state.Property;
@@ -42,6 +43,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.Map;
 import java.util.OptionalInt;
+import java.util.Set;
 
 import javax.annotation.Nullable;
 
@@ -91,10 +93,10 @@ public interface BukkitImplAdapter {
      *
      * @param location the location
      * @param state the block
-     * @param notifyAndLight notify and light if set
+     * @param blockUpdateOptionsSet block updates to apply
      * @return true if a block was likely changed
      */
-    boolean setBlock(Location location, BlockStateHolder<?> state, boolean notifyAndLight);
+    boolean setBlock(Location location, BlockStateHolder<?> state, Set<WorldApplyingExtent.BlockUpdateOptions> blockUpdateOptionsSet);
 
     /**
      * Notifies the simulation that the block at the given location has
@@ -102,8 +104,9 @@ public interface BukkitImplAdapter {
      *
      * @param position position of the block
      * @param previousType the type of the previous block that was there
+     * @param blockUpdateOptionsSet block updates to apply
      */
-    void notifyAndLightBlock(Location position, BlockState previousType);
+    void notifyAndLightBlock(Location position, BlockState previousType, Set<WorldApplyingExtent.BlockUpdateOptions> blockUpdateOptionsSet);
 
     /**
      * Get the state for the given entity.

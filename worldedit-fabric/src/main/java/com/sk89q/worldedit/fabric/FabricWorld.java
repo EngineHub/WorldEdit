@@ -31,6 +31,7 @@ import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
+import com.sk89q.worldedit.extent.world.WorldApplyingExtent;
 import com.sk89q.worldedit.internal.Constants;
 import com.sk89q.worldedit.internal.block.BlockStateIdAccess;
 import com.sk89q.worldedit.internal.util.BiomeMath;
@@ -69,7 +70,6 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldSaveHandler;
 import net.minecraft.world.biome.DefaultBiomeFeatures;
-import net.minecraft.world.biome.source.BiomeArray;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkManager;
 import net.minecraft.world.chunk.ChunkStatus;
@@ -89,6 +89,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.Random;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
@@ -167,7 +168,7 @@ public class FabricWorld extends AbstractWorld {
     }
 
     @Override
-    public <B extends BlockStateHolder<B>> boolean setBlock(BlockVector3 position, B block, boolean notifyAndLight) throws WorldEditException {
+    public <B extends BlockStateHolder<B>> boolean setBlock(BlockVector3 position, B block, Set<WorldApplyingExtent.BlockUpdateOptions> blockUpdateOptionsSet) throws WorldEditException {
         checkNotNull(position);
         checkNotNull(block);
 
@@ -209,7 +210,7 @@ public class FabricWorld extends AbstractWorld {
             }
         }
 
-        if (successful && notifyAndLight) {
+        if (successful && !blockUpdateOptionsSet.isEmpty()) {
             world.getChunkManager().getLightingProvider().checkBlock(pos);
             world.checkBlockRerender(pos, old, newState);
             world.updateListeners(pos, old, newState, UPDATE | NOTIFY);
@@ -223,7 +224,7 @@ public class FabricWorld extends AbstractWorld {
     }
 
     @Override
-    public boolean notifyAndLightBlock(BlockVector3 position, BlockState previousType) throws WorldEditException {
+    public boolean notifyBlock(BlockVector3 position, BlockState previousType, Set<WorldApplyingExtent.BlockUpdateOptions> blockUpdateOptionsSet) throws WorldEditException {
         BlockPos pos = new BlockPos(position.getX(), position.getY(), position.getZ());
         net.minecraft.block.BlockState state = getWorld().getBlockState(pos);
         getWorld().updateListeners(pos, FabricAdapter.adapt(previousType), state, 1 | 2);

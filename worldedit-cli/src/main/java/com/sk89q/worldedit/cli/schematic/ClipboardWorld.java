@@ -29,6 +29,7 @@ import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormats;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardWriter;
+import com.sk89q.worldedit.extent.world.WorldApplyingExtent;
 import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.Vector3;
@@ -46,6 +47,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 import javax.annotation.Nullable;
 
@@ -74,14 +76,14 @@ public class ClipboardWorld extends AbstractWorld implements Clipboard, CLIWorld
     }
 
     @Override
-    public <B extends BlockStateHolder<B>> boolean setBlock(BlockVector3 position, B block, boolean notifyAndLight)
+    public <B extends BlockStateHolder<B>> boolean setBlock(BlockVector3 position, B block, Set<WorldApplyingExtent.BlockUpdateOptions> blockUpdateOptionsSet)
             throws WorldEditException {
         dirty = true;
         return clipboard.setBlock(position, block);
     }
 
     @Override
-    public boolean notifyAndLightBlock(BlockVector3 position, BlockState previousType) throws WorldEditException {
+    public boolean notifyBlock(BlockVector3 position, BlockState previousType, Set<WorldApplyingExtent.BlockUpdateOptions> blockUpdateOptionsSet) throws WorldEditException {
         return false;
     }
 

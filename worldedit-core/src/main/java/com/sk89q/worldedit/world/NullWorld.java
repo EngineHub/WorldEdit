@@ -25,6 +25,7 @@ import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
+import com.sk89q.worldedit.extent.world.WorldApplyingExtent;
 import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.Vector3;
@@ -42,6 +43,7 @@ import com.sk89q.worldedit.world.weather.WeatherTypes;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import javax.annotation.Nullable;
 
@@ -66,13 +68,14 @@ public class NullWorld extends AbstractWorld {
         return "null";
     }
 
-    @Override
-    public <B extends BlockStateHolder<B>> boolean setBlock(BlockVector3 position, B block, boolean notifyAndLight) throws WorldEditException {
+    @Override public <B extends BlockStateHolder<B>> boolean setBlock(BlockVector3 position, B block,
+            Set<WorldApplyingExtent.BlockUpdateOptions> blockUpdateOptions) throws WorldEditException {
         return false;
     }
 
     @Override
-    public boolean notifyAndLightBlock(BlockVector3 position, BlockState previousType) throws WorldEditException {
+    public boolean notifyBlock(BlockVector3 position, BlockState previousType, Set<WorldApplyingExtent.BlockUpdateOptions> blockUpdateOptions)
+            throws WorldEditException {
         return false;
     }
 

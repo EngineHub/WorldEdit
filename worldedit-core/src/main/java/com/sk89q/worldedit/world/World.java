@@ -26,6 +26,7 @@ import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.extent.Extent;
+import com.sk89q.worldedit.extent.world.WorldApplyingExtent;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.math.BlockVector3;
@@ -41,6 +42,7 @@ import com.sk89q.worldedit.world.weather.WeatherType;
 
 import javax.annotation.Nullable;
 import java.nio.file.Path;
+import java.util.Set;
 
 /**
  * Represents a world (dimension).
@@ -107,7 +109,30 @@ public interface World extends Extent, Keyed {
      * @param notifyAndLight true to to notify and light
      * @return true if the block was successfully set (return value may not be accurate)
      */
-    <B extends BlockStateHolder<B>> boolean setBlock(BlockVector3 position, B block, boolean notifyAndLight) throws WorldEditException;
+    @Deprecated
+    default <B extends BlockStateHolder<B>> boolean setBlock(BlockVector3 position, B block, boolean notifyAndLight) throws WorldEditException {
+        return setBlock(position, block, notifyAndLight ? WorldApplyingExtent.ALL_UPDATES : WorldApplyingExtent.NO_UPDATES);
+    }
+
+    /**
+     * Similar to {@link Extent#setBlock(BlockVector3, BlockStateHolder)} but a
+     * {@code notifyAndLight} parameter indicates whether adjacent blocks
+     * should be notified that changes have been made and lighting operations
+     * should be executed.
+     *
+     * <p>If it's not possible to skip lighting, or if it's not possible to
+     * avoid notifying adjacent blocks, then attempt to meet the
+     * specification as best as possible.</p>
+     *
+     * <p>On implementations where the world is not simulated, the
+     * {@code notifyAndLight} parameter has no effect either way.</p>
+     *
+     * @param position position of the block
+     * @param block block to set
+     * @param blockUpdateOptions which block update actions to perform
+     * @return true if the block was successfully set (return value may not be accurate)
+     */
+    <B extends BlockStateHolder<B>> boolean setBlock(BlockVector3 position, B block, Set<WorldApplyingExtent.BlockUpdateOptions> blockUpdateOptions) throws WorldEditException;
 
     /**
      * Notifies the simulation that the block at the given location has
@@ -117,7 +142,21 @@ public interface World extends Extent, Keyed {
      * @param previousType the type of the previous block that was there
      * @return true if the block was successfully notified
      */
-    boolean notifyAndLightBlock(BlockVector3 position, BlockState previousType) throws WorldEditException;
+    @Deprecated
+    default boolean notifyAndLightBlock(BlockVector3 position, BlockState previousType) throws WorldEditException {
+        return notifyBlock(position, previousType, WorldApplyingExtent.ALL_UPDATES);
+    }
+
+    /**
+     * Notifies the simulation that the block at the given location has
+     * been changed and it must be re-lighted (and issue other events).
+     *
+     * @param position position of the block
+     * @param previousType the type of the previous block that was there
+     * @param blockUpdateOptions the options to use when updating blocks
+     * @return true if the block was successfully notified
+     */
+    boolean notifyBlock(BlockVector3 position, BlockState previousType, Set<WorldApplyingExtent.BlockUpdateOptions> blockUpdateOptions) throws WorldEditException;
 
     /**
      * Get the light level at the given block.

@@ -31,6 +31,7 @@ import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
+import com.sk89q.worldedit.extent.world.WorldApplyingExtent;
 import com.sk89q.worldedit.internal.Constants;
 import com.sk89q.worldedit.internal.block.BlockStateIdAccess;
 import com.sk89q.worldedit.internal.util.BiomeMath;
@@ -51,8 +52,6 @@ import com.sk89q.worldedit.world.item.ItemTypes;
 import com.sk89q.worldedit.world.weather.WeatherType;
 import com.sk89q.worldedit.world.weather.WeatherTypes;
 import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.LeavesBlock;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.inventory.IClearable;
@@ -92,6 +91,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
@@ -105,10 +105,6 @@ public class ForgeWorld extends AbstractWorld {
 
     private static final Random random = new Random();
     private static final int UPDATE = 1, NOTIFY = 2;
-
-    private static final net.minecraft.block.BlockState JUNGLE_LOG = Blocks.JUNGLE_LOG.getDefaultState();
-    private static final net.minecraft.block.BlockState JUNGLE_LEAF = Blocks.JUNGLE_LEAVES.getDefaultState().with(LeavesBlock.PERSISTENT, Boolean.TRUE);
-    private static final net.minecraft.block.BlockState JUNGLE_SHRUB = Blocks.OAK_LEAVES.getDefaultState().with(LeavesBlock.PERSISTENT, Boolean.TRUE);
 
     private final WeakReference<World> worldRef;
 
@@ -172,7 +168,7 @@ public class ForgeWorld extends AbstractWorld {
     }
 
     @Override
-    public <B extends BlockStateHolder<B>> boolean setBlock(BlockVector3 position, B block, boolean notifyAndLight) throws WorldEditException {
+    public <B extends BlockStateHolder<B>> boolean setBlock(BlockVector3 position, B block, Set<WorldApplyingExtent.BlockUpdateOptions> blockUpdateOptionsSet) throws WorldEditException {
         checkNotNull(position);
         checkNotNull(block);
 
@@ -206,7 +202,7 @@ public class ForgeWorld extends AbstractWorld {
             }
         }
 
-        if (successful && notifyAndLight) {
+        if (successful && !blockUpdateOptionsSet.isEmpty()) {
             world.getChunkProvider().getLightManager().checkBlock(pos);
             world.markAndNotifyBlock(pos, chunk, old, newState, UPDATE | NOTIFY);
         }
@@ -215,7 +211,7 @@ public class ForgeWorld extends AbstractWorld {
     }
 
     @Override
-    public boolean notifyAndLightBlock(BlockVector3 position, BlockState previousType) throws WorldEditException {
+    public boolean notifyBlock(BlockVector3 position, BlockState previousType, Set<WorldApplyingExtent.BlockUpdateOptions> blockUpdateOptionsSet) throws WorldEditException {
         BlockPos pos = new BlockPos(position.getX(), position.getY(), position.getZ());
         getWorld().notifyBlockUpdate(pos, ForgeAdapter.adapt(previousType), getWorld().getBlockState(pos), 1 | 2);
         return true;
