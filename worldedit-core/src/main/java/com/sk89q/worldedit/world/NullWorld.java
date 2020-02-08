@@ -25,12 +25,12 @@ import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
-import com.sk89q.worldedit.extent.world.WorldApplyingExtent;
 import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.Location;
+import com.sk89q.worldedit.util.SideEffectApplier;
 import com.sk89q.worldedit.util.TreeGenerator.TreeType;
 import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.biome.BiomeTypes;
@@ -43,7 +43,6 @@ import com.sk89q.worldedit.world.weather.WeatherTypes;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
 import javax.annotation.Nullable;
 
@@ -68,13 +67,12 @@ public class NullWorld extends AbstractWorld {
         return "null";
     }
 
-    @Override public <B extends BlockStateHolder<B>> boolean setBlock(BlockVector3 position, B block,
-            Set<WorldApplyingExtent.BlockUpdateOptions> blockUpdateOptions) throws WorldEditException {
+    @Override public <B extends BlockStateHolder<B>> boolean setBlock(BlockVector3 position, B block, SideEffectApplier sideEffectApplier) throws WorldEditException {
         return false;
     }
 
     @Override
-    public boolean notifyBlock(BlockVector3 position, BlockState previousType, Set<WorldApplyingExtent.BlockUpdateOptions> blockUpdateOptions)
+    public boolean notifyBlock(BlockVector3 position, BlockState previousType, SideEffectApplier sideEffectApplier)
             throws WorldEditException {
         return false;
     }

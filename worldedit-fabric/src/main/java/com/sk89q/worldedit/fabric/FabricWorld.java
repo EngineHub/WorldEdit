@@ -31,7 +31,6 @@ import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
-import com.sk89q.worldedit.extent.world.WorldApplyingExtent;
 import com.sk89q.worldedit.internal.Constants;
 import com.sk89q.worldedit.internal.block.BlockStateIdAccess;
 import com.sk89q.worldedit.internal.util.BiomeMath;
@@ -42,6 +41,7 @@ import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.util.Location;
+import com.sk89q.worldedit.util.SideEffectApplier;
 import com.sk89q.worldedit.util.TreeGenerator.TreeType;
 import com.sk89q.worldedit.world.AbstractWorld;
 import com.sk89q.worldedit.world.biome.BiomeType;
@@ -89,7 +89,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.Random;
-import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
@@ -168,7 +167,7 @@ public class FabricWorld extends AbstractWorld {
     }
 
     @Override
-    public <B extends BlockStateHolder<B>> boolean setBlock(BlockVector3 position, B block, Set<WorldApplyingExtent.BlockUpdateOptions> blockUpdateOptionsSet) throws WorldEditException {
+    public <B extends BlockStateHolder<B>> boolean setBlock(BlockVector3 position, B block, SideEffectApplier sideEffectApplier) throws WorldEditException {
         checkNotNull(position);
         checkNotNull(block);
 
@@ -210,7 +209,7 @@ public class FabricWorld extends AbstractWorld {
             }
         }
 
-        if (successful && !blockUpdateOptionsSet.isEmpty()) {
+        if (successful && !sideEffectApplier.isNone()) {
             world.getChunkManager().getLightingProvider().checkBlock(pos);
             world.checkBlockRerender(pos, old, newState);
             world.updateListeners(pos, old, newState, UPDATE | NOTIFY);
@@ -224,7 +223,7 @@ public class FabricWorld extends AbstractWorld {
     }
 
     @Override
-    public boolean notifyBlock(BlockVector3 position, BlockState previousType, Set<WorldApplyingExtent.BlockUpdateOptions> blockUpdateOptionsSet) throws WorldEditException {
+    public boolean notifyBlock(BlockVector3 position, BlockState previousType, SideEffectApplier sideEffectApplier) throws WorldEditException {
         BlockPos pos = new BlockPos(position.getX(), position.getY(), position.getZ());
         net.minecraft.block.BlockState state = getWorld().getBlockState(pos);
         getWorld().updateListeners(pos, FabricAdapter.adapt(previousType), state, 1 | 2);

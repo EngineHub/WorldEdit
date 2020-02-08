@@ -104,6 +104,7 @@ import com.sk89q.worldedit.regions.shape.RegionShape;
 import com.sk89q.worldedit.regions.shape.WorldEditExpressionEnvironment;
 import com.sk89q.worldedit.util.Countable;
 import com.sk89q.worldedit.util.Direction;
+import com.sk89q.worldedit.util.SideEffectApplier;
 import com.sk89q.worldedit.util.TreeGenerator;
 import com.sk89q.worldedit.util.collection.DoubleArrayList;
 import com.sk89q.worldedit.util.eventbus.EventBus;
@@ -468,7 +469,7 @@ public class EditSession implements Extent, AutoCloseable {
     @Deprecated
     public void setFastMode(boolean enabled) {
         if (worldApplyingExtent != null) {
-            worldApplyingExtent.setBlockUpdateOptions(enabled ? WorldApplyingExtent.ALL_UPDATES : WorldApplyingExtent.NO_UPDATES);
+            worldApplyingExtent.setSideEffectApplier(enabled ? SideEffectApplier.ALL : SideEffectApplier.NONE);
         }
     }
 
@@ -478,11 +479,11 @@ public class EditSession implements Extent, AutoCloseable {
      * <p>Fast mode may skip lighting checks or adjacent block
      * notification.</p>
      *
-     * @param blockUpdateOptions options to enable
+     * @param sideEffectApplier side effects to enable
      */
-    public void setBlockUpdateOptions(Set<WorldApplyingExtent.BlockUpdateOptions> blockUpdateOptions) {
+    public void setSideEffectApplier(SideEffectApplier sideEffectApplier) {
         if (worldApplyingExtent != null) {
-            worldApplyingExtent.setBlockUpdateOptions(blockUpdateOptions);
+            worldApplyingExtent.setSideEffectApplier(sideEffectApplier);
         }
     }
 
@@ -496,14 +497,14 @@ public class EditSession implements Extent, AutoCloseable {
      */
     @Deprecated
     public boolean hasFastMode() {
-        return worldApplyingExtent != null && worldApplyingExtent.getUpdateOptions().size() == WorldApplyingExtent.ALL_UPDATES.size();
+        return worldApplyingExtent != null && worldApplyingExtent.getSideEffectApplier().isAll();
     }
 
-    public Set<WorldApplyingExtent.BlockUpdateOptions> getBlockUpdateOptions() {
+    public SideEffectApplier getSideEffectApplier() {
         if (worldApplyingExtent == null) {
-            return WorldApplyingExtent.NO_UPDATES;
+            return SideEffectApplier.NONE;
         }
-        return worldApplyingExtent.getUpdateOptions();
+        return worldApplyingExtent.getSideEffectApplier();
     }
 
     /**

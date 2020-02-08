@@ -26,7 +26,6 @@ import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.extent.Extent;
-import com.sk89q.worldedit.extent.world.WorldApplyingExtent;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.math.BlockVector3;
@@ -34,6 +33,7 @@ import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.registry.Keyed;
 import com.sk89q.worldedit.util.Direction;
+import com.sk89q.worldedit.util.SideEffectApplier;
 import com.sk89q.worldedit.util.TreeGenerator;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
@@ -42,7 +42,6 @@ import com.sk89q.worldedit.world.weather.WeatherType;
 
 import javax.annotation.Nullable;
 import java.nio.file.Path;
-import java.util.Set;
 
 /**
  * Represents a world (dimension).
@@ -111,7 +110,7 @@ public interface World extends Extent, Keyed {
      */
     @Deprecated
     default <B extends BlockStateHolder<B>> boolean setBlock(BlockVector3 position, B block, boolean notifyAndLight) throws WorldEditException {
-        return setBlock(position, block, notifyAndLight ? WorldApplyingExtent.ALL_UPDATES : WorldApplyingExtent.NO_UPDATES);
+        return setBlock(position, block, notifyAndLight ? SideEffectApplier.ALL : SideEffectApplier.NONE);
     }
 
     /**
@@ -129,10 +128,10 @@ public interface World extends Extent, Keyed {
      *
      * @param position position of the block
      * @param block block to set
-     * @param blockUpdateOptions which block update actions to perform
+     * @param sideEffectApplier which side effects to perform
      * @return true if the block was successfully set (return value may not be accurate)
      */
-    <B extends BlockStateHolder<B>> boolean setBlock(BlockVector3 position, B block, Set<WorldApplyingExtent.BlockUpdateOptions> blockUpdateOptions) throws WorldEditException;
+    <B extends BlockStateHolder<B>> boolean setBlock(BlockVector3 position, B block, SideEffectApplier sideEffectApplier) throws WorldEditException;
 
     /**
      * Notifies the simulation that the block at the given location has
@@ -144,7 +143,7 @@ public interface World extends Extent, Keyed {
      */
     @Deprecated
     default boolean notifyAndLightBlock(BlockVector3 position, BlockState previousType) throws WorldEditException {
-        return notifyBlock(position, previousType, WorldApplyingExtent.ALL_UPDATES);
+        return notifyBlock(position, previousType, SideEffectApplier.ALL);
     }
 
     /**
@@ -153,10 +152,10 @@ public interface World extends Extent, Keyed {
      *
      * @param position position of the block
      * @param previousType the type of the previous block that was there
-     * @param blockUpdateOptions the options to use when updating blocks
+     * @param sideEffectApplier which side effects to perform
      * @return true if the block was successfully notified
      */
-    boolean notifyBlock(BlockVector3 position, BlockState previousType, Set<WorldApplyingExtent.BlockUpdateOptions> blockUpdateOptions) throws WorldEditException;
+    boolean notifyBlock(BlockVector3 position, BlockState previousType, SideEffectApplier sideEffectApplier) throws WorldEditException;
 
     /**
      * Get the light level at the given block.

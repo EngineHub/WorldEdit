@@ -21,13 +21,14 @@ package com.sk89q.worldedit.extent.world;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import com.google.common.collect.Sets;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.extent.AbstractDelegateExtent;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.RunContext;
 import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.util.SideEffect;
+import com.sk89q.worldedit.util.SideEffectApplier;
 import com.sk89q.worldedit.util.collection.BlockMap;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BlockState;
@@ -44,21 +45,15 @@ import java.util.Set;
  */
 public class WorldApplyingExtent extends AbstractDelegateExtent {
 
-    public static Set<WorldApplyingExtent.BlockUpdateOptions> NO_UPDATES =
-            Sets.immutableEnumSet(EnumSet.noneOf(WorldApplyingExtent.BlockUpdateOptions.class));
-    public static Set<WorldApplyingExtent.BlockUpdateOptions> ALL_UPDATES =
-            Sets.immutableEnumSet(EnumSet.allOf(WorldApplyingExtent.BlockUpdateOptions.class));
-
     private final World world;
     private final Map<BlockVector3, BlockState> positions = BlockMap.create();
     private final Set<BlockVector2> dirtyChunks = new HashSet<>();
-    private final Set<BlockUpdateOptions> blockUpdateOptions = EnumSet.of(
-            BlockUpdateOptions.CONNECTIONS,
-            BlockUpdateOptions.LIGHTING,
-            BlockUpdateOptions.NEIGHBOURS
-    );
+    private SideEffectApplier sideEffectApplier = new SideEffectApplier(EnumSet.of(
+            SideEffect.CONNECTIONS,
+            SideEffect.LIGHTING,
+            SideEffect.NEIGHBOURS
+    ));
     private boolean postEditSimulation;
-    private boolean requiresCleanup = blockUpdateOptions.stream().anyMatch(BlockUpdateOptions::requiresCleanup);
 
     /**
      * Create a new instance.
@@ -79,25 +74,24 @@ public class WorldApplyingExtent extends AbstractDelegateExtent {
         this.postEditSimulation = enabled;
     }
 
-    public Set<BlockUpdateOptions> getUpdateOptions() {
-        return this.blockUpdateOptions;
+    public SideEffectApplier getSideEffectApplier() {
+        return this.sideEffectApplier;
     }
 
-    public void setBlockUpdateOptions(Set<BlockUpdateOptions> blockUpdateOptions) {
-        this.blockUpdateOptions.clear();
-        this.blockUpdateOptions.addAll(blockUpdateOptions);
+    public void setSideEffectApplier(SideEffectApplier sideEffectApplier) {
+        this.sideEffectApplier = sideEffectApplier;
     }
 
     @Override
     public <B extends BlockStateHolder<B>> boolean setBlock(BlockVector3 location, B block) throws WorldEditException {
-        if (requiresCleanup) {
+        if (sideEffectApplier.doesRequireCleanup()) {
             dirtyChunks.add(BlockVector2.at(location.getBlockX() >> 4, location.getBlockZ() >> 4));
         }
         if (postEditSimulation) {
             positions.put(location, world.getBlock(location));
         }
 
-        return world.setBlock(location, block, postEditSimulation ? NO_UPDATES : blockUpdateOptions);
+        return world.setBlock(location, block, postEditSimulation ? SideEffectApplier.NONE : sideEffectApplier);
     }
 
     public boolean commitRequired() {
@@ -120,7 +114,7 @@ public class WorldApplyingExtent extends AbstractDelegateExtent {
                     Iterator<Map.Entry<BlockVector3, BlockState>> positionIterator = positions.entrySet().iterator();
                     while (run.shouldContinue() && positionIterator.hasNext()) {
                         Map.Entry<BlockVector3, BlockState> position = positionIterator.next();
-                        world.notifyBlock(position.getKey(), position.getValue(), blockUpdateOptions);
+                        world.notifyBlock(position.getKey(), position.getValue(), sideEffectApplier);
                         positionIterator.remove();
                     }
 
@@ -134,23 +128,5 @@ public class WorldApplyingExtent extends AbstractDelegateExtent {
             public void cancel() {
             }
         };
-    }
-
-    public enum BlockUpdateOptions {
-        LIGHTING(false),
-        NEIGHBOURS(false),
-        CONNECTIONS(false),
-        ENTITY_AI(false),
-        PLUGIN_EVENTS(false);
-
-        private boolean dirty;
-
-        BlockUpdateOptions(boolean dirty) {
-            this.dirty = dirty;
-        }
-
-        public boolean requiresCleanup() {
-            return this.dirty;
-        }
     }
 }

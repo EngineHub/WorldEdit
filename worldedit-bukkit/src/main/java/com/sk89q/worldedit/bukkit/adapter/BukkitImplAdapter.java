@@ -24,11 +24,11 @@ import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.entity.BaseEntity;
-import com.sk89q.worldedit.extent.world.WorldApplyingExtent;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.util.Direction;
+import com.sk89q.worldedit.util.SideEffectApplier;
 import com.sk89q.worldedit.world.DataFixer;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;
@@ -43,7 +43,6 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.Map;
 import java.util.OptionalInt;
-import java.util.Set;
 
 import javax.annotation.Nullable;
 
@@ -93,10 +92,10 @@ public interface BukkitImplAdapter {
      *
      * @param location the location
      * @param state the block
-     * @param blockUpdateOptionsSet block updates to apply
+     * @param sideEffectApplier side effects to apply
      * @return true if a block was likely changed
      */
-    boolean setBlock(Location location, BlockStateHolder<?> state, Set<WorldApplyingExtent.BlockUpdateOptions> blockUpdateOptionsSet);
+    boolean setBlock(Location location, BlockStateHolder<?> state, SideEffectApplier sideEffectApplier);
 
     /**
      * Notifies the simulation that the block at the given location has
@@ -104,9 +103,9 @@ public interface BukkitImplAdapter {
      *
      * @param position position of the block
      * @param previousType the type of the previous block that was there
-     * @param blockUpdateOptionsSet block updates to apply
+     * @param sideEffectApplier side effects to apply
      */
-    void notifyAndLightBlock(Location position, BlockState previousType, Set<WorldApplyingExtent.BlockUpdateOptions> blockUpdateOptionsSet);
+    void notifyAndLightBlock(Location position, BlockState previousType, SideEffectApplier sideEffectApplier);
 
     /**
      * Get the state for the given entity.
