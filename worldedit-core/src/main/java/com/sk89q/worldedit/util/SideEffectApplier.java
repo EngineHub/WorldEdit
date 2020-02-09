@@ -21,17 +21,23 @@ package com.sk89q.worldedit.util;
 
 import com.google.common.collect.Sets;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class SideEffectApplier {
 
-    public static final SideEffectApplier ALL = new SideEffectApplier(EnumSet.allOf(SideEffect.class));
+    private static final Collection<SideEffect> CONFIGURABLE = Arrays.stream(SideEffect.values()).filter(SideEffect::isConfigurable).collect(Collectors.toList());
+    public static final SideEffectApplier ALL = new SideEffectApplier(CONFIGURABLE);
     public static final SideEffectApplier NONE = new SideEffectApplier(EnumSet.noneOf(SideEffect.class));
 
     private final Set<SideEffect> sideEffects;
     private boolean requiresCleanup = false;
+    private boolean isAll = false;
 
     public SideEffectApplier(Collection<SideEffect> sideEffects) {
         this.sideEffects = Sets.immutableEnumSet(sideEffects);
@@ -40,6 +46,19 @@ public class SideEffectApplier {
 
     private void updateSideEffects() {
         requiresCleanup = sideEffects.stream().anyMatch(SideEffect::requiresCleanup);
+        isAll = sideEffects.stream().filter(SideEffect::isConfigurable).count() == CONFIGURABLE.size();
+    }
+
+    public SideEffectApplier with(Collection<SideEffect> newSideEffects) {
+        List<SideEffect> entries = new ArrayList<>(newSideEffects);
+        entries.addAll(this.sideEffects);
+        return new SideEffectApplier(entries);
+    }
+
+    public SideEffectApplier without(Collection<SideEffect> removedSideEffects) {
+        List<SideEffect> entries = new ArrayList<>(this.sideEffects);
+        entries.removeAll(removedSideEffects);
+        return new SideEffectApplier(entries);
     }
 
     public boolean doesRequireCleanup() {
@@ -55,6 +74,14 @@ public class SideEffectApplier {
     }
 
     public boolean isAll() {
-        return sideEffects.size() == SideEffect.values().length;
+        return this.isAll;
+    }
+
+    public SideEffectApplier withAll() {
+        return with(CONFIGURABLE);
+    }
+
+    public SideEffectApplier withoutAll() {
+        return without(CONFIGURABLE);
     }
 }

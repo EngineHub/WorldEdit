@@ -21,6 +21,7 @@ package com.sk89q.worldedit.command;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import com.google.common.collect.Lists;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
@@ -35,8 +36,13 @@ import com.sk89q.worldedit.extension.input.DisallowedUsageException;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.function.mask.Mask;
+import com.sk89q.worldedit.util.SideEffect;
+import com.sk89q.worldedit.util.formatting.component.MessageBox;
 import com.sk89q.worldedit.util.formatting.component.PaginationBox;
+import com.sk89q.worldedit.util.formatting.component.TextComponentProducer;
 import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.util.formatting.text.event.ClickEvent;
+import com.sk89q.worldedit.util.formatting.text.event.HoverEvent;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
@@ -126,6 +132,44 @@ public class GeneralCommands {
             component.append(TranslatableComponent.of("worldedit.timeout.return-to-default", TextColor.GRAY));
         }
         actor.printInfo(component);
+    }
+
+    @Command(
+            name = "/sideeffect",
+            desc = "Toggle side effects"
+    )
+    @CommandPermissions("worldedit.sideeffect")
+    public void sideEffect(Actor actor, LocalSession session,
+            @Arg(desc = "The side effect", def = "") SideEffect sideEffect,
+            @Arg(desc = "The new state of the side effect", def = "")
+                    Boolean shouldEnable) {
+        if (sideEffect != null) {
+            boolean hasSideEffect = session.getSideEffectApplier().shouldApply(sideEffect);
+            if (shouldEnable != null && shouldEnable == hasSideEffect) {
+                actor.printError(
+                        TranslatableComponent.of(shouldEnable ? "worldedit.sideeffect.enabled.already" : "worldedit.sideeffect.disabled.already"));
+                return;
+            }
+
+            if (hasSideEffect) {
+                session.setSideEffectApplier(session.getSideEffectApplier().without(Lists.newArrayList(sideEffect)));
+                actor.printInfo(TranslatableComponent.of("worldedit.sideeffect.disabled"));
+            } else {
+                session.setSideEffectApplier(session.getSideEffectApplier().with(Lists.newArrayList(sideEffect)));
+                actor.printInfo(TranslatableComponent.of("worldedit.sideeffect.enabled"));
+            }
+        } else {
+            TextComponentProducer producer = new TextComponentProducer();
+            for (SideEffect testSideEffect : SideEffect.values()) {
+                boolean enabled = session.getSideEffectApplier().shouldApply(testSideEffect);
+                producer.append(
+                        TextComponent.of(testSideEffect.getDisplayName(), TextColor.YELLOW).append(TextComponent.space())
+                                .append(TextComponent.of(enabled ? "Enabled" : "Disabled", enabled ? TextColor.GREEN : TextColor.RED)).hoverEvent(
+                                HoverEvent.of(HoverEvent.Action.SHOW_TEXT, TextComponent.of(testSideEffect.getDescription()))).clickEvent(ClickEvent.runCommand("//sideeffect " + testSideEffect.name().toLowerCase(Locale.US)))
+                ).newline();
+            }
+            actor.print(new MessageBox("Side Effects", producer, TextColor.GRAY).create());
+        }
     }
 
     @Command(

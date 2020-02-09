@@ -1039,7 +1039,7 @@ public class LocalSession {
      */
     @Deprecated
     public void setFastMode(boolean fastMode) {
-        this.sideEffectApplier = fastMode ? SideEffectApplier.NONE : SideEffectApplier.ALL;
+        this.sideEffectApplier = fastMode ? this.sideEffectApplier.withoutAll() : this.sideEffectApplier.withAll();
     }
 
     /**
