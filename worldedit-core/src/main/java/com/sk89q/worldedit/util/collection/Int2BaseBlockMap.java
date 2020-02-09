@@ -67,8 +67,8 @@ class Int2BaseBlockMap extends AbstractInt2ObjectMap<BaseBlock> {
         return state.toBaseBlock();
     }
 
-    private final Int2IntMap commonMap = new Int2IntOpenHashMap(64, 1f);
-    private final Int2ObjectMap<BaseBlock> uncommonMap = new Int2ObjectOpenHashMap<>(1, 1f);
+    private final Int2IntMap commonMap = new Int2IntOpenHashMap(64, 0.9f);
+    private final Int2ObjectMap<BaseBlock> uncommonMap = new Int2ObjectOpenHashMap<>(1, 0.75f);
 
     {
         commonMap.defaultReturnValue(BlockStateIdAccess.invalidId());

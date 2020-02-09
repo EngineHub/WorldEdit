@@ -58,7 +58,7 @@ public class BlockMap<V> extends AbstractMap<BlockVector3, V> {
        ========================= */
 
     public static <V> BlockMap<V> create() {
-        return create(() -> new Int2ObjectOpenHashMap<>(64, 1f));
+        return create(() -> new Int2ObjectOpenHashMap<>(64, 0.9f));
     }
 
     public static BlockMap<BaseBlock> createForBaseBlock() {
@@ -118,7 +118,7 @@ public class BlockMap<V> extends AbstractMap<BlockVector3, V> {
         return BlockVector3.at(x, y, z);
     }
 
-    private final Long2ObjectMap<Int2ObjectMap<V>> maps = new Long2ObjectOpenHashMap<>(4, 1f);
+    private final Long2ObjectMap<Int2ObjectMap<V>> maps = new Long2ObjectOpenHashMap<>(4, 0.75f);
     private final Supplier<Int2ObjectMap<V>> subMapSupplier;
     private Set<Entry<BlockVector3, V>> entrySet;
     private Collection<V> values;
