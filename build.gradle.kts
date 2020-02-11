@@ -23,6 +23,6 @@ if (!project.hasProperty("gitCommitHash")) {
     } catch (e: Exception) {
         logger.warn("Error getting commit hash", e)
 
-        "no_git_id"
+        "no.git.id"
     }
 }

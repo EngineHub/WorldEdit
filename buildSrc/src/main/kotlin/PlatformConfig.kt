@@ -28,7 +28,7 @@ fun Project.applyPlatformAndCoreConfiguration() {
     apply(plugin = "com.jfrog.artifactory")
     apply(plugin = "net.minecrell.licenser")
 
-    ext["internalVersion"] = "$version;${rootProject.ext["gitCommitHash"]}"
+    ext["internalVersion"] = "$version+${rootProject.ext["gitCommitHash"]}"
 
     configure<JavaPluginConvention> {
         sourceCompatibility = JavaVersion.VERSION_1_8
