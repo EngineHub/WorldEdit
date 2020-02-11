@@ -28,7 +28,7 @@ fun Project.applyPlatformAndCoreConfiguration() {
     apply(plugin = "com.jfrog.artifactory")
     apply(plugin = "net.minecrell.licenser")
 
-    ext["internalVersion"] = "$version;${rootProject.ext["gitCommitHash"]}"
+    ext["internalVersion"] = "$version+${rootProject.ext["gitCommitHash"]}"
 
     configure<JavaPluginConvention> {
         sourceCompatibility = JavaVersion.VERSION_1_8
@@ -115,7 +115,19 @@ fun Project.applyShadowConfiguration() {
     }
 }
 
-val CLASSPATH = listOf("truezip", "truevfs", "js")
-    .map { "$it.jar" }
-    .flatMap { listOf(it, "WorldEdit/$it") }
-    .joinToString(separator = " ")
+private val CLASSPATH = listOf("truezip", "truevfs", "js")
+        .map { "$it.jar" }
+        .flatMap { listOf(it, "WorldEdit/$it") }
+        .joinToString(separator = " ")
+
+fun Project.addJarManifest(includeClasspath: Boolean = false) {
+    tasks.named<Jar>("jar") {
+        val attributes = mutableMapOf(
+                "WorldEdit-Version" to project(":worldedit-core").version
+        )
+        if (includeClasspath) {
+            attributes["Class-Path"] = CLASSPATH
+        }
+        manifest.attributes(attributes)
+    }
+}
