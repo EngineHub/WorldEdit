@@ -41,12 +41,12 @@ import com.sk89q.worldedit.util.formatting.component.MessageBox;
 import com.sk89q.worldedit.util.formatting.component.PaginationBox;
 import com.sk89q.worldedit.util.formatting.component.TextComponentProducer;
 import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.event.ClickEvent;
-import com.sk89q.worldedit.util.formatting.text.event.HoverEvent;
-import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
+import com.sk89q.worldedit.util.formatting.text.event.ClickEvent;
+import com.sk89q.worldedit.util.formatting.text.event.HoverEvent;
 import com.sk89q.worldedit.util.formatting.text.format.TextColor;
+import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.item.ItemType;
 import org.enginehub.piston.annotation.Command;
 import org.enginehub.piston.annotation.CommandContainer;
@@ -135,63 +135,44 @@ public class GeneralCommands {
     }
 
     @Command(
-            name = "/sideeffect",
-            desc = "Toggle side effects"
+            name = "/fast",
+            desc = "Toggle fast mode side effects"
     )
-    @CommandPermissions("worldedit.sideeffect")
-    public void sideEffect(Actor actor, LocalSession session,
+    @CommandPermissions("worldedit.fast")
+    public void fast(Actor actor, LocalSession session,
             @Arg(desc = "The side effect", def = "") SideEffect sideEffect,
-            @Arg(desc = "The new state of the side effect", def = "")
+            @Arg(desc = "The new side effect state", def = "")
                     Boolean shouldEnable) {
         if (sideEffect != null) {
             boolean hasSideEffect = session.getSideEffectApplier().shouldApply(sideEffect);
             if (shouldEnable != null && shouldEnable == hasSideEffect) {
                 actor.printError(
-                        TranslatableComponent.of(shouldEnable ? "worldedit.sideeffect.enabled.already" : "worldedit.sideeffect.disabled.already"));
+                        TranslatableComponent.of(shouldEnable ? "worldedit.fast.sideeffect.enabled.already" : "worldedit.fast.sideeffect.disabled.already"));
                 return;
             }
 
             if (hasSideEffect) {
                 session.setSideEffectApplier(session.getSideEffectApplier().without(Lists.newArrayList(sideEffect)));
-                actor.printInfo(TranslatableComponent.of("worldedit.sideeffect.disabled"));
+                actor.printInfo(TranslatableComponent.of("worldedit.fast.sideeffect.disabled"));
             } else {
                 session.setSideEffectApplier(session.getSideEffectApplier().with(Lists.newArrayList(sideEffect)));
-                actor.printInfo(TranslatableComponent.of("worldedit.sideeffect.enabled"));
+                actor.printInfo(TranslatableComponent.of("worldedit.fast.sideeffect.enabled"));
             }
         } else {
             TextComponentProducer producer = new TextComponentProducer();
             for (SideEffect testSideEffect : SideEffect.values()) {
+                if (!testSideEffect.isConfigurable()) {
+                    continue;
+                }
                 boolean enabled = session.getSideEffectApplier().shouldApply(testSideEffect);
                 producer.append(
                         TextComponent.of(testSideEffect.getDisplayName(), TextColor.YELLOW).append(TextComponent.space())
                                 .append(TextComponent.of(enabled ? "Enabled" : "Disabled", enabled ? TextColor.GREEN : TextColor.RED)).hoverEvent(
-                                HoverEvent.of(HoverEvent.Action.SHOW_TEXT, TextComponent.of(testSideEffect.getDescription()))).clickEvent(ClickEvent.runCommand("//sideeffect " + testSideEffect.name().toLowerCase(Locale.US)))
+                                HoverEvent.of(HoverEvent.Action.SHOW_TEXT, TextComponent.of(testSideEffect.getDescription())))
+                                .clickEvent(ClickEvent.runCommand("//fast " + testSideEffect.name().toLowerCase(Locale.US)))
                 ).newline();
             }
             actor.print(new MessageBox("Side Effects", producer, TextColor.GRAY).create());
-        }
-    }
-
-    @Command(
-        name = "/fast",
-        desc = "Toggle fast mode"
-    )
-    @CommandPermissions("worldedit.fast")
-    public void fast(Actor actor, LocalSession session,
-                     @Arg(desc = "The new fast mode state", def = "")
-                        Boolean fastMode) {
-        boolean hasFastMode = session.hasFastMode();
-        if (fastMode != null && fastMode == hasFastMode) {
-            actor.printError(TranslatableComponent.of(fastMode ? "worldedit.fast.enabled.already" : "worldedit.fast.disabled.already"));
-            return;
-        }
-
-        if (hasFastMode) {
-            session.setFastMode(false);
-            actor.printInfo(TranslatableComponent.of("worldedit.fast.disabled"));
-        } else {
-            session.setFastMode(true);
-            actor.printInfo(TranslatableComponent.of("worldedit.fast.enabled"));
         }
     }
 
