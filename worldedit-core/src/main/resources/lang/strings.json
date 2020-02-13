@@ -339,6 +339,9 @@
     "worldedit.sideeffect.entity_ai.description": "Updates Entity AI paths for the block changes",
     "worldedit.sideeffect.plugin_events": "Plugin Events",
     "worldedit.sideeffect.plugin_events.description": "Tells other plugins/mods about these changes when applicable",
+    "worldedit.sideeffect.state.on": "On",
+    "worldedit.sideeffect.state.delayed": "Delayed",
+    "worldedit.sideeffect.state.off": "Off",
 
     "worldedit.help.command-not-found": "The command '{0}' could not be found.",
     "worldedit.help.no-subcommands": "'{0}' has no sub-commands. (Maybe '{1}' is for a parameter?)",

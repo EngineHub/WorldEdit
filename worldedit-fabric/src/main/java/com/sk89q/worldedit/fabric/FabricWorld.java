@@ -209,7 +209,7 @@ public class FabricWorld extends AbstractWorld {
             }
         }
 
-        if (successful && !sideEffectApplier.isNone()) {
+        if (successful && sideEffectApplier.doesApplyAny()) {
             world.getChunkManager().getLightingProvider().checkBlock(pos);
             world.checkBlockRerender(pos, old, newState);
             world.updateListeners(pos, old, newState, UPDATE | NOTIFY);

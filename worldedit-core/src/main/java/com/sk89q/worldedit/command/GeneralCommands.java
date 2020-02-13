@@ -21,7 +21,6 @@ package com.sk89q.worldedit.command;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import com.google.common.collect.Lists;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
@@ -38,15 +37,11 @@ import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.util.SideEffect;
 import com.sk89q.worldedit.util.formatting.component.InvalidComponentException;
-import com.sk89q.worldedit.util.formatting.component.MessageBox;
 import com.sk89q.worldedit.util.formatting.component.PaginationBox;
 import com.sk89q.worldedit.util.formatting.component.SideEffectBox;
-import com.sk89q.worldedit.util.formatting.component.TextComponentProducer;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
-import com.sk89q.worldedit.util.formatting.text.event.ClickEvent;
-import com.sk89q.worldedit.util.formatting.text.event.HoverEvent;
 import com.sk89q.worldedit.util.formatting.text.format.TextColor;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.item.ItemType;
@@ -143,31 +138,36 @@ public class GeneralCommands {
     @CommandPermissions("worldedit.fast")
     public void fast(Actor actor, LocalSession session,
             @Arg(desc = "The side effect", def = "") SideEffect sideEffect,
-            @Arg(desc = "The new side effect state", def = "") Boolean shouldEnable,
+            @Arg(desc = "The new side effect state", def = "") SideEffect.State newState,
             @Switch(name = 'h', desc = "Show the info box") boolean showInfoBox) {
         if (sideEffect != null) {
-            boolean hasSideEffect = session.getSideEffectApplier().shouldApply(sideEffect);
-            if (shouldEnable != null && shouldEnable == hasSideEffect) {
+            SideEffect.State currentState = session.getSideEffectApplier().getState(sideEffect);
+            if (newState != null && newState == currentState) {
                 if (!showInfoBox) {
-                    actor.printError(
-                            TranslatableComponent.of(shouldEnable ? "worldedit.fast.sideeffect.enabled.already" : "worldedit.fast.sideeffect"
-                                    + ".disabled.already", TranslatableComponent.of(sideEffect.getDisplayName())));
+                    actor.printError(TranslatableComponent.of(
+                            "worldedit.fast.sideeffect.already-set",
+                            TranslatableComponent.of(sideEffect.getDisplayName()),
+                            TranslatableComponent.of(newState.getDisplayName())
+                    ));
                 }
                 return;
             }
 
-            if (hasSideEffect) {
-                session.setSideEffectApplier(session.getSideEffectApplier().without(Lists.newArrayList(sideEffect)));
+            if (newState != null) {
+                session.setSideEffectApplier(session.getSideEffectApplier().with(sideEffect, newState));
                 if (!showInfoBox) {
-                    actor.printInfo(TranslatableComponent.of("worldedit.fast.sideeffect.disabled",
-                            TranslatableComponent.of(sideEffect.getDisplayName())));
+                    actor.printInfo(TranslatableComponent.of(
+                            "worldedit.fast.sideeffect.set",
+                            TranslatableComponent.of(sideEffect.getDisplayName()),
+                            TranslatableComponent.of(newState.getDisplayName())
+                    ));
                 }
             } else {
-                session.setSideEffectApplier(session.getSideEffectApplier().with(Lists.newArrayList(sideEffect)));
-                if (!showInfoBox) {
-                    actor.printInfo(TranslatableComponent.of("worldedit.fast.sideeffect.enabled",
-                            TranslatableComponent.of(sideEffect.getDisplayName())));
-                }
+                actor.printInfo(TranslatableComponent.of(
+                        "worldedit.fast.sideeffect.get",
+                        TranslatableComponent.of(sideEffect.getDisplayName()),
+                        TranslatableComponent.of(currentState.getDisplayName())
+                ));
             }
         }
 

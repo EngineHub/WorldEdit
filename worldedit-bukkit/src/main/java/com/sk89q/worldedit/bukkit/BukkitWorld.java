@@ -426,12 +426,12 @@ public class BukkitWorld extends AbstractWorld {
                 }
                 e.printStackTrace();
                 Block bukkitBlock = getWorld().getBlockAt(position.getBlockX(), position.getBlockY(), position.getBlockZ());
-                bukkitBlock.setBlockData(BukkitAdapter.adapt(block), !sideEffectApplier.isNone());
+                bukkitBlock.setBlockData(BukkitAdapter.adapt(block), sideEffectApplier.doesApplyAny());
                 return true;
             }
         } else {
             Block bukkitBlock = getWorld().getBlockAt(position.getBlockX(), position.getBlockY(), position.getBlockZ());
-            bukkitBlock.setBlockData(BukkitAdapter.adapt(block), !sideEffectApplier.isNone());
+            bukkitBlock.setBlockData(BukkitAdapter.adapt(block), sideEffectApplier.doesApplyAny());
             return true;
         }
     }

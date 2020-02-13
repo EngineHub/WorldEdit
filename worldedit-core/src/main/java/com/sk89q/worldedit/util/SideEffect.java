@@ -22,20 +22,22 @@ package com.sk89q.worldedit.util;
 import java.util.Locale;
 
 public enum SideEffect {
-    LIGHTING(false, true),
-    NEIGHBORS(false, true),
-    CONNECTIONS(false, true),
-    ENTITY_AI(false, true),
-    PLUGIN_EVENTS(false, false);
+    LIGHTING(State.ON, false, true),
+    NEIGHBORS(State.ON, false, true),
+    CONNECTIONS(State.ON, false, true),
+    ENTITY_AI(State.OFF, false, true),
+    PLUGIN_EVENTS(State.OFF, false, false);
 
     private String displayName;
     private String description;
+    private State defaultValue;
     private boolean dirty;
     private boolean configurable;
 
-    SideEffect(boolean dirty, boolean configurable) {
+    SideEffect(State defaultValue, boolean dirty, boolean configurable) {
         this.displayName = "worldedit.sideeffect." + this.name().toLowerCase(Locale.US);
         this.description = "worldedit.sideeffect." + this.name().toLowerCase(Locale.US) + ".description";
+        this.defaultValue = defaultValue;
         this.dirty = dirty;
         this.configurable = configurable;
     }
@@ -48,11 +50,31 @@ public enum SideEffect {
         return this.description;
     }
 
+    public State getDefaultValue() {
+        return this.defaultValue;
+    }
+
     public boolean requiresCleanup() {
         return this.dirty;
     }
 
     public boolean isConfigurable() {
         return this.configurable;
+    }
+
+    public enum State {
+        OFF,
+        ON,
+        DELAYED;
+
+        private String displayName;
+
+        State() {
+            this.displayName = "worldedit.sideeffect.state." + this.name().toLowerCase(Locale.US);
+        }
+
+        public String getDisplayName() {
+            return this.displayName;
+        }
     }
 }

@@ -53,15 +53,21 @@ public class SideEffectBox extends PaginationBox {
     @Override
     public Component getComponent(int number) {
         SideEffect effect = sideEffects.get(number);
-        boolean enabled = this.sideEffectApplier.shouldApply(effect);
+        SideEffect.State state = this.sideEffectApplier.getState(effect);
 
-        return TextComponent.empty()
-                .append(TranslatableComponent.of(effect.getDisplayName(), TextColor.YELLOW)
-                        .hoverEvent(HoverEvent.of(HoverEvent.Action.SHOW_TEXT, TranslatableComponent.of(effect.getDescription()))))
-                .append(TextComponent.space())
-                .append(TextComponent.of(enabled ? "Enabled" : "Disabled", enabled ? TextColor.GREEN : TextColor.RED)
-                        .clickEvent(ClickEvent.runCommand("//fast -h " + effect.name().toLowerCase(Locale.US)))
-                        .hoverEvent(HoverEvent.showText(TextComponent.of("Click to " + (enabled ? "Disable" : "Enable")))));
+        TextComponent.Builder builder = TextComponent.builder();
+        builder = builder.append(TranslatableComponent.of(effect.getDisplayName(), TextColor.YELLOW)
+                .hoverEvent(HoverEvent.of(HoverEvent.Action.SHOW_TEXT, TranslatableComponent.of(effect.getDescription()))));
+        for (SideEffect.State uiState : SideEffect.State.values()) {
+            builder = builder.append(TextComponent.space());
+            builder = builder.append(TranslatableComponent.of(uiState.getDisplayName(), uiState == state ? TextColor.WHITE : TextColor.GRAY)
+                    .clickEvent(ClickEvent.runCommand("//fast -h " + effect.name().toLowerCase(Locale.US) + " " + uiState.name().toLowerCase(Locale.US)))
+                    .hoverEvent(HoverEvent.showText(uiState == state ?
+                     TextComponent.of("Current") : TextComponent.of("Click to set to ").append(TranslatableComponent.of(uiState.getDisplayName()))))
+            );
+        }
+
+        return builder.build();
     }
 
     @Override

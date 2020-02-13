@@ -55,6 +55,10 @@ public final class EnumConverter {
                 MultiKeyConverter.from(EnumSet.copyOf(Arrays.stream(SideEffect.values()).filter(SideEffect::isConfigurable).collect(Collectors.toList())),
                         r -> ImmutableSet.of(r.name().toLowerCase(Locale.US)),
                         null));
+        commandManager.registerConverter(Key.of(SideEffect.State.class),
+                full(SideEffect.State.class,
+                        r -> ImmutableSet.of(r.name().toLowerCase(Locale.US)),
+                        null));
         commandManager.registerConverter(Key.of(HookMode.class),
             basic(HookMode.class));
     }

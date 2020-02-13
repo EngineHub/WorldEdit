@@ -19,69 +19,75 @@
 
 package com.sk89q.worldedit.util;
 
-import com.google.common.collect.Sets;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Set;
+import java.util.EnumMap;
+import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class SideEffectApplier {
+    private static final SideEffectApplier DEFAULT = new SideEffectApplier();
+    private static final SideEffectApplier NONE = new SideEffectApplier(
+            Arrays.stream(SideEffect.values()).collect(Collectors.toMap(Function.identity(), SideEffect::getDefaultValue))
+    );
 
-    private static final Collection<SideEffect> CONFIGURABLE = Arrays.stream(SideEffect.values()).filter(SideEffect::isConfigurable).collect(Collectors.toList());
-    public static final SideEffectApplier ALL = new SideEffectApplier(CONFIGURABLE);
-    public static final SideEffectApplier NONE = new SideEffectApplier(EnumSet.noneOf(SideEffect.class));
-
-    private final Set<SideEffect> sideEffects;
+    private final Map<SideEffect, SideEffect.State> sideEffects;
     private boolean requiresCleanup = false;
-    private boolean isAll = false;
+    private boolean appliesAny = false;
 
-    public SideEffectApplier(Collection<SideEffect> sideEffects) {
-        this.sideEffects = Sets.immutableEnumSet(sideEffects);
+    private SideEffectApplier() {
+        this.sideEffects = ImmutableMap.of();
+        updateSideEffects();
+    }
+
+    public SideEffectApplier(Map<SideEffect, SideEffect.State> sideEffects) {
+        this.sideEffects = Maps.immutableEnumMap(sideEffects);
         updateSideEffects();
     }
 
     private void updateSideEffects() {
-        requiresCleanup = sideEffects.stream().anyMatch(SideEffect::requiresCleanup);
-        isAll = sideEffects.stream().filter(SideEffect::isConfigurable).count() == CONFIGURABLE.size();
+        requiresCleanup = sideEffects.keySet().stream().anyMatch(SideEffect::requiresCleanup);
+        appliesAny = sideEffects.values().stream().anyMatch(state -> state != SideEffect.State.OFF);
     }
 
-    public SideEffectApplier with(Collection<SideEffect> newSideEffects) {
-        List<SideEffect> entries = new ArrayList<>(newSideEffects);
-        entries.addAll(this.sideEffects);
+    public SideEffectApplier with(SideEffect sideEffect, SideEffect.State state) {
+        Map<SideEffect, SideEffect.State> entries = this.sideEffects.isEmpty() ? Maps.newEnumMap(SideEffect.class) : new EnumMap<>(this.sideEffects);
+        entries.put(sideEffect, state);
         return new SideEffectApplier(entries);
     }
 
-    public SideEffectApplier without(Collection<SideEffect> removedSideEffects) {
-        List<SideEffect> entries = new ArrayList<>(this.sideEffects);
-        entries.removeAll(removedSideEffects);
-        return new SideEffectApplier(entries);
+    public boolean doesApplyAny() {
+        return this.appliesAny;
     }
 
     public boolean doesRequireCleanup() {
         return this.requiresCleanup;
     }
 
+    public SideEffect.State getState(SideEffect effect) {
+        return sideEffects.getOrDefault(effect, effect.getDefaultValue());
+    }
+
+    /**
+     * Gets whether this side effect is not off.
+     *
+     * This returns whether it is either delayed or on.
+     *
+     * @param effect The side effect
+     * @return Whether it should apply
+     */
     public boolean shouldApply(SideEffect effect) {
-        return sideEffects.contains(effect);
+        return getState(effect) != SideEffect.State.OFF;
     }
 
-    public boolean isNone() {
-        return sideEffects.isEmpty();
+    public static SideEffectApplier defaults() {
+        return DEFAULT;
     }
 
-    public boolean isAll() {
-        return this.isAll;
-    }
-
-    public SideEffectApplier withAll() {
-        return with(CONFIGURABLE);
-    }
-
-    public SideEffectApplier withoutAll() {
-        return without(CONFIGURABLE);
+    public static SideEffectApplier none() {
+        return NONE;
     }
 }

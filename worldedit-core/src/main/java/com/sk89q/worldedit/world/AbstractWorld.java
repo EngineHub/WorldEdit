@@ -57,7 +57,7 @@ public abstract class AbstractWorld implements World {
 
     @Override
     public final <B extends BlockStateHolder<B>> boolean setBlock(BlockVector3 pt, B block) throws WorldEditException {
-        return setBlock(pt, block, SideEffectApplier.ALL);
+        return setBlock(pt, block, SideEffectApplier.defaults());
     }
 
     @Override

@@ -110,7 +110,7 @@ public interface World extends Extent, Keyed {
      */
     @Deprecated
     default <B extends BlockStateHolder<B>> boolean setBlock(BlockVector3 position, B block, boolean notifyAndLight) throws WorldEditException {
-        return setBlock(position, block, notifyAndLight ? SideEffectApplier.ALL : SideEffectApplier.NONE);
+        return setBlock(position, block, notifyAndLight ? SideEffectApplier.defaults() : SideEffectApplier.none());
     }
 
     /**
@@ -143,7 +143,7 @@ public interface World extends Extent, Keyed {
      */
     @Deprecated
     default boolean notifyAndLightBlock(BlockVector3 position, BlockState previousType) throws WorldEditException {
-        return notifyBlock(position, previousType, SideEffectApplier.ALL);
+        return notifyBlock(position, previousType, SideEffectApplier.defaults());
     }
 
     /**

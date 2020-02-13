@@ -469,7 +469,7 @@ public class EditSession implements Extent, AutoCloseable {
     @Deprecated
     public void setFastMode(boolean enabled) {
         if (worldApplyingExtent != null) {
-            worldApplyingExtent.setSideEffectApplier(enabled ? SideEffectApplier.ALL : SideEffectApplier.NONE);
+            worldApplyingExtent.setSideEffectApplier(enabled ? SideEffectApplier.defaults() : SideEffectApplier.none());
         }
     }
 
@@ -497,12 +497,12 @@ public class EditSession implements Extent, AutoCloseable {
      */
     @Deprecated
     public boolean hasFastMode() {
-        return worldApplyingExtent != null && worldApplyingExtent.getSideEffectApplier().isAll();
+        return worldApplyingExtent != null && this.worldApplyingExtent.getSideEffectApplier().doesApplyAny();
     }
 
     public SideEffectApplier getSideEffectApplier() {
         if (worldApplyingExtent == null) {
-            return SideEffectApplier.NONE;
+            return SideEffectApplier.defaults();
         }
         return worldApplyingExtent.getSideEffectApplier();
     }

@@ -99,7 +99,7 @@ public class LocalSession {
     private transient Snapshot snapshotExperimental;
     private transient boolean hasCUISupport = false;
     private transient int cuiVersion = -1;
-    private transient SideEffectApplier sideEffectApplier = SideEffectApplier.ALL;
+    private transient SideEffectApplier sideEffectApplier = SideEffectApplier.defaults();
     private transient Mask mask;
     private transient ZoneId timezone = ZoneId.systemDefault();
     private transient BlockVector3 cuiTemporaryBlock;
@@ -1029,7 +1029,7 @@ public class LocalSession {
      */
     @Deprecated
     public boolean hasFastMode() {
-        return !this.sideEffectApplier.isAll();
+        return !this.sideEffectApplier.doesApplyAny();
     }
 
     /**
@@ -1039,7 +1039,7 @@ public class LocalSession {
      */
     @Deprecated
     public void setFastMode(boolean fastMode) {
-        this.sideEffectApplier = fastMode ? this.sideEffectApplier.withoutAll() : this.sideEffectApplier.withAll();
+        this.sideEffectApplier = fastMode ? SideEffectApplier.none() : SideEffectApplier.defaults();
     }
 
     /**

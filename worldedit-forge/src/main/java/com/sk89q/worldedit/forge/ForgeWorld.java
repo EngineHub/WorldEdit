@@ -201,7 +201,7 @@ public class ForgeWorld extends AbstractWorld {
             }
         }
 
-        if (successful && !sideEffectApplier.isNone()) {
+        if (successful && sideEffectApplier.doesApplyAny()) {
             world.getChunkProvider().getLightManager().checkBlock(pos);
             world.markAndNotifyBlock(pos, chunk, old, newState, UPDATE | NOTIFY);
         }

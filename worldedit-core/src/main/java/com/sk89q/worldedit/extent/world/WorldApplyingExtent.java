@@ -27,14 +27,12 @@ import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.RunContext;
 import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.math.BlockVector3;
-import com.sk89q.worldedit.util.SideEffect;
 import com.sk89q.worldedit.util.SideEffectApplier;
 import com.sk89q.worldedit.util.collection.BlockMap;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 
-import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
@@ -48,11 +46,7 @@ public class WorldApplyingExtent extends AbstractDelegateExtent {
     private final World world;
     private final Map<BlockVector3, BlockState> positions = BlockMap.create();
     private final Set<BlockVector2> dirtyChunks = new HashSet<>();
-    private SideEffectApplier sideEffectApplier = new SideEffectApplier(EnumSet.of(
-            SideEffect.CONNECTIONS,
-            SideEffect.LIGHTING,
-            SideEffect.NEIGHBORS
-    ));
+    private SideEffectApplier sideEffectApplier = SideEffectApplier.defaults();
     private boolean postEditSimulation;
 
     /**
@@ -91,7 +85,7 @@ public class WorldApplyingExtent extends AbstractDelegateExtent {
             positions.put(location, world.getBlock(location));
         }
 
-        return world.setBlock(location, block, postEditSimulation ? SideEffectApplier.NONE : sideEffectApplier);
+        return world.setBlock(location, block, postEditSimulation ? SideEffectApplier.none() : sideEffectApplier);
     }
 
     public boolean commitRequired() {
