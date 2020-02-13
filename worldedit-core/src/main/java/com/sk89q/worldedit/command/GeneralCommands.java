@@ -37,8 +37,10 @@ import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.util.SideEffect;
+import com.sk89q.worldedit.util.formatting.component.InvalidComponentException;
 import com.sk89q.worldedit.util.formatting.component.MessageBox;
 import com.sk89q.worldedit.util.formatting.component.PaginationBox;
+import com.sk89q.worldedit.util.formatting.component.SideEffectBox;
 import com.sk89q.worldedit.util.formatting.component.TextComponentProducer;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
@@ -141,38 +143,41 @@ public class GeneralCommands {
     @CommandPermissions("worldedit.fast")
     public void fast(Actor actor, LocalSession session,
             @Arg(desc = "The side effect", def = "") SideEffect sideEffect,
-            @Arg(desc = "The new side effect state", def = "")
-                    Boolean shouldEnable) {
+            @Arg(desc = "The new side effect state", def = "") Boolean shouldEnable,
+            @Switch(name = 'h', desc = "Show the info box") boolean showInfoBox) {
         if (sideEffect != null) {
             boolean hasSideEffect = session.getSideEffectApplier().shouldApply(sideEffect);
             if (shouldEnable != null && shouldEnable == hasSideEffect) {
-                actor.printError(
-                        TranslatableComponent.of(shouldEnable ? "worldedit.fast.sideeffect.enabled.already" : "worldedit.fast.sideeffect.disabled.already"));
+                if (!showInfoBox) {
+                    actor.printError(
+                            TranslatableComponent.of(shouldEnable ? "worldedit.fast.sideeffect.enabled.already" : "worldedit.fast.sideeffect"
+                                    + ".disabled.already", TranslatableComponent.of(sideEffect.getDisplayName())));
+                }
                 return;
             }
 
             if (hasSideEffect) {
                 session.setSideEffectApplier(session.getSideEffectApplier().without(Lists.newArrayList(sideEffect)));
-                actor.printInfo(TranslatableComponent.of("worldedit.fast.sideeffect.disabled"));
+                if (!showInfoBox) {
+                    actor.printInfo(TranslatableComponent.of("worldedit.fast.sideeffect.disabled",
+                            TranslatableComponent.of(sideEffect.getDisplayName())));
+                }
             } else {
                 session.setSideEffectApplier(session.getSideEffectApplier().with(Lists.newArrayList(sideEffect)));
-                actor.printInfo(TranslatableComponent.of("worldedit.fast.sideeffect.enabled"));
-            }
-        } else {
-            TextComponentProducer producer = new TextComponentProducer();
-            for (SideEffect testSideEffect : SideEffect.values()) {
-                if (!testSideEffect.isConfigurable()) {
-                    continue;
+                if (!showInfoBox) {
+                    actor.printInfo(TranslatableComponent.of("worldedit.fast.sideeffect.enabled",
+                            TranslatableComponent.of(sideEffect.getDisplayName())));
                 }
-                boolean enabled = session.getSideEffectApplier().shouldApply(testSideEffect);
-                producer.append(
-                        TextComponent.of(testSideEffect.getDisplayName(), TextColor.YELLOW).append(TextComponent.space())
-                                .append(TextComponent.of(enabled ? "Enabled" : "Disabled", enabled ? TextColor.GREEN : TextColor.RED)).hoverEvent(
-                                HoverEvent.of(HoverEvent.Action.SHOW_TEXT, TextComponent.of(testSideEffect.getDescription())))
-                                .clickEvent(ClickEvent.runCommand("//fast " + testSideEffect.name().toLowerCase(Locale.US)))
-                ).newline();
             }
-            actor.print(new MessageBox("Side Effects", producer, TextColor.GRAY).create());
+        }
+
+        if (sideEffect == null || showInfoBox) {
+            SideEffectBox sideEffectBox = new SideEffectBox(session.getSideEffectApplier());
+            try {
+                actor.print(sideEffectBox.create(1));
+            } catch (InvalidComponentException e) {
+                e.printStackTrace();
+            }
         }
     }
 

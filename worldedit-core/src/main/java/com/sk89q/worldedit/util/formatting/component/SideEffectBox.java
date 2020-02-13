@@ -1,0 +1,71 @@
+/*
+ * WorldEdit, a Minecraft world manipulation toolkit
+ * Copyright (C) sk89q <http://www.sk89q.com>
+ * Copyright (C) WorldEdit team and contributors
+ *
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as published by the
+ * Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+
+package com.sk89q.worldedit.util.formatting.component;
+
+import com.sk89q.worldedit.util.SideEffect;
+import com.sk89q.worldedit.util.SideEffectApplier;
+import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.util.formatting.text.TextComponent;
+import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
+import com.sk89q.worldedit.util.formatting.text.event.ClickEvent;
+import com.sk89q.worldedit.util.formatting.text.event.HoverEvent;
+import com.sk89q.worldedit.util.formatting.text.format.TextColor;
+
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Locale;
+import java.util.stream.Collectors;
+
+public class SideEffectBox extends PaginationBox {
+
+    private static final List<SideEffect> sideEffects = Arrays
+            .stream(SideEffect.values())
+            .filter(SideEffect::isConfigurable)
+            .sorted(Comparator.comparing(Enum::name))
+            .collect(Collectors.toList());
+
+    private SideEffectApplier sideEffectApplier;
+
+    public SideEffectBox(SideEffectApplier sideEffectApplier) {
+        super("Side Effects");
+
+        this.sideEffectApplier = sideEffectApplier;
+    }
+
+    @Override
+    public Component getComponent(int number) {
+        SideEffect effect = sideEffects.get(number);
+        boolean enabled = this.sideEffectApplier.shouldApply(effect);
+
+        return TextComponent.empty()
+                .append(TranslatableComponent.of(effect.getDisplayName(), TextColor.YELLOW)
+                        .hoverEvent(HoverEvent.of(HoverEvent.Action.SHOW_TEXT, TranslatableComponent.of(effect.getDescription()))))
+                .append(TextComponent.space())
+                .append(TextComponent.of(enabled ? "Enabled" : "Disabled", enabled ? TextColor.GREEN : TextColor.RED)
+                        .clickEvent(ClickEvent.runCommand("//fast -h " + effect.name().toLowerCase(Locale.US)))
+                        .hoverEvent(HoverEvent.showText(TextComponent.of("Click to " + (enabled ? "Disable" : "Enable")))));
+    }
+
+    @Override
+    public int getComponentsSize() {
+        return sideEffects.size();
+    }
+}

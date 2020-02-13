@@ -51,7 +51,7 @@ public class WorldApplyingExtent extends AbstractDelegateExtent {
     private SideEffectApplier sideEffectApplier = new SideEffectApplier(EnumSet.of(
             SideEffect.CONNECTIONS,
             SideEffect.LIGHTING,
-            SideEffect.NEIGHBOURS
+            SideEffect.NEIGHBORS
     ));
     private boolean postEditSimulation;
 

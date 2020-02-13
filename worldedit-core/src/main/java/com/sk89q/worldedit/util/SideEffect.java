@@ -19,21 +19,23 @@
 
 package com.sk89q.worldedit.util;
 
+import java.util.Locale;
+
 public enum SideEffect {
-    LIGHTING("Lighting", "Updates block lighting",false, true),
-    NEIGHBOURS("Neighbours", "Notifies nearby blocks of changes", false, true),
-    CONNECTIONS("Connections", "Updates connections for blocks like fences", false, true),
-    ENTITY_AI("Entity AI", "Updates Entity AI paths for the block changes", false, true),
-    PLUGIN_EVENTS("Plugin Events", "Tells other plugins/mods about these changes when applicable", false, false);
+    LIGHTING(false, true),
+    NEIGHBORS(false, true),
+    CONNECTIONS(false, true),
+    ENTITY_AI(false, true),
+    PLUGIN_EVENTS(false, false);
 
     private String displayName;
     private String description;
     private boolean dirty;
     private boolean configurable;
 
-    SideEffect(String displayName, String description, boolean dirty, boolean configurable) {
-        this.displayName = displayName;
-        this.description = description;
+    SideEffect(boolean dirty, boolean configurable) {
+        this.displayName = "worldedit.sideeffect." + this.name().toLowerCase(Locale.US);
+        this.description = "worldedit.sideeffect." + this.name().toLowerCase(Locale.US) + ".description";
         this.dirty = dirty;
         this.configurable = configurable;
     }
