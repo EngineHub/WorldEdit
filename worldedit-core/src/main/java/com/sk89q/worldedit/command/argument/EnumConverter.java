@@ -21,6 +21,7 @@ package com.sk89q.worldedit.command.argument;
 
 import com.google.common.collect.ImmutableSet;
 import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.command.util.HookMode;
 import com.sk89q.worldedit.util.SideEffect;
 import com.sk89q.worldedit.util.TreeGenerator;
@@ -31,12 +32,10 @@ import org.enginehub.piston.inject.Key;
 
 import javax.annotation.Nullable;
 
-import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.Locale;
 import java.util.Set;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 public final class EnumConverter {
 
@@ -51,10 +50,6 @@ public final class EnumConverter {
             full(EditSession.ReorderMode.class,
                 r -> ImmutableSet.of(r.getDisplayName()),
                 null));
-        commandManager.registerConverter(Key.of(SideEffect.class),
-                MultiKeyConverter.from(EnumSet.copyOf(Arrays.stream(SideEffect.values()).filter(SideEffect::isConfigurable).collect(Collectors.toList())),
-                        r -> ImmutableSet.of(r.name().toLowerCase(Locale.US)),
-                        null));
         commandManager.registerConverter(Key.of(SideEffect.State.class),
                 full(SideEffect.State.class,
                         r -> ImmutableSet.of(r.name().toLowerCase(Locale.US)),

@@ -28,6 +28,7 @@ import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.util.Direction;
+import com.sk89q.worldedit.util.SideEffect;
 import com.sk89q.worldedit.util.SideEffectApplier;
 import com.sk89q.worldedit.world.DataFixer;
 import com.sk89q.worldedit.world.block.BaseBlock;
@@ -41,6 +42,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.OptionalInt;
 
@@ -179,6 +181,13 @@ public interface BukkitImplAdapter {
      * @return the WorldEdit BaseItemStack
      */
     BaseItemStack adapt(ItemStack itemStack);
+
+    /**
+     * Get the {@link SideEffect}s that this adapter supports.
+     *
+     * @return The side effects that are supported
+     */
+    Collection<SideEffect> getSupportedSideEffects();
 
     default OptionalInt getInternalBlockStateId(BlockData data) {
         return OptionalInt.empty();

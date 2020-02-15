@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.forge;
 
+import com.google.common.collect.ImmutableSet;
 import com.sk89q.worldedit.command.util.PermissionCondition;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.AbstractPlatform;
@@ -26,6 +27,7 @@ import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.extension.platform.MultiUserPlatform;
 import com.sk89q.worldedit.extension.platform.Preference;
+import com.sk89q.worldedit.util.SideEffect;
 import com.sk89q.worldedit.world.DataFixer;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.registry.Registries;
@@ -46,6 +48,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -197,6 +200,18 @@ class ForgePlatform extends AbstractPlatform implements MultiUserPlatform {
         capabilities.put(Capability.USER_COMMANDS, Preference.NORMAL);
         capabilities.put(Capability.WORLD_EDITING, Preference.PREFERRED);
         return capabilities;
+    }
+
+    private static final Collection<SideEffect> SUPPORTED_SIDE_EFFECTS = ImmutableSet.copyOf(EnumSet.of(
+            SideEffect.CONNECTIONS,
+            SideEffect.ENTITY_AI,
+            SideEffect.LIGHTING,
+            SideEffect.NEIGHBORS
+    ));
+
+    @Override
+    public Collection<SideEffect> getSupportedSideEffects() {
+        return SUPPORTED_SIDE_EFFECTS;
     }
 
     @Override

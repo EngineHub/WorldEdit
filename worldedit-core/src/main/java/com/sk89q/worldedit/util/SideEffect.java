@@ -22,24 +22,22 @@ package com.sk89q.worldedit.util;
 import java.util.Locale;
 
 public enum SideEffect {
-    LIGHTING(State.ON, false, true),
-    NEIGHBORS(State.ON, false, true),
-    CONNECTIONS(State.ON, false, true),
-    ENTITY_AI(State.OFF, false, true),
-    PLUGIN_EVENTS(State.OFF, false, false);
+    LIGHTING(State.ON, false),
+    NEIGHBORS(State.ON, false),
+    CONNECTIONS(State.ON, false),
+    ENTITY_AI(State.OFF, false),
+    PLUGIN_EVENTS(State.OFF, false);
 
     private String displayName;
     private String description;
     private State defaultValue;
     private boolean dirty;
-    private boolean configurable;
 
-    SideEffect(State defaultValue, boolean dirty, boolean configurable) {
+    SideEffect(State defaultValue, boolean dirty) {
         this.displayName = "worldedit.sideeffect." + this.name().toLowerCase(Locale.US);
         this.description = "worldedit.sideeffect." + this.name().toLowerCase(Locale.US) + ".description";
         this.defaultValue = defaultValue;
         this.dirty = dirty;
-        this.configurable = configurable;
     }
 
     public String getDisplayName() {
@@ -56,10 +54,6 @@ public enum SideEffect {
 
     public boolean requiresCleanup() {
         return this.dirty;
-    }
-
-    public boolean isConfigurable() {
-        return this.configurable;
     }
 
     public enum State {

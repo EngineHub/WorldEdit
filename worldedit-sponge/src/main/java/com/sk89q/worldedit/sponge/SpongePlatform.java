@@ -20,6 +20,7 @@
 package com.sk89q.worldedit.sponge;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.event.platform.CommandEvent;
@@ -31,6 +32,7 @@ import com.sk89q.worldedit.extension.platform.MultiUserPlatform;
 import com.sk89q.worldedit.extension.platform.Preference;
 import com.sk89q.worldedit.internal.command.CommandUtil;
 import com.sk89q.worldedit.sponge.config.SpongeConfiguration;
+import com.sk89q.worldedit.util.SideEffect;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.registry.Registries;
 import org.enginehub.piston.Command;
@@ -190,6 +192,11 @@ class SpongePlatform extends AbstractPlatform implements MultiUserPlatform {
         capabilities.put(Capability.USER_COMMANDS, Preference.NORMAL);
         capabilities.put(Capability.WORLD_EDITING, Preference.PREFERRED);
         return capabilities;
+    }
+
+    @Override
+    public Collection<SideEffect> getSupportedSideEffects() {
+        return Lists.newArrayList();
     }
 
     @Override

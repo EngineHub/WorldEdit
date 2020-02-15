@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.util.formatting.component;
 
+import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.util.SideEffect;
 import com.sk89q.worldedit.util.SideEffectApplier;
 import com.sk89q.worldedit.util.formatting.text.Component;
@@ -28,7 +29,6 @@ import com.sk89q.worldedit.util.formatting.text.event.ClickEvent;
 import com.sk89q.worldedit.util.formatting.text.event.HoverEvent;
 import com.sk89q.worldedit.util.formatting.text.format.TextColor;
 
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
@@ -36,16 +36,19 @@ import java.util.stream.Collectors;
 
 public class SideEffectBox extends PaginationBox {
 
-    private static final List<SideEffect> sideEffects = Arrays
-            .stream(SideEffect.values())
-            .filter(SideEffect::isConfigurable)
-            .sorted(Comparator.comparing(Enum::name))
-            .collect(Collectors.toList());
+    private static List<SideEffect> sideEffects;
 
     private SideEffectApplier sideEffectApplier;
 
     public SideEffectBox(SideEffectApplier sideEffectApplier) {
         super("Side Effects");
+
+        if (sideEffects == null) {
+            sideEffects = WorldEdit.getInstance().getPlatformManager().getSupportedSideEffects()
+                    .stream()
+                    .sorted(Comparator.comparing(Enum::name))
+                    .collect(Collectors.toList());
+        }
 
         this.sideEffectApplier = sideEffectApplier;
     }
