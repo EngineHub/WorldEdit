@@ -248,7 +248,7 @@ public class MCEditSchematicReader extends NBTSchematicReader {
                             int combined = block << 8 | data;
                             if (unknownBlocks.add(combined)) {
                                 log.warn("Unknown block when loading schematic: "
-                                        + block + ":" + data + ". Please report this issue.");
+                                        + block + ":" + data + ". This is most likely a bad schematic.");
                             }
                         }
                     } catch (WorldEditException ignored) { // BlockArrayClipboard won't throw this
