@@ -33,7 +33,6 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
-import java.util.Stack;
 
 /**
  * Compiles and evaluates expressions.
@@ -62,8 +61,6 @@ import java.util.Stack;
  * To query slots after evaluation, you can use the {@linkplain #getSlots() slot table}.
  */
 public class Expression {
-
-    private static final ThreadLocal<Stack<Expression>> instance = new ThreadLocal<>();
 
     private final SlotTable slots = new SlotTable();
     private final List<String> providedSlots;
