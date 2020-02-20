@@ -60,12 +60,6 @@ public class ExpressionHelper {
         check(iterations <= 256, ctx, "Loop exceeded 256 iterations");
     }
 
-    public static void checkTimeout() {
-        if (Thread.interrupted()) {
-            throw new ExpressionTimeoutException("Calculations exceeded time limit.");
-        }
-    }
-
     public static MethodHandle resolveFunction(SetMultimap<String, MethodHandle> functions,
                                                ExpressionParser.FunctionCallContext ctx) {
         String fnName = ctx.name.getText();

@@ -41,7 +41,6 @@ import java.util.function.Supplier;
 
 import static com.sk89q.worldedit.internal.expression.ExpressionHelper.check;
 import static com.sk89q.worldedit.internal.expression.ExpressionHelper.checkIterations;
-import static com.sk89q.worldedit.internal.expression.ExpressionHelper.checkTimeout;
 import static com.sk89q.worldedit.internal.expression.ExpressionHelper.getErrorPosition;
 import static java.lang.invoke.MethodHandles.collectArguments;
 import static java.lang.invoke.MethodHandles.constant;
@@ -237,7 +236,7 @@ class ExpressionHandles {
         }
         while ((boolean) standardInvoke(condition, data)) {
             checkIterations(iterations, body.ctx);
-            checkTimeout();
+            data.checkDeadline();
             iterations++;
             try {
                 result = (Double) standardInvoke(body.handle, data);
@@ -264,7 +263,7 @@ class ExpressionHandles {
         int iterations = 0;
         do {
             checkIterations(iterations, body.ctx);
-            checkTimeout();
+            data.checkDeadline();
             iterations++;
             try {
                 result = (Double) standardInvoke(body.handle, data);
@@ -297,7 +296,7 @@ class ExpressionHandles {
         LocalSlot.Variable variable = initVariable(data, counterToken);
         for (double i = first; i <= last; i++) {
             checkIterations(iterations, body.ctx);
-            checkTimeout();
+            data.checkDeadline();
             iterations++;
             variable.setValue(i);
             try {
