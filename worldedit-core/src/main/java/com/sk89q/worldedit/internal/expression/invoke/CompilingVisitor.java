@@ -73,6 +73,7 @@ import static com.sk89q.worldedit.internal.expression.invoke.ExpressionHandles.D
 import static com.sk89q.worldedit.internal.expression.invoke.ExpressionHandles.IS_NULL;
 import static com.sk89q.worldedit.internal.expression.invoke.ExpressionHandles.NEW_LS_CONSTANT;
 import static com.sk89q.worldedit.internal.expression.invoke.ExpressionHandles.NULL_DOUBLE;
+import static com.sk89q.worldedit.internal.expression.invoke.ExpressionHandles.unboxDoubles;
 import static java.lang.invoke.MethodType.methodType;
 
 /**
@@ -136,7 +137,6 @@ class CompilingVisitor extends ExpressionBaseVisitor<MethodHandle> {
 
     private MethodHandle evaluateBoolean(ParserRuleContext boolExpression) {
         MethodHandle value = evaluateForNamedValue(boolExpression, "a boolean");
-        value = value.asType(value.type().unwrap());
         // Pass `value` into converter, returns (ExecutionData)boolean;
         return MethodHandles.collectArguments(
             DOUBLE_TO_BOOL, 0, value
@@ -340,13 +340,13 @@ class CompilingVisitor extends ExpressionBaseVisitor<MethodHandle> {
         // Inject left as primary condition, on failure take right with data parameter
         // logic = (Double,ExecutionData)Double
         MethodHandle logic = MethodHandles.guardWithTest(
-            // data arg dropped implicitly
+            // data arg dropped implicitly -- (Double)boolean;
             DOUBLE_TO_BOOL,
-            // drop data arg
+            // drop data arg -- (Double,ExecutionData)Double;
             MethodHandles.dropArguments(
                 MethodHandles.identity(Double.class), 1, ExecutionData.class
             ),
-            // drop left arg, call right
+            // drop left arg, call right -- (Double,ExecutionData)Double;
             MethodHandles.dropArguments(
                 right, 0, Double.class
             )
@@ -367,9 +367,8 @@ class CompilingVisitor extends ExpressionBaseVisitor<MethodHandle> {
         // Map two data args to two double args, then evaluate op
         MethodHandle doubleData = MethodHandles.filterArguments(
             CALL_BINARY_OP.bindTo(op), 0,
-            mhLeft.asType(mhLeft.type().unwrap()), mhRight.asType(mhRight.type().unwrap())
+            unboxDoubles(mhLeft), unboxDoubles(mhRight)
         );
-        doubleData = doubleData.asType(doubleData.type().wrap());
         return ExpressionHandles.dedupData(doubleData);
     }
 

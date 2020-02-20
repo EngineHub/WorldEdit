@@ -38,6 +38,7 @@ import java.lang.invoke.MethodType;
 import java.util.Objects;
 import java.util.function.DoubleBinaryOperator;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import static com.sk89q.worldedit.internal.expression.ExpressionHelper.check;
 import static com.sk89q.worldedit.internal.expression.ExpressionHelper.checkIterations;
@@ -62,8 +63,11 @@ class ExpressionHandles {
     private static final MethodHandle SIMPLE_FOR_LOOP_IMPL;
     private static final MethodHandle SWITCH_IMPL;
 
+    // (Object)boolean;
     static final MethodHandle IS_NULL;
+    // (Double)boolean;
     static final MethodHandle DOUBLE_TO_BOOL;
+    // (double, double)Double;
     static final MethodHandle CALL_BINARY_OP;
     static final MethodHandle NEW_LS_CONSTANT;
 
@@ -94,15 +98,44 @@ class ExpressionHandles {
 
             IS_NULL = lookup.findStatic(Objects.class, "isNull",
                 methodType(boolean.class, Object.class));
-            DOUBLE_TO_BOOL = lookup.findStatic(ExpressionHandles.class, "doubleToBool",
-                methodType(boolean.class, double.class));
+            DOUBLE_TO_BOOL = boxDoubles(lookup.findStatic(ExpressionHandles.class, "doubleToBool",
+                methodType(boolean.class, double.class)));
             CALL_BINARY_OP = lookup.findVirtual(DoubleBinaryOperator.class, "applyAsDouble",
-                methodType(double.class, double.class, double.class));
+                methodType(double.class, double.class, double.class))
+                .asType(methodType(Double.class, DoubleBinaryOperator.class, double.class, double.class));
             NEW_LS_CONSTANT = lookup.findConstructor(LocalSlot.Constant.class,
                 methodType(void.class, double.class));
         } catch (NoSuchMethodException | IllegalAccessException e) {
             throw new IllegalStateException(e);
         }
+    }
+
+    static MethodHandle boxDoubles(MethodHandle handle) {
+        MethodType type = handle.type();
+        type = methodType(
+            boxIfPrimitiveDouble(type.returnType()),
+            type.parameterList().stream().map(ExpressionHandles::boxIfPrimitiveDouble)
+                .collect(Collectors.toList())
+        );
+        return handle.asType(type);
+    }
+
+    private static Class<?> boxIfPrimitiveDouble(Class<?> clazz) {
+        return clazz == double.class ? Double.class : clazz;
+    }
+
+    static MethodHandle unboxDoubles(MethodHandle handle) {
+        MethodType type = handle.type();
+        type = methodType(
+            unboxIfDouble(type.returnType()),
+            type.parameterList().stream().map(ExpressionHandles::unboxIfDouble)
+                .collect(Collectors.toList())
+        );
+        return handle.asType(type);
+    }
+
+    private static Class<?> unboxIfDouble(Class<?> clazz) {
+        return clazz == Double.class ? double.class : clazz;
     }
 
     @FunctionalInterface
