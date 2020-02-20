@@ -20,7 +20,6 @@
 package com.sk89q.worldedit.internal.expression;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.SetMultimap;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.antlr.ExpressionLexer;
 import com.sk89q.worldedit.antlr.ExpressionParser;
@@ -31,7 +30,6 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
-import java.lang.invoke.MethodHandle;
 import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
@@ -70,8 +68,7 @@ public class Expression {
     private final SlotTable slots = new SlotTable();
     private final List<String> providedSlots;
     private final ExpressionParser.AllStatementsContext root;
-    private final SetMultimap<String, MethodHandle> functions = Functions.getFunctionMap();
-    private ExpressionEnvironment environment;
+    private final Functions functions = Functions.create();
     private final CompiledExpression compiledExpression;
 
     public static Expression compile(String expression, String... variableNames) throws ExpressionException {
@@ -123,14 +120,9 @@ public class Expression {
             slot.setValue(values[i]);
         }
 
-        pushInstance();
-        try {
-            // evaluation exceptions are thrown out of this method
-            Instant deadline = Instant.now().plusMillis(timeout);
-            return compiledExpression.execute(new ExecutionData(slots, functions, deadline));
-        } finally {
-            popInstance();
-        }
+        Instant deadline = Instant.now().plusMillis(timeout);
+        // evaluation exceptions are thrown out of this method
+        return compiledExpression.execute(new ExecutionData(slots, functions, deadline));
     }
 
     public void optimize() {
@@ -146,35 +138,12 @@ public class Expression {
         return slots;
     }
 
-    public static Expression getInstance() {
-        return instance.get().peek();
-    }
-
-    private void pushInstance() {
-        Stack<Expression> threadLocalExprStack = instance.get();
-        if (threadLocalExprStack == null) {
-            instance.set(threadLocalExprStack = new Stack<>());
-        }
-
-        threadLocalExprStack.push(this);
-    }
-
-    private void popInstance() {
-        Stack<Expression> threadLocalExprStack = instance.get();
-
-        threadLocalExprStack.pop();
-
-        if (threadLocalExprStack.isEmpty()) {
-            instance.set(null);
-        }
-    }
-
     public ExpressionEnvironment getEnvironment() {
-        return environment;
+        return functions.getEnvironment();
     }
 
     public void setEnvironment(ExpressionEnvironment environment) {
-        this.environment = environment;
+        functions.setEnvironment(environment);
     }
 
 }

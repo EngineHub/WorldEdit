@@ -19,9 +19,6 @@
 
 package com.sk89q.worldedit.internal.expression;
 
-import com.google.common.collect.SetMultimap;
-
-import java.lang.invoke.MethodHandle;
 import java.time.Instant;
 
 import static java.util.Objects.requireNonNull;
@@ -35,10 +32,10 @@ public class ExecutionData {
     public static final ExecutionData CONSTANT_EVALUATOR = new ExecutionData(null, null, Instant.MAX);
 
     private final SlotTable slots;
-    private final SetMultimap<String, MethodHandle> functions;
+    private final Functions functions;
     private final Instant deadline;
 
-    public ExecutionData(SlotTable slots, SetMultimap<String, MethodHandle> functions, Instant deadline) {
+    public ExecutionData(SlotTable slots, Functions functions, Instant deadline) {
         this.slots = slots;
         this.functions = functions;
         this.deadline = deadline;
@@ -48,7 +45,7 @@ public class ExecutionData {
         return requireNonNull(slots, "Cannot use variables in a constant");
     }
 
-    public SetMultimap<String, MethodHandle> getFunctions() {
+    public Functions getFunctions() {
         return requireNonNull(functions, "Cannot use functions in a constant");
     }
 

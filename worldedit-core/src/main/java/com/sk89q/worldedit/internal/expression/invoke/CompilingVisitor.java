@@ -19,13 +19,13 @@
 
 package com.sk89q.worldedit.internal.expression.invoke;
 
-import com.google.common.collect.SetMultimap;
 import com.sk89q.worldedit.antlr.ExpressionBaseVisitor;
 import com.sk89q.worldedit.antlr.ExpressionParser;
 import com.sk89q.worldedit.internal.expression.BreakException;
 import com.sk89q.worldedit.internal.expression.EvaluationException;
 import com.sk89q.worldedit.internal.expression.ExecutionData;
 import com.sk89q.worldedit.internal.expression.ExpressionHelper;
+import com.sk89q.worldedit.internal.expression.Functions;
 import com.sk89q.worldedit.internal.expression.LocalSlot;
 import it.unimi.dsi.fastutil.doubles.Double2ObjectLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.doubles.Double2ObjectMap;
@@ -86,9 +86,9 @@ class CompilingVisitor extends ExpressionBaseVisitor<MethodHandle> {
      * (ExecutionData)Double, with a few as (ExecutionData,Double)Double where it needs an existing
      * value passed in. EVERY handle returned from an overriden method must be of the first type.
      */
-    private final SetMultimap<String, MethodHandle> functions;
+    private final Functions functions;
 
-    CompilingVisitor(SetMultimap<String, MethodHandle> functions) {
+    CompilingVisitor(Functions functions) {
         this.functions = functions;
     }
 
