@@ -58,5 +58,5 @@ dependencies {
     implementation("net.fabricmc:fabric-loom:$loomVersion")
     implementation("net.fabricmc:sponge-mixin:$mixinVersion")
     implementation("gradle.plugin.com.mendhak.gradlecrowdin:plugin:0.1.0")
-    implementation("org.enginehub.gradle:gradle-codecov-plugin:0.1.0-SNAPSHOT")
+    implementation("org.enginehub.gradle:gradle-codecov-plugin:0.1.0")
 }
