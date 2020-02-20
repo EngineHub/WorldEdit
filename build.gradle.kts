@@ -1,5 +1,10 @@
 import org.ajoberstar.grgit.Grgit
 
+plugins {
+    id("org.enginehub.codecov")
+    jacoco
+}
+
 logger.lifecycle("""
 *******************************************
  You are building WorldEdit!
@@ -14,7 +19,40 @@ logger.lifecycle("""
 *******************************************
 """)
 
+applyCommonConfiguration()
 applyRootArtifactoryConfig()
+
+val totalReport = tasks.register<JacocoReport>("jacocoTotalReport") {
+    for (proj in subprojects) {
+        proj.apply(plugin = "jacoco")
+        proj.plugins.withId("java") {
+            executionData(
+                    fileTree(proj.buildDir.absolutePath).include("**/jacoco/*.exec")
+            )
+            sourceSets(proj.the<JavaPluginConvention>().sourceSets["main"])
+            reports {
+                xml.isEnabled = true
+                xml.destination = rootProject.buildDir.resolve("reports/jacoco/report.xml")
+                html.isEnabled = true
+            }
+            dependsOn(proj.tasks.named("test"))
+        }
+    }
+}
+afterEvaluate {
+    totalReport.configure {
+        classDirectories.setFrom(classDirectories.files.map {
+            fileTree(it).apply {
+                exclude("**/*AutoValue_*")
+                exclude("**/*Registration.*")
+            }
+        })
+    }
+}
+
+codecov {
+    reportTask.set(totalReport)
+}
 
 if (!project.hasProperty("gitCommitHash")) {
     apply(plugin = "org.ajoberstar.grgit")
