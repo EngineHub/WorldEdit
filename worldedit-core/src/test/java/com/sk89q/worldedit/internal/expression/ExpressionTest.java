@@ -48,6 +48,12 @@ class ExpressionTest extends BaseExpressionTest {
 
         // check variables
         assertEquals(8, compile("foo+bar", "foo", "bar").evaluate(5D, 3D), 0);
+
+        // check conditionals
+        assertEquals(5, simpleEval("0 || 5"), 0);
+        assertEquals(2, simpleEval("2 || 5"), 0);
+        assertEquals(5, simpleEval("2 && 5"), 0);
+        assertEquals(0, simpleEval("5 && 0"), 0);
     }
 
     @Test

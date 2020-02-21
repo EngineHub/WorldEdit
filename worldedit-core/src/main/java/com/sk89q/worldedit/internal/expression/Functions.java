@@ -44,25 +44,10 @@ import static java.lang.invoke.MethodType.methodType;
 /**
  * Contains all functions that can be used in expressions.
  */
-final class Functions {
+public final class Functions {
 
-    static SetMultimap<String, MethodHandle> getFunctionMap() {
-        SetMultimap<String, MethodHandle> map = HashMultimap.create();
-        Functions functions = new Functions();
-        MethodHandles.Lookup lookup = MethodHandles.lookup();
-
-        try {
-            addMathHandles(map, lookup);
-            addStaticFunctionHandles(map, lookup);
-            functions.addInstanceFunctionHandles(map, lookup);
-        } catch (NoSuchMethodException | IllegalAccessException e) {
-            throw new IllegalStateException(e);
-        }
-
-        // clean up all the functions
-        return ImmutableSetMultimap.copyOf(
-            Multimaps.transformValues(map, Functions::clean)
-        );
+    static Functions create() {
+        return new Functions();
     }
 
     private static final MethodHandle DOUBLE_VALUE;
@@ -149,15 +134,6 @@ final class Functions {
         map.put("ridgedmulti", lookup.findStatic(Functions.class, "ridgedmulti",
             methodType(double.class, double.class, double.class, double.class, double.class,
                 double.class, double.class)));
-        map.put("query", lookup.findStatic(Functions.class, "query",
-            methodType(double.class, double.class, double.class, double.class, LocalSlot.class,
-                LocalSlot.class)));
-        map.put("queryAbs", lookup.findStatic(Functions.class, "queryAbs",
-            methodType(double.class, double.class, double.class, double.class, LocalSlot.class,
-                LocalSlot.class)));
-        map.put("queryRel", lookup.findStatic(Functions.class, "queryRel",
-            methodType(double.class, double.class, double.class, double.class, LocalSlot.class,
-                LocalSlot.class)));
     }
 
     private void addInstanceFunctionHandles(
@@ -173,6 +149,20 @@ final class Functions {
         map.put("closest", lookup.findSpecial(Functions.class, "closest",
             methodType(double.class, double.class, double.class, double.class, double.class,
                 double.class, double.class), Functions.class)
+            .bindTo(this));
+
+        // rely on expression field
+        map.put("query", lookup.findSpecial(Functions.class, "query",
+            methodType(double.class, double.class, double.class, double.class, LocalSlot.class,
+                LocalSlot.class), Functions.class)
+            .bindTo(this));
+        map.put("queryAbs", lookup.findSpecial(Functions.class, "queryAbs",
+            methodType(double.class, double.class, double.class, double.class, LocalSlot.class,
+                LocalSlot.class), Functions.class)
+            .bindTo(this));
+        map.put("queryRel", lookup.findSpecial(Functions.class, "queryRel",
+            methodType(double.class, double.class, double.class, double.class, LocalSlot.class,
+                LocalSlot.class), Functions.class)
             .bindTo(this));
     }
 
@@ -201,6 +191,35 @@ final class Functions {
 
     private static final Int2ObjectMap<double[]> globalMegaBuffer = new Int2ObjectOpenHashMap<>();
     private final Int2ObjectMap<double[]> megaBuffer = new Int2ObjectOpenHashMap<>();
+    private final SetMultimap<String, MethodHandle> map;
+    private ExpressionEnvironment environment;
+
+    private Functions() {
+        MethodHandles.Lookup lookup = MethodHandles.lookup();
+        SetMultimap<String, MethodHandle> map = HashMultimap.create();
+        try {
+            addMathHandles(map, lookup);
+            addStaticFunctionHandles(map, lookup);
+            addInstanceFunctionHandles(map, lookup);
+        } catch (NoSuchMethodException | IllegalAccessException e) {
+            throw new IllegalStateException(e);
+        }
+        this.map = ImmutableSetMultimap.copyOf(
+            Multimaps.transformValues(map, Functions::clean)
+        );
+    }
+
+    public SetMultimap<String, MethodHandle> getMap() {
+        return map;
+    }
+
+    public ExpressionEnvironment getEnvironment() {
+        return environment;
+    }
+
+    public void setEnvironment(ExpressionEnvironment environment) {
+        this.environment = environment;
+    }
 
     private static double[] getSubBuffer(Int2ObjectMap<double[]> megabuf, int key) {
         return megabuf.computeIfAbsent(key, k -> new double[1024]);
@@ -332,9 +351,7 @@ final class Functions {
         return ret;
     }
 
-    private static double query(double x, double y, double z, LocalSlot type, LocalSlot data) {
-        final ExpressionEnvironment environment = Expression.getInstance().getEnvironment();
-
+    private double query(double x, double y, double z, LocalSlot type, LocalSlot data) {
         // Read values from world
         final double typeId = environment.getBlockType(x, y, z);
         final double dataValue = environment.getBlockData(x, y, z);
@@ -342,9 +359,7 @@ final class Functions {
         return queryInternal(type, data, typeId, dataValue);
     }
 
-    private static double queryAbs(double x, double y, double z, LocalSlot type, LocalSlot data) {
-        final ExpressionEnvironment environment = Expression.getInstance().getEnvironment();
-
+    private double queryAbs(double x, double y, double z, LocalSlot type, LocalSlot data) {
         // Read values from world
         final double typeId = environment.getBlockTypeAbs(x, y, z);
         final double dataValue = environment.getBlockDataAbs(x, y, z);
@@ -352,17 +367,12 @@ final class Functions {
         return queryInternal(type, data, typeId, dataValue);
     }
 
-    private static double queryRel(double x, double y, double z, LocalSlot type, LocalSlot data) {
-        final ExpressionEnvironment environment = Expression.getInstance().getEnvironment();
-
+    private double queryRel(double x, double y, double z, LocalSlot type, LocalSlot data) {
         // Read values from world
         final double typeId = environment.getBlockTypeRel(x, y, z);
         final double dataValue = environment.getBlockDataRel(x, y, z);
 
         return queryInternal(type, data, typeId, dataValue);
-    }
-
-    private Functions() {
     }
 
 }

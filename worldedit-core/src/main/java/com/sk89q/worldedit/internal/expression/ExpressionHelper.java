@@ -19,7 +19,6 @@
 
 package com.sk89q.worldedit.internal.expression;
 
-import com.google.common.collect.SetMultimap;
 import com.sk89q.worldedit.antlr.ExpressionParser;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
@@ -60,16 +59,10 @@ public class ExpressionHelper {
         check(iterations <= 256, ctx, "Loop exceeded 256 iterations");
     }
 
-    public static void checkTimeout() {
-        if (Thread.interrupted()) {
-            throw new ExpressionTimeoutException("Calculations exceeded time limit.");
-        }
-    }
-
-    public static MethodHandle resolveFunction(SetMultimap<String, MethodHandle> functions,
+    public static MethodHandle resolveFunction(Functions functions,
                                                ExpressionParser.FunctionCallContext ctx) {
         String fnName = ctx.name.getText();
-        Set<MethodHandle> matchingFns = functions.get(fnName);
+        Set<MethodHandle> matchingFns = functions.getMap().get(fnName);
         check(!matchingFns.isEmpty(), ctx, "Unknown function '" + fnName + "'");
         for (MethodHandle function : matchingFns) {
             MethodType type = function.type();

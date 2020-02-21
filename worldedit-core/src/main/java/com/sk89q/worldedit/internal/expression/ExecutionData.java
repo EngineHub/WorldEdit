@@ -19,9 +19,7 @@
 
 package com.sk89q.worldedit.internal.expression;
 
-import com.google.common.collect.SetMultimap;
-
-import java.lang.invoke.MethodHandle;
+import java.time.Instant;
 
 import static java.util.Objects.requireNonNull;
 
@@ -31,21 +29,33 @@ public class ExecutionData {
      * Special execution context for evaluating constant values. As long as no variables are used,
      * it can be considered constant.
      */
-    public static final ExecutionData CONSTANT_EVALUATOR = new ExecutionData(null, null);
+    public static final ExecutionData CONSTANT_EVALUATOR = new ExecutionData(null, null, Instant.MAX);
 
     private final SlotTable slots;
-    private final SetMultimap<String, MethodHandle> functions;
+    private final Functions functions;
+    private final Instant deadline;
 
-    public ExecutionData(SlotTable slots, SetMultimap<String, MethodHandle> functions) {
+    public ExecutionData(SlotTable slots, Functions functions, Instant deadline) {
         this.slots = slots;
         this.functions = functions;
+        this.deadline = deadline;
     }
 
     public SlotTable getSlots() {
         return requireNonNull(slots, "Cannot use variables in a constant");
     }
 
-    public SetMultimap<String, MethodHandle> getFunctions() {
+    public Functions getFunctions() {
         return requireNonNull(functions, "Cannot use functions in a constant");
+    }
+
+    public Instant getDeadline() {
+        return deadline;
+    }
+
+    public void checkDeadline() {
+        if (Instant.now().isAfter(deadline)) {
+            throw new ExpressionTimeoutException("Calculations exceeded time limit.");
+        }
     }
 }

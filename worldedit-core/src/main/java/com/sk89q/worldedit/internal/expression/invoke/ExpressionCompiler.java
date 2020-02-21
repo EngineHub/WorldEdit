@@ -19,9 +19,9 @@
 
 package com.sk89q.worldedit.internal.expression.invoke;
 
-import com.google.common.collect.SetMultimap;
 import com.sk89q.worldedit.antlr.ExpressionParser;
 import com.sk89q.worldedit.internal.expression.CompiledExpression;
+import com.sk89q.worldedit.internal.expression.Functions;
 
 import java.lang.invoke.LambdaConversionException;
 import java.lang.invoke.LambdaMetafactory;
@@ -64,7 +64,7 @@ public class ExpressionCompiler {
     }
 
     public CompiledExpression compileExpression(ExpressionParser.AllStatementsContext root,
-                                                SetMultimap<String, MethodHandle> functions) {
+                                                Functions functions) {
         MethodHandle invokable = root.accept(new CompilingVisitor(functions));
         return (CompiledExpression) ExpressionHandles.safeInvoke(
             HANDLE_TO_CE_CONVERTER, h -> h.invoke(invokable)
