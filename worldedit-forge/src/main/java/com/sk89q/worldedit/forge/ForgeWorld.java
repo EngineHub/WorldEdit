@@ -19,6 +19,8 @@
 
 package com.sk89q.worldedit.forge;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -41,6 +43,7 @@ import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.util.Location;
+import com.sk89q.worldedit.util.SideEffect;
 import com.sk89q.worldedit.util.SideEffectApplier;
 import com.sk89q.worldedit.util.TreeGenerator.TreeType;
 import com.sk89q.worldedit.world.AbstractWorld;
@@ -76,13 +79,13 @@ import net.minecraft.world.chunk.listener.IChunkStatusListener;
 import net.minecraft.world.gen.ChunkGenerator;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.Feature;
+import net.minecraft.world.server.ChunkHolder;
 import net.minecraft.world.server.ServerChunkProvider;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraft.world.storage.SaveHandler;
 import net.minecraft.world.storage.WorldInfo;
 import net.minecraftforge.common.DimensionManager;
 
-import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
@@ -95,7 +98,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import javax.annotation.Nullable;
 
 /**
  * An adapter to Minecraft worlds for WorldEdit.
@@ -166,6 +169,49 @@ public class ForgeWorld extends AbstractWorld {
         return null;
     }
 
+    /**
+     * This is a heavily modified function stripped from MC to apply worldedit-modifications.
+     *
+     * @see World#markAndNotifyBlock
+     */
+    public void markAndNotifyBlock(World world, BlockPos pos, @Nullable Chunk chunk, net.minecraft.block.BlockState blockstate,
+            net.minecraft.block.BlockState newState, SideEffectApplier sideEffectApplier) {
+        Block block = newState.getBlock();
+        net.minecraft.block.BlockState blockstate1 = world.getBlockState(pos);
+        if (blockstate1 == newState) {
+            if (blockstate != blockstate1) {
+                world.markBlockRangeForRenderUpdate(pos, blockstate, blockstate1);
+            }
+
+            // Remove redundant branches
+            if (world.isRemote || chunk == null || chunk.getLocationType().isAtLeast(ChunkHolder.LocationType.TICKING)) {
+                if (sideEffectApplier.shouldApply(SideEffect.ENTITY_AI)) {
+                    world.notifyBlockUpdate(pos, blockstate, newState, UPDATE | NOTIFY);
+                } else {
+                    // If we want to skip entity AI, just call the chunk dirty flag.
+                    ((ServerChunkProvider) world.getChunkProvider()).markBlockChanged(pos);
+                }
+            }
+
+            if (!world.isRemote && sideEffectApplier.shouldApply(SideEffect.NEIGHBORS)) {
+                world.notifyNeighbors(pos, blockstate.getBlock());
+                if (newState.hasComparatorInputOverride()) {
+                    world.updateComparatorOutputLevel(pos, block);
+                }
+            }
+
+            // Make connection updates optional
+            if (sideEffectApplier.shouldApply(SideEffect.CONNECTIONS)) {
+                blockstate.updateDiagonalNeighbors(world, pos, 2);
+                newState.updateNeighbors(world, pos, 2);
+                newState.updateDiagonalNeighbors(world, pos, 2);
+            }
+
+            // This is disabled for other platforms, but keep it for mods.
+            world.onBlockStateChange(pos, blockstate, blockstate1);
+        }
+    }
+
     @Override
     public <B extends BlockStateHolder<B>> boolean setBlock(BlockVector3 position, B block, SideEffectApplier sideEffectApplier) throws WorldEditException {
         checkNotNull(position);
@@ -201,9 +247,11 @@ public class ForgeWorld extends AbstractWorld {
             }
         }
 
-        if (successful && sideEffectApplier.doesApplyAny()) {
-            world.getChunkProvider().getLightManager().checkBlock(pos);
-            world.markAndNotifyBlock(pos, chunk, old, newState, UPDATE | NOTIFY);
+        if (successful) {
+            if (sideEffectApplier.shouldApply(SideEffect.LIGHTING)) {
+                world.getChunkProvider().getLightManager().checkBlock(pos);
+            }
+            markAndNotifyBlock(world, pos, chunk, old, newState, sideEffectApplier);
         }
 
         return successful;
@@ -212,7 +260,13 @@ public class ForgeWorld extends AbstractWorld {
     @Override
     public boolean notifyBlock(BlockVector3 position, BlockState previousType, SideEffectApplier sideEffectApplier) throws WorldEditException {
         BlockPos pos = new BlockPos(position.getX(), position.getY(), position.getZ());
-        getWorld().notifyBlockUpdate(pos, ForgeAdapter.adapt(previousType), getWorld().getBlockState(pos), 1 | 2);
+        net.minecraft.block.BlockState oldData = ForgeAdapter.adapt(previousType);
+        net.minecraft.block.BlockState newData = getWorld().getBlockState(pos);
+
+        if (sideEffectApplier.shouldApply(SideEffect.LIGHTING)) {
+            getWorld().getChunkProvider().getLightManager().checkBlock(pos);
+        }
+        markAndNotifyBlock(getWorld(), pos, null, oldData, newData, sideEffectApplier); // Update
         return true;
     }
 

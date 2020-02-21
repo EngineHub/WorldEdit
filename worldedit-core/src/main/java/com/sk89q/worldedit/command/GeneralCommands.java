@@ -36,6 +36,7 @@ import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.util.SideEffect;
+import com.sk89q.worldedit.util.SideEffectApplier;
 import com.sk89q.worldedit.util.formatting.component.InvalidComponentException;
 import com.sk89q.worldedit.util.formatting.component.PaginationBox;
 import com.sk89q.worldedit.util.formatting.component.SideEffectBox;
@@ -167,6 +168,18 @@ public class GeneralCommands {
                         "worldedit.fast.sideeffect.get",
                         TranslatableComponent.of(sideEffect.getDisplayName()),
                         TranslatableComponent.of(currentState.getDisplayName())
+                ));
+            }
+        } else if (newState != null) {
+            SideEffectApplier applier = session.getSideEffectApplier();
+            for (SideEffect sideEffectEntry : SideEffect.values()) {
+                applier = applier.with(sideEffectEntry, newState);
+            }
+            session.setSideEffectApplier(applier);
+            if (!showInfoBox) {
+                actor.printInfo(TranslatableComponent.of(
+                        "worldedit.fast.sideeffect.set-all",
+                        TranslatableComponent.of(newState.getDisplayName())
                 ));
             }
         }
