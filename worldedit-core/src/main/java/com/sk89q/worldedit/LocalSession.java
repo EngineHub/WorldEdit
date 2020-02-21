@@ -105,7 +105,7 @@ public class LocalSession {
     private transient EditSession.ReorderMode reorderMode = EditSession.ReorderMode.MULTI_STAGE;
     private transient List<Countable<BlockState>> lastDistribution;
     private transient World worldOverride;
-    private transient boolean tickingWatchdog = false;
+    private transient boolean tickingWatchdog = true;
     private transient boolean hasBeenToldVersion;
 
     // Saved properties
