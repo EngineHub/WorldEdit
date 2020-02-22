@@ -52,7 +52,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Collectors;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -293,7 +292,7 @@ public class PlatformManager {
     }
 
     public Collection<SideEffect> getSupportedSideEffects() {
-        return platforms.stream().flatMap(platform -> platform.getSupportedSideEffects().stream()).distinct().collect(Collectors.toList());
+        return queryCapability(Capability.WORLD_EDITING).getSupportedSideEffects();
     }
 
     @Subscribe
