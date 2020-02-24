@@ -39,9 +39,9 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * An extent that sets blocks in the world, with BlockUpdateOptions.
+ * An extent that sets blocks in the world, with a {@link SideEffectSet}.
  */
-public class WorldApplyingExtent extends AbstractDelegateExtent {
+public class SideEffectExtent extends AbstractDelegateExtent {
 
     private final World world;
     private final Map<BlockVector3, BlockState> positions = BlockMap.create();
@@ -54,7 +54,7 @@ public class WorldApplyingExtent extends AbstractDelegateExtent {
      *
      * @param world the world
      */
-    public WorldApplyingExtent(World world) {
+    public SideEffectExtent(World world) {
         super(world);
         checkNotNull(world);
         this.world = world;

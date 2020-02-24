@@ -39,7 +39,7 @@ import com.sk89q.worldedit.extent.validation.BlockChangeLimiter;
 import com.sk89q.worldedit.extent.validation.DataValidatorExtent;
 import com.sk89q.worldedit.extent.world.BlockQuirkExtent;
 import com.sk89q.worldedit.extent.world.ChunkLoadingExtent;
-import com.sk89q.worldedit.extent.world.WorldApplyingExtent;
+import com.sk89q.worldedit.extent.world.SideEffectExtent;
 import com.sk89q.worldedit.extent.world.SurvivalModeExtent;
 import com.sk89q.worldedit.extent.world.WatchdogTickingExtent;
 import com.sk89q.worldedit.function.GroundFunction;
@@ -186,7 +186,7 @@ public class EditSession implements Extent, AutoCloseable {
     protected final World world;
     private final ChangeSet changeSet = new BlockOptimizedHistory();
 
-    private @Nullable WorldApplyingExtent worldApplyingExtent;
+    private @Nullable SideEffectExtent sideEffectExtent;
     private final SurvivalModeExtent survivalExtent;
     private @Nullable ChunkBatchingExtent chunkBatchingExtent;
     private final BlockBagExtent blockBagExtent;
@@ -225,7 +225,7 @@ public class EditSession implements Extent, AutoCloseable {
             Extent extent;
 
             // These extents are ALWAYS used
-            extent = worldApplyingExtent = new WorldApplyingExtent(world);
+            extent = sideEffectExtent = new SideEffectExtent(world);
             if (watchdog != null) {
                 // Reset watchdog before world placement
                 WatchdogTickingExtent watchdogExtent = new WatchdogTickingExtent(extent, watchdog);
@@ -289,7 +289,7 @@ public class EditSession implements Extent, AutoCloseable {
         if (chunkBatchingExtent != null && chunkBatchingExtent.commitRequired()) {
             return true;
         }
-        if (worldApplyingExtent != null && worldApplyingExtent.commitRequired()) {
+        if (sideEffectExtent != null && sideEffectExtent.commitRequired()) {
             return true;
         }
         return false;
@@ -310,7 +310,7 @@ public class EditSession implements Extent, AutoCloseable {
      * @param reorderMode The reorder mode
      */
     public void setReorderMode(ReorderMode reorderMode) {
-        if (reorderMode == ReorderMode.FAST && worldApplyingExtent == null) {
+        if (reorderMode == ReorderMode.FAST && sideEffectExtent == null) {
             throw new IllegalArgumentException("An EditSession without a fast mode tried to use it for reordering!");
         }
         if (reorderMode == ReorderMode.MULTI_STAGE && reorderExtent == null) {
@@ -323,20 +323,20 @@ public class EditSession implements Extent, AutoCloseable {
         this.reorderMode = reorderMode;
         switch (reorderMode) {
             case MULTI_STAGE:
-                if (worldApplyingExtent != null) {
-                    worldApplyingExtent.setPostEditSimulationEnabled(false);
+                if (sideEffectExtent != null) {
+                    sideEffectExtent.setPostEditSimulationEnabled(false);
                 }
                 reorderExtent.setEnabled(true);
                 break;
             case FAST:
-                worldApplyingExtent.setPostEditSimulationEnabled(true);
+                sideEffectExtent.setPostEditSimulationEnabled(true);
                 if (reorderExtent != null) {
                     reorderExtent.setEnabled(false);
                 }
                 break;
             case NONE:
-                if (worldApplyingExtent != null) {
-                    worldApplyingExtent.setPostEditSimulationEnabled(false);
+                if (sideEffectExtent != null) {
+                    sideEffectExtent.setPostEditSimulationEnabled(false);
                 }
                 if (reorderExtent != null) {
                     reorderExtent.setEnabled(false);
@@ -468,8 +468,8 @@ public class EditSession implements Extent, AutoCloseable {
      */
     @Deprecated
     public void setFastMode(boolean enabled) {
-        if (worldApplyingExtent != null) {
-            worldApplyingExtent.setSideEffectSet(enabled ? SideEffectSet.defaults() : SideEffectSet.none());
+        if (sideEffectExtent != null) {
+            sideEffectExtent.setSideEffectSet(enabled ? SideEffectSet.defaults() : SideEffectSet.none());
         }
     }
 
@@ -479,8 +479,8 @@ public class EditSession implements Extent, AutoCloseable {
      * @param sideEffectSet side effects to enable
      */
     public void setSideEffectApplier(SideEffectSet sideEffectSet) {
-        if (worldApplyingExtent != null) {
-            worldApplyingExtent.setSideEffectSet(sideEffectSet);
+        if (sideEffectExtent != null) {
+            sideEffectExtent.setSideEffectSet(sideEffectSet);
         }
     }
 
@@ -494,14 +494,14 @@ public class EditSession implements Extent, AutoCloseable {
      */
     @Deprecated
     public boolean hasFastMode() {
-        return worldApplyingExtent != null && this.worldApplyingExtent.getSideEffectSet().doesApplyAny();
+        return sideEffectExtent != null && this.sideEffectExtent.getSideEffectSet().doesApplyAny();
     }
 
     public SideEffectSet getSideEffectApplier() {
-        if (worldApplyingExtent == null) {
+        if (sideEffectExtent == null) {
             return SideEffectSet.defaults();
         }
-        return worldApplyingExtent.getSideEffectSet();
+        return sideEffectExtent.getSideEffectSet();
     }
 
     /**
