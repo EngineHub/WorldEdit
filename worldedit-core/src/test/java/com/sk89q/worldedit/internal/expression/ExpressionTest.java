@@ -55,7 +55,17 @@ class ExpressionTest extends BaseExpressionTest {
             testCase("0 || 5", 5),
             testCase("2 || 5", 2),
             testCase("2 && 5", 5),
-            testCase("5 && 0", 0)
+            testCase("5 && 0", 0),
+            // check ternaries
+            testCase("false ? 1 : 2", 2),
+            testCase("true ? 1 : 2", 1),
+            // - ternary binds inside
+            testCase("true ? true ? 1 : 2 : 3", 1),
+            testCase("true ? false ? 1 : 2 : 3", 2),
+            testCase("false ? true ? 1 : 2 : 3", 3),
+            testCase("false ? false ? 1 : 2 : 3", 3),
+            // check return
+            testCase("return 1; 0", 1)
         );
         return testCases.stream()
             .map(testCase -> DynamicTest.dynamicTest(

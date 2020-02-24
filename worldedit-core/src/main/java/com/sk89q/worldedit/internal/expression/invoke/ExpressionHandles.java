@@ -20,7 +20,6 @@
 package com.sk89q.worldedit.internal.expression.invoke;
 
 import com.google.common.base.Throwables;
-import com.sk89q.worldedit.internal.expression.BreakException;
 import com.sk89q.worldedit.internal.expression.CompiledExpression;
 import com.sk89q.worldedit.internal.expression.EvaluationException;
 import com.sk89q.worldedit.internal.expression.ExecutionData;
@@ -70,6 +69,10 @@ class ExpressionHandles {
     // (double, double)Double;
     static final MethodHandle CALL_BINARY_OP;
     static final MethodHandle NEW_LS_CONSTANT;
+    // (Double)ReturnException;
+    static final MethodHandle NEW_RETURN_EXCEPTION;
+    // (ReturnException)Double;
+    static final MethodHandle RETURN_EXCEPTION_GET_RESULT;
 
     static final MethodHandle NULL_DOUBLE = dropData(constant(Double.class, null));
 
@@ -105,6 +108,10 @@ class ExpressionHandles {
                 .asType(methodType(Double.class, DoubleBinaryOperator.class, double.class, double.class));
             NEW_LS_CONSTANT = lookup.findConstructor(LocalSlot.Constant.class,
                 methodType(void.class, double.class));
+            NEW_RETURN_EXCEPTION = lookup.findConstructor(ReturnException.class,
+                methodType(void.class, Double.class));
+            RETURN_EXCEPTION_GET_RESULT = lookup.findVirtual(ReturnException.class,
+                "getResult", methodType(Double.class));
         } catch (NoSuchMethodException | IllegalAccessException e) {
             throw new IllegalStateException(e);
         }

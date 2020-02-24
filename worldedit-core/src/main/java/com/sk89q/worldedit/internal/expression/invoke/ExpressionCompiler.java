@@ -66,8 +66,15 @@ public class ExpressionCompiler {
     public CompiledExpression compileExpression(ExpressionParser.AllStatementsContext root,
                                                 Functions functions) {
         MethodHandle invokable = root.accept(new CompilingVisitor(functions));
+        // catch ReturnExpression and substitute its result
+        invokable = MethodHandles.catchException(
+            invokable,
+            ReturnException.class,
+            ExpressionHandles.RETURN_EXCEPTION_GET_RESULT
+        );
+        MethodHandle finalInvokable = invokable;
         return (CompiledExpression) ExpressionHandles.safeInvoke(
-            HANDLE_TO_CE_CONVERTER, h -> h.invoke(invokable)
+            HANDLE_TO_CE_CONVERTER, h -> h.invoke(finalInvokable)
         );
     }
 }

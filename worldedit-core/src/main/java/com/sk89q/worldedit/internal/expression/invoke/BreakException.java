@@ -17,13 +17,13 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.internal.expression;
+package com.sk89q.worldedit.internal.expression.invoke;
 
 /**
  * Thrown when a break or continue is encountered.
  * Loop constructs catch this exception.
  */
-public class BreakException extends RuntimeException {
+class BreakException extends RuntimeException {
 
     public static final BreakException BREAK = new BreakException(false);
     public static final BreakException CONTINUE = new BreakException(true);

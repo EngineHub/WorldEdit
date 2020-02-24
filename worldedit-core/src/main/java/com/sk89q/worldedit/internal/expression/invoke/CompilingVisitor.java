@@ -21,7 +21,6 @@ package com.sk89q.worldedit.internal.expression.invoke;
 
 import com.sk89q.worldedit.antlr.ExpressionBaseVisitor;
 import com.sk89q.worldedit.antlr.ExpressionParser;
-import com.sk89q.worldedit.internal.expression.BreakException;
 import com.sk89q.worldedit.internal.expression.EvaluationException;
 import com.sk89q.worldedit.internal.expression.ExecutionData;
 import com.sk89q.worldedit.internal.expression.ExpressionHelper;
@@ -217,12 +216,31 @@ class CompilingVisitor extends ExpressionBaseVisitor<MethodHandle> {
         return CONTINUE_STATEMENT;
     }
 
+    // MH = (Double)Double
+    // takes the double to return, conveniently has Double return type
+    private static final MethodHandle RETURN_STATEMENT_BASE = MethodHandles.filterReturnValue(
+        // take the (Double)ReturnException constructor
+        ExpressionHandles.NEW_RETURN_EXCEPTION,
+        // and map the return type to Double by throwing it
+        MethodHandles.throwException(Double.class, ReturnException.class)
+    );
+
     @Override
     public MethodHandle visitReturnStatement(ExpressionParser.ReturnStatementContext ctx) {
+        // MH:returnValue = (ExecutionData)Double
+        MethodHandle returnValue;
         if (ctx.value != null) {
-            return evaluate(ctx.value).handle;
+            returnValue = evaluate(ctx.value).handle;
+        } else {
+            returnValue = defaultResult();
         }
-        return defaultResult();
+        return MethodHandles.filterArguments(
+            // take the (Double)Double return statement
+            RETURN_STATEMENT_BASE,
+            0,
+            // map the Double back to ExecutionData via the returnValue
+            returnValue
+        );
     }
 
     @Override
@@ -450,7 +468,7 @@ class CompilingVisitor extends ExpressionBaseVisitor<MethodHandle> {
                 case NOT_EQUAL:
                     return (l, r) -> ExpressionHandles.boolToDouble(l != r);
                 case NEAR:
-                    return (l, r) -> ExpressionHandles.boolToDouble(almostEqual2sComplement(l, r, 450359963L));
+                    return (l, r) -> ExpressionHandles.boolToDouble(almostEqual2sComplement(l, r));
                 case GREATER_THAN_OR_EQUAL:
                     return (l, r) -> ExpressionHandles.boolToDouble(l >= r);
             }
@@ -459,7 +477,7 @@ class CompilingVisitor extends ExpressionBaseVisitor<MethodHandle> {
     }
 
     // Usable AlmostEqual function, based on http://www.cygnus-software.com/papers/comparingfloats/comparingfloats.htm
-    private static boolean almostEqual2sComplement(double a, double b, long maxUlps) {
+    private static boolean almostEqual2sComplement(double a, double b) {
         // Make sure maxUlps is non-negative and small enough that the
         // default NAN won't compare as equal to anything.
         //assert(maxUlps > 0 && maxUlps < 4 * 1024 * 1024); // this is for floats, not doubles
@@ -473,7 +491,7 @@ class CompilingVisitor extends ExpressionBaseVisitor<MethodHandle> {
         if (bLong < 0) bLong = 0x8000000000000000L - bLong;
 
         final long longDiff = Math.abs(aLong - bLong);
-        return longDiff <= maxUlps;
+        return longDiff <= 450359963L;
     }
 
     @Override
@@ -645,11 +663,7 @@ class CompilingVisitor extends ExpressionBaseVisitor<MethodHandle> {
                 checkHandle(childResult, (ParserRuleContext) c);
             }
 
-            boolean returning = c instanceof ExpressionParser.ReturnStatementContext;
-            result = aggregateResult(result, childResult, returning);
-            if (returning) {
-                return result;
-            }
+            result = aggregateHandleResult(result, childResult);
         }
 
         return result;
@@ -660,25 +674,26 @@ class CompilingVisitor extends ExpressionBaseVisitor<MethodHandle> {
         throw new UnsupportedOperationException();
     }
 
-    private MethodHandle aggregateResult(MethodHandle oldResult, MethodHandle result,
-                                         boolean keepDefault) {
+    private MethodHandle aggregateHandleResult(MethodHandle oldResult, MethodHandle result) {
+        // MH:oldResult,result = (ExecutionData)Double
+
         // Execute `oldResult` but ignore its return value, then execute result and return that.
         // If `oldResult` (the old value) is `defaultResult`, it's bogus, so just skip it
         if (oldResult == DEFAULT_RESULT) {
             return result;
         }
-        if (result == DEFAULT_RESULT && !keepDefault) {
-            return oldResult;
-        }
         // Add a dummy Double parameter to the end
+        // MH:dummyDouble = (ExecutionData, Double)Double
         MethodHandle dummyDouble = MethodHandles.dropArguments(
             result, 1, Double.class
         );
         // Have oldResult turn it from data->Double
+        // MH:doubledData = (ExecutionData, ExecutionData)Double
         MethodHandle doubledData = MethodHandles.collectArguments(
             dummyDouble, 1, oldResult
         );
         // Deduplicate the `data` parameter
+        // MH:@return = (ExecutionData)Double
         return ExpressionHandles.dedupData(doubledData);
     }
 }
