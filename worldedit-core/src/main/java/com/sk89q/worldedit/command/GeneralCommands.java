@@ -138,9 +138,12 @@ public class GeneralCommands {
     )
     @CommandPermissions("worldedit.fast")
     public void fast(Actor actor, LocalSession session,
-            @Arg(desc = "The side effect", def = "") SideEffect sideEffect,
-            @Arg(desc = "The new side effect state", def = "") SideEffect.State newState,
-            @Switch(name = 'h', desc = "Show the info box") boolean showInfoBox) {
+            @Arg(desc = "The side effect", def = "")
+                    SideEffect sideEffect,
+            @Arg(desc = "The new side effect state", def = "")
+                    SideEffect.State newState,
+            @Switch(name = 'h', desc = "Show the info box")
+                    boolean showInfoBox) {
         if (sideEffect != null) {
             SideEffect.State currentState = session.getSideEffectSet().getState(sideEffect);
             if (newState != null && newState == currentState) {

@@ -29,13 +29,12 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class SideEffectSet {
-    private static final SideEffectSet DEFAULT = new SideEffectSet();
-    private static final SideEffectSet NONE = new SideEffectSet(
+    private static final SideEffectSet DEFAULT = new SideEffectSet(
             Arrays.stream(SideEffect.values()).collect(Collectors.toMap(Function.identity(), SideEffect::getDefaultValue))
     );
+    private static final SideEffectSet NONE = new SideEffectSet();
 
     private final Map<SideEffect, SideEffect.State> sideEffects;
-    private boolean requiresCleanup = false;
     private boolean appliesAny;
 
     private SideEffectSet() {
@@ -45,7 +44,6 @@ public class SideEffectSet {
     public SideEffectSet(Map<SideEffect, SideEffect.State> sideEffects) {
         this.sideEffects = Maps.immutableEnumMap(sideEffects);
 
-        requiresCleanup = sideEffects.keySet().stream().anyMatch(SideEffect::requiresCleanup);
         appliesAny = sideEffects.values().stream().anyMatch(state -> state != SideEffect.State.OFF);
     }
 
@@ -57,10 +55,6 @@ public class SideEffectSet {
 
     public boolean doesApplyAny() {
         return this.appliesAny;
-    }
-
-    public boolean doesRequireCleanup() {
-        return this.requiresCleanup;
     }
 
     public SideEffect.State getState(SideEffect effect) {

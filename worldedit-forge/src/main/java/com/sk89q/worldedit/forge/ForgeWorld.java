@@ -248,7 +248,7 @@ public class ForgeWorld extends AbstractWorld {
         }
 
         if (successful) {
-            if (sideEffectSet.shouldApply(SideEffect.LIGHTING)) {
+            if (sideEffectSet.getState(SideEffect.LIGHTING) == SideEffect.State.ON) {
                 world.getChunkProvider().getLightManager().checkBlock(pos);
             }
             markAndNotifyBlock(world, pos, chunk, old, newState, sideEffectSet);
@@ -263,7 +263,7 @@ public class ForgeWorld extends AbstractWorld {
         net.minecraft.block.BlockState oldData = ForgeAdapter.adapt(previousType);
         net.minecraft.block.BlockState newData = getWorld().getBlockState(pos);
 
-        if (sideEffectSet.shouldApply(SideEffect.LIGHTING)) {
+        if (sideEffectSet.getState(SideEffect.LIGHTING) == SideEffect.State.ON) {
             getWorld().getChunkProvider().getLightManager().checkBlock(pos);
         }
         markAndNotifyBlock(getWorld(), pos, null, oldData, newData, sideEffectSet); // Update

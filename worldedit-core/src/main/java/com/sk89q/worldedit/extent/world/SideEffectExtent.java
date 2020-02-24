@@ -27,6 +27,7 @@ import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.RunContext;
 import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.util.SideEffect;
 import com.sk89q.worldedit.util.SideEffectSet;
 import com.sk89q.worldedit.util.collection.BlockMap;
 import com.sk89q.worldedit.world.World;
@@ -78,7 +79,7 @@ public class SideEffectExtent extends AbstractDelegateExtent {
 
     @Override
     public <B extends BlockStateHolder<B>> boolean setBlock(BlockVector3 location, B block) throws WorldEditException {
-        if (sideEffectSet.doesRequireCleanup()) {
+        if (sideEffectSet.getState(SideEffect.LIGHTING) == SideEffect.State.DELAYED) {
             dirtyChunks.add(BlockVector2.at(location.getBlockX() >> 4, location.getBlockZ() >> 4));
         }
         if (postEditSimulation) {
