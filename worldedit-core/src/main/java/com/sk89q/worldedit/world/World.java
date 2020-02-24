@@ -33,6 +33,7 @@ import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.registry.Keyed;
 import com.sk89q.worldedit.util.Direction;
+import com.sk89q.worldedit.util.SideEffect;
 import com.sk89q.worldedit.util.SideEffectSet;
 import com.sk89q.worldedit.util.TreeGenerator;
 import com.sk89q.worldedit.world.block.BlockState;
@@ -42,6 +43,7 @@ import com.sk89q.worldedit.world.weather.WeatherType;
 
 import javax.annotation.Nullable;
 import java.nio.file.Path;
+import java.util.Set;
 
 /**
  * Represents a world (dimension).
@@ -143,7 +145,7 @@ public interface World extends Extent, Keyed {
      */
     @Deprecated
     default boolean notifyAndLightBlock(BlockVector3 position, BlockState previousType) throws WorldEditException {
-        return applySideEffects(position, previousType, SideEffectSet.defaults());
+        return !applySideEffects(position, previousType, SideEffectSet.defaults()).isEmpty();
     }
 
     /**
@@ -152,9 +154,9 @@ public interface World extends Extent, Keyed {
      * @param position position of the block
      * @param previousType the type of the previous block that was there
      * @param sideEffectSet which side effects to perform
-     * @return true if the block was successfully notified
+     * @return a set of side effects that were applied
      */
-    boolean applySideEffects(BlockVector3 position, BlockState previousType, SideEffectSet sideEffectSet) throws WorldEditException;
+    Set<SideEffect> applySideEffects(BlockVector3 position, BlockState previousType, SideEffectSet sideEffectSet) throws WorldEditException;
 
     /**
      * Get the light level at the given block.

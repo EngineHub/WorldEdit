@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.bukkit;
 
+import com.google.common.collect.Sets;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
@@ -31,6 +32,7 @@ import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.Direction;
+import com.sk89q.worldedit.util.SideEffect;
 import com.sk89q.worldedit.util.SideEffectSet;
 import com.sk89q.worldedit.util.TreeGenerator;
 import com.sk89q.worldedit.world.AbstractWorld;
@@ -60,6 +62,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -447,14 +450,21 @@ public class BukkitWorld extends AbstractWorld {
     }
 
     @Override
-    public boolean applySideEffects(BlockVector3 position, com.sk89q.worldedit.world.block.BlockState previousType, SideEffectSet sideEffectSet) throws WorldEditException {
+    public Set<SideEffect> applySideEffects(BlockVector3 position, com.sk89q.worldedit.world.block.BlockState previousType,
+            SideEffectSet sideEffectSet) throws WorldEditException {
         BukkitImplAdapter adapter = WorldEditPlugin.getInstance().getBukkitImplAdapter();
         if (adapter != null) {
             adapter.applySideEffects(BukkitAdapter.adapt(getWorld(), position), previousType, sideEffectSet);
-            return true;
+            return Sets.intersection(
+                    adapter.getSupportedSideEffects(),
+                    sideEffectSet.getSideEffectsToApply()
+            );
         }
 
-        return false;
+        return Sets.intersection(
+                WorldEditPlugin.getInstance().getInternalPlatform().getSupportedSideEffects(),
+                sideEffectSet.getSideEffectsToApply()
+        );
     }
 
     @Override

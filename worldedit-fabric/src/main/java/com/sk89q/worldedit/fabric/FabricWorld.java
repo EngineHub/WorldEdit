@@ -22,6 +22,7 @@ package com.sk89q.worldedit.fabric;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import com.google.common.collect.Sets;
 import com.google.common.io.Files;
 import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.worldedit.EditSession;
@@ -91,6 +92,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.Random;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
@@ -258,7 +260,7 @@ public class FabricWorld extends AbstractWorld {
     }
 
     @Override
-    public boolean applySideEffects(BlockVector3 position, BlockState previousType, SideEffectSet sideEffectSet) throws WorldEditException {
+    public Set<SideEffect> applySideEffects(BlockVector3 position, BlockState previousType, SideEffectSet sideEffectSet) throws WorldEditException {
         BlockPos pos = new BlockPos(position.getX(), position.getY(), position.getZ());
         net.minecraft.block.BlockState oldData = FabricAdapter.adapt(previousType);
         net.minecraft.block.BlockState newData = getWorld().getBlockState(pos);
@@ -267,7 +269,7 @@ public class FabricWorld extends AbstractWorld {
             getWorld().getChunkManager().getLightingProvider().checkBlock(pos);
         }
         markAndNotifyBlock(getWorld(), pos, null, oldData, newData, sideEffectSet); // Update
-        return true;
+        return Sets.intersection(FabricWorldEdit.inst.getPlatform().getSupportedSideEffects(), sideEffectSet.getSideEffectsToApply());
     }
 
     @Override

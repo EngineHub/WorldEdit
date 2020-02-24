@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.world;
 
+import com.google.common.collect.ImmutableSet;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.WorldEditException;
@@ -30,6 +31,7 @@ import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.Location;
+import com.sk89q.worldedit.util.SideEffect;
 import com.sk89q.worldedit.util.SideEffectSet;
 import com.sk89q.worldedit.util.TreeGenerator.TreeType;
 import com.sk89q.worldedit.world.biome.BiomeType;
@@ -43,6 +45,7 @@ import com.sk89q.worldedit.world.weather.WeatherTypes;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import javax.annotation.Nullable;
 
@@ -72,9 +75,9 @@ public class NullWorld extends AbstractWorld {
     }
 
     @Override
-    public boolean applySideEffects(BlockVector3 position, BlockState previousType, SideEffectSet sideEffectSet)
+    public Set<SideEffect> applySideEffects(BlockVector3 position, BlockState previousType, SideEffectSet sideEffectSet)
             throws WorldEditException {
-        return false;
+        return ImmutableSet.of();
     }
 
     @Override

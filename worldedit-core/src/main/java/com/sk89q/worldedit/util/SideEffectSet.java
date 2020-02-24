@@ -25,6 +25,7 @@ import com.google.common.collect.Maps;
 import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -35,6 +36,7 @@ public class SideEffectSet {
     private static final SideEffectSet NONE = new SideEffectSet();
 
     private final Map<SideEffect, SideEffect.State> sideEffects;
+    private final Set<SideEffect> appliedSideEffects;
     private boolean appliesAny;
 
     private SideEffectSet() {
@@ -45,6 +47,11 @@ public class SideEffectSet {
         this.sideEffects = Maps.immutableEnumMap(sideEffects);
 
         appliesAny = sideEffects.values().stream().anyMatch(state -> state != SideEffect.State.OFF);
+        appliedSideEffects = sideEffects.entrySet()
+                .stream()
+                .filter(entry -> entry.getValue() != SideEffect.State.OFF)
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toSet());
     }
 
     public SideEffectSet with(SideEffect sideEffect, SideEffect.State state) {
@@ -71,6 +78,10 @@ public class SideEffectSet {
      */
     public boolean shouldApply(SideEffect effect) {
         return getState(effect) != SideEffect.State.OFF;
+    }
+
+    public Set<SideEffect> getSideEffectsToApply() {
+        return this.appliedSideEffects;
     }
 
     public static SideEffectSet defaults() {
