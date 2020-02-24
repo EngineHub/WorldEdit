@@ -70,7 +70,7 @@ class ExpressionTest extends BaseExpressionTest {
         return testCases.stream()
             .map(testCase -> DynamicTest.dynamicTest(
                 testCase.getExpression(),
-                () -> assertEquals(testCase.getResult(), simpleEval(testCase.getExpression()), 0)
+                () -> checkTestCase(testCase)
             ));
     }
 
@@ -81,7 +81,7 @@ class ExpressionTest extends BaseExpressionTest {
 
     @Test
     void testTightTokenization() {
-        assertEquals(4, simpleEval("3+1"), 0);
+        checkTestCase("3+1", 4);
     }
 
     @Test
@@ -137,8 +137,8 @@ class ExpressionTest extends BaseExpressionTest {
 
     @Test
     public void testIf() throws ExpressionException {
-        assertEquals(40, simpleEval("y=0; if (1) x=4; else y=5; x*10+y;"), 0);
-        assertEquals(5, simpleEval("x=0; if (0) x=4; else y=5; x*10+y;"), 0);
+        checkTestCase("y=0; if (1) x=4; else y=5; x*10+y;", 40);
+        checkTestCase("x=0; if (0) x=4; else y=5; x*10+y;", 5);
 
         // test 'dangling else'
         final Expression expression1 = compile("if (1) if (0) x=4; else y=5;", "x", "y");
@@ -154,36 +154,36 @@ class ExpressionTest extends BaseExpressionTest {
 
     @Test
     public void testWhile() throws ExpressionException {
-        assertEquals(5, simpleEval("c=5; a=0; while (c > 0) { ++a; --c; } a"), 0);
-        assertEquals(5, simpleEval("c=5; a=0; do { ++a; --c; } while (c > 0); a"), 0);
+        checkTestCase("c=5; a=0; while (c > 0) { ++a; --c; } a", 5);
+        checkTestCase("c=5; a=0; do { ++a; --c; } while (c > 0); a", 5);
     }
 
     @Test
     public void testFor() throws ExpressionException {
-        assertEquals(5, simpleEval("a=0; for (i=0; i<5; ++i) { ++a; } a"), 0);
-        assertEquals(12345, simpleEval("y=0; for (i=1,5) { y *= 10; y += i; } y"), 0);
+        checkTestCase("a=0; for (i=0; i<5; ++i) { ++a; } a", 5);
+        checkTestCase("y=0; for (i=1,5) { y *= 10; y += i; } y", 12345);
     }
 
     @Test
     public void testSwitch() throws ExpressionException {
-        assertEquals(523, simpleEval("x=1;y=2;z=3;switch (1) { case 1: x=5; break; case 2: y=6; break; default: z=7 } x*100+y*10+z"), 0);
-        assertEquals(163, simpleEval("x=1;y=2;z=3;switch (2) { case 1: x=5; break; case 2: y=6; break; default: z=7 } x*100+y*10+z"), 0);
-        assertEquals(127, simpleEval("x=1;y=2;z=3;switch (3) { case 1: x=5; break; case 2: y=6; break; default: z=7 } x*100+y*10+z"), 0);
+        checkTestCase("x=1;y=2;z=3;switch (1) { case 1: x=5; break; case 2: y=6; break; default: z=7 } x*100+y*10+z", 523);
+        checkTestCase("x=1;y=2;z=3;switch (2) { case 1: x=5; break; case 2: y=6; break; default: z=7 } x*100+y*10+z", 163);
+        checkTestCase("x=1;y=2;z=3;switch (3) { case 1: x=5; break; case 2: y=6; break; default: z=7 } x*100+y*10+z", 127);
 
-        assertEquals(567, simpleEval("x=1;y=2;z=3;switch (1) { case 1: x=5; case 2: y=6; default: z=7 } x*100+y*10+z"), 0);
-        assertEquals(167, simpleEval("x=1;y=2;z=3;switch (2) { case 1: x=5; case 2: y=6; default: z=7 } x*100+y*10+z"), 0);
-        assertEquals(127, simpleEval("x=1;y=2;z=3;switch (3) { case 1: x=5; case 2: y=6; default: z=7 } x*100+y*10+z"), 0);
+        checkTestCase("x=1;y=2;z=3;switch (1) { case 1: x=5; case 2: y=6; default: z=7 } x*100+y*10+z", 567);
+        checkTestCase("x=1;y=2;z=3;switch (2) { case 1: x=5; case 2: y=6; default: z=7 } x*100+y*10+z", 167);
+        checkTestCase("x=1;y=2;z=3;switch (3) { case 1: x=5; case 2: y=6; default: z=7 } x*100+y*10+z", 127);
     }
 
     @Test
     public void testQuery() throws Exception {
-        assertEquals(1, simpleEval("a=1;b=2;query(3,4,5,a,b); a==3 && b==4"), 0);
-        assertEquals(1, simpleEval("a=1;b=2;queryAbs(3,4,5,a*1,b*1); a==1 && b==2"), 0);
-        assertEquals(1, simpleEval("a=1;b=2;queryRel(3,4,5,(a),(b)); a==300 && b==400"), 0);
-        assertEquals(1, simpleEval("query(3,4,5,3,4)"), 0);
-        assertEquals(1, simpleEval("!query(3,4,5,3,2)"), 0);
-        assertEquals(1, simpleEval("!queryAbs(3,4,5,10,40)"), 0);
-        assertEquals(1, simpleEval("!queryRel(3,4,5,100,200)"), 0);
+        checkTestCase("a=1;b=2;query(3,4,5,a,b); a==3 && b==4", 1);
+        checkTestCase("a=1;b=2;queryAbs(3,4,5,a*1,b*1); a==1 && b==2", 1);
+        checkTestCase("a=1;b=2;queryRel(3,4,5,(a),(b)); a==300 && b==400", 1);
+        checkTestCase("query(3,4,5,3,4)", 1);
+        checkTestCase("!query(3,4,5,3,2)", 1);
+        checkTestCase("!queryAbs(3,4,5,10,40)", 1);
+        checkTestCase("!queryRel(3,4,5,100,200)", 1);
     }
 
     @Test
