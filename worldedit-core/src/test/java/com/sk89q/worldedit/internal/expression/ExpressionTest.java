@@ -19,10 +19,17 @@
 
 package com.sk89q.worldedit.internal.expression;
 
+import com.google.common.collect.ImmutableList;
+import org.junit.jupiter.api.DynamicNode;
+import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestFactory;
 
 import java.time.Duration;
+import java.util.List;
+import java.util.stream.Stream;
 
+import static com.sk89q.worldedit.internal.expression.ExpressionTestCase.testCase;
 import static java.lang.Math.atan2;
 import static java.lang.Math.sin;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -32,28 +39,34 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ExpressionTest extends BaseExpressionTest {
 
+    @TestFactory
+    public Stream<DynamicNode> testEvaluate() throws ExpressionException {
+        List<ExpressionTestCase> testCases = ImmutableList.of(
+            // basic arithmetic
+            testCase("1 - 2 + 3", 2),
+            // unary ops
+            testCase("2 + +4", 6),
+            testCase("2 - -4", 6),
+            testCase("2 * -4", -8),
+            // check functions
+            testCase("sin(5)", sin(5)),
+            testCase("atan2(3, 4)", atan2(3, 4)),
+            // check conditionals
+            testCase("0 || 5", 5),
+            testCase("2 || 5", 2),
+            testCase("2 && 5", 5),
+            testCase("5 && 0", 0)
+        );
+        return testCases.stream()
+            .map(testCase -> DynamicTest.dynamicTest(
+                testCase.getExpression(),
+                () -> assertEquals(testCase.getResult(), simpleEval(testCase.getExpression()), 0)
+            ));
+    }
+
     @Test
-    public void testEvaluate() throws ExpressionException {
-        // check
-        assertEquals(1 - 2 + 3, simpleEval("1 - 2 + 3"), 0);
-
-        // check unary ops
-        assertEquals(2 + +4, simpleEval("2 + +4"), 0);
-        assertEquals(2 - -4, simpleEval("2 - -4"), 0);
-        assertEquals(2 * -4, simpleEval("2 * -4"), 0);
-
-        // check functions
-        assertEquals(sin(5), simpleEval("sin(5)"), 0);
-        assertEquals(atan2(3, 4), simpleEval("atan2(3, 4)"), 0);
-
-        // check variables
+    void testVariables() {
         assertEquals(8, compile("foo+bar", "foo", "bar").evaluate(5D, 3D), 0);
-
-        // check conditionals
-        assertEquals(5, simpleEval("0 || 5"), 0);
-        assertEquals(2, simpleEval("2 || 5"), 0);
-        assertEquals(5, simpleEval("2 && 5"), 0);
-        assertEquals(0, simpleEval("5 && 0"), 0);
     }
 
     @Test
