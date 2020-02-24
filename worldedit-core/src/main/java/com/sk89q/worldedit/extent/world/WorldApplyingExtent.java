@@ -27,7 +27,7 @@ import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.RunContext;
 import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.math.BlockVector3;
-import com.sk89q.worldedit.util.SideEffectApplier;
+import com.sk89q.worldedit.util.SideEffectSet;
 import com.sk89q.worldedit.util.collection.BlockMap;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BlockState;
@@ -46,7 +46,7 @@ public class WorldApplyingExtent extends AbstractDelegateExtent {
     private final World world;
     private final Map<BlockVector3, BlockState> positions = BlockMap.create();
     private final Set<BlockVector2> dirtyChunks = new HashSet<>();
-    private SideEffectApplier sideEffectApplier = SideEffectApplier.defaults();
+    private SideEffectSet sideEffectSet = SideEffectSet.defaults();
     private boolean postEditSimulation;
 
     /**
@@ -68,24 +68,24 @@ public class WorldApplyingExtent extends AbstractDelegateExtent {
         this.postEditSimulation = enabled;
     }
 
-    public SideEffectApplier getSideEffectApplier() {
-        return this.sideEffectApplier;
+    public SideEffectSet getSideEffectSet() {
+        return this.sideEffectSet;
     }
 
-    public void setSideEffectApplier(SideEffectApplier sideEffectApplier) {
-        this.sideEffectApplier = sideEffectApplier;
+    public void setSideEffectSet(SideEffectSet sideEffectSet) {
+        this.sideEffectSet = sideEffectSet;
     }
 
     @Override
     public <B extends BlockStateHolder<B>> boolean setBlock(BlockVector3 location, B block) throws WorldEditException {
-        if (sideEffectApplier.doesRequireCleanup()) {
+        if (sideEffectSet.doesRequireCleanup()) {
             dirtyChunks.add(BlockVector2.at(location.getBlockX() >> 4, location.getBlockZ() >> 4));
         }
         if (postEditSimulation) {
             positions.put(location, world.getBlock(location));
         }
 
-        return world.setBlock(location, block, postEditSimulation ? SideEffectApplier.none() : sideEffectApplier);
+        return world.setBlock(location, block, postEditSimulation ? SideEffectSet.none() : sideEffectSet);
     }
 
     public boolean commitRequired() {
@@ -108,7 +108,7 @@ public class WorldApplyingExtent extends AbstractDelegateExtent {
                     Iterator<Map.Entry<BlockVector3, BlockState>> positionIterator = positions.entrySet().iterator();
                     while (run.shouldContinue() && positionIterator.hasNext()) {
                         Map.Entry<BlockVector3, BlockState> position = positionIterator.next();
-                        world.notifyBlock(position.getKey(), position.getValue(), sideEffectApplier);
+                        world.applySideEffects(position.getKey(), position.getValue(), sideEffectSet);
                         positionIterator.remove();
                     }
 

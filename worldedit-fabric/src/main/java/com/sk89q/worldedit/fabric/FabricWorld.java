@@ -42,7 +42,7 @@ import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.SideEffect;
-import com.sk89q.worldedit.util.SideEffectApplier;
+import com.sk89q.worldedit.util.SideEffectSet;
 import com.sk89q.worldedit.util.TreeGenerator.TreeType;
 import com.sk89q.worldedit.world.AbstractWorld;
 import com.sk89q.worldedit.world.biome.BiomeType;
@@ -169,7 +169,7 @@ public class FabricWorld extends AbstractWorld {
     }
 
     public void markAndNotifyBlock(World world, BlockPos pos, @Nullable WorldChunk worldChunk, net.minecraft.block.BlockState blockState,
-            net.minecraft.block.BlockState state, SideEffectApplier sideEffectApplier) {
+            net.minecraft.block.BlockState state, SideEffectSet sideEffectSet) {
         Block block = state.getBlock();
         net.minecraft.block.BlockState blockState2 = world.getBlockState(pos);
         if (blockState2 == state) {
@@ -178,7 +178,7 @@ public class FabricWorld extends AbstractWorld {
             }
 
             if (world.isClient || worldChunk.getLevelType() != null && worldChunk.getLevelType().isAfter(ChunkHolder.LevelType.TICKING)) {
-                if (sideEffectApplier.shouldApply(SideEffect.ENTITY_AI)) {
+                if (sideEffectSet.shouldApply(SideEffect.ENTITY_AI)) {
                     world.updateListeners(pos, blockState, state, UPDATE | NOTIFY);
                 } else {
                     // If we want to skip entity AI, just call the chunk dirty flag.
@@ -186,14 +186,14 @@ public class FabricWorld extends AbstractWorld {
                 }
             }
 
-            if (!world.isClient && sideEffectApplier.shouldApply(SideEffect.NEIGHBORS)) {
+            if (!world.isClient && sideEffectSet.shouldApply(SideEffect.NEIGHBORS)) {
                 world.updateNeighbors(pos, blockState.getBlock());
                 if (state.hasComparatorOutput()) {
                     world.updateHorizontalAdjacent(pos, block);
                 }
             }
 
-            if (sideEffectApplier.shouldApply(SideEffect.CONNECTIONS)) {
+            if (sideEffectSet.shouldApply(SideEffect.CONNECTIONS)) {
                 blockState.method_11637(world, pos, 2);
                 state.updateNeighborStates(world, pos, 2);
                 state.method_11637(world, pos, 2);
@@ -205,7 +205,7 @@ public class FabricWorld extends AbstractWorld {
     }
 
     @Override
-    public <B extends BlockStateHolder<B>> boolean setBlock(BlockVector3 position, B block, SideEffectApplier sideEffectApplier) throws WorldEditException {
+    public <B extends BlockStateHolder<B>> boolean setBlock(BlockVector3 position, B block, SideEffectSet sideEffectSet) throws WorldEditException {
         checkNotNull(position);
         checkNotNull(block);
 
@@ -248,25 +248,25 @@ public class FabricWorld extends AbstractWorld {
         }
 
         if (successful) {
-            if (sideEffectApplier.shouldApply(SideEffect.LIGHTING)) {
+            if (sideEffectSet.shouldApply(SideEffect.LIGHTING)) {
                 world.getChunkManager().getLightingProvider().checkBlock(pos);
             }
-            markAndNotifyBlock(world, pos, chunk, old, newState, sideEffectApplier);
+            markAndNotifyBlock(world, pos, chunk, old, newState, sideEffectSet);
         }
 
         return successful;
     }
 
     @Override
-    public boolean notifyBlock(BlockVector3 position, BlockState previousType, SideEffectApplier sideEffectApplier) throws WorldEditException {
+    public boolean applySideEffects(BlockVector3 position, BlockState previousType, SideEffectSet sideEffectSet) throws WorldEditException {
         BlockPos pos = new BlockPos(position.getX(), position.getY(), position.getZ());
         net.minecraft.block.BlockState oldData = FabricAdapter.adapt(previousType);
         net.minecraft.block.BlockState newData = getWorld().getBlockState(pos);
 
-        if (sideEffectApplier.shouldApply(SideEffect.LIGHTING)) {
+        if (sideEffectSet.shouldApply(SideEffect.LIGHTING)) {
             getWorld().getChunkManager().getLightingProvider().checkBlock(pos);
         }
-        markAndNotifyBlock(getWorld(), pos, null, oldData, newData, sideEffectApplier); // Update
+        markAndNotifyBlock(getWorld(), pos, null, oldData, newData, sideEffectSet); // Update
         return true;
     }
 

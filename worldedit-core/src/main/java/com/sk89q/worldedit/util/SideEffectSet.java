@@ -28,35 +28,31 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class SideEffectApplier {
-    private static final SideEffectApplier DEFAULT = new SideEffectApplier();
-    private static final SideEffectApplier NONE = new SideEffectApplier(
+public class SideEffectSet {
+    private static final SideEffectSet DEFAULT = new SideEffectSet();
+    private static final SideEffectSet NONE = new SideEffectSet(
             Arrays.stream(SideEffect.values()).collect(Collectors.toMap(Function.identity(), SideEffect::getDefaultValue))
     );
 
     private final Map<SideEffect, SideEffect.State> sideEffects;
     private boolean requiresCleanup = false;
-    private boolean appliesAny = false;
+    private boolean appliesAny;
 
-    private SideEffectApplier() {
-        this.sideEffects = ImmutableMap.of();
-        updateSideEffects();
+    private SideEffectSet() {
+        this(ImmutableMap.of());
     }
 
-    public SideEffectApplier(Map<SideEffect, SideEffect.State> sideEffects) {
+    public SideEffectSet(Map<SideEffect, SideEffect.State> sideEffects) {
         this.sideEffects = Maps.immutableEnumMap(sideEffects);
-        updateSideEffects();
-    }
 
-    private void updateSideEffects() {
         requiresCleanup = sideEffects.keySet().stream().anyMatch(SideEffect::requiresCleanup);
         appliesAny = sideEffects.values().stream().anyMatch(state -> state != SideEffect.State.OFF);
     }
 
-    public SideEffectApplier with(SideEffect sideEffect, SideEffect.State state) {
+    public SideEffectSet with(SideEffect sideEffect, SideEffect.State state) {
         Map<SideEffect, SideEffect.State> entries = this.sideEffects.isEmpty() ? Maps.newEnumMap(SideEffect.class) : new EnumMap<>(this.sideEffects);
         entries.put(sideEffect, state);
-        return new SideEffectApplier(entries);
+        return new SideEffectSet(entries);
     }
 
     public boolean doesApplyAny() {
@@ -83,11 +79,11 @@ public class SideEffectApplier {
         return getState(effect) != SideEffect.State.OFF;
     }
 
-    public static SideEffectApplier defaults() {
+    public static SideEffectSet defaults() {
         return DEFAULT;
     }
 
-    public static SideEffectApplier none() {
+    public static SideEffectSet none() {
         return NONE;
     }
 }

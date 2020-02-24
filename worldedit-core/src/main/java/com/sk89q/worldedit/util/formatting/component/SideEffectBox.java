@@ -21,7 +21,7 @@ package com.sk89q.worldedit.util.formatting.component;
 
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.util.SideEffect;
-import com.sk89q.worldedit.util.SideEffectApplier;
+import com.sk89q.worldedit.util.SideEffectSet;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
@@ -38,11 +38,9 @@ public class SideEffectBox extends PaginationBox {
 
     private static List<SideEffect> sideEffects;
 
-    private SideEffectApplier sideEffectApplier;
+    private SideEffectSet sideEffectSet;
 
-    public SideEffectBox(SideEffectApplier sideEffectApplier) {
-        super("Side Effects");
-
+    private static List<SideEffect> getSideEffects() {
         if (sideEffects == null) {
             sideEffects = WorldEdit.getInstance().getPlatformManager().getSupportedSideEffects()
                     .stream()
@@ -50,13 +48,19 @@ public class SideEffectBox extends PaginationBox {
                     .collect(Collectors.toList());
         }
 
-        this.sideEffectApplier = sideEffectApplier;
+        return sideEffects;
+    }
+
+    public SideEffectBox(SideEffectSet sideEffectSet) {
+        super("Side Effects");
+
+        this.sideEffectSet = sideEffectSet;
     }
 
     @Override
     public Component getComponent(int number) {
-        SideEffect effect = sideEffects.get(number);
-        SideEffect.State state = this.sideEffectApplier.getState(effect);
+        SideEffect effect = getSideEffects().get(number);
+        SideEffect.State state = this.sideEffectSet.getState(effect);
 
         TextComponent.Builder builder = TextComponent.builder();
         builder = builder.append(TranslatableComponent.of(effect.getDisplayName(), TextColor.YELLOW)
@@ -75,6 +79,6 @@ public class SideEffectBox extends PaginationBox {
 
     @Override
     public int getComponentsSize() {
-        return sideEffects.size();
+        return getSideEffects().size();
     }
 }

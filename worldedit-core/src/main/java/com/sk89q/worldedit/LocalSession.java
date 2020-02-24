@@ -49,7 +49,7 @@ import com.sk89q.worldedit.regions.selector.RegionSelectorType;
 import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.session.request.Request;
 import com.sk89q.worldedit.util.Countable;
-import com.sk89q.worldedit.util.SideEffectApplier;
+import com.sk89q.worldedit.util.SideEffectSet;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;
@@ -99,7 +99,7 @@ public class LocalSession {
     private transient Snapshot snapshotExperimental;
     private transient boolean hasCUISupport = false;
     private transient int cuiVersion = -1;
-    private transient SideEffectApplier sideEffectApplier = SideEffectApplier.defaults();
+    private transient SideEffectSet sideEffectSet = SideEffectSet.defaults();
     private transient Mask mask;
     private transient ZoneId timezone = ZoneId.systemDefault();
     private transient BlockVector3 cuiTemporaryBlock;
@@ -996,7 +996,7 @@ public class LocalSession {
     }
 
     private void prepareEditingExtents(EditSession editSession, Actor actor) {
-        editSession.setSideEffectApplier(sideEffectApplier);
+        editSession.setSideEffectApplier(sideEffectSet);
         editSession.setReorderMode(reorderMode);
         if (editSession.getSurvivalExtent() != null) {
             editSession.getSurvivalExtent().setStripNbt(!actor.hasPermission("worldedit.setnbt"));
@@ -1009,17 +1009,17 @@ public class LocalSession {
      *
      * @return the side effect applier
      */
-    public SideEffectApplier getSideEffectApplier() {
-        return this.sideEffectApplier;
+    public SideEffectSet getSideEffectSet() {
+        return this.sideEffectSet;
     }
 
     /**
      * Sets the side effect applier for this session
      *
-     * @param sideEffectApplier the side effect applier
+     * @param sideEffectSet the side effect applier
      */
-    public void setSideEffectApplier(SideEffectApplier sideEffectApplier) {
-        this.sideEffectApplier = sideEffectApplier;
+    public void setSideEffectSet(SideEffectSet sideEffectSet) {
+        this.sideEffectSet = sideEffectSet;
     }
 
     /**
@@ -1029,7 +1029,7 @@ public class LocalSession {
      */
     @Deprecated
     public boolean hasFastMode() {
-        return !this.sideEffectApplier.doesApplyAny();
+        return !this.sideEffectSet.doesApplyAny();
     }
 
     /**
@@ -1039,7 +1039,7 @@ public class LocalSession {
      */
     @Deprecated
     public void setFastMode(boolean fastMode) {
-        this.sideEffectApplier = fastMode ? SideEffectApplier.none() : SideEffectApplier.defaults();
+        this.sideEffectSet = fastMode ? SideEffectSet.none() : SideEffectSet.defaults();
     }
 
     /**

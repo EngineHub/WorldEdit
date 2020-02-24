@@ -20,6 +20,7 @@
 package com.sk89q.worldedit.sponge;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.entity.Player;
@@ -52,6 +53,7 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import static java.util.stream.Collectors.toList;
 
@@ -195,8 +197,8 @@ class SpongePlatform extends AbstractPlatform implements MultiUserPlatform {
     }
 
     @Override
-    public Collection<SideEffect> getSupportedSideEffects() {
-        return Lists.newArrayList();
+    public Set<SideEffect> getSupportedSideEffects() {
+        return ImmutableSet.of();
     }
 
     @Override

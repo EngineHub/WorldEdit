@@ -19,7 +19,7 @@
 
 package com.sk89q.worldedit.bukkit;
 
-import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Sets;
 import com.sk89q.bukkit.util.CommandInfo;
 import com.sk89q.bukkit.util.CommandRegistration;
 import com.sk89q.worldedit.LocalConfiguration;
@@ -45,9 +45,9 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumMap;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -220,12 +220,12 @@ public class BukkitServerInterface implements MultiUserPlatform {
         return capabilities;
     }
 
-    private static final Collection<SideEffect> SUPPORTED_SIDE_EFFECTS = ImmutableSet.copyOf(EnumSet.of(
+    private static final Set<SideEffect> SUPPORTED_SIDE_EFFECTS = Sets.immutableEnumSet(
             SideEffect.NEIGHBORS
-    ));
+    );
 
     @Override
-    public Collection<SideEffect> getSupportedSideEffects() {
+    public Set<SideEffect> getSupportedSideEffects() {
         if (plugin.getBukkitImplAdapter() != null) {
             return plugin.getBukkitImplAdapter().getSupportedSideEffects();
         }

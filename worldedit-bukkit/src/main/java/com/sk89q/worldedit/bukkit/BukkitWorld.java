@@ -31,7 +31,7 @@ import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.Direction;
-import com.sk89q.worldedit.util.SideEffectApplier;
+import com.sk89q.worldedit.util.SideEffectSet;
 import com.sk89q.worldedit.util.TreeGenerator;
 import com.sk89q.worldedit.world.AbstractWorld;
 import com.sk89q.worldedit.world.biome.BiomeType;
@@ -414,11 +414,11 @@ public class BukkitWorld extends AbstractWorld {
     }
 
     @Override
-    public <B extends BlockStateHolder<B>> boolean setBlock(BlockVector3 position, B block, SideEffectApplier sideEffectApplier) throws WorldEditException {
+    public <B extends BlockStateHolder<B>> boolean setBlock(BlockVector3 position, B block, SideEffectSet sideEffectSet) throws WorldEditException {
         BukkitImplAdapter adapter = WorldEditPlugin.getInstance().getBukkitImplAdapter();
         if (adapter != null) {
             try {
-                return adapter.setBlock(BukkitAdapter.adapt(getWorld(), position), block, sideEffectApplier);
+                return adapter.setBlock(BukkitAdapter.adapt(getWorld(), position), block, sideEffectSet);
             } catch (Exception e) {
                 if (block instanceof BaseBlock && ((BaseBlock) block).getNbtData() != null) {
                     logger.warn("Tried to set a corrupt tile entity at " + position.toString());
@@ -426,12 +426,12 @@ public class BukkitWorld extends AbstractWorld {
                 }
                 e.printStackTrace();
                 Block bukkitBlock = getWorld().getBlockAt(position.getBlockX(), position.getBlockY(), position.getBlockZ());
-                bukkitBlock.setBlockData(BukkitAdapter.adapt(block), sideEffectApplier.doesApplyAny());
+                bukkitBlock.setBlockData(BukkitAdapter.adapt(block), sideEffectSet.doesApplyAny());
                 return true;
             }
         } else {
             Block bukkitBlock = getWorld().getBlockAt(position.getBlockX(), position.getBlockY(), position.getBlockZ());
-            bukkitBlock.setBlockData(BukkitAdapter.adapt(block), sideEffectApplier.doesApplyAny());
+            bukkitBlock.setBlockData(BukkitAdapter.adapt(block), sideEffectSet.doesApplyAny());
             return true;
         }
     }
@@ -447,10 +447,10 @@ public class BukkitWorld extends AbstractWorld {
     }
 
     @Override
-    public boolean notifyBlock(BlockVector3 position, com.sk89q.worldedit.world.block.BlockState previousType, SideEffectApplier sideEffectApplier) throws WorldEditException {
+    public boolean applySideEffects(BlockVector3 position, com.sk89q.worldedit.world.block.BlockState previousType, SideEffectSet sideEffectSet) throws WorldEditException {
         BukkitImplAdapter adapter = WorldEditPlugin.getInstance().getBukkitImplAdapter();
         if (adapter != null) {
-            adapter.notifyAndLightBlock(BukkitAdapter.adapt(getWorld(), position), previousType, sideEffectApplier);
+            adapter.applySideEffects(BukkitAdapter.adapt(getWorld(), position), previousType, sideEffectSet);
             return true;
         }
 

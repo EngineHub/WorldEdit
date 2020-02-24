@@ -44,7 +44,7 @@ import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.SideEffect;
-import com.sk89q.worldedit.util.SideEffectApplier;
+import com.sk89q.worldedit.util.SideEffectSet;
 import com.sk89q.worldedit.util.TreeGenerator.TreeType;
 import com.sk89q.worldedit.world.AbstractWorld;
 import com.sk89q.worldedit.world.biome.BiomeType;
@@ -175,7 +175,7 @@ public class ForgeWorld extends AbstractWorld {
      * @see World#markAndNotifyBlock
      */
     public void markAndNotifyBlock(World world, BlockPos pos, @Nullable Chunk chunk, net.minecraft.block.BlockState blockstate,
-            net.minecraft.block.BlockState newState, SideEffectApplier sideEffectApplier) {
+            net.minecraft.block.BlockState newState, SideEffectSet sideEffectSet) {
         Block block = newState.getBlock();
         net.minecraft.block.BlockState blockstate1 = world.getBlockState(pos);
         if (blockstate1 == newState) {
@@ -185,7 +185,7 @@ public class ForgeWorld extends AbstractWorld {
 
             // Remove redundant branches
             if (world.isRemote || chunk == null || chunk.getLocationType().isAtLeast(ChunkHolder.LocationType.TICKING)) {
-                if (sideEffectApplier.shouldApply(SideEffect.ENTITY_AI)) {
+                if (sideEffectSet.shouldApply(SideEffect.ENTITY_AI)) {
                     world.notifyBlockUpdate(pos, blockstate, newState, UPDATE | NOTIFY);
                 } else {
                     // If we want to skip entity AI, just call the chunk dirty flag.
@@ -193,7 +193,7 @@ public class ForgeWorld extends AbstractWorld {
                 }
             }
 
-            if (!world.isRemote && sideEffectApplier.shouldApply(SideEffect.NEIGHBORS)) {
+            if (!world.isRemote && sideEffectSet.shouldApply(SideEffect.NEIGHBORS)) {
                 world.notifyNeighbors(pos, blockstate.getBlock());
                 if (newState.hasComparatorInputOverride()) {
                     world.updateComparatorOutputLevel(pos, block);
@@ -201,7 +201,7 @@ public class ForgeWorld extends AbstractWorld {
             }
 
             // Make connection updates optional
-            if (sideEffectApplier.shouldApply(SideEffect.CONNECTIONS)) {
+            if (sideEffectSet.shouldApply(SideEffect.CONNECTIONS)) {
                 blockstate.updateDiagonalNeighbors(world, pos, 2);
                 newState.updateNeighbors(world, pos, 2);
                 newState.updateDiagonalNeighbors(world, pos, 2);
@@ -213,7 +213,7 @@ public class ForgeWorld extends AbstractWorld {
     }
 
     @Override
-    public <B extends BlockStateHolder<B>> boolean setBlock(BlockVector3 position, B block, SideEffectApplier sideEffectApplier) throws WorldEditException {
+    public <B extends BlockStateHolder<B>> boolean setBlock(BlockVector3 position, B block, SideEffectSet sideEffectSet) throws WorldEditException {
         checkNotNull(position);
         checkNotNull(block);
 
@@ -248,25 +248,25 @@ public class ForgeWorld extends AbstractWorld {
         }
 
         if (successful) {
-            if (sideEffectApplier.shouldApply(SideEffect.LIGHTING)) {
+            if (sideEffectSet.shouldApply(SideEffect.LIGHTING)) {
                 world.getChunkProvider().getLightManager().checkBlock(pos);
             }
-            markAndNotifyBlock(world, pos, chunk, old, newState, sideEffectApplier);
+            markAndNotifyBlock(world, pos, chunk, old, newState, sideEffectSet);
         }
 
         return successful;
     }
 
     @Override
-    public boolean notifyBlock(BlockVector3 position, BlockState previousType, SideEffectApplier sideEffectApplier) throws WorldEditException {
+    public boolean applySideEffects(BlockVector3 position, BlockState previousType, SideEffectSet sideEffectSet) throws WorldEditException {
         BlockPos pos = new BlockPos(position.getX(), position.getY(), position.getZ());
         net.minecraft.block.BlockState oldData = ForgeAdapter.adapt(previousType);
         net.minecraft.block.BlockState newData = getWorld().getBlockState(pos);
 
-        if (sideEffectApplier.shouldApply(SideEffect.LIGHTING)) {
+        if (sideEffectSet.shouldApply(SideEffect.LIGHTING)) {
             getWorld().getChunkProvider().getLightManager().checkBlock(pos);
         }
-        markAndNotifyBlock(getWorld(), pos, null, oldData, newData, sideEffectApplier); // Update
+        markAndNotifyBlock(getWorld(), pos, null, oldData, newData, sideEffectSet); // Update
         return true;
     }
 

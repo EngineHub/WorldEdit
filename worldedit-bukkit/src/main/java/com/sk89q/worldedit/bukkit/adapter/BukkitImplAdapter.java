@@ -29,7 +29,7 @@ import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.util.SideEffect;
-import com.sk89q.worldedit.util.SideEffectApplier;
+import com.sk89q.worldedit.util.SideEffectSet;
 import com.sk89q.worldedit.world.DataFixer;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;
@@ -42,9 +42,9 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.Collection;
 import java.util.Map;
 import java.util.OptionalInt;
+import java.util.Set;
 
 import javax.annotation.Nullable;
 
@@ -94,20 +94,19 @@ public interface BukkitImplAdapter {
      *
      * @param location the location
      * @param state the block
-     * @param sideEffectApplier side effects to apply
+     * @param sideEffectSet side effects to apply
      * @return true if a block was likely changed
      */
-    boolean setBlock(Location location, BlockStateHolder<?> state, SideEffectApplier sideEffectApplier);
+    boolean setBlock(Location location, BlockStateHolder<?> state, SideEffectSet sideEffectSet);
 
     /**
-     * Notifies the simulation that the block at the given location has
-     * been changed and it must be re-lighted (and issue other events).
+     * Applies side effects on the given block.
      *
      * @param position position of the block
      * @param previousType the type of the previous block that was there
-     * @param sideEffectApplier side effects to apply
+     * @param sideEffectSet side effects to apply
      */
-    void notifyAndLightBlock(Location position, BlockState previousType, SideEffectApplier sideEffectApplier);
+    void applySideEffects(Location position, BlockState previousType, SideEffectSet sideEffectSet);
 
     /**
      * Get the state for the given entity.
@@ -187,7 +186,7 @@ public interface BukkitImplAdapter {
      *
      * @return The side effects that are supported
      */
-    Collection<SideEffect> getSupportedSideEffects();
+    Set<SideEffect> getSupportedSideEffects();
 
     default OptionalInt getInternalBlockStateId(BlockData data) {
         return OptionalInt.empty();

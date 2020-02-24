@@ -29,9 +29,9 @@ import org.enginehub.piston.CommandManager;
 
 import javax.annotation.Nullable;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Represents a platform that WorldEdit has been implemented for.
@@ -177,5 +177,5 @@ public interface Platform {
      */
     Map<Capability, Preference> getCapabilities();
 
-    Collection<SideEffect> getSupportedSideEffects();
+    Set<SideEffect> getSupportedSideEffects();
 }

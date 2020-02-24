@@ -104,7 +104,7 @@ import com.sk89q.worldedit.regions.shape.RegionShape;
 import com.sk89q.worldedit.regions.shape.WorldEditExpressionEnvironment;
 import com.sk89q.worldedit.util.Countable;
 import com.sk89q.worldedit.util.Direction;
-import com.sk89q.worldedit.util.SideEffectApplier;
+import com.sk89q.worldedit.util.SideEffectSet;
 import com.sk89q.worldedit.util.TreeGenerator;
 import com.sk89q.worldedit.util.collection.DoubleArrayList;
 import com.sk89q.worldedit.util.eventbus.EventBus;
@@ -469,21 +469,18 @@ public class EditSession implements Extent, AutoCloseable {
     @Deprecated
     public void setFastMode(boolean enabled) {
         if (worldApplyingExtent != null) {
-            worldApplyingExtent.setSideEffectApplier(enabled ? SideEffectApplier.defaults() : SideEffectApplier.none());
+            worldApplyingExtent.setSideEffectSet(enabled ? SideEffectSet.defaults() : SideEffectSet.none());
         }
     }
 
     /**
      * Set which block updates should occur.
      *
-     * <p>Fast mode may skip lighting checks or adjacent block
-     * notification.</p>
-     *
-     * @param sideEffectApplier side effects to enable
+     * @param sideEffectSet side effects to enable
      */
-    public void setSideEffectApplier(SideEffectApplier sideEffectApplier) {
+    public void setSideEffectApplier(SideEffectSet sideEffectSet) {
         if (worldApplyingExtent != null) {
-            worldApplyingExtent.setSideEffectApplier(sideEffectApplier);
+            worldApplyingExtent.setSideEffectSet(sideEffectSet);
         }
     }
 
@@ -497,14 +494,14 @@ public class EditSession implements Extent, AutoCloseable {
      */
     @Deprecated
     public boolean hasFastMode() {
-        return worldApplyingExtent != null && this.worldApplyingExtent.getSideEffectApplier().doesApplyAny();
+        return worldApplyingExtent != null && this.worldApplyingExtent.getSideEffectSet().doesApplyAny();
     }
 
-    public SideEffectApplier getSideEffectApplier() {
+    public SideEffectSet getSideEffectApplier() {
         if (worldApplyingExtent == null) {
-            return SideEffectApplier.defaults();
+            return SideEffectSet.defaults();
         }
-        return worldApplyingExtent.getSideEffectApplier();
+        return worldApplyingExtent.getSideEffectSet();
     }
 
     /**

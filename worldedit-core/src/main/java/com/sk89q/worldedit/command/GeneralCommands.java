@@ -36,7 +36,7 @@ import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.util.SideEffect;
-import com.sk89q.worldedit.util.SideEffectApplier;
+import com.sk89q.worldedit.util.SideEffectSet;
 import com.sk89q.worldedit.util.formatting.component.InvalidComponentException;
 import com.sk89q.worldedit.util.formatting.component.PaginationBox;
 import com.sk89q.worldedit.util.formatting.component.SideEffectBox;
@@ -142,7 +142,7 @@ public class GeneralCommands {
             @Arg(desc = "The new side effect state", def = "") SideEffect.State newState,
             @Switch(name = 'h', desc = "Show the info box") boolean showInfoBox) {
         if (sideEffect != null) {
-            SideEffect.State currentState = session.getSideEffectApplier().getState(sideEffect);
+            SideEffect.State currentState = session.getSideEffectSet().getState(sideEffect);
             if (newState != null && newState == currentState) {
                 if (!showInfoBox) {
                     actor.printError(TranslatableComponent.of(
@@ -155,7 +155,7 @@ public class GeneralCommands {
             }
 
             if (newState != null) {
-                session.setSideEffectApplier(session.getSideEffectApplier().with(sideEffect, newState));
+                session.setSideEffectSet(session.getSideEffectSet().with(sideEffect, newState));
                 if (!showInfoBox) {
                     actor.printInfo(TranslatableComponent.of(
                             "worldedit.fast.sideeffect.set",
@@ -171,11 +171,11 @@ public class GeneralCommands {
                 ));
             }
         } else if (newState != null) {
-            SideEffectApplier applier = session.getSideEffectApplier();
+            SideEffectSet applier = session.getSideEffectSet();
             for (SideEffect sideEffectEntry : SideEffect.values()) {
                 applier = applier.with(sideEffectEntry, newState);
             }
-            session.setSideEffectApplier(applier);
+            session.setSideEffectSet(applier);
             if (!showInfoBox) {
                 actor.printInfo(TranslatableComponent.of(
                         "worldedit.fast.sideeffect.set-all",
@@ -185,7 +185,7 @@ public class GeneralCommands {
         }
 
         if (sideEffect == null || showInfoBox) {
-            SideEffectBox sideEffectBox = new SideEffectBox(session.getSideEffectApplier());
+            SideEffectBox sideEffectBox = new SideEffectBox(session.getSideEffectSet());
             try {
                 actor.print(sideEffectBox.create(1));
             } catch (InvalidComponentException e) {
