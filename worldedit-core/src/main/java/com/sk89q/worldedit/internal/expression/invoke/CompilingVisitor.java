@@ -612,14 +612,9 @@ class CompilingVisitor extends ExpressionBaseVisitor<MethodHandle> {
 
     @Override
     public MethodHandle visitConstantExpression(ExpressionParser.ConstantExpressionContext ctx) {
-        try {
-            return ExpressionHandles.dropData(
-                MethodHandles.constant(Double.class, Double.parseDouble(ctx.getText()))
-            );
-        } catch (NumberFormatException e) {
-            // Rare, but might happen, e.g. if too many digits
-            throw ExpressionHelper.evalException(ctx, "Invalid constant: " + e.getMessage());
-        }
+        return ExpressionHandles.dropData(
+            MethodHandles.constant(Double.class, Double.parseDouble(ctx.getText()))
+        );
     }
 
     @Override

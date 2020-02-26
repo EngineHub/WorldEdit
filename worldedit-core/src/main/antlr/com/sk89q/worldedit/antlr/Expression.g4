@@ -60,10 +60,11 @@ DEFAULT : 'default' ;
 fragment DIGIT : [0-9] ;
 fragment SIGN : [+-] ;
 fragment EXP_CHAR : [eE] ;
-fragment DECIMAL : '.' DIGIT+ ( EXP_CHAR SIGN? DIGIT+ )? ;
+fragment EXPONENT : EXP_CHAR SIGN? DIGIT+ ;
+fragment DECIMAL : '.' DIGIT+ ;
 
 // All numbers are treated the same. No int/dec divide.
-NUMBER : ( DIGIT+ DECIMAL? | DECIMAL ) ;
+NUMBER : ( DIGIT+ DECIMAL? | DECIMAL ) EXPONENT? ;
 
 ID : [A-Za-z] [0-9A-Za-z_]* ;
 
