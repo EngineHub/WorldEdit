@@ -21,7 +21,6 @@ package com.sk89q.worldedit.internal.expression;
 
 import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.DynamicNode;
-import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
 
@@ -36,6 +35,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.DynamicTest.dynamicTest;
 
 class ExpressionTest extends BaseExpressionTest {
 
@@ -68,7 +68,7 @@ class ExpressionTest extends BaseExpressionTest {
             testCase("return 1; 0", 1)
         );
         return testCases.stream()
-            .map(testCase -> DynamicTest.dynamicTest(
+            .map(testCase -> dynamicTest(
                 testCase.getExpression(),
                 () -> checkTestCase(testCase)
             ));
@@ -77,6 +77,24 @@ class ExpressionTest extends BaseExpressionTest {
     @Test
     void testVariables() {
         assertEquals(8, compile("foo+bar", "foo", "bar").evaluate(5D, 3D), 0);
+
+        // variables need to be assigned first
+        EvaluationException ex = assertThrows(EvaluationException.class,
+            () -> simpleEval("a*=5"));
+        assertTrue(ex.getMessage().contains("not initialized yet"));
+
+        // can't modify e, pi, true, false
+
+    }
+
+    @TestFactory
+    Stream<DynamicNode> testModifyConstants() {
+        return Stream.of("e", "pi", "true", "false").map(constant ->
+            dynamicTest(constant, () -> {
+                EvaluationException ex = assertThrows(EvaluationException.class, () ->
+                    simpleEval(constant + "++"));
+                assertTrue(ex.getMessage().endsWith("'" + constant + "' is not a variable"));
+            }));
     }
 
     @Test
@@ -180,6 +198,16 @@ class ExpressionTest extends BaseExpressionTest {
     }
 
     @Test
+    void testAssignOps() {
+        checkTestCase("a=2; a^=3; a", 8);
+        checkTestCase("a=2; a*=3; a", 6);
+        checkTestCase("a=2; a/=2; a", 1);
+        checkTestCase("a=2; a%=3; a", 2);
+        checkTestCase("a=2; a+=3; a", 5);
+        checkTestCase("a=2; a-=3; a", -1);
+    }
+
+    @Test
     public void testErrors() {
         // test lexer errors
         {
@@ -275,23 +303,104 @@ class ExpressionTest extends BaseExpressionTest {
             "   --c;" +
             "}" +
             "a", 9);
+        checkTestCase("" +
+            "c=5;" +
+            "a=0;" +
+            "do {" +
+            "   ++a;" +
+            "   --c;" +
+            "   if (c == 1) break;" +
+            "} while (c > 0);" +
+            "a", 4);
+        checkTestCase("" +
+            "c=5;" +
+            "a=0;" +
+            "do {" +
+            "   ++a;" +
+            "   if (a < 5) continue;" +
+            "   --c;" +
+            "} while (c > 0);" +
+            "a", 9);
     }
 
     @Test
     public void testFor() throws ExpressionException {
         checkTestCase("a=0; for (i=0; i<5; ++i) { ++a; } a", 5);
         checkTestCase("y=0; for (i=1,5) { y *= 10; y += i; } y", 12345);
+        checkTestCase("" +
+            "a=0;" +
+            "for (c = 5; c > 0; c--) {" +
+            "   ++a;" +
+            "   if (c == 2) break;" +
+            "}" +
+            "a", 4);
+        checkTestCase("" +
+            "a=0;" +
+            "for (c = 5; c > 0; c--) {" +
+            "   if (a > 1) continue;" +
+            "   ++a;" +
+            "}" +
+            "a", 2);
+        checkTestCase("" +
+            "a=0;" +
+            "for (c = 1,5) {" +
+            "   ++a;" +
+            "   if (c == 4) break;" +
+            "}" +
+            "a", 4);
+        checkTestCase("" +
+            "a=0;" +
+            "for (c = 1,5) {" +
+            "   if (a > 1) continue;" +
+            "   ++a;" +
+            "}" +
+            "a", 2);
     }
 
     @Test
     public void testSwitch() throws ExpressionException {
-        checkTestCase("x=1;y=2;z=3;switch (1) { case 1: x=5; break; case 2: y=6; break; default: z=7 } x*100+y*10+z", 523);
-        checkTestCase("x=1;y=2;z=3;switch (2) { case 1: x=5; break; case 2: y=6; break; default: z=7 } x*100+y*10+z", 163);
-        checkTestCase("x=1;y=2;z=3;switch (3) { case 1: x=5; break; case 2: y=6; break; default: z=7 } x*100+y*10+z", 127);
+        checkTestCase("x=1;y=2;z=3;switch (1) { case 1: x=5; break; case 2: y=6; break; default: z=7; break } x*100+y*10+z", 523);
+        checkTestCase("x=1;y=2;z=3;switch (2) { case 1: x=5; break; case 2: y=6; break; default: z=7; break } x*100+y*10+z", 163);
+        checkTestCase("x=1;y=2;z=3;switch (3) { case 1: x=5; break; case 2: y=6; break; default: z=7; break } x*100+y*10+z", 127);
 
         checkTestCase("x=1;y=2;z=3;switch (1) { case 1: x=5; case 2: y=6; default: z=7 } x*100+y*10+z", 567);
         checkTestCase("x=1;y=2;z=3;switch (2) { case 1: x=5; case 2: y=6; default: z=7 } x*100+y*10+z", 167);
         checkTestCase("x=1;y=2;z=3;switch (3) { case 1: x=5; case 2: y=6; default: z=7 } x*100+y*10+z", 127);
+
+        checkTestCase("x=1;y=2;z=3;switch (1) { case 1: x=5; case 2: y=6 } x*100+y*10+z", 563);
+
+        // try to continue in a switch :P
+        {
+            EvaluationException ex = assertThrows(EvaluationException.class, () -> simpleEval("" +
+                "switch(1) {" +
+                "   case 1: continue;" +
+                "}"));
+            assertTrue(ex.getMessage().contains("continue in a switch"));
+        }
+        {
+            EvaluationException ex = assertThrows(EvaluationException.class, () -> simpleEval("" +
+                "switch(1) {" +
+                "   default: continue;" +
+                "}"));
+            assertTrue(ex.getMessage().contains("continue in a switch"));
+        }
+        // duplicate case checks
+        {
+            EvaluationException ex = assertThrows(EvaluationException.class, () -> simpleEval("" +
+                "switch(1) {" +
+                "   case 1: 1;" +
+                "   case 1: 1;" +
+                "}"));
+            assertTrue(ex.getMessage().contains("Duplicate cases"));
+        }
+        {
+            EvaluationException ex = assertThrows(EvaluationException.class, () -> simpleEval("" +
+                "switch(1) {" +
+                "   default: 1;" +
+                "   default: 1;" +
+                "}"));
+            assertTrue(ex.getMessage().contains("Duplicate default cases"));
+        }
     }
 
     @Test
