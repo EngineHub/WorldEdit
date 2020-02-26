@@ -85,6 +85,14 @@ class ExpressionTest extends BaseExpressionTest {
     }
 
     @Test
+    void testPostPreOps() {
+        checkTestCase("a=0; b=a++; a+b", 1);
+        checkTestCase("a=0; b=++a; a+b", 2);
+        checkTestCase("a=0; b=a--; a+b", -1);
+        checkTestCase("a=0; b=--a; a+b", -2);
+    }
+
+    @Test
     public void testErrors() {
         // test lexer errors
         {

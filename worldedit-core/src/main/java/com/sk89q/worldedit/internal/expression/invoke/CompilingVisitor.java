@@ -269,13 +269,14 @@ class CompilingVisitor extends ExpressionBaseVisitor<MethodHandle> {
         return ExpressionHandles.call(data -> {
             LocalSlot.Variable variable = ExpressionHandles.getVariable(data, target);
             double value = variable.getValue();
+            double result = value;
             if (opType == INCREMENT) {
                 value++;
             } else {
                 value--;
             }
             variable.setValue(value);
-            return value;
+            return result;
         });
     }
 
@@ -286,14 +287,13 @@ class CompilingVisitor extends ExpressionBaseVisitor<MethodHandle> {
         return ExpressionHandles.call(data -> {
             LocalSlot.Variable variable = ExpressionHandles.getVariable(data, target);
             double value = variable.getValue();
-            double result = value;
             if (opType == INCREMENT) {
                 value++;
             } else {
                 value--;
             }
             variable.setValue(value);
-            return result;
+            return value;
         });
     }
 
