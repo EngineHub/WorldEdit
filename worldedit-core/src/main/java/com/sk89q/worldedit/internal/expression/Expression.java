@@ -34,6 +34,8 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
  * Compiles and evaluates expressions.
  *
@@ -119,7 +121,9 @@ public class Expression {
 
         Instant deadline = Instant.now().plusMillis(timeout);
         // evaluation exceptions are thrown out of this method
-        return compiledExpression.execute(new ExecutionData(slots, functions, deadline));
+        Double result = compiledExpression.execute(new ExecutionData(slots, functions, deadline));
+        checkNotNull(result, "Expression must result in a value");
+        return result;
     }
 
     public void optimize() {

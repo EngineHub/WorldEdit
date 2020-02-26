@@ -103,6 +103,12 @@ class ExpressionTest extends BaseExpressionTest {
                 () -> compile("x()"));
             assertEquals(0, e.getPosition(), "Error position");
         }
+        {
+            // verify that you must return a value
+            ExpressionException e = assertThrows(ExpressionException.class,
+                () -> compile("return"));
+            assertEquals(6, e.getPosition(), "Error position");
+        }
         assertThrows(ExpressionException.class,
             () -> compile("("));
         assertThrows(ExpressionException.class,
@@ -156,6 +162,24 @@ class ExpressionTest extends BaseExpressionTest {
     public void testWhile() throws ExpressionException {
         checkTestCase("c=5; a=0; while (c > 0) { ++a; --c; } a", 5);
         checkTestCase("c=5; a=0; do { ++a; --c; } while (c > 0); a", 5);
+        checkTestCase("" +
+            "c=5;" +
+            "a=0;" +
+            "while (c > 0) {" +
+            "   ++a;" +
+            "   --c;" +
+            "   if (c == 1) break;" +
+            "}" +
+            "a", 4);
+        checkTestCase("" +
+            "c=5;" +
+            "a=0;" +
+            "while (c > 0) {" +
+            "   ++a;" +
+            "   if (a < 5) continue;" +
+            "   --c;" +
+            "}" +
+            "a", 9);
     }
 
     @Test

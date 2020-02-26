@@ -227,19 +227,12 @@ class CompilingVisitor extends ExpressionBaseVisitor<MethodHandle> {
 
     @Override
     public MethodHandle visitReturnStatement(ExpressionParser.ReturnStatementContext ctx) {
-        // MH:returnValue = (ExecutionData)Double
-        MethodHandle returnValue;
-        if (ctx.value != null) {
-            returnValue = evaluate(ctx.value).handle;
-        } else {
-            returnValue = defaultResult();
-        }
         return MethodHandles.filterArguments(
             // take the (Double)Double return statement
             RETURN_STATEMENT_BASE,
             0,
             // map the Double back to ExecutionData via the returnValue
-            returnValue
+            evaluate(ctx.value).handle
         );
     }
 

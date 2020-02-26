@@ -114,7 +114,7 @@ breakStatement : BREAK ;
 
 continueStatement : CONTINUE ;
 
-returnStatement : RETURN value=expression? ;
+returnStatement : RETURN value=expression ;
 
 switchStatement : SWITCH '(' target=expression ')' '{' (labels+=switchLabel ':' bodies+=statements )+ '}' ;
 
