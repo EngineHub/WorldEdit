@@ -102,6 +102,84 @@ class ExpressionTest extends BaseExpressionTest {
     }
 
     @Test
+    void testComplement() {
+        checkTestCase("~0", ~0);
+        checkTestCase("~1", ~1);
+        checkTestCase("~-1", ~-1);
+        checkTestCase("~-2", ~-2);
+        // it drops the decimal!
+        checkTestCase("~0.1", ~0);
+        checkTestCase("~0.5", ~0);
+        checkTestCase("~1.9", ~1);
+    }
+
+    @Test
+    void testShift() {
+        checkTestCase("1<<4", 1 << 4);
+        // drops both decimals
+        checkTestCase("1.1<<4.1", 1 << 4);
+        checkTestCase("16>>2", 16 >> 2);
+        checkTestCase("16.9>>2.1", 16 >> 2);
+    }
+
+    @Test
+    void testComparisonOps() {
+        checkTestCase("1>=0", 1);
+        checkTestCase("1>0", 1);
+
+        checkTestCase("0>=0", 1);
+        checkTestCase("0>0", 0);
+
+        checkTestCase("0<=1", 1);
+        checkTestCase("0<1", 1);
+
+        checkTestCase("0<=0", 1);
+        checkTestCase("0<0", 0);
+
+        checkTestCase("1>=2", 0);
+        checkTestCase("1>2", 0);
+
+        checkTestCase("0>=1", 0);
+        checkTestCase("0>1", 0);
+
+        checkTestCase("2<=1", 0);
+        checkTestCase("2<1", 0);
+
+        checkTestCase("1<=0", 0);
+        checkTestCase("1<0", 0);
+    }
+
+    @Test
+    void testEqualityOps() {
+        checkTestCase("1==1", 1);
+        checkTestCase("0==1", 0);
+        checkTestCase("1==0", 0);
+
+        checkTestCase("1!=1", 0);
+        checkTestCase("0!=1", 1);
+        checkTestCase("1!=0", 1);
+
+        checkTestCase("1.1==1.1", 1);
+        // These aren't normally equal
+        checkTestCase("1!=0.999999999", 1);
+        // But they are _almost_ equal!
+        checkTestCase("1~=0.999999999", 1);
+        // On the other hand, these aren't
+        checkTestCase("1~=0.9", 0);
+    }
+
+    @Test
+    void testPostfixOps() {
+        checkTestCase("(-1)!", 0);
+        checkTestCase("0!", 1);
+        checkTestCase("1!", 1);
+        checkTestCase("2!", 2);
+        checkTestCase("2000!", Double.POSITIVE_INFINITY);
+        // it truncates
+        checkTestCase("2.9!", 2);
+    }
+
+    @Test
     public void testErrors() {
         // test lexer errors
         {

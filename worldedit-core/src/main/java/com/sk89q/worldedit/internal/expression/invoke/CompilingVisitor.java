@@ -462,8 +462,6 @@ class CompilingVisitor extends ExpressionBaseVisitor<MethodHandle> {
                     return (l, r) -> ExpressionHandles.boolToDouble(l != r);
                 case NEAR:
                     return (l, r) -> ExpressionHandles.boolToDouble(almostEqual2sComplement(l, r));
-                case GREATER_THAN_OR_EQUAL:
-                    return (l, r) -> ExpressionHandles.boolToDouble(l >= r);
             }
             throw ExpressionHelper.evalException(ctx, "Invalid text for equality expr: " + ctx.op.getText());
         });
