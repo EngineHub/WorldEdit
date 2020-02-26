@@ -93,6 +93,15 @@ class ExpressionTest extends BaseExpressionTest {
     }
 
     @Test
+    void testNot() {
+        checkTestCase("!0", 1);
+        checkTestCase("!1", 0);
+        checkTestCase("!2", 0);
+        checkTestCase("!-1", 0);
+        checkTestCase("!-2", 0);
+    }
+
+    @Test
     public void testErrors() {
         // test lexer errors
         {

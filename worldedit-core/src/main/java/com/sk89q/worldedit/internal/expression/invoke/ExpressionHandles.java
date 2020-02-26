@@ -237,7 +237,7 @@ class ExpressionHandles {
     }
 
     private static boolean doubleToBool(double bool) {
-        return bool > 0;
+        return bool != 0;
     }
 
     static double boolToDouble(boolean bool) {
