@@ -21,7 +21,6 @@ package com.sk89q.worldedit.command.argument;
 
 import com.google.common.collect.ImmutableSet;
 import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.command.util.HookMode;
 import com.sk89q.worldedit.util.SideEffect;
 import com.sk89q.worldedit.util.TreeGenerator;

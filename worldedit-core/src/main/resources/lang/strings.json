@@ -342,6 +342,8 @@
     "worldedit.sideeffect.state.on": "On",
     "worldedit.sideeffect.state.delayed": "Delayed",
     "worldedit.sideeffect.state.off": "Off",
+    "worldedit.sideeffect.box.current": "Current",
+    "worldedit.sideeffect.box.change-to": "Click to set to {0}",
 
     "worldedit.help.command-not-found": "The command '{0}' could not be found.",
     "worldedit.help.no-subcommands": "'{0}' has no sub-commands. (Maybe '{1}' is for a parameter?)",

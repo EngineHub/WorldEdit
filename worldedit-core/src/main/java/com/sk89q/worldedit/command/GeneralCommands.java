@@ -37,7 +37,6 @@ import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.util.SideEffect;
 import com.sk89q.worldedit.util.SideEffectSet;
-import com.sk89q.worldedit.util.formatting.component.InvalidComponentException;
 import com.sk89q.worldedit.util.formatting.component.PaginationBox;
 import com.sk89q.worldedit.util.formatting.component.SideEffectBox;
 import com.sk89q.worldedit.util.formatting.text.Component;
@@ -138,12 +137,12 @@ public class GeneralCommands {
     )
     @CommandPermissions("worldedit.fast")
     public void fast(Actor actor, LocalSession session,
-            @Arg(desc = "The side effect", def = "")
-                    SideEffect sideEffect,
-            @Arg(desc = "The new side effect state", def = "")
-                    SideEffect.State newState,
-            @Switch(name = 'h', desc = "Show the info box")
-                    boolean showInfoBox) {
+                    @Arg(desc = "The side effect", def = "")
+                            SideEffect sideEffect,
+                    @Arg(desc = "The new side effect state", def = "")
+                            SideEffect.State newState,
+                    @Switch(name = 'h', desc = "Show the info box")
+                            boolean showInfoBox) throws WorldEditException {
         if (sideEffect != null) {
             SideEffect.State currentState = session.getSideEffectSet().getState(sideEffect);
             if (newState != null && newState == currentState) {
@@ -189,11 +188,7 @@ public class GeneralCommands {
 
         if (sideEffect == null || showInfoBox) {
             SideEffectBox sideEffectBox = new SideEffectBox(session.getSideEffectSet());
-            try {
-                actor.print(sideEffectBox.create(1));
-            } catch (InvalidComponentException e) {
-                e.printStackTrace();
-            }
+            actor.print(sideEffectBox.create(1));
         }
     }
 

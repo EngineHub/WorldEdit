@@ -70,7 +70,8 @@ public class NullWorld extends AbstractWorld {
         return "null";
     }
 
-    @Override public <B extends BlockStateHolder<B>> boolean setBlock(BlockVector3 position, B block, SideEffectSet sideEffectSet) throws WorldEditException {
+    @Override
+    public <B extends BlockStateHolder<B>> boolean setBlock(BlockVector3 position, B block, SideEffectSet sideEffectSet) throws WorldEditException {
         return false;
     }
 

@@ -37,7 +37,7 @@ public class SideEffectSet {
 
     private final Map<SideEffect, SideEffect.State> sideEffects;
     private final Set<SideEffect> appliedSideEffects;
-    private boolean appliesAny;
+    private final boolean appliesAny;
 
     private SideEffectSet() {
         this(ImmutableMap.of());
@@ -46,12 +46,12 @@ public class SideEffectSet {
     public SideEffectSet(Map<SideEffect, SideEffect.State> sideEffects) {
         this.sideEffects = Maps.immutableEnumMap(sideEffects);
 
-        appliesAny = sideEffects.values().stream().anyMatch(state -> state != SideEffect.State.OFF);
         appliedSideEffects = sideEffects.entrySet()
                 .stream()
                 .filter(entry -> entry.getValue() != SideEffect.State.OFF)
                 .map(Map.Entry::getKey)
                 .collect(Collectors.toSet());
+        appliesAny = !appliedSideEffects.isEmpty();
     }
 
     public SideEffectSet with(SideEffect sideEffect, SideEffect.State state) {
