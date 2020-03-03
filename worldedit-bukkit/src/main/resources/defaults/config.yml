@@ -144,7 +144,6 @@ debugging:
 
 wand-item: minecraft:wooden_axe
 shell-save-type:
-no-double-slash: false
 no-op-permissions: false
 debug: false
 show-help-on-first-use: true
