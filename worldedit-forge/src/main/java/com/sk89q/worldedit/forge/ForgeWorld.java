@@ -215,7 +215,7 @@ public class ForgeWorld extends AbstractWorld {
     }
 
     @Override
-    public <B extends BlockStateHolder<B>> boolean setBlock(BlockVector3 position, B block, SideEffectSet sideEffectSet) throws WorldEditException {
+    public <B extends BlockStateHolder<B>> boolean setBlock(BlockVector3 position, B block, SideEffectSet sideEffects) throws WorldEditException {
         checkNotNull(position);
         checkNotNull(block);
 
@@ -250,10 +250,10 @@ public class ForgeWorld extends AbstractWorld {
         }
 
         if (successful) {
-            if (sideEffectSet.getState(SideEffect.LIGHTING) == SideEffect.State.ON) {
+            if (sideEffects.getState(SideEffect.LIGHTING) == SideEffect.State.ON) {
                 world.getChunkProvider().getLightManager().checkBlock(pos);
             }
-            markAndNotifyBlock(world, pos, chunk, old, newState, sideEffectSet);
+            markAndNotifyBlock(world, pos, chunk, old, newState, sideEffects);
         }
 
         return successful;

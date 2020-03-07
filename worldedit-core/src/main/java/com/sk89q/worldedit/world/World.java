@@ -118,7 +118,7 @@ public interface World extends Extent, Keyed {
 
     /**
      * Similar to {@link Extent#setBlock(BlockVector3, BlockStateHolder)} but a
-     * {@code sideEffectSet} parameter indicates which side effects should be applied
+     * {@code sideEffects} parameter indicates which side effects should be applied
      * to the block. This includes block updates, lighting, and others. See {@link SideEffect}
      * for a full list.
      *
@@ -128,10 +128,10 @@ public interface World extends Extent, Keyed {
      *
      * @param position position of the block
      * @param block block to set
-     * @param sideEffectSet which side effects to perform
+     * @param sideEffects which side effects to perform
      * @return true if the block was successfully set (return value may not be accurate)
      */
-    <B extends BlockStateHolder<B>> boolean setBlock(BlockVector3 position, B block, SideEffectSet sideEffectSet) throws WorldEditException;
+    <B extends BlockStateHolder<B>> boolean setBlock(BlockVector3 position, B block, SideEffectSet sideEffects) throws WorldEditException;
 
     /**
      * Notifies the simulation that the block at the given location has
