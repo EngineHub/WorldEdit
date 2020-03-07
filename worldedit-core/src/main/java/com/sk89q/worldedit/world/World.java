@@ -41,9 +41,10 @@ import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.weather.WeatherType;
 
-import javax.annotation.Nullable;
 import java.nio.file.Path;
 import java.util.Set;
+
+import javax.annotation.Nullable;
 
 /**
  * Represents a world (dimension).
@@ -118,10 +119,12 @@ public interface World extends Extent, Keyed {
     /**
      * Similar to {@link Extent#setBlock(BlockVector3, BlockStateHolder)} but a
      * {@code sideEffectSet} parameter indicates which side effects should be applied
-     * to the block. This includes block updates, lighting, and others. {@link SideEffect}.
-     **
-     * <p>On implementations where the world is not simulated, the
-     * {@code sideEffectSet} parameter has no effect either way.</p>
+     * to the block. This includes block updates, lighting, and others. See {@link SideEffect}
+     * for a full list.
+     *
+     * <p>Not all implementations support all side effects. Use
+     * {@link Platform#getSupportedSideEffects()} for a list of supported side effects.
+     * Non-supported side effects will be ignored.</p>
      *
      * @param position position of the block
      * @param block block to set
