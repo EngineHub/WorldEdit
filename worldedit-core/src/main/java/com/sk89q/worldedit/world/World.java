@@ -117,16 +117,11 @@ public interface World extends Extent, Keyed {
 
     /**
      * Similar to {@link Extent#setBlock(BlockVector3, BlockStateHolder)} but a
-     * {@code notifyAndLight} parameter indicates whether adjacent blocks
-     * should be notified that changes have been made and lighting operations
-     * should be executed.
-     *
-     * <p>If it's not possible to skip lighting, or if it's not possible to
-     * avoid notifying adjacent blocks, then attempt to meet the
-     * specification as best as possible.</p>
-     *
+     * {@code sideEffectSet} parameter indicates which side effects should be applied
+     * to the block. This includes block updates, lighting, and others. {@link SideEffect}.
+     **
      * <p>On implementations where the world is not simulated, the
-     * {@code notifyAndLight} parameter has no effect either way.</p>
+     * {@code sideEffectSet} parameter has no effect either way.</p>
      *
      * @param position position of the block
      * @param block block to set
