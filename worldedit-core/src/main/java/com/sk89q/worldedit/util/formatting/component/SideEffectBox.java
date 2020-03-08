@@ -71,7 +71,7 @@ public class SideEffectBox extends PaginationBox {
                     .clickEvent(ClickEvent.runCommand("//fast -h " + effect.name().toLowerCase(Locale.US) + " " + uiState.name().toLowerCase(Locale.US)))
                     .hoverEvent(HoverEvent.showText(uiState == state
                             ? TranslatableComponent.of("worldedit.sideeffect.box.current")
-                            : TranslatableComponent.of("worldedit.sideeffect.box.change-to ", TranslatableComponent.of(uiState.getDisplayName()))
+                            : TranslatableComponent.of("worldedit.sideeffect.box.change-to", TranslatableComponent.of(uiState.getDisplayName()))
                     ))
             );
         }
