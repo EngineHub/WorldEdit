@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.bukkit;
 
+import com.google.common.collect.Sets;
 import com.sk89q.bukkit.util.CommandInfo;
 import com.sk89q.bukkit.util.CommandRegistration;
 import com.sk89q.worldedit.LocalConfiguration;
@@ -30,6 +31,7 @@ import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.extension.platform.MultiUserPlatform;
 import com.sk89q.worldedit.extension.platform.Preference;
 import com.sk89q.worldedit.extension.platform.Watchdog;
+import com.sk89q.worldedit.util.SideEffect;
 import com.sk89q.worldedit.util.concurrency.LazyReference;
 import com.sk89q.worldedit.world.DataFixer;
 import com.sk89q.worldedit.world.registry.Registries;
@@ -44,8 +46,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -216,6 +218,18 @@ public class BukkitServerInterface implements MultiUserPlatform {
         capabilities.put(Capability.USER_COMMANDS, Preference.PREFERRED);
         capabilities.put(Capability.WORLD_EDITING, Preference.PREFER_OTHERS);
         return capabilities;
+    }
+
+    private static final Set<SideEffect> SUPPORTED_SIDE_EFFECTS = Sets.immutableEnumSet(
+            SideEffect.NEIGHBORS
+    );
+
+    @Override
+    public Set<SideEffect> getSupportedSideEffects() {
+        if (plugin.getBukkitImplAdapter() != null) {
+            return plugin.getBukkitImplAdapter().getSupportedSideEffects();
+        }
+        return SUPPORTED_SIDE_EFFECTS;
     }
 
     public void unregisterCommands() {

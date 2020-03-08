@@ -19,10 +19,12 @@
 
 package com.sk89q.worldedit.cli;
 
+import com.google.common.collect.ImmutableSet;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.AbstractPlatform;
 import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.extension.platform.Preference;
+import com.sk89q.worldedit.util.SideEffect;
 import com.sk89q.worldedit.world.DataFixer;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.entity.EntityTypes;
@@ -33,6 +35,7 @@ import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -151,6 +154,11 @@ class CLIPlatform extends AbstractPlatform {
         capabilities.put(Capability.USER_COMMANDS, Preference.NORMAL);
         capabilities.put(Capability.WORLD_EDITING, Preference.PREFERRED);
         return capabilities;
+    }
+
+    @Override
+    public Set<SideEffect> getSupportedSideEffects() {
+        return ImmutableSet.of();
     }
 
     public void addWorld(World world) {

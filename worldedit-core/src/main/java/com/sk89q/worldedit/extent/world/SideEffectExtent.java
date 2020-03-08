@@ -27,64 +27,38 @@ import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.RunContext;
 import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.util.SideEffect;
+import com.sk89q.worldedit.util.SideEffectSet;
+import com.sk89q.worldedit.util.collection.BlockMap;
 import com.sk89q.worldedit.world.World;
+import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
-import com.sk89q.worldedit.world.block.BlockTypes;
 
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
- * Implements "fast mode" which may skip physics, lighting, etc.
+ * An extent that sets blocks in the world, with a {@link SideEffectSet}.
  */
-public class FastModeExtent extends AbstractDelegateExtent {
+public class SideEffectExtent extends AbstractDelegateExtent {
 
     private final World world;
-    private final Set<BlockVector3> positions = new HashSet<>();
+    private final Map<BlockVector3, BlockState> positions = BlockMap.create();
     private final Set<BlockVector2> dirtyChunks = new HashSet<>();
-    private boolean enabled = true;
+    private SideEffectSet sideEffectSet = SideEffectSet.defaults();
     private boolean postEditSimulation;
-
-    /**
-     * Create a new instance with fast mode enabled.
-     *
-     * @param world the world
-     */
-    public FastModeExtent(World world) {
-        this(world, true);
-    }
 
     /**
      * Create a new instance.
      *
      * @param world the world
-     * @param enabled true to enable fast mode
      */
-    public FastModeExtent(World world, boolean enabled) {
+    public SideEffectExtent(World world) {
         super(world);
         checkNotNull(world);
         this.world = world;
-        this.enabled = enabled;
-    }
-
-    /**
-     * Return whether fast mode is enabled.
-     *
-     * @return true if fast mode is enabled
-     */
-    public boolean isEnabled() {
-        return enabled;
-    }
-
-    /**
-     * Set fast mode enable status.
-     *
-     * @param enabled true to enable fast mode
-     */
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
     }
 
     public boolean isPostEditSimulationEnabled() {
@@ -95,26 +69,28 @@ public class FastModeExtent extends AbstractDelegateExtent {
         this.postEditSimulation = enabled;
     }
 
+    public SideEffectSet getSideEffectSet() {
+        return this.sideEffectSet;
+    }
+
+    public void setSideEffectSet(SideEffectSet sideEffectSet) {
+        this.sideEffectSet = sideEffectSet;
+    }
+
     @Override
     public <B extends BlockStateHolder<B>> boolean setBlock(BlockVector3 location, B block) throws WorldEditException {
-        if (enabled || postEditSimulation) {
+        if (sideEffectSet.getState(SideEffect.LIGHTING) == SideEffect.State.DELAYED) {
             dirtyChunks.add(BlockVector2.at(location.getBlockX() >> 4, location.getBlockZ() >> 4));
-
-            if (world.setBlock(location, block, false)) {
-                if (!enabled && postEditSimulation) {
-                    positions.add(location);
-                }
-                return true;
-            }
-
-            return false;
-        } else {
-            return world.setBlock(location, block, true);
         }
+        if (postEditSimulation) {
+            positions.put(location, world.getBlock(location));
+        }
+
+        return world.setBlock(location, block, postEditSimulation ? SideEffectSet.none() : sideEffectSet);
     }
 
     public boolean commitRequired() {
-        return enabled || postEditSimulation;
+        return postEditSimulation || !dirtyChunks.isEmpty();
     }
 
     @Override
@@ -129,11 +105,11 @@ public class FastModeExtent extends AbstractDelegateExtent {
                     world.fixAfterFastMode(dirtyChunks);
                 }
 
-                if (!enabled && postEditSimulation) {
-                    Iterator<BlockVector3> positionIterator = positions.iterator();
+                if (postEditSimulation) {
+                    Iterator<Map.Entry<BlockVector3, BlockState>> positionIterator = positions.entrySet().iterator();
                     while (run.shouldContinue() && positionIterator.hasNext()) {
-                        BlockVector3 position = positionIterator.next();
-                        world.notifyAndLightBlock(position, BlockTypes.AIR.getDefaultState());
+                        Map.Entry<BlockVector3, BlockState> position = positionIterator.next();
+                        world.applySideEffects(position.getKey(), position.getValue(), sideEffectSet);
                         positionIterator.remove();
                     }
 
@@ -148,5 +124,4 @@ public class FastModeExtent extends AbstractDelegateExtent {
             }
         };
     }
-
 }

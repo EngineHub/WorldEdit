@@ -66,6 +66,6 @@
   </module>
   <!-- Validate that command annotations are formatted correctly -->
   <module name="RegexpMultiline">
-    <property name="format" value="^( +)@(Arg|Switch|Command)\(.*?\n\1 {5,}"/>
+    <property name="format" value="^( +)@(Arg|Switch|Command)\(.*?\r?\n\1 {5,}"/>
   </module>
 </module>

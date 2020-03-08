@@ -49,6 +49,7 @@ import com.sk89q.worldedit.regions.selector.RegionSelectorType;
 import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.session.request.Request;
 import com.sk89q.worldedit.util.Countable;
+import com.sk89q.worldedit.util.SideEffectSet;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;
@@ -98,7 +99,7 @@ public class LocalSession {
     private transient Snapshot snapshotExperimental;
     private transient boolean hasCUISupport = false;
     private transient int cuiVersion = -1;
-    private transient boolean fastMode = false;
+    private transient SideEffectSet sideEffectSet = SideEffectSet.defaults();
     private transient Mask mask;
     private transient ZoneId timezone = ZoneId.systemDefault();
     private transient BlockVector3 cuiTemporaryBlock;
@@ -995,7 +996,7 @@ public class LocalSession {
     }
 
     private void prepareEditingExtents(EditSession editSession, Actor actor) {
-        editSession.setFastMode(fastMode);
+        editSession.setSideEffectApplier(sideEffectSet);
         editSession.setReorderMode(reorderMode);
         if (editSession.getSurvivalExtent() != null) {
             editSession.getSurvivalExtent().setStripNbt(!actor.hasPermission("worldedit.setnbt"));
@@ -1004,12 +1005,31 @@ public class LocalSession {
     }
 
     /**
+     * Gets the side effect applier of this session.
+     *
+     * @return the side effect applier
+     */
+    public SideEffectSet getSideEffectSet() {
+        return this.sideEffectSet;
+    }
+
+    /**
+     * Sets the side effect applier for this session
+     *
+     * @param sideEffectSet the side effect applier
+     */
+    public void setSideEffectSet(SideEffectSet sideEffectSet) {
+        this.sideEffectSet = sideEffectSet;
+    }
+
+    /**
      * Checks if the session has fast mode enabled.
      *
      * @return true if fast mode is enabled
      */
+    @Deprecated
     public boolean hasFastMode() {
-        return fastMode;
+        return !this.sideEffectSet.doesApplyAny();
     }
 
     /**
@@ -1017,8 +1037,9 @@ public class LocalSession {
      *
      * @param fastMode true if fast mode is enabled
      */
+    @Deprecated
     public void setFastMode(boolean fastMode) {
-        this.fastMode = fastMode;
+        this.sideEffectSet = fastMode ? SideEffectSet.none() : SideEffectSet.defaults();
     }
 
     /**
