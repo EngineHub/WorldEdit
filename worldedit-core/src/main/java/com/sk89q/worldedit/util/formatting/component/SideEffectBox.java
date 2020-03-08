@@ -57,6 +57,8 @@ public class SideEffectBox extends PaginationBox {
         this.sideEffectSet = sideEffectSet;
     }
 
+    private SideEffect.State[] SHOWN_VALUES = {SideEffect.State.OFF, SideEffect.State.ON};
+
     @Override
     public Component getComponent(int number) {
         SideEffect effect = getSideEffects().get(number);
@@ -65,7 +67,7 @@ public class SideEffectBox extends PaginationBox {
         TextComponent.Builder builder = TextComponent.builder();
         builder = builder.append(TranslatableComponent.of(effect.getDisplayName(), TextColor.YELLOW)
                 .hoverEvent(HoverEvent.of(HoverEvent.Action.SHOW_TEXT, TranslatableComponent.of(effect.getDescription()))));
-        for (SideEffect.State uiState : SideEffect.State.values()) {
+        for (SideEffect.State uiState : SHOWN_VALUES) {
             builder = builder.append(TextComponent.space());
             builder = builder.append(TranslatableComponent.of(uiState.getDisplayName(), uiState == state ? TextColor.WHITE : TextColor.GRAY)
                     .clickEvent(ClickEvent.runCommand("//fast -h " + effect.name().toLowerCase(Locale.US) + " " + uiState.name().toLowerCase(Locale.US)))
