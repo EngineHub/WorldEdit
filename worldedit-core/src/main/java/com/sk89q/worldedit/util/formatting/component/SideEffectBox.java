@@ -57,7 +57,7 @@ public class SideEffectBox extends PaginationBox {
         this.sideEffectSet = sideEffectSet;
     }
 
-    private SideEffect.State[] SHOWN_VALUES = {SideEffect.State.OFF, SideEffect.State.ON};
+    private static final SideEffect.State[] SHOWN_VALUES = {SideEffect.State.OFF, SideEffect.State.ON};
 
     @Override
     public Component getComponent(int number) {
