@@ -307,9 +307,10 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
         File actual = new File(getDataFolder(), name);
         if (!actual.exists()) {
             try {
-                InputStream stream = getResource("defaults/" + name);
-                if (stream == null) throw new FileNotFoundException();
-                copyDefaultConfig(stream, actual, name);
+                try (InputStream stream = getResource("defaults/" + name)) {
+                    if (stream == null) throw new FileNotFoundException();
+                    copyDefaultConfig(stream, actual, name);
+                }
             } catch (IOException e) {
                 getLogger().severe("Unable to read default configuration: " + name);
             }
