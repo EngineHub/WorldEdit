@@ -170,7 +170,13 @@ public class FabricWorld extends AbstractWorld {
         return null;
     }
 
-    public void markAndNotifyBlock(World world, BlockPos pos, @Nullable WorldChunk worldChunk, net.minecraft.block.BlockState blockState,
+    /**
+     * This is a heavily modified function stripped from MC to apply worldedit-modifications.
+     *
+     * It is taken from Forge's World class, not Fabric's. This code should be consistent with the
+     * ForgeWorld code.
+     */
+    private void markAndNotifyBlock(World world, BlockPos pos, WorldChunk worldChunk, net.minecraft.block.BlockState blockState,
             net.minecraft.block.BlockState state, SideEffectSet sideEffectSet) {
         Block block = state.getBlock();
         net.minecraft.block.BlockState blockState2 = world.getBlockState(pos);
@@ -179,7 +185,7 @@ public class FabricWorld extends AbstractWorld {
                 world.checkBlockRerender(pos, blockState, blockState2);
             }
 
-            if (world.isClient || worldChunk.getLevelType() != null && worldChunk.getLevelType().isAfter(ChunkHolder.LevelType.TICKING)) {
+            if (worldChunk.getLevelType().isAfter(ChunkHolder.LevelType.TICKING)) {
                 if (sideEffectSet.shouldApply(SideEffect.ENTITY_AI)) {
                     world.updateListeners(pos, blockState, state, UPDATE | NOTIFY);
                 } else {
@@ -188,14 +194,14 @@ public class FabricWorld extends AbstractWorld {
                 }
             }
 
-            if (!world.isClient && sideEffectSet.shouldApply(SideEffect.NEIGHBORS)) {
+            if (sideEffectSet.shouldApply(SideEffect.NEIGHBORS)) {
                 world.updateNeighbors(pos, blockState.getBlock());
                 if (state.hasComparatorOutput()) {
                     world.updateHorizontalAdjacent(pos, block);
                 }
             }
 
-            if (sideEffectSet.shouldApply(SideEffect.CONNECTIONS)) {
+            if (sideEffectSet.shouldApply(SideEffect.VALIDATION)) {
                 blockState.method_11637(world, pos, 2);
                 state.updateNeighborStates(world, pos, 2);
                 state.method_11637(world, pos, 2);
@@ -250,6 +256,14 @@ public class FabricWorld extends AbstractWorld {
         }
 
         if (successful) {
+            if (sideEffects.shouldApply(SideEffect.VALIDATION)) {
+                net.minecraft.block.BlockState update = Block.getRenderingState(
+                    newState, world, pos
+                );
+                if (update != newState) {
+                    world.setBlockState(pos, update);
+                }
+            }
             if (sideEffects.getState(SideEffect.LIGHTING) == SideEffect.State.ON) {
                 world.getChunkManager().getLightingProvider().checkBlock(pos);
             }
@@ -261,14 +275,17 @@ public class FabricWorld extends AbstractWorld {
 
     @Override
     public Set<SideEffect> applySideEffects(BlockVector3 position, BlockState previousType, SideEffectSet sideEffectSet) throws WorldEditException {
+        World world = getWorldChecked();
         BlockPos pos = new BlockPos(position.getX(), position.getY(), position.getZ());
         net.minecraft.block.BlockState oldData = FabricAdapter.adapt(previousType);
-        net.minecraft.block.BlockState newData = getWorld().getBlockState(pos);
+        net.minecraft.block.BlockState newData = world.getBlockState(pos);
 
         if (sideEffectSet.getState(SideEffect.LIGHTING) == SideEffect.State.ON) {
-            getWorld().getChunkManager().getLightingProvider().checkBlock(pos);
+            world.getChunkManager().getLightingProvider().checkBlock(pos);
         }
-        markAndNotifyBlock(getWorld(), pos, null, oldData, newData, sideEffectSet); // Update
+
+        Chunk chunk = world.getChunk(pos.getX() >> 4, pos.getY() >> 4);
+        markAndNotifyBlock(world, pos, null, oldData, newData, sideEffectSet); // Update
         return Sets.intersection(FabricWorldEdit.inst.getPlatform().getSupportedSideEffects(), sideEffectSet.getSideEffectsToApply());
     }
 

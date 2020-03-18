@@ -176,7 +176,7 @@ public class ForgeWorld extends AbstractWorld {
      *
      * @see World#markAndNotifyBlock
      */
-    public void markAndNotifyBlock(World world, BlockPos pos, @Nullable Chunk chunk, net.minecraft.block.BlockState blockstate,
+    private void markAndNotifyBlock(World world, BlockPos pos, Chunk chunk, net.minecraft.block.BlockState blockstate,
             net.minecraft.block.BlockState newState, SideEffectSet sideEffectSet) {
         Block block = newState.getBlock();
         net.minecraft.block.BlockState blockstate1 = world.getBlockState(pos);
@@ -186,7 +186,7 @@ public class ForgeWorld extends AbstractWorld {
             }
 
             // Remove redundant branches
-            if (world.isRemote || chunk == null || chunk.getLocationType().isAtLeast(ChunkHolder.LocationType.TICKING)) {
+            if (chunk.getLocationType().isAtLeast(ChunkHolder.LocationType.TICKING)) {
                 if (sideEffectSet.shouldApply(SideEffect.ENTITY_AI)) {
                     world.notifyBlockUpdate(pos, blockstate, newState, UPDATE | NOTIFY);
                 } else {
@@ -195,7 +195,7 @@ public class ForgeWorld extends AbstractWorld {
                 }
             }
 
-            if (!world.isRemote && sideEffectSet.shouldApply(SideEffect.NEIGHBORS)) {
+            if (sideEffectSet.shouldApply(SideEffect.NEIGHBORS)) {
                 world.notifyNeighbors(pos, blockstate.getBlock());
                 if (newState.hasComparatorInputOverride()) {
                     world.updateComparatorOutputLevel(pos, block);
@@ -203,7 +203,7 @@ public class ForgeWorld extends AbstractWorld {
             }
 
             // Make connection updates optional
-            if (sideEffectSet.shouldApply(SideEffect.CONNECTIONS)) {
+            if (sideEffectSet.shouldApply(SideEffect.VALIDATION)) {
                 blockstate.updateDiagonalNeighbors(world, pos, 2);
                 newState.updateNeighbors(world, pos, 2);
                 newState.updateDiagonalNeighbors(world, pos, 2);
@@ -250,6 +250,15 @@ public class ForgeWorld extends AbstractWorld {
         }
 
         if (successful) {
+            // update our block first
+            if (sideEffects.shouldApply(SideEffect.VALIDATION)) {
+                net.minecraft.block.BlockState update = Block.getValidBlockForPosition(
+                    newState, world, pos
+                );
+                if (update != newState) {
+                    world.setBlockState(pos, update);
+                }
+            }
             if (sideEffects.getState(SideEffect.LIGHTING) == SideEffect.State.ON) {
                 world.getChunkProvider().getLightManager().checkBlock(pos);
             }
@@ -261,14 +270,17 @@ public class ForgeWorld extends AbstractWorld {
 
     @Override
     public Set<SideEffect> applySideEffects(BlockVector3 position, BlockState previousType, SideEffectSet sideEffectSet) throws WorldEditException {
+        World world = getWorldChecked();
         BlockPos pos = new BlockPos(position.getX(), position.getY(), position.getZ());
         net.minecraft.block.BlockState oldData = ForgeAdapter.adapt(previousType);
-        net.minecraft.block.BlockState newData = getWorld().getBlockState(pos);
+        net.minecraft.block.BlockState newData = world.getBlockState(pos);
 
         if (sideEffectSet.getState(SideEffect.LIGHTING) == SideEffect.State.ON) {
-            getWorld().getChunkProvider().getLightManager().checkBlock(pos);
+            world.getChunkProvider().getLightManager().checkBlock(pos);
         }
-        markAndNotifyBlock(getWorld(), pos, null, oldData, newData, sideEffectSet); // Update
+
+        Chunk chunk = world.getChunk(pos.getX() >> 4, pos.getY() >> 4);
+        markAndNotifyBlock(world, pos, chunk, oldData, newData, sideEffectSet); // Update
         return Sets.intersection(ForgeWorldEdit.inst.getPlatform().getSupportedSideEffects(), sideEffectSet.getSideEffectsToApply());
     }
 
