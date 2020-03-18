@@ -165,7 +165,7 @@ public class ToolCommands {
 
         final ItemType itemType = player.getItemInHand(HandSide.MAIN_HAND).getType();
         session.setTool(itemType, new NavigationWand());
-        player.printInfo(TranslatableComponent.of("worldedit.tool.navWand.equip", TextComponent.of(itemType.getName())));
+        player.printInfo(TranslatableComponent.of("worldedit.tool.navwand.equip", TextComponent.of(itemType.getName())));
     }
 
     @Command(
