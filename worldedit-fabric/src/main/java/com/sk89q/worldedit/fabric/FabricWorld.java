@@ -256,6 +256,7 @@ public class FabricWorld extends AbstractWorld {
         }
 
         if (successful) {
+            // update our block first
             if (sideEffects.shouldApply(SideEffect.VALIDATION)) {
                 net.minecraft.block.BlockState update = Block.getRenderingState(
                     newState, world, pos
