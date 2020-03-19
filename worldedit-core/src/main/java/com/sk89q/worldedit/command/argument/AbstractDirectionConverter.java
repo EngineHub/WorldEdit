@@ -92,7 +92,12 @@ public abstract class AbstractDirectionConverter<D> implements ArgumentConverter
 
     @Override
     public ConversionResult<D> convert(String argument, InjectedValueAccess context) {
-        Player player = context.injectedValue(Key.of(Player.class)).orElse(null);
+        Player player;
+        try {
+            player = context.injectedValue(Key.of(Player.class)).orElse(null);
+        } catch (PlayerRequiredException ex) {
+            player = null;
+        }
         try {
             return SuccessfulConversion.fromSingle(convertDirection(argument, player, includeDiagonals));
         } catch (Exception e) {

@@ -76,6 +76,7 @@ import com.sk89q.worldedit.command.argument.DirectionVectorConverter;
 import com.sk89q.worldedit.command.argument.EntityRemoverConverter;
 import com.sk89q.worldedit.command.argument.EnumConverter;
 import com.sk89q.worldedit.command.argument.FactoryConverter;
+import com.sk89q.worldedit.command.argument.PlayerRequiredException;
 import com.sk89q.worldedit.command.argument.RegionFactoryConverter;
 import com.sk89q.worldedit.command.argument.RegistryConverter;
 import com.sk89q.worldedit.command.argument.SideEffectConverter;
@@ -561,7 +562,7 @@ public final class PlatformCommandManager {
             store.injectValue(Key.of(Player.class), ValueProvider.constant((Player) actor));
         } else {
             store.injectValue(Key.of(Player.class), context -> {
-                throw new CommandException(TranslatableComponent.of("worldedit.command.player-only"), ImmutableList.of());
+                throw new PlayerRequiredException();
             });
         }
         store.injectValue(Key.of(Arguments.class), ValueProvider.constant(arguments));
