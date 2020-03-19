@@ -83,9 +83,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
-import java.util.jar.JarFile;
 import java.util.logging.Level;
-import java.util.zip.ZipEntry;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.sk89q.worldedit.internal.anvil.ChunkDeleter.DELCHUNKS_FILE_NAME;
@@ -308,10 +306,9 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
     protected void createDefaultConfiguration(String name) {
         File actual = new File(getDataFolder(), name);
         if (!actual.exists()) {
-            try (JarFile file = new JarFile(getFile())) {
-                ZipEntry copy = file.getEntry("defaults/" + name);
-                if (copy == null) throw new FileNotFoundException();
-                copyDefaultConfig(file.getInputStream(copy), actual, name);
+            try (InputStream stream = getResource("defaults/" + name)) {
+                if (stream == null) throw new FileNotFoundException();
+                copyDefaultConfig(stream, actual, name);
             } catch (IOException e) {
                 getLogger().severe("Unable to read default configuration: " + name);
             }
