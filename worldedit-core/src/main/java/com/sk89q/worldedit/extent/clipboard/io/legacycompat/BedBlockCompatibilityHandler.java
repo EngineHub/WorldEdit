@@ -82,10 +82,7 @@ public class BedBlockCompatibilityHandler implements NBTCompatibilityHandler {
         return block;
     }
 
-    private String convertBedType(Integer oldType) {
-        if (oldType == null) {
-            return null;
-        }
+    private String convertBedType(int oldType) {
         String color;
         switch (oldType) {
             case 0:

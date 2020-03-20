@@ -109,10 +109,7 @@ public class BannerBlockCompatibilityHandler implements NBTCompatibilityHandler 
         return block;
     }
 
-    private static String convertBannerType(Integer oldType, boolean isWall) {
-        if (oldType == null) {
-            return null;
-        }
+    private static String convertBannerType(int oldType, boolean isWall) {
         String color;
         switch (oldType) {
             case 0:
