@@ -93,29 +93,30 @@ public class ExpandCommands {
             .action(parameters -> {
                 expandVert(
                     requireIV(Key.of(LocalSession.class), "localSession", parameters),
-                    requireIV(Key.of(Player.class), "localSession", parameters)
+                    requireIV(Key.of(Actor.class), "actor", parameters),
+                    requireIV(Key.of(World.class), "world", parameters)
                 );
                 return 1;
             })
             .build();
     }
 
-    private static void expandVert(LocalSession session, Player player) throws IncompleteRegionException {
-        Region region = session.getSelection(player.getWorld());
+    private static void expandVert(LocalSession session, Actor actor, World world) throws IncompleteRegionException {
+        Region region = session.getSelection(world);
         try {
             int oldSize = region.getArea();
             region.expand(
-                BlockVector3.at(0, (player.getWorld().getMaxY() + 1), 0),
-                BlockVector3.at(0, -(player.getWorld().getMaxY() + 1), 0));
-            session.getRegionSelector(player.getWorld()).learnChanges();
+                BlockVector3.at(0, (world.getMaxY() + 1), 0),
+                BlockVector3.at(0, -(world.getMaxY() + 1), 0));
+            session.getRegionSelector(world).learnChanges();
             int newSize = region.getArea();
-            session.getRegionSelector(player.getWorld()).explainRegionAdjust(player, session);
+            session.getRegionSelector(world).explainRegionAdjust(actor, session);
             int changeSize = newSize - oldSize;
-            player.printInfo(
+            actor.printInfo(
                     TranslatableComponent.of("worldedit.expand.expanded.vert", TextComponent.of(changeSize))
             );
         } catch (RegionOperationException e) {
-            player.printError(TextComponent.of(e.getMessage()));
+            actor.printError(TextComponent.of(e.getMessage()));
         }
     }
 
