@@ -17,7 +17,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.forge;
+package com.sk89q.worldedit.forge.internal;
 
 import com.sk89q.jnbt.ByteArrayTag;
 import com.sk89q.jnbt.ByteTag;
@@ -57,7 +57,7 @@ import java.util.Set;
 /**
  * Converts between JNBT and Minecraft NBT classes.
  */
-final class NBTConverter {
+public final class NBTConverter {
 
     private NBTConverter() {
     }

@@ -35,6 +35,7 @@ import com.mojang.datafixers.DataFixerBuilder;
 import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.schemas.Schema;
 import com.sk89q.jnbt.CompoundTag;
+import com.sk89q.worldedit.forge.internal.NBTConverter;
 import net.minecraft.item.DyeColor;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
