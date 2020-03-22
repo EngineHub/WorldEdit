@@ -26,10 +26,7 @@ import javax.annotation.Nullable;
 
 /**
  * Provides information on biomes.
- *
- * @deprecated Not useful any more, all biome data is known via {@link BiomeType}.
  */
-@Deprecated
 public interface BiomeRegistry {
 
     /**

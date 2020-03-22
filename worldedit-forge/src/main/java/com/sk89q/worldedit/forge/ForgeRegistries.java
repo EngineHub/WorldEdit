@@ -33,7 +33,6 @@ class ForgeRegistries extends BundledRegistries {
 
     private static final ForgeRegistries INSTANCE = new ForgeRegistries();
     private final BlockRegistry blockRegistry = new ForgeBlockRegistry();
-    @SuppressWarnings("deprecation")
     private final BiomeRegistry biomeRegistry = new ForgeBiomeRegistry();
     private final ItemRegistry itemRegistry = new ForgeItemRegistry();
     private final BlockCategoryRegistry blockCategoryRegistry = new ForgeBlockCategoryRegistry();
@@ -44,8 +43,6 @@ class ForgeRegistries extends BundledRegistries {
         return blockRegistry;
     }
 
-    @SuppressWarnings("deprecation")
-    @Deprecated
     @Override
     public BiomeRegistry getBiomeRegistry() {
         return biomeRegistry;

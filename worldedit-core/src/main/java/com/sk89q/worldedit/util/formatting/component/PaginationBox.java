@@ -27,7 +27,6 @@ import com.sk89q.worldedit.util.formatting.text.format.TextColor;
 
 import javax.annotation.Nullable;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public abstract class PaginationBox extends MessageBox {
 
@@ -130,26 +129,20 @@ public abstract class PaginationBox extends MessageBox {
     }
 
     public static PaginationBox fromStrings(String header, @Nullable String pageCommand, List<String> lines) {
-        return fromComponents(header, pageCommand, lines.stream()
-            .map(TextComponent::of)
-            .collect(Collectors.toList()));
-    }
-
-    public static PaginationBox fromComponents(String header, @Nullable String pageCommand, List<Component> lines) {
         return new ListPaginationBox(header, pageCommand, lines);
     }
 
     private static class ListPaginationBox extends PaginationBox {
-        private final List<Component> lines;
+        private final List<String> lines;
 
-        ListPaginationBox(String header, String pageCommand, List<Component> lines) {
+        ListPaginationBox(String header, String pageCommand, List<String> lines) {
             super(header, pageCommand);
             this.lines = lines;
         }
 
         @Override
         public Component getComponent(int number) {
-            return lines.get(number);
+            return TextComponent.of(lines.get(number));
         }
 
         @Override

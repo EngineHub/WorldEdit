@@ -33,7 +33,6 @@ class FabricRegistries extends BundledRegistries {
 
     private static final FabricRegistries INSTANCE = new FabricRegistries();
     private final BlockRegistry blockRegistry = new FabricBlockRegistry();
-    @SuppressWarnings("deprecation")
     private final BiomeRegistry biomeRegistry = new FabricBiomeRegistry();
     private final ItemRegistry itemRegistry = new FabricItemRegistry();
     private final BlockCategoryRegistry blockCategoryRegistry = new FabricBlockCategoryRegistry();
@@ -44,8 +43,6 @@ class FabricRegistries extends BundledRegistries {
         return blockRegistry;
     }
 
-    @SuppressWarnings("deprecation")
-    @Deprecated
     @Override
     public BiomeRegistry getBiomeRegistry() {
         return biomeRegistry;

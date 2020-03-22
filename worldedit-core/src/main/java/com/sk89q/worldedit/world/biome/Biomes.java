@@ -35,10 +35,7 @@ import javax.annotation.Nullable;
 
 /**
  * Utility methods related to biomes.
- *
- * @deprecated Only method in this class is being removed.
  */
-@Deprecated
 public final class Biomes {
 
     private Biomes() {
@@ -51,11 +48,8 @@ public final class Biomes {
      * @param name the name to test
      * @param registry a biome registry
      * @return a biome or null
-     * @deprecated Biome names are not known to the server, use {@link BiomeType} if you need to
-     * match / suggest names.
      */
     @Nullable
-    @Deprecated
     public static BiomeType findBiomeByName(Collection<BiomeType> biomes, String name, BiomeRegistry registry) {
         checkNotNull(biomes);
         checkNotNull(name);

@@ -32,7 +32,6 @@ class BukkitRegistries extends BundledRegistries {
 
     private static final BukkitRegistries INSTANCE = new BukkitRegistries();
     private final BlockRegistry blockRegistry = new BukkitBlockRegistry();
-    @SuppressWarnings("deprecation")
     private final BiomeRegistry biomeRegistry = new BukkitBiomeRegistry();
     private final BlockCategoryRegistry blockCategoryRegistry = new BukkitBlockCategoryRegistry();
     private final ItemCategoryRegistry itemCategoryRegistry = new BukkitItemCategoryRegistry();
@@ -48,8 +47,6 @@ class BukkitRegistries extends BundledRegistries {
         return blockRegistry;
     }
 
-    @SuppressWarnings("deprecation")
-    @Deprecated
     @Override
     public BiomeRegistry getBiomeRegistry() {
         return biomeRegistry;

@@ -28,8 +28,6 @@ import javax.annotation.Nullable;
 /**
  * Provides access to biome data in Sponge.
  */
-// for removal with BiomeRegistry
-@Deprecated
 class SpongeBiomeRegistry implements BiomeRegistry {
 
     @Nullable

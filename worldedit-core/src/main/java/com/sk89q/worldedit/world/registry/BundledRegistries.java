@@ -29,7 +29,6 @@ public class BundledRegistries implements Registries {
     private final BundledBlockRegistry blockRegistry = new BundledBlockRegistry();
     private final BundledItemRegistry itemRegistry = new BundledItemRegistry();
     private final NullEntityRegistry entityRegistry = new NullEntityRegistry();
-    @SuppressWarnings("deprecation")
     private final NullBiomeRegistry biomeRegistry = new NullBiomeRegistry();
     private final NullBlockCategoryRegistry blockCategoryRegistry = new NullBlockCategoryRegistry();
     private final NullItemCategoryRegistry itemCategoryRegistry = new NullItemCategoryRegistry();
@@ -55,7 +54,6 @@ public class BundledRegistries implements Registries {
         return entityRegistry;
     }
 
-    @Deprecated
     @Override
     public BiomeRegistry getBiomeRegistry() {
         return biomeRegistry;

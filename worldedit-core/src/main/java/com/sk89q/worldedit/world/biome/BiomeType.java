@@ -23,9 +23,6 @@ import com.sk89q.worldedit.function.pattern.BiomePattern;
 import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.registry.Keyed;
 import com.sk89q.worldedit.registry.NamespacedRegistry;
-import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
-import com.sk89q.worldedit.util.translation.TranslationManager;
 
 /**
  * All the types of biomes in the game.
@@ -48,17 +45,6 @@ public class BiomeType implements Keyed, BiomePattern {
     @Override
     public String getId() {
         return this.id;
-    }
-
-    /**
-     * Gets the name of this biome, usually as a translation key.
-     *
-     * @return the name of the biome
-     */
-    public Component getName() {
-        return TranslatableComponent.of(
-            TranslationManager.makeTranslationKey("biome", this.id)
-        );
     }
 
     @Override

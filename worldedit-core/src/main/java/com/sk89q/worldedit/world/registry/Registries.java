@@ -19,8 +19,6 @@
 
 package com.sk89q.worldedit.world.registry;
 
-import com.sk89q.worldedit.world.biome.BiomeType;
-
 /**
  * Contains getters for the various registries.
  */
@@ -51,9 +49,7 @@ public interface Registries {
      * Get the biome registry.
      *
      * @return the biome registry
-     * @deprecated all biome data is known via {@link BiomeType}.
      */
-    @Deprecated
     BiomeRegistry getBiomeRegistry();
 
     /**

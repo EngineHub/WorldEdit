@@ -27,8 +27,6 @@ import net.minecraft.world.biome.Biome;
 /**
  * Provides access to biome data in Forge.
  */
-// for removal with BiomeRegistry
-@Deprecated
 class ForgeBiomeRegistry implements BiomeRegistry {
 
     @Override
