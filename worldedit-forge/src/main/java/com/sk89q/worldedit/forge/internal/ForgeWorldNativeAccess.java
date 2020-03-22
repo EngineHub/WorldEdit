@@ -76,11 +76,6 @@ public class ForgeWorldNativeAccess implements WorldNativeAccess<Chunk, BlockSta
     }
 
     @Override
-    public void markBlockRangeForRenderUpdate(BlockPos position, BlockState oldState, BlockState newState) {
-        getWorld().markBlockRangeForRenderUpdate(position, oldState, newState);
-    }
-
-    @Override
     public void notifyBlockUpdate(BlockPos position, BlockState oldState, BlockState newState) {
         getWorld().notifyBlockUpdate(position, oldState, newState, UPDATE | NOTIFY);
     }

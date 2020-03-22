@@ -82,11 +82,6 @@ public class FabricWorldNativeAccess implements WorldNativeAccess<WorldChunk, Bl
     }
 
     @Override
-    public void markBlockRangeForRenderUpdate(BlockPos position, BlockState oldState, BlockState newState) {
-        getWorld().checkBlockRerender(position, oldState, newState);
-    }
-
-    @Override
     public void notifyBlockUpdate(BlockPos position, BlockState oldState, BlockState newState) {
         getWorld().updateListeners(position, oldState, newState, UPDATE | NOTIFY);
     }

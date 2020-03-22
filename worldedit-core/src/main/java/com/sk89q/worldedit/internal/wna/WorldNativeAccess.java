@@ -100,8 +100,6 @@ public interface WorldNativeAccess<NC, NBS, NP> {
 
     boolean updateTileEntity(NP position, CompoundTag tag);
 
-    void markBlockRangeForRenderUpdate(NP position, NBS oldState, NBS newState);
-
     void notifyBlockUpdate(NP position, NBS oldState, NBS newState);
 
     boolean isChunkTicking(NC chunk);
@@ -123,9 +121,6 @@ public interface WorldNativeAccess<NC, NBS, NP> {
         NBS blockState1 = getBlockState(chunk, pos);
         if (blockState1 != newState) {
             return;
-        }
-        if (oldState != newState) {
-            markBlockRangeForRenderUpdate(pos, oldState, newState);
         }
 
         // Remove redundant branches
