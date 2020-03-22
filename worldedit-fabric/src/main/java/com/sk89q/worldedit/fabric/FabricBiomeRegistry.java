@@ -32,7 +32,7 @@ import net.minecraft.world.biome.Biome;
 class FabricBiomeRegistry implements BiomeRegistry {
 
     @Override
-    public Component getName(BiomeType biomeType) {
+    public Component getRichName(BiomeType biomeType) {
         return TranslatableComponent.of(FabricAdapter.adapt(biomeType).getTranslationKey());
     }
 

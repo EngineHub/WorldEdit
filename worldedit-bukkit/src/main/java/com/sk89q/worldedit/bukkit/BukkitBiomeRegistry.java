@@ -38,7 +38,7 @@ class BukkitBiomeRegistry implements BiomeRegistry {
     }
 
     @Override
-    public Component getName(BiomeType biomeType) {
+    public Component getRichName(BiomeType biomeType) {
         return TranslatableComponent.of(
             TranslationManager.makeTranslationKey("biome", biomeType.getId())
         );

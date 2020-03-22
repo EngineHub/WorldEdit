@@ -34,7 +34,7 @@ import javax.annotation.Nullable;
 class SpongeBiomeRegistry implements BiomeRegistry {
 
     @Override
-    public Component getName(com.sk89q.worldedit.world.biome.BiomeType biomeType) {
+    public Component getRichName(com.sk89q.worldedit.world.biome.BiomeType biomeType) {
         return TranslatableComponent.of(
             TranslationManager.makeTranslationKey("biome", biomeType.getId())
         );

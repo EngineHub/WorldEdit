@@ -32,7 +32,7 @@ import net.minecraft.world.biome.Biome;
 class ForgeBiomeRegistry implements BiomeRegistry {
 
     @Override
-    public Component getName(BiomeType biomeType) {
+    public Component getRichName(BiomeType biomeType) {
         return TranslatableComponent.of(ForgeAdapter.adapt(biomeType).getTranslationKey());
     }
 

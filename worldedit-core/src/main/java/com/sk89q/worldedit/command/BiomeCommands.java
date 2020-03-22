@@ -96,7 +96,7 @@ public class BiomeCommands {
                             .map(biomeType -> TextComponent.builder()
                                 .append(biomeType.getId())
                                 .append(" (")
-                                .append(biomeRegistry.getName(biomeType))
+                                .append(biomeRegistry.getRichName(biomeType))
                                 .append(")")
                                 .build())
                             .collect(Collectors.toList()));
@@ -154,7 +154,7 @@ public class BiomeCommands {
         }
 
         List<Component> components = biomes.stream().map(biome ->
-            biomeRegistry.getName(biome).hoverEvent(
+            biomeRegistry.getRichName(biome).hoverEvent(
                 HoverEvent.showText(TextComponent.of(biome.getId()))
             )
         ).collect(Collectors.toList());

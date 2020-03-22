@@ -36,7 +36,7 @@ public interface BiomeRegistry {
      * @param biomeType the biome type
      * @return the name of the biome
      */
-    Component getName(BiomeType biomeType);
+    Component getRichName(BiomeType biomeType);
 
     /**
      * Get data about a biome.
@@ -44,7 +44,7 @@ public interface BiomeRegistry {
      * @param biome the biome
      * @return a data object or null if information is not known
      * @deprecated This method no longer returns any useful information.
-     *     Use {@link #getName(BiomeType)} for the name of the biome.
+     *     Use {@link #getRichName(BiomeType)} for the name of the biome.
      */
     @Deprecated
     @Nullable
