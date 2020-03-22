@@ -23,15 +23,9 @@ import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.fabric.FabricAdapter;
 import com.sk89q.worldedit.fabric.FabricPlayer;
 import com.sk89q.worldedit.fabric.FabricWorldEdit;
-import net.fabricmc.fabric.api.network.PacketConsumer;
-import net.fabricmc.fabric.api.network.PacketContext;
 import net.fabricmc.fabric.api.network.ServerSidePacketRegistry;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.packet.CustomPayloadS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.network.packet.CustomPayloadC2SPacket;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.PacketByteBuf;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
