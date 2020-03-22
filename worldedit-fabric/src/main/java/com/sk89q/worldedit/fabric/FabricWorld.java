@@ -32,6 +32,8 @@ import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
+import com.sk89q.worldedit.fabric.internal.FabricWorldNativeAccess;
+import com.sk89q.worldedit.fabric.internal.NBTConverter;
 import com.sk89q.worldedit.internal.Constants;
 import com.sk89q.worldedit.internal.block.BlockStateIdAccess;
 import com.sk89q.worldedit.internal.util.BiomeMath;
@@ -61,7 +63,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.WorldGenerationProgressListener;
-import net.minecraft.server.world.ChunkHolder;
 import net.minecraft.server.world.ServerChunkManager;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
@@ -108,6 +109,7 @@ public class FabricWorld extends AbstractWorld {
     private static final int UPDATE = 1, NOTIFY = 2;
 
     private final WeakReference<World> worldRef;
+    private final FabricWorldNativeAccess worldNativeAccess;
 
     /**
      * Construct a new world.
@@ -117,6 +119,7 @@ public class FabricWorld extends AbstractWorld {
     FabricWorld(World world) {
         checkNotNull(world);
         this.worldRef = new WeakReference<>(world);
+        this.worldNativeAccess = new FabricWorldNativeAccess(worldRef);
     }
 
     /**
@@ -170,123 +173,14 @@ public class FabricWorld extends AbstractWorld {
         return null;
     }
 
-    /**
-     * This is a heavily modified function stripped from MC to apply worldedit-modifications.
-     *
-     * It is taken from Forge's World class, not Fabric's. This code should be consistent with the
-     * ForgeWorld code.
-     */
-    private void markAndNotifyBlock(World world, BlockPos pos, WorldChunk worldChunk, net.minecraft.block.BlockState blockState,
-            net.minecraft.block.BlockState state, SideEffectSet sideEffectSet) {
-        Block block = state.getBlock();
-        net.minecraft.block.BlockState blockState2 = world.getBlockState(pos);
-        if (blockState2 == state) {
-            if (blockState != blockState2) {
-                world.checkBlockRerender(pos, blockState, blockState2);
-            }
-
-            if (worldChunk.getLevelType().isAfter(ChunkHolder.LevelType.TICKING)) {
-                if (sideEffectSet.shouldApply(SideEffect.ENTITY_AI)) {
-                    world.updateListeners(pos, blockState, state, UPDATE | NOTIFY);
-                } else {
-                    // If we want to skip entity AI, just call the chunk dirty flag.
-                    ((ServerChunkManager) world.getChunkManager()).markForUpdate(pos);
-                }
-            }
-
-            if (sideEffectSet.shouldApply(SideEffect.NEIGHBORS)) {
-                world.updateNeighbors(pos, blockState.getBlock());
-                if (state.hasComparatorOutput()) {
-                    world.updateHorizontalAdjacent(pos, block);
-                }
-            }
-
-            if (sideEffectSet.shouldApply(SideEffect.VALIDATION)) {
-                blockState.method_11637(world, pos, 2);
-                state.updateNeighborStates(world, pos, 2);
-                state.method_11637(world, pos, 2);
-            }
-
-            // This is disabled for other platforms, but keep it for mods.
-            world.onBlockChanged(pos, blockState, blockState2);
-        }
-    }
-
     @Override
     public <B extends BlockStateHolder<B>> boolean setBlock(BlockVector3 position, B block, SideEffectSet sideEffects) throws WorldEditException {
-        checkNotNull(position);
-        checkNotNull(block);
-
-        World world = getWorldChecked();
-        int x = position.getBlockX();
-        int y = position.getBlockY();
-        int z = position.getBlockZ();
-
-        // First set the block
-        WorldChunk chunk = world.getChunk(x >> 4, z >> 4);
-        BlockPos pos = new BlockPos(x, y, z);
-        net.minecraft.block.BlockState old = chunk.getBlockState(pos);
-        int stateId = BlockStateIdAccess.getBlockStateId(block.toImmutableState());
-        net.minecraft.block.BlockState newState =
-            BlockStateIdAccess.isValidInternalId(stateId)
-                ? Block.getStateFromRawId(stateId)
-                : FabricAdapter.adapt(block.toImmutableState());
-        net.minecraft.block.BlockState successState = chunk.setBlockState(pos, newState, false);
-        boolean successful = successState != null;
-
-        // Create the TileEntity
-        if (successful || old == newState) {
-            if (block instanceof BaseBlock) {
-                CompoundTag tag = ((BaseBlock) block).getNbtData();
-                if (tag != null) {
-                    tag = tag.createBuilder()
-                        .putInt("x", x)
-                        .putInt("y", y)
-                        .putInt("z", z)
-                        .build();
-                    net.minecraft.nbt.CompoundTag nativeTag = NBTConverter.toNative(tag);
-                    BlockEntity tileEntity = getWorld().getWorldChunk(pos).getBlockEntity(pos);
-                    if (tileEntity != null) {
-                        tileEntity.setLocation(world, pos);
-                        tileEntity.fromTag(nativeTag);
-                        successful = true; // update if TE changed as well
-                    }
-                }
-            }
-        }
-
-        if (successful) {
-            // update our block first
-            if (sideEffects.shouldApply(SideEffect.VALIDATION)) {
-                net.minecraft.block.BlockState update = Block.getRenderingState(
-                    newState, world, pos
-                );
-                if (update != newState) {
-                    world.setBlockState(pos, update);
-                }
-            }
-            if (sideEffects.getState(SideEffect.LIGHTING) == SideEffect.State.ON) {
-                world.getChunkManager().getLightingProvider().checkBlock(pos);
-            }
-            markAndNotifyBlock(world, pos, chunk, old, newState, sideEffects);
-        }
-
-        return successful;
+        return worldNativeAccess.setBlock(position, block, sideEffects);
     }
 
     @Override
     public Set<SideEffect> applySideEffects(BlockVector3 position, BlockState previousType, SideEffectSet sideEffectSet) throws WorldEditException {
-        World world = getWorldChecked();
-        BlockPos pos = new BlockPos(position.getX(), position.getY(), position.getZ());
-        net.minecraft.block.BlockState oldData = FabricAdapter.adapt(previousType);
-        net.minecraft.block.BlockState newData = world.getBlockState(pos);
-
-        if (sideEffectSet.getState(SideEffect.LIGHTING) == SideEffect.State.ON) {
-            world.getChunkManager().getLightingProvider().checkBlock(pos);
-        }
-
-        Chunk chunk = world.getChunk(pos.getX() >> 4, pos.getY() >> 4);
-        markAndNotifyBlock(world, pos, null, oldData, newData, sideEffectSet); // Update
+        worldNativeAccess.applySideEffects(position, previousType, sideEffectSet);
         return Sets.intersection(FabricWorldEdit.inst.getPlatform().getSupportedSideEffects(), sideEffectSet.getSideEffectsToApply());
     }
 

@@ -54,8 +54,8 @@ public interface WorldNativeAccess<NC, NBS, NP> {
                         .putInt("y", position.getY())
                         .putInt("z", position.getZ())
                         .build();
-                    updateTileEntity(pos, tag);
-                    successful = true; // update if TE changed as well
+                    // update if TE changed as well
+                    successful = updateTileEntity(pos, tag);
                 }
             }
         }
@@ -98,7 +98,7 @@ public interface WorldNativeAccess<NC, NBS, NP> {
 
     void updateLightingForBlock(NP position);
 
-    void updateTileEntity(NP position, CompoundTag tag);
+    boolean updateTileEntity(NP position, CompoundTag tag);
 
     void markBlockRangeForRenderUpdate(NP position, NBS oldState, NBS newState);
 

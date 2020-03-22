@@ -70,9 +70,9 @@ public class ForgeWorldNativeAccess implements WorldNativeAccess<Chunk, BlockSta
     }
 
     @Override
-    public void updateTileEntity(BlockPos position, CompoundTag tag) {
+    public boolean updateTileEntity(BlockPos position, CompoundTag tag) {
         CompoundNBT nativeTag = NBTConverter.toNative(tag);
-        TileEntityUtils.setTileEntity(getWorld(), position, nativeTag);
+        return TileEntityUtils.setTileEntity(getWorld(), position, nativeTag);
     }
 
     @Override

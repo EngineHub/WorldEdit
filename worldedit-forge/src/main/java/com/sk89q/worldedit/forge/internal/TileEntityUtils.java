@@ -40,11 +40,13 @@ public final class TileEntityUtils {
      * @param position the position
      * @param tag the tag for the tile entity
      */
-    static void setTileEntity(World world, BlockPos position, CompoundNBT tag) {
+    static boolean setTileEntity(World world, BlockPos position, CompoundNBT tag) {
         TileEntity tileEntity = TileEntity.create(tag);
-        if (tileEntity != null) {
-            world.setTileEntity(new BlockPos(position.getX(), position.getY(), position.getZ()), tileEntity);
+        if (tileEntity == null) {
+            return false;
         }
+        world.setTileEntity(new BlockPos(position.getX(), position.getY(), position.getZ()), tileEntity);
+        return true;
     }
 
     public static CompoundNBT copyNbtData(TileEntity tile) {
