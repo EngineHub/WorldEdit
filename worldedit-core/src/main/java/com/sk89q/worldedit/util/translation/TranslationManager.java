@@ -63,6 +63,11 @@ public class TranslationManager {
     private static final Gson gson = new GsonBuilder().create();
     private static final Type STRING_MAP_TYPE = new TypeToken<Map<String, String>>() {}.getType();
 
+    public static String makeTranslationKey(String type, String id) {
+        String[] parts = id.split(":", 2);
+        return type + '.' + parts[0] + '.' + parts[1].replace('/', '.');
+    }
+
     private final Map<Locale, Map<String, String>> translationMap = new ConcurrentHashMap<>();
     private final TranslatableComponentRenderer<Locale> friendlyComponentRenderer = TranslatableComponentRenderer.from(
         (locale, key) -> {

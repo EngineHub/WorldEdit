@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.world.registry;
 
+import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.world.biome.BiomeData;
 import com.sk89q.worldedit.world.biome.BiomeType;
 
@@ -30,11 +31,22 @@ import javax.annotation.Nullable;
 public interface BiomeRegistry {
 
     /**
+     * Get the name of the biome, usually as a translatable component.
+     *
+     * @param biomeType the biome type
+     * @return the name of the biome
+     */
+    Component getName(BiomeType biomeType);
+
+    /**
      * Get data about a biome.
      *
      * @param biome the biome
      * @return a data object or null if information is not known
+     * @deprecated This method no longer returns any useful information.
+     *     Use {@link #getName(BiomeType)} for the name of the biome.
      */
+    @Deprecated
     @Nullable
     BiomeData getData(BiomeType biome);
 
