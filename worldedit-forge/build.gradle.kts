@@ -12,6 +12,9 @@ applyPlatformAndCoreConfiguration()
 applyShadowConfiguration()
 
 val minecraftVersion = "1.15.2"
+val nextMajorMinecraftVersion: String = minecraftVersion.split('.').let { (useless, major) ->
+    "$useless.${major.toInt() + 1}"
+}
 val mappingsMinecraftVersion = "1.15.1"
 val forgeVersion = "31.0.14"
 
@@ -57,18 +60,22 @@ configure<BasePluginConvention> {
 
 tasks.named<Copy>("processResources") {
     // this will ensure that this task is redone when the versions change.
-    inputs.property("version", project.ext["internalVersion"])
-    inputs.property("forgeVersion", forgeVersion)
+    val properties = mapOf(
+            "version" to project.ext["internalVersion"],
+            "forgeVersion" to forgeVersion,
+            "minecraftVersion" to minecraftVersion,
+            "nextMajorMinecraftVersion" to nextMajorMinecraftVersion
+    )
+    properties.forEach { (key, value) ->
+        inputs.property(key, value)
+    }
 
     // replace stuff in mcmod.info, nothing else
     from(sourceSets["main"].resources.srcDirs) {
         include("META-INF/mods.toml")
 
         // replace version and mcversion
-        expand(
-                "version" to project.ext["internalVersion"],
-                "forgeVersion" to forgeVersion
-        )
+        expand(properties)
     }
 
     // copy everything else except the mcmod.info

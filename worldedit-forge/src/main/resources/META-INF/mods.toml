@@ -23,6 +23,12 @@ description='''
 WorldEdit is an easy-to-use in-game world editor for Minecraft, supporting both single- and multi-player.
 '''
 [[dependencies.worldedit]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[${minecraftVersion},${nextMajorMinecraftVersion})"
+    ordering="NONE"
+    side="BOTH"
+[[dependencies.worldedit]]
     modId="forge"
     mandatory=true
     versionRange="[${forgeVersion},)"
