@@ -42,7 +42,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import javax.annotation.Nullable;
-import java.lang.ref.WeakReference;
 import java.util.Map;
 import java.util.OptionalInt;
 import java.util.Set;
@@ -94,7 +93,7 @@ public interface BukkitImplAdapter {
      * @param world the world reference
      * @return the native access object
      */
-    WorldNativeAccess<?, ?, ?> createWorldNativeAccess(WeakReference<World> world);
+    WorldNativeAccess<?, ?, ?> createWorldNativeAccess(World world);
 
     /**
      * Get the state for the given entity.

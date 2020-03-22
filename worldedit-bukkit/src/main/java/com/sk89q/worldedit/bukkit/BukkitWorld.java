@@ -91,7 +91,7 @@ public class BukkitWorld extends AbstractWorld {
         this.worldRef = new WeakReference<>(world);
         BukkitImplAdapter adapter = WorldEditPlugin.getInstance().getBukkitImplAdapter();
         if (adapter != null) {
-            this.worldNativeAccess = adapter.createWorldNativeAccess(worldRef);
+            this.worldNativeAccess = adapter.createWorldNativeAccess(world);
         } else {
             this.worldNativeAccess = null;
         }
