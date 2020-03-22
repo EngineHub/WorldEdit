@@ -23,6 +23,8 @@ import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.worldedit.forge.ForgeAdapter;
 import com.sk89q.worldedit.internal.block.BlockStateIdAccess;
 import com.sk89q.worldedit.internal.wna.WorldNativeAccess;
+import com.sk89q.worldedit.util.SideEffect;
+import com.sk89q.worldedit.util.SideEffectSet;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundNBT;
@@ -40,6 +42,7 @@ public class ForgeWorldNativeAccess implements WorldNativeAccess<Chunk, BlockSta
     private static final int UPDATE = 1, NOTIFY = 2;
 
     private final WeakReference<World> world;
+    private SideEffectSet sideEffectSet;
 
     public ForgeWorldNativeAccess(WeakReference<World> world) {
         this.world = world;
@@ -47,6 +50,11 @@ public class ForgeWorldNativeAccess implements WorldNativeAccess<Chunk, BlockSta
 
     private World getWorld() {
         return Objects.requireNonNull(world.get(), "The reference to the world was lost");
+    }
+
+    @Override
+    public void setCurrentSideEffectSet(SideEffectSet sideEffectSet) {
+        this.sideEffectSet = sideEffectSet;
     }
 
     @Override
@@ -111,9 +119,21 @@ public class ForgeWorldNativeAccess implements WorldNativeAccess<Chunk, BlockSta
 
     @Override
     public void notifyNeighbors(BlockPos pos, BlockState oldState, BlockState newState) {
-        getWorld().notifyNeighbors(pos, oldState.getBlock());
+        World world = getWorld();
+        if (sideEffectSet.shouldApply(SideEffect.EVENTS)) {
+            world.notifyNeighbors(pos, oldState.getBlock());
+        } else {
+            // Manually update each side
+            Block block = oldState.getBlock();
+            world.neighborChanged(pos.west(), block, pos);
+            world.neighborChanged(pos.east(), block, pos);
+            world.neighborChanged(pos.down(), block, pos);
+            world.neighborChanged(pos.up(), block, pos);
+            world.neighborChanged(pos.north(), block, pos);
+            world.neighborChanged(pos.south(), block, pos);
+        }
         if (newState.hasComparatorInputOverride()) {
-            getWorld().updateComparatorOutputLevel(pos, newState.getBlock());
+            world.updateComparatorOutputLevel(pos, newState.getBlock());
         }
     }
 
