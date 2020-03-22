@@ -29,6 +29,8 @@ import javax.annotation.Nullable;
 /**
  * A biome registry for Bukkit.
  */
+// to be removed with BiomeRegistry
+@Deprecated
 class BukkitBiomeRegistry implements BiomeRegistry {
 
     BukkitBiomeRegistry() {

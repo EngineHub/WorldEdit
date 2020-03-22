@@ -27,6 +27,8 @@ import javax.annotation.Nullable;
 /**
  * A biome registry that knows nothing.
  */
+// for removal with BiomeRegistry
+@Deprecated
 public class NullBiomeRegistry implements BiomeRegistry {
 
     /**

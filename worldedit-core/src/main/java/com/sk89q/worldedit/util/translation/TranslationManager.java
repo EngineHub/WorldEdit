@@ -28,6 +28,7 @@ import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.renderer.FriendlyComponentRenderer;
 import com.sk89q.worldedit.util.io.ResourceLoader;
 
+import javax.annotation.Nullable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -62,6 +63,11 @@ public class TranslationManager {
 
     private static final Gson gson = new GsonBuilder().create();
     private static final Type STRING_MAP_TYPE = new TypeToken<Map<String, String>>() {}.getType();
+
+    public static String makeTranslationKey(String type, String id) {
+        String[] parts = id.split(":", 2);
+        return type + '.' + parts[0] + '.' + parts[1].replace('/', '.');
+    }
 
     private final Map<Locale, Map<String, String>> translationMap = new ConcurrentHashMap<>();
     private final FriendlyComponentRenderer<Locale> friendlyComponentRenderer = FriendlyComponentRenderer.from(

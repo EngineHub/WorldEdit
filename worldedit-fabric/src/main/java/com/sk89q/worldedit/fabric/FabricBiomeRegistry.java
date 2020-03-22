@@ -27,6 +27,8 @@ import net.minecraft.world.biome.Biome;
 /**
  * Provides access to biome data in Fabric.
  */
+// for removal with BiomeRegistry
+@Deprecated
 class FabricBiomeRegistry implements BiomeRegistry {
 
     @Override

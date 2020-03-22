@@ -28,8 +28,11 @@ import com.sk89q.worldedit.world.registry.BundledRegistries;
 class SpongeRegistries extends BundledRegistries {
 
     private static final SpongeRegistries INSTANCE = new SpongeRegistries();
+    @SuppressWarnings("deprecation")
     private final BiomeRegistry biomeRegistry = new SpongeBiomeRegistry();
 
+    @SuppressWarnings("deprecation")
+    @Deprecated
     @Override
     public BiomeRegistry getBiomeRegistry() {
         return biomeRegistry;
