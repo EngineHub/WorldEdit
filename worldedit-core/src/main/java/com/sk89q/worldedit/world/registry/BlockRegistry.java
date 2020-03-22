@@ -20,13 +20,13 @@
 package com.sk89q.worldedit.world.registry;
 
 import com.sk89q.worldedit.registry.state.Property;
+import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockType;
 
+import javax.annotation.Nullable;
 import java.util.Map;
 import java.util.OptionalInt;
-
-import javax.annotation.Nullable;
 
 /**
  * Provides information on blocks and provides methods to create them.
@@ -37,10 +37,22 @@ public interface BlockRegistry {
      * Gets the name for the given block.
      *
      * @param blockType the block
-     * @return The name, or null if it's unknown
+     * @return The name
      */
+    Component getRichName(BlockType blockType);
+
+    /**
+     * Gets the name for the given block.
+     *
+     * @param blockType the block
+     * @return The name, or null if it's unknown
+     * @deprecated Names are now translatable, use {@link #getRichName(BlockType)}.
+     */
+    @Deprecated
     @Nullable
-    String getName(BlockType blockType);
+    default String getName(BlockType blockType) {
+        return getRichName(blockType).toString();
+    }
 
     /**
      * Get the material for the given block.

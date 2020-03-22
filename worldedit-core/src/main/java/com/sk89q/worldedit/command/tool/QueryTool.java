@@ -56,7 +56,7 @@ public class QueryTool implements BlockTool {
 
         TextComponent.Builder builder = TextComponent.builder();
         builder.append(TextComponent.of("@" + clicked.toVector().toBlockPoint() + ": ", TextColor.BLUE));
-        builder.append(TextComponent.of(block.getBlockType().getName(), TextColor.YELLOW));
+        builder.append(block.getBlockType().getRichName().color(TextColor.YELLOW));
         builder.append(TextComponent.of(" (" + block + ") ", TextColor.GRAY)
                 .hoverEvent(HoverEvent.of(HoverEvent.Action.SHOW_TEXT, TranslatableComponent.of("worldedit.tool.info.blockstate.hover"))));
         final int internalId = BlockStateIdAccess.getBlockStateId(block.toImmutableState());

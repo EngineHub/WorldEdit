@@ -43,6 +43,7 @@ import com.sk89q.worldedit.internal.command.CommandRegistrationHandler;
 import com.sk89q.worldedit.internal.command.CommandUtil;
 import com.sk89q.worldedit.util.HandSide;
 import com.sk89q.worldedit.util.TreeGenerator;
+import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
@@ -283,14 +284,18 @@ public class ToolCommands {
         final ItemType itemType = player.getItemInHand(HandSide.MAIN_HAND).getType();
         session.setTool(itemType, new LongRangeBuildTool(primary, secondary));
         player.printInfo(TranslatableComponent.of("worldedit.tool.lrbuild.equip", TextComponent.of(itemType.getName())));
-        String primaryName = "pattern";
-        String secondaryName = "pattern";
+        Component primaryName;
+        Component secondaryName;
         if (primary instanceof BlockStateHolder) {
-            primaryName = ((BlockStateHolder<?>) primary).getBlockType().getName();
+            primaryName = ((BlockStateHolder<?>) primary).getBlockType().getRichName();
+        } else {
+            primaryName = TextComponent.of("pattern");
         }
         if (secondary instanceof BlockStateHolder) {
-            secondaryName = ((BlockStateHolder<?>) secondary).getBlockType().getName();
+            secondaryName = ((BlockStateHolder<?>) secondary).getBlockType().getRichName();
+        } else {
+            secondaryName = TextComponent.of("pattern");
         }
-        player.printInfo(TranslatableComponent.of("worldedit.tool.lrbuild.set", TextComponent.of(primaryName), TextComponent.of(secondaryName)));
+        player.printInfo(TranslatableComponent.of("worldedit.tool.lrbuild.set", primaryName, secondaryName));
     }
 }

@@ -20,6 +20,8 @@
 package com.sk89q.worldedit.forge;
 
 import com.sk89q.worldedit.registry.state.Property;
+import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.registry.BlockMaterial;
@@ -27,9 +29,7 @@ import com.sk89q.worldedit.world.registry.BundledBlockRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.state.IProperty;
-import net.minecraftforge.fml.loading.FMLLoader;
 
-import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -40,15 +40,9 @@ public class ForgeBlockRegistry extends BundledBlockRegistry {
 
     private Map<Material, ForgeBlockMaterial> materialMap = new HashMap<>();
 
-    @Nullable
     @Override
-    public String getName(BlockType blockType) {
-        Block block = ForgeAdapter.adapt(blockType);
-        if (block != null && FMLLoader.getDist().isClient()) {
-            return block.getNameTextComponent().getFormattedText();
-        } else {
-            return super.getName(blockType);
-        }
+    public Component getRichName(BlockType blockType) {
+        return TranslatableComponent.of(ForgeAdapter.adapt(blockType).getTranslationKey());
     }
 
     @Override

@@ -30,6 +30,7 @@ import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.util.SideEffect;
+import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.world.DataFixer;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;
@@ -113,6 +114,14 @@ public interface BukkitImplAdapter {
      */
     @Nullable
     Entity createEntity(Location location, BaseEntity state);
+
+    /**
+     * Gets the name for the given block.
+     *
+     * @param blockType the block
+     * @return The name
+     */
+    Component getRichBlockName(BlockType blockType);
 
     /**
      * Get a map of {@code string -> property}.

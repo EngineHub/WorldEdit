@@ -20,16 +20,14 @@
 package com.sk89q.worldedit.fabric;
 
 import com.sk89q.worldedit.registry.state.Property;
+import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.registry.BlockMaterial;
 import com.sk89q.worldedit.world.registry.BundledBlockRegistry;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.Block;
 import net.minecraft.block.Material;
-
-import javax.annotation.Nullable;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -41,15 +39,9 @@ public class FabricBlockRegistry extends BundledBlockRegistry {
 
     private Map<Material, FabricBlockMaterial> materialMap = new HashMap<>();
 
-    @Nullable
     @Override
-    public String getName(BlockType blockType) {
-        Block block = FabricAdapter.adapt(blockType);
-        if (FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) {
-            return block.getName().asFormattedString();
-        } else {
-            return super.getName(blockType);
-        }
+    public Component getRichName(BlockType blockType) {
+        return TranslatableComponent.of(FabricAdapter.adapt(blockType).getTranslationKey());
     }
 
     @Override

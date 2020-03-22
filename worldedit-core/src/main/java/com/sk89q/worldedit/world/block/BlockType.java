@@ -28,6 +28,7 @@ import com.sk89q.worldedit.registry.Keyed;
 import com.sk89q.worldedit.registry.NamespacedRegistry;
 import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.util.concurrency.LazyReference;
+import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.world.item.ItemType;
 import com.sk89q.worldedit.world.item.ItemTypes;
 import com.sk89q.worldedit.world.registry.BlockMaterial;
@@ -97,18 +98,20 @@ public class BlockType implements Keyed {
         return this.id;
     }
 
+    public Component getRichName() {
+        return WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.GAME_HOOKS)
+            .getRegistries().getBlockRegistry().getRichName(this);
+    }
+
     /**
      * Gets the name of this block, or the ID if the name cannot be found.
      *
      * @return The name, or ID
+     * @deprecated The name is now translatable, use {@link #getRichName()}.
      */
+    @Deprecated
     public String getName() {
-        String name = WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.GAME_HOOKS).getRegistries().getBlockRegistry().getName(this);
-        if (name == null) {
-            return getId();
-        } else {
-            return name;
-        }
+        return getRichName().toString();
     }
 
     /**

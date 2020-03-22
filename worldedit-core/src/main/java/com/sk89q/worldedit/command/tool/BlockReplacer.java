@@ -79,7 +79,7 @@ public class BlockReplacer implements DoubleActionBlockTool {
 
         if (targetBlock != null) {
             pattern = targetBlock;
-            player.printInfo(TranslatableComponent.of("worldedit.tool.repl.switched", TextComponent.of(targetBlock.getBlockType().getName())));
+            player.printInfo(TranslatableComponent.of("worldedit.tool.repl.switched", targetBlock.getBlockType().getRichName()));
         }
 
         return true;
