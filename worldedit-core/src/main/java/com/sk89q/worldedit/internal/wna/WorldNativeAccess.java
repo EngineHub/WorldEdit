@@ -25,6 +25,7 @@ public interface WorldNativeAccess<NC, NBS, NP> {
     default <B extends BlockStateHolder<B>> boolean setBlock(BlockVector3 position, B block, SideEffectSet sideEffects) throws WorldEditException {
         checkNotNull(position);
         checkNotNull(block);
+        setCurrentSideEffectSet(sideEffects);
 
         int x = position.getBlockX();
         int y = position.getBlockY();
@@ -71,6 +72,7 @@ public interface WorldNativeAccess<NC, NBS, NP> {
     }
 
     default void applySideEffects(BlockVector3 position, BlockState previousType, SideEffectSet sideEffectSet) {
+        setCurrentSideEffectSet(sideEffectSet);
         NP pos = getPosition(position.getX(), position.getY(), position.getZ());
         NC chunk = getChunk(position.getX() >> 4, position.getZ() >> 4);
         NBS oldData = toNative(previousType);
@@ -82,6 +84,21 @@ public interface WorldNativeAccess<NC, NBS, NP> {
 
         markAndNotifyBlock(pos, chunk, oldData, newData, sideEffectSet);
     }
+
+    // state-keeping functions for WNA
+    // may be thread-unsafe, as this is single-threaded code
+
+    /**
+     * Receive the current side-effect set from the high level call.
+     *
+     * This allows the implementation to branch on the side-effects internally.
+     *
+     * @param sideEffectSet the set of side-effects
+     */
+    default void setCurrentSideEffectSet(SideEffectSet sideEffectSet) {
+    }
+
+    // access functions
 
     NC getChunk(int x, int z);
 
