@@ -36,6 +36,7 @@ import com.mojang.datafixers.DataFixerBuilder;
 import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.schemas.Schema;
 import com.sk89q.jnbt.CompoundTag;
+import com.sk89q.worldedit.fabric.internal.NBTConverter;
 import net.minecraft.datafixer.NbtOps;
 import net.minecraft.datafixer.Schemas;
 import net.minecraft.datafixer.TypeReferences;

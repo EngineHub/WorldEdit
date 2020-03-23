@@ -24,16 +24,15 @@ import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.entity.BaseEntity;
+import com.sk89q.worldedit.internal.wna.WorldNativeAccess;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.util.SideEffect;
-import com.sk89q.worldedit.util.SideEffectSet;
 import com.sk89q.worldedit.world.DataFixer;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;
-import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.block.BlockType;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -42,11 +41,10 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import javax.annotation.Nullable;
 import java.util.Map;
 import java.util.OptionalInt;
 import java.util.Set;
-
-import javax.annotation.Nullable;
 
 /**
  * An interface for adapters of various Bukkit implementations.
@@ -90,23 +88,12 @@ public interface BukkitImplAdapter {
     BaseBlock getBlock(Location location);
 
     /**
-     * Set the block at the given location.
+     * Create a {@link WorldNativeAccess} for the given world reference.
      *
-     * @param location the location
-     * @param state the block
-     * @param sideEffectSet side effects to apply
-     * @return true if a block was likely changed
+     * @param world the world reference
+     * @return the native access object
      */
-    boolean setBlock(Location location, BlockStateHolder<?> state, SideEffectSet sideEffectSet);
-
-    /**
-     * Applies side effects on the given block.
-     *
-     * @param position position of the block
-     * @param previousType the type of the previous block that was there
-     * @param sideEffectSet side effects to apply
-     */
-    void applySideEffects(Location position, BlockState previousType, SideEffectSet sideEffectSet);
+    WorldNativeAccess<?, ?, ?> createWorldNativeAccess(World world);
 
     /**
      * Get the state for the given entity.

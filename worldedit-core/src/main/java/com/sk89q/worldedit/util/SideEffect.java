@@ -24,9 +24,9 @@ import java.util.Locale;
 public enum SideEffect {
     LIGHTING(State.ON),
     NEIGHBORS(State.ON),
-    CONNECTIONS(State.ON),
+    VALIDATION(State.ON),
     ENTITY_AI(State.OFF),
-    PLUGIN_EVENTS(State.OFF);
+    EVENTS(State.OFF);
 
     private final String displayName;
     private final String description;

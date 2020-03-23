@@ -17,41 +17,19 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.forge;
-
-import static com.google.common.base.Preconditions.checkNotNull;
-
-import com.sk89q.worldedit.math.BlockVector3;
+package com.sk89q.worldedit.forge.internal;
 
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.IntNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-import javax.annotation.Nullable;
-
 /**
  * Utility methods for setting tile entities in the world.
  */
-final class TileEntityUtils {
+public final class TileEntityUtils {
 
     private TileEntityUtils() {
-    }
-
-    /**
-     * Update the given tag compound with position information.
-     *
-     * @param tag the tag
-     * @param position the position
-     */
-    private static void updateForSet(CompoundNBT tag, BlockVector3 position) {
-        checkNotNull(tag);
-        checkNotNull(position);
-
-        tag.put("x", IntNBT.valueOf(position.getBlockX()));
-        tag.put("y", IntNBT.valueOf(position.getBlockY()));
-        tag.put("z", IntNBT.valueOf(position.getBlockZ()));
     }
 
     /**
@@ -60,16 +38,15 @@ final class TileEntityUtils {
      *
      * @param world the world
      * @param position the position
-     * @param tag the tag for the tile entity (may be null to do nothing)
+     * @param tag the tag for the tile entity
      */
-    static void setTileEntity(World world, BlockVector3 position, @Nullable CompoundNBT tag) {
-        if (tag != null) {
-            updateForSet(tag, position);
-            TileEntity tileEntity = TileEntity.create(tag);
-            if (tileEntity != null) {
-                world.setTileEntity(new BlockPos(position.getBlockX(), position.getBlockY(), position.getBlockZ()), tileEntity);
-            }
+    static boolean setTileEntity(World world, BlockPos position, CompoundNBT tag) {
+        TileEntity tileEntity = TileEntity.create(tag);
+        if (tileEntity == null) {
+            return false;
         }
+        world.setTileEntity(new BlockPos(position.getX(), position.getY(), position.getZ()), tileEntity);
+        return true;
     }
 
     public static CompoundNBT copyNbtData(TileEntity tile) {
