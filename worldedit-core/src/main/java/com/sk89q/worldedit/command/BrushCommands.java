@@ -23,6 +23,7 @@ import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.command.argument.HeightConverter;
 import com.sk89q.worldedit.command.factory.ReplaceFactory;
 import com.sk89q.worldedit.command.factory.TreeGeneratorFactory;
 import com.sk89q.worldedit.command.tool.BrushTool;
@@ -49,6 +50,7 @@ import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.internal.annotation.ClipboardMask;
+import com.sk89q.worldedit.internal.annotation.VertHeight;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.factory.RegionFactory;
 import com.sk89q.worldedit.session.ClipboardHolder;
@@ -244,13 +246,20 @@ public class BrushCommands {
     public void gravityBrush(Player player, LocalSession session,
                              @Arg(desc = "The radius to apply gravity in", def = "5")
                                  double radius,
-                             @Switch(name = 'h', desc = "Affect blocks starting at max Y, rather than the target location Y + radius")
-                                 boolean fromMaxY) throws WorldEditException {
+                             @ArgFlag(
+                                 name = 'h',
+                                 desc = "Affect blocks between the given height, " +
+                                     "upwards and downwards, " +
+                                     "rather than the target location Y + radius",
+                                 def = HeightConverter.DEFAULT_VALUE
+                             )
+                             @VertHeight
+                                 Integer height) throws WorldEditException {
         worldEdit.checkMaxBrushRadius(radius);
 
         BrushTool tool = session.getBrushTool(player.getItemInHand(HandSide.MAIN_HAND).getType());
         tool.setSize(radius);
-        tool.setBrush(new GravityBrush(fromMaxY), "worldedit.brush.gravity");
+        tool.setBrush(new GravityBrush(height), "worldedit.brush.gravity");
 
         player.printInfo(TranslatableComponent.of("worldedit.brush.gravity.equip", TextComponent.of((int) radius)));
     }

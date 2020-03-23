@@ -66,8 +66,13 @@ public abstract class AbstractWorld implements World {
     }
 
     @Override
+    public int getMinY() {
+        return 0;
+    }
+
+    @Override
     public int getMaxY() {
-        return getMaximumPoint().getBlockY();
+        return 255;
     }
 
     @Override
@@ -123,12 +128,12 @@ public abstract class AbstractWorld implements World {
 
     @Override
     public BlockVector3 getMinimumPoint() {
-        return BlockVector3.at(-30000000, 0, -30000000);
+        return BlockVector3.at(-30000000, getMinY(), -30000000);
     }
 
     @Override
     public BlockVector3 getMaximumPoint() {
-        return BlockVector3.at(30000000, 255, 30000000);
+        return BlockVector3.at(30000000, getMaxY(), 30000000);
     }
 
     @Override

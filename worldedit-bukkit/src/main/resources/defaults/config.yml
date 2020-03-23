@@ -3,7 +3,7 @@
 #
 # About editing this file:
 # - DO NOT USE TABS. You MUST use spaces or Bukkit will complain and post
-#   errors. If you use an editor, like Notepad++ (recommended for Windows 
+#   errors. If you use an editor, like Notepad++ (recommended for Windows
 #   users), you must configure it to "replace tabs with spaces."
 #   This can be changed in Settings > Preferences > Language Menu.
 # - Don't get rid of indentations. They are indented so some entries that are
@@ -20,6 +20,8 @@ limits:
     max-blocks-changed:
         default: -1
         maximum: -1
+    vertical-height:
+        default: 256
     max-polygonal-points:
         default: -1
         maximum: 20

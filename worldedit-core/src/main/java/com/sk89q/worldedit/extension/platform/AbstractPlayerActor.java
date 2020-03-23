@@ -105,14 +105,20 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
     @Override
     public void findFreePosition(Location searchPos) {
         Extent world = searchPos.getExtent();
+
+        int worldMinY = world.getMinimumPoint().getY();
+        int worldMaxY = world.getMaximumPoint().getY();
+
         int x = searchPos.getBlockX();
-        int y = Math.max(0, searchPos.getBlockY());
+        int y = Math.max(worldMinY, searchPos.getBlockY());
         int origY = y;
         int z = searchPos.getBlockZ();
+        int yPlusSearchHeight = y + WorldEdit.getInstance().getConfiguration().defaultVerticalHeight;
+        int maxY = Math.min(worldMaxY, yPlusSearchHeight) + 2;
 
         byte free = 0;
 
-        while (y <= world.getMaximumPoint().getBlockY() + 2) {
+        while (y <= maxY) {
             if (!world.getBlock(BlockVector3.at(x, y, z)).getBlockType().getMaterial().isMovementBlocker()) {
                 ++free;
             } else {
@@ -134,11 +140,16 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
     @Override
     public void setOnGround(Location searchPos) {
         Extent world = searchPos.getExtent();
-        int x = searchPos.getBlockX();
-        int y = Math.max(0, searchPos.getBlockY());
-        int z = searchPos.getBlockZ();
 
-        while (y >= 0) {
+        int worldMinY = world.getMinimumPoint().getY();
+
+        int x = searchPos.getBlockX();
+        int y = Math.max(worldMinY, searchPos.getBlockY());
+        int z = searchPos.getBlockZ();
+        int yLessSearchHeight = y - WorldEdit.getInstance().getConfiguration().defaultVerticalHeight;
+        int minY = Math.min(worldMinY, yLessSearchHeight) + 2;
+
+        while (y >= minY) {
             final BlockVector3 pos = BlockVector3.at(x, y, z);
             final BlockState id = world.getBlock(pos);
             if (id.getBlockType().getMaterial().isMovementBlocker()) {
@@ -157,16 +168,18 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
 
     @Override
     public boolean ascendLevel() {
+        final World world = getWorld();
         final Location pos = getBlockLocation();
         final int x = pos.getBlockX();
-        int y = Math.max(0, pos.getBlockY());
+        int y = Math.max(world.getMinY(), pos.getBlockY());
         final int z = pos.getBlockZ();
-        final Extent world = pos.getExtent();
+        int yPlusSearchHeight = y + WorldEdit.getInstance().getConfiguration().defaultVerticalHeight;
+        int maxY = Math.min(world.getMaxY(), yPlusSearchHeight) + 2;
 
-        byte free = 0;
-        byte spots = 0;
+        int free = 0;
+        int spots = 0;
 
-        while (y <= world.getMaximumPoint().getY() + 2) {
+        while (y <= maxY) {
             if (!world.getBlock(BlockVector3.at(x, y, z)).getBlockType().getMaterial().isMovementBlocker()) {
                 ++free;
             } else {
@@ -198,15 +211,17 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
 
     @Override
     public boolean descendLevel() {
+        final World world = getWorld();
         final Location pos = getBlockLocation();
         final int x = pos.getBlockX();
-        int y = Math.max(0, pos.getBlockY() - 1);
+        int y = Math.max(world.getMinY(), pos.getBlockY() - 1);
         final int z = pos.getBlockZ();
-        final Extent world = pos.getExtent();
+        int yLessSearchHeight = y - WorldEdit.getInstance().getConfiguration().defaultVerticalHeight;
+        int minY = Math.min(world.getMinY() + 1, yLessSearchHeight);
 
         byte free = 0;
 
-        while (y >= 1) {
+        while (y >= minY) {
             if (!world.getBlock(BlockVector3.at(x, y, z)).getBlockType().getMaterial().isMovementBlocker()) {
                 ++free;
             } else {
@@ -217,7 +232,7 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
                 // So we've found a spot, but we have to drop the player
                 // lightly and also check to see if there's something to
                 // stand upon
-                while (y >= 0) {
+                while (y >= minY) {
                     final BlockVector3 platform = BlockVector3.at(x, y, z);
                     final BlockState block = world.getBlock(platform);
                     final BlockType type = block.getBlockType();
@@ -248,19 +263,22 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
 
     @Override
     public boolean ascendToCeiling(int clearance, boolean alwaysGlass) {
+        World world = getWorld();
         Location pos = getBlockLocation();
         int x = pos.getBlockX();
-        int initialY = Math.max(0, pos.getBlockY());
-        int y = Math.max(0, pos.getBlockY() + 2);
+        int initialY = Math.max(world.getMinY(), pos.getBlockY());
+        int y = Math.max(world.getMinY(), pos.getBlockY() + 2);
         int z = pos.getBlockZ();
-        Extent world = getLocation().getExtent();
 
         // No free space above
         if (!world.getBlock(BlockVector3.at(x, y, z)).getBlockType().getMaterial().isAir()) {
             return false;
         }
 
-        while (y <= world.getMaximumPoint().getY()) {
+        int yPlusSearchHeight = y + WorldEdit.getInstance().getConfiguration().defaultVerticalHeight;
+        int maxY = Math.min(world.getMaxY(), yPlusSearchHeight);
+
+        while (y <= maxY) {
             // Found a ceiling!
             if (world.getBlock(BlockVector3.at(x, y, z)).getBlockType().getMaterial().isMovementBlocker()) {
                 int platformY = Math.max(initialY, y - 3 - clearance);
@@ -286,15 +304,15 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
 
     @Override
     public boolean ascendUpwards(int distance, boolean alwaysGlass) {
+        final World world = getWorld();
         final Location pos = getBlockLocation();
         final int x = pos.getBlockX();
-        final int initialY = Math.max(0, pos.getBlockY());
-        int y = Math.max(0, pos.getBlockY() + 1);
+        final int initialY = Math.max(world.getMinY(), pos.getBlockY());
+        int y = Math.max(world.getMinY(), pos.getBlockY() + 1);
         final int z = pos.getBlockZ();
-        final int maxY = Math.min(getWorld().getMaxY() + 1, initialY + distance);
-        final Extent world = getLocation().getExtent();
+        final int maxY = Math.min(world.getMaxY() + 1, initialY + distance);
 
-        while (y <= world.getMaximumPoint().getY() + 2) {
+        while (y <= world.getMaxY() + 2) {
             if (world.getBlock(BlockVector3.at(x, y, z)).getBlockType().getMaterial().isMovementBlocker()) {
                 break; // Hit something
             } else if (y > maxY + 1) {

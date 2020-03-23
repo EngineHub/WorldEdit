@@ -106,8 +106,8 @@ public class CuboidRegion extends AbstractRegion implements FlatRegion {
      * Clamps the cuboid according to boundaries of the world.
      */
     private void recalculate() {
-        pos1 = pos1.clampY(0, world == null ? 255 : world.getMaxY());
-        pos2 = pos2.clampY(0, world == null ? 255 : world.getMaxY());
+        pos1 = pos1.clampY(getWorldMinY(), getWorldMaxY());
+        pos2 = pos2.clampY(getWorldMinY(), getWorldMaxY());
     }
 
     /**

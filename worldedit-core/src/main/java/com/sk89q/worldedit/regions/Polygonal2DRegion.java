@@ -127,8 +127,8 @@ public class Polygonal2DRegion extends AbstractRegion implements FlatRegion {
         minY = Math.min(oldMinY, oldMaxY);
         maxY = Math.max(oldMinY, oldMaxY);
 
-        minY = Math.min(Math.max(0, minY), world == null ? 255 : world.getMaxY());
-        maxY = Math.min(Math.max(0, maxY), world == null ? 255 : world.getMaxY());
+        minY = Math.min(Math.max(getWorldMinY(), minY), getWorldMaxY());
+        maxY = Math.min(Math.max(getWorldMinY(), maxY), getWorldMaxY());
 
         min = BlockVector2.at(minX, minZ);
         max = BlockVector2.at(maxX, maxZ);
@@ -413,7 +413,7 @@ public class Polygonal2DRegion extends AbstractRegion implements FlatRegion {
     public Polygonal2DRegion clone() {
         Polygonal2DRegion clone = (Polygonal2DRegion) super.clone();
         clone.points = new ArrayList<>(points);
-        return clone; 
+        return clone;
     }
 
     @Override

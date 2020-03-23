@@ -70,12 +70,14 @@ import com.sk89q.worldedit.command.WorldEditCommands;
 import com.sk89q.worldedit.command.WorldEditCommandsRegistration;
 import com.sk89q.worldedit.command.argument.Arguments;
 import com.sk89q.worldedit.command.argument.BooleanConverter;
+import com.sk89q.worldedit.command.argument.Chunk3dVectorConverter;
 import com.sk89q.worldedit.command.argument.CommaSeparatedValuesConverter;
 import com.sk89q.worldedit.command.argument.DirectionConverter;
 import com.sk89q.worldedit.command.argument.DirectionVectorConverter;
 import com.sk89q.worldedit.command.argument.EntityRemoverConverter;
 import com.sk89q.worldedit.command.argument.EnumConverter;
 import com.sk89q.worldedit.command.argument.FactoryConverter;
+import com.sk89q.worldedit.command.argument.HeightConverter;
 import com.sk89q.worldedit.command.argument.RegionFactoryConverter;
 import com.sk89q.worldedit.command.argument.RegistryConverter;
 import com.sk89q.worldedit.command.argument.SideEffectConverter;
@@ -209,6 +211,7 @@ public final class PlatformCommandManager {
             );
         }
         VectorConverter.register(commandManager);
+        Chunk3dVectorConverter.register(commandManager);
         EnumConverter.register(commandManager);
         RegistryConverter.register(commandManager);
         ZonedDateTimeConverter.register(commandManager);
@@ -217,6 +220,7 @@ public final class PlatformCommandManager {
         RegionFactoryConverter.register(commandManager);
         WorldConverter.register(commandManager);
         SideEffectConverter.register(commandManager);
+        HeightConverter.register(commandManager);
     }
 
     private void registerAlwaysInjectedValues() {

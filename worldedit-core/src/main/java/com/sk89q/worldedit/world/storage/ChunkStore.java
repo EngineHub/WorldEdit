@@ -41,6 +41,22 @@ public abstract class ChunkStore implements Closeable {
     public static final int CHUNK_SHIFTS = 4;
 
     /**
+     * {@code >>} - to Y of 3D-chunk
+     * {@code <<} - from Y of 3D-chunk
+     */
+    public static final int CHUNK_SHIFTS_Y = 8;
+
+    /**
+     * Convert a position to a 3D-chunk. Y is counted in steps of 256.
+     *
+     * @param position the position
+     * @return chunk coordinates
+     */
+    public static BlockVector3 toChunk3d(BlockVector3 position) {
+        return position.shr(CHUNK_SHIFTS, CHUNK_SHIFTS_Y, CHUNK_SHIFTS);
+    }
+
+    /**
      * Convert a position to a chunk.
      *
      * @param position the position

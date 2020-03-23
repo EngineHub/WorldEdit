@@ -41,9 +41,9 @@ import com.sk89q.worldedit.function.block.BlockDistributionCounter;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.function.operation.Operations;
 import com.sk89q.worldedit.function.visitor.RegionVisitor;
+import com.sk89q.worldedit.internal.annotation.Chunk3d;
 import com.sk89q.worldedit.internal.annotation.Direction;
 import com.sk89q.worldedit.internal.annotation.MultiDirection;
-import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.RegionOperationException;
@@ -89,6 +89,8 @@ import java.util.stream.Stream;
 
 import static com.sk89q.worldedit.command.util.Logging.LogMode.POSITION;
 import static com.sk89q.worldedit.command.util.Logging.LogMode.REGION;
+import static com.sk89q.worldedit.world.storage.ChunkStore.CHUNK_SHIFTS;
+import static com.sk89q.worldedit.world.storage.ChunkStore.CHUNK_SHIFTS_Y;
 
 /**
  * Selection commands.
@@ -210,7 +212,8 @@ public class SelectionCommands {
     @CommandPermissions("worldedit.selection.chunk")
     public void chunk(Actor actor, World world, LocalSession session,
                       @Arg(desc = "The chunk to select", def = "")
-                          BlockVector2 coordinates,
+                      @Chunk3d
+                          BlockVector3 coordinates,
                       @Switch(name = 's', desc = "Expand your selection to encompass all chunks that are part of it")
                           boolean expandSelection,
                       @Switch(name = 'c', desc = "Use chunk coordinates instead of block coordinates")
@@ -220,40 +223,49 @@ public class SelectionCommands {
         if (expandSelection) {
             Region region = session.getSelection(world);
 
-            final BlockVector2 min2D = ChunkStore.toChunk(region.getMinimumPoint());
-            final BlockVector2 max2D = ChunkStore.toChunk(region.getMaximumPoint());
+            int minChunkY = world.getMinY() >> CHUNK_SHIFTS_Y;
+            int maxChunkY = world.getMaxY() >> CHUNK_SHIFTS_Y;
 
-            min = BlockVector3.at(min2D.getBlockX() * 16, 0, min2D.getBlockZ() * 16);
-            max = BlockVector3.at(max2D.getBlockX() * 16 + 15, world.getMaxY(), max2D.getBlockZ() * 16 + 15);
+            BlockVector3 minChunk = ChunkStore.toChunk3d(region.getMinimumPoint())
+                .clampY(minChunkY, maxChunkY);
+            BlockVector3 maxChunk = ChunkStore.toChunk3d(region.getMaximumPoint())
+                .clampY(minChunkY, maxChunkY);
+
+            min = minChunk.shl(CHUNK_SHIFTS, CHUNK_SHIFTS_Y, CHUNK_SHIFTS);
+            max = maxChunk.shl(CHUNK_SHIFTS, CHUNK_SHIFTS_Y, CHUNK_SHIFTS).add(15, 255, 15);
 
             actor.printInfo(TranslatableComponent.of(
-                    "worldedit.chunk.selected-multiple",
-                    TextComponent.of(min2D.getBlockX()),
-                    TextComponent.of(min2D.getBlockZ()),
-                    TextComponent.of(max2D.getBlockX()),
-                    TextComponent.of(max2D.getBlockZ())
+                "worldedit.chunk.selected-multiple",
+                TextComponent.of(minChunk.getBlockX()),
+                TextComponent.of(minChunk.getBlockY()),
+                TextComponent.of(minChunk.getBlockZ()),
+                TextComponent.of(maxChunk.getBlockX()),
+                TextComponent.of(maxChunk.getBlockY()),
+                TextComponent.of(maxChunk.getBlockZ())
             ));
         } else {
-            final BlockVector2 min2D;
+            BlockVector3 minChunk;
             if (coordinates != null) {
                 // coords specified
-                min2D = useChunkCoordinates
+                minChunk = useChunkCoordinates
                     ? coordinates
-                    : ChunkStore.toChunk(coordinates.toBlockVector3());
+                    : ChunkStore.toChunk3d(coordinates);
             } else {
                 // use player loc
                 if (actor instanceof Locatable) {
-                    min2D = ChunkStore.toChunk(((Locatable) actor).getBlockLocation().toVector().toBlockPoint());
+                    minChunk = ChunkStore.toChunk3d(((Locatable) actor).getBlockLocation().toVector().toBlockPoint());
                 } else {
                     throw new StopExecutionException(TextComponent.of("A player or coordinates are required."));
                 }
             }
 
-            min = BlockVector3.at(min2D.getBlockX() * 16, 0, min2D.getBlockZ() * 16);
-            max = min.add(15, world.getMaxY(), 15);
+            min = minChunk.shl(CHUNK_SHIFTS, CHUNK_SHIFTS_Y, CHUNK_SHIFTS);
+            max = min.add(15, 255, 15);
 
-            actor.printInfo(TranslatableComponent.of("worldedit.chunk.selected", TextComponent.of(min2D.getBlockX()),
-                    TextComponent.of(min2D.getBlockZ())));
+            actor.printInfo(TranslatableComponent.of("worldedit.chunk.selected",
+                TextComponent.of(minChunk.getBlockX()),
+                TextComponent.of(minChunk.getBlockY()),
+                TextComponent.of(minChunk.getBlockZ())));
         }
 
         final CuboidRegionSelector selector;

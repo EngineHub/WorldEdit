@@ -62,6 +62,9 @@ public class YAMLConfiguration extends LocalConfiguration {
         maxChangeLimit = Math.max(-1,
                 config.getInt("limits.max-blocks-changed.maximum", maxChangeLimit));
 
+        defaultVerticalHeight = Math.max(1,
+                config.getInt("limits.vertical-height.default", defaultVerticalHeight));
+
         defaultMaxPolygonalPoints = Math.max(-1,
                 config.getInt("limits.max-polygonal-points.default", defaultMaxPolygonalPoints));
         maxPolygonalPoints = Math.max(-1,
