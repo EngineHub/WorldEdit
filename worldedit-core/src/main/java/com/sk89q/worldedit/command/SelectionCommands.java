@@ -675,7 +675,7 @@ public class SelectionCommands {
 
             final BlockState state = c.getID();
             final BlockType blockType = state.getBlockType();
-            TextComponent blockName = TextComponent.of(blockType.getName(), TextColor.LIGHT_PURPLE);
+            Component blockName = blockType.getRichName().color(TextColor.LIGHT_PURPLE);
             TextComponent toolTip;
             if (separateStates && state != blockType.getDefaultState()) {
                 toolTip = TextComponent.of(state.getAsString(), TextColor.GRAY);

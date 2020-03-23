@@ -25,6 +25,11 @@ fun Project.applyLibrariesConfiguration() {
 
     group = "${rootProject.group}.worldedit-libs"
 
+    val relocations = mapOf(
+            "net.kyori.text" to "com.sk89q.worldedit.util.formatting.text",
+            "net.kyori.minecraft" to "com.sk89q.worldedit.util.kyori"
+    )
+
     tasks.register<ShadowJar>("jar") {
         configurations = listOf(project.configurations["shade"])
         archiveClassifier.set("")
@@ -36,7 +41,9 @@ fun Project.applyLibrariesConfiguration() {
             exclude(dependency("org.slf4j:slf4j-api"))
         }
 
-        relocate("net.kyori.text", "com.sk89q.worldedit.util.formatting.text")
+        relocations.forEach { (from, to) ->
+            relocate(from, to)
+        }
     }
     val altConfigFiles = { artifactType: String ->
         val deps = configurations["shade"].incoming.dependencies
@@ -61,13 +68,15 @@ fun Project.applyLibrariesConfiguration() {
         from({
             altConfigFiles("sources")
         })
-        val filePattern = Regex("(.*)net/kyori/text((?:/|$).*)")
-        val textPattern = Regex("net\\.kyori\\.text")
-        eachFile {
-            filter {
-                it.replaceFirst(textPattern, "com.sk89q.worldedit.util.formatting.text")
+        relocations.forEach { (from, to) ->
+            val filePattern = Regex("(.*)${from.replace('.', '/')}((?:/|$).*)")
+            val textPattern = Regex.fromLiteral(from)
+            eachFile {
+                filter {
+                    it.replaceFirst(textPattern, to)
+                }
+                path = path.replaceFirst(filePattern, "$1${to.replace('.', '/')}$2")
             }
-            path = path.replaceFirst(filePattern, "$1com/sk89q/worldedit/util/formatting/text$2")
         }
         archiveClassifier.set("sources")
     }

@@ -19,6 +19,8 @@
 
 package com.sk89q.worldedit.forge;
 
+import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.world.biome.BiomeData;
 import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.registry.BiomeRegistry;
@@ -30,6 +32,12 @@ import net.minecraft.world.biome.Biome;
 class ForgeBiomeRegistry implements BiomeRegistry {
 
     @Override
+    public Component getRichName(BiomeType biomeType) {
+        return TranslatableComponent.of(ForgeAdapter.adapt(biomeType).getTranslationKey());
+    }
+
+    @Deprecated
+    @Override
     public BiomeData getData(BiomeType biome) {
         return new ForgeBiomeData(ForgeAdapter.adapt(biome));
     }
@@ -37,6 +45,7 @@ class ForgeBiomeRegistry implements BiomeRegistry {
     /**
      * Cached biome data information.
      */
+    @Deprecated
     private static class ForgeBiomeData implements BiomeData {
         private final Biome biome;
 
@@ -49,6 +58,7 @@ class ForgeBiomeRegistry implements BiomeRegistry {
             this.biome = biome;
         }
 
+        @SuppressWarnings("deprecation")
         @Override
         public String getName() {
             return biome.getDisplayName().getString();

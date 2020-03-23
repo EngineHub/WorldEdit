@@ -19,9 +19,14 @@
 
 package com.sk89q.worldedit.world.biome;
 
+import com.sk89q.worldedit.world.registry.BiomeRegistry;
+
 /**
  * Provides information about a biome.
+ *
+ * @deprecated This no longer returns useful information.
  */
+@Deprecated
 public interface BiomeData {
 
     /**
@@ -29,7 +34,10 @@ public interface BiomeData {
      * particular convention.
      *
      * @return the biome's name
+     * @deprecated This method does not work on the server.
+     *     Use {@link BiomeRegistry#getRichName(BiomeType)}.
      */
+    @Deprecated
     String getName();
 
 }

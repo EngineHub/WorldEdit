@@ -36,6 +36,7 @@ import com.sk89q.worldedit.command.InsufficientArgumentsException;
 import com.sk89q.worldedit.command.tool.InvalidToolBindException;
 import com.sk89q.worldedit.internal.expression.ExpressionException;
 import com.sk89q.worldedit.regions.RegionOperationException;
+import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.io.file.FileSelectionAbortedException;
 import com.sk89q.worldedit.util.io.file.FilenameResolutionException;
@@ -62,7 +63,11 @@ public class WorldEditExceptionConverter extends ExceptionConverterHelper {
     }
 
     private CommandException newCommandException(String message, Throwable cause) {
-        return new CommandException(TextComponent.of(String.valueOf(message)), cause, ImmutableList.of());
+        return newCommandException(TextComponent.of(String.valueOf(message)), cause);
+    }
+
+    private CommandException newCommandException(Component message, Throwable cause) {
+        return new CommandException(message, cause, ImmutableList.of());
     }
 
     @ExceptionMatch
@@ -158,7 +163,13 @@ public class WorldEditExceptionConverter extends ExceptionConverterHelper {
 
     @ExceptionMatch
     public void convert(InvalidToolBindException e) throws CommandException {
-        throw newCommandException("Can't bind tool to " + e.getItemType().getName() + ": " + e.getMessage(), e);
+        throw newCommandException(
+            TextComponent.builder("Can't bind tool to ")
+                .append(e.getItemType().getRichName())
+                .append(": " + e.getMessage())
+                .build(),
+            e
+        );
     }
 
     @ExceptionMatch

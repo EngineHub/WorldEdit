@@ -19,24 +19,26 @@
 
 package com.sk89q.worldedit.fabric;
 
+import com.sk89q.worldedit.blocks.BaseItemStack;
+import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.world.item.ItemType;
 import com.sk89q.worldedit.world.registry.BundledItemRegistry;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.client.resource.language.I18n;
-import net.minecraft.item.Item;
-
-import javax.annotation.Nullable;
 
 public class FabricItemRegistry extends BundledItemRegistry {
 
-    @Nullable
     @Override
-    public String getName(ItemType itemType) {
-        if (FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) {
-            final Item item = FabricAdapter.adapt(itemType);
-            return I18n.translate(item.getTranslationKey());
-        }
-        return super.getName(itemType);
+    public Component getRichName(ItemType itemType) {
+        return TranslatableComponent.of(
+            FabricAdapter.adapt(itemType).getTranslationKey()
+        );
     }
+
+    @Override
+    public Component getRichName(BaseItemStack itemStack) {
+        return TranslatableComponent.of(
+            FabricAdapter.adapt(itemStack).getTranslationKey()
+        );
+    }
+
 }

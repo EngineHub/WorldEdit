@@ -19,6 +19,9 @@
 
 package com.sk89q.worldedit.sponge;
 
+import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
+import com.sk89q.worldedit.util.translation.TranslationManager;
 import com.sk89q.worldedit.world.biome.BiomeData;
 import com.sk89q.worldedit.world.registry.BiomeRegistry;
 import org.spongepowered.api.world.biome.BiomeType;
@@ -30,12 +33,21 @@ import javax.annotation.Nullable;
  */
 class SpongeBiomeRegistry implements BiomeRegistry {
 
+    @Override
+    public Component getRichName(com.sk89q.worldedit.world.biome.BiomeType biomeType) {
+        return TranslatableComponent.of(
+            TranslationManager.makeTranslationKey("biome", biomeType.getId())
+        );
+    }
+
+    @Deprecated
     @Nullable
     @Override
     public BiomeData getData(com.sk89q.worldedit.world.biome.BiomeType biome) {
         return new SpongeBiomeData(SpongeAdapter.adapt(biome));
     }
 
+    @Deprecated
     private static class SpongeBiomeData implements BiomeData {
         private final BiomeType biome;
 
@@ -48,6 +60,7 @@ class SpongeBiomeRegistry implements BiomeRegistry {
             this.biome = biome;
         }
 
+        @SuppressWarnings("deprecation")
         @Override
         public String getName() {
             return biome.getName();

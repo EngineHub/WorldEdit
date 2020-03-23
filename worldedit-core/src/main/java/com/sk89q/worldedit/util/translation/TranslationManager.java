@@ -25,7 +25,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.renderer.FriendlyComponentRenderer;
+import com.sk89q.worldedit.util.formatting.text.renderer.TranslatableComponentRenderer;
 import com.sk89q.worldedit.util.io.ResourceLoader;
 
 import java.io.File;
@@ -63,9 +63,22 @@ public class TranslationManager {
     private static final Gson gson = new GsonBuilder().create();
     private static final Type STRING_MAP_TYPE = new TypeToken<Map<String, String>>() {}.getType();
 
+    public static String makeTranslationKey(String type, String id) {
+        String[] parts = id.split(":", 2);
+        return type + '.' + parts[0] + '.' + parts[1].replace('/', '.');
+    }
+
     private final Map<Locale, Map<String, String>> translationMap = new ConcurrentHashMap<>();
-    private final FriendlyComponentRenderer<Locale> friendlyComponentRenderer = FriendlyComponentRenderer.from(
-            (locale, key) -> new MessageFormat(getTranslationMap(locale).getOrDefault(key, key), locale));
+    private final TranslatableComponentRenderer<Locale> friendlyComponentRenderer = TranslatableComponentRenderer.from(
+        (locale, key) -> {
+            String translation = getTranslationMap(locale).get(key);
+            if (translation == null) {
+                // let it pass through (for e.g. MC messages)
+                return null;
+            }
+            return new MessageFormat(translation, locale);
+        }
+    );
     private Locale defaultLocale = Locale.ENGLISH;
 
     private final WorldEdit worldEdit;

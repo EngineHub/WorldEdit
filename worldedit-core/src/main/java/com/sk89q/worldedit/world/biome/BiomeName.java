@@ -28,7 +28,10 @@ import javax.annotation.Nullable;
 
 /**
  * Returns the name of a biome using a given {@code BiomeRegistry}.
+ *
+ * @deprecated for removal, appears to be unused
  */
+@Deprecated
 class BiomeName implements Function<BiomeType, String> {
 
     private final BiomeRegistry registry;

@@ -19,28 +19,26 @@
 
 package com.sk89q.worldedit.forge;
 
+import com.sk89q.worldedit.blocks.BaseItemStack;
+import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.world.item.ItemType;
 import com.sk89q.worldedit.world.registry.BundledItemRegistry;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.item.Item;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.loading.FMLLoader;
-import net.minecraftforge.registries.RegistryManager;
-
-import javax.annotation.Nullable;
 
 public class ForgeItemRegistry extends BundledItemRegistry {
 
-    @Nullable
     @Override
-    public String getName(ItemType itemType) {
-        if (FMLLoader.getDist().isClient()) {
-            final Item item = RegistryManager.ACTIVE.getRegistry(Item.class)
-                    .getValue(ResourceLocation.tryCreate(itemType.getId()));
-            if (item != null) {
-                return I18n.format(item.getTranslationKey());
-            }
-        }
-        return super.getName(itemType);
+    public Component getRichName(ItemType itemType) {
+        return TranslatableComponent.of(
+            ForgeAdapter.adapt(itemType).getTranslationKey()
+        );
     }
+
+    @Override
+    public Component getRichName(BaseItemStack itemStack) {
+        return TranslatableComponent.of(
+            ForgeAdapter.adapt(itemStack).getTranslationKey()
+        );
+    }
+
 }
