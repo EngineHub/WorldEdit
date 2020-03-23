@@ -471,7 +471,7 @@ public class SelectionCommands {
             actor.printInfo(TranslatableComponent.of("worldedit.size.type", TextComponent.of(session.getRegionSelector(world).getTypeName())));
 
             for (Component line : session.getRegionSelector(world).getSelectionInfoLines()) {
-                actor.print(line);
+                actor.printInfo(line);
             }
         }
         BlockVector3 size = region.getMaximumPoint()
