@@ -24,6 +24,7 @@ import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.command.tool.BlockDataCyler;
 import com.sk89q.worldedit.command.tool.BlockReplacer;
 import com.sk89q.worldedit.command.tool.DistanceWand;
@@ -34,6 +35,7 @@ import com.sk89q.worldedit.command.tool.LongRangeBuildTool;
 import com.sk89q.worldedit.command.tool.NavigationWand;
 import com.sk89q.worldedit.command.tool.QueryTool;
 import com.sk89q.worldedit.command.tool.SelectionWand;
+import com.sk89q.worldedit.command.tool.Tool;
 import com.sk89q.worldedit.command.tool.TreePlanter;
 import com.sk89q.worldedit.command.util.CommandPermissions;
 import com.sk89q.worldedit.command.util.CommandPermissionsConditionGenerator;
@@ -47,7 +49,6 @@ import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
-import com.sk89q.worldedit.world.item.ItemType;
 import org.enginehub.piston.CommandManager;
 import org.enginehub.piston.CommandManagerService;
 import org.enginehub.piston.CommandMetadata;
@@ -128,6 +129,13 @@ public class ToolCommands {
         player.printInfo(TranslatableComponent.of(isBrush ? "worldedit.brush.none.equip" : "worldedit.tool.none.equip"));
     }
 
+    private static void setTool(Player player, LocalSession session, Tool tool,
+                                String translationKey) throws InvalidToolBindException {
+        BaseItemStack itemStack = player.getItemInHand(HandSide.MAIN_HAND);
+        session.setTool(itemStack.getType(), tool);
+        player.printInfo(TranslatableComponent.of(translationKey, itemStack.getRichName()));
+    }
+
     private final WorldEdit we;
 
     public ToolCommands(WorldEdit we) {
@@ -150,10 +158,7 @@ public class ToolCommands {
     )
     @CommandPermissions("worldedit.setwand")
     public void selwand(Player player, LocalSession session) throws WorldEditException {
-
-        final ItemType itemType = player.getItemInHand(HandSide.MAIN_HAND).getType();
-        session.setTool(itemType, new SelectionWand());
-        player.printInfo(TranslatableComponent.of("worldedit.tool.selwand.equip", TextComponent.of(itemType.getName())));
+        setTool(player, session, new SelectionWand(), "worldedit.tool.selwand.equip");
     }
 
     @Command(
@@ -163,10 +168,7 @@ public class ToolCommands {
     )
     @CommandPermissions("worldedit.setwand")
     public void navwand(Player player, LocalSession session) throws WorldEditException {
-
-        final ItemType itemType = player.getItemInHand(HandSide.MAIN_HAND).getType();
-        session.setTool(itemType, new NavigationWand());
-        player.printInfo(TranslatableComponent.of("worldedit.tool.navwand.equip", TextComponent.of(itemType.getName())));
+        setTool(player, session, new NavigationWand(), "worldedit.tool.navwand.equip");
     }
 
     @Command(
@@ -175,10 +177,7 @@ public class ToolCommands {
     )
     @CommandPermissions("worldedit.tool.info")
     public void info(Player player, LocalSession session) throws WorldEditException {
-
-        final ItemType itemType = player.getItemInHand(HandSide.MAIN_HAND).getType();
-        session.setTool(itemType, new QueryTool());
-        player.printInfo(TranslatableComponent.of("worldedit.tool.info.equip", TextComponent.of(itemType.getName())));
+        setTool(player, session, new QueryTool(), "worldedit.tool.info.equip");
     }
 
     @Command(
@@ -189,10 +188,7 @@ public class ToolCommands {
     public void tree(Player player, LocalSession session,
                      @Arg(desc = "Type of tree to generate", def = "tree")
                      TreeGenerator.TreeType type) throws WorldEditException {
-
-        final ItemType itemType = player.getItemInHand(HandSide.MAIN_HAND).getType();
-        session.setTool(itemType, new TreePlanter(type));
-        player.printInfo(TranslatableComponent.of("worldedit.tool.tree.equip", TextComponent.of(itemType.getName())));
+        setTool(player, session, new TreePlanter(type), "worldedit.tool.tree.equip");
     }
 
     @Command(
@@ -203,10 +199,7 @@ public class ToolCommands {
     public void repl(Player player, LocalSession session,
                      @Arg(desc = "The pattern of blocks to place")
                          Pattern pattern) throws WorldEditException {
-
-        final ItemType itemType = player.getItemInHand(HandSide.MAIN_HAND).getType();
-        session.setTool(itemType, new BlockReplacer(pattern));
-        player.printInfo(TranslatableComponent.of("worldedit.tool.repl.equip", TextComponent.of(itemType.getName())));
+        setTool(player, session, new BlockReplacer(pattern), "worldedit.tool.repl.equip");
     }
 
     @Command(
@@ -215,10 +208,7 @@ public class ToolCommands {
     )
     @CommandPermissions("worldedit.tool.data-cycler")
     public void cycler(Player player, LocalSession session) throws WorldEditException {
-
-        final ItemType itemType = player.getItemInHand(HandSide.MAIN_HAND).getType();
-        session.setTool(itemType, new BlockDataCyler());
-        player.printInfo(TranslatableComponent.of("worldedit.tool.data-cycler.equip", TextComponent.of(itemType.getName())));
+        setTool(player, session, new BlockDataCyler(), "worldedit.tool.data-cycler.equip");
     }
 
     @Command(
@@ -239,10 +229,7 @@ public class ToolCommands {
             player.printError(TranslatableComponent.of("worldedit.superpickaxe.max-range", TextComponent.of(config.maxSuperPickaxeSize)));
             return;
         }
-
-        final ItemType itemType = player.getItemInHand(HandSide.MAIN_HAND).getType();
-        session.setTool(itemType, new FloodFillTool(range, pattern));
-        player.printInfo(TranslatableComponent.of("worldedit.tool.floodfill.equip", TextComponent.of(itemType.getName())));
+        setTool(player, session, new FloodFillTool(range, pattern), "worldedit.tool.floodfill.equip");
     }
 
     @Command(
@@ -251,10 +238,7 @@ public class ToolCommands {
     )
     @CommandPermissions("worldedit.tool.deltree")
     public void deltree(Player player, LocalSession session) throws WorldEditException {
-
-        final ItemType itemType = player.getItemInHand(HandSide.MAIN_HAND).getType();
-        session.setTool(itemType, new FloatingTreeRemover());
-        player.printInfo(TranslatableComponent.of("worldedit.tool.deltree.equip", TextComponent.of(itemType.getName())));
+        setTool(player, session, new FloatingTreeRemover(), "worldedit.tool.deltree.equip");
     }
 
     @Command(
@@ -263,10 +247,7 @@ public class ToolCommands {
     )
     @CommandPermissions("worldedit.tool.farwand")
     public void farwand(Player player, LocalSession session) throws WorldEditException {
-
-        final ItemType itemType = player.getItemInHand(HandSide.MAIN_HAND).getType();
-        session.setTool(itemType, new DistanceWand());
-        player.printInfo(TranslatableComponent.of("worldedit.tool.farwand.equip", TextComponent.of(itemType.getName())));
+        setTool(player, session, new DistanceWand(), "worldedit.tool.farwand.equip");
     }
 
     @Command(
@@ -280,10 +261,7 @@ public class ToolCommands {
                                        Pattern primary,
                                    @Arg(desc = "Pattern to set on right-click")
                                        Pattern secondary) throws WorldEditException {
-
-        final ItemType itemType = player.getItemInHand(HandSide.MAIN_HAND).getType();
-        session.setTool(itemType, new LongRangeBuildTool(primary, secondary));
-        player.printInfo(TranslatableComponent.of("worldedit.tool.lrbuild.equip", TextComponent.of(itemType.getName())));
+        setTool(player, session, new LongRangeBuildTool(primary, secondary), "worldedit.tool.lrbuild.equip");
         Component primaryName;
         Component secondaryName;
         if (primary instanceof BlockStateHolder) {

@@ -20,6 +20,9 @@
 package com.sk89q.worldedit.blocks;
 
 import com.sk89q.jnbt.CompoundTag;
+import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.extension.platform.Capability;
+import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.world.item.ItemType;
 
 /**
@@ -65,7 +68,7 @@ public class BaseItemStack extends BaseItem {
 
     /**
      * Get the number of items in the stack.
-     * 
+     *
      * @return the amount
      */
     public int getAmount() {
@@ -74,10 +77,15 @@ public class BaseItemStack extends BaseItem {
 
     /**
      * Set the amount of items in the stack.
-     * 
+     *
      * @param amount the amount to set
      */
     public void setAmount(int amount) {
         this.amount = amount;
+    }
+
+    public Component getRichName() {
+        return WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.GAME_HOOKS)
+            .getRegistries().getItemRegistry().getRichName(this);
     }
 }

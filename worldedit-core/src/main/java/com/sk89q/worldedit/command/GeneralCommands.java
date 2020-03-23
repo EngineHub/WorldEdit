@@ -19,8 +19,6 @@
 
 package com.sk89q.worldedit.command;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
@@ -57,6 +55,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.Callable;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * General WorldEdit commands.
@@ -350,7 +350,7 @@ public class GeneralCommands {
         @Override
         public Component call() throws Exception {
             String command = "/searchitem " + (blocksOnly ? "-b " : "") + (itemsOnly ? "-i " : "") + "-p %page% " + search;
-            Map<String, String> results = new TreeMap<>();
+            Map<String, Component> results = new TreeMap<>();
             String idMatch = search.replace(' ', '_');
             String nameMatch = search.toLowerCase(Locale.ROOT);
             for (ItemType searchType : ItemType.REGISTRY) {
@@ -362,15 +362,17 @@ public class GeneralCommands {
                     continue;
                 }
                 final String id = searchType.getId();
-                String name = searchType.getName();
-                final boolean hasName = !name.equals(id);
-                name = name.toLowerCase(Locale.ROOT);
-                if (id.contains(idMatch) || (hasName && name.contains(nameMatch))) {
-                    results.put(id, name + (hasName ? " (" + id + ")" : ""));
+                if (id.contains(idMatch)) {
+                    Component name = searchType.getRichName();
+                    results.put(id, TextComponent.builder()
+                        .append(name)
+                        .append(" (" + id + ")")
+                        .build());
                 }
             }
-            List<String> list = new ArrayList<>(results.values());
-            return PaginationBox.fromStrings("Search results for '" + search + "'", command, list).create(page);
+            List<Component> list = new ArrayList<>(results.values());
+            return PaginationBox.fromComponents("Search results for '" + search + "'", command, list)
+                .create(page);
         }
     }
 }

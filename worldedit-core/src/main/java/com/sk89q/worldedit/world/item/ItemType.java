@@ -24,9 +24,9 @@ import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.registry.Keyed;
 import com.sk89q.worldedit.registry.NamespacedRegistry;
 import com.sk89q.worldedit.util.concurrency.LazyReference;
+import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.block.BlockTypes;
-import com.sk89q.worldedit.world.registry.BlockMaterial;
 import com.sk89q.worldedit.world.registry.ItemMaterial;
 
 import javax.annotation.Nullable;
@@ -37,6 +37,11 @@ public class ItemType implements Keyed {
 
     private String id;
     private String name;
+    private final LazyReference<Component> richName =
+        LazyReference.from(() ->
+            WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.GAME_HOOKS)
+                .getRegistries().getItemRegistry().getRichName(this)
+        );
     private final LazyReference<ItemMaterial> itemMaterial
             = LazyReference.from(() -> WorldEdit.getInstance().getPlatformManager()
             .queryCapability(Capability.GAME_HOOKS).getRegistries().getItemRegistry().getMaterial(this));
@@ -54,11 +59,17 @@ public class ItemType implements Keyed {
         return this.id;
     }
 
+    public Component getRichName() {
+        return richName.getValue();
+    }
+
     /**
      * Gets the name of this item, or the ID if the name cannot be found.
      *
      * @return The name, or ID
+     * @deprecated Names are translatable now, use {@link #getRichName()}.
      */
+    @Deprecated
     public String getName() {
         if (name == null) {
             name = WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.GAME_HOOKS).getRegistries()

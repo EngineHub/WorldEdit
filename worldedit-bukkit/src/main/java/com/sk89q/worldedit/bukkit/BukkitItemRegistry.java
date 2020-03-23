@@ -17,28 +17,27 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.forge;
+package com.sk89q.worldedit.bukkit;
 
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.world.item.ItemType;
 import com.sk89q.worldedit.world.registry.BundledItemRegistry;
 
-public class ForgeItemRegistry extends BundledItemRegistry {
-
+class BukkitItemRegistry extends BundledItemRegistry {
     @Override
     public Component getRichName(ItemType itemType) {
-        return TranslatableComponent.of(
-            ForgeAdapter.adapt(itemType).getTranslationKey()
-        );
+        if (WorldEditPlugin.getInstance().getBukkitImplAdapter() != null) {
+            return WorldEditPlugin.getInstance().getBukkitImplAdapter().getRichItemName(itemType);
+        }
+        return super.getRichName(itemType);
     }
 
     @Override
     public Component getRichName(BaseItemStack itemStack) {
-        return TranslatableComponent.of(
-            ForgeAdapter.adapt(itemStack).getTranslationKey()
-        );
+        if (WorldEditPlugin.getInstance().getBukkitImplAdapter() != null) {
+            return WorldEditPlugin.getInstance().getBukkitImplAdapter().getRichItemName(itemStack);
+        }
+        return super.getRichName(itemStack);
     }
-
 }

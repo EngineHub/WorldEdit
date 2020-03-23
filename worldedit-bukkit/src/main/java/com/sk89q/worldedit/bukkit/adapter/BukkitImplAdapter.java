@@ -35,6 +35,7 @@ import com.sk89q.worldedit.world.DataFixer;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockType;
+import com.sk89q.worldedit.world.item.ItemType;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.data.BlockData;
@@ -122,6 +123,22 @@ public interface BukkitImplAdapter {
      * @return The name
      */
     Component getRichBlockName(BlockType blockType);
+
+    /**
+     * Gets the name for the given item.
+     *
+     * @param itemType the item
+     * @return The name
+     */
+    Component getRichItemName(ItemType itemType);
+
+    /**
+     * Gets the name for the given item stack.
+     *
+     * @param itemStack the item stack
+     * @return The name
+     */
+    Component getRichItemName(BaseItemStack itemStack);
 
     /**
      * Get a map of {@code string -> property}.
