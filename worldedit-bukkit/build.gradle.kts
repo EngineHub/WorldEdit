@@ -29,7 +29,7 @@ dependencies {
     "implementation"("io.papermc:paperlib:1.0.2")
     "compileOnly"("com.sk89q:dummypermscompat:1.10")
     "implementation"("org.apache.logging.log4j:log4j-slf4j-impl:2.8.1")
-    "implementation"("org.bstats:bstats-bukkit:1.5")
+    "implementation"("org.bstats:bstats-bukkit:1.7")
     "testCompile"("org.mockito:mockito-core:1.9.0-rc1")
 }
 
@@ -37,20 +37,16 @@ tasks.named<Copy>("processResources") {
     filesMatching("plugin.yml") {
         expand("internalVersion" to project.ext["internalVersion"])
     }
-    from(zipTree("src/main/resources/worldedit-adapters.jar").matching {
-        exclude("META-INF/")
-    })
+    // exclude adapters entirely from this JAR, they should only be in the shadow JAR
     exclude("**/worldedit-adapters.jar")
 }
 
-tasks.named<Jar>("jar") {
-    manifest {
-        attributes("Class-Path" to "truezip.jar WorldEdit/truezip.jar js.jar WorldEdit/js.jar",
-                "WorldEdit-Version" to project.version)
-    }
-}
+addJarManifest(includeClasspath = true)
 
 tasks.named<ShadowJar>("shadowJar") {
+    from(zipTree("src/main/resources/worldedit-adapters.jar").matching {
+        exclude("META-INF/")
+    })
     dependencies {
         relocate("org.slf4j", "com.sk89q.worldedit.slf4j")
         relocate("org.apache.logging.slf4j", "com.sk89q.worldedit.log4jbridge")
@@ -60,7 +56,7 @@ tasks.named<ShadowJar>("shadowJar") {
         include(dependency("org.apache.logging.log4j:log4j-slf4j-impl"))
         include(dependency("org.antlr:antlr4-runtime"))
         relocate("org.bstats", "com.sk89q.worldedit.bukkit.bstats") {
-            include(dependency("org.bstats:bstats-bukkit:1.5"))
+            include(dependency("org.bstats:bstats-bukkit:1.7"))
         }
         relocate("io.papermc.lib", "com.sk89q.worldedit.bukkit.paperlib") {
             include(dependency("io.papermc:paperlib:1.0.2"))

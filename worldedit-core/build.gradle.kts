@@ -22,6 +22,7 @@ configurations.all {
 dependencies {
     "compile"(project(":worldedit-libs:core"))
     "compile"("de.schlichtherle:truezip:6.8.3")
+    "compile"("net.java.truevfs:truevfs-profile-default_2.13:0.12.1")
     "compile"("org.mozilla:rhino:1.7.11")
     "compile"("org.yaml:snakeyaml:1.9")
     "compile"("com.google.guava:guava:21.0")
@@ -40,6 +41,8 @@ dependencies {
     "annotationProcessor"("com.google.guava:guava:21.0")
     "compileOnly"("com.google.auto.value:auto-value-annotations:${Versions.AUTO_VALUE}")
     "annotationProcessor"("com.google.auto.value:auto-value:${Versions.AUTO_VALUE}")
+    "testImplementation"("ch.qos.logback:logback-core:${Versions.LOGBACK}")
+    "testImplementation"("ch.qos.logback:logback-classic:${Versions.LOGBACK}")
 }
 
 tasks.withType<JavaCompile>().configureEach {
@@ -90,7 +93,7 @@ sourceSets {
 
 val crowdinApiKey = "crowdin_apikey"
 
-if (project.hasProperty(crowdinApiKey)) {
+if (project.hasProperty(crowdinApiKey) && !gradle.startParameter.isOffline) {
     tasks.named<UploadSourceFileTask>("crowdinUpload") {
         apiKey = "${project.property(crowdinApiKey)}"
         projectId = "worldedit-core"
@@ -102,10 +105,17 @@ if (project.hasProperty(crowdinApiKey)) {
         )
     }
 
-    tasks.named<DownloadTranslationsTask>("crowdinDownload") {
+    val dlTranslationsTask = tasks.named<DownloadTranslationsTask>("crowdinDownload") {
         apiKey = "${project.property(crowdinApiKey)}"
-        destination = "${file("build/resources/main/lang")}"
+        destination = "${buildDir.resolve("crowdin-i18n")}"
         projectId = "worldedit-core"
+    }
+
+    tasks.named<Copy>("processResources") {
+        dependsOn(dlTranslationsTask)
+        from(dlTranslationsTask.get().destination) {
+            into("lang")
+        }
     }
 
     tasks.named("classes").configure {

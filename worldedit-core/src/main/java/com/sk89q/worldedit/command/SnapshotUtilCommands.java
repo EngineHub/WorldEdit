@@ -31,29 +31,31 @@ import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
-import com.sk89q.worldedit.world.DataException;
 import com.sk89q.worldedit.world.World;
-import com.sk89q.worldedit.world.snapshot.InvalidSnapshotException;
-import com.sk89q.worldedit.world.snapshot.Snapshot;
-import com.sk89q.worldedit.world.snapshot.SnapshotRestore;
-import com.sk89q.worldedit.world.storage.ChunkStore;
-import com.sk89q.worldedit.world.storage.MissingWorldException;
+import com.sk89q.worldedit.world.snapshot.experimental.Snapshot;
+import com.sk89q.worldedit.world.snapshot.experimental.SnapshotRestore;
 import org.enginehub.piston.annotation.Command;
 import org.enginehub.piston.annotation.CommandContainer;
 import org.enginehub.piston.annotation.param.Arg;
 
-import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.util.Optional;
+import java.util.stream.Stream;
 
+import static com.sk89q.worldedit.command.SnapshotCommands.checkSnapshotsConfigured;
+import static com.sk89q.worldedit.command.SnapshotCommands.resolveSnapshotName;
 import static com.sk89q.worldedit.command.util.Logging.LogMode.REGION;
 
 @CommandContainer(superTypes = CommandPermissionsConditionGenerator.Registration.class)
 public class SnapshotUtilCommands {
 
     private final WorldEdit we;
+    private final LegacySnapshotUtilCommands legacy;
 
     public SnapshotUtilCommands(WorldEdit we) {
         this.we = we;
+        this.legacy = new LegacySnapshotUtilCommands(we);
     }
 
     @Command(
@@ -65,12 +67,12 @@ public class SnapshotUtilCommands {
     @CommandPermissions("worldedit.snapshots.restore")
     public void restore(Actor actor, World world, LocalSession session, EditSession editSession,
                         @Arg(name = "snapshot", desc = "The snapshot to restore", def = "")
-                            String snapshotName) throws WorldEditException {
-
+                            String snapshotName) throws WorldEditException, IOException {
         LocalConfiguration config = we.getConfiguration();
+        checkSnapshotsConfigured(config);
 
-        if (config.snapshotRepo == null) {
-            actor.printError(TranslatableComponent.of("worldedit.restore.not-configured"));
+        if (config.snapshotRepo != null) {
+            legacy.restore(actor, world, session, editSession, snapshotName);
             return;
         }
 
@@ -78,58 +80,41 @@ public class SnapshotUtilCommands {
         Snapshot snapshot;
 
         if (snapshotName != null) {
-            try {
-                snapshot = config.snapshotRepo.getSnapshot(snapshotName);
-            } catch (InvalidSnapshotException e) {
+            URI uri = resolveSnapshotName(config, snapshotName);
+            Optional<Snapshot> snapOpt = config.snapshotDatabase.getSnapshot(uri);
+            if (!snapOpt.isPresent()) {
                 actor.printError(TranslatableComponent.of("worldedit.restore.not-available"));
                 return;
             }
+            snapshot = snapOpt.get();
         } else {
-            snapshot = session.getSnapshot();
+            snapshot = session.getSnapshotExperimental();
         }
 
         // No snapshot set?
         if (snapshot == null) {
-            try {
-                snapshot = config.snapshotRepo.getDefaultSnapshot(world.getName());
+            try (Stream<Snapshot> snapshotStream =
+                     config.snapshotDatabase.getSnapshotsNewestFirst(world.getName())) {
+                snapshot = snapshotStream
+                    .findFirst().orElse(null);
+            }
 
-                if (snapshot == null) {
-                    actor.printError(TranslatableComponent.of("worldedit.restore.none-found-console"));
-
-                    // Okay, let's toss some debugging information!
-                    File dir = config.snapshotRepo.getDirectory();
-
-                    try {
-                        WorldEdit.logger.info("WorldEdit found no snapshots: looked in: "
-                                + dir.getCanonicalPath());
-                    } catch (IOException e) {
-                        WorldEdit.logger.info("WorldEdit found no snapshots: looked in "
-                                + "(NON-RESOLVABLE PATH - does it exist?): "
-                                + dir.getPath());
-                    }
-
-                    return;
-                }
-            } catch (MissingWorldException ex) {
-                actor.printError(TranslatableComponent.of("worldedit.restore.none-for-world"));
+            if (snapshot == null) {
+                actor.printError(TranslatableComponent.of(
+                    "worldedit.restore.none-for-specific-world",
+                    TextComponent.of(world.getName())
+                ));
                 return;
             }
         }
-
-        ChunkStore chunkStore;
-
-        // Load chunk store
-        try {
-            chunkStore = snapshot.getChunkStore();
-            actor.printInfo(TranslatableComponent.of("worldedit.restore.loaded", TextComponent.of(snapshot.getName())));
-        } catch (DataException | IOException e) {
-            actor.printError(TranslatableComponent.of("worldedit.restore.failed", TextComponent.of(e.getMessage())));
-            return;
-        }
+        actor.printInfo(TranslatableComponent.of(
+            "worldedit.restore.loaded",
+            TextComponent.of(snapshot.getInfo().getDisplayName())
+        ));
 
         try {
             // Restore snapshot
-            SnapshotRestore restore = new SnapshotRestore(chunkStore, editSession, region);
+            SnapshotRestore restore = new SnapshotRestore(snapshot, editSession, region);
             //player.print(restore.getChunksAffected() + " chunk(s) will be loaded.");
 
             restore.restore();
@@ -146,12 +131,12 @@ public class SnapshotUtilCommands {
                 }
             } else {
                 actor.printInfo(TranslatableComponent.of("worldedit.restore.restored",
-                        TextComponent.of(restore.getMissingChunks().size()),
-                        TextComponent.of(restore.getErrorChunks().size())));
+                    TextComponent.of(restore.getMissingChunks().size()),
+                    TextComponent.of(restore.getErrorChunks().size())));
             }
         } finally {
             try {
-                chunkStore.close();
+                snapshot.close();
             } catch (IOException ignored) {
             }
         }

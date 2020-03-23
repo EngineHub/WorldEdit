@@ -19,18 +19,17 @@
 
 package com.sk89q.worldedit.extent.buffer;
 
-import com.google.common.collect.Maps;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.extent.AbstractBufferingExtent;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.function.mask.Masks;
 import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.util.collection.BlockMap;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 
 import java.util.Map;
-import java.util.Optional;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -40,7 +39,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class ExtentBuffer extends AbstractBufferingExtent {
 
-    private final Map<BlockVector3, BaseBlock> buffer = Maps.newHashMap();
+    private final Map<BlockVector3, BaseBlock> buffer = BlockMap.create();
     private final Mask mask;
 
     /**
@@ -67,11 +66,11 @@ public class ExtentBuffer extends AbstractBufferingExtent {
     }
 
     @Override
-    protected Optional<BaseBlock> getBufferedBlock(BlockVector3 position) {
+    protected BaseBlock getBufferedFullBlock(BlockVector3 position) {
         if (mask.test(position)) {
-            return Optional.of(buffer.computeIfAbsent(position, (pos -> getExtent().getFullBlock(pos))));
+            return buffer.computeIfAbsent(position, (pos -> getExtent().getFullBlock(pos)));
         }
-        return Optional.empty();
+        return null;
     }
 
     @Override

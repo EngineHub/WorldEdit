@@ -117,19 +117,19 @@ final class NBTConverter {
     }
 
     public static LongNBT toNative(LongTag tag) {
-        return new LongNBT(tag.getValue());
+        return LongNBT.valueOf(tag.getValue());
     }
 
     public static StringNBT toNative(StringTag tag) {
-        return new StringNBT(tag.getValue());
+        return StringNBT.valueOf(tag.getValue());
     }
 
     public static IntNBT toNative(IntTag tag) {
-        return new IntNBT(tag.getValue());
+        return IntNBT.valueOf(tag.getValue());
     }
 
     public static ByteNBT toNative(ByteTag tag) {
-        return new ByteNBT(tag.getValue());
+        return ByteNBT.valueOf(tag.getValue());
     }
 
     public static ByteArrayNBT toNative(ByteArrayTag tag) {
@@ -146,15 +146,15 @@ final class NBTConverter {
     }
 
     public static FloatNBT toNative(FloatTag tag) {
-        return new FloatNBT(tag.getValue());
+        return FloatNBT.valueOf(tag.getValue());
     }
 
     public static ShortNBT toNative(ShortTag tag) {
-        return new ShortNBT(tag.getValue());
+        return ShortNBT.valueOf(tag.getValue());
     }
 
     public static DoubleNBT toNative(DoubleTag tag) {
-        return new DoubleNBT(tag.getValue());
+        return DoubleNBT.valueOf(tag.getValue());
     }
 
     public static Tag fromNative(INBT other) {

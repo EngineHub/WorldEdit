@@ -19,11 +19,9 @@
 
 package com.sk89q.worldedit.internal.expression;
 
-import com.google.common.collect.SetMultimap;
 import com.sk89q.worldedit.antlr.ExpressionBaseListener;
 import com.sk89q.worldedit.antlr.ExpressionParser;
 
-import java.lang.invoke.MethodHandle;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -34,10 +32,10 @@ import static com.sk89q.worldedit.internal.expression.ExpressionHelper.resolveFu
 class ExpressionValidator extends ExpressionBaseListener {
 
     private final Set<String> variableNames = new HashSet<>();
-    private final SetMultimap<String, MethodHandle> functions;
+    private final Functions functions;
 
     ExpressionValidator(Collection<String> variableNames,
-                        SetMultimap<String, MethodHandle> functions) {
+                        Functions functions) {
         this.variableNames.addAll(variableNames);
         this.functions = functions;
     }

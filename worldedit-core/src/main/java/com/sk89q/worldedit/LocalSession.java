@@ -49,11 +49,13 @@ import com.sk89q.worldedit.regions.selector.RegionSelectorType;
 import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.session.request.Request;
 import com.sk89q.worldedit.util.Countable;
+import com.sk89q.worldedit.util.SideEffectSet;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.item.ItemType;
-import com.sk89q.worldedit.world.snapshot.Snapshot;
+import com.sk89q.worldedit.world.item.ItemTypes;
+import com.sk89q.worldedit.world.snapshot.experimental.Snapshot;
 
 import javax.annotation.Nullable;
 import java.time.ZoneId;
@@ -65,6 +67,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -92,17 +95,19 @@ public class LocalSession {
     private transient int maxBlocksChanged = -1;
     private transient int maxTimeoutTime;
     private transient boolean useInventory;
-    private transient Snapshot snapshot;
+    private transient com.sk89q.worldedit.world.snapshot.Snapshot snapshot;
+    private transient Snapshot snapshotExperimental;
     private transient boolean hasCUISupport = false;
     private transient int cuiVersion = -1;
-    private transient boolean fastMode = false;
+    private transient SideEffectSet sideEffectSet = SideEffectSet.defaults();
     private transient Mask mask;
     private transient ZoneId timezone = ZoneId.systemDefault();
     private transient BlockVector3 cuiTemporaryBlock;
     private transient EditSession.ReorderMode reorderMode = EditSession.ReorderMode.MULTI_STAGE;
     private transient List<Countable<BlockState>> lastDistribution;
     private transient World worldOverride;
-    private transient boolean tickingWatchdog = false;
+    private transient boolean tickingWatchdog = true;
+    private transient boolean hasBeenToldVersion;
 
     // Saved properties
     private String lastScript;
@@ -554,22 +559,40 @@ public class LocalSession {
     }
 
     /**
+     * Get the legacy snapshot that has been selected.
+     *
+     * @return the legacy snapshot
+     */
+    @Nullable
+    public com.sk89q.worldedit.world.snapshot.Snapshot getSnapshot() {
+        return snapshot;
+    }
+
+    /**
+     * Select a legacy snapshot.
+     *
+     * @param snapshot a legacy snapshot
+     */
+    public void setSnapshot(@Nullable com.sk89q.worldedit.world.snapshot.Snapshot snapshot) {
+        this.snapshot = snapshot;
+    }
+
+    /**
      * Get the snapshot that has been selected.
      *
      * @return the snapshot
      */
-    @Nullable
-    public Snapshot getSnapshot() {
-        return snapshot;
+    public @Nullable Snapshot getSnapshotExperimental() {
+        return snapshotExperimental;
     }
 
     /**
      * Select a snapshot.
      *
-     * @param snapshot a snapshot
+     * @param snapshotExperimental a snapshot
      */
-    public void setSnapshot(@Nullable Snapshot snapshot) {
-        this.snapshot = snapshot;
+    public void setSnapshotExperimental(@Nullable Snapshot snapshotExperimental) {
+        this.snapshotExperimental = snapshotExperimental;
     }
 
     /**
@@ -634,14 +657,33 @@ public class LocalSession {
             throw new InvalidToolBindException(item, "Blocks can't be used");
         }
         if (tool instanceof SelectionWand) {
-            this.wandItem = item.getId();
-            setDirty();
+            setSingleItemTool(id -> this.wandItem = id, this.wandItem, item);
         } else if (tool instanceof NavigationWand) {
-            this.navWandItem = item.getId();
-            setDirty();
+            setSingleItemTool(id -> this.navWandItem = id, this.navWandItem, item);
+        } else if (tool == null) {
+            // Check if un-setting sel/nav
+            String id = item.getId();
+            if (id.equals(this.wandItem)) {
+                this.wandItem = null;
+                setDirty();
+            } else if (id.equals(this.navWandItem)) {
+                this.navWandItem = null;
+                setDirty();
+            }
         }
 
         this.tools.put(item, tool);
+    }
+
+    private void setSingleItemTool(Consumer<String> setter, @Nullable String itemId, ItemType newItem) {
+        if (itemId != null) {
+            ItemType item = ItemTypes.get(itemId);
+            if (item != null) {
+                this.tools.remove(item);
+            }
+        }
+        setter.accept(newItem.getId());
+        setDirty();
     }
 
     /**
@@ -688,6 +730,9 @@ public class LocalSession {
      * @param actor the actor
      */
     public void tellVersion(Actor actor) {
+        if (hasBeenToldVersion) return;
+        hasBeenToldVersion = true;
+        actor.sendAnnouncements();
     }
 
     public boolean shouldUseServerCUI() {
@@ -951,7 +996,7 @@ public class LocalSession {
     }
 
     private void prepareEditingExtents(EditSession editSession, Actor actor) {
-        editSession.setFastMode(fastMode);
+        editSession.setSideEffectApplier(sideEffectSet);
         editSession.setReorderMode(reorderMode);
         if (editSession.getSurvivalExtent() != null) {
             editSession.getSurvivalExtent().setStripNbt(!actor.hasPermission("worldedit.setnbt"));
@@ -960,12 +1005,31 @@ public class LocalSession {
     }
 
     /**
+     * Gets the side effect applier of this session.
+     *
+     * @return the side effect applier
+     */
+    public SideEffectSet getSideEffectSet() {
+        return this.sideEffectSet;
+    }
+
+    /**
+     * Sets the side effect applier for this session
+     *
+     * @param sideEffectSet the side effect applier
+     */
+    public void setSideEffectSet(SideEffectSet sideEffectSet) {
+        this.sideEffectSet = sideEffectSet;
+    }
+
+    /**
      * Checks if the session has fast mode enabled.
      *
      * @return true if fast mode is enabled
      */
+    @Deprecated
     public boolean hasFastMode() {
-        return fastMode;
+        return !this.sideEffectSet.doesApplyAny();
     }
 
     /**
@@ -973,8 +1037,9 @@ public class LocalSession {
      *
      * @param fastMode true if fast mode is enabled
      */
+    @Deprecated
     public void setFastMode(boolean fastMode) {
-        this.fastMode = fastMode;
+        this.sideEffectSet = fastMode ? SideEffectSet.none() : SideEffectSet.defaults();
     }
 
     /**

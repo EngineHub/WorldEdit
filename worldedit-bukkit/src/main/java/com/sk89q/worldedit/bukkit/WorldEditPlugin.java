@@ -83,9 +83,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
-import java.util.jar.JarFile;
 import java.util.logging.Level;
-import java.util.zip.ZipEntry;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.sk89q.worldedit.internal.anvil.ChunkDeleter.DELCHUNKS_FILE_NAME;
@@ -98,6 +96,7 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
     private static final Logger log = LoggerFactory.getLogger(WorldEditPlugin.class);
     public static final String CUI_PLUGIN_CHANNEL = "worldedit:cui";
     private static WorldEditPlugin INSTANCE;
+    private static final int BSTATS_PLUGIN_ID = 3328;
 
     private BukkitImplAdapter bukkitAdapter;
     private BukkitServerInterface server;
@@ -156,7 +155,7 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
         }
 
         // Enable metrics
-        new Metrics(this);
+        new Metrics(this, BSTATS_PLUGIN_ID);
         PaperLib.suggestPaper(this);
     }
 
@@ -307,10 +306,9 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
     protected void createDefaultConfiguration(String name) {
         File actual = new File(getDataFolder(), name);
         if (!actual.exists()) {
-            try (JarFile file = new JarFile(getFile())) {
-                ZipEntry copy = file.getEntry("defaults/" + name);
-                if (copy == null) throw new FileNotFoundException();
-                copyDefaultConfig(file.getInputStream(copy), actual, name);
+            try (InputStream stream = getResource("defaults/" + name)) {
+                if (stream == null) throw new FileNotFoundException();
+                copyDefaultConfig(stream, actual, name);
             } catch (IOException e) {
                 getLogger().severe("Unable to read default configuration: " + name);
             }

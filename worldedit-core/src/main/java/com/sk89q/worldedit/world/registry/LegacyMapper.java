@@ -119,7 +119,7 @@ public final class LegacyMapper {
 
             // if it's still null, both fixer and default failed
             if (state == null) {
-                log.warn("Unknown block: " + value);
+                log.debug("Unknown block: " + value);
             } else {
                 // it's not null so one of them succeeded, now use it
                 blockToStringMap.put(state, id);
@@ -136,7 +136,7 @@ public final class LegacyMapper {
                 type = ItemTypes.get(value);
             }
             if (type == null) {
-                log.warn("Unknown item: " + value);
+                log.debug("Unknown item: " + value);
             } else {
                 itemToStringMap.put(type, id);
                 stringToItemMap.put(id, type);

@@ -27,7 +27,6 @@ import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.command.argument.HeightConverter;
 import com.sk89q.worldedit.command.util.Logging;
 import com.sk89q.worldedit.command.util.PermissionCondition;
-import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.internal.annotation.Direction;
 import com.sk89q.worldedit.internal.annotation.MultiDirection;
@@ -107,7 +106,8 @@ public class ExpandCommands {
                     .asSingle(Key.of(int.class, VertHeight.class)));
                 expandVert(
                     requireIV(Key.of(LocalSession.class), "localSession", parameters),
-                    requireIV(Key.of(Player.class), "localSession", parameters),
+                    requireIV(Key.of(Actor.class), "actor", parameters),
+                    requireIV(Key.of(World.class), "world", parameters),
                     height
                 );
                 return 1;
@@ -115,23 +115,23 @@ public class ExpandCommands {
             .build();
     }
 
-    private static void expandVert(LocalSession session, Player player,
+    private static void expandVert(LocalSession session, Actor actor, World world,
                                    int height) throws IncompleteRegionException {
-        Region region = session.getSelection(player.getWorld());
+        Region region = session.getSelection(world);
         try {
             int oldSize = region.getArea();
             region.expand(
                 BlockVector3.at(0, height, 0),
                 BlockVector3.at(0, -height, 0));
-            session.getRegionSelector(player.getWorld()).learnChanges();
+            session.getRegionSelector(world).learnChanges();
             int newSize = region.getArea();
-            session.getRegionSelector(player.getWorld()).explainRegionAdjust(player, session);
+            session.getRegionSelector(world).explainRegionAdjust(actor, session);
             int changeSize = newSize - oldSize;
-            player.printInfo(
-                    TranslatableComponent.of("worldedit.expand.expanded.vert", TextComponent.of(changeSize))
+            actor.printInfo(
+                TranslatableComponent.of("worldedit.expand.expanded.vert", TextComponent.of(changeSize))
             );
         } catch (RegionOperationException e) {
-            player.printError(TextComponent.of(e.getMessage()));
+            actor.printError(TextComponent.of(e.getMessage()));
         }
     }
 

@@ -29,7 +29,6 @@ import com.sk89q.jnbt.Tag;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.world.DataException;
-import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockTypes;
@@ -54,12 +53,11 @@ public class AnvilChunk implements Chunk {
 
     /**
      * Construct the chunk with a compound tag.
-     * 
-     * @param world the world to construct the chunk for
+     *
      * @param tag the tag to read
      * @throws DataException on a data error
      */
-    public AnvilChunk(World world, CompoundTag tag) throws DataException {
+    public AnvilChunk(CompoundTag tag) throws DataException {
         rootTag = tag;
 
         rootX = NBTUtils.getChildTag(rootTag.getValue(), "xPos", IntTag.class).getValue();
@@ -68,19 +66,19 @@ public class AnvilChunk implements Chunk {
         blocks = new byte[16][16 * 16 * 16];
         blocksAdd = new byte[16][16 * 16 * 8];
         data = new byte[16][16 * 16 * 8];
-        
+
         List<Tag> sections = NBTUtils.getChildTag(rootTag.getValue(), "Sections", ListTag.class).getValue();
-        
+
         for (Tag rawSectionTag : sections) {
             if (!(rawSectionTag instanceof CompoundTag)) {
                 continue;
             }
-            
+
             CompoundTag sectionTag = (CompoundTag) rawSectionTag;
             if (!sectionTag.getValue().containsKey("Y")) {
                 continue; // Empty section.
             }
-            
+
             int y = NBTUtils.getChildTag(sectionTag.getValue(), "Y", ByteTag.class).getValue();
             if (y < 0 || y >= 16) {
                 continue;
@@ -116,7 +114,7 @@ public class AnvilChunk implements Chunk {
             }
         }
     }
-    
+
     private int getBlockID(BlockVector3 position) throws DataException {
         int x = position.getX() - rootX * 16;
         int y = position.getY();
@@ -126,14 +124,14 @@ public class AnvilChunk implements Chunk {
         if (section < 0 || section >= blocks.length) {
             throw new DataException("Chunk does not contain position " + position);
         }
-        
+
         int yindex = y & 0x0F;
 
         int index = x + (z * 16 + (yindex * 16 * 16));
-        
+
         try {
             int addId = 0;
-            
+
             // The block ID is the combination of the Blocks byte array with the
             // Add byte array. 'Blocks' stores the lowest 8 bits of a block's ID, and
             // 'Add' stores the highest 4 bits of the ID. The first block is stored
@@ -143,7 +141,7 @@ public class AnvilChunk implements Chunk {
             } else {
                 addId = (blocksAdd[section][index >> 1] & 0xF0) << 4;
             }
-            
+
             return (blocks[section][index] & 0xFF) + addId;
         } catch (IndexOutOfBoundsException e) {
             throw new DataException("Chunk does not contain position " + position);
@@ -157,7 +155,7 @@ public class AnvilChunk implements Chunk {
 
         int section = y >> 4;
         int yIndex = y & 0x0F;
-        
+
         if (section < 0 || section >= blocks.length) {
             throw new DataException("Chunk does not contain position " + position);
         }

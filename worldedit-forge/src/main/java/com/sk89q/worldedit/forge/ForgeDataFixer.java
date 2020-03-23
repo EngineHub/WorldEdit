@@ -167,7 +167,7 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
     }
 
     private static String fixName(String key, int srcVer, TypeReference type) {
-        return INSTANCE.fixer.update(type, new Dynamic<>(OPS_NBT, new StringNBT(key)), srcVer, DATA_VERSION)
+        return INSTANCE.fixer.update(type, new Dynamic<>(OPS_NBT, StringNBT.valueOf(key)), srcVer, DATA_VERSION)
                 .asString().orElse(key);
     }
 
@@ -639,17 +639,17 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
 
                 if (!cmp.contains("HandDropChances", 10)) {
                     nbttaglist2 = new ListNBT();
-                    nbttaglist2.add(new FloatNBT(nbttaglist1.getFloat(0)));
-                    nbttaglist2.add(new FloatNBT(0.0F));
+                    nbttaglist2.add(FloatNBT.valueOf(nbttaglist1.getFloat(0)));
+                    nbttaglist2.add(FloatNBT.valueOf(0.0F));
                     cmp.put("HandDropChances", nbttaglist2);
                 }
 
                 if (!cmp.contains("ArmorDropChances", 10)) {
                     nbttaglist2 = new ListNBT();
-                    nbttaglist2.add(new FloatNBT(nbttaglist1.getFloat(1)));
-                    nbttaglist2.add(new FloatNBT(nbttaglist1.getFloat(2)));
-                    nbttaglist2.add(new FloatNBT(nbttaglist1.getFloat(3)));
-                    nbttaglist2.add(new FloatNBT(nbttaglist1.getFloat(4)));
+                    nbttaglist2.add(FloatNBT.valueOf(nbttaglist1.getFloat(1)));
+                    nbttaglist2.add(FloatNBT.valueOf(nbttaglist1.getFloat(2)));
+                    nbttaglist2.add(FloatNBT.valueOf(nbttaglist1.getFloat(3)));
+                    nbttaglist2.add(FloatNBT.valueOf(nbttaglist1.getFloat(4)));
                     cmp.put("ArmorDropChances", nbttaglist2);
                 }
 
@@ -1874,7 +1874,7 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
                             object = new StringTextComponent("");
                         }
 
-                        nbttaglist.set(i, new StringNBT(ITextComponent.Serializer.toJson((ITextComponent) object)));
+                        nbttaglist.set(i, StringNBT.valueOf(ITextComponent.Serializer.toJson((ITextComponent) object)));
                     }
 
                     nbttagcompound1.put("pages", nbttaglist);

@@ -20,7 +20,6 @@
 package com.sk89q.worldedit.bukkit;
 
 import com.sk89q.util.StringUtil;
-import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.bukkit.adapter.BukkitImplAdapter;
@@ -35,7 +34,11 @@ import com.sk89q.worldedit.util.HandSide;
 import com.sk89q.worldedit.util.formatting.WorldEditText;
 import com.sk89q.worldedit.util.formatting.component.TextUtils;
 import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.util.formatting.text.TextComponent;
+import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.util.formatting.text.adapter.bukkit.TextAdapter;
+import com.sk89q.worldedit.util.formatting.text.event.ClickEvent;
+import com.sk89q.worldedit.util.formatting.text.format.TextColor;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
@@ -223,6 +226,15 @@ public class BukkitPlayer extends AbstractPlayerActor {
         return TextUtils.getLocaleByMinecraftTag(player.getLocale());
     }
 
+    @Override
+    public void sendAnnouncements() {
+        if (WorldEditPlugin.getInstance().getBukkitImplAdapter() == null) {
+            printError(TranslatableComponent.of("worldedit.version.bukkit.unsupported-adapter",
+                    TextComponent.of("https://www.enginehub.org/worldedit/#downloads", TextColor.AQUA)
+                        .clickEvent(ClickEvent.openUrl("https://www.enginehub.org/worldedit/#downloads"))));
+        }
+    }
+
     @Nullable
     @Override
     public <T> T getFacet(Class<? extends T> cls) {
@@ -282,8 +294,8 @@ public class BukkitPlayer extends AbstractPlayerActor {
             if (block instanceof BaseBlock && ((BaseBlock) block).hasNbtData()) {
                 BukkitImplAdapter adapter = WorldEditPlugin.getInstance().getBukkitImplAdapter();
                 if (adapter != null) {
-                    adapter.sendFakeNBT(player, pos, ((BaseBlock) block).getNbtData());
                     if (block.getBlockType() == BlockTypes.STRUCTURE_BLOCK) {
+                        adapter.sendFakeNBT(player, pos, ((BaseBlock) block).getNbtData());
                         adapter.sendFakeOP(player);
                     }
                 }

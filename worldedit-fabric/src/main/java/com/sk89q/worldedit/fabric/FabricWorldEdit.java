@@ -44,6 +44,7 @@ import net.fabricmc.fabric.api.event.server.ServerTickCallback;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.tag.BlockTags;
@@ -51,6 +52,7 @@ import net.minecraft.tag.ItemTags;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -241,19 +243,20 @@ public class FabricWorldEdit implements ModInitializer {
         return ActionResult.PASS;
     }
 
-    private ActionResult onRightClickAir(PlayerEntity playerEntity, World world, Hand hand) {
+    private TypedActionResult<ItemStack> onRightClickAir(PlayerEntity playerEntity, World world, Hand hand) {
+        ItemStack stackInHand = playerEntity.getStackInHand(hand);
         if (shouldSkip() || hand == Hand.OFF_HAND || world.isClient) {
-            return ActionResult.PASS;
+            return TypedActionResult.pass(stackInHand);
         }
 
         WorldEdit we = WorldEdit.getInstance();
         FabricPlayer player = adaptPlayer((ServerPlayerEntity) playerEntity);
 
         if (we.handleRightClick(player)) {
-            return ActionResult.SUCCESS;
+            return TypedActionResult.success(stackInHand);
         }
 
-        return ActionResult.PASS;
+        return TypedActionResult.pass(stackInHand);
     }
 
     // TODO Pass empty left click to server

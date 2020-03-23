@@ -133,12 +133,12 @@ context.checkArgs(1, 3, "<image> <orientation> <palette>");
 
 var f = context.getSafeOpenFile("drawings", argv[1], "png", ["png", "jpg", "jpeg", "bmp"]);
 var sess = context.remember();
-var upright = argv[2] === "v";
+var upright = argv[2] == "v";
 var colors = clothColors;
-if(argv[3] === "opt") {
+if(argv[3] == "opt") {
 	colors = clothColorsOpt;
 	player.print("Using optimized palette");
-} else if(argv[3] === "optHD") {
+} else if(argv[3] == "optHD") {
 	colors = clothColorsOptHD;
 	player.print("Using optimized HD palette");
 }

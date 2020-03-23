@@ -79,7 +79,9 @@ public final class BundledItemData {
         Gson gson = gsonBuilder.create();
         URL url = null;
         final int dataVersion = WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.WORLD_EDITING).getDataVersion();
-        if (dataVersion > 1900) { // > MC 1.13
+        if (dataVersion > 2224) { // > MC 1.14
+            url = ResourceLoader.getResource(BundledBlockData.class, "items.115.json");
+        } else if (dataVersion > 1900) { // > MC 1.13
             url = ResourceLoader.getResource(BundledBlockData.class, "items.114.json");
         }
         if (url == null) {
@@ -110,6 +112,23 @@ public final class BundledItemData {
             id = "minecraft:" + id;
         }
         return idMap.get(id);
+    }
+
+    /**
+     * Get the material properties for the given item.
+     *
+     * @param id the string ID
+     * @return the material's properties, or null
+     */
+    @Nullable
+    public ItemMaterial getMaterialById(String id) {
+        ItemEntry entry = findById(id);
+        if (entry != null) {
+            // FIXME: This should probably just be part of the JSON itself
+            return new SimpleItemMaterial(entry.maxStackSize, entry.maxDamage);
+        } else {
+            return null;
+        }
     }
 
     /**

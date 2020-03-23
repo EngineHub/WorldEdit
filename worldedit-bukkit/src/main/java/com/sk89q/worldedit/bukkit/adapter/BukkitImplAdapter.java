@@ -20,12 +20,16 @@
 package com.sk89q.worldedit.bukkit.adapter;
 
 import com.sk89q.jnbt.CompoundTag;
+import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.util.Direction;
+import com.sk89q.worldedit.util.SideEffect;
+import com.sk89q.worldedit.util.SideEffectSet;
 import com.sk89q.worldedit.world.DataFixer;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;
@@ -40,6 +44,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.Map;
 import java.util.OptionalInt;
+import java.util.Set;
 
 import javax.annotation.Nullable;
 
@@ -89,19 +94,19 @@ public interface BukkitImplAdapter {
      *
      * @param location the location
      * @param state the block
-     * @param notifyAndLight notify and light if set
+     * @param sideEffectSet side effects to apply
      * @return true if a block was likely changed
      */
-    boolean setBlock(Location location, BlockStateHolder<?> state, boolean notifyAndLight);
+    boolean setBlock(Location location, BlockStateHolder<?> state, SideEffectSet sideEffectSet);
 
     /**
-     * Notifies the simulation that the block at the given location has
-     * been changed and it must be re-lighted (and issue other events).
+     * Applies side effects on the given block.
      *
      * @param position position of the block
      * @param previousType the type of the previous block that was there
+     * @param sideEffectSet side effects to apply
      */
-    void notifyAndLightBlock(Location position, BlockState previousType);
+    void applySideEffects(Location position, BlockState previousType, SideEffectSet sideEffectSet);
 
     /**
      * Get the state for the given entity.
@@ -176,6 +181,13 @@ public interface BukkitImplAdapter {
      */
     BaseItemStack adapt(ItemStack itemStack);
 
+    /**
+     * Get the {@link SideEffect}s that this adapter supports.
+     *
+     * @return The side effects that are supported
+     */
+    Set<SideEffect> getSupportedSideEffects();
+
     default OptionalInt getInternalBlockStateId(BlockData data) {
         return OptionalInt.empty();
     }
@@ -188,5 +200,16 @@ public interface BukkitImplAdapter {
      */
     default OptionalInt getInternalBlockStateId(BlockState state) {
         return OptionalInt.empty();
+    }
+
+    /**
+     * Regenerate a region in the given world, so it appears "as new".
+     * @param world the world to regen in
+     * @param region the region to regen
+     * @param session the session to use for setting blocks
+     * @return true on success, false on failure
+     */
+    default boolean regenerate(World world, Region region, EditSession session) {
+        throw new UnsupportedOperationException("This adapter does not support regeneration.");
     }
 }

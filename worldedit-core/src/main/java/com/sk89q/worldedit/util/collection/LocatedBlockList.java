@@ -37,7 +37,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class LocatedBlockList implements Iterable<LocatedBlock> {
 
-    private final BlockMap blocks = BlockMap.create();
+    private final BlockMap<BaseBlock> blocks = BlockMap.createForBaseBlock();
     private final PositionList order = PositionList.create(
         WorldEdit.getInstance().getConfiguration().extendedYLimit
     );

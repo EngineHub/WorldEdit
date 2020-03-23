@@ -1,6 +1,6 @@
 <!DOCTYPE import-control PUBLIC
     "-//Puppy Crawl//DTD Import Control 1.1//EN"
-    "http://www.puppycrawl.com/dtds/import_control_1_1.dtd">
+    "http://checkstyle.sourceforge.net/dtds/import_control_1_1.dtd">
 
 <import-control pkg="com.sk89q">
   <allow pkg="java"/>
@@ -41,6 +41,10 @@
     <allow pkg="de.schlichtherle"/>
     <allow pkg="com.google.auto"/>
     <allow pkg="it.unimi.dsi.fastutil"/>
+
+    <subpackage name="util.io.file">
+      <allow pkg="net.java.truevfs"/>
+    </subpackage>
 
     <subpackage name="internal.expression">
       <allow pkg="org.antlr.v4"/>

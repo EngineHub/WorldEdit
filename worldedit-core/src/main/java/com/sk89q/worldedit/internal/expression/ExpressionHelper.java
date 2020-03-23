@@ -19,7 +19,6 @@
 
 package com.sk89q.worldedit.internal.expression;
 
-import com.google.common.collect.SetMultimap;
 import com.sk89q.worldedit.antlr.ExpressionParser;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
@@ -33,35 +32,37 @@ import java.util.stream.Collectors;
 
 import static com.sk89q.worldedit.antlr.ExpressionLexer.ID;
 
-class ExpressionHelper {
+public class ExpressionHelper {
 
-    static void check(boolean condition, ParserRuleContext ctx, String message) {
+    public static void check(boolean condition, ParserRuleContext ctx, String message) {
         if (!condition) {
             throw evalException(ctx, message);
         }
     }
 
-    static EvaluationException evalException(ParserRuleContext ctx, String message) {
+    public static int getErrorPosition(Token token) {
+        return token.getCharPositionInLine();
+    }
+
+    public static EvaluationException evalException(ParserRuleContext ctx, String message) {
+        return evalException(ctx.start, message);
+    }
+
+    public static EvaluationException evalException(Token token, String message) {
         return new EvaluationException(
-            ctx.getStart().getCharPositionInLine(),
+            getErrorPosition(token),
             message
         );
     }
 
-    static void checkIterations(int iterations, ParserRuleContext ctx) {
+    public static void checkIterations(int iterations, ParserRuleContext ctx) {
         check(iterations <= 256, ctx, "Loop exceeded 256 iterations");
     }
 
-    static void checkTimeout() {
-        if (Thread.interrupted()) {
-            throw new ExpressionTimeoutException("Calculations exceeded time limit.");
-        }
-    }
-
-    static MethodHandle resolveFunction(SetMultimap<String, MethodHandle> functions,
-                                        ExpressionParser.FunctionCallContext ctx) {
+    public static MethodHandle resolveFunction(Functions functions,
+                                               ExpressionParser.FunctionCallContext ctx) {
         String fnName = ctx.name.getText();
-        Set<MethodHandle> matchingFns = functions.get(fnName);
+        Set<MethodHandle> matchingFns = functions.getMap().get(fnName);
         check(!matchingFns.isEmpty(), ctx, "Unknown function '" + fnName + "'");
         for (MethodHandle function : matchingFns) {
             MethodType type = function.type();
@@ -92,14 +93,14 @@ class ExpressionHelper {
     /**
      * The argument should be wrapped in a {@link LocalSlot.Constant} before being passed.
      */
-    static final String WRAPPED_CONSTANT = "<wrapped constant>";
+    public static final String WRAPPED_CONSTANT = "<wrapped constant>";
 
     /**
      * If this argument needs a handle, returns the name of the handle needed. Otherwise, returns
      * {@code null}. If {@code arg} isn't a valid handle reference, throws.
      */
-    static String getArgumentHandleName(String fnName, MethodType type, int i,
-                                        ParserRuleContext arg) {
+    public static String getArgumentHandleName(String fnName, MethodType type, int i,
+                                               ParserRuleContext arg) {
         // Pass variable handle in for modification?
         Class<?> pType = type.parameterType(i);
         Optional<String> id = tryResolveId(arg);

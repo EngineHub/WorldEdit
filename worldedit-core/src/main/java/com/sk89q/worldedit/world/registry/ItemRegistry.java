@@ -34,4 +34,12 @@ public interface ItemRegistry {
     @Nullable
     String getName(ItemType itemType);
 
+    /**
+     * Get the material for the given item.
+     *
+     * @param itemType the item
+     * @return the material, or null if the material information is not known
+     */
+    @Nullable
+    ItemMaterial getMaterial(ItemType itemType);
 }

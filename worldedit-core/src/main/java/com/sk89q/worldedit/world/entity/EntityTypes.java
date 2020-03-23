@@ -27,6 +27,7 @@ public class EntityTypes {
     @Nullable public static final EntityType ARMOR_STAND = get("minecraft:armor_stand");
     @Nullable public static final EntityType ARROW = get("minecraft:arrow");
     @Nullable public static final EntityType BAT = get("minecraft:bat");
+    @Nullable public static final EntityType BEE = get("minecraft:bee");
     @Nullable public static final EntityType BLAZE = get("minecraft:blaze");
     @Nullable public static final EntityType BOAT = get("minecraft:boat");
     @Nullable public static final EntityType CAT = get("minecraft:cat");

@@ -15,7 +15,7 @@ dependencies {
     compile(project(":worldedit-core"))
     compile(project(":worldedit-libs:sponge"))
     compile("org.spongepowered:spongeapi:7.1.0")
-    compile("org.bstats:bstats-sponge:1.5")
+    compile("org.bstats:bstats-sponge:1.7")
     testCompile("org.mockito:mockito-core:1.9.0-rc1")
 }
 
@@ -25,17 +25,12 @@ sponge {
     }
 }
 
-tasks.named<Jar>("jar") {
-    manifest {
-        attributes("Class-Path" to "truezip.jar WorldEdit/truezip.jar js.jar WorldEdit/js.jar",
-                "WorldEdit-Version" to project.version)
-    }
-}
+addJarManifest(includeClasspath = true)
 
 tasks.named<ShadowJar>("shadowJar") {
     dependencies {
         relocate ("org.bstats", "com.sk89q.worldedit.sponge.bstats") {
-            include(dependency("org.bstats:bstats-sponge:1.5"))
+            include(dependency("org.bstats:bstats-sponge:1.7"))
         }
     }
 }

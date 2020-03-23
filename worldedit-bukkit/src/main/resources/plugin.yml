@@ -3,3 +3,4 @@ main: com.sk89q.worldedit.bukkit.WorldEditPlugin
 version: "${internalVersion}"
 load: STARTUP
 api-version: 1.13
+softdepend: [Vault]

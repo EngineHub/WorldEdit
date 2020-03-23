@@ -28,6 +28,7 @@ import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.extension.input.InputParseException;
 import com.sk89q.worldedit.extension.input.ParserContext;
+import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.internal.block.BlockStateIdAccess;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.Vector3;
@@ -51,6 +52,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Biome;
 import org.bukkit.block.data.BlockData;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -120,6 +122,16 @@ public class BukkitAdapter {
     }
 
     /**
+     * Create a WorldEdit Actor from a Bukkit CommandSender
+     *
+     * @param sender The Bukkit CommandSender
+     * @return The WorldEdit Actor
+     */
+    public static Actor adapt(CommandSender sender) {
+        return WorldEditPlugin.getInstance().wrapCommandSender(sender);
+    }
+
+    /**
      * Create a WorldEdit Player from a Bukkit Player.
      *
      * @param player The Bukkit player
@@ -127,6 +139,21 @@ public class BukkitAdapter {
      */
     public static BukkitPlayer adapt(Player player) {
         return WorldEditPlugin.getInstance().wrapPlayer(player);
+    }
+
+    /**
+     * Create a Bukkit CommandSender from a WorldEdit Actor.
+     *
+     * @param actor The WorldEdit actor
+     * @return The Bukkit command sender
+     */
+    public static CommandSender adapt(Actor actor) {
+        if (actor instanceof com.sk89q.worldedit.entity.Player) {
+            return adapt((com.sk89q.worldedit.entity.Player) actor);
+        } else if (actor instanceof BukkitBlockCommandSender) {
+            return ((BukkitBlockCommandSender) actor).getSender();
+        }
+        return ((BukkitCommandSender) actor).getSender();
     }
 
     /**
@@ -426,7 +453,10 @@ public class BukkitAdapter {
     public static <B extends BlockStateHolder<B>> BlockData adapt(B block) {
         checkNotNull(block);
         // Should never not have an ID for this BlockState.
-        int cacheKey = BlockStateIdAccess.getBlockStateId(block.toImmutableState()).orElseGet(block::hashCode);
+        int cacheKey = BlockStateIdAccess.getBlockStateId(block.toImmutableState());
+        if (cacheKey == BlockStateIdAccess.invalidId()) {
+            cacheKey = block.hashCode();
+        }
         return blockDataCache.computeIfAbsent(cacheKey, input -> Bukkit.createBlockData(block.getAsString())).clone();
     }
 

@@ -20,6 +20,10 @@ repositories {
         name = "sponge"
         url = uri("https://repo.spongepowered.org/maven")
     }
+    maven {
+        name = "EngineHub Repository"
+        url = uri("https://maven.enginehub.org/repo/")
+    }
 }
 
 configurations.all {
@@ -50,8 +54,9 @@ dependencies {
     implementation("net.ltgt.apt-idea:net.ltgt.apt-idea.gradle.plugin:0.21")
     implementation("org.jfrog.buildinfo:build-info-extractor-gradle:4.9.7")
     implementation("gradle.plugin.org.spongepowered:spongegradle:0.9.0")
-    implementation("net.minecraftforge.gradle:ForgeGradle:3.0.143")
+    implementation("net.minecraftforge.gradle:ForgeGradle:3.0.159")
     implementation("net.fabricmc:fabric-loom:$loomVersion")
     implementation("net.fabricmc:sponge-mixin:$mixinVersion")
     implementation("gradle.plugin.com.mendhak.gradlecrowdin:plugin:0.1.0")
+    implementation("org.enginehub.gradle:gradle-codecov-plugin:0.1.0")
 }

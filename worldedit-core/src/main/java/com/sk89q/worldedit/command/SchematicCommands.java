@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.command;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Multimap;
 import com.google.common.io.Files;
 import com.sk89q.worldedit.LocalConfiguration;
@@ -44,6 +45,7 @@ import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.util.formatting.component.CodeFormat;
 import com.sk89q.worldedit.util.formatting.component.ErrorFormat;
 import com.sk89q.worldedit.util.formatting.component.PaginationBox;
+import com.sk89q.worldedit.util.formatting.component.SubtleFormat;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
@@ -57,6 +59,7 @@ import org.enginehub.piston.annotation.CommandContainer;
 import org.enginehub.piston.annotation.param.Arg;
 import org.enginehub.piston.annotation.param.ArgFlag;
 import org.enginehub.piston.annotation.param.Switch;
+import org.enginehub.piston.exception.CommandException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.enginehub.piston.exception.StopExecutionException;
@@ -190,7 +193,7 @@ public class SchematicCommands {
                 .registerWithSupervisor(worldEdit.getSupervisor(), "Saving schematic " + filename)
                 .sendMessageAfterDelay(TranslatableComponent.of("worldedit.schematic.save.saving"))
                 .onSuccess(filename + " saved" + (overwrite ? " (overwriting previous file)." : "."), null)
-                .onFailure("Failed to load schematic", worldEdit.getPlatformManager().getPlatformCommandManager().getExceptionConverter())
+                .onFailure("Failed to save schematic", worldEdit.getPlatformManager().getPlatformCommandManager().getExceptionConverter())
                 .buildAndExec(worldEdit.getExecutorService());
     }
 
@@ -275,7 +278,8 @@ public class SchematicCommands {
                 ? "//schem list -p %page%" + (sortType == -1 ? " -d" : sortType == 1 ? " -n" : "") : null;
 
         WorldEditAsyncCommandBuilder.createAndSendMessage(actor,
-                new SchematicListTask(saveDir, sortType, page, pageCommand), "(Please wait... gathering schematic list.)");
+                new SchematicListTask(saveDir, sortType, page, pageCommand),
+                SubtleFormat.wrap("(Please wait... gathering schematic list.)"));
     }
 
     private static class SchematicLoadTask implements Callable<ClipboardHolder> {
@@ -341,6 +345,9 @@ public class SchematicCommands {
                 writer.write(target);
 
                 log.info(actor.getName() + " saved " + file.getCanonicalPath() + (overwrite ? " (overwriting previous file)" : ""));
+            } catch (IOException e) {
+                file.delete();
+                throw new CommandException(TextComponent.of(e.getMessage()), e, ImmutableList.of());
             }
             return null;
         }

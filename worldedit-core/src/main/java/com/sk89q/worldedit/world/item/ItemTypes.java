@@ -58,7 +58,10 @@ public final class ItemTypes {
     @Nullable public static final ItemType BAT_SPAWN_EGG = get("minecraft:bat_spawn_egg");
     @Nullable public static final ItemType BEACON = get("minecraft:beacon");
     @Nullable public static final ItemType BEDROCK = get("minecraft:bedrock");
+    @Nullable public static final ItemType BEE_NEST = get("minecraft:bee_nest");
+    @Nullable public static final ItemType BEE_SPAWN_EGG = get("minecraft:bee_spawn_egg");
     @Nullable public static final ItemType BEEF = get("minecraft:beef");
+    @Nullable public static final ItemType BEEHIVE = get("minecraft:beehive");
     @Nullable public static final ItemType BEETROOT = get("minecraft:beetroot");
     @Nullable public static final ItemType BEETROOT_SEEDS = get("minecraft:beetroot_seeds");
     @Nullable public static final ItemType BEETROOT_SOUP = get("minecraft:beetroot_soup");
@@ -401,6 +404,10 @@ public final class ItemTypes {
     @Nullable public static final ItemType HAY_BLOCK = get("minecraft:hay_block");
     @Nullable public static final ItemType HEART_OF_THE_SEA = get("minecraft:heart_of_the_sea");
     @Nullable public static final ItemType HEAVY_WEIGHTED_PRESSURE_PLATE = get("minecraft:heavy_weighted_pressure_plate");
+    @Nullable public static final ItemType HONEY_BLOCK = get("minecraft:honey_block");
+    @Nullable public static final ItemType HONEY_BOTTLE = get("minecraft:honey_bottle");
+    @Nullable public static final ItemType HONEYCOMB = get("minecraft:honeycomb");
+    @Nullable public static final ItemType HONEYCOMB_BLOCK = get("minecraft:honeycomb_block");
     @Nullable public static final ItemType HOPPER = get("minecraft:hopper");
     @Nullable public static final ItemType HOPPER_MINECART = get("minecraft:hopper_minecart");
     @Nullable public static final ItemType HORN_CORAL = get("minecraft:horn_coral");

@@ -11,9 +11,12 @@ plugins {
 applyPlatformAndCoreConfiguration()
 applyShadowConfiguration()
 
-val minecraftVersion = "1.14.4"
-val mappingsMinecraftVersion = "1.14.3"
-val forgeVersion = "28.1.0"
+val minecraftVersion = "1.15.2"
+val nextMajorMinecraftVersion: String = minecraftVersion.split('.').let { (useless, major) ->
+    "$useless.${major.toInt() + 1}"
+}
+val mappingsMinecraftVersion = "1.15.1"
+val forgeVersion = "31.0.14"
 
 configurations.all {
     resolutionStrategy {
@@ -31,7 +34,7 @@ dependencies {
 configure<UserDevExtension> {
     mappings(mapOf(
             "channel" to "snapshot",
-            "version" to "20190913-$mappingsMinecraftVersion"
+            "version" to "20200201-$mappingsMinecraftVersion"
     ))
 
     accessTransformer(file("src/main/resources/META-INF/accesstransformer.cfg"))
@@ -57,31 +60,34 @@ configure<BasePluginConvention> {
 
 tasks.named<Copy>("processResources") {
     // this will ensure that this task is redone when the versions change.
-    inputs.property("version", project.ext["internalVersion"])
-    inputs.property("forgeVersion", forgeVersion)
+    val properties = mapOf(
+            "version" to project.ext["internalVersion"],
+            "forgeVersion" to forgeVersion,
+            "minecraftVersion" to minecraftVersion,
+            "nextMajorMinecraftVersion" to nextMajorMinecraftVersion
+    )
+    properties.forEach { (key, value) ->
+        inputs.property(key, value)
+    }
 
     // replace stuff in mcmod.info, nothing else
     from(sourceSets["main"].resources.srcDirs) {
         include("META-INF/mods.toml")
 
         // replace version and mcversion
-        expand(
-                "version" to project.ext["internalVersion"],
-                "forgeVersion" to forgeVersion
-        )
+        expand(properties)
     }
 
     // copy everything else except the mcmod.info
     from(sourceSets["main"].resources.srcDirs) {
         exclude("META-INF/mods.toml")
     }
+
+    // copy from -core resources as well
+    from(project(":worldedit-core").tasks.named("processResources"))
 }
 
-tasks.named<Jar>("jar") {
-    manifest {
-        attributes("WorldEdit-Version" to project.version)
-    }
-}
+addJarManifest(includeClasspath = false)
 
 tasks.named<ShadowJar>("shadowJar") {
     dependencies {
@@ -93,6 +99,7 @@ tasks.named<ShadowJar>("shadowJar") {
         include(dependency("org.apache.logging.log4j:log4j-slf4j-impl"))
         include(dependency("org.antlr:antlr4-runtime"))
         include(dependency("de.schlichtherle:truezip"))
+        include(dependency("net.java.truevfs:truevfs-profile-default_2.13"))
         include(dependency("org.mozilla:rhino"))
     }
     minimize {

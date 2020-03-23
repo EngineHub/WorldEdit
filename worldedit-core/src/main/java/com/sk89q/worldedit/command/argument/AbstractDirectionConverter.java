@@ -25,6 +25,7 @@ import com.google.common.collect.ImmutableSet;
 import com.sk89q.worldedit.UnknownDirectionException;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.entity.Player;
+import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.internal.annotation.Direction;
 import com.sk89q.worldedit.internal.annotation.MultiDirection;
 import com.sk89q.worldedit.util.formatting.text.Component;
@@ -92,7 +93,8 @@ public abstract class AbstractDirectionConverter<D> implements ArgumentConverter
 
     @Override
     public ConversionResult<D> convert(String argument, InjectedValueAccess context) {
-        Player player = context.injectedValue(Key.of(Player.class)).orElse(null);
+        Player player = context.injectedValue(Key.of(Actor.class))
+                .filter(Player.class::isInstance).map(Player.class::cast).orElse(null);
         try {
             return SuccessfulConversion.fromSingle(convertDirection(argument, player, includeDiagonals));
         } catch (Exception e) {

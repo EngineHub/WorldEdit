@@ -104,19 +104,19 @@ final class NBTConverter {
     }
 
     public static net.minecraft.nbt.LongTag toNative(LongTag tag) {
-        return new net.minecraft.nbt.LongTag(tag.getValue());
+        return net.minecraft.nbt.LongTag.of(tag.getValue());
     }
 
     public static net.minecraft.nbt.StringTag toNative(StringTag tag) {
-        return new net.minecraft.nbt.StringTag(tag.getValue());
+        return net.minecraft.nbt.StringTag.of(tag.getValue());
     }
 
     public static net.minecraft.nbt.IntTag toNative(IntTag tag) {
-        return new net.minecraft.nbt.IntTag(tag.getValue());
+        return net.minecraft.nbt.IntTag.of(tag.getValue());
     }
 
     public static net.minecraft.nbt.ByteTag toNative(ByteTag tag) {
-        return new net.minecraft.nbt.ByteTag(tag.getValue());
+        return net.minecraft.nbt.ByteTag.of(tag.getValue());
     }
 
     public static net.minecraft.nbt.ByteArrayTag toNative(ByteArrayTag tag) {
@@ -133,15 +133,15 @@ final class NBTConverter {
     }
 
     public static net.minecraft.nbt.FloatTag toNative(FloatTag tag) {
-        return new net.minecraft.nbt.FloatTag(tag.getValue());
+        return net.minecraft.nbt.FloatTag.of(tag.getValue());
     }
 
     public static net.minecraft.nbt.ShortTag toNative(ShortTag tag) {
-        return new net.minecraft.nbt.ShortTag(tag.getValue());
+        return net.minecraft.nbt.ShortTag.of(tag.getValue());
     }
 
     public static net.minecraft.nbt.DoubleTag toNative(DoubleTag tag) {
-        return new net.minecraft.nbt.DoubleTag(tag.getValue());
+        return net.minecraft.nbt.DoubleTag.of(tag.getValue());
     }
 
     public static Tag fromNative(net.minecraft.nbt.Tag other) {
@@ -232,7 +232,7 @@ final class NBTConverter {
         Set<String> tags = other.getKeys();
         Map<String, Tag> map = new HashMap<>();
         for (String tagName : tags) {
-            map.put(tagName, fromNative(other.getTag(tagName)));
+            map.put(tagName, fromNative(other.get(tagName)));
         }
         return new CompoundTag(map);
     }

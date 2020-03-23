@@ -6,9 +6,9 @@ applyShadowConfiguration()
 
 apply(plugin = "fabric-loom")
 
-val minecraftVersion = "1.14.4"
-val yarnMappings = "1.14.4+build.12"
-val loaderVersion = "0.6.2+build.166"
+val minecraftVersion = "1.15.2"
+val yarnMappings = "1.15.2+build.8:v2"
+val loaderVersion = "0.7.6+build.180"
 
 configurations.all {
     resolutionStrategy {
@@ -25,10 +25,10 @@ dependencies {
     "modCompile"("net.fabricmc:fabric-loader:$loaderVersion")
 
     listOf(
-        "net.fabricmc.fabric-api:fabric-api-base:0.1.0+2983bc0442",
-        "net.fabricmc.fabric-api:fabric-events-interaction-v0:0.1.1+591e97ae42",
-        "net.fabricmc.fabric-api:fabric-events-lifecycle-v0:0.1.1+591e97ae42",
-        "net.fabricmc.fabric-api:fabric-networking-v0:0.1.3+591e97ae42"
+        "net.fabricmc.fabric-api:fabric-api-base:0.1.2+28f8190f42",
+        "net.fabricmc.fabric-api:fabric-events-interaction-v0:0.2.6+12515ed975",
+        "net.fabricmc.fabric-api:fabric-events-lifecycle-v0:0.1.2+b7f9825de8",
+        "net.fabricmc.fabric-api:fabric-networking-v0:0.1.7+12515ed975"
     ).forEach {
         "include"(it)
         "modImplementation"(it)
@@ -61,12 +61,7 @@ tasks.named<Copy>("processResources") {
     }
 }
 
-tasks.named<Jar>("jar") {
-    manifest {
-        attributes("Class-Path" to "truezip.jar WorldEdit/truezip.jar js.jar WorldEdit/js.jar",
-                   "WorldEdit-Version" to project.version)
-    }
-}
+addJarManifest(includeClasspath = true)
 
 tasks.named<ShadowJar>("shadowJar") {
     archiveClassifier.set("dist-dev")

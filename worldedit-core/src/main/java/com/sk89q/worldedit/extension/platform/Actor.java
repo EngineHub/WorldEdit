@@ -163,4 +163,10 @@ public interface Actor extends Identifiable, SessionOwner, Subject {
      * @return The locale
      */
     Locale getLocale();
+
+    /**
+     * Sends any relevant notices to the user when they first use WorldEdit in a session.
+     */
+    default void sendAnnouncements() {
+    }
 }

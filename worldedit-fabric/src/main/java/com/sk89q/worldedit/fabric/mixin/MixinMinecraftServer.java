@@ -20,15 +20,15 @@
 package com.sk89q.worldedit.fabric.mixin;
 
 import com.sk89q.worldedit.extension.platform.Watchdog;
-import net.minecraft.server.ServerTask;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.NonBlockingThreadExecutor;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.server.ServerTask;
+import net.minecraft.util.Util;
+import net.minecraft.util.thread.ReentrantThreadExecutor;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(MinecraftServer.class)
-public abstract class MixinMinecraftServer extends NonBlockingThreadExecutor<ServerTask> implements Watchdog {
+public abstract class MixinMinecraftServer extends ReentrantThreadExecutor<ServerTask> implements Watchdog {
 
     public MixinMinecraftServer(String name) {
         super(name);
@@ -39,7 +39,7 @@ public abstract class MixinMinecraftServer extends NonBlockingThreadExecutor<Ser
 
     @Override
     public void tick() {
-        timeReference = SystemUtil.getMeasuringTimeMs();
+        timeReference = Util.getMeasuringTimeMs();
     }
 
 }

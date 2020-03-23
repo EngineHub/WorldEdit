@@ -402,22 +402,25 @@ public class RegionCommands {
 
     @Command(
         name = "/regen",
-        desc = "Regenerates the contents of the selection",
-        descFooter = "This command might affect things outside the selection,\n" +
-            "if they are within the same chunk."
+        desc = "Regenerates the contents of the selection"
     )
     @CommandPermissions("worldedit.regen")
     @Logging(REGION)
     public void regenerateChunk(Actor actor, World world, LocalSession session,
             EditSession editSession, @Selection Region region) throws WorldEditException {
         Mask mask = session.getMask();
+        boolean success;
         try {
             session.setMask(null);
-            world.regenerate(region, editSession);
+            success = world.regenerate(region, editSession);
         } finally {
             session.setMask(mask);
         }
-        actor.printInfo(TranslatableComponent.of("worldedit.regen.regenerated"));
+        if (success) {
+            actor.printInfo(TranslatableComponent.of("worldedit.regen.regenerated"));
+        } else {
+            actor.printError(TranslatableComponent.of("worldedit.regen.failed"));
+        }
     }
 
     @Command(

@@ -17,21 +17,20 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.internal.expression;
+package com.sk89q.worldedit.world.registry;
 
-/**
- * Thrown when a break or continue is encountered.
- * Loop constructs catch this exception.
- */
-public class BreakException extends RuntimeException {
+public interface ItemMaterial {
+    /**
+     * Gets the the maximum quantity of this item that can be in a single stack.
+     *
+     * @return the maximum quantity
+     */
+    int getMaxStackSize();
 
-    public final boolean doContinue;
-
-    public BreakException(boolean doContinue) {
-        super(doContinue ? "'continue' encountered outside a loop" : "'break' encountered outside a loop",
-            null, true, false);
-
-        this.doContinue = doContinue;
-    }
-
+    /**
+     * Gets the the maximum damage this item can take before being broken.
+     *
+     * @return the maximum damage, or 0 if not applicable
+     */
+    int getMaxDamage();
 }

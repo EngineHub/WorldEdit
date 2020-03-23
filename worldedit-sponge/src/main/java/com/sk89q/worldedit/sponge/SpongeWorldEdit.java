@@ -74,16 +74,16 @@ import java.util.concurrent.TimeUnit;
  */
 @Plugin(id = SpongeWorldEdit.MOD_ID, name = "WorldEdit",
         description = "WorldEdit is an easy-to-use in-game world editor for Minecraft",
-        url = "http://www.enginehub.org/worldedit")
+        url = "https://enginehub.org/worldedit/")
 public class SpongeWorldEdit {
 
     @Inject
     private Logger logger;
 
-    @Inject
     private Metrics2 metrics;
 
     public static final String MOD_ID = "worldedit";
+    private static final int BSTATS_PLUGIN_ID = 3329;
 
     private SpongePermissionsProvider provider;
 
@@ -109,8 +109,10 @@ public class SpongeWorldEdit {
     @Inject @ConfigDir(sharedRoot = false)
     private File workingDir;
 
-    public SpongeWorldEdit() {
+    @Inject
+    public SpongeWorldEdit(Metrics2.Factory metricsFactory) {
         inst = this;
+        metrics = metricsFactory.make(BSTATS_PLUGIN_ID);
     }
 
     @Listener

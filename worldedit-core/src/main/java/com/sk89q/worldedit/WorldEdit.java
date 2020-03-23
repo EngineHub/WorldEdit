@@ -739,23 +739,9 @@ public final class WorldEdit {
             return version;
         }
 
-        Package p = WorldEdit.class.getPackage();
+        WorldEditManifest manifest = WorldEditManifest.load();
 
-        if (p == null) {
-            p = Package.getPackage("com.sk89q.worldedit");
-        }
-
-        if (p == null) {
-            version = "(unknown)";
-        } else {
-            version = p.getImplementationVersion();
-
-            if (version == null) {
-                version = "(unknown)";
-            }
-        }
-
-        return version;
+        return version = manifest.getWorldEditVersion();
     }
 
 }
