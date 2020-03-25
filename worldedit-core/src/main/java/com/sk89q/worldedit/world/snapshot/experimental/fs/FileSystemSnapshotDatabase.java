@@ -27,6 +27,7 @@ import com.sk89q.worldedit.util.io.Closer;
 import com.sk89q.worldedit.util.io.file.ArchiveDir;
 import com.sk89q.worldedit.util.io.file.ArchiveNioSupport;
 import com.sk89q.worldedit.util.io.file.MorePaths;
+import com.sk89q.worldedit.util.io.file.SafeFiles;
 import com.sk89q.worldedit.util.time.FileNameDateTimeParser;
 import com.sk89q.worldedit.util.time.ModificationDateTimeParser;
 import com.sk89q.worldedit.util.time.SnapshotDateTimeParser;
@@ -45,7 +46,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.ServiceLoader;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -194,12 +194,6 @@ public class FileSystemSnapshotDatabase implements SnapshotDatabase {
         }
     }
 
-    private static Stream<Path> noLeakFileList(Path dir) throws IOException {
-        try (Stream<Path> stream = Files.list(dir)) {
-            return stream.collect(Collectors.toList()).stream();
-        }
-    }
-
     @Override
     public Stream<Snapshot> getSnapshots(String worldName) throws IOException {
         /*
@@ -219,13 +213,13 @@ public class FileSystemSnapshotDatabase implements SnapshotDatabase {
            minus the extensions. Due to extension detection methods, this won't work properly
            with some files, e.g. world.qux.zip/world.qux is invalid, but world.qux.zip/world isn't.
          */
-        return noLeakFileList(root)
+        return SafeFiles.noLeakFileList(root)
             .flatMap(IOFunction.unchecked(entry -> {
                 String worldEntry = getWorldEntry(worldName, entry);
                 if (worldEntry != null) {
                     return Stream.of(worldEntry);
                 }
-                String fileName = canonicalFileName(entry);
+                String fileName = SafeFiles.canonicalFileName(entry);
                 if (fileName.equals(worldName)
                     && Files.isDirectory(entry)
                     && !Files.exists(entry.resolve("level.dat"))) {
@@ -244,7 +238,7 @@ public class FileSystemSnapshotDatabase implements SnapshotDatabase {
     }
 
     private Stream<String> listTimestampedEntries(String worldName, Path directory) throws IOException {
-        return noLeakFileList(directory)
+        return SafeFiles.noLeakFileList(directory)
             .flatMap(IOFunction.unchecked(entry -> getTimestampedEntries(worldName, entry)));
     }
 
@@ -254,7 +248,7 @@ public class FileSystemSnapshotDatabase implements SnapshotDatabase {
             // nothing available at this path
             return Stream.of();
         }
-        String fileName = canonicalFileName(entry);
+        String fileName = SafeFiles.canonicalFileName(entry);
         if (Files.isDirectory(entry)) {
             // timestamped directory, find worlds inside
             return listWorldEntries(worldName, entry)
@@ -276,13 +270,13 @@ public class FileSystemSnapshotDatabase implements SnapshotDatabase {
     }
 
     private Stream<String> listWorldEntries(String worldName, Path directory) throws IOException {
-        return noLeakFileList(directory)
+        return SafeFiles.noLeakFileList(directory)
             .map(IOFunction.unchecked(entry -> getWorldEntry(worldName, entry)))
             .filter(Objects::nonNull);
     }
 
     private String getWorldEntry(String worldName, Path entry) throws IOException {
-        String fileName = canonicalFileName(entry);
+        String fileName = SafeFiles.canonicalFileName(entry);
         if (fileName.equals(worldName) && Files.exists(entry.resolve("level.dat"))) {
             // world directory
             return worldName;
@@ -296,17 +290,6 @@ public class FileSystemSnapshotDatabase implements SnapshotDatabase {
             }
         }
         return null;
-    }
-
-    private static String canonicalFileName(Path path) {
-        return dropSlash(path.getFileName().toString());
-    }
-
-    private static String dropSlash(String name) {
-        if (name.isEmpty() || name.codePointBefore(name.length()) != '/') {
-            return name;
-        }
-        return name.substring(0, name.length() - 1);
     }
 
 }
