@@ -100,6 +100,7 @@ public class ExpandCommands {
             .defaultsTo(ImmutableList.of(HeightConverter.DEFAULT_VALUE))
             .build();
         return commandManager.newCommand("vert")
+            .addPart(heightPart)
             .description(TranslatableComponent.of("worldedit.expand.description.vert"))
             .action(parameters -> {
                 int height = requireNonNull(parameters.valueOf(heightPart)
