@@ -1,4 +1,5 @@
 applyLibrariesConfiguration()
+constrainDependenciesToLibsCore()
 
 repositories {
     maven {

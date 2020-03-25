@@ -1,11 +1,13 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.gradle.api.Project
+import org.gradle.api.artifacts.ExternalModuleDependency
 import org.gradle.api.artifacts.ModuleDependency
 import org.gradle.api.internal.HasConvention
 import org.gradle.api.plugins.MavenRepositoryHandlerConvention
 import org.gradle.api.tasks.Upload
 import org.gradle.api.tasks.bundling.Jar
 import org.gradle.kotlin.dsl.apply
+import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.get
 import org.gradle.kotlin.dsl.getPlugin
 import org.gradle.kotlin.dsl.invoke
@@ -105,4 +107,17 @@ fun Project.applyLibrariesConfiguration() {
     }
 
     applyCommonArtifactoryConfig()
+}
+
+fun Project.constrainDependenciesToLibsCore() {
+    evaluationDependsOn(":worldedit-libs:core")
+    val coreDeps = project(":worldedit-libs:core").configurations["shade"].dependencies
+        .filterIsInstance<ExternalModuleDependency>()
+    dependencies.constraints {
+        for (coreDep in coreDeps) {
+            add("shade", "${coreDep.group}:${coreDep.name}:${coreDep.version}") {
+                because("libs should align with libs:core")
+            }
+        }
+    }
 }
