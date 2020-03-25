@@ -21,6 +21,7 @@ package com.sk89q.worldedit.world.snapshot.experimental.fs;
 
 import com.google.common.collect.ImmutableList;
 import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.util.io.file.ArchiveDir;
 import com.sk89q.worldedit.world.DataException;
 import com.sk89q.worldedit.world.snapshot.experimental.Snapshot;
 import org.junit.jupiter.api.DynamicNode;
@@ -29,7 +30,6 @@ import org.junit.jupiter.api.DynamicTest;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
-import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.FileTime;
@@ -38,8 +38,8 @@ import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Stream;
 
-import static com.sk89q.worldedit.world.snapshot.experimental.fs.FileSystemSnapshotDatabaseTest.CHUNK_TAG;
 import static com.sk89q.worldedit.world.snapshot.experimental.fs.FileSystemSnapshotDatabaseTest.CHUNK_POS;
+import static com.sk89q.worldedit.world.snapshot.experimental.fs.FileSystemSnapshotDatabaseTest.CHUNK_TAG;
 import static com.sk89q.worldedit.world.snapshot.experimental.fs.FileSystemSnapshotDatabaseTest.TIME_ONE;
 import static com.sk89q.worldedit.world.snapshot.experimental.fs.FileSystemSnapshotDatabaseTest.TIME_TWO;
 import static com.sk89q.worldedit.world.snapshot.experimental.fs.FileSystemSnapshotDatabaseTest.WORLD_ALPHA;
@@ -102,16 +102,11 @@ enum FSSDTestType {
         List<DynamicTest> getTests(FSSDContext context) throws IOException {
             Path worldArchive = EntryMaker.WORLD_ARCHIVE
                 .createEntry(context.db.getRoot(), WORLD_ALPHA);
-            Path rootOfArchive = context.getRootOfArchive(worldArchive);
-            try {
+            try (ArchiveDir rootOfArchive = context.getRootOfArchive(worldArchive)) {
                 Files.setLastModifiedTime(
-                    rootOfArchive,
+                    rootOfArchive.getPath(),
                     FileTime.from(TIME_ONE.toInstant())
                 );
-            } finally {
-                if (rootOfArchive.getFileSystem() != FileSystems.getDefault()) {
-                    rootOfArchive.getFileSystem().close();
-                }
             }
             return singleSnapTest(context, WORLD_ALPHA + ".zip", TIME_ONE);
         }
@@ -144,14 +139,9 @@ enum FSSDTestType {
             Path root = context.db.getRoot();
             Path timestampedArchive = EntryMaker.TIMESTAMPED_ARCHIVE
                 .createEntry(root, TIME_ONE);
-            Path timestampedDir = context.getRootOfArchive(timestampedArchive);
-            try {
-                EntryMaker.WORLD_DIR.createEntry(timestampedDir, WORLD_ALPHA);
-                EntryMaker.WORLD_ARCHIVE.createEntry(timestampedDir, WORLD_BETA);
-            } finally {
-                if (timestampedDir.getFileSystem() != FileSystems.getDefault()) {
-                    timestampedDir.getFileSystem().close();
-                }
+            try (ArchiveDir timestampedDir = context.getRootOfArchive(timestampedArchive)) {
+                EntryMaker.WORLD_DIR.createEntry(timestampedDir.getPath(), WORLD_ALPHA);
+                EntryMaker.WORLD_ARCHIVE.createEntry(timestampedDir.getPath(), WORLD_BETA);
             }
             return ImmutableList.of(
                 dynamicContainer("world dir",
@@ -261,16 +251,18 @@ enum FSSDTestType {
         }
     };
 
-    private static List<DynamicTest> singleSnapTest(FSSDContext context, String name,
+    List<DynamicTest> singleSnapTest(FSSDContext context, String name,
                                                     ZonedDateTime time) {
         return ImmutableList.of(
             dynamicTest("return a valid snapshot for " + name, () -> {
-                Snapshot snapshot = context.requireSnapshot(name);
-                assertValidSnapshot(time, snapshot);
+                try (Snapshot snapshot = context.requireSnapshot(name)) {
+                    assertValidSnapshot(time, snapshot);
+                }
             }),
             dynamicTest("list a valid snapshot for " + name, () -> {
-                Snapshot snapshot = context.requireListsSnapshot(name);
-                assertValidSnapshot(time, snapshot);
+                try (Snapshot snapshot = context.requireListsSnapshot(name)) {
+                    assertValidSnapshot(time, snapshot);
+                }
             })
         );
     }
