@@ -92,6 +92,12 @@ limits:
     - "minecraft:cactus"
     - "minecraft:sugar_cane"
     - "minecraft:bedrock"
+    - "minecraft:command_block"
+    - "minecraft:chain_command_block"
+    - "minecraft:repeating_command_block"
+    - "minecraft:structure_block"
+    - "minecraft:structure_void"
+    - "minecraft:jigsaw_block"
 
 use-inventory:
     enable: false
