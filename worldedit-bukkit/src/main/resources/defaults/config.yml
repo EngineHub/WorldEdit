@@ -97,7 +97,7 @@ limits:
     - "minecraft:repeating_command_block"
     - "minecraft:structure_block"
     - "minecraft:structure_void"
-    - "minecraft:jigsaw_block"
+    - "minecraft:jigsaw"
 
 use-inventory:
     enable: false
