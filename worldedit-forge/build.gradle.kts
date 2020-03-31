@@ -1,7 +1,7 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import net.minecraftforge.gradle.common.util.RunConfig
 import net.minecraftforge.gradle.userdev.UserDevExtension
-import net.minecraftforge.gradle.userdev.tasks.GenerateSRG
+import net.minecraftforge.gradle.mcp.task.GenerateSRG
 import net.minecraftforge.gradle.userdev.tasks.RenameJarInPlace
 
 plugins {

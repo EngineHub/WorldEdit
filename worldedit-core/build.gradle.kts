@@ -46,7 +46,7 @@ dependencies {
 }
 
 tasks.named<Test>("test") {
-    maxHeapSize = "300M"
+    maxHeapSize = "1G"
 }
 
 tasks.withType<JavaCompile>().configureEach {
