@@ -45,6 +45,10 @@ dependencies {
     "testImplementation"("ch.qos.logback:logback-classic:${Versions.LOGBACK}")
 }
 
+tasks.named<Test>("test") {
+    maxHeapSize = "300M"
+}
+
 tasks.withType<JavaCompile>().configureEach {
     dependsOn(":worldedit-libs:build")
     options.compilerArgs.add("-Aarg.name.key.prefix=")
