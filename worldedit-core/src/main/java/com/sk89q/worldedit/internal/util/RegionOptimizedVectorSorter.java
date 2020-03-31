@@ -33,6 +33,9 @@ import java.util.concurrent.Future;
 
 import static com.sk89q.worldedit.math.BitMath.mask;
 
+/**
+ * Uses a radix sort to order vectors by region, then chunk, then Y value (max -> min).
+ */
 public class RegionOptimizedVectorSorter {
 
     // We need to sort by region file, chunk, and Y (x/z don't really matter)
@@ -42,19 +45,30 @@ public class RegionOptimizedVectorSorter {
     // [region X (17)][region Z (17)][chunk X (5)][chunk Z (5)][block Y (20)] = 64 bits
     // Even though we only normally need 8 bits for Y, we might as well use it for cubic chunks
     // compatibility in the future, since we have the room in the long value
-    private static final long Y_MAX = mask(20);
+    private static final int CHUNK_Z_SHIFT = 20;
+    private static final int CHUNK_X_SHIFT = 5 + CHUNK_Z_SHIFT;
+    private static final int REGION_Z_SHIFT = 5 + CHUNK_X_SHIFT;
+    private static final int REGION_X_SHIFT = 17 + REGION_Z_SHIFT;
+    private static final long REGION_X_MASK = ((long) mask(17)) << REGION_X_SHIFT;
+    private static final long REGION_Z_MASK = ((long) mask(17)) << REGION_Z_SHIFT;
+    private static final long CHUNK_X_MASK = ((long) mask(5)) << CHUNK_X_SHIFT;
+    private static final long CHUNK_Z_MASK = ((long) mask(5)) << CHUNK_Z_SHIFT;
+    private static final int Y_MAX = mask(20);
+    // We flip the region x/z sign to turn signed numbers into unsigned ones
+    // this allows us to sort on the raw bits, and not care about signs
+    // Essentially it transforms [negative values][positive values]
+    // to [positive value][even more positive values], i.e. a shift upwards
+    private static final long FLIP_REGION_X_SIGN = 0x1_00_00L << REGION_X_SHIFT;
+    private static final long FLIP_REGION_Z_SIGN = 0x1_00_00L << REGION_Z_SHIFT;
 
     private static long key(BlockVector3 elem) {
-        long cx = elem.getX() >>> 4;
-        long cz = elem.getZ() >>> 4;
-        long cy = Y_MAX - elem.getY();
-        long rx = cx >>> 5;
-        long rz = cz >>> 5;
-        return (rx << (17 + 5 + 5 + 20))
-            | ((rz << (5 + 5 + 20)))
-            | ((cx << (5 + 20)))
-            | ((cz << 20))
-            | cy;
+        long x = elem.getX();
+        long z = elem.getZ();
+        return (((x << (REGION_X_SHIFT - 9)) & REGION_X_MASK) ^ FLIP_REGION_X_SIGN)
+            | (((z << (REGION_Z_SHIFT - 9)) & REGION_Z_MASK) ^ FLIP_REGION_Z_SIGN)
+            | ((x << (CHUNK_X_SHIFT - 4)) & CHUNK_X_MASK)
+            | ((z << (CHUNK_Z_SHIFT - 4)) & CHUNK_Z_MASK)
+            | (Y_MAX - elem.getY());
     }
 
     private static final int NUMBER_OF_BITS = 64;
@@ -195,5 +209,8 @@ public class RegionOptimizedVectorSorter {
             sorted[count] = source[i];
         }
         Arrays.fill(finalCounts, 0);
+    }
+
+    private RegionOptimizedVectorSorter() {
     }
 }
