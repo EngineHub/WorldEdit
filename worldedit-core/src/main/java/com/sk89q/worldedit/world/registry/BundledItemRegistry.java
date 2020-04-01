@@ -54,6 +54,23 @@ public class BundledItemRegistry implements ItemRegistry {
 
     @Nullable
     @Override
+    @Deprecated
+    public String getName(ItemType itemType) {
+        BundledItemData.ItemEntry itemEntry = getEntryById(itemType);
+        if (itemEntry != null) {
+            String localized = itemEntry.localizedName;
+            if (localized.equals("Air")) {
+                String id = itemType.getId();
+                int c = id.indexOf(':');
+                return c < 0 ? id : id.substring(c + 1);
+            }
+            return localized;
+        }
+        return null;
+    }
+
+    @Nullable
+    @Override
     public ItemMaterial getMaterial(ItemType itemType) {
         return new PassthroughItemMaterial(BundledItemData.getInstance().getMaterialById(itemType.getId()));
     }
