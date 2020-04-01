@@ -24,13 +24,15 @@ import com.sk89q.worldedit.extent.AbstractBufferingExtent;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.RunContext;
+import com.sk89q.worldedit.internal.util.RegionOptimizedVectorSorter;
 import com.sk89q.worldedit.math.BlockVector3;
-import com.sk89q.worldedit.math.RegionOptimizedComparator;
 import com.sk89q.worldedit.util.collection.BlockMap;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * A special extent that batches changes into Minecraft chunks. This helps
@@ -91,7 +93,9 @@ public class ChunkBatchingExtent extends AbstractBufferingExtent {
             @Override
             public Operation resume(RunContext run) throws WorldEditException {
                 if (iterator == null) {
-                    iterator = blockMap.keySet().parallelStream().sorted(RegionOptimizedComparator.INSTANCE).iterator();
+                    List<BlockVector3> blockVectors = new ArrayList<>(blockMap.keySet());
+                    RegionOptimizedVectorSorter.sort(blockVectors);
+                    iterator = blockVectors.iterator();
                 }
                 while (iterator.hasNext()) {
                     BlockVector3 position = iterator.next();
