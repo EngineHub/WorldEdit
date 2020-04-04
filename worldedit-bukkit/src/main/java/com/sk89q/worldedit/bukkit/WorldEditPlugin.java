@@ -500,7 +500,7 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
 
             String buffer = event.getBuffer();
             int firstSpace = buffer.indexOf(' ');
-            if (firstSpace < 0) return;
+            if (firstSpace < 1) return;
             String label = buffer.substring(1, firstSpace);
             Plugin owner = server.getDynamicCommands().getCommandOwner(label);
             if (owner != WorldEditPlugin.this) {
