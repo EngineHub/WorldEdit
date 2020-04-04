@@ -329,8 +329,7 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
         }
     }
 
-    @Override
-    public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
+    private String rebuildArguments(String commandLabel, String[] args) {
         int plSep = commandLabel.indexOf(":");
         if (plSep >= 0 && plSep < commandLabel.length() + 1) {
             commandLabel = commandLabel.substring(plSep + 1);
@@ -340,7 +339,12 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
         if (args.length > 0) {
             sb.append(" ");
         }
-        String arguments = Joiner.on(" ").appendTo(sb, args).toString();
+        return Joiner.on(" ").appendTo(sb, args).toString();
+    }
+
+    @Override
+    public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
+        String arguments = rebuildArguments(commandLabel, args);
         CommandEvent event = new CommandEvent(wrapCommandSender(sender), arguments);
         getWorldEdit().getEventBus().post(event);
 
@@ -349,16 +353,7 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command cmd, String commandLabel, String[] args) {
-        int plSep = commandLabel.indexOf(":");
-        if (plSep >= 0 && plSep < commandLabel.length() + 1) {
-            commandLabel = commandLabel.substring(plSep + 1);
-        }
-
-        StringBuilder sb = new StringBuilder("/").append(commandLabel);
-        if (args.length > 0) {
-            sb.append(" ");
-        }
-        String arguments = Joiner.on(" ").appendTo(sb, args).toString();
+        String arguments = rebuildArguments(commandLabel, args);
         CommandSuggestionEvent event = new CommandSuggestionEvent(wrapCommandSender(sender), arguments);
         getWorldEdit().getEventBus().post(event);
         return CommandUtil.fixSuggestions(arguments, event.getSuggestions());
