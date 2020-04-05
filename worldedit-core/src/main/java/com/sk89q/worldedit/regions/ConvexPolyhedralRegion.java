@@ -19,14 +19,13 @@
 
 package com.sk89q.worldedit.regions;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.regions.polyhedron.Edge;
 import com.sk89q.worldedit.regions.polyhedron.Triangle;
 import com.sk89q.worldedit.world.World;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -34,7 +33,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.annotation.Nullable;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public class ConvexPolyhedralRegion extends AbstractRegion {
 
@@ -69,7 +68,7 @@ public class ConvexPolyhedralRegion extends AbstractRegion {
     private BlockVector3 centerAccum = BlockVector3.ZERO;
 
     /**
-     * The last triangle that caused a {@link #contains(Vector3)} to classify a point as "outside". Used for optimization.
+     * The last triangle that caused a {@link #contains(BlockVector3)}} to classify a point as "outside". Used for optimization.
      */
     private Triangle lastTriangle;
 
@@ -128,12 +127,14 @@ public class ConvexPolyhedralRegion extends AbstractRegion {
             return false;
         }
 
+        Vector3 vertexD = vertex.toVector3();
+
         if (vertices.size() == 3) {
             if (vertexBacklog.contains(vertex)) {
                 return false;
             }
 
-            if (containsRaw(vertex.toVector3())) {
+            if (containsRaw(vertexD)) {
                 return vertexBacklog.add(vertex);
             }
         }
@@ -159,7 +160,7 @@ public class ConvexPolyhedralRegion extends AbstractRegion {
 
         case 3:
             // Generate minimal mesh to start from
-            final BlockVector3[] v = vertices.toArray(new BlockVector3[vertices.size()]);
+            final BlockVector3[] v = vertices.toArray(new BlockVector3[0]);
 
             triangles.add((new Triangle(v[0].toVector3(), v[1].toVector3(), v[2].toVector3())));
             triangles.add((new Triangle(v[0].toVector3(), v[2].toVector3(), v[1].toVector3())));
@@ -172,7 +173,7 @@ public class ConvexPolyhedralRegion extends AbstractRegion {
             final Triangle triangle = it.next();
 
             // If the triangle can't be seen, it's not relevant
-            if (!triangle.above(vertex.toVector3())) {
+            if (!triangle.above(vertexD)) {
                 continue;
             }
 
@@ -192,11 +193,11 @@ public class ConvexPolyhedralRegion extends AbstractRegion {
 
         // Add triangles between the remembered edges and the new vertex.
         for (Edge edge : borderEdges) {
-            triangles.add(edge.createTriangle(vertex.toVector3()));
+            triangles.add(edge.createTriangle(vertexD));
         }
 
         if (!vertexBacklog.isEmpty()) {
-            // Remove the new vertex 
+            // Remove the new vertex
             vertices.remove(vertex);
 
             // Clone, clear and work through the backlog
@@ -226,7 +227,7 @@ public class ConvexPolyhedralRegion extends AbstractRegion {
     public BlockVector3 getMaximumPoint() {
         return maximumPoint;
     }
-    
+
     @Override
     public Vector3 getCenter() {
         return centerAccum.toVector3().divide(vertices.size());
