@@ -17,24 +17,28 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.util.io.file;
+package com.sk89q.worldedit.util.function;
 
 import java.io.IOException;
-import java.nio.file.FileSystem;
-import java.nio.file.Path;
-import java.util.Optional;
+import java.io.UncheckedIOException;
+import java.util.function.Function;
 
 /**
- * Something that can provide access to an archive file as a file system.
+ * I/O function type.
  */
-public interface ArchiveNioSupport {
+@FunctionalInterface
+public interface IOFunction<T, R> {
 
-    /**
-     * Try to open the given archive as a file system.
-     *
-     * @param archive the archive to open
-     * @return the path for the root of the archive, if available
-     */
-    Optional<ArchiveDir> tryOpenAsDir(Path archive) throws IOException;
+    static <T, R> Function<T, R> unchecked(IOFunction<T, R> function) {
+        return param -> {
+            try {
+                return function.apply(param);
+            } catch (IOException e) {
+                throw new UncheckedIOException(e);
+            }
+        };
+    }
+
+    R apply(T param) throws IOException;
 
 }

@@ -22,7 +22,7 @@ package com.sk89q.worldedit.world.snapshot.experimental.fs;
 import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.math.BlockVector3;
-import com.sk89q.worldedit.util.function.IORunnable;
+import com.sk89q.worldedit.util.io.Closer;
 import com.sk89q.worldedit.world.DataException;
 import com.sk89q.worldedit.world.snapshot.experimental.Snapshot;
 import com.sk89q.worldedit.world.snapshot.experimental.SnapshotInfo;
@@ -95,9 +95,9 @@ public class FolderSnapshot implements Snapshot {
     private final SnapshotInfo info;
     private final Path folder;
     private final AtomicReference<Object> regionFolder = new AtomicReference<>();
-    private final @Nullable IORunnable closeCallback;
+    private final @Nullable Closer closeCallback;
 
-    public FolderSnapshot(SnapshotInfo info, Path folder, @Nullable IORunnable closeCallback) {
+    public FolderSnapshot(SnapshotInfo info, Path folder, @Nullable Closer closeCallback) {
         this.info = info;
         // This is required to force TrueVfs to properly resolve parents.
         // Kinda odd, but whatever works.
@@ -160,7 +160,7 @@ public class FolderSnapshot implements Snapshot {
     @Override
     public void close() throws IOException {
         if (closeCallback != null) {
-            closeCallback.run();
+            closeCallback.close();
         }
     }
 }

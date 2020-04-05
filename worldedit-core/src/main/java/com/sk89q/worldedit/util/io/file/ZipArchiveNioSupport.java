@@ -37,17 +37,28 @@ public final class ZipArchiveNioSupport implements ArchiveNioSupport {
     }
 
     @Override
-    public Optional<Path> tryOpenAsDir(Path archive) throws IOException {
+    public Optional<ArchiveDir> tryOpenAsDir(Path archive) throws IOException {
         if (!archive.getFileName().toString().endsWith(".zip")) {
             return Optional.empty();
         }
         FileSystem zipFs = FileSystems.newFileSystem(
             archive, getClass().getClassLoader()
         );
-        return Optional.of(ArchiveNioSupports.skipRootSameName(
+        Path root = ArchiveNioSupports.skipRootSameName(
             zipFs.getPath("/"), archive.getFileName().toString()
                 .replaceFirst("\\.zip$", "")
-        ));
+        );
+        return Optional.of(new ArchiveDir() {
+            @Override
+            public Path getPath() {
+                return root;
+            }
+
+            @Override
+            public void close() throws IOException {
+                zipFs.close();
+            }
+        });
     }
 
 }

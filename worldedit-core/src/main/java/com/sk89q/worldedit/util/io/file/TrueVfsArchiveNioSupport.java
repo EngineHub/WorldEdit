@@ -22,6 +22,7 @@ package com.sk89q.worldedit.util.io.file;
 import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableSet;
 import net.java.truevfs.access.TArchiveDetector;
+import net.java.truevfs.access.TFileSystem;
 import net.java.truevfs.access.TPath;
 
 import java.io.IOException;
@@ -45,15 +46,28 @@ public final class TrueVfsArchiveNioSupport implements ArchiveNioSupport {
     }
 
     @Override
-    public Optional<Path> tryOpenAsDir(Path archive) throws IOException {
+    public Optional<ArchiveDir> tryOpenAsDir(Path archive) throws IOException {
         String fileName = archive.getFileName().toString();
         int dot = fileName.indexOf('.');
-        if (dot < 0 || dot >= fileName.length() || !ALLOWED_EXTENSIONS.contains(fileName.substring(dot + 1))) {
+        if (dot < 0 || dot >= fileName.length() || !ALLOWED_EXTENSIONS
+            .contains(fileName.substring(dot + 1))) {
             return Optional.empty();
         }
-        TPath root = new TPath(archive).getFileSystem().getPath("/");
-        return Optional.of(ArchiveNioSupports.skipRootSameName(
+        TFileSystem fileSystem = new TPath(archive).getFileSystem();
+        TPath root = fileSystem.getPath("/");
+        Path realRoot = ArchiveNioSupports.skipRootSameName(
             root, fileName.substring(0, dot)
-        ));
+        );
+        return Optional.of(new ArchiveDir() {
+            @Override
+            public Path getPath() {
+                return realRoot;
+            }
+
+            @Override
+            public void close() throws IOException {
+                fileSystem.close();
+            }
+        });
     }
 }

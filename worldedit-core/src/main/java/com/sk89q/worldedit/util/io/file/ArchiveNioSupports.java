@@ -45,9 +45,9 @@ public class ArchiveNioSupports {
             .build();
     }
 
-    public static Optional<Path> tryOpenAsDir(Path archive) throws IOException {
+    public static Optional<ArchiveDir> tryOpenAsDir(Path archive) throws IOException {
         for (ArchiveNioSupport support : SUPPORTS) {
-            Optional<Path> fs = support.tryOpenAsDir(archive);
+            Optional<ArchiveDir> fs = support.tryOpenAsDir(archive);
             if (fs.isPresent()) {
                 return fs;
             }

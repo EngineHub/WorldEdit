@@ -33,7 +33,6 @@ import com.sk89q.worldedit.world.storage.ChunkStoreHelper;
 import com.sk89q.worldedit.world.storage.McRegionReader;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicNode;
 import org.junit.jupiter.api.Test;
@@ -62,7 +61,6 @@ import java.util.zip.GZIPOutputStream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.DynamicContainer.dynamicContainer;
 
-@Disabled("Fails on Windows due to file handle issues.")
 @DisplayName("A FS Snapshot Database")
 class FileSystemSnapshotDatabaseTest {
 

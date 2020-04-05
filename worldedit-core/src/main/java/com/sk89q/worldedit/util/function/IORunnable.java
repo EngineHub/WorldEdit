@@ -20,12 +20,23 @@
 package com.sk89q.worldedit.util.function;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 
 /**
  * I/O runnable type.
  */
 @FunctionalInterface
 public interface IORunnable {
+
+    static Runnable unchecked(IORunnable runnable) {
+        return () -> {
+            try {
+                runnable.run();
+            } catch (IOException e) {
+                throw new UncheckedIOException(e);
+            }
+        };
+    }
 
     void run() throws IOException;
 
