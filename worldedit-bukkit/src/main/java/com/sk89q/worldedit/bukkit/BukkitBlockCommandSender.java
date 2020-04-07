@@ -168,7 +168,7 @@ public class BukkitBlockCommandSender extends AbstractNonPlayerActor implements 
                     updateActive();
                 } else {
                     // we should update it eventually
-                    Bukkit.getScheduler().callSyncMethod(WorldEditPlugin.getInstance(),
+                    Bukkit.getScheduler().callSyncMethod(plugin,
                         () -> {
                             updateActive();
                             return null;
