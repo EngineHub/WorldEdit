@@ -19,8 +19,6 @@
 
 package com.sk89q.worldedit.bukkit;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.extension.platform.AbstractNonPlayerActor;
 import com.sk89q.worldedit.extension.platform.Locatable;
@@ -33,12 +31,15 @@ import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.adapter.bukkit.TextAdapter;
 import com.sk89q.worldedit.util.formatting.text.format.TextColor;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.BlockCommandSender;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 import java.util.UUID;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public class BukkitBlockCommandSender extends AbstractNonPlayerActor implements Locatable {
 
@@ -146,6 +147,15 @@ public class BukkitBlockCommandSender extends AbstractNonPlayerActor implements 
     @Override
     public SessionKey getSessionKey() {
         return new SessionKey() {
+
+            private volatile boolean active = true;
+
+            private void updateActive() {
+                active = sender.getBlock().getType() == Material.COMMAND_BLOCK
+                    || sender.getBlock().getType() == Material.CHAIN_COMMAND_BLOCK
+                    || sender.getBlock().getType() == Material.REPEATING_COMMAND_BLOCK;
+            }
+
             @Override
             public String getName() {
                 return sender.getName();
@@ -153,9 +163,18 @@ public class BukkitBlockCommandSender extends AbstractNonPlayerActor implements 
 
             @Override
             public boolean isActive() {
-                return sender.getBlock().getType() == Material.COMMAND_BLOCK
-                        || sender.getBlock().getType() == Material.CHAIN_COMMAND_BLOCK
-                        || sender.getBlock().getType() == Material.REPEATING_COMMAND_BLOCK;
+                if (Bukkit.isPrimaryThread()) {
+                    // we can update eagerly
+                    updateActive();
+                } else {
+                    // we should update it eventually
+                    Bukkit.getScheduler().callSyncMethod(WorldEditPlugin.getInstance(),
+                        () -> {
+                            updateActive();
+                            return null;
+                        });
+                }
+                return active;
             }
 
             @Override
