@@ -2,7 +2,7 @@
 name: Bug report
 about: Report a way in which WorldEdit is not working as intended
 title: ''
-labels: type:bug
+labels: type:bug, status:pending
 assignees: ''
 
 ---

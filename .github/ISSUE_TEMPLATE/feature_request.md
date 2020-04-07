@@ -2,7 +2,7 @@
 name: Feature request
 about: Suggest an idea for WorldEdit
 title: ''
-labels: type:feature-request
+labels: type:feature-request, status:pending
 assignees: ''
 
 ---
