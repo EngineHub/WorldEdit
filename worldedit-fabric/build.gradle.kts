@@ -1,6 +1,19 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import net.fabricmc.loom.task.RemapJarTask
 
+buildscript {
+    repositories {
+        mavenCentral()
+        maven {
+            name = "Fabric"
+            url = uri("https://maven.fabricmc.net/")
+        }
+    }
+    dependencies {
+        classpath("net.fabricmc:fabric-loom:${versions.loom}")
+    }
+}
+
 applyPlatformAndCoreConfiguration()
 applyShadowConfiguration()
 
