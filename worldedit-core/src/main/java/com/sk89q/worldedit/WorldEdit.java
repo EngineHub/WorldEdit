@@ -19,8 +19,11 @@
 
 package com.sk89q.worldedit;
 
+import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
+import com.google.common.collect.SetMultimap;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.sk89q.worldedit.blocks.BaseItem;
@@ -68,7 +71,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import javax.script.ScriptException;
-
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -463,6 +465,37 @@ public final class WorldEdit {
         throw new UnknownDirectionException(dir.name());
     }
 
+    private static final Map<String, Direction> NAME_TO_DIRECTION_MAP;
+    static {
+        SetMultimap<Direction, String> directionNames = HashMultimap.create();
+        for (Direction direction : Direction.valuesOf(
+            Direction.Flag.CARDINAL | Direction.Flag.UPRIGHT
+        )) {
+            String name = direction.name().toLowerCase(Locale.ROOT);
+            for (int i = 1; i <= name.length(); i++) {
+                directionNames.put(direction, name.substring(0, i));
+            }
+        }
+        ImmutableMap.Builder<String, Direction> nameToDirectionMap = ImmutableMap.builder();
+        for (Direction direction : directionNames.keySet()) {
+            directionNames.get(direction).forEach(name ->
+                nameToDirectionMap.put(name, direction)
+            );
+        }
+        for (Direction direction : ImmutableList.of(Direction.NORTH, Direction.SOUTH)) {
+            for (Direction diagonal : ImmutableList.of(Direction.WEST, Direction.EAST)) {
+                for (String dirName : directionNames.get(direction)) {
+                    for (String diagName : directionNames.get(diagonal)) {
+                        nameToDirectionMap.put(dirName + diagName, Direction.valueOf(
+                            direction.name() + diagonal.name()
+                        ));
+                    }
+                }
+            }
+        }
+        NAME_TO_DIRECTION_MAP = nameToDirectionMap.build();
+    }
+
     /**
      * Get the direction vector for a player's direction.
      *
@@ -472,68 +505,32 @@ public final class WorldEdit {
      * @throws UnknownDirectionException thrown if the direction is not known, or a relative direction is used with null player
      */
     private Direction getPlayerDirection(@Nullable Player player, String dirStr) throws UnknownDirectionException {
-        final Direction dir;
-
-        switch (dirStr.charAt(0)) {
-        case 'w':
-            dir = Direction.WEST;
-            break;
-
-        case 'e':
-            dir = Direction.EAST;
-            break;
-
-        case 's':
-            if (dirStr.indexOf('w') > 0) {
-                return Direction.SOUTHWEST;
-            }
-
-            if (dirStr.indexOf('e') > 0) {
-                return Direction.SOUTHEAST;
-            }
-            dir = Direction.SOUTH;
-            break;
-
-        case 'n':
-            if (dirStr.indexOf('w') > 0) {
-                return Direction.NORTHWEST;
-            }
-
-            if (dirStr.indexOf('e') > 0) {
-                return Direction.NORTHEAST;
-            }
-            dir = Direction.NORTH;
-            break;
-
-        case 'u':
-            dir = Direction.UP;
-            break;
-
-        case 'd':
-            dir = Direction.DOWN;
-            break;
-
-        case 'm': // me
-        case 'f': // forward
-            dir = getDirectionRelative(player, 0);
-            break;
-
-        case 'b': // back
-            dir = getDirectionRelative(player, 180);
-            break;
-
-        case 'l': // left
-            dir = getDirectionRelative(player, -90);
-            break;
-
-        case 'r': // right
-            dir = getDirectionRelative(player, 90);
-            break;
-
-        default:
-            throw new UnknownDirectionException(dirStr);
+        Direction byName = NAME_TO_DIRECTION_MAP.get(dirStr);
+        if (byName != null) {
+            return byName;
         }
-        return dir;
+        switch (dirStr) {
+            case "m":
+            case "me":
+            case "f":
+            case "forward":
+                return getDirectionRelative(player, 0);
+
+            case "b":
+            case "back":
+                return getDirectionRelative(player, 180);
+
+            case "l":
+            case "left":
+                return getDirectionRelative(player, -90);
+
+            case "r":
+            case "right":
+                return getDirectionRelative(player, 90);
+
+            default:
+                throw new UnknownDirectionException(dirStr);
+        }
     }
 
     private Direction getDirectionRelative(Player player, int yawOffset) throws UnknownDirectionException {
