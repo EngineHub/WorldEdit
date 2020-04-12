@@ -510,9 +510,9 @@ public final class WorldEdit {
             return byName;
         }
         switch (dirStr) {
-            case "m":// me
+            case "m":
             case "me":
-            case "f": // forward
+            case "f":
             case "forward":
                 return getDirectionRelative(player, 0);
 
