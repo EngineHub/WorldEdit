@@ -70,9 +70,10 @@ public class CommaSeparatedValuesConverter<T> implements ArgumentConverter<T> {
     }
 
     @Override
-    public List<String> getSuggestions(String input) {
+    public List<String> getSuggestions(String input, InjectedValueAccess context) {
         String lastInput = Iterables.getLast(COMMA.split(input), "");
-        return delegate.getSuggestions(lastInput);
+        assert lastInput != null;
+        return delegate.getSuggestions(lastInput, context);
     }
 
     @Override

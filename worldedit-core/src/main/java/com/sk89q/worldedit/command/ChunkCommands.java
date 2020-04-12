@@ -112,7 +112,7 @@ public class ChunkCommands {
     @CommandPermissions("worldedit.delchunks")
     @Logging(REGION)
     public void deleteChunks(Actor actor, World world, LocalSession session,
-                                @ArgFlag(name = 'o', desc = "Only delete chunks older than the specified time.", def = "")
+                                @ArgFlag(name = 'o', desc = "Only delete chunks older than the specified time.")
                                     ZonedDateTime beforeTime) throws WorldEditException {
         Path worldDir = world.getStoragePath();
         if (worldDir == null) {

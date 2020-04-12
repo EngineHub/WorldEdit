@@ -313,7 +313,7 @@ public class RegionCommands {
                         boolean copyEntities,
                     @Switch(name = 'b', desc = "Also copy biomes")
                         boolean copyBiomes,
-                    @ArgFlag(name = 'm', desc = "Set the include mask, non-matching blocks become air", def = "")
+                    @ArgFlag(name = 'm', desc = "Set the include mask, non-matching blocks become air")
                         Mask mask) throws WorldEditException {
         checkCommandArgument(count >= 1, "Count must be >= 1");
 
@@ -366,7 +366,7 @@ public class RegionCommands {
                          boolean copyEntities,
                      @Switch(name = 'b', desc = "Also copy biomes")
                          boolean copyBiomes,
-                     @ArgFlag(name = 'm', desc = "Set the include mask, non-matching blocks become air", def = "")
+                     @ArgFlag(name = 'm', desc = "Set the include mask, non-matching blocks become air")
                          Mask mask) throws WorldEditException {
 
         Mask combinedMask;

@@ -61,7 +61,7 @@ public class WorldConverter implements ArgumentConverter<World> {
     }
 
     @Override
-    public List<String> getSuggestions(String input) {
+    public List<String> getSuggestions(String input, InjectedValueAccess context) {
         return getWorlds()
                 .map(World::getId)
                 .filter(world -> world.startsWith(input))

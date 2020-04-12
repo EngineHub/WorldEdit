@@ -77,7 +77,7 @@ public class ClipboardCommands {
                          boolean copyEntities,
                      @Switch(name = 'b', desc = "Also copy biomes")
                          boolean copyBiomes,
-                     @ArgFlag(name = 'm', desc = "Set the include mask, non-matching blocks become air", def = "")
+                     @ArgFlag(name = 'm', desc = "Set the include mask, non-matching blocks become air")
                          Mask mask) throws WorldEditException {
         BlockArrayClipboard clipboard = new BlockArrayClipboard(region);
         clipboard.setOrigin(session.getPlacementPosition(actor));
@@ -107,7 +107,7 @@ public class ClipboardCommands {
                         boolean copyEntities,
                     @Switch(name = 'b', desc = "Also copy biomes, source biomes are unaffected")
                         boolean copyBiomes,
-                    @ArgFlag(name = 'm', desc = "Set the exclude mask, non-matching blocks become air", def = "")
+                    @ArgFlag(name = 'm', desc = "Set the exclude mask, non-matching blocks become air")
                         Mask mask) throws WorldEditException {
 
         BlockArrayClipboard clipboard = new BlockArrayClipboard(region);
@@ -145,7 +145,7 @@ public class ClipboardCommands {
                           boolean pasteEntities,
                       @Switch(name = 'b', desc = "Paste biomes if available")
                           boolean pasteBiomes,
-                      @ArgFlag(name = 'm', desc = "Only paste blocks matching this mask", def = "")
+                      @ArgFlag(name = 'm', desc = "Only paste blocks matching this mask")
                       @ClipboardMask
                           Mask sourceMask) throws WorldEditException {
 

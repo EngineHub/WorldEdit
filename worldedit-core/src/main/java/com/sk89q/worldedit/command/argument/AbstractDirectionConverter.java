@@ -111,7 +111,7 @@ public abstract class AbstractDirectionConverter<D> implements ArgumentConverter
     }
 
     @Override
-    public List<String> getSuggestions(String input) {
+    public List<String> getSuggestions(String input, InjectedValueAccess context) {
         return limitByPrefix(suggestions.stream(), input);
     }
 

@@ -506,7 +506,7 @@ public class SelectionCommands {
                           boolean clipboardDistr,
                       @Switch(name = 'd', desc = "Separate blocks by state")
                           boolean separateStates,
-                      @ArgFlag(name = 'p', desc = "Gets page from a previous distribution.", def = "")
+                      @ArgFlag(name = 'p', desc = "Gets page from a previous distribution.")
                           Integer page) throws WorldEditException {
         List<Countable<BlockState>> distribution;
 

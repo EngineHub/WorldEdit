@@ -105,7 +105,7 @@ public final class RegistryConverter<V extends Keyed> implements ArgumentConvert
     }
 
     @Override
-    public List<String> getSuggestions(String input) {
+    public List<String> getSuggestions(String input, InjectedValueAccess context) {
         return SuggestionHelper.getRegistrySuggestions(registry, input).collect(Collectors.toList());
     }
 }
