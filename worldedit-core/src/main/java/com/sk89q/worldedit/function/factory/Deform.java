@@ -33,6 +33,7 @@ import com.sk89q.worldedit.function.Contextual;
 import com.sk89q.worldedit.function.EditContext;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.RunContext;
+import com.sk89q.worldedit.internal.expression.Expression;
 import com.sk89q.worldedit.internal.expression.ExpressionException;
 import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.regions.NullRegion;
@@ -46,8 +47,9 @@ public class Deform implements Contextual<Operation> {
 
     private Extent destination;
     private Region region;
-    private String expression;
-    private Mode mode = Mode.UNIT_CUBE;
+    private String expressionString;
+    private Expression expression;
+    private Mode mode;
     private Vector3 offset = Vector3.ZERO;
 
     public Deform(String expression) {
@@ -65,12 +67,18 @@ public class Deform implements Contextual<Operation> {
     public Deform(Extent destination, Region region, String expression, Mode mode) {
         checkNotNull(destination, "destination");
         checkNotNull(region, "region");
-        checkNotNull(expression, "expression");
         checkNotNull(mode, "mode");
+        checkAndSetExpression(expression);
         this.destination = destination;
         this.region = region;
-        this.expression = expression;
         this.mode = mode;
+    }
+
+    private void checkAndSetExpression(String expressionString) {
+        checkNotNull(expressionString, "expression");
+        this.expression = Expression.compile(expressionString, "x", "y", "z");
+        this.expression.optimize();
+        this.expressionString = expressionString;
     }
 
     public Extent getDestination() {
@@ -91,13 +99,12 @@ public class Deform implements Contextual<Operation> {
         this.region = region;
     }
 
-    public String getExpression() {
-        return expression;
+    public String getExpressionString() {
+        return expressionString;
     }
 
-    public void setExpression(String expression) {
-        checkNotNull(expression, "expression");
-        this.expression = expression;
+    public void setExpressionString(String expressionString) {
+        checkAndSetExpression(expressionString);
     }
 
     public Mode getMode() {
@@ -120,7 +127,7 @@ public class Deform implements Contextual<Operation> {
 
     @Override
     public String toString() {
-        return "deformation of " + expression;
+        return "deformation of " + expressionString;
     }
 
     @Override
@@ -153,7 +160,7 @@ public class Deform implements Contextual<Operation> {
         }
 
         LocalSession session = context.getSession();
-        return new DeformOperation(context.getDestination(), region, zero, unit, expression,
+        return new DeformOperation(context.getDestination(), region, zero, unit, expression, expressionString,
                 session == null ? WorldEdit.getInstance().getConfiguration().calculationTimeout : session.getTimeout());
     }
 
@@ -162,15 +169,18 @@ public class Deform implements Contextual<Operation> {
         private final Region region;
         private final Vector3 zero;
         private final Vector3 unit;
-        private final String expression;
+        private final Expression expression;
+        private final String expressionString;
         private final int timeout;
 
-        private DeformOperation(Extent destination, Region region, Vector3 zero, Vector3 unit, String expression, int timeout) {
+        private DeformOperation(Extent destination, Region region, Vector3 zero, Vector3 unit, Expression expression,
+                                String expressionString, int timeout) {
             this.destination = destination;
             this.region = region;
             this.zero = zero;
             this.unit = unit;
             this.expression = expression;
+            this.expressionString = expressionString;
             this.timeout = timeout;
         }
 
@@ -193,7 +203,7 @@ public class Deform implements Contextual<Operation> {
         @Override
         public Iterable<Component> getStatusMessages() {
             return ImmutableList.of(TranslatableComponent.of("worldedit.operation.deform.expression",
-                    TextComponent.of(expression).color(TextColor.LIGHT_PURPLE)));
+                    TextComponent.of(expressionString).color(TextColor.LIGHT_PURPLE)));
         }
 
     }
