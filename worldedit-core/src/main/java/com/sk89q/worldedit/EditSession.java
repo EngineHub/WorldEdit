@@ -2070,10 +2070,23 @@ public class EditSession implements Extent, AutoCloseable {
      * @throws MaxChangedBlocksException
      */
     public int makeShape(final Region region, final Vector3 zero, final Vector3 unit,
-                        final Pattern pattern, final String expressionString, final boolean hollow, final int timeout)
+                         final Pattern pattern, final String expressionString, final boolean hollow, final int timeout)
             throws ExpressionException, MaxChangedBlocksException {
         final Expression expression = Expression.compile(expressionString, "x", "y", "z", "type", "data");
         expression.optimize();
+        return makeShape(region, zero, unit, pattern, expression, hollow, timeout);
+    }
+
+    public int makeShape(final Region region, final Vector3 zero, final Vector3 unit,
+                         final Pattern pattern, final Expression expression, final boolean hollow, final int timeout)
+            throws ExpressionException, MaxChangedBlocksException {
+
+        expression.getSlots().getVariable("x")
+            .orElseThrow(IllegalStateException::new);
+        expression.getSlots().getVariable("y")
+            .orElseThrow(IllegalStateException::new);
+        expression.getSlots().getVariable("z")
+            .orElseThrow(IllegalStateException::new);
 
         final Variable typeVariable = expression.getSlots().getVariable("type")
             .orElseThrow(IllegalStateException::new);
