@@ -22,7 +22,6 @@ package com.sk89q.worldedit;
 import javax.annotation.Nullable;
 
 import com.google.common.base.Preconditions;
-import com.sk89q.worldedit.event.extent.EditSessionEvent;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Locatable;
 import com.sk89q.worldedit.extent.Extent;
@@ -36,20 +35,17 @@ import com.sk89q.worldedit.world.World;
 public final class EditSessionBuilder {
 
     private final EventBus eventBus;
-    @Nullable
-    private World world;
+    private @Nullable World world;
     private int maxBlocks = -1;
-    private Actor actor;
-    @Nullable
-    private BlockBag blockBag;
+    private @Nullable Actor actor;
+    private @Nullable BlockBag blockBag;
     private boolean tracing;
 
     EditSessionBuilder(EventBus eventBus) {
         this.eventBus = eventBus;
     }
 
-    @Nullable
-    public World getWorld() {
+    public @Nullable World getWorld() {
         return world;
     }
 
@@ -79,7 +75,7 @@ public final class EditSessionBuilder {
         return this;
     }
 
-    public Actor getActor() {
+    public @Nullable Actor getActor() {
         return actor;
     }
 
@@ -89,13 +85,12 @@ public final class EditSessionBuilder {
      * @param actor the actor
      * @return this builder
      */
-    public EditSessionBuilder actor(Actor actor) {
+    public EditSessionBuilder actor(@Nullable Actor actor) {
         this.actor = actor;
         return this;
     }
 
-    @Nullable
-    public BlockBag getBlockBag() {
+    public @Nullable BlockBag getBlockBag() {
         return blockBag;
     }
 
@@ -142,10 +137,9 @@ public final class EditSessionBuilder {
      * @return the new EditSession
      */
     public EditSession build() {
-        EditSessionEvent event = new EditSessionEvent(world, actor, maxBlocks, null);
         if (WorldEdit.getInstance().getConfiguration().traceUnflushedSessions) {
-            return new TracedEditSession(eventBus, world, maxBlocks, blockBag, event, tracing);
+            return new TracedEditSession(eventBus, world, maxBlocks, blockBag, actor, tracing);
         }
-        return new EditSession(eventBus, world, maxBlocks, blockBag, event, tracing);
+        return new EditSession(eventBus, world, maxBlocks, blockBag, actor, tracing);
     }
 }

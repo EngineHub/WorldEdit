@@ -29,16 +29,13 @@ import java.time.format.TextStyle;
 import java.time.zone.ZoneRulesException;
 import java.util.List;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterables;
 import com.google.common.io.Files;
-import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.IncompleteRegionException;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.command.util.CommandPermissions;
 import com.sk89q.worldedit.command.util.CommandPermissionsConditionGenerator;
+import com.sk89q.worldedit.command.util.HookMode;
 import com.sk89q.worldedit.command.util.PrintCommandHelp;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.event.platform.ConfigurationLoadEvent;
@@ -46,7 +43,6 @@ import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.extension.platform.PlatformManager;
-import com.sk89q.worldedit.extent.TracingExtent;
 import com.sk89q.worldedit.util.formatting.component.MessageBox;
 import com.sk89q.worldedit.util.formatting.component.TextComponentProducer;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
@@ -145,41 +141,24 @@ public class WorldEditCommands {
 
     @Command(
         name = "trace",
-        desc = "Trace edit actions to see what's blocking them",
-        descFooter = "This will run the given action at your placement position, then provide a single" +
-            " extent which was the first to return a failure for that action"
+        desc = "Toggles trace hook"
     )
-    void trace(Actor actor, LocalSession localSession,
-               @Arg(desc = "The action to trace")
-                   TracingExtent.Action action,
-               @Switch(name = 'a', desc = "Print all active extents") boolean all) throws IncompleteRegionException {
-        EditSession session = localSession.createEditSession(actor, true);
-        try (EditSession ignored = session) {
-            if (action.test.test(session, localSession.getPlacementPosition(actor))) {
-                actor.printInfo(TranslatableComponent.builder("worldedit.trace.success")
-                    .args(TextComponent.of(action.toString()))
-                    .build());
+    void trace(Actor actor, LocalSession session,
+               @Arg(desc = "The mode to set the trace hook to", def = "")
+                   HookMode hookMode) {
+        boolean previousMode = session.isTracingActions();
+        boolean newMode;
+        if (hookMode != null) {
+            newMode = hookMode == HookMode.ACTIVE;
+            if (newMode == previousMode) {
+                actor.printError(TranslatableComponent.of(previousMode ? "worldedit.trace.active.already" : "worldedit.trace.inactive.already"));
                 return;
             }
+        } else {
+            newMode = !previousMode;
         }
-        List<TracingExtent> tracingExtents = session.getTracingExtents();
-        assert tracingExtents != null;
-        if (tracingExtents.isEmpty()) {
-            actor.printError(TranslatableComponent.of("worldedit.trace.no-tracing-extents"));
-            return;
-        }
-        if (!all) {
-            // make it only print the last one (which is the failure)
-            tracingExtents = ImmutableList.of(Iterables.getLast(tracingExtents));
-        }
-        for (TracingExtent tracingExtent : tracingExtents) {
-            actor.printInfo(TranslatableComponent.builder("worldedit.trace.extent")
-                .args(
-                    TextComponent.of(tracingExtent.getFailedActions().contains(action)),
-                    TextComponent.of(tracingExtent.getExtent().getClass().getName())
-                )
-                .build());
-        }
+        session.setTracingActions(newMode);
+        actor.printInfo(TranslatableComponent.of(newMode ? "worldedit.trace.active" : "worldedit.trace.inactive"));
     }
 
     @Command(

@@ -109,6 +109,7 @@ public class LocalSession {
     private transient World worldOverride;
     private transient boolean tickingWatchdog = true;
     private transient boolean hasBeenToldVersion;
+    private transient boolean tracingActions;
 
     // Saved properties
     private String lastScript;
@@ -303,6 +304,14 @@ public class LocalSession {
 
     public void setTickingWatchdog(boolean tickingWatchdog) {
         this.tickingWatchdog = tickingWatchdog;
+    }
+
+    public boolean isTracingActions() {
+        return tracingActions;
+    }
+
+    public void setTracingActions(boolean tracingActions) {
+        this.tracingActions = tracingActions;
     }
 
     /**
@@ -979,19 +988,6 @@ public class LocalSession {
      * @return an edit session
      */
     public EditSession createEditSession(Actor actor) {
-        return createEditSession(actor, false);
-    }
-
-    /**
-     * Construct a new edit session, optionally with tracing.
-     *
-     * <em>Internal use only.</em>
-     *
-     * @param actor the actor
-     * @param tracing if tracing is enabled
-     * @return an edit session
-     */
-    public EditSession createEditSession(Actor actor, boolean tracing) {
         checkNotNull(actor);
 
         World world = null;
@@ -1006,7 +1002,7 @@ public class LocalSession {
             .world(world)
             .actor(actor)
             .maxBlocks(getBlockChangeLimit())
-            .tracing(tracing);
+            .tracing(isTracingActions());
         if (actor.isPlayer() && actor instanceof Player) {
             builder.blockBag(getBlockBag((Player) actor));
         }

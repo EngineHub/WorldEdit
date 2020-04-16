@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableList;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.event.extent.EditSessionEvent;
+import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.extension.platform.Watchdog;
 import com.sk89q.worldedit.extent.ChangeSetExtent;
@@ -108,8 +109,11 @@ import com.sk89q.worldedit.util.Countable;
 import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.util.SideEffectSet;
 import com.sk89q.worldedit.util.TreeGenerator;
+import com.sk89q.worldedit.util.collection.BlockMap;
 import com.sk89q.worldedit.util.collection.DoubleArrayList;
 import com.sk89q.worldedit.util.eventbus.EventBus;
+import com.sk89q.worldedit.util.formatting.text.TextComponent;
+import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.world.NullWorld;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.biome.BiomeType;
@@ -123,8 +127,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -188,6 +194,7 @@ public class EditSession implements Extent, AutoCloseable {
 
     @SuppressWarnings("ProtectedField")
     protected final World world;
+    private final @Nullable Actor actor;
     private final ChangeSet changeSet = new BlockOptimizedHistory();
 
     private @Nullable SideEffectExtent sideEffectExtent;
@@ -216,23 +223,27 @@ public class EditSession implements Extent, AutoCloseable {
      * @param world the world
      * @param maxBlocks the maximum number of blocks that can be changed, or -1 to use no limit
      * @param blockBag an optional {@link BlockBag} to use, otherwise null
-     * @param event the event to call with the extent
+     * @param actor the actor that owns the session
+     * @param tracing if tracing is enabled. An actor is required if this is {@code true}
      */
-    EditSession(EventBus eventBus, World world, int maxBlocks, @Nullable BlockBag blockBag, EditSessionEvent event,
+    EditSession(EventBus eventBus, World world, int maxBlocks, @Nullable BlockBag blockBag,
+                @Nullable Actor actor,
                 boolean tracing) {
         checkNotNull(eventBus);
         checkArgument(maxBlocks >= -1, "maxBlocks >= -1 required");
-        checkNotNull(event);
 
         if (tracing) {
             this.tracingExtents = new ArrayList<>();
+            checkNotNull(actor, "An actor is required while tracing");
         } else {
             this.tracingExtents = null;
         }
 
         this.world = world;
+        this.actor = actor;
 
         if (world != null) {
+            EditSessionEvent event = new EditSessionEvent(world, actor, maxBlocks, null);
             Watchdog watchdog = WorldEdit.getInstance().getPlatformManager()
                 .queryCapability(Capability.GAME_HOOKS).getWatchdog();
             Extent extent;
@@ -327,11 +338,9 @@ public class EditSession implements Extent, AutoCloseable {
 
     /**
      * Get the current list of active tracing extents.
-     *
-     * <em>Internal use only.</em>
      */
     @Nullable
-    public List<TracingExtent> getTracingExtents() {
+    private List<TracingExtent> getActiveTracingExtents() {
         if (tracingExtents == null) {
             return null;
         }
@@ -364,7 +373,7 @@ public class EditSession implements Extent, AutoCloseable {
             throw new IllegalArgumentException("An EditSession without a reorder extent tried to use it for reordering!");
         }
         if (commitRequired()) {
-            flushSession();
+            internalFlushSession();
         }
 
         this.reorderMode = reorderMode;
@@ -462,14 +471,14 @@ public class EditSession implements Extent, AutoCloseable {
     }
 
     /**
-     * Disable the queue. This will {@linkplain #flushSession() flush the session}.
+     * Disable the queue. This will flush the session.
      *
      * @deprecated Use {@link EditSession#setReorderMode(ReorderMode)} with another mode instead.
      */
     @Deprecated
     public void disableQueue() {
         if (isQueueEnabled()) {
-            flushSession();
+            internalFlushSession();
         }
         setReorderMode(ReorderMode.NONE);
     }
@@ -590,8 +599,7 @@ public class EditSession implements Extent, AutoCloseable {
     }
 
     /**
-     * Enable or disable chunk batching. Disabling will
-     * {@linkplain #flushSession() flush the session}.
+     * Enable or disable chunk batching. Disabling will flush the session.
      *
      * @param batchingChunks {@code true} to enable, {@code false} to disable
      */
@@ -603,7 +611,7 @@ public class EditSession implements Extent, AutoCloseable {
             return;
         }
         if (!batchingChunks && isBatchingChunks()) {
-            flushSession();
+            internalFlushSession();
         }
         chunkBatchingExtent.setEnabled(batchingChunks);
     }
@@ -617,7 +625,7 @@ public class EditSession implements Extent, AutoCloseable {
     public void disableBuffering() {
         // We optimize here to avoid repeated calls to flushSession.
         if (commitRequired()) {
-            flushSession();
+            internalFlushSession();
         }
         setReorderMode(ReorderMode.NONE);
         if (chunkBatchingExtent != null) {
@@ -822,7 +830,7 @@ public class EditSession implements Extent, AutoCloseable {
         UndoContext context = new UndoContext();
         context.setExtent(editSession.bypassHistory);
         Operations.completeBlindly(ChangeSetExecutor.createUndo(changeSet, context));
-        editSession.flushSession();
+        editSession.internalFlushSession();
     }
 
     /**
@@ -834,7 +842,7 @@ public class EditSession implements Extent, AutoCloseable {
         UndoContext context = new UndoContext();
         context.setExtent(editSession.bypassHistory);
         Operations.completeBlindly(ChangeSetExecutor.createRedo(changeSet, context));
-        editSession.flushSession();
+        editSession.internalFlushSession();
     }
 
     /**
@@ -867,18 +875,67 @@ public class EditSession implements Extent, AutoCloseable {
     }
 
     /**
-     * Closing an EditSession {@linkplain #flushSession() flushes its buffers}.
+     * Closing an EditSession flushes its buffers to the world, and performs other
+     * cleanup tasks.
      */
     @Override
     public void close() {
-        flushSession();
+        internalFlushSession();
+        dumpTracingInformation();
+    }
+
+    private void dumpTracingInformation() {
+        List<TracingExtent> tracingExtents = getActiveTracingExtents();
+        if (tracingExtents == null) {
+            return;
+        }
+        assert actor != null;
+        if (tracingExtents.isEmpty()) {
+            actor.printError(TranslatableComponent.of("worldedit.trace.no-tracing-extents"));
+            return;
+        }
+        // find the common stacks
+        Set<List<TracingExtent>> stacks = new LinkedHashSet<>();
+        Map<List<TracingExtent>, BlockVector3> stackToPosition = new HashMap<>();
+        Set<BlockVector3> touchedLocations = Collections.newSetFromMap(BlockMap.create());
+        for (TracingExtent tracingExtent : tracingExtents) {
+            touchedLocations.addAll(tracingExtent.getTouchedLocations());
+        }
+        for (BlockVector3 loc : touchedLocations) {
+            List<TracingExtent> stack = tracingExtents.stream()
+                    .filter(it -> it.getTouchedLocations().contains(loc))
+                    .collect(Collectors.toList());
+            boolean anyFailed = stack.stream()
+                .anyMatch(it -> it.getFailedActions().containsKey(loc));
+            if (anyFailed && stacks.add(stack)) {
+                stackToPosition.put(stack, loc);
+            }
+        }
+        stackToPosition.forEach((stack, position) -> {
+            // stack can never be empty, something has to have touched the position
+            TracingExtent failure = stack.get(0);
+            actor.printDebug(TranslatableComponent.builder("worldedit.trace.action-failed")
+                .args(
+                    TextComponent.of(position.toString()),
+                    TextComponent.of(failure.getFailedActions().get(position).toString()),
+                    TextComponent.of(failure.getExtent().getClass().getName())
+                )
+                .build());
+        });
     }
 
     /**
      * Communicate to the EditSession that all block changes are complete,
      * and that it should apply them to the world.
+     *
+     * @deprecated Replace with {@link #close()} for proper cleanup behavior.
      */
+    @Deprecated
     public void flushSession() {
+        internalFlushSession();
+    }
+
+    private void internalFlushSession() {
         Operations.completeBlindly(commit());
     }
 

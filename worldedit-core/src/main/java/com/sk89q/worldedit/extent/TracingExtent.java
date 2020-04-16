@@ -20,17 +20,22 @@
 package com.sk89q.worldedit.extent;
 
 import javax.annotation.Nullable;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Set;
 import java.util.function.BiPredicate;
 
-import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Collections2;
+import com.google.common.collect.ImmutableSetMultimap;
+import com.google.common.collect.Multimaps;
+import com.google.common.collect.SetMultimap;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.util.Location;
+import com.sk89q.worldedit.util.collection.BlockMap;
 import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.biome.BiomeTypes;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
@@ -67,8 +72,10 @@ public class TracingExtent extends AbstractDelegateExtent {
         }
     }
 
-    private final Set<Action> failedActions = EnumSet.noneOf(Action.class);
-    private boolean active;
+    private final Set<BlockVector3> touchedLocations = Collections.newSetFromMap(BlockMap.create());
+    private final SetMultimap<BlockVector3, Action> failedActions = Multimaps.newSetMultimap(
+            BlockMap.create(), () -> EnumSet.noneOf(Action.class)
+    );
 
     /**
      * Create a new instance.
@@ -80,29 +87,34 @@ public class TracingExtent extends AbstractDelegateExtent {
     }
 
     public boolean isActive() {
-        return active;
+        return !touchedLocations.isEmpty();
     }
 
-    public Set<Action> getFailedActions() {
-        return ImmutableSet.copyOf(failedActions);
+    public Set<BlockVector3> getTouchedLocations() {
+        return Collections.unmodifiableSet(touchedLocations);
+    }
+
+    public SetMultimap<BlockVector3, Action> getFailedActions() {
+        return Multimaps.unmodifiableSetMultimap(failedActions);
     }
 
     @Override
     public <T extends BlockStateHolder<T>> boolean setBlock(BlockVector3 location, T block) throws WorldEditException {
-        active = true;
+        touchedLocations.add(location);
         boolean result = super.setBlock(location, block);
         if (!result) {
-            failedActions.add(Action.SET_BLOCK);
+            failedActions.put(location, Action.SET_BLOCK);
         }
         return result;
     }
 
     @Override
     public boolean setBiome(BlockVector2 position, BiomeType biome) {
-        active = true;
+        BlockVector3 blockVector3 = position.toBlockVector3();
+        touchedLocations.add(blockVector3);
         boolean result = super.setBiome(position, biome);
         if (!result) {
-            failedActions.add(Action.SET_BIOME);
+            failedActions.put(blockVector3, Action.SET_BIOME);
         }
         return result;
     }
@@ -110,10 +122,11 @@ public class TracingExtent extends AbstractDelegateExtent {
     @Nullable
     @Override
     public Entity createEntity(Location location, BaseEntity entity) {
-        active = true;
+        BlockVector3 blockVector3 = location.toVector().toBlockPoint();
+        touchedLocations.add(blockVector3);
         Entity result = super.createEntity(location, entity);
         if (result == null) {
-            failedActions.add(Action.CREATE_ENTITY);
+            failedActions.put(blockVector3, Action.CREATE_ENTITY);
         }
         return result;
     }
