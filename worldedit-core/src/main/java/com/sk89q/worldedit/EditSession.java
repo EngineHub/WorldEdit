@@ -2139,7 +2139,11 @@ public class EditSession implements Extent, AutoCloseable {
                             final int timeout) throws ExpressionException, MaxChangedBlocksException {
         final Expression expression = Expression.compile(expressionString, "x", "y", "z");
         expression.optimize();
+        return deformRegion(region, zero, unit, expression, timeout);
+    }
 
+    public int deformRegion(final Region region, final Vector3 zero, final Vector3 unit, final Expression expression,
+                            final int timeout) throws ExpressionException, MaxChangedBlocksException {
         final Variable x = expression.getSlots().getVariable("x")
             .orElseThrow(IllegalStateException::new);
         final Variable y = expression.getSlots().getVariable("y")
