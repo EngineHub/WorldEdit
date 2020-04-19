@@ -47,7 +47,6 @@ public class Deform implements Contextual<Operation> {
 
     private Extent destination;
     private Region region;
-    private String expressionString;
     private Expression expression;
     private Mode mode;
     private Vector3 offset = Vector3.ZERO;
@@ -68,17 +67,12 @@ public class Deform implements Contextual<Operation> {
         checkNotNull(destination, "destination");
         checkNotNull(region, "region");
         checkNotNull(mode, "mode");
-        checkAndSetExpression(expression);
+        checkNotNull(expression, "expression");
+        this.expression = Expression.compile(expression, "x", "y", "z");
+        this.expression.optimize();
         this.destination = destination;
         this.region = region;
         this.mode = mode;
-    }
-
-    private void checkAndSetExpression(String expressionString) {
-        checkNotNull(expressionString, "expression");
-        this.expression = Expression.compile(expressionString, "x", "y", "z");
-        this.expression.optimize();
-        this.expressionString = expressionString;
     }
 
     public Extent getDestination() {
@@ -97,14 +91,6 @@ public class Deform implements Contextual<Operation> {
     public void setRegion(Region region) {
         checkNotNull(region, "region");
         this.region = region;
-    }
-
-    public String getExpressionString() {
-        return expressionString;
-    }
-
-    public void setExpressionString(String expressionString) {
-        checkAndSetExpression(expressionString);
     }
 
     public Mode getMode() {
@@ -127,7 +113,7 @@ public class Deform implements Contextual<Operation> {
 
     @Override
     public String toString() {
-        return "deformation of " + expressionString;
+        return "deformation of " + expression.getSource();
     }
 
     @Override
@@ -160,7 +146,7 @@ public class Deform implements Contextual<Operation> {
         }
 
         LocalSession session = context.getSession();
-        return new DeformOperation(context.getDestination(), region, zero, unit, expression, expressionString,
+        return new DeformOperation(context.getDestination(), region, zero, unit, expression,
                 session == null ? WorldEdit.getInstance().getConfiguration().calculationTimeout : session.getTimeout());
     }
 
@@ -170,17 +156,15 @@ public class Deform implements Contextual<Operation> {
         private final Vector3 zero;
         private final Vector3 unit;
         private final Expression expression;
-        private final String expressionString;
         private final int timeout;
 
         private DeformOperation(Extent destination, Region region, Vector3 zero, Vector3 unit, Expression expression,
-                                String expressionString, int timeout) {
+                                int timeout) {
             this.destination = destination;
             this.region = region;
             this.zero = zero;
             this.unit = unit;
             this.expression = expression;
-            this.expressionString = expressionString;
             this.timeout = timeout;
         }
 
@@ -203,7 +187,7 @@ public class Deform implements Contextual<Operation> {
         @Override
         public Iterable<Component> getStatusMessages() {
             return ImmutableList.of(TranslatableComponent.of("worldedit.operation.deform.expression",
-                    TextComponent.of(expressionString).color(TextColor.LIGHT_PURPLE)));
+                    TextComponent.of(expression.getSource()).color(TextColor.LIGHT_PURPLE)));
         }
 
     }

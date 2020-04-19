@@ -2077,6 +2077,11 @@ public class EditSession implements Extent, AutoCloseable {
         return makeShape(region, zero, unit, pattern, expression, hollow, timeout);
     }
 
+    /**
+     * Internal version of {@link EditSession#makeShape(Region, Vector3, Vector3, Pattern, String, boolean, int)}.
+     *
+     * The Expression class is subject to change. Expressions should be provided via the string overload.
+     */
     public int makeShape(final Region region, final Vector3 zero, final Vector3 unit,
                          final Pattern pattern, final Expression expression, final boolean hollow, final int timeout)
             throws ExpressionException, MaxChangedBlocksException {
@@ -2143,11 +2148,42 @@ public class EditSession implements Extent, AutoCloseable {
         return changed;
     }
 
+    /**
+     * Deforms the region by a given expression. A deform provides a block's x, y, and z coordinates (possibly scaled)
+     * to an expression, and then sets the block to the block given by the resulting values of the variables, if they
+     * have changed.
+     *
+     * @param region the region to deform
+     * @param zero the origin of the coordinate system
+     * @param unit the scale of the coordinate system
+     * @param expressionString the expression to evaluate for each block
+     *
+     * @return number of blocks changed
+     *
+     * @throws ExpressionException thrown on invalid expression input
+     * @throws MaxChangedBlocksException thrown if too many blocks are changed
+     */
     public int deformRegion(final Region region, final Vector3 zero, final Vector3 unit, final String expressionString)
             throws ExpressionException, MaxChangedBlocksException {
         return deformRegion(region, zero, unit, expressionString, WorldEdit.getInstance().getConfiguration().calculationTimeout);
     }
 
+    /**
+     * Deforms the region by a given expression. A deform provides a block's x, y, and z coordinates (possibly scaled)
+     * to an expression, and then sets the block to the block given by the resulting values of the variables, if they
+     * have changed.
+     *
+     * @param region the region to deform
+     * @param zero the origin of the coordinate system
+     * @param unit the scale of the coordinate system
+     * @param expressionString the expression to evaluate for each block
+     * @param timeout maximum time for the expression to evaluate for each block. -1 for unlimited.
+     *
+     * @return number of blocks changed
+     *
+     * @throws ExpressionException thrown on invalid expression input
+     * @throws MaxChangedBlocksException thrown if too many blocks are changed
+     */
     public int deformRegion(final Region region, final Vector3 zero, final Vector3 unit, final String expressionString,
                             final int timeout) throws ExpressionException, MaxChangedBlocksException {
         final Expression expression = Expression.compile(expressionString, "x", "y", "z");
@@ -2155,6 +2191,11 @@ public class EditSession implements Extent, AutoCloseable {
         return deformRegion(region, zero, unit, expression, timeout);
     }
 
+    /**
+     * Internal version of {@link EditSession#deformRegion(Region, Vector3, Vector3, String, int)}.
+     *
+     * The Expression class is subject to change. Expressions should be provided via the string overload.
+     */
     public int deformRegion(final Region region, final Vector3 zero, final Vector3 unit, final Expression expression,
                             final int timeout) throws ExpressionException, MaxChangedBlocksException {
         final Variable x = expression.getSlots().getVariable("x")
