@@ -34,6 +34,9 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
  * Compiles and evaluates expressions.
  *
@@ -62,6 +65,7 @@ import java.util.Objects;
  */
 public class Expression {
 
+    private final String source;
     private final SlotTable slots = new SlotTable();
     private final List<String> providedSlots;
     private final ExpressionParser.AllStatementsContext root;
@@ -73,6 +77,9 @@ public class Expression {
     }
 
     private Expression(String expression, String... variableNames) throws ExpressionException {
+        checkNotNull(expression, "Expression cannot be null.");
+        checkArgument(!expression.isEmpty(), "Expression cannot be empty string.");
+        this.source = expression;
         slots.putSlot("e", new LocalSlot.Constant(Math.E));
         slots.putSlot("pi", new LocalSlot.Constant(Math.PI));
         slots.putSlot("true", new LocalSlot.Constant(1));
@@ -128,6 +135,10 @@ public class Expression {
 
     public void optimize() {
         // TODO optimizing
+    }
+
+    public String getSource() {
+        return source;
     }
 
     @Override
