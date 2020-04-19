@@ -33,6 +33,7 @@ import com.sk89q.worldedit.util.formatting.text.adapter.bukkit.TextAdapter;
 import com.sk89q.worldedit.util.formatting.text.format.TextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.command.BlockCommandSender;
 
 import java.nio.charset.StandardCharsets;
@@ -151,9 +152,15 @@ public class BukkitBlockCommandSender extends AbstractNonPlayerActor implements 
             private volatile boolean active = true;
 
             private void updateActive() {
-                active = sender.getBlock().getType() == Material.COMMAND_BLOCK
-                    || sender.getBlock().getType() == Material.CHAIN_COMMAND_BLOCK
-                    || sender.getBlock().getType() == Material.REPEATING_COMMAND_BLOCK;
+                Block block = sender.getBlock();
+                if (!block.getWorld().isChunkLoaded(block.getX() >> 4, block.getZ() >> 4)) {
+                    active = false;
+                    return;
+                }
+                Material type = block.getType();
+                active = type == Material.COMMAND_BLOCK
+                    || type == Material.CHAIN_COMMAND_BLOCK
+                    || type == Material.REPEATING_COMMAND_BLOCK;
             }
 
             @Override
