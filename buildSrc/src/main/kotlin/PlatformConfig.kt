@@ -7,7 +7,7 @@ import org.gradle.api.plugins.quality.CheckstyleExtension
 import org.gradle.api.tasks.bundling.Jar
 import org.gradle.api.tasks.javadoc.Javadoc
 import org.gradle.api.tasks.testing.Test
-import org.gradle.external.javadoc.CoreJavadocOptions
+import org.gradle.external.javadoc.StandardJavadocDocletOptions
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.dependencies
@@ -54,7 +54,14 @@ fun Project.applyPlatformAndCoreConfiguration() {
 
     // Java 8 turns on doclint which we fail
     tasks.withType<Javadoc>().configureEach {
-        (options as CoreJavadocOptions).addStringOption("Xdoclint:none", "-quiet")
+        (options as StandardJavadocDocletOptions).apply {
+            addStringOption("Xdoclint:none", "-quiet")
+            tags(
+                "apiNote:a:API Note:",
+                "implSpec:a:Implementation Requirements:",
+                "implNote:a:Implementation Note:"
+            )
+        }
     }
 
     tasks.register<Jar>("javadocJar") {

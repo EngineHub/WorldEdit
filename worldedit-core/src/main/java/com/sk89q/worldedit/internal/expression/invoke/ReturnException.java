@@ -24,7 +24,7 @@ package com.sk89q.worldedit.internal.expression.invoke;
  *
  * Should be caught by the executor.
  */
-class ReturnException extends RuntimeException {
+public class ReturnException extends RuntimeException {
 
     private final Double result;
 
