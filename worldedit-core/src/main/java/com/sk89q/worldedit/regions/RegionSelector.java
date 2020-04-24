@@ -92,7 +92,7 @@ public interface RegionSelector {
     void explainSecondarySelection(Actor actor, LocalSession session, BlockVector3 position);
 
     /**
-     * The the player information about the region's changes. This may resend
+     * Tell the player information about the region's changes. This may resend
      * all the defining region information if needed.
      *
      * @param actor the actor
