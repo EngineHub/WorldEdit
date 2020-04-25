@@ -19,7 +19,10 @@
 
 package com.sk89q.worldedit.scripting;
 
+import com.google.common.io.CharStreams;
 import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.scripting.compat.BabelScriptTranspiler;
+import com.sk89q.worldedit.scripting.compat.ScriptTranspiler;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ImporterTopLevel;
 import org.mozilla.javascript.JavaScriptException;
@@ -28,11 +31,13 @@ import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 import org.mozilla.javascript.WrappedException;
 
+import javax.script.ScriptException;
+import java.io.StringReader;
 import java.util.Map;
 
-import javax.script.ScriptException;
-
 public class RhinoCraftScriptEngine implements CraftScriptEngine {
+
+    private static final ScriptTranspiler TRANSPILER = new BabelScriptTranspiler();
     private int timeLimit;
 
     @Override
@@ -48,6 +53,7 @@ public class RhinoCraftScriptEngine implements CraftScriptEngine {
     @Override
     public Object evaluate(String script, String filename, Map<String, Object> args)
             throws ScriptException, Throwable {
+        String transpiled = CharStreams.toString(TRANSPILER.transpile(new StringReader(script)));
         RhinoContextFactory factory = new RhinoContextFactory(timeLimit);
         Context cx = factory.enterContext();
         cx.setClassShutter(new MinecraftHidingClassShutter());
@@ -59,7 +65,7 @@ public class RhinoCraftScriptEngine implements CraftScriptEngine {
                     Context.javaToJS(entry.getValue(), scope));
         }
         try {
-            return cx.evaluateString(scope, script, filename, 1, null);
+            return cx.evaluateString(scope, transpiled, filename, 1, null);
         } catch (Error e) {
             throw new ScriptException(e.getMessage());
         } catch (RhinoException e) {

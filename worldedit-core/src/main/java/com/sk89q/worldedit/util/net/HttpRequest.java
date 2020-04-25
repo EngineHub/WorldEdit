@@ -43,6 +43,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.google.common.base.Preconditions.checkState;
+
 public class HttpRequest implements Closeable {
 
     private static final int CONNECT_TIMEOUT = 1000 * 5;
@@ -200,6 +202,13 @@ public class HttpRequest implements Closeable {
         return conn.getResponseCode();
     }
 
+    public String getSingleHeaderValue(String header) {
+        checkState(conn != null, "No connection has been made");
+
+        // maybe we should check for multi-header?
+        return conn.getHeaderField(header);
+    }
+
     /**
      * Get the input stream.
      *
@@ -214,9 +223,8 @@ public class HttpRequest implements Closeable {
      *
      * @return the buffered response
      * @throws java.io.IOException  on I/O error
-     * @throws InterruptedException on interruption
      */
-    public BufferedResponse returnContent() throws IOException, InterruptedException {
+    public BufferedResponse returnContent() throws IOException {
         if (inputStream == null) {
             throw new IllegalArgumentException("No input stream available");
         }
@@ -239,9 +247,8 @@ public class HttpRequest implements Closeable {
      * @param file the file
      * @return this object
      * @throws java.io.IOException  on I/O error
-     * @throws InterruptedException on interruption
      */
-    public HttpRequest saveContent(File file) throws IOException, InterruptedException {
+    public HttpRequest saveContent(File file) throws IOException {
         Closer closer = Closer.create();
 
         try {
@@ -262,9 +269,8 @@ public class HttpRequest implements Closeable {
      * @param out the output stream
      * @return this object
      * @throws java.io.IOException  on I/O error
-     * @throws InterruptedException on interruption
      */
-    public HttpRequest saveContent(OutputStream out) throws IOException, InterruptedException {
+    public HttpRequest saveContent(OutputStream out) throws IOException {
         BufferedInputStream bis;
 
         try {
