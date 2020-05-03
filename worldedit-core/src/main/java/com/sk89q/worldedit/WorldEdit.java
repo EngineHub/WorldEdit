@@ -61,6 +61,7 @@ import com.sk89q.worldedit.util.io.file.InvalidFilenameException;
 import com.sk89q.worldedit.util.task.SimpleSupervisor;
 import com.sk89q.worldedit.util.task.Supervisor;
 import com.sk89q.worldedit.util.translation.TranslationManager;
+import com.sk89q.worldedit.util.translation.WorldEditTranslationLoader;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.registry.BundledBlockData;
@@ -115,7 +116,7 @@ public final class WorldEdit {
     private final ListeningExecutorService executorService = MoreExecutors.listeningDecorator(
             EvenMoreExecutors.newBoundedCachedThreadPool(0, 1, 20, "WorldEdit Task Executor - %s"));
     private final Supervisor supervisor = new SimpleSupervisor();
-    private final TranslationManager translationManager = new TranslationManager(this);
+    private final TranslationManager translationManager = new TranslationManager(new WorldEditTranslationLoader(this));
 
     private final BlockFactory blockFactory = new BlockFactory(this);
     private final ItemFactory itemFactory = new ItemFactory(this);
