@@ -25,6 +25,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.renderer.TranslatableComponentRenderer;
+import com.sk89q.worldedit.util.io.ResourceLoader;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -79,12 +80,12 @@ public class TranslationManager {
     );
     private Locale defaultLocale = Locale.ENGLISH;
 
-    private final TranslationLoader translationLoader;
+    private final ResourceLoader resourceLoader;
 
     private final Set<Locale> checkedLocales = new HashSet<>();
 
-    public TranslationManager(TranslationLoader translationLoader) {
-        this.translationLoader = translationLoader;
+    public TranslationManager(ResourceLoader resourceLoader) {
+        this.resourceLoader = resourceLoader;
     }
 
     public void setDefaultLocale(Locale defaultLocale) {
@@ -107,14 +108,14 @@ public class TranslationManager {
     private Optional<Map<String, String>> loadTranslationFile(String filename) {
         Map<String, String> baseTranslations;
 
-        try (InputStream stream = translationLoader.getBundledTranslation("lang/" + filename).openStream()) {
+        try (InputStream stream = resourceLoader.getRootResource("lang/" + filename).openStream()) {
             baseTranslations = parseTranslationFile(stream);
         } catch (IOException e) {
             // Seem to be missing base. If the user has provided a file use that.
             baseTranslations = new ConcurrentHashMap<>();
         }
 
-        File localFile = translationLoader.getLocalTranslation("lang/" + filename);
+        File localFile = resourceLoader.getLocalResource("lang/" + filename);
         if (localFile.exists()) {
             try (InputStream stream = new FileInputStream(localFile)) {
                 baseTranslations.putAll(parseTranslationFile(stream));

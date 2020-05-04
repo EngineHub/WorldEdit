@@ -17,30 +17,51 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.util.translation;
+package com.sk89q.worldedit.util.io;
 
 import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.util.io.ResourceLoader;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
-public class WorldEditTranslationLoader implements TranslationLoader {
+public class WorldEditResourceLoader implements ResourceLoader {
 
     private final WorldEdit worldEdit;
 
-    public WorldEditTranslationLoader(WorldEdit worldEdit) {
+    public WorldEditResourceLoader(WorldEdit worldEdit) {
         this.worldEdit = worldEdit;
     }
 
-    @Override
-    public URL getBundledTranslation(String pathname) throws IOException {
-        return ResourceLoader.getResourceRoot(pathname);
+    private static URL getResourceForgeHack(String location) throws IOException {
+        try {
+            return new URL("modjar://worldedit/" + location);
+        } catch (Exception e) {
+            throw new IOException("Could not find " + location);
+        }
     }
 
     @Override
-    public File getLocalTranslation(String pathname) {
+    public URL getResource(Class<?> clazz, String pathname) throws IOException {
+        URL url = clazz.getResource(pathname);
+        if (url == null) {
+            return getResourceForgeHack(clazz.getName().substring(0, clazz.getName().lastIndexOf('.')).replace(".", "/")
+                    + "/" + pathname);
+        }
+        return url;
+    }
+
+    @Override
+    public URL getRootResource(String pathname) throws IOException {
+        URL url = com.sk89q.worldedit.util.io.ResourceLoader.class.getResource("/" + pathname);
+        if (url == null) {
+            return getResourceForgeHack(pathname);
+        }
+        return url;
+    }
+
+    @Override
+    public File getLocalResource(String pathname) {
         return this.worldEdit.getWorkingDirectoryFile(pathname);
     }
 }

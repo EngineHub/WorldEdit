@@ -32,7 +32,6 @@ import com.sk89q.worldedit.extension.input.ParserContext;
 import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.util.gson.VectorAdapter;
-import com.sk89q.worldedit.util.io.ResourceLoader;
 import com.sk89q.worldedit.world.DataFixer;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.item.ItemType;
@@ -53,11 +52,10 @@ public final class LegacyMapper {
     private static final Logger log = LoggerFactory.getLogger(LegacyMapper.class);
     private static LegacyMapper INSTANCE;
 
-    private Map<String, String> blockEntries = new HashMap<>();
-    private Map<String, BlockState> stringToBlockMap = new HashMap<>();
-    private Multimap<BlockState, String> blockToStringMap = HashMultimap.create();
-    private Map<String, ItemType> stringToItemMap = new HashMap<>();
-    private Multimap<ItemType, String> itemToStringMap = HashMultimap.create();
+    private final Map<String, BlockState> stringToBlockMap = new HashMap<>();
+    private final Multimap<BlockState, String> blockToStringMap = HashMultimap.create();
+    private final Map<String, ItemType> stringToItemMap = new HashMap<>();
+    private final Multimap<ItemType, String> itemToStringMap = HashMultimap.create();
 
     /**
      * Create a new instance.
@@ -79,7 +77,7 @@ public final class LegacyMapper {
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.registerTypeAdapter(Vector3.class, new VectorAdapter());
         Gson gson = gsonBuilder.disableHtmlEscaping().create();
-        URL url = ResourceLoader.getResource(LegacyMapper.class, "legacy.json");
+        URL url = WorldEdit.getInstance().getResourceLoader().getResource(LegacyMapper.class, "legacy.json");
         if (url == null) {
             throw new IOException("Could not find legacy.json");
         }
@@ -95,7 +93,6 @@ public final class LegacyMapper {
         for (Map.Entry<String, String> blockEntry : dataFile.blocks.entrySet()) {
             String id = blockEntry.getKey();
             final String value = blockEntry.getValue();
-            blockEntries.put(id, value);
 
             BlockState state = null;
             BlockFactory blockFactory = WorldEdit.getInstance().getBlockFactory();

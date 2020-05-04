@@ -27,7 +27,6 @@ import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.util.gson.VectorAdapter;
-import com.sk89q.worldedit.util.io.ResourceLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -80,12 +79,12 @@ public final class BundledItemData {
         URL url = null;
         final int dataVersion = WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.WORLD_EDITING).getDataVersion();
         if (dataVersion > 2224) { // > MC 1.14
-            url = ResourceLoader.getResource(BundledBlockData.class, "items.115.json");
+            url = WorldEdit.getInstance().getResourceLoader().getResource(BundledBlockData.class, "items.115.json");
         } else if (dataVersion > 1900) { // > MC 1.13
-            url = ResourceLoader.getResource(BundledBlockData.class, "items.114.json");
+            url = WorldEdit.getInstance().getResourceLoader().getResource(BundledBlockData.class, "items.114.json");
         }
         if (url == null) {
-            url = ResourceLoader.getResource(BundledBlockData.class, "items.json");
+            url = WorldEdit.getInstance().getResourceLoader().getResource(BundledBlockData.class, "items.json");
         }
         if (url == null) {
             throw new IOException("Could not find items.json");

@@ -22,8 +22,8 @@ package com.sk89q.worldedit.cli.data;
 import com.google.common.io.Resources;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.cli.CLIWorldEdit;
-import com.sk89q.worldedit.util.io.ResourceLoader;
 
 import java.io.IOException;
 import java.net.URL;
@@ -44,7 +44,7 @@ public class FileRegistries {
 
     public void loadDataFiles() {
         try {
-            URL url = ResourceLoader.getResource(FileRegistries.class, app.getPlatform().getDataVersion() + ".json");
+            URL url = WorldEdit.getInstance().getResourceLoader().getResource(FileRegistries.class, app.getPlatform().getDataVersion() + ".json");
             this.dataFile = gson.fromJson(Resources.toString(url, StandardCharsets.UTF_8), DataFile.class);
         } catch (IOException e) {
             throw new RuntimeException("The provided file is not compatible with this version of WorldEdit-CLI. Please update or report this.");

@@ -19,36 +19,42 @@
 
 package com.sk89q.worldedit.util.io;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
-public class ResourceLoader {
+/**
+ * An abstract loader that handles loading resources
+ * from bundled URLs or local files.
+ */
+public interface ResourceLoader {
 
-    private ResourceLoader() {
-    }
+    /**
+     * Gets the bundled resource URL by name,
+     * relative to the provided class.
+     *
+     * @param clazz The class to search relative to
+     * @param pathname The pathname
+     * @return The URL to this bundled resource
+     * @throws IOException if an IO issue occurs
+     */
+    URL getResource(Class<?> clazz, String pathname) throws IOException;
 
-    private static URL getResourceForgeHack(String location) throws IOException {
-        try {
-            return new URL("modjar://worldedit/" + location);
-        } catch (Exception e) {
-            throw new IOException("Could not find " + location);
-        }
-    }
+    /**
+     * Gets the bundled resource URL by name.
+     *
+     * @param pathname The pathname
+     * @return The URL to this bundled resource
+     * @throws IOException if an IO issue occurs
+     */
+    URL getRootResource(String pathname) throws IOException;
 
-    public static URL getResource(Class clazz, String name) throws IOException {
-        URL url = clazz.getResource(name);
-        if (url == null) {
-            return getResourceForgeHack(clazz.getName().substring(0, clazz.getName().lastIndexOf('.')).replace(".", "/")
-                    + "/" + name);
-        }
-        return url;
-    }
-
-    public static URL getResourceRoot(String name) throws IOException {
-        URL url = ResourceLoader.class.getResource("/" + name);
-        if (url == null) {
-            return getResourceForgeHack(name);
-        }
-        return url;
-    }
+    /**
+     * Gets the {@link File} reference to this
+     * local resource. The file may not exist.
+     *
+     * @param pathname The pathname
+     * @return The file reference
+     */
+    File getLocalResource(String pathname);
 }
