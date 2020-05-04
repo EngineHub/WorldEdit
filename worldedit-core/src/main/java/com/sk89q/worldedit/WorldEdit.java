@@ -54,7 +54,6 @@ import com.sk89q.worldedit.util.eventbus.EventBus;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.util.formatting.text.format.TextColor;
-import com.sk89q.worldedit.util.io.ResourceLoader;
 import com.sk89q.worldedit.util.io.file.FileSelectionAbortedException;
 import com.sk89q.worldedit.util.io.file.FilenameException;
 import com.sk89q.worldedit.util.io.file.FilenameResolutionException;
@@ -62,7 +61,6 @@ import com.sk89q.worldedit.util.io.file.InvalidFilenameException;
 import com.sk89q.worldedit.util.task.SimpleSupervisor;
 import com.sk89q.worldedit.util.task.Supervisor;
 import com.sk89q.worldedit.util.translation.TranslationManager;
-import com.sk89q.worldedit.util.io.WorldEditResourceLoader;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.registry.BundledBlockData;
@@ -117,8 +115,7 @@ public final class WorldEdit {
     private final ListeningExecutorService executorService = MoreExecutors.listeningDecorator(
             EvenMoreExecutors.newBoundedCachedThreadPool(0, 1, 20, "WorldEdit Task Executor - %s"));
     private final Supervisor supervisor = new SimpleSupervisor();
-    private final ResourceLoader resourceLoader = new WorldEditResourceLoader(this);
-    private final TranslationManager translationManager = new TranslationManager(resourceLoader);
+    private TranslationManager translationManager;
 
     private final BlockFactory blockFactory = new BlockFactory(this);
     private final ItemFactory itemFactory = new ItemFactory(this);
@@ -235,20 +232,16 @@ public final class WorldEdit {
     }
 
     /**
-     * Return the resource loader.
-     *
-     * @return The resource loader
-     */
-    public ResourceLoader getResourceLoader() {
-        return resourceLoader;
-    }
-
-    /**
      * Return the translation manager.
      *
      * @return the translation manager
      */
     public TranslationManager getTranslationManager() {
+        if (translationManager == null) {
+            translationManager = new TranslationManager(
+                    WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.CONFIGURATION).getResourceLoader()
+            );
+        }
         return translationManager;
     }
 

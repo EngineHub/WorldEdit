@@ -26,6 +26,7 @@ import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.command.util.PermissionCondition;
 import com.sk89q.worldedit.entity.Player;
+import com.sk89q.worldedit.extension.platform.AbstractPlatform;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.extension.platform.MultiUserPlatform;
@@ -53,7 +54,8 @@ import java.util.stream.Stream;
 
 import static com.sk89q.worldedit.util.formatting.WorldEditText.reduceToText;
 
-public class BukkitServerInterface implements MultiUserPlatform {
+public class BukkitServerInterface extends AbstractPlatform implements MultiUserPlatform {
+
     public Server server;
     public WorldEditPlugin plugin;
     private CommandRegistration dynamicCommands;

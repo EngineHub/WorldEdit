@@ -22,6 +22,7 @@ package com.sk89q.worldedit.extension.platform;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.util.SideEffect;
+import com.sk89q.worldedit.util.io.ResourceLoader;
 import com.sk89q.worldedit.world.DataFixer;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.registry.Registries;
@@ -40,6 +41,13 @@ import java.util.Set;
  * {@link AbstractPlatform}.</p>
  */
 public interface Platform {
+
+    /**
+     * Return the resource loader.
+     *
+     * @return The resource loader
+     */
+    ResourceLoader getResourceLoader();
 
     /**
      * Gets the registry holder.
@@ -177,5 +185,10 @@ public interface Platform {
      */
     Map<Capability, Preference> getCapabilities();
 
+    /**
+     * Get a set of {@link SideEffect}s supported by this platform.
+     *
+     * @return A set of supported side effects
+     */
     Set<SideEffect> getSupportedSideEffects();
 }

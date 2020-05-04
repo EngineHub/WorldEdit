@@ -32,6 +32,7 @@ import com.sk89q.worldedit.extension.input.ParserContext;
 import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.util.gson.VectorAdapter;
+import com.sk89q.worldedit.util.io.ResourceLoader;
 import com.sk89q.worldedit.world.DataFixer;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.item.ItemType;
@@ -51,6 +52,7 @@ public final class LegacyMapper {
 
     private static final Logger log = LoggerFactory.getLogger(LegacyMapper.class);
     private static LegacyMapper INSTANCE;
+    private final ResourceLoader resourceLoader;
 
     private final Map<String, BlockState> stringToBlockMap = new HashMap<>();
     private final Multimap<BlockState, String> blockToStringMap = HashMultimap.create();
@@ -61,6 +63,8 @@ public final class LegacyMapper {
      * Create a new instance.
      */
     private LegacyMapper() {
+        this.resourceLoader = WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.CONFIGURATION).getResourceLoader();
+
         try {
             loadFromResource();
         } catch (Throwable e) {
@@ -77,7 +81,7 @@ public final class LegacyMapper {
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.registerTypeAdapter(Vector3.class, new VectorAdapter());
         Gson gson = gsonBuilder.disableHtmlEscaping().create();
-        URL url = WorldEdit.getInstance().getResourceLoader().getResource(LegacyMapper.class, "legacy.json");
+        URL url = resourceLoader.getResource(LegacyMapper.class, "legacy.json");
         if (url == null) {
             throw new IOException("Could not find legacy.json");
         }
