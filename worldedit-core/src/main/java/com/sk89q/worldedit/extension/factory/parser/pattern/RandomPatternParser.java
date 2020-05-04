@@ -32,6 +32,8 @@ import java.util.stream.Stream;
 
 public class RandomPatternParser extends InputParser<Pattern> {
 
+    private final java.util.regex.Pattern regex = java.util.regex.Pattern.compile("[0-9]+(\\.[0-9]*)?%.*");
+
     public RandomPatternParser(WorldEdit worldEdit) {
         super(worldEdit);
     }
@@ -40,23 +42,20 @@ public class RandomPatternParser extends InputParser<Pattern> {
     public Stream<String> getSuggestions(String input) {
         String[] splits = input.split(",", -1);
         List<String> patterns = StringUtil.parseListInQuotes(splits, ',', '[', ']', true);
-        if (patterns.size() == 1) {
-            return Stream.empty();
-        }
         // get suggestions for the last token only
+        String percent = null;
         String token = patterns.get(patterns.size() - 1);
-        String previous = String.join(",", patterns.subList(0, patterns.size() - 1));
-        if (token.matches("[0-9]+(\\.[0-9]*)?%.*")) {
-            String[] p = token.split("%");
-
-            if (p.length < 2) {
-                return Stream.empty();
-            } else {
-                token = p[1];
-            }
+        if (regex.matcher(token).matches()) {
+            String[] p = token.split("%", 2);
+            percent = p[0];
+            token = p[1];
+        } else if (patterns.size() == 1) {
+            return Stream.empty(); // handled by DefaultBlockParser
         }
+        String previous = patterns.size() == 1 ? "" : String.join(",", patterns.subList(0, patterns.size() - 1)) + ",";
+        String prefix = previous + (percent == null ? "" : percent + "%");
         final List<String> innerSuggestions = worldEdit.getPatternFactory().getSuggestions(token);
-        return innerSuggestions.stream().map(s -> previous + "," + s);
+        return innerSuggestions.stream().map(s -> prefix + s);
     }
 
     @Override
