@@ -40,7 +40,7 @@ public class WorldEditResourceLoader implements ResourceLoader {
 
     @Override
     public URL getRootResource(String pathname) throws IOException {
-        return ResourceLoader.class.getResource("/" + pathname);
+        return WorldEditResourceLoader.class.getResource("/" + pathname);
     }
 
     @Override
