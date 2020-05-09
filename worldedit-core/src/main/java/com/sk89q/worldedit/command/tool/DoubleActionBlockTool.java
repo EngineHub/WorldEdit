@@ -23,7 +23,10 @@ import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Platform;
+import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.util.Location;
+
+import javax.annotation.Nullable;
 
 /**
  * Represents a block tool that also has a secondary/primary function.
@@ -40,6 +43,24 @@ public interface DoubleActionBlockTool extends BlockTool {
      * @param clicked
      * @return true to cancel the original event which triggered this action (if possible)
      */
-    boolean actSecondary(Platform server, LocalConfiguration config, Player player, LocalSession session, Location clicked);
+    @Deprecated
+    default boolean actSecondary(Platform server, LocalConfiguration config, Player player, LocalSession session, Location clicked) {
+        return false;
+    }
+
+    /**
+     * Perform the secondary action of this block tool.
+     *
+     * @param server The platform
+     * @param config The config instance
+     * @param player The player
+     * @param session The local session
+     * @param clicked The location that was clicked
+     * @param face The face that was clicked
+     * @return true to cancel the original event which triggered this action (if possible)
+     */
+    default boolean actSecondary(Platform server, LocalConfiguration config, Player player, LocalSession session, Location clicked, @Nullable Direction face) {
+        return actSecondary(server, config, player, session, clicked);
+    }
 
 }

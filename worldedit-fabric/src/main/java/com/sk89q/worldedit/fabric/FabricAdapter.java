@@ -60,6 +60,8 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
+import javax.annotation.Nullable;
+
 public final class FabricAdapter {
 
     private FabricAdapter() {
@@ -102,7 +104,10 @@ public final class FabricAdapter {
         }
     }
 
-    public static Direction adaptEnumFacing(net.minecraft.util.math.Direction face) {
+    public static Direction adaptEnumFacing(@Nullable net.minecraft.util.math.Direction face) {
+        if (face == null) {
+            return null;
+        }
         switch (face) {
             case NORTH: return Direction.NORTH;
             case SOUTH: return Direction.SOUTH;

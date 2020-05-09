@@ -32,6 +32,7 @@ import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.internal.block.BlockStateIdAccess;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.Vector3;
+import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.biome.BiomeType;
@@ -51,6 +52,7 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Biome;
+import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -164,6 +166,28 @@ public class BukkitAdapter {
      */
     public static Player adapt(com.sk89q.worldedit.entity.Player player) {
         return ((BukkitPlayer) player).getPlayer();
+    }
+
+    /**
+     * Create a WorldEdit Direction from a Bukkit BlockFace.
+     *
+     * @param face the Bukkit BlockFace
+     * @return a WorldEdit direction
+     */
+    public static Direction adapt(@Nullable BlockFace face) {
+        if (face == null) {
+            return null;
+        }
+        switch (face) {
+            case NORTH: return Direction.NORTH;
+            case SOUTH: return Direction.SOUTH;
+            case WEST: return Direction.WEST;
+            case EAST: return Direction.EAST;
+            case DOWN: return Direction.DOWN;
+            case UP:
+            default:
+                return Direction.UP;
+        }
     }
 
     /**

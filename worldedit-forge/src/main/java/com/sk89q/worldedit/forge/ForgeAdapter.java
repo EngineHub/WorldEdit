@@ -62,6 +62,8 @@ import java.util.stream.Collectors;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import javax.annotation.Nullable;
+
 public final class ForgeAdapter {
 
     private ForgeAdapter() {
@@ -104,7 +106,10 @@ public final class ForgeAdapter {
         }
     }
 
-    public static Direction adaptEnumFacing(net.minecraft.util.Direction face) {
+    public static Direction adaptEnumFacing(@Nullable net.minecraft.util.Direction face) {
+        if (face == null) {
+            return null;
+        }
         switch (face) {
             case NORTH: return Direction.NORTH;
             case SOUTH: return Direction.SOUTH;

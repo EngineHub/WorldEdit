@@ -35,12 +35,14 @@ import com.sk89q.worldedit.command.tool.LongRangeBuildTool;
 import com.sk89q.worldedit.command.tool.NavigationWand;
 import com.sk89q.worldedit.command.tool.QueryTool;
 import com.sk89q.worldedit.command.tool.SelectionWand;
+import com.sk89q.worldedit.command.tool.StackTool;
 import com.sk89q.worldedit.command.tool.Tool;
 import com.sk89q.worldedit.command.tool.TreePlanter;
 import com.sk89q.worldedit.command.util.CommandPermissions;
 import com.sk89q.worldedit.command.util.CommandPermissionsConditionGenerator;
 import com.sk89q.worldedit.command.util.SubCommandPermissionCondition;
 import com.sk89q.worldedit.entity.Player;
+import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.internal.command.CommandRegistrationHandler;
 import com.sk89q.worldedit.internal.command.CommandUtil;
@@ -195,6 +197,19 @@ public class ToolCommands {
     }
 
     @Command(
+        name = "stacker",
+        desc = "Block stacker tool"
+    )
+    @CommandPermissions("worldedit.tool.stack")
+    public void stacker(Player player, LocalSession session,
+                      @Arg(desc = "The max range of the stack", def = "10")
+                        int range,
+                      @Arg(desc = "The mask to replace until", def = "!#existing")
+                        Mask mask) throws WorldEditException {
+        setTool(player, session, new StackTool(range, mask), "worldedit.tool.stack.equip");
+    }
+
+    @Command(
         name = "repl",
         desc = "Block replacer tool"
     )
@@ -229,7 +244,7 @@ public class ToolCommands {
         LocalConfiguration config = we.getConfiguration();
 
         if (range > config.maxSuperPickaxeSize) {
-            player.printError(TranslatableComponent.of("worldedit.superpickaxe.max-range", TextComponent.of(config.maxSuperPickaxeSize)));
+            player.printError(TranslatableComponent.of("worldedit.tool.superpickaxe.max-range", TextComponent.of(config.maxSuperPickaxeSize)));
             return;
         }
         setTool(player, session, new FloodFillTool(range, pattern), "worldedit.tool.floodfill.equip");
