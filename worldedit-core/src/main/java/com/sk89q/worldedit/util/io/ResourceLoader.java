@@ -47,7 +47,9 @@ public interface ResourceLoader {
      * @return The URL to this bundled resource
      * @throws IOException if an IO issue occurs
      */
-    URL getRootResource(String pathname) throws IOException;
+    default URL getRootResource(String pathname) throws IOException {
+        return getResource(this.getClass(), "/" + pathname);
+    }
 
     /**
      * Gets the {@link File} reference to this

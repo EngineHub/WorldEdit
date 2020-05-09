@@ -39,11 +39,6 @@ public class WorldEditResourceLoader implements ResourceLoader {
     }
 
     @Override
-    public URL getRootResource(String pathname) throws IOException {
-        return WorldEditResourceLoader.class.getResource("/" + pathname);
-    }
-
-    @Override
     public File getLocalResource(String pathname) {
         return this.worldEdit.getWorkingDirectoryFile(pathname);
     }
