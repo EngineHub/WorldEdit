@@ -19,13 +19,13 @@
 
 package com.sk89q.worldedit.util.io;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Path;
 
 /**
- * An abstract loader that handles loading resources
- * from bundled URLs or local files.
+ * An abstract loader that handles loading resources from bundled URLs or local
+ * files.
  */
 public interface ResourceLoader {
 
@@ -34,29 +34,31 @@ public interface ResourceLoader {
      * relative to the provided class.
      *
      * @param clazz The class to search relative to
-     * @param pathname The pathname
+     * @param pathName The path name
      * @return The URL to this bundled resource
      * @throws IOException if an IO issue occurs
      */
-    URL getResource(Class<?> clazz, String pathname) throws IOException;
+    default URL getResource(Class<?> clazz, String pathName) throws IOException {
+        return clazz.getResource(pathName);
+    }
 
     /**
      * Gets the bundled resource URL by name.
      *
-     * @param pathname The pathname
+     * @param pathName The path name
      * @return The URL to this bundled resource
      * @throws IOException if an IO issue occurs
      */
-    default URL getRootResource(String pathname) throws IOException {
-        return getResource(this.getClass(), "/" + pathname);
+    default URL getRootResource(String pathName) throws IOException {
+        return this.getClass().getClassLoader().getResource(pathName);
     }
 
     /**
-     * Gets the {@link File} reference to this
+     * Gets the {@link Path} reference to this
      * local resource. The file may not exist.
      *
      * @param pathname The pathname
-     * @return The file reference
+     * @return The path reference
      */
-    File getLocalResource(String pathname);
+    Path getLocalResource(String pathname);
 }

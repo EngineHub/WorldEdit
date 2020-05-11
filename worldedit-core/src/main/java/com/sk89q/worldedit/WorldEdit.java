@@ -50,6 +50,7 @@ import com.sk89q.worldedit.session.SessionManager;
 import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.concurrency.EvenMoreExecutors;
+import com.sk89q.worldedit.util.concurrency.LazyReference;
 import com.sk89q.worldedit.util.eventbus.EventBus;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
@@ -115,7 +116,10 @@ public final class WorldEdit {
     private final ListeningExecutorService executorService = MoreExecutors.listeningDecorator(
             EvenMoreExecutors.newBoundedCachedThreadPool(0, 1, 20, "WorldEdit Task Executor - %s"));
     private final Supervisor supervisor = new SimpleSupervisor();
-    private TranslationManager translationManager;
+    private final LazyReference<TranslationManager> translationManager =
+            LazyReference.from(() -> new TranslationManager(
+                    WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.CONFIGURATION).getResourceLoader()
+            ));
 
     private final BlockFactory blockFactory = new BlockFactory(this);
     private final ItemFactory itemFactory = new ItemFactory(this);
@@ -237,12 +241,7 @@ public final class WorldEdit {
      * @return the translation manager
      */
     public TranslationManager getTranslationManager() {
-        if (translationManager == null) {
-            translationManager = new TranslationManager(
-                    WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.CONFIGURATION).getResourceLoader()
-            );
-        }
-        return translationManager;
+        return translationManager.getValue();
     }
 
     /**

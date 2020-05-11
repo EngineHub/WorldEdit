@@ -21,9 +21,7 @@ package com.sk89q.worldedit.util.io;
 
 import com.sk89q.worldedit.WorldEdit;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
+import java.nio.file.Path;
 
 public class WorldEditResourceLoader implements ResourceLoader {
 
@@ -34,12 +32,7 @@ public class WorldEditResourceLoader implements ResourceLoader {
     }
 
     @Override
-    public URL getResource(Class<?> clazz, String pathname) throws IOException {
-        return clazz.getResource(pathname);
-    }
-
-    @Override
-    public File getLocalResource(String pathname) {
-        return this.worldEdit.getWorkingDirectoryFile(pathname);
+    public Path getLocalResource(String pathname) {
+        return this.worldEdit.getWorkingDirectoryFile(pathname).toPath();
     }
 }

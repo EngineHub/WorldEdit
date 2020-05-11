@@ -40,21 +40,21 @@ public class ForgeResourceLoader extends WorldEditResourceLoader  {
     }
 
     @Override
-    public URL getResource(Class<?> clazz, String pathname) throws IOException {
-        URL url = super.getResource(clazz, pathname);
+    public URL getResource(Class<?> clazz, String pathName) throws IOException {
+        URL url = super.getResource(clazz, pathName);
         if (url == null) {
             return getResourceForgeHack(clazz.getName().substring(0, clazz.getName().lastIndexOf('.')).replace(".", "/")
-                    + "/" + pathname);
+                    + "/" + pathName);
         }
         return url;
     }
 
     @Override
-    public URL getRootResource(String pathname) throws IOException {
+    public URL getRootResource(String pathName) throws IOException {
         // This override is required as the default will prepend a `/` to the pathname
-        URL url = super.getRootResource(pathname);
+        URL url = super.getRootResource(pathName);
         if (url == null) {
-            return getResourceForgeHack(pathname);
+            return getResourceForgeHack(pathName);
         }
         return url;
     }

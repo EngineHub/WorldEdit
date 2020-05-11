@@ -27,14 +27,14 @@ import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.renderer.TranslatableComponentRenderer;
 import com.sk89q.worldedit.util.io.ResourceLoader;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.text.MessageFormat;
 import java.util.HashSet;
 import java.util.Locale;
@@ -115,9 +115,9 @@ public class TranslationManager {
             baseTranslations = new ConcurrentHashMap<>();
         }
 
-        File localFile = resourceLoader.getLocalResource("lang/" + filename);
-        if (localFile.exists()) {
-            try (InputStream stream = new FileInputStream(localFile)) {
+        Path localFile = resourceLoader.getLocalResource("lang/" + filename);
+        if (Files.exists(localFile)) {
+            try (InputStream stream = Files.newInputStream(localFile)) {
                 baseTranslations.putAll(parseTranslationFile(stream));
             } catch (IOException e) {
                 // Failed to parse custom language file. Worth printing.
