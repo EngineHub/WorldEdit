@@ -39,7 +39,7 @@
     "worldedit.limit.set": "Block change limit set to {0}.",
     "worldedit.limit.return-to-default": "(Use //limit to go back to the default.)",
     "worldedit.timeout.too-high": "Your maximum allowable timeout is {0}ms.",
-    "worldedit.timeout.set": "Timeout time set to {0} ms.",
+    "worldedit.timeout.set": "Timeout time set to {0}ms.",
     "worldedit.timeout.return-to-default": " (Use //timeout to go back to the default.)",
     "worldedit.fast.disabled": "Fast mode disabled.",
     "worldedit.fast.enabled": "Fast mode enabled. Lighting in the affected chunks may be wrong and/or you may need to rejoin to see changes.",
