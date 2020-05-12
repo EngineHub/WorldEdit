@@ -177,6 +177,33 @@ public class BlockTransformExtent extends AbstractDelegateExtent {
                             result = result.with(enumProp, newValue);
                         }
                     }
+                    // slabs
+                    if (((AffineTransform) transform).isVerticalFlip()) {
+                        String value = (String) block.getState(property);
+                        String newValue = null;
+                        if ("bottom".equals(value)) {
+                            newValue = "top";
+                        } else if ("top".equals(value)) {
+                            newValue = "bottom";
+                        }
+                        if (newValue != null && enumProp.getValues().contains(newValue)) {
+                            result = result.with(enumProp, newValue);
+                        }
+                    }
+                } else if (property.getName().equals("half") && transform instanceof AffineTransform) {
+                    // stairs
+                    if (((AffineTransform) transform).isVerticalFlip()) {
+                        String value = (String) block.getState(property);
+                        String newValue = null;
+                        if ("bottom".equals(value)) {
+                            newValue = "top";
+                        } else if ("top".equals(value)) {
+                            newValue = "bottom";
+                        }
+                        if (newValue != null && enumProp.getValues().contains(newValue)) {
+                            result = result.with(enumProp, newValue);
+                        }
+                    }
                 } else if (property.getName().equals("shape") && transform instanceof AffineTransform) {
                     // stairs
                     if (((AffineTransform) transform).isHorizontalFlip()) {

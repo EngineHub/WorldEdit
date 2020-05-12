@@ -313,11 +313,18 @@ public class AffineTransform implements Transform {
     }
 
     /**
-     * Returns if this affine transform is representing a horizontal flip.
+     * Returns if this affine transform represents a horizontal flip.
      */
     public boolean isHorizontalFlip() {
         // use the determinant of the x-z submatrix to check if this is a horizontal flip
         return m00 * m22 - m02 * m20 < 0;
+    }
+
+    /**
+     * Returns if this affine transform represents a vertical flip.
+     */
+    public boolean isVerticalFlip() {
+        return m11 < 0;
     }
 
     @Override
