@@ -19,6 +19,8 @@
 
 package com.sk89q.worldedit.util.io;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Path;
@@ -33,23 +35,30 @@ public interface ResourceLoader {
      * Gets the bundled resource URL by name,
      * relative to the provided class.
      *
+     * The path name *must not* start with /
+     *
      * @param clazz The class to search relative to
      * @param pathName The path name
      * @return The URL to this bundled resource
      * @throws IOException if an IO issue occurs
      */
     default URL getResource(Class<?> clazz, String pathName) throws IOException {
-        return clazz.getResource(pathName);
+        checkArgument(!pathName.startsWith("/"), "pathName must not start with /");
+        String qualifiedName = clazz.getName().substring(0, clazz.getName().lastIndexOf('.')).replace(".", "/") + "/" + pathName;
+        return getRootResource(qualifiedName);
     }
 
     /**
      * Gets the bundled resource URL by name.
+     *
+     * The path name *must not* start with /
      *
      * @param pathName The path name
      * @return The URL to this bundled resource
      * @throws IOException if an IO issue occurs
      */
     default URL getRootResource(String pathName) throws IOException {
+        checkArgument(!pathName.startsWith("/"), "pathName must not start with /");
         return this.getClass().getClassLoader().getResource(pathName);
     }
 
