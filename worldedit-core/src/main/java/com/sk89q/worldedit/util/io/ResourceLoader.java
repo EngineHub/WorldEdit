@@ -32,10 +32,11 @@ import java.nio.file.Path;
 public interface ResourceLoader {
 
     /**
-     * Gets the bundled resource URL by name,
-     * relative to the provided class.
+     * Gets the bundled resource URL by name, relative to the provided class.
      *
-     * The path name <b>must not</b> start with /
+     * <p>
+     * The path name <b>must not</b> start with {@code /}.
+     * </p>
      *
      * @param clazz The class to search relative to
      * @param pathName The path name
@@ -44,14 +45,18 @@ public interface ResourceLoader {
      */
     default URL getResource(Class<?> clazz, String pathName) throws IOException {
         checkArgument(!pathName.startsWith("/"), "pathName must not start with /");
-        String qualifiedName = clazz.getName().substring(0, clazz.getName().lastIndexOf('.')).replace(".", "/") + "/" + pathName;
+        String qualifiedName = clazz.getName().substring(0, clazz.getName().lastIndexOf('.'))
+            .replace(".", "/") + "/" + pathName;
         return getRootResource(qualifiedName);
     }
 
     /**
      * Gets the bundled resource URL by name.
      *
-     * The path name <b>must not</b> start with /
+     * <p>
+     * The path name <b>must not</b> start with {@code /}. It is always
+     * absolute.
+     * </p>
      *
      * @param pathName The path name
      * @return The URL to this bundled resource
@@ -63,8 +68,8 @@ public interface ResourceLoader {
     }
 
     /**
-     * Gets the {@link Path} reference to this
-     * local resource. The file may not exist.
+     * Gets the {@link Path} reference to this local resource. The file may not
+     * exist.
      *
      * @param pathName The path name
      * @return The path reference
