@@ -32,7 +32,7 @@ public class WorldEditResourceLoader implements ResourceLoader {
     }
 
     @Override
-    public Path getLocalResource(String pathname) {
-        return this.worldEdit.getWorkingDirectoryFile(pathname).toPath();
+    public Path getLocalResource(String pathName) {
+        return this.worldEdit.getWorkingDirectoryFile(pathName).toPath();
     }
 }

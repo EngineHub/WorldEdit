@@ -57,8 +57,8 @@ public interface ResourceLoader {
      * Gets the {@link Path} reference to this
      * local resource. The file may not exist.
      *
-     * @param pathname The pathname
+     * @param pathName The path name
      * @return The path reference
      */
-    Path getLocalResource(String pathname);
+    Path getLocalResource(String pathName);
 }
