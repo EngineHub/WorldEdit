@@ -35,7 +35,7 @@ public interface ResourceLoader {
      * Gets the bundled resource URL by name,
      * relative to the provided class.
      *
-     * The path name *must not* start with /
+     * The path name <b>must not</b> start with /
      *
      * @param clazz The class to search relative to
      * @param pathName The path name
@@ -51,7 +51,7 @@ public interface ResourceLoader {
     /**
      * Gets the bundled resource URL by name.
      *
-     * The path name *must not* start with /
+     * The path name <b>must not</b> start with /
      *
      * @param pathName The path name
      * @return The URL to this bundled resource
