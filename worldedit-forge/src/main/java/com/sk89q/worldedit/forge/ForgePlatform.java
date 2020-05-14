@@ -20,6 +20,7 @@
 package com.sk89q.worldedit.forge;
 
 import com.google.common.collect.Sets;
+import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.command.util.PermissionCondition;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.AbstractPlatform;
@@ -28,6 +29,7 @@ import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.extension.platform.MultiUserPlatform;
 import com.sk89q.worldedit.extension.platform.Preference;
 import com.sk89q.worldedit.util.SideEffect;
+import com.sk89q.worldedit.util.io.ResourceLoader;
 import com.sk89q.worldedit.world.DataFixer;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.registry.Registries;
@@ -61,6 +63,7 @@ class ForgePlatform extends AbstractPlatform implements MultiUserPlatform {
     private final ForgeDataFixer dataFixer;
     private final @Nullable ForgeWatchdog watchdog;
     private boolean hookingEvents = false;
+    private final ResourceLoader resourceLoader = new ForgeResourceLoader(WorldEdit.getInstance());
 
     ForgePlatform(ForgeWorldEdit mod) {
         this.mod = mod;
@@ -72,6 +75,11 @@ class ForgePlatform extends AbstractPlatform implements MultiUserPlatform {
 
     boolean isHookingEvents() {
         return hookingEvents;
+    }
+
+    @Override
+    public ResourceLoader getResourceLoader() {
+        return resourceLoader;
     }
 
     @Override

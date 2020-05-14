@@ -19,36 +19,60 @@
 
 package com.sk89q.worldedit.util.io;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Path;
 
-public class ResourceLoader {
+/**
+ * An abstract loader that handles loading resources from bundled URLs or local
+ * files.
+ */
+public interface ResourceLoader {
 
-    private ResourceLoader() {
+    /**
+     * Gets the bundled resource URL by name, relative to the provided class.
+     *
+     * <p>
+     * The path name <b>must not</b> start with {@code /}.
+     * </p>
+     *
+     * @param clazz The class to search relative to
+     * @param pathName The path name
+     * @return The URL to this bundled resource
+     * @throws IOException if an IO issue occurs
+     */
+    default URL getResource(Class<?> clazz, String pathName) throws IOException {
+        checkArgument(!pathName.startsWith("/"), "pathName must not start with /");
+        String qualifiedName = clazz.getName().substring(0, clazz.getName().lastIndexOf('.'))
+            .replace(".", "/") + "/" + pathName;
+        return getRootResource(qualifiedName);
     }
 
-    private static URL getResourceForgeHack(String location) throws IOException {
-        try {
-            return new URL("modjar://worldedit/" + location);
-        } catch (Exception e) {
-            throw new IOException("Could not find " + location);
-        }
+    /**
+     * Gets the bundled resource URL by name.
+     *
+     * <p>
+     * The path name <b>must not</b> start with {@code /}. It is always
+     * absolute.
+     * </p>
+     *
+     * @param pathName The path name
+     * @return The URL to this bundled resource
+     * @throws IOException if an IO issue occurs
+     */
+    default URL getRootResource(String pathName) throws IOException {
+        checkArgument(!pathName.startsWith("/"), "pathName must not start with /");
+        return this.getClass().getClassLoader().getResource(pathName);
     }
 
-    public static URL getResource(Class clazz, String name) throws IOException {
-        URL url = clazz.getResource(name);
-        if (url == null) {
-            return getResourceForgeHack(clazz.getName().substring(0, clazz.getName().lastIndexOf('.')).replace(".", "/")
-                    + "/" + name);
-        }
-        return url;
-    }
-
-    public static URL getResourceRoot(String name) throws IOException {
-        URL url = ResourceLoader.class.getResource("/" + name);
-        if (url == null) {
-            return getResourceForgeHack(name);
-        }
-        return url;
-    }
+    /**
+     * Gets the {@link Path} reference to this local resource. The file may not
+     * exist.
+     *
+     * @param pathName The path name
+     * @return The path reference
+     */
+    Path getLocalResource(String pathName);
 }

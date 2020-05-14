@@ -17,41 +17,35 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.extension.platform;
+package com.sk89q.worldedit.forge;
 
 import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.util.io.ResourceLoader;
 import com.sk89q.worldedit.util.io.WorldEditResourceLoader;
-import com.sk89q.worldedit.world.DataFixer;
-import com.sk89q.worldedit.world.World;
 
-import java.util.Collections;
-import java.util.List;
+import java.io.IOException;
+import java.net.URL;
 
-/**
- * An abstract implementation of {@link Platform}.
- */
-public abstract class AbstractPlatform implements Platform {
+public class ForgeResourceLoader extends WorldEditResourceLoader  {
 
-    private final ResourceLoader resourceLoader = new WorldEditResourceLoader(WorldEdit.getInstance());
+    public ForgeResourceLoader(WorldEdit worldEdit) {
+        super(worldEdit);
+    }
 
-    @Override
-    public ResourceLoader getResourceLoader() {
-        return resourceLoader;
+    private static URL getResourceForgeHack(String location) throws IOException {
+        try {
+            return new URL("modjar://worldedit/" + location);
+        } catch (Exception e) {
+            throw new IOException("Could not find " + location);
+        }
     }
 
     @Override
-    public int schedule(long delay, long period, Runnable task) {
-        return -1;
+    public URL getRootResource(String pathName) throws IOException {
+        URL url = super.getRootResource(pathName);
+        if (url == null) {
+            return getResourceForgeHack(pathName);
+        }
+        return url;
     }
 
-    @Override
-    public List<? extends World> getWorlds() {
-        return Collections.emptyList();
-    }
-
-    @Override
-    public DataFixer getDataFixer() {
-        return null;
-    }
 }

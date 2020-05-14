@@ -54,6 +54,7 @@ public final class BundledItemData {
 
     private static final Logger log = LoggerFactory.getLogger(BundledItemData.class);
     private static BundledItemData INSTANCE;
+    private final ResourceLoader resourceLoader;
 
     private final Map<String, ItemEntry> idMap = new HashMap<>();
 
@@ -61,6 +62,8 @@ public final class BundledItemData {
      * Create a new instance.
      */
     private BundledItemData() {
+        this.resourceLoader = WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.CONFIGURATION).getResourceLoader();
+
         try {
             loadFromResource();
         } catch (Throwable e) {
@@ -80,12 +83,12 @@ public final class BundledItemData {
         URL url = null;
         final int dataVersion = WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.WORLD_EDITING).getDataVersion();
         if (dataVersion > 2224) { // > MC 1.14
-            url = ResourceLoader.getResource(BundledBlockData.class, "items.115.json");
+            url = resourceLoader.getResource(BundledBlockData.class, "items.115.json");
         } else if (dataVersion > 1900) { // > MC 1.13
-            url = ResourceLoader.getResource(BundledBlockData.class, "items.114.json");
+            url = resourceLoader.getResource(BundledBlockData.class, "items.114.json");
         }
         if (url == null) {
-            url = ResourceLoader.getResource(BundledBlockData.class, "items.json");
+            url = resourceLoader.getResource(BundledBlockData.class, "items.json");
         }
         if (url == null) {
             throw new IOException("Could not find items.json");

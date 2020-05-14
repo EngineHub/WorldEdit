@@ -23,19 +23,18 @@ import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.renderer.TranslatableComponentRenderer;
 import com.sk89q.worldedit.util.io.ResourceLoader;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.text.MessageFormat;
 import java.util.HashSet;
 import java.util.Locale;
@@ -81,12 +80,12 @@ public class TranslationManager {
     );
     private Locale defaultLocale = Locale.ENGLISH;
 
-    private final WorldEdit worldEdit;
+    private final ResourceLoader resourceLoader;
 
     private final Set<Locale> checkedLocales = new HashSet<>();
 
-    public TranslationManager(WorldEdit worldEdit) {
-        this.worldEdit = worldEdit;
+    public TranslationManager(ResourceLoader resourceLoader) {
+        this.resourceLoader = resourceLoader;
     }
 
     public void setDefaultLocale(Locale defaultLocale) {
@@ -109,16 +108,16 @@ public class TranslationManager {
     private Optional<Map<String, String>> loadTranslationFile(String filename) {
         Map<String, String> baseTranslations;
 
-        try (InputStream stream = ResourceLoader.getResourceRoot("lang/" + filename).openStream()) {
+        try (InputStream stream = resourceLoader.getRootResource("lang/" + filename).openStream()) {
             baseTranslations = parseTranslationFile(stream);
         } catch (IOException e) {
             // Seem to be missing base. If the user has provided a file use that.
             baseTranslations = new ConcurrentHashMap<>();
         }
 
-        File localFile = worldEdit.getWorkingDirectoryFile("lang/" + filename);
-        if (localFile.exists()) {
-            try (InputStream stream = new FileInputStream(localFile)) {
+        Path localFile = resourceLoader.getLocalResource("lang/" + filename);
+        if (Files.exists(localFile)) {
+            try (InputStream stream = Files.newInputStream(localFile)) {
                 baseTranslations.putAll(parseTranslationFile(stream));
             } catch (IOException e) {
                 // Failed to parse custom language file. Worth printing.

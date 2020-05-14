@@ -17,41 +17,22 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.extension.platform;
+package com.sk89q.worldedit.util.io;
 
 import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.util.io.ResourceLoader;
-import com.sk89q.worldedit.util.io.WorldEditResourceLoader;
-import com.sk89q.worldedit.world.DataFixer;
-import com.sk89q.worldedit.world.World;
 
-import java.util.Collections;
-import java.util.List;
+import java.nio.file.Path;
 
-/**
- * An abstract implementation of {@link Platform}.
- */
-public abstract class AbstractPlatform implements Platform {
+public class WorldEditResourceLoader implements ResourceLoader {
 
-    private final ResourceLoader resourceLoader = new WorldEditResourceLoader(WorldEdit.getInstance());
+    private final WorldEdit worldEdit;
 
-    @Override
-    public ResourceLoader getResourceLoader() {
-        return resourceLoader;
+    public WorldEditResourceLoader(WorldEdit worldEdit) {
+        this.worldEdit = worldEdit;
     }
 
     @Override
-    public int schedule(long delay, long period, Runnable task) {
-        return -1;
-    }
-
-    @Override
-    public List<? extends World> getWorlds() {
-        return Collections.emptyList();
-    }
-
-    @Override
-    public DataFixer getDataFixer() {
-        return null;
+    public Path getLocalResource(String pathName) {
+        return this.worldEdit.getWorkingDirectoryFile(pathName).toPath();
     }
 }
