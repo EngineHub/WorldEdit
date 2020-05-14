@@ -25,6 +25,8 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Path;
 
+import javax.annotation.Nullable;
+
 /**
  * An abstract loader that handles loading resources from bundled URLs or local
  * files.
@@ -43,6 +45,7 @@ public interface ResourceLoader {
      * @return The URL to this bundled resource
      * @throws IOException if an IO issue occurs
      */
+    @Nullable
     default URL getResource(Class<?> clazz, String pathName) throws IOException {
         checkArgument(!pathName.startsWith("/"), "pathName must not start with /");
         String qualifiedName = clazz.getName().substring(0, clazz.getName().lastIndexOf('.'))
@@ -62,6 +65,7 @@ public interface ResourceLoader {
      * @return The URL to this bundled resource
      * @throws IOException if an IO issue occurs
      */
+    @Nullable
     default URL getRootResource(String pathName) throws IOException {
         checkArgument(!pathName.startsWith("/"), "pathName must not start with /");
         return this.getClass().getClassLoader().getResource(pathName);
