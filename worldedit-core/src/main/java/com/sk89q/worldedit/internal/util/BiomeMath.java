@@ -41,9 +41,9 @@ public class BiomeMath {
      * @return the index into the standard MC biome array
      */
     public static int computeBiomeIndex(int x, int y, int z) {
-        int l = x & HORIZONTAL_BIT_MASK;
-        int m = MathHelper.clamp(y, 0, VERTICAL_BIT_MASK);
-        int n = z & HORIZONTAL_BIT_MASK;
+        int l = (x >> 2) & HORIZONTAL_BIT_MASK;
+        int m = MathHelper.clamp(y >> 2, 0, VERTICAL_BIT_MASK);
+        int n = (z >> 2) & HORIZONTAL_BIT_MASK;
         return m << HORIZONTAL_SECTION_COUNT + HORIZONTAL_SECTION_COUNT
             | n << HORIZONTAL_SECTION_COUNT
             | l;

@@ -36,7 +36,6 @@ import com.sk89q.worldedit.fabric.internal.FabricWorldNativeAccess;
 import com.sk89q.worldedit.fabric.internal.NBTConverter;
 import com.sk89q.worldedit.internal.Constants;
 import com.sk89q.worldedit.internal.block.BlockStateIdAccess;
-import com.sk89q.worldedit.internal.util.BiomeMath;
 import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.Vector3;
@@ -74,6 +73,7 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldSaveHandler;
 import net.minecraft.world.biome.DefaultBiomeFeatures;
+import net.minecraft.world.biome.source.BiomeArray;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkManager;
 import net.minecraft.world.chunk.ChunkStatus;
@@ -204,7 +204,9 @@ public class FabricWorld extends AbstractWorld {
     @Override
     public BiomeType getBiome(BlockVector2 position) {
         checkNotNull(position);
-        return FabricAdapter.adapt(getWorld().getBiome(new BlockPos(position.getBlockX(), 0, position.getBlockZ())));
+        Chunk chunk = getWorld().getChunk(position.getX() >> 4, position.getZ() >> 4);
+        BiomeArray biomeArray = checkNotNull(chunk.getBiomeArray());
+        return FabricAdapter.adapt(biomeArray.getBiomeForNoiseGen(position.getX() >> 2, 0, position.getZ() >> 2));
     }
 
     @Override
@@ -216,9 +218,9 @@ public class FabricWorld extends AbstractWorld {
         if (chunk == null) {
             return false;
         }
-        MutableBiomeArray biomeArray = MutableBiomeArray.inject(chunk.getBiomeArray());
+        MutableBiomeArray biomeArray = MutableBiomeArray.inject(checkNotNull(chunk.getBiomeArray()));
         // Temporary, while biome setting is 2D only
-        for (int i = 0; i < BiomeMath.VERTICAL_BIT_MASK; i++) {
+        for (int i = 0; i <= getMaxY(); i++) {
             biomeArray.setBiome(position.getX(), i, position.getZ(), FabricAdapter.adapt(biome));
         }
         chunk.setShouldSave(true);
