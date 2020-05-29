@@ -81,8 +81,8 @@ public class EllipsoidRegion extends AbstractRegion {
     }
 
     @Override
-    public int getArea() {
-        return (int) Math.floor((4.0 / 3.0) * Math.PI * radius.getX() * radius.getY() * radius.getZ());
+    public long getVolume() {
+        return (long) Math.floor((4.0 / 3.0) * Math.PI * radius.getX() * radius.getY() * radius.getZ());
     }
 
     @Override

@@ -61,8 +61,22 @@ public interface Region extends Iterable<BlockVector3>, Cloneable {
      * Get the number of blocks in the region.
      *
      * @return number of blocks
+     * @deprecated use {@link Region#getVolume()} to prevent overflows
      */
-    int getArea();
+    @Deprecated
+    default int getArea() {
+        return (int) getVolume();
+    }
+
+    /**
+     * Get the number of blocks in the region.
+     *
+     * @return number of blocks
+     */
+    default long getVolume() {
+        // TODO Remove default status when getArea is removed.
+        return getArea();
+    }
 
     /**
      * Get X-size.

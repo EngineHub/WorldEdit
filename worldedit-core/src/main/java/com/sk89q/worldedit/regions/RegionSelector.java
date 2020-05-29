@@ -134,8 +134,22 @@ public interface RegionSelector {
      * Get the number of blocks inside the region.
      *
      * @return number of blocks, or -1 if undefined
+     * @deprecated use {@link RegionSelector#getVolume()}
      */
-    int getArea();
+    @Deprecated
+    default int getArea() {
+        return (int) getVolume();
+    }
+
+    /**
+     * Get the number of blocks inside the region.
+     *
+     * @return number of blocks, or -1 if undefined
+     */
+    default long getVolume() {
+        // TODO Remove default once getArea is removed
+        return getArea();
+    }
 
     /**
      * Update the selector with changes to the region.

@@ -197,7 +197,7 @@ public class Polygonal2DRegion extends AbstractRegion implements FlatRegion {
     }
 
     @Override
-    public int getArea() {
+    public long getVolume() {
         double area = 0;
         int i, j = points.size() - 1;
 
@@ -207,7 +207,7 @@ public class Polygonal2DRegion extends AbstractRegion implements FlatRegion {
             j = i;
         }
 
-        return (int) Math.floor(Math.abs(area * 0.5)
+        return (long) Math.floor(Math.abs(area * 0.5)
                 * (maxY - minY + 1));
     }
 

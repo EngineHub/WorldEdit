@@ -184,8 +184,8 @@ public class CylinderRegion extends AbstractRegion implements FlatRegion {
     }
 
     @Override
-    public int getArea() {
-        return (int) Math.floor(radius.getX() * radius.getZ() * Math.PI * getHeight());
+    public long getVolume() {
+        return (long) Math.floor(radius.getX() * radius.getZ() * Math.PI * getHeight());
     }
 
     @Override

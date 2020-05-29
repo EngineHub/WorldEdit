@@ -53,7 +53,7 @@ public class NullRegion implements Region {
     }
 
     @Override
-    public int getArea() {
+    public long getVolume() {
         return 0;
     }
 

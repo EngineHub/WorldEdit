@@ -151,7 +151,7 @@ public class EllipsoidRegionSelector implements RegionSelector, CUIRegion {
             player.printInfo(TranslatableComponent.of(
                     "worldedit.selection.ellipsoid.explain.primary-area",
                     TextComponent.of(region.getCenter().toString()),
-                    TextComponent.of(region.getArea())
+                    TextComponent.of(region.getVolume())
             ));
         } else {
             player.printInfo(TranslatableComponent.of(
@@ -169,7 +169,7 @@ public class EllipsoidRegionSelector implements RegionSelector, CUIRegion {
             player.printInfo(TranslatableComponent.of(
                     "worldedit.selection.ellipsoid.explain.secondary-area",
                     TextComponent.of(region.getRadius().toString()),
-                    TextComponent.of(region.getArea())
+                    TextComponent.of(region.getVolume())
             ));
         } else {
             player.printInfo(TranslatableComponent.of(
@@ -238,8 +238,8 @@ public class EllipsoidRegionSelector implements RegionSelector, CUIRegion {
     }
 
     @Override
-    public int getArea() {
-        return region.getArea();
+    public long getVolume() {
+        return region.getVolume();
     }
 
     @Override
@@ -250,8 +250,8 @@ public class EllipsoidRegionSelector implements RegionSelector, CUIRegion {
 
     @Override
     public void describeLegacyCUI(LocalSession session, Actor player) {
-        session.dispatchCUIEvent(player, new SelectionPointEvent(0, region.getMinimumPoint(), getArea()));
-        session.dispatchCUIEvent(player, new SelectionPointEvent(1, region.getMaximumPoint(), getArea()));
+        session.dispatchCUIEvent(player, new SelectionPointEvent(0, region.getMinimumPoint(), getVolume()));
+        session.dispatchCUIEvent(player, new SelectionPointEvent(1, region.getMaximumPoint(), getVolume()));
     }
 
     @Override
