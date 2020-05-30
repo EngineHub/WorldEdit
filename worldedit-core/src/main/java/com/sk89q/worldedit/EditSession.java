@@ -301,7 +301,9 @@ public class EditSession implements Extent, AutoCloseable {
      * chunk batching}.
      */
     public void enableStandardMode() {
-        setBatchingChunks(true);
+        if (chunkBatchingExtent != null) {
+            setBatchingChunks(true);
+        }
     }
 
     /**
