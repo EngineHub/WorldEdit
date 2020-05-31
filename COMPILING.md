@@ -10,6 +10,7 @@ The build process uses Gradle, which you do *not* need to download. WorldEdit is
 * `worldedit-bukkit` is the Bukkit plugin
 * `worldedit-sponge` is the Sponge plugin
 * `worldedit-forge` is the Forge mod
+* `worldedit-fabric` is the Fabric mod
 
 ## To compile...
 
@@ -31,6 +32,7 @@ You will find:
 * WorldEdit for Bukkit in **worldedit-bukkit/build/libs**
 * WorldEdit for Sponge in **worldedit-sponge/build/libs**
 * WorldEdit for Forge in **worldedit-forge/build/libs**
+* WorldEdit for Fabric in **worldedit-fabric/build/libs**
 
 If you want to use WorldEdit, use the `-dist` version.
 
