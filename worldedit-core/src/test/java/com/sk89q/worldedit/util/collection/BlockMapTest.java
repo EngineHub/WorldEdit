@@ -45,11 +45,11 @@ import org.mockito.MockitoAnnotations;
 
 import java.lang.reflect.Field;
 import java.util.AbstractMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -63,24 +63,23 @@ import static org.junit.jupiter.api.Assumptions.assumeFalse;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 @DisplayName("An ordered block map")
 class BlockMapTest {
 
-    private static Platform mockedPlatform = mock(Platform.class);
+    private static final Platform MOCKED_PLATFORM = mock(Platform.class);
 
     @BeforeAll
     static void setupFakePlatform() {
-        when(mockedPlatform.getRegistries()).thenReturn(new BundledRegistries() {
+        when(MOCKED_PLATFORM.getRegistries()).thenReturn(new BundledRegistries() {
         });
-        when(mockedPlatform.getCapabilities()).thenReturn(ImmutableMap.of(
+        when(MOCKED_PLATFORM.getCapabilities()).thenReturn(ImmutableMap.of(
             Capability.WORLD_EDITING, Preference.PREFERRED,
             Capability.GAME_HOOKS, Preference.PREFERRED
         ));
         PlatformManager platformManager = WorldEdit.getInstance().getPlatformManager();
-        platformManager.register(mockedPlatform);
+        platformManager.register(MOCKED_PLATFORM);
 
         registerBlock("minecraft:air");
         registerBlock("minecraft:oak_wood");
@@ -88,7 +87,7 @@ class BlockMapTest {
 
     @AfterAll
     static void tearDownFakePlatform() throws Exception {
-        WorldEdit.getInstance().getPlatformManager().unregister(mockedPlatform);
+        WorldEdit.getInstance().getPlatformManager().unregister(MOCKED_PLATFORM);
         Field map = Registry.class.getDeclaredField("map");
         map.setAccessible(true);
         ((Map<?, ?>) map.get(BlockType.REGISTRY)).clear();
@@ -99,8 +98,6 @@ class BlockMapTest {
     }
 
     @Mock
-    private Function<? super BlockVector3, ? extends BaseBlock> function;
-    @Mock
     private BiFunction<? super BlockVector3, ? super BaseBlock, ? extends BaseBlock> biFunction;
     @Mock
     private BiFunction<? super BaseBlock, ? super BaseBlock, ? extends BaseBlock> mergeFunction;
@@ -110,7 +107,7 @@ class BlockMapTest {
     private final BaseBlock air = checkNotNull(BlockTypes.AIR).getDefaultState().toBaseBlock();
     private final BaseBlock oakWood = checkNotNull(BlockTypes.OAK_WOOD).getDefaultState().toBaseBlock();
 
-    private BlockMap<BaseBlock> map = BlockMap.createForBaseBlock();
+    private final BlockMap<BaseBlock> map = BlockMap.createForBaseBlock();
 
     @BeforeEach
     void setUp() {
@@ -186,14 +183,14 @@ class BlockMapTest {
         @DisplayName("never calls the forEach action")
         void neverCallsForEachAction() {
             map.forEach(biConsumer);
-            verifyZeroInteractions(biConsumer);
+            verifyNoMoreInteractions(biConsumer);
         }
 
         @Test
         @DisplayName("never calls the replaceAll function")
         void neverCallsReplaceAllFunction() {
             map.replaceAll(biFunction);
-            verifyZeroInteractions(biFunction);
+            verifyNoMoreInteractions(biFunction);
         }
 
         @Test
@@ -254,7 +251,7 @@ class BlockMapTest {
             assertEquals(air, map.merge(BlockVector3.ZERO, air, mergeFunction));
             assertEquals(1, map.size());
             assertEquals(air, map.get(BlockVector3.ZERO));
-            verifyZeroInteractions(mergeFunction);
+            verifyNoMoreInteractions(mergeFunction);
         }
 
     }
@@ -428,6 +425,26 @@ class BlockMapTest {
         void removeKeyReturnsOldValue(BlockVector3 vec) {
             map.put(vec, air);
             assertEquals(air, map.remove(vec));
+            assertEquals(0, map.size());
+        }
+
+        @VariedVectorsProvider.Test
+        @DisplayName("keySet().remove(key) removes the entry from the map")
+        void keySetRemovePassesThrough(BlockVector3 vec) {
+            map.put(vec, air);
+            assertTrue(map.keySet().remove(vec));
+            assertEquals(0, map.size());
+        }
+
+        @VariedVectorsProvider.Test
+        @DisplayName("entrySet().iterator().remove() removes the entry from the map")
+        void entrySetIteratorRemovePassesThrough(BlockVector3 vec) {
+            map.put(vec, air);
+            Iterator<Map.Entry<BlockVector3, BaseBlock>> iterator = map.entrySet().iterator();
+            assertTrue(iterator.hasNext());
+            Map.Entry<BlockVector3, BaseBlock> entry = iterator.next();
+            assertEquals(entry.getKey(), vec);
+            iterator.remove();
             assertEquals(0, map.size());
         }
 
