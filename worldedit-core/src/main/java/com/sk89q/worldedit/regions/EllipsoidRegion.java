@@ -26,6 +26,7 @@ import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.storage.ChunkStore;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -88,6 +89,7 @@ public class EllipsoidRegion extends AbstractRegion {
                 .multiply(BigDecimal.valueOf(radius.getX()))
                 .multiply(BigDecimal.valueOf(radius.getY()))
                 .multiply(BigDecimal.valueOf(radius.getZ()))
+                .setScale(0, RoundingMode.FLOOR)
                 .longValue();
     }
 

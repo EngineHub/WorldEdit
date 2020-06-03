@@ -32,6 +32,7 @@ import com.sk89q.worldedit.regions.iterator.FlatRegionIterator;
 import com.sk89q.worldedit.world.World;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Iterator;
 import java.util.List;
 
@@ -192,6 +193,7 @@ public class CylinderRegion extends AbstractRegion implements FlatRegion {
                 .multiply(BigDecimal.valueOf(radius.getZ()))
                 .multiply(PI)
                 .multiply(BigDecimal.valueOf(getHeight()))
+                .setScale(0, RoundingMode.FLOOR)
                 .longValue();
     }
 
