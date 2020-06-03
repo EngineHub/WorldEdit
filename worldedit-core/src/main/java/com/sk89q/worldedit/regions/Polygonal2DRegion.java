@@ -25,6 +25,8 @@ import com.sk89q.worldedit.regions.iterator.FlatRegion3DIterator;
 import com.sk89q.worldedit.regions.iterator.FlatRegionIterator;
 import com.sk89q.worldedit.world.World;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -198,17 +200,23 @@ public class Polygonal2DRegion extends AbstractRegion implements FlatRegion {
 
     @Override
     public long getVolume() {
-        double area = 0;
+        BigDecimal area = BigDecimal.ZERO;
         int i, j = points.size() - 1;
 
         for (i = 0; i < points.size(); ++i) {
-            area += (points.get(j).getBlockX() + points.get(i).getBlockX())
-                    * (points.get(j).getBlockZ() - points.get(i).getBlockZ());
+            area = area.add(
+                    BigDecimal.valueOf(points.get(j).getBlockX() + points.get(i).getBlockX())
+                            .multiply(BigDecimal.valueOf(points.get(j).getBlockZ() - points.get(i).getBlockZ()))
+            );
             j = i;
         }
 
-        return (long) Math.floor(Math.abs(area * 0.5)
-                * (maxY - minY + 1));
+        return area
+                .multiply(BigDecimal.valueOf(0.5))
+                .abs()
+                .setScale(0, RoundingMode.FLOOR)
+                .multiply(BigDecimal.valueOf(maxY - minY + 1))
+                .longValue();
     }
 
     @Override
