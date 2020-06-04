@@ -259,7 +259,6 @@ class BlockMapTest {
 
     @Nested
     @DisplayName("after having an entry added")
-    @EnabledIfSystemProperty(named = "blockmap.fulltesting", matches = "true")
     class AfterEntryAdded {
 
         // Note: This section of tests would really benefit from

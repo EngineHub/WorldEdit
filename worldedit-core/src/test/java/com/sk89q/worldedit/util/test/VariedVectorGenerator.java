@@ -40,9 +40,9 @@ public class VariedVectorGenerator {
     public final int divisionsXZ;
     public final int divisionsY;
     public final int maxXZ;
-    public final int maxY;
+    public final long maxY;
     public final int xzStep;
-    public final int yStep;
+    public final long yStep;
     public final Set<BlockVector3> alwaysInclude;
 
     public VariedVectorGenerator() {

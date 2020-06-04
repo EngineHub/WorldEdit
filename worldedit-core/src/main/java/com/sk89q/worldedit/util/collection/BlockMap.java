@@ -52,12 +52,6 @@ import static com.sk89q.worldedit.math.BitMath.mask;
  */
 public class BlockMap<V> extends AbstractMap<BlockVector3, V> {
 
-    /* =========================
-       IF YOU MAKE CHANGES TO THIS CLASS
-       Re-run BlockMapTest with the blockmap.fulltesting=true system property.
-       Or just temporarily remove the annotation disabling the related tests.
-       ========================= */
-
     public static <V> BlockMap<V> create() {
         return create(() -> new Int2ObjectOpenHashMap<>(64, 0.9f));
     }
