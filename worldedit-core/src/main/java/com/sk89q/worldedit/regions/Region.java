@@ -71,6 +71,8 @@ public interface Region extends Iterable<BlockVector3>, Cloneable {
     /**
      * Get the number of blocks in the region.
      *
+     * <p>Note: This method <b>must</b> be overridden.</p>
+     *
      * @return number of blocks
      */
     default long getVolume() {

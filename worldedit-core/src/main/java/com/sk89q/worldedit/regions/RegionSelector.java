@@ -144,6 +144,8 @@ public interface RegionSelector {
     /**
      * Get the number of blocks inside the region.
      *
+     * <p>Note: This method <b>must</b> be overridden.</p>
+     *
      * @return number of blocks, or -1 if undefined
      */
     default long getVolume() {
