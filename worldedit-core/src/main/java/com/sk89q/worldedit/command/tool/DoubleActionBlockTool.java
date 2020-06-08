@@ -45,7 +45,7 @@ public interface DoubleActionBlockTool extends BlockTool {
      */
     @Deprecated
     default boolean actSecondary(Platform server, LocalConfiguration config, Player player, LocalSession session, Location clicked) {
-        return false;
+        throw new AssertionError("actPrimary must be overridden");
     }
 
     /**

@@ -204,7 +204,7 @@ public class ToolCommands {
     public void stacker(Player player, LocalSession session,
                       @Arg(desc = "The max range of the stack", def = "10")
                         int range,
-                      @Arg(desc = "The mask to replace until", def = "!#existing")
+                      @Arg(desc = "The mask to stack until", def = "!#existing")
                         Mask mask) throws WorldEditException {
         setTool(player, session, new StackTool(range, mask), "worldedit.tool.stack.equip");
     }

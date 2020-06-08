@@ -57,6 +57,7 @@ public class BlockInteractEvent extends Event implements Cancellable {
      *
      * @param cause the causing actor
      * @param location the location of the block
+     * @param face the face of the block
      * @param type the type of interaction
      */
     public BlockInteractEvent(Actor cause, Location location, @Nullable Direction face, Interaction type) {

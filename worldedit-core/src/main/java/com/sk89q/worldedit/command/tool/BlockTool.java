@@ -42,7 +42,7 @@ public interface BlockTool extends Tool {
      */
     @Deprecated
     default boolean actPrimary(Platform server, LocalConfiguration config, Player player, LocalSession session, Location clicked) {
-        return false;
+        throw new AssertionError("actPrimary must be overridden");
     }
 
     /**
