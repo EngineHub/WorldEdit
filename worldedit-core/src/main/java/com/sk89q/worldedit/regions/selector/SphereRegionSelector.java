@@ -93,7 +93,7 @@ public class SphereRegionSelector extends EllipsoidRegionSelector {
             player.printInfo(TranslatableComponent.of(
                     "worldedit.selection.sphere.explain.secondary-defined",
                     TextComponent.of(region.getRadius().getX()),
-                    TextComponent.of(region.getArea())
+                    TextComponent.of(region.getVolume())
             ));
         } else {
             player.printInfo(TranslatableComponent.of("worldedit.selection.sphere.explain.secondary", TextComponent.of(region.getRadius().getX())));

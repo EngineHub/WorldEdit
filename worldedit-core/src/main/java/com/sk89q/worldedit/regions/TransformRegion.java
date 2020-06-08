@@ -113,8 +113,8 @@ public class TransformRegion extends AbstractRegion {
     }
 
     @Override
-    public int getArea() {
-        return region.getArea(); // Cannot transform this
+    public long getVolume() {
+        return region.getVolume(); // Cannot transform this
     }
 
     @Override

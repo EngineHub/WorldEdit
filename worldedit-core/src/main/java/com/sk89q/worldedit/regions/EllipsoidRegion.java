@@ -25,6 +25,8 @@ import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.storage.ChunkStore;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -80,9 +82,16 @@ public class EllipsoidRegion extends AbstractRegion {
         return center.toVector3().add(getRadius()).toBlockPoint();
     }
 
+    private static final BigDecimal ELLIPSOID_BASE_MULTIPLIER = BigDecimal.valueOf((4.0 / 3.0) * Math.PI);
+
     @Override
-    public int getArea() {
-        return (int) Math.floor((4.0 / 3.0) * Math.PI * radius.getX() * radius.getY() * radius.getZ());
+    public long getVolume() {
+        return ELLIPSOID_BASE_MULTIPLIER
+                .multiply(BigDecimal.valueOf(radius.getX()))
+                .multiply(BigDecimal.valueOf(radius.getY()))
+                .multiply(BigDecimal.valueOf(radius.getZ()))
+                .setScale(0, RoundingMode.FLOOR)
+                .longValue();
     }
 
     @Override

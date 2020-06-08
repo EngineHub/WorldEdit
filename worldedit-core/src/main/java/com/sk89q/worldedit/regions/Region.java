@@ -61,8 +61,31 @@ public interface Region extends Iterable<BlockVector3>, Cloneable {
      * Get the number of blocks in the region.
      *
      * @return number of blocks
+     * @deprecated use {@link Region#getVolume()} to prevent overflows
      */
-    int getArea();
+    @Deprecated
+    default int getArea() {
+        return (int) getVolume();
+    }
+
+    /**
+     * Get the number of blocks in the region.
+     *
+     * <p>Note: This method <b>must</b> be overridden.</p>
+     *
+     * @return number of blocks
+     */
+    default long getVolume() {
+        // TODO Remove default status when getArea is removed.
+        try {
+            if (getClass().getMethod("getArea").getDeclaringClass().equals(Region.class)) {
+                throw new IllegalStateException("Class " + getClass().getName() + " must override getVolume.");
+            }
+        } catch (NoSuchMethodException e) {
+            throw new AssertionError(e);
+        }
+        return getArea();
+    }
 
     /**
      * Get X-size.

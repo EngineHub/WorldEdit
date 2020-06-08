@@ -134,7 +134,7 @@ public class ExtendingCuboidRegionSelector extends CuboidRegionSelector {
         player.printInfo(TranslatableComponent.of(
                 "worldedit.selection.extend.explain.primary",
                 TextComponent.of(pos.toString()),
-                TextComponent.of(region.getArea())
+                TextComponent.of(region.getVolume())
         ));
 
         explainRegionAdjust(player, session);
@@ -145,7 +145,7 @@ public class ExtendingCuboidRegionSelector extends CuboidRegionSelector {
         player.printInfo(TranslatableComponent.of(
                 "worldedit.selection.extend.explain.secondary",
                 TextComponent.of(pos.toString()),
-                TextComponent.of(region.getArea())
+                TextComponent.of(region.getVolume())
         ));
 
         explainRegionAdjust(player, session);

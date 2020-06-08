@@ -134,8 +134,31 @@ public interface RegionSelector {
      * Get the number of blocks inside the region.
      *
      * @return number of blocks, or -1 if undefined
+     * @deprecated use {@link RegionSelector#getVolume()}
      */
-    int getArea();
+    @Deprecated
+    default int getArea() {
+        return (int) getVolume();
+    }
+
+    /**
+     * Get the number of blocks inside the region.
+     *
+     * <p>Note: This method <b>must</b> be overridden.</p>
+     *
+     * @return number of blocks, or -1 if undefined
+     */
+    default long getVolume() {
+        // TODO Remove default once getArea is removed
+        try {
+            if (getClass().getMethod("getArea").getDeclaringClass().equals(RegionSelector.class)) {
+                throw new IllegalStateException("Class " + getClass().getName() + " must override getVolume.");
+            }
+        } catch (NoSuchMethodException e) {
+            throw new AssertionError(e);
+        }
+        return getArea();
+    }
 
     /**
      * Update the selector with changes to the region.

@@ -120,14 +120,14 @@ public class ExpandCommands {
                                    int height) throws IncompleteRegionException {
         Region region = session.getSelection(world);
         try {
-            int oldSize = region.getArea();
+            long oldSize = region.getVolume();
             region.expand(
                 BlockVector3.at(0, height, 0),
                 BlockVector3.at(0, -height, 0));
             session.getRegionSelector(world).learnChanges();
-            int newSize = region.getArea();
+            long newSize = region.getVolume();
             session.getRegionSelector(world).explainRegionAdjust(actor, session);
-            int changeSize = newSize - oldSize;
+            long changeSize = newSize - oldSize;
             actor.printInfo(
                 TranslatableComponent.of("worldedit.expand.expanded.vert", TextComponent.of(changeSize))
             );
@@ -150,7 +150,7 @@ public class ExpandCommands {
                        @MultiDirection
                            List<BlockVector3> direction) throws WorldEditException {
         Region region = session.getSelection(world);
-        int oldSize = region.getArea();
+        long oldSize = region.getVolume();
 
         if (reverseAmount == 0) {
             for (BlockVector3 dir : direction) {
@@ -163,11 +163,11 @@ public class ExpandCommands {
         }
 
         session.getRegionSelector(world).learnChanges();
-        int newSize = region.getArea();
+        long newSize = region.getVolume();
 
         session.getRegionSelector(world).explainRegionAdjust(actor, session);
 
-        int changeSize = newSize - oldSize;
+        long changeSize = newSize - oldSize;
         actor.printInfo(TranslatableComponent.of("worldedit.expand.expanded", TextComponent.of(changeSize)));
     }
 

@@ -31,6 +31,8 @@ import com.sk89q.worldedit.regions.iterator.FlatRegion3DIterator;
 import com.sk89q.worldedit.regions.iterator.FlatRegionIterator;
 import com.sk89q.worldedit.world.World;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Iterator;
 import java.util.List;
 
@@ -183,9 +185,16 @@ public class CylinderRegion extends AbstractRegion implements FlatRegion {
         return minY;
     }
 
+    private static final BigDecimal PI = BigDecimal.valueOf(Math.PI);
+
     @Override
-    public int getArea() {
-        return (int) Math.floor(radius.getX() * radius.getZ() * Math.PI * getHeight());
+    public long getVolume() {
+        return BigDecimal.valueOf(radius.getX())
+                .multiply(BigDecimal.valueOf(radius.getZ()))
+                .multiply(PI)
+                .multiply(BigDecimal.valueOf(getHeight()))
+                .setScale(0, RoundingMode.FLOOR)
+                .longValue();
     }
 
     @Override
