@@ -200,17 +200,17 @@ public class Polygonal2DRegion extends AbstractRegion implements FlatRegion {
 
     @Override
     public long getVolume() {
-        BigDecimal area = BigDecimal.ZERO;
+        long area = 0;
         int i, j = points.size() - 1;
 
         for (i = 0; i < points.size(); ++i) {
             long x = points.get(j).getBlockX() + points.get(i).getBlockX();
             long z = points.get(j).getBlockZ() - points.get(i).getBlockZ();
-            area = area.add(BigDecimal.valueOf(x).multiply(BigDecimal.valueOf(z)));
+            area += x * z;
             j = i;
         }
 
-        return area
+        return BigDecimal.valueOf(area)
                 .multiply(BigDecimal.valueOf(0.5))
                 .abs()
                 .setScale(0, RoundingMode.FLOOR)
