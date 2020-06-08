@@ -76,11 +76,11 @@ public interface Region extends Iterable<BlockVector3>, Cloneable {
     default long getVolume() {
         // TODO Remove default status when getArea is removed.
         try {
-            if (getClass().getMethod("getArea").getDeclaringClass().equals(this.getClass())) {
-                throw new IllegalStateException("Class " + getClass().getName() + " must override either getVolume or getArea.");
+            if (getClass().getMethod("getArea").getDeclaringClass().equals(Region.class)) {
+                throw new IllegalStateException("Class " + getClass().getName() + " must override getVolume.");
             }
         } catch (NoSuchMethodException e) {
-            e.printStackTrace();
+            throw new AssertionError(e);
         }
         return getArea();
     }
