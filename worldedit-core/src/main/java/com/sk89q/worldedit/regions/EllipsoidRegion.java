@@ -82,7 +82,7 @@ public class EllipsoidRegion extends AbstractRegion {
         return center.toVector3().add(getRadius()).toBlockPoint();
     }
 
-    private final BigDecimal ELLIPSOID_BASE_MULTIPLIER = BigDecimal.valueOf((4.0 / 3.0) * Math.PI);
+    private static final BigDecimal ELLIPSOID_BASE_MULTIPLIER = BigDecimal.valueOf((4.0 / 3.0) * Math.PI);
 
     @Override
     public long getVolume() {
