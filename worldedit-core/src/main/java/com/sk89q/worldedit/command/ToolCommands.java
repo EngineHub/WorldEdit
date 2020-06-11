@@ -20,6 +20,7 @@
 package com.sk89q.worldedit.command;
 
 import com.google.common.collect.Collections2;
+import com.google.common.collect.Lists;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
@@ -61,12 +62,15 @@ import org.enginehub.piston.annotation.CommandContainer;
 import org.enginehub.piston.annotation.param.Arg;
 import org.enginehub.piston.part.SubCommandPart;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 @CommandContainer(superTypes = CommandPermissionsConditionGenerator.Registration.class)
 public class ToolCommands {
+
+    private static final List<String> IGNORED_GLOBAL_ALIASES = Lists.newArrayList("unbind", "stacker");
 
     public static void register(CommandRegistrationHandler registration,
                                 CommandManager commandManager,
@@ -85,17 +89,13 @@ public class ToolCommands {
         Set<org.enginehub.piston.Command> commands = collect.getAllCommands()
             .collect(Collectors.toSet());
         for (org.enginehub.piston.Command command : commands) {
-            if (command.getAliases().contains("unbind")) {
-                // Don't register new /tool unbind alias
-                command = command.toBuilder().aliases(
-                    Collections2.filter(command.getAliases(), alias -> !"unbind".equals(alias))
-                ).build();
-            }
-            if (command.getAliases().contains("stacker")) {
-                // Don't register new /tool unbind alias
-                command = command.toBuilder().aliases(
-                        Collections2.filter(command.getAliases(), alias -> !"stacker".equals(alias))
-                ).build();
+            for (String ignoredAlias : IGNORED_GLOBAL_ALIASES) {
+                if (command.getAliases().contains(ignoredAlias)) {
+                    // Don't register new /tool <whatever> alias
+                    command = command.toBuilder().aliases(
+                            Collections2.filter(command.getAliases(), alias -> !ignoredAlias.equals(alias))
+                    ).build();
+                }
             }
             commandManager.register(CommandUtil.deprecate(
                 command, "Global tool names cause conflicts " +
@@ -209,9 +209,9 @@ public class ToolCommands {
     @CommandPermissions("worldedit.tool.stack")
     public void stacker(Player player, LocalSession session,
                       @Arg(desc = "The max range of the stack", def = "10")
-                        int range,
+                          int range,
                       @Arg(desc = "The mask to stack until", def = "!#existing")
-                        Mask mask) throws WorldEditException {
+                          Mask mask) throws WorldEditException {
         setTool(player, session, new StackTool(range, mask), "worldedit.tool.stack.equip");
     }
 

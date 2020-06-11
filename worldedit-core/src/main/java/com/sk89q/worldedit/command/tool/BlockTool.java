@@ -48,6 +48,8 @@ public interface BlockTool extends Tool {
     /**
      * Perform the primary action of this tool.
      *
+     * <p>Note: This will not be default in WorldEdit 8</p>
+     *
      * @param server The platform
      * @param config The config instance
      * @param player The player

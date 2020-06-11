@@ -51,6 +51,8 @@ public interface DoubleActionBlockTool extends BlockTool {
     /**
      * Perform the secondary action of this block tool.
      *
+     * <p>Note: This will not be default in WorldEdit 8</p>
+     *
      * @param server The platform
      * @param config The config instance
      * @param player The player
