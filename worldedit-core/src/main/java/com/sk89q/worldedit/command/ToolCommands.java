@@ -39,6 +39,7 @@ import com.sk89q.worldedit.command.tool.Tool;
 import com.sk89q.worldedit.command.tool.TreePlanter;
 import com.sk89q.worldedit.command.util.CommandPermissions;
 import com.sk89q.worldedit.command.util.CommandPermissionsConditionGenerator;
+import com.sk89q.worldedit.command.util.SubCommandPermissionCondition;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.internal.command.CommandRegistrationHandler;
@@ -111,6 +112,8 @@ public class ToolCommands {
                 .required()
                 .build());
             command.description(TextComponent.of("Binds a tool to the item in your hand"));
+
+            command.condition(new SubCommandPermissionCondition.Generator(nonGlobalCommands).build());
         });
     }
 

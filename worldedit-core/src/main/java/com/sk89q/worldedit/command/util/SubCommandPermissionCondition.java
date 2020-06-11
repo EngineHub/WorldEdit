@@ -19,10 +19,12 @@
 
 package com.sk89q.worldedit.command.util;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import org.enginehub.piston.Command;
 import org.enginehub.piston.inject.InjectedValueAccess;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -45,8 +47,8 @@ public final class SubCommandPermissionCondition extends PermissionCondition {
     public static class Generator {
         private final List<Command> subCommands;
 
-        public Generator(List<Command> subCommands) {
-            this.subCommands = subCommands;
+        public Generator(Collection<? extends Command> subCommands) {
+            this.subCommands = ImmutableList.copyOf(subCommands);
         }
 
         public Command.Condition build() {
