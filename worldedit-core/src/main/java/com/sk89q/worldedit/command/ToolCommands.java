@@ -91,7 +91,7 @@ public class ToolCommands {
             if (command.getAliases().contains("unbind")) {
                 // Don't register new /tool <whatever> alias
                 command = command.toBuilder().aliases(
-                        Collections2.filter(command.getAliases(), alias -> !"unbind".equals(alias))
+                    Collections2.filter(command.getAliases(), alias -> !"unbind".equals(alias))
                 ).build();
             }
             if (command.getName().equals("stacker")) {
