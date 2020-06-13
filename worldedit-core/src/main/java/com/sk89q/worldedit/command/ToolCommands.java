@@ -70,7 +70,6 @@ import java.util.stream.Collectors;
 @CommandContainer(superTypes = CommandPermissionsConditionGenerator.Registration.class)
 public class ToolCommands {
 
-    private static final List<String> IGNORED_GLOBAL_ALIASES = Lists.newArrayList("unbind", "stacker");
 
     public static void register(CommandRegistrationHandler registration,
                                 CommandManager commandManager,
@@ -89,13 +88,15 @@ public class ToolCommands {
         Set<org.enginehub.piston.Command> commands = collect.getAllCommands()
             .collect(Collectors.toSet());
         for (org.enginehub.piston.Command command : commands) {
-            for (String ignoredAlias : IGNORED_GLOBAL_ALIASES) {
-                if (command.getAliases().contains(ignoredAlias)) {
-                    // Don't register new /tool <whatever> alias
-                    command = command.toBuilder().aliases(
-                            Collections2.filter(command.getAliases(), alias -> !ignoredAlias.equals(alias))
-                    ).build();
-                }
+            if (command.getAliases().contains("unbind")) {
+                // Don't register new /tool <whatever> alias
+                command = command.toBuilder().aliases(
+                        Collections2.filter(command.getAliases(), alias -> !"unbind".equals(alias))
+                ).build();
+            }
+            if (command.getName().equals("stacker")) {
+                // Don't register /stacker
+                continue;
             }
             commandManager.register(CommandUtil.deprecate(
                 command, "Global tool names cause conflicts " +
