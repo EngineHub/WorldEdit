@@ -99,7 +99,7 @@ public abstract class ArbitraryShape {
             int z = position.getBlockZ();
 
             if (!hollow) {
-                BaseBlock material = getMaterial(x, y, z, pattern.apply(position));
+                BaseBlock material = getMaterial(x, y, z, pattern.applyBlock(position));
                 if (material != null && editSession.setBlock(position, material)) {
                     ++affected;
                 }
@@ -107,7 +107,7 @@ public abstract class ArbitraryShape {
                 continue;
             }
 
-            BaseBlock material = getMaterial(x, y, z, pattern.apply(position));
+            BaseBlock material = getMaterial(x, y, z, pattern.applyBlock(position));
             if (material == null) {
                 final int index = (y - cacheOffsetY) + (z - cacheOffsetZ) * cacheSizeY + (x - cacheOffsetX) * cacheSizeY * cacheSizeZ;
                 cache[index] = -1;

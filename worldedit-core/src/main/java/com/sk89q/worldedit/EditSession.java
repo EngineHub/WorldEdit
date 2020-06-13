@@ -733,7 +733,7 @@ public class EditSession implements Extent, AutoCloseable {
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
     public boolean setBlock(BlockVector3 position, Pattern pattern) throws MaxChangedBlocksException {
-        return setBlock(position, pattern.apply(position));
+        return setBlock(position, pattern.applyBlock(position));
     }
 
     /**
@@ -2310,7 +2310,7 @@ public class EditSession implements Extent, AutoCloseable {
                 }
             }
 
-            if (setBlock(position, pattern.apply(position))) {
+            if (setBlock(position, pattern.applyBlock(position))) {
                 ++affected;
             }
         }
