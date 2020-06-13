@@ -22,13 +22,11 @@ package com.sk89q.worldedit.fabric.mixin;
 import com.mojang.datafixers.util.Either;
 import net.minecraft.server.world.ChunkHolder;
 import net.minecraft.server.world.ServerChunkManager;
-import net.minecraft.util.thread.ThreadExecutor;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkStatus;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.gen.Invoker;
-import org.spongepowered.asm.mixin.injection.Coerce;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -37,9 +35,6 @@ public interface AccessorServerChunkManager {
 
     @Invoker
     CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> callGetChunkFuture(int chunkX, int chunkZ, ChunkStatus leastStatus, boolean create);
-
-    @Invoker
-    boolean callTick();
 
     @Accessor
     ServerChunkManager.MainThreadExecutor getMainThreadExecutor();
