@@ -24,7 +24,10 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import com.sk89q.worldedit.event.Cancellable;
 import com.sk89q.worldedit.event.Event;
 import com.sk89q.worldedit.extension.platform.Actor;
+import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.util.Location;
+
+import javax.annotation.Nullable;
 
 /**
  * Called when a block is interacted with.
@@ -34,6 +37,7 @@ public class BlockInteractEvent extends Event implements Cancellable {
     private final Actor cause;
     private final Location location;
     private final Interaction type;
+    private final Direction face;
     private boolean cancelled;
 
     /**
@@ -43,12 +47,26 @@ public class BlockInteractEvent extends Event implements Cancellable {
      * @param location the location of the block
      * @param type the type of interaction
      */
+    @Deprecated
     public BlockInteractEvent(Actor cause, Location location, Interaction type) {
+        this(cause, location, null, type);
+    }
+
+    /**
+     * Create a new event.
+     *
+     * @param cause the causing actor
+     * @param location the location of the block
+     * @param face the face of the block that was interacted with
+     * @param type the type of interaction
+     */
+    public BlockInteractEvent(Actor cause, Location location, @Nullable Direction face, Interaction type) {
         checkNotNull(cause);
         checkNotNull(location);
         checkNotNull(type);
         this.cause = cause;
         this.location = location;
+        this.face = face;
         this.type = type;
     }
 
@@ -68,6 +86,16 @@ public class BlockInteractEvent extends Event implements Cancellable {
      */
     public Location getLocation() {
         return location;
+    }
+
+    /**
+     * Get the face of the block that was interacted with.
+     *
+     * @return The interacted face
+     */
+    @Nullable
+    public Direction getFace() {
+        return face;
     }
 
     /**

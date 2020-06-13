@@ -200,8 +200,9 @@ public class FabricWorldEdit implements ModInitializer {
                 blockPos.getY(),
                 blockPos.getZ()
         );
+        com.sk89q.worldedit.util.Direction weDirection = FabricAdapter.adaptEnumFacing(direction);
 
-        if (we.handleBlockLeftClick(player, pos)) {
+        if (we.handleBlockLeftClick(player, pos, weDirection)) {
             return ActionResult.SUCCESS;
         }
 
@@ -231,8 +232,9 @@ public class FabricWorldEdit implements ModInitializer {
                 blockHitResult.getBlockPos().getY(),
                 blockHitResult.getBlockPos().getZ()
         );
+        com.sk89q.worldedit.util.Direction direction = FabricAdapter.adaptEnumFacing(blockHitResult.getSide());
 
-        if (we.handleBlockRightClick(player, pos)) {
+        if (we.handleBlockRightClick(player, pos, direction)) {
             return ActionResult.SUCCESS;
         }
 

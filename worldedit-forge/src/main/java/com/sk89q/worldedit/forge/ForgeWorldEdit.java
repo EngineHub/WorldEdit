@@ -32,6 +32,7 @@ import com.sk89q.worldedit.forge.proxy.ClientProxy;
 import com.sk89q.worldedit.forge.proxy.CommonProxy;
 import com.sk89q.worldedit.forge.proxy.ServerProxy;
 import com.sk89q.worldedit.internal.anvil.ChunkDeleter;
+import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.block.BlockCategory;
@@ -246,13 +247,14 @@ public class ForgeWorldEdit {
         WorldEdit we = WorldEdit.getInstance();
         ForgePlayer player = adaptPlayer((ServerPlayerEntity) event.getPlayer());
         ForgeWorld world = getWorld(event.getPlayer().world);
+        Direction direction = ForgeAdapter.adaptEnumFacing(event.getFace());
 
         if (event instanceof PlayerInteractEvent.LeftClickEmpty) {
             we.handleArmSwing(player); // this event cannot be canceled
         } else if (event instanceof PlayerInteractEvent.LeftClickBlock) {
             Location pos = new Location(world, event.getPos().getX(), event.getPos().getY(), event.getPos().getZ());
 
-            if (we.handleBlockLeftClick(player, pos)) {
+            if (we.handleBlockLeftClick(player, pos, direction)) {
                 event.setCanceled(true);
             }
 
@@ -262,7 +264,7 @@ public class ForgeWorldEdit {
         } else if (event instanceof PlayerInteractEvent.RightClickBlock) {
             Location pos = new Location(world, event.getPos().getX(), event.getPos().getY(), event.getPos().getZ());
 
-            if (we.handleBlockRightClick(player, pos)) {
+            if (we.handleBlockRightClick(player, pos, direction)) {
                 event.setCanceled(true);
             }
 

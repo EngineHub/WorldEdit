@@ -616,8 +616,21 @@ public final class WorldEdit {
      * @param clicked the clicked block
      * @return false if you want the action to go through
      */
+    @Deprecated
     public boolean handleBlockRightClick(Player player, Location clicked) {
-        BlockInteractEvent event = new BlockInteractEvent(player, clicked, OPEN);
+        return handleBlockRightClick(player, clicked, null);
+    }
+
+    /**
+     * Called on right click.
+     *
+     * @param player the player
+     * @param clicked the clicked block
+     * @param face The clicked face
+     * @return false if you want the action to go through
+     */
+    public boolean handleBlockRightClick(Player player, Location clicked, @Nullable Direction face) {
+        BlockInteractEvent event = new BlockInteractEvent(player, clicked, face, OPEN);
         getEventBus().post(event);
         return event.isCancelled();
     }
@@ -629,8 +642,21 @@ public final class WorldEdit {
      * @param clicked the clicked block
      * @return false if you want the action to go through
      */
+    @Deprecated
     public boolean handleBlockLeftClick(Player player, Location clicked) {
-        BlockInteractEvent event = new BlockInteractEvent(player, clicked, HIT);
+        return handleBlockLeftClick(player, clicked, null);
+    }
+
+    /**
+     * Called on left click.
+     *
+     * @param player the player
+     * @param clicked the clicked block
+     * @param face The clicked face
+     * @return false if you want the action to go through
+     */
+    public boolean handleBlockLeftClick(Player player, Location clicked, @Nullable Direction face) {
+        BlockInteractEvent event = new BlockInteractEvent(player, clicked, face, HIT);
         getEventBus().post(event);
         return event.isCancelled();
     }

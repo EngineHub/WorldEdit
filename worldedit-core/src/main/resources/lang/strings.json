@@ -268,6 +268,7 @@
     "worldedit.tool.farwand.equip": "Far wand tool bound to {0}.",
     "worldedit.tool.lrbuild.equip": "Long-range building tool bound to {0}.",
     "worldedit.tool.lrbuild.set": "Left-click set to {0}; right-click set to {1}.",
+    "worldedit.tool.stack.equip": "Stack tool bound to {0}.",
 
     "worldedit.tool.superpickaxe.mode.single": "Mode is now single. Left click with a pickaxe. // to disable.",
     "worldedit.tool.superpickaxe.mode.area": "Mode is now area. Left click with a pickaxe. // to disable.",

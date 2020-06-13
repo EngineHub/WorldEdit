@@ -330,7 +330,7 @@ public class PlatformManager {
                     final BlockTool superPickaxe = session.getSuperPickaxe();
                     if (superPickaxe != null && superPickaxe.canUse(player)) {
                         if (superPickaxe.actPrimary(queryCapability(Capability.WORLD_EDITING),
-                                getConfiguration(), player, session, location)) {
+                                getConfiguration(), player, session, location, event.getFace())) {
                             event.setCancelled(true);
                         }
                         return;
@@ -340,7 +340,7 @@ public class PlatformManager {
                 Tool tool = session.getTool(player.getItemInHand(HandSide.MAIN_HAND).getType());
                 if (tool instanceof DoubleActionBlockTool && tool.canUse(player)) {
                     if (((DoubleActionBlockTool) tool).actSecondary(queryCapability(Capability.WORLD_EDITING),
-                            getConfiguration(), player, session, location)) {
+                            getConfiguration(), player, session, location, event.getFace())) {
                         event.setCancelled(true);
                     }
                 }
@@ -349,7 +349,7 @@ public class PlatformManager {
                 Tool tool = session.getTool(player.getItemInHand(HandSide.MAIN_HAND).getType());
                 if (tool instanceof BlockTool && tool.canUse(player)) {
                     if (((BlockTool) tool).actPrimary(queryCapability(Capability.WORLD_EDITING),
-                            getConfiguration(), player, session, location)) {
+                            getConfiguration(), player, session, location, event.getFace())) {
                         event.setCancelled(true);
                     }
                 }
