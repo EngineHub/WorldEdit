@@ -34,7 +34,7 @@ public class FabricItemCategoryRegistry implements ItemCategoryRegistry {
     @Override
     public Set<ItemType> getCategorisedByName(String category) {
         return Optional.ofNullable(ItemTags.getContainer().get(new Identifier(category)))
-                .map(Tag::values).orElse(Collections.emptySet())
+                .map(Tag::values).orElse(Collections.emptyList())
                 .stream().map(FabricAdapter::adapt).collect(Collectors.toSet());
     }
 }

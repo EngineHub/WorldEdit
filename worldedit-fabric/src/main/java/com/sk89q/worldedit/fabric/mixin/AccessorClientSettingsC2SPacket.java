@@ -19,13 +19,15 @@
 
 package com.sk89q.worldedit.fabric.mixin;
 
-import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.network.packet.c2s.play.ClientSettingsC2SPacket;
+import net.minecraft.server.world.ThreadedAnvilChunkStorage;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
-@Mixin(ServerPlayerEntity.class)
-public interface AccessorServerPlayerEntity {
+@Mixin(ClientSettingsC2SPacket.class)
+public interface AccessorClientSettingsC2SPacket {
 
     @Accessor
-    String getClientLanguage();
+    String getLanguage();
+
 }

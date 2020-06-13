@@ -30,9 +30,9 @@ configurations.all {
     resolutionStrategy {
         // Fabric needs this.
         force(
-            "commons-io:commons-io:2.5",
-            "org.ow2.asm:asm:7.1",
-            "org.ow2.asm:asm-commons:7.1"
+            "commons-io:commons-io:2.6",
+            "org.ow2.asm:asm:8.0.1",
+            "org.ow2.asm:asm-commons:8.0.1"
         )
     }
 }

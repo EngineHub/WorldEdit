@@ -75,7 +75,7 @@ public class FabricWorldNativeAccess implements WorldNativeAccess<WorldChunk, Bl
 
     @Override
     public BlockState getValidBlockForPosition(BlockState block, BlockPos position) {
-        return Block.getRenderingState(block, getWorld(), position);
+        return Block.postProcessState(block, getWorld(), position);
     }
 
     @Override
@@ -96,7 +96,7 @@ public class FabricWorldNativeAccess implements WorldNativeAccess<WorldChunk, Bl
             return false;
         }
         tileEntity.setLocation(getWorld(), position);
-        tileEntity.fromTag(nativeTag);
+        tileEntity.fromTag(getWorld().getBlockState(position), nativeTag);
         return true;
     }
 
@@ -119,17 +119,16 @@ public class FabricWorldNativeAccess implements WorldNativeAccess<WorldChunk, Bl
     public void notifyNeighbors(BlockPos pos, BlockState oldState, BlockState newState) {
         getWorld().updateNeighbors(pos, oldState.getBlock());
         if (newState.hasComparatorOutput()) {
-            getWorld().updateHorizontalAdjacent(pos, newState.getBlock());
+            getWorld().updateComparators(pos, newState.getBlock());
         }
     }
 
     @Override
     public void updateNeighbors(BlockPos pos, BlockState oldState, BlockState newState) {
         World world = getWorld();
-        // method_11637 = updateDiagonalNeighbors
-        oldState.method_11637(world, pos, NOTIFY);
-        newState.updateNeighborStates(world, pos, NOTIFY);
-        newState.method_11637(world, pos, NOTIFY);
+        oldState.prepare(world, pos, NOTIFY);
+        newState.updateNeighbors(world, pos, NOTIFY);
+        newState.prepare(world, pos, NOTIFY);
     }
 
     @Override

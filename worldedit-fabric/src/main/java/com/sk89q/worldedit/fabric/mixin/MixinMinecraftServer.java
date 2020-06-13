@@ -20,15 +20,20 @@
 package com.sk89q.worldedit.fabric.mixin;
 
 import com.sk89q.worldedit.extension.platform.Watchdog;
+import com.sk89q.worldedit.fabric.internal.ExtendedMinecraftServer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.ServerTask;
 import net.minecraft.util.Util;
 import net.minecraft.util.thread.ReentrantThreadExecutor;
+import net.minecraft.world.World;
+import net.minecraft.world.level.storage.LevelStorage;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
+import java.nio.file.Path;
+
 @Mixin(MinecraftServer.class)
-public abstract class MixinMinecraftServer extends ReentrantThreadExecutor<ServerTask> implements Watchdog {
+public abstract class MixinMinecraftServer extends ReentrantThreadExecutor<ServerTask> implements Watchdog, ExtendedMinecraftServer {
 
     public MixinMinecraftServer(String name) {
         super(name);
@@ -36,10 +41,16 @@ public abstract class MixinMinecraftServer extends ReentrantThreadExecutor<Serve
 
     @Shadow
     private long timeReference;
+    @Shadow
+    protected LevelStorage.Session session;
 
     @Override
     public void tick() {
         timeReference = Util.getMeasuringTimeMs();
     }
 
+    @Override
+    public Path getStoragePath(World world) {
+        return session.method_27424(world.getRegistryKey()).toPath();
+    }
 }

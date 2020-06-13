@@ -17,24 +17,22 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.fabric;
+package com.sk89q.worldedit.fabric.mixin;
 
-import com.sk89q.worldedit.world.block.BlockType;
-import com.sk89q.worldedit.world.registry.BlockCategoryRegistry;
-import net.minecraft.tag.BlockTags;
-import net.minecraft.tag.Tag;
-import net.minecraft.util.Identifier;
+import com.mojang.datafixers.util.Either;
+import net.minecraft.server.world.ChunkHolder;
+import net.minecraft.server.world.ThreadedAnvilChunkStorage;
+import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.chunk.ChunkStatus;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.gen.Invoker;
 
-import java.util.Collections;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.concurrent.CompletableFuture;
 
-public class FabricBlockCategoryRegistry implements BlockCategoryRegistry {
-    @Override
-    public Set<BlockType> getCategorisedByName(String category) {
-        return Optional.ofNullable(BlockTags.getContainer().get(new Identifier(category)))
-                .map(Tag::values).orElse(Collections.emptyList())
-                .stream().map(FabricAdapter::adapt).collect(Collectors.toSet());
-    }
+@Mixin(ThreadedAnvilChunkStorage.class)
+public interface AccessorThreadedAnvilChunkStorage {
+
+    @Invoker
+    CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> callGenerateChunk(ChunkHolder chunkHolder, ChunkStatus chunkStatus);
+
 }

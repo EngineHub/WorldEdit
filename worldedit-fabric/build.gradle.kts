@@ -19,9 +19,9 @@ applyShadowConfiguration()
 
 apply(plugin = "fabric-loom")
 
-val minecraftVersion = "1.15.2"
-val yarnMappings = "1.15.2+build.14:v2"
-val loaderVersion = "0.7.8+build.189"
+val minecraftVersion = "1.16-pre5"
+val yarnMappings = "1.16-pre5+build.1:v2"
+val loaderVersion = "0.8.7+build.201"
 
 configurations.all {
     resolutionStrategy {
@@ -38,10 +38,7 @@ dependencies {
     "modCompile"("net.fabricmc:fabric-loader:$loaderVersion")
 
     listOf(
-        "net.fabricmc.fabric-api:fabric-api-base:0.1.2+28f8190f42",
-        "net.fabricmc.fabric-api:fabric-events-interaction-v0:0.2.6+12515ed975",
-        "net.fabricmc.fabric-api:fabric-events-lifecycle-v0:0.1.2+b7f9825de8",
-        "net.fabricmc.fabric-api:fabric-networking-v0:0.1.7+12515ed975"
+        "net.fabricmc.fabric-api:fabric-api:0.12.1+build.361-1.16"
     ).forEach {
         "include"(it)
         "modImplementation"(it)
