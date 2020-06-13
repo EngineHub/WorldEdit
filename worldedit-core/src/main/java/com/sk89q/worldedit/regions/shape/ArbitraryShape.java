@@ -159,7 +159,7 @@ public abstract class ArbitraryShape {
 
         switch (cache[index]) {
             case 0:
-                BaseBlock mat = getMaterial(x, y, z, pattern.apply(BlockVector3.at(x, y, z)));
+                BaseBlock mat = getMaterial(x, y, z, pattern.applyBlock(BlockVector3.at(x, y, z)));
                 if (mat == null) {
                     cache[index] = -1;
                     return false;

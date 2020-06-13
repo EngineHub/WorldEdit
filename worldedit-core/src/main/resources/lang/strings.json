@@ -29,7 +29,7 @@
     "worldedit.brush.operation.equip": "Set brush to {0}.",
     "worldedit.brush.none.equip": "Brush unbound from your current item.",
 
-    "worldedit.setbiome.changed": "Biomes were changed in {0} columns. You may have to rejoin your game (or close and reopen your world) to see a change.",
+    "worldedit.setbiome.changed": "Biomes were changed for {0} blocks. You may have to rejoin your game (or close and reopen your world) to see a change.",
 
     "worldedit.drawsel.disabled": "Server CUI disabled.",
     "worldedit.drawsel.enabled": "Server CUI enabled. This only supports cuboid regions, with a maximum size of 32x32x32.",

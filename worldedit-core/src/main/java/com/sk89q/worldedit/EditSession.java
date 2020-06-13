@@ -71,7 +71,6 @@ import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.function.pattern.WaterloggedRemover;
 import com.sk89q.worldedit.function.util.RegionOffset;
 import com.sk89q.worldedit.function.visitor.DownwardVisitor;
-import com.sk89q.worldedit.function.visitor.FlatRegionVisitor;
 import com.sk89q.worldedit.function.visitor.LayerVisitor;
 import com.sk89q.worldedit.function.visitor.NonRisingVisitor;
 import com.sk89q.worldedit.function.visitor.RecursiveVisitor;
@@ -83,10 +82,8 @@ import com.sk89q.worldedit.internal.expression.Expression;
 import com.sk89q.worldedit.internal.expression.ExpressionException;
 import com.sk89q.worldedit.internal.expression.ExpressionTimeoutException;
 import com.sk89q.worldedit.internal.expression.LocalSlot.Variable;
-import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.MathUtils;
-import com.sk89q.worldedit.math.Vector2;
 import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.math.interpolation.Interpolation;
 import com.sk89q.worldedit.math.interpolation.KochanekBartelsInterpolation;
@@ -1374,7 +1371,7 @@ public class EditSession implements Extent, AutoCloseable {
 
         if (copyBiomes) {
             BiomeReplace biomeReplace = new BiomeReplace(this, buffer);
-            FlatRegionVisitor biomeVisitor = new FlatRegionVisitor((FlatRegion) buffer.asRegion(), biomeReplace);
+            RegionVisitor biomeVisitor = new RegionVisitor(buffer.asRegion(), biomeReplace);
             operation.offer(biomeVisitor);
         }
 
@@ -2530,8 +2527,6 @@ public class EditSession implements Extent, AutoCloseable {
     public int makeBiomeShape(final Region region, final Vector3 zero, final Vector3 unit, final BiomeType biomeType,
                               final String expressionString, final boolean hollow, final int timeout)
             throws ExpressionException, MaxChangedBlocksException {
-        final Vector2 zero2D = zero.toVector2();
-        final Vector2 unit2D = unit.toVector2();
 
         final Expression expression = Expression.compile(expressionString, "x", "z");
         expression.optimize();
@@ -2543,13 +2538,13 @@ public class EditSession implements Extent, AutoCloseable {
         final int[] timedOut = {0};
         final ArbitraryBiomeShape shape = new ArbitraryBiomeShape(region) {
             @Override
-            protected BiomeType getBiome(int x, int z, BiomeType defaultBiomeType) {
-                final Vector2 current = Vector2.at(x, z);
-                environment.setCurrentBlock(current.toVector3(0));
-                final Vector2 scaled = current.subtract(zero2D).divide(unit2D);
+            protected BiomeType getBiome(int x, int y, int z, BiomeType defaultBiomeType) {
+                final Vector3 current = Vector3.at(x, y, z);
+                environment.setCurrentBlock(current);
+                final Vector3 scaled = current.subtract(zero).divide(unit);
 
                 try {
-                    if (expression.evaluate(new double[]{scaled.getX(), scaled.getZ()}, timeout) <= 0) {
+                    if (expression.evaluate(new double[]{scaled.getX(), scaled.getY(), scaled.getZ()}, timeout) <= 0) {
                         return null;
                     }
 
