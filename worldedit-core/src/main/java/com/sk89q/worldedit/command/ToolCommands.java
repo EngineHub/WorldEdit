@@ -20,7 +20,6 @@
 package com.sk89q.worldedit.command;
 
 import com.google.common.collect.Collections2;
-import com.google.common.collect.Lists;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
@@ -62,7 +61,6 @@ import org.enginehub.piston.annotation.CommandContainer;
 import org.enginehub.piston.annotation.param.Arg;
 import org.enginehub.piston.part.SubCommandPart;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
