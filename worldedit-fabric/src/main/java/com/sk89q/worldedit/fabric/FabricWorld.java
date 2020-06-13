@@ -278,14 +278,14 @@ public class FabricWorld extends AbstractWorld {
 
         try {
             doRegen(region, editSession);
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new IllegalStateException("Regen failed", e);
         }
 
         return true;
     }
 
-    private void doRegen(Region region, EditSession editSession) throws IOException {
+    private void doRegen(Region region, EditSession editSession) throws Exception {
         Path tempDir = Files.createTempDirectory("WorldEditWorldGen");
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             try {
@@ -296,7 +296,7 @@ public class FabricWorld extends AbstractWorld {
         LevelStorage levelStorage = LevelStorage.create(tempDir);
         try (LevelStorage.Session session = levelStorage.createSession("WorldEditTempGen")) {
             ServerWorld originalWorld = (ServerWorld) getWorld();
-            ServerWorld serverWorld = new ServerWorld(
+            try (ServerWorld serverWorld = new ServerWorld(
                 originalWorld.getServer(), Util.getServerWorkerExecutor(), session,
                 ((ServerWorldProperties) originalWorld.getLevelProperties()),
                 originalWorld.getRegistryKey(),
@@ -310,44 +310,48 @@ public class FabricWorld extends AbstractWorld {
                 ImmutableList.of(),
                 // This controls ticking, we don't need it so set it to false.
                 false
-            );
-
-            List<CompletableFuture<Chunk>> chunkLoadings = submitChunkLoadTasks(region, serverWorld);
-
-            // drive executor until loading finishes
-            ((AccessorServerChunkManager) serverWorld.getChunkManager()).getMainThreadExecutor()
-                .runTasks(() -> {
-                    // bail out early if a future fails
-                    if (chunkLoadings.stream().anyMatch(ftr ->
-                        ftr.isDone() && Futures.getUnchecked(ftr) == null
-                    )) {
-                        return false;
-                    }
-                    return chunkLoadings.stream().allMatch(CompletableFuture::isDone);
-                });
-
-            Map<ChunkPos, Chunk> chunks = new HashMap<>();
-            for (CompletableFuture<Chunk> future : chunkLoadings) {
-                @Nullable
-                Chunk chunk = future.getNow(null);
-                checkState(chunk != null, "Failed to generate a chunk, regen failed.");
-                chunks.put(chunk.getPos(), chunk);
+            )) {
+                regenForWorld(region, editSession, serverWorld);
             }
+        } finally {
+            FileUtils.deleteDirectory(tempDir.toFile());
+        }
+    }
 
-            for (BlockVector3 vec : region) {
-                BlockPos pos = FabricAdapter.toBlockPos(vec);
-                Chunk chunk = chunks.get(new ChunkPos(pos));
-                BlockStateHolder<?> state = FabricAdapter.adapt(chunk.getBlockState(pos));
-                BlockEntity blockEntity = chunk.getBlockEntity(pos);
-                if (blockEntity != null) {
-                    net.minecraft.nbt.CompoundTag tag = new net.minecraft.nbt.CompoundTag();
-                    blockEntity.toTag(tag);
-                    state = state.toBaseBlock(NBTConverter.fromNative(tag));
+    private void regenForWorld(Region region, EditSession editSession, ServerWorld serverWorld) throws MaxChangedBlocksException {
+        List<CompletableFuture<Chunk>> chunkLoadings = submitChunkLoadTasks(region, serverWorld);
+
+        // drive executor until loading finishes
+        ((AccessorServerChunkManager) serverWorld.getChunkManager()).getMainThreadExecutor()
+            .runTasks(() -> {
+                // bail out early if a future fails
+                if (chunkLoadings.stream().anyMatch(ftr ->
+                    ftr.isDone() && Futures.getUnchecked(ftr) == null
+                )) {
+                    return false;
                 }
-                editSession.setBlock(vec, state);
+                return chunkLoadings.stream().allMatch(CompletableFuture::isDone);
+            });
+
+        Map<ChunkPos, Chunk> chunks = new HashMap<>();
+        for (CompletableFuture<Chunk> future : chunkLoadings) {
+            @Nullable
+            Chunk chunk = future.getNow(null);
+            checkState(chunk != null, "Failed to generate a chunk, regen failed.");
+            chunks.put(chunk.getPos(), chunk);
+        }
+
+        for (BlockVector3 vec : region) {
+            BlockPos pos = FabricAdapter.toBlockPos(vec);
+            Chunk chunk = chunks.get(new ChunkPos(pos));
+            BlockStateHolder<?> state = FabricAdapter.adapt(chunk.getBlockState(pos));
+            BlockEntity blockEntity = chunk.getBlockEntity(pos);
+            if (blockEntity != null) {
+                net.minecraft.nbt.CompoundTag tag = new net.minecraft.nbt.CompoundTag();
+                blockEntity.toTag(tag);
+                state = state.toBaseBlock(NBTConverter.fromNative(tag));
             }
-        } catch (MaxChangedBlocksException e) {
-            throw new RuntimeException(e);
+            editSession.setBlock(vec, state);
         }
     }
 
