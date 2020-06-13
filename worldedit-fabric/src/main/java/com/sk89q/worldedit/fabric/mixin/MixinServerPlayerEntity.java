@@ -31,6 +31,7 @@ import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ServerPlayerEntity.class)
 public abstract class MixinServerPlayerEntity extends PlayerEntity implements ExtendedPlayerEntity {
@@ -42,12 +43,13 @@ public abstract class MixinServerPlayerEntity extends PlayerEntity implements Ex
     }
 
     @Inject(method = "swingHand", at = @At(value = "HEAD"))
-    public void onSwing(Hand hand) {
+    public void onSwing(Hand hand, @SuppressWarnings("unused") CallbackInfo callbackInfo) {
         FabricWorldEdit.inst.onLeftClickAir(this, this.world, hand);
     }
 
     @Inject(method = "setClientSettings", at = @At(value = "HEAD"))
-    public void setClientSettings(ClientSettingsC2SPacket clientSettingsC2SPacket) {
+    public void setClientSettings(ClientSettingsC2SPacket clientSettingsC2SPacket,
+                                  @SuppressWarnings("unused") CallbackInfo callbackInfo) {
         this.language = ((AccessorClientSettingsC2SPacket) clientSettingsC2SPacket).getLanguage();
     }
 

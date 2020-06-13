@@ -22,6 +22,7 @@ package com.sk89q.worldedit.fabric;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.Futures;
 import com.sk89q.jnbt.CompoundTag;
@@ -35,13 +36,12 @@ import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.fabric.internal.ExtendedMinecraftServer;
 import com.sk89q.worldedit.fabric.internal.FabricWorldNativeAccess;
 import com.sk89q.worldedit.fabric.internal.NBTConverter;
-import com.sk89q.worldedit.fabric.mixin.AccessorThreadedAnvilChunkStorage;
+import com.sk89q.worldedit.fabric.mixin.AccessorServerChunkManager;
 import com.sk89q.worldedit.internal.Constants;
 import com.sk89q.worldedit.internal.block.BlockStateIdAccess;
 import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.Vector3;
-import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.util.Location;
@@ -63,12 +63,12 @@ import net.minecraft.entity.ItemEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.world.ChunkHolder;
 import net.minecraft.server.world.ServerChunkManager;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Clearable;
 import net.minecraft.util.Hand;
+import net.minecraft.util.Util;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -84,9 +84,13 @@ import net.minecraft.world.gen.feature.DefaultBiomeFeatures;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.level.LevelProperties;
 import net.minecraft.world.level.ServerWorldProperties;
+import net.minecraft.world.level.storage.LevelStorage;
+import org.apache.commons.io.FileUtils;
 
 import javax.annotation.Nullable;
+import java.io.IOException;
 import java.lang.ref.WeakReference;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -100,7 +104,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
@@ -274,15 +277,59 @@ public class FabricWorld extends AbstractWorld {
         }
 
         try {
+            doRegen(region, editSession);
+        } catch (IOException e) {
+            throw new IllegalStateException("Regen failed", e);
+        }
+
+        return true;
+    }
+
+    private void doRegen(Region region, EditSession editSession) throws IOException {
+        Path tempDir = Files.createTempDirectory("WorldEditWorldGen");
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            try {
+                FileUtils.deleteDirectory(tempDir.toFile());
+            } catch (IOException ignored) {
+            }
+        }));
+        LevelStorage levelStorage = LevelStorage.create(tempDir);
+        try (LevelStorage.Session session = levelStorage.createSession("WorldEditTempGen")) {
             ServerWorld originalWorld = (ServerWorld) getWorld();
+            ServerWorld serverWorld = new ServerWorld(
+                originalWorld.getServer(), Util.getServerWorkerExecutor(), session,
+                ((ServerWorldProperties) originalWorld.getLevelProperties()),
+                originalWorld.getRegistryKey(),
+                originalWorld.getDimensionRegistryKey(),
+                originalWorld.getDimension(),
+                new WorldEditGenListener(),
+                originalWorld.getChunkManager().getChunkGenerator(),
+                originalWorld.isDebugWorld(),
+                originalWorld.getSeed(),
+                // No spawners are needed for this world.
+                ImmutableList.of(),
+                // This controls ticking, we don't need it so set it to false.
+                false
+            );
 
+            List<CompletableFuture<Chunk>> chunkLoadings = submitChunkLoadTasks(region, serverWorld);
 
-            List<CompletableFuture<Chunk>> chunkLoadings = submitChunkGenTasks(region, originalWorld);
+            // drive executor until loading finishes
+            ((AccessorServerChunkManager) serverWorld.getChunkManager()).getMainThreadExecutor()
+                .runTasks(() -> {
+                    // bail out early if a future fails
+                    if (chunkLoadings.stream().anyMatch(ftr ->
+                        ftr.isDone() && Futures.getUnchecked(ftr) == null
+                    )) {
+                        return false;
+                    }
+                    return chunkLoadings.stream().allMatch(CompletableFuture::isDone);
+                });
 
             Map<ChunkPos, Chunk> chunks = new HashMap<>();
             for (CompletableFuture<Chunk> future : chunkLoadings) {
                 @Nullable
-                Chunk chunk = Futures.getUnchecked(future);
+                Chunk chunk = future.getNow(null);
                 checkState(chunk != null, "Failed to generate a chunk, regen failed.");
                 chunks.put(chunk.getPos(), chunk);
             }
@@ -302,28 +349,15 @@ public class FabricWorld extends AbstractWorld {
         } catch (MaxChangedBlocksException e) {
             throw new RuntimeException(e);
         }
-
-        return true;
     }
 
-    private List<CompletableFuture<Chunk>> submitChunkGenTasks(Region region, ServerWorld originalWorld) {
-        AccessorThreadedAnvilChunkStorage tacs = (AccessorThreadedAnvilChunkStorage)
-            originalWorld.getChunkManager().threadedAnvilChunkStorage;
+    private List<CompletableFuture<Chunk>> submitChunkLoadTasks(Region region, ServerWorld world) {
+        AccessorServerChunkManager chunkManager = (AccessorServerChunkManager) world.getChunkManager();
         List<CompletableFuture<Chunk>> chunkLoadings = new ArrayList<>();
         // Pre-gen all the chunks
-        // We need to also pull one more chunk in every direction
-        CuboidRegion expandedPreGen = new CuboidRegion(region.getMinimumPoint().subtract(16, 0, 16), region.getMaximumPoint().add(16, 0, 16));
-        for (BlockVector2 chunk : expandedPreGen.getChunks()) {
-            ChunkHolder chunkHolder = new ChunkHolder(
-                new ChunkPos(chunk.getX(), chunk.getZ()),
-                0,
-                originalWorld.getLightingProvider(),
-                (pos, levelGetter, targetLevel, levelSetter) -> {
-                },
-                (chunkPos, onlyOnWatchDistanceEdge) -> Stream.of()
-            );
+        for (BlockVector2 chunk : region.getChunks()) {
             chunkLoadings.add(
-                tacs.callGenerateChunk(chunkHolder, ChunkStatus.FEATURES)
+                chunkManager.callGetChunkFuture(chunk.getX(), chunk.getZ(), ChunkStatus.FEATURES, true)
                     .thenApply(either -> either.left().orElse(null))
             );
         }
