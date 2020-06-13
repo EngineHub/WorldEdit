@@ -70,7 +70,6 @@ import java.util.stream.Collectors;
 @CommandContainer(superTypes = CommandPermissionsConditionGenerator.Registration.class)
 public class ToolCommands {
 
-
     public static void register(CommandRegistrationHandler registration,
                                 CommandManager commandManager,
                                 CommandManagerService commandManagerService,
