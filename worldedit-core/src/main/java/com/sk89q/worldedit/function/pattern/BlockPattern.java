@@ -64,7 +64,7 @@ public class BlockPattern extends AbstractPattern {
     }
 
     @Override
-    public BaseBlock apply(BlockVector3 position) {
+    public BaseBlock applyBlock(BlockVector3 position) {
         return block;
     }
 

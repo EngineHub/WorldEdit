@@ -71,9 +71,9 @@ public class ChunkLoadingExtent extends AbstractDelegateExtent {
     }
 
     @Override
-    public boolean setBiome(BlockVector2 position, BiomeType biome) {
+    public boolean setBiome(BlockVector3 position, BiomeType biome) {
         if (enabled) {
-            world.checkLoadedChunk(position.toBlockVector3());
+            world.checkLoadedChunk(position);
         }
         return super.setBiome(position, biome);
     }

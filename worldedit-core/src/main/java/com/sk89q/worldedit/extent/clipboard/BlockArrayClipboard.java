@@ -167,21 +167,23 @@ public class BlockArrayClipboard implements Clipboard {
     }
 
     @Override
-    public BiomeType getBiome(BlockVector2 position) {
+    public BiomeType getBiome(BlockVector3 position) {
+        // TODO Clipboards / Schematics biomes
         if (biomes != null
-                && position.containedWithin(getMinimumPoint().toBlockVector2(), getMaximumPoint().toBlockVector2())) {
-            BlockVector2 v = position.subtract(region.getMinimumPoint().toBlockVector2());
+                && position.containedWithin(getMinimumPoint(), getMaximumPoint())) {
+            BlockVector3 v = position.subtract(region.getMinimumPoint());
             BiomeType biomeType = biomes[v.getBlockX()][v.getBlockZ()];
             if (biomeType != null) {
                 return biomeType;
             }
         }
 
-        return BiomeTypes.OCEAN;
+        return BiomeTypes.THE_VOID;
     }
 
     @Override
     public boolean setBiome(BlockVector2 position, BiomeType biome) {
+        // TODO Clipboards / Schematics :(
         if (position.containedWithin(getMinimumPoint().toBlockVector2(), getMaximumPoint().toBlockVector2())) {
             BlockVector2 v = position.subtract(region.getMinimumPoint().toBlockVector2());
             if (biomes == null) {

@@ -25,6 +25,7 @@ import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.history.UndoContext;
 import com.sk89q.worldedit.math.BlockVector2;
+import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.world.biome.BiomeType;
 
 /**
@@ -36,7 +37,7 @@ import com.sk89q.worldedit.world.biome.BiomeType;
  */
 public class BiomeChange implements Change {
 
-    private final BlockVector2 position;
+    private final BlockVector3 position;
     private final BiomeType previous;
     private final BiomeType current;
 
@@ -46,8 +47,26 @@ public class BiomeChange implements Change {
      * @param position the position
      * @param previous the previous biome
      * @param current the current biome
+     * @deprecated use {@link BiomeChange#BiomeChange(BlockVector3, BiomeType, BiomeType)}
      */
+    @Deprecated
     public BiomeChange(BlockVector2 position, BiomeType previous, BiomeType current) {
+        checkNotNull(position);
+        checkNotNull(previous);
+        checkNotNull(current);
+        this.position = position.toBlockVector3();
+        this.previous = previous;
+        this.current = current;
+    }
+
+    /**
+     * Create a new biome change.
+     *
+     * @param position the position
+     * @param previous the previous biome
+     * @param current the current biome
+     */
+    public BiomeChange(BlockVector3 position, BiomeType previous, BiomeType current) {
         checkNotNull(position);
         checkNotNull(previous);
         checkNotNull(current);
@@ -62,7 +81,8 @@ public class BiomeChange implements Change {
      * @return the position
      */
     public BlockVector2 getPosition() {
-        return position;
+        // TODO Decide what to do here
+        return position.toBlockVector2();
     }
 
     /**

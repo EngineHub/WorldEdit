@@ -52,10 +52,10 @@ public class ExtentBufferedCompositePattern extends AbstractExtentPattern {
     }
 
     @Override
-    public BaseBlock apply(BlockVector3 position) {
+    public BaseBlock applyBlock(BlockVector3 position) {
         BaseBlock lastBlock = null;
         for (Pattern pattern : patterns) {
-            lastBlock = pattern.apply(position);
+            lastBlock = pattern.applyBlock(position);
             try {
                 getExtent().setBlock(position, lastBlock);
             } catch (WorldEditException ignored) { // buffer doesn't throw

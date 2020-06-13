@@ -21,19 +21,35 @@ package com.sk89q.worldedit.function.pattern;
 
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.world.block.BaseBlock;
-import com.sk89q.worldedit.world.block.BlockStateHolder;
 
 /**
- * Returns a {@link BlockStateHolder} for a given position.
+ * Returns a {@link BaseBlock} for a given position.
  */
 public interface Pattern {
 
     /**
-     * Return a {@link BlockStateHolder} for the given position.
+     * Return a {@link BaseBlock} for the given position.
+     *
+     * @param position the position
+     * @return a block
+     * @deprecated use {@link Pattern#applyBlock(BlockVector3)}
+     */
+    @Deprecated
+    default BaseBlock apply(BlockVector3 position) {
+        throw new IllegalStateException("applyBlock(BlockVector3) must be overridden.");
+    }
+
+    /**
+     * Return a {@link BaseBlock} for the given position.
+     *
+     * <p>
+     *     Note: This will not be default in WE8.
+     * </p>
      *
      * @param position the position
      * @return a block
      */
-    BaseBlock apply(BlockVector3 position);
-
+    default BaseBlock applyBlock(BlockVector3 position) {
+        return apply(position);
+    }
 }

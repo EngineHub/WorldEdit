@@ -20,7 +20,7 @@
 package com.sk89q.worldedit.world.biome;
 
 import com.sk89q.worldedit.function.pattern.BiomePattern;
-import com.sk89q.worldedit.math.BlockVector2;
+import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.registry.Keyed;
 import com.sk89q.worldedit.registry.NamespacedRegistry;
 
@@ -63,7 +63,7 @@ public class BiomeType implements Keyed, BiomePattern {
     }
 
     @Override
-    public BiomeType apply(BlockVector2 position) {
+    public BiomeType applyBiome(BlockVector3 position) {
         return this;
     }
 }

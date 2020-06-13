@@ -58,12 +58,39 @@ public interface InputExtent {
     /**
      * Get the biome at the given location.
      *
-     * <p>If there is no biome available, then the ocean biome should be
+     * <p>If there is no biome available, then the void biome should be
      * returned.</p>
      *
      * @param position the (x, z) location to check the biome at
      * @return the biome at the location
+     * @deprecated Biomes in Minecraft are 3D now, use {@link InputExtent#getBiome(BlockVector3)}
      */
-    BiomeType getBiome(BlockVector2 position);
+    @Deprecated
+    default BiomeType getBiome(BlockVector2 position) {
+        throw new IllegalStateException("getBiome(BlockVector3) must be overridden.");
+    }
 
+    /**
+     * Get the biome at the given location.
+     *
+     * <p>
+     *     If there is no biome available, then the void biome should be
+     *     returned.
+     * </p>
+     *
+     * <p>
+     *     As implementation varies per Minecraft version, this may not exactly get
+     *     this positions biome. On versions prior to 1.15, this will get the entire
+     *     column. On later versions it will get the 4x4x4 cube's biome.
+     * </p>
+     * <p>
+     *     Note: This method will no longer be defaulted in WE 8.
+     * </p>
+     *
+     * @param position the (x, y, z) location to check the biome at
+     * @return the biome at the location
+     */
+    default BiomeType getBiome(BlockVector3 position) {
+        return getBiome(position.toBlockVector2());
+    }
 }

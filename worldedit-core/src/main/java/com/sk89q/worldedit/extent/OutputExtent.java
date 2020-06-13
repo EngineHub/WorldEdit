@@ -58,8 +58,32 @@ public interface OutputExtent {
      * @param position the (x, z) location to set the biome at
      * @param biome the biome to set to
      * @return true if the biome was successfully set (return value may not be accurate)
+     * @deprecated Biomes in Minecraft are 3D now, use {@link OutputExtent#setBiome(BlockVector3, BiomeType)}
      */
-    boolean setBiome(BlockVector2 position, BiomeType biome);
+    @Deprecated
+    default boolean setBiome(BlockVector2 position, BiomeType biome) {
+        throw new IllegalStateException("setBiome(BlockVector3, BiomeType) must be overridden.");
+    }
+
+    /**
+     * Set the biome.
+     *
+     * <p>
+     *     As implementation varies per Minecraft version, this may not exactly set
+     *     this positions biome. On versions prior to 1.15, this will set the entire
+     *     column. On later versions it will set the 4x4x4 cube.
+     * </p>
+     * <p>
+     *     Note: This method will no longer be defaulted in WE 8.
+     * </p>
+     *
+     * @param position the (x, y, z) location to set the biome at
+     * @param biome the biome to set to
+     * @return true if the biome was successfully set (return value may not be accurate)
+     */
+    default boolean setBiome(BlockVector3 position, BiomeType biome) {
+        return setBiome(BlockVector2.at(position.getX(), position.getZ()), biome);
+    }
 
     /**
      * Return an {@link Operation} that should be called to tie up loose ends

@@ -20,6 +20,7 @@
 package com.sk89q.worldedit.function.pattern;
 
 import com.sk89q.worldedit.math.BlockVector2;
+import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.world.biome.BiomeType;
 
 /**
@@ -31,7 +32,25 @@ public interface BiomePattern {
      * Return a {@link BiomeType} for the given position.
      *
      * @param position the position
-     * @return a block
+     * @return a biome
+     * @deprecated use {@link BiomePattern#applyBiome(BlockVector3)}
      */
-    BiomeType apply(BlockVector2 position);
+    @Deprecated
+    default BiomeType apply(BlockVector2 position) {
+        throw new IllegalStateException("applyBiome(BlockVector3) must be overridden.");
+    }
+
+    /**
+     * Return a {@link BiomeType} for the given position.
+     *
+     * <p>
+     *     Note: This will not be default in WE8.
+     * </p>
+     *
+     * @param position the position
+     * @return a biome
+     */
+    default BiomeType applyBiome(BlockVector3 position) {
+        return apply(position.toBlockVector2());
+    }
 }

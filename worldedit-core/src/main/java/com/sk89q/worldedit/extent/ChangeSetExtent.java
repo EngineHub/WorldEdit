@@ -69,7 +69,7 @@ public class ChangeSetExtent extends AbstractDelegateExtent {
     }
 
     @Override
-    public boolean setBiome(BlockVector2 position, BiomeType biome) {
+    public boolean setBiome(BlockVector3 position, BiomeType biome) {
         BiomeType previous = getBiome(position);
         changeSet.add(new BiomeChange(position, previous, biome));
         return super.setBiome(position, biome);

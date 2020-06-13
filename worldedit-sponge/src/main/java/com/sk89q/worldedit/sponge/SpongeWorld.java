@@ -205,17 +205,17 @@ public abstract class SpongeWorld extends AbstractWorld {
     }
 
     @Override
-    public BiomeType getBiome(BlockVector2 position) {
+    public BiomeType getBiome(BlockVector3 position) {
         checkNotNull(position);
-        return SpongeAdapter.adapt(getWorld().getBiome(position.getBlockX(), 0, position.getBlockZ()));
+        return SpongeAdapter.adapt(getWorld().getBiome(position.getBlockX(), position.getBlockY(), position.getBlockZ()));
     }
 
     @Override
-    public boolean setBiome(BlockVector2 position, BiomeType biome) {
+    public boolean setBiome(BlockVector3 position, BiomeType biome) {
         checkNotNull(position);
         checkNotNull(biome);
 
-        getWorld().setBiome(position.getBlockX(), 0, position.getBlockZ(), SpongeAdapter.adapt(biome));
+        getWorld().setBiome(position.getBlockX(), position.getY(), position.getBlockZ(), SpongeAdapter.adapt(biome));
         return true;
     }
 

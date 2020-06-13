@@ -609,12 +609,12 @@ public class EditSession implements Extent, AutoCloseable {
     }
 
     @Override
-    public BiomeType getBiome(BlockVector2 position) {
+    public BiomeType getBiome(BlockVector3 position) {
         return bypassNone.getBiome(position);
     }
 
     @Override
-    public boolean setBiome(BlockVector2 position, BiomeType biome) {
+    public boolean setBiome(BlockVector3 position, BiomeType biome) {
         return bypassNone.setBiome(position, biome);
     }
 

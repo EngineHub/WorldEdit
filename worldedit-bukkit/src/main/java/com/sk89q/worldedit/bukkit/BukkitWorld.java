@@ -479,12 +479,14 @@ public class BukkitWorld extends AbstractWorld {
     }
 
     @Override
-    public BiomeType getBiome(BlockVector2 position) {
+    public BiomeType getBiome(BlockVector3 position) {
+        // TODO 3D biomes
         return BukkitAdapter.adapt(getWorld().getBiome(position.getBlockX(), position.getBlockZ()));
     }
 
     @Override
-    public boolean setBiome(BlockVector2 position, BiomeType biome) {
+    public boolean setBiome(BlockVector3 position, BiomeType biome) {
+        // TODO Ughhh
         getWorld().setBiome(position.getBlockX(), position.getBlockZ(), BukkitAdapter.adapt(biome));
         return true;
     }
