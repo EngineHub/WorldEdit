@@ -72,11 +72,22 @@ public class BukkitWorld extends AbstractWorld {
 
     private static final Logger logger = WorldEdit.logger;
 
+    private static final boolean HAS_3D_BIOMES;
+
     private static final Map<Integer, Effect> effects = new HashMap<>();
     static {
         for (Effect effect : Effect.values()) {
             effects.put(effect.getId(), effect);
         }
+
+        boolean temp;
+        try {
+            World.class.getMethod("getBiome", int.class, int.class, int.class);
+            temp = true;
+        } catch (NoSuchMethodException e) {
+            temp = false;
+        }
+        HAS_3D_BIOMES = temp;
     }
 
     private final WeakReference<World> worldRef;
@@ -478,16 +489,24 @@ public class BukkitWorld extends AbstractWorld {
         return false;
     }
 
+    @SuppressWarnings("deprecated")
     @Override
     public BiomeType getBiome(BlockVector3 position) {
-        // TODO 3D biomes
-        return BukkitAdapter.adapt(getWorld().getBiome(position.getBlockX(), position.getBlockZ()));
+        if (HAS_3D_BIOMES) {
+            return BukkitAdapter.adapt(getWorld().getBiome(position.getBlockX(), position.getBlockY(), position.getBlockZ()));
+        } else {
+            return BukkitAdapter.adapt(getWorld().getBiome(position.getBlockX(), position.getBlockZ()));
+        }
     }
 
+    @SuppressWarnings("deprecated")
     @Override
     public boolean setBiome(BlockVector3 position, BiomeType biome) {
-        // TODO Ughhh
-        getWorld().setBiome(position.getBlockX(), position.getBlockZ(), BukkitAdapter.adapt(biome));
+        if (HAS_3D_BIOMES) {
+            getWorld().setBiome(position.getBlockX(), position.getBlockY(), position.getBlockZ(), BukkitAdapter.adapt(biome));
+        } else {
+            getWorld().setBiome(position.getBlockX(), position.getBlockZ(), BukkitAdapter.adapt(biome));
+        }
         return true;
     }
 }
