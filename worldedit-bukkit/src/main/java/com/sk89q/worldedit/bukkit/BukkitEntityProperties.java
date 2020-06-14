@@ -22,6 +22,7 @@ package com.sk89q.worldedit.bukkit;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.sk89q.worldedit.entity.metadata.EntityProperties;
+import org.bukkit.entity.AbstractVillager;
 import org.bukkit.entity.Ambient;
 import org.bukkit.entity.Animals;
 import org.bukkit.entity.ArmorStand;
@@ -45,6 +46,18 @@ import org.bukkit.entity.Villager;
 import org.bukkit.entity.minecart.ExplosiveMinecart;
 
 class BukkitEntityProperties implements EntityProperties {
+
+    private static final boolean HAS_ABSTRACT_VILLAGER;
+    static {
+        boolean temp;
+        try {
+            Class.forName("org.bukkit.entity.AbstractVillager");
+            temp = true;
+        } catch (ClassNotFoundException e) {
+            temp = false;
+        }
+        HAS_ABSTRACT_VILLAGER = temp;
+    }
 
     private final Entity entity;
 
@@ -120,6 +133,9 @@ class BukkitEntityProperties implements EntityProperties {
 
     @Override
     public boolean isNPC() {
+        if (HAS_ABSTRACT_VILLAGER) {
+            return entity instanceof AbstractVillager;
+        }
         return entity instanceof Villager;
     }
 
