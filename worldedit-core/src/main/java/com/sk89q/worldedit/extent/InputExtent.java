@@ -67,7 +67,7 @@ public interface InputExtent {
      */
     @Deprecated
     default BiomeType getBiome(BlockVector2 position) {
-        throw new IllegalStateException("getBiome(BlockVector3) must be overridden.");
+        return getBiome(position.toBlockVector3());
     }
 
     /**
@@ -91,6 +91,14 @@ public interface InputExtent {
      * @return the biome at the location
      */
     default BiomeType getBiome(BlockVector3 position) {
+        // TODO Remove default in WE8
+        try {
+            if (getClass().getMethod("getBiome", BlockVector2.class).getDeclaringClass().equals(InputExtent.class)) {
+                throw new IllegalStateException("Class " + getClass().getName() + " must override getBiome(BlockVector3).");
+            }
+        } catch (NoSuchMethodException e) {
+            throw new AssertionError(e);
+        }
         return getBiome(position.toBlockVector2());
     }
 }

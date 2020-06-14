@@ -37,7 +37,7 @@ public interface BiomePattern {
      */
     @Deprecated
     default BiomeType apply(BlockVector2 position) {
-        throw new IllegalStateException("applyBiome(BlockVector3) must be overridden.");
+        return applyBiome(position.toBlockVector3());
     }
 
     /**
@@ -51,6 +51,14 @@ public interface BiomePattern {
      * @return a biome
      */
     default BiomeType applyBiome(BlockVector3 position) {
+        // TODO Remove default in WE8
+        try {
+            if (getClass().getMethod("apply", BlockVector2.class).getDeclaringClass().equals(BiomePattern.class)) {
+                throw new IllegalStateException("Class " + getClass().getName() + " must override applyBiome(BlockVector3).");
+            }
+        } catch (NoSuchMethodException e) {
+            throw new AssertionError(e);
+        }
         return apply(position.toBlockVector2());
     }
 }

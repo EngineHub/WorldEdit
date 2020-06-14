@@ -36,7 +36,7 @@ public interface Pattern {
      */
     @Deprecated
     default BaseBlock apply(BlockVector3 position) {
-        throw new IllegalStateException("applyBlock(BlockVector3) must be overridden.");
+        return applyBlock(position);
     }
 
     /**
@@ -50,6 +50,14 @@ public interface Pattern {
      * @return a block
      */
     default BaseBlock applyBlock(BlockVector3 position) {
+        // TODO Remove default in WE8
+        try {
+            if (getClass().getMethod("apply", BlockVector3.class).getDeclaringClass().equals(Pattern.class)) {
+                throw new IllegalStateException("Class " + getClass().getName() + " must override apply(BlockVector3).");
+            }
+        } catch (NoSuchMethodException e) {
+            throw new AssertionError(e);
+        }
         return apply(position);
     }
 }

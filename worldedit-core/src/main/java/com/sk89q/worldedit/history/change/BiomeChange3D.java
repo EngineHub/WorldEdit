@@ -24,7 +24,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.history.UndoContext;
-import com.sk89q.worldedit.math.BlockVector2;
+import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.world.biome.BiomeType;
 
 /**
@@ -33,12 +33,10 @@ import com.sk89q.worldedit.world.biome.BiomeType;
  * <p>This biome change does not have an {@link Extent} assigned to it because
  * one will be taken from the passed {@link UndoContext}. If the context
  * does not have an extent (it is null), cryptic errors may occur.</p>
- * @deprecated use {@link BiomeChange3D}
  */
-@Deprecated
-public class BiomeChange implements Change {
+public class BiomeChange3D implements Change {
 
-    private final BlockVector2 position;
+    private final BlockVector3 position;
     private final BiomeType previous;
     private final BiomeType current;
 
@@ -49,7 +47,7 @@ public class BiomeChange implements Change {
      * @param previous the previous biome
      * @param current the current biome
      */
-    public BiomeChange(BlockVector2 position, BiomeType previous, BiomeType current) {
+    public BiomeChange3D(BlockVector3 position, BiomeType previous, BiomeType current) {
         checkNotNull(position);
         checkNotNull(previous);
         checkNotNull(current);
@@ -63,8 +61,7 @@ public class BiomeChange implements Change {
      *
      * @return the position
      */
-    public BlockVector2 getPosition() {
-        // TODO Decide what to do here
+    public BlockVector3 getPosition() {
         return position;
     }
 
@@ -88,12 +85,12 @@ public class BiomeChange implements Change {
 
     @Override
     public void undo(UndoContext context) throws WorldEditException {
-        checkNotNull(context.getExtent()).setBiome(position.toBlockVector3(), previous);
+        checkNotNull(context.getExtent()).setBiome(position, previous);
     }
 
     @Override
     public void redo(UndoContext context) throws WorldEditException {
-        checkNotNull(context.getExtent()).setBiome(position.toBlockVector3(), current);
+        checkNotNull(context.getExtent()).setBiome(position, current);
     }
 
 }

@@ -62,7 +62,7 @@ public interface OutputExtent {
      */
     @Deprecated
     default boolean setBiome(BlockVector2 position, BiomeType biome) {
-        throw new IllegalStateException("setBiome(BlockVector3, BiomeType) must be overridden.");
+        return setBiome(position.toBlockVector3(), biome);
     }
 
     /**
@@ -82,7 +82,15 @@ public interface OutputExtent {
      * @return true if the biome was successfully set (return value may not be accurate)
      */
     default boolean setBiome(BlockVector3 position, BiomeType biome) {
-        return setBiome(BlockVector2.at(position.getX(), position.getZ()), biome);
+        // TODO Remove default in WE8
+        try {
+            if (getClass().getMethod("setBiome", BlockVector2.class, BiomeType.class).getDeclaringClass().equals(OutputExtent.class)) {
+                throw new IllegalStateException("Class " + getClass().getName() + " must override setBiome(BlockVector3, BiomeType).");
+            }
+        } catch (NoSuchMethodException e) {
+            throw new AssertionError(e);
+        }
+        return setBiome(position.toBlockVector2(), biome);
     }
 
     /**
