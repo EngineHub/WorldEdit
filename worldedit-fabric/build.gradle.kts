@@ -149,6 +149,7 @@ tasks.register<RemapJarTask>("remapShadowJar") {
     input.set(shadowJar.archiveFile)
     archiveFileName.set(shadowJar.archiveFileName.get().replace(Regex("-dev\\.jar$"), ".jar"))
     addNestedDependencies.set(true)
+    remapAccessWidener.set(true)
 }
 
 tasks.named("assemble").configure {
