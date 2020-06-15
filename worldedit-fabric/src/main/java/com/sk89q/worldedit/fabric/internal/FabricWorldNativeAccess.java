@@ -124,11 +124,11 @@ public class FabricWorldNativeAccess implements WorldNativeAccess<WorldChunk, Bl
     }
 
     @Override
-    public void updateNeighbors(BlockPos pos, BlockState oldState, BlockState newState) {
+    public void updateNeighbors(BlockPos pos, BlockState oldState, BlockState newState, int recursionLimit) {
         World world = getWorld();
-        oldState.prepare(world, pos, NOTIFY);
-        newState.updateNeighbors(world, pos, NOTIFY);
-        newState.prepare(world, pos, NOTIFY);
+        oldState.prepare(world, pos, NOTIFY, recursionLimit);
+        newState.updateNeighbors(world, pos, NOTIFY, recursionLimit);
+        newState.prepare(world, pos, NOTIFY, recursionLimit);
     }
 
     @Override

@@ -144,7 +144,7 @@ public interface WorldNativeAccess<NC, NBS, NP> {
 
     void notifyNeighbors(NP pos, NBS oldState, NBS newState);
 
-    void updateNeighbors(NP pos, NBS oldState, NBS newState);
+    void updateNeighbors(NP pos, NBS oldState, NBS newState, int recursionLimit);
 
     void onBlockStateChange(NP pos, NBS oldState, NBS newState);
 
@@ -175,7 +175,7 @@ public interface WorldNativeAccess<NC, NBS, NP> {
 
         // Make connection updates optional
         if (sideEffectSet.shouldApply(SideEffect.VALIDATION)) {
-            updateNeighbors(pos, oldState, newState);
+            updateNeighbors(pos, oldState, newState, 512);
         }
 
         onBlockStateChange(pos, oldState, newState);
