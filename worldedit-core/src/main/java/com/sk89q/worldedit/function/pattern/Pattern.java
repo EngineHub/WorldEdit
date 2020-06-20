@@ -20,6 +20,7 @@
 package com.sk89q.worldedit.function.pattern;
 
 import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.util.DeprecationUtil;
 import com.sk89q.worldedit.world.block.BaseBlock;
 
 /**
@@ -51,13 +52,9 @@ public interface Pattern {
      */
     default BaseBlock applyBlock(BlockVector3 position) {
         // TODO Remove default in WE8
-        try {
-            if (getClass().getMethod("apply", BlockVector3.class).getDeclaringClass().equals(Pattern.class)) {
-                throw new IllegalStateException("Class " + getClass().getName() + " must override apply(BlockVector3).");
-            }
-        } catch (NoSuchMethodException e) {
-            throw new AssertionError(e);
-        }
+        DeprecationUtil.checkDelegatingOverride(getClass(), Pattern.class, "applyBlock(BlockVector3)", "apply",
+                BlockVector3.class);
+
         return apply(position);
     }
 }

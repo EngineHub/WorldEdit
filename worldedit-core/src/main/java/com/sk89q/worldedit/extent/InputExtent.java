@@ -22,6 +22,7 @@ package com.sk89q.worldedit.extent;
 import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.util.DeprecationUtil;
 import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;
@@ -58,7 +59,7 @@ public interface InputExtent {
     /**
      * Get the biome at the given location.
      *
-     * <p>If there is no biome available, then the void biome should be
+     * <p>If there is no biome available, then the ocean biome should be
      * returned.</p>
      *
      * @param position the (x, z) location to check the biome at
@@ -74,7 +75,7 @@ public interface InputExtent {
      * Get the biome at the given location.
      *
      * <p>
-     *     If there is no biome available, then the void biome should be
+     *     If there is no biome available, then the ocean biome should be
      *     returned.
      * </p>
      *
@@ -92,13 +93,8 @@ public interface InputExtent {
      */
     default BiomeType getBiome(BlockVector3 position) {
         // TODO Remove default in WE8
-        try {
-            if (getClass().getMethod("getBiome", BlockVector2.class).getDeclaringClass().equals(InputExtent.class)) {
-                throw new IllegalStateException("Class " + getClass().getName() + " must override getBiome(BlockVector3).");
-            }
-        } catch (NoSuchMethodException e) {
-            throw new AssertionError(e);
-        }
+        DeprecationUtil.checkDelegatingOverride(getClass(), InputExtent.class, "getBiome(BlockVector3)", "getBiome", BlockVector2.class);
+
         return getBiome(position.toBlockVector2());
     }
 }

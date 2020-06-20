@@ -355,7 +355,9 @@ public class SpongeSchematicReader extends NBTSchematicReader {
             int z = biomeIndex / width;
             int x = biomeIndex % width;
             BiomeType type = palette.get(bVal);
-            clipboard.setBiome(min.add(x, 0, z), type);
+            for (int y = 0; y < clipboard.getRegion().getHeight(); y++) {
+                clipboard.setBiome(min.add(x, y, z), type);
+            }
             biomeIndex++;
         }
     }

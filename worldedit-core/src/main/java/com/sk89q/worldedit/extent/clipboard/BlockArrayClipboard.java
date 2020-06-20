@@ -176,7 +176,7 @@ public class BlockArrayClipboard implements Clipboard {
             }
         }
 
-        return BiomeTypes.THE_VOID;
+        return BiomeTypes.OCEAN;
     }
 
     @Override

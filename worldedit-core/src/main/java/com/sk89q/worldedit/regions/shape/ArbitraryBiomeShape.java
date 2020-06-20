@@ -88,17 +88,12 @@ public abstract class ArbitraryBiomeShape {
             final BiomeType material = getBiome(x, y, z, baseBiome);
             if (material == null) {
                 // outside
-                cache[index] = BiomeTypes.THE_VOID;
+                cache[index] = null;
                 return null;
             }
 
             cache[index] = material;
             return material;
-        }
-
-        if (cacheEntry == BiomeTypes.THE_VOID) {
-            // outside
-            return null;
         }
 
         return cacheEntry;

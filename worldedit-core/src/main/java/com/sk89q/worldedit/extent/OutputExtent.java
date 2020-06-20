@@ -23,6 +23,7 @@ import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.util.DeprecationUtil;
 import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 
@@ -69,8 +70,8 @@ public interface OutputExtent {
      * Set the biome.
      *
      * <p>
-     *     As implementation varies per Minecraft version, this may not exactly set
-     *     this positions biome. On versions prior to 1.15, this will set the entire
+     *     As implementation varies per Minecraft version, this may set more than
+     *     this position's biome. On versions prior to 1.15, this will set the entire
      *     column. On later versions it will set the 4x4x4 cube.
      * </p>
      * <p>
@@ -83,13 +84,9 @@ public interface OutputExtent {
      */
     default boolean setBiome(BlockVector3 position, BiomeType biome) {
         // TODO Remove default in WE8
-        try {
-            if (getClass().getMethod("setBiome", BlockVector2.class, BiomeType.class).getDeclaringClass().equals(OutputExtent.class)) {
-                throw new IllegalStateException("Class " + getClass().getName() + " must override setBiome(BlockVector3, BiomeType).");
-            }
-        } catch (NoSuchMethodException e) {
-            throw new AssertionError(e);
-        }
+        DeprecationUtil.checkDelegatingOverride(getClass(), OutputExtent.class, "setBiome(BlockVector3, BiomeType)",
+                "setBiome", BlockVector2.class, BiomeType.class);
+
         return setBiome(position.toBlockVector2(), biome);
     }
 

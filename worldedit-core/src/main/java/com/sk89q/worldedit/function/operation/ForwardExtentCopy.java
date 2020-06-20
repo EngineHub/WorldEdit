@@ -251,9 +251,6 @@ public class ForwardExtentCopy implements Operation {
      * @param copyingBiomes true if copying
      */
     public void setCopyingBiomes(boolean copyingBiomes) {
-        if (copyingBiomes && !(region instanceof FlatRegion)) {
-            throw new UnsupportedOperationException("Can't copy biomes from region that doesn't implement FlatRegion");
-        }
         this.copyingBiomes = copyingBiomes;
     }
 
@@ -303,7 +300,7 @@ public class ForwardExtentCopy implements Operation {
 
             List<Operation> ops = Lists.newArrayList(blockVisitor);
 
-            if (copyingBiomes) { // double-check here even though we checked before
+            if (copyingBiomes) {
                 ExtentBiomeCopy biomeCopy = new ExtentBiomeCopy(source, from,
                         destination, to, currentTransform);
                 RegionFunction biomeFunction = sourceFunction == null ? biomeCopy

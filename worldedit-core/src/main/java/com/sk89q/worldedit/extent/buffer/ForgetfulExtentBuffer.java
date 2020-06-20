@@ -137,7 +137,7 @@ public class ForgetfulExtentBuffer extends AbstractDelegateExtent implements Pat
         if (biome != null) {
             return biome;
         } else {
-            return BiomeTypes.THE_VOID;
+            return BiomeTypes.OCEAN;
         }
     }
 
@@ -183,7 +183,7 @@ public class ForgetfulExtentBuffer extends AbstractDelegateExtent implements Pat
                 return biomeBuffer.keySet()
                         .stream()
                         .map(BlockVector3::toBlockVector2)
-                        .collect(Collectors.toList());
+                        .collect(Collectors.toSet());
             }
         };
     }

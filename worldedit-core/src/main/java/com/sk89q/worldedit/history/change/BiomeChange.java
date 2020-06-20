@@ -64,7 +64,6 @@ public class BiomeChange implements Change {
      * @return the position
      */
     public BlockVector2 getPosition() {
-        // TODO Decide what to do here
         return position;
     }
 

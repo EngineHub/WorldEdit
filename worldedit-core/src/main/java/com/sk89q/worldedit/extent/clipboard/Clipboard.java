@@ -60,7 +60,7 @@ public interface Clipboard extends Extent {
 
     /**
      * Returns true if the clipboard has biome data. This can be checked since {@link Extent#getBiome(BlockVector3)}
-     * strongly suggests returning {@link com.sk89q.worldedit.world.biome.BiomeTypes#THE_VOID} instead of {@code null}
+     * strongly suggests returning {@link com.sk89q.worldedit.world.biome.BiomeTypes#OCEAN} instead of {@code null}
      * if biomes aren't present.
      *
      * @return true if the clipboard has biome data set

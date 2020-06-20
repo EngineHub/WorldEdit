@@ -32,6 +32,8 @@ import java.util.Set;
 
 /**
  * Tests true if the biome at applied points is the same as the one given.
+ *
+ * @deprecated use {@link BiomeMask} as biomes are now 3D.
  */
 @Deprecated
 public class BiomeMask2D extends AbstractMask2D {

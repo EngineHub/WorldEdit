@@ -21,6 +21,7 @@ package com.sk89q.worldedit.function.pattern;
 
 import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.util.DeprecationUtil;
 import com.sk89q.worldedit.world.biome.BiomeType;
 
 /**
@@ -52,13 +53,8 @@ public interface BiomePattern {
      */
     default BiomeType applyBiome(BlockVector3 position) {
         // TODO Remove default in WE8
-        try {
-            if (getClass().getMethod("apply", BlockVector2.class).getDeclaringClass().equals(BiomePattern.class)) {
-                throw new IllegalStateException("Class " + getClass().getName() + " must override applyBiome(BlockVector3).");
-            }
-        } catch (NoSuchMethodException e) {
-            throw new AssertionError(e);
-        }
+        DeprecationUtil.checkDelegatingOverride(getClass(), BiomePattern.class, "applyBiome(BlockVector3)", "apply", BlockVector2.class);
+
         return apply(position.toBlockVector2());
     }
 }

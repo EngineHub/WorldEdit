@@ -25,6 +25,7 @@ import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.selector.limit.SelectorLimits;
+import com.sk89q.worldedit.util.DeprecationUtil;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.format.TextColor;
@@ -150,13 +151,8 @@ public interface RegionSelector {
      */
     default long getVolume() {
         // TODO Remove default once getArea is removed
-        try {
-            if (getClass().getMethod("getArea").getDeclaringClass().equals(RegionSelector.class)) {
-                throw new IllegalStateException("Class " + getClass().getName() + " must override getVolume.");
-            }
-        } catch (NoSuchMethodException e) {
-            throw new AssertionError(e);
-        }
+        DeprecationUtil.checkDelegatingOverride(getClass(), RegionSelector.class, "getVolume()", "getArea");
+
         return getArea();
     }
 
