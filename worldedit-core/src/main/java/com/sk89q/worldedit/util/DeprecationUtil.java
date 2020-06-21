@@ -23,6 +23,9 @@ import java.lang.reflect.Method;
 
 public class DeprecationUtil {
 
+    private DeprecationUtil() {
+    }
+
     public static void checkDelegatingOverride(
             Class<?> declaringClass,
             Class<?> implementingClass,
