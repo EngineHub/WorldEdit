@@ -21,6 +21,8 @@ package com.sk89q.worldedit.extent;
 
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.function.operation.Operation;
+import com.sk89q.worldedit.internal.util.DeprecationUtil;
+import com.sk89q.worldedit.internal.util.NonAbstractForCompatibility;
 import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.world.biome.BiomeType;
@@ -58,8 +60,37 @@ public interface OutputExtent {
      * @param position the (x, z) location to set the biome at
      * @param biome the biome to set to
      * @return true if the biome was successfully set (return value may not be accurate)
+     * @deprecated Biomes in Minecraft are 3D now, use {@link OutputExtent#setBiome(BlockVector3, BiomeType)}
      */
-    boolean setBiome(BlockVector2 position, BiomeType biome);
+    @Deprecated
+    default boolean setBiome(BlockVector2 position, BiomeType biome) {
+        return setBiome(position.toBlockVector3(), biome);
+    }
+
+    /**
+     * Set the biome.
+     *
+     * <p>
+     *     As implementation varies per Minecraft version, this may set more than
+     *     this position's biome. On versions prior to 1.15, this will set the entire
+     *     column. On later versions it will set the 4x4x4 cube.
+     * </p>
+     *
+     * @param position the (x, y, z) location to set the biome at
+     * @param biome the biome to set to
+     * @return true if the biome was successfully set (return value may not be accurate)
+     * @apiNote This must be overridden by new subclasses. See {@link NonAbstractForCompatibility}
+     *          for details
+     */
+    @NonAbstractForCompatibility(
+        delegateName = "setBiome",
+        delegateParams = { BlockVector3.class, BiomeType.class }
+    )
+    default boolean setBiome(BlockVector3 position, BiomeType biome) {
+        DeprecationUtil.checkDelegatingOverride(getClass());
+
+        return setBiome(position.toBlockVector2(), biome);
+    }
 
     /**
      * Return an {@link Operation} that should be called to tie up loose ends

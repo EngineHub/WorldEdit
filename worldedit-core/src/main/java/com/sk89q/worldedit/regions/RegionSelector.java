@@ -23,6 +23,8 @@ import com.google.common.collect.Lists;
 import com.sk89q.worldedit.IncompleteRegionException;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.extension.platform.Actor;
+import com.sk89q.worldedit.internal.util.DeprecationUtil;
+import com.sk89q.worldedit.internal.util.NonAbstractForCompatibility;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.selector.limit.SelectorLimits;
 import com.sk89q.worldedit.util.formatting.text.Component;
@@ -30,10 +32,9 @@ import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.format.TextColor;
 import com.sk89q.worldedit.world.World;
 
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import javax.annotation.Nullable;
 
 /**
  * Region selectors create {@link Region}s from a series of "selected points."
@@ -144,19 +145,17 @@ public interface RegionSelector {
     /**
      * Get the number of blocks inside the region.
      *
-     * <p>Note: This method <b>must</b> be overridden.</p>
-     *
      * @return number of blocks, or -1 if undefined
+     * @apiNote This must be overridden by new subclasses. See {@link NonAbstractForCompatibility}
+     *          for details
      */
+    @NonAbstractForCompatibility(
+        delegateName = "getArea",
+        delegateParams = {}
+    )
     default long getVolume() {
-        // TODO Remove default once getArea is removed
-        try {
-            if (getClass().getMethod("getArea").getDeclaringClass().equals(RegionSelector.class)) {
-                throw new IllegalStateException("Class " + getClass().getName() + " must override getVolume.");
-            }
-        } catch (NoSuchMethodException e) {
-            throw new AssertionError(e);
-        }
+        DeprecationUtil.checkDelegatingOverride(getClass());
+
         return getArea();
     }
 

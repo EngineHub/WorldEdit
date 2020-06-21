@@ -19,9 +19,11 @@
 
 package com.sk89q.worldedit.regions;
 
+import com.sk89q.worldedit.internal.util.NonAbstractForCompatibility;
 import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.Vector3;
+import com.sk89q.worldedit.internal.util.DeprecationUtil;
 import com.sk89q.worldedit.world.World;
 
 import java.util.List;
@@ -71,19 +73,17 @@ public interface Region extends Iterable<BlockVector3>, Cloneable {
     /**
      * Get the number of blocks in the region.
      *
-     * <p>Note: This method <b>must</b> be overridden.</p>
-     *
      * @return number of blocks
+     * @apiNote This must be overridden by new subclasses. See {@link NonAbstractForCompatibility}
+     *          for details
      */
+    @NonAbstractForCompatibility(
+        delegateName = "getArea",
+        delegateParams = {}
+    )
     default long getVolume() {
-        // TODO Remove default status when getArea is removed.
-        try {
-            if (getClass().getMethod("getArea").getDeclaringClass().equals(Region.class)) {
-                throw new IllegalStateException("Class " + getClass().getName() + " must override getVolume.");
-            }
-        } catch (NoSuchMethodException e) {
-            throw new AssertionError(e);
-        }
+        DeprecationUtil.checkDelegatingOverride(getClass());
+
         return getArea();
     }
 

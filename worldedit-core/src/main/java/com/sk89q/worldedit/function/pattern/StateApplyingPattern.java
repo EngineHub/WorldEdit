@@ -43,7 +43,7 @@ public class StateApplyingPattern extends AbstractExtentPattern {
     }
 
     @Override
-    public BaseBlock apply(BlockVector3 position) {
+    public BaseBlock applyBlock(BlockVector3 position) {
         BlockState block = getExtent().getBlock(position);
         for (Entry<Property<Object>, Object> entry : cache
                 .computeIfAbsent(block.getBlockType(), (b -> resolveProperties(states, b))).entrySet()) {

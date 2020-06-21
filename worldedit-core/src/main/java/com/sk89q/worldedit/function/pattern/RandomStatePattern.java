@@ -39,7 +39,7 @@ public class RandomStatePattern implements Pattern {
     }
 
     @Override
-    public BaseBlock apply(BlockVector3 position) {
+    public BaseBlock applyBlock(BlockVector3 position) {
         return blocks.get(rand.nextInt(blocks.size()));
     }
 }

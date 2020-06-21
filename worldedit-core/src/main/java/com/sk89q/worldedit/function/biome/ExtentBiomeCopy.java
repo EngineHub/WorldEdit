@@ -22,7 +22,9 @@ package com.sk89q.worldedit.function.biome;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.function.FlatRegionFunction;
+import com.sk89q.worldedit.function.RegionFunction;
 import com.sk89q.worldedit.math.BlockVector2;
+import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.transform.Transform;
 import com.sk89q.worldedit.world.biome.BiomeType;
 
@@ -31,12 +33,12 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * Copies the biome from one extent to another.
  */
-public class ExtentBiomeCopy implements FlatRegionFunction {
+public class ExtentBiomeCopy implements FlatRegionFunction, RegionFunction {
 
     private final Extent source;
     private final Extent destination;
-    private final BlockVector2 from;
-    private final BlockVector2 to;
+    private final BlockVector3 from;
+    private final BlockVector3 to;
     private final Transform transform;
 
     /**
@@ -47,8 +49,32 @@ public class ExtentBiomeCopy implements FlatRegionFunction {
      * @param destination the destination extent
      * @param to the destination offset
      * @param transform a transform to apply to positions (after source offset, before destination offset)
+     * @deprecated use {@link ExtentBiomeCopy#ExtentBiomeCopy(Extent, BlockVector3, Extent, BlockVector3, Transform)}
      */
+    @Deprecated
     public ExtentBiomeCopy(Extent source, BlockVector2 from, Extent destination, BlockVector2 to, Transform transform) {
+        checkNotNull(source);
+        checkNotNull(from);
+        checkNotNull(destination);
+        checkNotNull(to);
+        checkNotNull(transform);
+        this.source = source;
+        this.from = from.toBlockVector3();
+        this.destination = destination;
+        this.to = to.toBlockVector3();
+        this.transform = transform;
+    }
+
+    /**
+     * Make a new biome copy.
+     *
+     * @param source the source extent
+     * @param from the source offset
+     * @param destination the destination extent
+     * @param to the destination offset
+     * @param transform a transform to apply to positions (after source offset, before destination offset)
+     */
+    public ExtentBiomeCopy(Extent source, BlockVector3 from, Extent destination, BlockVector3 to, Transform transform) {
         checkNotNull(source);
         checkNotNull(from);
         checkNotNull(destination);
@@ -62,11 +88,21 @@ public class ExtentBiomeCopy implements FlatRegionFunction {
     }
 
     @Override
-    public boolean apply(BlockVector2 position) throws WorldEditException {
+    public boolean apply(BlockVector3 position) throws WorldEditException {
         BiomeType biome = source.getBiome(position);
-        BlockVector2 orig = position.subtract(from);
-        BlockVector2 transformed = transform.apply(orig.toVector3(0)).toVector2().toBlockPoint();
+        BlockVector3 orig = position.subtract(from);
+        BlockVector3 transformed = transform.apply(orig.toVector3()).toBlockPoint();
 
         return destination.setBiome(transformed.add(to), biome);
+    }
+
+    @Override
+    @Deprecated
+    public boolean apply(BlockVector2 position) throws WorldEditException {
+        boolean success = false;
+        for (int y = destination.getMinimumPoint().getY(); y <= destination.getMaximumPoint().getY(); y++) {
+            success |= apply(position.toBlockVector3(y));
+        }
+        return success;
     }
 }

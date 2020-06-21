@@ -19,21 +19,43 @@
 
 package com.sk89q.worldedit.function.pattern;
 
+import com.sk89q.worldedit.internal.util.DeprecationUtil;
+import com.sk89q.worldedit.internal.util.NonAbstractForCompatibility;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.world.block.BaseBlock;
-import com.sk89q.worldedit.world.block.BlockStateHolder;
 
 /**
- * Returns a {@link BlockStateHolder} for a given position.
+ * Returns a {@link BaseBlock} for a given position.
  */
 public interface Pattern {
 
     /**
-     * Return a {@link BlockStateHolder} for the given position.
+     * Return a {@link BaseBlock} for the given position.
      *
      * @param position the position
      * @return a block
+     * @deprecated use {@link Pattern#applyBlock(BlockVector3)}
      */
-    BaseBlock apply(BlockVector3 position);
+    @Deprecated
+    default BaseBlock apply(BlockVector3 position) {
+        return applyBlock(position);
+    }
 
+    /**
+     * Return a {@link BaseBlock} for the given position.
+     *
+     * @param position the position
+     * @return a block
+     * @apiNote This must be overridden by new subclasses. See {@link NonAbstractForCompatibility}
+     *          for details
+     */
+    @NonAbstractForCompatibility(
+        delegateName = "apply",
+        delegateParams = { BlockVector3.class }
+    )
+    default BaseBlock applyBlock(BlockVector3 position) {
+        DeprecationUtil.checkDelegatingOverride(getClass());
+
+        return apply(position);
+    }
 }

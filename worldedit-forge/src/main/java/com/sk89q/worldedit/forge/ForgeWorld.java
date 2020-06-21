@@ -201,16 +201,16 @@ public class ForgeWorld extends AbstractWorld {
     }
 
     @Override
-    public BiomeType getBiome(BlockVector2 position) {
+    public BiomeType getBiome(BlockVector3 position) {
         checkNotNull(position);
 
         IChunk chunk = getWorld().getChunk(position.getBlockX() >> 4, position.getBlockZ() >> 4);
         BiomeContainer biomes = checkNotNull(chunk.getBiomes());
-        return ForgeAdapter.adapt(biomes.getNoiseBiome(position.getX() >> 2, 0, position.getZ() >> 2));
+        return ForgeAdapter.adapt(biomes.getNoiseBiome(position.getX() >> 2, position.getY() >> 2, position.getZ() >> 2));
     }
 
     @Override
-    public boolean setBiome(BlockVector2 position, BiomeType biome) {
+    public boolean setBiome(BlockVector3 position, BiomeType biome) {
         checkNotNull(position);
         checkNotNull(biome);
 
@@ -219,11 +219,8 @@ public class ForgeWorld extends AbstractWorld {
         if (chunk == null || container == null) {
             return false;
         }
-        // Temporary, while biome setting is 2D only
-        for (int i = 0; i <= getMaxY(); i++) {
-            int idx = BiomeMath.computeBiomeIndex(position.getX(), i, position.getZ());
-            container.biomes[idx] = ForgeAdapter.adapt(biome);
-        }
+        int idx = BiomeMath.computeBiomeIndex(position.getX(), position.getY(), position.getZ());
+        container.biomes[idx] = ForgeAdapter.adapt(biome);
         chunk.setModified(true);
         return true;
     }

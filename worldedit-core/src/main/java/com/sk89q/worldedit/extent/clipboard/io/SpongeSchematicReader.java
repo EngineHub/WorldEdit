@@ -39,7 +39,6 @@ import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.extent.clipboard.BlockArrayClipboard;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
-import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
@@ -337,7 +336,7 @@ public class SpongeSchematicReader extends NBTSchematicReader {
         int biomeJ = 0;
         int bVal;
         int varIntLength;
-        BlockVector2 min = clipboard.getMinimumPoint().toBlockVector2();
+        BlockVector3 min = clipboard.getMinimumPoint();
         while (biomeJ < biomes.length) {
             bVal = 0;
             varIntLength = 0;
@@ -356,7 +355,9 @@ public class SpongeSchematicReader extends NBTSchematicReader {
             int z = biomeIndex / width;
             int x = biomeIndex % width;
             BiomeType type = palette.get(bVal);
-            clipboard.setBiome(min.add(x, z), type);
+            for (int y = 0; y < clipboard.getRegion().getHeight(); y++) {
+                clipboard.setBiome(min.add(x, y, z), type);
+            }
             biomeIndex++;
         }
     }

@@ -24,9 +24,8 @@ import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.command.util.SuggestionHelper;
 import com.sk89q.worldedit.extension.input.InputParseException;
 import com.sk89q.worldedit.extension.input.ParserContext;
-import com.sk89q.worldedit.function.mask.BiomeMask2D;
+import com.sk89q.worldedit.function.mask.BiomeMask;
 import com.sk89q.worldedit.function.mask.Mask;
-import com.sk89q.worldedit.function.mask.Masks;
 import com.sk89q.worldedit.internal.registry.InputParser;
 import com.sk89q.worldedit.world.biome.BiomeType;
 
@@ -77,6 +76,6 @@ public class BiomeMaskParser extends InputParser<Mask> {
             biomes.add(biome);
         }
 
-        return Masks.asMask(new BiomeMask2D(context.getExtent(), biomes));
+        return new BiomeMask(context.getExtent(), biomes);
     }
 }

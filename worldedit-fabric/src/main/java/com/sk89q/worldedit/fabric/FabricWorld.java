@@ -202,15 +202,15 @@ public class FabricWorld extends AbstractWorld {
     }
 
     @Override
-    public BiomeType getBiome(BlockVector2 position) {
+    public BiomeType getBiome(BlockVector3 position) {
         checkNotNull(position);
         Chunk chunk = getWorld().getChunk(position.getX() >> 4, position.getZ() >> 4);
         BiomeArray biomeArray = checkNotNull(chunk.getBiomeArray());
-        return FabricAdapter.adapt(biomeArray.getBiomeForNoiseGen(position.getX() >> 2, 0, position.getZ() >> 2));
+        return FabricAdapter.adapt(biomeArray.getBiomeForNoiseGen(position.getX() >> 2, position.getY() >> 2, position.getZ() >> 2));
     }
 
     @Override
-    public boolean setBiome(BlockVector2 position, BiomeType biome) {
+    public boolean setBiome(BlockVector3 position, BiomeType biome) {
         checkNotNull(position);
         checkNotNull(biome);
 
@@ -219,10 +219,7 @@ public class FabricWorld extends AbstractWorld {
             return false;
         }
         MutableBiomeArray biomeArray = MutableBiomeArray.inject(checkNotNull(chunk.getBiomeArray()));
-        // Temporary, while biome setting is 2D only
-        for (int i = 0; i <= getMaxY(); i++) {
-            biomeArray.setBiome(position.getX(), i, position.getZ(), FabricAdapter.adapt(biome));
-        }
+        biomeArray.setBiome(position.getX(), position.getY(), position.getZ(), FabricAdapter.adapt(biome));
         chunk.setShouldSave(true);
         return true;
     }

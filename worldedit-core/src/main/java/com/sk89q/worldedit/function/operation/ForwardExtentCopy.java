@@ -29,18 +29,14 @@ import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.entity.metadata.EntityProperties;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.function.CombinedRegionFunction;
-import com.sk89q.worldedit.function.FlatRegionFunction;
-import com.sk89q.worldedit.function.FlatRegionMaskingFilter;
 import com.sk89q.worldedit.function.RegionFunction;
 import com.sk89q.worldedit.function.RegionMaskingFilter;
 import com.sk89q.worldedit.function.biome.ExtentBiomeCopy;
 import com.sk89q.worldedit.function.block.ExtentBlockCopy;
 import com.sk89q.worldedit.function.entity.ExtentEntityCopy;
 import com.sk89q.worldedit.function.mask.Mask;
-import com.sk89q.worldedit.function.mask.Mask2D;
 import com.sk89q.worldedit.function.mask.Masks;
 import com.sk89q.worldedit.function.visitor.EntityVisitor;
-import com.sk89q.worldedit.function.visitor.FlatRegionVisitor;
 import com.sk89q.worldedit.function.visitor.RegionVisitor;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.transform.Identity;
@@ -78,7 +74,7 @@ public class ForwardExtentCopy implements Operation {
     private Transform currentTransform = null;
 
     private RegionVisitor lastVisitor;
-    private FlatRegionVisitor lastBiomeVisitor;
+    private RegionVisitor lastBiomeVisitor;
     private EntityVisitor lastEntityVisitor;
 
     private int affectedBlocks;
@@ -255,9 +251,6 @@ public class ForwardExtentCopy implements Operation {
      * @param copyingBiomes true if copying
      */
     public void setCopyingBiomes(boolean copyingBiomes) {
-        if (copyingBiomes && !(region instanceof FlatRegion)) {
-            throw new UnsupportedOperationException("Can't copy biomes from region that doesn't implement FlatRegion");
-        }
         this.copyingBiomes = copyingBiomes;
     }
 
@@ -307,13 +300,12 @@ public class ForwardExtentCopy implements Operation {
 
             List<Operation> ops = Lists.newArrayList(blockVisitor);
 
-            if (copyingBiomes && region instanceof FlatRegion) { // double-check here even though we checked before
-                ExtentBiomeCopy biomeCopy = new ExtentBiomeCopy(source, from.toBlockVector2(),
-                        destination, to.toBlockVector2(), currentTransform);
-                Mask2D biomeMask = sourceMask.toMask2D();
-                FlatRegionFunction biomeFunction = biomeMask == null ? biomeCopy
-                        : new FlatRegionMaskingFilter(biomeMask, biomeCopy);
-                FlatRegionVisitor biomeVisitor = new FlatRegionVisitor(((FlatRegion) region), biomeFunction);
+            if (copyingBiomes) {
+                ExtentBiomeCopy biomeCopy = new ExtentBiomeCopy(source, from,
+                        destination, to, currentTransform);
+                RegionFunction biomeFunction = sourceFunction == null ? biomeCopy
+                        : new RegionMaskingFilter(sourceMask, biomeCopy);
+                RegionVisitor biomeVisitor = new RegionVisitor(region, biomeFunction);
                 ops.add(biomeVisitor);
                 lastBiomeVisitor = biomeVisitor;
             }

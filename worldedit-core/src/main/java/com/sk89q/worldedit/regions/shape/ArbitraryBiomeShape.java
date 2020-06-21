@@ -20,9 +20,7 @@
 package com.sk89q.worldedit.regions.shape;
 
 import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.math.BlockVector2;
-import com.sk89q.worldedit.regions.CuboidRegion;
-import com.sk89q.worldedit.regions.FlatRegion;
+import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.biome.BiomeTypes;
@@ -33,36 +31,34 @@ import com.sk89q.worldedit.world.biome.BiomeTypes;
  */
 public abstract class ArbitraryBiomeShape {
 
-    private final FlatRegion extent;
-    private int cacheOffsetX;
-    private int cacheOffsetZ;
+    private final Region extent;
+    private final int cacheOffsetX;
+    private final int cacheOffsetY;
+    private final int cacheOffsetZ;
     @SuppressWarnings("FieldCanBeLocal")
-    private int cacheSizeX;
-    private int cacheSizeZ;
+    private final int cacheSizeX;
+    private final int cacheSizeY;
+    private final int cacheSizeZ;
 
     public ArbitraryBiomeShape(Region extent) {
-        if (extent instanceof FlatRegion) {
-            this.extent = (FlatRegion) extent;
-        }
-        else {
-            // TODO: polygonize
-            this.extent = new CuboidRegion(extent.getWorld(), extent.getMinimumPoint(), extent.getMaximumPoint());
-        }
+        this.extent = extent;
 
-        BlockVector2 min = extent.getMinimumPoint().toBlockVector2();
-        BlockVector2 max = extent.getMaximumPoint().toBlockVector2();
+        BlockVector3 min = extent.getMinimumPoint();
+        BlockVector3 max = extent.getMaximumPoint();
 
         cacheOffsetX = min.getBlockX() - 1;
+        cacheOffsetY = min.getBlockY() - 1;
         cacheOffsetZ = min.getBlockZ() - 1;
 
         cacheSizeX = max.getX() - cacheOffsetX + 2;
+        cacheSizeY = max.getY() - cacheOffsetY + 2;
         cacheSizeZ = max.getZ() - cacheOffsetZ + 2;
 
-        cache = new BiomeType[cacheSizeX * cacheSizeZ];
+        cache = new BiomeType[cacheSizeX * cacheSizeY * cacheSizeZ];
     }
 
-    protected Iterable<BlockVector2> getExtent() {
-        return extent.asFlatRegion();
+    protected Iterable<BlockVector3> getExtent() {
+        return extent;
     }
 
 
@@ -82,17 +78,17 @@ public abstract class ArbitraryBiomeShape {
      * @param defaultBaseBiome The default biome for the current column.
      * @return material to place or null to not place anything.
      */
-    protected abstract BiomeType getBiome(int x, int z, BiomeType defaultBaseBiome);
+    protected abstract BiomeType getBiome(int x, int y, int z, BiomeType defaultBaseBiome);
 
-    private BiomeType getBiomeCached(int x, int z, BiomeType baseBiome) {
-        final int index = (z - cacheOffsetZ) + (x - cacheOffsetX) * cacheSizeZ;
+    private BiomeType getBiomeCached(int x, int y, int z, BiomeType baseBiome) {
+        final int index = (y - cacheOffsetY) + (z - cacheOffsetZ) * cacheSizeY + (x - cacheOffsetX) * cacheSizeY * cacheSizeZ;
 
         final BiomeType cacheEntry = cache[index];
         if (cacheEntry == null) {// unknown, fetch material
-            final BiomeType material = getBiome(x, z, baseBiome);
+            final BiomeType material = getBiome(x, y, z, baseBiome);
             if (material == null) {
                 // outside
-                cache[index] = BiomeTypes.THE_VOID;
+                cache[index] = null;
                 return null;
             }
 
@@ -100,21 +96,16 @@ public abstract class ArbitraryBiomeShape {
             return material;
         }
 
-        if (cacheEntry == BiomeTypes.THE_VOID) {
-            // outside
-            return null;
-        }
-
         return cacheEntry;
     }
 
-    private boolean isInsideCached(int x, int z, BiomeType baseBiome) {
-        final int index = (z - cacheOffsetZ) + (x - cacheOffsetX) * cacheSizeZ;
+    private boolean isInsideCached(int x, int y, int z, BiomeType baseBiome) {
+        final int index = (y - cacheOffsetY) + (z - cacheOffsetZ) * cacheSizeY + (x - cacheOffsetX) * cacheSizeY * cacheSizeZ;
 
         final BiomeType cacheEntry = cache[index];
         if (cacheEntry == null) {
             // unknown block, meaning they must be outside the extent at this stage, but might still be inside the shape
-            return getBiomeCached(x, z, baseBiome) != null;
+            return getBiomeCached(x, y, z, baseBiome) != null;
         }
 
         return cacheEntry != BiomeTypes.THE_VOID;
@@ -131,12 +122,13 @@ public abstract class ArbitraryBiomeShape {
     public int generate(EditSession editSession, BiomeType baseBiome, boolean hollow) {
         int affected = 0;
 
-        for (BlockVector2 position : getExtent()) {
+        for (BlockVector3 position : getExtent()) {
             int x = position.getBlockX();
+            int y = position.getBlockY();
             int z = position.getBlockZ();
 
             if (!hollow) {
-                final BiomeType material = getBiome(x, z, baseBiome);
+                final BiomeType material = getBiome(x, y, z, baseBiome);
                 if (material != null && material != BiomeTypes.THE_VOID) {
                     editSession.getWorld().setBiome(position, material);
                     ++affected;
@@ -145,26 +137,34 @@ public abstract class ArbitraryBiomeShape {
                 continue;
             }
 
-            final BiomeType material = getBiomeCached(x, z, baseBiome);
+            final BiomeType material = getBiomeCached(x, y, z, baseBiome);
             if (material == null) {
                 continue;
             }
 
             boolean draw = false;
             do {
-                if (!isInsideCached(x + 1, z, baseBiome)) {
+                if (!isInsideCached(x + 1, y, z, material)) {
                     draw = true;
                     break;
                 }
-                if (!isInsideCached(x - 1, z, baseBiome)) {
+                if (!isInsideCached(x - 1, y, z, material)) {
                     draw = true;
                     break;
                 }
-                if (!isInsideCached(x, z + 1, baseBiome)) {
+                if (!isInsideCached(x, y, z + 1, material)) {
                     draw = true;
                     break;
                 }
-                if (!isInsideCached(x, z - 1, baseBiome)) {
+                if (!isInsideCached(x, y, z - 1, material)) {
+                    draw = true;
+                    break;
+                }
+                if (!isInsideCached(x, y + 1, z, material)) {
+                    draw = true;
+                    break;
+                }
+                if (!isInsideCached(x, y - 1, z, material)) {
                     draw = true;
                     break;
                 }
