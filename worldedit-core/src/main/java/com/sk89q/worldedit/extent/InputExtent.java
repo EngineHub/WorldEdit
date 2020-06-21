@@ -20,9 +20,10 @@
 package com.sk89q.worldedit.extent;
 
 import com.sk89q.worldedit.function.pattern.Pattern;
+import com.sk89q.worldedit.internal.util.DeprecationUtil;
+import com.sk89q.worldedit.internal.util.NonAbstractForCompatibility;
 import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.math.BlockVector3;
-import com.sk89q.worldedit.util.DeprecationUtil;
 import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;
@@ -84,16 +85,18 @@ public interface InputExtent {
      *     this positions biome. On versions prior to 1.15, this will get the entire
      *     column. On later versions it will get the 4x4x4 cube's biome.
      * </p>
-     * <p>
-     *     Note: This method will no longer be defaulted in WE 8.
-     * </p>
      *
      * @param position the (x, y, z) location to check the biome at
      * @return the biome at the location
+     * @apiNote This must be overridden by new subclasses. See {@link NonAbstractForCompatibility}
+     *          for details
      */
+    @NonAbstractForCompatibility(
+        delegateName = "getBiome",
+        delegateParams = { BlockVector2.class }
+    )
     default BiomeType getBiome(BlockVector3 position) {
-        // TODO Remove default in WE8
-        DeprecationUtil.checkDelegatingOverride(getClass(), InputExtent.class, "getBiome(BlockVector3)", "getBiome", BlockVector2.class);
+        DeprecationUtil.checkDelegatingOverride(getClass());
 
         return getBiome(position.toBlockVector2());
     }

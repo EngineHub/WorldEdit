@@ -21,9 +21,10 @@ package com.sk89q.worldedit.extent;
 
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.function.operation.Operation;
+import com.sk89q.worldedit.internal.util.DeprecationUtil;
+import com.sk89q.worldedit.internal.util.NonAbstractForCompatibility;
 import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.math.BlockVector3;
-import com.sk89q.worldedit.util.DeprecationUtil;
 import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 
@@ -74,18 +75,19 @@ public interface OutputExtent {
      *     this position's biome. On versions prior to 1.15, this will set the entire
      *     column. On later versions it will set the 4x4x4 cube.
      * </p>
-     * <p>
-     *     Note: This method will no longer be defaulted in WE 8.
-     * </p>
      *
      * @param position the (x, y, z) location to set the biome at
      * @param biome the biome to set to
      * @return true if the biome was successfully set (return value may not be accurate)
+     * @apiNote This must be overridden by new subclasses. See {@link NonAbstractForCompatibility}
+     *          for details
      */
+    @NonAbstractForCompatibility(
+        delegateName = "setBiome",
+        delegateParams = { BlockVector3.class, BiomeType.class }
+    )
     default boolean setBiome(BlockVector3 position, BiomeType biome) {
-        // TODO Remove default in WE8
-        DeprecationUtil.checkDelegatingOverride(getClass(), OutputExtent.class, "setBiome(BlockVector3, BiomeType)",
-                "setBiome", BlockVector2.class, BiomeType.class);
+        DeprecationUtil.checkDelegatingOverride(getClass());
 
         return setBiome(position.toBlockVector2(), biome);
     }

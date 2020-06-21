@@ -19,8 +19,9 @@
 
 package com.sk89q.worldedit.function.pattern;
 
+import com.sk89q.worldedit.internal.util.DeprecationUtil;
+import com.sk89q.worldedit.internal.util.NonAbstractForCompatibility;
 import com.sk89q.worldedit.math.BlockVector3;
-import com.sk89q.worldedit.util.DeprecationUtil;
 import com.sk89q.worldedit.world.block.BaseBlock;
 
 /**
@@ -43,17 +44,17 @@ public interface Pattern {
     /**
      * Return a {@link BaseBlock} for the given position.
      *
-     * <p>
-     *     Note: This will not be default in WE8.
-     * </p>
-     *
      * @param position the position
      * @return a block
+     * @apiNote This must be overridden by new subclasses. See {@link NonAbstractForCompatibility}
+     *          for details
      */
+    @NonAbstractForCompatibility(
+        delegateName = "apply",
+        delegateParams = { BlockVector3.class }
+    )
     default BaseBlock applyBlock(BlockVector3 position) {
-        // TODO Remove default in WE8
-        DeprecationUtil.checkDelegatingOverride(getClass(), Pattern.class, "applyBlock(BlockVector3)", "apply",
-                BlockVector3.class);
+        DeprecationUtil.checkDelegatingOverride(getClass());
 
         return apply(position);
     }
