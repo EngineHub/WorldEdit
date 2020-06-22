@@ -35,6 +35,14 @@ public class RhinoContextFactory extends ContextFactory {
     @Override
     protected Context makeContext() {
         RhinoContext cx = new RhinoContext(this);
+        try {
+            // Try to set ES6 compat flag (since 1.7.7)
+            Context.class.getDeclaredField("VERSION_ES6");
+            cx.setLanguageVersion(RhinoContext.VERSION_ES6);
+        } catch (NoSuchFieldException e) {
+            // best we can do, compatible with 1.7R2 that many people probably use
+            cx.setLanguageVersion(Context.VERSION_1_7);
+        }
         cx.setInstructionObserverThreshold(10000);
         return cx;
     }
