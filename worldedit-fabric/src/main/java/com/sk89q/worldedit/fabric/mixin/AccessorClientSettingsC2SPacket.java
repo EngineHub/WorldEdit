@@ -17,24 +17,17 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.fabric;
+package com.sk89q.worldedit.fabric.mixin;
 
-import com.sk89q.worldedit.world.block.BlockType;
-import com.sk89q.worldedit.world.registry.BlockCategoryRegistry;
-import net.minecraft.tag.BlockTags;
-import net.minecraft.tag.Tag;
-import net.minecraft.util.Identifier;
+import net.minecraft.network.packet.c2s.play.ClientSettingsC2SPacket;
+import net.minecraft.server.world.ThreadedAnvilChunkStorage;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.gen.Accessor;
 
-import java.util.Collections;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
+@Mixin(ClientSettingsC2SPacket.class)
+public interface AccessorClientSettingsC2SPacket {
 
-public class FabricBlockCategoryRegistry implements BlockCategoryRegistry {
-    @Override
-    public Set<BlockType> getCategorisedByName(String category) {
-        return Optional.ofNullable(BlockTags.getContainer().get(new Identifier(category)))
-                .map(Tag::values).orElse(Collections.emptyList())
-                .stream().map(FabricAdapter::adapt).collect(Collectors.toSet());
-    }
+    @Accessor
+    String getLanguage();
+
 }

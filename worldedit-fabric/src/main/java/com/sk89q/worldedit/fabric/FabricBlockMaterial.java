@@ -82,7 +82,8 @@ public class FabricBlockMaterial extends PassthroughBlockMaterial {
 
     @Override
     public boolean isToolRequired() {
-        return !delegate.canBreakByHand();
+        // TODO this property has been removed
+        throw new UnsupportedOperationException("Mojang no longer provides this information");
     }
 
     @Override

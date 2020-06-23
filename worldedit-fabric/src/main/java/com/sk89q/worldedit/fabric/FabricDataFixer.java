@@ -33,8 +33,8 @@ import com.google.gson.JsonParseException;
 import com.mojang.datafixers.DSL.TypeReference;
 import com.mojang.datafixers.DataFixer;
 import com.mojang.datafixers.DataFixerBuilder;
-import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.schemas.Schema;
+import com.mojang.serialization.Dynamic;
 import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.worldedit.fabric.internal.NBTConverter;
 import net.minecraft.datafixer.NbtOps;
@@ -45,6 +45,7 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
@@ -169,7 +170,7 @@ class FabricDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wo
 
     private static String fixName(String key, int srcVer, TypeReference type) {
         return INSTANCE.fixer.update(type, new Dynamic<>(OPS_NBT, StringTag.of(key)), srcVer, DATA_VERSION)
-                .asString().orElse(key);
+                .asString().result().orElse(key);
     }
 
     private static final NbtOps OPS_NBT = NbtOps.INSTANCE;
@@ -2434,17 +2435,17 @@ class FabricDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wo
     private static class DataConverterSignText implements DataConverter {
 
         public static final Gson a = new GsonBuilder().registerTypeAdapter(Text.class, new JsonDeserializer() {
-            Text a(JsonElement jsonelement, Type type, JsonDeserializationContext jsondeserializationcontext) throws JsonParseException {
+            MutableText a(JsonElement jsonelement, Type type, JsonDeserializationContext jsondeserializationcontext) throws JsonParseException {
                 if (jsonelement.isJsonPrimitive()) {
                     return new LiteralText(jsonelement.getAsString());
                 } else if (jsonelement.isJsonArray()) {
                     JsonArray jsonarray = jsonelement.getAsJsonArray();
-                    Text iTextComponent = null;
-                    Iterator iterator = jsonarray.iterator();
+                    MutableText iTextComponent = null;
+                    Iterator<JsonElement> iterator = jsonarray.iterator();
 
                     while (iterator.hasNext()) {
-                        JsonElement jsonelement1 = (JsonElement) iterator.next();
-                        Text iTextComponent1 = this.a(jsonelement1, jsonelement1.getClass(), jsondeserializationcontext);
+                        JsonElement jsonelement1 = iterator.next();
+                        MutableText iTextComponent1 = this.a(jsonelement1, jsonelement1.getClass(), jsondeserializationcontext);
 
                         if (iTextComponent == null) {
                             iTextComponent = iTextComponent1;

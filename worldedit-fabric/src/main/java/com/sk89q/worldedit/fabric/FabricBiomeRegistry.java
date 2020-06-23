@@ -61,7 +61,7 @@ class FabricBiomeRegistry implements BiomeRegistry {
         @SuppressWarnings("deprecation")
         @Override
         public String getName() {
-            return biome.getName().asFormattedString();
+            return biome.getName().asString();
         }
     }
 

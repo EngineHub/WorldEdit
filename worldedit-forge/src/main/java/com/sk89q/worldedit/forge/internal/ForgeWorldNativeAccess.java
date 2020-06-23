@@ -138,7 +138,7 @@ public class ForgeWorldNativeAccess implements WorldNativeAccess<Chunk, BlockSta
     }
 
     @Override
-    public void updateNeighbors(BlockPos pos, BlockState oldState, BlockState newState) {
+    public void updateNeighbors(BlockPos pos, BlockState oldState, BlockState newState, int recursionLimit) {
         World world = getWorld();
         oldState.updateDiagonalNeighbors(world, pos, NOTIFY);
         newState.updateNeighbors(world, pos, NOTIFY);

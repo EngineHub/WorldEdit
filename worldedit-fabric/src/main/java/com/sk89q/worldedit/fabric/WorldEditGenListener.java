@@ -19,22 +19,25 @@
 
 package com.sk89q.worldedit.fabric;
 
-import com.sk89q.worldedit.world.block.BlockType;
-import com.sk89q.worldedit.world.registry.BlockCategoryRegistry;
-import net.minecraft.tag.BlockTags;
-import net.minecraft.tag.Tag;
-import net.minecraft.util.Identifier;
+import net.minecraft.server.WorldGenerationProgressListener;
+import net.minecraft.util.math.ChunkPos;
+import net.minecraft.world.chunk.ChunkStatus;
 
-import java.util.Collections;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
+import javax.annotation.Nullable;
 
-public class FabricBlockCategoryRegistry implements BlockCategoryRegistry {
+// For now, this does nothing, but might be useful later for regen progress communication.
+class WorldEditGenListener implements WorldGenerationProgressListener {
+
     @Override
-    public Set<BlockType> getCategorisedByName(String category) {
-        return Optional.ofNullable(BlockTags.getContainer().get(new Identifier(category)))
-                .map(Tag::values).orElse(Collections.emptyList())
-                .stream().map(FabricAdapter::adapt).collect(Collectors.toSet());
+    public void start(ChunkPos spawnPos) {
     }
+
+    @Override
+    public void setChunkStatus(ChunkPos pos, @Nullable ChunkStatus status) {
+    }
+
+    @Override
+    public void stop() {
+    }
+
 }

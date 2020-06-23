@@ -6,7 +6,8 @@
         "MixinBiomeArray",
         "MixinServerPlayerEntity",
         "MixinMinecraftServer",
-        "AccessorServerPlayerEntity"
+        "AccessorClientSettingsC2SPacket",
+        "AccessorServerChunkManager"
     ],
     "server": [
     ],

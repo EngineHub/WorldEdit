@@ -40,6 +40,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.world.level.ServerWorldProperties;
 import org.enginehub.piston.Command;
 import org.enginehub.piston.CommandManager;
 
@@ -138,7 +139,7 @@ class FabricPlatform extends AbstractPlatform implements MultiUserPlatform {
             return world;
         } else {
             for (ServerWorld ws : server.getWorlds()) {
-                if (ws.getLevelProperties().getLevelName().equals(world.getName())) {
+                if (((ServerWorldProperties) ws.getLevelProperties()).getLevelName().equals(world.getName())) {
                     return new FabricWorld(ws);
                 }
             }

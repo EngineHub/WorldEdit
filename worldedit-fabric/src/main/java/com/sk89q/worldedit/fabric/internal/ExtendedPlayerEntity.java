@@ -17,24 +17,10 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.fabric;
+package com.sk89q.worldedit.fabric.internal;
 
-import com.sk89q.worldedit.world.block.BlockType;
-import com.sk89q.worldedit.world.registry.BlockCategoryRegistry;
-import net.minecraft.tag.BlockTags;
-import net.minecraft.tag.Tag;
-import net.minecraft.util.Identifier;
+public interface ExtendedPlayerEntity {
 
-import java.util.Collections;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
+    String getLanguage();
 
-public class FabricBlockCategoryRegistry implements BlockCategoryRegistry {
-    @Override
-    public Set<BlockType> getCategorisedByName(String category) {
-        return Optional.ofNullable(BlockTags.getContainer().get(new Identifier(category)))
-                .map(Tag::values).orElse(Collections.emptyList())
-                .stream().map(FabricAdapter::adapt).collect(Collectors.toSet());
-    }
 }

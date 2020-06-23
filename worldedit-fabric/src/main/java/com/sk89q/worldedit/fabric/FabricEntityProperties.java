@@ -19,10 +19,7 @@
 
 package com.sk89q.worldedit.fabric;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import com.sk89q.worldedit.entity.metadata.EntityProperties;
-import net.minecraft.entity.EnderEyeEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.entity.FallingBlockEntity;
@@ -36,14 +33,16 @@ import net.minecraft.entity.decoration.painting.PaintingEntity;
 import net.minecraft.entity.mob.AmbientEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.passive.AnimalEntity;
-import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.passive.GolemEntity;
+import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.Projectile;
+import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.village.Trader;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public class FabricEntityProperties implements EntityProperties {
 
@@ -61,7 +60,7 @@ public class FabricEntityProperties implements EntityProperties {
 
     @Override
     public boolean isProjectile() {
-        return entity instanceof EnderEyeEntity || entity instanceof Projectile;
+        return entity instanceof ProjectileEntity;
     }
 
     @Override

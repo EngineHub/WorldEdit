@@ -27,7 +27,6 @@ import net.minecraft.server.network.ServerPlayerInteractionManager;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.stat.Stat;
 import net.minecraft.text.Text;
-import net.minecraft.world.dimension.DimensionType;
 
 import javax.annotation.Nullable;
 import java.util.UUID;
@@ -52,16 +51,13 @@ public class WorldEditFakePlayer extends ServerPlayerEntity {
     }
 
     @Override
-    public void sendMessage(Text component) {
-    }
-
-    @Override
-    public void addChatMessage(Text component, boolean opt) {
+    public void sendMessage(Text message, boolean actionBar) {
+        super.sendMessage(message, actionBar);
     }
 
     @Nullable
     @Override
-    public Entity changeDimension(DimensionType dimensionType) {
+    public Entity changeDimension(ServerWorld serverWorld) {
         return this;
     }
 

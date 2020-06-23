@@ -1,4 +1,5 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import net.fabricmc.loom.LoomGradleExtension
 import net.fabricmc.loom.task.RemapJarTask
 
 buildscript {
@@ -19,13 +20,26 @@ applyShadowConfiguration()
 
 apply(plugin = "fabric-loom")
 
-val minecraftVersion = "1.15.2"
-val yarnMappings = "1.15.2+build.14:v2"
-val loaderVersion = "0.7.8+build.189"
+configure<LoomGradleExtension> {
+    accessWidener("src/main/resources/worldedit.accesswidener")
+}
+
+val minecraftVersion = "1.16"
+val yarnMappings = "1.16+build.1:v2"
+val loaderVersion = "0.8.8+build.202"
 
 configurations.all {
     resolutionStrategy {
         force("com.google.guava:guava:21.0")
+    }
+}
+
+val fabricApiConfiguration: Configuration = configurations.create("fabricApi")
+
+repositories {
+    maven {
+        name = "Fabric"
+        url = uri("https://maven.fabricmc.net/")
     }
 }
 
@@ -37,12 +51,43 @@ dependencies {
     "mappings"("net.fabricmc:yarn:$yarnMappings")
     "modCompile"("net.fabricmc:fabric-loader:$loaderVersion")
 
-    listOf(
-        "net.fabricmc.fabric-api:fabric-api-base:0.1.2+28f8190f42",
-        "net.fabricmc.fabric-api:fabric-events-interaction-v0:0.2.6+12515ed975",
-        "net.fabricmc.fabric-api:fabric-events-lifecycle-v0:0.1.2+b7f9825de8",
-        "net.fabricmc.fabric-api:fabric-networking-v0:0.1.7+12515ed975"
-    ).forEach {
+    // [1] declare fabric-api dependency...
+    "fabricApi"("net.fabricmc.fabric-api:fabric-api:0.13.1+build.370-1.16")
+
+    // [2] and now we resolve it to pick out what we want :D
+    val wantedDependencies = setOf(
+        "net.fabricmc.fabric-api:fabric-api-base",
+        "net.fabricmc.fabric-api:fabric-events-interaction-v0",
+        "net.fabricmc.fabric-api:fabric-events-lifecycle-v0",
+        "net.fabricmc.fabric-api:fabric-networking-v0"
+    )
+    val fabricApiDependencies = fabricApiConfiguration.incoming.resolutionResult.allDependencies
+        .onEach {
+            if (it is UnresolvedDependencyResult) {
+                throw kotlin.IllegalStateException("Failed to resolve Fabric API", it.failure)
+            }
+        }
+        .filterIsInstance<ResolvedDependencyResult>()
+        // pick out transitive dependencies
+        .flatMap {
+            it.selected.dependencies
+        }
+        // grab the requested versions
+        .map { it.requested }
+        .filterIsInstance<ModuleComponentSelector>()
+        // map to standard notation
+        .associateByTo(
+            mutableMapOf(),
+            keySelector = { "${it.group}:${it.module}" },
+            valueTransform = { "${it.group}:${it.module}:${it.version}" }
+        )
+    fabricApiDependencies.keys.retainAll(wantedDependencies)
+    // sanity check
+    for (wantedDep in wantedDependencies) {
+        check(wantedDep in fabricApiDependencies) { "Fabric API library $wantedDep is missing!" }
+    }
+
+    fabricApiDependencies.values.forEach {
         "include"(it)
         "modImplementation"(it)
     }
@@ -104,6 +149,7 @@ tasks.register<RemapJarTask>("remapShadowJar") {
     input.set(shadowJar.archiveFile)
     archiveFileName.set(shadowJar.archiveFileName.get().replace(Regex("-dev\\.jar$"), ".jar"))
     addNestedDependencies.set(true)
+    remapAccessWidener.set(true)
 }
 
 tasks.named("assemble").configure {
