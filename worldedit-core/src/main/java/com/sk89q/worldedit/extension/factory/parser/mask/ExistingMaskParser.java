@@ -21,6 +21,7 @@ package com.sk89q.worldedit.extension.factory.parser.mask;
 
 import com.google.common.collect.ImmutableList;
 import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.extension.input.InputParseException;
 import com.sk89q.worldedit.extension.input.ParserContext;
 import com.sk89q.worldedit.function.mask.ExistingBlockMask;
 import com.sk89q.worldedit.function.mask.Mask;
@@ -42,7 +43,7 @@ public class ExistingMaskParser extends SimpleInputParser<Mask> {
     }
 
     @Override
-    public Mask parseFromSimpleInput(String input, ParserContext context) {
-        return new ExistingBlockMask(context.getExtent());
+    public Mask parseFromSimpleInput(String input, ParserContext context) throws InputParseException {
+        return new ExistingBlockMask(context.requireExtent());
     }
 }

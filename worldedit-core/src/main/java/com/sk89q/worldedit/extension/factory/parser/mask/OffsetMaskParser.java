@@ -61,7 +61,7 @@ public class OffsetMaskParser extends InputParser<Mask> {
         if (input.length() > 1) {
             submask = worldEdit.getMaskFactory().parseFromInput(input.substring(1), context);
         } else {
-            submask = new ExistingBlockMask(context.getExtent());
+            submask = new ExistingBlockMask(context.requireExtent());
         }
         OffsetMask offsetMask = new OffsetMask(submask, BlockVector3.at(0, firstChar == '>' ? -1 : 1, 0));
         return new MaskIntersection(offsetMask, Masks.negate(submask));

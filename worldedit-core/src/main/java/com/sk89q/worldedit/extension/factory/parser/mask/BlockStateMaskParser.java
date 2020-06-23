@@ -52,7 +52,7 @@ public class BlockStateMaskParser extends InputParser<Mask> {
         boolean strict = input.charAt(1) == '=';
         String states = input.substring(2 + (strict ? 1 : 0), input.length() - 1);
         try {
-            return new BlockStateMask(context.getExtent(),
+            return new BlockStateMask(context.requireExtent(),
                     Splitter.on(',').omitEmptyStrings().trimResults().withKeyValueSeparator('=').split(states),
                     strict);
         } catch (Exception e) {
