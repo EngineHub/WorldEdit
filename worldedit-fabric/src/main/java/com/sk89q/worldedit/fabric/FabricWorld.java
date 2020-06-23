@@ -309,6 +309,11 @@ public class FabricWorld extends AbstractWorld {
                 false
             )) {
                 regenForWorld(region, editSession, serverWorld);
+
+                // drive the server executor until all tasks are popped off
+                while (originalWorld.getServer().runTask()) {
+                    Thread.yield();
+                }
             }
         } finally {
             FileUtils.deleteDirectory(tempDir.toFile());
