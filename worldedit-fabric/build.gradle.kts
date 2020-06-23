@@ -24,9 +24,9 @@ configure<LoomGradleExtension> {
     accessWidener("src/main/resources/worldedit.accesswidener")
 }
 
-val minecraftVersion = "1.16-pre6"
-val yarnMappings = "1.16-pre6+build.1:v2"
-val loaderVersion = "0.8.7+build.201"
+val minecraftVersion = "1.16"
+val yarnMappings = "1.16+build.1:v2"
+val loaderVersion = "0.8.8+build.202"
 
 configurations.all {
     resolutionStrategy {
@@ -52,7 +52,7 @@ dependencies {
     "modCompile"("net.fabricmc:fabric-loader:$loaderVersion")
 
     // [1] declare fabric-api dependency...
-    "fabricApi"("net.fabricmc.fabric-api:fabric-api:0.12.1+build.361-1.16")
+    "fabricApi"("net.fabricmc.fabric-api:fabric-api:0.13.1+build.370-1.16")
 
     // [2] and now we resolve it to pick out what we want :D
     val wantedDependencies = setOf(
