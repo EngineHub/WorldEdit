@@ -33,9 +33,9 @@ public class VariedVectorGenerator {
     // For better coverage assurance, increase these values for a local Gradle run.
     // Don't do it for IntelliJ, it'll probably run out of memory.
     private static final int DEFAULT_DIVISIONS_XZ =
-        Integer.getInteger("variedvecs.divisions.xz", 5);
+        Integer.getInteger("variedvecs.divisions.xz", 2);
     private static final int DEFAULT_DIVISIONS_Y =
-        Integer.getInteger("variedvecs.divisions.y", 5);
+        Integer.getInteger("variedvecs.divisions.y", 2);
 
     public final int divisionsXZ;
     public final int divisionsY;

@@ -27,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @DisplayName("A 3D block vector")
 public class BlockVector3Test {
 
-    @VariedVectors.Test(capToVanilla = true, divisionsXZ = 50, divisionsY = 50)
+    @VariedVectors.Test(capToVanilla = true, divisionsXZ = 25, divisionsY = 25)
     @DisplayName("survives a round-trip through long-packing")
     void longPackingRoundTrip(BlockVector3 vec) {
         assertEquals(vec, BlockVector3.fromLongPackedForm(vec.toLongPackedForm()));
