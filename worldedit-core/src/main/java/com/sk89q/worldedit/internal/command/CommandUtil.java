@@ -52,14 +52,12 @@ public class CommandUtil {
 
     private static final Component DEPRECATION_MARKER = TextComponent.of("This command is deprecated.");
 
-    private static Component makeDeprecatedFooter(String reason, Component newCommand) {
+    private static Component makeDeprecatedFooter(String reason, Component replacement) {
         return TextComponent.builder()
             .append(DEPRECATION_MARKER)
             .append(" " + reason + ".")
             .append(TextComponent.newline())
-            .append(TextComponent.of("Use ", TextColor.GOLD, TextDecoration.ITALIC))
-            .append(newCommand)
-            .append(TextComponent.of(" instead.", TextColor.GOLD, TextDecoration.ITALIC))
+            .append(replacement.color(TextColor.GOLD).decoration(TextDecoration.ITALIC, true))
             .build();
     }
 
@@ -69,20 +67,48 @@ public class CommandUtil {
 
     }
 
+    public interface ReplacementMessageGenerator {
+
+        /**
+         * Generate text that says "Please use [cmd] instead." and allows clicking to dump
+         * the command to the text box.
+         */
+        static ReplacementMessageGenerator forNewCommand(NewCommandGenerator generator) {
+            return (oldCommand, oldParameters) -> {
+                String suggestedCommand = generator.newCommand(oldCommand, oldParameters);
+                return createNewCommandReplacementText(suggestedCommand);
+            };
+        }
+
+        Component getReplacement(Command oldCommand, CommandParameters oldParameters);
+
+    }
+
+    public static Component createNewCommandReplacementText(String suggestedCommand) {
+        return TextComponent.builder("Please use ", TextColor.GOLD)
+            .append(TextComponent.of(suggestedCommand)
+                .decoration(TextDecoration.UNDERLINED, true)
+                .clickEvent(ClickEvent.suggestCommand(suggestedCommand)))
+            .append(" instead.")
+            .build();
+    }
+
     public static Command deprecate(Command command, String reason,
-                                    NewCommandGenerator newCommandGenerator) {
+                                    ReplacementMessageGenerator replacementMessageGenerator) {
         Component deprecatedWarning = makeDeprecatedFooter(
             reason,
-            newCommandSuggestion(newCommandGenerator,
-                NoInputCommandParameters.builder().build(),
-                command)
+            replacementMessageGenerator.getReplacement(
+                command,
+                NoInputCommandParameters.builder().build()
+            )
         );
         return command.toBuilder()
             .action(parameters ->
-                deprecatedCommandWarning(parameters, command, reason, newCommandGenerator))
+                deprecatedCommandWarning(parameters, command, reason, replacementMessageGenerator))
             .footer(command.getFooter()
                 .map(existingFooter -> existingFooter
-                    .append(TextComponent.newline()).append(deprecatedWarning))
+                    .append(TextComponent.newline())
+                    .append(deprecatedWarning))
                 .orElse(deprecatedWarning))
             .build();
     }
@@ -139,26 +165,28 @@ public class CommandUtil {
         CommandParameters parameters,
         Command command,
         String reason,
-        NewCommandGenerator generator
+        ReplacementMessageGenerator generator
     ) throws Exception {
         parameters.injectedValue(Key.of(Actor.class))
-            .ifPresent(actor -> {
-                Component suggestion = newCommandSuggestion(generator, parameters, command);
-                actor.print(TextComponent.of(reason + ". Please use ", TextColor.GOLD)
-                    .append(suggestion)
-                    .append(TextComponent.of(" instead."))
-                );
-            });
+            .ifPresent(actor ->
+                sendDeprecationMessage(parameters, command, reason, generator, actor)
+            );
         return command.getAction().run(parameters);
     }
 
-    private static Component newCommandSuggestion(NewCommandGenerator generator,
-                                                  CommandParameters parameters,
-                                                  Command command) {
-        String suggestedCommand = generator.newCommand(command, parameters);
-        return TextComponent.of(suggestedCommand)
-            .decoration(TextDecoration.UNDERLINED, true)
-            .clickEvent(ClickEvent.suggestCommand(suggestedCommand));
+    private static void sendDeprecationMessage(
+        CommandParameters parameters,
+        Command command,
+        String reason,
+        ReplacementMessageGenerator generator,
+        Actor actor
+    ) {
+        Component replacement = generator.getReplacement(command, parameters);
+        actor.print(
+            TextComponent.builder(reason + ". ", TextColor.GOLD)
+                .append(replacement)
+                .build()
+        );
     }
 
     public static Map<String, Command> getSubCommands(Command currentCommand) {
