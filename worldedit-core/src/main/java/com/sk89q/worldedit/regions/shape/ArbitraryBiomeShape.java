@@ -23,7 +23,8 @@ import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.world.biome.BiomeType;
-import com.sk89q.worldedit.world.biome.BiomeTypes;
+
+import java.util.BitSet;
 
 /**
  * Generates solid and hollow shapes according to materials returned by the
@@ -39,6 +40,8 @@ public abstract class ArbitraryBiomeShape {
     private final int cacheSizeX;
     private final int cacheSizeY;
     private final int cacheSizeZ;
+    private final BiomeType[] cache;
+    private final BitSet isCached;
 
     public ArbitraryBiomeShape(Region extent) {
         this.extent = extent;
@@ -55,20 +58,12 @@ public abstract class ArbitraryBiomeShape {
         cacheSizeZ = max.getZ() - cacheOffsetZ + 2;
 
         cache = new BiomeType[cacheSizeX * cacheSizeY * cacheSizeZ];
+        isCached = new BitSet(cache.length);
     }
 
     protected Iterable<BlockVector3> getExtent() {
         return extent;
     }
-
-
-    /**
-     * Cache entries:
-     * null = unknown
-     * OUTSIDE = outside
-     * else = inside
-     */
-    private final BiomeType[] cache;
 
     /**
      * Override this function to specify the shape to generate.
@@ -83,32 +78,18 @@ public abstract class ArbitraryBiomeShape {
     private BiomeType getBiomeCached(int x, int y, int z, BiomeType baseBiome) {
         final int index = (y - cacheOffsetY) + (z - cacheOffsetZ) * cacheSizeY + (x - cacheOffsetX) * cacheSizeY * cacheSizeZ;
 
-        final BiomeType cacheEntry = cache[index];
-        if (cacheEntry == null) {// unknown, fetch material
+        if (!isCached.get(index)) {
             final BiomeType material = getBiome(x, y, z, baseBiome);
-            if (material == null) {
-                // outside
-                cache[index] = null;
-                return null;
-            }
-
+            isCached.set(index);
             cache[index] = material;
             return material;
         }
 
-        return cacheEntry;
+        return cache[index];
     }
 
-    private boolean isInsideCached(int x, int y, int z, BiomeType baseBiome) {
-        final int index = (y - cacheOffsetY) + (z - cacheOffsetZ) * cacheSizeY + (x - cacheOffsetX) * cacheSizeY * cacheSizeZ;
-
-        final BiomeType cacheEntry = cache[index];
-        if (cacheEntry == null) {
-            // unknown block, meaning they must be outside the extent at this stage, but might still be inside the shape
-            return getBiomeCached(x, y, z, baseBiome) != null;
-        }
-
-        return cacheEntry != BiomeTypes.THE_VOID;
+    private boolean isOutside(int x, int y, int z, BiomeType baseBiome) {
+        return getBiomeCached(x, y, z, baseBiome) == null;
     }
 
     /**
@@ -122,6 +103,8 @@ public abstract class ArbitraryBiomeShape {
     public int generate(EditSession editSession, BiomeType baseBiome, boolean hollow) {
         int affected = 0;
 
+        boolean fullySupports3DBiomes = editSession.getWorld().fullySupports3DBiomes();
+
         for (BlockVector3 position : getExtent()) {
             int x = position.getBlockX();
             int y = position.getBlockY();
@@ -129,7 +112,10 @@ public abstract class ArbitraryBiomeShape {
 
             if (!hollow) {
                 final BiomeType material = getBiome(x, y, z, baseBiome);
-                if (material != null && material != BiomeTypes.THE_VOID) {
+                if (material != null) {
+                    if (!fullySupports3DBiomes) {
+                        position = position.withY(0);
+                    }
                     editSession.getWorld().setBiome(position, material);
                     ++affected;
                 }
@@ -142,36 +128,12 @@ public abstract class ArbitraryBiomeShape {
                 continue;
             }
 
-            boolean draw = false;
-            do {
-                if (!isInsideCached(x + 1, y, z, material)) {
-                    draw = true;
-                    break;
-                }
-                if (!isInsideCached(x - 1, y, z, material)) {
-                    draw = true;
-                    break;
-                }
-                if (!isInsideCached(x, y, z + 1, material)) {
-                    draw = true;
-                    break;
-                }
-                if (!isInsideCached(x, y, z - 1, material)) {
-                    draw = true;
-                    break;
-                }
-                if (!isInsideCached(x, y + 1, z, material)) {
-                    draw = true;
-                    break;
-                }
-                if (!isInsideCached(x, y - 1, z, material)) {
-                    draw = true;
-                    break;
-                }
-            } while (false);
-
-            if (!draw) {
+            if (!shouldDraw(x, y, z, material)) {
                 continue;
+            }
+
+            if (!fullySupports3DBiomes) {
+                position = position.withY(0);
             }
 
             editSession.getWorld().setBiome(position, material);
@@ -179,6 +141,27 @@ public abstract class ArbitraryBiomeShape {
         }
 
         return affected;
+    }
+
+    private boolean shouldDraw(int x, int y, int z, BiomeType material) {
+        // we should draw this if the surrounding blocks fall outside the shape,
+        // this position will form an edge of the hull
+        if (isOutside(x + 1, y, z, material)) {
+            return true;
+        }
+        if (isOutside(x - 1, y, z, material)) {
+            return true;
+        }
+        if (isOutside(x, y, z + 1, material)) {
+            return true;
+        }
+        if (isOutside(x, y, z - 1, material)) {
+            return true;
+        }
+        if (isOutside(x, y + 1, z, material)) {
+            return true;
+        }
+        return isOutside(x, y - 1, z, material);
     }
 
 }

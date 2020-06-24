@@ -489,6 +489,12 @@ public class BukkitWorld extends AbstractWorld {
         return false;
     }
 
+    @Override
+    public boolean fullySupports3DBiomes() {
+        // Supports if API does and we're not in the overworld
+        return HAS_3D_BIOMES && getWorld().getEnvironment() != World.Environment.NORMAL;
+    }
+
     @SuppressWarnings("deprecated")
     @Override
     public BiomeType getBiome(BlockVector3 position) {

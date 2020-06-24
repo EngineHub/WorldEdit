@@ -72,7 +72,9 @@ import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeContainer;
+import net.minecraft.world.biome.ColumnFuzzedBiomeMagnifier;
 import net.minecraft.world.biome.DefaultBiomeFeatures;
+import net.minecraft.world.biome.IBiomeMagnifier;
 import net.minecraft.world.chunk.AbstractChunkProvider;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.IChunk;
@@ -198,6 +200,12 @@ public class ForgeWorld extends AbstractWorld {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public boolean fullySupports3DBiomes() {
+        IBiomeMagnifier magnifier = getWorld().getDimension().getType().getMagnifier();
+        return !(magnifier instanceof ColumnFuzzedBiomeMagnifier);
     }
 
     @Override

@@ -92,6 +92,11 @@ public class NullWorld extends AbstractWorld {
     }
 
     @Override
+    public boolean fullySupports3DBiomes() {
+        return false;
+    }
+
+    @Override
     public BiomeType getBiome(BlockVector3 position) {
         return BiomeTypes.THE_VOID;
     }
