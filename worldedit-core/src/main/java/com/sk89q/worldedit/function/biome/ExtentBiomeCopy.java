@@ -26,6 +26,7 @@ import com.sk89q.worldedit.function.RegionFunction;
 import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.transform.Transform;
+import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.biome.BiomeType;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -91,9 +92,15 @@ public class ExtentBiomeCopy implements FlatRegionFunction, RegionFunction {
     public boolean apply(BlockVector3 position) throws WorldEditException {
         BiomeType biome = source.getBiome(position);
         BlockVector3 orig = position.subtract(from);
-        BlockVector3 transformed = transform.apply(orig.toVector3()).toBlockPoint();
+        BlockVector3 transformed = transform.apply(orig.toVector3())
+            .toBlockPoint()
+            .add(to);
 
-        return destination.setBiome(transformed.add(to), biome);
+        if (destination instanceof World && !((World) destination).fullySupports3DBiomes()) {
+            transformed = transformed.withY(0);
+        }
+
+        return destination.setBiome(transformed, biome);
     }
 
     @Override
