@@ -149,6 +149,11 @@ public class ClipboardWorld extends AbstractWorld implements Clipboard, CLIWorld
     }
 
     @Override
+    public boolean fullySupports3DBiomes() {
+        return true;
+    }
+
+    @Override
     public BiomeType getBiome(BlockVector3 position) {
         return clipboard.getBiome(position);
     }

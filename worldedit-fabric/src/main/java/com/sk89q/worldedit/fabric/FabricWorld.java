@@ -74,7 +74,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldProperties;
+import net.minecraft.world.biome.source.BiomeAccessType;
 import net.minecraft.world.biome.source.BiomeArray;
+import net.minecraft.world.biome.source.HorizontalVoronoiBiomeAccessType;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkManager;
 import net.minecraft.world.chunk.ChunkStatus;
@@ -189,6 +191,12 @@ public class FabricWorld extends AbstractWorld {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public boolean fullySupports3DBiomes() {
+        BiomeAccessType biomeAccessType = getWorld().getDimension().getBiomeAccessType();
+        return !(biomeAccessType instanceof HorizontalVoronoiBiomeAccessType);
     }
 
     @Override
