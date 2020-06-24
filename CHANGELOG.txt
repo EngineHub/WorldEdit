@@ -1,3 +1,34 @@
+7.2.0
+- Greatly improve WorldEdit performance on servers with many plugins (See more: https://matthewmiller.dev/talk/optimizing-your-application/)
+- Improve general WorldEdit performance
+- Added a fine-grained fast mode system with //perf to allow individually enabling or disabling update types
+- Added a stack tool that stacks the clicked block until it hits an obstacle (https://gfycat.com/faithfulhardtofinddingo)
+- Added 3D biomes support
+- Improve expression handling
+- Enable //watchdog by default
+- Improve archive file handling
+- Optimize polygon regions
+- Improved performance of the deform brush
+- Update to a newer Rhino release for craftscripts
+- Added support for 1.16
+- Improved ES6 support for craftscripts
+- Fixed an issue with edges of polygonal regions
+- Fixed multiple of the same flag being applied to commands not providing a friendly error
+- Fixed potential issues with direction name parsing in commands
+- Fixed numerous issues with using commands via the console
+- Fixed a bug where languages using non-latin fonts would look odd
+- Remove the "please report this" message in legacy schematic loading
+- Fixed some potential errors with Paper command handling and protocol hacks
+- Fixed //size having inconsistent colors
+- Fixed default namespace blocks being suggested and cluttering suggestion list
+- Fixed issue where command blocks wouldn't work with sessions
+- Fixed beds and banners in legacy schematics
+- Fixed an issue with random pattern suggestions
+- Fixed biome math on Forge and Fabric
+- Fixed vertical flip for stairs
+- Fixed region volume not displaying correctly for very large regions
+- Fixed wandering traders not being counted as NPCs in /butcher
+
 7.1.0
 - Improve the expression parser by compiling expressions for performance
 - Made ItemMaterial accessible via the API
