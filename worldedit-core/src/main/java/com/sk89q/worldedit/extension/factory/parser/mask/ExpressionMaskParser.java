@@ -57,7 +57,7 @@ public class ExpressionMaskParser extends InputParser<Mask> {
         try {
             Expression exp = Expression.compile(input.substring(1), "x", "y", "z");
             WorldEditExpressionEnvironment env = new WorldEditExpressionEnvironment(
-                    context.getExtent(), Vector3.ONE, Vector3.ZERO);
+                    context.requireExtent(), Vector3.ONE, Vector3.ZERO);
             exp.setEnvironment(env);
             if (context.getActor() != null) {
                 SessionOwner owner = context.getActor();
