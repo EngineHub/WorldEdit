@@ -82,7 +82,9 @@ public final class BundledBlockData {
         Gson gson = gsonBuilder.create();
         URL url = null;
         final int dataVersion = WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.WORLD_EDITING).getDataVersion();
-        if (dataVersion > 2224) { // > MC 1.14
+        if (dataVersion > 2566) { // > MC 1.15
+            url = resourceLoader.getResource(BundledBlockData.class, "blocks.116.json");
+        } else if (dataVersion > 2224) { // > MC 1.14
             url = resourceLoader.getResource(BundledBlockData.class, "blocks.115.json");
         } else if (dataVersion > 1900) { // > MC 1.13
             url = resourceLoader.getResource(BundledBlockData.class, "blocks.114.json");

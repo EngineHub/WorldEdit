@@ -63,6 +63,7 @@ public class EntityTypes {
     @Nullable public static final EntityType GHAST = get("minecraft:ghast");
     @Nullable public static final EntityType GIANT = get("minecraft:giant");
     @Nullable public static final EntityType GUARDIAN = get("minecraft:guardian");
+    @Nullable public static final EntityType HOGLIN = get("minecraft:hoglin");
     @Nullable public static final EntityType HOPPER_MINECART = get("minecraft:hopper_minecart");
     @Nullable public static final EntityType HORSE = get("minecraft:horse");
     @Nullable public static final EntityType HUSK = get("minecraft:husk");
@@ -84,6 +85,7 @@ public class EntityTypes {
     @Nullable public static final EntityType PARROT = get("minecraft:parrot");
     @Nullable public static final EntityType PHANTOM = get("minecraft:phantom");
     @Nullable public static final EntityType PIG = get("minecraft:pig");
+    @Nullable public static final EntityType PIGLIN = get("minecraft:piglin");
     @Nullable public static final EntityType PILLAGER = get("minecraft:pillager");
     @Nullable public static final EntityType PLAYER = get("minecraft:player");
     @Nullable public static final EntityType POLAR_BEAR = get("minecraft:polar_bear");
@@ -107,6 +109,7 @@ public class EntityTypes {
     @Nullable public static final EntityType SPIDER = get("minecraft:spider");
     @Nullable public static final EntityType SQUID = get("minecraft:squid");
     @Nullable public static final EntityType STRAY = get("minecraft:stray");
+    @Nullable public static final EntityType STRIDER = get("minecraft:strider");
     @Nullable public static final EntityType TNT = get("minecraft:tnt");
     @Nullable public static final EntityType TNT_MINECART = get("minecraft:tnt_minecart");
     @Nullable public static final EntityType TRADER_LLAMA = get("minecraft:trader_llama");
@@ -122,10 +125,12 @@ public class EntityTypes {
     @Nullable public static final EntityType WITHER_SKELETON = get("minecraft:wither_skeleton");
     @Nullable public static final EntityType WITHER_SKULL = get("minecraft:wither_skull");
     @Nullable public static final EntityType WOLF = get("minecraft:wolf");
+    @Nullable public static final EntityType ZOGLIN = get("minecraft:zoglin");
     @Nullable public static final EntityType ZOMBIE = get("minecraft:zombie");
     @Nullable public static final EntityType ZOMBIE_HORSE = get("minecraft:zombie_horse");
-    @Nullable public static final EntityType ZOMBIE_PIGMAN = get("minecraft:zombie_pigman");
+    @Nullable @Deprecated public static final EntityType ZOMBIE_PIGMAN = get("minecraft:zombie_pigman");
     @Nullable public static final EntityType ZOMBIE_VILLAGER = get("minecraft:zombie_villager");
+    @Nullable public static final EntityType ZOMBIFIED_PIGLIN = get("minecraft:zombified_piglin");
 
     private EntityTypes() {
     }
