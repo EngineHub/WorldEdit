@@ -24,8 +24,8 @@ configure<LoomGradleExtension> {
     accessWidener("src/main/resources/worldedit.accesswidener")
 }
 
-val minecraftVersion = "1.16"
-val yarnMappings = "1.16+build.1:v2"
+val minecraftVersion = "1.16.1"
+val yarnMappings = "1.16.1+build.4:v2"
 val loaderVersion = "0.8.8+build.202"
 
 configurations.all {

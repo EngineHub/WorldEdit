@@ -36,7 +36,7 @@ public final class Constants {
 
     static {
         NO_COPY_ENTITY_NBT_FIELDS = Collections.unmodifiableList(Arrays.asList(
-                "UUIDLeast", "UUIDMost", // Bukkit and Vanilla
+                "UUIDLeast", "UUIDMost", "UUID", // Bukkit and Vanilla
                 "WorldUUIDLeast", "WorldUUIDMost", // Bukkit and Vanilla
                 "PersistentIDMSB", "PersistentIDLSB" // Forge
         ));
