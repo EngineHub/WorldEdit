@@ -25,7 +25,7 @@ configure<LoomGradleExtension> {
 }
 
 val minecraftVersion = "1.16.1"
-val yarnMappings = "1.16.1+build.4:v2"
+val yarnMappings = "1.16.1+build.5:v2"
 val loaderVersion = "0.8.8+build.202"
 
 configurations.all {
