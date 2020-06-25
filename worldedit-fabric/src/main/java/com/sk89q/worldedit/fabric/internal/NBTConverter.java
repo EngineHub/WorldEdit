@@ -28,6 +28,7 @@ import com.sk89q.jnbt.FloatTag;
 import com.sk89q.jnbt.IntArrayTag;
 import com.sk89q.jnbt.IntTag;
 import com.sk89q.jnbt.ListTag;
+import com.sk89q.jnbt.LongArrayTag;
 import com.sk89q.jnbt.LongTag;
 import com.sk89q.jnbt.ShortTag;
 import com.sk89q.jnbt.StringTag;
@@ -58,6 +59,9 @@ public final class NBTConverter {
 
         } else if (tag instanceof LongTag) {
             return toNative((LongTag) tag);
+
+        } else if (tag instanceof LongArrayTag) {
+            return toNative((LongArrayTag) tag);
 
         } else if (tag instanceof StringTag) {
             return toNative((StringTag) tag);
@@ -107,6 +111,10 @@ public final class NBTConverter {
         return net.minecraft.nbt.LongTag.of(tag.getValue());
     }
 
+    public static net.minecraft.nbt.LongArrayTag toNative(LongArrayTag tag) {
+        return new net.minecraft.nbt.LongArrayTag(tag.getValue().clone());
+    }
+
     public static net.minecraft.nbt.StringTag toNative(StringTag tag) {
         return net.minecraft.nbt.StringTag.of(tag.getValue());
     }
@@ -120,8 +128,7 @@ public final class NBTConverter {
     }
 
     public static net.minecraft.nbt.ByteArrayTag toNative(ByteArrayTag tag) {
-        byte[] value = tag.getValue();
-        return new net.minecraft.nbt.ByteArrayTag(Arrays.copyOf(value, value.length));
+        return new net.minecraft.nbt.ByteArrayTag(tag.getValue().clone());
     }
 
     public static net.minecraft.nbt.CompoundTag toNative(CompoundTag tag) {
@@ -157,6 +164,9 @@ public final class NBTConverter {
         } else if (other instanceof net.minecraft.nbt.LongTag) {
             return fromNative((net.minecraft.nbt.LongTag) other);
 
+        } else if (other instanceof net.minecraft.nbt.LongArrayTag) {
+            return fromNative((net.minecraft.nbt.LongArrayTag) other);
+
         } else if (other instanceof net.minecraft.nbt.StringTag) {
             return fromNative((net.minecraft.nbt.StringTag) other);
 
@@ -191,7 +201,7 @@ public final class NBTConverter {
     }
 
     public static ListTag fromNative(net.minecraft.nbt.ListTag other) {
-        other = (net.minecraft.nbt.ListTag) other.copy();
+        other = other.copy();
         List<Tag> list = new ArrayList<>();
         Class<? extends Tag> listClass = StringTag.class;
         int tags = other.size();
@@ -211,6 +221,10 @@ public final class NBTConverter {
         return new LongTag(other.getLong());
     }
 
+    public static LongArrayTag fromNative(net.minecraft.nbt.LongArrayTag other) {
+        return new LongArrayTag(other.getLongArray().clone());
+    }
+
     public static StringTag fromNative(net.minecraft.nbt.StringTag other) {
         return new StringTag(other.asString());
     }
@@ -224,8 +238,7 @@ public final class NBTConverter {
     }
 
     public static ByteArrayTag fromNative(net.minecraft.nbt.ByteArrayTag other) {
-        byte[] value = other.getByteArray();
-        return new ByteArrayTag(Arrays.copyOf(value, value.length));
+        return new ByteArrayTag(other.getByteArray().clone());
     }
 
     public static CompoundTag fromNative(net.minecraft.nbt.CompoundTag other) {

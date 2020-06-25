@@ -28,6 +28,7 @@ import com.sk89q.jnbt.FloatTag;
 import com.sk89q.jnbt.IntArrayTag;
 import com.sk89q.jnbt.IntTag;
 import com.sk89q.jnbt.ListTag;
+import com.sk89q.jnbt.LongArrayTag;
 import com.sk89q.jnbt.LongTag;
 import com.sk89q.jnbt.ShortTag;
 import com.sk89q.jnbt.StringTag;
@@ -42,6 +43,7 @@ import net.minecraft.nbt.FloatNBT;
 import net.minecraft.nbt.IntArrayNBT;
 import net.minecraft.nbt.IntNBT;
 import net.minecraft.nbt.ListNBT;
+import net.minecraft.nbt.LongArrayNBT;
 import net.minecraft.nbt.LongNBT;
 import net.minecraft.nbt.StringNBT;
 import net.minecraft.nbt.ShortNBT;
@@ -71,6 +73,9 @@ public final class NBTConverter {
 
         } else if (tag instanceof LongTag) {
             return toNative((LongTag) tag);
+
+        } else if (tag instanceof LongArrayTag) {
+            return toNative((LongArrayTag) tag);
 
         } else if (tag instanceof StringTag) {
             return toNative((StringTag) tag);
@@ -120,6 +125,10 @@ public final class NBTConverter {
         return LongNBT.valueOf(tag.getValue());
     }
 
+    public static LongArrayNBT toNative(LongArrayTag tag) {
+        return new LongArrayNBT(tag.getValue().clone());
+    }
+
     public static StringNBT toNative(StringTag tag) {
         return StringNBT.valueOf(tag.getValue());
     }
@@ -133,8 +142,7 @@ public final class NBTConverter {
     }
 
     public static ByteArrayNBT toNative(ByteArrayTag tag) {
-        byte[] value = tag.getValue();
-        return new ByteArrayNBT(Arrays.copyOf(value, value.length));
+        return new ByteArrayNBT(tag.getValue().clone());
     }
 
     public static CompoundNBT toNative(CompoundTag tag) {
@@ -169,6 +177,9 @@ public final class NBTConverter {
 
         } else if (other instanceof LongNBT) {
             return fromNative((LongNBT) other);
+
+        } else if (other instanceof LongArrayNBT) {
+            return fromNative((LongArrayNBT) other);
 
         } else if (other instanceof StringNBT) {
             return fromNative((StringNBT) other);
@@ -224,6 +235,10 @@ public final class NBTConverter {
         return new LongTag(other.getLong());
     }
 
+    public static LongArrayTag fromNative(LongArrayNBT other) {
+        return new LongArrayTag(other.getAsLongArray().clone());
+    }
+
     public static StringTag fromNative(StringNBT other) {
         return new StringTag(other.getString());
     }
@@ -237,8 +252,7 @@ public final class NBTConverter {
     }
 
     public static ByteArrayTag fromNative(ByteArrayNBT other) {
-        byte[] value = other.getByteArray();
-        return new ByteArrayTag(Arrays.copyOf(value, value.length));
+        return new ByteArrayTag(other.getByteArray().clone());
     }
 
     public static CompoundTag fromNative(CompoundNBT other) {
