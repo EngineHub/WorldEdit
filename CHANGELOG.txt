@@ -10,7 +10,7 @@
 - Optimize polygon regions
 - Improved performance of the deform brush
 - Update to a newer Rhino release for craftscripts
-- Added support for 1.16
+- Added support for 1.16.1
 - Improved ES6 support for craftscripts
 - Fixed an issue with edges of polygonal regions
 - Fixed multiple of the same flag being applied to commands not providing a friendly error
@@ -28,6 +28,7 @@
 - Fixed vertical flip for stairs
 - Fixed region volume not displaying correctly for very large regions
 - Fixed wandering traders not being counted as NPCs in /butcher
+- Fixed /delchunks in the nether and end on Spigot
 
 7.1.0
 - Improve the expression parser by compiling expressions for performance
