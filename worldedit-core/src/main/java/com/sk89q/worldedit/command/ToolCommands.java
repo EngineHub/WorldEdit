@@ -97,7 +97,8 @@ public class ToolCommands {
             }
             commandManager.register(CommandUtil.deprecate(
                 command, "Global tool names cause conflicts " +
-                "and will be removed in WorldEdit 8", ToolCommands::asNonGlobal
+                "and will be removed in WorldEdit 8",
+                CommandUtil.ReplacementMessageGenerator.forNewCommand(ToolCommands::asNonGlobal)
             ));
         }
 

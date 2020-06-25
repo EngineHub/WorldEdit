@@ -358,10 +358,11 @@ public final class PlatformCommandManager {
             ClipboardCommandsRegistration.builder(),
             new ClipboardCommands()
         );
-        this.registration.register(
+        GeneralCommands.register(
+            registration,
             commandManager,
-            GeneralCommandsRegistration.builder(),
-            new GeneralCommands(worldEdit)
+            commandManagerService,
+            worldEdit
         );
         this.registration.register(
             commandManager,
