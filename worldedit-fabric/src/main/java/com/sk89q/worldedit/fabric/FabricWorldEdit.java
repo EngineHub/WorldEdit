@@ -39,12 +39,11 @@ import com.sk89q.worldedit.world.item.ItemCategory;
 import com.sk89q.worldedit.world.item.ItemType;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
-import net.fabricmc.fabric.api.event.server.ServerStartCallback;
-import net.fabricmc.fabric.api.event.server.ServerStopCallback;
-import net.fabricmc.fabric.api.event.server.ServerTickCallback;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.minecraft.entity.player.PlayerEntity;
@@ -113,10 +112,10 @@ public class FabricWorldEdit implements ModInitializer {
 
         WECUIPacketHandler.init();
 
-        ServerTickCallback.EVENT.register(ThreadSafeCache.getInstance());
+        ServerTickEvents.END_SERVER_TICK.register(ThreadSafeCache.getInstance());
         CommandRegistrationCallback.EVENT.register(this::registerCommands);
-        ServerStartCallback.EVENT.register(this::onStartServer);
-        ServerStopCallback.EVENT.register(this::onStopServer);
+        ServerLifecycleEvents.SERVER_STARTED.register(this::onStartServer);
+        ServerLifecycleEvents.SERVER_STOPPING.register(this::onStopServer);
         AttackBlockCallback.EVENT.register(this::onLeftClickBlock);
         UseBlockCallback.EVENT.register(this::onRightClickBlock);
         UseItemCallback.EVENT.register(this::onRightClickAir);
