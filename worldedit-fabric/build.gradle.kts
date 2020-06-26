@@ -54,14 +54,19 @@ dependencies {
     // [1] declare fabric-api dependency...
     "fabricApi"("net.fabricmc.fabric-api:fabric-api:0.14.0+build.371-1.16")
 
-    // [2] and now we resolve it to pick out what we want :D
-    val wantedDependencies = setOf(
-        "net.fabricmc.fabric-api:fabric-api-base",
-        "net.fabricmc.fabric-api:fabric-events-interaction-v0",
-        "net.fabricmc.fabric-api:fabric-command-api-v1",
-        "net.fabricmc.fabric-api:fabric-networking-v0",
-        "net.fabricmc.fabric-api:fabric-lifecycle-events-v1"
-    )
+    // [2] Load the API dependencies from the fabric mod json...
+    @Suppress("UNCHECKED_CAST")
+    val fabricModJson = file("src/main/resources/fabric.mod.json").bufferedReader().use {
+        groovy.json.JsonSlurper().parse(it) as Map<String, Map<String, *>>
+    }
+    val wantedDependencies = (fabricModJson["depends"] ?: error("no depends in fabric.mod.json")).keys
+        .filter { it == "fabric-api-base" || it.contains(Regex("v\\d$")) }
+        .map { "net.fabricmc.fabric-api:$it" }
+    logger.lifecycle("Looking for these dependencies:")
+    for (wantedDependency in wantedDependencies) {
+        logger.lifecycle(wantedDependency)
+    }
+    // [3] and now we resolve it to pick out what we want :D
     val fabricApiDependencies = fabricApiConfiguration.incoming.resolutionResult.allDependencies
         .onEach {
             if (it is UnresolvedDependencyResult) {
