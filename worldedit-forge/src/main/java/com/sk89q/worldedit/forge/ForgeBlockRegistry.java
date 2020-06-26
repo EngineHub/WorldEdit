@@ -27,8 +27,6 @@ import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.registry.BlockMaterial;
 import com.sk89q.worldedit.world.registry.BundledBlockRegistry;
 import net.minecraft.block.Block;
-import net.minecraft.block.material.Material;
-import net.minecraft.state.IProperty;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -38,7 +36,7 @@ import java.util.TreeMap;
 
 public class ForgeBlockRegistry extends BundledBlockRegistry {
 
-    private Map<Material, ForgeBlockMaterial> materialMap = new HashMap<>();
+    private final Map<net.minecraft.block.BlockState, ForgeBlockMaterial> materialMap = new HashMap<>();
 
     @Override
     public Component getRichName(BlockType blockType) {
@@ -51,18 +49,19 @@ public class ForgeBlockRegistry extends BundledBlockRegistry {
         if (block == null) {
             return super.getMaterial(blockType);
         }
-        return materialMap.computeIfAbsent(block.getDefaultState().getMaterial(),
-                m -> new ForgeBlockMaterial(m, super.getMaterial(blockType)));
+        return materialMap.computeIfAbsent(block.getDefaultState(),
+                s -> new ForgeBlockMaterial(s.getMaterial(), s, super.getMaterial(blockType)));
     }
 
     @Override
     public Map<String, ? extends Property<?>> getProperties(BlockType blockType) {
         Block block = ForgeAdapter.adapt(blockType);
         Map<String, Property<?>> map = new TreeMap<>();
-        Collection<IProperty<?>> propertyKeys = block
+        Collection<net.minecraft.state.Property<?>> propertyKeys = block
                 .getDefaultState()
-                .getProperties();
-        for (IProperty<?> key : propertyKeys) {
+            // func_235904_r_ == getProperties
+                .func_235904_r_();
+        for (net.minecraft.state.Property<?> key : propertyKeys) {
             map.put(key.getName(), ForgeAdapter.adaptProperty(key));
         }
         return map;

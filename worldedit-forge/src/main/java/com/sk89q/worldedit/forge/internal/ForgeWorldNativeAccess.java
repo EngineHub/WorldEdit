@@ -121,7 +121,7 @@ public class ForgeWorldNativeAccess implements WorldNativeAccess<Chunk, BlockSta
     public void notifyNeighbors(BlockPos pos, BlockState oldState, BlockState newState) {
         World world = getWorld();
         if (sideEffectSet.shouldApply(SideEffect.EVENTS)) {
-            world.notifyNeighbors(pos, oldState.getBlock());
+            world.notifyNeighborsOfStateChange(pos, oldState.getBlock());
         } else {
             // Manually update each side
             Block block = oldState.getBlock();
@@ -140,9 +140,9 @@ public class ForgeWorldNativeAccess implements WorldNativeAccess<Chunk, BlockSta
     @Override
     public void updateNeighbors(BlockPos pos, BlockState oldState, BlockState newState, int recursionLimit) {
         World world = getWorld();
-        oldState.updateDiagonalNeighbors(world, pos, NOTIFY);
-        newState.updateNeighbors(world, pos, NOTIFY);
-        newState.updateDiagonalNeighbors(world, pos, NOTIFY);
+        oldState.func_241483_b_(world, pos, NOTIFY, recursionLimit);
+        newState.func_241482_a_(world, pos, NOTIFY, recursionLimit);
+        newState.func_241483_b_(world, pos, NOTIFY, recursionLimit);
     }
 
     @Override

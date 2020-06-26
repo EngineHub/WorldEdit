@@ -19,21 +19,20 @@
 
 package com.sk89q.worldedit.forge;
 
-import static com.google.common.base.Preconditions.checkArgument;
-
 import com.google.common.collect.ImmutableList;
 import com.sk89q.worldedit.registry.state.Property;
-import net.minecraft.state.IProperty;
 
 import java.util.List;
 import java.util.Optional;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
 class IPropertyAdapter<T extends Comparable<T>> implements Property<T> {
 
-    private final IProperty<T> property;
+    private final net.minecraft.state.Property<T> property;
     private final List<T> values;
 
-    public IPropertyAdapter(IProperty<T> property) {
+    public IPropertyAdapter(net.minecraft.state.Property<T> property) {
         this.property = property;
         this.values = ImmutableList.copyOf(property.getAllowedValues());
     }

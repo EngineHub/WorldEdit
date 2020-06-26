@@ -32,8 +32,8 @@ import com.google.gson.JsonParseException;
 import com.mojang.datafixers.DSL.TypeReference;
 import com.mojang.datafixers.DataFixer;
 import com.mojang.datafixers.DataFixerBuilder;
-import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.schemas.Schema;
+import com.mojang.serialization.Dynamic;
 import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.worldedit.forge.internal.NBTConverter;
 import net.minecraft.item.DyeColor;
@@ -49,6 +49,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StringUtils;
 import net.minecraft.util.datafix.DataFixesManager;
 import net.minecraft.util.datafix.TypeReferences;
+import net.minecraft.util.text.IFormattableTextComponent;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import org.apache.logging.log4j.LogManager;
@@ -169,7 +170,7 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
 
     private static String fixName(String key, int srcVer, TypeReference type) {
         return INSTANCE.fixer.update(type, new Dynamic<>(OPS_NBT, StringNBT.valueOf(key)), srcVer, DATA_VERSION)
-                .asString().orElse(key);
+                .asString().result().orElse(key);
     }
 
     private static final NBTDynamicOps OPS_NBT = NBTDynamicOps.INSTANCE;
@@ -1853,7 +1854,7 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
 
                                 if (object == null) {
                                     try {
-                                        object = ITextComponent.Serializer.fromJson(s);
+                                        object = ITextComponent.Serializer.func_240643_a_(s);
                                     } catch (JsonParseException jsonparseexception1) {
                                         ;
                                     }
@@ -1861,7 +1862,7 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
 
                                 if (object == null) {
                                     try {
-                                        object = ITextComponent.Serializer.fromJsonLenient(s);
+                                        object = ITextComponent.Serializer.func_240644_b_(s);
                                     } catch (JsonParseException jsonparseexception2) {
                                         ;
                                     }
@@ -2434,22 +2435,22 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
     private static class DataConverterSignText implements DataConverter {
 
         public static final Gson a = new GsonBuilder().registerTypeAdapter(ITextComponent.class, new JsonDeserializer() {
-            ITextComponent a(JsonElement jsonelement, Type type, JsonDeserializationContext jsondeserializationcontext) throws JsonParseException {
+            IFormattableTextComponent a(JsonElement jsonelement, Type type, JsonDeserializationContext jsondeserializationcontext) throws JsonParseException {
                 if (jsonelement.isJsonPrimitive()) {
                     return new StringTextComponent(jsonelement.getAsString());
                 } else if (jsonelement.isJsonArray()) {
                     JsonArray jsonarray = jsonelement.getAsJsonArray();
-                    ITextComponent iTextComponent = null;
+                    IFormattableTextComponent iTextComponent = null;
                     Iterator iterator = jsonarray.iterator();
 
                     while (iterator.hasNext()) {
                         JsonElement jsonelement1 = (JsonElement) iterator.next();
-                        ITextComponent iTextComponent1 = this.a(jsonelement1, jsonelement1.getClass(), jsondeserializationcontext);
+                        IFormattableTextComponent iTextComponent1 = this.a(jsonelement1, jsonelement1.getClass(), jsondeserializationcontext);
 
                         if (iTextComponent == null) {
                             iTextComponent = iTextComponent1;
                         } else {
-                            iTextComponent.appendSibling(iTextComponent1);
+                            iTextComponent.func_230529_a_(iTextComponent1);
                         }
                     }
 
@@ -2500,7 +2501,7 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
 
                     if (object == null) {
                         try {
-                            object = ITextComponent.Serializer.fromJson(s1);
+                            object = ITextComponent.Serializer.func_240643_a_(s1);
                         } catch (JsonParseException jsonparseexception1) {
                             ;
                         }
@@ -2508,7 +2509,7 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
 
                     if (object == null) {
                         try {
-                            object = ITextComponent.Serializer.fromJsonLenient(s1);
+                            object = ITextComponent.Serializer.func_240644_b_(s1);
                         } catch (JsonParseException jsonparseexception2) {
                             ;
                         }

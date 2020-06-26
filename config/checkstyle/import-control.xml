@@ -72,6 +72,7 @@
       <allow pkg="org.spongepowered.api" />
       <allow pkg="com.mojang.brigadier" />
       <allow pkg="com.mojang.datafixers" />
+      <allow pkg="com.mojang.serialization" />
       <allow pkg="org.apache.commons" />
     </subpackage>
 

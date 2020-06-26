@@ -34,7 +34,6 @@ import com.sk89q.worldedit.session.SessionKey;
 import com.sk89q.worldedit.util.HandSide;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.formatting.WorldEditText;
-import com.sk89q.worldedit.util.formatting.component.TextUtils;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.serializer.gson.GsonComponentSerializer;
 import com.sk89q.worldedit.world.World;
@@ -51,16 +50,17 @@ import net.minecraft.network.play.server.SCustomPayloadPlayPacket;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ChatType;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.Locale;
 import java.util.UUID;
-
-import javax.annotation.Nullable;
 
 public class ForgePlayer extends AbstractPlayerActor {
 
@@ -86,7 +86,7 @@ public class ForgePlayer extends AbstractPlayerActor {
 
     @Override
     public String getName() {
-        return this.player.getName().getFormattedText();
+        return this.player.getName().getUnformattedComponentText();
     }
 
     @Override
@@ -132,10 +132,14 @@ public class ForgePlayer extends AbstractPlayerActor {
         this.player.connection.sendPacket(packet);
     }
 
+    private void sendMessage(ITextComponent textComponent) {
+        this.player.func_241151_a_(textComponent, ChatType.CHAT, Util.field_240973_b_);
+    }
+
     @Override
     public void printRaw(String msg) {
         for (String part : msg.split("\n")) {
-            this.player.sendMessage(new StringTextComponent(part));
+            sendMessage(new StringTextComponent(part));
         }
     }
 
@@ -156,14 +160,14 @@ public class ForgePlayer extends AbstractPlayerActor {
 
     @Override
     public void print(Component component) {
-        this.player.sendMessage(ITextComponent.Serializer.fromJson(GsonComponentSerializer.INSTANCE.serialize(WorldEditText.format(component, getLocale()))));
+        sendMessage(ITextComponent.Serializer.func_240643_a_(GsonComponentSerializer.INSTANCE.serialize(WorldEditText.format(component, getLocale()))));
     }
 
     private void sendColorized(String msg, TextFormatting formatting) {
         for (String part : msg.split("\n")) {
             StringTextComponent component = new StringTextComponent(part);
-            component.getStyle().setColor(formatting);
-            this.player.sendMessage(component);
+            component.func_240699_a_(formatting);
+            sendMessage(component);
         }
     }
 
@@ -208,7 +212,8 @@ public class ForgePlayer extends AbstractPlayerActor {
 
     @Override
     public Locale getLocale() {
-        return TextUtils.getLocaleByMinecraftTag(player.language);
+        // TODO wait for upstream fix
+        return Locale.ENGLISH; //TextUtils.getLocaleByMinecraftTag(player.language);
     }
 
     @Override

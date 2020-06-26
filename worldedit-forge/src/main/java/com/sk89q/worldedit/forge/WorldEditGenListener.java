@@ -17,9 +17,28 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.forge.proxy;
+package com.sk89q.worldedit.forge;
 
-public interface CommonProxy {
+import net.minecraft.util.math.ChunkPos;
+import net.minecraft.world.chunk.ChunkStatus;
+import net.minecraft.world.chunk.listener.IChunkStatusListener;
 
-    void registerHandlers();
+import javax.annotation.Nullable;
+
+// For now, this does nothing, but might be useful later for regen progress communication.
+class WorldEditGenListener implements IChunkStatusListener {
+
+    @Override
+    public void start(ChunkPos spawnPos) {
+    }
+
+    @Override
+    public void statusChanged(ChunkPos chunkPosition, @Nullable ChunkStatus newStatus) {
+
+    }
+
+    @Override
+    public void stop() {
+    }
+
 }

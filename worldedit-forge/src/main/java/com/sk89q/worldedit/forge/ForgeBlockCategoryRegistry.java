@@ -22,7 +22,7 @@ package com.sk89q.worldedit.forge;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.registry.BlockCategoryRegistry;
 import net.minecraft.tags.BlockTags;
-import net.minecraft.tags.Tag;
+import net.minecraft.tags.ITag;
 import net.minecraft.util.ResourceLocation;
 
 import java.util.Collections;
@@ -34,7 +34,7 @@ public class ForgeBlockCategoryRegistry implements BlockCategoryRegistry {
     @Override
     public Set<BlockType> getCategorisedByName(String category) {
         return Optional.ofNullable(BlockTags.getCollection().get(new ResourceLocation(category)))
-                .map(Tag::getAllElements).orElse(Collections.emptySet())
+                .map(ITag::func_230236_b_).orElse(Collections.emptyList())
                 .stream().map(ForgeAdapter::adapt).collect(Collectors.toSet());
     }
 }

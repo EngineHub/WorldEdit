@@ -54,7 +54,7 @@ dependencies {
     implementation("net.ltgt.apt-idea:net.ltgt.apt-idea.gradle.plugin:0.21")
     implementation("org.jfrog.buildinfo:build-info-extractor-gradle:4.9.7")
     implementation("gradle.plugin.org.spongepowered:spongegradle:0.9.0")
-    implementation("net.minecraftforge.gradle:ForgeGradle:3.0.168")
+    implementation("net.minecraftforge.gradle:ForgeGradle:3.0.178")
     implementation("net.fabricmc:fabric-loom:$loomVersion")
     implementation("net.fabricmc:sponge-mixin:$mixinVersion")
     implementation("gradle.plugin.com.mendhak.gradlecrowdin:plugin:0.1.0")

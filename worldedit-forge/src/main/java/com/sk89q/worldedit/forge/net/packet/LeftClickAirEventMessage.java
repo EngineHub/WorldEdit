@@ -28,8 +28,9 @@ import net.minecraftforge.fml.network.NetworkEvent.Context;
 import java.util.Objects;
 import java.util.function.Supplier;
 
-@SuppressWarnings({"NonFinalUtilityClass", "checkstyle:hideutilityclassconstructor"})
 public class LeftClickAirEventMessage {
+
+    public static final LeftClickAirEventMessage INSTANCE = new LeftClickAirEventMessage();
 
     public static final class Handler {
         public static void handle(final LeftClickAirEventMessage message, Supplier<Context> ctx) {
@@ -39,10 +40,13 @@ public class LeftClickAirEventMessage {
     }
 
     public static LeftClickAirEventMessage decode(ByteBuf buf) {
-        return new LeftClickAirEventMessage();
+        return INSTANCE;
     }
 
     public static void encode(LeftClickAirEventMessage msg, PacketBuffer buf) {
+    }
+
+    private LeftClickAirEventMessage() {
     }
 
 }

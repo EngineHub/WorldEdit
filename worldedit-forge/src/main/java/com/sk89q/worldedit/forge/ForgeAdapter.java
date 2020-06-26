@@ -40,18 +40,18 @@ import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.block.BlockTypes;
 import com.sk89q.worldedit.world.item.ItemType;
 import com.sk89q.worldedit.world.item.ItemTypes;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.state.DirectionProperty;
-import net.minecraft.state.IProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.util.IStringSerializable;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.biome.Biome;
 import net.minecraftforge.registries.ForgeRegistries;
 
@@ -81,7 +81,7 @@ public final class ForgeAdapter {
         return BiomeTypes.get(biome.getRegistryName().toString());
     }
 
-    public static Vector3 adapt(Vec3d vector) {
+    public static Vector3 adapt(Vector3d vector) {
         return Vector3.at(vector.x, vector.y, vector.z);
     }
 
@@ -89,8 +89,8 @@ public final class ForgeAdapter {
         return BlockVector3.at(pos.getX(), pos.getY(), pos.getZ());
     }
 
-    public static Vec3d toVec3(BlockVector3 vector) {
-        return new Vec3d(vector.getBlockX(), vector.getBlockY(), vector.getBlockZ());
+    public static Vector3d toVec3(BlockVector3 vector) {
+        return new Vector3d(vector.getBlockX(), vector.getBlockY(), vector.getBlockZ());
     }
 
     public static net.minecraft.util.Direction adapt(Direction face) {
@@ -126,7 +126,7 @@ public final class ForgeAdapter {
         return new BlockPos(vector.getBlockX(), vector.getBlockY(), vector.getBlockZ());
     }
 
-    public static Property<?> adaptProperty(IProperty<?> property) {
+    public static Property<?> adaptProperty(net.minecraft.state.Property<?> property) {
         if (property instanceof net.minecraft.state.BooleanProperty) {
             return new BooleanProperty(property.getName(), ImmutableList.copyOf(((net.minecraft.state.BooleanProperty) property).getAllowedValues()));
         }
@@ -141,30 +141,33 @@ public final class ForgeAdapter {
         if (property instanceof net.minecraft.state.EnumProperty) {
             // Note: do not make x.getName a method reference.
             // It will cause runtime bootstrap exceptions.
+            // Temporary: func_176610_l == getName
+            //noinspection Convert2MethodRef
             return new EnumProperty(property.getName(), ((net.minecraft.state.EnumProperty<?>) property).getAllowedValues().stream()
-                    .map(x -> x.getName())
+                    .map(x -> x.func_176610_l())
                     .collect(Collectors.toList()));
         }
         return new IPropertyAdapter<>(property);
     }
 
-    public static Map<Property<?>, Object> adaptProperties(BlockType block, Map<IProperty<?>, Comparable<?>> mcProps) {
+    public static Map<Property<?>, Object> adaptProperties(BlockType block, Map<net.minecraft.state.Property<?>, Comparable<?>> mcProps) {
         Map<Property<?>, Object> props = new TreeMap<>(Comparator.comparing(Property::getName));
-        for (Map.Entry<IProperty<?>, Comparable<?>> prop : mcProps.entrySet()) {
+        for (Map.Entry<net.minecraft.state.Property<?>, Comparable<?>> prop : mcProps.entrySet()) {
             Object value = prop.getValue();
             if (prop.getKey() instanceof DirectionProperty) {
                 value = adaptEnumFacing((net.minecraft.util.Direction) value);
             } else if (prop.getKey() instanceof net.minecraft.state.EnumProperty) {
-                value = ((IStringSerializable) value).getName();
+                value = ((IStringSerializable) value).func_176610_l();
             }
             props.put(block.getProperty(prop.getKey().getName()), value);
         }
         return props;
     }
 
+    @SuppressWarnings({"rawtypes", "unchecked"})
     private static net.minecraft.block.BlockState applyProperties(StateContainer<Block, net.minecraft.block.BlockState> stateContainer, net.minecraft.block.BlockState newState, Map<Property<?>, Object> states) {
         for (Map.Entry<Property<?>, Object> state : states.entrySet()) {
-            IProperty property = stateContainer.getProperty(state.getKey().getName());
+            net.minecraft.state.Property property = stateContainer.getProperty(state.getKey().getName());
             Comparable value = (Comparable) state.getValue();
             // we may need to adapt this value, depending on the source prop
             if (property instanceof DirectionProperty) {

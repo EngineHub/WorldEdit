@@ -28,9 +28,6 @@ import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.forge.net.handler.InternalPacketHandler;
 import com.sk89q.worldedit.forge.net.handler.WECUIPacketHandler;
 import com.sk89q.worldedit.forge.net.packet.LeftClickAirEventMessage;
-import com.sk89q.worldedit.forge.proxy.ClientProxy;
-import com.sk89q.worldedit.forge.proxy.CommonProxy;
-import com.sk89q.worldedit.forge.proxy.ServerProxy;
 import com.sk89q.worldedit.internal.anvil.ChunkDeleter;
 import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.util.Location;
@@ -54,7 +51,6 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent.LeftClickEmpty
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.ExtensionPoint;
 import net.minecraftforge.fml.ModContainer;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -94,8 +90,6 @@ public class ForgeWorldEdit {
     private ForgePermissionsProvider provider;
 
     public static ForgeWorldEdit inst;
-
-    public static CommonProxy proxy = DistExecutor.runForDist(() -> ClientProxy::new, () -> ServerProxy::new);
 
     private ForgePlatform platform;
     private ForgeConfiguration config;
@@ -137,7 +131,6 @@ public class ForgeWorldEdit {
 
         WECUIPacketHandler.init();
         InternalPacketHandler.init();
-        proxy.registerHandlers();
 
         LOGGER.info("WorldEdit for Forge (version " + getInternalVersion() + ") is loaded");
     }
@@ -229,7 +222,7 @@ public class ForgeWorldEdit {
 
         if (event.getWorld().isRemote && event instanceof LeftClickEmpty) {
             // catch LCE, pass it to server
-            InternalPacketHandler.getHandler().sendToServer(new LeftClickAirEventMessage());
+            InternalPacketHandler.getHandler().sendToServer(LeftClickAirEventMessage.INSTANCE);
             return;
         }
 

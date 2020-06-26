@@ -21,8 +21,8 @@ package com.sk89q.worldedit.forge;
 
 import com.sk89q.worldedit.world.item.ItemType;
 import com.sk89q.worldedit.world.registry.ItemCategoryRegistry;
+import net.minecraft.tags.ITag;
 import net.minecraft.tags.ItemTags;
-import net.minecraft.tags.Tag;
 import net.minecraft.util.ResourceLocation;
 
 import java.util.Collections;
@@ -34,7 +34,7 @@ public class ForgeItemCategoryRegistry implements ItemCategoryRegistry {
     @Override
     public Set<ItemType> getCategorisedByName(String category) {
         return Optional.ofNullable(ItemTags.getCollection().get(new ResourceLocation(category)))
-                .map(Tag::getAllElements).orElse(Collections.emptySet())
+                .map(ITag::func_230236_b_).orElse(Collections.emptyList())
                 .stream().map(ForgeAdapter::adapt).collect(Collectors.toSet());
     }
 }

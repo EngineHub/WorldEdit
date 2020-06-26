@@ -41,7 +41,7 @@ public final class TileEntityUtils {
      * @param tag the tag for the tile entity
      */
     static boolean setTileEntity(World world, BlockPos position, CompoundNBT tag) {
-        TileEntity tileEntity = TileEntity.create(tag);
+        TileEntity tileEntity = TileEntity.func_235657_b_(world.getBlockState(position), tag);
         if (tileEntity == null) {
             return false;
         }

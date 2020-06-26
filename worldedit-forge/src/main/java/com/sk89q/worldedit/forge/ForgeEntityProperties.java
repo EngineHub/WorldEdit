@@ -19,31 +19,30 @@
 
 package com.sk89q.worldedit.forge;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import com.sk89q.worldedit.entity.metadata.EntityProperties;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.INPC;
+import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.boss.dragon.EnderDragonPartEntity;
 import net.minecraft.entity.item.ArmorStandEntity;
-import net.minecraft.entity.item.ExperienceOrbEntity;
-import net.minecraft.entity.item.PaintingEntity;
-import net.minecraft.entity.item.TNTEntity;
-import net.minecraft.entity.merchant.IMerchant;
-import net.minecraft.entity.INPC;
-import net.minecraft.entity.IProjectile;
-import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.item.BoatEntity;
-import net.minecraft.entity.item.EyeOfEnderEntity;
+import net.minecraft.entity.item.ExperienceOrbEntity;
 import net.minecraft.entity.item.FallingBlockEntity;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.item.ItemFrameEntity;
+import net.minecraft.entity.item.PaintingEntity;
+import net.minecraft.entity.item.TNTEntity;
 import net.minecraft.entity.item.minecart.AbstractMinecartEntity;
+import net.minecraft.entity.merchant.IMerchant;
 import net.minecraft.entity.passive.AmbientEntity;
 import net.minecraft.entity.passive.AnimalEntity;
-import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.passive.GolemEntity;
+import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.entity.projectile.ProjectileEntity;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public class ForgeEntityProperties implements EntityProperties {
 
@@ -61,7 +60,7 @@ public class ForgeEntityProperties implements EntityProperties {
 
     @Override
     public boolean isProjectile() {
-        return entity instanceof EyeOfEnderEntity || entity instanceof IProjectile;
+        return entity instanceof ProjectileEntity;
     }
 
     @Override

@@ -21,9 +21,9 @@ package com.sk89q.worldedit.forge;
 
 import com.sk89q.worldedit.world.registry.BlockMaterial;
 import com.sk89q.worldedit.world.registry.PassthroughBlockMaterial;
-
-import net.minecraft.block.material.PushReaction;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.material.PushReaction;
 
 import javax.annotation.Nullable;
 
@@ -35,10 +35,12 @@ import javax.annotation.Nullable;
 public class ForgeBlockMaterial extends PassthroughBlockMaterial {
 
     private final Material delegate;
+    private final BlockState block;
 
-    public ForgeBlockMaterial(Material delegate, @Nullable BlockMaterial secondary) {
+    public ForgeBlockMaterial(Material delegate, BlockState block, @Nullable BlockMaterial secondary) {
         super(secondary);
         this.delegate = delegate;
+        this.block = block;
     }
 
     @Override
@@ -83,7 +85,7 @@ public class ForgeBlockMaterial extends PassthroughBlockMaterial {
 
     @Override
     public boolean isToolRequired() {
-        return !delegate.isToolNotRequired();
+        return !block.func_235783_q_();
     }
 
     @Override
