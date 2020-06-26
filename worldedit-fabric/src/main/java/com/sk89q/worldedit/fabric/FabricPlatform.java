@@ -20,6 +20,7 @@
 package com.sk89q.worldedit.fabric;
 
 import com.google.common.collect.Sets;
+import com.mojang.brigadier.CommandDispatcher;
 import com.sk89q.worldedit.command.util.PermissionCondition;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.AbstractPlatform;
@@ -35,6 +36,7 @@ import com.sk89q.worldedit.world.registry.Registries;
 import net.minecraft.SharedConstants;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
+import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.dedicated.MinecraftDedicatedServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -62,10 +64,12 @@ class FabricPlatform extends AbstractPlatform implements MultiUserPlatform {
     private final FabricDataFixer dataFixer;
     private final @Nullable Watchdog watchdog;
     private boolean hookingEvents = false;
+    private CommandDispatcher<ServerCommandSource> nativeDispatcher;
 
     FabricPlatform(FabricWorldEdit mod, MinecraftServer server) {
         this.mod = mod;
         this.server = server;
+        this.nativeDispatcher = server.getCommandManager().getDispatcher();
         this.dataFixer = new FabricDataFixer(getDataVersion());
         this.watchdog = server instanceof MinecraftDedicatedServer
             ? (Watchdog) server : null;
@@ -148,13 +152,16 @@ class FabricPlatform extends AbstractPlatform implements MultiUserPlatform {
         }
     }
 
+    public void setNativeDispatcher(CommandDispatcher<ServerCommandSource> nativeDispatcher) {
+        this.nativeDispatcher = nativeDispatcher;
+    }
+
     @Override
     public void registerCommands(CommandManager manager) {
         if (server == null) return;
-        net.minecraft.server.command.CommandManager mcMan = server.getCommandManager();
 
         for (Command command : manager.getAllCommands().collect(toList())) {
-            CommandWrapper.register(mcMan.getDispatcher(), command);
+            CommandWrapper.register(nativeDispatcher, command);
             Set<String> perms = command.getCondition().as(PermissionCondition.class)
                 .map(PermissionCondition::getPermissions)
                 .orElseGet(Collections::emptySet);

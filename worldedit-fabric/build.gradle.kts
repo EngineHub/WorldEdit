@@ -59,6 +59,7 @@ dependencies {
         "net.fabricmc.fabric-api:fabric-api-base",
         "net.fabricmc.fabric-api:fabric-events-interaction-v0",
         "net.fabricmc.fabric-api:fabric-events-lifecycle-v0",
+        "net.fabricmc.fabric-api:fabric-command-api-v1",
         "net.fabricmc.fabric-api:fabric-networking-v0"
     )
     val fabricApiDependencies = fabricApiConfiguration.incoming.resolutionResult.allDependencies

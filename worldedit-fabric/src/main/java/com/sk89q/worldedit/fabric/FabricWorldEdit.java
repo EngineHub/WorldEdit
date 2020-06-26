@@ -22,10 +22,13 @@ package com.sk89q.worldedit.fabric;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.sk89q.worldedit.fabric.FabricAdapter.adaptPlayer;
 
+import com.mojang.brigadier.CommandDispatcher;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.event.platform.PlatformReadyEvent;
+import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.extension.platform.Platform;
+import com.sk89q.worldedit.extension.platform.PlatformManager;
 import com.sk89q.worldedit.fabric.net.handler.WECUIPacketHandler;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.biome.BiomeType;
@@ -35,6 +38,7 @@ import com.sk89q.worldedit.world.entity.EntityType;
 import com.sk89q.worldedit.world.item.ItemCategory;
 import com.sk89q.worldedit.world.item.ItemType;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
@@ -46,6 +50,7 @@ import net.fabricmc.loader.api.ModContainer;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.ItemTags;
@@ -109,12 +114,31 @@ public class FabricWorldEdit implements ModInitializer {
         WECUIPacketHandler.init();
 
         ServerTickCallback.EVENT.register(ThreadSafeCache.getInstance());
+        CommandRegistrationCallback.EVENT.register(this::registerCommands);
         ServerStartCallback.EVENT.register(this::onStartServer);
         ServerStopCallback.EVENT.register(this::onStopServer);
         AttackBlockCallback.EVENT.register(this::onLeftClickBlock);
         UseBlockCallback.EVENT.register(this::onRightClickBlock);
         UseItemCallback.EVENT.register(this::onRightClickAir);
         LOGGER.info("WorldEdit for Fabric (version " + getInternalVersion() + ") is loaded");
+    }
+
+    private void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher, boolean dedicated) {
+        PlatformManager manager = WorldEdit.getInstance().getPlatformManager();
+        if (manager.getPlatforms().isEmpty()) {
+            // We'll register as part of our platform initialization later.
+            return;
+        }
+
+        // This is a re-register (due to /reload), we must add our commands now
+
+        Platform commandsPlatform = manager.queryCapability(Capability.USER_COMMANDS);
+        if (commandsPlatform != platform || !platform.isHookingEvents()) {
+            // We're not in control of commands/events -- do not re-register.
+            return;
+        }
+        platform.setNativeDispatcher(dispatcher);
+        platform.registerCommands(manager.getPlatformCommandManager().getCommandManager());
     }
 
     private void setupPlatform(MinecraftServer server) {
