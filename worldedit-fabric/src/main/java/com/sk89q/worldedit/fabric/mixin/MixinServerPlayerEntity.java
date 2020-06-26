@@ -36,7 +36,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(ServerPlayerEntity.class)
 public abstract class MixinServerPlayerEntity extends PlayerEntity implements ExtendedPlayerEntity {
 
-    private String language;
+    private String language = "en_us";
 
     public MixinServerPlayerEntity(World world, BlockPos blockPos, GameProfile gameProfile) {
         super(world, blockPos, gameProfile);
