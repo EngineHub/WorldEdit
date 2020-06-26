@@ -52,15 +52,15 @@ dependencies {
     "modCompile"("net.fabricmc:fabric-loader:$loaderVersion")
 
     // [1] declare fabric-api dependency...
-    "fabricApi"("net.fabricmc.fabric-api:fabric-api:0.13.1+build.370-1.16")
+    "fabricApi"("net.fabricmc.fabric-api:fabric-api:0.14.0+build.371-1.16")
 
     // [2] and now we resolve it to pick out what we want :D
     val wantedDependencies = setOf(
         "net.fabricmc.fabric-api:fabric-api-base",
         "net.fabricmc.fabric-api:fabric-events-interaction-v0",
-        "net.fabricmc.fabric-api:fabric-events-lifecycle-v0",
         "net.fabricmc.fabric-api:fabric-command-api-v1",
-        "net.fabricmc.fabric-api:fabric-networking-v0"
+        "net.fabricmc.fabric-api:fabric-networking-v0",
+        "net.fabricmc.fabric-api:fabric-lifecycle-events-v1"
     )
     val fabricApiDependencies = fabricApiConfiguration.incoming.resolutionResult.allDependencies
         .onEach {
