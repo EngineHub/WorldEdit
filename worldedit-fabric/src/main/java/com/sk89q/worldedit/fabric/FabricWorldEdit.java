@@ -70,6 +70,7 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Collections;
 
 /**
  * The Fabric implementation of WorldEdit.
@@ -194,6 +195,9 @@ public class FabricWorldEdit implements ModInitializer {
         config = new FabricConfiguration(this);
         config.load();
         WorldEdit.getInstance().getEventBus().post(new PlatformReadyEvent());
+        minecraftServer.reloadResources(
+            minecraftServer.getDataPackManager().getEnabledNames()
+        );
     }
 
     private void onStopServer(MinecraftServer minecraftServer) {
