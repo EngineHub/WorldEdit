@@ -36,7 +36,7 @@ public class ThreadSafeCache implements ServerTickEvents.EndTick {
 
     private static final long REFRESH_DELAY = 1000 * 30;
     private static final ThreadSafeCache INSTANCE = new ThreadSafeCache();
-    private Set<UUID> onlineIds = Collections.emptySet();
+    private Set<UUID> onlineIds = new CopyOnWriteArraySet<>();
     private long lastRefresh = 0;
 
     /**
