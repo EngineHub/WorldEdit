@@ -27,9 +27,9 @@ Please read [CONTRIBUTING.md](CONTRIBUTING.md) for important guidelines to follo
 Links
 -----
 
-* [Visit our website](http://www.enginehub.org/)
+* [Visit our website](https://enginehub.org/)
 * [Discord](https://discord.gg/enginehub)
 * [IRC channel](https://webchat.esper.net/?join=sk89q) (#sk89q on irc.esper.net)
-* [Issue tracker](https://dev.enginehub.org/youtrack/issues/WORLDEDIT)
-* [Continuous integration](http://builds.enginehub.org) [![Build Status](https://ci.enginehub.org/app/rest/builds/buildType:bt10,branch:master/statusIcon.svg)](http://ci.enginehub.org/viewType.html?buildTypeId=bt10&guest=1)
+* [Issue tracker](https://github.com/EngineHub/WorldEdit/issues)
+* [Continuous integration](https://builds.enginehub.org) [![Build Status](https://ci.enginehub.org/app/rest/builds/buildType:bt10,branch:master/statusIcon.svg)](https://ci.enginehub.org/viewType.html?buildTypeId=bt10&guest=1)
 * [End-user documentation](https://worldedit.enginehub.org/en/latest/)
