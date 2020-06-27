@@ -521,10 +521,7 @@ public final class PlatformCommandManager {
         } catch (CommandExecutionException e) {
             handleUnknownException(actor, e.getCause());
         } catch (CommandException e) {
-            actor.print(TextComponent.builder("")
-                    .color(TextColor.RED)
-                    .append(e.getRichMessage())
-                    .build());
+            actor.printError(e.getRichMessage());
         } catch (Throwable t) {
             handleUnknownException(actor, t);
         } finally {
