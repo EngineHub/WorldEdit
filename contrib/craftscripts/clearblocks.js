@@ -1,6 +1,6 @@
 // Marks all blocks that have at least 3 exposed sides (adjacent to an air block)
-// and then deletes those editSession.
-// Based on jsa's MCEdit Filter cleareditSession.py
+// and then deletes those blocks.
+// Based on jsa's MCEdit Filter clearBlocks.py
 
 importClass(Packages.com.sk89q.worldedit.world.block.BlockTypes)
 
