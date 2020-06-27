@@ -34,6 +34,7 @@ import com.sk89q.worldedit.session.SessionKey;
 import com.sk89q.worldedit.util.HandSide;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.formatting.WorldEditText;
+import com.sk89q.worldedit.util.formatting.component.TextUtils;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.serializer.gson.GsonComponentSerializer;
 import com.sk89q.worldedit.world.World;
@@ -212,8 +213,7 @@ public class ForgePlayer extends AbstractPlayerActor {
 
     @Override
     public Locale getLocale() {
-        // TODO wait for upstream fix
-        return Locale.ENGLISH; //TextUtils.getLocaleByMinecraftTag(player.language);
+        return TextUtils.getLocaleByMinecraftTag(player.getLanguage());
     }
 
     @Override

@@ -55,6 +55,9 @@ public class TextUtils {
      * @return A Java locale
      */
     public static Locale getLocaleByMinecraftTag(String locale) {
+        if (locale == null) {
+            return Locale.US;
+        }
         return Locale.forLanguageTag(locale.replace('_', '-'));
     }
 }
