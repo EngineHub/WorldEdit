@@ -19,21 +19,22 @@
 
 package com.sk89q.worldedit.scripting;
 
-import com.sk89q.worldedit.DisallowedItemException;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
-import com.sk89q.worldedit.UnknownItemException;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.command.InsufficientArgumentsException;
 import com.sk89q.worldedit.entity.Player;
+import com.sk89q.worldedit.extension.input.DisallowedUsageException;
+import com.sk89q.worldedit.extension.input.NoMatchException;
 import com.sk89q.worldedit.extension.input.ParserContext;
 import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.internal.expression.invoke.ReturnException;
 import com.sk89q.worldedit.session.request.Request;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
+import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.util.io.file.FilenameException;
 import com.sk89q.worldedit.world.block.BaseBlock;
 
@@ -148,7 +149,7 @@ public class CraftScriptContext extends CraftScriptEnvironment {
     public void checkArgs(int min, int max, String usage)
             throws InsufficientArgumentsException {
         if (args.length <= min || (max != -1 && args.length - 1 > max)) {
-            throw new InsufficientArgumentsException("Usage: " + usage);
+            throw new InsufficientArgumentsException(TranslatableComponent.of("worldedit.error.incorrect-usage", TextComponent.of(usage)));
         }
     }
 
@@ -168,8 +169,8 @@ public class CraftScriptContext extends CraftScriptEnvironment {
      * @param input input to parse
      * @param allAllowed true to ignore blacklists
      * @return a block
-     * @throws UnknownItemException
-     * @throws DisallowedItemException
+     * @throws NoMatchException if no block was found
+     * @throws DisallowedUsageException if the block is disallowed
      */
     public BaseBlock getBlock(String input, boolean allAllowed) throws WorldEditException {
         ParserContext context = new ParserContext();
@@ -187,8 +188,8 @@ public class CraftScriptContext extends CraftScriptEnvironment {
      *
      * @param id the type Id
      * @return a block
-     * @throws UnknownItemException
-     * @throws DisallowedItemException
+     * @throws NoMatchException if no block was found
+     * @throws DisallowedUsageException if the block is disallowed
      */
     public BaseBlock getBlock(String id) throws WorldEditException {
         return getBlock(id, false);
@@ -199,8 +200,8 @@ public class CraftScriptContext extends CraftScriptEnvironment {
      *
      * @param list the input
      * @return pattern
-     * @throws UnknownItemException
-     * @throws DisallowedItemException
+     * @throws NoMatchException if the pattern was invalid
+     * @throws DisallowedUsageException if the block is disallowed
      */
     public Pattern getBlockPattern(String list) throws WorldEditException {
         ParserContext context = new ParserContext();
@@ -216,8 +217,8 @@ public class CraftScriptContext extends CraftScriptEnvironment {
      * @param list a list
      * @param allBlocksAllowed true if all blocks are allowed
      * @return set
-     * @throws UnknownItemException
-     * @throws DisallowedItemException
+     * @throws NoMatchException if the blocks couldn't be found
+     * @throws DisallowedUsageException if the block is disallowed
      */
     public Set<BaseBlock> getBlocks(String list, boolean allBlocksAllowed) throws WorldEditException {
         ParserContext context = new ParserContext();

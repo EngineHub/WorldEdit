@@ -307,7 +307,7 @@ public final class WorldEdit {
             }
 
             if (f == null) {
-                throw new FileSelectionAbortedException("No file selected");
+                throw new FileSelectionAbortedException(TranslatableComponent.of("worldedit.error.no-file-selected"));
             }
         } else {
             List<String> exts = extensions == null ? ImmutableList.of(defaultExt) : Lists.asList(defaultExt, extensions);
@@ -326,12 +326,12 @@ public final class WorldEdit {
 
             boolean isSym = existingParent != null && !existingParent.toRealPath().equals(existingParent);
             if (!inDir || (!getConfiguration().allowSymlinks && isSym)) {
-                throw new FilenameResolutionException(filename, "Path is outside allowable root");
+                throw new FilenameResolutionException(filename, TranslatableComponent.of("worldedit.error.file-resolution.outside-root"));
             }
 
             return filePath.toFile();
         } catch (IOException e) {
-            throw new FilenameResolutionException(filename, "Failed to resolve path");
+            throw new FilenameResolutionException(filename, TranslatableComponent.of("worldedit.error.file-resolution.resolve-failed"));
         }
     }
 
@@ -358,7 +358,7 @@ public final class WorldEdit {
             result = getSafeFileWithExtension(dir, filename, iter.next());
         }
         if (result == null) {
-            throw new InvalidFilenameException(filename, "Invalid characters or extension missing");
+            throw new InvalidFilenameException(filename, TranslatableComponent.of("worldedit.error.invalid-filename.invalid-characters"));
         }
         return result;
     }

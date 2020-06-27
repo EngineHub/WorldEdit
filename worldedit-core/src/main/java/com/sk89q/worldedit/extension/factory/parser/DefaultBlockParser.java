@@ -40,6 +40,8 @@ import com.sk89q.worldedit.internal.util.DeprecationUtil;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.util.HandSide;
+import com.sk89q.worldedit.util.formatting.text.TextComponent;
+import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockCategories;
@@ -70,7 +72,7 @@ public class DefaultBlockParser extends InputParser<BaseBlock> {
             try {
                 return ((Player) actor).getBlockInHand(handSide);
             } catch (NotABlockException e) {
-                throw new InputParseException("You're not holding a block!");
+                throw new InputParseException(e.getRichMessage());
             } catch (WorldEditException e) {
                 throw new InputParseException("Unknown error occurred: " + e.getMessage(), e);
             }
@@ -309,7 +311,7 @@ public class DefaultBlockParser extends InputParser<BaseBlock> {
             }
 
             if (blockType == null) {
-                throw new NoMatchException("Does not match a valid block type: '" + input + "'");
+                throw new NoMatchException(TranslatableComponent.of("worldedit.error.unknown-block", TextComponent.of(input)));
             }
 
             blockStates.putAll(parseProperties(blockType, stateProperties, context));
@@ -343,7 +345,7 @@ public class DefaultBlockParser extends InputParser<BaseBlock> {
             Actor actor = context.requireActor();
             if (actor != null && !actor.hasPermission("worldedit.anyblock")
                     && worldEdit.getConfiguration().disallowedBlocks.contains(blockType.getId())) {
-                throw new DisallowedUsageException("You are not allowed to use '" + input + "'");
+                throw new DisallowedUsageException(TranslatableComponent.of("worldedit.error.disallowed-block", TextComponent.of(input)));
             }
         }
 

@@ -20,6 +20,7 @@
 package com.sk89q.worldedit.extension.input;
 
 import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.util.formatting.text.Component;
 
 /**
  * Thrown when parsed input results in an error.
@@ -31,6 +32,16 @@ public class InputParseException extends WorldEditException {
      *
      * @param message the message
      */
+    public InputParseException(Component message) {
+        super(message);
+    }
+
+    /**
+     * Throw with a message.
+     *
+     * @param message the message
+     */
+    @Deprecated
     public InputParseException(String message) {
         super(message);
     }
@@ -41,6 +52,17 @@ public class InputParseException extends WorldEditException {
      * @param message the message
      * @param cause the cause
      */
+    public InputParseException(Component message, Throwable cause) {
+        super(message, cause);
+    }
+
+    /**
+     * Throw with a message and a cause.
+     *
+     * @param message the message
+     * @param cause the cause
+     */
+    @Deprecated
     public InputParseException(String message, Throwable cause) {
         super(message, cause);
     }

@@ -20,7 +20,6 @@
 package com.sk89q.worldedit.internal.command.exception;
 
 import com.google.common.collect.ImmutableList;
-import com.sk89q.worldedit.DisallowedItemException;
 import com.sk89q.worldedit.EmptyClipboardException;
 import com.sk89q.worldedit.IncompleteRegionException;
 import com.sk89q.worldedit.InvalidItemException;
@@ -34,6 +33,7 @@ import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.command.InsufficientArgumentsException;
 import com.sk89q.worldedit.command.tool.InvalidToolBindException;
+import com.sk89q.worldedit.extension.input.DisallowedUsageException;
 import com.sk89q.worldedit.internal.expression.ExpressionException;
 import com.sk89q.worldedit.regions.RegionOperationException;
 import com.sk89q.worldedit.util.formatting.text.Component;
@@ -89,7 +89,7 @@ public class WorldEditExceptionConverter extends ExceptionConverterHelper {
 
     @ExceptionMatch
     public void convert(MissingWorldException e) throws CommandException {
-        throw newCommandException(TranslatableComponent.of("worldedit.error.missing-world"), e);
+        throw newCommandException(e.getRichMessage(), e);
     }
 
     @ExceptionMatch
@@ -97,14 +97,15 @@ public class WorldEditExceptionConverter extends ExceptionConverterHelper {
         throw newCommandException(TranslatableComponent.of("worldedit.error.unknown-block", TextComponent.of(e.getID())), e);
     }
 
+    @Deprecated
     @ExceptionMatch
     public void convert(InvalidItemException e) throws CommandException {
-        throw newCommandException(e.getMessage(), e);
+        throw newCommandException(e.getRichMessage(), e);
     }
 
     @ExceptionMatch
-    public void convert(DisallowedItemException e) throws CommandException {
-        throw newCommandException(TranslatableComponent.of("worldedit.error.disallowed-block", TextComponent.of(e.getID())), e);
+    public void convert(DisallowedUsageException e) throws CommandException {
+        throw newCommandException(e.getRichMessage(), e);
     }
 
     @ExceptionMatch
@@ -130,17 +131,17 @@ public class WorldEditExceptionConverter extends ExceptionConverterHelper {
 
     @ExceptionMatch
     public void convert(UnknownDirectionException e) throws CommandException {
-        throw newCommandException(TranslatableComponent.of("worldedit.error.unknown-direction", TextComponent.of(e.getDirection())), e);
+        throw newCommandException(e.getRichMessage(), e);
     }
 
     @ExceptionMatch
     public void convert(InsufficientArgumentsException e) throws CommandException {
-        throw newCommandException(e.getMessage(), e);
+        throw newCommandException(e.getRichMessage(), e);
     }
 
     @ExceptionMatch
     public void convert(RegionOperationException e) throws CommandException {
-        throw newCommandException(e.getMessage(), e);
+        throw newCommandException(e.getRichMessage(), e);
     }
 
     @ExceptionMatch
@@ -156,7 +157,7 @@ public class WorldEditExceptionConverter extends ExceptionConverterHelper {
     @ExceptionMatch
     public void convert(InvalidFilenameException e) throws CommandException {
         throw newCommandException(
-                TranslatableComponent.of("worldedit.error.invalid-filename", TextComponent.of(e.getFilename()), TextComponent.of(e.getMessage())),
+                TranslatableComponent.of("worldedit.error.invalid-filename", TextComponent.of(e.getFilename()), e.getRichMessage()),
                 e
         );
     }
@@ -164,7 +165,7 @@ public class WorldEditExceptionConverter extends ExceptionConverterHelper {
     @ExceptionMatch
     public void convert(FilenameResolutionException e) throws CommandException {
         throw newCommandException(
-                TranslatableComponent.of("worldedit.error.file-resolution", TextComponent.of(e.getFilename()), TextComponent.of(e.getMessage())),
+                TranslatableComponent.of("worldedit.error.file-resolution", TextComponent.of(e.getFilename()), e.getRichMessage()),
                 e
         );
     }
@@ -172,7 +173,7 @@ public class WorldEditExceptionConverter extends ExceptionConverterHelper {
     @ExceptionMatch
     public void convert(InvalidToolBindException e) throws CommandException {
         throw newCommandException(
-                TranslatableComponent.of("worldedit.error.tool-bind", e.getItemType().getRichName(), TranslatableComponent.of(e.getMessage())),
+                TranslatableComponent.of("worldedit.error.tool-bind", e.getItemType().getRichName(), e.getRichMessage()),
                 e
         );
     }
@@ -184,7 +185,7 @@ public class WorldEditExceptionConverter extends ExceptionConverterHelper {
 
     @ExceptionMatch
     public void convert(WorldEditException e) throws CommandException {
-        throw newCommandException(e.getMessage(), e);
+        throw newCommandException(e.getRichMessage(), e);
     }
 
     // Prevent investigation into UsageExceptions

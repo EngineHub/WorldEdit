@@ -19,12 +19,17 @@
 
 package com.sk89q.worldedit;
 
+import com.sk89q.worldedit.extension.input.DisallowedUsageException;
+
 /**
  * Thrown when a disallowed item is used.
+ *
+ * {@link DisallowedUsageException}
  */
+@Deprecated
 public class DisallowedItemException extends WorldEditException {
 
-    private String type;
+    private final String type;
 
     public DisallowedItemException(String type) {
         this.type = type;

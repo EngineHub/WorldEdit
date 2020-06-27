@@ -22,6 +22,7 @@ package com.sk89q.worldedit;
 /**
  * Thrown when an invalid item is specified.
  */
+@Deprecated
 public class InvalidItemException extends DisallowedItemException {
 
     public InvalidItemException(String type, String message) {

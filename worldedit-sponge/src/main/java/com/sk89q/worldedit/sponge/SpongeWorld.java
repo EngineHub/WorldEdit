@@ -28,7 +28,6 @@ import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
-import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.regions.Region;
@@ -36,6 +35,7 @@ import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.AbstractWorld;
 import com.sk89q.worldedit.world.RegenOptions;
+import com.sk89q.worldedit.world.WorldUnloadedException;
 import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
@@ -95,7 +95,7 @@ public abstract class SpongeWorld extends AbstractWorld {
         if (world != null) {
             return world;
         } else {
-            throw new WorldReferenceLostException("The reference to the world was lost (i.e. the world may have been unloaded)");
+            throw new WorldUnloadedException();
         }
     }
 
@@ -337,15 +337,6 @@ public abstract class SpongeWorld extends AbstractWorld {
     @Override
     public BlockVector3 getSpawnPosition() {
         return SpongeAdapter.asBlockVector(getWorld().getSpawnLocation());
-    }
-
-    /**
-     * Thrown when the reference to the world is lost.
-     */
-    private static class WorldReferenceLostException extends WorldEditException {
-        private WorldReferenceLostException(String message) {
-            super(message);
-        }
     }
 
 }
