@@ -30,6 +30,7 @@ import com.sk89q.worldedit.internal.registry.InputParser;
 import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.regions.shape.WorldEditExpressionEnvironment;
 import com.sk89q.worldedit.session.SessionOwner;
+import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 
 import java.util.function.IntSupplier;
 import java.util.stream.Stream;
@@ -66,7 +67,7 @@ public class ExpressionMaskParser extends InputParser<Mask> {
             }
             return new ExpressionMask(exp);
         } catch (ExpressionException e) {
-            throw new InputParseException("Invalid expression: " + e.getMessage());
+            throw new InputParseException(TranslatableComponent.of("worldedit.error.parser.invalid-expression"));
         }
     }
 }
