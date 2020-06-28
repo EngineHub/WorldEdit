@@ -28,12 +28,12 @@ import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.MaxRadiusException;
 import com.sk89q.worldedit.MissingWorldException;
 import com.sk89q.worldedit.UnknownDirectionException;
-import com.sk89q.worldedit.UnknownItemException;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.command.InsufficientArgumentsException;
 import com.sk89q.worldedit.command.tool.InvalidToolBindException;
 import com.sk89q.worldedit.extension.input.DisallowedUsageException;
+import com.sk89q.worldedit.extension.input.NoMatchException;
 import com.sk89q.worldedit.internal.expression.ExpressionException;
 import com.sk89q.worldedit.regions.RegionOperationException;
 import com.sk89q.worldedit.util.formatting.text.Component;
@@ -93,8 +93,8 @@ public class WorldEditExceptionConverter extends ExceptionConverterHelper {
     }
 
     @ExceptionMatch
-    public void convert(UnknownItemException e) throws CommandException {
-        throw newCommandException(TranslatableComponent.of("worldedit.error.unknown-block", TextComponent.of(e.getID())), e);
+    public void convert(NoMatchException e) throws CommandException {
+        throw newCommandException(e.getRichMessage(), e);
     }
 
     @Deprecated
@@ -173,7 +173,7 @@ public class WorldEditExceptionConverter extends ExceptionConverterHelper {
     @ExceptionMatch
     public void convert(InvalidToolBindException e) throws CommandException {
         throw newCommandException(
-                TranslatableComponent.of("worldedit.error.tool-bind", e.getItemType().getRichName(), e.getRichMessage()),
+                TranslatableComponent.of("worldedit.tool.error.cannot-bind", e.getItemType().getRichName(), e.getRichMessage()),
                 e
         );
     }

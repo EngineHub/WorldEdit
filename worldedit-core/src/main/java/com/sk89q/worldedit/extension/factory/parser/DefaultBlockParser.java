@@ -74,7 +74,7 @@ public class DefaultBlockParser extends InputParser<BaseBlock> {
             } catch (NotABlockException e) {
                 throw new InputParseException(e.getRichMessage());
             } catch (WorldEditException e) {
-                throw new InputParseException("Unknown error occurred: " + e.getMessage(), e);
+                throw new InputParseException(TranslatableComponent.of("worldedit.error.unknown", e.getRichMessage()), e);
             }
         } else {
             throw new InputParseException("The user is not a player!");
@@ -337,7 +337,7 @@ public class DefaultBlockParser extends InputParser<BaseBlock> {
         }
         // this should be impossible but IntelliJ isn't that smart
         if (blockType == null) {
-            throw new NoMatchException("Does not match a valid block type: '" + input + "'");
+            throw new NoMatchException(TranslatableComponent.of("worldedit.error.unknown-block", TextComponent.of(input)));
         }
 
         // Check if the item is allowed

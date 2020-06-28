@@ -307,7 +307,7 @@ public class GeneralCommands {
                               @Arg(desc = "The new draw selection state", def = "")
                                   Boolean drawSelection) throws WorldEditException {
         if (!WorldEdit.getInstance().getConfiguration().serverSideCUI) {
-            throw new AuthorizationException("This functionality is disabled in the configuration!");
+            throw new AuthorizationException(TranslatableComponent.of("worldedit.error.disabled"));
         }
         boolean useServerCui = session.shouldUseServerCUI();
         if (drawSelection != null && drawSelection == useServerCui) {
