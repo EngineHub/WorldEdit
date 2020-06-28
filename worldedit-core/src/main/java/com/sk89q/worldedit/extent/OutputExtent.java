@@ -55,6 +55,22 @@ public interface OutputExtent {
     <T extends BlockStateHolder<T>> boolean setBlock(BlockVector3 position, T block) throws WorldEditException;
 
     /**
+     * Does this extent fully support 3D biomes?
+     *
+     * <p>
+     * If {@code false}, the extent only visually reads biomes from {@code y = 0}.
+     * The biomes will still be set in 3D, but the client will only see the one at
+     * {@code y = 0}. It is up to the caller to determine if they want to set that
+     * biome instead, or simply warn the actor.
+     * </p>
+     *
+     * @return if the extent fully supports 3D biomes
+     */
+    default boolean fullySupports3DBiomes() {
+        return true;
+    }
+
+    /**
      * Set the biome.
      *
      * @param position the (x, z) location to set the biome at

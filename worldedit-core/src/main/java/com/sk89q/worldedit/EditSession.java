@@ -606,6 +606,11 @@ public class EditSession implements Extent, AutoCloseable {
     }
 
     @Override
+    public boolean fullySupports3DBiomes() {
+        return bypassNone.fullySupports3DBiomes();
+    }
+
+    @Override
     public BiomeType getBiome(BlockVector3 position) {
         return bypassNone.getBiome(position);
     }

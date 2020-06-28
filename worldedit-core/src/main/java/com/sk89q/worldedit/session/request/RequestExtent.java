@@ -96,6 +96,11 @@ public class RequestExtent implements Extent {
     }
 
     @Override
+    public boolean fullySupports3DBiomes() {
+        return getExtent().fullySupports3DBiomes();
+    }
+
+    @Override
     public boolean setBiome(BlockVector3 position, BiomeType biome) {
         return getExtent().setBiome(position, biome);
     }

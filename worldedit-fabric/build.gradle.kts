@@ -44,12 +44,12 @@ repositories {
 }
 
 dependencies {
-    "compile"(project(":worldedit-core"))
-    "compile"("org.apache.logging.log4j:log4j-slf4j-impl:2.8.1")
+    "implementation"(project(":worldedit-core"))
+    "implementation"("org.apache.logging.log4j:log4j-slf4j-impl:2.8.1")
 
     "minecraft"("com.mojang:minecraft:$minecraftVersion")
     "mappings"("net.fabricmc:yarn:$yarnMappings")
-    "modCompile"("net.fabricmc:fabric-loader:$loaderVersion")
+    "modImplementation"("net.fabricmc:fabric-loader:$loaderVersion")
 
     // [1] declare fabric-api dependency...
     "fabricApi"("net.fabricmc.fabric-api:fabric-api:0.14.0+build.371-1.16")
@@ -99,11 +99,9 @@ dependencies {
     }
 
     // Hook these up manually, because Fabric doesn't seem to quite do it properly.
-    "compileClasspath"("net.fabricmc:sponge-mixin:${project.versions.mixin}")
+    "compileOnly"("net.fabricmc:sponge-mixin:${project.versions.mixin}")
     "annotationProcessor"("net.fabricmc:sponge-mixin:${project.versions.mixin}")
     "annotationProcessor"("net.fabricmc:fabric-loom:${project.versions.loom}")
-
-    "testCompile"("org.mockito:mockito-core:1.9.0-rc1")
 }
 
 configure<BasePluginConvention> {

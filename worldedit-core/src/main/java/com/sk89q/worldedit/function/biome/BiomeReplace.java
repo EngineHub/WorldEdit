@@ -19,8 +19,6 @@
 
 package com.sk89q.worldedit.function.biome;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.function.FlatRegionFunction;
@@ -28,8 +26,9 @@ import com.sk89q.worldedit.function.RegionFunction;
 import com.sk89q.worldedit.function.pattern.BiomePattern;
 import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.math.BlockVector3;
-import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.biome.BiomeType;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Replaces the biome at the locations that this function is applied to.
@@ -37,7 +36,7 @@ import com.sk89q.worldedit.world.biome.BiomeType;
 public class BiomeReplace implements FlatRegionFunction, RegionFunction {
 
     private final Extent extent;
-    private BiomePattern biome;
+    private final BiomePattern biome;
 
     /**
      * Create a new instance.
@@ -64,7 +63,7 @@ public class BiomeReplace implements FlatRegionFunction, RegionFunction {
 
     @Override
     public boolean apply(BlockVector3 position) throws WorldEditException {
-        if (extent instanceof World && !((World) extent).fullySupports3DBiomes()) {
+        if (!extent.fullySupports3DBiomes()) {
             position = position.withY(0);
         }
         return extent.setBiome(position, biome.applyBiome(position));
@@ -73,7 +72,7 @@ public class BiomeReplace implements FlatRegionFunction, RegionFunction {
     @Override
     @Deprecated
     public boolean apply(BlockVector2 position) throws WorldEditException {
-        if (extent instanceof World && !((World) extent).fullySupports3DBiomes()) {
+        if (!extent.fullySupports3DBiomes()) {
             return apply(position.toBlockVector3());
         }
         boolean success = false;

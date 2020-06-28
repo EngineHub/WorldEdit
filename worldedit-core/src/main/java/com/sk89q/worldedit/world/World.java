@@ -101,20 +101,6 @@ public interface World extends Extent, Keyed {
     boolean useItem(BlockVector3 position, BaseItem item, Direction face);
 
     /**
-     * Does this world fully support 3D biomes?
-     *
-     * <p>
-     * If {@code false}, the world only visually reads biomes from {@code y = 0}.
-     * The biomes will still be set in 3D, but the client will only see the one at
-     * {@code y = 0}. It is up to the caller to determine if they want to set that
-     * biome instead, or simply warn the actor.
-     * </p>
-     *
-     * @return if the world fully supports 3D biomes
-     */
-    boolean fullySupports3DBiomes();
-
-    /**
      * Similar to {@link Extent#setBlock(BlockVector3, BlockStateHolder)} but a
      * {@code notifyAndLight} parameter indicates whether adjacent blocks
      * should be notified that changes have been made and lighting operations

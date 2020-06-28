@@ -96,7 +96,7 @@ public class ExtentBiomeCopy implements FlatRegionFunction, RegionFunction {
             .toBlockPoint()
             .add(to);
 
-        if (destination instanceof World && !((World) destination).fullySupports3DBiomes()) {
+        if (!destination.fullySupports3DBiomes()) {
             transformed = transformed.withY(0);
         }
 

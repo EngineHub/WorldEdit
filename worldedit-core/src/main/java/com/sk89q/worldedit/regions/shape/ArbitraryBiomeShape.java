@@ -103,7 +103,7 @@ public abstract class ArbitraryBiomeShape {
     public int generate(EditSession editSession, BiomeType baseBiome, boolean hollow) {
         int affected = 0;
 
-        boolean fullySupports3DBiomes = editSession.getWorld().fullySupports3DBiomes();
+        boolean fullySupports3DBiomes = editSession.fullySupports3DBiomes();
 
         for (BlockVector3 position : getExtent()) {
             int x = position.getBlockX();
