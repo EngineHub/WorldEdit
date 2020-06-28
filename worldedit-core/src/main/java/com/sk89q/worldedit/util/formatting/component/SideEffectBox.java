@@ -70,7 +70,7 @@ public class SideEffectBox extends PaginationBox {
         for (SideEffect.State uiState : SHOWN_VALUES) {
             builder = builder.append(TextComponent.space());
             builder = builder.append(TranslatableComponent.of(uiState.getDisplayName(), uiState == state ? TextColor.WHITE : TextColor.GRAY)
-                    .clickEvent(ClickEvent.runCommand("//fast -h " + effect.name().toLowerCase(Locale.US) + " " + uiState.name().toLowerCase(Locale.US)))
+                    .clickEvent(ClickEvent.runCommand("//perf -h " + effect.name().toLowerCase(Locale.US) + " " + uiState.name().toLowerCase(Locale.US)))
                     .hoverEvent(HoverEvent.showText(uiState == state
                             ? TranslatableComponent.of("worldedit.sideeffect.box.current")
                             : TranslatableComponent.of("worldedit.sideeffect.box.change-to", TranslatableComponent.of(uiState.getDisplayName()))
