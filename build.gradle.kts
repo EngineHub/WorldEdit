@@ -57,7 +57,7 @@ codecov {
 if (!project.hasProperty("gitCommitHash")) {
     apply(plugin = "org.ajoberstar.grgit")
     ext["gitCommitHash"] = try {
-        (ext["grgit"] as Grgit?)?.head()?.abbreviatedId
+        extensions.getByName<Grgit>("grgit").head()?.abbreviatedId
     } catch (e: Exception) {
         logger.warn("Error getting commit hash", e)
 
