@@ -84,7 +84,6 @@ import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.DefaultBiomeFeatures;
 import net.minecraft.world.gen.feature.Feature;
-import net.minecraft.world.level.LevelProperties;
 import net.minecraft.world.level.ServerWorldProperties;
 import net.minecraft.world.level.storage.LevelStorage;
 import org.apache.commons.io.FileUtils;
@@ -456,7 +455,7 @@ public class FabricWorld extends AbstractWorld {
 
     @Override
     public long getRemainingWeatherDuration() {
-        LevelProperties info = (LevelProperties) getWorld().getLevelProperties();
+        ServerWorldProperties info = (ServerWorldProperties) getWorld().getLevelProperties();
         if (info.isThundering()) {
             return info.getThunderTime();
         }
@@ -473,7 +472,7 @@ public class FabricWorld extends AbstractWorld {
 
     @Override
     public void setWeather(WeatherType weatherType, long duration) {
-        LevelProperties info = (LevelProperties) getWorld().getLevelProperties();
+        ServerWorldProperties info = (ServerWorldProperties) getWorld().getLevelProperties();
         if (weatherType == WeatherTypes.THUNDER_STORM) {
             info.setClearWeatherTime(0);
             info.setThundering(true);

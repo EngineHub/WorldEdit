@@ -86,7 +86,6 @@ import net.minecraft.world.server.ServerWorld;
 import net.minecraft.world.storage.IServerWorldInfo;
 import net.minecraft.world.storage.IWorldInfo;
 import net.minecraft.world.storage.SaveFormat;
-import net.minecraft.world.storage.ServerWorldInfo;
 import org.apache.commons.io.FileUtils;
 
 import javax.annotation.Nullable;
@@ -148,7 +147,7 @@ public class ForgeWorld extends AbstractWorld {
 
     @Override
     public String getName() {
-        return ((ServerWorldInfo) getWorld().getWorldInfo()).getWorldName();
+        return ((IServerWorldInfo) getWorld().getWorldInfo()).getWorldName();
     }
 
     @Override
