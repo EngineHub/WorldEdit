@@ -72,6 +72,7 @@ public class SpongeCommandSender implements Actor {
         return sender.getName();
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public void printRaw(String msg) {
         for (String part : msg.split("\n")) {
@@ -96,9 +97,10 @@ public class SpongeCommandSender implements Actor {
 
     @Override
     public void print(Component component) {
-        TextAdapter.sendComponent(sender, WorldEditText.format(component, getLocale()));
+        TextAdapter.sendMessage(sender, WorldEditText.format(component, getLocale()));
     }
 
+    @SuppressWarnings("deprecation")
     private void sendColorized(String msg, TextColor formatting) {
         for (String part : msg.split("\n")) {
             sender.sendMessage(Text.of(formatting, TextSerializers.LEGACY_FORMATTING_CODE.deserialize(part)));

@@ -21,6 +21,9 @@ package com.sk89q.worldedit.internal.util;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Throwables;
+import com.sk89q.worldedit.world.block.BlockCategories;
+import com.sk89q.worldedit.world.block.BlockType;
+import com.sk89q.worldedit.world.block.BlockTypes;
 
 import java.lang.reflect.Method;
 import java.util.stream.Stream;
@@ -92,6 +95,15 @@ public class DeprecationUtil {
             .iterator());
         builder.append(')');
         return builder.toString();
+    }
+
+    public static boolean isSign(BlockType blockType) {
+        @SuppressWarnings("deprecation")
+        BlockType sign = BlockTypes.SIGN;
+        @SuppressWarnings("deprecation")
+        BlockType wallSign = BlockTypes.WALL_SIGN;
+        return blockType == sign || blockType == wallSign
+            || BlockCategories.SIGNS.contains(blockType);
     }
 
 }

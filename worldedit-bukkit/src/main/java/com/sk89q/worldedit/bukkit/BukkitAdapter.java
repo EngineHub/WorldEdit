@@ -389,6 +389,7 @@ public class BukkitAdapter {
      * @return WorldEdit EntityType
      */
     public static EntityType adapt(org.bukkit.entity.EntityType entityType) {
+        @SuppressWarnings("deprecation")
         final String name = entityType.getName();
         if (name == null) {
             return null;
@@ -396,6 +397,7 @@ public class BukkitAdapter {
         return EntityTypes.get(name.toLowerCase(Locale.ROOT));
     }
 
+    @SuppressWarnings("deprecation")
     public static org.bukkit.entity.EntityType adapt(EntityType entityType) {
         if (!entityType.getId().startsWith("minecraft:")) {
             throw new IllegalArgumentException("Bukkit only supports vanilla entities");

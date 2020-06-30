@@ -36,6 +36,7 @@ import com.sk89q.worldedit.extension.input.ParserContext;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.internal.registry.InputParser;
+import com.sk89q.worldedit.internal.util.DeprecationUtil;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.util.HandSide;
@@ -350,8 +351,7 @@ public class DefaultBlockParser extends InputParser<BaseBlock> {
             return state.toBaseBlock();
         }
 
-        if (blockType == BlockTypes.SIGN || blockType == BlockTypes.WALL_SIGN
-                || BlockCategories.SIGNS.contains(blockType)) {
+        if (DeprecationUtil.isSign(blockType)) {
             // Allow special sign text syntax
             String[] text = new String[4];
             text[0] = blockAndExtraData.length > 1 ? blockAndExtraData[1] : "";

@@ -77,7 +77,9 @@ public class BukkitWorld extends AbstractWorld {
     private static final Map<Integer, Effect> effects = new HashMap<>();
     static {
         for (Effect effect : Effect.values()) {
-            effects.put(effect.getId(), effect);
+            @SuppressWarnings("deprecation")
+            int id = effect.getId();
+            effects.put(id, effect);
         }
 
         boolean temp;
@@ -349,6 +351,7 @@ public class BukkitWorld extends AbstractWorld {
         return getWorld().getMaxHeight() - 1;
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public void fixAfterFastMode(Iterable<BlockVector2> chunks) {
         World world = getWorld();
@@ -504,7 +507,7 @@ public class BukkitWorld extends AbstractWorld {
         return HAS_3D_BIOMES && getWorld().getEnvironment() != World.Environment.NORMAL;
     }
 
-    @SuppressWarnings("deprecated")
+    @SuppressWarnings("deprecation")
     @Override
     public BiomeType getBiome(BlockVector3 position) {
         if (HAS_3D_BIOMES) {
@@ -514,7 +517,7 @@ public class BukkitWorld extends AbstractWorld {
         }
     }
 
-    @SuppressWarnings("deprecated")
+    @SuppressWarnings("deprecation")
     @Override
     public boolean setBiome(BlockVector3 position, BiomeType biome) {
         if (HAS_3D_BIOMES) {

@@ -162,11 +162,15 @@ public class ChunkCommands {
             throw new StopExecutionException(TextComponent.of("Failed to write chunk list: " + e.getMessage()));
         }
 
-        actor.print(String.format("%d chunk(s) have been marked for deletion the next time the server starts.",
-                newBatch.getChunkCount()));
+        actor.print(TextComponent.of(
+            String.format("%d chunk(s) have been marked for deletion the next time the server starts.",
+                newBatch.getChunkCount())
+        ));
         if (currentInfo.batches.size() > 1) {
-            actor.printDebug(String.format("%d chunks total marked for deletion. (May have overlaps).",
-                    currentInfo.batches.stream().mapToInt(ChunkDeletionInfo.ChunkBatch::getChunkCount).sum()));
+            actor.printDebug(TextComponent.of(
+                String.format("%d chunks total marked for deletion. (May have overlaps).",
+                    currentInfo.batches.stream().mapToInt(ChunkDeletionInfo.ChunkBatch::getChunkCount).sum())
+            ));
         }
         actor.print(TextComponent.of("You can mark more chunks for deletion, or to stop now, run: ", TextColor.LIGHT_PURPLE)
                 .append(TextComponent.of("/stop", TextColor.AQUA)

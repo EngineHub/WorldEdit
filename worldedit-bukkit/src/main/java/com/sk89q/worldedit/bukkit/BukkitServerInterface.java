@@ -109,6 +109,7 @@ public class BukkitServerInterface extends AbstractPlatform implements MultiUser
         if (!type.startsWith("minecraft:")) {
             return false;
         }
+        @SuppressWarnings("deprecation")
         final EntityType entityType = EntityType.fromName(type.substring(10));
         return entityType != null && entityType.isAlive();
     }

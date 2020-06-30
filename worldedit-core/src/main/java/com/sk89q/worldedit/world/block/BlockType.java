@@ -60,6 +60,7 @@ public class BlockType implements Keyed {
     private final LazyReference<Map<Map<Property<?>, Object>, BlockState>> blockStatesMap
         = LazyReference.from(() -> BlockState.generateStateMap(this));
 
+    @Deprecated
     private final LazyReference<String> name = LazyReference.from(() -> WorldEdit.getInstance().getPlatformManager()
         .queryCapability(Capability.GAME_HOOKS).getRegistries().getBlockRegistry().getName(this));
     private final LazyReference<Integer> legacyId = LazyReference.from(() -> computeLegacy(0));

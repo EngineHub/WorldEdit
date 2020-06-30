@@ -83,6 +83,7 @@ public class SpongePlayer extends AbstractPlayerActor {
         return this.player.getName();
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public String getDisplayName() {
         return player.getDisplayNameData().displayName().getDirect().map(TextSerializers.LEGACY_FORMATTING_CODE::serialize).orElse(getName());
@@ -155,7 +156,7 @@ public class SpongePlayer extends AbstractPlayerActor {
 
     @Override
     public void print(Component component) {
-        TextAdapter.sendComponent(player, WorldEditText.format(component, getLocale()));
+        TextAdapter.sendMessage(player, WorldEditText.format(component, getLocale()));
     }
 
     private void sendColorized(String msg, TextColor formatting) {

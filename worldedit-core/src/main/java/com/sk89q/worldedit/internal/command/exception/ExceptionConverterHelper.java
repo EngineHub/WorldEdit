@@ -65,6 +65,7 @@ public abstract class ExceptionConverterHelper implements ExceptionConverter {
         this.handlers = handlers;
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public void convert(Throwable t) throws CommandException {
         Class<?> throwableClass = t.getClass();
