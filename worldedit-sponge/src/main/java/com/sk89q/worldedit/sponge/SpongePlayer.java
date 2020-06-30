@@ -165,12 +165,12 @@ public class SpongePlayer extends AbstractPlayerActor {
     }
 
     @Override
-    public void setPosition(Vector3 pos, float pitch, float yaw) {
+    public boolean trySetPosition(Vector3 pos, float pitch, float yaw) {
         org.spongepowered.api.world.Location<World> loc = new org.spongepowered.api.world.Location<>(
-                this.player.getWorld(), pos.getX(), pos.getY(), pos.getZ()
+            this.player.getWorld(), pos.getX(), pos.getY(), pos.getZ()
         );
 
-        this.player.setLocationAndRotation(loc, new Vector3d(pitch, yaw, 0));
+        return this.player.setLocationAndRotation(loc, new Vector3d(pitch, yaw, 0));
     }
 
     @Override

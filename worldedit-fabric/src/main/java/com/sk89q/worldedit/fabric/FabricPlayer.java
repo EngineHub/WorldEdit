@@ -174,8 +174,9 @@ public class FabricPlayer extends AbstractPlayerActor {
     }
 
     @Override
-    public void setPosition(Vector3 pos, float pitch, float yaw) {
+    public boolean trySetPosition(Vector3 pos, float pitch, float yaw) {
         this.player.networkHandler.requestTeleport(pos.getX(), pos.getY(), pos.getZ(), yaw, pitch);
+        return true;
     }
 
     @Override

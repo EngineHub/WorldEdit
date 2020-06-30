@@ -106,8 +106,8 @@ class PlayerProxy extends AbstractPlayerActor {
     }
 
     @Override
-    public void setPosition(Vector3 pos, float pitch, float yaw) {
-        basePlayer.setPosition(pos, pitch, yaw);
+    public boolean trySetPosition(Vector3 pos, float pitch, float yaw) {
+        return basePlayer.trySetPosition(pos, pitch, yaw);
     }
 
     @Override
