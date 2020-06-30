@@ -8,7 +8,7 @@ assignees: ''
 ---
 
 **Versions**
-<!-- Please include the full version of WorldEdit and the platform (Forge, Fabric, Bukkit...) you are running, e.g. output from `/we version` and `/version` commands, where applicable. Please ensure you are running up to date software before making a bug report. Old versions will recieve little to no support. -->
+<!-- Please include the full version of WorldEdit and the platform (Forge, Fabric, Bukkit...) you are running, e.g. output from `/we version` and `/version` commands, where applicable. Please ensure you are running up to date software before making a bug report. Old versions will receive little to no support. -->
 WorldEdit version:
 Platform version:
 
