@@ -99,7 +99,8 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
                 || item == ItemTypes.WOODEN_PICKAXE
                 || item == ItemTypes.STONE_PICKAXE
                 || item == ItemTypes.DIAMOND_PICKAXE
-                || item == ItemTypes.GOLDEN_PICKAXE;
+                || item == ItemTypes.GOLDEN_PICKAXE
+                || item == ItemTypes.NETHERITE_PICKAXE;
     }
 
     @Override
