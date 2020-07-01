@@ -66,7 +66,7 @@ public class SuperPickaxeCommands {
         LocalConfiguration config = we.getConfiguration();
 
         if (range > config.maxSuperPickaxeSize) {
-            player.printError(TranslatableComponent.of("worldedit.superpickaxe.max-range", TextComponent.of(config.maxSuperPickaxeSize)));
+            player.printError(TranslatableComponent.of("worldedit.tool.superpickaxe.max-range", TextComponent.of(config.maxSuperPickaxeSize)));
             return;
         }
 
@@ -88,7 +88,7 @@ public class SuperPickaxeCommands {
         LocalConfiguration config = we.getConfiguration();
 
         if (range > config.maxSuperPickaxeSize) {
-            player.printError(TranslatableComponent.of("worldedit.superpickaxe.max-range", TextComponent.of(config.maxSuperPickaxeSize)));
+            player.printError(TranslatableComponent.of("worldedit.tool.superpickaxe.max-range", TextComponent.of(config.maxSuperPickaxeSize)));
             return;
         }
 
