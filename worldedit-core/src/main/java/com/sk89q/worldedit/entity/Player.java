@@ -24,6 +24,8 @@ import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
 import com.sk89q.worldedit.function.mask.Mask;
+import com.sk89q.worldedit.internal.util.DeprecationUtil;
+import com.sk89q.worldedit.internal.util.NonAbstractForCompatibility;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.util.Direction;
@@ -282,8 +284,40 @@ public interface Player extends Entity, Actor {
      * @param pos where to move them
      * @param pitch the pitch (up/down) of the player's view in degrees
      * @param yaw the yaw (left/right) of the player's view in degrees
+     * @deprecated This method may fail without indication. Use
+     * {@link #trySetPosition(Vector3, float, float)} instead
      */
-    void setPosition(Vector3 pos, float pitch, float yaw);
+    @Deprecated
+    default void setPosition(Vector3 pos, float pitch, float yaw) {
+        trySetPosition(pos, pitch, yaw);
+    }
+
+    /**
+     * Attempt to move the player.
+     *
+     * <p>
+     * This action may fail, due to other mods cancelling the move.
+     * If so, this method will return {@code false}.
+     * </p>
+     *
+     * @param pos where to move them
+     * @param pitch the pitch (up/down) of the player's view in degrees
+     * @param yaw the yaw (left/right) of the player's view in degrees
+     * @return if the move was able to occur
+     * @apiNote This must be overridden by new subclasses. See {@link NonAbstractForCompatibility}
+     *          for details
+     */
+    @NonAbstractForCompatibility(
+        delegateName = "setPosition",
+        delegateParams = { Vector3.class, float.class, float.class }
+    )
+    default boolean trySetPosition(Vector3 pos, float pitch, float yaw) {
+        DeprecationUtil.checkDelegatingOverride(getClass());
+
+        setPosition(pos, pitch, yaw);
+
+        return true;
+    }
 
     /**
      * Sends a fake block to the client.

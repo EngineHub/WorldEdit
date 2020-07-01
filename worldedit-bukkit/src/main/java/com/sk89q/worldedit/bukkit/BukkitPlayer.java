@@ -139,9 +139,9 @@ public class BukkitPlayer extends AbstractPlayerActor {
     }
 
     @Override
-    public void setPosition(Vector3 pos, float pitch, float yaw) {
-        player.teleport(new Location(player.getWorld(), pos.getX(), pos.getY(),
-                pos.getZ(), yaw, pitch));
+    public boolean trySetPosition(Vector3 pos, float pitch, float yaw) {
+        return player.teleport(new Location(player.getWorld(), pos.getX(), pos.getY(),
+            pos.getZ(), yaw, pitch));
     }
 
     @Override

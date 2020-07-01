@@ -54,9 +54,27 @@ public interface Locatable {
      * Sets the position of this actor.
      *
      * @param pos where to move them
+     * @deprecated This method may fail without indication. Use {@link #trySetPosition(Vector3)}
+     * instead
      */
+    @Deprecated
     default void setPosition(Vector3 pos) {
-        setLocation(new Location(getExtent(), pos));
+        trySetPosition(pos);
+    }
+
+    /**
+     * Attempts to set the position of this actor.
+     *
+     * <p>
+     * This action may fail, due to other mods cancelling the move.
+     * If so, this method will return {@code false}.
+     * </p>
+     *
+     * @param pos the position to set
+     * @return if the position was able to be set
+     */
+    default boolean trySetPosition(Vector3 pos) {
+        return setLocation(new Location(getExtent(), pos));
     }
 
     /**

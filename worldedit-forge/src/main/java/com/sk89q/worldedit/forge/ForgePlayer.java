@@ -173,8 +173,9 @@ public class ForgePlayer extends AbstractPlayerActor {
     }
 
     @Override
-    public void setPosition(Vector3 pos, float pitch, float yaw) {
+    public boolean trySetPosition(Vector3 pos, float pitch, float yaw) {
         this.player.connection.setPlayerLocation(pos.getX(), pos.getY(), pos.getZ(), yaw, pitch);
+        return true;
     }
 
     @Override
