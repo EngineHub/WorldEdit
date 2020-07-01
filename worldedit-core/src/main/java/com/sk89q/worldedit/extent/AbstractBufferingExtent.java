@@ -20,6 +20,8 @@
 package com.sk89q.worldedit.extent;
 
 import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.internal.util.DeprecationUtil;
+import com.sk89q.worldedit.internal.util.NonAbstractForCompatibility;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;
@@ -69,22 +71,30 @@ public abstract class AbstractBufferingExtent extends AbstractDelegateExtent {
         return block;
     }
 
+    /**
+     * @deprecated New subclasses should override {@link #getBufferedFullBlock(BlockVector3)}
+     *     instead
+     */
     @Deprecated
     protected Optional<BaseBlock> getBufferedBlock(BlockVector3 position) {
-        throw new IllegalStateException("Invalid BufferingExtent provided. Must override `getBufferedFullBlock(BlockVector3)`.");
+        return Optional.ofNullable(getBufferedFullBlock(position));
     }
 
-    //TODO make below abstract
     /**
      * Gets a block from the buffer, or null if not buffered.
      *
-     * This **must** be overridden, and will be abstract in WorldEdit 8.
-     *
      * @param position The position
      * @return The buffered block, or null
+     * @apiNote This must be overridden by new subclasses. See {@link NonAbstractForCompatibility}
+     *          for details
      */
+    @NonAbstractForCompatibility(
+        delegateName = "getBufferedBlock",
+        delegateParams = { BlockVector3.class }
+    )
     @Nullable
     protected BaseBlock getBufferedFullBlock(BlockVector3 position) {
+        DeprecationUtil.checkDelegatingOverride(getClass());
         return getBufferedBlock(position).orElse(null);
     }
 

@@ -22,11 +22,9 @@ package com.sk89q.worldedit.function.operation;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.math.BlockVector3;
-import com.sk89q.worldedit.util.LocatedBlock;
 import com.sk89q.worldedit.util.collection.BlockMap;
 import com.sk89q.worldedit.world.block.BaseBlock;
 
-import java.util.List;
 import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -51,10 +49,6 @@ public class SetBlockMap implements Operation {
 
     @Override
     public void cancel() {
-    }
-
-    @Override
-    public void addStatusMessages(List<String> messages) {
     }
 
 }

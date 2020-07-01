@@ -25,6 +25,7 @@ import java.util.Optional;
 /**
  * Stores a list of common Block String IDs.
  */
+@SuppressWarnings("unused")
 public final class BlockTypes {
 
     @Nullable public static final BlockType ACACIA_BUTTON = get("minecraft:acacia_button");

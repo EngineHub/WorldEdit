@@ -55,6 +55,8 @@ public class BundledItemRegistry implements ItemRegistry {
     @Nullable
     @Override
     @Deprecated
+    // dumb_intellij.jpg
+    @SuppressWarnings("deprecation")
     public String getName(ItemType itemType) {
         BundledItemData.ItemEntry itemEntry = getEntryById(itemType);
         if (itemEntry != null) {

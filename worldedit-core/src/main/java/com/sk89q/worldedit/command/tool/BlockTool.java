@@ -23,6 +23,8 @@ import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Platform;
+import com.sk89q.worldedit.internal.util.DeprecationUtil;
+import com.sk89q.worldedit.internal.util.NonAbstractForCompatibility;
 import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.util.Location;
 
@@ -33,22 +35,18 @@ public interface BlockTool extends Tool {
     /**
      * Perform the primary action of this tool.
      *
-     * @param server
-     * @param config
-     * @param player
-     * @param session
-     * @param clicked
      * @return true to cancel the original event which triggered this action (if possible)
+     * @deprecated New subclasses should override
+     * {@link #actPrimary(Platform, LocalConfiguration, Player, LocalSession, Location, Direction)}
+     * instead
      */
     @Deprecated
     default boolean actPrimary(Platform server, LocalConfiguration config, Player player, LocalSession session, Location clicked) {
-        throw new AssertionError("actPrimary must be overridden");
+        return actPrimary(server, config, player, session, clicked, null);
     }
 
     /**
      * Perform the primary action of this tool.
-     *
-     * <p>Note: This will not be default in WorldEdit 8</p>
      *
      * @param server The platform
      * @param config The config instance
@@ -57,8 +55,15 @@ public interface BlockTool extends Tool {
      * @param clicked The location that was clicked
      * @param face The face that was clicked
      * @return true to cancel the original event which triggered this action (if possible)
+     * @apiNote This must be overridden by new subclasses. See {@link NonAbstractForCompatibility}
+     *          for details
      */
+    @NonAbstractForCompatibility(
+        delegateName = "actPrimary",
+        delegateParams = { Platform.class, LocalConfiguration.class, Player.class, LocalSession.class, Location.class }
+    )
     default boolean actPrimary(Platform server, LocalConfiguration config, Player player, LocalSession session, Location clicked, @Nullable Direction face) {
+        DeprecationUtil.checkDelegatingOverride(getClass());
         return actPrimary(server, config, player, session, clicked);
     }
 }

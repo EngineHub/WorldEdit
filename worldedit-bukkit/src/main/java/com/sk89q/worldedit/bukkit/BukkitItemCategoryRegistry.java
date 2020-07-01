@@ -29,6 +29,8 @@ import org.bukkit.Tag;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 public class BukkitItemCategoryRegistry implements ItemCategoryRegistry {
 
     private Set<ItemType> getFromBukkitTag(Tag<Material> tag) {
@@ -40,7 +42,9 @@ public class BukkitItemCategoryRegistry implements ItemCategoryRegistry {
         String[] split = category.split(":");
         String namespace = split.length > 1 ? split[0] : "minecraft";
         String key =  split.length > 1 ? split[1] : category;
+        @SuppressWarnings("deprecation")
         Tag<Material> tag = Bukkit.getTag(Tag.REGISTRY_ITEMS, new NamespacedKey(namespace, key), Material.class);
+        checkNotNull(tag);
         return getFromBukkitTag(tag);
     }
 }

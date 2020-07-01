@@ -132,8 +132,12 @@ public class MultiStageReorder extends AbstractBufferingExtent implements Reorde
         BlockCategories.DOORS.getAll().forEach(type -> priorityMap.put(type, PlacementPriority.FINAL));
         BlockCategories.BANNERS.getAll().forEach(type -> priorityMap.put(type, PlacementPriority.FINAL));
         BlockCategories.SIGNS.getAll().forEach(type -> priorityMap.put(type, PlacementPriority.FINAL));
-        priorityMap.put(BlockTypes.SIGN, PlacementPriority.FINAL);
-        priorityMap.put(BlockTypes.WALL_SIGN, PlacementPriority.FINAL);
+        @SuppressWarnings("deprecation")
+        BlockType sign = BlockTypes.SIGN;
+        priorityMap.put(sign, PlacementPriority.FINAL);
+        @SuppressWarnings("deprecation")
+        BlockType wallSign = BlockTypes.WALL_SIGN;
+        priorityMap.put(wallSign, PlacementPriority.FINAL);
         priorityMap.put(BlockTypes.CACTUS, PlacementPriority.FINAL);
         priorityMap.put(BlockTypes.SUGAR_CANE, PlacementPriority.FINAL);
         priorityMap.put(BlockTypes.PISTON_HEAD, PlacementPriority.FINAL);

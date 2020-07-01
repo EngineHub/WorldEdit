@@ -27,12 +27,15 @@ import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.extension.platform.permission.ActorSelectorLimits;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.RegionSelector;
+import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.util.Location;
+
+import javax.annotation.Nullable;
 
 public class SelectionWand implements DoubleActionBlockTool {
 
     @Override
-    public boolean actSecondary(Platform server, LocalConfiguration config, Player player, LocalSession session, Location clicked) {
+    public boolean actSecondary(Platform server, LocalConfiguration config, Player player, LocalSession session, Location clicked, @Nullable Direction face) {
         RegionSelector selector = session.getRegionSelector(player.getWorld());
         BlockVector3 blockPoint = clicked.toVector().toBlockPoint();
 
@@ -43,7 +46,7 @@ public class SelectionWand implements DoubleActionBlockTool {
     }
 
     @Override
-    public boolean actPrimary(Platform server, LocalConfiguration config, Player player, LocalSession session, Location clicked) {
+    public boolean actPrimary(Platform server, LocalConfiguration config, Player player, LocalSession session, Location clicked, @Nullable Direction face) {
         RegionSelector selector = session.getRegionSelector(player.getWorld());
         BlockVector3 blockPoint = clicked.toVector().toBlockPoint();
 
