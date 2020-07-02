@@ -49,6 +49,7 @@ import com.sk89q.worldedit.util.SideEffect;
 import com.sk89q.worldedit.util.SideEffectSet;
 import com.sk89q.worldedit.util.TreeGenerator.TreeType;
 import com.sk89q.worldedit.world.AbstractWorld;
+import com.sk89q.worldedit.world.RegenOptions;
 import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;
@@ -72,6 +73,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
+import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeContainer;
 import net.minecraft.world.biome.ColumnFuzzedBiomeMagnifier;
 import net.minecraft.world.biome.DefaultBiomeFeatures;
@@ -214,15 +216,16 @@ public class ForgeWorld extends AbstractWorld {
         checkNotNull(position);
         checkNotNull(biome);
 
-        IChunk chunk = getWorld().getChunk(position.getBlockX() >> 4, position.getBlockZ() >> 4, ChunkStatus.FULL, false);
-        BiomeContainer container = chunk == null ? null : chunk.getBiomes();
-        if (chunk == null || container == null) {
-            return false;
-        }
-        int idx = BiomeMath.computeBiomeIndex(position.getX(), position.getY(), position.getZ());
-        container.biomes[idx] = ForgeAdapter.adapt(biome);
-        chunk.setModified(true);
+        IChunk chunk = getWorld().getChunk(position.getBlockX() >> 4, position.getBlockZ() >> 4);
+        setBiomeInChunk(position, ForgeAdapter.adapt(biome), chunk);
         return true;
+    }
+
+    private void setBiomeInChunk(BlockVector3 position, Biome biome, IChunk chunk) {
+        BiomeContainer container = checkNotNull(chunk.getBiomes());
+        int idx = BiomeMath.computeBiomeIndex(position.getX(), position.getY(), position.getZ());
+        container.biomes[idx] = biome;
+        chunk.setModified(true);
     }
 
     private static final LoadingCache<ServerWorld, WorldEditFakePlayer> fakePlayers
@@ -282,7 +285,7 @@ public class ForgeWorld extends AbstractWorld {
     // For unmapped regen names, see Fabric!
 
     @Override
-    public boolean regenerate(Region region, EditSession editSession) {
+    public boolean regenerate(Region region, EditSession editSession, RegenOptions options) {
         // Don't even try to regen if it's going to fail.
         AbstractChunkProvider provider = getWorld().getChunkProvider();
         if (!(provider instanceof ServerChunkProvider)) {
@@ -290,7 +293,7 @@ public class ForgeWorld extends AbstractWorld {
         }
 
         try {
-            doRegen(region, editSession);
+            doRegen(region, editSession, options);
         } catch (Exception e) {
             throw new IllegalStateException("Regen failed", e);
         }
@@ -298,7 +301,7 @@ public class ForgeWorld extends AbstractWorld {
         return true;
     }
 
-    private void doRegen(Region region, EditSession editSession) throws Exception {
+    private void doRegen(Region region, EditSession editSession, RegenOptions options) throws Exception {
         Path tempDir = Files.createTempDirectory("WorldEditWorldGen");
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             try {
@@ -318,13 +321,13 @@ public class ForgeWorld extends AbstractWorld {
                 new WorldEditGenListener(),
                 originalWorld.getChunkProvider().getChunkGenerator(),
                 originalWorld.func_234925_Z_(),
-                originalWorld.getSeed(),
+                options.getSeed().orElse(originalWorld.getSeed()),
                 // No spawners are needed for this world.
                 ImmutableList.of(),
                 // This controls ticking, we don't need it so set it to false.
                 false
             )) {
-                regenForWorld(region, editSession, serverWorld);
+                regenForWorld(region, editSession, originalWorld, serverWorld, options);
 
                 // drive the server executor until all tasks are popped off
                 while (originalWorld.getServer().driveOne()) {
@@ -336,7 +339,8 @@ public class ForgeWorld extends AbstractWorld {
         }
     }
 
-    private void regenForWorld(Region region, EditSession editSession, ServerWorld serverWorld) throws MaxChangedBlocksException {
+    private void regenForWorld(Region region, EditSession editSession, ServerWorld originalWorld,
+                               ServerWorld serverWorld, RegenOptions options) throws MaxChangedBlocksException {
         List<CompletableFuture<IChunk>> chunkLoadings = submitChunkLoadTasks(region, serverWorld);
 
         // drive executor until loading finishes
@@ -370,6 +374,15 @@ public class ForgeWorld extends AbstractWorld {
                 state = state.toBaseBlock(NBTConverter.fromNative(tag));
             }
             editSession.setBlock(vec, state);
+
+            if (options.isRegenBiomes()) {
+                setBiomeInChunk(
+                    vec,
+                    checkNotNull(chunk.getBiomes())
+                        .getNoiseBiome(vec.getX() >> 2, vec.getY() >> 2, vec.getZ() >> 2),
+                    originalWorld.getChunk(pos)
+                );
+            }
         }
     }
 

@@ -27,6 +27,7 @@ import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.function.mask.Mask;
+import com.sk89q.worldedit.internal.util.NonAbstractForCompatibility;
 import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.Vector3;
@@ -211,7 +212,25 @@ public interface World extends Extent, Keyed {
      * @param editSession the {@link EditSession}
      * @return true if re-generation was successful
      */
-    boolean regenerate(Region region, EditSession editSession);
+    default boolean regenerate(Region region, EditSession editSession) {
+        return regenerate(region, editSession, RegenOptions.builder().build());
+    }
+
+    /**
+     * Regenerate an area.
+     *
+     * @param region the region
+     * @param editSession the {@link EditSession}
+     * @param options the regeneration options
+     * @return true if regeneration was successful
+     */
+    @NonAbstractForCompatibility(
+        delegateName = "regenerate",
+        delegateParams = { Region.class, EditSession.class }
+    )
+    default boolean regenerate(Region region, EditSession editSession, RegenOptions options) {
+        return regenerate(region, editSession);
+    }
 
     /**
      * Generate a tree at the given position.
