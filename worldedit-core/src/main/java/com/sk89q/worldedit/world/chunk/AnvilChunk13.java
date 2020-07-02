@@ -41,7 +41,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * The chunk format for Minecraft 1.13 and newer
+ * The chunk format for Minecraft 1.13 to 1.15
  */
 public class AnvilChunk13 implements Chunk {
 
@@ -116,19 +116,44 @@ public class AnvilChunk13 implements Chunk {
             // parse block states
             long[] blockStatesSerialized = NBTUtils.getChildTag(sectionTag.getValue(), "BlockStates", LongArrayTag.class).getValue();
 
-            int blocksPerChunkSection = 16 * 16 * 16;
-            BlockState[] chunkSectionBlocks = new BlockState[blocksPerChunkSection];
-
-            PackedIntArrayReader reader = new PackedIntArrayReader(blockStatesSerialized);
-            for (int blockPos = 0; blockPos < blocksPerChunkSection; blockPos++) {
-                int index = reader.get(blockPos);
-                if (index >= palette.length) {
-                    throw new InvalidFormatException("Invalid block state table entry: " + index);
-                }
-                chunkSectionBlocks[blockPos] = palette[index];
-            }
-
+            BlockState[] chunkSectionBlocks = new BlockState[16 * 16 * 16];
             blocks[y] = chunkSectionBlocks;
+
+            readBlockStates(palette, blockStatesSerialized, chunkSectionBlocks);
+        }
+    }
+
+    protected void readBlockStates(BlockState[] palette, long[] blockStatesSerialized, BlockState[] chunkSectionBlocks) throws InvalidFormatException {
+        int paletteBits = 4;
+        while ((1 << paletteBits) < palette.length) {
+            ++paletteBits;
+        }
+        int paletteMask = (1 << paletteBits) - 1;
+
+        long currentSerializedValue = 0;
+        int nextSerializedItem = 0;
+        int remainingBits = 0;
+        for (int blockPos = 0; blockPos < chunkSectionBlocks.length; blockPos++) {
+            int localBlockId;
+            if (remainingBits < paletteBits) {
+                int bitsNextLong = paletteBits - remainingBits;
+                localBlockId = (int) currentSerializedValue;
+                if (nextSerializedItem >= blockStatesSerialized.length) {
+                    throw new InvalidFormatException("Too short block state table");
+                }
+                currentSerializedValue = blockStatesSerialized[nextSerializedItem++];
+                localBlockId |= (currentSerializedValue & ((1 << bitsNextLong) - 1)) << remainingBits;
+                currentSerializedValue >>>= bitsNextLong;
+                remainingBits = 64 - bitsNextLong;
+            } else {
+                localBlockId = (int) (currentSerializedValue & paletteMask);
+                currentSerializedValue >>>= paletteBits;
+                remainingBits -= paletteBits;
+            }
+            if (localBlockId >= palette.length) {
+                throw new InvalidFormatException("Invalid block state table entry: " + localBlockId);
+            }
+            chunkSectionBlocks[blockPos] = palette[localBlockId];
         }
     }
 

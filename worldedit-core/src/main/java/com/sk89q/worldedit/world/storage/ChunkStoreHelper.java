@@ -29,6 +29,7 @@ import com.sk89q.worldedit.world.DataException;
 import com.sk89q.worldedit.world.DataFixer;
 import com.sk89q.worldedit.world.chunk.AnvilChunk;
 import com.sk89q.worldedit.world.chunk.AnvilChunk13;
+import com.sk89q.worldedit.world.chunk.AnvilChunk16;
 import com.sk89q.worldedit.world.chunk.Chunk;
 import com.sk89q.worldedit.world.chunk.OldChunk;
 
@@ -64,6 +65,11 @@ public class ChunkStoreHelper {
     private static final int DATA_VERSION_MC_1_13 = 1519;
 
     /**
+     * The DataVersion for Minecraft 1.16
+     */
+    private static final int DATA_VERSION_MC_1_16 = 2566;
+
+    /**
      * Convert a chunk NBT tag into a {@link Chunk} implementation.
      *
      * @param rootTag the root tag of the chunk
@@ -94,11 +100,15 @@ public class ChunkStoreHelper {
         if (dataVersion == 0) dataVersion = -1;
         final Platform platform = WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.WORLD_EDITING);
         final int currentDataVersion = platform.getDataVersion();
-        if (tag.getValue().containsKey("Sections") &&  dataVersion < currentDataVersion) { // only fix up MCA format, DFU doesn't support MCR chunks
+        if (tag.getValue().containsKey("Sections") && dataVersion < currentDataVersion) { // only fix up MCA format, DFU doesn't support MCR chunks
             final DataFixer dataFixer = platform.getDataFixer();
             if (dataFixer != null) {
-                return new AnvilChunk13((CompoundTag) dataFixer.fixUp(DataFixer.FixTypes.CHUNK, rootTag, dataVersion).getValue().get("Level"));
+                tag = (CompoundTag) dataFixer.fixUp(DataFixer.FixTypes.CHUNK, rootTag, dataVersion).getValue().get("Level");
+                dataVersion = currentDataVersion;
             }
+        }
+        if (dataVersion >= DATA_VERSION_MC_1_16) {
+            return new AnvilChunk16(tag);
         }
         if (dataVersion >= DATA_VERSION_MC_1_13) {
             return new AnvilChunk13(tag);
