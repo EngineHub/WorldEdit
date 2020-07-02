@@ -43,8 +43,8 @@ public class PackedIntArrayReader {
         this.data = data;
         this.elementBits = data.length * 64 / 4096;
         this.maxValue = (1L << elementBits) - 1L;
-        this.elementsPerLong = (char) (64 / elementBits);
-        this.factor = FACTORS[elementBits];
+        this.elementsPerLong = 64 / elementBits;
+        this.factor = FACTORS[elementsPerLong - 1];
         int j = (SIZE + this.elementsPerLong - 1) / this.elementsPerLong;
         if (j != data.length) {
             throw new IllegalStateException("Invalid packed-int array provided, should be of length " + j);
