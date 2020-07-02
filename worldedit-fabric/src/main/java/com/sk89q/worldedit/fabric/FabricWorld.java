@@ -25,6 +25,7 @@ import com.google.common.cache.LoadingCache;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.Futures;
+import com.mojang.serialization.Dynamic;
 import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
@@ -36,6 +37,7 @@ import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.fabric.internal.ExtendedMinecraftServer;
 import com.sk89q.worldedit.fabric.internal.FabricWorldNativeAccess;
 import com.sk89q.worldedit.fabric.internal.NBTConverter;
+import com.sk89q.worldedit.fabric.mixin.AccessorLevelProperties;
 import com.sk89q.worldedit.fabric.mixin.AccessorServerChunkManager;
 import com.sk89q.worldedit.internal.Constants;
 import com.sk89q.worldedit.internal.block.BlockStateIdAccess;
@@ -59,10 +61,12 @@ import com.sk89q.worldedit.world.weather.WeatherType;
 import com.sk89q.worldedit.world.weather.WeatherTypes;
 import net.minecraft.block.Block;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.datafixer.NbtOps;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
+import net.minecraft.nbt.Tag;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerChunkManager;
 import net.minecraft.server.world.ServerWorld;
@@ -73,6 +77,7 @@ import net.minecraft.util.Util;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldProperties;
 import net.minecraft.world.biome.Biome;
@@ -83,6 +88,8 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkManager;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.WorldChunk;
+import net.minecraft.world.dimension.DimensionOptions;
+import net.minecraft.world.gen.GeneratorOptions;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.DefaultBiomeFeatures;
 import net.minecraft.world.gen.feature.Feature;
@@ -97,6 +104,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -304,16 +312,35 @@ public class FabricWorld extends AbstractWorld {
         LevelStorage levelStorage = LevelStorage.create(tempDir);
         try (LevelStorage.Session session = levelStorage.createSession("WorldEditTempGen")) {
             ServerWorld originalWorld = (ServerWorld) getWorld();
+            long seed = options.getSeed().orElse(originalWorld.getSeed());
+            AccessorLevelProperties levelProperties = (AccessorLevelProperties)
+                originalWorld.getServer().getSaveProperties();
+            GeneratorOptions originalOpts = levelProperties.getGeneratorOptions();
+
+            GeneratorOptions newOpts = GeneratorOptions.CODEC
+                .encodeStart(NbtOps.INSTANCE, originalOpts)
+                .flatMap(tag ->
+                    GeneratorOptions.CODEC.parse(
+                        recursivelySetSeed(new Dynamic<>(NbtOps.INSTANCE, tag), seed, new HashSet<>())
+                    )
+                )
+                .result()
+                .orElseThrow(() -> new IllegalStateException("Unable to map GeneratorOptions"));
+
+            levelProperties.setGeneratorOptions(newOpts);
+            RegistryKey<World> worldRegKey = originalWorld.getRegistryKey();
+            DimensionOptions dimGenOpts = newOpts.getDimensionMap().get(worldRegKey.getValue());
+            checkNotNull(dimGenOpts, "No DimensionOptions for %s", worldRegKey);
             try (ServerWorld serverWorld = new ServerWorld(
                 originalWorld.getServer(), Util.getServerWorkerExecutor(), session,
                 ((ServerWorldProperties) originalWorld.getLevelProperties()),
-                originalWorld.getRegistryKey(),
+                worldRegKey,
                 originalWorld.getDimensionRegistryKey(),
                 originalWorld.getDimension(),
                 new WorldEditGenListener(),
-                originalWorld.getChunkManager().getChunkGenerator(),
+                dimGenOpts.getChunkGenerator(),
                 originalWorld.isDebugWorld(),
-                options.getSeed().orElse(originalWorld.getSeed()),
+                seed,
                 // No spawners are needed for this world.
                 ImmutableList.of(),
                 // This controls ticking, we don't need it so set it to false.
@@ -325,10 +352,28 @@ public class FabricWorld extends AbstractWorld {
                 while (originalWorld.getServer().runTask()) {
                     Thread.yield();
                 }
+            } finally {
+                levelProperties.setGeneratorOptions(originalOpts);
             }
         } finally {
             FileUtils.deleteDirectory(tempDir.toFile());
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    private Dynamic<Tag> recursivelySetSeed(Dynamic<Tag> dynamic, long seed, Set<Dynamic<Tag>> seen) {
+        if (!seen.add(dynamic)) {
+            return dynamic;
+        }
+        return dynamic.updateMapValues(pair -> {
+            if (pair.getFirst().asString("").equals("seed")) {
+                return pair.mapSecond(v -> v.createLong(seed));
+            }
+            if (pair.getSecond().getValue() instanceof net.minecraft.nbt.CompoundTag) {
+                return pair.mapSecond(v -> recursivelySetSeed((Dynamic<Tag>) v, seed, seen));
+            }
+            return pair;
+        });
     }
 
     private void regenForWorld(Region region, EditSession editSession, ServerWorld originalWorld,

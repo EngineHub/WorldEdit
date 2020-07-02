@@ -55,11 +55,12 @@ import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.RegionOperationException;
 import com.sk89q.worldedit.util.TreeGenerator.TreeType;
-import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.util.formatting.component.TextUtils;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
+import com.sk89q.worldedit.world.RegenOptions;
+import com.sk89q.worldedit.world.World;
 import org.enginehub.piston.annotation.Command;
 import org.enginehub.piston.annotation.CommandContainer;
 import org.enginehub.piston.annotation.param.Arg;
@@ -406,13 +407,21 @@ public class RegionCommands {
     )
     @CommandPermissions("worldedit.regen")
     @Logging(REGION)
-    public void regenerateChunk(Actor actor, World world, LocalSession session,
-            EditSession editSession, @Selection Region region) throws WorldEditException {
+    void regenerate(Actor actor, World world, LocalSession session, EditSession editSession,
+                    @Selection Region region,
+                    @Arg(desc = "The seed to regenerate with, otherwise uses world seed", def = "")
+                        Long seed,
+                    @Switch(name = 'b', desc = "Regenerate biomes as well")
+                        boolean regenBiomes) {
         Mask mask = session.getMask();
         boolean success;
         try {
             session.setMask(null);
-            success = world.regenerate(region, editSession);
+            RegenOptions options = RegenOptions.builder()
+                .seed(seed)
+                .regenBiomes(regenBiomes)
+                .build();
+            success = world.regenerate(region, editSession, options);
         } finally {
             session.setMask(mask);
         }

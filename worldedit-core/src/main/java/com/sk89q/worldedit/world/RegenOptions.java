@@ -25,6 +25,8 @@ import com.sk89q.worldedit.regions.Region;
 
 import java.util.OptionalLong;
 
+import javax.annotation.Nullable;
+
 /**
  * Regeneration options for {@link World#regenerate(Region, EditSession, RegenOptions)}.
  */
@@ -41,19 +43,24 @@ public abstract class RegenOptions {
     }
 
     @AutoValue.Builder
-    public interface Builder {
+    public abstract static class Builder {
 
         /**
-         * Sets the seed to regenerate with. Defaults to {@link OptionalLong#empty()}.
+         * Sets the seed to regenerate with. Defaults to {@code null}.
          *
          * <p>
-         * Use {@link OptionalLong#empty()} to use the world's current seed.
+         * Use {@code null} to use the world's current seed.
          * </p>
          *
          * @param seed the seed to regenerate with
          * @return this builder
          */
-        Builder seed(OptionalLong seed);
+        public final Builder seed(@Nullable Long seed) {
+            return seed(seed == null ? OptionalLong.empty() : OptionalLong.of(seed));
+        }
+
+        // AV doesn't like us using @Nullable Long for some reason
+        abstract Builder seed(OptionalLong seed);
 
         /**
          * Turn on or off applying the biomes from the regenerated chunk. Defaults to {@code false}.
@@ -61,14 +68,14 @@ public abstract class RegenOptions {
          * @param regenBiomes {@code true} to apply biomes
          * @return this builder
          */
-        Builder regenBiomes(boolean regenBiomes);
+        public abstract Builder regenBiomes(boolean regenBiomes);
 
         /**
          * Build the options object.
          *
          * @return the options object
          */
-        RegenOptions build();
+        public abstract RegenOptions build();
 
     }
 
