@@ -30,6 +30,7 @@ import com.sk89q.worldedit.extension.factory.BlockFactory;
 import com.sk89q.worldedit.extension.input.InputParseException;
 import com.sk89q.worldedit.extension.input.ParserContext;
 import com.sk89q.worldedit.extension.platform.Capability;
+import com.sk89q.worldedit.internal.Constants;
 import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.util.gson.VectorAdapter;
 import com.sk89q.worldedit.util.io.ResourceLoader;
@@ -104,7 +105,7 @@ public final class LegacyMapper {
             // if fixer is available, try using that first, as some old blocks that were renamed share names with new blocks
             if (fixer != null) {
                 try {
-                    String newEntry = fixer.fixUp(DataFixer.FixTypes.BLOCK_STATE, value, 1631);
+                    String newEntry = fixer.fixUp(DataFixer.FixTypes.BLOCK_STATE, value, Constants.DATA_VERSION_MC_1_12_2);
                     state = blockFactory.parseFromInput(newEntry, parserContext).toImmutableState();
                 } catch (InputParseException e) {
                 }
@@ -133,7 +134,7 @@ public final class LegacyMapper {
             String value = itemEntry.getValue();
             ItemType type = ItemTypes.get(value);
             if (type == null && fixer != null) {
-                value = fixer.fixUp(DataFixer.FixTypes.ITEM_TYPE, value, 1631);
+                value = fixer.fixUp(DataFixer.FixTypes.ITEM_TYPE, value, Constants.DATA_VERSION_MC_1_12_2);
                 type = ItemTypes.get(value);
             }
             if (type == null) {

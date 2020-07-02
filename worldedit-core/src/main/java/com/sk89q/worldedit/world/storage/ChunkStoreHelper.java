@@ -25,6 +25,7 @@ import com.sk89q.jnbt.Tag;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.extension.platform.Platform;
+import com.sk89q.worldedit.internal.Constants;
 import com.sk89q.worldedit.world.DataException;
 import com.sk89q.worldedit.world.DataFixer;
 import com.sk89q.worldedit.world.chunk.AnvilChunk;
@@ -58,16 +59,6 @@ public class ChunkStoreHelper {
             return (CompoundTag) tag;
         }
     }
-
-    /**
-     * The DataVersion for Minecraft 1.13
-     */
-    private static final int DATA_VERSION_MC_1_13 = 1519;
-
-    /**
-     * The DataVersion for Minecraft 1.16
-     */
-    private static final int DATA_VERSION_MC_1_16 = 2566;
 
     /**
      * Convert a chunk NBT tag into a {@link Chunk} implementation.
@@ -107,10 +98,10 @@ public class ChunkStoreHelper {
                 dataVersion = currentDataVersion;
             }
         }
-        if (dataVersion >= DATA_VERSION_MC_1_16) {
+        if (dataVersion >= Constants.DATA_VERSION_MC_1_16) {
             return new AnvilChunk16(tag);
         }
-        if (dataVersion >= DATA_VERSION_MC_1_13) {
+        if (dataVersion >= Constants.DATA_VERSION_MC_1_13) {
             return new AnvilChunk13(tag);
         }
 
