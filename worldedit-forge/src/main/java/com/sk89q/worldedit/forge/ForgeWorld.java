@@ -424,7 +424,7 @@ public class ForgeWorld extends AbstractWorld {
             }
             editSession.setBlock(vec, state);
 
-            if (options.isRegenBiomes()) {
+            if (options.shouldRegenBiomes()) {
                 setBiomeInChunk(
                     vec,
                     checkNotNull(chunk.getBiomes())

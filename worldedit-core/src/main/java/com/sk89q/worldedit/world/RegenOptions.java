@@ -91,10 +91,13 @@ public abstract class RegenOptions {
      */
     public abstract OptionalLong getSeed();
 
+    abstract boolean isRegenBiomes();
 
     /**
      * Whether biomes should be regenerated.
      */
-    public abstract boolean isRegenBiomes();
+    public final boolean shouldRegenBiomes() {
+        return isRegenBiomes();
+    }
 
 }
