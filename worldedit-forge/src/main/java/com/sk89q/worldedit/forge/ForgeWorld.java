@@ -25,6 +25,8 @@ import com.google.common.cache.LoadingCache;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.Futures;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.Dynamic;
 import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
@@ -49,6 +51,7 @@ import com.sk89q.worldedit.util.SideEffect;
 import com.sk89q.worldedit.util.SideEffectSet;
 import com.sk89q.worldedit.util.TreeGenerator.TreeType;
 import com.sk89q.worldedit.world.AbstractWorld;
+import com.sk89q.worldedit.world.RegenOptions;
 import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;
@@ -63,14 +66,18 @@ import net.minecraft.inventory.IClearable;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUseContext;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.INBT;
+import net.minecraft.nbt.NBTDynamicOps;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
+import net.minecraft.util.RegistryKey;
 import net.minecraft.util.Util;
 import net.minecraft.util.concurrent.ThreadTaskExecutor;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.world.Dimension;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeContainer;
 import net.minecraft.world.biome.ColumnFuzzedBiomeMagnifier;
@@ -81,14 +88,15 @@ import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.IChunk;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.Feature;
+import net.minecraft.world.gen.settings.DimensionGeneratorSettings;
 import net.minecraft.world.server.ServerChunkProvider;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraft.world.storage.IServerWorldInfo;
 import net.minecraft.world.storage.IWorldInfo;
 import net.minecraft.world.storage.SaveFormat;
+import net.minecraft.world.storage.ServerWorldInfo;
 import org.apache.commons.io.FileUtils;
 
-import javax.annotation.Nullable;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.nio.file.Files;
@@ -96,6 +104,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -105,6 +114,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
+
+import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
@@ -205,6 +216,10 @@ public class ForgeWorld extends AbstractWorld {
         checkNotNull(position);
 
         IChunk chunk = getWorld().getChunk(position.getBlockX() >> 4, position.getBlockZ() >> 4);
+        return getBiomeInChunk(position, chunk);
+    }
+
+    private BiomeType getBiomeInChunk(BlockVector3 position, IChunk chunk) {
         BiomeContainer biomes = checkNotNull(chunk.getBiomes());
         return ForgeAdapter.adapt(biomes.getNoiseBiome(position.getX() >> 2, position.getY() >> 2, position.getZ() >> 2));
     }
@@ -214,11 +229,8 @@ public class ForgeWorld extends AbstractWorld {
         checkNotNull(position);
         checkNotNull(biome);
 
-        IChunk chunk = getWorld().getChunk(position.getBlockX() >> 4, position.getBlockZ() >> 4, ChunkStatus.FULL, false);
-        BiomeContainer container = chunk == null ? null : chunk.getBiomes();
-        if (chunk == null || container == null) {
-            return false;
-        }
+        IChunk chunk = getWorld().getChunk(position.getBlockX() >> 4, position.getBlockZ() >> 4);
+        BiomeContainer container = checkNotNull(chunk.getBiomes());
         int idx = BiomeMath.computeBiomeIndex(position.getX(), position.getY(), position.getZ());
         container.biomes[idx] = ForgeAdapter.adapt(biome);
         chunk.setModified(true);
@@ -282,7 +294,7 @@ public class ForgeWorld extends AbstractWorld {
     // For unmapped regen names, see Fabric!
 
     @Override
-    public boolean regenerate(Region region, EditSession editSession) {
+    public boolean regenerate(Region region, EditSession editSession, RegenOptions options) {
         // Don't even try to regen if it's going to fail.
         AbstractChunkProvider provider = getWorld().getChunkProvider();
         if (!(provider instanceof ServerChunkProvider)) {
@@ -290,7 +302,7 @@ public class ForgeWorld extends AbstractWorld {
         }
 
         try {
-            doRegen(region, editSession);
+            doRegen(region, editSession, options);
         } catch (Exception e) {
             throw new IllegalStateException("Regen failed", e);
         }
@@ -298,7 +310,7 @@ public class ForgeWorld extends AbstractWorld {
         return true;
     }
 
-    private void doRegen(Region region, EditSession editSession) throws Exception {
+    private void doRegen(Region region, EditSession editSession, RegenOptions options) throws Exception {
         Path tempDir = Files.createTempDirectory("WorldEditWorldGen");
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             try {
@@ -309,34 +321,74 @@ public class ForgeWorld extends AbstractWorld {
         SaveFormat levelStorage = SaveFormat.func_237269_a_(tempDir);
         try (SaveFormat.LevelSave session = levelStorage.func_237274_c_("WorldEditTempGen")) {
             ServerWorld originalWorld = (ServerWorld) getWorld();
+            long seed = options.getSeed().orElse(originalWorld.getSeed());
+            ServerWorldInfo levelProperties =
+                (ServerWorldInfo) originalWorld.getServer().func_240793_aU_();
+            DimensionGeneratorSettings originalOpts = levelProperties.field_237343_c_;
+
+            Codec<DimensionGeneratorSettings> dimCodec = DimensionGeneratorSettings.field_236201_a_;
+            DimensionGeneratorSettings newOpts = dimCodec
+                .encodeStart(NBTDynamicOps.INSTANCE, originalOpts)
+                .flatMap(tag ->
+                    dimCodec.parse(
+                        recursivelySetSeed(new Dynamic<>(NBTDynamicOps.INSTANCE, tag), seed, new HashSet<>())
+                    )
+                )
+                .result()
+                .orElseThrow(() -> new IllegalStateException("Unable to map GeneratorOptions"));
+
+            levelProperties.field_237343_c_ = newOpts;
+            RegistryKey<World> worldRegKey = originalWorld.func_234923_W_();
+            Dimension dimGenOpts = newOpts.func_236224_e_()
+                .getOrDefault(worldRegKey.func_240901_a_());
+            checkNotNull(dimGenOpts, "No DimensionOptions for %s", worldRegKey);
             try (ServerWorld serverWorld = new ServerWorld(
                 originalWorld.getServer(), Util.getServerExecutor(), session,
                 ((IServerWorldInfo) originalWorld.getWorldInfo()),
-                originalWorld.func_234923_W_(),
+                worldRegKey,
                 originalWorld.func_234922_V_(),
                 originalWorld.func_230315_m_(),
                 new WorldEditGenListener(),
-                originalWorld.getChunkProvider().getChunkGenerator(),
+                dimGenOpts.func_236064_c_(),
                 originalWorld.func_234925_Z_(),
-                originalWorld.getSeed(),
+                seed,
                 // No spawners are needed for this world.
                 ImmutableList.of(),
                 // This controls ticking, we don't need it so set it to false.
                 false
             )) {
-                regenForWorld(region, editSession, serverWorld);
+                regenForWorld(region, editSession, serverWorld, options);
 
                 // drive the server executor until all tasks are popped off
                 while (originalWorld.getServer().driveOne()) {
                     Thread.yield();
                 }
+            } finally {
+                levelProperties.field_237343_c_ = originalOpts;
             }
         } finally {
             FileUtils.deleteDirectory(tempDir.toFile());
         }
     }
 
-    private void regenForWorld(Region region, EditSession editSession, ServerWorld serverWorld) throws MaxChangedBlocksException {
+    @SuppressWarnings("unchecked")
+    private Dynamic<INBT> recursivelySetSeed(Dynamic<INBT> dynamic, long seed, Set<Dynamic<INBT>> seen) {
+        if (!seen.add(dynamic)) {
+            return dynamic;
+        }
+        return dynamic.updateMapValues(pair -> {
+            if (pair.getFirst().asString("").equals("seed")) {
+                return pair.mapSecond(v -> v.createLong(seed));
+            }
+            if (pair.getSecond().getValue() instanceof CompoundNBT) {
+                return pair.mapSecond(v -> recursivelySetSeed((Dynamic<INBT>) v, seed, seen));
+            }
+            return pair;
+        });
+    }
+
+    private void regenForWorld(Region region, EditSession editSession, ServerWorld serverWorld,
+                               RegenOptions options) throws MaxChangedBlocksException {
         List<CompletableFuture<IChunk>> chunkLoadings = submitChunkLoadTasks(region, serverWorld);
 
         // drive executor until loading finishes
@@ -370,6 +422,13 @@ public class ForgeWorld extends AbstractWorld {
                 state = state.toBaseBlock(NBTConverter.fromNative(tag));
             }
             editSession.setBlock(vec, state);
+
+            if (options.shouldRegenBiomes()) {
+                if (!editSession.fullySupports3DBiomes()) {
+                    vec = vec.withY(0);
+                }
+                editSession.setBiome(vec, getBiomeInChunk(vec, chunk));
+            }
         }
     }
 

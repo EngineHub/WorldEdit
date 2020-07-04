@@ -32,6 +32,7 @@ import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.util.SideEffect;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.world.DataFixer;
+import com.sk89q.worldedit.world.RegenOptions;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockType;
@@ -220,9 +221,10 @@ public interface BukkitImplAdapter {
      * @param world the world to regen in
      * @param region the region to regen
      * @param session the session to use for setting blocks
+     * @param options the regeneration options
      * @return true on success, false on failure
      */
-    default boolean regenerate(World world, Region region, EditSession session) {
+    default boolean regenerate(World world, Region region, EditSession session, RegenOptions options) {
         throw new UnsupportedOperationException("This adapter does not support regeneration.");
     }
 }
