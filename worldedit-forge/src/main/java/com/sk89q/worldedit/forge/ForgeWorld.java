@@ -424,6 +424,9 @@ public class ForgeWorld extends AbstractWorld {
             editSession.setBlock(vec, state);
 
             if (options.shouldRegenBiomes()) {
+                if (!editSession.fullySupports3DBiomes()) {
+                    vec = vec.withY(0);
+                }
                 editSession.setBiome(vec, getBiomeInChunk(vec, chunk));
             }
         }
