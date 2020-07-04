@@ -25,6 +25,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.extension.platform.Capability;
+import com.sk89q.worldedit.internal.Constants;
 import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.util.gson.VectorAdapter;
 import com.sk89q.worldedit.util.io.ResourceLoader;
@@ -82,11 +83,11 @@ public final class BundledItemData {
         Gson gson = gsonBuilder.create();
         URL url = null;
         final int dataVersion = WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.WORLD_EDITING).getDataVersion();
-        if (dataVersion > 2566) { // > MC 1.15
+        if (dataVersion >= Constants.DATA_VERSION_MC_1_16) {
             url = resourceLoader.getResource(BundledBlockData.class, "items.116.json");
-        } else if (dataVersion > 2224) { // > MC 1.14
+        } else if (dataVersion >= Constants.DATA_VERSION_MC_1_15) {
             url = resourceLoader.getResource(BundledBlockData.class, "items.115.json");
-        } else if (dataVersion > 1900) { // > MC 1.13
+        } else if (dataVersion >= Constants.DATA_VERSION_MC_1_14) {
             url = resourceLoader.getResource(BundledBlockData.class, "items.114.json");
         }
         if (url == null) {
