@@ -24,7 +24,7 @@ import com.sk89q.worldedit.extension.input.DisallowedUsageException;
 /**
  * Thrown when a disallowed item is used.
  *
- * {@link DisallowedUsageException}
+ * @deprecated Use {@link DisallowedUsageException}
  */
 @Deprecated
 public class DisallowedItemException extends WorldEditException {

@@ -353,7 +353,7 @@
     "worldedit.error.missing-extent": "No Extent is known",
     "worldedit.error.missing-session": "No LocalSession is known",
     "worldedit.error.missing-world": "You need to provide a world (Try //world)",
-    "worldedit.error.missing-actor": "No world is known (try //world)",
+    "worldedit.error.missing-actor": "No actor is known",
 
     "worldedit.selection.convex.info.vertices": "Vertices: {0}",
     "worldedit.selection.convex.info.triangles": "Triangles: {0}",

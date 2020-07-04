@@ -188,10 +188,10 @@ public class DefaultBlockParser extends InputParser<BaseBlock> {
                         return Maps.newHashMap();
                     }
                     if (blockStates.containsKey(propertyKey)) {
-                        throw new InputParseException(
-                                TranslatableComponent.of("worldedit.error.parser.duplicate-property",
-                                TextComponent.of(parts[0]))
-                        );
+                        throw new InputParseException(TranslatableComponent.of(
+                                "worldedit.error.parser.duplicate-property",
+                                TextComponent.of(parts[0])
+                        ));
                     }
                     Object value;
                     try {

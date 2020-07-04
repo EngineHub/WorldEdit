@@ -26,7 +26,6 @@ import com.sk89q.worldedit.util.formatting.text.Component;
  */
 public class DisallowedUsageException extends InputParseException {
 
-
     /**
      * Create with a message.
      *
