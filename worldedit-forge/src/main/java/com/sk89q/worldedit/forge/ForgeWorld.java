@@ -79,7 +79,6 @@ import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.Dimension;
 import net.minecraft.world.World;
-import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeContainer;
 import net.minecraft.world.biome.ColumnFuzzedBiomeMagnifier;
 import net.minecraft.world.biome.DefaultBiomeFeatures;
@@ -217,6 +216,10 @@ public class ForgeWorld extends AbstractWorld {
         checkNotNull(position);
 
         IChunk chunk = getWorld().getChunk(position.getBlockX() >> 4, position.getBlockZ() >> 4);
+        return getBiomeInChunk(position, chunk);
+    }
+
+    private BiomeType getBiomeInChunk(BlockVector3 position, IChunk chunk) {
         BiomeContainer biomes = checkNotNull(chunk.getBiomes());
         return ForgeAdapter.adapt(biomes.getNoiseBiome(position.getX() >> 2, position.getY() >> 2, position.getZ() >> 2));
     }
@@ -227,15 +230,11 @@ public class ForgeWorld extends AbstractWorld {
         checkNotNull(biome);
 
         IChunk chunk = getWorld().getChunk(position.getBlockX() >> 4, position.getBlockZ() >> 4);
-        setBiomeInChunk(position, ForgeAdapter.adapt(biome), chunk);
-        return true;
-    }
-
-    private void setBiomeInChunk(BlockVector3 position, Biome biome, IChunk chunk) {
         BiomeContainer container = checkNotNull(chunk.getBiomes());
         int idx = BiomeMath.computeBiomeIndex(position.getX(), position.getY(), position.getZ());
-        container.biomes[idx] = biome;
+        container.biomes[idx] = ForgeAdapter.adapt(biome);
         chunk.setModified(true);
+        return true;
     }
 
     private static final LoadingCache<ServerWorld, WorldEditFakePlayer> fakePlayers
@@ -358,7 +357,7 @@ public class ForgeWorld extends AbstractWorld {
                 // This controls ticking, we don't need it so set it to false.
                 false
             )) {
-                regenForWorld(region, editSession, originalWorld, serverWorld, options);
+                regenForWorld(region, editSession, serverWorld, options);
 
                 // drive the server executor until all tasks are popped off
                 while (originalWorld.getServer().driveOne()) {
@@ -388,8 +387,8 @@ public class ForgeWorld extends AbstractWorld {
         });
     }
 
-    private void regenForWorld(Region region, EditSession editSession, ServerWorld originalWorld,
-                               ServerWorld serverWorld, RegenOptions options) throws MaxChangedBlocksException {
+    private void regenForWorld(Region region, EditSession editSession, ServerWorld serverWorld,
+                               RegenOptions options) throws MaxChangedBlocksException {
         List<CompletableFuture<IChunk>> chunkLoadings = submitChunkLoadTasks(region, serverWorld);
 
         // drive executor until loading finishes
@@ -425,12 +424,7 @@ public class ForgeWorld extends AbstractWorld {
             editSession.setBlock(vec, state);
 
             if (options.shouldRegenBiomes()) {
-                setBiomeInChunk(
-                    vec,
-                    checkNotNull(chunk.getBiomes())
-                        .getNoiseBiome(vec.getX() >> 2, vec.getY() >> 2, vec.getZ() >> 2),
-                    originalWorld.getChunk(pos)
-                );
+                editSession.setBiome(vec, getBiomeInChunk(vec, chunk));
             }
         }
     }

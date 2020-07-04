@@ -80,7 +80,6 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldProperties;
-import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeAccessType;
 import net.minecraft.world.biome.source.BiomeArray;
 import net.minecraft.world.biome.source.HorizontalVoronoiBiomeAccessType;
@@ -213,6 +212,10 @@ public class FabricWorld extends AbstractWorld {
     public BiomeType getBiome(BlockVector3 position) {
         checkNotNull(position);
         Chunk chunk = getWorld().getChunk(position.getX() >> 4, position.getZ() >> 4);
+        return getBiomeInChunk(position, chunk);
+    }
+
+    private BiomeType getBiomeInChunk(BlockVector3 position, Chunk chunk) {
         BiomeArray biomeArray = checkNotNull(chunk.getBiomeArray());
         return FabricAdapter.adapt(biomeArray.getBiomeForNoiseGen(position.getX() >> 2, position.getY() >> 2, position.getZ() >> 2));
     }
@@ -223,14 +226,10 @@ public class FabricWorld extends AbstractWorld {
         checkNotNull(biome);
 
         Chunk chunk = getWorld().getChunk(position.getBlockX() >> 4, position.getBlockZ() >> 4);
-        setBiomeInChunk(position, FabricAdapter.adapt(biome), chunk);
-        return true;
-    }
-
-    private void setBiomeInChunk(BlockVector3 position, Biome biome, Chunk chunk) {
         MutableBiomeArray biomeArray = MutableBiomeArray.inject(checkNotNull(chunk.getBiomeArray()));
-        biomeArray.setBiome(position.getX(), position.getY(), position.getZ(), biome);
+        biomeArray.setBiome(position.getX(), position.getY(), position.getZ(), FabricAdapter.adapt(biome));
         chunk.setShouldSave(true);
+        return true;
     }
 
     private static final LoadingCache<ServerWorld, WorldEditFakePlayer> fakePlayers
@@ -346,7 +345,7 @@ public class FabricWorld extends AbstractWorld {
                 // This controls ticking, we don't need it so set it to false.
                 false
             )) {
-                regenForWorld(region, editSession, originalWorld, serverWorld, options);
+                regenForWorld(region, editSession, serverWorld, options);
 
                 // drive the server executor until all tasks are popped off
                 while (originalWorld.getServer().runTask()) {
@@ -376,8 +375,8 @@ public class FabricWorld extends AbstractWorld {
         });
     }
 
-    private void regenForWorld(Region region, EditSession editSession, ServerWorld originalWorld,
-                               ServerWorld serverWorld, RegenOptions options) throws MaxChangedBlocksException {
+    private void regenForWorld(Region region, EditSession editSession, ServerWorld serverWorld,
+                               RegenOptions options) throws MaxChangedBlocksException {
         List<CompletableFuture<Chunk>> chunkLoadings = submitChunkLoadTasks(region, serverWorld);
 
         // drive executor until loading finishes
@@ -413,12 +412,7 @@ public class FabricWorld extends AbstractWorld {
             editSession.setBlock(vec, state);
 
             if (options.shouldRegenBiomes()) {
-                setBiomeInChunk(
-                    vec,
-                    checkNotNull(chunk.getBiomeArray())
-                        .getBiomeForNoiseGen(vec.getX() >> 2, vec.getY() >> 2, vec.getZ() >> 2),
-                    originalWorld.getChunk(pos)
-                );
+                editSession.setBiome(vec, getBiomeInChunk(vec, chunk));
             }
         }
     }
