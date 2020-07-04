@@ -38,6 +38,7 @@ import com.sk89q.worldedit.util.auth.AuthorizationException;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BaseBlock;
+import com.sk89q.worldedit.world.block.BlockCategories;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.block.BlockType;
@@ -172,9 +173,14 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
         findFreePosition(getBlockLocation());
     }
 
-    private boolean isBadSpaceForStanding(BlockVector3 location) {
+    /**
+     * Determines if the block at the given location "harms" the player, either by suffocation
+     * or other means.
+     */
+    private boolean isPlayerHarmingBlock(BlockVector3 location) {
         BlockType type = getWorld().getBlock(location).getBlockType();
-        return type.getMaterial().isMovementBlocker() || type == BlockTypes.LAVA;
+        return type.getMaterial().isMovementBlocker() || type == BlockTypes.LAVA
+            || BlockCategories.FIRE.contains(type);
     }
 
     /**
@@ -182,10 +188,10 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
      * @return if the player can stand at the location
      */
     private boolean isLocationGoodForStanding(BlockVector3 location) {
-        if (isBadSpaceForStanding(location.add(0, 1, 0))) {
+        if (isPlayerHarmingBlock(location.add(0, 1, 0))) {
             return false;
         }
-        if (isBadSpaceForStanding(location)) {
+        if (isPlayerHarmingBlock(location)) {
             return false;
         }
         return getWorld().getBlock(location.add(0, -1, 0)).getBlockType().getMaterial()
@@ -197,7 +203,7 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
         final World world = getWorld();
         final Location pos = getBlockLocation();
         final int x = pos.getBlockX();
-        int y = Math.max(world.getMinY(), pos.getBlockY());
+        int y = Math.max(world.getMinY(), pos.getBlockY() + 1);
         final int z = pos.getBlockZ();
         int yPlusSearchHeight = y + WorldEdit.getInstance().getConfiguration().defaultVerticalHeight;
         int maxY = Math.min(world.getMaxY(), yPlusSearchHeight) + 2;
