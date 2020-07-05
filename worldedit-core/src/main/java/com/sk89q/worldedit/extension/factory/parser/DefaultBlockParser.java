@@ -77,7 +77,10 @@ public class DefaultBlockParser extends InputParser<BaseBlock> {
                 throw new InputParseException(TranslatableComponent.of("worldedit.error.unknown", e.getRichMessage()), e);
             }
         } else {
-            throw new InputParseException(TranslatableComponent.of("worldedit.error.player-only"));
+            throw new InputParseException(TranslatableComponent.of(
+                    "worldedit.error.parser.player-only",
+                    TextComponent.of(handSide == HandSide.MAIN_HAND ? "hand" : "offhand")
+            ));
         }
     }
 
