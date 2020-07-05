@@ -22,6 +22,7 @@ package com.sk89q.worldedit;
 /**
  * Thrown when no item exist by the ID.
  */
+@Deprecated
 public class UnknownItemException extends WorldEditException {
 
     private String type;

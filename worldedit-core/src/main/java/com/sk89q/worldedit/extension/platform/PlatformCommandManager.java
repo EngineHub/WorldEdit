@@ -513,18 +513,15 @@ public final class PlatformCommandManager {
                 .build());
             ImmutableList<Command> cmd = e.getCommands();
             if (!cmd.isEmpty()) {
-                actor.print(TextComponent.builder("Usage: ")
-                    .color(TextColor.RED)
-                    .append(HelpGenerator.create(e.getCommandParseResult()).getUsage())
-                    .build());
+                actor.printError(
+                        TranslatableComponent.of("worldedit.error.incorrect-usage",
+                        HelpGenerator.create(e.getCommandParseResult()).getUsage())
+                );
             }
         } catch (CommandExecutionException e) {
             handleUnknownException(actor, e.getCause());
         } catch (CommandException e) {
-            actor.print(TextComponent.builder("")
-                    .color(TextColor.RED)
-                    .append(e.getRichMessage())
-                    .build());
+            actor.printError(e.getRichMessage());
         } catch (Throwable t) {
             handleUnknownException(actor, t);
         } finally {

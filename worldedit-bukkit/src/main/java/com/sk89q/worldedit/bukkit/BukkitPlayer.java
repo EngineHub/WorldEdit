@@ -230,8 +230,8 @@ public class BukkitPlayer extends AbstractPlayerActor {
     public void sendAnnouncements() {
         if (WorldEditPlugin.getInstance().getBukkitImplAdapter() == null) {
             printError(TranslatableComponent.of("worldedit.version.bukkit.unsupported-adapter",
-                    TextComponent.of("https://www.enginehub.org/worldedit/#downloads", TextColor.AQUA)
-                        .clickEvent(ClickEvent.openUrl("https://www.enginehub.org/worldedit/#downloads"))));
+                    TextComponent.of("https://enginehub.org/worldedit/#downloads", TextColor.AQUA)
+                        .clickEvent(ClickEvent.openUrl("https://enginehub.org/worldedit/#downloads"))));
         }
     }
 

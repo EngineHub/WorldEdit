@@ -19,15 +19,37 @@
 
 package com.sk89q.worldedit;
 
+import com.sk89q.worldedit.util.formatting.WorldEditText;
+import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.util.formatting.text.TextComponent;
+
+import java.util.Locale;
+
 /**
  * Parent for all WorldEdit exceptions.
  */
 public abstract class WorldEditException extends Exception {
 
+    private final Component message;
+
     /**
      * Create a new exception.
      */
     protected WorldEditException() {
+        this.message = null;
+    }
+
+    /**
+     * Create a new exception with a message.
+     *
+     * @param message the message
+     * @deprecated Use component version
+     */
+    @Deprecated
+    protected WorldEditException(String message) {
+        super(message);
+
+        this.message = TextComponent.of(message);
     }
 
     /**
@@ -35,8 +57,24 @@ public abstract class WorldEditException extends Exception {
      *
      * @param message the message
      */
-    protected WorldEditException(String message) {
-        super(message);
+    protected WorldEditException(Component message) {
+        super(WorldEditText.reduceToText(message, Locale.getDefault()));
+
+        this.message = message;
+    }
+
+    /**
+     * Create a new exception with a message and a cause.
+     *
+     * @param message the message
+     * @param cause the cause
+     * @deprecated Use component version
+     */
+    @Deprecated
+    protected WorldEditException(String message, Throwable cause) {
+        super(message, cause);
+
+        this.message = TextComponent.of(message);
     }
 
     /**
@@ -45,8 +83,10 @@ public abstract class WorldEditException extends Exception {
      * @param message the message
      * @param cause the cause
      */
-    protected WorldEditException(String message, Throwable cause) {
-        super(message, cause);
+    protected WorldEditException(Component message, Throwable cause) {
+        super(WorldEditText.reduceToText(message, Locale.getDefault()), cause);
+
+        this.message = message;
     }
 
     /**
@@ -56,5 +96,16 @@ public abstract class WorldEditException extends Exception {
      */
     protected WorldEditException(Throwable cause) {
         super(cause);
+
+        this.message = null;
+    }
+
+    /**
+     * Get the message of this exception as a rich text component.
+     *
+     * @return The rich message
+     */
+    public Component getRichMessage() {
+        return this.message;
     }
 }

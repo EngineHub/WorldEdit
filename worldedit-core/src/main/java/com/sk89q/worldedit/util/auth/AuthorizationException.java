@@ -20,6 +20,7 @@
 package com.sk89q.worldedit.util.auth;
 
 import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.util.formatting.text.Component;
 
 /**
  * Raised when authorization is not granted.
@@ -29,10 +30,20 @@ public class AuthorizationException extends WorldEditException {
     public AuthorizationException() {
     }
 
+    public AuthorizationException(Component message) {
+        super(message);
+    }
+
+    @Deprecated
     public AuthorizationException(String message) {
         super(message);
     }
 
+    public AuthorizationException(Component message, Throwable cause) {
+        super(message, cause);
+    }
+
+    @Deprecated
     public AuthorizationException(String message, Throwable cause) {
         super(message, cause);
     }

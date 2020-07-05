@@ -20,7 +20,6 @@
 package com.sk89q.worldedit.internal.command.exception;
 
 import com.google.common.collect.ImmutableList;
-import com.sk89q.worldedit.DisallowedItemException;
 import com.sk89q.worldedit.EmptyClipboardException;
 import com.sk89q.worldedit.IncompleteRegionException;
 import com.sk89q.worldedit.InvalidItemException;
@@ -29,15 +28,17 @@ import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.MaxRadiusException;
 import com.sk89q.worldedit.MissingWorldException;
 import com.sk89q.worldedit.UnknownDirectionException;
-import com.sk89q.worldedit.UnknownItemException;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.command.InsufficientArgumentsException;
 import com.sk89q.worldedit.command.tool.InvalidToolBindException;
+import com.sk89q.worldedit.extension.input.DisallowedUsageException;
+import com.sk89q.worldedit.extension.input.NoMatchException;
 import com.sk89q.worldedit.internal.expression.ExpressionException;
 import com.sk89q.worldedit.regions.RegionOperationException;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
+import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.util.io.file.FileSelectionAbortedException;
 import com.sk89q.worldedit.util.io.file.FilenameResolutionException;
 import com.sk89q.worldedit.util.io.file.InvalidFilenameException;
@@ -75,68 +76,72 @@ public class WorldEditExceptionConverter extends ExceptionConverterHelper {
         final Matcher matcher = numberFormat.matcher(e.getMessage());
 
         if (matcher.matches()) {
-            throw newCommandException("Number expected; string \"" + matcher.group(1)
-                    + "\" given.", e);
+            throw newCommandException(TranslatableComponent.of("worldedit.error.invalid-number.matches", TextComponent.of(matcher.group(1))), e);
         } else {
-            throw newCommandException("Number expected; string given.", e);
+            throw newCommandException(TranslatableComponent.of("worldedit.error.invalid-number"), e);
         }
     }
 
     @ExceptionMatch
     public void convert(IncompleteRegionException e) throws CommandException {
-        throw newCommandException("Make a region selection first.", e);
+        throw newCommandException(TranslatableComponent.of("worldedit.error.incomplete-region"), e);
     }
 
     @ExceptionMatch
     public void convert(MissingWorldException e) throws CommandException {
-        throw newCommandException("You need to provide a world (Try //world)", e);
+        throw newCommandException(e.getRichMessage(), e);
     }
 
     @ExceptionMatch
-    public void convert(UnknownItemException e) throws CommandException {
-        throw newCommandException("Block name '" + e.getID() + "' was not recognized.", e);
+    public void convert(NoMatchException e) throws CommandException {
+        throw newCommandException(e.getRichMessage(), e);
     }
 
+    @Deprecated
     @ExceptionMatch
     public void convert(InvalidItemException e) throws CommandException {
-        throw newCommandException(e.getMessage(), e);
+        throw newCommandException(e.getRichMessage(), e);
     }
 
     @ExceptionMatch
-    public void convert(DisallowedItemException e) throws CommandException {
-        throw newCommandException("Block '" + e.getID()
-                + "' not allowed (see WorldEdit configuration).", e);
+    public void convert(DisallowedUsageException e) throws CommandException {
+        throw newCommandException(e.getRichMessage(), e);
     }
 
     @ExceptionMatch
     public void convert(MaxChangedBlocksException e) throws CommandException {
-        throw newCommandException("Max blocks changed in an operation reached ("
-                + e.getBlockLimit() + ").", e);
+        throw newCommandException(TranslatableComponent.of("worldedit.error.max-changes", TextComponent.of(e.getBlockLimit())), e);
     }
 
     @ExceptionMatch
     public void convert(MaxBrushRadiusException e) throws CommandException {
-        throw newCommandException("Maximum brush radius (in configuration): " + worldEdit.getConfiguration().maxBrushRadius, e);
+        throw newCommandException(
+                TranslatableComponent.of("worldedit.error.max-brush-radius", TextComponent.of(worldEdit.getConfiguration().maxBrushRadius)),
+                e
+        );
     }
 
     @ExceptionMatch
     public void convert(MaxRadiusException e) throws CommandException {
-        throw newCommandException("Maximum radius (in configuration): " + worldEdit.getConfiguration().maxRadius, e);
+        throw newCommandException(
+                TranslatableComponent.of("worldedit.error.max-radius", TextComponent.of(worldEdit.getConfiguration().maxRadius)),
+                e
+        );
     }
 
     @ExceptionMatch
     public void convert(UnknownDirectionException e) throws CommandException {
-        throw newCommandException("Unknown direction: " + e.getDirection(), e);
+        throw newCommandException(e.getRichMessage(), e);
     }
 
     @ExceptionMatch
     public void convert(InsufficientArgumentsException e) throws CommandException {
-        throw newCommandException(e.getMessage(), e);
+        throw newCommandException(e.getRichMessage(), e);
     }
 
     @ExceptionMatch
     public void convert(RegionOperationException e) throws CommandException {
-        throw newCommandException(e.getMessage(), e);
+        throw newCommandException(e.getRichMessage(), e);
     }
 
     @ExceptionMatch
@@ -146,40 +151,41 @@ public class WorldEditExceptionConverter extends ExceptionConverterHelper {
 
     @ExceptionMatch
     public void convert(EmptyClipboardException e) throws CommandException {
-        throw newCommandException("Your clipboard is empty. Use //copy first.", e);
+        throw newCommandException(TranslatableComponent.of("worldedit.error.empty-clipboard"), e);
     }
 
     @ExceptionMatch
     public void convert(InvalidFilenameException e) throws CommandException {
-        throw newCommandException("Filename '" + e.getFilename() + "' invalid: "
-                + e.getMessage(), e);
+        throw newCommandException(
+                TranslatableComponent.of("worldedit.error.invalid-filename", TextComponent.of(e.getFilename()), e.getRichMessage()),
+                e
+        );
     }
 
     @ExceptionMatch
     public void convert(FilenameResolutionException e) throws CommandException {
         throw newCommandException(
-                "File '" + e.getFilename() + "' resolution error: " + e.getMessage(), e);
+                TranslatableComponent.of("worldedit.error.file-resolution", TextComponent.of(e.getFilename()), e.getRichMessage()),
+                e
+        );
     }
 
     @ExceptionMatch
     public void convert(InvalidToolBindException e) throws CommandException {
         throw newCommandException(
-            TextComponent.builder("Can't bind tool to ")
-                .append(e.getItemType().getRichName())
-                .append(": " + e.getMessage())
-                .build(),
-            e
+                TranslatableComponent.of("worldedit.tool.error.cannot-bind", e.getItemType().getRichName(), e.getRichMessage()),
+                e
         );
     }
 
     @ExceptionMatch
     public void convert(FileSelectionAbortedException e) throws CommandException {
-        throw newCommandException("File selection aborted.", e);
+        throw newCommandException(TranslatableComponent.of("worldedit.error.file-aborted"), e);
     }
 
     @ExceptionMatch
     public void convert(WorldEditException e) throws CommandException {
-        throw newCommandException(e.getMessage(), e);
+        throw newCommandException(e.getRichMessage(), e);
     }
 
     // Prevent investigation into UsageExceptions

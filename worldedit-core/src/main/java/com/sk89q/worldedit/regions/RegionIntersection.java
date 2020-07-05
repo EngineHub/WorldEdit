@@ -24,6 +24,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.google.common.collect.Iterators;
 import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.world.World;
 
 import java.util.ArrayList;
@@ -109,13 +110,13 @@ public class RegionIntersection extends AbstractRegion {
     @Override
     public void expand(BlockVector3... changes) throws RegionOperationException {
         checkNotNull(changes);
-        throw new RegionOperationException("Cannot expand a region intersection");
+        throw new RegionOperationException(TranslatableComponent.of("worldedit.selection.intersection.error.cannot-expand"));
     }
 
     @Override
     public void contract(BlockVector3... changes) throws RegionOperationException {
         checkNotNull(changes);
-        throw new RegionOperationException("Cannot contract a region intersection");
+        throw new RegionOperationException(TranslatableComponent.of("worldedit.selection.intersection.error.cannot-contract"));
     }
 
     @Override

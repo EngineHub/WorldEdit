@@ -26,6 +26,8 @@ import com.sk89q.worldedit.extension.input.ParserContext;
 import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.function.pattern.RandomPattern;
 import com.sk89q.worldedit.internal.registry.InputParser;
+import com.sk89q.worldedit.util.formatting.text.TextComponent;
+import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 
 import java.util.List;
 import java.util.stream.Stream;
@@ -76,7 +78,7 @@ public class RandomPatternParser extends InputParser<Pattern> {
                 String[] p = token.split("%");
 
                 if (p.length < 2) {
-                    throw new InputParseException("Missing the type after the % symbol for '" + input + "'");
+                    throw new InputParseException(TranslatableComponent.of("worldedit.error.parser.missing-random-type", TextComponent.of(input)));
                 } else {
                     chance = Double.parseDouble(p[0]);
                     innerPattern = worldEdit.getPatternFactory().parseFromInput(p[1], context);

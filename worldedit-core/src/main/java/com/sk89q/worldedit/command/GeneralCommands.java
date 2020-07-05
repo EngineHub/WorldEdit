@@ -30,7 +30,6 @@ import com.sk89q.worldedit.command.util.CommandPermissionsConditionGenerator;
 import com.sk89q.worldedit.command.util.HookMode;
 import com.sk89q.worldedit.command.util.WorldEditAsyncCommandBuilder;
 import com.sk89q.worldedit.entity.Player;
-import com.sk89q.worldedit.extension.input.DisallowedUsageException;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.function.mask.Mask;
@@ -38,6 +37,7 @@ import com.sk89q.worldedit.internal.command.CommandRegistrationHandler;
 import com.sk89q.worldedit.internal.command.CommandUtil;
 import com.sk89q.worldedit.util.SideEffect;
 import com.sk89q.worldedit.util.SideEffectSet;
+import com.sk89q.worldedit.util.auth.AuthorizationException;
 import com.sk89q.worldedit.util.formatting.component.PaginationBox;
 import com.sk89q.worldedit.util.formatting.component.SideEffectBox;
 import com.sk89q.worldedit.util.formatting.text.Component;
@@ -307,7 +307,7 @@ public class GeneralCommands {
                               @Arg(desc = "The new draw selection state", def = "")
                                   Boolean drawSelection) throws WorldEditException {
         if (!WorldEdit.getInstance().getConfiguration().serverSideCUI) {
-            throw new DisallowedUsageException("This functionality is disabled in the configuration!");
+            throw new AuthorizationException(TranslatableComponent.of("worldedit.error.disabled"));
         }
         boolean useServerCui = session.shouldUseServerCUI();
         if (drawSelection != null && drawSelection == useServerCui) {
