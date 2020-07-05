@@ -208,10 +208,10 @@ public class DefaultBlockParser extends InputParser<BaseBlock> {
                 } catch (InputParseException e) {
                     throw e; // Pass-through
                 } catch (Exception e) {
-                    throw new InputParseException(
-                            TranslatableComponent.of("worldedit.error.parser.bad-state-format",
-                                    TextComponent.of(parseableData))
-                    );
+                    throw new InputParseException(TranslatableComponent.of(
+                            "worldedit.error.parser.bad-state-format",
+                            TextComponent.of(parseableData)
+                    ));
                 }
             }
         }
