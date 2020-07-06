@@ -44,7 +44,9 @@ public abstract class MixinServerPlayerEntity extends PlayerEntity implements Ex
 
     @Inject(method = "swingHand", at = @At(value = "HEAD"))
     public void onSwing(Hand hand, @SuppressWarnings("unused") CallbackInfo callbackInfo) {
-        FabricWorldEdit.inst.onLeftClickAir(this, this.world, hand);
+        if (hand == Hand.MAIN_HAND) {
+            FabricWorldEdit.inst.onLeftClickAir(this);
+        }
     }
 
     @Inject(method = "setClientSettings", at = @At(value = "HEAD"))

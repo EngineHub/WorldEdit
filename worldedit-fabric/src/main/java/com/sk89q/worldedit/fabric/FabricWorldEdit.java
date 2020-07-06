@@ -240,7 +240,7 @@ public class FabricWorldEdit implements ModInitializer {
         return ActionResult.PASS;
     }
 
-    public void onLeftClickAir(PlayerEntity playerEntity, World world, Hand hand) {
+    public void onLeftClickAir(PlayerEntity playerEntity) {
         WorldEdit we = WorldEdit.getInstance();
         FabricPlayer player = adaptPlayer((ServerPlayerEntity) playerEntity);
         we.handleArmSwing(player);
