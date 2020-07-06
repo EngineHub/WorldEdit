@@ -4,6 +4,7 @@
 - Added a fine-grained fast mode system with //perf to allow individually enabling or disabling update types
 - Added a stack tool that stacks the clicked block until it hits an obstacle (https://gfycat.com/faithfulhardtofinddingo)
 - Added 3D biomes support
+- Added netherite pickaxe support to superpickaxe
 - Improve expression handling
 - Enable //watchdog by default
 - Improve archive file handling
@@ -11,6 +12,7 @@
 - Improved performance of the deform brush
 - Update to a newer Rhino release for craftscripts
 - Added support for 1.16.1
+- Added support for regenerating biomes with //regen
 - Improved ES6 support for craftscripts
 - Fixed an issue with edges of polygonal regions
 - Fixed multiple of the same flag being applied to commands not providing a friendly error
@@ -29,6 +31,13 @@
 - Fixed region volume not displaying correctly for very large regions
 - Fixed wandering traders not being counted as NPCs in /butcher
 - Fixed /delchunks in the nether and end on Spigot
+- Fixed commands disappearing on a /reload on Fabric
+- Partial hacky support for WorldEdit commands to be used in functions on Fabric
+- Fixed ascend and descend with entry deny regions
+- Fixed some broken localisation strings
+- Fixed the snapshot feature on 1.16
+- Fixed many error messages not being localisable
+- Fixed tool left click action firing on right click on Fabric
 
 7.1.0
 - Improve the expression parser by compiling expressions for performance
