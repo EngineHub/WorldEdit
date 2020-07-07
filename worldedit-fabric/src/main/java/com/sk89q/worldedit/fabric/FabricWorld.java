@@ -47,9 +47,11 @@ import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.util.Location;
+import com.sk89q.worldedit.util.ShutdownHook;
 import com.sk89q.worldedit.util.SideEffect;
 import com.sk89q.worldedit.util.SideEffectSet;
 import com.sk89q.worldedit.util.TreeGenerator.TreeType;
+import com.sk89q.worldedit.util.io.file.SafeFiles;
 import com.sk89q.worldedit.world.AbstractWorld;
 import com.sk89q.worldedit.world.RegenOptions;
 import com.sk89q.worldedit.world.biome.BiomeType;
@@ -94,9 +96,7 @@ import net.minecraft.world.gen.feature.DefaultBiomeFeatures;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.level.ServerWorldProperties;
 import net.minecraft.world.level.storage.LevelStorage;
-import org.apache.commons.io.FileUtils;
 
-import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -113,7 +113,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
-
 import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -302,14 +301,9 @@ public class FabricWorld extends AbstractWorld {
 
     private void doRegen(Region region, EditSession editSession, RegenOptions options) throws Exception {
         Path tempDir = Files.createTempDirectory("WorldEditWorldGen");
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            try {
-                FileUtils.deleteDirectory(tempDir.toFile());
-            } catch (IOException ignored) {
-            }
-        }));
         LevelStorage levelStorage = LevelStorage.create(tempDir);
-        try (LevelStorage.Session session = levelStorage.createSession("WorldEditTempGen")) {
+        try (ShutdownHook<Path> ignored = SafeFiles.tryHardToDeleteDirOnExit(tempDir);
+             LevelStorage.Session session = levelStorage.createSession("WorldEditTempGen")) {
             ServerWorld originalWorld = (ServerWorld) getWorld();
             long seed = options.getSeed().orElse(originalWorld.getSeed());
             AccessorLevelProperties levelProperties = (AccessorLevelProperties)
@@ -355,7 +349,7 @@ public class FabricWorld extends AbstractWorld {
                 levelProperties.setGeneratorOptions(originalOpts);
             }
         } finally {
-            FileUtils.deleteDirectory(tempDir.toFile());
+            SafeFiles.tryHardToDeleteDir(tempDir);
         }
     }
 

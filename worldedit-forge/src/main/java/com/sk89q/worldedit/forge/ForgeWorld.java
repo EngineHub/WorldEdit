@@ -47,9 +47,11 @@ import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.util.Location;
+import com.sk89q.worldedit.util.ShutdownHook;
 import com.sk89q.worldedit.util.SideEffect;
 import com.sk89q.worldedit.util.SideEffectSet;
 import com.sk89q.worldedit.util.TreeGenerator.TreeType;
+import com.sk89q.worldedit.util.io.file.SafeFiles;
 import com.sk89q.worldedit.world.AbstractWorld;
 import com.sk89q.worldedit.world.RegenOptions;
 import com.sk89q.worldedit.world.biome.BiomeType;
@@ -312,14 +314,9 @@ public class ForgeWorld extends AbstractWorld {
 
     private void doRegen(Region region, EditSession editSession, RegenOptions options) throws Exception {
         Path tempDir = Files.createTempDirectory("WorldEditWorldGen");
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            try {
-                FileUtils.deleteDirectory(tempDir.toFile());
-            } catch (IOException ignored) {
-            }
-        }));
         SaveFormat levelStorage = SaveFormat.func_237269_a_(tempDir);
-        try (SaveFormat.LevelSave session = levelStorage.func_237274_c_("WorldEditTempGen")) {
+        try (ShutdownHook<Path> ignored = SafeFiles.tryHardToDeleteDirOnExit(tempDir);
+             SaveFormat.LevelSave session = levelStorage.func_237274_c_("WorldEditTempGen")) {
             ServerWorld originalWorld = (ServerWorld) getWorld();
             long seed = options.getSeed().orElse(originalWorld.getSeed());
             ServerWorldInfo levelProperties =
@@ -367,7 +364,7 @@ public class ForgeWorld extends AbstractWorld {
                 levelProperties.field_237343_c_ = originalOpts;
             }
         } finally {
-            FileUtils.deleteDirectory(tempDir.toFile());
+            SafeFiles.tryHardToDeleteDir(tempDir);
         }
     }
 
