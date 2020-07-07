@@ -27,7 +27,7 @@ import com.sk89q.worldedit.world.block.BlockTypes;
 
 public class CylinderBrush implements Brush {
 
-    private int height;
+    private final int height;
 
     public CylinderBrush(int height) {
         this.height = height;

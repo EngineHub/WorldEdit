@@ -31,7 +31,7 @@ public interface ForgePermissionsProvider {
 
     class VanillaPermissionsProvider implements ForgePermissionsProvider {
 
-        private ForgePlatform platform;
+        private final ForgePlatform platform;
 
         public VanillaPermissionsProvider(ForgePlatform platform) {
             this.platform = platform;

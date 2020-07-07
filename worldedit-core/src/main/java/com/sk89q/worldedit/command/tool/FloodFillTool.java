@@ -45,8 +45,8 @@ import javax.annotation.Nullable;
  */
 public class FloodFillTool implements BlockTool {
 
-    private int range;
-    private Pattern pattern;
+    private final int range;
+    private final Pattern pattern;
 
     public FloodFillTool(int range, Pattern pattern) {
         this.range = range;

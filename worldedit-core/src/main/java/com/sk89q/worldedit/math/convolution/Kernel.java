@@ -27,11 +27,11 @@ package com.sk89q.worldedit.math.convolution;
  */
 public class Kernel {
 
-    private int width;
-    private int height;
-    private int xOrigin;
-    private int yOrigin;
-    private float[] data;
+    private final int width;
+    private final int height;
+    private final int xOrigin;
+    private final int yOrigin;
+    private final float[] data;
 
     public Kernel(int width, int height, float[] data) {
         this.width = width;

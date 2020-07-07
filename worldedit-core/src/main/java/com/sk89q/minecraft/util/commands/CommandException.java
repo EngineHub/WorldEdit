@@ -29,7 +29,7 @@ import javax.annotation.Nullable;
 
 public class CommandException extends Exception {
 
-    private List<String> commandStack = new ArrayList<>();
+    private final List<String> commandStack = new ArrayList<>();
 
     public CommandException() {
         super();

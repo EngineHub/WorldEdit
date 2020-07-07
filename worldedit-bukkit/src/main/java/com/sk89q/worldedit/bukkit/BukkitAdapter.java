@@ -405,8 +405,8 @@ public class BukkitAdapter {
         return org.bukkit.entity.EntityType.fromName(entityType.getId().substring(10));
     }
 
-    private static EnumMap<Material, BlockType> materialBlockTypeCache = new EnumMap<>(Material.class);
-    private static EnumMap<Material, ItemType> materialItemTypeCache = new EnumMap<>(Material.class);
+    private static final EnumMap<Material, BlockType> materialBlockTypeCache = new EnumMap<>(Material.class);
+    private static final EnumMap<Material, ItemType> materialItemTypeCache = new EnumMap<>(Material.class);
 
     /**
      * Converts a Material to a BlockType
@@ -432,8 +432,8 @@ public class BukkitAdapter {
         return materialItemTypeCache.computeIfAbsent(material, input -> ItemTypes.get(material.getKey().toString()));
     }
 
-    private static Int2ObjectMap<BlockState> blockStateCache = new Int2ObjectOpenHashMap<>();
-    private static Map<String, BlockState> blockStateStringCache = new HashMap<>();
+    private static final Int2ObjectMap<BlockState> blockStateCache = new Int2ObjectOpenHashMap<>();
+    private static final Map<String, BlockState> blockStateStringCache = new HashMap<>();
 
     /**
      * Create a WorldEdit BlockState from a Bukkit BlockData
@@ -468,7 +468,7 @@ public class BukkitAdapter {
         }
     }
 
-    private static Int2ObjectMap<BlockData> blockDataCache = new Int2ObjectOpenHashMap<>();
+    private static final Int2ObjectMap<BlockData> blockDataCache = new Int2ObjectOpenHashMap<>();
 
     /**
      * Create a Bukkit BlockData from a WorldEdit BlockStateHolder

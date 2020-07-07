@@ -36,11 +36,11 @@ public class SignBlock extends BaseBlock {
 
     private String[] text;
 
-    private static String EMPTY =  "{\"text\":\"\"}";
+    private static final String EMPTY =  "{\"text\":\"\"}";
 
     /**
      * Construct the sign with text.
-     * 
+     *
      * @param blockState The block state
      * @param text lines of text
      */
@@ -62,7 +62,7 @@ public class SignBlock extends BaseBlock {
 
     /**
      * Get the text.
-     * 
+     *
      * @return the text
      */
     public String[] getText() {
@@ -71,7 +71,7 @@ public class SignBlock extends BaseBlock {
 
     /**
      * Set the text.
-     * 
+     *
      * @param text the text to set
      */
     public void setText(String[] text) {
@@ -80,7 +80,7 @@ public class SignBlock extends BaseBlock {
         }
         this.text = text;
     }
-    
+
     @Override
     public boolean hasNbtData() {
         return true;

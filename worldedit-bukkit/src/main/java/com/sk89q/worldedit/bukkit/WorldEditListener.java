@@ -49,7 +49,7 @@ import java.util.Optional;
  */
 public class WorldEditListener implements Listener {
 
-    private WorldEditPlugin plugin;
+    private final WorldEditPlugin plugin;
 
     /**
      * Construct the object;

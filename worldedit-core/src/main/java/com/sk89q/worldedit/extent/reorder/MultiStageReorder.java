@@ -144,7 +144,7 @@ public class MultiStageReorder extends AbstractBufferingExtent implements Reorde
         priorityMap.put(BlockTypes.MOVING_PISTON, PlacementPriority.FINAL);
     }
 
-    private Map<PlacementPriority, BlockMap<BaseBlock>> stages = new HashMap<>();
+    private final Map<PlacementPriority, BlockMap<BaseBlock>> stages = new HashMap<>();
 
     private boolean enabled;
 

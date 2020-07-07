@@ -43,11 +43,11 @@ import java.util.Map;
  */
 public class OldChunk implements Chunk {
 
-    private CompoundTag rootTag;
-    private byte[] blocks;
-    private byte[] data;
-    private int rootX;
-    private int rootZ;
+    private final CompoundTag rootTag;
+    private final byte[] blocks;
+    private final byte[] data;
+    private final int rootX;
+    private final int rootZ;
 
     private Map<BlockVector3, Map<String,Tag>> tileEntities;
 

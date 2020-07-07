@@ -30,13 +30,13 @@ import java.util.NoSuchElementException;
 
 public class FlatRegionIterator implements Iterator<BlockVector2>  {
 
-    private Region region;
-    private int y;
-    private int minX;
+    private final Region region;
+    private final int y;
+    private final int minX;
+    private final int maxX;
+    private final int maxZ;
     private int nextX;
     private int nextZ;
-    private int maxX;
-    private int maxZ;
 
     public FlatRegionIterator(Region region) {
         checkNotNull(region);

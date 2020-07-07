@@ -31,12 +31,12 @@ import org.bukkit.inventory.ItemStack;
 
 public class BukkitPlayerBlockBag extends BlockBag {
 
-    private Player player;
+    private final Player player;
     private ItemStack[] items;
 
     /**
      * Construct the object.
-     * 
+     *
      * @param player the player
      */
     public BukkitPlayerBlockBag(Player player) {
@@ -54,7 +54,7 @@ public class BukkitPlayerBlockBag extends BlockBag {
 
     /**
      * Get the player.
-     * 
+     *
      * @return the player
      */
     public Player getPlayer() {

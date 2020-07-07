@@ -42,7 +42,7 @@ import javax.annotation.Nullable;
  */
 public class BaseEntity implements NbtValued {
 
-    private EntityType type;
+    private final EntityType type;
     private CompoundTag nbtData;
 
     /**

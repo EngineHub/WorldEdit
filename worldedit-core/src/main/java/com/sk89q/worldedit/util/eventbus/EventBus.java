@@ -61,7 +61,7 @@ public final class EventBus {
      */
     private final SubscriberFindingStrategy finder = new AnnotatedSubscriberFinder();
 
-    private HierarchyCache flattenHierarchyCache = new HierarchyCache();
+    private final HierarchyCache flattenHierarchyCache = new HierarchyCache();
 
     /**
      * Registers the given handler for the given class to receive events.

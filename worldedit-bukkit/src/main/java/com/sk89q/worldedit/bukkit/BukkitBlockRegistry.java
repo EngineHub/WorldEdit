@@ -35,7 +35,7 @@ import java.util.OptionalInt;
 import javax.annotation.Nullable;
 
 public class BukkitBlockRegistry extends BundledBlockRegistry {
-    private Map<Material, BukkitBlockMaterial> materialMap = new EnumMap<>(Material.class);
+    private final Map<Material, BukkitBlockMaterial> materialMap = new EnumMap<>(Material.class);
 
     @Override
     public Component getRichName(BlockType blockType) {

@@ -47,8 +47,8 @@ public class LayerVisitor implements Operation {
     private final FlatRegion flatRegion;
     private final LayerFunction function;
     private Mask2D mask = Masks.alwaysTrue2D();
-    private int minY;
-    private int maxY;
+    private final int minY;
+    private final int maxY;
 
     /**
      * Create a new visitor.

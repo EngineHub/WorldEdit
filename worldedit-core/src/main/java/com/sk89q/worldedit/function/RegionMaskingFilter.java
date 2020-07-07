@@ -33,7 +33,7 @@ import com.sk89q.worldedit.math.BlockVector3;
 public class RegionMaskingFilter implements RegionFunction {
 
     private final RegionFunction function;
-    private Mask mask;
+    private final Mask mask;
 
     /**
      * Create a new masking filter.

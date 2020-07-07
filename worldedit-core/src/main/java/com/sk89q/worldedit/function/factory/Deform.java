@@ -47,7 +47,7 @@ public class Deform implements Contextual<Operation> {
 
     private Extent destination;
     private Region region;
-    private Expression expression;
+    private final Expression expression;
     private Mode mode;
     private Vector3 offset = Vector3.ZERO;
 

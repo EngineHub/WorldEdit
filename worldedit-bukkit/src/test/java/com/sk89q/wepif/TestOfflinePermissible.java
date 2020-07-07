@@ -39,8 +39,8 @@ import java.util.Set;
 import java.util.UUID;
 
 public class TestOfflinePermissible implements OfflinePlayer, Permissible {
+    private final UUID randomUuid = UUID.randomUUID();
     private boolean op;
-    private UUID randomUuid = UUID.randomUUID();
 
     private final Map<String, Boolean> assignedPermissions = new HashMap<>();
 

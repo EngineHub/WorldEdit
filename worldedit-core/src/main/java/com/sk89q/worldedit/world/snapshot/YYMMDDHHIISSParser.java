@@ -27,7 +27,7 @@ import java.util.regex.Pattern;
 
 public class YYMMDDHHIISSParser implements SnapshotDateParser {
 
-    private Pattern datePattern =
+    private final Pattern datePattern =
             Pattern.compile("([0-9]+)[^0-9]?([0-9]+)[^0-9]?([0-9]+)[^0-9]?"
                     + "([0-9]+)[^0-9]?([0-9]+)[^0-9]?([0-9]+)(\\..*)?");
 

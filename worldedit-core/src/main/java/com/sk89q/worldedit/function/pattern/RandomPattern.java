@@ -34,7 +34,7 @@ import java.util.Random;
 public class RandomPattern extends AbstractPattern {
 
     private final Random random = new Random();
-    private List<Chance> patterns = new ArrayList<>();
+    private final List<Chance> patterns = new ArrayList<>();
     private double max = 0;
 
     /**
@@ -68,8 +68,8 @@ public class RandomPattern extends AbstractPattern {
     }
 
     private static class Chance {
-        private Pattern pattern;
-        private double chance;
+        private final Pattern pattern;
+        private final double chance;
 
         private Chance(Pattern pattern, double chance) {
             this.pattern = pattern;

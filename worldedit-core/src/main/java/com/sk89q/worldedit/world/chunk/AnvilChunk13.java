@@ -45,10 +45,10 @@ import java.util.Map;
  */
 public class AnvilChunk13 implements Chunk {
 
-    private CompoundTag rootTag;
-    private BlockState[][] blocks;
-    private int rootX;
-    private int rootZ;
+    private final CompoundTag rootTag;
+    private final BlockState[][] blocks;
+    private final int rootX;
+    private final int rootZ;
 
     private Map<BlockVector3, Map<String,Tag>> tileEntities;
 

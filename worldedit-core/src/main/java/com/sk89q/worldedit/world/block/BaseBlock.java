@@ -43,8 +43,9 @@ import javax.annotation.Nullable;
  */
 public class BaseBlock implements BlockStateHolder<BaseBlock>, TileEntityBlock {
 
-    private BlockState blockState;
-    @Nullable private CompoundTag nbtData;
+    private final BlockState blockState;
+    @Nullable
+    private final CompoundTag nbtData;
 
     /**
      * Construct a block with a state.
@@ -53,6 +54,7 @@ public class BaseBlock implements BlockStateHolder<BaseBlock>, TileEntityBlock {
      */
     protected BaseBlock(BlockState blockState) {
         this.blockState = blockState;
+        this.nbtData = null;
     }
 
     /**
@@ -147,7 +149,7 @@ public class BaseBlock implements BlockStateHolder<BaseBlock>, TileEntityBlock {
 
     /**
      * Checks if the type is the same, and if the matched states are the same.
-     * 
+     *
      * @param o other block
      * @return true if equal
      */

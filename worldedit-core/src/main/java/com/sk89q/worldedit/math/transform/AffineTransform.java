@@ -35,17 +35,17 @@ public class AffineTransform implements Transform {
     /**
      * coefficients for x coordinate.
      */
-    private double m00, m01, m02, m03;
+    private final double m00, m01, m02, m03;
 
     /**
      * coefficients for y coordinate.
      */
-    private double m10, m11, m12, m13;
+    private final double m10, m11, m12, m13;
 
     /**
      * coefficients for z coordinate.
      */
-    private double m20, m21, m22, m23;
+    private final double m20, m21, m22, m23;
 
     // ===================================================================
     // constructors
@@ -72,6 +72,7 @@ public class AffineTransform implements Transform {
             m20 = coefs[6];
             m21 = coefs[7];
             m22 = coefs[8];
+            m03 = m13 = m23 = 0;
         } else if (coefs.length == 12) {
             m00 = coefs[0];
             m01 = coefs[1];

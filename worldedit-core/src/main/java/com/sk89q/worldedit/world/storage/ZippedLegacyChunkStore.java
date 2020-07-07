@@ -35,7 +35,7 @@ import java.util.zip.ZipFile;
  */
 public class ZippedLegacyChunkStore extends LegacyChunkStore {
 
-    private ZipFile zip;
+    private final ZipFile zip;
     private String folder;
 
     /**

@@ -152,7 +152,7 @@ public final class BundledBlockData {
     public static class BlockEntry {
         private String id;
         public String localizedName;
-        private SimpleBlockMaterial material = new SimpleBlockMaterial();
+        private final SimpleBlockMaterial material = new SimpleBlockMaterial();
     }
 
 }

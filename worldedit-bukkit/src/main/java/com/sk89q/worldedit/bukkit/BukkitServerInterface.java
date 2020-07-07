@@ -56,23 +56,24 @@ import static com.sk89q.worldedit.util.formatting.WorldEditText.reduceToText;
 
 public class BukkitServerInterface extends AbstractPlatform implements MultiUserPlatform {
 
-    public Server server;
-    public WorldEditPlugin plugin;
-    private CommandRegistration dynamicCommands;
+    public final Server server;
+    public final WorldEditPlugin plugin;
+    private final CommandRegistration dynamicCommands;
+    private final LazyReference<Watchdog> watchdog;
     private boolean hookingEvents;
-    private final LazyReference<Watchdog> watchdog = LazyReference.from(() -> {
-        if (plugin.getBukkitImplAdapter() != null) {
-            return plugin.getBukkitImplAdapter().supportsWatchdog()
-                ? new BukkitWatchdog(plugin.getBukkitImplAdapter())
-                : null;
-        }
-        return null;
-    });
 
     public BukkitServerInterface(WorldEditPlugin plugin, Server server) {
         this.plugin = plugin;
         this.server = server;
-        dynamicCommands = new CommandRegistration(plugin);
+        this.dynamicCommands = new CommandRegistration(plugin);
+        this.watchdog = LazyReference.from(() -> {
+            if (plugin.getBukkitImplAdapter() != null) {
+                return plugin.getBukkitImplAdapter().supportsWatchdog()
+                    ? new BukkitWatchdog(plugin.getBukkitImplAdapter())
+                    : null;
+            }
+            return null;
+        });
     }
 
     CommandRegistration getDynamicCommands() {

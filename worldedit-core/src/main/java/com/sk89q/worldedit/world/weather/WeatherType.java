@@ -26,7 +26,7 @@ public class WeatherType implements Keyed {
 
     public static final Registry<WeatherType> REGISTRY = new Registry<>("weather type");
 
-    private String id;
+    private final String id;
 
     public WeatherType(String id) {
         this.id = id;

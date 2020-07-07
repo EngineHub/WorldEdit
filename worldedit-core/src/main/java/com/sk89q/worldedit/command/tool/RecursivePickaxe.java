@@ -45,7 +45,7 @@ import javax.annotation.Nullable;
  */
 public class RecursivePickaxe implements BlockTool {
 
-    private double range;
+    private final double range;
 
     public RecursivePickaxe(double range) {
         this.range = range;

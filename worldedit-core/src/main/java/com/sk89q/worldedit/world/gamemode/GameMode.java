@@ -26,7 +26,7 @@ public class GameMode implements Keyed {
 
     public static final Registry<GameMode> REGISTRY = new Registry<>("game mode");
 
-    private String id;
+    private final String id;
 
     public GameMode(String id) {
         this.id = id;

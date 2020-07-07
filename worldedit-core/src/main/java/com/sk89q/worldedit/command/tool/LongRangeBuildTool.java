@@ -39,8 +39,8 @@ import com.sk89q.worldedit.world.block.BaseBlock;
  */
 public class LongRangeBuildTool extends BrushTool implements DoubleActionTraceTool {
 
-    private Pattern primary;
-    private Pattern secondary;
+    private final Pattern primary;
+    private final Pattern secondary;
 
     public LongRangeBuildTool(Pattern secondary, Pattern primary) {
         super("worldedit.tool.lrbuild");

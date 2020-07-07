@@ -66,8 +66,8 @@ public final class FileDialogUtil {
     }
 
     private static class ExtensionFilter extends FileFilter {
-        private Set<String> exts;
-        private String desc;
+        private final Set<String> exts;
+        private final String desc;
 
         private ExtensionFilter(String[] exts) {
             this.exts = new HashSet<>(Arrays.asList(exts));

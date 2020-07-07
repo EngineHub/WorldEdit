@@ -45,7 +45,7 @@ public class EventBusTest {
 
     }
 
-    private EventBus eventBus = new EventBus();
+    private final EventBus eventBus = new EventBus();
 
     @Test
     public void testRegister() {

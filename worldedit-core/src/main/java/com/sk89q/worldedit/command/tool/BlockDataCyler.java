@@ -53,7 +53,7 @@ public class BlockDataCyler implements DoubleActionBlockTool {
         return player.hasPermission("worldedit.tool.data-cycler");
     }
 
-    private Map<UUID, Property<?>> selectedProperties = new HashMap<>();
+    private final Map<UUID, Property<?>> selectedProperties = new HashMap<>();
 
     private boolean handleCycle(LocalConfiguration config, Player player, LocalSession session,
                                 Location clicked, boolean forward) {

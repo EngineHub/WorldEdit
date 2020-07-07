@@ -19,14 +19,12 @@
 
 package com.sk89q.worldedit.registry.state;
 
-import static com.google.common.base.Preconditions.checkState;
-
 import java.util.List;
 
 public abstract class AbstractProperty<T> implements Property<T> {
 
-    private String name;
-    private List<T> values;
+    private final String name;
+    private final List<T> values;
 
     public AbstractProperty(final String name, final List<T> values) {
         this.name = name;
@@ -41,14 +39,6 @@ public abstract class AbstractProperty<T> implements Property<T> {
     @Override
     public String getName() {
         return this.name;
-    }
-
-    /**
-     * Internal method for name setting post-deserialise. Do not use.
-     */
-    public void setName(final String name) {
-        checkState(this.name == null, "name already set");
-        this.name = name;
     }
 
     @Override

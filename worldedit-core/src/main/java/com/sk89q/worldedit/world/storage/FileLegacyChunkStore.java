@@ -32,7 +32,7 @@ import java.io.InputStream;
  */
 public class FileLegacyChunkStore extends LegacyChunkStore {
 
-    private File path;
+    private final File path;
 
     /**
      * Create an instance. The passed path is the folder to read the

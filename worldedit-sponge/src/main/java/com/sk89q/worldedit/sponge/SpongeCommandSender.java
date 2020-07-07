@@ -50,8 +50,8 @@ public class SpongeCommandSender implements Actor {
      */
     private static final UUID DEFAULT_ID = UUID.fromString("a233eb4b-4cab-42cd-9fd9-7e7b9a3f74be");
 
-    private CommandSource sender;
-    private SpongeWorldEdit plugin;
+    private final CommandSource sender;
+    private final SpongeWorldEdit plugin;
 
     public SpongeCommandSender(SpongeWorldEdit plugin, CommandSource sender) {
         checkNotNull(plugin);

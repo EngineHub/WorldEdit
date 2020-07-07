@@ -58,7 +58,7 @@ public final class ChunkDeleter {
     private static final Comparator<BlockVector2> chunkSorter = Comparator.comparing(
             pos -> (pos.getBlockX() & 31) + (pos.getBlockZ() & 31) * 32);
 
-    private static Gson chunkDeleterGson = new GsonBuilder()
+    private static final Gson chunkDeleterGson = new GsonBuilder()
             .registerTypeAdapter(BlockVector2.class, new BlockVector2Adapter())
             .setPrettyPrinting()
             .create();
@@ -119,7 +119,7 @@ public final class ChunkDeleter {
     }
 
     private final ChunkDeletionInfo chunkDeletionInfo;
-    private Set<Path> backedUpRegions = new HashSet<>();
+    private final Set<Path> backedUpRegions = new HashSet<>();
     private boolean shouldPreload;
     private int debugRate = 100;
     private int totalChunksDeleted = 0;

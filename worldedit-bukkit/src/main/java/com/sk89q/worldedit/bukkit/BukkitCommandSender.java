@@ -44,8 +44,8 @@ public class BukkitCommandSender extends AbstractNonPlayerActor {
      */
     private static final UUID DEFAULT_ID = UUID.fromString("a233eb4b-4cab-42cd-9fd9-7e7b9a3f74be");
 
-    private CommandSender sender;
-    private WorldEditPlugin plugin;
+    private final CommandSender sender;
+    private final WorldEditPlugin plugin;
 
     public BukkitCommandSender(WorldEditPlugin plugin, CommandSender sender) {
         checkNotNull(plugin);

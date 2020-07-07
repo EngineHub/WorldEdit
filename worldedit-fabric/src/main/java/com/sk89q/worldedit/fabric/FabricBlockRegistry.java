@@ -37,7 +37,7 @@ import java.util.TreeMap;
 
 public class FabricBlockRegistry extends BundledBlockRegistry {
 
-    private Map<Material, FabricBlockMaterial> materialMap = new HashMap<>();
+    private final Map<Material, FabricBlockMaterial> materialMap = new HashMap<>();
 
     @Override
     public Component getRichName(BlockType blockType) {

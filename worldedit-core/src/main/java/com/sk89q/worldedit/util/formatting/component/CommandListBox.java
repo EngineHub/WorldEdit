@@ -30,9 +30,9 @@ import java.util.List;
 
 public class CommandListBox extends PaginationBox {
 
-    private List<CommandEntry> commands = Lists.newArrayList();
+    private final List<CommandEntry> commands = Lists.newArrayList();
+    private final String helpCommand;
     private boolean hideHelp;
-    private String helpCommand;
 
     /**
      * Create a new box.

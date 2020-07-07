@@ -34,12 +34,12 @@ public abstract class ArbitraryShape {
 
     protected final Region extent;
 
-    private int cacheOffsetX;
-    private int cacheOffsetY;
-    private int cacheOffsetZ;
-    private int cacheSizeX;
-    private int cacheSizeY;
-    private int cacheSizeZ;
+    private final int cacheOffsetX;
+    private final int cacheOffsetY;
+    private final int cacheOffsetZ;
+    private final int cacheSizeX;
+    private final int cacheSizeY;
+    private final int cacheSizeZ;
 
     /**
      * Cache entires:
