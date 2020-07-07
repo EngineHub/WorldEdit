@@ -240,7 +240,7 @@ public class BlockMap<V> extends AbstractMap<BlockVector3, V> {
             entrySet = es = new AbstractSet<Entry<BlockVector3, V>>() {
                 @Override
                 public Iterator<Entry<BlockVector3, V>> iterator() {
-                    return new Iterator<Entry<BlockVector3,V>>() {
+                    return new Iterator<Entry<BlockVector3, V>>() {
 
                         private final ObjectIterator<Long2ObjectMap.Entry<Int2ObjectMap<V>>> primaryIterator
                             = Long2ObjectMaps.fastIterator(maps);
@@ -346,8 +346,9 @@ public class BlockMap<V> extends AbstractMap<BlockVector3, V> {
         }
 
         public boolean equals(Object o) {
-            if (!(o instanceof Map.Entry))
+            if (!(o instanceof Map.Entry)) {
                 return false;
+            }
             Entry<?, ?> e = (Entry<?, ?>) o;
             if (o instanceof BlockMap.LazyEntry) {
                 @SuppressWarnings("unchecked")

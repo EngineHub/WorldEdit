@@ -435,9 +435,9 @@ public class RegionCommands {
     @Command(
         name = "/deform",
         desc = "Deforms a selected region with an expression",
-        descFooter = "The expression is executed for each block and is expected\n" +
-            "to modify the variables x, y and z to point to a new block\n" +
-            "to fetch. See also https://tinyurl.com/weexpr"
+        descFooter = "The expression is executed for each block and is expected\n"
+            + "to modify the variables x, y and z to point to a new block\n"
+            + "to fetch. See also https://tinyurl.com/weexpr"
     )
     @CommandPermissions("worldedit.region.deform")
     @Logging(ALL)
@@ -465,9 +465,15 @@ public class RegionCommands {
             zero = max.add(min).divide(2);
             unit = max.subtract(zero);
 
-            if (unit.getX() == 0) unit = unit.withX(1.0);
-            if (unit.getY() == 0) unit = unit.withY(1.0);
-            if (unit.getZ() == 0) unit = unit.withZ(1.0);
+            if (unit.getX() == 0) {
+                unit = unit.withX(1.0);
+            }
+            if (unit.getY() == 0) {
+                unit = unit.withY(1.0);
+            }
+            if (unit.getZ() == 0) {
+                unit = unit.withZ(1.0);
+            }
         }
 
         try {

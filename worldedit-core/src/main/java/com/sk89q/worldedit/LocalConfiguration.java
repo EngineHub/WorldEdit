@@ -210,7 +210,7 @@ public abstract class LocalConfiguration {
                 data = Byte.parseByte(splitter[1]);
             }
             item = LegacyMapper.getInstance().getItemFromLegacy(id, data).getId();
-        } catch (Throwable e) {
+        } catch (Throwable ignored) {
         }
 
         return item;

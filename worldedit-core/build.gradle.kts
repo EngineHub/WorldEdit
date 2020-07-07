@@ -1,7 +1,7 @@
-import net.minecrell.gradle.licenser.LicenseExtension
-import org.gradle.plugins.ide.idea.model.IdeaModel
 import com.mendhak.gradlecrowdin.DownloadTranslationsTask
 import com.mendhak.gradlecrowdin.UploadSourceFileTask
+import net.minecrell.gradle.licenser.LicenseExtension
+import org.gradle.plugins.ide.idea.model.IdeaModel
 
 plugins {
     id("java-library")

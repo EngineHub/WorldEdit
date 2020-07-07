@@ -92,8 +92,8 @@ public class GeneralCommands {
             if (command.getName().equals("/fast")) {
                 // deprecate to `//perf`
                 commandManager.register(CommandUtil.deprecate(
-                    command, "//fast duplicates //perf " +
-                        "and will be removed in WorldEdit 8",
+                    command, "//fast duplicates //perf "
+                        + "and will be removed in WorldEdit 8",
                     GeneralCommands::replaceFastForPerf
                 ));
                 continue;
@@ -110,8 +110,8 @@ public class GeneralCommands {
         }
         ImmutableList<String> args = oldParams.getMetadata().getArguments();
         if (args.isEmpty()) {
-            return TextComponent.of("There is not yet a replacement for //fast" +
-                " with no arguments");
+            return TextComponent.of("There is not yet a replacement for //fast"
+                + " with no arguments");
         }
         String arg0 = args.get(0).toLowerCase(Locale.ENGLISH);
         String flipped;
@@ -222,8 +222,8 @@ public class GeneralCommands {
     @Command(
         name = "/perf",
         desc = "Toggle side effects for performance",
-        descFooter = "Note that this command is GOING to change in the future." +
-            " Do not depend on the exact format of this command yet."
+        descFooter = "Note that this command is GOING to change in the future."
+            + " Do not depend on the exact format of this command yet."
     )
     @CommandPermissions("worldedit.perf")
     void perf(Actor actor, LocalSession session,
@@ -344,8 +344,8 @@ public class GeneralCommands {
     @Command(
         name = "/watchdog",
         desc = "Changes watchdog hook state.",
-        descFooter = "This is dependent on platform implementation. " +
-            "Not all platforms support watchdog hooks, or contain a watchdog."
+        descFooter = "This is dependent on platform implementation. "
+            + "Not all platforms support watchdog hooks, or contain a watchdog."
     )
     @CommandPermissions("worldedit.watchdog")
     public void watchdog(Actor actor, LocalSession session,

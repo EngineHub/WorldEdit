@@ -19,13 +19,13 @@
 
 package com.sk89q.worldedit.registry;
 
-import static com.google.common.base.Preconditions.checkState;
-import static java.util.Objects.requireNonNull;
-
-import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import javax.annotation.Nullable;
+
+import static com.google.common.base.Preconditions.checkState;
+import static java.util.Objects.requireNonNull;
 
 public final class NamespacedRegistry<V extends Keyed> extends Registry<V> {
     private static final String MINECRAFT_NAMESPACE = "minecraft";

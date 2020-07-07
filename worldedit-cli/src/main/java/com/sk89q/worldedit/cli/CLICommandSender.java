@@ -19,8 +19,6 @@
 
 package com.sk89q.worldedit.cli;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.internal.cui.CUIEvent;
@@ -35,6 +33,8 @@ import org.slf4j.Logger;
 import java.io.File;
 import java.util.Locale;
 import java.util.UUID;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public class CLICommandSender implements Actor {
 

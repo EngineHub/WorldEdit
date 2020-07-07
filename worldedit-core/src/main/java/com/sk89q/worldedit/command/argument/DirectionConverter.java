@@ -26,8 +26,8 @@ import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.util.Direction;
 import org.enginehub.piston.CommandManager;
 
-import javax.annotation.Nullable;
 import java.util.Optional;
+import javax.annotation.Nullable;
 
 public final class DirectionConverter extends AbstractDirectionConverter<Direction> {
 

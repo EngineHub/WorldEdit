@@ -24,13 +24,13 @@ import com.sk89q.worldedit.util.io.file.ArchiveDir;
 import com.sk89q.worldedit.util.io.file.ArchiveNioSupport;
 import com.sk89q.worldedit.world.snapshot.experimental.Snapshot;
 
-import javax.annotation.Nullable;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Stream;
+import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.stream.Collectors.toList;

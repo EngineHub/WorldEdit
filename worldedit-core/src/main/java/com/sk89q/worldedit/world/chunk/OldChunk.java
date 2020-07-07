@@ -49,13 +49,13 @@ public class OldChunk implements Chunk {
     private final int rootX;
     private final int rootZ;
 
-    private Map<BlockVector3, Map<String,Tag>> tileEntities;
+    private Map<BlockVector3, Map<String, Tag>> tileEntities;
 
     /**
      * Construct the chunk with a compound tag.
      *
      * @param tag the tag
-     * @throws DataException
+     * @throws DataException if there is an error getting the chunk data
      */
     public OldChunk(CompoundTag tag) throws DataException {
         rootTag = tag;
@@ -71,7 +71,7 @@ public class OldChunk implements Chunk {
                     + "to be " + size + " bytes; found " + blocks.length);
         }
 
-        if (data.length != (size/2)) {
+        if (data.length != (size / 2)) {
             throw new InvalidFormatException("Chunk block data byte array "
                     + "expected to be " + size + " bytes; found " + data.length);
         }
@@ -80,7 +80,7 @@ public class OldChunk implements Chunk {
     /**
      * Used to load the tile entities.
      *
-     * @throws DataException
+     * @throws DataException if there is an error getting the chunk data
      */
     private void populateTileEntities() throws DataException {
         List<Tag> tags = NBTUtils.getChildTag(
@@ -119,6 +119,8 @@ public class OldChunk implements Chunk {
                             z = ((IntTag) entry.getValue()).getValue();
                         }
                         break;
+                    default:
+                        break;
                 }
 
                 values.put(entry.getKey(), entry.getValue());
@@ -136,7 +138,7 @@ public class OldChunk implements Chunk {
      *
      * @param position the position
      * @return a tag
-     * @throws DataException
+     * @throws DataException if there is an error getting the chunk data
      */
     private CompoundTag getBlockTileEntity(BlockVector3 position) throws DataException {
         if (tileEntities == null) {
@@ -152,8 +154,11 @@ public class OldChunk implements Chunk {
 
     @Override
     public BaseBlock getBlock(BlockVector3 position) throws DataException {
-        if(position.getY() >= 128) return BlockTypes.VOID_AIR.getDefaultState().toBaseBlock();
-        int id, dataVal;
+        if (position.getY() >= 128) {
+            return BlockTypes.VOID_AIR.getDefaultState().toBaseBlock();
+        }
+        int id;
+        int dataVal;
 
         int x = position.getX() - rootX * 16;
         int y = position.getY();

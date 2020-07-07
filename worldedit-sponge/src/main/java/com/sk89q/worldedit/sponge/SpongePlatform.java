@@ -21,7 +21,6 @@ package com.sk89q.worldedit.sponge;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.event.platform.CommandEvent;
@@ -46,7 +45,6 @@ import org.spongepowered.api.entity.EntityType;
 import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.world.Location;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumMap;
@@ -54,6 +52,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import javax.annotation.Nullable;
 
 import static java.util.stream.Collectors.toList;
 

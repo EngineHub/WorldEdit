@@ -29,7 +29,6 @@ import com.sk89q.worldedit.world.block.BlockType;
 
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.annotation.Nullable;
 
 /**

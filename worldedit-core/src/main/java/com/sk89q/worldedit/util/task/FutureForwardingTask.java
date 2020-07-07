@@ -22,11 +22,11 @@ package com.sk89q.worldedit.util.task;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.sk89q.worldedit.util.task.progress.Progress;
 
-import javax.annotation.Nullable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 

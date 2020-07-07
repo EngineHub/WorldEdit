@@ -30,7 +30,7 @@ public interface Tool {
     /**
      * Checks to see if the player can still be using this tool (considering
      * permissions and such).
-     * 
+     *
      * @param actor the actor
      * @return true if use is permitted
      */

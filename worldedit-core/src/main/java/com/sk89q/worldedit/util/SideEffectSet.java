@@ -71,7 +71,9 @@ public class SideEffectSet {
     /**
      * Gets whether this side effect is not off.
      *
+     * <p>
      * This returns whether it is either delayed or on.
+     * </p>
      *
      * @param effect The side effect
      * @return Whether it should apply

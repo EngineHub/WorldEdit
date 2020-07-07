@@ -26,5 +26,6 @@ import java.util.Map;
 
 public interface NBTCompatibilityHandler {
     <B extends BlockStateHolder<B>> boolean isAffectedBlock(B block);
+
     <B extends BlockStateHolder<B>> B updateNBT(B block, Map<String, Tag> values);
 }

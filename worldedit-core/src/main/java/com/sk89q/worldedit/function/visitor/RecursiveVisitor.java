@@ -19,11 +19,11 @@
 
 package com.sk89q.worldedit.function.visitor;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import com.sk89q.worldedit.function.RegionFunction;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.math.BlockVector3;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * An implementation of an {@link BreadthFirstSearch} that uses a mask to

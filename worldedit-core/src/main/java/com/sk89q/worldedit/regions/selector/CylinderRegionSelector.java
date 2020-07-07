@@ -19,8 +19,6 @@
 
 package com.sk89q.worldedit.regions.selector;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import com.sk89q.worldedit.IncompleteRegionException;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.extension.platform.Actor;
@@ -44,15 +42,16 @@ import com.sk89q.worldedit.world.World;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.annotation.Nullable;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Creates a {@code CylinderRegionSelector} from a user's selections.
  */
 public class CylinderRegionSelector implements RegionSelector, CUIRegion {
 
-    protected static transient final NumberFormat NUMBER_FORMAT;
+    protected static final transient NumberFormat NUMBER_FORMAT;
     protected transient CylinderRegion region;
 
     static {

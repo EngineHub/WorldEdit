@@ -78,7 +78,9 @@ public final class CommandWrapper {
     private static Predicate<CommandSource> requirementsFor(org.enginehub.piston.Command mapping) {
         return ctx -> {
             final Entity entity = ctx.getEntity();
-            if (!(entity instanceof ServerPlayerEntity)) return true;
+            if (!(entity instanceof ServerPlayerEntity)) {
+                return true;
+            }
             final Actor actor = ForgeAdapter.adaptPlayer(((ServerPlayerEntity) entity));
             InjectedValueStore store = MapBackedValueStore.create();
             store.injectValue(Key.of(Actor.class), context -> Optional.of(actor));

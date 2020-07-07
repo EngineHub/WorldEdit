@@ -40,7 +40,7 @@ public class LabelFormat extends TextComponentProducer {
      * @param texts The text
      * @return The Component
      */
-    public static TextComponent wrap(String ... texts) {
+    public static TextComponent wrap(String... texts) {
         LabelFormat label = new LabelFormat();
         for (String component : texts) {
             label.append(component);

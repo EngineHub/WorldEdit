@@ -33,9 +33,9 @@ import it.unimi.dsi.fastutil.objects.AbstractObjectSet;
 import it.unimi.dsi.fastutil.objects.ObjectIterator;
 import it.unimi.dsi.fastutil.objects.ObjectSet;
 
-import javax.annotation.Nonnull;
 import java.util.NoSuchElementException;
 import java.util.function.BiFunction;
+import javax.annotation.Nonnull;
 
 /**
  * Int-to-BaseBlock map, but with optimizations for common cases.

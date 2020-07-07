@@ -57,7 +57,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.slf4j.Logger;
 
-import javax.annotation.Nullable;
 import java.lang.ref.WeakReference;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -67,6 +66,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -77,6 +77,7 @@ public class BukkitWorld extends AbstractWorld {
     private static final boolean HAS_3D_BIOMES;
 
     private static final Map<Integer, Effect> effects = new HashMap<>();
+
     static {
         for (Effect effect : Effect.values()) {
             @SuppressWarnings("deprecation")
@@ -272,7 +273,7 @@ public class BukkitWorld extends AbstractWorld {
     }
 
     /**
-     * An EnumMap that stores which WorldEdit TreeTypes apply to which Bukkit TreeTypes
+     * An EnumMap that stores which WorldEdit TreeTypes apply to which Bukkit TreeTypes.
      */
     private static final EnumMap<TreeGenerator.TreeType, TreeType> treeTypeMapping =
             new EnumMap<>(TreeGenerator.TreeType.class);
@@ -457,8 +458,8 @@ public class BukkitWorld extends AbstractWorld {
                 return worldNativeAccess.setBlock(position, block, sideEffects);
             } catch (Exception e) {
                 if (block instanceof BaseBlock && ((BaseBlock) block).getNbtData() != null) {
-                    logger.warn("Tried to set a corrupt tile entity at " + position.toString() +
-                        ": " + ((BaseBlock) block).getNbtData(), e);
+                    logger.warn("Tried to set a corrupt tile entity at " + position.toString()
+                        + ": " + ((BaseBlock) block).getNbtData(), e);
                 } else {
                     logger.warn("Failed to set block via adapter, falling back to generic", e);
                 }

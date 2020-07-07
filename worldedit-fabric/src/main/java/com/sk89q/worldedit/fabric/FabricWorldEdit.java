@@ -19,9 +19,6 @@
 
 package com.sk89q.worldedit.fabric;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.sk89q.worldedit.fabric.FabricAdapter.adaptPlayer;
-
 import com.mojang.brigadier.CommandDispatcher;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
@@ -70,7 +67,9 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Collections;
+
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.sk89q.worldedit.fabric.FabricAdapter.adaptPlayer;
 
 /**
  * The Fabric implementation of WorldEdit.
@@ -98,7 +97,7 @@ public class FabricWorldEdit implements ModInitializer {
     @Override
     public void onInitialize() {
         this.container = FabricLoader.getInstance().getModContainer("worldedit").orElseThrow(
-                () -> new IllegalStateException("WorldEdit mod missing in Fabric")
+            () -> new IllegalStateException("WorldEdit mod missing in Fabric")
         );
 
         // Setup working directory

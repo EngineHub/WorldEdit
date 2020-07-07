@@ -30,7 +30,6 @@ import it.unimi.dsi.fastutil.doubles.Double2ObjectMaps;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
 
-import javax.annotation.Nullable;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
@@ -38,6 +37,7 @@ import java.util.Objects;
 import java.util.function.DoubleBinaryOperator;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import javax.annotation.Nullable;
 
 import static com.sk89q.worldedit.internal.expression.ExpressionHelper.check;
 import static com.sk89q.worldedit.internal.expression.ExpressionHelper.checkIterations;

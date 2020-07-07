@@ -19,9 +19,6 @@
 
 package com.sk89q.worldedit.event.extent;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.sk89q.worldedit.EditSession.Stage;
-
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.event.Event;
 import com.sk89q.worldedit.extension.platform.Actor;
@@ -31,6 +28,9 @@ import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 
 import javax.annotation.Nullable;
+
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.sk89q.worldedit.EditSession.Stage;
 
 /**
  * Raised (several times) when a new {@link EditSession} is being instantiated.

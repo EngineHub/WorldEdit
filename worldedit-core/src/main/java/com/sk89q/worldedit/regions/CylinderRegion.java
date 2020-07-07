@@ -19,11 +19,9 @@
 
 package com.sk89q.worldedit.regions;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import com.sk89q.worldedit.extent.Extent;
-import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.BlockVector2;
+import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.Vector2;
 import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.math.geom.Polygons;
@@ -37,6 +35,8 @@ import java.math.RoundingMode;
 import java.util.Iterator;
 import java.util.List;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
  * Represents a cylindrical region.
  */
@@ -49,7 +49,7 @@ public class CylinderRegion extends AbstractRegion implements FlatRegion {
     private boolean hasY = false;
 
     /**
-     * Construct the region
+     * Construct the region.
      */
     public CylinderRegion() {
         this((World) null);
@@ -111,7 +111,7 @@ public class CylinderRegion extends AbstractRegion implements FlatRegion {
     }
 
     /**
-     * Sets the main center point of the region
+     * Sets the main center point of the region.
      *
      * @param center the center point
      */
@@ -120,7 +120,7 @@ public class CylinderRegion extends AbstractRegion implements FlatRegion {
     }
 
     /**
-     * Returns the radius of the cylinder
+     * Returns the radius of the cylinder.
      *
      * @return the radius along the X and Z axes
      */
@@ -129,7 +129,7 @@ public class CylinderRegion extends AbstractRegion implements FlatRegion {
     }
 
     /**
-     * Sets the radius of the cylinder
+     * Sets the radius of the cylinder.
      *
      * @param radius the radius along the X and Z axes
      */
@@ -138,7 +138,7 @@ public class CylinderRegion extends AbstractRegion implements FlatRegion {
     }
 
     /**
-     * Extends the radius to be at least the given radius
+     * Extends the radius to be at least the given radius.
      *
      * @param minRadius the minimum radius
      */
@@ -235,13 +235,6 @@ public class CylinderRegion extends AbstractRegion implements FlatRegion {
         return total.divide(2).floor();
     }
 
-    /**
-     * Expand the region.
-     * Expand the region.
-     *
-     * @param changes array/arguments with multiple related changes
-     * @throws RegionOperationException
-     */
     @Override
     public void expand(BlockVector3... changes) throws RegionOperationException {
         center = center.add(calculateDiff2D(changes));
@@ -256,12 +249,6 @@ public class CylinderRegion extends AbstractRegion implements FlatRegion {
         }
     }
 
-    /**
-     * Contract the region.
-     *
-     * @param changes array/arguments with multiple related changes
-     * @throws RegionOperationException
-     */
     @Override
     public void contract(BlockVector3... changes) throws RegionOperationException {
         center = center.subtract(calculateDiff2D(changes));
@@ -334,12 +321,6 @@ public class CylinderRegion extends AbstractRegion implements FlatRegion {
         return () -> new FlatRegionIterator(CylinderRegion.this);
     }
 
-    /**
-     * Returns string representation in the format
-     * "(centerX, centerZ) - (radiusX, radiusZ) - (minY, maxY)"
-     *
-     * @return string
-     */
     @Override
     public String toString() {
         return center + " - " + radius + "(" + minY + ", " + maxY + ")";

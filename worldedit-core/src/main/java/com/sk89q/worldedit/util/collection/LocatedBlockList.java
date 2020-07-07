@@ -26,9 +26,9 @@ import com.sk89q.worldedit.util.LocatedBlock;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 
-import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Iterator;
+import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 

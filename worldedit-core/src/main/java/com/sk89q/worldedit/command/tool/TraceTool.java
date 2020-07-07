@@ -29,10 +29,10 @@ public interface TraceTool extends Tool {
     /**
      * Perform the primary action of this trace tool.
      *
-     * @param server
-     * @param config
-     * @param player
-     * @param session
+     * @param server The platform
+     * @param config The config instance
+     * @param player The player
+     * @param session The local session
      * @return true to cancel the original event which triggered this action (if possible)
      */
     boolean actPrimary(Platform server, LocalConfiguration config, Player player, LocalSession session);

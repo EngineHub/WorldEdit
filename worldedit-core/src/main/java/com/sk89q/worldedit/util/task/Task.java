@@ -22,9 +22,9 @@ package com.sk89q.worldedit.util.task;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.sk89q.worldedit.util.task.progress.ProgressObservable;
 
-import javax.annotation.Nullable;
 import java.util.Date;
 import java.util.UUID;
+import javax.annotation.Nullable;
 
 /**
  * A task is a job that can be scheduled, run, or cancelled. Tasks can report

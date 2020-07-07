@@ -104,9 +104,9 @@ public abstract class AbstractRegion implements Region {
         BlockVector3 min = getMinimumPoint();
         BlockVector3 max = getMaximumPoint();
 
-        return (max.getX() - min.getX() + 1L) *
-                (max.getY() - min.getY() + 1L) *
-                (max.getZ() - min.getZ() + 1L);
+        return (max.getX() - min.getX() + 1L)
+            * (max.getY() - min.getY() + 1L)
+            * (max.getZ() - min.getZ() + 1L);
     }
 
     /**

@@ -21,9 +21,9 @@ package com.sk89q.worldedit.util.task;
 
 import com.google.common.util.concurrent.AbstractFuture;
 
-import javax.annotation.Nullable;
 import java.util.Date;
 import java.util.UUID;
+import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 

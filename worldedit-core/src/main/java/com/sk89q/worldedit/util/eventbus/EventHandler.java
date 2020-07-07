@@ -19,9 +19,9 @@
 
 package com.sk89q.worldedit.util.eventbus;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import java.lang.reflect.InvocationTargetException;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Event handler object for {@link EventBus} that is able to dispatch
@@ -97,9 +97,9 @@ public abstract class EventHandler implements Comparable<EventHandler> {
 
     @Override
     public String toString() {
-        return "EventHandler{" +
-                "priority=" + priority +
-                '}';
+        return "EventHandler{"
+            + "priority=" + priority
+            + '}';
     }
 
 }

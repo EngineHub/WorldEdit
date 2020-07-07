@@ -38,7 +38,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
-
 import javax.annotation.Nullable;
 
 class CLIPlatform extends AbstractPlatform {

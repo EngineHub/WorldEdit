@@ -116,7 +116,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
-
 import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -391,14 +390,14 @@ public class ForgeWorld extends AbstractWorld {
         // drive executor until loading finishes
         ThreadTaskExecutor<Runnable> executor = serverWorld.getChunkProvider().executor;
         executor.driveUntil(() -> {
-                // bail out early if a future fails
-                if (chunkLoadings.stream().anyMatch(ftr ->
-                    ftr.isDone() && Futures.getUnchecked(ftr) == null
-                )) {
-                    return false;
-                }
-                return chunkLoadings.stream().allMatch(CompletableFuture::isDone);
-            });
+            // bail out early if a future fails
+            if (chunkLoadings.stream().anyMatch(ftr ->
+                ftr.isDone() && Futures.getUnchecked(ftr) == null
+            )) {
+                return false;
+            }
+            return chunkLoadings.stream().allMatch(CompletableFuture::isDone);
+        });
 
         Map<ChunkPos, IChunk> chunks = new HashMap<>();
         for (CompletableFuture<IChunk> future : chunkLoadings) {
@@ -640,7 +639,9 @@ public class ForgeWorld extends AbstractWorld {
     public Entity createEntity(Location location, BaseEntity entity) {
         World world = getWorld();
         final Optional<EntityType<?>> entityType = EntityType.byKey(entity.getType().getId());
-        if (!entityType.isPresent()) return null;
+        if (!entityType.isPresent()) {
+            return null;
+        }
         net.minecraft.entity.Entity createdEntity = entityType.get().create(world);
         if (createdEntity != null) {
             CompoundTag nativeTag = entity.getNbtData();

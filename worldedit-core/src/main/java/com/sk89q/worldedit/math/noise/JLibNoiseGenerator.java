@@ -21,7 +21,6 @@ package com.sk89q.worldedit.math.noise;
 
 import com.sk89q.worldedit.math.Vector2;
 import com.sk89q.worldedit.math.Vector3;
-
 import net.royawesome.jlibnoise.module.Module;
 
 import java.util.Random;

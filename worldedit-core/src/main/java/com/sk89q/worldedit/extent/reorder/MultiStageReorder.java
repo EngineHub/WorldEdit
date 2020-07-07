@@ -237,6 +237,8 @@ public class MultiStageReorder extends AbstractBufferingExtent implements Reorde
                 case LAST:
                     stages.get(PlacementPriority.CLEAR_LAST).put(location, replacement);
                     break;
+                default:
+                    break;
             }
 
             if (block.getBlockType().getMaterial().isAir()) {

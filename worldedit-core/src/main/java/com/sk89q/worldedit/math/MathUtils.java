@@ -63,14 +63,16 @@ public final class MathUtils {
                 dInt += 360;
             }
             switch (dInt) {
-            case 0:
-                return 1.0;
-            case 90:
-                return 0.0;
-            case 180:
-                return -1.0;
-            case 270:
-                return 0.0;
+                case 0:
+                    return 1.0;
+                case 90:
+                    return 0.0;
+                case 180:
+                    return -1.0;
+                case 270:
+                    return 0.0;
+                default:
+                    break;
             }
         }
         return Math.cos(Math.toRadians(degrees));
@@ -92,14 +94,16 @@ public final class MathUtils {
                 dInt += 360;
             }
             switch (dInt) {
-            case 0:
-                return 0.0;
-            case 90:
-                return 1.0;
-            case 180:
-                return 0.0;
-            case 270:
-                return -1.0;
+                case 0:
+                    return 0.0;
+                case 90:
+                    return 1.0;
+                case 180:
+                    return 0.0;
+                case 270:
+                    return -1.0;
+                default:
+                    break;
             }
         }
         return Math.sin(Math.toRadians(degrees));
@@ -109,7 +113,9 @@ public final class MathUtils {
      * Returns the rounded double of the given value, rounding to the
      * nearest integer value away from zero on ties.
      *
+     * <p>
      * This behavior is the same as {@link java.math.RoundingMode#HALF_UP}.
+     * </p>
      *
      * @param value the value
      * @return the rounded value

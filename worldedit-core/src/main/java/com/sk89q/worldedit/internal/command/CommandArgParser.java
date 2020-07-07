@@ -69,6 +69,9 @@ public class CommandArgParser {
                     break;
                 case QUOTE:
                     handleQuote(nextPart);
+                    break;
+                default:
+                    break;
             }
         }
         if (currentArg.size() > 0) {

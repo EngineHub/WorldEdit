@@ -19,10 +19,10 @@
 
 package com.sk89q.worldedit.util;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.math.Vector3;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Represents a location in a world with has a direction.
@@ -347,15 +347,27 @@ public class Location {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         Location location = (Location) o;
 
-        if (Double.doubleToLongBits(pitch) != Double.doubleToLongBits(location.pitch)) return false;
-        if (Double.doubleToLongBits(yaw) != Double.doubleToLongBits(location.yaw)) return false;
-        if (!position.equals(location.position)) return false;
-        if (!extent.equals(location.extent)) return false;
+        if (Double.doubleToLongBits(pitch) != Double.doubleToLongBits(location.pitch)) {
+            return false;
+        }
+        if (Double.doubleToLongBits(yaw) != Double.doubleToLongBits(location.yaw)) {
+            return false;
+        }
+        if (!position.equals(location.position)) {
+            return false;
+        }
+        if (!extent.equals(location.extent)) {
+            return false;
+        }
 
         return true;
     }

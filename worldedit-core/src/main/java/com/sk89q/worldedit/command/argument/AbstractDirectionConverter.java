@@ -38,8 +38,8 @@ import org.enginehub.piston.converter.SuccessfulConversion;
 import org.enginehub.piston.inject.InjectedValueAccess;
 import org.enginehub.piston.inject.Key;
 
-import javax.annotation.Nullable;
 import java.util.List;
+import javax.annotation.Nullable;
 
 import static org.enginehub.piston.converter.SuggestionHelper.limitByPrefix;
 
@@ -56,7 +56,7 @@ public abstract class AbstractDirectionConverter<D> implements ArgumentConverter
     }
 
     protected static <D> void register(CommandManager commandManager, AbstractDirectionConverter<D> converter,
-                                   Class<D> keyClass, boolean includeDiagonals) {
+                                       Class<D> keyClass, boolean includeDiagonals) {
         commandManager.registerConverter(
                 Key.of(keyClass, direction(includeDiagonals)),
                 converter

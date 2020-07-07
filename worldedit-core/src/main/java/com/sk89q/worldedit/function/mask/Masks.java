@@ -19,12 +19,12 @@
 
 package com.sk89q.worldedit.function.mask;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.math.BlockVector3;
 
 import javax.annotation.Nullable;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Various utility functions related to {@link Mask} and {@link Mask2D}.
@@ -38,7 +38,7 @@ public final class Masks {
     }
 
     /**
-     * Return a 3D mask that always returns true;
+     * Return a 3D mask that always returns true.
      *
      * @return a mask
      */
@@ -47,7 +47,7 @@ public final class Masks {
     }
 
     /**
-     * Return a 2D mask that always returns true;
+     * Return a 2D mask that always returns true.
      *
      * @return a mask
      */

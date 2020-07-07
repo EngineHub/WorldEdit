@@ -19,10 +19,6 @@
 
 package com.sk89q.worldedit.fabric;
 
-import static com.sk89q.worldedit.fabric.FabricAdapter.adaptPlayer;
-import static net.minecraft.server.command.CommandManager.argument;
-import static net.minecraft.server.command.CommandManager.literal;
-
 import com.google.common.collect.ImmutableList;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
@@ -50,6 +46,10 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
 
+import static com.sk89q.worldedit.fabric.FabricAdapter.adaptPlayer;
+import static net.minecraft.server.command.CommandManager.argument;
+import static net.minecraft.server.command.CommandManager.literal;
+
 
 public final class CommandWrapper {
 
@@ -60,14 +60,13 @@ public final class CommandWrapper {
         ImmutableList.Builder<String> aliases = ImmutableList.builder();
         aliases.add(command.getName()).addAll(command.getAliases());
 
-        Command<ServerCommandSource> commandRunner =
-                ctx -> {
-                    WorldEdit.getInstance().getEventBus().post(new com.sk89q.worldedit.event.platform.CommandEvent(
-                            adaptPlayer(ctx.getSource().getPlayer()),
-                            ctx.getInput()
-                    ));
-                    return 0;
-                };
+        Command<ServerCommandSource> commandRunner = ctx -> {
+            WorldEdit.getInstance().getEventBus().post(new com.sk89q.worldedit.event.platform.CommandEvent(
+                adaptPlayer(ctx.getSource().getPlayer()),
+                ctx.getInput()
+            ));
+            return 0;
+        };
 
         for (String alias : aliases.build()) {
             LiteralArgumentBuilder<ServerCommandSource> base = literal(alias).executes(commandRunner)

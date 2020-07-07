@@ -38,7 +38,7 @@ public interface BlockTool extends Tool {
      * @return true to cancel the original event which triggered this action (if possible)
      * @deprecated New subclasses should override
      * {@link #actPrimary(Platform, LocalConfiguration, Player, LocalSession, Location, Direction)}
-     * instead
+     *      instead
      */
     @Deprecated
     default boolean actPrimary(Platform server, LocalConfiguration config, Player player, LocalSession session, Location clicked) {

@@ -19,11 +19,7 @@
 
 package com.sk89q.worldedit.command.argument;
 
-import static org.enginehub.piston.converter.SuggestionHelper.limitByPrefix;
-
-import com.google.common.collect.ImmutableList;
 import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.command.util.EntityRemover;
 import com.sk89q.worldedit.util.SideEffect;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
@@ -38,6 +34,8 @@ import org.enginehub.piston.inject.Key;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
+
+import static org.enginehub.piston.converter.SuggestionHelper.limitByPrefix;
 
 public class SideEffectConverter implements ArgumentConverter<SideEffect> {
 

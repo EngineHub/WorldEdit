@@ -24,7 +24,6 @@ import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
 import com.sk89q.worldedit.WorldEdit;
 
-import javax.annotation.Nullable;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -33,6 +32,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -100,6 +100,8 @@ public class ClipboardFormats {
     }
 
     /**
+     * A mapping from extensions to formats.
+     *
      * @return a multimap from a file extension to the potential matching formats.
      */
     public static Multimap<String, ClipboardFormat> getFileExtensionMap() {

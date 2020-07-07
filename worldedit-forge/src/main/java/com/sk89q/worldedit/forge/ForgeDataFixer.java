@@ -38,11 +38,11 @@ import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.worldedit.forge.internal.NBTConverter;
 import net.minecraft.item.DyeColor;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.FloatNBT;
 import net.minecraft.nbt.INBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.nbt.NBTDynamicOps;
 import net.minecraft.nbt.StringNBT;
-import net.minecraft.nbt.FloatNBT;
 import net.minecraft.util.Direction;
 import net.minecraft.util.JSONUtils;
 import net.minecraft.util.ResourceLocation;
@@ -55,7 +55,6 @@ import net.minecraft.util.text.StringTextComponent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.annotation.Nullable;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.EnumMap;
@@ -69,18 +68,24 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
+import javax.annotation.Nullable;
 
 /**
  * Handles converting all Pre 1.13.2 data using the Legacy DataFix System (ported to 1.13.2)
  *
+ * <p>
  * We register a DFU Fixer per Legacy Data Version and apply the fixes using legacy strategy
  * which is safer, faster and cleaner code.
+ * </p>
  *
+ * <p>
  * The pre DFU code did not fail when the Source version was unknown.
+ * </p>
  *
+ * <p>
  * This class also provides util methods for converting compounds to wrap the update call to
- * receive the source version in the compound
- *
+ * receive the source version in the compound.
+ * </p>
  */
 @SuppressWarnings("UnnecessarilyQualifiedStaticUsage")
 class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.world.DataFixer {
@@ -170,7 +175,7 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
 
     private static String fixName(String key, int srcVer, TypeReference type) {
         return INSTANCE.fixer.update(type, new Dynamic<>(OPS_NBT, StringNBT.valueOf(key)), srcVer, DATA_VERSION)
-                .asString().result().orElse(key);
+            .asString().result().orElse(key);
     }
 
     private static final NBTDynamicOps OPS_NBT = NBTDynamicOps.INSTANCE;
@@ -461,6 +466,7 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
     private void registerEntityItemListEquipment(String type) {
         registerEntityItemList(type, "ArmorItems", "HandItems");
     }
+
     private static final Map<String, ResourceLocation> OLD_ID_TO_KEY_MAP = new HashMap<>();
 
     static {
@@ -606,7 +612,8 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
 
     private static class DataConverterEquipment implements DataConverter {
 
-        DataConverterEquipment() {}
+        DataConverterEquipment() {
+        }
 
         @Override
         public int getDataVersion() {
@@ -667,7 +674,8 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
         private static final Map<String, String> b = Maps.newHashMap();
         private static final Map<String, String> c = Maps.newHashMap();
 
-        DataInspectorBlockEntity() {}
+        DataInspectorBlockEntity() {
+        }
 
         @Nullable
         private static String convertEntityId(int i, String s) {
@@ -808,7 +816,8 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
 
         private static final Logger a = LogManager.getLogger(ForgeDataFixer.class);
 
-        DataInspectorEntity() {}
+        DataInspectorEntity() {
+        }
 
         @Override
         public CompoundNBT inspect(CompoundNBT cmp, int sourceVer, int targetVer) {
@@ -886,6 +895,7 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
             return nbttagcompound;
         }
     }
+
     private static class DataInspectorItem extends DataInspectorTagged {
 
         private final String[] keys;
@@ -908,7 +918,8 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
 
         private static final String[] materials = new String[2268];
 
-        DataConverterMaterialId() {}
+        DataConverterMaterialId() {
+        }
 
         public int getDataVersion() {
             return 102;
@@ -1247,7 +1258,8 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
 
     private static class DataConverterArmorStand implements DataConverter {
 
-        DataConverterArmorStand() {}
+        DataConverterArmorStand() {
+        }
 
         public int getDataVersion() {
             return 147;
@@ -1264,7 +1276,8 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
 
     private static class DataConverterBanner implements DataConverter {
 
-        DataConverterBanner() {}
+        DataConverterBanner() {
+        }
 
         public int getDataVersion() {
             return 804;
@@ -1311,7 +1324,8 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
 
         private static final String[] potions = new String[128];
 
-        DataConverterPotionId() {}
+        DataConverterPotionId() {
+        }
 
         public int getDataVersion() {
             return 102;
@@ -1476,7 +1490,8 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
 
         private static final String[] eggs = new String[256];
 
-        DataConverterSpawnEgg() {}
+        DataConverterSpawnEgg() {
+        }
 
         public int getDataVersion() {
             return 105;
@@ -1580,9 +1595,10 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
 
     private static class DataConverterMinecart implements DataConverter {
 
-        private static final List<String> a = Lists.newArrayList(new String[] { "MinecartRideable", "MinecartChest", "MinecartFurnace", "MinecartTNT", "MinecartSpawner", "MinecartHopper", "MinecartCommandBlock"});
+        private static final List<String> a = Lists.newArrayList(new String[] { "MinecartRideable", "MinecartChest", "MinecartFurnace", "MinecartTNT", "MinecartSpawner", "MinecartHopper", "MinecartCommandBlock" });
 
-        DataConverterMinecart() {}
+        DataConverterMinecart() {
+        }
 
         public int getDataVersion() {
             return 106;
@@ -1607,7 +1623,8 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
 
     private static class DataConverterMobSpawner implements DataConverter {
 
-        DataConverterMobSpawner() {}
+        DataConverterMobSpawner() {
+        }
 
         public int getDataVersion() {
             return 107;
@@ -1650,7 +1667,8 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
 
     private static class DataConverterUUID implements DataConverter {
 
-        DataConverterUUID() {}
+        DataConverterUUID() {
+        }
 
         public int getDataVersion() {
             return 108;
@@ -1667,9 +1685,10 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
 
     private static class DataConverterHealth implements DataConverter {
 
-        private static final Set<String> a = Sets.newHashSet(new String[] { "ArmorStand", "Bat", "Blaze", "CaveSpider", "Chicken", "Cow", "Creeper", "EnderDragon", "Enderman", "Endermite", "EntityHorse", "Ghast", "Giant", "Guardian", "LavaSlime", "MushroomCow", "Ozelot", "Pig", "PigZombie", "Rabbit", "Sheep", "Shulker", "Silverfish", "Skeleton", "Slime", "SnowMan", "Spider", "Squid", "Villager", "VillagerGolem", "Witch", "WitherBoss", "Wolf", "Zombie"});
+        private static final Set<String> a = Sets.newHashSet(new String[] { "ArmorStand", "Bat", "Blaze", "CaveSpider", "Chicken", "Cow", "Creeper", "EnderDragon", "Enderman", "Endermite", "EntityHorse", "Ghast", "Giant", "Guardian", "LavaSlime", "MushroomCow", "Ozelot", "Pig", "PigZombie", "Rabbit", "Sheep", "Shulker", "Silverfish", "Skeleton", "Slime", "SnowMan", "Spider", "Squid", "Villager", "VillagerGolem", "Witch", "WitherBoss", "Wolf", "Zombie" });
 
-        DataConverterHealth() {}
+        DataConverterHealth() {
+        }
 
         public int getDataVersion() {
             return 109;
@@ -1699,7 +1718,8 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
 
     private static class DataConverterSaddle implements DataConverter {
 
-        DataConverterSaddle() {}
+        DataConverterSaddle() {
+        }
 
         public int getDataVersion() {
             return 110;
@@ -1722,7 +1742,8 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
 
     private static class DataConverterHanging implements DataConverter {
 
-        DataConverterHanging() {}
+        DataConverterHanging() {
+        }
 
         public int getDataVersion() {
             return 111;
@@ -1759,7 +1780,8 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
 
     private static class DataConverterDropChances implements DataConverter {
 
-        DataConverterDropChances() {}
+        DataConverterDropChances() {
+        }
 
         public int getDataVersion() {
             return 113;
@@ -1788,7 +1810,8 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
 
     private static class DataConverterRiding implements DataConverter {
 
-        DataConverterRiding() {}
+        DataConverterRiding() {
+        }
 
         public int getDataVersion() {
             return 135;
@@ -1822,7 +1845,8 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
 
     private static class DataConverterBook implements DataConverter {
 
-        DataConverterBook() {}
+        DataConverterBook() {
+        }
 
         public int getDataVersion() {
             return 165;
@@ -1891,7 +1915,8 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
 
         private static final ResourceLocation a = new ResourceLocation("cooked_fished");
 
-        DataConverterCookedFish() {}
+        DataConverterCookedFish() {
+        }
 
         public int getDataVersion() {
             return 502;
@@ -1910,7 +1935,8 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
 
         private static final Random a = new Random();
 
-        DataConverterZombie() {}
+        DataConverterZombie() {
+        }
 
         public int getDataVersion() {
             return 502;
@@ -1949,7 +1975,8 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
 
     private static class DataConverterVBO implements DataConverter {
 
-        DataConverterVBO() {}
+        DataConverterVBO() {
+        }
 
         public int getDataVersion() {
             return 505;
@@ -1963,7 +1990,8 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
 
     private static class DataConverterGuardian implements DataConverter {
 
-        DataConverterGuardian() {}
+        DataConverterGuardian() {
+        }
 
         public int getDataVersion() {
             return 700;
@@ -1984,7 +2012,8 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
 
     private static class DataConverterSkeleton implements DataConverter {
 
-        DataConverterSkeleton() {}
+        DataConverterSkeleton() {
+        }
 
         public int getDataVersion() {
             return 701;
@@ -2011,7 +2040,8 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
 
     private static class DataConverterZombieType implements DataConverter {
 
-        DataConverterZombieType() {}
+        DataConverterZombieType() {
+        }
 
         public int getDataVersion() {
             return 702;
@@ -2046,7 +2076,8 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
 
     private static class DataConverterHorse implements DataConverter {
 
-        DataConverterHorse() {}
+        DataConverterHorse() {
+        }
 
         public int getDataVersion() {
             return 703;
@@ -2090,7 +2121,8 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
 
         private static final Map<String, String> a = Maps.newHashMap();
 
-        DataConverterTileEntity() {}
+        DataConverterTileEntity() {
+        }
 
         public int getDataVersion() {
             return 704;
@@ -2137,7 +2169,8 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
 
         private static final Map<String, String> a = Maps.newHashMap();
 
-        DataConverterEntity() {}
+        DataConverterEntity() {
+        }
 
         public int getDataVersion() {
             return 704;
@@ -2234,7 +2267,8 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
 
     private static class DataConverterPotionWater implements DataConverter {
 
-        DataConverterPotionWater() {}
+        DataConverterPotionWater() {
+        }
 
         public int getDataVersion() {
             return 806;
@@ -2261,7 +2295,8 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
 
     private static class DataConverterShulker implements DataConverter {
 
-        DataConverterShulker() {}
+        DataConverterShulker() {
+        }
 
         public int getDataVersion() {
             return 808;
@@ -2278,9 +2313,10 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
 
     private static class DataConverterShulkerBoxItem implements DataConverter {
 
-        public static final String[] a = new String[] { "minecraft:white_shulker_box", "minecraft:orange_shulker_box", "minecraft:magenta_shulker_box", "minecraft:light_blue_shulker_box", "minecraft:yellow_shulker_box", "minecraft:lime_shulker_box", "minecraft:pink_shulker_box", "minecraft:gray_shulker_box", "minecraft:silver_shulker_box", "minecraft:cyan_shulker_box", "minecraft:purple_shulker_box", "minecraft:blue_shulker_box", "minecraft:brown_shulker_box", "minecraft:green_shulker_box", "minecraft:red_shulker_box", "minecraft:black_shulker_box"};
+        public static final String[] a = new String[] { "minecraft:white_shulker_box", "minecraft:orange_shulker_box", "minecraft:magenta_shulker_box", "minecraft:light_blue_shulker_box", "minecraft:yellow_shulker_box", "minecraft:lime_shulker_box", "minecraft:pink_shulker_box", "minecraft:gray_shulker_box", "minecraft:silver_shulker_box", "minecraft:cyan_shulker_box", "minecraft:purple_shulker_box", "minecraft:blue_shulker_box", "minecraft:brown_shulker_box", "minecraft:green_shulker_box", "minecraft:red_shulker_box", "minecraft:black_shulker_box" };
 
-        DataConverterShulkerBoxItem() {}
+        DataConverterShulkerBoxItem() {
+        }
 
         public int getDataVersion() {
             return 813;
@@ -2318,7 +2354,8 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
 
     private static class DataConverterShulkerBoxBlock implements DataConverter {
 
-        DataConverterShulkerBoxBlock() {}
+        DataConverterShulkerBoxBlock() {
+        }
 
         public int getDataVersion() {
             return 813;
@@ -2335,7 +2372,8 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
 
     private static class DataConverterLang implements DataConverter {
 
-        DataConverterLang() {}
+        DataConverterLang() {
+        }
 
         public int getDataVersion() {
             return 816;
@@ -2352,7 +2390,8 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
 
     private static class DataConverterTotem implements DataConverter {
 
-        DataConverterTotem() {}
+        DataConverterTotem() {
+        }
 
         public int getDataVersion() {
             return 820;
@@ -2371,7 +2410,8 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
 
         private static final Logger a = LogManager.getLogger(ForgeDataFixer.class);
 
-        DataConverterBedBlock() {}
+        DataConverterBedBlock() {
+        }
 
         public int getDataVersion() {
             return 1125;
@@ -2417,7 +2457,8 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
 
     private static class DataConverterBedItem implements DataConverter {
 
-        DataConverterBedItem() {}
+        DataConverterBedItem() {
+        }
 
         public int getDataVersion() {
             return 1125;
@@ -2465,7 +2506,8 @@ class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wor
             }
         }).create();
 
-        DataConverterSignText() {}
+        DataConverterSignText() {
+        }
 
         public int getDataVersion() {
             return 101;

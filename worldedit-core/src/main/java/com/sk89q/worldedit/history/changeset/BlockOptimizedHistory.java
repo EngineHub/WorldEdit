@@ -19,8 +19,6 @@
 
 package com.sk89q.worldedit.history.changeset;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import com.google.common.collect.Iterators;
 import com.sk89q.worldedit.history.change.BlockChange;
 import com.sk89q.worldedit.history.change.Change;
@@ -30,6 +28,8 @@ import com.sk89q.worldedit.util.collection.LocatedBlockList;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * An extension of {@link ArrayListHistory} that stores {@link BlockChange}s

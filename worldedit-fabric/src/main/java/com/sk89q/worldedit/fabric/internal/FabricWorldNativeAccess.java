@@ -32,12 +32,13 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.WorldChunk;
 
-import javax.annotation.Nullable;
 import java.lang.ref.WeakReference;
 import java.util.Objects;
+import javax.annotation.Nullable;
 
 public class FabricWorldNativeAccess implements WorldNativeAccess<WorldChunk, BlockState, BlockPos> {
-    private static final int UPDATE = 1, NOTIFY = 2;
+    private static final int UPDATE = 1;
+    private static final int NOTIFY = 2;
 
     private final WeakReference<World> world;
 

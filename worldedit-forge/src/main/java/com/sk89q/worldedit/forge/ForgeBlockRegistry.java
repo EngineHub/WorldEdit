@@ -49,8 +49,10 @@ public class ForgeBlockRegistry extends BundledBlockRegistry {
         if (block == null) {
             return super.getMaterial(blockType);
         }
-        return materialMap.computeIfAbsent(block.getDefaultState(),
-                s -> new ForgeBlockMaterial(s.getMaterial(), s, super.getMaterial(blockType)));
+        return materialMap.computeIfAbsent(
+            block.getDefaultState(),
+            s -> new ForgeBlockMaterial(s.getMaterial(), s, super.getMaterial(blockType))
+        );
     }
 
     @Override
@@ -58,9 +60,9 @@ public class ForgeBlockRegistry extends BundledBlockRegistry {
         Block block = ForgeAdapter.adapt(blockType);
         Map<String, Property<?>> map = new TreeMap<>();
         Collection<net.minecraft.state.Property<?>> propertyKeys = block
-                .getDefaultState()
+            .getDefaultState()
             // func_235904_r_ == getProperties
-                .func_235904_r_();
+            .func_235904_r_();
         for (net.minecraft.state.Property<?> key : propertyKeys) {
             map.put(key.getName(), ForgeAdapter.adaptProperty(key));
         }

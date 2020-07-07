@@ -19,8 +19,6 @@
 
 package com.sk89q.worldedit.bukkit;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import com.sk89q.worldedit.bukkit.adapter.BukkitImplAdapter;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
@@ -31,8 +29,9 @@ import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.NullWorld;
 
 import java.lang.ref.WeakReference;
-
 import javax.annotation.Nullable;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * An adapter to adapt a Bukkit entity into a WorldEdit one.

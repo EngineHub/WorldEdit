@@ -25,8 +25,8 @@ package com.sk89q.worldedit.math.convolution;
 public class GaussianKernel extends Kernel {
 
     /**
-     * Constructor of the kernel
-     * 
+     * Constructor of the kernel.
+     *
      * @param radius the resulting diameter will be radius * 2 + 1
      * @param sigma controls 'flatness'
      */

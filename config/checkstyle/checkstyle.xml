@@ -1,71 +1,201 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0"?>
 <!DOCTYPE module PUBLIC
-    "-//Puppy Crawl//DTD Check Configuration 1.3//EN"
-    "http://checkstyle.sourceforge.net/dtds/configuration_1_3.dtd">
+        "-//Puppy Crawl//DTD Check Configuration 1.3//EN"
+        "http://www.puppycrawl.com/dtds/configuration_1_3.dtd">
+
+<!--
+Checks based on Google Checks, modified for EngineHub.
+ -->
+
 <module name="Checker">
-  <!-- Tabs are strictly banned -->
-  <module name="FileTabCharacter"/>
-  <module name="SuppressWarningsFilter" />
-  <module name="TreeWalker">
-    <module name="SuppressWarningsHolder" /> <!-- allows for @SuppressWarnings annotation -->
-    <!-- Important basics -->
-    <!-- <module name="PackageDeclaration"/> Unlikely that we would miss this in a PR -->
-    <module name="OuterTypeFilename"/> <!-- TypeName -> TypeName.java -->
+    <property name="charset" value="UTF-8"/>
 
-    <!--
-    Control package usage, so people don't insert Bukkit into WE where it shouldn't belong, etc.
-    It is a bit draconian, so update as necessary!
-    -->
-    <module name="ImportControl">
-      <property name="file" value="${config_loc}/import-control.xml"/>
+    <property name="severity" value="error"/>
+
+    <property name="fileExtensions" value="java, properties, xml"/>
+    <!-- Checks for whitespace                               -->
+    <!-- See http://checkstyle.sf.net/config_whitespace.html -->
+    <module name="FileTabCharacter">
+        <property name="eachLine" value="true"/>
     </module>
 
-    <!-- Code -->
-    <module name="HideUtilityClassConstructor"/> <!-- Utility classes should not have a constructor -->
-    <module name="CovariantEquals"/>
-    <module name="EqualsHashCode"/> <!-- equals() and hashCode() go together -->
-    <module name="NestedTryDepth"> <!-- SHOULD not need to adjust this -->
-      <property name="max" value="2"/>
+    <module name="TreeWalker">
+        <module name="OuterTypeFilename"/>
+        <module name="IllegalTokenText">
+            <property name="tokens" value="STRING_LITERAL, CHAR_LITERAL"/>
+            <property name="format"
+                      value="\\u00(08|09|0(a|A)|0(c|C)|0(d|D)|22|27|5(C|c))|\\(0(10|11|12|14|15|42|47)|134)"/>
+            <property name="message" value="Avoid using corresponding octal or Unicode escape."/>
+        </module>
+        <module name="AvoidEscapedUnicodeCharacters">
+            <property name="allowEscapesForControlCharacters" value="true"/>
+            <property name="allowByTailComment" value="true"/>
+            <property name="allowNonPrintableEscapes" value="true"/>
+        </module>
+        <module name="AvoidStarImport"/>
+        <module name="OneTopLevelClass"/>
+        <module name="NoLineWrap"/>
+        <module name="EmptyBlock">
+            <property name="option" value="TEXT"/>
+            <property name="tokens" value="LITERAL_TRY, LITERAL_FINALLY, LITERAL_IF, LITERAL_ELSE, LITERAL_SWITCH"/>
+        </module>
+        <module name="NeedBraces"/>
+        <module name="RightCurly"/>
+        <module name="RightCurly">
+            <property name="option" value="alone"/>
+            <property name="tokens"
+                      value="CLASS_DEF, METHOD_DEF, CTOR_DEF, LITERAL_FOR, LITERAL_WHILE, STATIC_INIT, INSTANCE_INIT"/>
+        </module>
+        <module name="WhitespaceAround">
+            <property name="allowEmptyConstructors" value="true"/>
+            <property name="allowEmptyMethods" value="true"/>
+            <property name="allowEmptyTypes" value="true"/>
+            <property name="allowEmptyLoops" value="true"/>
+            <message key="ws.notFollowed"
+                     value="WhitespaceAround: ''{0}'' is not followed by whitespace. Empty blocks may only be represented as '{}' when not part of a multi-block statement (4.1.3)"/>
+            <message key="ws.notPreceded"
+                     value="WhitespaceAround: ''{0}'' is not preceded with whitespace."/>
+        </module>
+        <module name="WhitespaceAfter">
+            <message key="ws.notFollowed"
+                     value="WhitespaceAround: ''{0}'' is not followed by whitespace. (4.1.3)"/>
+        </module>
+        <module name="NoWhitespaceBefore"/>
+        <module name="OneStatementPerLine"/>
+        <module name="MultipleVariableDeclarations"/>
+        <module name="ArrayTypeStyle"/>
+        <module name="MissingSwitchDefault"/>
+        <module name="FallThrough">
+            <property name="reliefPattern" value="FALL-THROUGH|falls?[ -]?thr(u|ough)"/>
+        </module>
+        <module name="UpperEll"/>
+        <module name="ModifierOrder"/>
+        <module name="EmptyLineSeparator">
+            <property name="allowNoEmptyLineBetweenFields" value="true"/>
+        </module>
+        <module name="SeparatorWrap">
+            <property name="tokens" value="DOT"/>
+            <property name="option" value="nl"/>
+        </module>
+        <module name="SeparatorWrap">
+            <property name="tokens" value="COMMA"/>
+            <property name="option" value="EOL"/>
+        </module>
+        <module name="PackageName">
+            <property name="format" value="^[a-z]+(\.[a-z][a-z0-9]*)*$"/>
+            <message key="name.invalidPattern"
+                     value="Package name ''{0}'' must match pattern ''{1}''."/>
+        </module>
+        <module name="TypeName">
+            <message key="name.invalidPattern"
+                     value="Type name ''{0}'' must match pattern ''{1}''."/>
+        </module>
+        <module name="MemberName">
+            <property name="format" value="^([a-z][_a-zA-Z0-9]+|[xyz])$"/>
+            <message key="name.invalidPattern"
+                     value="Member name ''{0}'' must match pattern ''{1}''."/>
+        </module>
+        <module name="ParameterName">
+            <property name="format" value="^([a-z][a-z0-9][_a-zA-Z0-9]*|[a-z])$"/>
+            <message key="name.invalidPattern"
+                     value="Parameter name ''{0}'' must match pattern ''{1}''."/>
+        </module>
+        <module name="ClassTypeParameterName">
+            <property name="format" value="(^[A-Z][0-9]?)$|(^[A-Z][a-zA-Z0-9]*$)"/>
+            <message key="name.invalidPattern"
+                     value="Class type name ''{0}'' must match pattern ''{1}''."/>
+        </module>
+        <module name="MethodTypeParameterName">
+            <property name="format" value="(^[A-Z][0-9]?)$|(^[A-Z][a-zA-Z0-9]*$)"/>
+            <message key="name.invalidPattern"
+                     value="Method type name ''{0}'' must match pattern ''{1}''."/>
+        </module>
+        <module name="NoFinalizer"/>
+        <module name="GenericWhitespace">
+            <message key="ws.followed"
+                     value="GenericWhitespace ''{0}'' is followed by whitespace."/>
+            <message key="ws.preceded"
+                     value="GenericWhitespace ''{0}'' is preceded with whitespace."/>
+            <message key="ws.illegalFollow"
+                     value="GenericWhitespace ''{0}'' should followed by whitespace."/>
+            <message key="ws.notPreceded"
+                     value="GenericWhitespace ''{0}'' is not preceded with whitespace."/>
+        </module>
+        <module name="Regexp">
+            <property name="format" value="[ \t]+$"/>
+            <property name="illegalPattern" value="true"/>
+            <property name="message" value="Trailing whitespace"/>
+        </module>
+        <module name="Indentation">
+            <property name="basicOffset" value="4"/>
+            <property name="braceAdjustment" value="0"/>
+            <property name="caseIndent" value="4"/>
+            <property name="throwsIndent" value="4"/>
+            <property name="lineWrappingIndentation" value="4"/>
+            <property name="arrayInitIndent" value="4"/>
+        </module>
+        <module name="CustomImportOrder">
+            <property name="sortImportsInGroupAlphabetically" value="true"/>
+            <property name="customImportOrderRules" value="THIRD_PARTY_PACKAGE###STANDARD_JAVA_PACKAGE###STATIC"/>
+        </module>
+        <module name="MethodParamPad"/>
+        <module name="OperatorWrap">
+            <property name="option" value="NL"/>
+            <property name="tokens"
+                      value="BAND, BOR, BSR, BXOR, DIV, EQUAL, GE, GT, LAND, LE, LITERAL_INSTANCEOF, LOR, LT, MINUS, MOD, NOT_EQUAL, PLUS, QUESTION, SL, SR, STAR "/>
+        </module>
+        <module name="AnnotationLocation">
+            <property name="tokens" value="CLASS_DEF, INTERFACE_DEF, ENUM_DEF, METHOD_DEF, CTOR_DEF"/>
+        </module>
+        <module name="AnnotationLocation">
+            <property name="tokens" value="VARIABLE_DEF"/>
+            <property name="allowSamelineMultipleAnnotations" value="true"/>
+        </module>
+        <module name="NonEmptyAtclauseDescription"/>
+        <module name="JavadocTagContinuationIndentation"/>
+        <module name="SummaryJavadocCheck">
+            <property name="forbiddenSummaryFragments"
+                      value="^@return the *|^This method returns |^A [{]@code [a-zA-Z0-9]+[}]( is a )"/>
+        </module>
+        <module name="JavadocParagraph"/>
+        <module name="AtclauseOrder">
+            <property name="tagOrder" value="@param, @return, @throws, @deprecated"/>
+            <property name="target" value="CLASS_DEF, INTERFACE_DEF, ENUM_DEF, METHOD_DEF, CTOR_DEF, VARIABLE_DEF"/>
+        </module>
+        <!-- No javadoc for now -->
+        <!--<module name="JavadocMethod">
+            <property name="scope" value="public"/>
+            <property name="allowMissingParamTags" value="true"/>
+            <property name="allowMissingThrowsTags" value="true"/>
+            <property name="allowMissingReturnTag" value="true"/>
+            <property name="minLineCount" value="2"/>
+            <property name="allowedAnnotations" value="Override, Test"/>
+            <property name="allowThrowsTagsForSubclasses" value="true"/>
+        </module>-->
+        <module name="MethodName">
+            <property name="format" value="^[a-z][a-z0-9][a-zA-Z0-9_]*$"/>
+            <message key="name.invalidPattern"
+                     value="Method name ''{0}'' must match pattern ''{1}''."/>
+        </module>
+        <module name="SingleLineJavadoc">
+            <property name="ignoreInlineTags" value="false"/>
+        </module>
+        <module name="EmptyCatchBlock">
+            <property name="exceptionVariableName" value="expected|ignored"/>
+        </module>
+        <module name="CommentsIndentation"/>
+        <!-- Validate String.to(Lower|Upper)Case() calls include Locale argument -->
+        <module name="Regexp">
+            <property name="message" value="Case-conversion calls must include an explicit Locale"/>
+            <property name="format" value="(?!Character)\.to(Lower|Upper)Case\(\)"/>
+            <property name="illegalPattern" value="true"/>
+        </module>
     </module>
-    <module name="SuperFinalize"/> <!-- We don't actually use this -->
-
-    <!-- Style -->
-    <module name="LeftCurly"> <!-- Left brace never goes on another line -->
-      <property name="option" value="eol"/>
-    </module> <!-- We don't check right brance -->
-    <module name="DefaultComesLast"/> <!-- default case in switch should be last -->
-    <module name="GenericWhitespace"/>
-
-    <!-- Naming -->
-    <module name="ClassTypeParameterName">
-      <property name="format" value="^[A-Z][a-zA-Z0-9]*$"/>
+    <!-- Validate that command annotations are formatted correctly -->
+    <module name="RegexpMultiline">
+        <property name="format" value="^( +)@(Arg|Switch|Command)\(.*?\r?\n\1 {5,}"/>
     </module>
-    <module name="LocalFinalVariableName"/>
-    <module name="LocalVariableName">
-      <property name="format" value="^[a-z_][a-zA-Z0-9]*$"/>
+    <module name="SuppressionFilter">
+        <property name="file" value="${config_loc}/checkstyle-suppression.xml"/>
     </module>
-    <module name="MemberName">
-      <property name="format" value="^[a-z_][a-zA-Z0-9]*$"/>
-    </module>
-    <module name="MethodName">
-      <property name="format" value="^[a-z][a-zA-Z0-9]*$"/>
-    </module>
-    <!-- <module name="PackageName"/> Unlikely that we would miss this in a PR -->
-    <module name="ParameterName"/>
-    <!-- <module name="TypeName"/> Unlikely that we would miss this in a PR -->
-    <!-- Validate assignment operators -->
-    <module name="WhitespaceAround">
-      <property name="tokens" value="ASSIGN"/>
-    </module>
-    <!-- Validate String.to(Lower|Upper)Case() calls include Locale argument -->
-    <module name="Regexp">
-      <property name="message" value="Case-conversion calls must include an explicit Locale"/>
-      <property name="format" value="(?!Character)\.to(Lower|Upper)Case\(\)"/>
-      <property name="illegalPattern" value="true"/>
-    </module>
-  </module>
-  <!-- Validate that command annotations are formatted correctly -->
-  <module name="RegexpMultiline">
-    <property name="format" value="^( +)@(Arg|Switch|Command)\(.*?\r?\n\1 {5,}"/>
-  </module>
 </module>

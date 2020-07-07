@@ -23,43 +23,43 @@ import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.extension.platform.Actor;
 
 public interface CUIRegion {
-    
+
     /**
      * Sends CUI events describing the region for
      * versions of CUI equal to or greater than the
      * value supplied by getProtocolVersion().
-     * 
+     *
      */
     void describeCUI(LocalSession session, Actor player);
-    
+
     /**
      * Sends CUI events describing the region for
-     * versions of CUI smaller than the value 
+     * versions of CUI smaller than the value
      * supplied by getProtocolVersion().
-     * 
+     *
      */
     void describeLegacyCUI(LocalSession session, Actor player);
-    
+
     /**
      * Returns the CUI version that is required to send
      * up-to-date data. If the CUI version is smaller than
      * this value, the legacy methods will be called.
-     * 
+     *
      * @return the protocol version
      */
     int getProtocolVersion();
-    
+
     /**
      * Returns the type ID to send to CUI in the selection event.
      *
      * @return the type ID
      */
     String getTypeID();
-    
+
     /**
      * Returns the type ID to send to CUI in the selection
      * event if the CUI is in legacy mode.
-     * 
+     *
      * @return the legacy type ID
      */
     String getLegacyTypeID();

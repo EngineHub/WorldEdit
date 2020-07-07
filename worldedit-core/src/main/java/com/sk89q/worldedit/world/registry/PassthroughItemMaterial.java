@@ -19,9 +19,9 @@
 
 package com.sk89q.worldedit.world.registry;
 
-import static com.sk89q.worldedit.util.GuavaUtil.firstNonNull;
-
 import javax.annotation.Nullable;
+
+import static com.sk89q.worldedit.util.GuavaUtil.firstNonNull;
 
 public class PassthroughItemMaterial implements ItemMaterial {
 

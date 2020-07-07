@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 public interface BlockStateHolder<B extends BlockStateHolder<B>> extends Pattern {
 
     /**
-     * Get the block type
+     * Get the block type.
      *
      * @return The type
      */
@@ -47,7 +47,7 @@ public interface BlockStateHolder<B extends BlockStateHolder<B>> extends Pattern
     <V> B with(final Property<V> property, final V value);
 
     /**
-     * Gets the value at the given state
+     * Gets the value for the given state.
      *
      * @param property The state
      * @return The value

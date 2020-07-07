@@ -19,8 +19,6 @@
 
 package com.sk89q.worldedit.function.visitor;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import com.google.common.collect.ImmutableList;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.function.RegionFunction;
@@ -40,6 +38,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Queue;
 import java.util.Set;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Performs a breadth-first search starting from points added with
@@ -167,7 +167,7 @@ public abstract class BreadthFirstSearch implements Operation {
     @Override
     public Operation resume(RunContext run) throws WorldEditException {
         BlockVector3 position;
-        
+
         while ((position = queue.poll()) != null) {
             if (function.apply(position)) {
                 affected++;

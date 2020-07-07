@@ -39,7 +39,7 @@ public abstract class SimpleInputParser<E> extends InputParser<E> {
     }
 
     /**
-     * The strings this parser matches
+     * The strings this parser matches.
      *
      * @return the matching aliases
      */
@@ -57,7 +57,7 @@ public abstract class SimpleInputParser<E> extends InputParser<E> {
     public abstract E parseFromSimpleInput(String input, ParserContext context) throws InputParseException;
 
     /**
-     * Gets the primary name of this matcher
+     * Gets the primary name of this matcher.
      *
      * @return the primary match
      */

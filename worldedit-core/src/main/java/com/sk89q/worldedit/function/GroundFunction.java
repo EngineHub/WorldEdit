@@ -19,11 +19,11 @@
 
 package com.sk89q.worldedit.function;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.math.BlockVector3;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Applies a {@link RegionFunction} to the first ground block.

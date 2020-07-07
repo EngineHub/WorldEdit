@@ -19,11 +19,11 @@
 
 package com.sk89q.worldedit.function.pattern;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.world.block.BaseBlock;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Returns the blocks from {@link Extent}, repeating when out of bounds.

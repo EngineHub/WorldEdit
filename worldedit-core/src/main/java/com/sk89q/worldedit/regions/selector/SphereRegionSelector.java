@@ -53,7 +53,7 @@ public class SphereRegionSelector extends EllipsoidRegionSelector {
     }
 
     /**
-     * Create a new selector from another one
+     * Create a new selector from another one.
      *
      * @param oldSelector the old selector
      */

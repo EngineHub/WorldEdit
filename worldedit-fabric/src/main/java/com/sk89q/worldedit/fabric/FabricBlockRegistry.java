@@ -47,8 +47,10 @@ public class FabricBlockRegistry extends BundledBlockRegistry {
     @Override
     public BlockMaterial getMaterial(BlockType blockType) {
         Block block = FabricAdapter.adapt(blockType);
-        return materialMap.computeIfAbsent(block.getDefaultState().getMaterial(),
-                m -> new FabricBlockMaterial(m, super.getMaterial(blockType)));
+        return materialMap.computeIfAbsent(
+            block.getDefaultState().getMaterial(),
+            m -> new FabricBlockMaterial(m, super.getMaterial(blockType))
+        );
     }
 
     @Override

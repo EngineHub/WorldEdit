@@ -19,13 +19,13 @@
 
 package com.sk89q.worldedit.history.change;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.history.UndoContext;
 import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.world.biome.BiomeType;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Represents a biome change that may be undone or replayed.

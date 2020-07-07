@@ -35,8 +35,10 @@ class AnnotatedSubscriberFinder implements SubscriberFindingStrategy {
     /**
      * {@inheritDoc}
      *
+     * <p>
      * This implementation finds all methods marked with a {@link Subscribe}
      * annotation.
+     * </p>
      */
     @Override
     public Multimap<Class<?>, EventHandler> findAllSubscribers(Object listener) {
@@ -51,9 +53,10 @@ class AnnotatedSubscriberFinder implements SubscriberFindingStrategy {
                     Class<?>[] parameterTypes = method.getParameterTypes();
                     if (parameterTypes.length != 1) {
                         throw new IllegalArgumentException(
-                                "Method " + method + " has @Subscribe annotation, but requires " +
-                                        parameterTypes.length + " arguments.  Event handler methods " +
-                                        "must require a single argument.");
+                            "Method " + method + " has @Subscribe annotation, but requires "
+                                + parameterTypes.length + " arguments. Event handler methods "
+                                + "must require a single argument."
+                        );
                     }
                     Class<?> eventType = parameterTypes[0];
                     EventHandler handler = new MethodEventHandler(annotation.priority(), listener, method);

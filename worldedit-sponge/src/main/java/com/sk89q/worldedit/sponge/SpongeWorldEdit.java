@@ -19,9 +19,6 @@
 
 package com.sk89q.worldedit.sponge;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.sk89q.worldedit.internal.anvil.ChunkDeleter.DELCHUNKS_FILE_NAME;
-
 import com.google.inject.Inject;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
@@ -68,6 +65,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
+
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.sk89q.worldedit.internal.anvil.ChunkDeleter.DELCHUNKS_FILE_NAME;
 
 /**
  * The Sponge implementation of WorldEdit.
@@ -205,9 +205,9 @@ public class SpongeWorldEdit {
             if (platform instanceof SpongePlatform) {
                 logger.warn(e.getMessage());
             } else {
-                logger.info("WorldEdit could not find a Sponge adapter for this MC version, " +
-                        "but it seems that you have another implementation of WorldEdit installed (" + platform.getPlatformName() + ") " +
-                        "that handles the world editing.");
+                logger.info("WorldEdit could not find a Sponge adapter for this MC version, "
+                    + "but it seems that you have another implementation of WorldEdit installed (" + platform.getPlatformName() + ") "
+                    + "that handles the world editing.");
             }
         }
     }
@@ -222,7 +222,9 @@ public class SpongeWorldEdit {
             return;
         }
 
-        if (!platform.isHookingEvents()) return; // We have to be told to catch these events
+        if (!platform.isHookingEvents()) {
+            return; // We have to be told to catch these events
+        }
 
         WorldEdit we = WorldEdit.getInstance();
 
@@ -238,7 +240,9 @@ public class SpongeWorldEdit {
             return;
         }
 
-        if (!platform.isHookingEvents()) return; // We have to be told to catch these events
+        if (!platform.isHookingEvents()) {
+            return; // We have to be told to catch these events
+        }
 
         WorldEdit we = WorldEdit.getInstance();
 

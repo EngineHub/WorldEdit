@@ -19,9 +19,6 @@
 
 package com.sk89q.worldedit.function.factory;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.sk89q.worldedit.util.GuavaUtil.firstNonNull;
-
 import com.google.common.collect.ImmutableList;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalSession;
@@ -42,6 +39,9 @@ import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.util.formatting.text.format.TextColor;
+
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.sk89q.worldedit.util.GuavaUtil.firstNonNull;
 
 public class Deform implements Contextual<Operation> {
 
@@ -131,9 +131,15 @@ public class Deform implements Contextual<Operation> {
                 zero = max.add(min).multiply(0.5);
                 unit = max.subtract(zero);
 
-                if (unit.getX() == 0) unit = unit.withX(1.0);
-                if (unit.getY() == 0) unit = unit.withY(1.0);
-                if (unit.getZ() == 0) unit = unit.withZ(1.0);
+                if (unit.getX() == 0) {
+                    unit = unit.withX(1.0);
+                }
+                if (unit.getY() == 0) {
+                    unit = unit.withY(1.0);
+                }
+                if (unit.getZ() == 0) {
+                    unit = unit.withZ(1.0);
+                }
                 break;
             case RAW_COORD:
                 zero = Vector3.ZERO;

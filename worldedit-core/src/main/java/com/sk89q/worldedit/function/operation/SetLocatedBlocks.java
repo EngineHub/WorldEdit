@@ -19,13 +19,11 @@
 
 package com.sk89q.worldedit.function.operation;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.util.LocatedBlock;
 
-import java.util.List;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public class SetLocatedBlocks implements Operation {
 

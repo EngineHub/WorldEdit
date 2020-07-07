@@ -78,6 +78,8 @@ public class DinnerPermsResolver implements PermissionsResolver {
                 return false;
             case 1:
                 return true;
+            default:
+                break;
         }
         int dotPos = permission.lastIndexOf(".");
         while (dotPos > -1) {
@@ -86,6 +88,8 @@ public class DinnerPermsResolver implements PermissionsResolver {
                     return false;
                 case 1:
                     return true;
+                default:
+                    break;
             }
             dotPos = permission.lastIndexOf(".", dotPos - 1);
         }
@@ -126,19 +130,23 @@ public class DinnerPermsResolver implements PermissionsResolver {
     }
 
     public Permissible getPermissible(OfflinePlayer offline) {
-        if (offline == null) return null;
+        if (offline == null) {
+            return null;
+        }
         Permissible perm = null;
         if (offline instanceof Permissible) {
             perm = (Permissible) offline;
         } else {
             Player player = offline.getPlayer();
-            if (player != null) perm = player;
+            if (player != null) {
+                perm = player;
+            }
         }
         return perm;
     }
 
     /**
-     * Checks the permission from dinnerperms
+     * Checks the permission from dinnerperms.
      *
      * @param perms      Permissible to check for
      * @param permission The permission to check

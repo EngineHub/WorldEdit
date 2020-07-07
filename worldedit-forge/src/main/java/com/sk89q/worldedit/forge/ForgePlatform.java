@@ -42,12 +42,10 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SharedConstants;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraft.world.storage.IServerWorldInfo;
-import net.minecraft.world.storage.ServerWorldInfo;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
 import org.enginehub.piston.Command;
 import org.enginehub.piston.CommandManager;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -55,6 +53,7 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import javax.annotation.Nullable;
 
 import static java.util.stream.Collectors.toList;
 
@@ -159,7 +158,9 @@ class ForgePlatform extends AbstractPlatform implements MultiUserPlatform {
 
     @Override
     public void registerCommands(CommandManager manager) {
-        if (server == null) return;
+        if (server == null) {
+            return;
+        }
         Commands mcMan = server.getCommandManager();
 
         for (Command command : manager.getAllCommands().collect(toList())) {

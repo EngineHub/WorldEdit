@@ -23,9 +23,9 @@ import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.registry.BlockRegistry;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 
-import javax.annotation.Nullable;
 import java.util.BitSet;
 import java.util.OptionalInt;
+import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkState;
 
@@ -42,6 +42,7 @@ public final class BlockStateIdAccess {
 
     public interface BlockStateInternalId {
         int getInternalId(BlockState blockState);
+
         void setInternalId(BlockState blockState, int internalId);
     }
 
@@ -52,6 +53,7 @@ public final class BlockStateIdAccess {
     }
 
     /**
+     * An invalid internal ID, for verification purposes.
      * @return an internal ID which is never valid
      */
     public static int invalidId() {

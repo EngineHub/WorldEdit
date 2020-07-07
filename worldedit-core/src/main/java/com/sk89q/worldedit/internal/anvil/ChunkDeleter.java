@@ -38,7 +38,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.nio.file.StandardOpenOption;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -56,7 +55,8 @@ public final class ChunkDeleter {
     private static final Logger logger = LoggerFactory.getLogger(ChunkDeleter.class);
 
     private static final Comparator<BlockVector2> chunkSorter = Comparator.comparing(
-            pos -> (pos.getBlockX() & 31) + (pos.getBlockZ() & 31) * 32);
+        pos -> (pos.getBlockX() & 31) + (pos.getBlockZ() & 31) * 32
+    );
 
     private static final Gson chunkDeleterGson = new GsonBuilder()
             .registerTypeAdapter(BlockVector2.class, new BlockVector2Adapter())
@@ -96,13 +96,13 @@ public final class ChunkDeleter {
                 } catch (IOException ignored) {
                 }
                 if (!deletedFile) {
-                    logger.warn("Chunk deletion file could not be cleaned up. This may have unintended consequences" +
-                            " on next startup, or if /delchunks is used again.");
+                    logger.warn("Chunk deletion file could not be cleaned up. This may have unintended consequences"
+                        + " on next startup, or if /delchunks is used again.");
                 }
             }
         } else {
-            logger.error("Error occurred while deleting chunks. " +
-                    "If world errors occur, stop the server and restore the *.bak backup files.");
+            logger.error("Error occurred while deleting chunks. "
+                + "If world errors occur, stop the server and restore the *.bak backup files.");
         }
     }
 
@@ -140,7 +140,9 @@ public final class ChunkDeleter {
 
         return regionToChunkList.entrySet().stream().allMatch(entry -> {
             Path regionPath = entry.getKey();
-            if (!Files.exists(regionPath)) return true;
+            if (!Files.exists(regionPath)) {
+                return true;
+            }
             if (chunkBatch.backup && !backedUpRegions.contains(regionPath)) {
                 try {
                     backupRegion(regionPath);
@@ -157,10 +159,10 @@ public final class ChunkDeleter {
         Path worldPath = Paths.get(chunkBatch.worldPath);
         if (chunkBatch.chunks != null) {
             return chunkBatch.chunks.stream()
-                    .collect(Collectors.groupingBy(RegionFilePos::new))
-                    .entrySet().stream().collect(Collectors.toMap(
-                            e -> worldPath.resolve("region").resolve(e.getKey().getFileName()),
-                            e -> e.getValue().stream().sorted(chunkSorter)));
+                .collect(Collectors.groupingBy(RegionFilePos::new))
+                .entrySet().stream().collect(Collectors.toMap(
+                    e -> worldPath.resolve("region").resolve(e.getKey().getFileName()),
+                    e -> e.getValue().stream().sorted(chunkSorter)));
         } else {
             final BlockVector2 minChunk = chunkBatch.minChunk;
             final BlockVector2 maxChunk = chunkBatch.maxChunk;
@@ -170,7 +172,9 @@ public final class ChunkDeleter {
             for (int regX = minRegion.getX(); regX <= maxRegion.getX(); regX++) {
                 for (int regZ = minRegion.getZ(); regZ <= maxRegion.getZ(); regZ++) {
                     final Path regionPath = worldPath.resolve("region").resolve(new RegionFilePos(regX, regZ).getFileName());
-                    if (!Files.exists(regionPath)) continue;
+                    if (!Files.exists(regionPath)) {
+                        continue;
+                    }
                     int startX = regX << 5;
                     int endX = (regX << 5) + 31;
                     int startZ = regZ << 5;
@@ -181,17 +185,17 @@ public final class ChunkDeleter {
                     int maxX = Math.min(Math.max(startX, endX), maxChunk.getBlockX());
                     int maxZ = Math.min(Math.max(startZ, endZ), maxChunk.getBlockZ());
                     Stream<BlockVector2> stream = Stream.iterate(BlockVector2.at(minX, minZ),
-                            bv2 -> {
-                                int nextX = bv2.getBlockX();
-                                int nextZ = bv2.getBlockZ();
-                                if (++nextX > maxX) {
-                                    nextX = minX;
-                                    if (++nextZ > maxZ) {
-                                        return null;
-                                    }
+                        bv2 -> {
+                            int nextX = bv2.getBlockX();
+                            int nextZ = bv2.getBlockZ();
+                            if (++nextX > maxX) {
+                                nextX = minX;
+                                if (++nextZ > maxZ) {
+                                    return null;
                                 }
-                                return BlockVector2.at(nextX, nextZ);
-                            });
+                            }
+                            return BlockVector2.at(nextX, nextZ);
+                        });
                     groupedChunks.put(regionPath, stream);
                 }
             }
@@ -200,7 +204,9 @@ public final class ChunkDeleter {
     }
 
     private BiPredicate<RegionAccess, BlockVector2> createPredicates(List<ChunkDeletionInfo.DeletionPredicate> deletionPredicates) {
-        if (deletionPredicates == null) return (r, p) -> true;
+        if (deletionPredicates == null) {
+            return (r, p) -> true;
+        }
         return deletionPredicates.stream()
                 .map(this::createPredicate)
                 .reduce(BiPredicate::and)
@@ -250,7 +256,9 @@ public final class ChunkDeleter {
         try (RegionAccess region = new RegionAccess(regionFile, shouldPreload)) {
             for (Iterator<BlockVector2> iterator = chunks.iterator(); iterator.hasNext();) {
                 BlockVector2 chunk = iterator.next();
-                if (chunk == null) break;
+                if (chunk == null) {
+                    break;
+                }
                 if (deletionPredicate.test(region, chunk)) {
                     region.deleteChunk(chunk);
                     totalChunksDeleted++;
@@ -323,12 +331,18 @@ public final class ChunkDeleter {
 
         @Override
         public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
 
             RegionFilePos that = (RegionFilePos) o;
 
-            if (x != that.x) return false;
+            if (x != that.x) {
+                return false;
+            }
             return z == that.z;
 
         }

@@ -41,13 +41,13 @@ import com.sk89q.worldedit.world.item.ItemTypes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Nullable;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import javax.annotation.Nullable;
 
 public final class LegacyMapper {
 
@@ -107,7 +107,7 @@ public final class LegacyMapper {
                 try {
                     String newEntry = fixer.fixUp(DataFixer.FixTypes.BLOCK_STATE, value, Constants.DATA_VERSION_MC_1_13_2);
                     state = blockFactory.parseFromInput(newEntry, parserContext).toImmutableState();
-                } catch (InputParseException e) {
+                } catch (InputParseException ignored) {
                 }
             }
 
@@ -115,7 +115,7 @@ public final class LegacyMapper {
             if (state == null) {
                 try {
                     state = blockFactory.parseFromInput(value, parserContext).toImmutableState();
-                } catch (InputParseException e) {
+                } catch (InputParseException ignored) {
                 }
             }
 

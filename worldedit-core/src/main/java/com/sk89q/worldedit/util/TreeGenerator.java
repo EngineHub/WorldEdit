@@ -35,7 +35,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
-
 import javax.annotation.Nullable;
 
 /**
@@ -171,7 +170,7 @@ public class TreeGenerator {
 
     private static final Random RANDOM = new Random();
 
-     /**
+    /**
      * Makes a terrible looking pine tree.
      *
      * @param basePosition the base position

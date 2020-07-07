@@ -39,7 +39,6 @@ import com.sk89q.worldedit.command.ClipboardCommands;
 import com.sk89q.worldedit.command.ClipboardCommandsRegistration;
 import com.sk89q.worldedit.command.ExpandCommands;
 import com.sk89q.worldedit.command.GeneralCommands;
-import com.sk89q.worldedit.command.GeneralCommandsRegistration;
 import com.sk89q.worldedit.command.GenerationCommands;
 import com.sk89q.worldedit.command.GenerationCommandsRegistration;
 import com.sk89q.worldedit.command.HistoryCommands;
@@ -225,55 +224,56 @@ public final class PlatformCommandManager {
 
     private void registerAlwaysInjectedValues() {
         globalInjectedValues.injectValue(Key.of(Region.class, Selection.class),
-                context -> {
-                    LocalSession localSession = context.injectedValue(Key.of(LocalSession.class))
-                            .orElseThrow(() -> new IllegalStateException("No LocalSession"));
-                    return context.injectedValue(Key.of(World.class))
-                            .map(world -> {
-                                try {
-                                    return localSession.getSelection(world);
-                                } catch (IncompleteRegionException e) {
-                                    exceptionConverter.convert(e);
-                                    throw new AssertionError("Should have thrown a new exception.", e);
-                                }
-                            });
-                });
+            context -> {
+                LocalSession localSession = context.injectedValue(Key.of(LocalSession.class))
+                    .orElseThrow(() -> new IllegalStateException("No LocalSession"));
+                return context.injectedValue(Key.of(World.class))
+                    .map(world -> {
+                        try {
+                            return localSession.getSelection(world);
+                        } catch (IncompleteRegionException e) {
+                            exceptionConverter.convert(e);
+                            throw new AssertionError("Should have thrown a new exception.", e);
+                        }
+                    });
+            });
         globalInjectedValues.injectValue(Key.of(EditSession.class),
-                context -> {
-                    LocalSession localSession = context.injectedValue(Key.of(LocalSession.class))
-                            .orElseThrow(() -> new IllegalStateException("No LocalSession"));
-                    return context.injectedValue(Key.of(Actor.class))
-                            .map(actor -> {
-                                EditSession editSession = localSession.createEditSession(actor);
-                                editSession.enableStandardMode();
-                                return editSession;
-                            });
-                });
+            context -> {
+                LocalSession localSession = context.injectedValue(Key.of(LocalSession.class))
+                    .orElseThrow(() -> new IllegalStateException("No LocalSession"));
+                return context.injectedValue(Key.of(Actor.class))
+                    .map(actor -> {
+                        EditSession editSession = localSession.createEditSession(actor);
+                        editSession.enableStandardMode();
+                        return editSession;
+                    });
+            });
         globalInjectedValues.injectValue(Key.of(World.class),
-                context -> {
-                    LocalSession localSession = context.injectedValue(Key.of(LocalSession.class))
-                            .orElseThrow(() -> new IllegalStateException("No LocalSession"));
-                    return context.injectedValue(Key.of(Actor.class))
-                            .map(actor -> {
-                                try {
-                                    if (localSession.hasWorldOverride()) {
-                                        return localSession.getWorldOverride();
-                                    } else if (actor instanceof Locatable && ((Locatable) actor).getExtent() instanceof World) {
-                                        return (World) ((Locatable) actor).getExtent();
-                                    } else {
-                                        throw new MissingWorldException();
-                                    }
-                                } catch (MissingWorldException e) {
-                                    exceptionConverter.convert(e);
-                                    throw new AssertionError("Should have thrown a new exception.", e);
-                                }
-                            });
-                });
+            context -> {
+                LocalSession localSession = context.injectedValue(Key.of(LocalSession.class))
+                    .orElseThrow(() -> new IllegalStateException("No LocalSession"));
+                return context.injectedValue(Key.of(Actor.class))
+                    .map(actor -> {
+                        try {
+                            if (localSession.hasWorldOverride()) {
+                                return localSession.getWorldOverride();
+                            } else if (actor instanceof Locatable && ((Locatable) actor).getExtent() instanceof World) {
+                                return (World) ((Locatable) actor).getExtent();
+                            } else {
+                                throw new MissingWorldException();
+                            }
+                        } catch (MissingWorldException e) {
+                            exceptionConverter.convert(e);
+                            throw new AssertionError("Should have thrown a new exception.", e);
+                        }
+                    });
+            });
     }
 
     private <CI> void registerSubCommands(String name, List<String> aliases, String desc,
-                                      CommandRegistration<CI> registration, CI instance) {
-        registerSubCommands(name, aliases, desc, registration, instance, m -> {});
+                                          CommandRegistration<CI> registration, CI instance) {
+        registerSubCommands(name, aliases, desc, registration, instance, m -> {
+        });
     }
 
     private <CI> void registerSubCommands(String name, List<String> aliases, String desc,

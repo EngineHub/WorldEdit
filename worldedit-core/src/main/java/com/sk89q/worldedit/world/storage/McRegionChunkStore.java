@@ -78,7 +78,7 @@ public abstract class McRegionChunkStore extends ChunkStore {
      * @param name the name of the chunk file
      * @param worldName the world name
      * @return an input stream
-     * @throws IOException
+     * @throws IOException if there is an error getting the chunk data
      */
     protected abstract InputStream getInputStream(String name, String worldName) throws IOException, DataException;
 

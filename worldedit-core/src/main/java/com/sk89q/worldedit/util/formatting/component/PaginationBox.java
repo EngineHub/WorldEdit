@@ -26,9 +26,9 @@ import com.sk89q.worldedit.util.formatting.text.event.ClickEvent;
 import com.sk89q.worldedit.util.formatting.text.event.HoverEvent;
 import com.sk89q.worldedit.util.formatting.text.format.TextColor;
 
-import javax.annotation.Nullable;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.annotation.Nullable;
 
 public abstract class PaginationBox extends MessageBox {
 
@@ -39,7 +39,7 @@ public abstract class PaginationBox extends MessageBox {
     private int currentPage = -1;
 
     /**
-     * Creates a Paginated component
+     * Creates a Paginated component.
      *
      * @param title The title
      */
@@ -65,7 +65,7 @@ public abstract class PaginationBox extends MessageBox {
     }
 
     /**
-     * Creates a Paginated component
+     * Creates a Paginated component.
      *
      * @param title The title
      * @param pageCommand The command to run to switch page, with %page% representing page number

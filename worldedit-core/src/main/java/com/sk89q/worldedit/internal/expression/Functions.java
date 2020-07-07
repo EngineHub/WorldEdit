@@ -267,10 +267,10 @@ public final class Functions {
 
         for (int i = 0; i < count; ++i) {
             double currentX = getBufferItem(megabuf, index) - x;
-            double currentY = getBufferItem(megabuf, index+1) - y;
-            double currentZ = getBufferItem(megabuf, index+2) - z;
+            double currentY = getBufferItem(megabuf, index + 1) - y;
+            double currentZ = getBufferItem(megabuf, index + 2) - z;
 
-            double currentDistanceSquared = currentX*currentX + currentY*currentY + currentZ*currentZ;
+            double currentDistanceSquared = currentX * currentX + currentY * currentY + currentZ * currentZ;
 
             if (currentDistanceSquared < minDistanceSquared) {
                 minDistanceSquared = currentDistanceSquared;

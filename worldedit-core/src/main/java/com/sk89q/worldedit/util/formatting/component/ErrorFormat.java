@@ -40,7 +40,7 @@ public class ErrorFormat extends TextComponentProducer {
      * @param texts The text
      * @return The Component
      */
-    public static TextComponent wrap(String ... texts) {
+    public static TextComponent wrap(String... texts) {
         ErrorFormat error = new ErrorFormat();
         for (String component : texts) {
             error.append(component);

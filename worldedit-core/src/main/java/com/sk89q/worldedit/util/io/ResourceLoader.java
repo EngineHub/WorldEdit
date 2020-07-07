@@ -19,13 +19,12 @@
 
 package com.sk89q.worldedit.util.io;
 
-import static com.google.common.base.Preconditions.checkArgument;
-
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Path;
-
 import javax.annotation.Nullable;
+
+import static com.google.common.base.Preconditions.checkArgument;
 
 /**
  * An abstract loader that handles loading resources from bundled URLs or local

@@ -48,12 +48,12 @@ public class SpongeImplLoader {
     private static final String CLASS_SUFFIX = ".class";
 
     private static final String LOAD_ERROR_MESSAGE =
-            "\n**********************************************\n" +
-                    "** This WorldEdit version does not support your version of Sponge.\n" +
-                    "** WorldEdit will not function! \n" +
-                    "** \n" +
-                    "** Please ensure you are running the latest version\n" +
-                    "**********************************************\n";
+        "\n**********************************************\n"
+            + "** This WorldEdit version does not support your version of Sponge.\n"
+            + "** WorldEdit will not function! \n"
+            + "** \n"
+            + "** Please ensure you are running the latest version\n"
+            + "**********************************************\n";
 
     /**
      * Create a new instance.
@@ -91,7 +91,9 @@ public class SpongeImplLoader {
 
                 String className = jarEntry.getName().replaceAll("[/\\\\]+", ".");
 
-                if (!className.startsWith(SEARCH_PACKAGE_DOT) || jarEntry.isDirectory() || className.contains("$")) continue;
+                if (!className.startsWith(SEARCH_PACKAGE_DOT) || jarEntry.isDirectory() || className.contains("$")) {
+                    continue;
+                }
 
                 int beginIndex = 0;
                 int endIndex = className.length() - CLASS_SUFFIX.length();
@@ -157,15 +159,15 @@ public class SpongeImplLoader {
                 if (SpongeImplAdapter.class.isAssignableFrom(cls)) {
                     suitableAdapters.add((SpongeImplAdapter) cls.newInstance());
                 } else {
-                    log.warn("Failed to load the Sponge adapter class '" + className +
-                            "' because it does not implement " + SpongeImplAdapter.class.getCanonicalName());
+                    log.warn("Failed to load the Sponge adapter class '" + className
+                        + "' because it does not implement " + SpongeImplAdapter.class.getCanonicalName());
                 }
             } catch (ClassNotFoundException e) {
-                log.warn("Failed to load the Sponge adapter class '" + className +
-                        "' that is not supposed to be missing", e);
+                log.warn("Failed to load the Sponge adapter class '" + className
+                    + "' that is not supposed to be missing", e);
             } catch (IllegalAccessException e) {
-                log.warn("Failed to load the Sponge adapter class '" + className +
-                        "' that is not supposed to be raising this error", e);
+                log.warn("Failed to load the Sponge adapter class '" + className
+                    + "' that is not supposed to be raising this error", e);
             } catch (Throwable e) {
                 if (className.equals(customCandidate)) {
                     log.warn("Failed to load the Sponge adapter class '" + className + "'", e);

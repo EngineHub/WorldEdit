@@ -29,11 +29,11 @@ import javax.annotation.Nullable;
  * format, but may be used in other cases.
  */
 public interface NbtValued {
-    
+
     /**
      * Returns whether the block contains NBT data. {@link #getNbtData()}
      * must not return null if this method returns true.
-     * 
+     *
      * @return true if there is NBT data
      */
     boolean hasNbtData();
@@ -47,7 +47,7 @@ public interface NbtValued {
      *
      * <p>{@link #hasNbtData()} must return true if and only if method does
      * not return null.</p>
-     * 
+     *
      * @return compound tag, or null
      */
     @Nullable
@@ -55,7 +55,7 @@ public interface NbtValued {
 
     /**
      * Set the object's NBT data (tile entity data).
-     * 
+     *
      * @param nbtData NBT data, or null if no data
      */
     void setNbtData(@Nullable CompoundTag nbtData);

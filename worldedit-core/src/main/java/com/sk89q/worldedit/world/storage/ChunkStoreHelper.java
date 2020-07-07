@@ -88,7 +88,9 @@ public class ChunkStoreHelper {
         }
 
         int dataVersion = rootTag.getInt("DataVersion");
-        if (dataVersion == 0) dataVersion = -1;
+        if (dataVersion == 0) {
+            dataVersion = -1;
+        }
         final Platform platform = WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.WORLD_EDITING);
         final int currentDataVersion = platform.getDataVersion();
         if (tag.getValue().containsKey("Sections") && dataVersion < currentDataVersion) { // only fix up MCA format, DFU doesn't support MCR chunks

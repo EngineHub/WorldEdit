@@ -25,7 +25,6 @@ import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.session.SessionManager;
 import com.sk89q.worldedit.util.report.Unreported;
 import com.sk89q.worldedit.world.registry.LegacyMapper;
-import com.sk89q.worldedit.world.snapshot.SnapshotRepository;
 import ninja.leaping.configurate.ConfigurationOptions;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
@@ -63,7 +62,7 @@ public class ConfigurateConfiguration extends LocalConfiguration {
         wandItem = node.getNode("wand-item").getString(wandItem);
         try {
             wandItem = LegacyMapper.getInstance().getItemFromLegacy(Integer.parseInt(wandItem)).getId();
-        } catch (Throwable e) {
+        } catch (Throwable ignored) {
         }
 
         defaultChangeLimit = Math.max(-1, node.getNode("limits", "max-blocks-changed", "default").getInt(defaultChangeLimit));
@@ -107,7 +106,7 @@ public class ConfigurateConfiguration extends LocalConfiguration {
         navigationWand = node.getNode("navigation-wand", "item").getString(navigationWand);
         try {
             navigationWand = LegacyMapper.getInstance().getItemFromLegacy(Integer.parseInt(navigationWand)).getId();
-        } catch (Throwable e) {
+        } catch (Throwable ignored) {
         }
         navigationWandMaxDistance = node.getNode("navigation-wand", "max-distance").getInt(navigationWandMaxDistance);
         navigationUseGlass = node.getNode("navigation", "use-glass").getBoolean(navigationUseGlass);

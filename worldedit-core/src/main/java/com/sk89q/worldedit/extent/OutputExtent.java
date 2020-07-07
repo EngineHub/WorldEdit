@@ -55,7 +55,7 @@ public interface OutputExtent {
     <T extends BlockStateHolder<T>> boolean setBlock(BlockVector3 position, T block) throws WorldEditException;
 
     /**
-     * Does this extent fully support 3D biomes?
+     * Check if this extent fully supports 3D biomes.
      *
      * <p>
      * If {@code false}, the extent only visually reads biomes from {@code y = 0}.

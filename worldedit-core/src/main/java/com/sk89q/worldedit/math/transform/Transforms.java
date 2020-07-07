@@ -19,9 +19,9 @@
 
 package com.sk89q.worldedit.math.transform;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import com.sk89q.worldedit.util.Location;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Various utility methods related to {@link Transform}s.

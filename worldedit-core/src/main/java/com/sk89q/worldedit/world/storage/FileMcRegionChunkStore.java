@@ -62,7 +62,9 @@ public class FileMcRegionChunkStore extends McRegionChunkStore {
         }
 
         try {
-            if (file == null) throw new FileNotFoundException();
+            if (file == null) {
+                throw new FileNotFoundException();
+            }
             return new FileInputStream(file);
         } catch (FileNotFoundException e) {
             throw new MissingChunkException();
@@ -71,8 +73,8 @@ public class FileMcRegionChunkStore extends McRegionChunkStore {
 
     @Override
     public boolean isValid() {
-        return new File(path, "region").isDirectory() ||
-                new File(path, "DIM-1" + File.separator + "region").isDirectory();
+        return new File(path, "region").isDirectory()
+            || new File(path, "DIM-1" + File.separator + "region").isDirectory();
     }
 
 }

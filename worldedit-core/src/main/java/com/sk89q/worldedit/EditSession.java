@@ -118,7 +118,6 @@ import com.sk89q.worldedit.world.registry.LegacyMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -126,6 +125,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -159,9 +159,11 @@ public class EditSession implements Extent, AutoCloseable {
     /**
      * Reorder mode for {@link EditSession#setReorderMode(ReorderMode)}.
      *
+     * <p>
      * MULTI_STAGE = Multi stage reorder, may not be great with mods.
      * FAST = Use the fast mode. Good for mods.
      * NONE = Place blocks without worrying about placement order.
+     * </p>
      */
     public enum ReorderMode {
         MULTI_STAGE("multi"),
@@ -341,6 +343,8 @@ public class EditSession implements Extent, AutoCloseable {
                     reorderExtent.setEnabled(false);
                 }
                 break;
+            default:
+                break;
         }
     }
 
@@ -404,7 +408,6 @@ public class EditSession implements Extent, AutoCloseable {
     /**
      * Queue certain types of block for better reproduction of those blocks.
      *
-     * Uses {@link ReorderMode#MULTI_STAGE}
      * @deprecated Use {@link EditSession#setReorderMode(ReorderMode)} with MULTI_STAGE instead.
      */
     @Deprecated
@@ -683,9 +686,9 @@ public class EditSession implements Extent, AutoCloseable {
                 return bypassHistory.setBlock(position, block);
             case BEFORE_REORDER:
                 return bypassReorderHistory.setBlock(position, block);
+            default:
+                throw new RuntimeException("New enum entry added that is unhandled here");
         }
-
-        throw new RuntimeException("New enum entry added that is unhandled here");
     }
 
     /**
@@ -1349,9 +1352,9 @@ public class EditSession implements Extent, AutoCloseable {
         BlockVector3 to = region.getMinimumPoint();
 
         // Remove the original blocks
-        Pattern pattern = replacement != null ?
-                replacement :
-                BlockTypes.AIR.getDefaultState();
+        Pattern pattern = replacement != null
+            ? replacement
+            : BlockTypes.AIR.getDefaultState();
         BlockReplace remove = new BlockReplace(this, pattern);
 
         // Copy to a buffer so we don't destroy our original before we can copy all the blocks from it
@@ -1950,8 +1953,8 @@ public class EditSession implements Extent, AutoCloseable {
                     final BlockVector3 pt = BlockVector3.at(x, y, z);
                     final BlockState block = getBlock(pt);
 
-                    if (block.getBlockType() == BlockTypes.DIRT ||
-                            (!onlyNormalDirt && block.getBlockType() == BlockTypes.COARSE_DIRT)) {
+                    if (block.getBlockType() == BlockTypes.DIRT
+                        || (!onlyNormalDirt && block.getBlockType() == BlockTypes.COARSE_DIRT)) {
                         if (setBlock(pt, grass)) {
                             ++affected;
                         }
@@ -2050,8 +2053,8 @@ public class EditSession implements Extent, AutoCloseable {
      * @param expressionString the expression defining the shape
      * @param hollow whether the shape should be hollow
      * @return number of blocks changed
-     * @throws ExpressionException
-     * @throws MaxChangedBlocksException
+     * @throws ExpressionException if there is a problem with the expression
+     * @throws MaxChangedBlocksException if the maximum block change limit is exceeded
      */
     public int makeShape(final Region region, final Vector3 zero, final Vector3 unit,
                          final Pattern pattern, final String expressionString, final boolean hollow)
@@ -2070,8 +2073,8 @@ public class EditSession implements Extent, AutoCloseable {
      * @param hollow whether the shape should be hollow
      * @param timeout the time, in milliseconds, to wait for each expression evaluation before halting it. -1 to disable
      * @return number of blocks changed
-     * @throws ExpressionException
-     * @throws MaxChangedBlocksException
+     * @throws ExpressionException if there is a problem with the expression
+     * @throws MaxChangedBlocksException if the maximum block change limit is exceeded
      */
     public int makeShape(final Region region, final Vector3 zero, final Vector3 unit,
                          final Pattern pattern, final String expressionString, final boolean hollow, final int timeout)
@@ -2084,7 +2087,9 @@ public class EditSession implements Extent, AutoCloseable {
     /**
      * Internal version of {@link EditSession#makeShape(Region, Vector3, Vector3, Pattern, String, boolean, int)}.
      *
+     * <p>
      * The Expression class is subject to change. Expressions should be provided via the string overload.
+     * </p>
      */
     public int makeShape(final Region region, final Vector3 zero, final Vector3 unit,
                          final Pattern pattern, final Expression expression, final boolean hollow, final int timeout)
@@ -2198,7 +2203,9 @@ public class EditSession implements Extent, AutoCloseable {
     /**
      * Internal version of {@link EditSession#deformRegion(Region, Vector3, Vector3, String, int)}.
      *
+     * <p>
      * The Expression class is subject to change. Expressions should be provided via the string overload.
+     * </p>
      */
     public int deformRegion(final Region region, final Vector3 zero, final Vector3 unit, final Expression expression,
                             final int timeout) throws ExpressionException, MaxChangedBlocksException {
@@ -2362,10 +2369,18 @@ public class EditSession implements Extent, AutoCloseable {
             BlockVector3 pos1 = vectors.get(i);
             BlockVector3 pos2 = vectors.get(i + 1);
 
-            int x1 = pos1.getBlockX(), y1 = pos1.getBlockY(), z1 = pos1.getBlockZ();
-            int x2 = pos2.getBlockX(), y2 = pos2.getBlockY(), z2 = pos2.getBlockZ();
-            int tipx = x1, tipy = y1, tipz = z1;
-            int dx = Math.abs(x2 - x1), dy = Math.abs(y2 - y1), dz = Math.abs(z2 - z1);
+            int x1 = pos1.getBlockX();
+            int y1 = pos1.getBlockY();
+            int z1 = pos1.getBlockZ();
+            int x2 = pos2.getBlockX();
+            int y2 = pos2.getBlockY();
+            int z2 = pos2.getBlockZ();
+            int tipx = x1;
+            int tipy = y1;
+            int tipz = z1;
+            int dx = Math.abs(x2 - x1);
+            int dy = Math.abs(y2 - y1);
+            int dz = Math.abs(z2 - z1);
 
             if (dx + dy + dz == 0) {
                 vset.add(BlockVector3.at(tipx, tipy, tipz));
@@ -2392,8 +2407,8 @@ public class EditSession implements Extent, AutoCloseable {
             } else /* if (dMax == dz) */ {
                 for (int domstep = 0; domstep <= dz; domstep++) {
                     tipz = z1 + domstep * (z2 - z1 > 0 ? 1 : -1);
-                    tipy = (int) Math.round(y1 + domstep * ((double) dy) / ((double) dz) * (y2-y1>0 ? 1 : -1));
-                    tipx = (int) Math.round(x1 + domstep * ((double) dx) / ((double) dz) * (x2-x1>0 ? 1 : -1));
+                    tipy = (int) Math.round(y1 + domstep * ((double) dy) / ((double) dz) * (y2 - y1 > 0 ? 1 : -1));
+                    tipx = (int) Math.round(x1 + domstep * ((double) dx) / ((double) dz) * (x2 - x1 > 0 ? 1 : -1));
 
                     vset.add(BlockVector3.at(tipx, tipy, tipz));
                 }
@@ -2467,7 +2482,9 @@ public class EditSession implements Extent, AutoCloseable {
         int ceilrad = (int) Math.ceil(radius);
 
         for (BlockVector3 v : vset) {
-            int tipx = v.getBlockX(), tipy = v.getBlockY(), tipz = v.getBlockZ();
+            int tipx = v.getBlockX();
+            int tipy = v.getBlockY();
+            int tipz = v.getBlockZ();
 
             for (int loopx = tipx - ceilrad; loopx <= tipx + ceilrad; loopx++) {
                 for (int loopy = tipy - ceilrad; loopy <= tipy + ceilrad; loopy++) {
@@ -2485,13 +2502,15 @@ public class EditSession implements Extent, AutoCloseable {
     private static Set<BlockVector3> getHollowed(Set<BlockVector3> vset) {
         Set<BlockVector3> returnset = new HashSet<>();
         for (BlockVector3 v : vset) {
-            double x = v.getX(), y = v.getY(), z = v.getZ();
-            if (!(vset.contains(BlockVector3.at(x + 1, y, z)) &&
-                    vset.contains(BlockVector3.at(x - 1, y, z)) &&
-                    vset.contains(BlockVector3.at(x, y + 1, z)) &&
-                    vset.contains(BlockVector3.at(x, y - 1, z)) &&
-                    vset.contains(BlockVector3.at(x, y, z + 1)) &&
-                    vset.contains(BlockVector3.at(x, y, z - 1)))) {
+            double x = v.getX();
+            double y = v.getY();
+            double z = v.getZ();
+            if (!(vset.contains(BlockVector3.at(x + 1, y, z))
+                && vset.contains(BlockVector3.at(x - 1, y, z))
+                && vset.contains(BlockVector3.at(x, y + 1, z))
+                && vset.contains(BlockVector3.at(x, y - 1, z))
+                && vset.contains(BlockVector3.at(x, y, z + 1))
+                && vset.contains(BlockVector3.at(x, y, z - 1)))) {
                 returnset.add(v);
             }
         }

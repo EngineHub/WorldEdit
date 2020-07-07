@@ -24,9 +24,9 @@ import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.util.FakePlayer;
 
-import javax.annotation.Nullable;
 import java.util.OptionalInt;
 import java.util.UUID;
+import javax.annotation.Nullable;
 
 public class WorldEditFakePlayer extends FakePlayer {
 

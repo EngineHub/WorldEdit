@@ -19,8 +19,6 @@
 
 package com.sk89q.worldedit.sponge;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import com.flowpowered.math.vector.Vector3d;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.Vector3;
@@ -30,6 +28,8 @@ import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.biome.BiomeTypes;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Adapts between Sponge and WorldEdit equivalent objects.

@@ -25,13 +25,13 @@ import com.sk89q.worldedit.regions.polyhedron.Edge;
 import com.sk89q.worldedit.regions.polyhedron.Triangle;
 import com.sk89q.worldedit.world.World;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -152,19 +152,22 @@ public class ConvexPolyhedralRegion extends AbstractRegion {
 
 
         switch (vertices.size()) {
-        case 0:
-        case 1:
-        case 2:
-            // Incomplete, can't make a mesh yet
-            return true;
+            case 0:
+            case 1:
+            case 2:
+                // Incomplete, can't make a mesh yet
+                return true;
 
-        case 3:
-            // Generate minimal mesh to start from
-            final BlockVector3[] v = vertices.toArray(new BlockVector3[0]);
+            case 3:
+                // Generate minimal mesh to start from
+                final BlockVector3[] v = vertices.toArray(new BlockVector3[0]);
 
-            triangles.add((new Triangle(v[0].toVector3(), v[1].toVector3(), v[2].toVector3())));
-            triangles.add((new Triangle(v[0].toVector3(), v[2].toVector3(), v[1].toVector3())));
-            return true;
+                triangles.add((new Triangle(v[0].toVector3(), v[1].toVector3(), v[2].toVector3())));
+                triangles.add((new Triangle(v[0].toVector3(), v[2].toVector3(), v[1].toVector3())));
+                return true;
+
+            default:
+                break;
         }
 
         // Look for triangles that face the vertex and remove them
@@ -277,19 +280,12 @@ public class ConvexPolyhedralRegion extends AbstractRegion {
             return false;
         }
 
-        final int x = position.getBlockX();
-        final int y = position.getBlockY();
-        final int z = position.getBlockZ();
-
         final BlockVector3 min = getMinimumPoint();
         final BlockVector3 max = getMaximumPoint();
 
-        if (x < min.getBlockX()) return false;
-        if (x > max.getBlockX()) return false;
-        if (y < min.getBlockY()) return false;
-        if (y > max.getBlockY()) return false;
-        if (z < min.getBlockZ()) return false;
-        if (z > max.getBlockZ()) return false;
+        if (!position.containedWithin(min, max)) {
+            return false;
+        }
 
         return containsRaw(position.toVector3());
     }

@@ -19,12 +19,11 @@
 
 package com.sk89q.jnbt;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import java.util.Collections;
 import java.util.List;
-
 import javax.annotation.Nullable;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * The {@code TAG_List} tag.
@@ -73,7 +72,7 @@ public final class ListTag extends Tag {
 
     /**
      * Get the tag if it exists at the given index.
-     * 
+     *
      * @param index the index
      * @return the tag or null
      */

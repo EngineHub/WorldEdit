@@ -19,12 +19,12 @@
 
 package com.sk89q.worldedit.regions.iterator;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.Region;
 
 import java.util.Iterator;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public class RegionIterator implements Iterator<BlockVector3> {
 
@@ -68,7 +68,9 @@ public class RegionIterator implements Iterator<BlockVector3> {
 
     @Override
     public BlockVector3 next() {
-        if (!hasNext()) throw new java.util.NoSuchElementException();
+        if (!hasNext()) {
+            throw new java.util.NoSuchElementException();
+        }
 
         BlockVector3 answer = BlockVector3.at(nextX, nextY, nextZ);
 

@@ -19,12 +19,12 @@
 
 package com.sk89q.jnbt;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.world.storage.InvalidFormatException;
 
 import java.util.Map;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * A class which contains NBT-related utility methods.
@@ -126,34 +126,34 @@ public final class NBTUtils {
      */
     public static Class<? extends Tag> getTypeClass(int type) {
         switch (type) {
-        case NBTConstants.TYPE_END:
-            return EndTag.class;
-        case NBTConstants.TYPE_BYTE:
-            return ByteTag.class;
-        case NBTConstants.TYPE_SHORT:
-            return ShortTag.class;
-        case NBTConstants.TYPE_INT:
-            return IntTag.class;
-        case NBTConstants.TYPE_LONG:
-            return LongTag.class;
-        case NBTConstants.TYPE_FLOAT:
-            return FloatTag.class;
-        case NBTConstants.TYPE_DOUBLE:
-            return DoubleTag.class;
-        case NBTConstants.TYPE_BYTE_ARRAY:
-            return ByteArrayTag.class;
-        case NBTConstants.TYPE_STRING:
-            return StringTag.class;
-        case NBTConstants.TYPE_LIST:
-            return ListTag.class;
-        case NBTConstants.TYPE_COMPOUND:
-            return CompoundTag.class;
-        case NBTConstants.TYPE_INT_ARRAY:
-            return IntArrayTag.class;
-        case NBTConstants.TYPE_LONG_ARRAY:
-            return LongArrayTag.class;
-        default:
-            throw new IllegalArgumentException("Invalid tag type : " + type
+            case NBTConstants.TYPE_END:
+                return EndTag.class;
+            case NBTConstants.TYPE_BYTE:
+                return ByteTag.class;
+            case NBTConstants.TYPE_SHORT:
+                return ShortTag.class;
+            case NBTConstants.TYPE_INT:
+                return IntTag.class;
+            case NBTConstants.TYPE_LONG:
+                return LongTag.class;
+            case NBTConstants.TYPE_FLOAT:
+                return FloatTag.class;
+            case NBTConstants.TYPE_DOUBLE:
+                return DoubleTag.class;
+            case NBTConstants.TYPE_BYTE_ARRAY:
+                return ByteArrayTag.class;
+            case NBTConstants.TYPE_STRING:
+                return StringTag.class;
+            case NBTConstants.TYPE_LIST:
+                return ListTag.class;
+            case NBTConstants.TYPE_COMPOUND:
+                return CompoundTag.class;
+            case NBTConstants.TYPE_INT_ARRAY:
+                return IntArrayTag.class;
+            case NBTConstants.TYPE_LONG_ARRAY:
+                return LongArrayTag.class;
+            default:
+                throw new IllegalArgumentException("Invalid tag type : " + type
                     + ".");
         }
     }
@@ -179,7 +179,7 @@ public final class NBTUtils {
      * @param key the key to look for
      * @param expected the expected NBT class type
      * @return child tag
-     * @throws InvalidFormatException
+     * @throws InvalidFormatException if the format of the items is invalid
      */
     public static <T extends Tag> T getChildTag(Map<String, Tag> items, String key, Class<T> expected) throws InvalidFormatException {
         if (!items.containsKey(key)) {

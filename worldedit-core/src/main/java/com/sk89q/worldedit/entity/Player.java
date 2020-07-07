@@ -39,7 +39,7 @@ import com.sk89q.worldedit.world.gamemode.GameMode;
 import javax.annotation.Nullable;
 
 /**
- * Represents a player
+ * Represents a player.
  */
 public interface Player extends Entity, Actor {
 

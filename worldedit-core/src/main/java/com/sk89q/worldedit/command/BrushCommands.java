@@ -248,9 +248,9 @@ public class BrushCommands {
                                  double radius,
                              @ArgFlag(
                                  name = 'h',
-                                 desc = "Affect blocks between the given height, " +
-                                     "upwards and downwards, " +
-                                     "rather than the target location Y + radius",
+                                 desc = "Affect blocks between the given height, "
+                                     + "upwards and downwards, "
+                                     + "rather than the target location Y + radius",
                                  def = HeightConverter.DEFAULT_VALUE
                              )
                              @VertHeight
@@ -304,14 +304,14 @@ public class BrushCommands {
         }
 
         CreatureButcher flags = new CreatureButcher(player);
-        flags.or(CreatureButcher.Flags.FRIENDLY      , killFriendly); // No permission check here. Flags will instead be filtered by the subsequent calls.
-        flags.or(CreatureButcher.Flags.PETS          , killPets, "worldedit.butcher.pets");
-        flags.or(CreatureButcher.Flags.NPCS          , killNpcs, "worldedit.butcher.npcs");
-        flags.or(CreatureButcher.Flags.GOLEMS        , killGolems, "worldedit.butcher.golems");
-        flags.or(CreatureButcher.Flags.ANIMALS       , killAnimals, "worldedit.butcher.animals");
-        flags.or(CreatureButcher.Flags.AMBIENT       , killAmbient, "worldedit.butcher.ambient");
-        flags.or(CreatureButcher.Flags.TAGGED        , killWithName, "worldedit.butcher.tagged");
-        flags.or(CreatureButcher.Flags.ARMOR_STAND   , killArmorStands, "worldedit.butcher.armorstands");
+        flags.or(CreatureButcher.Flags.FRIENDLY, killFriendly); // No permission check here. Flags will instead be filtered by the subsequent calls.
+        flags.or(CreatureButcher.Flags.PETS, killPets, "worldedit.butcher.pets");
+        flags.or(CreatureButcher.Flags.NPCS, killNpcs, "worldedit.butcher.npcs");
+        flags.or(CreatureButcher.Flags.GOLEMS, killGolems, "worldedit.butcher.golems");
+        flags.or(CreatureButcher.Flags.ANIMALS, killAnimals, "worldedit.butcher.animals");
+        flags.or(CreatureButcher.Flags.AMBIENT, killAmbient, "worldedit.butcher.ambient");
+        flags.or(CreatureButcher.Flags.TAGGED, killWithName, "worldedit.butcher.tagged");
+        flags.or(CreatureButcher.Flags.ARMOR_STAND, killArmorStands, "worldedit.butcher.armorstands");
 
         BrushTool tool = session.getBrushTool(player.getItemInHand(HandSide.MAIN_HAND).getType());
         tool.setSize(radius);

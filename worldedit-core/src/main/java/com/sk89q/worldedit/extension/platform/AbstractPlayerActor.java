@@ -49,7 +49,6 @@ import com.sk89q.worldedit.world.item.ItemType;
 import com.sk89q.worldedit.world.item.ItemTypes;
 
 import java.io.File;
-
 import javax.annotation.Nullable;
 
 /**
@@ -184,6 +183,8 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
     }
 
     /**
+     * Check if the location is a good place to leave a standing player.
+     *
      * @param location where the player would be placed (not Y offset)
      * @return if the player can stand at the location
      */
@@ -433,7 +434,8 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
     }
 
     /**
-     * Advances the block target block until the current block is a wall
+     * Advances the block target block until the current block is a wall.
+     *
      * @return true if a wall is found
      */
     private boolean advanceToWall(TargetBlock hitBlox) {
@@ -450,7 +452,8 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
     }
 
     /**
-     * Advances the block target block until the current block is a free
+     * Advances the block target block until the current block is a free spot.
+     *
      * @return true if a free spot is found
      */
     private boolean advanceToFree(TargetBlock hitBlox) {

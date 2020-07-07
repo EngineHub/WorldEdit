@@ -30,7 +30,6 @@ import com.sk89q.worldedit.world.block.BlockType;
 import java.util.Collections;
 import java.util.Map;
 import java.util.OptionalInt;
-
 import javax.annotation.Nullable;
 
 /**

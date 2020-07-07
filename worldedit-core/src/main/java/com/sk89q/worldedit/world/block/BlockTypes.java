@@ -19,8 +19,8 @@
 
 package com.sk89q.worldedit.world.block;
 
-import javax.annotation.Nullable;
 import java.util.Optional;
+import javax.annotation.Nullable;
 
 /**
  * Stores a list of common Block String IDs.

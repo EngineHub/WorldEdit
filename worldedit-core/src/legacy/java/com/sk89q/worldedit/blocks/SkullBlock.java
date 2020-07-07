@@ -63,8 +63,11 @@ public class SkullBlock extends BaseBlock {
         if (owner == null) {
             this.owner = "";
         } else {
-            if (owner.length() > 16 || owner.isEmpty()) this.owner = "";
-            else this.owner = owner;
+            if (owner.length() > 16 || owner.isEmpty()) {
+                this.owner = "";
+            } else {
+                this.owner = owner;
+            }
         }
     }
 

@@ -23,7 +23,6 @@ import com.sk89q.worldedit.EmptyClipboardException;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.blocks.BaseItem;
-import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.extension.input.InputParseException;
 import com.sk89q.worldedit.extension.input.ParserContext;
 import com.sk89q.worldedit.extension.platform.Actor;
@@ -48,10 +47,10 @@ import org.enginehub.piston.converter.SuccessfulConversion;
 import org.enginehub.piston.inject.InjectedValueAccess;
 import org.enginehub.piston.inject.Key;
 
-import javax.annotation.Nullable;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import javax.annotation.Nullable;
 
 public class FactoryConverter<T> implements ArgumentConverter<T> {
 
@@ -64,22 +63,22 @@ public class FactoryConverter<T> implements ArgumentConverter<T> {
             new FactoryConverter<>(worldEdit, WorldEdit::getItemFactory, "item", null));
 
         commandManager.registerConverter(Key.of(Mask.class, ClipboardMask.class),
-                new FactoryConverter<>(worldEdit, WorldEdit::getMaskFactory, "mask",
-                        context -> {
-                            try {
-                                ClipboardHolder holder = context.getSession().getClipboard();
-                                Transform transform = holder.getTransform();
-                                Extent target;
-                                if (transform.isIdentity()) {
-                                    target = holder.getClipboard();
-                                } else {
-                                    target = new BlockTransformExtent(holder.getClipboard(), transform);
-                                }
-                                context.setExtent(target);
-                            } catch (EmptyClipboardException e) {
-                                throw new IllegalStateException(e);
-                            }
-                        }));
+            new FactoryConverter<>(worldEdit, WorldEdit::getMaskFactory, "mask",
+                context -> {
+                    try {
+                        ClipboardHolder holder = context.getSession().getClipboard();
+                        Transform transform = holder.getTransform();
+                        Extent target;
+                        if (transform.isIdentity()) {
+                            target = holder.getClipboard();
+                        } else {
+                            target = new BlockTransformExtent(holder.getClipboard(), transform);
+                        }
+                        context.setExtent(target);
+                    } catch (EmptyClipboardException e) {
+                        throw new IllegalStateException(e);
+                    }
+                }));
     }
 
     private final WorldEdit worldEdit;

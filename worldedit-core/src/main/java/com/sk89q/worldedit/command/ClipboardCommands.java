@@ -46,19 +46,19 @@ import com.sk89q.worldedit.regions.RegionSelector;
 import com.sk89q.worldedit.regions.selector.CuboidRegionSelector;
 import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
+import com.sk89q.worldedit.world.World;
 import org.enginehub.piston.annotation.Command;
 import org.enginehub.piston.annotation.CommandContainer;
 import org.enginehub.piston.annotation.param.Arg;
 import org.enginehub.piston.annotation.param.ArgFlag;
 import org.enginehub.piston.annotation.param.Switch;
 
+import java.util.List;
+
 import static com.sk89q.worldedit.command.util.Logging.LogMode.PLACEMENT;
 import static com.sk89q.worldedit.command.util.Logging.LogMode.REGION;
-
-import java.util.List;
 
 /**
  * Clipboard commands.
@@ -189,29 +189,29 @@ public class ClipboardCommands {
     @Command(
         name = "/rotate",
         desc = "Rotate the contents of the clipboard",
-        descFooter = "Non-destructively rotate the contents of the clipboard.\n" +
-            "Angles are provided in degrees and a positive angle will result in a clockwise rotation. " +
-            "Multiple rotations can be stacked. Interpolation is not performed so angles should be a multiple of 90 degrees.\n"
+        descFooter = "Non-destructively rotate the contents of the clipboard.\n"
+            + "Angles are provided in degrees and a positive angle will result in a clockwise rotation. "
+            + "Multiple rotations can be stacked. Interpolation is not performed so angles should be a multiple of 90 degrees.\n"
     )
     @CommandPermissions("worldedit.clipboard.rotate")
     public void rotate(Actor actor, LocalSession session,
                        @Arg(desc = "Amount to rotate on the y-axis")
-                           double yRotate,
+                           double rotateY,
                        @Arg(desc = "Amount to rotate on the x-axis", def = "0")
-                           double xRotate,
+                           double rotateX,
                        @Arg(desc = "Amount to rotate on the z-axis", def = "0")
-                           double zRotate) throws WorldEditException {
-        if (Math.abs(yRotate % 90) > 0.001 ||
-            Math.abs(xRotate % 90) > 0.001 ||
-            Math.abs(zRotate % 90) > 0.001) {
+                           double rotateZ) throws WorldEditException {
+        if (Math.abs(rotateY % 90) > 0.001
+            || Math.abs(rotateX % 90) > 0.001
+            || Math.abs(rotateZ % 90) > 0.001) {
             actor.printDebug(TranslatableComponent.of("worldedit.rotate.no-interpolation"));
         }
 
         ClipboardHolder holder = session.getClipboard();
         AffineTransform transform = new AffineTransform();
-        transform = transform.rotateY(-yRotate);
-        transform = transform.rotateX(-xRotate);
-        transform = transform.rotateZ(-zRotate);
+        transform = transform.rotateY(-rotateY);
+        transform = transform.rotateX(-rotateX);
+        transform = transform.rotateZ(-rotateZ);
         holder.setTransform(holder.getTransform().combine(transform));
         actor.printInfo(TranslatableComponent.of("worldedit.rotate.rotated"));
     }
@@ -236,7 +236,7 @@ public class ClipboardCommands {
         desc = "Clear your clipboard"
     )
     @CommandPermissions("worldedit.clipboard.clear")
-    public void clearClipboard(Actor actor, LocalSession session) throws WorldEditException {
+    public void clearClipboard(Actor actor, LocalSession session) {
         session.setClipboard(null);
         actor.printInfo(TranslatableComponent.of("worldedit.clearclipboard.cleared"));
     }

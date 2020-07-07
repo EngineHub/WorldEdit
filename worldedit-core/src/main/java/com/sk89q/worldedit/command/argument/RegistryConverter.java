@@ -62,7 +62,8 @@ public final class RegistryConverter<V extends Keyed> implements ArgumentConvert
             FluidCategory.class,
             GameMode.class,
             WeatherType.class
-        ).stream()
+        )
+            .stream()
             .map(c -> (Class<Keyed>) c)
             .forEach(registryType ->
                 commandManager.registerConverter(Key.of(registryType), from(registryType))

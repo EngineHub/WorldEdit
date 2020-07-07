@@ -44,11 +44,14 @@ public final class Vector2 {
                     return ONE;
                 }
                 break;
+            default:
+                break;
         }
         return new Vector2(x, z);
     }
 
-    private final double x, z;
+    private final double x;
+    private final double z;
 
     /**
      * Construct an instance.
@@ -128,7 +131,8 @@ public final class Vector2 {
      * @return a new vector
      */
     public Vector2 add(Vector2... others) {
-        double newX = x, newZ = z;
+        double newX = x;
+        double newZ = z;
 
         for (Vector2 other : others) {
             newX += other.x;
@@ -169,7 +173,8 @@ public final class Vector2 {
      * @return a new vector
      */
     public Vector2 subtract(Vector2... others) {
-        double newX = x, newZ = z;
+        double newX = x;
+        double newZ = z;
 
         for (Vector2 other : others) {
             newX -= other.x;
@@ -207,7 +212,8 @@ public final class Vector2 {
      * @return a new vector
      */
     public Vector2 multiply(Vector2... others) {
-        double newX = x, newZ = z;
+        double newX = x;
+        double newZ = z;
 
         for (Vector2 other : others) {
             newX *= other.x;
@@ -418,7 +424,7 @@ public final class Vector2 {
             Math.max(z, v2.z)
         );
     }
-    
+
     public static BlockVector2 toBlockPoint(double x, double z) {
         return BlockVector2.at(x, z);
     }

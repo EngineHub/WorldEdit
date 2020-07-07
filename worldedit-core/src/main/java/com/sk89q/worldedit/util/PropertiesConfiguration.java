@@ -26,8 +26,6 @@ import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.util.report.Unreported;
 import com.sk89q.worldedit.world.registry.LegacyMapper;
-import com.sk89q.worldedit.world.snapshot.SnapshotRepository;
-import com.sk89q.worldedit.world.snapshot.experimental.fs.FileSystemSnapshotDatabase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,10 +36,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.UncheckedIOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Properties;
@@ -101,7 +95,7 @@ public class PropertiesConfiguration extends LocalConfiguration {
         wandItem = getString("wand-item", wandItem);
         try {
             wandItem = LegacyMapper.getInstance().getItemFromLegacy(Integer.parseInt(wandItem)).getId();
-        } catch (Throwable e) {
+        } catch (Throwable ignored) {
         }
         superPickaxeDrop = getBool("super-pickaxe-drop-items", superPickaxeDrop);
         superPickaxeManyDrop = getBool("super-pickaxe-many-drop-items", superPickaxeManyDrop);
@@ -111,7 +105,7 @@ public class PropertiesConfiguration extends LocalConfiguration {
         navigationWand = getString("nav-wand-item", navigationWand);
         try {
             navigationWand = LegacyMapper.getInstance().getItemFromLegacy(Integer.parseInt(navigationWand)).getId();
-        } catch (Throwable e) {
+        } catch (Throwable ignored) {
         }
         navigationWandMaxDistance = getInt("nav-wand-distance", navigationWandMaxDistance);
         navigationUseGlass = getBool("nav-use-glass", navigationUseGlass);

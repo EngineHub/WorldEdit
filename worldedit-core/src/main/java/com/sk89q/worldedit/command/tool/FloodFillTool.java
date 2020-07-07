@@ -37,7 +37,6 @@ import com.sk89q.worldedit.world.block.BlockTypes;
 
 import java.util.HashSet;
 import java.util.Set;
-
 import javax.annotation.Nullable;
 
 /**

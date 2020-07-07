@@ -21,7 +21,6 @@ package com.sk89q.worldedit.world.snapshot;
 
 import java.io.File;
 import java.util.Calendar;
-
 import javax.annotation.Nullable;
 
 /**
@@ -31,7 +30,7 @@ public interface SnapshotDateParser {
 
     /**
      * Attempt to detect a date from a file.
-     * 
+     *
      * @param file the file
      * @return date or null
      */

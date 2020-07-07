@@ -48,8 +48,8 @@ public class ZippedMcRegionChunkStore extends McRegionChunkStore {
      *
      * @param zipFile the ZIP file
      * @param folder the folder
-     * @throws IOException
-     * @throws ZipException
+     * @throws IOException if there is an error opening the zip
+     * @throws ZipException if there is an error opening the zip
      */
     public ZippedMcRegionChunkStore(File zipFile, String folder) throws IOException, ZipException {
         this.zipFile = zipFile;
@@ -63,8 +63,8 @@ public class ZippedMcRegionChunkStore extends McRegionChunkStore {
      * be detected.
      *
      * @param zipFile the ZIP file
-     * @throws IOException
-     * @throws ZipException
+     * @throws IOException if there is an error opening the zip
+     * @throws ZipException if there is an error opening the zip
      */
     public ZippedMcRegionChunkStore(File zipFile) throws IOException, ZipException {
         this.zipFile = zipFile;
@@ -87,7 +87,9 @@ public class ZippedMcRegionChunkStore extends McRegionChunkStore {
                 if (testEntry.getName().startsWith(worldName + "/")) {
                     if (pattern.matcher(testEntry.getName()).matches()) { // does entry end in .mca
                         folder = testEntry.getName().substring(0, testEntry.getName().lastIndexOf('/'));
-                        if (folder.endsWith("poi")) continue;
+                        if (folder.endsWith("poi")) {
+                            continue;
+                        }
                         name = folder + "/" + name;
                         break;
                     }
@@ -121,7 +123,7 @@ public class ZippedMcRegionChunkStore extends McRegionChunkStore {
 
     /**
      * Get an entry from the ZIP, trying both types of slashes.
-     * 
+     *
      * @param file the file
      * @return a ZIP entry
      */

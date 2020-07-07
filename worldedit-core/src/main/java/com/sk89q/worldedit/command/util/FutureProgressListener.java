@@ -19,8 +19,6 @@
 
 package com.sk89q.worldedit.command.util;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.sk89q.worldedit.extension.platform.Actor;
@@ -28,6 +26,8 @@ import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 
 import java.util.Timer;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public class FutureProgressListener implements Runnable {
 

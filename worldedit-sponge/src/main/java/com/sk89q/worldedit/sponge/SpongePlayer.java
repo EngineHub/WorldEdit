@@ -54,7 +54,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.UUID;
-
 import javax.annotation.Nullable;
 
 public class SpongePlayer extends AbstractPlayerActor {
@@ -223,13 +222,13 @@ public class SpongePlayer extends AbstractPlayerActor {
             player.sendBlockChange(loc.getBlockPosition(), loc.getBlock());
         } else {
             // TODO
-//            player.sendBlockChange(loc, BukkitAdapter.adapt(block));
-//            if (block instanceof BaseBlock && ((BaseBlock) block).hasNbtData()) {
-//                BukkitImplAdapter adapter = WorldEditPlugin.getInstance().getBukkitImplAdapter();
-//                if (adapter != null) {
-//                    adapter.sendFakeNBT(player, pos, ((BaseBlock) block).getNbtData());
-//                }
-//            }
+            //            player.sendBlockChange(loc, BukkitAdapter.adapt(block));
+            //            if (block instanceof BaseBlock && ((BaseBlock) block).hasNbtData()) {
+            //                BukkitImplAdapter adapter = WorldEditPlugin.getInstance().getBukkitImplAdapter();
+            //                if (adapter != null) {
+            //                    adapter.sendFakeNBT(player, pos, ((BaseBlock) block).getNbtData());
+            //                }
+            //            }
         }
     }
 

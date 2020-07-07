@@ -37,9 +37,9 @@ public class SelectionMinMaxEvent implements CUIEvent {
     @Override
     public String[] getParameters() {
         return new String[] {
-                    String.valueOf(min),
-                    String.valueOf(max),
-                };
+            String.valueOf(min),
+            String.valueOf(max),
+        };
     }
 
 }

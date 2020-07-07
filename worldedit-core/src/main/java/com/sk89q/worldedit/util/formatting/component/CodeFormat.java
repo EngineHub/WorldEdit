@@ -37,7 +37,7 @@ public class CodeFormat extends TextComponentProducer {
      * @param texts The text
      * @return The Component
      */
-    public static TextComponent wrap(String ... texts) {
+    public static TextComponent wrap(String... texts) {
         CodeFormat code = new CodeFormat();
         for (String text: texts) {
             code.append(text);

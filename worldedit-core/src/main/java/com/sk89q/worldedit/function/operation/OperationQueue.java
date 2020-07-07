@@ -19,8 +19,6 @@
 
 package com.sk89q.worldedit.function.operation;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.sk89q.worldedit.WorldEditException;
@@ -31,6 +29,8 @@ import java.util.Collection;
 import java.util.Deque;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Executes multiple queues in order.

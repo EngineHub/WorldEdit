@@ -35,14 +35,22 @@ import java.io.IOException;
 public abstract class ChunkStore implements Closeable {
 
     /**
+     * The shift for converting to/from a chunk position.
+     *
+     * <p>
      * {@code >>} - to chunk
      * {@code <<} - from chunk
+     * </p>
      */
     public static final int CHUNK_SHIFTS = 4;
 
     /**
+     * The shift for converting to/from a 3D chunk position.
+     *
+     * <p>
      * {@code >>} - to Y of 3D-chunk
      * {@code <<} - from Y of 3D-chunk
+     * </p>
      */
     public static final int CHUNK_SHIFTS_Y = 8;
 

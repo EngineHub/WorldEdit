@@ -50,7 +50,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
-
 import javax.annotation.Nullable;
 
 public class ClipboardWorld extends AbstractWorld implements Clipboard, CLIWorld {

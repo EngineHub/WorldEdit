@@ -19,8 +19,6 @@
 
 package com.sk89q.worldedit.regions.selector;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import com.sk89q.worldedit.IncompleteRegionException;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.extension.platform.Actor;
@@ -40,8 +38,9 @@ import com.sk89q.worldedit.world.World;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.annotation.Nullable;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Creates a {@code EllipsoidRegionSelector} from a user's selections.

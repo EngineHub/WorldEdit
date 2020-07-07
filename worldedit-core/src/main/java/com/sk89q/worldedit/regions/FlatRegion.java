@@ -24,14 +24,14 @@ import com.sk89q.worldedit.math.BlockVector2;
 public interface FlatRegion extends Region {
 
     /**
-     * Gets the minimum Y value
+     * Gets the minimum Y value.
      *
      * @return the Y value
      */
     int getMinimumY();
 
     /**
-     * Gets the maximum Y value
+     * Gets the maximum Y value.
      *
      * @return the Y value
      */

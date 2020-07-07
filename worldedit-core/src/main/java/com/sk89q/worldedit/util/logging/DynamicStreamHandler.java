@@ -26,7 +26,6 @@ import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.SimpleFormatter;
 import java.util.logging.StreamHandler;
-
 import javax.annotation.Nullable;
 
 /**
@@ -69,7 +68,7 @@ public class DynamicStreamHandler extends StreamHandler {
             handler.setFilter(filter);
             try {
                 handler.setEncoding(encoding);
-            } catch (UnsupportedEncodingException ignore) {
+            } catch (UnsupportedEncodingException ignored) {
             }
             handler.setLevel(level);
         }

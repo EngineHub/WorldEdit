@@ -37,7 +37,10 @@ import java.util.Set;
 public class CommandRegistration {
 
     static {
-      Bukkit.getServer().getHelpMap().registerHelpTopicFactory(DynamicPluginCommand.class, new DynamicPluginCommandHelpTopic.Factory());
+        Bukkit.getServer().getHelpMap().registerHelpTopicFactory(
+            DynamicPluginCommand.class,
+            new DynamicPluginCommandHelpTopic.Factory()
+        );
     }
 
     protected final Plugin plugin;
@@ -55,7 +58,9 @@ public class CommandRegistration {
     }
 
     public Plugin getCommandOwner(String label) {
-        if (serverCommandMap == null) return null;
+        if (serverCommandMap == null) {
+            return null;
+        }
         Command command = serverCommandMap.getCommand(label);
         if (command instanceof PluginIdentifiableCommand) {
             return ((PluginIdentifiableCommand) command).getPlugin();
@@ -87,8 +92,8 @@ public class CommandRegistration {
 
         CommandMap commandMap = ReflectionUtil.getField(plugin.getServer().getPluginManager(), "commandMap");
         if (commandMap == null) {
-            Bukkit.getServer().getLogger().severe(plugin.getDescription().getName() +
-                    ": Could not retrieve server CommandMap, using fallback instead!");
+            Bukkit.getServer().getLogger().severe(plugin.getDescription().getName()
+                + ": Could not retrieve server CommandMap, using fallback instead!");
             fallbackCommands = commandMap = new SimpleCommandMap(Bukkit.getServer());
             Bukkit.getServer().getPluginManager().registerEvents(new FallbackRegistrationListener(fallbackCommands), plugin);
         } else {

@@ -19,19 +19,19 @@
 
 package com.sk89q.worldedit.regions.polyhedron;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import com.sk89q.worldedit.math.Vector3;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public class Triangle {
 
     private String tag = "Triangle";
     private final Vector3[] vertices;
     private final Vector3 normal;
-    private final double b;
+    private final double maxDotProduct;
 
     /**
-     * Constructs a triangle with the given vertices (counter-clockwise)
+     * Constructs a triangle with the given vertices (counter-clockwise).
      *
      * @param v0 first vertex
      * @param v1 second vertex
@@ -45,7 +45,7 @@ public class Triangle {
         vertices = new Vector3[] { v0, v1, v2 };
 
         this.normal = v1.subtract(v0).cross(v2.subtract(v0)).normalize();
-        this.b = Math.max(Math.max(normal.dot(v0), normal.dot(v1)), normal.dot(v2));
+        this.maxDotProduct = Math.max(Math.max(normal.dot(v0), normal.dot(v1)), normal.dot(v2));
     }
 
     /**
@@ -79,7 +79,7 @@ public class Triangle {
      */
     public boolean below(Vector3 pt) {
         checkNotNull(pt);
-        return normal.dot(pt) < b;
+        return normal.dot(pt) < maxDotProduct;
     }
 
     /**
@@ -90,7 +90,7 @@ public class Triangle {
      */
     public boolean above(Vector3 pt) {
         checkNotNull(pt);
-        return normal.dot(pt) > b;
+        return normal.dot(pt) > maxDotProduct;
     }
 
     /**

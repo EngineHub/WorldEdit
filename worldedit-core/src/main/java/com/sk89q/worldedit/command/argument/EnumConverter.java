@@ -29,12 +29,11 @@ import org.enginehub.piston.converter.ArgumentConverter;
 import org.enginehub.piston.converter.MultiKeyConverter;
 import org.enginehub.piston.inject.Key;
 
-import javax.annotation.Nullable;
-
 import java.util.EnumSet;
 import java.util.Locale;
 import java.util.Set;
 import java.util.function.Function;
+import javax.annotation.Nullable;
 
 public final class EnumConverter {
 

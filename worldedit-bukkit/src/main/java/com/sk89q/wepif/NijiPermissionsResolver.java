@@ -76,7 +76,9 @@ public class NijiPermissionsResolver implements PermissionsResolver {
     public boolean hasPermission(String name, String permission) {
         try {
             Player player = server.getPlayerExact(name);
-            if (player == null) return false;
+            if (player == null) {
+                return false;
+            }
             try {
                 return api.getHandler().has(player, permission);
             } catch (Throwable t) {
@@ -107,7 +109,9 @@ public class NijiPermissionsResolver implements PermissionsResolver {
     public boolean inGroup(String name, String group) {
         try {
             Player player = server.getPlayerExact(name);
-            if (player == null) return false;
+            if (player == null) {
+                return false;
+            }
             try {
                 return api.getHandler().inGroup(player.getWorld().getName(), name, group);
             } catch (Throwable t) {
@@ -124,13 +128,17 @@ public class NijiPermissionsResolver implements PermissionsResolver {
     public String[] getGroups(String name) {
         try {
             Player player = server.getPlayerExact(name);
-            if (player == null) return new String[0];
+            if (player == null) {
+                return new String[0];
+            }
             String[] groups = null;
             try {
                 groups = api.getHandler().getGroups(player.getWorld().getName(), player.getName());
             } catch (Throwable t) {
                 String group = api.Security.getGroup(player.getWorld().getName(), player.getName());
-                if (group != null) groups = new String[] { group };
+                if (group != null) {
+                    groups = new String[] { group };
+                }
             }
             if (groups == null) {
                 return new String[0];

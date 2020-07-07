@@ -37,8 +37,10 @@ public final class BlockVector2 {
      * A comparator for BlockVector2ds that orders the vectors by rows, with x as the
      * column and z as the row.
      *
+     * <p>
      * For example, if x is the horizontal axis and z is the vertical axis, it
      * sorts like so:
+     * </p>
      *
      * <pre>
      * 0123
@@ -66,11 +68,14 @@ public final class BlockVector2 {
                     return ONE;
                 }
                 break;
+            default:
+                break;
         }
         return new BlockVector2(x, z);
     }
 
-    private final int x, z;
+    private final int x;
+    private final int z;
 
     /**
      * Construct an instance.
@@ -168,7 +173,8 @@ public final class BlockVector2 {
      * @return a new vector
      */
     public BlockVector2 add(BlockVector2... others) {
-        int newX = x, newZ = z;
+        int newX = x;
+        int newZ = z;
 
         for (BlockVector2 other : others) {
             newX += other.x;
@@ -209,7 +215,8 @@ public final class BlockVector2 {
      * @return a new vector
      */
     public BlockVector2 subtract(BlockVector2... others) {
-        int newX = x, newZ = z;
+        int newX = x;
+        int newZ = z;
 
         for (BlockVector2 other : others) {
             newX -= other.x;
@@ -247,7 +254,8 @@ public final class BlockVector2 {
      * @return a new vector
      */
     public BlockVector2 multiply(BlockVector2... others) {
-        int newX = x, newZ = z;
+        int newX = x;
+        int newZ = z;
 
         for (BlockVector2 other : others) {
             newX *= other.x;

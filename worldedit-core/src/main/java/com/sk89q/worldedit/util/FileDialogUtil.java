@@ -25,7 +25,6 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 

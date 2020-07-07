@@ -19,10 +19,10 @@
 
 package com.sk89q.worldedit.util;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import java.util.Optional;
 import java.util.function.Function;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Returns the best choice given a weighting function and a target weight.

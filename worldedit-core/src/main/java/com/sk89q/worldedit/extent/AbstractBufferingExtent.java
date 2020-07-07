@@ -28,7 +28,6 @@ import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 
 import java.util.Optional;
-
 import javax.annotation.Nullable;
 
 /**
@@ -72,6 +71,8 @@ public abstract class AbstractBufferingExtent extends AbstractDelegateExtent {
     }
 
     /**
+     * Gets a block from the buffer.
+     *
      * @deprecated New subclasses should override {@link #getBufferedFullBlock(BlockVector3)}
      *     instead
      */
