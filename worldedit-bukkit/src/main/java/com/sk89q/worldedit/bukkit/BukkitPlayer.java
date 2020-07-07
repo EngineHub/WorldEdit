@@ -105,6 +105,7 @@ public class BukkitPlayer extends AbstractPlayerActor {
     }
 
     @Override
+    @Deprecated
     public void printRaw(String msg) {
         for (String part : msg.split("\n")) {
             player.sendMessage(part);
@@ -112,6 +113,7 @@ public class BukkitPlayer extends AbstractPlayerActor {
     }
 
     @Override
+    @Deprecated
     public void print(String msg) {
         for (String part : msg.split("\n")) {
             player.sendMessage("§d" + part);
@@ -119,6 +121,7 @@ public class BukkitPlayer extends AbstractPlayerActor {
     }
 
     @Override
+    @Deprecated
     public void printDebug(String msg) {
         for (String part : msg.split("\n")) {
             player.sendMessage("§7" + part);
@@ -126,6 +129,7 @@ public class BukkitPlayer extends AbstractPlayerActor {
     }
 
     @Override
+    @Deprecated
     public void printError(String msg) {
         for (String part : msg.split("\n")) {
             player.sendMessage("§c" + part);

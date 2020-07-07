@@ -260,8 +260,9 @@ public class BlockTransformExtent extends AbstractDelegateExtent {
                             directionalProperties.put(closestProp, Boolean.TRUE);
                         } else {
                             if (prop.getValues().contains("none")) {
-                                //noinspection unchecked
-                                result = result.with((Property<Object>) prop, "none");
+                                @SuppressWarnings("unchecked")
+                                Property<Object> propAsObj = (Property<Object>) prop;
+                                result = result.with(propAsObj, "none");
                             }
                             directionalProperties.put(closestProp, block.getState(prop));
                         }

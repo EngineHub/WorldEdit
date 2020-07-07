@@ -329,7 +329,7 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
         } else {
             setFlying(true);
         }
-        setPosition(Vector3.at(x + 0.5, y, z + 0.5));
+        trySetPosition(Vector3.at(x + 0.5, y, z + 0.5));
     }
 
     /**

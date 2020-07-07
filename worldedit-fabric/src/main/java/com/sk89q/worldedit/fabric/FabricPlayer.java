@@ -139,6 +139,7 @@ public class FabricPlayer extends AbstractPlayerActor {
     }
 
     @Override
+    @Deprecated
     public void printRaw(String msg) {
         for (String part : msg.split("\n")) {
             this.player.sendMessage(new LiteralText(part), false);
@@ -146,16 +147,19 @@ public class FabricPlayer extends AbstractPlayerActor {
     }
 
     @Override
+    @Deprecated
     public void printDebug(String msg) {
         sendColorized(msg, Formatting.GRAY);
     }
 
     @Override
+    @Deprecated
     public void print(String msg) {
         sendColorized(msg, Formatting.LIGHT_PURPLE);
     }
 
     @Override
+    @Deprecated
     public void printError(String msg) {
         sendColorized(msg, Formatting.RED);
     }

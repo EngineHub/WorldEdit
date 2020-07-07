@@ -84,7 +84,7 @@ public class PermissionsResolverManager implements PermissionsResolver {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final List<Class<? extends PermissionsResolver>> enabledResolvers = new ArrayList<>();
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     protected Class<? extends PermissionsResolver>[] availableResolvers = new Class[] {
         PluginPermissionsResolver.class,
         PermissionsExResolver.class,

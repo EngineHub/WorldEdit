@@ -39,7 +39,7 @@ public class SignCompatibilityHandler implements NBTCompatibilityHandler {
     }
 
     @Override
-    public <B extends BlockStateHolder<B>> B updateNBT(B block, Map<String, Tag> values) {
+    public <B extends BlockStateHolder<B>> BlockStateHolder<?> updateNBT(B block, Map<String, Tag> values) {
         for (int i = 0; i < 4; ++i) {
             String key = "Text" + (i + 1);
             Tag value = values.get(key);

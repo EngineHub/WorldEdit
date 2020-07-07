@@ -47,7 +47,7 @@ public class NoteBlockCompatibilityHandler implements NBTCompatibilityHandler {
     }
 
     @Override
-    public <B extends BlockStateHolder<B>> B updateNBT(B block, Map<String, Tag> values) {
+    public <B extends BlockStateHolder<B>> BlockStateHolder<?> updateNBT(B block, Map<String, Tag> values) {
         // note that instrument was not stored (in state or nbt) previously.
         // it will be updated to the block below when it gets set into the world for the first time
         Tag noteTag = values.get("note");
@@ -55,7 +55,7 @@ public class NoteBlockCompatibilityHandler implements NBTCompatibilityHandler {
             Byte note = ((ByteTag) noteTag).getValue();
             if (note != null) {
                 values.clear();
-                return (B) block.with(NoteProperty, (int) note).toImmutableState();
+                return block.with(NoteProperty, (int) note).toImmutableState();
             }
         }
         return block;

@@ -130,7 +130,7 @@ public final class BlockVector3 {
 
     public long toLongPackedForm() {
         checkLongPackable(this);
-        return (x & BITS_26) | ((z & BITS_26) << 26) | (((y & (long) BITS_12) << (26 + 26)));
+        return (x & BITS_26) | ((z & BITS_26) << 26) | (((y & BITS_12) << (26 + 26)));
     }
 
     /**

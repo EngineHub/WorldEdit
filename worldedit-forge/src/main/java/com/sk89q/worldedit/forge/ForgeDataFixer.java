@@ -87,7 +87,7 @@ import javax.annotation.Nullable;
  * receive the source version in the compound.
  * </p>
  */
-@SuppressWarnings("UnnecessarilyQualifiedStaticUsage")
+@SuppressWarnings({ "UnnecessarilyQualifiedStaticUsage", "unchecked", "rawtypes" })
 class ForgeDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.world.DataFixer {
 
     @SuppressWarnings("unchecked")
