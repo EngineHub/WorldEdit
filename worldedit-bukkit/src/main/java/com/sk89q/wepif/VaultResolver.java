@@ -62,21 +62,25 @@ public class VaultResolver implements PermissionsResolver {
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public boolean hasPermission(String name, String permission) {
         return hasPermission(server.getOfflinePlayer(name), permission);
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public boolean hasPermission(String worldName, String name, String permission) {
         return hasPermission(worldName, server.getOfflinePlayer(name), permission);
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public boolean inGroup(String player, String group) {
         return inGroup(server.getOfflinePlayer(player), group);
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public String[] getGroups(String player) {
         return getGroups(server.getOfflinePlayer(player));
     }

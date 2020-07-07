@@ -67,6 +67,7 @@ public class BukkitBlockCommandSender extends AbstractNonPlayerActor implements 
     }
 
     @Override
+    @Deprecated
     public void printRaw(String msg) {
         for (String part : msg.split("\n")) {
             sender.sendMessage(part);
@@ -74,6 +75,7 @@ public class BukkitBlockCommandSender extends AbstractNonPlayerActor implements 
     }
 
     @Override
+    @Deprecated
     public void print(String msg) {
         for (String part : msg.split("\n")) {
             print(TextComponent.of(part, TextColor.LIGHT_PURPLE));
@@ -81,6 +83,7 @@ public class BukkitBlockCommandSender extends AbstractNonPlayerActor implements 
     }
 
     @Override
+    @Deprecated
     public void printDebug(String msg) {
         for (String part : msg.split("\n")) {
             print(TextComponent.of(part, TextColor.GRAY));
@@ -88,6 +91,7 @@ public class BukkitBlockCommandSender extends AbstractNonPlayerActor implements 
     }
 
     @Override
+    @Deprecated
     public void printError(String msg) {
         for (String part : msg.split("\n")) {
             print(TextComponent.of(part, TextColor.RED));

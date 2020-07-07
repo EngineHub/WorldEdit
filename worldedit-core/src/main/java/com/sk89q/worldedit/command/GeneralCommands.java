@@ -200,7 +200,7 @@ public class GeneralCommands {
         desc = "Toggle fast mode"
     )
     @CommandPermissions("worldedit.fast")
-    @Deprecated
+    @SuppressWarnings("deprecation")
     void fast(Actor actor, LocalSession session,
               @Arg(desc = "The new fast mode state", def = "")
                   Boolean fastMode) {

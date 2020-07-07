@@ -159,6 +159,7 @@ public final class FabricAdapter {
         return props;
     }
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     private static net.minecraft.block.BlockState applyProperties(StateManager<Block, net.minecraft.block.BlockState> stateContainer,
                                                                   net.minecraft.block.BlockState newState, Map<Property<?>, Object> states) {
         for (Map.Entry<Property<?>, Object> state : states.entrySet()) {

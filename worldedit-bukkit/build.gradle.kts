@@ -25,6 +25,7 @@ dependencies {
     "api"("org.bukkit:bukkit:1.15.2-R0.1-SNAPSHOT") {
         exclude("junit", "junit")
     }
+    "compileOnly"("org.jetbrains:annotations:19.0.0")
     "compileOnly"("com.destroystokyo.paper:paper-api:1.15.2-R0.1-SNAPSHOT")
     "implementation"("io.papermc:paperlib:1.0.2")
     "compileOnly"("com.sk89q:dummypermscompat:1.10")

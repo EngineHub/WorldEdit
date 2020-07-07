@@ -138,6 +138,7 @@ public class ForgePlayer extends AbstractPlayerActor {
     }
 
     @Override
+    @Deprecated
     public void printRaw(String msg) {
         for (String part : msg.split("\n")) {
             sendMessage(new StringTextComponent(part));
@@ -145,16 +146,19 @@ public class ForgePlayer extends AbstractPlayerActor {
     }
 
     @Override
+    @Deprecated
     public void printDebug(String msg) {
         sendColorized(msg, TextFormatting.GRAY);
     }
 
     @Override
+    @Deprecated
     public void print(String msg) {
         sendColorized(msg, TextFormatting.LIGHT_PURPLE);
     }
 
     @Override
+    @Deprecated
     public void printError(String msg) {
         sendColorized(msg, TextFormatting.RED);
     }

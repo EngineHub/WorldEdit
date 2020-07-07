@@ -33,7 +33,7 @@ public class SimpleInjector implements Injector {
 
     public SimpleInjector(Object... args) {
         this.args = args;
-        argClasses = new Class[args.length];
+        argClasses = new Class<?>[args.length];
         for (int i = 0; i < args.length; ++i) {
             argClasses[i] = args[i].getClass();
         }

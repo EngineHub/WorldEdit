@@ -72,7 +72,6 @@ public class NijiPermissionsResolver implements PermissionsResolver {
     }
 
     @Override
-    @SuppressWarnings("static-access")
     public boolean hasPermission(String name, String permission) {
         try {
             Player player = server.getPlayerExact(name);
@@ -82,7 +81,7 @@ public class NijiPermissionsResolver implements PermissionsResolver {
             try {
                 return api.getHandler().has(player, permission);
             } catch (Throwable t) {
-                return api.Security.permission(player, permission);
+                return Permissions.Security.permission(player, permission);
             }
         } catch (Throwable t) {
             log.warn("Failed to check permissions", t);
@@ -105,7 +104,6 @@ public class NijiPermissionsResolver implements PermissionsResolver {
     }
 
     @Override
-    @SuppressWarnings("static-access")
     public boolean inGroup(String name, String group) {
         try {
             Player player = server.getPlayerExact(name);
@@ -115,7 +113,7 @@ public class NijiPermissionsResolver implements PermissionsResolver {
             try {
                 return api.getHandler().inGroup(player.getWorld().getName(), name, group);
             } catch (Throwable t) {
-                return api.Security.inGroup(name, group);
+                return Permissions.Security.inGroup(name, group);
             }
         } catch (Throwable t) {
             log.warn("Failed to check groups", t);
@@ -124,7 +122,6 @@ public class NijiPermissionsResolver implements PermissionsResolver {
     }
 
     @Override
-    @SuppressWarnings("static-access")
     public String[] getGroups(String name) {
         try {
             Player player = server.getPlayerExact(name);
@@ -135,7 +132,7 @@ public class NijiPermissionsResolver implements PermissionsResolver {
             try {
                 groups = api.getHandler().getGroups(player.getWorld().getName(), player.getName());
             } catch (Throwable t) {
-                String group = api.Security.getGroup(player.getWorld().getName(), player.getName());
+                String group = Permissions.Security.getGroup(player.getWorld().getName(), player.getName());
                 if (group != null) {
                     groups = new String[] { group };
                 }

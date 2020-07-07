@@ -24,9 +24,8 @@ import com.sk89q.jnbt.CompoundTagBuilder;
 import com.sk89q.jnbt.IntTag;
 import com.sk89q.jnbt.ListTag;
 import com.sk89q.jnbt.Tag;
-import com.sk89q.worldedit.registry.state.DirectionalProperty;
-import com.sk89q.worldedit.registry.state.IntegerProperty;
 import com.sk89q.worldedit.registry.state.Property;
+import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.block.BlockType;
@@ -38,15 +37,15 @@ import java.util.Map;
 
 public class BannerBlockCompatibilityHandler implements NBTCompatibilityHandler {
 
-    private static final DirectionalProperty FacingProperty;
-    private static final IntegerProperty RotationProperty;
+    private static final Property<Direction> FacingProperty;
+    private static final Property<Integer> RotationProperty;
 
     static {
-        DirectionalProperty tempFacing;
-        IntegerProperty tempRotation;
+        Property<Direction> tempFacing;
+        Property<Integer> tempRotation;
         try {
-            tempFacing = (DirectionalProperty) (Property<?>) BlockTypes.WHITE_WALL_BANNER.getProperty("facing");
-            tempRotation = (IntegerProperty) (Property<?>) BlockTypes.WHITE_BANNER.getProperty("rotation");
+            tempFacing = BlockTypes.WHITE_WALL_BANNER.getProperty("facing");
+            tempRotation = BlockTypes.WHITE_BANNER.getProperty("rotation");
         } catch (NullPointerException | IllegalArgumentException | ClassCastException e) {
             tempFacing = null;
             tempRotation = null;
@@ -62,7 +61,7 @@ public class BannerBlockCompatibilityHandler implements NBTCompatibilityHandler 
     }
 
     @Override
-    public <B extends BlockStateHolder<B>> B updateNBT(B block, Map<String, Tag> values) {
+    public <B extends BlockStateHolder<B>> BlockStateHolder<?> updateNBT(B block, Map<String, Tag> values) {
         Tag typeTag = values.get("Base");
         if (typeTag instanceof IntTag) {
             boolean isWall = block.getBlockType() == BlockTypes.WHITE_WALL_BANNER;
@@ -73,10 +72,10 @@ public class BannerBlockCompatibilityHandler implements NBTCompatibilityHandler 
                     BlockState state = type.getDefaultState();
 
                     if (isWall) {
-                        Property facingProp = type.getProperty("facing");
+                        Property<Direction> facingProp = type.getProperty("facing");
                         state = state.with(facingProp, block.getState(FacingProperty));
                     } else {
-                        Property rotationProp = type.getProperty("rotation");
+                        Property<Integer> rotationProp = type.getProperty("rotation");
                         state = state.with(rotationProp, block.getState(RotationProperty));
                     }
 
@@ -102,7 +101,7 @@ public class BannerBlockCompatibilityHandler implements NBTCompatibilityHandler 
                         }
                         values.put("Patterns", new ListTag(((ListTag) patternsTag).getType(), tempList));
                     }
-                    return (B) state;
+                    return state;
                 }
             }
         }

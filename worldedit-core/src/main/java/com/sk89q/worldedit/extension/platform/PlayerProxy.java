@@ -115,21 +115,25 @@ class PlayerProxy extends AbstractPlayerActor {
     }
 
     @Override
+    @Deprecated
     public void printRaw(String msg) {
         basePlayer.print(TextComponent.of(msg));
     }
 
     @Override
+    @Deprecated
     public void printDebug(String msg) {
         basePlayer.printDebug(TextComponent.of(msg));
     }
 
     @Override
+    @Deprecated
     public void print(String msg) {
         basePlayer.printInfo(TextComponent.of(msg));
     }
 
     @Override
+    @Deprecated
     public void printError(String msg) {
         basePlayer.printError(TextComponent.of(msg));
     }

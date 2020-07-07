@@ -37,7 +37,10 @@ fun Project.applyPlatformAndCoreConfiguration() {
     }
 
     tasks.withType<JavaCompile>().configureEach {
-        options.compilerArgs.addAll(listOf("-Xlint:all", "-Xlint:-processing", "-Xlint:-path"))
+        val disabledLint = listOf(
+            "processing", "path", "fallthrough", "serial"
+        )
+        options.compilerArgs.addAll(listOf("-Xlint:all") + disabledLint.map { "-Xlint:-$it" })
         options.isDeprecation = true
         options.encoding = "UTF-8"
     }

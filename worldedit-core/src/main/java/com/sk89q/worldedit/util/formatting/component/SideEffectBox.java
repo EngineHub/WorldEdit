@@ -23,6 +23,7 @@ import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.util.SideEffect;
 import com.sk89q.worldedit.util.SideEffectSet;
 import com.sk89q.worldedit.util.concurrency.LazyReference;
+import com.sk89q.worldedit.util.formatting.WorldEditText;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
@@ -40,7 +41,12 @@ public class SideEffectBox extends PaginationBox {
     private static final LazyReference<List<SideEffect>> SIDE_EFFECTS = LazyReference.from(() ->
         WorldEdit.getInstance().getPlatformManager().getSupportedSideEffects()
             .stream()
-            .sorted(Comparator.comparing(Enum::name))
+            .sorted(Comparator.comparing(effect ->
+                WorldEditText.reduceToText(
+                    TranslatableComponent.of(effect.getDisplayName()),
+                    Locale.US
+                )
+            ))
             .collect(Collectors.toList())
     );
 

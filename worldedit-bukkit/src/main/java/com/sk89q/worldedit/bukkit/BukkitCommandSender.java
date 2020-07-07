@@ -65,6 +65,7 @@ public class BukkitCommandSender extends AbstractNonPlayerActor {
     }
 
     @Override
+    @Deprecated
     public void printRaw(String msg) {
         for (String part : msg.split("\n")) {
             sender.sendMessage(part);
@@ -72,6 +73,7 @@ public class BukkitCommandSender extends AbstractNonPlayerActor {
     }
 
     @Override
+    @Deprecated
     public void print(String msg) {
         for (String part : msg.split("\n")) {
             sender.sendMessage("§d" + part);
@@ -79,6 +81,7 @@ public class BukkitCommandSender extends AbstractNonPlayerActor {
     }
 
     @Override
+    @Deprecated
     public void printDebug(String msg) {
         for (String part : msg.split("\n")) {
             sender.sendMessage("§7" + part);
@@ -86,6 +89,7 @@ public class BukkitCommandSender extends AbstractNonPlayerActor {
     }
 
     @Override
+    @Deprecated
     public void printError(String msg) {
         for (String part : msg.split("\n")) {
             sender.sendMessage("§c" + part);

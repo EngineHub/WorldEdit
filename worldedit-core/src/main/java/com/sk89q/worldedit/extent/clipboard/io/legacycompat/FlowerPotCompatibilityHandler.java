@@ -37,12 +37,12 @@ public class FlowerPotCompatibilityHandler implements NBTCompatibilityHandler {
     }
 
     @Override
-    public <B extends BlockStateHolder<B>> B updateNBT(B block, Map<String, Tag> values) {
+    public <B extends BlockStateHolder<B>> BlockStateHolder<?> updateNBT(B block, Map<String, Tag> values) {
         Tag item = values.get("Item");
         if (item instanceof StringTag) {
             String id = ((StringTag) item).getValue();
             if (id.isEmpty()) {
-                return (B) BlockTypes.FLOWER_POT.getDefaultState();
+                return BlockTypes.FLOWER_POT.getDefaultState();
             }
             int data = 0;
             Tag dataTag = values.get("Data");
@@ -52,7 +52,7 @@ public class FlowerPotCompatibilityHandler implements NBTCompatibilityHandler {
             BlockState newState = convertLegacyBlockType(id, data);
             if (newState != null) {
                 values.clear();
-                return (B) newState; // generics pls :\
+                return newState;
             }
         }
         return block;

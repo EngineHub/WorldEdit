@@ -205,7 +205,7 @@ public class MCEditSchematicReader extends NBTSchematicReader {
             if (newBlock != null) {
                 for (NBTCompatibilityHandler handler : COMPATIBILITY_HANDLERS) {
                     if (handler.isAffectedBlock(newBlock)) {
-                        newBlock = handler.updateNBT(block, values);
+                        newBlock = handler.updateNBT(block, values).toImmutableState();
                         if (newBlock == null || values.isEmpty()) {
                             break;
                         }

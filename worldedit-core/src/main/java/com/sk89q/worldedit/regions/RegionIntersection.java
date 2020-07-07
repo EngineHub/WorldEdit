@@ -132,14 +132,9 @@ public class RegionIntersection extends AbstractRegion {
         return false;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public Iterator<BlockVector3> iterator() {
-        Iterator<BlockVector3>[] iterators = (Iterator<BlockVector3>[]) new Iterator[regions.size()];
-        for (int i = 0; i < regions.size(); i++) {
-            iterators[i] = regions.get(i).iterator();
-        }
-        return Iterators.concat(iterators);
+        return Iterators.concat(Iterators.transform(regions.iterator(), r -> r.iterator()));
     }
 
 }
