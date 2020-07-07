@@ -47,7 +47,7 @@ import javax.annotation.Nullable;
  * to anything else)
  */
 public class FloatingTreeRemover implements BlockTool {
-    private int rangeSq;
+    private final int rangeSq;
 
     public FloatingTreeRemover() {
         rangeSq = 100*100;
@@ -104,7 +104,7 @@ public class FloatingTreeRemover implements BlockTool {
         return true;
     }
 
-    private BlockVector3[] recurseDirections = {
+    private final BlockVector3[] recurseDirections = {
             Direction.NORTH.toBlockVector(),
             Direction.EAST.toBlockVector(),
             Direction.SOUTH.toBlockVector(),

@@ -49,8 +49,8 @@ import java.util.Set;
  */
 public class CraftScriptContext extends CraftScriptEnvironment {
 
-    private List<EditSession> editSessions = new ArrayList<>();
-    private String[] args;
+    private final List<EditSession> editSessions = new ArrayList<>();
+    private final String[] args;
 
     public CraftScriptContext(WorldEdit controller,
             Platform server, LocalConfiguration config,

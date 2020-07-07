@@ -36,7 +36,7 @@ import java.util.function.Function;
 public class WeightedChoice<T> {
 
     private final Function<T, ? extends Number> function;
-    private double target;
+    private final double target;
     private double best;
     private T current;
 

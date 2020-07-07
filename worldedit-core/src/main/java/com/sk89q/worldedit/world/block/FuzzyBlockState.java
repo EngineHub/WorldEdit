@@ -79,7 +79,7 @@ public class FuzzyBlockState extends BlockState {
      */
     public static class Builder {
         private BlockType type;
-        private Map<Property<?>, Object> values = new HashMap<>();
+        private final Map<Property<?>, Object> values = new HashMap<>();
 
         /**
          * The type of the Fuzzy BlockState

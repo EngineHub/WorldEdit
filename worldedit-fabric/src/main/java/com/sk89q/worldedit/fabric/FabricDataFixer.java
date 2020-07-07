@@ -182,7 +182,7 @@ class FabricDataFixer extends DataFixerBuilder implements com.sk89q.worldedit.wo
     private final Map<LegacyType, List<DataInspector>> inspectors = new EnumMap<>(LegacyType.class);
 
     // Set on build
-    private DataFixer fixer;
+    private final DataFixer fixer;
     private static final Map<String, LegacyType> DFU_TO_LEGACY = new HashMap<>();
 
     public enum LegacyType {

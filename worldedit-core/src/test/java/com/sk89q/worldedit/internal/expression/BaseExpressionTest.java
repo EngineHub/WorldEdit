@@ -38,7 +38,7 @@ class BaseExpressionTest {
         return expr.getSlots().getSlotValue(name).orElseThrow(IllegalStateException::new);
     }
 
-    private Platform mockPlat = mock(Platform.class);
+    private final Platform mockPlat = mock(Platform.class);
 
     @BeforeEach
     void setup() {

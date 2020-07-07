@@ -37,7 +37,7 @@ import javax.annotation.Nullable;
 public class SmoothBrush implements Brush {
 
     private final Mask mask;
-    private int iterations;
+    private final int iterations;
 
     public SmoothBrush(int iterations) {
         this(iterations, null);

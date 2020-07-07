@@ -38,7 +38,7 @@ public class GardenPatchGenerator implements RegionFunction {
     private final Random random = new Random();
     private final EditSession editSession;
     private Pattern plant = getPumpkinPattern();
-    private Pattern leafPattern = BlockTypes.OAK_LEAVES.getDefaultState().with(BlockTypes.OAK_LEAVES.getProperty("persistent"), true);
+    private final Pattern leafPattern = BlockTypes.OAK_LEAVES.getDefaultState().with(BlockTypes.OAK_LEAVES.getProperty("persistent"), true);
     private int affected;
 
     /**

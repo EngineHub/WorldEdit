@@ -35,8 +35,8 @@ import java.util.Map;
 
 public class FileRegistries {
 
-    private CLIWorldEdit app;
-    private Gson gson = new GsonBuilder().create();
+    private final CLIWorldEdit app;
+    private final Gson gson = new GsonBuilder().create();
 
     private DataFile dataFile;
 

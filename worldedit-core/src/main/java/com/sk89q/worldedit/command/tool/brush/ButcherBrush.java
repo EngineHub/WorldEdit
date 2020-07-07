@@ -33,7 +33,7 @@ import java.util.List;
 
 public class ButcherBrush implements Brush {
 
-    private CreatureButcher flags;
+    private final CreatureButcher flags;
 
     public ButcherBrush(CreatureButcher flags) {
         this.flags = flags;

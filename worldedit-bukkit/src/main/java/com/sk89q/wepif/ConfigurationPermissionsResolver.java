@@ -31,10 +31,10 @@ import java.util.Map;
 import java.util.Set;
 
 public class ConfigurationPermissionsResolver implements PermissionsResolver {
-    private YAMLProcessor config;
-    private Map<String, Set<String>> userPermissionsCache;
-    private Set<String> defaultPermissionsCache;
-    private Map<String, Set<String>> userGroups;
+    private final YAMLProcessor config;
+    private final Map<String, Set<String>> userPermissionsCache = new HashMap<>();
+    private final Set<String> defaultPermissionsCache = new HashSet<>();
+    private final Map<String, Set<String>> userGroups = new HashMap<>();
 
     public ConfigurationPermissionsResolver(YAMLProcessor config) {
         this.config = config;
@@ -53,9 +53,9 @@ public class ConfigurationPermissionsResolver implements PermissionsResolver {
 
     @Override
     public void load() {
-        userGroups = new HashMap<>();
-        userPermissionsCache = new HashMap<>();
-        defaultPermissionsCache = new HashSet<>();
+        userGroups.clear();
+        userPermissionsCache.clear();
+        defaultPermissionsCache.clear();
 
         Map<String, Set<String>> userGroupPermissions = new HashMap<>();
 

@@ -30,9 +30,9 @@ import java.util.NoSuchElementException;
 
 public class FlatRegion3DIterator implements Iterator<BlockVector3> {
 
-    private Iterator<BlockVector2> flatIterator;
-    private int minY;
-    private int maxY;
+    private final Iterator<BlockVector2> flatIterator;
+    private final int minY;
+    private final int maxY;
 
     private BlockVector2 next2D;
     private int nextY;

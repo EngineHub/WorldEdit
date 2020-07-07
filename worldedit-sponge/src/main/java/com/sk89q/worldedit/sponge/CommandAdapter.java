@@ -32,7 +32,7 @@ import java.util.Set;
 import static com.sk89q.worldedit.sponge.SpongeTextAdapter.convert;
 
 public abstract class CommandAdapter implements CommandCallable {
-    private Command command;
+    private final Command command;
 
     protected CommandAdapter(Command command) {
         this.command = command;

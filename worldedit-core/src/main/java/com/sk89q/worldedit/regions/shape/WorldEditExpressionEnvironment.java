@@ -29,7 +29,7 @@ public class WorldEditExpressionEnvironment implements ExpressionEnvironment {
     private final Vector3 unit;
     private final Vector3 zero2;
     private Vector3 current = Vector3.ZERO;
-    private Extent extent;
+    private final Extent extent;
 
     public WorldEditExpressionEnvironment(Extent extent, Vector3 unit, Vector3 zero) {
         this.extent = extent;

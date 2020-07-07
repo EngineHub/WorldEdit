@@ -35,8 +35,8 @@ public class MessageBox extends TextComponentProducer {
 
     private static final int GUARANTEED_NO_WRAP_CHAT_PAGE_WIDTH = 47;
 
-    private TextComponentProducer contents;
-    private TextColor borderColor;
+    private final TextComponentProducer contents;
+    private final TextColor borderColor;
 
     /**
      * Create a new box.

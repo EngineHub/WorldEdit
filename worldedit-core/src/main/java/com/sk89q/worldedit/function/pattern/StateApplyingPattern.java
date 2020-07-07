@@ -35,7 +35,7 @@ import static com.sk89q.worldedit.blocks.Blocks.resolveProperties;
 public class StateApplyingPattern extends AbstractExtentPattern {
 
     private final Map<String, String> states;
-    private Map<BlockType, Map<Property<Object>, Object>> cache = Maps.newHashMap();
+    private final Map<BlockType, Map<Property<Object>, Object>> cache = Maps.newHashMap();
 
     public StateApplyingPattern(Extent extent, Map<String, String> statesToSet) {
         super(extent);

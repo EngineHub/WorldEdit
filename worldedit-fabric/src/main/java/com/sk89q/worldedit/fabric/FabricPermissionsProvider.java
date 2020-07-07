@@ -30,7 +30,7 @@ public interface FabricPermissionsProvider {
 
     class VanillaPermissionsProvider implements FabricPermissionsProvider {
 
-        private FabricPlatform platform;
+        private final FabricPlatform platform;
 
         public VanillaPermissionsProvider(FabricPlatform platform) {
             this.platform = platform;

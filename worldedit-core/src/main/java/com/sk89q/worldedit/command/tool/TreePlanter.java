@@ -39,7 +39,7 @@ import javax.annotation.Nullable;
  */
 public class TreePlanter implements BlockTool {
 
-    private TreeGenerator.TreeType treeType;
+    private final TreeGenerator.TreeType treeType;
 
     public TreePlanter(TreeGenerator.TreeType treeType) {
         this.treeType = treeType;

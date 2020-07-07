@@ -80,7 +80,7 @@ public class SpongeWorldEdit {
     @Inject
     private Logger logger;
 
-    private Metrics2 metrics;
+    private final Metrics2 metrics;
 
     public static final String MOD_ID = "worldedit";
     private static final int BSTATS_PLUGIN_ID = 3329;

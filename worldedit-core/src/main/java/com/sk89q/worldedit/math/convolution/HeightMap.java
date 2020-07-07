@@ -38,12 +38,12 @@ import javax.annotation.Nullable;
  */
 public class HeightMap {
 
-    private int[] data;
-    private int width;
-    private int height;
+    private final int[] data;
+    private final int width;
+    private final int height;
 
-    private Region region;
-    private EditSession session;
+    private final Region region;
+    private final EditSession session;
 
     /**
      * Constructs the HeightMap
@@ -77,7 +77,7 @@ public class HeightMap {
 
     /**
      * Apply the filter 'iterations' amount times.
-     * 
+     *
      * @param filter the filter
      * @param iterations the number of iterations
      * @return number of blocks affected
@@ -99,7 +99,7 @@ public class HeightMap {
 
     /**
      * Apply a raw heightmap to the region
-     * 
+     *
      * @param data the data
      * @return number of blocks affected
      * @throws MaxChangedBlocksException

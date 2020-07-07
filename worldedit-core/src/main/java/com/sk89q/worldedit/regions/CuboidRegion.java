@@ -328,8 +328,8 @@ public class CuboidRegion extends AbstractRegion implements FlatRegion {
     @Override
     public Iterator<BlockVector3> iterator() {
         return new Iterator<BlockVector3>() {
-            private BlockVector3 min = getMinimumPoint();
-            private BlockVector3 max = getMaximumPoint();
+            private final BlockVector3 min = getMinimumPoint();
+            private final BlockVector3 max = getMaximumPoint();
             private int nextX = min.getBlockX();
             private int nextY = min.getBlockY();
             private int nextZ = min.getBlockZ();
@@ -360,8 +360,8 @@ public class CuboidRegion extends AbstractRegion implements FlatRegion {
     @Override
     public Iterable<BlockVector2> asFlatRegion() {
         return () -> new Iterator<BlockVector2>() {
-            private BlockVector3 min = getMinimumPoint();
-            private BlockVector3 max = getMaximumPoint();
+            private final BlockVector3 min = getMinimumPoint();
+            private final BlockVector3 max = getMaximumPoint();
             private int nextX = min.getBlockX();
             private int nextZ = min.getBlockZ();
 

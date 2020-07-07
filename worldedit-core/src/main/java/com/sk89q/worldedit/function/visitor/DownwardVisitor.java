@@ -36,7 +36,7 @@ import java.util.Collection;
  */
 public class DownwardVisitor extends RecursiveVisitor {
 
-    private int baseY;
+    private final int baseY;
 
     /**
      * Create a new visitor.

@@ -33,7 +33,7 @@ import com.sk89q.worldedit.math.BlockVector3;
 public class BlockReplace implements RegionFunction {
 
     private final Extent extent;
-    private Pattern pattern;
+    private final Pattern pattern;
 
     /**
      * Create a new instance.

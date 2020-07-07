@@ -168,7 +168,7 @@ public class EditSession implements Extent, AutoCloseable {
         FAST("fast"),
         NONE("none");
 
-        private String displayName;
+        private final String displayName;
 
         ReorderMode(String displayName) {
             this.displayName = displayName;

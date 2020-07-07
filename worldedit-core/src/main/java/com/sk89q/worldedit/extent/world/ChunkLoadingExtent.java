@@ -19,16 +19,15 @@
 
 package com.sk89q.worldedit.extent.world;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.extent.AbstractDelegateExtent;
 import com.sk89q.worldedit.extent.Extent;
-import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Automatically loads chunks when blocks are accessed.
@@ -36,7 +35,7 @@ import com.sk89q.worldedit.world.block.BlockStateHolder;
 public class ChunkLoadingExtent extends AbstractDelegateExtent {
 
     private final World world;
-    private boolean enabled;
+    private final boolean enabled;
 
     /**
      * Create a new instance.

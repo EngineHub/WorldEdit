@@ -31,7 +31,7 @@ public class BiomeType implements Keyed, BiomePattern {
 
     public static final NamespacedRegistry<BiomeType> REGISTRY = new NamespacedRegistry<>("biome type");
 
-    private String id;
+    private final String id;
 
     public BiomeType(String id) {
         this.id = id;

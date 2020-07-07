@@ -36,8 +36,8 @@ import java.util.zip.ZipException;
  */
 public class TrueZipLegacyChunkStore extends LegacyChunkStore {
 
-    private File zipFile;
-    private ZipFile zip;
+    private final File zipFile;
+    private final ZipFile zip;
     private String folder;
 
     /**

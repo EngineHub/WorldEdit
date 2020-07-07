@@ -57,8 +57,8 @@ import javax.annotation.Nullable;
 
 public class BukkitPlayer extends AbstractPlayerActor {
 
-    private Player player;
-    private WorldEditPlugin plugin;
+    private final Player player;
+    private final WorldEditPlugin plugin;
 
     public BukkitPlayer(Player player) {
         this(WorldEditPlugin.getInstance(), player);

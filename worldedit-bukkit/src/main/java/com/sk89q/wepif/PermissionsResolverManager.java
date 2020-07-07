@@ -78,11 +78,11 @@ public class PermissionsResolverManager implements PermissionsResolver {
         return instance;
     }
 
-    private Server server;
+    private final Server server;
     private PermissionsResolver permissionResolver;
     private YAMLProcessor config;
-    private Logger logger = LoggerFactory.getLogger(getClass());
-    private List<Class<? extends PermissionsResolver>> enabledResolvers = new ArrayList<>();
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+    private final List<Class<? extends PermissionsResolver>> enabledResolvers = new ArrayList<>();
 
     @SuppressWarnings("unchecked")
     protected Class<? extends PermissionsResolver>[] availableResolvers = new Class[] {

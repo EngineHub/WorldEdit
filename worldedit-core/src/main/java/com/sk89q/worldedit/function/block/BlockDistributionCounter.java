@@ -34,11 +34,11 @@ import java.util.Map;
 
 public class BlockDistributionCounter implements RegionFunction {
 
-    private Extent extent;
-    private boolean separateStates;
+    private final Extent extent;
+    private final boolean separateStates;
 
-    private List<Countable<BlockState>> distribution = new ArrayList<>();
-    private Map<BlockState, Countable<BlockState>> map = new HashMap<>();
+    private final List<Countable<BlockState>> distribution = new ArrayList<>();
+    private final Map<BlockState, Countable<BlockState>> map = new HashMap<>();
 
     public BlockDistributionCounter(Extent extent, boolean separateStates) {
         this.extent = extent;

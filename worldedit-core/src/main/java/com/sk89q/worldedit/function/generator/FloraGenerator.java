@@ -37,7 +37,7 @@ import com.sk89q.worldedit.world.block.BlockTypes;
 public class FloraGenerator implements RegionFunction {
 
     private final EditSession editSession;
-    private boolean biomeAware = false;
+    private final boolean biomeAware = false;
     private final Pattern desertPattern = getDesertPattern();
     private final Pattern temperatePattern = getTemperatePattern();
 

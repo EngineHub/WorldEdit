@@ -31,7 +31,7 @@ import org.bukkit.block.data.BlockData;
  */
 public class EditSessionBlockChangeDelegate implements BlockChangeDelegate {
 
-    private EditSession editSession;
+    private final EditSession editSession;
 
     public EditSessionBlockChangeDelegate(EditSession editSession) {
         this.editSession = editSession;

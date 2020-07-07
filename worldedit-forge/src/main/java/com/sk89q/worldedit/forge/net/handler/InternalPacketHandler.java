@@ -25,7 +25,7 @@ import net.minecraftforge.fml.network.simple.SimpleChannel;
 
 public final class InternalPacketHandler {
     private static final int PROTOCOL_VERSION = 1;
-    private static SimpleChannel HANDLER = PacketHandlerUtil
+    private static final SimpleChannel HANDLER = PacketHandlerUtil
             .buildLenientHandler("internal", PROTOCOL_VERSION)
             .simpleChannel();
 

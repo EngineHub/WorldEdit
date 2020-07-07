@@ -61,7 +61,7 @@ public class BlockState implements BlockStateHolder<BlockState> {
     private final BlockType blockType;
     private final Map<Property<?>, Object> values;
 
-    private BaseBlock emptyBaseBlock;
+    private final BaseBlock emptyBaseBlock;
 
     // Neighbouring state table.
     private Table<Property<?>, Object, BlockState> states;

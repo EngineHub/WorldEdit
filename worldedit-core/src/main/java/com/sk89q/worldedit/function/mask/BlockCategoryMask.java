@@ -32,7 +32,7 @@ import javax.annotation.Nullable;
  */
 public class BlockCategoryMask extends AbstractExtentMask {
 
-    private BlockCategory category;
+    private final BlockCategory category;
 
     public BlockCategoryMask(Extent extent, BlockCategory category) {
         super(extent);

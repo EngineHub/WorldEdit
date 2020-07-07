@@ -23,6 +23,7 @@ import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.registry.Keyed;
 import com.sk89q.worldedit.registry.NamespacedRegistry;
+import com.sk89q.worldedit.util.GuavaUtil;
 import com.sk89q.worldedit.util.concurrency.LazyReference;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.world.block.BlockType;
@@ -35,16 +36,24 @@ public class ItemType implements Keyed {
 
     public static final NamespacedRegistry<ItemType> REGISTRY = new NamespacedRegistry<>("item type");
 
-    private String id;
-    private String name;
-    private final LazyReference<Component> richName =
-        LazyReference.from(() ->
+    private final String id;
+    @SuppressWarnings("deprecation")
+    private final LazyReference<String> name = LazyReference.from(() -> {
+        String name = GuavaUtil.firstNonNull(
             WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.GAME_HOOKS)
-                .getRegistries().getItemRegistry().getRichName(this)
+                .getRegistries().getItemRegistry().getName(this),
+            ""
         );
-    private final LazyReference<ItemMaterial> itemMaterial
-            = LazyReference.from(() -> WorldEdit.getInstance().getPlatformManager()
-            .queryCapability(Capability.GAME_HOOKS).getRegistries().getItemRegistry().getMaterial(this));
+        return name.isEmpty() ? getId() : name;
+    });
+    private final LazyReference<Component> richName = LazyReference.from(() ->
+        WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.GAME_HOOKS)
+            .getRegistries().getItemRegistry().getRichName(this)
+    );
+    private final LazyReference<ItemMaterial> itemMaterial = LazyReference.from(() ->
+        WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.GAME_HOOKS)
+            .getRegistries().getItemRegistry().getMaterial(this)
+    );
 
     public ItemType(String id) {
         // If it has no namespace, assume minecraft.
@@ -71,14 +80,7 @@ public class ItemType implements Keyed {
      */
     @Deprecated
     public String getName() {
-        if (name == null) {
-            name = WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.GAME_HOOKS).getRegistries()
-                    .getItemRegistry().getName(this);
-            if (name == null) {
-                name = "";
-            }
-        }
-        return name.isEmpty() ? getId() : name;
+        return name.getValue();
     }
 
 

@@ -35,8 +35,8 @@ public class NijiPermissionsResolver implements PermissionsResolver {
 
     private static final Logger log = LoggerFactory.getLogger(NijiPermissionsResolver.class);
 
-    private Server server;
-    private Permissions api;
+    private final Server server;
+    private final Permissions api;
 
     public static PermissionsResolver factory(Server server, YAMLProcessor config) {
         PluginManager pluginManager = server.getPluginManager();
