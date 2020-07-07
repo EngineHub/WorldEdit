@@ -189,6 +189,7 @@ public class BaseBlock implements BlockStateHolder<BaseBlock>, TileEntityBlock {
 
     @Override
     public String toString() {
+        // TODO use a json serializer for the NBT data
         return blockState.getAsString() + (hasNbtData() ? "{hasNbt}" : "");
     }
 
