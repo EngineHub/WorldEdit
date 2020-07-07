@@ -630,7 +630,9 @@ public class FabricWorld extends AbstractWorld {
     public Entity createEntity(Location location, BaseEntity entity) {
         World world = getWorld();
         final Optional<EntityType<?>> entityType = EntityType.get(entity.getType().getId());
-        if (!entityType.isPresent()) return null;
+        if (!entityType.isPresent()) {
+            return null;
+        }
         net.minecraft.entity.Entity createdEntity = entityType.get().create(world);
         if (createdEntity != null) {
             CompoundTag nativeTag = entity.getNbtData();

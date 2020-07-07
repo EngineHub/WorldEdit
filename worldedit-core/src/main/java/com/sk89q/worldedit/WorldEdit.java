@@ -72,8 +72,6 @@ import com.sk89q.worldedit.world.registry.LegacyMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Nullable;
-import javax.script.ScriptException;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -87,6 +85,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import javax.annotation.Nullable;
+import javax.script.ScriptException;
 
 import static com.sk89q.worldedit.event.platform.Interaction.HIT;
 import static com.sk89q.worldedit.event.platform.Interaction.OPEN;
@@ -295,7 +295,9 @@ public final class WorldEdit {
      * @throws FilenameException thrown if the filename is invalid
      */
     private File getSafeFile(@Nullable Actor actor, File dir, String filename, String defaultExt, String[] extensions, boolean isSave) throws FilenameException {
-        if (extensions != null && (extensions.length == 1 && extensions[0] == null)) extensions = null;
+        if (extensions != null && (extensions.length == 1 && extensions[0] == null)) {
+            extensions = null;
+        }
 
         File f;
 
@@ -395,7 +397,7 @@ public final class WorldEdit {
      * Checks to see if the specified radius is within bounds.
      *
      * @param radius the radius
-     * @throws MaxRadiusException
+     * @throws MaxRadiusException if the radius is bigger than the configured radius
      */
     public void checkMaxRadius(double radius) throws MaxRadiusException {
         if (getConfiguration().maxRadius > 0 && radius > getConfiguration().maxRadius) {
@@ -407,7 +409,7 @@ public final class WorldEdit {
      * Checks to see if the specified brush radius is within bounds.
      *
      * @param radius the radius
-     * @throws MaxBrushRadiusException
+     * @throws MaxBrushRadiusException if the radius is bigger than the configured radius
      */
     public void checkMaxBrushRadius(double radius) throws MaxBrushRadiusException {
         if (getConfiguration().maxBrushRadius > 0 && radius > getConfiguration().maxBrushRadius) {
@@ -472,6 +474,7 @@ public final class WorldEdit {
     }
 
     private static final Map<String, Direction> NAME_TO_DIRECTION_MAP;
+
     static {
         SetMultimap<Direction, String> directionNames = HashMultimap.create();
         for (Direction direction : Direction.valuesOf(

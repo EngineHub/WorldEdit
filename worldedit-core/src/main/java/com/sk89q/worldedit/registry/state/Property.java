@@ -20,7 +20,6 @@
 package com.sk89q.worldedit.registry.state;
 
 import java.util.List;
-
 import javax.annotation.Nullable;
 
 /**

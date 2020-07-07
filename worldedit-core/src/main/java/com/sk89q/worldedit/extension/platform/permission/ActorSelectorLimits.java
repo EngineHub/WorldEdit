@@ -19,14 +19,14 @@
 
 package com.sk89q.worldedit.extension.platform.permission;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.regions.selector.limit.SelectorLimits;
 
 import java.util.Optional;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public class ActorSelectorLimits implements SelectorLimits {
 

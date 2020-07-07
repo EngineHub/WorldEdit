@@ -19,16 +19,15 @@
 
 package com.sk89q.worldedit.regions;
 
+import com.sk89q.worldedit.internal.util.DeprecationUtil;
 import com.sk89q.worldedit.internal.util.NonAbstractForCompatibility;
 import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.Vector3;
-import com.sk89q.worldedit.internal.util.DeprecationUtil;
 import com.sk89q.worldedit.world.World;
 
 import java.util.List;
 import java.util.Set;
-
 import javax.annotation.Nullable;
 
 /**
@@ -112,7 +111,7 @@ public interface Region extends Iterable<BlockVector3>, Cloneable {
      * Expand the region.
      *
      * @param changes array/arguments with multiple related changes
-     * @throws RegionOperationException
+     * @throws RegionOperationException if the operation cannot be performed
      */
     void expand(BlockVector3... changes) throws RegionOperationException;
 
@@ -120,7 +119,7 @@ public interface Region extends Iterable<BlockVector3>, Cloneable {
      * Contract the region.
      *
      * @param changes array/arguments with multiple related changes
-     * @throws RegionOperationException
+     * @throws RegionOperationException if the operation cannot be performed
      */
     void contract(BlockVector3... changes) throws RegionOperationException;
 
@@ -128,7 +127,7 @@ public interface Region extends Iterable<BlockVector3>, Cloneable {
      * Shift the region.
      *
      * @param change the change
-     * @throws RegionOperationException
+     * @throws RegionOperationException if the operation cannot be performed
      */
     void shift(BlockVector3 change) throws RegionOperationException;
 
@@ -148,7 +147,7 @@ public interface Region extends Iterable<BlockVector3>, Cloneable {
     Set<BlockVector2> getChunks();
 
     /**
-     * Return a list of 16*16*16 chunks in a region
+     * Return a list of 16*16*16 chunks in a region.
      *
      * @return the chunk cubes this region overlaps with
      */

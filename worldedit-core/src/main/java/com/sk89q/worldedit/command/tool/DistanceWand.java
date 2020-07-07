@@ -42,7 +42,9 @@ public class DistanceWand extends BrushTool implements DoubleActionTraceTool {
     @Override
     public boolean actSecondary(Platform server, LocalConfiguration config, Player player, LocalSession session) {
         Location target = getTarget(player);
-        if (target == null) return true;
+        if (target == null) {
+            return true;
+        }
 
         RegionSelector selector = session.getRegionSelector(player.getWorld());
         BlockVector3 blockPoint = target.toVector().toBlockPoint();
@@ -55,7 +57,9 @@ public class DistanceWand extends BrushTool implements DoubleActionTraceTool {
     @Override
     public boolean actPrimary(Platform server, LocalConfiguration config, Player player, LocalSession session) {
         Location target = getTarget(player);
-        if (target == null) return true;
+        if (target == null) {
+            return true;
+        }
 
         RegionSelector selector = session.getRegionSelector(player.getWorld());
         BlockVector3 blockPoint = target.toVector().toBlockPoint();

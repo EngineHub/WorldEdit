@@ -282,8 +282,8 @@ enum FSSDTestType {
     Stream<DynamicNode> getNamedTests(FSSDContext context) throws IOException {
         return Stream.of(dynamicContainer(
             name(),
-            URI.create("method:" + getClass().getName() +
-                "#getTests(" + FSSDContext.class.getName() + ")"),
+            URI.create("method:" + getClass().getName()
+                + "#getTests(" + FSSDContext.class.getName() + ")"),
             getTests(context).stream()
         ));
     }

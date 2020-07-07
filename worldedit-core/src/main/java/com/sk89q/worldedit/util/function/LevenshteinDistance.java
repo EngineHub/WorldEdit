@@ -19,14 +19,13 @@
 
 package com.sk89q.worldedit.util.function;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import com.google.common.base.Function;
 
 import java.util.Locale;
 import java.util.regex.Pattern;
-
 import javax.annotation.Nullable;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Provides a Levenshtein distance between a given string and each string
@@ -34,7 +33,7 @@ import javax.annotation.Nullable;
  */
 public class LevenshteinDistance implements Function<String, Integer> {
 
-    public final static Pattern STANDARD_CHARS = Pattern.compile("[ _\\-]");
+    public static final Pattern STANDARD_CHARS = Pattern.compile("[ _\\-]");
 
     private final String baseString;
     private final boolean caseSensitive;

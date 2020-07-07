@@ -320,8 +320,8 @@ public class SpongeSchematicReader extends NBTSchematicReader {
             }
             BiomeType biome = BiomeTypes.get(key);
             if (biome == null) {
-                log.warn("Unknown biome type :" + key +
-                        " in palette. Are you missing a mod or using a schematic made in a newer version of Minecraft?");
+                log.warn("Unknown biome type :" + key
+                    + " in palette. Are you missing a mod or using a schematic made in a newer version of Minecraft?");
             }
             Tag idTag = palettePart.getValue();
             if (!(idTag instanceof IntTag)) {

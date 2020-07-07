@@ -19,11 +19,11 @@
 
 package com.sk89q.worldedit.event.platform;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.event.Cancellable;
 import com.sk89q.worldedit.event.Event;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Raised whenever a player sends input.

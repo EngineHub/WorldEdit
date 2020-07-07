@@ -137,6 +137,8 @@ public class CommandLoggingHandler implements CommandCallListener, AutoCloseable
                         break;
                     }
                     break;
+                default:
+                    break;
             }
         }
 

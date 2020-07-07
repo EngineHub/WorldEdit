@@ -34,10 +34,10 @@ import com.sk89q.worldedit.world.item.ItemTypes;
 import com.sk89q.worldedit.world.registry.BlockMaterial;
 import com.sk89q.worldedit.world.registry.LegacyMapper;
 
-import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
@@ -217,7 +217,9 @@ public class BlockType implements Keyed {
     /**
      * Gets the legacy ID. Needed for legacy reasons.
      *
+     * <p>
      * DO NOT USE THIS.
+     * </p>
      *
      * @return legacy id or 0, if unknown
      */
@@ -229,7 +231,9 @@ public class BlockType implements Keyed {
     /**
      * Gets the legacy data. Needed for legacy reasons.
      *
+     * <p>
      * DO NOT USE THIS.
+     * </p>
      *
      * @return legacy data or 0, if unknown
      */

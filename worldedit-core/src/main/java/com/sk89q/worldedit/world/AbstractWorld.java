@@ -39,7 +39,6 @@ import com.sk89q.worldedit.world.weather.WeatherTypes;
 
 import java.nio.file.Path;
 import java.util.PriorityQueue;
-
 import javax.annotation.Nullable;
 
 /**
@@ -110,7 +109,9 @@ public abstract class AbstractWorld implements World {
             taskId = server.schedule(0, 1, () -> {
                 int max = Math.max(1, Math.min(30, effectQueue.size() / 3));
                 for (int i = 0; i < max; ++i) {
-                    if (effectQueue.isEmpty()) return;
+                    if (effectQueue.isEmpty()) {
+                        return;
+                    }
 
                     effectQueue.poll().play();
                 }

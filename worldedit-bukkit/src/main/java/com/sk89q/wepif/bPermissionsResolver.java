@@ -37,7 +37,7 @@ public class bPermissionsResolver implements PermissionsResolver {
 
         return new bPermissionsResolver(server);
     }
-    
+
     private final Server server;
 
     public bPermissionsResolver(Server server) {

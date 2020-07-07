@@ -19,8 +19,6 @@
 
 package com.sk89q.worldedit.session;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.extent.transform.BlockTransformExtent;
@@ -32,6 +30,8 @@ import com.sk89q.worldedit.function.operation.ForwardExtentCopy;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.transform.Transform;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Builds an operation to paste the contents of a clipboard.
@@ -79,7 +79,7 @@ public class PasteBuilder {
      * This provides a more flexible alternative to {@link #ignoreAirBlocks(boolean)}, for example
      * one might want to ignore structure void if copying a Minecraft Structure, etc.
      *
-     * @param sourceMask
+     * @param sourceMask the mask for the source
      * @return this builder instance
      */
     public PasteBuilder maskSource(Mask sourceMask) {
@@ -105,7 +105,7 @@ public class PasteBuilder {
      * Set whether the copy should include source entities.
      * Note that this is true by default for legacy reasons.
      *
-     * @param copyEntities
+     * @param copyEntities if entities should be copied
      * @return this builder instance
      */
     public PasteBuilder copyEntities(boolean copyEntities) {
@@ -116,7 +116,7 @@ public class PasteBuilder {
     /**
      * Set whether the copy should include source biomes (if available).
      *
-     * @param copyBiomes
+     * @param copyBiomes if biomes should be copied
      * @return this builder instance
      */
     public PasteBuilder copyBiomes(boolean copyBiomes) {

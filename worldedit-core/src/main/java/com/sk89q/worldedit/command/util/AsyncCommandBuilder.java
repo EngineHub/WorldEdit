@@ -36,9 +36,9 @@ import org.enginehub.piston.exception.CommandExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Nullable;
 import java.util.concurrent.Callable;
 import java.util.function.Consumer;
+import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;

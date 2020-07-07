@@ -92,7 +92,7 @@ public abstract class LegacyChunkStore extends ChunkStore {
      * @param f2 the second part of the path
      * @param name the name
      * @return an input stream
-     * @throws IOException
+     * @throws IOException if there is an error getting the chunk data
      */
     protected abstract InputStream getInputStream(String f1, String f2, String name) throws IOException, DataException;
 

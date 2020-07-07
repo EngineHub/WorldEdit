@@ -26,7 +26,7 @@ import com.sk89q.worldedit.math.Vector3;
 import java.util.List;
 
 /**
- * Represents an arbitrary function in &#8477; &rarr; &#8477;<sup>3</sup>
+ * Represents an arbitrary function in &#8477; &rarr; &#8477;<sup>3</sup>.
  */
 public interface Interpolation {
 
@@ -39,7 +39,7 @@ public interface Interpolation {
     void setNodes(List<Node> nodes);
 
     /**
-     * Gets the result of f(position)
+     * Gets the result of f(position).
      *
      * @param position the position to interpolate
      * @return the result

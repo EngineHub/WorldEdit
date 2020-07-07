@@ -38,7 +38,7 @@ public class OutOfSpaceException extends BlockBagException {
     }
 
     /**
-     * Get the type of the block
+     * Get the type of the block.
      *
      * @return the type
      */

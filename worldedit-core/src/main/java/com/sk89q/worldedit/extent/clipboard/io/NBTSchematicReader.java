@@ -23,11 +23,10 @@ import com.sk89q.jnbt.Tag;
 
 import java.io.IOException;
 import java.util.Map;
-
 import javax.annotation.Nullable;
 
 /**
- * Base class for NBT schematic readers
+ * Base class for NBT schematic readers.
  */
 public abstract class NBTSchematicReader implements ClipboardReader {
 

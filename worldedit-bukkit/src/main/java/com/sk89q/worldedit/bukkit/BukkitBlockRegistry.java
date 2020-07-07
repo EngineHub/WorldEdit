@@ -19,11 +19,11 @@
 
 package com.sk89q.worldedit.bukkit;
 
-import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.world.registry.BlockMaterial;
 import com.sk89q.worldedit.registry.state.Property;
+import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockType;
+import com.sk89q.worldedit.world.registry.BlockMaterial;
 import com.sk89q.worldedit.world.registry.BundledBlockRegistry;
 import com.sk89q.worldedit.world.registry.PassthroughBlockMaterial;
 import org.bukkit.Material;
@@ -31,7 +31,6 @@ import org.bukkit.Material;
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.OptionalInt;
-
 import javax.annotation.Nullable;
 
 public class BukkitBlockRegistry extends BundledBlockRegistry {

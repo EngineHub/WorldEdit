@@ -148,7 +148,7 @@ public final class StringUtil {
      * @param initialIndex the initial index to start form
      * @return a new string
      */
-    public static String joinString(Collection<?> str, String delimiter,int initialIndex) {
+    public static String joinString(Collection<?> str, String delimiter, int initialIndex) {
         if (str.isEmpty()) {
             return "";
         }
@@ -310,7 +310,7 @@ public final class StringUtil {
     }
 
     public static List<String> parseListInQuotes(String[] input, char delimiter, char quoteOpen, char quoteClose, boolean appendLeftover) {
-       List<String> parsableBlocks = new ArrayList<>();
+        List<String> parsableBlocks = new ArrayList<>();
         StringBuilder buffer = new StringBuilder();
         for (String split : input) {
             if (split.indexOf(quoteOpen) != -1 && split.indexOf(quoteClose) == -1) {

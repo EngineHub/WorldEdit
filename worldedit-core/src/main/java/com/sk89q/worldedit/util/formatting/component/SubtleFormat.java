@@ -40,7 +40,7 @@ public class SubtleFormat extends TextComponentProducer {
      * @param texts The text
      * @return The Component
      */
-    public static TextComponent wrap(String ... texts) {
+    public static TextComponent wrap(String... texts) {
         SubtleFormat subtle = new SubtleFormat();
         for (String component : texts) {
             subtle.append(component);

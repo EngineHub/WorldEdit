@@ -19,8 +19,6 @@
 
 package com.sk89q.worldedit.world.block;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.jnbt.StringTag;
 import com.sk89q.jnbt.Tag;
@@ -29,8 +27,9 @@ import com.sk89q.worldedit.registry.state.Property;
 
 import java.util.Map;
 import java.util.Objects;
-
 import javax.annotation.Nullable;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Represents a "snapshot" of a block with NBT Data.
@@ -70,7 +69,7 @@ public class BaseBlock implements BlockStateHolder<BaseBlock>, TileEntityBlock {
     }
 
     /**
-     * Gets a map of state to statevalue
+     * Gets a map of state to state values.
      *
      * @return The state map
      */
@@ -190,11 +189,7 @@ public class BaseBlock implements BlockStateHolder<BaseBlock>, TileEntityBlock {
 
     @Override
     public String toString() {
-//        if (getNbtData() != null) { // TODO Maybe make some JSON serialiser to make this not awful.
-//            return blockState.getAsString() + " {" + String.valueOf(getNbtData()) + "}";
-//        } else {
-            return blockState.getAsString();
-//        }
+        return blockState.getAsString() + (hasNbtData() ? "{hasNbt}" : "");
     }
 
 }

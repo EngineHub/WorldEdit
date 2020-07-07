@@ -19,9 +19,9 @@
 
 package com.sk89q.worldedit.util.eventbus;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import java.lang.reflect.Method;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Invokes a {@link Method} to dispatch an event.
@@ -60,14 +60,21 @@ public class MethodEventHandler extends EventHandler {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         MethodEventHandler that = (MethodEventHandler) o;
 
-        if (!method.equals(that.method)) return false;
-        if (object != null ? !object.equals(that.object) : that.object != null)
+        if (!method.equals(that.method)) {
             return false;
+        }
+        if (object != null ? !object.equals(that.object) : that.object != null) {
+            return false;
+        }
 
         return true;
     }

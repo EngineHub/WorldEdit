@@ -43,7 +43,6 @@ import com.sk89q.worldedit.world.World;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumMap;
@@ -52,6 +51,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicBoolean;
+import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -104,9 +104,9 @@ public class PlatformManager {
         // Make sure that versions are in sync
         if (firstSeenVersion != null) {
             if (!firstSeenVersion.equals(platform.getVersion())) {
-                logger.warn("Multiple ports of WorldEdit are installed but they report different versions ({} and {}). " +
-                                "If these two versions are truly different, then you may run into unexpected crashes and errors.",
-                        new Object[]{ firstSeenVersion, platform.getVersion() });
+                logger.warn("Multiple ports of WorldEdit are installed but they report different versions ({} and {}). "
+                        + "If these two versions are truly different, then you may run into unexpected crashes and errors.",
+                    firstSeenVersion, platform.getVersion());
             }
         } else {
             firstSeenVersion = platform.getVersion();
@@ -396,6 +396,9 @@ public class PlatformManager {
 
                     break;
                 }
+
+                default:
+                    break;
             }
         } finally {
             Request.reset();

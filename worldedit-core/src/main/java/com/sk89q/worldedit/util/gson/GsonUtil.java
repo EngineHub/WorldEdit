@@ -45,6 +45,7 @@ public final class GsonUtil {
     }
 
     private static final Gson gson = new Gson();
+
     public static String stringValue(String s) {
         return gson.toJson(s);
     }

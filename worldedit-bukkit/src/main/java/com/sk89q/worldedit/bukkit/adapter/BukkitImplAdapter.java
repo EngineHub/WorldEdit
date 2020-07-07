@@ -44,10 +44,10 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import javax.annotation.Nullable;
 import java.util.Map;
 import java.util.OptionalInt;
 import java.util.Set;
+import javax.annotation.Nullable;
 
 /**
  * An interface for adapters of various Bukkit implementations.
@@ -62,7 +62,7 @@ public interface BukkitImplAdapter {
     int getDataVersion();
 
     /**
-     * Get a data fixer, or null if not supported
+     * Get a data fixer, or null if not supported.
      *
      * @return the data fixer
      */
@@ -70,6 +70,8 @@ public interface BukkitImplAdapter {
     DataFixer getDataFixer();
 
     /**
+     * Check if this adapter supports the watchdog.
+     *
      * @return {@code true} if {@link #tickWatchdog()} is implemented
      */
     default boolean supportsWatchdog() {

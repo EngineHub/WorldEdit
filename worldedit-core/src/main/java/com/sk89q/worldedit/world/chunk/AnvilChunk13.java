@@ -35,10 +35,10 @@ import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.block.BlockTypes;
 import com.sk89q.worldedit.world.storage.InvalidFormatException;
 
-import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.annotation.Nullable;
 
 /**
  * The chunk format for Minecraft 1.13 to 1.15
@@ -50,7 +50,7 @@ public class AnvilChunk13 implements Chunk {
     private final int rootX;
     private final int rootZ;
 
-    private Map<BlockVector3, Map<String,Tag>> tileEntities;
+    private Map<BlockVector3, Map<String, Tag>> tileEntities;
 
     /**
      * Construct the chunk with a compound tag.
@@ -163,8 +163,6 @@ public class AnvilChunk13 implements Chunk {
 
     /**
      * Used to load the tile entities.
-     *
-     * @throws DataException
      */
     private void populateTileEntities() throws DataException {
         tileEntities = new HashMap<>();

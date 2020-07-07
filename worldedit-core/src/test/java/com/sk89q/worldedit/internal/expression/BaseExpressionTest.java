@@ -80,22 +80,22 @@ class BaseExpressionTest {
 
             @Override
             public int getBlockTypeAbs(double x, double y, double z) {
-                return (int) x*10;
+                return (int) x * 10;
             }
 
             @Override
             public int getBlockDataAbs(double x, double y, double z) {
-                return (int) y*10;
+                return (int) y * 10;
             }
 
             @Override
             public int getBlockTypeRel(double x, double y, double z) {
-                return (int) x*100;
+                return (int) x * 100;
             }
 
             @Override
             public int getBlockDataRel(double x, double y, double z) {
-                return (int) y*100;
+                return (int) y * 100;
             }
         });
 

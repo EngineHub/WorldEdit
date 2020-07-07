@@ -61,6 +61,8 @@ public final class BlockVector3 {
                     return ONE;
                 }
                 break;
+            default:
+                break;
         }
         return new BlockVector3(x, y, z);
     }
@@ -73,9 +75,9 @@ public final class BlockVector3 {
     }
 
     public static boolean isLongPackable(BlockVector3 location) {
-        return isHorizontallyInBounds(location.getX()) &&
-            isHorizontallyInBounds(location.getZ()) &&
-            0 <= location.getY() && location.getY() <= WORLD_Y_MAX;
+        return isHorizontallyInBounds(location.getX())
+            && isHorizontallyInBounds(location.getZ())
+            && 0 <= location.getY() && location.getY() <= WORLD_Y_MAX;
     }
 
     public static void checkLongPackable(BlockVector3 location) {
@@ -103,12 +105,15 @@ public final class BlockVector3 {
      *
      * <p>
      * Useful for sorting by chunk block storage order.
+     * </p>
      */
     public static Comparator<BlockVector3> sortByCoordsYzx() {
         return YzxOrderComparator.YZX_ORDER;
     }
 
-    private final int x, y, z;
+    private final int x;
+    private final int y;
+    private final int z;
 
     /**
      * Construct an instance.
@@ -242,7 +247,9 @@ public final class BlockVector3 {
      * @return a new vector
      */
     public BlockVector3 add(BlockVector3... others) {
-        int newX = x, newY = y, newZ = z;
+        int newX = x;
+        int newY = y;
+        int newZ = z;
 
         for (BlockVector3 other : others) {
             newX += other.x;
@@ -285,7 +292,9 @@ public final class BlockVector3 {
      * @return a new vector
      */
     public BlockVector3 subtract(BlockVector3... others) {
-        int newX = x, newY = y, newZ = z;
+        int newX = x;
+        int newY = y;
+        int newZ = z;
 
         for (BlockVector3 other : others) {
             newX -= other.x;
@@ -325,7 +334,9 @@ public final class BlockVector3 {
      * @return a new vector
      */
     public BlockVector3 multiply(BlockVector3... others) {
-        int newX = x, newY = y, newZ = z;
+        int newX = x;
+        int newY = y;
+        int newZ = z;
 
         for (BlockVector3 other : others) {
             newX *= other.x;

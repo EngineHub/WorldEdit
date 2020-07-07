@@ -36,7 +36,7 @@ public interface CLIWorld {
     boolean isDirty();
 
     /**
-     * Set the world's dirty status
+     * Set the world's dirty status.
      *
      * @param dirty if dirty
      */

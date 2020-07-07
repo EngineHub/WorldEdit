@@ -19,8 +19,6 @@
 
 package com.sk89q.worldedit.sponge;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import com.sk89q.worldedit.entity.metadata.EntityProperties;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.Entity;
@@ -45,6 +43,8 @@ import org.spongepowered.api.entity.vehicle.minecart.Minecart;
 import org.spongepowered.api.text.Text;
 
 import java.util.Optional;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public class SpongeEntityProperties implements EntityProperties {
 
@@ -138,7 +138,7 @@ public class SpongeEntityProperties implements EntityProperties {
     @Override
     public boolean isTagged() {
         return !entity.get(Keys.DISPLAY_NAME).orElse(Text.EMPTY).isEmpty();
-   }
+    }
 
     @Override
     public boolean isArmorStand() {

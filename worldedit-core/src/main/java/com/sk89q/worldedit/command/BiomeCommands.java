@@ -85,18 +85,18 @@ public class BiomeCommands {
                               int page) {
         WorldEditAsyncCommandBuilder.createAndSendMessage(actor, () -> {
             BiomeRegistry biomeRegistry = WorldEdit.getInstance().getPlatformManager()
-                    .queryCapability(Capability.GAME_HOOKS).getRegistries().getBiomeRegistry();
+                .queryCapability(Capability.GAME_HOOKS).getRegistries().getBiomeRegistry();
 
             PaginationBox paginationBox = PaginationBox.fromComponents("Available Biomes", "/biomelist -p %page%",
-                    BiomeType.REGISTRY.values().stream()
-                            .map(biomeType -> TextComponent.builder()
-                                .append(biomeType.getId())
-                                .append(" (")
-                                .append(biomeRegistry.getRichName(biomeType))
-                                .append(")")
-                                .build())
-                            .collect(Collectors.toList()));
-             return paginationBox.create(page);
+                BiomeType.REGISTRY.values().stream()
+                    .map(biomeType -> TextComponent.builder()
+                        .append(biomeType.getId())
+                        .append(" (")
+                        .append(biomeRegistry.getRichName(biomeType))
+                        .append(")")
+                        .build())
+                    .collect(Collectors.toList()));
+            return paginationBox.create(page);
         }, (Component) null);
     }
 

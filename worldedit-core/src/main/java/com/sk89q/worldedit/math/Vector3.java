@@ -19,12 +19,12 @@
 
 package com.sk89q.worldedit.math;
 
-import static com.google.common.base.Preconditions.checkArgument;
-
 import com.google.common.collect.ComparisonChain;
 import com.sk89q.worldedit.math.transform.AffineTransform;
 
 import java.util.Comparator;
+
+import static com.google.common.base.Preconditions.checkArgument;
 
 /**
  * An immutable 3-dimensional vector.
@@ -52,6 +52,8 @@ public final class Vector3 {
                     return ONE;
                 }
                 break;
+            default:
+                break;
         }
         return new Vector3(x, y, z);
     }
@@ -69,15 +71,18 @@ public final class Vector3 {
 
     /**
      * Returns a comparator that sorts vectors first by Y, then Z, then X.
-     * 
+     *
      * <p>
      * Useful for sorting by chunk block storage order.
+     * </p>
      */
     public static Comparator<Vector3> sortByCoordsYzx() {
         return YzxOrderComparator.YZX_ORDER;
     }
 
-    private final double x, y, z;
+    private final double x;
+    private final double y;
+    private final double z;
 
     /**
      * Construct an instance.
@@ -179,7 +184,9 @@ public final class Vector3 {
      * @return a new vector
      */
     public Vector3 add(Vector3... others) {
-        double newX = x, newY = y, newZ = z;
+        double newX = x;
+        double newY = y;
+        double newZ = z;
 
         for (Vector3 other : others) {
             newX += other.x;
@@ -222,7 +229,9 @@ public final class Vector3 {
      * @return a new vector
      */
     public Vector3 subtract(Vector3... others) {
-        double newX = x, newY = y, newZ = z;
+        double newX = x;
+        double newY = y;
+        double newZ = z;
 
         for (Vector3 other : others) {
             newX -= other.x;
@@ -262,7 +271,9 @@ public final class Vector3 {
      * @return a new vector
      */
     public Vector3 multiply(Vector3... others) {
-        double newX = x, newY = y, newZ = z;
+        double newX = x;
+        double newY = y;
+        double newZ = z;
 
         for (Vector3 other : others) {
             newX *= other.x;

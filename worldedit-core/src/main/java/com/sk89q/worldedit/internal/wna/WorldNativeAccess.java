@@ -110,7 +110,9 @@ public interface WorldNativeAccess<NC, NBS, NP> {
     /**
      * Receive the current side-effect set from the high level call.
      *
+     * <p>
      * This allows the implementation to branch on the side-effects internally.
+     * </p>
      *
      * @param sideEffectSet the set of side-effects
      */
@@ -149,9 +151,11 @@ public interface WorldNativeAccess<NC, NBS, NP> {
     void onBlockStateChange(NP pos, NBS oldState, NBS newState);
 
     /**
-     * This is a heavily modified function stripped from MC to apply worldedit-modifications.
+     * This is a heavily modified function stripped from MC to apply WorldEdit-modifications.
      *
+     * <p>
      * See Forge's World.markAndNotifyBlock
+     * </p>
      */
     default void markAndNotifyBlock(NP pos, NC chunk, NBS oldState, NBS newState, SideEffectSet sideEffectSet) {
         NBS blockState1 = getBlockState(chunk, pos);

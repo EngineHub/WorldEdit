@@ -65,13 +65,17 @@ public final class Blocks {
         states.forEach((key, value) -> {
             @SuppressWarnings("unchecked")
             Property<Object> prop = (Property<Object>) existing.get(key);
-            if (prop == null) return;
+            if (prop == null) {
+                return;
+            }
             Object val = null;
             try {
                 val = prop.getValueFor(value);
             } catch (IllegalArgumentException ignored) {
             }
-            if (val == null) return;
+            if (val == null) {
+                return;
+            }
             newMap.put(prop, val);
         });
         return newMap;

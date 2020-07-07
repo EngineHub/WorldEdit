@@ -153,8 +153,9 @@ public class HttpRequest implements Closeable {
                 out.close();
             }
 
-            inputStream = conn.getResponseCode() == HttpURLConnection.HTTP_OK ?
-                    conn.getInputStream() : conn.getErrorStream();
+            inputStream = conn.getResponseCode() == HttpURLConnection.HTTP_OK
+                ? conn.getInputStream()
+                : conn.getErrorStream();
 
             successful = true;
         } finally {
@@ -295,8 +296,10 @@ public class HttpRequest implements Closeable {
     }
 
     @Override
-    public void close() throws IOException {
-        if (conn != null) conn.disconnect();
+    public void close() {
+        if (conn != null) {
+            conn.disconnect();
+        }
     }
 
     /**
@@ -370,7 +373,7 @@ public class HttpRequest implements Closeable {
     /**
      * Used with {@link #bodyForm(Form)}.
      */
-    public final static class Form {
+    public static final class Form {
         public final List<String> elements = new ArrayList<>();
 
         private Form() {
@@ -385,8 +388,8 @@ public class HttpRequest implements Closeable {
          */
         public Form add(String key, String value) {
             try {
-                elements.add(URLEncoder.encode(key, "UTF-8") +
-                        "=" + URLEncoder.encode(value, "UTF-8"));
+                elements.add(URLEncoder.encode(key, "UTF-8")
+                    + "=" + URLEncoder.encode(value, "UTF-8"));
                 return this;
             } catch (UnsupportedEncodingException e) {
                 throw new RuntimeException(e);

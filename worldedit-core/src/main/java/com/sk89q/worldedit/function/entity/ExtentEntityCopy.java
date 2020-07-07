@@ -19,8 +19,6 @@
 
 package com.sk89q.worldedit.function.entity;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.jnbt.CompoundTagBuilder;
 import com.sk89q.jnbt.Tag;
@@ -37,6 +35,8 @@ import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.util.Direction.Flag;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.entity.EntityTypes;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Copies entities provided to the function to the provided destination
@@ -107,9 +107,9 @@ public class ExtentEntityCopy implements EntityFunction {
             }
             Vector3 newDirection;
 
-            newDirection = transform.isIdentity() ?
-                    entity.getLocation().getDirection()
-                    : transform.apply(location.getDirection()).subtract(transform.apply(Vector3.ZERO)).normalize();
+            newDirection = transform.isIdentity()
+                ? entity.getLocation().getDirection()
+                : transform.apply(location.getDirection()).subtract(transform.apply(Vector3.ZERO)).normalize();
             newLocation = new Location(destination, newPosition.add(to.round().add(0.5, 0.5, 0.5)), newDirection);
 
             // Some entities store their position data in NBT

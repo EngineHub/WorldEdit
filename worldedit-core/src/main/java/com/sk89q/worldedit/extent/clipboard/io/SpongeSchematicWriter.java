@@ -19,8 +19,6 @@
 
 package com.sk89q.worldedit.extent.clipboard.io;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import com.google.common.collect.Maps;
 import com.sk89q.jnbt.ByteArrayTag;
 import com.sk89q.jnbt.CompoundTag;
@@ -52,6 +50,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Writes schematic files using the Sponge schematic format.
@@ -153,11 +153,7 @@ public class SpongeSchematicWriter implements ClipboardWriter {
                         values.remove("z");
 
                         values.put("Id", new StringTag(block.getNbtId()));
-                        values.put("Pos", new IntArrayTag(new int[]{
-                                x,
-                                y,
-                                z
-                        }));
+                        values.put("Pos", new IntArrayTag(new int[] { x, y, z }));
 
                         tileEntities.add(new CompoundTag(values));
                     }

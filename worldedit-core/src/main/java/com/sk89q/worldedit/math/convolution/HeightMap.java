@@ -19,8 +19,6 @@
 
 package com.sk89q.worldedit.math.convolution;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.function.mask.Mask;
@@ -30,6 +28,8 @@ import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockTypes;
 
 import javax.annotation.Nullable;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Allows applications of Kernels onto the region's height map.
@@ -46,7 +46,7 @@ public class HeightMap {
     private final EditSession session;
 
     /**
-     * Constructs the HeightMap
+     * Constructs the HeightMap.
      *
      * @param session an edit session
      * @param region the region
@@ -81,9 +81,8 @@ public class HeightMap {
      * @param filter the filter
      * @param iterations the number of iterations
      * @return number of blocks affected
-     * @throws MaxChangedBlocksException
+     * @throws MaxChangedBlocksException if the maximum block change limit is exceeded
      */
-
     public int applyFilter(HeightMapFilter filter, int iterations) throws MaxChangedBlocksException {
         checkNotNull(filter);
 
@@ -98,13 +97,12 @@ public class HeightMap {
     }
 
     /**
-     * Apply a raw heightmap to the region
+     * Apply a raw heightmap to the region.
      *
      * @param data the data
      * @return number of blocks affected
-     * @throws MaxChangedBlocksException
+     * @throws MaxChangedBlocksException if the maximum block change limit is exceeded
      */
-
     public int apply(int[] data) throws MaxChangedBlocksException {
         checkNotNull(data);
 

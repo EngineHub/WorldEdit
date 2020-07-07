@@ -44,7 +44,6 @@ import com.sk89q.worldedit.world.weather.WeatherType;
 
 import java.nio.file.Path;
 import java.util.Set;
-
 import javax.annotation.Nullable;
 
 /**

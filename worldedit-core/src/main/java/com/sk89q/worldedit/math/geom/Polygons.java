@@ -31,19 +31,18 @@ import java.util.List;
 public final class Polygons {
 
     private Polygons() {
-        
     }
 
     /**
      * Calculates the polygon shape of a cylinder which can then be used for e.g. intersection detection.
-     * 
+     *
      * @param center the center point of the cylinder
      * @param radius the radius of the cylinder
      * @param maxPoints max points to be used for the calculation
      * @return a list of {@link BlockVector2} which resemble the shape as a polygon
      */
     public static List<BlockVector2> polygonizeCylinder(BlockVector2 center, Vector2 radius, int maxPoints) {
-        int nPoints = (int) Math.ceil(Math.PI*radius.length());
+        int nPoints = (int) Math.ceil(Math.PI * radius.length());
 
         // These strange semantics for maxPoints are copied from the selectSecondary method.
         if (maxPoints >= 0 && nPoints >= maxPoints) {
@@ -60,5 +59,5 @@ public final class Polygons {
 
         return points;
     }
-    
+
 }

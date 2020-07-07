@@ -40,7 +40,6 @@ import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.block.BlockTypes;
 import com.sk89q.worldedit.world.item.ItemType;
 import com.sk89q.worldedit.world.item.ItemTypes;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.Item;
@@ -59,10 +58,9 @@ import java.util.Comparator;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
+import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-
-import javax.annotation.Nullable;
 
 public final class ForgeAdapter {
 

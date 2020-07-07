@@ -37,7 +37,6 @@ import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 
-import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -45,6 +44,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.Set;
+import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -144,6 +144,8 @@ public class BlockTransformExtent extends AbstractDelegateExtent {
                             break;
                         case "z":
                             value = Direction.NORTH;
+                            break;
+                        default:
                             break;
                     }
                     if (value != null) {

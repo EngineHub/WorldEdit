@@ -45,14 +45,14 @@ import org.enginehub.piston.inject.MapBackedValueStore;
 import java.util.Optional;
 
 /**
- * Handles all events thrown in relation to a Player
+ * Handles all events thrown in relation to a Player.
  */
 public class WorldEditListener implements Listener {
 
     private final WorldEditPlugin plugin;
 
     /**
-     * Construct the object;
+     * Construct the object.
      *
      * @param plugin the plugin
      */
@@ -85,7 +85,7 @@ public class WorldEditListener implements Listener {
     }
 
     /**
-     * Called when a player interacts
+     * Called when a player interacts.
      *
      * @param event Relevant event details
      */

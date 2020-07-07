@@ -101,8 +101,11 @@ public class ChunkCommands {
         final Region region = session.getSelection(world);
 
         WorldEditAsyncCommandBuilder.createAndSendMessage(actor,
-                () -> new ChunkListPaginationBox(region).create(page),
-                TranslatableComponent.of("worldedit.listchunks.listfor", TextComponent.of(actor.getName())));
+            () -> new ChunkListPaginationBox(region).create(page),
+            TranslatableComponent.of(
+                "worldedit.listchunks.listfor",
+                TextComponent.of(actor.getName())
+            ));
     }
 
     @Command(

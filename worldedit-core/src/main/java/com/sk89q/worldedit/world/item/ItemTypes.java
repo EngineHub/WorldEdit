@@ -19,8 +19,8 @@
 
 package com.sk89q.worldedit.world.item;
 
-import javax.annotation.Nullable;
 import java.util.Optional;
+import javax.annotation.Nullable;
 
 public final class ItemTypes {
 

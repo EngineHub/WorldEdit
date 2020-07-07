@@ -49,8 +49,8 @@ public class TrueZipMcRegionChunkStore extends McRegionChunkStore {
      *
      * @param zipFile the ZIP file
      * @param folder the folder to look into
-     * @throws IOException
-     * @throws ZipException 
+     * @throws IOException if there is an error opening the zip
+     * @throws ZipException if there is an error opening the zip
      */
     public TrueZipMcRegionChunkStore(File zipFile, String folder) throws IOException, ZipException {
         this.zipFile = zipFile;
@@ -64,8 +64,8 @@ public class TrueZipMcRegionChunkStore extends McRegionChunkStore {
      * be detected.
      *
      * @param zipFile the ZIP file
-     * @throws IOException
-     * @throws ZipException
+     * @throws IOException if there is an error opening the zip
+     * @throws ZipException if there is an error opening the zip
      */
     public TrueZipMcRegionChunkStore(File zipFile) throws IOException, ZipException {
         this.zipFile = zipFile;
@@ -79,8 +79,8 @@ public class TrueZipMcRegionChunkStore extends McRegionChunkStore {
      * @param name the name
      * @param worldName the world name
      * @return an input stream
-     * @throws IOException
-     * @throws DataException
+     * @throws IOException if there is an error getting the chunk data
+     * @throws DataException if there is an error getting the chunk data
      */
     @Override
     @SuppressWarnings("unchecked")
@@ -101,7 +101,9 @@ public class TrueZipMcRegionChunkStore extends McRegionChunkStore {
                     // Check for file
                     if (pattern.matcher(testEntry.getName()).matches()) {
                         folder = testEntry.getName().substring(0, testEntry.getName().lastIndexOf('/'));
-                        if (folder.endsWith("poi")) continue;
+                        if (folder.endsWith("poi")) {
+                            continue;
+                        }
                         name = folder + "/" + name;
                         break;
                     }
@@ -134,7 +136,7 @@ public class TrueZipMcRegionChunkStore extends McRegionChunkStore {
 
     /**
      * Get an entry from the ZIP, trying both types of slashes.
-     * 
+     *
      * @param file the file
      * @return an entry
      */

@@ -52,7 +52,6 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.Locale;
 import java.util.UUID;
-
 import javax.annotation.Nullable;
 
 public class BukkitPlayer extends AbstractPlayerActor {
@@ -115,21 +114,21 @@ public class BukkitPlayer extends AbstractPlayerActor {
     @Override
     public void print(String msg) {
         for (String part : msg.split("\n")) {
-            player.sendMessage("\u00A7d" + part);
+            player.sendMessage("§d" + part);
         }
     }
 
     @Override
     public void printDebug(String msg) {
         for (String part : msg.split("\n")) {
-            player.sendMessage("\u00A77" + part);
+            player.sendMessage("§7" + part);
         }
     }
 
     @Override
     public void printError(String msg) {
         for (String part : msg.split("\n")) {
-            player.sendMessage("\u00A7c" + part);
+            player.sendMessage("§c" + part);
         }
     }
 

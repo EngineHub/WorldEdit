@@ -19,13 +19,13 @@
 
 package com.sk89q.worldedit.fabric;
 
-import static com.google.common.base.Preconditions.checkArgument;
-
 import com.google.common.collect.ImmutableList;
 import com.sk89q.worldedit.registry.state.Property;
 
 import java.util.List;
 import java.util.Optional;
+
+import static com.google.common.base.Preconditions.checkArgument;
 
 class PropertyAdapter<T extends Comparable<T>> implements Property<T> {
 

@@ -140,11 +140,11 @@ public class ForgeWorldEdit {
 
         WorldEdit.getInstance().getPlatformManager().register(platform);
 
-//  TODO      if (ModList.get().isLoaded("sponge")) {
-//            this.provider = new ForgePermissionsProvider.SpongePermissionsProvider();
-//        } else {
+        //  TODO      if (ModList.get().isLoaded("sponge")) {
+        //            this.provider = new ForgePermissionsProvider.SpongePermissionsProvider();
+        //        } else {
         this.provider = new ForgePermissionsProvider.VanillaPermissionsProvider(platform);
-//        }
+        //        }
     }
 
     private void setupRegistries() {
@@ -217,8 +217,9 @@ public class ForgeWorldEdit {
             return;
         }
 
-        if (!platform.isHookingEvents())
+        if (!platform.isHookingEvents()) {
             return; // We have to be told to catch these events
+        }
 
         if (event.getWorld().isRemote && event instanceof LeftClickEmpty) {
             // catch LCE, pass it to server

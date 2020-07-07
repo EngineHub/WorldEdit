@@ -39,18 +39,17 @@ import com.sk89q.worldedit.world.block.BlockTypes;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
-
 import javax.annotation.Nullable;
 
 /**
  * A pickaxe mode that removes floating treetops (logs and leaves not connected
- * to anything else)
+ * to anything else).
  */
 public class FloatingTreeRemover implements BlockTool {
     private final int rangeSq;
 
     public FloatingTreeRemover() {
-        rangeSq = 100*100;
+        rangeSq = 100 * 100;
     }
 
     @Override

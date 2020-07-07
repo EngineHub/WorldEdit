@@ -58,10 +58,10 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 
-import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.Locale;
 import java.util.UUID;
+import javax.annotation.Nullable;
 
 public class FabricPlayer extends AbstractPlayerActor {
 

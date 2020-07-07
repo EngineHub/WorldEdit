@@ -19,10 +19,6 @@
 
 package com.sk89q.worldedit.command.util;
 
-import static com.sk89q.worldedit.internal.command.CommandUtil.byCleanName;
-import static com.sk89q.worldedit.internal.command.CommandUtil.getSubCommands;
-import static java.util.stream.Collectors.toList;
-
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
@@ -41,6 +37,10 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static com.sk89q.worldedit.internal.command.CommandUtil.byCleanName;
+import static com.sk89q.worldedit.internal.command.CommandUtil.getSubCommands;
+import static java.util.stream.Collectors.toList;
 
 /**
  * Implementation of the //help command.

@@ -96,27 +96,27 @@ public class CLIWorldEdit {
         for (Map.Entry<String, FileRegistries.BlockManifest> manifestEntry : fileRegistries.getDataFile().blocks.entrySet()) {
             if (BlockType.REGISTRY.get(manifestEntry.getKey()) == null) {
                 BlockType.REGISTRY.register(manifestEntry.getKey(), new BlockType(manifestEntry.getKey(), input -> {
-                            ParserContext context = new ParserContext();
-                            context.setPreferringWildcard(true);
-                            context.setTryLegacy(false);
-                            context.setRestricted(false);
-                            try {
-                                FuzzyBlockState state = (FuzzyBlockState) WorldEdit.getInstance().getBlockFactory().parseFromInput(
-                                        manifestEntry.getValue().defaultstate,
-                                        context
-                                ).toImmutableState();
-                                BlockState defaultState = input.getBlockType().getAllStates().get(0);
-                                for (Map.Entry<Property<?>, Object> propertyObjectEntry : state.getStates().entrySet()) {
-                                    @SuppressWarnings("unchecked")
-                                    Property<Object> prop = (Property<Object>) propertyObjectEntry.getKey();
-                                    defaultState = defaultState.with(prop, propertyObjectEntry.getValue());
-                                }
-                                return defaultState;
-                            } catch (InputParseException e) {
-                                LOGGER.warn("Error loading block state for " + manifestEntry.getKey(), e);
-                                return input;
-                            }
-                        }));
+                    ParserContext context = new ParserContext();
+                    context.setPreferringWildcard(true);
+                    context.setTryLegacy(false);
+                    context.setRestricted(false);
+                    try {
+                        FuzzyBlockState state = (FuzzyBlockState) WorldEdit.getInstance().getBlockFactory().parseFromInput(
+                            manifestEntry.getValue().defaultstate,
+                            context
+                        ).toImmutableState();
+                        BlockState defaultState = input.getBlockType().getAllStates().get(0);
+                        for (Map.Entry<Property<?>, Object> propertyObjectEntry : state.getStates().entrySet()) {
+                            @SuppressWarnings("unchecked")
+                            Property<Object> prop = (Property<Object>) propertyObjectEntry.getKey();
+                            defaultState = defaultState.with(prop, propertyObjectEntry.getValue());
+                        }
+                        return defaultState;
+                    } catch (InputParseException e) {
+                        LOGGER.warn("Error loading block state for " + manifestEntry.getKey(), e);
+                        return input;
+                    }
+                }));
             }
         }
         // Items

@@ -82,7 +82,9 @@ public final class MaskFactory extends AbstractFactory<Mask> {
         final String[] split = input.split(" ");
         if (split.length > 1) {
             String prev = input.substring(0, input.lastIndexOf(" ")) + " ";
-            return super.getSuggestions(split[split.length -1]).stream().map(s -> prev + s).collect(Collectors.toList());
+            return super.getSuggestions(split[split.length - 1]).stream()
+                .map(s -> prev + s)
+                .collect(Collectors.toList());
         }
         return super.getSuggestions(input);
     }

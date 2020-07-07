@@ -19,8 +19,6 @@
 
 package com.sk89q.worldedit.event.platform;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import com.sk89q.worldedit.event.Cancellable;
 import com.sk89q.worldedit.event.Event;
 import com.sk89q.worldedit.extension.platform.Actor;
@@ -28,6 +26,8 @@ import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.util.Location;
 
 import javax.annotation.Nullable;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Called when a block is interacted with.

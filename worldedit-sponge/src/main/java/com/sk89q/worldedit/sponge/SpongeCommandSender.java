@@ -19,9 +19,6 @@
 
 package com.sk89q.worldedit.sponge;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.internal.cui.CUIEvent;
@@ -40,8 +37,10 @@ import org.spongepowered.api.text.serializer.TextSerializers;
 import java.io.File;
 import java.util.Locale;
 import java.util.UUID;
-
 import javax.annotation.Nullable;
+
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public class SpongeCommandSender implements Actor {
 

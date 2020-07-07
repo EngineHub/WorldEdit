@@ -307,8 +307,9 @@ class CompilingVisitor extends ExpressionBaseVisitor<MethodHandle> {
                 return ExpressionHandles.call(data ->
                     -(double) ExpressionHandles.standardInvoke(value, data)
                 );
+            default:
+                throw ExpressionHelper.evalException(ctx, "Invalid text for plus/minus expr: " + ctx.op.getText());
         }
-        throw ExpressionHelper.evalException(ctx, "Invalid text for plus/minus expr: " + ctx.op.getText());
     }
 
     @Override
@@ -404,8 +405,9 @@ class CompilingVisitor extends ExpressionBaseVisitor<MethodHandle> {
                     return (l, r) -> l / r;
                 case MODULO:
                     return (l, r) -> l % r;
+                default:
+                    throw ExpressionHelper.evalException(ctx, "Invalid text for multiplicative expr: " + ctx.op.getText());
             }
-            throw ExpressionHelper.evalException(ctx, "Invalid text for multiplicative expr: " + ctx.op.getText());
         });
     }
 
@@ -417,8 +419,9 @@ class CompilingVisitor extends ExpressionBaseVisitor<MethodHandle> {
                     return Double::sum;
                 case MINUS:
                     return (l, r) -> l - r;
+                default:
+                    throw ExpressionHelper.evalException(ctx, "Invalid text for additive expr: " + ctx.op.getText());
             }
-            throw ExpressionHelper.evalException(ctx, "Invalid text for additive expr: " + ctx.op.getText());
         });
     }
 
@@ -430,8 +433,9 @@ class CompilingVisitor extends ExpressionBaseVisitor<MethodHandle> {
                     return (l, r) -> (double) ((long) l << (long) r);
                 case RIGHT_SHIFT:
                     return (l, r) -> (double) ((long) l >> (long) r);
+                default:
+                    throw ExpressionHelper.evalException(ctx, "Invalid text for shift expr: " + ctx.op.getText());
             }
-            throw ExpressionHelper.evalException(ctx, "Invalid text for shift expr: " + ctx.op.getText());
         });
     }
 
@@ -447,8 +451,9 @@ class CompilingVisitor extends ExpressionBaseVisitor<MethodHandle> {
                     return (l, r) -> ExpressionHandles.boolToDouble(l > r);
                 case GREATER_THAN_OR_EQUAL:
                     return (l, r) -> ExpressionHandles.boolToDouble(l >= r);
+                default:
+                    throw ExpressionHelper.evalException(ctx, "Invalid text for relational expr: " + ctx.op.getText());
             }
-            throw ExpressionHelper.evalException(ctx, "Invalid text for relational expr: " + ctx.op.getText());
         });
     }
 
@@ -462,8 +467,9 @@ class CompilingVisitor extends ExpressionBaseVisitor<MethodHandle> {
                     return (l, r) -> ExpressionHandles.boolToDouble(l != r);
                 case NEAR:
                     return (l, r) -> ExpressionHandles.boolToDouble(almostEqual2sComplement(l, r));
+                default:
+                    throw ExpressionHelper.evalException(ctx, "Invalid text for equality expr: " + ctx.op.getText());
             }
-            throw ExpressionHelper.evalException(ctx, "Invalid text for equality expr: " + ctx.op.getText());
         });
     }
 
@@ -475,11 +481,15 @@ class CompilingVisitor extends ExpressionBaseVisitor<MethodHandle> {
 
         long aLong = Double.doubleToRawLongBits(a);
         // Make aLong lexicographically ordered as a twos-complement long
-        if (aLong < 0) aLong = 0x8000000000000000L - aLong;
+        if (aLong < 0) {
+            aLong = 0x8000000000000000L - aLong;
+        }
 
         long bLong = Double.doubleToRawLongBits(b);
         // Make bLong lexicographically ordered as a twos-complement long
-        if (bLong < 0) bLong = 0x8000000000000000L - bLong;
+        if (bLong < 0) {
+            bLong = 0x8000000000000000L - bLong;
+        }
 
         final long longDiff = Math.abs(aLong - bLong);
         return longDiff <= 450359963L;
@@ -555,8 +565,8 @@ class CompilingVisitor extends ExpressionBaseVisitor<MethodHandle> {
                         value -= arg;
                         break;
                     default:
-                        throw ExpressionHelper.evalException(ctx, "Invalid text for assign expr: " +
-                            ctx.assignmentOperator().getText());
+                        throw ExpressionHelper.evalException(ctx, "Invalid text for assign expr: "
+                            + ctx.assignmentOperator().getText());
                 }
             }
             variable.setValue(value);

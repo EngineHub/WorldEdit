@@ -19,8 +19,6 @@
 
 package com.sk89q.worldedit.extension.platform;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Player;
@@ -39,8 +37,9 @@ import com.sk89q.worldedit.world.gamemode.GameMode;
 
 import java.util.Locale;
 import java.util.UUID;
-
 import javax.annotation.Nullable;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 class PlayerProxy extends AbstractPlayerActor {
 

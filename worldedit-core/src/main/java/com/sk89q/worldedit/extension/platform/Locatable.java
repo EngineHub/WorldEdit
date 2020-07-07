@@ -55,7 +55,7 @@ public interface Locatable {
      *
      * @param pos where to move them
      * @deprecated This method may fail without indication. Use {@link #trySetPosition(Vector3)}
-     * instead
+     *      instead
      */
     @Deprecated
     default void setPosition(Vector3 pos) {

@@ -144,7 +144,7 @@ public class CraftScriptContext extends CraftScriptEnvironment {
      * @param min a number of arguments
      * @param max -1 for no maximum
      * @param usage usage string
-     * @throws InsufficientArgumentsException
+     * @throws InsufficientArgumentsException if the arguments are not "sufficiently" good
      */
     public void checkArgs(int min, int max, String usage)
             throws InsufficientArgumentsException {
@@ -243,7 +243,7 @@ public class CraftScriptContext extends CraftScriptEnvironment {
      * @param defaultExt default extension to append if there is none
      * @param exts list of extensions for file open dialog, null for no filter
      * @return a file
-     * @throws FilenameException
+     * @throws FilenameException if there is a problem with the name of the file
      */
     public File getSafeOpenFile(String folder, String filename, String defaultExt, String... exts) throws FilenameException {
         File dir = controller.getWorkingDirectoryFile(folder);
@@ -264,7 +264,7 @@ public class CraftScriptContext extends CraftScriptEnvironment {
      * @param defaultExt default extension to append if there is none
      * @param exts list of extensions for file save dialog, null for no filter
      * @return a file
-     * @throws FilenameException
+     * @throws FilenameException if there is a problem with the name of the file
      */
     public File getSafeSaveFile(String folder, String filename, String defaultExt, String... exts) throws FilenameException {
         File dir = controller.getWorkingDirectoryFile(folder);

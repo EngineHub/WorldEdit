@@ -20,7 +20,6 @@
 package com.sk89q.worldedit.util.io.file;
 
 import java.io.IOException;
-import java.nio.file.FileSystem;
 import java.nio.file.Path;
 import java.util.Optional;
 

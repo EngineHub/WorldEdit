@@ -42,7 +42,7 @@ public class FluidCategory extends Category<FluidType> implements Keyed {
     protected Set<FluidType> load() {
         return Collections.emptySet(); // TODO Make this work.
         //        return WorldEdit.getInstance().getPlatformManager()
-//                .queryCapability(Capability.GAME_HOOKS).getRegistries()
-//                .getBlockCategoryRegistry().getCategorisedByName(this.id);
+        //                .queryCapability(Capability.GAME_HOOKS).getRegistries()
+        //                .getBlockCategoryRegistry().getCategorisedByName(this.id);
     }
 }

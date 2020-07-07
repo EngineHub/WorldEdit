@@ -19,13 +19,9 @@
 
 package com.sk89q.worldedit.bukkit;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.extension.platform.AbstractNonPlayerActor;
 import com.sk89q.worldedit.session.SessionKey;
-import com.sk89q.worldedit.util.auth.AuthorizationException;
 import com.sk89q.worldedit.util.formatting.WorldEditText;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.adapter.bukkit.TextAdapter;
@@ -34,8 +30,10 @@ import org.bukkit.entity.Player;
 
 import java.util.Locale;
 import java.util.UUID;
-
 import javax.annotation.Nullable;
+
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public class BukkitCommandSender extends AbstractNonPlayerActor {
 
@@ -76,21 +74,21 @@ public class BukkitCommandSender extends AbstractNonPlayerActor {
     @Override
     public void print(String msg) {
         for (String part : msg.split("\n")) {
-            sender.sendMessage("\u00A7d" + part);
+            sender.sendMessage("§d" + part);
         }
     }
 
     @Override
     public void printDebug(String msg) {
         for (String part : msg.split("\n")) {
-            sender.sendMessage("\u00A77" + part);
+            sender.sendMessage("§7" + part);
         }
     }
 
     @Override
     public void printError(String msg) {
         for (String part : msg.split("\n")) {
-            sender.sendMessage("\u00A7c" + part);
+            sender.sendMessage("§c" + part);
         }
     }
 
@@ -110,7 +108,7 @@ public class BukkitCommandSender extends AbstractNonPlayerActor {
     }
 
     @Override
-    public void checkPermission(String permission) throws AuthorizationException {
+    public void checkPermission(String permission) {
     }
 
     @Override

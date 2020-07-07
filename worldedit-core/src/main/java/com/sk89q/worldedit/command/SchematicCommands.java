@@ -60,9 +60,9 @@ import org.enginehub.piston.annotation.param.Arg;
 import org.enginehub.piston.annotation.param.ArgFlag;
 import org.enginehub.piston.annotation.param.Switch;
 import org.enginehub.piston.exception.CommandException;
+import org.enginehub.piston.exception.StopExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.enginehub.piston.exception.StopExecutionException;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -145,15 +145,14 @@ public class SchematicCommands {
         name = "save",
         desc = "Save a schematic into your clipboard"
     )
-    @CommandPermissions({"worldedit.clipboard.save", "worldedit.schematic.save"})
+    @CommandPermissions({ "worldedit.clipboard.save", "worldedit.schematic.save" })
     public void save(Actor actor, LocalSession session,
                      @Arg(desc = "File name.")
                          String filename,
                      @Arg(desc = "Format name.", def = "sponge")
                          String formatName,
                      @Switch(name = 'f', desc = "Overwrite an existing file.")
-                         boolean allowOverwrite
-        ) throws WorldEditException {
+                         boolean allowOverwrite) throws WorldEditException {
         LocalConfiguration config = worldEdit.getConfiguration();
 
         File dir = worldEdit.getWorkingDirectoryFile(config.saveDir);
@@ -391,7 +390,9 @@ public class SchematicCommands {
                     }
                 } else {
                     res = Long.compare(f1.lastModified(), f2.lastModified()); // use date if there is a flag
-                    if (sortType == 1) res = -res; // flip date for newest first instead of oldest first
+                    if (sortType == 1) {
+                        res = -res; // flip date for newest first instead of oldest first
+                    }
                 }
                 return res;
             });
@@ -403,12 +404,16 @@ public class SchematicCommands {
 
     private static List<File> allFiles(File root) {
         File[] files = root.listFiles();
-        if (files == null) return null;
+        if (files == null) {
+            return null;
+        }
         List<File> fileList = new ArrayList<>();
         for (File f : files) {
             if (f.isDirectory()) {
                 List<File> subFiles = allFiles(f);
-                if (subFiles == null) continue; // empty subdir
+                if (subFiles == null) {
+                    continue; // empty subdir
+                }
                 fileList.addAll(subFiles);
             } else {
                 fileList.add(f);

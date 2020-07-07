@@ -538,12 +538,13 @@ public class SelectionCommands {
         }
 
         final int finalPage = page;
-        WorldEditAsyncCommandBuilder.createAndSendMessage(actor,
-                () -> {
-                    BlockDistributionResult res = new BlockDistributionResult(distribution, separateStates);
-                    if (!actor.isPlayer()) res.formatForConsole();
-                    return res.create(finalPage);
-                }, (Component) null);
+        WorldEditAsyncCommandBuilder.createAndSendMessage(actor, () -> {
+            BlockDistributionResult res = new BlockDistributionResult(distribution, separateStates);
+            if (!actor.isPlayer()) {
+                res.formatForConsole();
+            }
+            return res.create(finalPage);
+        }, (Component) null);
     }
 
     @Command(

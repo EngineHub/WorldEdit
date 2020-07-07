@@ -47,15 +47,14 @@ public class BukkitImplLoader {
     private static final String CLASS_SUFFIX = ".class";
 
     private static final String LOAD_ERROR_MESSAGE =
-            "\n**********************************************\n" +
-            "** This WorldEdit version does not fully support your version of Bukkit.\n" +
-            "**\n" +
-            "** When working with blocks or undoing, chests will be empty, signs\n" +
-            "** will be blank, and so on. There will be no support for entity\n" +
-            "** and block property-related functions.\n" +
-            "**\n" +
-            "** Please see https://worldedit.enginehub.org/en/latest/faq/#bukkit-adapters\n" +
-            "**********************************************\n";
+        "\n**********************************************\n"
+            + "** This WorldEdit version does not fully support your version of Bukkit.\n"
+            + "**\n" + "** When working with blocks or undoing, chests will be empty, signs\n"
+            + "** will be blank, and so on. There will be no support for entity\n"
+            + "** and block property-related functions.\n"
+            + "**\n"
+            + "** Please see https://worldedit.enginehub.org/en/latest/faq/#bukkit-adapters\n"
+            + "**********************************************\n";
 
     /**
      * Create a new instance.
@@ -93,7 +92,9 @@ public class BukkitImplLoader {
 
                 String className = jarEntry.getName().replaceAll("[/\\\\]+", ".");
 
-                if (!className.startsWith(SEARCH_PACKAGE_DOT) || jarEntry.isDirectory()) continue;
+                if (!className.startsWith(SEARCH_PACKAGE_DOT) || jarEntry.isDirectory()) {
+                    continue;
+                }
 
                 int beginIndex = 0;
                 int endIndex = className.length() - CLASS_SUFFIX.length();
@@ -153,16 +154,18 @@ public class BukkitImplLoader {
         for (String className : adapterCandidates) {
             try {
                 Class<?> cls = Class.forName(className);
-                if (cls.isSynthetic()) continue;
+                if (cls.isSynthetic()) {
+                    continue;
+                }
                 if (BukkitImplAdapter.class.isAssignableFrom(cls)) {
                     return (BukkitImplAdapter) cls.newInstance();
                 }
             } catch (ClassNotFoundException e) {
-                log.warn("Failed to load the Bukkit adapter class '" + className +
-                        "' that is not supposed to be missing", e);
+                log.warn("Failed to load the Bukkit adapter class '" + className
+                    + "' that is not supposed to be missing", e);
             } catch (IllegalAccessException e) {
-                log.warn("Failed to load the Bukkit adapter class '" + className +
-                        "' that is not supposed to be raising this error", e);
+                log.warn("Failed to load the Bukkit adapter class '" + className
+                    + "' that is not supposed to be raising this error", e);
             } catch (Throwable e) {
                 if (className.equals(customCandidate)) {
                     log.warn("Failed to load the Bukkit adapter class '" + className + "'", e);

@@ -19,7 +19,13 @@
 
 package com.sk89q.worldedit.util.report;
 
-import java.lang.management.*;
+import java.lang.management.ClassLoadingMXBean;
+import java.lang.management.GarbageCollectorMXBean;
+import java.lang.management.ManagementFactory;
+import java.lang.management.OperatingSystemMXBean;
+import java.lang.management.RuntimeMXBean;
+import java.lang.management.ThreadInfo;
+import java.lang.management.ThreadMXBean;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 

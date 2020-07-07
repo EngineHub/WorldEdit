@@ -23,7 +23,8 @@ public class CommandInfo {
 
     private final String[] aliases;
     private final Object registeredWith;
-    private final String usage, desc;
+    private final String usage;
+    private final String desc;
     private final String[] permissions;
 
     public CommandInfo(String usage, String desc, String[] aliases, Object registeredWith) {

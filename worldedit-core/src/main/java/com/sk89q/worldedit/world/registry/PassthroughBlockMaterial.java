@@ -26,6 +26,7 @@ import static com.sk89q.worldedit.util.GuavaUtil.firstNonNull;
 public class PassthroughBlockMaterial implements BlockMaterial {
 
     private static final SimpleBlockMaterial DEFAULT_MATERIAL = new SimpleBlockMaterial();
+
     static {
         DEFAULT_MATERIAL.setFullCube(true);
         DEFAULT_MATERIAL.setOpaque(true);

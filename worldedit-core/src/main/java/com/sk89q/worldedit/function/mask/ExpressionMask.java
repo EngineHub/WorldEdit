@@ -19,16 +19,16 @@
 
 package com.sk89q.worldedit.function.mask;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
+import com.sk89q.worldedit.internal.expression.EvaluationException;
 import com.sk89q.worldedit.internal.expression.Expression;
 import com.sk89q.worldedit.internal.expression.ExpressionException;
-import com.sk89q.worldedit.internal.expression.EvaluationException;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.shape.WorldEditExpressionEnvironment;
 
-import javax.annotation.Nullable;
 import java.util.function.IntSupplier;
+import javax.annotation.Nullable;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * A mask that evaluates an expression.

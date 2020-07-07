@@ -37,7 +37,7 @@ fun Project.applyPlatformAndCoreConfiguration() {
 
     configure<CheckstyleExtension> {
         configFile = rootProject.file("config/checkstyle/checkstyle.xml")
-        toolVersion = "7.6.1"
+        toolVersion = "8.34"
     }
 
     tasks.withType<Test>().configureEach {

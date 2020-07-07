@@ -32,7 +32,7 @@ public class HeightMapFilter {
 
     /**
      * Construct the HeightMapFilter object.
-     * 
+     *
      * @param kernel the kernel
      */
     public HeightMapFilter(Kernel kernel) {
@@ -42,7 +42,7 @@ public class HeightMapFilter {
 
     /**
      * Construct the HeightMapFilter object.
-     * 
+     *
      * @param kernelWidth the width
      * @param kernelHeight the height
      * @param kernelData the data
@@ -53,15 +53,15 @@ public class HeightMapFilter {
     }
 
     /**
-     * @return the kernel
+     * Get the kernel.
      */
     public Kernel getKernel() {
         return kernel;
     }
 
     /**
-     * Set Kernel
-     * 
+     * Set the kernel.
+     *
      * @param kernel the kernel
      */
     public void setKernel(Kernel kernel) {
@@ -71,7 +71,7 @@ public class HeightMapFilter {
     }
 
     /**
-     * Filter with a 2D kernel
+     * Filter with a 2D kernel.
      *
      * @param inData the data
      * @param width the width
@@ -107,7 +107,9 @@ public class HeightMapFilter {
                     int matrixOffset = ky * kw;
                     for (int kx = 0; kx < kw; ++kx) {
                         float f = matrix[matrixOffset + kx];
-                        if (f == 0) continue;
+                        if (f == 0) {
+                            continue;
+                        }
 
                         int offsetX = x + kx - kox;
                         // Clamp coordinates inside data

@@ -97,8 +97,8 @@ public class MCEditSchematicReader extends NBTSchematicReader {
         checkNotNull(inputStream);
         this.inputStream = inputStream;
         this.fixer = null;
-                //com.sk89q.worldedit.WorldEdit.getInstance().getPlatformManager().queryCapability(
-                        //com.sk89q.worldedit.extension.platform.Capability.WORLD_EDITING).getDataFixer();
+        //com.sk89q.worldedit.WorldEdit.getInstance().getPlatformManager().queryCapability(
+        //com.sk89q.worldedit.extension.platform.Capability.WORLD_EDITING).getDataFixer();
     }
 
     @Override
@@ -188,7 +188,9 @@ public class MCEditSchematicReader extends NBTSchematicReader {
         Map<BlockVector3, BlockState> blockStates = new HashMap<>();
 
         for (Tag tag : tileEntities) {
-            if (!(tag instanceof CompoundTag)) continue;
+            if (!(tag instanceof CompoundTag)) {
+                continue;
+            }
             CompoundTag t = (CompoundTag) tag;
             Map<String, Tag> values = new HashMap<>(t.getValue());
             String id = t.getString("id");
@@ -298,7 +300,7 @@ public class MCEditSchematicReader extends NBTSchematicReader {
     }
 
     private String convertEntityId(String id) {
-        switch(id) {
+        switch (id) {
             case "AreaEffectCloud": return "area_effect_cloud";
             case "ArmorStand": return "armor_stand";
             case "CaveSpider": return "cave_spider";

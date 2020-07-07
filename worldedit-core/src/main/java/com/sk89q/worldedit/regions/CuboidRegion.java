@@ -19,9 +19,6 @@
 
 package com.sk89q.worldedit.regions;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.world.World;
@@ -31,6 +28,9 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Set;
+
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * An axis-aligned cuboid. It can be defined using two corners of the cuboid.
@@ -341,7 +341,9 @@ public class CuboidRegion extends AbstractRegion implements FlatRegion {
 
             @Override
             public BlockVector3 next() {
-                if (!hasNext()) throw new NoSuchElementException();
+                if (!hasNext()) {
+                    throw new NoSuchElementException();
+                }
                 BlockVector3 answer = BlockVector3.at(nextX, nextY, nextZ);
                 if (++nextX > max.getBlockX()) {
                     nextX = min.getBlockX();
@@ -372,7 +374,9 @@ public class CuboidRegion extends AbstractRegion implements FlatRegion {
 
             @Override
             public BlockVector2 next() {
-                if (!hasNext()) throw new NoSuchElementException();
+                if (!hasNext()) {
+                    throw new NoSuchElementException();
+                }
                 BlockVector2 answer = BlockVector2.at(nextX, nextZ);
                 if (++nextX > max.getBlockX()) {
                     nextX = min.getBlockX();

@@ -221,8 +221,6 @@ public class BlockState implements BlockStateHolder<BlockState> {
     /**
      * Internal method used for creating the initial BlockState.
      *
-     * Sets a value. DO NOT USE THIS.
-     *
      * @param property The state
      * @param value The value
      * @return The blockstate, for chaining

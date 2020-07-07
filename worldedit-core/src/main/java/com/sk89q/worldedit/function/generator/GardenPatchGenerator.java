@@ -84,8 +84,12 @@ public class GardenPatchGenerator implements RegionFunction {
      * @param pos the vine position
      */
     private void placeVine(BlockVector3 basePos, BlockVector3 pos) throws MaxChangedBlocksException {
-        if (pos.distance(basePos) > 4) return;
-        if (!editSession.getBlock(pos).getBlockType().getMaterial().isAir()) return;
+        if (pos.distance(basePos) > 4) {
+            return;
+        }
+        if (!editSession.getBlock(pos).getBlockType().getMaterial().isAir()) {
+            return;
+        }
 
         for (int i = -1; i > -3; --i) {
             BlockVector3 testPos = pos.add(0, i, 0);
@@ -152,6 +156,8 @@ public class GardenPatchGenerator implements RegionFunction {
                 }
                 setBlockIfAir(editSession, p = pos.add(-1, 0, -1), plant.applyBlock(p));
                 affected++;
+                break;
+            default:
                 break;
         }
     }

@@ -36,7 +36,6 @@ import com.sk89q.worldedit.world.block.BlockTypes;
 
 import java.util.HashSet;
 import java.util.Set;
-
 import javax.annotation.Nullable;
 
 /**
@@ -91,7 +90,7 @@ public class RecursivePickaxe implements BlockTool {
             BlockVector3 origin, double size, BlockType initialType, Set<BlockVector3> visited) throws MaxChangedBlocksException {
 
         final double distanceSq = origin.distanceSq(pos);
-        if (distanceSq > size*size || visited.contains(pos)) {
+        if (distanceSq > size * size || visited.contains(pos)) {
             return;
         }
 

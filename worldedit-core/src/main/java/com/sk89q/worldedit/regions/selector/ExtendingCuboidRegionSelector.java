@@ -122,9 +122,9 @@ public class ExtendingCuboidRegionSelector extends CuboidRegionSelector {
         region.setPos1(position1);
         region.setPos2(position2);
 
-        assert(region.contains(o1));
-        assert(region.contains(o2));
-        assert(region.contains(position));
+        assert (region.contains(o1));
+        assert (region.contains(o2));
+        assert (region.contains(position));
 
         return true;
     }

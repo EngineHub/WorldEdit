@@ -40,26 +40,27 @@ public interface ForgePermissionsProvider {
         @Override
         public boolean hasPermission(ServerPlayerEntity player, String permission) {
             ForgeConfiguration configuration = platform.getConfiguration();
-            return configuration.cheatMode ||
-                    ServerLifecycleHooks.getCurrentServer().getPlayerList().canSendCommands(player.getGameProfile()) ||
-                    (configuration.creativeEnable && player.interactionManager.getGameType() == GameType.CREATIVE);
+            return configuration.cheatMode
+                || ServerLifecycleHooks.getCurrentServer().getPlayerList().canSendCommands(player.getGameProfile())
+                || (configuration.creativeEnable && player.interactionManager.getGameType() == GameType.CREATIVE);
         }
 
         @Override
-        public void registerPermission(String permission) {}
+        public void registerPermission(String permission) {
+        }
     }
 
     // TODO Re-add when Sponge for 1.14 is out
-//    class SpongePermissionsProvider implements ForgePermissionsProvider {
-//
-//        @Override
-//        public boolean hasPermission(EntityPlayerMP player, String permission) {
-//            return ((Player) player).hasPermission(permission);
-//        }
-//
-//        @Override
-//        public void registerPermission(ICommand command, String permission) {
-//
-//        }
-//    }
+    //    class SpongePermissionsProvider implements ForgePermissionsProvider {
+    //
+    //        @Override
+    //        public boolean hasPermission(EntityPlayerMP player, String permission) {
+    //            return ((Player) player).hasPermission(permission);
+    //        }
+    //
+    //        @Override
+    //        public void registerPermission(ICommand command, String permission) {
+    //
+    //        }
+    //    }
 }

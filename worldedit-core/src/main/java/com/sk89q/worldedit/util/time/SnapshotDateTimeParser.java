@@ -19,9 +19,9 @@
 
 package com.sk89q.worldedit.util.time;
 
-import javax.annotation.Nullable;
 import java.nio.file.Path;
 import java.time.ZonedDateTime;
+import javax.annotation.Nullable;
 
 /**
  * Instances of this interface try to determine an {@link ZonedDateTime} from a given

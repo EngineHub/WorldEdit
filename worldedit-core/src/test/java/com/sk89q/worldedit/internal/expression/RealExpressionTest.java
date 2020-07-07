@@ -22,7 +22,6 @@ package com.sk89q.worldedit.internal.expression;
 import com.sk89q.worldedit.math.Vector3;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 

@@ -84,9 +84,9 @@ public class ExpressionHelper {
                 ? (mh.type().parameterCount() - 1) + "+"
                 : String.valueOf(mh.type().parameterCount()))
             .collect(Collectors.joining("/"));
-        throw evalException(ctx, "Incorrect number of arguments for function '" + fnName + "', " +
-            "expected " + possibleCounts + ", " +
-            "got " + ctx.args.size());
+        throw evalException(ctx, "Incorrect number of arguments for function '" + fnName + "', "
+            + "expected " + possibleCounts + ", "
+            + "got " + ctx.args.size());
     }
 
     // Special argument handle names

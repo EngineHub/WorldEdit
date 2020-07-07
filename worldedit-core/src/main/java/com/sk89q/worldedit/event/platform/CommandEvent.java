@@ -19,10 +19,10 @@
 
 package com.sk89q.worldedit.event.platform;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import com.sk89q.worldedit.event.AbstractCancellable;
 import com.sk89q.worldedit.extension.platform.Actor;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * This class is currently only for internal use. Do not post or catch this event.

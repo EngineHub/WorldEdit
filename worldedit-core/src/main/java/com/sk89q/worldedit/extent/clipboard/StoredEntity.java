@@ -19,12 +19,12 @@
 
 package com.sk89q.worldedit.extent.clipboard;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.util.Location;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * An implementation of {@link Entity} that stores a {@link BaseEntity} with it.

@@ -19,10 +19,10 @@
 
 package com.sk89q.worldedit.event.platform;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.event.Event;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Raised when the configuration has been loaded or re-loaded.

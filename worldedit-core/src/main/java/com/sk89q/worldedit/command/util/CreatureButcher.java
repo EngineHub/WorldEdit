@@ -51,7 +51,9 @@ public class CreatureButcher {
     }
 
     public void or(int flag, boolean on) {
-        if (on) flags |= flag;
+        if (on) {
+            flags |= flag;
+        }
     }
 
     public void or(int flag, boolean on, String permission) {

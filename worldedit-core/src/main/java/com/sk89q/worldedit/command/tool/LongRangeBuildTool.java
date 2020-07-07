@@ -56,7 +56,9 @@ public class LongRangeBuildTool extends BrushTool implements DoubleActionTraceTo
     @Override
     public boolean actSecondary(Platform server, LocalConfiguration config, Player player, LocalSession session) {
         Location pos = getTargetFace(player);
-        if (pos == null) return false;
+        if (pos == null) {
+            return false;
+        }
         BlockBag bag = session.getBlockBag(player);
 
         try (EditSession editSession = session.createEditSession(player)) {
@@ -84,7 +86,9 @@ public class LongRangeBuildTool extends BrushTool implements DoubleActionTraceTo
     @Override
     public boolean actPrimary(Platform server, LocalConfiguration config, Player player, LocalSession session) {
         Location pos = getTargetFace(player);
-        if (pos == null) return false;
+        if (pos == null) {
+            return false;
+        }
         BlockBag bag = session.getBlockBag(player);
 
         try (EditSession editSession = session.createEditSession(player)) {

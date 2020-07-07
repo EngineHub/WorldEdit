@@ -34,12 +34,13 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.server.ChunkHolder;
 import net.minecraft.world.server.ServerChunkProvider;
 
-import javax.annotation.Nullable;
 import java.lang.ref.WeakReference;
 import java.util.Objects;
+import javax.annotation.Nullable;
 
 public class ForgeWorldNativeAccess implements WorldNativeAccess<Chunk, BlockState, BlockPos> {
-    private static final int UPDATE = 1, NOTIFY = 2;
+    private static final int UPDATE = 1;
+    private static final int NOTIFY = 2;
 
     private final WeakReference<World> world;
     private SideEffectSet sideEffectSet;

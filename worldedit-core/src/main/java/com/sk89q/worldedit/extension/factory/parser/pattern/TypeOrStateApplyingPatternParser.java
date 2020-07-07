@@ -84,17 +84,27 @@ public class TypeOrStateApplyingPatternParser extends InputParser<Pattern> {
                     worldEdit.getBlockFactory().parseFromInput(type, context).getBlockType().getDefaultState());
         } else {
             // states given
-            if (!parts[1].endsWith("]")) throw new InputParseException(TranslatableComponent.of("worldedit.error.parser.missing-rbracket"));
+            if (!parts[1].endsWith("]")) {
+                throw new InputParseException(TranslatableComponent.of("worldedit.error.parser.missing-rbracket"));
+            }
             final String[] states = parts[1].substring(0, parts[1].length() - 1).split(",");
             Map<String, String> statesToSet = new HashMap<>();
             for (String state : states) {
-                if (state.isEmpty()) throw new InputParseException(TranslatableComponent.of("worldedit.error.parser.empty-state"));
+                if (state.isEmpty()) {
+                    throw new InputParseException(TranslatableComponent.of("worldedit.error.parser.empty-state"));
+                }
                 String[] propVal = state.split("=", 2);
-                if (propVal.length != 2) throw new InputParseException(TranslatableComponent.of("worldedit.error.parser.missing-equals-separator"));
+                if (propVal.length != 2) {
+                    throw new InputParseException(TranslatableComponent.of("worldedit.error.parser.missing-equals-separator"));
+                }
                 final String prop = propVal[0];
-                if (prop.isEmpty()) throw new InputParseException(TranslatableComponent.of("worldedit.error.parser.empty-property"));
+                if (prop.isEmpty()) {
+                    throw new InputParseException(TranslatableComponent.of("worldedit.error.parser.empty-property"));
+                }
                 final String value = propVal[1];
-                if (value.isEmpty()) throw new InputParseException(TranslatableComponent.of("worldedit.error.parser.empty-value"));
+                if (value.isEmpty()) {
+                    throw new InputParseException(TranslatableComponent.of("worldedit.error.parser.empty-value"));
+                }
                 if (statesToSet.put(prop, value) != null) {
                     throw new InputParseException(TranslatableComponent.of("worldedit.error.parser.duplicate-property", TextComponent.of(prop)));
                 }

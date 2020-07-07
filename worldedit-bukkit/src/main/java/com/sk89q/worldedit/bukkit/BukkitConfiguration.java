@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 
 /**
- * YAMLConfiguration but with setting for no op permissions and plugin root data folder
+ * YAMLConfiguration but with setting for no op permissions and plugin root data folder.
  */
 public class BukkitConfiguration extends YAMLConfiguration {
 
@@ -59,8 +59,8 @@ public class BukkitConfiguration extends YAMLConfiguration {
         File toDir = new File(getWorkingDirectory(), file);
         if (fromDir.exists() & !toDir.exists()) {
             if (fromDir.renameTo(toDir)) {
-                plugin.getLogger().info("Migrated " + name + " folder '" + file +
-                        "' from server root to plugin data folder.");
+                plugin.getLogger().info("Migrated " + name + " folder '" + file
+                    + "' from server root to plugin data folder.");
             } else {
                 plugin.getLogger().warning("Error while migrating " + name + " folder!");
             }

@@ -101,8 +101,9 @@ public class SnapshotRestore {
     }
 
     private void checkAndAddBlock(BlockVector3 pos) {
-        if (editSession.getMask() != null && !editSession.getMask().test(pos))
+        if (editSession.getMask() != null && !editSession.getMask().test(pos)) {
             return;
+        }
 
         BlockVector2 chunkPos = ChunkStore.toChunk(pos);
 
@@ -126,7 +127,7 @@ public class SnapshotRestore {
     /**
      * Restores to world.
      *
-     * @throws MaxChangedBlocksException
+     * @throws MaxChangedBlocksException if the max block change limit is exceeded
      */
     public void restore() throws MaxChangedBlocksException {
 

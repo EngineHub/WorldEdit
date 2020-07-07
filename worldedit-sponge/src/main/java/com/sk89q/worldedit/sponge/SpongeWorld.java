@@ -19,8 +19,6 @@
 
 package com.sk89q.worldedit.sponge;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import com.flowpowered.math.vector.Vector3d;
 import com.flowpowered.math.vector.Vector3i;
 import com.sk89q.worldedit.EditSession;
@@ -64,8 +62,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
-
 import javax.annotation.Nullable;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * An adapter to Minecraft worlds for WorldEdit.
@@ -121,8 +120,8 @@ public abstract class SpongeWorld extends AbstractWorld {
 
     @Override
     public String getId() {
-        return getName().replace(" ", "_").toLowerCase(Locale.ROOT) +
-                getWorld().getDimension().getType().getName().toLowerCase(Locale.ROOT);
+        return getName().replace(" ", "_").toLowerCase(Locale.ROOT)
+            + getWorld().getDimension().getType().getName().toLowerCase(Locale.ROOT);
     }
 
     @Override

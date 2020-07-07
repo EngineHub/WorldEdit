@@ -35,10 +35,10 @@ import com.sk89q.worldedit.world.block.BlockTypes;
 import com.sk89q.worldedit.world.registry.LegacyMapper;
 import com.sk89q.worldedit.world.storage.InvalidFormatException;
 
-import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.annotation.Nullable;
 
 public class AnvilChunk implements Chunk {
 
@@ -49,7 +49,7 @@ public class AnvilChunk implements Chunk {
     private final int rootX;
     private final int rootZ;
 
-    private Map<BlockVector3, Map<String,Tag>> tileEntities;
+    private Map<BlockVector3, Map<String, Tag>> tileEntities;
 
     /**
      * Construct the chunk with a compound tag.
@@ -177,8 +177,6 @@ public class AnvilChunk implements Chunk {
 
     /**
      * Used to load the tile entities.
-     *
-     * @throws DataException
      */
     private void populateTileEntities() throws DataException {
         List<Tag> tags = NBTUtils.getChildTag(rootTag.getValue(),
@@ -215,6 +213,8 @@ public class AnvilChunk implements Chunk {
                         if (entry.getValue() instanceof IntTag) {
                             z = ((IntTag) entry.getValue()).getValue();
                         }
+                        break;
+                    default:
                         break;
                 }
 

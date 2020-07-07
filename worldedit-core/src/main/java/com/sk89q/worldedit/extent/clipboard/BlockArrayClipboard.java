@@ -19,8 +19,6 @@
 
 package com.sk89q.worldedit.extent.clipboard;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
@@ -38,8 +36,9 @@ import com.sk89q.worldedit.world.block.BlockTypes;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
 import javax.annotation.Nullable;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Stores block data as a multi-dimensional array of {@link BaseBlock}s and

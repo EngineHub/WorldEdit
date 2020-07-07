@@ -153,7 +153,7 @@ public interface BlockMaterial {
     boolean isTranslucent();
 
     /**
-     * Gets whether the block has a container (Item container)
+     * Gets whether the block has a container (Item container).
      *
      * @return If it has a container
      */

@@ -58,10 +58,10 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 
-import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.Locale;
 import java.util.UUID;
+import javax.annotation.Nullable;
 
 public class ForgePlayer extends AbstractPlayerActor {
 

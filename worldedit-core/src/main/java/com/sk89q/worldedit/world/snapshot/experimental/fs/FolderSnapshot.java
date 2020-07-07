@@ -32,7 +32,6 @@ import com.sk89q.worldedit.world.storage.McRegionChunkStore;
 import com.sk89q.worldedit.world.storage.McRegionReader;
 import com.sk89q.worldedit.world.storage.MissingChunkException;
 
-import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -41,6 +40,7 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
 import java.util.zip.GZIPInputStream;
+import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkState;
 
@@ -83,8 +83,8 @@ public class FolderSnapshot implements Snapshot {
                 .filter(Files::isRegularFile)
                 .anyMatch(p -> {
                     String fileName = p.getFileName().toString();
-                    return fileName.startsWith("r") &&
-                        (fileName.endsWith(".mca") || fileName.endsWith(".mcr"));
+                    return fileName.startsWith("r")
+                        && (fileName.endsWith(".mca") || fileName.endsWith(".mcr"));
                 })) {
                 return folder;
             }

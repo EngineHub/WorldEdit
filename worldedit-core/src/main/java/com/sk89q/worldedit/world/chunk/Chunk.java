@@ -29,7 +29,7 @@ import com.sk89q.worldedit.world.block.BaseBlock;
 public interface Chunk {
 
     /**
-     * Get a block;
+     * Get a block.
      *
      * @param position the position of the block
      * @return block the block

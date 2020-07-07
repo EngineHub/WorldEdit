@@ -50,14 +50,18 @@ import static java.util.stream.Collectors.toMap;
 /**
  * Handles translations for the plugin.
  *
+ * <p>
  * These should be in the following format:
  * plugin.component.message[.meta]*
+ * </p>
  *
+ * <p>
  * Where,
  * plugin = worldedit
  * component = The part of the plugin, eg expand
  * message = A descriptor for which message, eg, expanded
  * meta = Any extra information such as plural/singular (Can have none to infinite)
+ * </p>
  */
 public class TranslationManager {
 
@@ -159,7 +163,7 @@ public class TranslationManager {
         }
         if (locale.equals(defaultLocale)) {
             translationMap.put(Locale.ENGLISH, loadTranslationFile("strings.json").orElseThrow(
-                    () -> new RuntimeException("Failed to load WorldEdit strings!")
+                () -> new RuntimeException("Failed to load WorldEdit strings!")
             ));
             return true;
         }

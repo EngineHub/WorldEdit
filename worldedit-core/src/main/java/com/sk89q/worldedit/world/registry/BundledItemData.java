@@ -32,13 +32,13 @@ import com.sk89q.worldedit.util.io.ResourceLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Nullable;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.annotation.Nullable;
 
 /**
  * Provides item data based on the built-in item database that is bundled

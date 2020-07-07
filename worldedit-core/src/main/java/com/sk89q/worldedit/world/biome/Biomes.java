@@ -19,8 +19,6 @@
 
 package com.sk89q.worldedit.world.biome;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import com.google.common.base.Functions;
 import com.sk89q.worldedit.util.WeightedChoice;
 import com.sk89q.worldedit.util.WeightedChoice.Choice;
@@ -30,8 +28,9 @@ import com.sk89q.worldedit.world.registry.BiomeRegistry;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.function.Function;
-
 import javax.annotation.Nullable;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Utility methods related to biomes.

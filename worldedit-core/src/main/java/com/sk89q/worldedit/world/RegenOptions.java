@@ -24,7 +24,6 @@ import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.regions.Region;
 
 import java.util.OptionalLong;
-
 import javax.annotation.Nullable;
 
 /**

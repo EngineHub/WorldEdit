@@ -22,7 +22,9 @@ package com.sk89q.worldedit.internal.expression.invoke;
 /**
  * Thrown when a return is encountered, to pop the stack frames and return the value easily.
  *
+ * <p>
  * Should be caught by the executor.
+ * </p>
  */
 public class ReturnException extends RuntimeException {
 

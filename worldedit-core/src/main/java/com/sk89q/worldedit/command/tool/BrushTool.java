@@ -19,8 +19,6 @@
 
 package com.sk89q.worldedit.command.tool;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
@@ -39,6 +37,8 @@ import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 
 import javax.annotation.Nullable;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
  * Builds a shape at the place being looked at.
  */
@@ -56,7 +56,7 @@ public class BrushTool implements TraceTool {
 
     /**
      * Construct the tool.
-     * 
+     *
      * @param permission the permission to check before use is allowed
      */
     public BrushTool(String permission) {
@@ -71,7 +71,7 @@ public class BrushTool implements TraceTool {
 
     /**
      * Get the filter.
-     * 
+     *
      * @return the filter
      */
     public Mask getMask() {
@@ -80,7 +80,7 @@ public class BrushTool implements TraceTool {
 
     /**
      * Set the block filter used for identifying blocks to replace.
-     * 
+     *
      * @param filter the filter to set
      */
     public void setMask(Mask filter) {
@@ -107,7 +107,7 @@ public class BrushTool implements TraceTool {
 
     /**
      * Set the brush.
-     * 
+     *
      * @param brush tbe brush
      * @param permission the permission
      */
@@ -118,7 +118,7 @@ public class BrushTool implements TraceTool {
 
     /**
      * Get the current brush.
-     * 
+     *
      * @return the current brush
      */
     public Brush getBrush() {
@@ -127,7 +127,7 @@ public class BrushTool implements TraceTool {
 
     /**
      * Set the material.
-     * 
+     *
      * @param material the material
      */
     public void setFill(@Nullable Pattern material) {
@@ -145,7 +145,7 @@ public class BrushTool implements TraceTool {
 
     /**
      * Get the set brush size.
-     * 
+     *
      * @return a radius
      */
     public double getSize() {
@@ -154,7 +154,7 @@ public class BrushTool implements TraceTool {
 
     /**
      * Set the set brush size.
-     * 
+     *
      * @param radius a radius
      */
     public void setSize(double radius) {
@@ -163,7 +163,7 @@ public class BrushTool implements TraceTool {
 
     /**
      * Get the set brush range.
-     * 
+     *
      * @return the range of the brush in blocks
      */
     public int getRange() {
@@ -172,7 +172,7 @@ public class BrushTool implements TraceTool {
 
     /**
      * Set the set brush range.
-     * 
+     *
      * @param range the range of the brush in blocks
      */
     public void setRange(int range) {

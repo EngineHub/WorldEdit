@@ -76,13 +76,13 @@ public class DeprecationUtil {
             throw new AssertionError("Caller class missing?", e);
         }
         for (Method declaredMethod : declaredMethods) {
-            if (declaredMethod.isAnnotationPresent(NonAbstractForCompatibility.class) &&
-                declaredMethod.getName().equals(callerInfo.getMethodName())) {
+            if (declaredMethod.isAnnotationPresent(NonAbstractForCompatibility.class)
+                && declaredMethod.getName().equals(callerInfo.getMethodName())) {
                 return declaredMethod;
             }
         }
-        throw new IllegalStateException("Failed to find caller method " +
-            callerInfo.getMethodName() + " annotated with " + NonAbstractForCompatibility.class);
+        throw new IllegalStateException("Failed to find caller method "
+            + callerInfo.getMethodName() + " annotated with " + NonAbstractForCompatibility.class);
     }
 
     private static String methodToString(Method method) {

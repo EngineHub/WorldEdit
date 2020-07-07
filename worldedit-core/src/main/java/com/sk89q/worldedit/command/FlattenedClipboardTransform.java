@@ -19,8 +19,6 @@
 
 package com.sk89q.worldedit.command;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.extent.transform.BlockTransformExtent;
@@ -32,6 +30,8 @@ import com.sk89q.worldedit.math.transform.CombinedTransform;
 import com.sk89q.worldedit.math.transform.Transform;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Helper class to 'bake' a transform into a clipboard.
@@ -76,14 +76,15 @@ class FlattenedClipboardTransform {
                         new AffineTransform().translate(original.getOrigin()));
 
         Vector3[] corners = new Vector3[] {
-                minimum,
-                maximum,
-                minimum.withX(maximum.getX()),
-                minimum.withY(maximum.getY()),
-                minimum.withZ(maximum.getZ()),
-                maximum.withX(minimum.getX()),
-                maximum.withY(minimum.getY()),
-                maximum.withZ(minimum.getZ()) };
+            minimum,
+            maximum,
+            minimum.withX(maximum.getX()),
+            minimum.withY(maximum.getY()),
+            minimum.withZ(maximum.getZ()),
+            maximum.withX(minimum.getX()),
+            maximum.withY(minimum.getY()),
+            maximum.withZ(minimum.getZ())
+        };
 
         for (int i = 0; i < corners.length; i++) {
             corners[i] = transformAround.apply(corners[i]);

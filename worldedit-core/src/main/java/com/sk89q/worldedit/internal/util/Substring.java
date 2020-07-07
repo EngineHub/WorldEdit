@@ -77,12 +77,16 @@ public final class Substring {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Substring substring1 = (Substring) o;
-        return start == substring1.start &&
-            end == substring1.end &&
-            substring.equals(substring1.substring);
+        return start == substring1.start
+            && end == substring1.end
+            && substring.equals(substring1.substring);
     }
 
     @Override
@@ -92,10 +96,10 @@ public final class Substring {
 
     @Override
     public String toString() {
-        return "Substring{" +
-            "substring='" + substring + "'" +
-            ",start=" + start +
-            ",end=" + end +
-            "}";
+        return "Substring{"
+            + "substring='" + substring + "'"
+            + ",start=" + start
+            + ",end=" + end
+            + "}";
     }
 }

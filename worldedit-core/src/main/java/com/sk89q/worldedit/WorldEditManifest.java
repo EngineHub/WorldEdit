@@ -19,7 +19,6 @@
 
 package com.sk89q.worldedit;
 
-import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.net.JarURLConnection;
@@ -27,6 +26,7 @@ import java.net.URL;
 import java.util.function.Supplier;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
+import javax.annotation.Nullable;
 
 /**
  * Represents WorldEdit info from the MANIFEST.MF file.

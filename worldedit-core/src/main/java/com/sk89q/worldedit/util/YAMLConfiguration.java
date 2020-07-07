@@ -25,7 +25,6 @@ import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.session.SessionManager;
 import com.sk89q.worldedit.util.report.Unreported;
-import com.sk89q.worldedit.world.snapshot.SnapshotRepository;
 import org.slf4j.Logger;
 
 import java.io.IOException;

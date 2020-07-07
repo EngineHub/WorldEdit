@@ -25,7 +25,6 @@ import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.sponge.SpongeWorld;
 import com.sk89q.worldedit.util.Location;
-
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.world.World;
