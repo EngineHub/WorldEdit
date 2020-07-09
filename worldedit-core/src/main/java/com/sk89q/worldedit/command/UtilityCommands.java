@@ -307,7 +307,7 @@ public class UtilityCommands {
 
         BlockVector3 position = session.getPlacementPosition(actor);
 
-        CylinderRegion region = new CylinderRegion(position, Vector2.at(size, size), position.getBlockY(), height);
+        CylinderRegion region = new CylinderRegion(position, Vector2.at(size, size), position.getBlockY() - height, position.getBlockY() + height);
         int affected = editSession.simulateSnow(region, stack);
         actor.printInfo(TranslatableComponent.of(
             "worldedit.snow.created", TextComponent.of(affected)
