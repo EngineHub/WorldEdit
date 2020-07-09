@@ -49,6 +49,7 @@ import com.sk89q.worldedit.function.block.BlockDistributionCounter;
 import com.sk89q.worldedit.function.block.BlockReplace;
 import com.sk89q.worldedit.function.block.Counter;
 import com.sk89q.worldedit.function.block.Naturalizer;
+import com.sk89q.worldedit.function.block.SnowSimulator;
 import com.sk89q.worldedit.function.generator.ForestGenerator;
 import com.sk89q.worldedit.function.generator.GardenPatchGenerator;
 import com.sk89q.worldedit.function.mask.BlockMask;
@@ -84,6 +85,7 @@ import com.sk89q.worldedit.internal.expression.ExpressionTimeoutException;
 import com.sk89q.worldedit.internal.expression.LocalSlot.Variable;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.MathUtils;
+import com.sk89q.worldedit.math.Vector2;
 import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.math.interpolation.Interpolation;
 import com.sk89q.worldedit.math.interpolation.KochanekBartelsInterpolation;
@@ -91,6 +93,7 @@ import com.sk89q.worldedit.math.interpolation.Node;
 import com.sk89q.worldedit.math.noise.RandomNoise;
 import com.sk89q.worldedit.math.transform.AffineTransform;
 import com.sk89q.worldedit.regions.CuboidRegion;
+import com.sk89q.worldedit.regions.CylinderRegion;
 import com.sk89q.worldedit.regions.EllipsoidRegion;
 import com.sk89q.worldedit.regions.FlatRegion;
 import com.sk89q.worldedit.regions.Region;
@@ -109,7 +112,6 @@ import com.sk89q.worldedit.world.NullWorld;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.block.BaseBlock;
-import com.sk89q.worldedit.world.block.BlockCategories;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.block.BlockType;
@@ -1838,66 +1840,27 @@ public class EditSession implements Extent, AutoCloseable {
      */
     public int simulateSnow(BlockVector3 position, double radius, int height)
         throws MaxChangedBlocksException {
-        int affected = 0;
-        double radiusSq = radius * radius;
 
-        int ox = position.getBlockX();
-        int oy = position.getBlockY();
-        int oz = position.getBlockZ();
+        return simulateSnow(new CylinderRegion(position, Vector2.at(radius, radius), position.getBlockY(), height), false);
+    }
 
-        BlockState ice = BlockTypes.ICE.getDefaultState();
-        BlockState snow = BlockTypes.SNOW.getDefaultState();
 
-        int centerY = Math.max(getWorld().getMinY(), Math.min(getWorld().getMaxY(), oy));
-        int minY = Math.max(getWorld().getMinY(), centerY - height);
-        int maxY = Math.min(getWorld().getMaxY(), centerY + height);
+    /**
+     * Make snow in a region.
+     *
+     * @param region the region to simulate snow in
+     * @param stack whether it should stack existing snow
+     * @return number of blocks affected
+     * @throws MaxChangedBlocksException thrown if too many blocks are changed
+     */
+    public int simulateSnow(Region region, boolean stack)
+            throws MaxChangedBlocksException {
+        checkNotNull(region);
 
-        int ceilRadius = (int) Math.ceil(radius);
-        for (int x = ox - ceilRadius; x <= ox + ceilRadius; ++x) {
-            for (int z = oz - ceilRadius; z <= oz + ceilRadius; ++z) {
-                if ((BlockVector3.at(x, oy, z)).distanceSq(position) > radiusSq) {
-                    continue;
-                }
-
-                for (int y = maxY; y > minY; --y) {
-                    BlockVector3 pt = BlockVector3.at(x, y, z);
-                    BlockType id = getBlock(pt).getBlockType();
-
-                    if (id.getMaterial().isAir()) {
-                        continue;
-                    }
-
-                    // Ice!
-                    if (id == BlockTypes.WATER) {
-                        if (setBlock(pt, ice)) {
-                            ++affected;
-                        }
-                        break;
-                    }
-
-                    // Snow should not cover these blocks
-                    if (id.getMaterial().isTranslucent()) {
-                        // Add snow on leaves
-                        if (!BlockCategories.LEAVES.contains(id)) {
-                            break;
-                        }
-                    }
-
-                    // Too high?
-                    if (y == world.getMaxY()) {
-                        break;
-                    }
-
-                    // add snow cover
-                    if (setBlock(pt.add(0, 1, 0), snow)) {
-                        ++affected;
-                    }
-                    break;
-                }
-            }
-        }
-
-        return affected;
+        SnowSimulator snowSimulator = new SnowSimulator(this, stack);
+        RegionVisitor regionVisitor = new RegionVisitor(region, snowSimulator);
+        Operations.completeLegacy(regionVisitor);
+        return regionVisitor.getAffected();
     }
 
     /**
