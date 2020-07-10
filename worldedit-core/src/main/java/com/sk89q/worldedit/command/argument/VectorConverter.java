@@ -40,12 +40,22 @@ import java.util.List;
 import java.util.function.Function;
 
 public class VectorConverter<C, T> implements ArgumentConverter<T> {
+
+    private static final CommaSeparatedValuesConverter<Integer> INT_CONVERTER =
+        CommaSeparatedValuesConverter.wrap(ArgumentConverters.get(TypeToken.of(int.class)));
+
+    public static final VectorConverter<Integer, BlockVector3> BLOCK_VECTOR_3_CONVERTER = new VectorConverter<>(
+        INT_CONVERTER,
+        3,
+        cmps -> BlockVector3.at(cmps.get(0), cmps.get(1), cmps.get(2)),
+        "block vector with x, y, and z"
+    );
+
     public static void register(CommandManager commandManager) {
-        CommaSeparatedValuesConverter<Integer> intConverter = CommaSeparatedValuesConverter.wrap(ArgumentConverters.get(TypeToken.of(int.class)));
         CommaSeparatedValuesConverter<Double> doubleConverter = CommaSeparatedValuesConverter.wrap(ArgumentConverters.get(TypeToken.of(double.class)));
         commandManager.registerConverter(Key.of(BlockVector2.class),
             new VectorConverter<>(
-                intConverter,
+                INT_CONVERTER,
                 2,
                 cmps -> BlockVector2.at(cmps.get(0), cmps.get(1)),
                 "block vector with x and z"
@@ -57,13 +67,7 @@ public class VectorConverter<C, T> implements ArgumentConverter<T> {
                 cmps -> Vector2.at(cmps.get(0), cmps.get(1)),
                 "vector with x and z"
             ));
-        commandManager.registerConverter(Key.of(BlockVector3.class),
-            new VectorConverter<>(
-                intConverter,
-                3,
-                cmps -> BlockVector3.at(cmps.get(0), cmps.get(1), cmps.get(2)),
-                "block vector with x, y, and z"
-            ));
+        commandManager.registerConverter(Key.of(BlockVector3.class), BLOCK_VECTOR_3_CONVERTER);
         commandManager.registerConverter(Key.of(Vector3.class),
             new VectorConverter<>(
                 doubleConverter,

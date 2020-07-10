@@ -1285,7 +1285,7 @@ public class EditSession implements Extent, AutoCloseable {
      * Stack a cuboid region.
      *
      * @param region the region to stack
-     * @param dir the direction to stack
+     * @param offset how far to move the contents each stack
      * @param count the number of times to stack
      * @param copyEntities true to copy entities
      * @param copyBiomes true to copy biomes
@@ -1293,17 +1293,17 @@ public class EditSession implements Extent, AutoCloseable {
      * @return number of blocks affected
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
-    public int stackCuboidRegion(Region region, BlockVector3 dir, int count,
+    public int stackCuboidRegion(Region region, BlockVector3 offset, int count,
                                  boolean copyEntities, boolean copyBiomes, Mask mask) throws MaxChangedBlocksException {
         checkNotNull(region);
-        checkNotNull(dir);
+        checkNotNull(offset);
         checkArgument(count >= 1, "count >= 1 required");
 
         BlockVector3 size = region.getMaximumPoint().subtract(region.getMinimumPoint()).add(1, 1, 1);
         BlockVector3 to = region.getMinimumPoint();
         ForwardExtentCopy copy = new ForwardExtentCopy(this, region, this, to);
         copy.setRepetitions(count);
-        copy.setTransform(new AffineTransform().translate(dir.multiply(size)));
+        copy.setTransform(new AffineTransform().translate(offset.multiply(size)));
         copy.setCopyingEntities(copyEntities);
         copy.setCopyingBiomes(copyBiomes);
         if (mask != null) {
@@ -1317,23 +1317,23 @@ public class EditSession implements Extent, AutoCloseable {
      * Move the blocks in a region a certain direction.
      *
      * @param region the region to move
-     * @param dir the direction
-     * @param distance the distance to move
+     * @param offset the offset
+     * @param multiplier the number to multiply the offset by
      * @param copyAir true to copy air blocks
      * @param replacement the replacement pattern to fill in after moving, or null to use air
      * @return number of blocks moved
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
-    public int moveRegion(Region region, BlockVector3 dir, int distance, boolean copyAir, Pattern replacement) throws MaxChangedBlocksException {
-        return moveRegion(region, dir, distance, true, false, copyAir ? new ExistingBlockMask(this) : null, replacement);
+    public int moveRegion(Region region, BlockVector3 offset, int multiplier, boolean copyAir, Pattern replacement) throws MaxChangedBlocksException {
+        return moveRegion(region, offset, multiplier, true, false, copyAir ? new ExistingBlockMask(this) : null, replacement);
     }
 
     /**
      * Move the blocks in a region a certain direction.
      *
      * @param region the region to move
-     * @param dir the direction
-     * @param distance the distance to move
+     * @param offset the offset
+     * @param multiplier the number to multiply the offset by
      * @param moveEntities true to move entities
      * @param copyBiomes true to copy biomes (source biome is unchanged)
      * @param mask source mask for the operation (only matching blocks are moved)
@@ -1342,11 +1342,11 @@ public class EditSession implements Extent, AutoCloseable {
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
      * @throws IllegalArgumentException thrown if the region is not a flat region, but copyBiomes is true
      */
-    public int moveRegion(Region region, BlockVector3 dir, int distance,
+    public int moveRegion(Region region, BlockVector3 offset, int multiplier,
                           boolean moveEntities, boolean copyBiomes, Mask mask, Pattern replacement) throws MaxChangedBlocksException {
         checkNotNull(region);
-        checkNotNull(dir);
-        checkArgument(distance >= 1, "distance >= 1 required");
+        checkNotNull(offset);
+        checkArgument(multiplier >= 1, "multiplier >= 1 required");
         checkArgument(!copyBiomes || region instanceof FlatRegion, "can't copy biomes from non-flat region");
 
         BlockVector3 to = region.getMinimumPoint();
@@ -1360,7 +1360,7 @@ public class EditSession implements Extent, AutoCloseable {
         // Copy to a buffer so we don't destroy our original before we can copy all the blocks from it
         ForgetfulExtentBuffer buffer = new ForgetfulExtentBuffer(this, new RegionMask(region));
         ForwardExtentCopy copy = new ForwardExtentCopy(this, region, buffer, to);
-        copy.setTransform(new AffineTransform().translate(dir.multiply(distance)));
+        copy.setTransform(new AffineTransform().translate(offset.multiply(multiplier)));
         copy.setSourceFunction(remove); // Remove
 
         copy.setCopyingEntities(moveEntities);
