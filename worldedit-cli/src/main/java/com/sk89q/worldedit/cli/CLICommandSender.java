@@ -65,6 +65,7 @@ public class CLICommandSender implements Actor {
     }
 
     @Override
+    @Deprecated
     public void printRaw(String msg) {
         for (String part : msg.split("\n")) {
             sender.info(part);
@@ -77,6 +78,7 @@ public class CLICommandSender implements Actor {
     private static final String ANSI_RESET = "\u001B[0m";
 
     @Override
+    @Deprecated
     public void print(String msg) {
         for (String part : msg.split("\n")) {
             sender.info(ANSI_PURPLE + part + ANSI_RESET);
@@ -84,6 +86,7 @@ public class CLICommandSender implements Actor {
     }
 
     @Override
+    @Deprecated
     public void printDebug(String msg) {
         for (String part : msg.split("\n")) {
             sender.debug(ANSI_GREEN + part + ANSI_RESET);
@@ -91,6 +94,7 @@ public class CLICommandSender implements Actor {
     }
 
     @Override
+    @Deprecated
     public void printError(String msg) {
         for (String part : msg.split("\n")) {
             sender.error(ANSI_RED + part + ANSI_RESET);
