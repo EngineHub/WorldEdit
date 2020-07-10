@@ -310,6 +310,9 @@ public class BukkitWorld extends AbstractWorld {
     public boolean generateTree(TreeGenerator.TreeType type, EditSession editSession, BlockVector3 pt) {
         World world = getWorld();
         TreeType bukkitType = toBukkitTreeType(type);
+        if (bukkitType == TreeType.CHORUS_PLANT) {
+            pt = pt.add(0, 1, 0); // bukkit skips the feature gen which does this offset normally, so we have to add it back
+        }
         return type != null && world.generateTree(BukkitAdapter.adapt(world, pt), bukkitType,
                 new EditSessionBlockChangeDelegate(editSession));
     }
