@@ -89,6 +89,8 @@ import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.IChunk;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.Feature;
+import net.minecraft.world.gen.feature.HugeFungusConfig;
+import net.minecraft.world.gen.feature.NoFeatureConfig;
 import net.minecraft.world.gen.settings.DimensionGeneratorSettings;
 import net.minecraft.world.server.ServerChunkProvider;
 import net.minecraft.world.server.ServerWorld;
@@ -457,6 +459,9 @@ public class ForgeWorld extends AbstractWorld {
             case TALL_BIRCH: return Feature.field_236291_c_.withConfiguration(DefaultBiomeFeatures.field_230130_i_);
             case RED_MUSHROOM: return Feature.HUGE_RED_MUSHROOM.withConfiguration(DefaultBiomeFeatures.BIG_RED_MUSHROOM);
             case BROWN_MUSHROOM: return Feature.HUGE_BROWN_MUSHROOM.withConfiguration(DefaultBiomeFeatures.BIG_BROWN_MUSHROOM);
+            case WARPED_FUNGUS: return Feature.field_236281_L_.withConfiguration(HugeFungusConfig.field_236299_b_);
+            case CRIMSON_FUNGUS: return Feature.field_236281_L_.withConfiguration(HugeFungusConfig.field_236301_d_);
+            case CHORUS_PLANT: return Feature.CHORUS_PLANT.withConfiguration(NoFeatureConfig.field_236559_b_);
             case RANDOM: return createTreeFeatureGenerator(TreeType.values()[ThreadLocalRandom.current().nextInt(TreeType.values().length)]);
             default:
                 return null;

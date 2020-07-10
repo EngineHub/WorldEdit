@@ -40,7 +40,7 @@ import javax.annotation.Nullable;
 /**
  * Tree generator.
  */
-public class TreeGenerator {
+public final class TreeGenerator {
 
     public enum TreeType {
         TREE("Oak tree", "oak", "tree", "regular"),
@@ -82,10 +82,12 @@ public class TreeGenerator {
         JUNGLE_BUSH("Jungle bush", "junglebush", "jungleshrub"),
         RED_MUSHROOM("Red mushroom", "redmushroom", "redgiantmushroom"),
         BROWN_MUSHROOM("Brown mushroom", "brownmushroom", "browngiantmushroom"),
+        CRIMSON_FUNGUS("Crimson fungus", "crimsonfungus", "rednethermushroom"),
+        WARPED_FUNGUS("Warped fungus", "warpedfungus", "greennethermushroom"),
         RANDOM_MUSHROOM("Random mushroom", "randmushroom", "randommushroom") {
             @Override
             public boolean generate(EditSession editSession, BlockVector3 pos) throws MaxChangedBlocksException {
-                TreeType[] choices = { RED_MUSHROOM, BROWN_MUSHROOM };
+                TreeType[] choices = { RED_MUSHROOM, BROWN_MUSHROOM, CRIMSON_FUNGUS, WARPED_FUNGUS };
                 return choices[TreeGenerator.RANDOM.nextInt(choices.length)].generate(editSession, pos);
             }
         },
@@ -97,6 +99,13 @@ public class TreeGenerator {
             public boolean generate(EditSession editSession, BlockVector3 pos) throws MaxChangedBlocksException {
                 makePineTree(editSession, pos);
                 return true;
+            }
+        },
+        CHORUS_PLANT("Chorus plant", "chorusplant") {
+            @Override
+            public boolean generate(EditSession editSession, BlockVector3 pos) throws MaxChangedBlocksException {
+                // chorus plants have to generate starting in the end stone itself, not the air above the ground
+                return editSession.getWorld().generateTree(this, editSession, pos.subtract(0, 1, 0));
             }
         },
         RANDOM("Random tree", "rand", "random") {

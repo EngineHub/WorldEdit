@@ -22,11 +22,11 @@ configurations.all {
 dependencies {
     "api"(project(":worldedit-core"))
     "api"(project(":worldedit-libs:bukkit"))
-    "api"("org.bukkit:bukkit:1.15.2-R0.1-SNAPSHOT") {
+    "api"("org.spigotmc:spigot-api:1.16.1-R0.1-SNAPSHOT") {
         exclude("junit", "junit")
     }
     "compileOnly"("org.jetbrains:annotations:19.0.0")
-    "compileOnly"("com.destroystokyo.paper:paper-api:1.15.2-R0.1-SNAPSHOT")
+    "compileOnly"("com.destroystokyo.paper:paper-api:1.16.1-R0.1-SNAPSHOT")
     "implementation"("io.papermc:paperlib:1.0.2")
     "compileOnly"("com.sk89q:dummypermscompat:1.10")
     "implementation"("org.apache.logging.log4j:log4j-slf4j-impl:2.8.1")
