@@ -41,7 +41,7 @@ import com.sk89q.worldedit.function.operation.Operations;
 import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.function.visitor.LayerVisitor;
 import com.sk89q.worldedit.function.visitor.RegionVisitor;
-import com.sk89q.worldedit.internal.annotation.Direction;
+import com.sk89q.worldedit.internal.annotation.Offset;
 import com.sk89q.worldedit.internal.annotation.Selection;
 import com.sk89q.worldedit.internal.expression.ExpressionException;
 import com.sk89q.worldedit.math.BlockVector3;
@@ -299,11 +299,11 @@ public class RegionCommands {
     @Logging(ORIENTATION_REGION)
     public int move(Actor actor, World world, EditSession editSession, LocalSession session,
                     @Selection Region region,
-                    @Arg(desc = "# of blocks to move", def = "1")
-                        int count,
-                    @Arg(desc = "The direction to move", def = Direction.AIM)
-                    @Direction(includeDiagonals = true)
-                        BlockVector3 direction,
+                    @Arg(desc = "number of times to apply the offset", def = "1")
+                        int multiplier,
+                    @Arg(desc = "The offset to move", def = Offset.FORWARD)
+                    @Offset
+                        BlockVector3 offset,
                     @Arg(desc = "The pattern of blocks to leave", def = "air")
                         Pattern replace,
                     @Switch(name = 's', desc = "Shift the selection to the target location")
@@ -316,7 +316,7 @@ public class RegionCommands {
                         boolean copyBiomes,
                     @ArgFlag(name = 'm', desc = "Set the include mask, non-matching blocks become air")
                         Mask mask) throws WorldEditException {
-        checkCommandArgument(count >= 1, "Count must be >= 1");
+        checkCommandArgument(multiplier >= 1, "Multiplier must be >= 1");
 
         Mask combinedMask;
         if (ignoreAirBlocks) {
@@ -329,11 +329,11 @@ public class RegionCommands {
             combinedMask = mask;
         }
 
-        int affected = editSession.moveRegion(region, direction, count, copyEntities, copyBiomes, combinedMask, replace);
+        int affected = editSession.moveRegion(region, offset, multiplier, copyEntities, copyBiomes, combinedMask, replace);
 
         if (moveSelection) {
             try {
-                region.shift(direction.multiply(count));
+                region.shift(offset.multiply(multiplier));
 
                 session.getRegionSelector(world).learnChanges();
                 session.getRegionSelector(world).explainRegionAdjust(actor, session);
@@ -356,9 +356,9 @@ public class RegionCommands {
                      @Selection Region region,
                      @Arg(desc = "# of copies to stack", def = "1")
                          int count,
-                     @Arg(desc = "The direction to stack", def = Direction.AIM)
-                     @Direction(includeDiagonals = true)
-                         BlockVector3 direction,
+                     @Arg(desc = "How far to move the contents each stack", def = Offset.FORWARD)
+                     @Offset
+                         BlockVector3 offset,
                      @Switch(name = 's', desc = "Shift the selection to the last stacked copy")
                          boolean moveSelection,
                      @Switch(name = 'a', desc = "Ignore air blocks")
@@ -381,13 +381,13 @@ public class RegionCommands {
             combinedMask = mask;
         }
 
-        int affected = editSession.stackCuboidRegion(region, direction, count, copyEntities, copyBiomes, combinedMask);
+        int affected = editSession.stackCuboidRegion(region, offset, count, copyEntities, copyBiomes, combinedMask);
 
         if (moveSelection) {
             try {
                 final BlockVector3 size = region.getMaximumPoint().subtract(region.getMinimumPoint()).add(1, 1, 1);
 
-                final BlockVector3 shiftVector = direction.multiply(size).multiply(count);
+                final BlockVector3 shiftVector = offset.multiply(size).multiply(count);
                 region.shift(shiftVector);
 
                 session.getRegionSelector(world).learnChanges();

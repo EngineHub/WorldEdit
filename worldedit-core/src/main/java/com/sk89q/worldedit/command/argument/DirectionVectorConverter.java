@@ -29,7 +29,7 @@ import javax.annotation.Nullable;
 
 public final class DirectionVectorConverter extends AbstractDirectionConverter<BlockVector3> {
 
-    private DirectionVectorConverter(WorldEdit worldEdit, boolean includeDiagonals) {
+    public DirectionVectorConverter(WorldEdit worldEdit, boolean includeDiagonals) {
         super(worldEdit, includeDiagonals);
     }
 
