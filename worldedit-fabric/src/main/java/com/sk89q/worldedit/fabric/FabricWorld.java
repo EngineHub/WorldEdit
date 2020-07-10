@@ -47,7 +47,6 @@ import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.util.Location;
-import com.sk89q.worldedit.util.ShutdownHook;
 import com.sk89q.worldedit.util.SideEffect;
 import com.sk89q.worldedit.util.SideEffectSet;
 import com.sk89q.worldedit.util.TreeGenerator.TreeType;
@@ -302,8 +301,7 @@ public class FabricWorld extends AbstractWorld {
     private void doRegen(Region region, EditSession editSession, RegenOptions options) throws Exception {
         Path tempDir = Files.createTempDirectory("WorldEditWorldGen");
         LevelStorage levelStorage = LevelStorage.create(tempDir);
-        try (ShutdownHook<Path> ignored = SafeFiles.tryHardToDeleteDirOnExit(tempDir);
-             LevelStorage.Session session = levelStorage.createSession("WorldEditTempGen")) {
+        try (LevelStorage.Session session = levelStorage.createSession("WorldEditTempGen")) {
             ServerWorld originalWorld = (ServerWorld) getWorld();
             long seed = options.getSeed().orElse(originalWorld.getSeed());
             AccessorLevelProperties levelProperties = (AccessorLevelProperties)

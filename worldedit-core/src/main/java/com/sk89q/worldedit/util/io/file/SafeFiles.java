@@ -19,8 +19,6 @@
 
 package com.sk89q.worldedit.util.io.file;
 
-import com.sk89q.worldedit.util.ShutdownHook;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -66,16 +64,6 @@ public class SafeFiles {
             return name;
         }
         return name.substring(0, name.length() - 1);
-    }
-
-    public static ShutdownHook<Path> tryHardToDeleteDirOnExit(Path directory) {
-        Thread hook = new Thread(() -> {
-            try {
-                tryHardToDeleteDir(directory);
-            } catch (IOException ignored) {
-            }
-        });
-        return new ShutdownHook<>(hook, directory);
     }
 
     /**

@@ -47,7 +47,6 @@ import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.util.Location;
-import com.sk89q.worldedit.util.ShutdownHook;
 import com.sk89q.worldedit.util.SideEffect;
 import com.sk89q.worldedit.util.SideEffectSet;
 import com.sk89q.worldedit.util.TreeGenerator.TreeType;
@@ -314,8 +313,7 @@ public class ForgeWorld extends AbstractWorld {
     private void doRegen(Region region, EditSession editSession, RegenOptions options) throws Exception {
         Path tempDir = Files.createTempDirectory("WorldEditWorldGen");
         SaveFormat levelStorage = SaveFormat.func_237269_a_(tempDir);
-        try (ShutdownHook<Path> ignored = SafeFiles.tryHardToDeleteDirOnExit(tempDir);
-             SaveFormat.LevelSave session = levelStorage.func_237274_c_("WorldEditTempGen")) {
+        try (SaveFormat.LevelSave session = levelStorage.func_237274_c_("WorldEditTempGen")) {
             ServerWorld originalWorld = (ServerWorld) getWorld();
             long seed = options.getSeed().orElse(originalWorld.getSeed());
             ServerWorldInfo levelProperties =
