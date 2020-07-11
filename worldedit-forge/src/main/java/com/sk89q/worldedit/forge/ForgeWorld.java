@@ -69,6 +69,7 @@ import net.minecraft.item.ItemUseContext;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
 import net.minecraft.nbt.NBTDynamicOps;
+import net.minecraft.server.dedicated.DedicatedServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
@@ -98,9 +99,7 @@ import net.minecraft.world.storage.IServerWorldInfo;
 import net.minecraft.world.storage.IWorldInfo;
 import net.minecraft.world.storage.SaveFormat;
 import net.minecraft.world.storage.ServerWorldInfo;
-import org.apache.commons.io.FileUtils;
 
-import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -209,6 +208,9 @@ public class ForgeWorld extends AbstractWorld {
 
     @Override
     public boolean fullySupports3DBiomes() {
+        if (getWorld().getServer() instanceof DedicatedServer) {
+            return true;
+        }
         IBiomeMagnifier magnifier = getWorld().func_230315_m_().getMagnifier();
         return !(magnifier instanceof ColumnFuzzedBiomeMagnifier);
     }
@@ -420,10 +422,14 @@ public class ForgeWorld extends AbstractWorld {
             editSession.setBlock(vec, state);
 
             if (options.shouldRegenBiomes()) {
+                BiomeType biome = getBiomeInChunk(vec, chunk);
                 if (!editSession.fullySupports3DBiomes()) {
-                    vec = vec.withY(0);
+                    for (int y = editSession.getMinimumPoint().getY(); y <= editSession.getMaximumPoint().getY(); y++) {
+                        editSession.setBiome(vec.withY(y), biome);
+                    }
+                } else {
+                    editSession.setBiome(vec, biome);
                 }
-                editSession.setBiome(vec, getBiomeInChunk(vec, chunk));
             }
         }
     }

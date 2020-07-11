@@ -23,7 +23,6 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.bukkit.adapter.BukkitImplAdapter;
@@ -39,7 +38,6 @@ import com.sk89q.worldedit.util.SideEffectSet;
 import com.sk89q.worldedit.util.TreeGenerator;
 import com.sk89q.worldedit.world.AbstractWorld;
 import com.sk89q.worldedit.world.RegenOptions;
-import com.sk89q.worldedit.world.WorldUnloadedException;
 import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
@@ -168,19 +166,6 @@ public class BukkitWorld extends AbstractWorld {
      */
     public World getWorld() {
         return checkNotNull(worldRef.get(), "The world was unloaded and the reference is unavailable");
-    }
-
-    /**
-     * Get the world handle.
-     *
-     * @return the world
-     */
-    protected World getWorldChecked() throws WorldEditException {
-        World world = worldRef.get();
-        if (world == null) {
-            throw new WorldUnloadedException();
-        }
-        return world;
     }
 
     @Override
@@ -509,8 +494,8 @@ public class BukkitWorld extends AbstractWorld {
 
     @Override
     public boolean fullySupports3DBiomes() {
-        // Supports if API does and we're not in the overworld
-        return HAS_3D_BIOMES && getWorld().getEnvironment() != World.Environment.NORMAL;
+        // Supports if API does
+        return HAS_3D_BIOMES;
     }
 
     @SuppressWarnings("deprecation")
