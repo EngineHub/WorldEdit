@@ -21,14 +21,14 @@ package com.sk89q.worldedit.function.block;
 
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.function.RegionFunction;
+import com.sk89q.worldedit.function.LayerFunction;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.registry.state.IntegerProperty;
 import com.sk89q.worldedit.world.block.BlockCategories;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockTypes;
 
-public class SnowSimulator implements RegionFunction {
+public class SnowSimulator implements LayerFunction {
 
     private final BlockState ice = BlockTypes.ICE.getDefaultState();
     private final BlockState snow = BlockTypes.SNOW.getDefaultState();
@@ -39,48 +39,87 @@ public class SnowSimulator implements RegionFunction {
     private final EditSession editSession;
     private final boolean stack;
 
+    private int affected;
+
     public SnowSimulator(EditSession editSession, boolean stack) {
         this.editSession = editSession;
         this.stack = stack;
+
+        this.affected = 0;
+    }
+
+    public int getAffected() {
+        return this.affected;
     }
 
     @Override
-    public boolean apply(BlockVector3 position) throws WorldEditException {
+    public boolean isGround(BlockVector3 position) {
+        BlockState block = this.editSession.getBlock(position);
+
+        // We're returning the first block we can place *on top of*
+        if (block.getBlockType().getMaterial().isAir() || (stack && block.getBlockType() == BlockTypes.SNOW)) {
+            return false;
+        }
+
+        // Unless it's water
+        if (block.getBlockType() == BlockTypes.WATER) {
+            return true;
+        }
+
+        // Can't place on translucent blocks
+        if (block.getBlockType().getMaterial().isTranslucent()) {
+            // But still add snow on leaves
+            return BlockCategories.LEAVES.contains(block.getBlockType());
+        }
+
+        return true;
+    }
+
+    @Override
+    public boolean apply(BlockVector3 position, int depth) throws WorldEditException {
+        if (depth > 0) {
+            // We only care about the first layer.
+            return false;
+        }
+
         BlockState block = this.editSession.getBlock(position);
 
         if (block.getBlockType() == BlockTypes.WATER) {
-            return this.editSession.setBlock(position, ice);
-        }
-
-        // Can only replace air (or snow in stack mode)
-        if (!block.getBlockType().getMaterial().isAir() && (!stack || block.getBlockType() != BlockTypes.SNOW)) {
+            this.editSession.setBlock(position, ice);
+            affected++;
             return false;
         }
 
         // Can't put snow this far down
-        if (position.getBlockY() == this.editSession.getMinimumPoint().getBlockY()) {
+        if (position.getBlockY() == this.editSession.getMaximumPoint().getBlockY()) {
             return false;
         }
 
-        BlockState below = this.editSession.getBlock(position.subtract(0, 1, 0));
+        BlockVector3 abovePosition = position.add(0, 1, 0);
+        BlockState above = this.editSession.getBlock(abovePosition);
 
-        // Can't place snow on translucent blocks
-        if (below.getBlockType().getMaterial().isTranslucent()) {
-            // But still add snow on leaves
-            if (!BlockCategories.LEAVES.contains(below.getBlockType())) {
-                return false;
-            }
+        // Can only replace air (or snow in stack mode)
+        if (!above.getBlockType().getMaterial().isAir() && (!stack || above.getBlockType() != BlockTypes.SNOW)) {
+            return false;
         }
 
-        if (stack && block.getBlockType() == BlockTypes.SNOW) {
-            int currentHeight = block.getState(snowLayersProperty);
+        if (stack && above.getBlockType() == BlockTypes.SNOW) {
+            int currentHeight = above.getState(snowLayersProperty);
             // We've hit the highest layer (If it doesn't contain current + 2 it means it's 1 away from full)
             if (!snowLayersProperty.getValues().contains(currentHeight + 2)) {
-                return this.editSession.setBlock(position, snowBlock);
+                if (this.editSession.setBlock(abovePosition, snowBlock)) {
+                    this.affected++;
+                }
             } else {
-                return this.editSession.setBlock(position, block.with(snowLayersProperty, currentHeight + 1));
+                if (this.editSession.setBlock(abovePosition, above.with(snowLayersProperty, currentHeight + 1))) {
+                    this.affected++;
+                }
             }
+            return false;
         }
-        return this.editSession.setBlock(position, snow);
+        if (this.editSession.setBlock(abovePosition, snow)) {
+            this.affected++;
+        }
+        return false;
     }
 }

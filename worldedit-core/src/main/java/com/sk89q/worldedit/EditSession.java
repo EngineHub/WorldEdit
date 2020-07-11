@@ -1853,14 +1853,14 @@ public class EditSession implements Extent, AutoCloseable {
      * @return number of blocks affected
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
      */
-    public int simulateSnow(Region region, boolean stack)
+    public int simulateSnow(FlatRegion region, boolean stack)
             throws MaxChangedBlocksException {
         checkNotNull(region);
 
         SnowSimulator snowSimulator = new SnowSimulator(this, stack);
-        RegionVisitor regionVisitor = new RegionVisitor(region, snowSimulator);
-        Operations.completeLegacy(regionVisitor);
-        return regionVisitor.getAffected();
+        LayerVisitor layerVisitor = new LayerVisitor(region, region.getMinimumY(), region.getMaximumY(), snowSimulator);
+        Operations.completeLegacy(layerVisitor);
+        return snowSimulator.getAffected();
     }
 
     /**
