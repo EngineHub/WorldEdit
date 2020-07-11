@@ -64,20 +64,21 @@ public class BiomeReplace implements FlatRegionFunction, RegionFunction {
     @Override
     public boolean apply(BlockVector3 position) throws WorldEditException {
         if (!extent.fullySupports3DBiomes()) {
-            position = position.withY(0);
+            return apply(position.toBlockVector2());
         }
+        return setBiome(position);
+    }
+
+    private boolean setBiome(BlockVector3 position) {
         return extent.setBiome(position, biome.applyBiome(position));
     }
 
     @Override
     @Deprecated
     public boolean apply(BlockVector2 position) throws WorldEditException {
-        if (!extent.fullySupports3DBiomes()) {
-            return apply(position.toBlockVector3());
-        }
         boolean success = false;
         for (int y = extent.getMinimumPoint().getY(); y <= extent.getMaximumPoint().getY(); y++) {
-            success |= apply(position.toBlockVector3(y));
+            success |= setBiome(position.toBlockVector3(y));
         }
         return success;
     }

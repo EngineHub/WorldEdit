@@ -96,7 +96,11 @@ public class ExtentBiomeCopy implements FlatRegionFunction, RegionFunction {
             .add(to);
 
         if (!destination.fullySupports3DBiomes()) {
-            transformed = transformed.withY(0);
+            boolean success = false;
+            for (int y = destination.getMinimumPoint().getY(); y <= destination.getMaximumPoint().getY(); y++) {
+                success |= destination.setBiome(transformed.withY(y), biome);
+            }
+            return success;
         }
 
         return destination.setBiome(transformed, biome);
