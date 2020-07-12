@@ -27,8 +27,8 @@ fun Project.applyLibrariesConfiguration() {
     group = "${rootProject.group}.worldedit-libs"
 
     val relocations = mapOf(
-            "net.kyori.text" to "com.sk89q.worldedit.util.formatting.text",
-            "net.kyori.minecraft" to "com.sk89q.worldedit.util.kyori"
+        "net.kyori.text" to "com.sk89q.worldedit.util.formatting.text",
+        "net.kyori.minecraft" to "com.sk89q.worldedit.util.kyori"
     )
 
     tasks.register<ShadowJar>("jar") {
@@ -48,22 +48,22 @@ fun Project.applyLibrariesConfiguration() {
     }
     val altConfigFiles = { artifactType: String ->
         val deps = configurations["shade"].incoming.dependencies
-                .filterIsInstance<ModuleDependency>()
-                .map { it.copy() }
-                .map { dependency ->
-                    dependency.artifact {
-                        name = dependency.name
-                        type = artifactType
-                        extension = "jar"
-                        classifier = artifactType
-                    }
-                    dependency
+            .filterIsInstance<ModuleDependency>()
+            .map { it.copy() }
+            .map { dependency ->
+                dependency.artifact {
+                    name = dependency.name
+                    type = artifactType
+                    extension = "jar"
+                    classifier = artifactType
                 }
+                dependency
+            }
 
         files(configurations.detachedConfiguration(*deps.toTypedArray())
-                .resolvedConfiguration.lenientConfiguration.artifacts
-                .filter { it.classifier == artifactType }
-                .map { zipTree(it.file) })
+            .resolvedConfiguration.lenientConfiguration.artifacts
+            .filter { it.classifier == artifactType }
+            .map { zipTree(it.file) })
     }
     tasks.register<Jar>("sourcesJar") {
         from({
