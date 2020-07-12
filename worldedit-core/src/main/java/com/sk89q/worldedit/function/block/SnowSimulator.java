@@ -23,7 +23,7 @@ import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.function.LayerFunction;
 import com.sk89q.worldedit.math.BlockVector3;
-import com.sk89q.worldedit.registry.state.IntegerProperty;
+import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.world.block.BlockCategories;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockTypes;
@@ -34,7 +34,7 @@ public class SnowSimulator implements LayerFunction {
     private final BlockState snow = BlockTypes.SNOW.getDefaultState();
     private final BlockState snowBlock = BlockTypes.SNOW_BLOCK.getDefaultState();
 
-    private final IntegerProperty snowLayersProperty = (IntegerProperty) (Object) BlockTypes.SNOW.getProperty("layers");
+    private final Property<Integer> snowLayersProperty = BlockTypes.SNOW.getProperty("layers");
 
     private final EditSession editSession;
     private final boolean stack;
@@ -85,12 +85,13 @@ public class SnowSimulator implements LayerFunction {
         BlockState block = this.editSession.getBlock(position);
 
         if (block.getBlockType() == BlockTypes.WATER) {
-            this.editSession.setBlock(position, ice);
-            affected++;
+            if (this.editSession.setBlock(position, ice)) {
+                affected++;
+            }
             return false;
         }
 
-        // Can't put snow this far down
+        // Can't put snow this far up
         if (position.getBlockY() == this.editSession.getMaximumPoint().getBlockY()) {
             return false;
         }
