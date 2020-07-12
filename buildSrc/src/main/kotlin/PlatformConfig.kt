@@ -36,7 +36,10 @@ fun Project.applyPlatformAndCoreConfiguration() {
         targetCompatibility = JavaVersion.VERSION_1_8
     }
 
-    tasks.withType<JavaCompile>().configureEach {
+    tasks
+        .withType<JavaCompile>()
+        .matching { it.name == "compileJava" || it.name == "compileTestJava" }
+        .configureEach {
         val disabledLint = listOf(
             "processing", "path", "fallthrough", "serial"
         )
