@@ -130,6 +130,7 @@ if (project.hasProperty(crowdinApiKey) && !gradle.startParameter.isOffline) {
 // allow checking of the source file even without the API key
 val checkTranslationFiles by tasks.registering(TranslationFileCheck::class) {
     dependsOn(processResources)
+    sourceFile.set(i18nSource)
     translationFiles.from(fileTree(processResources.map { it.destinationDir }) {
         include("**/lang/**/*.json")
     })
