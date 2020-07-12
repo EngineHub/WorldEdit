@@ -93,13 +93,21 @@ import static com.sk89q.worldedit.internal.anvil.ChunkDeleter.DELCHUNKS_FILE_NAM
  */
 public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
 
-    private static final Logger log = LoggerFactory.getLogger(WorldEditPlugin.class);
-    public static final String CUI_PLUGIN_CHANNEL = "worldedit:cui";
+    // This must be before the Logger is initialized, which fails in 1.8
     private static final String FAILED_VERSION_CHECK =
         "\n**********************************************\n"
             + "** This Minecraft version (%s) is not supported by this version of WorldEdit.\n"
             + "** Please download an OLDER version of WorldEdit which does.\n"
             + "**********************************************\n";
+
+    static {
+        if (PaperLib.getMinecraftVersion() < 13) {
+            throw new IllegalStateException(String.format(FAILED_VERSION_CHECK, Bukkit.getVersion()));
+        }
+    }
+
+    private static final Logger log = LoggerFactory.getLogger(WorldEditPlugin.class);
+    public static final String CUI_PLUGIN_CHANNEL = "worldedit:cui";
     private static WorldEditPlugin INSTANCE;
     private static final int BSTATS_PLUGIN_ID = 3328;
 
@@ -131,8 +139,6 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
      */
     @Override
     public void onEnable() {
-        checkForOldMinecraft();
-
         PermissionsResolverManager.initialize(this); // Setup permission resolver
 
         // Register CUI
@@ -164,13 +170,6 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
         // Enable metrics
         new Metrics(this, BSTATS_PLUGIN_ID);
         PaperLib.suggestPaper(this);
-    }
-
-    private void checkForOldMinecraft() {
-        if (PaperLib.getMinecraftVersion() < 13) {
-            Bukkit.getPluginManager().disablePlugin(this);
-            throw new IllegalStateException(String.format(FAILED_VERSION_CHECK, Bukkit.getVersion()));
-        }
     }
 
     private void setupPreWorldData() {
