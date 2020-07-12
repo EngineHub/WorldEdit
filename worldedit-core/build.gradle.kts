@@ -83,20 +83,20 @@ plugins.withId("idea") {
     }
 }
 
-sourceSets {
-    main {
-        java {
-            srcDir("src/main/java")
-            srcDir("src/legacy/java")
-        }
-        resources {
-            srcDir("src/main/resources")
-        }
+sourceSets.named("main") {
+    java {
+        srcDir("src/main/java")
+        srcDir("src/legacy/java")
+    }
+    resources {
+        srcDir("src/main/resources")
     }
 }
 
-val crowdinApiKey = "crowdin_apikey"
+val i18nSource = file("src/main/resources/lang/strings.json")
+val processResources = tasks.named<Copy>("processResources")
 
+val crowdinApiKey = "crowdin_apikey"
 if (project.hasProperty(crowdinApiKey) && !gradle.startParameter.isOffline) {
     tasks.named<UploadSourceFileTask>("crowdinUpload") {
         apiKey = "${project.property(crowdinApiKey)}"
@@ -104,7 +104,7 @@ if (project.hasProperty(crowdinApiKey) && !gradle.startParameter.isOffline) {
         files = arrayOf(
             object {
                 var name = "strings.json"
-                var source = "${file("src/main/resources/lang/strings.json")}"
+                var source = "$i18nSource"
             }
         )
     }
@@ -115,14 +115,25 @@ if (project.hasProperty(crowdinApiKey) && !gradle.startParameter.isOffline) {
         projectId = "worldedit-core"
     }
 
-    tasks.named<Copy>("processResources") {
+    processResources.configure {
         dependsOn(dlTranslationsTask)
-        from(dlTranslationsTask.get().destination) {
+        from(dlTranslationsTask.map { it.destination }) {
             into("lang")
         }
     }
 
-    tasks.named("classes").configure {
+    tasks.named("classes") {
         dependsOn("crowdinDownload")
     }
+}
+
+// allow checking of the source file even without the API key
+val checkTranslationFiles by tasks.registering(TranslationFileCheck::class) {
+    dependsOn(processResources)
+    translationFiles.from(fileTree(processResources.map { it.destinationDir }) {
+        include("**/lang/**/*.json")
+    })
+}
+tasks.named("check") {
+    dependsOn(checkTranslationFiles)
 }
