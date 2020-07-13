@@ -101,6 +101,12 @@ public class SpongeSchematicReader extends NBTSchematicReader {
             return readVersion1(schematicTag);
         } else if (schematicVersion == 2) {
             dataVersion = requireTag(schematic, "DataVersion", IntTag.class).getValue();
+            if (dataVersion < 0) {
+                log.warn("Schematic has an unknown data version ({}). Data may be incompatible.",
+                    dataVersion);
+                // Do not DFU unknown data
+                dataVersion = liveDataVersion;
+            }
             if (dataVersion > liveDataVersion) {
                 log.warn("Schematic was made in a newer Minecraft version ({} > {}). Data may be incompatible.",
                         dataVersion, liveDataVersion);
@@ -129,7 +135,11 @@ public class SpongeSchematicReader extends NBTSchematicReader {
             if (schematicVersion == 1) {
                 return OptionalInt.of(Constants.DATA_VERSION_MC_1_13_2);
             } else if (schematicVersion == 2) {
-                return OptionalInt.of(requireTag(schematic, "DataVersion", IntTag.class).getValue());
+                int dataVersion = requireTag(schematic, "DataVersion", IntTag.class).getValue();
+                if (dataVersion < 0) {
+                    return OptionalInt.empty();
+                }
+                return OptionalInt.of(dataVersion);
             }
             return OptionalInt.empty();
         } catch (IOException e) {
