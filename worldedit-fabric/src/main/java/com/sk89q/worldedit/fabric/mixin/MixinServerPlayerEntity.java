@@ -42,13 +42,6 @@ public abstract class MixinServerPlayerEntity extends PlayerEntity implements Ex
         super(world, blockPos, gameProfile);
     }
 
-    @Inject(method = "swingHand", at = @At(value = "HEAD"))
-    public void onSwing(Hand hand, @SuppressWarnings("unused") CallbackInfo callbackInfo) {
-        if (hand == Hand.MAIN_HAND) {
-            FabricWorldEdit.inst.onLeftClickAir(this);
-        }
-    }
-
     @Inject(method = "setClientSettings", at = @At(value = "HEAD"))
     public void setClientSettings(ClientSettingsC2SPacket clientSettingsC2SPacket,
                                   @SuppressWarnings("unused") CallbackInfo callbackInfo) {
