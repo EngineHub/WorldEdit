@@ -20,16 +20,16 @@ configurations.all {
 }
 
 dependencies {
-    "compile"(project(":worldedit-libs:core"))
-    "compile"("de.schlichtherle:truezip:6.8.3")
-    "compile"("net.java.truevfs:truevfs-profile-default_2.13:0.12.1")
-    "compile"("org.mozilla:rhino-runtime:1.7.12")
-    "compile"("org.yaml:snakeyaml:1.9")
-    "compile"("com.google.guava:guava:21.0")
-    "compile"("com.google.code.findbugs:jsr305:1.3.9")
-    "compile"("com.google.code.gson:gson:2.8.0")
-    "compile"("org.slf4j:slf4j-api:1.7.26")
-    "compile"("it.unimi.dsi:fastutil:8.2.1")
+    "api"(project(":worldedit-libs:core"))
+    "implementation"("de.schlichtherle:truezip:6.8.3")
+    "implementation"("net.java.truevfs:truevfs-profile-default_2.13:0.12.1")
+    "implementation"("org.mozilla:rhino-runtime:1.7.12")
+    "implementation"("org.yaml:snakeyaml:1.9")
+    "implementation"("com.google.guava:guava:${Versions.GUAVA}")
+    "implementation"("com.google.code.findbugs:jsr305:1.3.9")
+    "implementation"("com.google.code.gson:gson:${Versions.GSON}")
+    "implementation"("org.slf4j:slf4j-api:1.7.26")
+    "implementation"("it.unimi.dsi:fastutil:${Versions.FAST_UTIL}")
 
     val antlrVersion = "4.7.2"
     "antlr"("org.antlr:antlr4:$antlrVersion")

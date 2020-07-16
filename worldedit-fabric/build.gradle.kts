@@ -19,6 +19,7 @@ applyPlatformAndCoreConfiguration()
 applyShadowConfiguration()
 
 apply(plugin = "fabric-loom")
+apply(plugin = "java-library")
 
 configure<LoomGradleExtension> {
     accessWidener("src/main/resources/worldedit.accesswidener")
@@ -44,7 +45,7 @@ repositories {
 }
 
 dependencies {
-    "implementation"(project(":worldedit-core"))
+    "api"(project(":worldedit-core"))
     "implementation"("org.apache.logging.log4j:log4j-slf4j-impl:2.8.1")
 
     "minecraft"("com.mojang:minecraft:$minecraftVersion")

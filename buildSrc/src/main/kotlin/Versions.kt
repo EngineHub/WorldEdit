@@ -8,6 +8,9 @@ object Versions {
     const val JUNIT = "5.6.1"
     const val MOCKITO = "3.3.3"
     const val LOGBACK = "1.2.3"
+    const val FAST_UTIL = "8.2.1"
+    const val GUAVA = "21.0"
+    const val GSON = "2.8.0"
 }
 
 // Properties that need a project reference to resolve:

@@ -31,7 +31,9 @@ dependencies {
     "compileOnly"("com.sk89q:dummypermscompat:1.10")
     "implementation"("org.apache.logging.log4j:log4j-slf4j-impl:2.8.1")
     "implementation"("org.bstats:bstats-bukkit:1.7")
-    "testCompile"("org.mockito:mockito-core:1.9.0-rc1")
+    "implementation"("it.unimi.dsi:fastutil:${Versions.FAST_UTIL}")
+    "implementation"("it.unimi.dsi:fastutil:${Versions.FAST_UTIL}")
+    "testImplementation"("org.mockito:mockito-core:1.9.0-rc1")
 }
 
 tasks.named<Copy>("processResources") {
