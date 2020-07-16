@@ -65,8 +65,9 @@ public class SnowSimulator implements LayerFunction {
             return true;
         }
 
-        // Can only place on solid blocks
-        return block.getBlockType().getMaterial().isSolid();
+        // Can only place on full solid blocks
+        return block.getBlockType().getMaterial().isFullCube()
+                && block.getBlockType().getMaterial().isSolid();
     }
 
     @Override
