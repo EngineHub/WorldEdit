@@ -24,7 +24,6 @@ import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.function.LayerFunction;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.registry.state.Property;
-import com.sk89q.worldedit.world.block.BlockCategories;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockTypes;
 
@@ -66,13 +65,8 @@ public class SnowSimulator implements LayerFunction {
             return true;
         }
 
-        // Can't place on translucent blocks
-        if (block.getBlockType().getMaterial().isTranslucent()) {
-            // But still add snow on leaves
-            return BlockCategories.LEAVES.contains(block.getBlockType());
-        }
-
-        return true;
+        // Can only place on solid blocks
+        return block.getBlockType().getMaterial().isSolid();
     }
 
     @Override
