@@ -45,6 +45,6 @@ public class BiomeQuirkExtent extends AbstractDelegateExtent {
             // Also place at Y = 0 for proper handling
             success = super.setBiome(position.withY(0), biome);
         }
-        return success || super.setBiome(position, biome);
+        return super.setBiome(position, biome) || success;
     }
 }
