@@ -69,7 +69,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.nbt.Tag;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.dedicated.DedicatedServer;
 import net.minecraft.server.world.ServerChunkManager;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
@@ -205,9 +204,6 @@ public class FabricWorld extends AbstractWorld {
 
     @Override
     public boolean fullySupports3DBiomes() {
-        if (getWorld().getServer() instanceof DedicatedServer) {
-            return true;
-        }
         BiomeAccessType biomeAccessType = getWorld().getDimension().getBiomeAccessType();
         return !(biomeAccessType instanceof HorizontalVoronoiBiomeAccessType);
     }
@@ -411,13 +407,7 @@ public class FabricWorld extends AbstractWorld {
 
             if (options.shouldRegenBiomes()) {
                 BiomeType biome = getBiomeInChunk(vec, chunk);
-                if (!editSession.fullySupports3DBiomes()) {
-                    for (int y = editSession.getMinimumPoint().getY(); y <= editSession.getMaximumPoint().getY(); y++) {
-                        editSession.setBiome(vec.withY(y), biome);
-                    }
-                } else {
-                    editSession.setBiome(vec, biome);
-                }
+                editSession.setBiome(vec, biome);
             }
         }
     }
