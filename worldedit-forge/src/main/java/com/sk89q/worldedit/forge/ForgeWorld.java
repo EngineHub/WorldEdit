@@ -69,7 +69,6 @@ import net.minecraft.item.ItemUseContext;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
 import net.minecraft.nbt.NBTDynamicOps;
-import net.minecraft.server.dedicated.DedicatedServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
@@ -208,9 +207,6 @@ public class ForgeWorld extends AbstractWorld {
 
     @Override
     public boolean fullySupports3DBiomes() {
-        if (getWorld().getServer() instanceof DedicatedServer) {
-            return true;
-        }
         IBiomeMagnifier magnifier = getWorld().func_230315_m_().getMagnifier();
         return !(magnifier instanceof ColumnFuzzedBiomeMagnifier);
     }
@@ -423,13 +419,7 @@ public class ForgeWorld extends AbstractWorld {
 
             if (options.shouldRegenBiomes()) {
                 BiomeType biome = getBiomeInChunk(vec, chunk);
-                if (!editSession.fullySupports3DBiomes()) {
-                    for (int y = editSession.getMinimumPoint().getY(); y <= editSession.getMaximumPoint().getY(); y++) {
-                        editSession.setBiome(vec.withY(y), biome);
-                    }
-                } else {
-                    editSession.setBiome(vec, biome);
-                }
+                editSession.setBiome(vec, biome);
             }
         }
     }
