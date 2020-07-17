@@ -47,6 +47,7 @@ import com.sk89q.worldedit.internal.annotation.VertHeight;
 import com.sk89q.worldedit.internal.expression.Expression;
 import com.sk89q.worldedit.internal.expression.ExpressionException;
 import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.math.Vector2;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.CylinderRegion;
 import com.sk89q.worldedit.regions.Region;
@@ -297,12 +298,17 @@ public class UtilityCommands {
                         def = HeightConverter.DEFAULT_VALUE
                     )
                     @VertHeight
-                        int height) throws WorldEditException {
+                        int height,
+                    @Switch(name = 's', desc = "Stack snow layers")
+                        boolean stack) throws WorldEditException {
         size = Math.max(1, size);
         height = Math.max(1, height);
         we.checkMaxRadius(size);
 
-        int affected = editSession.simulateSnow(session.getPlacementPosition(actor), size, height);
+        BlockVector3 position = session.getPlacementPosition(actor);
+
+        CylinderRegion region = new CylinderRegion(position, Vector2.at(size, size), position.getBlockY() - height, position.getBlockY() + height);
+        int affected = editSession.simulateSnow(region, stack);
         actor.printInfo(TranslatableComponent.of(
             "worldedit.snow.created", TextComponent.of(affected)
         ));

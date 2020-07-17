@@ -27,7 +27,6 @@ import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.registry.BlockMaterial;
 import com.sk89q.worldedit.world.registry.BundledBlockRegistry;
 import net.minecraft.block.Block;
-import net.minecraft.block.Material;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -37,7 +36,7 @@ import java.util.TreeMap;
 
 public class FabricBlockRegistry extends BundledBlockRegistry {
 
-    private final Map<Material, FabricBlockMaterial> materialMap = new HashMap<>();
+    private final Map<net.minecraft.block.BlockState, FabricBlockMaterial> materialMap = new HashMap<>();
 
     @Override
     public Component getRichName(BlockType blockType) {
@@ -48,8 +47,8 @@ public class FabricBlockRegistry extends BundledBlockRegistry {
     public BlockMaterial getMaterial(BlockType blockType) {
         Block block = FabricAdapter.adapt(blockType);
         return materialMap.computeIfAbsent(
-            block.getDefaultState().getMaterial(),
-            m -> new FabricBlockMaterial(m, super.getMaterial(blockType))
+            block.getDefaultState(),
+            m -> new FabricBlockMaterial(m.getMaterial(), m, super.getMaterial(blockType))
         );
     }
 

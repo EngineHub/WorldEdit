@@ -21,6 +21,7 @@ package com.sk89q.worldedit.fabric;
 
 import com.sk89q.worldedit.world.registry.BlockMaterial;
 import com.sk89q.worldedit.world.registry.PassthroughBlockMaterial;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.Material;
 import net.minecraft.block.piston.PistonBehavior;
 
@@ -34,10 +35,12 @@ import javax.annotation.Nullable;
 public class FabricBlockMaterial extends PassthroughBlockMaterial {
 
     private final Material delegate;
+    private final BlockState block;
 
-    public FabricBlockMaterial(Material delegate, @Nullable BlockMaterial secondary) {
+    public FabricBlockMaterial(Material delegate, BlockState block, @Nullable BlockMaterial secondary) {
         super(secondary);
         this.delegate = delegate;
+        this.block = block;
     }
 
     @Override
@@ -82,8 +85,7 @@ public class FabricBlockMaterial extends PassthroughBlockMaterial {
 
     @Override
     public boolean isToolRequired() {
-        // TODO this property has been removed
-        throw new UnsupportedOperationException("Mojang no longer provides this information");
+        return block.isToolRequired();
     }
 
     @Override
