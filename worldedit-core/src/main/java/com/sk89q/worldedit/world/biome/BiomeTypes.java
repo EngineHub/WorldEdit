@@ -22,10 +22,12 @@ package com.sk89q.worldedit.world.biome;
 import javax.annotation.Nullable;
 
 /**
- * Stores a list of common Biome String IDs.
+ * Stores a list of common {@link BiomeType BiomeTypes}.
+ *
+ * @see BiomeType
  */
+@SuppressWarnings("unused")
 public final class BiomeTypes {
-
     @Nullable public static final BiomeType BADLANDS = get("minecraft:badlands");
     @Nullable public static final BiomeType BADLANDS_PLATEAU = get("minecraft:badlands_plateau");
     @Nullable public static final BiomeType BAMBOO_JUNGLE = get("minecraft:bamboo_jungle");
@@ -110,15 +112,10 @@ public final class BiomeTypes {
     private BiomeTypes() {
     }
 
-    private static BiomeType register(final String id) {
-        return register(new BiomeType(id));
-    }
-
-    public static BiomeType register(final BiomeType biome) {
-        return BiomeType.REGISTRY.register(biome.getId(), biome);
-    }
-
-    public static @Nullable BiomeType get(final String id) {
+    /**
+     * Gets the {@link BiomeType} associated with the given id.
+     */
+    public static @Nullable BiomeType get(String id) {
         return BiomeType.REGISTRY.get(id);
     }
 }

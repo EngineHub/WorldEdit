@@ -20,10 +20,12 @@
 package com.sk89q.worldedit.world.item;
 
 /**
- * Stores a list of categories of Item Types.
+ * Stores a list of common {@link ItemCategory ItemCategories}.
+ *
+ * @see ItemCategory
  */
+@SuppressWarnings("unused")
 public final class ItemCategories {
-
     public static final ItemCategory ACACIA_LOGS = get("minecraft:acacia_logs");
     public static final ItemCategory ANVIL = get("minecraft:anvil");
     public static final ItemCategory ARROWS = get("minecraft:arrows");
@@ -82,11 +84,14 @@ public final class ItemCategories {
     private ItemCategories() {
     }
 
-    private static ItemCategory get(final String id) {
-        ItemCategory itemCategory = ItemCategory.REGISTRY.get(id);
-        if (itemCategory == null) {
+    /**
+     * Gets the {@link ItemCategory} associated with the given id.
+     */
+    public static ItemCategory get(String id) {
+        ItemCategory entry = ItemCategory.REGISTRY.get(id);
+        if (entry == null) {
             return new ItemCategory(id);
         }
-        return itemCategory;
+        return entry;
     }
 }
