@@ -20,10 +20,12 @@
 package com.sk89q.worldedit.world.block;
 
 /**
- * Stores a list of categories of Block Types.
+ * Stores a list of common {@link BlockCategory BlockCategories}.
+ *
+ * @see BlockCategory
  */
+@SuppressWarnings("unused")
 public final class BlockCategories {
-
     public static final BlockCategory ACACIA_LOGS = get("minecraft:acacia_logs");
     public static final BlockCategory ANVIL = get("minecraft:anvil");
     public static final BlockCategory BAMBOO_PLANTABLE_ON = get("minecraft:bamboo_plantable_on");
@@ -112,11 +114,14 @@ public final class BlockCategories {
     private BlockCategories() {
     }
 
-    private static BlockCategory get(final String id) {
-        BlockCategory blockCategory = BlockCategory.REGISTRY.get(id);
-        if (blockCategory == null) {
+    /**
+     * Gets the {@link BlockCategory} associated with the given id.
+     */
+    public static BlockCategory get(String id) {
+        BlockCategory entry = BlockCategory.REGISTRY.get(id);
+        if (entry == null) {
             return new BlockCategory(id);
         }
-        return blockCategory;
+        return entry;
     }
 }

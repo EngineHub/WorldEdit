@@ -19,15 +19,15 @@
 
 package com.sk89q.worldedit.world.block;
 
-import java.util.Optional;
 import javax.annotation.Nullable;
 
 /**
- * Stores a list of common Block String IDs.
+ * Stores a list of common {@link BlockType BlockTypes}.
+ *
+ * @see BlockType
  */
 @SuppressWarnings("unused")
 public final class BlockTypes {
-
     @Nullable public static final BlockType ACACIA_BUTTON = get("minecraft:acacia_button");
     @Nullable public static final BlockType ACACIA_DOOR = get("minecraft:acacia_door");
     @Nullable public static final BlockType ACACIA_FENCE = get("minecraft:acacia_fence");
@@ -646,7 +646,7 @@ public final class BlockTypes {
     @Nullable public static final BlockType SEAGRASS = get("minecraft:seagrass");
     @Nullable public static final BlockType SHROOMLIGHT = get("minecraft:shroomlight");
     @Nullable public static final BlockType SHULKER_BOX = get("minecraft:shulker_box");
-    @Deprecated @Nullable public static final BlockType SIGN = Optional.ofNullable(get("minecraft:sign")).orElse(get("minecraft:oak_sign"));
+    @Deprecated @Nullable public static final BlockType SIGN = get("minecraft:sign");
     @Nullable public static final BlockType SKELETON_SKULL = get("minecraft:skeleton_skull");
     @Nullable public static final BlockType SKELETON_WALL_SKULL = get("minecraft:skeleton_wall_skull");
     @Nullable public static final BlockType SLIME_BLOCK = get("minecraft:slime_block");
@@ -739,7 +739,7 @@ public final class BlockTypes {
     @Nullable public static final BlockType TWISTING_VINES_PLANT = get("minecraft:twisting_vines_plant");
     @Nullable public static final BlockType VINE = get("minecraft:vine");
     @Nullable public static final BlockType VOID_AIR = get("minecraft:void_air");
-    @Deprecated @Nullable public static final BlockType WALL_SIGN = Optional.ofNullable(get("minecraft:wall_sign")).orElse(get("minecraft:oak_wall_sign"));
+    @Deprecated @Nullable public static final BlockType WALL_SIGN = get("minecraft:wall_sign");
     @Nullable public static final BlockType WALL_TORCH = get("minecraft:wall_torch");
     @Nullable public static final BlockType WARPED_BUTTON = get("minecraft:warped_button");
     @Nullable public static final BlockType WARPED_DOOR = get("minecraft:warped_door");
@@ -797,8 +797,10 @@ public final class BlockTypes {
     private BlockTypes() {
     }
 
-    @Nullable
-    public static BlockType get(final String id) {
+    /**
+     * Gets the {@link BlockType} associated with the given id.
+     */
+    public static @Nullable BlockType get(String id) {
         return BlockType.REGISTRY.get(id);
     }
 }
