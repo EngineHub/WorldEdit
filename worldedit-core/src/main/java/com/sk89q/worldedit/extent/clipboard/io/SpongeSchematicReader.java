@@ -149,9 +149,6 @@ public class SpongeSchematicReader extends NBTSchematicReader {
 
     private CompoundTag getBaseTag() throws IOException {
         NamedTag rootTag = inputStream.readNamedTag();
-        if (!rootTag.getName().equals("Schematic")) {
-            throw new IOException("Tag 'Schematic' does not exist or is not first");
-        }
         CompoundTag schematicTag = (CompoundTag) rootTag.getTag();
 
         // Check
