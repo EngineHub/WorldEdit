@@ -29,12 +29,12 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.Dynamic;
 import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
+import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.forge.internal.ForgeWorldNativeAccess;
 import com.sk89q.worldedit.forge.internal.NBTConverter;
 import com.sk89q.worldedit.forge.internal.TileEntityUtils;
@@ -294,7 +294,7 @@ public class ForgeWorld extends AbstractWorld {
     // For unmapped regen names, see Fabric!
 
     @Override
-    public boolean regenerate(Region region, EditSession editSession, RegenOptions options) {
+    public boolean regenerate(Region region, Extent extent, RegenOptions options) {
         // Don't even try to regen if it's going to fail.
         AbstractChunkProvider provider = getWorld().getChunkProvider();
         if (!(provider instanceof ServerChunkProvider)) {
@@ -302,7 +302,7 @@ public class ForgeWorld extends AbstractWorld {
         }
 
         try {
-            doRegen(region, editSession, options);
+            doRegen(region, extent, options);
         } catch (Exception e) {
             throw new IllegalStateException("Regen failed", e);
         }
@@ -310,7 +310,7 @@ public class ForgeWorld extends AbstractWorld {
         return true;
     }
 
-    private void doRegen(Region region, EditSession editSession, RegenOptions options) throws Exception {
+    private void doRegen(Region region, Extent extent, RegenOptions options) throws Exception {
         Path tempDir = Files.createTempDirectory("WorldEditWorldGen");
         SaveFormat levelStorage = SaveFormat.func_237269_a_(tempDir);
         try (SaveFormat.LevelSave session = levelStorage.func_237274_c_("WorldEditTempGen")) {
@@ -351,7 +351,7 @@ public class ForgeWorld extends AbstractWorld {
                 // This controls ticking, we don't need it so set it to false.
                 false
             )) {
-                regenForWorld(region, editSession, serverWorld, options);
+                regenForWorld(region, extent, serverWorld, options);
 
                 // drive the server executor until all tasks are popped off
                 while (originalWorld.getServer().driveOne()) {
@@ -381,8 +381,8 @@ public class ForgeWorld extends AbstractWorld {
         });
     }
 
-    private void regenForWorld(Region region, EditSession editSession, ServerWorld serverWorld,
-                               RegenOptions options) throws MaxChangedBlocksException {
+    private void regenForWorld(Region region, Extent extent, ServerWorld serverWorld,
+                               RegenOptions options) throws WorldEditException {
         List<CompletableFuture<IChunk>> chunkLoadings = submitChunkLoadTasks(region, serverWorld);
 
         // drive executor until loading finishes
@@ -415,11 +415,11 @@ public class ForgeWorld extends AbstractWorld {
                 blockEntity.write(tag);
                 state = state.toBaseBlock(NBTConverter.fromNative(tag));
             }
-            editSession.setBlock(vec, state);
+            extent.setBlock(vec, state.toBaseBlock());
 
             if (options.shouldRegenBiomes()) {
                 BiomeType biome = getBiomeInChunk(vec, chunk);
-                editSession.setBiome(vec, biome);
+                extent.setBiome(vec, biome);
             }
         }
     }

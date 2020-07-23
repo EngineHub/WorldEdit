@@ -208,11 +208,38 @@ public interface World extends Extent, Keyed {
      * Regenerate an area.
      *
      * @param region the region
+     * @param extent the {@link Extent}
+     * @return true if re-generation was successful
+     */
+    default boolean regenerate(Region region, Extent extent) {
+        return regenerate(region, extent, RegenOptions.builder().build());
+    }
+
+    /**
+     * Regenerate an area.
+     *
+     * @param region the region
      * @param editSession the {@link EditSession}
      * @return true if re-generation was successful
      */
     default boolean regenerate(Region region, EditSession editSession) {
-        return regenerate(region, editSession, RegenOptions.builder().build());
+        return regenerate(region, (Extent) editSession, RegenOptions.builder().build());
+    }
+
+    /**
+     * Regenerate an area.
+     *
+     * @param region the region
+     * @param extent the {@link Extent}
+     * @param options the regeneration options
+     * @return true if regeneration was successful
+     */
+    @NonAbstractForCompatibility(
+        delegateName = "regenerate",
+        delegateParams = { Region.class, Extent.class }
+    )
+    default boolean regenerate(Region region, Extent extent, RegenOptions options) {
+        return regenerate(region, extent);
     }
 
     /**
@@ -228,7 +255,7 @@ public interface World extends Extent, Keyed {
         delegateParams = { Region.class, EditSession.class }
     )
     default boolean regenerate(Region region, EditSession editSession, RegenOptions options) {
-        return regenerate(region, editSession);
+        return regenerate(region, (Extent) editSession);
     }
 
     /**
