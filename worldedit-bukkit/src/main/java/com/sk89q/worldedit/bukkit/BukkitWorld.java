@@ -27,6 +27,7 @@ import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.bukkit.adapter.BukkitImplAdapter;
 import com.sk89q.worldedit.entity.BaseEntity;
+import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.internal.wna.WorldNativeAccess;
 import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.math.BlockVector3;
@@ -198,11 +199,11 @@ public class BukkitWorld extends AbstractWorld {
     }
 
     @Override
-    public boolean regenerate(Region region, EditSession editSession, RegenOptions options) {
+    public boolean regenerate(Region region, Extent extent, RegenOptions options) {
         BukkitImplAdapter adapter = WorldEditPlugin.getInstance().getBukkitImplAdapter();
         try {
             if (adapter != null) {
-                return adapter.regenerate(getWorld(), region, editSession, options);
+                return adapter.regenerate(getWorld(), region, extent, options);
             } else {
                 throw new UnsupportedOperationException("Missing BukkitImplAdapater for this version.");
             }
