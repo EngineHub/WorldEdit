@@ -223,18 +223,6 @@ public interface BukkitImplAdapter {
      * Regenerate a region in the given world, so it appears "as new".
      * @param world the world to regen in
      * @param region the region to regen
-     * @param session the session to use for setting blocks
-     * @param options the regeneration options
-     * @return true on success, false on failure
-     */
-    default boolean regenerate(World world, Region region, EditSession session, RegenOptions options) {
-        return regenerate(world, region, (Extent) session, options);
-    }
-
-    /**
-     * Regenerate a region in the given world, so it appears "as new".
-     * @param world the world to regen in
-     * @param region the region to regen
      * @param extent the extent to use for setting blocks
      * @param options the regeneration options
      * @return true on success, false on failure
