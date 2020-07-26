@@ -27,6 +27,7 @@ import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.function.mask.Mask;
+import com.sk89q.worldedit.internal.util.DeprecationUtil;
 import com.sk89q.worldedit.internal.util.NonAbstractForCompatibility;
 import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.math.BlockVector3;
@@ -208,6 +209,17 @@ public interface World extends Extent, Keyed {
      * Regenerate an area.
      *
      * @param region the region
+     * @param editSession the {@link EditSession}
+     * @return true if re-generation was successful
+     */
+    default boolean regenerate(Region region, EditSession editSession) {
+        return regenerate(region, editSession, RegenOptions.builder().build());
+    }
+
+    /**
+     * Regenerate an area.
+     *
+     * @param region the region
      * @param extent the {@link Extent}
      * @return true if re-generation was successful
      */
@@ -219,43 +231,24 @@ public interface World extends Extent, Keyed {
      * Regenerate an area.
      *
      * @param region the region
-     * @param editSession the {@link EditSession}
-     * @return true if re-generation was successful
-     */
-    default boolean regenerate(Region region, EditSession editSession) {
-        return regenerate(region, (Extent) editSession, RegenOptions.builder().build());
-    }
-
-    /**
-     * Regenerate an area.
-     *
-     * @param region the region
      * @param extent the {@link Extent}
      * @param options the regeneration options
      * @return true if regeneration was successful
-     */
-    @NonAbstractForCompatibility(
-        delegateName = "regenerate",
-        delegateParams = { Region.class, Extent.class }
-    )
-    default boolean regenerate(Region region, Extent extent, RegenOptions options) {
-        return regenerate(region, extent);
-    }
-
-    /**
-     * Regenerate an area.
-     *
-     * @param region the region
-     * @param editSession the {@link EditSession}
-     * @param options the regeneration options
-     * @return true if regeneration was successful
+     * @apiNote This must be overridden by new subclasses. See {@link NonAbstractForCompatibility}
+     *          for details
      */
     @NonAbstractForCompatibility(
         delegateName = "regenerate",
         delegateParams = { Region.class, EditSession.class }
     )
-    default boolean regenerate(Region region, EditSession editSession, RegenOptions options) {
-        return regenerate(region, (Extent) editSession);
+    default boolean regenerate(Region region, Extent extent, RegenOptions options) {
+        DeprecationUtil.checkDelegatingOverride(getClass());
+        if (extent instanceof EditSession) {
+            return regenerate(region, (EditSession) extent);
+        }
+        throw new UnsupportedOperationException("This World class ("
+            + getClass().getName()
+            + ") does not implement the general Extent variant of this method");
     }
 
     /**
