@@ -20,6 +20,7 @@
 package com.sk89q.worldedit.bukkit;
 
 import com.google.common.base.Joiner;
+import com.google.gson.Gson;
 import com.sk89q.util.yaml.YAMLProcessor;
 import com.sk89q.wepif.PermissionsResolverManager;
 import com.sk89q.worldedit.EditSession;
@@ -40,6 +41,9 @@ import com.sk89q.worldedit.extent.inventory.BlockBag;
 import com.sk89q.worldedit.internal.anvil.ChunkDeleter;
 import com.sk89q.worldedit.internal.command.CommandUtil;
 import com.sk89q.worldedit.registry.state.Property;
+import com.sk89q.worldedit.util.formatting.text.TextComponent;
+import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
+import com.sk89q.worldedit.util.formatting.text.adapter.bukkit.SpigotTextAdapter;
 import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.block.BlockCategory;
 import com.sk89q.worldedit.world.block.BlockState;
@@ -51,6 +55,7 @@ import com.sk89q.worldedit.world.item.ItemCategory;
 import com.sk89q.worldedit.world.item.ItemType;
 import com.sk89q.worldedit.world.weather.WeatherTypes;
 import io.papermc.lib.PaperLib;
+import net.md_5.bungee.chat.ComponentSerializer;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -67,6 +72,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.world.WorldInitEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,6 +81,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.AccessibleObject;
+import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -170,6 +178,56 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
         // Enable metrics
         new Metrics(this, BSTATS_PLUGIN_ID);
         PaperLib.suggestPaper(this);
+
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                String result = ComponentSerializer.toString(SpigotTextAdapter.toBungeeCord(
+                    TranslatableComponent.of("worldedit.tests.bungee", TextComponent.of("It usually works!"))
+                ));
+                if (result.contains("\"key\"")) {
+                    log.warn("WARNING: WorldEdit has detected spooky action at a distance!"
+                        + " Please report your full server logs to the WorldEdit team.");
+                    try {
+                        log.warn("Serialized form: " + result);
+
+                        Field f = ComponentSerializer.class.getDeclaredField("gson");
+                        f.setAccessible(true);
+                        Gson gson = (Gson) f.get(null);
+
+
+                        StringBuilder info = new StringBuilder("GSON information: ");
+                        f = Gson.class.getDeclaredField("factories");
+                        f.setAccessible(true);
+                        List<?> factories = (List<?>) f.get(gson);
+                        for (Object factory : factories) {
+                            Field exact;
+                            Field hierarchy;
+                            try {
+                                exact = factory.getClass().getDeclaredField("exactType");
+                                hierarchy = factory.getClass().getDeclaredField("hierarchyType");
+                                AccessibleObject.setAccessible(
+                                    new AccessibleObject[]{exact, hierarchy},
+                                    true
+                                );
+                            } catch (NoSuchFieldException e) {
+                                info.append("Unhandled factory: ").append(factory).append('\n');
+                                continue;
+                            }
+                            info.append(factory)
+                                .append(": exact=").append(exact.get(factory))
+                                .append(", hierarchy=").append(hierarchy.get(factory))
+                                .append('\n');
+                        }
+                        log.warn(info.toString());
+                    } catch (Throwable e) {
+                        log.warn("Failed to run collection of information:", e);
+                    } finally {
+                        cancel();
+                    }
+                }
+            }
+        }.runTaskTimer(this, 20L, 20L);
     }
 
     private void setupPreWorldData() {
@@ -202,7 +260,7 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
                     context.setRestricted(false);
                     try {
                         FuzzyBlockState state = (FuzzyBlockState) WorldEdit.getInstance().getBlockFactory().parseFromInput(
-                                BukkitAdapter.adapt(blockState.getBlockType()).createBlockData().getAsString(), context
+                            BukkitAdapter.adapt(blockState.getBlockType()).createBlockData().getAsString(), context
                         ).toImmutableState();
                         BlockState defaultState = blockState.getBlockType().getAllStates().get(0);
                         for (Map.Entry<Property<?>, Object> propertyObjectEntry : state.getStates().entrySet()) {
@@ -397,7 +455,7 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
         BlockBag blockBag = session.getBlockBag(wePlayer);
 
         EditSession editSession = WorldEdit.getInstance().getEditSessionFactory()
-                .getEditSession(wePlayer.getWorld(), session.getBlockChangeLimit(), blockBag, wePlayer);
+            .getEditSession(wePlayer.getWorld(), session.getBlockChangeLimit(), blockBag, wePlayer);
         editSession.enableStandardMode();
 
         return editSession;
@@ -530,7 +588,7 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
                 buffer = "/" + buffer.substring(plSep + 2);
             }
             final Optional<org.enginehub.piston.Command> command
-                    = WorldEdit.getInstance().getPlatformManager().getPlatformCommandManager().getCommandManager().getCommand(label);
+                = WorldEdit.getInstance().getPlatformManager().getPlatformCommandManager().getCommandManager().getCommand(label);
             if (!command.isPresent()) {
                 return;
             }
