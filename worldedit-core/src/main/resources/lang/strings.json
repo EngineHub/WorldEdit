@@ -262,6 +262,7 @@
     "worldedit.tool.info.legacy.hover": "Legacy id:data",
     "worldedit.tool.info.light.hover": "Block Light/Light Above",
     "worldedit.tool.none.equip": "Tool unbound from your current item.",
+    "worldedit.tool.none.to.unequip": "Your current item is not bound.",
     "worldedit.tool.selwand.equip": "Selection wand bound to {0}.",
     "worldedit.tool.navwand.equip": "Navigation wand bound to {0}.",
     "worldedit.tool.floodfill.equip": "Block flood fill tool bound to {0}.",
