@@ -47,13 +47,16 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -72,7 +75,7 @@ public class SessionManager {
     private static final ListeningExecutorService executorService = MoreExecutors.listeningDecorator(
             EvenMoreExecutors.newBoundedCachedThreadPool(0, 1, 5, "WorldEdit Session Saver - %s"));
     private static final Logger log = LoggerFactory.getLogger(SessionManager.class);
-    private static boolean warnedInvalidTool;
+    private static final Set<String> warnedInvalidTool = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
     private final Timer timer = new Timer("WorldEdit Session Manager");
     private final WorldEdit worldEdit;
@@ -168,18 +171,20 @@ public class SessionManager {
             session.setBlockChangeLimit(config.defaultChangeLimit);
             session.setTimeout(config.calculationTimeout);
             try {
-                if (owner.hasPermission("worldedit.selection.pos")) {
-                    setDefaultWand(session.getWandItem(), config.wandItem, session, new SelectionWand());
-                }
-                if (owner.hasPermission("worldedit.navigation.jumpto.tool") || owner.hasPermission("worldedit.navigation.thru.tool")) {
-                    setDefaultWand(session.getNavWandItem(), config.navigationWand, session, new NavigationWand());
-                }
+                setDefaultWand(session.getWandItem(), config.wandItem, session, new SelectionWand());
             } catch (InvalidToolBindException e) {
-                if (!warnedInvalidTool) {
-                    warnedInvalidTool = true;
-                    log.warn("Invalid wand tool set in config. Tool will not be assigned: " + e.getItemType());
+                if (warnedInvalidTool.add("selwand")) {
+                    log.warn("Invalid selection wand tool set in config. Tool will not be assigned: " + e.getItemType());
                 }
             }
+            try {
+                setDefaultWand(session.getNavWandItem(), config.navigationWand, session, new NavigationWand());
+            } catch (InvalidToolBindException e) {
+                if (warnedInvalidTool.add("navwand")) {
+                    log.warn("Invalid navigation wand tool set in config. Tool will not be assigned: " + e.getItemType());
+                }
+            }
+            session.compareAndResetDirty();
 
             // Remember the session regardless of if it's currently active or not.
             // And have the SessionTracker FLUSH inactive sessions.
