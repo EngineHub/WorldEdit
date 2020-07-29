@@ -42,9 +42,11 @@ import com.sk89q.worldedit.command.util.CreatureButcher;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.function.Contextual;
-import com.sk89q.worldedit.function.factory.Apply;
+import com.sk89q.worldedit.function.factory.ApplyLayer;
+import com.sk89q.worldedit.function.factory.ApplyRegion;
 import com.sk89q.worldedit.function.factory.Deform;
 import com.sk89q.worldedit.function.factory.Paint;
+import com.sk89q.worldedit.function.factory.Snow;
 import com.sk89q.worldedit.function.mask.BlockTypeMask;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.function.operation.Operation;
@@ -52,6 +54,7 @@ import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.internal.annotation.ClipboardMask;
 import com.sk89q.worldedit.internal.annotation.VertHeight;
 import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.regions.factory.CylinderRegionFactory;
 import com.sk89q.worldedit.regions.factory.RegionFactory;
 import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.session.request.RequestExtent;
@@ -360,7 +363,7 @@ public class BrushCommands {
                     @Arg(desc = "The pattern of blocks to set")
                         Pattern pattern) throws WorldEditException {
         setOperationBasedBrush(player, localSession, radius,
-            new Apply(new ReplaceFactory(pattern)), shape, "worldedit.brush.set");
+            new ApplyRegion(new ReplaceFactory(pattern)), shape, "worldedit.brush.set");
     }
 
     @Command(
@@ -407,6 +410,27 @@ public class BrushCommands {
                           double radius) throws WorldEditException {
         setOperationBasedBrush(player, localSession, radius,
             new Deform("y+=1"), shape, "worldedit.brush.lower");
+    }
+
+    @Command(
+        name = "snow",
+        desc = "Snow brush, sets snow in the area"
+    )
+    @CommandPermissions("worldedit.brush.snow")
+    public void snow(Player player, LocalSession localSession,
+                    @Arg(desc = "The shape of the region")
+                        RegionFactory shape,
+                    @Arg(desc = "The size of the brush", def = "5")
+                        double radius,
+                    @Switch(name = 's', desc = "Whether to stack snow")
+                        boolean stack) throws WorldEditException {
+
+        if (shape instanceof CylinderRegionFactory) {
+            ((CylinderRegionFactory) shape).setHeight(radius);
+        }
+
+        setOperationBasedBrush(player, localSession, radius,
+            new ApplyLayer(new Snow(stack)), shape, "worldedit.brush.snow");
     }
 
     static void setOperationBasedBrush(Player player, LocalSession session, double radius,

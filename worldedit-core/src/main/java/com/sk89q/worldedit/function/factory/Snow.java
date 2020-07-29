@@ -17,28 +17,24 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.regions.factory;
+package com.sk89q.worldedit.function.factory;
 
-import com.sk89q.worldedit.math.BlockVector3;
-import com.sk89q.worldedit.math.Vector2;
-import com.sk89q.worldedit.regions.CylinderRegion;
-import com.sk89q.worldedit.regions.Region;
+import com.sk89q.worldedit.function.Contextual;
+import com.sk89q.worldedit.function.EditContext;
+import com.sk89q.worldedit.function.LayerFunction;
+import com.sk89q.worldedit.function.block.SnowSimulator;
+import com.sk89q.worldedit.session.request.Request;
 
-public class CylinderRegionFactory implements RegionFactory {
+public class Snow implements Contextual<LayerFunction> {
 
-    private double height;
+    private final boolean stack;
 
-    public CylinderRegionFactory(double height) {
-        this.height = height;
-    }
-
-    public void setHeight(double height) {
-        this.height = height;
+    public Snow(boolean stack) {
+        this.stack = stack;
     }
 
     @Override
-    public Region createCenteredAt(BlockVector3 position, double size) {
-        return new CylinderRegion(position, Vector2.at(size, size), position.getBlockY() - (int) (height / 2), position.getBlockY() + (int) (height / 2));
+    public LayerFunction createFromContext(EditContext context) {
+        return new SnowSimulator(Request.request().getEditSession(), this.stack);
     }
-
 }
