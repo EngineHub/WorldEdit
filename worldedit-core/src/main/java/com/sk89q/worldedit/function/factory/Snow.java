@@ -23,7 +23,6 @@ import com.sk89q.worldedit.function.Contextual;
 import com.sk89q.worldedit.function.EditContext;
 import com.sk89q.worldedit.function.LayerFunction;
 import com.sk89q.worldedit.function.block.SnowSimulator;
-import com.sk89q.worldedit.session.request.Request;
 
 public class Snow implements Contextual<LayerFunction> {
 
@@ -35,6 +34,6 @@ public class Snow implements Contextual<LayerFunction> {
 
     @Override
     public LayerFunction createFromContext(EditContext context) {
-        return new SnowSimulator(Request.request().getEditSession(), this.stack);
+        return new SnowSimulator(context.getDestination(), this.stack);
     }
 }

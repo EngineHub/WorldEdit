@@ -31,8 +31,10 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static com.sk89q.worldedit.util.GuavaUtil.firstNonNull;
 
 /**
+ * Creates an operation from a region context.
+ *
  * @deprecated Use {@link ApplyRegion} or {@link ApplyLayer}
- * depending on function type.
+ *     depending on function type.
  */
 @Deprecated
 public class Apply implements Contextual<Operation> {

@@ -19,8 +19,8 @@
 
 package com.sk89q.worldedit.function.block;
 
-import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.function.LayerFunction;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.registry.state.Property;
@@ -35,13 +35,13 @@ public class SnowSimulator implements LayerFunction {
 
     private final Property<Integer> snowLayersProperty = BlockTypes.SNOW.getProperty("layers");
 
-    private final EditSession editSession;
+    private final Extent extent;
     private final boolean stack;
 
     private int affected;
 
-    public SnowSimulator(EditSession editSession, boolean stack) {
-        this.editSession = editSession;
+    public SnowSimulator(Extent extent, boolean stack) {
+        this.extent = extent;
         this.stack = stack;
 
         this.affected = 0;
@@ -53,7 +53,7 @@ public class SnowSimulator implements LayerFunction {
 
     @Override
     public boolean isGround(BlockVector3 position) {
-        BlockState block = this.editSession.getBlock(position);
+        BlockState block = this.extent.getBlock(position);
 
         // We're returning the first block we can place *on top of*
         if (block.getBlockType().getMaterial().isAir() || (stack && block.getBlockType() == BlockTypes.SNOW)) {
@@ -77,22 +77,22 @@ public class SnowSimulator implements LayerFunction {
             return false;
         }
 
-        BlockState block = this.editSession.getBlock(position);
+        BlockState block = this.extent.getBlock(position);
 
         if (block.getBlockType() == BlockTypes.WATER) {
-            if (this.editSession.setBlock(position, ice)) {
+            if (this.extent.setBlock(position, ice)) {
                 affected++;
             }
             return false;
         }
 
         // Can't put snow this far up
-        if (position.getBlockY() == this.editSession.getMaximumPoint().getBlockY()) {
+        if (position.getBlockY() == this.extent.getMaximumPoint().getBlockY()) {
             return false;
         }
 
         BlockVector3 abovePosition = position.add(0, 1, 0);
-        BlockState above = this.editSession.getBlock(abovePosition);
+        BlockState above = this.extent.getBlock(abovePosition);
 
         // Can only replace air (or snow in stack mode)
         if (!above.getBlockType().getMaterial().isAir() && (!stack || above.getBlockType() != BlockTypes.SNOW)) {
@@ -103,17 +103,17 @@ public class SnowSimulator implements LayerFunction {
             int currentHeight = above.getState(snowLayersProperty);
             // We've hit the highest layer (If it doesn't contain current + 2 it means it's 1 away from full)
             if (!snowLayersProperty.getValues().contains(currentHeight + 2)) {
-                if (this.editSession.setBlock(abovePosition, snowBlock)) {
+                if (this.extent.setBlock(abovePosition, snowBlock)) {
                     this.affected++;
                 }
             } else {
-                if (this.editSession.setBlock(abovePosition, above.with(snowLayersProperty, currentHeight + 1))) {
+                if (this.extent.setBlock(abovePosition, above.with(snowLayersProperty, currentHeight + 1))) {
                     this.affected++;
                 }
             }
             return false;
         }
-        if (this.editSession.setBlock(abovePosition, snow)) {
+        if (this.extent.setBlock(abovePosition, snow)) {
             this.affected++;
         }
         return false;
