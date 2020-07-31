@@ -90,6 +90,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Level;
 import javax.annotation.Nullable;
 
@@ -179,6 +181,8 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
         new Metrics(this, BSTATS_PLUGIN_ID);
         PaperLib.suggestPaper(this);
 
+        long interval = TimeUnit.MINUTES.toMillis(1);
+        AtomicLong lastMentioned = new AtomicLong();
         new BukkitRunnable() {
             @Override
             public void run() {
@@ -186,6 +190,11 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
                     TranslatableComponent.of("worldedit.tests.bungee", TextComponent.of("It usually works!"))
                 ));
                 if (result.contains("\"key\"")) {
+                    long now = TimeUnit.NANOSECONDS.toMillis(System.nanoTime());
+                    if (lastMentioned.get() + interval > now) {
+                        return;
+                    }
+                    lastMentioned.set(now);
                     log.warn("WARNING: WorldEdit has detected spooky action at a distance!"
                         + " Please report your full server logs to the WorldEdit team.");
                     try {
@@ -222,8 +231,6 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
                         log.warn(info.toString());
                     } catch (Throwable e) {
                         log.warn("Failed to run collection of information:", e);
-                    } finally {
-                        cancel();
                     }
                 }
             }
