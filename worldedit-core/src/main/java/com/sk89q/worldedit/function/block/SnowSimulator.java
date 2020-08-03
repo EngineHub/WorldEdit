@@ -34,6 +34,7 @@ public class SnowSimulator implements LayerFunction {
     private final BlockState snowBlock = BlockTypes.SNOW_BLOCK.getDefaultState();
 
     private final Property<Integer> snowLayersProperty = BlockTypes.SNOW.getProperty("layers");
+    private final Property<Integer> waterLevelProperty = BlockTypes.WATER.getProperty("level");
 
     private final Extent extent;
     private final boolean stack;
@@ -80,8 +81,10 @@ public class SnowSimulator implements LayerFunction {
         BlockState block = this.extent.getBlock(position);
 
         if (block.getBlockType() == BlockTypes.WATER) {
-            if (this.extent.setBlock(position, ice)) {
-                affected++;
+            if (block.getState(waterLevelProperty) == 0) {
+                if (this.extent.setBlock(position, ice)) {
+                    affected++;
+                }
             }
             return false;
         }
