@@ -20,6 +20,8 @@
 package com.sk89q.worldedit.bukkit;
 
 import com.google.common.base.Joiner;
+import com.google.common.collect.ImmutableList;
+import com.sk89q.bukkit.util.ClassSourceValidator;
 import com.sk89q.util.yaml.YAMLProcessor;
 import com.sk89q.wepif.PermissionsResolverManager;
 import com.sk89q.worldedit.EditSession;
@@ -40,6 +42,7 @@ import com.sk89q.worldedit.extent.inventory.BlockBag;
 import com.sk89q.worldedit.internal.anvil.ChunkDeleter;
 import com.sk89q.worldedit.internal.command.CommandUtil;
 import com.sk89q.worldedit.registry.state.Property;
+import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.block.BlockCategory;
 import com.sk89q.worldedit.world.block.BlockState;
@@ -67,6 +70,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.world.WorldInitEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.enginehub.piston.CommandManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -139,6 +143,12 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
      */
     @Override
     public void onEnable() {
+
+        // Catch bad things being done by naughty plugins that include
+        // WorldEdit's classes
+        ClassSourceValidator verifier = new ClassSourceValidator(this);
+        verifier.reportMismatches(ImmutableList.of(World.class, CommandManager.class, EditSession.class, Actor.class));
+
         PermissionsResolverManager.initialize(this); // Setup permission resolver
 
         // Register CUI
