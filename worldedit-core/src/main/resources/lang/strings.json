@@ -399,6 +399,8 @@
     "worldedit.sideeffect.lighting.description": "Updates block lighting",
     "worldedit.sideeffect.neighbors": "Neighbors",
     "worldedit.sideeffect.neighbors.description": "Notifies nearby blocks of changes",
+    "worldedit.sideeffect.update": "Update",
+    "worldedit.sideeffect.update.description": "Notifies the changed block",
     "worldedit.sideeffect.validation": "Validation",
     "worldedit.sideeffect.validation.description": "Validates and fixes inconsistent world state, such as disconnected blocks",
     "worldedit.sideeffect.entity_ai": "Entity AI",
