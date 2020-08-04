@@ -36,4 +36,9 @@ public class Snow implements Contextual<LayerFunction> {
     public LayerFunction createFromContext(EditContext context) {
         return new SnowSimulator(context.getDestination(), this.stack);
     }
+
+    @Override
+    public String toString() {
+        return "snow" + (this.stack ? " stacker" : "");
+    }
 }
