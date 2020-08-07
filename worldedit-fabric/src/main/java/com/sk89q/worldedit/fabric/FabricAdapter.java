@@ -43,6 +43,7 @@ import com.sk89q.worldedit.world.item.ItemTypes;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.DirectionProperty;
@@ -52,9 +53,11 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.Biomes;
 
 import java.util.Comparator;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
@@ -62,6 +65,16 @@ import javax.annotation.Nullable;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class FabricAdapter {
+
+    private static @Nullable MinecraftServer server;
+
+    private static MinecraftServer requireServer() {
+        return Objects.requireNonNull(server, "No server injected");
+    }
+
+    static void setServer(@Nullable MinecraftServer server) {
+        FabricAdapter.server = server;
+    }
 
     private FabricAdapter() {
     }
@@ -71,11 +84,16 @@ public final class FabricAdapter {
     }
 
     public static Biome adapt(BiomeType biomeType) {
-        return Registry.BIOME.get(new Identifier(biomeType.getId()));
+        return requireServer()
+            .getRegistryManager()
+            .get(Registry.BIOME_KEY)
+            .get(new Identifier(biomeType.getId()));
     }
 
     public static BiomeType adapt(Biome biome) {
-        return BiomeTypes.get(Registry.BIOME.getId(biome).toString());
+        Identifier id = requireServer().getRegistryManager().get(Registry.BIOME_KEY).getId(biome);
+        Objects.requireNonNull(id, "biome is not registered");
+        return BiomeTypes.get(id.toString());
     }
 
     public static Vector3 adapt(Vec3d vector) {
