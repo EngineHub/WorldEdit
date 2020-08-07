@@ -55,12 +55,6 @@ public class WorldEditFakePlayer extends ServerPlayerEntity {
         super.sendMessage(message, actionBar);
     }
 
-    @Nullable
-    @Override
-    public Entity changeDimension(ServerWorld serverWorld) {
-        return this;
-    }
-
     @Override
     public boolean isInvulnerableTo(DamageSource damageSource) {
         return true;

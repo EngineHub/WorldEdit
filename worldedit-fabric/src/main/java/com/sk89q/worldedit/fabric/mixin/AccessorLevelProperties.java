@@ -29,7 +29,7 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 @Mixin(LevelProperties.class)
 public interface AccessorLevelProperties extends SaveProperties {
 
-    @Accessor("field_25425")
+    @Accessor
     @Mutable
     void setGeneratorOptions(GeneratorOptions options);
 

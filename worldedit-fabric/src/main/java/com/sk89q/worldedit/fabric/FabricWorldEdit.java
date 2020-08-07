@@ -101,7 +101,7 @@ public class FabricWorldEdit implements ModInitializer {
         );
 
         // Setup working directory
-        workingDir = new File(FabricLoader.getInstance().getConfigDirectory(), "worldedit").toPath();
+        workingDir = FabricLoader.getInstance().getConfigDir().resolve("worldedit");
         if (!Files.exists(workingDir)) {
             try {
                 Files.createDirectory(workingDir);
@@ -148,7 +148,7 @@ public class FabricWorldEdit implements ModInitializer {
         this.provider = new FabricPermissionsProvider.VanillaPermissionsProvider(platform);
     }
 
-    private void setupRegistries() {
+    private void setupRegistries(MinecraftServer server) {
         // Blocks
         for (Identifier name : Registry.BLOCK.getIds()) {
             if (BlockType.REGISTRY.get(name.toString()) == null) {
@@ -169,18 +169,18 @@ public class FabricWorldEdit implements ModInitializer {
             }
         }
         // Biomes
-        for (Identifier name : Registry.BIOME.getIds()) {
+        for (Identifier name : server.getRegistryManager().get(Registry.BIOME_KEY).getIds()) {
             if (BiomeType.REGISTRY.get(name.toString()) == null) {
                 BiomeType.REGISTRY.register(name.toString(), new BiomeType(name.toString()));
             }
         }
         // Tags
-        for (Identifier name : BlockTags.getContainer().getKeys()) {
+        for (Identifier name : BlockTags.getTagGroup().getTagIds()) {
             if (BlockCategory.REGISTRY.get(name.toString()) == null) {
                 BlockCategory.REGISTRY.register(name.toString(), new BlockCategory(name.toString()));
             }
         }
-        for (Identifier name : ItemTags.getContainer().getKeys()) {
+        for (Identifier name : ItemTags.getTagGroup().getTagIds()) {
             if (ItemCategory.REGISTRY.get(name.toString()) == null) {
                 ItemCategory.REGISTRY.register(name.toString(), new ItemCategory(name.toString()));
             }
@@ -188,8 +188,9 @@ public class FabricWorldEdit implements ModInitializer {
     }
 
     private void onStartServer(MinecraftServer minecraftServer) {
+        FabricAdapter.setServer(minecraftServer);
         setupPlatform(minecraftServer);
-        setupRegistries();
+        setupRegistries(minecraftServer);
 
         config = new FabricConfiguration(this);
         config.load();

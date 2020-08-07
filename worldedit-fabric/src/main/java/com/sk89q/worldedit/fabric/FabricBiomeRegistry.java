@@ -24,7 +24,8 @@ import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.world.biome.BiomeData;
 import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.registry.BiomeRegistry;
-import net.minecraft.world.biome.Biome;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.Util;
 
 /**
  * Provides access to biome data in Fabric.
@@ -33,13 +34,13 @@ class FabricBiomeRegistry implements BiomeRegistry {
 
     @Override
     public Component getRichName(BiomeType biomeType) {
-        return TranslatableComponent.of(FabricAdapter.adapt(biomeType).getTranslationKey());
+        return TranslatableComponent.of(Util.createTranslationKey("biome", new Identifier(biomeType.getId())));
     }
 
     @Deprecated
     @Override
     public BiomeData getData(BiomeType biome) {
-        return new FabricBiomeData(FabricAdapter.adapt(biome));
+        return new FabricBiomeData(biome);
     }
 
     /**
@@ -47,21 +48,21 @@ class FabricBiomeRegistry implements BiomeRegistry {
      */
     @Deprecated
     private static class FabricBiomeData implements BiomeData {
-        private final Biome biome;
+        private final BiomeType biome;
 
         /**
          * Create a new instance.
          *
          * @param biome the base biome
          */
-        private FabricBiomeData(Biome biome) {
+        private FabricBiomeData(BiomeType biome) {
             this.biome = biome;
         }
 
         @SuppressWarnings("deprecation")
         @Override
         public String getName() {
-            return biome.getName().asString();
+            return biome.getId();
         }
     }
 

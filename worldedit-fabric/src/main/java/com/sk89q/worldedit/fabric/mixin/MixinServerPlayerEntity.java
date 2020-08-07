@@ -20,12 +20,10 @@
 package com.sk89q.worldedit.fabric.mixin;
 
 import com.mojang.authlib.GameProfile;
-import com.sk89q.worldedit.fabric.FabricWorldEdit;
 import com.sk89q.worldedit.fabric.internal.ExtendedPlayerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.packet.c2s.play.ClientSettingsC2SPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
@@ -38,13 +36,13 @@ public abstract class MixinServerPlayerEntity extends PlayerEntity implements Ex
 
     private String language = "en_us";
 
-    public MixinServerPlayerEntity(World world, BlockPos blockPos, GameProfile gameProfile) {
-        super(world, blockPos, gameProfile);
+    public MixinServerPlayerEntity(World world, BlockPos blockPos, float yaw, GameProfile gameProfile) {
+        super(world, blockPos, yaw, gameProfile);
     }
 
     @Inject(method = "setClientSettings", at = @At(value = "HEAD"))
     public void setClientSettings(ClientSettingsC2SPacket clientSettingsC2SPacket,
-                                  @SuppressWarnings("unused") CallbackInfo callbackInfo) {
+                                  CallbackInfo callbackInfo) {
         this.language = ((AccessorClientSettingsC2SPacket) clientSettingsC2SPacket).getLanguage();
     }
 

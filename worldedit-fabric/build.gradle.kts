@@ -25,9 +25,9 @@ configure<LoomGradleExtension> {
     accessWidener("src/main/resources/worldedit.accesswidener")
 }
 
-val minecraftVersion = "1.16.1"
-val yarnMappings = "1.16.1+build.5:v2"
-val loaderVersion = "0.8.8+build.202"
+val minecraftVersion = "1.16.2-rc2"
+val yarnMappings = "1.16.2-rc2+build.1:v2"
+val loaderVersion = "0.9.1+build.205"
 
 configurations.all {
     resolutionStrategy {
@@ -53,7 +53,7 @@ dependencies {
     "modImplementation"("net.fabricmc:fabric-loader:$loaderVersion")
 
     // [1] declare fabric-api dependency...
-    "fabricApi"("net.fabricmc.fabric-api:fabric-api:0.14.0+build.371-1.16")
+    "fabricApi"("net.fabricmc.fabric-api:fabric-api:0.17.1+build.394-1.16")
 
     // [2] Load the API dependencies from the fabric mod json...
     @Suppress("UNCHECKED_CAST")
