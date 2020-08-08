@@ -182,6 +182,7 @@ public interface WorldNativeAccess<NC, NBS, NP> {
             updateNeighbors(pos, oldState, newState, 512);
         }
 
+        // Seems used only for PoI updates
         onBlockStateChange(pos, oldState, newState);
     }
 
