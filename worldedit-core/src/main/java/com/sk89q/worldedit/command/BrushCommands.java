@@ -418,15 +418,15 @@ public class BrushCommands {
     )
     @CommandPermissions("worldedit.brush.snow")
     public void snow(Player player, LocalSession localSession,
-                    @Arg(desc = "The shape of the region")
-                        RegionFactory shape,
-                    @Arg(desc = "The size of the brush", def = "5")
-                        double radius,
-                    @Switch(name = 's', desc = "Whether to stack snow")
-                        boolean stack) throws WorldEditException {
+                     @Arg(desc = "The shape of the region")
+                         RegionFactory shape,
+                     @Arg(desc = "The size of the brush", def = "5")
+                         double radius,
+                     @Switch(name = 's', desc = "Whether to stack snow")
+                         boolean stack) throws WorldEditException {
 
         if (shape instanceof CylinderRegionFactory) {
-            ((CylinderRegionFactory) shape).setHeight(radius);
+            shape = new CylinderRegionFactory(radius);
         }
 
         setOperationBasedBrush(player, localSession, radius,

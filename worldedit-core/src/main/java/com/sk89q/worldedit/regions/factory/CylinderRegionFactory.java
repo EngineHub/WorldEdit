@@ -26,13 +26,9 @@ import com.sk89q.worldedit.regions.Region;
 
 public class CylinderRegionFactory implements RegionFactory {
 
-    private double height;
+    private final double height;
 
     public CylinderRegionFactory(double height) {
-        this.height = height;
-    }
-
-    public void setHeight(double height) {
         this.height = height;
     }
 
