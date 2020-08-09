@@ -98,13 +98,18 @@ public final class MaskFactory extends AbstractFactory<Mask> {
                 continue;
             }
 
+            Mask match = null;
             for (InputParser<Mask> parser : getParsers()) {
-                Mask match = parser.parseFromInput(component, context);
+                match = parser.parseFromInput(component, context);
 
                 if (match != null) {
-                    masks.add(match);
+                    break;
                 }
             }
+            if (match == null) {
+                throw new NoMatchException(TranslatableComponent.of("worldedit.error.no-match", TextComponent.of(component)));
+            }
+            masks.add(match);
         }
 
         switch (masks.size()) {

@@ -10,6 +10,7 @@ displayURL="https://worldedit.enginehub.org/"
 logoFile="worldedit-icon.png"
 # A text field displayed in the mod UI
 authors="sk89q, wizjany, TomyLobo, kenzierocks, Me4502"
+license="GPL"
 # A list of mods - how many allowed here is determined by the individual mod loader
 [[mods]]
 # The modid of the mod

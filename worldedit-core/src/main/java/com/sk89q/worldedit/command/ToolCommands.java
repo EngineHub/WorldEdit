@@ -52,6 +52,7 @@ import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
+import com.sk89q.worldedit.world.item.ItemType;
 import org.enginehub.piston.CommandManager;
 import org.enginehub.piston.CommandManagerService;
 import org.enginehub.piston.CommandMetadata;
@@ -135,8 +136,16 @@ public class ToolCommands {
 
     static void setToolNone(Player player, LocalSession session, boolean isBrush)
         throws InvalidToolBindException {
-        session.setTool(player.getItemInHand(HandSide.MAIN_HAND).getType(), null);
-        player.printInfo(TranslatableComponent.of(isBrush ? "worldedit.brush.none.equip" : "worldedit.tool.none.equip"));
+        ItemType type = player.getItemInHand(HandSide.MAIN_HAND).getType();
+        boolean set = session.getTool(type) != null
+            || type.getId().equals(session.getWandItem())
+            || type.getId().equals(session.getNavWandItem());
+        if (set) {
+            session.setTool(type, null);
+            player.printInfo(TranslatableComponent.of(isBrush ? "worldedit.brush.none.equip" : "worldedit.tool.none.equip"));
+        } else {
+            player.printInfo(TranslatableComponent.of("worldedit.tool.none.to.unequip"));
+        }
     }
 
     private static void setTool(Player player, LocalSession session, Tool tool,

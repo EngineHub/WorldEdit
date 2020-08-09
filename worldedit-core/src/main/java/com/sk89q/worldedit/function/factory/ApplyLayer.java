@@ -21,32 +21,26 @@ package com.sk89q.worldedit.function.factory;
 
 import com.sk89q.worldedit.function.Contextual;
 import com.sk89q.worldedit.function.EditContext;
-import com.sk89q.worldedit.function.RegionFunction;
+import com.sk89q.worldedit.function.LayerFunction;
 import com.sk89q.worldedit.function.operation.Operation;
-import com.sk89q.worldedit.function.visitor.RegionVisitor;
+import com.sk89q.worldedit.function.visitor.LayerVisitor;
+import com.sk89q.worldedit.regions.FlatRegion;
 import com.sk89q.worldedit.regions.NullRegion;
-import com.sk89q.worldedit.regions.Region;
+import com.sk89q.worldedit.regions.Regions;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.sk89q.worldedit.util.GuavaUtil.firstNonNull;
 
-/**
- * Creates an operation from a region context.
- *
- * @deprecated Use {@link ApplyRegion} or {@link ApplyLayer}
- *     depending on function type.
- */
-@Deprecated
-public class Apply implements Contextual<Operation> {
+public class ApplyLayer implements Contextual<Operation> {
 
-    private final Region region;
-    private final Contextual<? extends RegionFunction> function;
+    private final FlatRegion region;
+    private final Contextual<? extends LayerFunction> function;
 
-    public Apply(Contextual<? extends RegionFunction> function) {
-        this(new NullRegion(), function);
+    public ApplyLayer(Contextual<? extends LayerFunction> function) {
+        this(Regions.asFlatRegion(new NullRegion()), function);
     }
 
-    public Apply(Region region, Contextual<? extends RegionFunction> function) {
+    public ApplyLayer(FlatRegion region, Contextual<? extends LayerFunction> function) {
         checkNotNull(region, "region");
         checkNotNull(function, "function");
         this.region = region;
@@ -55,7 +49,12 @@ public class Apply implements Contextual<Operation> {
 
     @Override
     public Operation createFromContext(EditContext context) {
-        return new RegionVisitor(firstNonNull(context.getRegion(), region), function.createFromContext(context));
+        FlatRegion localRegion = Regions.asFlatRegion(firstNonNull(context.getRegion(), region));
+
+        return new LayerVisitor(localRegion,
+            localRegion.getMinimumPoint().getY(),
+            localRegion.getMaximumPoint().getY(),
+            function.createFromContext(context));
     }
 
     @Override

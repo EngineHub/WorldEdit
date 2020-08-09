@@ -17,7 +17,7 @@ val nextMajorMinecraftVersion: String = minecraftVersion.split('.').let { (usele
     "$useless.${major.toInt() + 1}"
 }
 val mappingsMinecraftVersion = "1.16"
-val forgeVersion = "32.0.25"
+val forgeVersion = "32.0.92"
 
 configurations.all {
     resolutionStrategy {

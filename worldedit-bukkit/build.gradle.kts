@@ -32,7 +32,6 @@ dependencies {
     "implementation"("org.apache.logging.log4j:log4j-slf4j-impl:2.8.1")
     "implementation"("org.bstats:bstats-bukkit:1.7")
     "implementation"("it.unimi.dsi:fastutil:${Versions.FAST_UTIL}")
-    "implementation"("it.unimi.dsi:fastutil:${Versions.FAST_UTIL}")
     "testImplementation"("org.mockito:mockito-core:1.9.0-rc1")
 }
 
