@@ -5,6 +5,9 @@
 - Added a stack tool that stacks the clicked block until it hits an obstacle (https://gfycat.com/faithfulhardtofinddingo)
 - Added 3D biomes support
 - Added netherite pickaxe support to superpickaxe
+- Added warped_fungus, crimson_fungus, and chorus_plant tree types
+- Added a `-s` stack mode to the //snow command to add snow layers
+- Added a snow brush with stack mode support
 - Improve expression handling
 - Enable //watchdog by default
 - Improve archive file handling
@@ -13,6 +16,7 @@
 - Update to a newer Rhino release for craftscripts
 - Added support for 1.16.1
 - Added support for regenerating biomes with //regen
+- Added support for full offsets to //stack and //move
 - Improved ES6 support for craftscripts
 - Fixed an issue with edges of polygonal regions
 - Fixed multiple of the same flag being applied to commands not providing a friendly error
@@ -38,6 +42,13 @@
 - Fixed the snapshot feature on 1.16
 - Fixed many error messages not being localisable
 - Fixed tool left click action firing on right click on Fabric
+- Added a message when using an outdated version of Minecraft
+- Fixed a few localisation messages and added validation to prevent further issues
+- Allowed attempted loading of schematics with missing version information
+- Fixed issues where Fabric versions of WorldEdit could double-click tools in some cases
+- Fixed some Sponge schematics not loading due to overly-strict format requirements
+- Fixed wands not binding to players if they joined before having permissions to use them
+- Fixed edits still occurring even if some masks failed to parse
 
 7.1.0
 - Improve the expression parser by compiling expressions for performance
