@@ -19,8 +19,6 @@
 
 package com.sk89q.worldedit;
 
-import javax.annotation.Nullable;
-
 import com.google.common.base.Preconditions;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Locatable;
@@ -28,6 +26,8 @@ import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
 import com.sk89q.worldedit.util.eventbus.EventBus;
 import com.sk89q.worldedit.world.World;
+
+import javax.annotation.Nullable;
 
 /**
  * A builder-style factory for {@link EditSession EditSessions}.
@@ -106,7 +106,7 @@ public final class EditSessionBuilder {
     }
 
     /**
-     * Is tracing enabled?
+     * Check if tracing is enabled.
      *
      * <em>Internal use only.</em>
      */

@@ -19,13 +19,12 @@
 
 package com.sk89q.worldedit;
 
-import javax.annotation.Nullable;
-
-import com.sk89q.worldedit.event.extent.EditSessionEvent;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
 import com.sk89q.worldedit.util.eventbus.EventBus;
 import com.sk89q.worldedit.world.World;
+
+import javax.annotation.Nullable;
 
 /**
  * Internal use only.

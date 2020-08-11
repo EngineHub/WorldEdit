@@ -19,28 +19,21 @@
 
 package com.sk89q.worldedit.extent;
 
-import javax.annotation.Nullable;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.Set;
-import java.util.function.BiPredicate;
-
-import com.google.common.collect.Collections2;
-import com.google.common.collect.ImmutableSetMultimap;
 import com.google.common.collect.Multimaps;
 import com.google.common.collect.SetMultimap;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.entity.BaseEntity;
 import com.sk89q.worldedit.entity.Entity;
-import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.collection.BlockMap;
 import com.sk89q.worldedit.world.biome.BiomeType;
-import com.sk89q.worldedit.world.biome.BiomeTypes;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
-import com.sk89q.worldedit.world.block.BlockTypes;
-import com.sk89q.worldedit.world.entity.EntityTypes;
+
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.Set;
+import javax.annotation.Nullable;
 
 /**
  * An extent that can report back if an operation fails due to the extent(s) below it.
@@ -50,26 +43,9 @@ import com.sk89q.worldedit.world.entity.EntityTypes;
 public class TracingExtent extends AbstractDelegateExtent {
 
     public enum Action {
-        SET_BLOCK((extent, loc) -> {
-            try {
-                return extent.setBlock(loc, BlockTypes.STICKY_PISTON.getDefaultState());
-            } catch (WorldEditException e) {
-                throw new RuntimeException(e);
-            }
-        }),
-        SET_BIOME((extent, loc) ->
-            extent.setBiome(loc.toBlockVector2(), BiomeTypes.DESERT)
-        ),
-        CREATE_ENTITY((extent, loc) ->
-            extent.createEntity(new Location(extent, loc.toVector3()), new BaseEntity(EntityTypes.COW)) != null
-        ),
-        ;
-
-        public final BiPredicate<Extent, BlockVector3> test;
-
-        Action(BiPredicate<Extent, BlockVector3> test) {
-            this.test = test;
-        }
+        SET_BLOCK,
+        SET_BIOME,
+        CREATE_ENTITY,
     }
 
     private final Set<BlockVector3> touchedLocations = Collections.newSetFromMap(BlockMap.create());
@@ -109,12 +85,11 @@ public class TracingExtent extends AbstractDelegateExtent {
     }
 
     @Override
-    public boolean setBiome(BlockVector2 position, BiomeType biome) {
-        BlockVector3 blockVector3 = position.toBlockVector3();
-        touchedLocations.add(blockVector3);
+    public boolean setBiome(BlockVector3 position, BiomeType biome) {
+        touchedLocations.add(position);
         boolean result = super.setBiome(position, biome);
         if (!result) {
-            failedActions.put(blockVector3, Action.SET_BIOME);
+            failedActions.put(position, Action.SET_BIOME);
         }
         return result;
     }

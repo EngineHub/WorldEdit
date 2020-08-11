@@ -35,7 +35,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * the creation of {@link EditSession}s.</p>
  *
  * @deprecated Using the ever-extending factory methods is deprecated. Replace with {@link EditSessionBuilder},
- * which in most cases will be as simple as calling {@code builder.world(world).build()}.
+ *     which in most cases will be as simple as calling {@code builder.world(world).build()}.
  */
 @Deprecated
 public class EditSessionFactory {
