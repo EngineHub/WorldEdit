@@ -915,8 +915,8 @@ public class EditSession implements Extent, AutoCloseable {
             TracingExtent failure = stack.get(0);
             actor.printDebug(TranslatableComponent.builder("worldedit.trace.action-failed")
                 .args(
-                    TextComponent.of(position.toString()),
                     TextComponent.of(failure.getFailedActions().get(position).toString()),
+                    TextComponent.of(position.toString()),
                     TextComponent.of(failure.getExtent().getClass().getName())
                 )
                 .build());
