@@ -321,8 +321,7 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
             BlockVector3 spot = BlockVector3.at(x, y - 1, z);
             final World world = getWorld();
             if (!world.getBlock(spot).getBlockType().getMaterial().isMovementBlocker()) {
-                try (EditSession session =
-                         WorldEdit.getInstance().newEditSession(this)) {
+                try (EditSession session = WorldEdit.getInstance().newEditSession(this)) {
                     session.setBlock(spot, BlockTypes.GLASS.getDefaultState());
                 } catch (MaxChangedBlocksException ignored) {
                 }
