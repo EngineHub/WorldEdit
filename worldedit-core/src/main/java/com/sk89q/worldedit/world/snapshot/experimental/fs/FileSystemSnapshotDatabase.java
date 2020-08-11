@@ -93,7 +93,11 @@ public class FileSystemSnapshotDatabase implements SnapshotDatabase {
 
     public FileSystemSnapshotDatabase(Path root, ArchiveNioSupport archiveNioSupport) {
         checkArgument(Files.isDirectory(root), "Database root is not a directory");
-        this.root = root.toAbsolutePath();
+        try {
+            this.root = root.toRealPath();
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to resolve snapshot database path", e);
+        }
         this.archiveNioSupport = archiveNioSupport;
     }
 
