@@ -29,8 +29,9 @@ import com.sk89q.worldedit.util.auth.AuthorizationException;
 import com.sk89q.worldedit.util.formatting.WorldEditText;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
-import com.sk89q.worldedit.util.formatting.text.adapter.bukkit.TextAdapter;
-import com.sk89q.worldedit.util.formatting.text.format.TextColor;
+import com.sk89q.worldedit.util.formatting.text.format.NamedTextColor;
+import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -46,6 +47,7 @@ public class BukkitBlockCommandSender extends AbstractNonPlayerActor implements 
 
     private static final String UUID_PREFIX = "CMD";
 
+    private final Audience audience;
     private final BlockCommandSender sender;
     private final WorldEditPlugin plugin;
     private final Location location;
@@ -55,6 +57,7 @@ public class BukkitBlockCommandSender extends AbstractNonPlayerActor implements 
         checkNotNull(plugin);
         checkNotNull(sender);
 
+        this.audience = BukkitAudiences.create(plugin).audience(sender);
         this.plugin = plugin;
         this.sender = sender;
         this.location = BukkitAdapter.adapt(sender.getBlock().getLocation());
@@ -78,7 +81,7 @@ public class BukkitBlockCommandSender extends AbstractNonPlayerActor implements 
     @Deprecated
     public void print(String msg) {
         for (String part : msg.split("\n")) {
-            print(TextComponent.of(part, TextColor.LIGHT_PURPLE));
+            print(TextComponent.of(part, NamedTextColor.LIGHT_PURPLE));
         }
     }
 
@@ -86,7 +89,7 @@ public class BukkitBlockCommandSender extends AbstractNonPlayerActor implements 
     @Deprecated
     public void printDebug(String msg) {
         for (String part : msg.split("\n")) {
-            print(TextComponent.of(part, TextColor.GRAY));
+            print(TextComponent.of(part, NamedTextColor.GRAY));
         }
     }
 
@@ -94,13 +97,13 @@ public class BukkitBlockCommandSender extends AbstractNonPlayerActor implements 
     @Deprecated
     public void printError(String msg) {
         for (String part : msg.split("\n")) {
-            print(TextComponent.of(part, TextColor.RED));
+            print(TextComponent.of(part, NamedTextColor.RED));
         }
     }
 
     @Override
     public void print(Component component) {
-        TextAdapter.sendMessage(sender, WorldEditText.format(component, getLocale()));
+        audience.sendMessage(WorldEditText.format(component, getLocale()));
     }
 
     @Override

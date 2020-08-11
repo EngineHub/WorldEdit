@@ -43,7 +43,7 @@ import com.sk89q.worldedit.util.formatting.component.SideEffectBox;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
-import com.sk89q.worldedit.util.formatting.text.format.TextColor;
+import com.sk89q.worldedit.util.formatting.text.format.NamedTextColor;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.item.ItemType;
 import org.enginehub.piston.CommandManager;
@@ -163,7 +163,7 @@ public class GeneralCommands {
         session.setBlockChangeLimit(limit);
         Component component = TextComponent.empty().append(TranslatableComponent.of("worldedit.limit.set", TextComponent.of(limit)));
         if (limit != config.defaultChangeLimit) {
-            component.append(TextComponent.space()).append(TranslatableComponent.of("worldedit.limit.return-to-default", TextColor.GRAY));
+            component.append(TextComponent.space()).append(TranslatableComponent.of("worldedit.limit.return-to-default", NamedTextColor.GRAY));
         }
         actor.printInfo(component);
     }
@@ -190,7 +190,7 @@ public class GeneralCommands {
         session.setTimeout(limit);
         Component component = TextComponent.empty().append(TranslatableComponent.of("worldedit.timeout.set", TextComponent.of(limit)));
         if (limit != config.calculationTimeout) {
-            component.append(TranslatableComponent.of("worldedit.timeout.return-to-default", TextColor.GRAY));
+            component.append(TranslatableComponent.of("worldedit.timeout.return-to-default", NamedTextColor.GRAY));
         }
         actor.printInfo(component);
     }

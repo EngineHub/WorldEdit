@@ -26,6 +26,7 @@ import com.google.gson.reflect.TypeToken;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.renderer.TranslatableComponentRenderer;
 import com.sk89q.worldedit.util.io.ResourceLoader;
+import net.kyori.adventure.translation.TranslationRegistry;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -73,17 +74,7 @@ public class TranslationManager {
         return type + '.' + parts[0] + '.' + parts[1].replace('/', '.');
     }
 
-    private final Map<Locale, Map<String, String>> translationMap = new ConcurrentHashMap<>();
-    private final TranslatableComponentRenderer<Locale> friendlyComponentRenderer = TranslatableComponentRenderer.from(
-        (locale, key) -> {
-            String translation = getTranslationMap(locale).get(key);
-            if (translation == null) {
-                // let it pass through (for e.g. MC messages)
-                return null;
-            }
-            return new MessageFormat(translation, locale);
-        }
-    );
+    private final Map<Locale, Map<String, MessageFormat>> translationMap = new ConcurrentHashMap<>();
     private Locale defaultLocale = Locale.ENGLISH;
 
     private final ResourceLoader resourceLoader;
@@ -99,27 +90,27 @@ public class TranslationManager {
         this.defaultLocale = defaultLocale;
     }
 
-    private Map<String, String> filterTranslations(Map<String, String> translations) {
+    private Map<String, MessageFormat> filterTranslations(Locale locale, Map<String, String> translations) {
         return translations.entrySet().stream()
             .filter(e -> !e.getValue().isEmpty())
             .map(e -> Maps.immutableEntry(e.getKey(), e.getValue().replace("'", "''")))
-            .collect(toMap(Map.Entry::getKey, Map.Entry::getValue));
+            .collect(toMap(Map.Entry::getKey, e -> new MessageFormat(e.getValue(), locale)));
     }
 
-    private Map<String, String> parseTranslationFile(InputStream inputStream) throws IOException {
+    private Map<String, MessageFormat> parseTranslationFile(Locale locale, InputStream inputStream) throws IOException {
         try (Reader reader = new InputStreamReader(inputStream, StandardCharsets.UTF_8)) {
-            return filterTranslations(gson.fromJson(reader, STRING_MAP_TYPE));
+            return filterTranslations(locale, gson.fromJson(reader, STRING_MAP_TYPE));
         }
     }
 
-    private Optional<Map<String, String>> loadTranslationFile(String filename) {
-        Map<String, String> baseTranslations = new ConcurrentHashMap<>();
+    private Optional<Map<String, MessageFormat>> loadTranslationFile(Locale locale, String filename) {
+        Map<String, MessageFormat> baseTranslations = new ConcurrentHashMap<>();
 
         try {
             URL resource = resourceLoader.getRootResource("lang/" + filename);
             if (resource != null) {
                 try (InputStream stream = resource.openStream()) {
-                    baseTranslations = parseTranslationFile(stream);
+                    baseTranslations = parseTranslationFile(locale, stream);
                 }
             }
         } catch (IOException e) {
@@ -129,7 +120,7 @@ public class TranslationManager {
         Path localFile = resourceLoader.getLocalResource("lang/" + filename);
         if (Files.exists(localFile)) {
             try (InputStream stream = Files.newInputStream(localFile)) {
-                baseTranslations.putAll(parseTranslationFile(stream));
+                baseTranslations.putAll(parseTranslationFile(locale, stream));
             } catch (IOException e) {
                 // Failed to parse custom language file. Worth printing.
                 e.printStackTrace();
@@ -145,16 +136,16 @@ public class TranslationManager {
         }
         checkedLocales.add(locale);
         // Make a copy of the default language file
-        Map<String, String> baseTranslations = new ConcurrentHashMap<>();
+        Map<String, MessageFormat> baseTranslations = new ConcurrentHashMap<>();
         if (!locale.equals(defaultLocale)) {
             baseTranslations.putAll(getTranslationMap(defaultLocale));
         }
-        Optional<Map<String, String>> langData = Optional.empty();
+        Optional<Map<String, MessageFormat>> langData = Optional.empty();
         if (!locale.getCountry().isEmpty()) {
-            langData = loadTranslationFile(locale.getLanguage() + "-" + locale.getCountry() + "/strings.json");
+            langData = loadTranslationFile(locale, locale.getLanguage() + "-" + locale.getCountry() + "/strings.json");
         }
         if (!langData.isPresent()) {
-            langData = loadTranslationFile(locale.getLanguage() + "/strings.json");
+            langData = loadTranslationFile(locale, locale.getLanguage() + "/strings.json");
         }
         if (langData.isPresent()) {
             baseTranslations.putAll(langData.get());
@@ -162,7 +153,7 @@ public class TranslationManager {
             return true;
         }
         if (locale.equals(defaultLocale)) {
-            translationMap.put(Locale.ENGLISH, loadTranslationFile("strings.json").orElseThrow(
+            translationMap.put(Locale.ENGLISH, loadTranslationFile(defaultLocale, "strings.json").orElseThrow(
                 () -> new RuntimeException("Failed to load WorldEdit strings!")
             ));
             return true;
@@ -170,21 +161,36 @@ public class TranslationManager {
         return false;
     }
 
-    private Map<String, String> getTranslationMap(Locale locale) {
-        Map<String, String> translations = translationMap.get(locale);
-        if (translations == null) {
-            if (tryLoadTranslations(locale)) {
-                return getTranslationMap(locale);
-            }
-            if (!locale.equals(defaultLocale)) {
-                translations = getTranslationMap(defaultLocale);
-            }
+    private Map<String, MessageFormat> getTranslationMap(Locale locale) {
+        Map<String, MessageFormat> existing = translationMap.get(locale);
+        if (existing != null) {
+            return existing;
         }
 
-        return translations;
+        if (tryLoadTranslations(locale)) {
+            return translationMap.get(locale);
+        }
+
+        if (locale.equals(defaultLocale)) {
+            throw new IllegalStateException("Missing default locale translations: " + defaultLocale);
+        }
+
+        return translationMap.get(defaultLocale);
+    }
+
+    private void initializeTranslations(Locale locale) {
+        if (translationMap.get(locale) == null) {
+            Map<String, MessageFormat> map = getTranslationMap(locale);
+            translationMap.put(locale, map);
+            TranslationRegistry.get().registerAll(
+                locale,
+                map
+            );
+        }
     }
 
     public Component convertText(Component component, Locale locale) {
-        return friendlyComponentRenderer.render(component, locale);
+        initializeTranslations(locale);
+        return TranslatableComponentRenderer.get().render(component, locale);
     }
 }

@@ -69,7 +69,7 @@ import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.util.formatting.text.event.ClickEvent;
 import com.sk89q.worldedit.util.formatting.text.event.HoverEvent;
-import com.sk89q.worldedit.util.formatting.text.format.TextColor;
+import com.sk89q.worldedit.util.formatting.text.format.NamedTextColor;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockType;
@@ -316,13 +316,13 @@ public class SelectionCommands {
     @CommandPermissions("worldedit.wand.toggle")
     public void toggleWand(Player player) {
         player.printInfo(TextComponent.of("The selection wand is now a normal tool. You can disable it with ")
-                .append(TextComponent.of("/none", TextColor.AQUA).clickEvent(
+                .append(TextComponent.of("/none", NamedTextColor.AQUA).clickEvent(
                         ClickEvent.of(ClickEvent.Action.RUN_COMMAND, "/none")))
                 .append(TextComponent.of(" and rebind it to any item with "))
-                .append(TextComponent.of("//selwand", TextColor.AQUA).clickEvent(
+                .append(TextComponent.of("//selwand", NamedTextColor.AQUA).clickEvent(
                         ClickEvent.of(ClickEvent.Action.RUN_COMMAND, "//selwand")))
                 .append(TextComponent.of(" or get a new wand with "))
-                .append(TextComponent.of("//wand", TextColor.AQUA).clickEvent(
+                .append(TextComponent.of("//wand", NamedTextColor.AQUA).clickEvent(
                         ClickEvent.of(ClickEvent.Action.RUN_COMMAND, "//wand"))));
     }
 
@@ -670,20 +670,20 @@ public class SelectionCommands {
             final double perc = count / (double) totalBlocks * 100;
             final int maxDigits = (int) (Math.log10(totalBlocks) + 1);
             final int curDigits = (int) (Math.log10(count) + 1);
-            line.append(String.format("%s%.3f%%  ", perc < 10 ? "  " : "", perc), TextColor.GOLD);
+            line.append(String.format("%s%.3f%%  ", perc < 10 ? "  " : "", perc), NamedTextColor.GOLD);
             final int space = maxDigits - curDigits;
             String pad = Strings.repeat(" ", space == 0 ? 2 : 2 * space + 1);
-            line.append(String.format("%s%s", count, pad), TextColor.YELLOW);
+            line.append(String.format("%s%s", count, pad), NamedTextColor.YELLOW);
 
             final BlockState state = c.getID();
             final BlockType blockType = state.getBlockType();
-            Component blockName = blockType.getRichName().color(TextColor.LIGHT_PURPLE);
+            Component blockName = blockType.getRichName().color(NamedTextColor.LIGHT_PURPLE);
             TextComponent toolTip;
             if (separateStates && state != blockType.getDefaultState()) {
-                toolTip = TextComponent.of(state.getAsString(), TextColor.GRAY);
-                blockName = blockName.append(TextComponent.of("*", TextColor.LIGHT_PURPLE));
+                toolTip = TextComponent.of(state.getAsString(), NamedTextColor.GRAY);
+                blockName = blockName.append(TextComponent.of("*", NamedTextColor.LIGHT_PURPLE));
             } else {
-                toolTip = TextComponent.of(blockType.getId(), TextColor.GRAY);
+                toolTip = TextComponent.of(blockType.getId(), NamedTextColor.GRAY);
             }
             blockName = blockName.hoverEvent(HoverEvent.of(HoverEvent.Action.SHOW_TEXT, toolTip));
             line.append(blockName);
@@ -698,7 +698,7 @@ public class SelectionCommands {
 
         @Override
         public Component create(int page) throws InvalidComponentException {
-            super.getContents().append(TranslatableComponent.of("worldedit.distr.total", TextColor.GRAY, TextComponent.of(totalBlocks)))
+            super.getContents().append(TranslatableComponent.of("worldedit.distr.total", NamedTextColor.GRAY, TextComponent.of(totalBlocks)))
                     .append(TextComponent.newline());
             return super.create(page);
         }

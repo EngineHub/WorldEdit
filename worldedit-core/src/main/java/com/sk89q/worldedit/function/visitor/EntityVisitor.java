@@ -28,7 +28,7 @@ import com.sk89q.worldedit.function.operation.RunContext;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
-import com.sk89q.worldedit.util.formatting.text.format.TextColor;
+import com.sk89q.worldedit.util.formatting.text.format.NamedTextColor;
 
 import java.util.Iterator;
 
@@ -85,7 +85,7 @@ public class EntityVisitor implements Operation {
         return ImmutableList.of(TranslatableComponent.of(
                 "worldedit.operation.affected.entity",
                 TextComponent.of(getAffected())
-        ).color(TextColor.LIGHT_PURPLE));
+        ).color(NamedTextColor.LIGHT_PURPLE));
     }
 
 }

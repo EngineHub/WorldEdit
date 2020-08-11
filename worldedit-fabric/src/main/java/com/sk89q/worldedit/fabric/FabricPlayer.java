@@ -166,7 +166,7 @@ public class FabricPlayer extends AbstractPlayerActor {
 
     @Override
     public void print(Component component) {
-        this.player.sendMessage(Text.Serializer.fromJson(GsonComponentSerializer.INSTANCE.serialize(WorldEditText.format(component, getLocale()))), false);
+        this.player.sendMessage(Text.Serializer.fromJson(GsonComponentSerializer.gson().serialize(WorldEditText.format(component, getLocale()))), false);
     }
 
     private void sendColorized(String msg, Formatting formatting) {

@@ -20,7 +20,7 @@
 package com.sk89q.worldedit.util.formatting.component;
 
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
-import com.sk89q.worldedit.util.formatting.text.format.TextColor;
+import com.sk89q.worldedit.util.formatting.text.format.NamedTextColor;
 
 /**
  * Represents a fragment representing a label.
@@ -31,7 +31,7 @@ public class LabelFormat extends TextComponentProducer {
      * Create a new instance.
      */
     private LabelFormat() {
-        getBuilder().content("").color(TextColor.YELLOW);
+        getBuilder().content("").color(NamedTextColor.YELLOW);
     }
 
     /**

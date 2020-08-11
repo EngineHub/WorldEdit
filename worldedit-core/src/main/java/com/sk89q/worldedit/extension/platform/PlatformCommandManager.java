@@ -104,7 +104,7 @@ import com.sk89q.worldedit.session.request.Request;
 import com.sk89q.worldedit.util.eventbus.Subscribe;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
-import com.sk89q.worldedit.util.formatting.text.format.TextColor;
+import com.sk89q.worldedit.util.formatting.text.format.NamedTextColor;
 import com.sk89q.worldedit.util.logging.DynamicStreamHandler;
 import com.sk89q.worldedit.util.logging.LogFormat;
 import com.sk89q.worldedit.world.World;
@@ -511,7 +511,7 @@ public final class PlatformCommandManager {
             }
         } catch (UsageException e) {
             actor.print(TextComponent.builder("")
-                .color(TextColor.RED)
+                .color(NamedTextColor.RED)
                 .append(e.getRichMessage())
                 .build());
             ImmutableList<Command> cmd = e.getCommands();

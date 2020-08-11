@@ -24,13 +24,13 @@ import com.sk89q.worldedit.extension.platform.AbstractNonPlayerActor;
 import com.sk89q.worldedit.session.SessionKey;
 import com.sk89q.worldedit.util.formatting.WorldEditText;
 import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.adapter.bukkit.TextAdapter;
+import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.Locale;
 import java.util.UUID;
-import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -42,15 +42,15 @@ public class BukkitCommandSender extends AbstractNonPlayerActor {
      */
     private static final UUID DEFAULT_ID = UUID.fromString("a233eb4b-4cab-42cd-9fd9-7e7b9a3f74be");
 
+    private final Audience audience;
     private final CommandSender sender;
-    private final WorldEditPlugin plugin;
 
     public BukkitCommandSender(WorldEditPlugin plugin, CommandSender sender) {
         checkNotNull(plugin);
         checkNotNull(sender);
         checkArgument(!(sender instanceof Player), "Cannot wrap a player");
 
-        this.plugin = plugin;
+        this.audience = BukkitAudiences.create(plugin).audience(sender);
         this.sender = sender;
     }
 
@@ -98,7 +98,7 @@ public class BukkitCommandSender extends AbstractNonPlayerActor {
 
     @Override
     public void print(Component component) {
-        TextAdapter.sendMessage(sender, WorldEditText.format(component, getLocale()));
+        audience.sendMessage(WorldEditText.format(component, getLocale()));
     }
 
     @Override
@@ -127,7 +127,6 @@ public class BukkitCommandSender extends AbstractNonPlayerActor {
     @Override
     public SessionKey getSessionKey() {
         return new SessionKey() {
-            @Nullable
             @Override
             public String getName() {
                 return sender.getName();

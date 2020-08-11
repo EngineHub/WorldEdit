@@ -32,7 +32,7 @@ import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.util.formatting.text.event.HoverEvent;
-import com.sk89q.worldedit.util.formatting.text.format.TextColor;
+import com.sk89q.worldedit.util.formatting.text.format.NamedTextColor;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.registry.LegacyMapper;
@@ -58,23 +58,23 @@ public class QueryTool implements BlockTool {
         BaseBlock block = editSession.getFullBlock(blockPoint);
 
         TextComponent.Builder builder = TextComponent.builder();
-        builder.append(TextComponent.of("@" + clicked.toVector().toBlockPoint() + ": ", TextColor.BLUE));
-        builder.append(block.getBlockType().getRichName().color(TextColor.YELLOW));
-        builder.append(TextComponent.of(" (" + block + ") ", TextColor.GRAY)
+        builder.append(TextComponent.of("@" + clicked.toVector().toBlockPoint() + ": ", NamedTextColor.BLUE));
+        builder.append(block.getBlockType().getRichName().color(NamedTextColor.YELLOW));
+        builder.append(TextComponent.of(" (" + block + ") ", NamedTextColor.GRAY)
             .hoverEvent(HoverEvent.of(HoverEvent.Action.SHOW_TEXT, TranslatableComponent.of("worldedit.tool.info.blockstate.hover"))));
         final int internalId = BlockStateIdAccess.getBlockStateId(block.toImmutableState());
         if (BlockStateIdAccess.isValidInternalId(internalId)) {
-            builder.append(TextComponent.of(" (" + internalId + ") ", TextColor.DARK_GRAY)
+            builder.append(TextComponent.of(" (" + internalId + ") ", NamedTextColor.DARK_GRAY)
                 .hoverEvent(HoverEvent.of(HoverEvent.Action.SHOW_TEXT, TranslatableComponent.of("worldedit.tool.info.internalid.hover"))));
         }
         final int[] legacy = LegacyMapper.getInstance().getLegacyFromBlock(block.toImmutableState());
         if (legacy != null) {
-            builder.append(TextComponent.of(" (" + legacy[0] + ":" + legacy[1] + ") ", TextColor.DARK_GRAY)
+            builder.append(TextComponent.of(" (" + legacy[0] + ":" + legacy[1] + ") ", NamedTextColor.DARK_GRAY)
                 .hoverEvent(HoverEvent.of(HoverEvent.Action.SHOW_TEXT, TranslatableComponent.of("worldedit.tool.info.legacy.hover"))));
         }
 
         builder.append(TextComponent.of(" (" + world.getBlockLightLevel(blockPoint) + "/"
-            + world.getBlockLightLevel(blockPoint.add(0, 1, 0)) + ")", TextColor.WHITE)
+            + world.getBlockLightLevel(blockPoint.add(0, 1, 0)) + ")", NamedTextColor.WHITE)
             .hoverEvent(HoverEvent.of(HoverEvent.Action.SHOW_TEXT, TranslatableComponent.of("worldedit.tool.info.light.hover"))));
 
         player.print(builder.build());

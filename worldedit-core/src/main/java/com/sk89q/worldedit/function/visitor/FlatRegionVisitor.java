@@ -29,7 +29,7 @@ import com.sk89q.worldedit.regions.FlatRegion;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
-import com.sk89q.worldedit.util.formatting.text.format.TextColor;
+import com.sk89q.worldedit.util.formatting.text.format.NamedTextColor;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -85,7 +85,7 @@ public class FlatRegionVisitor implements Operation {
         return ImmutableList.of(TranslatableComponent.of(
                 "worldedit.operation.affected.column",
                 TextComponent.of(getAffected())
-        ).color(TextColor.LIGHT_PURPLE));
+        ).color(NamedTextColor.LIGHT_PURPLE));
     }
 
 }

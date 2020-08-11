@@ -50,7 +50,7 @@ import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.util.formatting.text.event.ClickEvent;
 import com.sk89q.worldedit.util.formatting.text.event.HoverEvent;
-import com.sk89q.worldedit.util.formatting.text.format.TextColor;
+import com.sk89q.worldedit.util.formatting.text.format.NamedTextColor;
 import com.sk89q.worldedit.util.io.Closer;
 import com.sk89q.worldedit.util.io.file.FilenameException;
 import com.sk89q.worldedit.util.io.file.MorePaths;
@@ -136,8 +136,8 @@ public class SchematicCommands {
                 .registerWithSupervisor(worldEdit.getSupervisor(), "Loading schematic " + filename)
                 .setDelayMessage(TranslatableComponent.of("worldedit.schematic.load.loading"))
                 .setWorkingMessage(TranslatableComponent.of("worldedit.schematic.load.still-loading"))
-                .onSuccess(TextComponent.of(filename, TextColor.GOLD)
-                                .append(TextComponent.of(" loaded. Paste it with ", TextColor.LIGHT_PURPLE))
+                .onSuccess(TextComponent.of(filename, NamedTextColor.GOLD)
+                                .append(TextComponent.of(" loaded. Paste it with ", NamedTextColor.LIGHT_PURPLE))
                                 .append(CodeFormat.wrap("//paste").clickEvent(ClickEvent.of(ClickEvent.Action.SUGGEST_COMMAND, "//paste"))),
                         session::setClipboard)
                 .onFailure("Failed to load schematic", worldEdit.getPlatformManager().getPlatformCommandManager().getExceptionConverter())
@@ -446,12 +446,12 @@ public class SchematicCommands {
             return TextComponent.builder()
                     .content("")
                     .append(TextComponent.of("[L]")
-                            .color(TextColor.GOLD)
+                            .color(NamedTextColor.GOLD)
                             .clickEvent(ClickEvent.of(ClickEvent.Action.RUN_COMMAND, "/schem load \"" + path + "\""))
                             .hoverEvent(HoverEvent.of(HoverEvent.Action.SHOW_TEXT, TextComponent.of("Click to load"))))
                     .append(TextComponent.space())
                     .append(TextComponent.of(path)
-                            .color(TextColor.DARK_GREEN)
+                            .color(NamedTextColor.DARK_GREEN)
                             .hoverEvent(HoverEvent.of(HoverEvent.Action.SHOW_TEXT, TextComponent.of(format))))
                     .build();
         }

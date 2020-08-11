@@ -27,7 +27,7 @@ import com.sk89q.worldedit.internal.util.Substring;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.event.ClickEvent;
-import com.sk89q.worldedit.util.formatting.text.format.TextColor;
+import com.sk89q.worldedit.util.formatting.text.format.NamedTextColor;
 import com.sk89q.worldedit.util.formatting.text.format.TextDecoration;
 import org.enginehub.piston.Command;
 import org.enginehub.piston.CommandParameters;
@@ -57,7 +57,7 @@ public class CommandUtil {
             .append(DEPRECATION_MARKER)
             .append(" " + reason + ".")
             .append(TextComponent.newline())
-            .append(replacement.color(TextColor.GOLD).decoration(TextDecoration.ITALIC, true))
+            .append(replacement.color(NamedTextColor.GOLD).decoration(TextDecoration.ITALIC, true))
             .build();
     }
 
@@ -85,7 +85,7 @@ public class CommandUtil {
     }
 
     public static Component createNewCommandReplacementText(String suggestedCommand) {
-        return TextComponent.builder("Please use ", TextColor.GOLD)
+        return TextComponent.builder("Please use ", NamedTextColor.GOLD)
             .append(TextComponent.of(suggestedCommand)
                 .decoration(TextDecoration.UNDERLINED, true)
                 .clickEvent(ClickEvent.suggestCommand(suggestedCommand)))
@@ -183,7 +183,7 @@ public class CommandUtil {
     ) {
         Component replacement = generator.getReplacement(command, parameters);
         actor.print(
-            TextComponent.builder(reason + ". ", TextColor.GOLD)
+            TextComponent.builder(reason + ". ", NamedTextColor.GOLD)
                 .append(replacement)
                 .build()
         );

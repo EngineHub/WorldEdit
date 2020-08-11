@@ -37,7 +37,7 @@ import com.sk89q.worldedit.util.formatting.component.MessageBox;
 import com.sk89q.worldedit.util.formatting.component.TextComponentProducer;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
-import com.sk89q.worldedit.util.formatting.text.format.TextColor;
+import com.sk89q.worldedit.util.formatting.text.format.NamedTextColor;
 import com.sk89q.worldedit.util.paste.ActorCallbackPaste;
 import com.sk89q.worldedit.util.report.ConfigReport;
 import com.sk89q.worldedit.util.report.ReportList;
@@ -82,23 +82,23 @@ public class WorldEditCommands {
         TextComponentProducer producer = new TextComponentProducer();
         for (Platform platform : pm.getPlatforms()) {
             producer.append(
-                    TextComponent.of("* ", TextColor.GRAY)
+                    TextComponent.of("* ", NamedTextColor.GRAY)
                     .append(TextComponent.of(platform.getPlatformName()))
                     .append(TextComponent.of("(" + platform.getPlatformVersion() + ")"))
             ).newline();
         }
-        actor.print(new MessageBox("Platforms", producer, TextColor.GRAY).create());
+        actor.print(new MessageBox("Platforms", producer, NamedTextColor.GRAY).create());
 
         producer.reset();
         for (Capability capability : Capability.values()) {
             Platform platform = pm.queryCapability(capability);
             producer.append(
-                    TextComponent.of(capability.name(), TextColor.GRAY)
+                    TextComponent.of(capability.name(), NamedTextColor.GRAY)
                     .append(TextComponent.of(": ")
                     .append(TextComponent.of(platform != null ? platform.getPlatformName() : "NONE")))
             ).newline();
         }
-        actor.print(new MessageBox("Capabilities", producer, TextColor.GRAY).create());
+        actor.print(new MessageBox("Capabilities", producer, NamedTextColor.GRAY).create());
     }
 
     @Command(

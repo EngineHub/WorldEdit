@@ -28,7 +28,7 @@ import com.sk89q.worldedit.internal.command.exception.ExceptionConverter;
 import com.sk89q.worldedit.util.formatting.component.ErrorFormat;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
-import com.sk89q.worldedit.util.formatting.text.format.TextColor;
+import com.sk89q.worldedit.util.formatting.text.format.NamedTextColor;
 import com.sk89q.worldedit.util.task.FutureForwardingTask;
 import com.sk89q.worldedit.util.task.Supervisor;
 import org.enginehub.piston.exception.CommandException;
@@ -116,7 +116,7 @@ public final class AsyncCommandBuilder<T> {
 
     public AsyncCommandBuilder<T> onSuccess(@Nullable String message, @Nullable Consumer<T> consumer) {
         checkArgument(message != null || consumer != null, "Can't have null message AND consumer");
-        this.successMessage = message == null ? null : TextComponent.of(message, TextColor.LIGHT_PURPLE);
+        this.successMessage = message == null ? null : TextComponent.of(message, NamedTextColor.LIGHT_PURPLE);
         this.consumer = consumer;
         return this;
     }

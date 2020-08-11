@@ -9,3 +9,8 @@ listOf("bukkit", "core", "forge", "sponge", "fabric", "cli").forEach {
 include("worldedit-libs:core:ap")
 
 include("worldedit-core:doctools")
+
+includeBuild("../Piston") {
+    dependencySubstitution {
+    }
+}

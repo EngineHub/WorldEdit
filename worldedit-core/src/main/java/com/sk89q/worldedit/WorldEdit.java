@@ -58,7 +58,7 @@ import com.sk89q.worldedit.util.concurrency.LazyReference;
 import com.sk89q.worldedit.util.eventbus.EventBus;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
-import com.sk89q.worldedit.util.formatting.text.format.TextColor;
+import com.sk89q.worldedit.util.formatting.text.format.NamedTextColor;
 import com.sk89q.worldedit.util.io.file.FileSelectionAbortedException;
 import com.sk89q.worldedit.util.io.file.FilenameException;
 import com.sk89q.worldedit.util.io.file.FilenameResolutionException;
@@ -751,14 +751,14 @@ public final class WorldEdit {
         } catch (ScriptException e) {
             // non-exceptional return check
             if (!(Throwables.getRootCause(e) instanceof ReturnException)) {
-                player.printError(TranslatableComponent.of("worldedit.script.failed", TextComponent.of(e.getMessage(), TextColor.WHITE)));
+                player.printError(TranslatableComponent.of("worldedit.script.failed", TextComponent.of(e.getMessage(), NamedTextColor.WHITE)));
                 logger.warn("Failed to execute script", e);
             }
         } catch (NumberFormatException | WorldEditException e) {
             throw e;
         } catch (Throwable e) {
             player.printError(TranslatableComponent.of("worldedit.script.failed-console", TextComponent.of(e.getClass().getCanonicalName(),
-                    TextColor.WHITE)));
+                NamedTextColor.WHITE)));
             logger.warn("Failed to execute script", e);
         } finally {
             for (EditSession editSession : scriptContext.getEditSessions()) {

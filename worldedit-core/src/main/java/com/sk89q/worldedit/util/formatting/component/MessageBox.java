@@ -23,6 +23,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
+import com.sk89q.worldedit.util.formatting.text.format.NamedTextColor;
 import com.sk89q.worldedit.util.formatting.text.format.TextColor;
 import com.sk89q.worldedit.util.formatting.text.format.TextDecoration;
 
@@ -42,7 +43,7 @@ public class MessageBox extends TextComponentProducer {
      * Create a new box.
      */
     public MessageBox(String title, TextComponentProducer contents) {
-        this(title, contents, TextColor.YELLOW);
+        this(title, contents, NamedTextColor.YELLOW);
     }
 
     /**

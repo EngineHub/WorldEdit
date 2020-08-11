@@ -165,7 +165,7 @@ public class ForgePlayer extends AbstractPlayerActor {
 
     @Override
     public void print(Component component) {
-        sendMessage(ITextComponent.Serializer.func_240643_a_(GsonComponentSerializer.INSTANCE.serialize(WorldEditText.format(component, getLocale()))));
+        sendMessage(ITextComponent.Serializer.func_240643_a_(GsonComponentSerializer.gson().serialize(WorldEditText.format(component, getLocale()))));
     }
 
     private void sendColorized(String msg, TextFormatting formatting) {

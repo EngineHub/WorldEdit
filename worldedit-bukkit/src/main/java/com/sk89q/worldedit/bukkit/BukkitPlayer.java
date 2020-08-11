@@ -36,15 +36,16 @@ import com.sk89q.worldedit.util.formatting.component.TextUtils;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
-import com.sk89q.worldedit.util.formatting.text.adapter.bukkit.TextAdapter;
 import com.sk89q.worldedit.util.formatting.text.event.ClickEvent;
-import com.sk89q.worldedit.util.formatting.text.format.TextColor;
+import com.sk89q.worldedit.util.formatting.text.format.NamedTextColor;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.block.BlockTypes;
 import com.sk89q.worldedit.world.gamemode.GameMode;
 import com.sk89q.worldedit.world.gamemode.GameModes;
+import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -58,6 +59,7 @@ public class BukkitPlayer extends AbstractPlayerActor {
 
     private final Player player;
     private final WorldEditPlugin plugin;
+    private final Audience audience;
 
     public BukkitPlayer(Player player) {
         this(WorldEditPlugin.getInstance(), player);
@@ -66,6 +68,7 @@ public class BukkitPlayer extends AbstractPlayerActor {
     public BukkitPlayer(WorldEditPlugin plugin, Player player) {
         this.plugin = plugin;
         this.player = player;
+        this.audience = BukkitAudiences.create(plugin).player(player);
     }
 
     @Override
@@ -138,7 +141,7 @@ public class BukkitPlayer extends AbstractPlayerActor {
 
     @Override
     public void print(Component component) {
-        TextAdapter.sendMessage(player, WorldEditText.format(component, getLocale()));
+        audience.sendMessage(WorldEditText.format(component, getLocale()));
     }
 
     @Override
@@ -233,7 +236,7 @@ public class BukkitPlayer extends AbstractPlayerActor {
     public void sendAnnouncements() {
         if (WorldEditPlugin.getInstance().getBukkitImplAdapter() == null) {
             printError(TranslatableComponent.of("worldedit.version.bukkit.unsupported-adapter",
-                    TextComponent.of("https://enginehub.org/worldedit/#downloads", TextColor.AQUA)
+                    TextComponent.of("https://enginehub.org/worldedit/#downloads", NamedTextColor.AQUA)
                         .clickEvent(ClickEvent.openUrl("https://enginehub.org/worldedit/#downloads"))));
         }
     }

@@ -24,7 +24,7 @@ import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.util.formatting.text.event.ClickEvent;
 import com.sk89q.worldedit.util.formatting.text.event.HoverEvent;
-import com.sk89q.worldedit.util.formatting.text.format.TextColor;
+import com.sk89q.worldedit.util.formatting.text.format.NamedTextColor;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -99,21 +99,21 @@ public abstract class PaginationBox extends MessageBox {
             return super.create();
         }
         getContents().newline();
-        TextComponent pageNumberComponent = TextComponent.of("Page ", TextColor.YELLOW)
-                .append(TextComponent.of(String.valueOf(page), TextColor.GOLD))
+        TextComponent pageNumberComponent = TextComponent.of("Page ", NamedTextColor.YELLOW)
+                .append(TextComponent.of(String.valueOf(page), NamedTextColor.GOLD))
                 .append(TextComponent.of(" of "))
-                .append(TextComponent.of(String.valueOf(pageCount), TextColor.GOLD));
+                .append(TextComponent.of(String.valueOf(pageCount), NamedTextColor.GOLD));
         if (pageCommand != null) {
             TextComponentProducer navProducer = new TextComponentProducer();
             if (page > 1) {
-                TextComponent prevComponent = TextComponent.of("<<< ", TextColor.GOLD)
+                TextComponent prevComponent = TextComponent.of("<<< ", NamedTextColor.GOLD)
                         .clickEvent(ClickEvent.of(ClickEvent.Action.RUN_COMMAND, pageCommand.replace("%page%", String.valueOf(page - 1))))
                         .hoverEvent(HoverEvent.of(HoverEvent.Action.SHOW_TEXT, TextComponent.of("Click to navigate")));
                 navProducer.append(prevComponent);
             }
             navProducer.append(pageNumberComponent);
             if (page < pageCount) {
-                TextComponent nextComponent = TextComponent.of(" >>>", TextColor.GOLD)
+                TextComponent nextComponent = TextComponent.of(" >>>", NamedTextColor.GOLD)
                         .clickEvent(ClickEvent.of(ClickEvent.Action.RUN_COMMAND, pageCommand.replace("%page%", String.valueOf(page + 1))))
                         .hoverEvent(HoverEvent.of(HoverEvent.Action.SHOW_TEXT, TextComponent.of("Click to navigate")));
                 navProducer.append(nextComponent);

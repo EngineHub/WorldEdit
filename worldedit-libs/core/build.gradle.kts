@@ -1,10 +1,10 @@
 applyLibrariesConfiguration()
 
 dependencies {
-    "shade"("net.kyori:text-api:${Versions.TEXT}")
-    "shade"("net.kyori:text-serializer-gson:${Versions.TEXT}")
-    "shade"("net.kyori:text-serializer-legacy:${Versions.TEXT}")
-    "shade"("net.kyori:text-serializer-plain:${Versions.TEXT}")
+    "shade"("net.kyori:adventure-api:${Versions.ADVENTURE}")
+    "shade"("net.kyori:adventure-text-serializer-gson:${Versions.ADVENTURE}")
+    "shade"("net.kyori:adventure-text-serializer-legacy:${Versions.ADVENTURE}")
+    "shade"("net.kyori:adventure-text-serializer-plain:${Versions.ADVENTURE}")
     "shade"("com.sk89q:jchronic:0.2.4a") {
         exclude(group = "junit", module = "junit")
     }

@@ -29,7 +29,7 @@ import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.util.formatting.text.event.ClickEvent;
 import com.sk89q.worldedit.util.formatting.text.event.HoverEvent;
-import com.sk89q.worldedit.util.formatting.text.format.TextColor;
+import com.sk89q.worldedit.util.formatting.text.format.NamedTextColor;
 
 import java.util.Comparator;
 import java.util.List;
@@ -70,11 +70,11 @@ public class SideEffectBox extends PaginationBox {
         SideEffect.State state = this.sideEffectSet.getState(effect);
 
         TextComponent.Builder builder = TextComponent.builder();
-        builder = builder.append(TranslatableComponent.of(effect.getDisplayName(), TextColor.YELLOW)
+        builder = builder.append(TranslatableComponent.of(effect.getDisplayName(), NamedTextColor.YELLOW)
                 .hoverEvent(HoverEvent.of(HoverEvent.Action.SHOW_TEXT, TranslatableComponent.of(effect.getDescription()))));
         for (SideEffect.State uiState : SHOWN_VALUES) {
             builder = builder.append(TextComponent.space());
-            builder = builder.append(TranslatableComponent.of(uiState.getDisplayName(), uiState == state ? TextColor.WHITE : TextColor.GRAY)
+            builder = builder.append(TranslatableComponent.of(uiState.getDisplayName(), uiState == state ? NamedTextColor.WHITE : NamedTextColor.GRAY)
                     .clickEvent(ClickEvent.runCommand("//perf -h " + effect.name().toLowerCase(Locale.US) + " " + uiState.name().toLowerCase(Locale.US)))
                     .hoverEvent(HoverEvent.showText(uiState == state
                             ? TranslatableComponent.of("worldedit.sideeffect.box.current")

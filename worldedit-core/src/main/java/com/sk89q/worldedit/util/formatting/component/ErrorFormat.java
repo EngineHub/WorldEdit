@@ -20,7 +20,7 @@
 package com.sk89q.worldedit.util.formatting.component;
 
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
-import com.sk89q.worldedit.util.formatting.text.format.TextColor;
+import com.sk89q.worldedit.util.formatting.text.format.NamedTextColor;
 
 /**
  * Represents a fragment representing an error.
@@ -31,7 +31,7 @@ public class ErrorFormat extends TextComponentProducer {
      * Create a new instance.
      */
     private ErrorFormat() {
-        getBuilder().content("").color(TextColor.RED);
+        getBuilder().content("").color(NamedTextColor.RED);
     }
 
     /**

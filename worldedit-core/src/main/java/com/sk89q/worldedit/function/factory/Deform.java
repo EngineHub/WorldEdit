@@ -38,7 +38,7 @@ import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
-import com.sk89q.worldedit.util.formatting.text.format.TextColor;
+import com.sk89q.worldedit.util.formatting.text.format.NamedTextColor;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.sk89q.worldedit.util.GuavaUtil.firstNonNull;
@@ -193,7 +193,7 @@ public class Deform implements Contextual<Operation> {
         @Override
         public Iterable<Component> getStatusMessages() {
             return ImmutableList.of(TranslatableComponent.of("worldedit.operation.deform.expression",
-                    TextComponent.of(expression.getSource()).color(TextColor.LIGHT_PURPLE)));
+                    TextComponent.of(expression.getSource()).color(NamedTextColor.LIGHT_PURPLE)));
         }
 
     }

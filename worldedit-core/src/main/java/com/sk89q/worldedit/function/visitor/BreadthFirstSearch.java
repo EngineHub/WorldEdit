@@ -29,7 +29,7 @@ import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
-import com.sk89q.worldedit.util.formatting.text.format.TextColor;
+import com.sk89q.worldedit.util.formatting.text.format.NamedTextColor;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -190,7 +190,7 @@ public abstract class BreadthFirstSearch implements Operation {
         return ImmutableList.of(TranslatableComponent.of(
                 "worldedit.operation.affected.block",
                 TextComponent.of(getAffected())
-        ).color(TextColor.LIGHT_PURPLE));
+        ).color(NamedTextColor.LIGHT_PURPLE));
     }
 
 }

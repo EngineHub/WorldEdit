@@ -34,7 +34,7 @@ import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.util.formatting.text.event.ClickEvent;
 import com.sk89q.worldedit.util.formatting.text.event.HoverEvent;
-import com.sk89q.worldedit.util.formatting.text.format.TextColor;
+import com.sk89q.worldedit.util.formatting.text.format.NamedTextColor;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.snapshot.experimental.Snapshot;
 import com.sk89q.worldedit.world.snapshot.experimental.fs.FileSystemSnapshotDatabase;
@@ -330,8 +330,8 @@ public class SnapshotCommands {
         public Component getComponent(int number) {
             final Snapshot snapshot = snapshots.get(number);
             String displayName = snapshot.getInfo().getDisplayName();
-            return TextComponent.of(number + 1 + ". ", TextColor.GOLD)
-                .append(TextComponent.builder(displayName, TextColor.LIGHT_PURPLE)
+            return TextComponent.of(number + 1 + ". ", NamedTextColor.GOLD)
+                .append(TextComponent.builder(displayName, NamedTextColor.LIGHT_PURPLE)
                     .hoverEvent(HoverEvent.showText(TextComponent.of("Click to use")))
                     .clickEvent(ClickEvent.runCommand("/snap use " + displayName)));
         }

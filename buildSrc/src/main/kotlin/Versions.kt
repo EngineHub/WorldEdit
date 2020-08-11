@@ -1,8 +1,8 @@
 import org.gradle.api.Project
 
 object Versions {
-    const val TEXT = "3.0.4"
-    const val TEXT_EXTRAS = "3.0.6"
+    const val ADVENTURE = "4.0.0-SNAPSHOT"
+    const val ADVENTURE_EXTRAS = "4.0.0-SNAPSHOT"
     const val PISTON = "0.5.6"
     const val AUTO_VALUE = "1.7"
     const val JUNIT = "5.6.1"

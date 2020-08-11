@@ -24,7 +24,7 @@ import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.event.ClickEvent;
 import com.sk89q.worldedit.util.formatting.text.event.HoverEvent;
-import com.sk89q.worldedit.util.formatting.text.format.TextColor;
+import com.sk89q.worldedit.util.formatting.text.format.NamedTextColor;
 
 import java.util.List;
 
@@ -93,7 +93,7 @@ public class CommandListBox extends PaginationBox {
                         .clickEvent(ClickEvent.of(ClickEvent.Action.RUN_COMMAND, CommandListBox.this.helpCommand + " " + insertion))
                         .hoverEvent(HoverEvent.of(HoverEvent.Action.SHOW_TEXT, TextComponent.of("Additional Help"))));
             }
-            TextComponent command = TextComponent.of(alias, TextColor.GOLD);
+            TextComponent command = TextComponent.of(alias, NamedTextColor.GOLD);
             if (insertion == null) {
                 line.append(command);
             } else {

@@ -41,7 +41,7 @@ import com.sk89q.worldedit.regions.factory.RegionFactory;
 import com.sk89q.worldedit.util.TreeGenerator;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
-import com.sk89q.worldedit.util.formatting.text.format.TextColor;
+import com.sk89q.worldedit.util.formatting.text.format.NamedTextColor;
 import com.sk89q.worldedit.util.formatting.text.format.TextDecoration;
 import org.enginehub.piston.CommandManager;
 import org.enginehub.piston.CommandManagerService;
@@ -130,7 +130,7 @@ public class PaintBrushCommands {
                      @Arg(desc = "The direction in which the item will be applied", def = "up")
                      @Direction(includeDiagonals = true)
                          com.sk89q.worldedit.util.Direction direction) throws WorldEditException {
-        player.print(TextComponent.builder().append("WARNING: ", TextColor.RED, TextDecoration.BOLD)
+        player.print(TextComponent.builder().append("WARNING: ", NamedTextColor.RED, TextDecoration.BOLD)
                 .append(TranslatableComponent.of("worldedit.brush.paint.item.warning")).build());
         setPaintBrush(parameters, player, localSession, new ItemUseFactory(item, direction));
     }

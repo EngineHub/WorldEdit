@@ -32,7 +32,7 @@ import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.util.formatting.text.event.ClickEvent;
 import com.sk89q.worldedit.util.formatting.text.event.HoverEvent;
-import com.sk89q.worldedit.util.formatting.text.format.TextColor;
+import com.sk89q.worldedit.util.formatting.text.format.NamedTextColor;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.snapshot.InvalidSnapshotException;
 import com.sk89q.worldedit.world.snapshot.Snapshot;
@@ -189,8 +189,8 @@ class LegacySnapshotCommands {
         @Override
         public Component getComponent(int number) {
             final Snapshot snapshot = snapshots.get(number);
-            return TextComponent.of(number + 1 + ". ", TextColor.GOLD)
-                    .append(TextComponent.of(snapshot.getName(), TextColor.LIGHT_PURPLE)
+            return TextComponent.of(number + 1 + ". ", NamedTextColor.GOLD)
+                    .append(TextComponent.of(snapshot.getName(), NamedTextColor.LIGHT_PURPLE)
                             .hoverEvent(HoverEvent.of(HoverEvent.Action.SHOW_TEXT, TextComponent.of("Click to use")))
                             .clickEvent(ClickEvent.of(ClickEvent.Action.RUN_COMMAND, "/snap use " + snapshot.getName())));
         }

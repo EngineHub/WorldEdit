@@ -29,7 +29,7 @@ import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
-import com.sk89q.worldedit.util.formatting.text.format.TextColor;
+import com.sk89q.worldedit.util.formatting.text.format.NamedTextColor;
 
 /**
  * Utility class to apply region functions to {@link com.sk89q.worldedit.regions.Region}.
@@ -74,7 +74,7 @@ public class RegionVisitor implements Operation {
         return ImmutableList.of(TranslatableComponent.of(
                 "worldedit.operation.affected.block",
                 TextComponent.of(getAffected())
-        ).color(TextColor.LIGHT_PURPLE));
+        ).color(NamedTextColor.LIGHT_PURPLE));
     }
 
 }
