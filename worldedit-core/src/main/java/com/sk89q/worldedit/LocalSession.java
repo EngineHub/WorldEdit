@@ -245,8 +245,10 @@ public class LocalSession {
         --historyPointer;
         if (historyPointer >= 0) {
             EditSession editSession = history.get(historyPointer);
-            try (EditSession newEditSession = WorldEdit.getInstance().getEditSessionFactory()
-                    .getEditSession(editSession.getWorld(), -1, newBlockBag, actor)) {
+            try (EditSession newEditSession =
+                     WorldEdit.getInstance().newEditSessionBuilder()
+                         .world(editSession.getWorld()).blockBag(newBlockBag).actor(actor)
+                         .build()) {
                 prepareEditingExtents(editSession, actor);
                 editSession.undo(newEditSession);
             }
@@ -268,8 +270,10 @@ public class LocalSession {
         checkNotNull(actor);
         if (historyPointer < history.size()) {
             EditSession editSession = history.get(historyPointer);
-            try (EditSession newEditSession = WorldEdit.getInstance().getEditSessionFactory()
-                    .getEditSession(editSession.getWorld(), -1, newBlockBag, actor)) {
+            try (EditSession newEditSession =
+                     WorldEdit.getInstance().newEditSessionBuilder()
+                         .world(editSession.getWorld()).blockBag(newBlockBag).actor(actor)
+                         .build()) {
                 prepareEditingExtents(editSession, actor);
                 editSession.redo(newEditSession);
             }
@@ -975,6 +979,19 @@ public class LocalSession {
      * @return an edit session
      */
     public EditSession createEditSession(Actor actor) {
+        return createEditSession(actor, false);
+    }
+
+    /**
+     * Construct a new edit session, optionally with tracing.
+     *
+     * <em>Internal use only.</em>
+     *
+     * @param actor the actor
+     * @param tracing if tracing is enabled
+     * @return an edit session
+     */
+    public EditSession createEditSession(Actor actor, boolean tracing) {
         checkNotNull(actor);
 
         World world = null;
@@ -985,17 +1002,15 @@ public class LocalSession {
         }
 
         // Create an edit session
-        EditSession editSession;
+        EditSessionBuilder builder = WorldEdit.getInstance().newEditSessionBuilder()
+            .world(world)
+            .actor(actor)
+            .maxBlocks(getBlockChangeLimit())
+            .tracing(tracing);
         if (actor.isPlayer() && actor instanceof Player) {
-            BlockBag blockBag = getBlockBag((Player) actor);
-            editSession = WorldEdit.getInstance().getEditSessionFactory().getEditSession(
-                    world,
-                    getBlockChangeLimit(), blockBag, actor
-            );
-        } else {
-            editSession = WorldEdit.getInstance().getEditSessionFactory()
-                    .getEditSession(world, getBlockChangeLimit());
+            builder.blockBag(getBlockBag((Player) actor));
         }
+        EditSession editSession = builder.build();
         Request.request().setEditSession(editSession);
 
         editSession.setMask(mask);

@@ -38,6 +38,7 @@ import com.sk89q.worldedit.extension.factory.MaskFactory;
 import com.sk89q.worldedit.extension.factory.PatternFactory;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Capability;
+import com.sk89q.worldedit.extension.platform.Locatable;
 import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.extension.platform.PlatformManager;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
@@ -64,6 +65,7 @@ import com.sk89q.worldedit.util.io.file.InvalidFilenameException;
 import com.sk89q.worldedit.util.task.SimpleSupervisor;
 import com.sk89q.worldedit.util.task.Supervisor;
 import com.sk89q.worldedit.util.translation.TranslationManager;
+import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.registry.BundledBlockData;
@@ -113,7 +115,8 @@ public final class WorldEdit {
 
     private final EventBus eventBus = new EventBus();
     private final PlatformManager platformManager = new PlatformManager(this);
-    private final EditSessionFactory editSessionFactory = new EditSessionFactory.EditSessionFactoryImpl(eventBus);
+    @Deprecated
+    private final EditSessionFactory editSessionFactory = new EditSessionFactory.EditSessionFactoryImpl();
     private final SessionManager sessions = new SessionManager(this);
     private final ListeningExecutorService executorService = MoreExecutors.listeningDecorator(
             EvenMoreExecutors.newBoundedCachedThreadPool(0, 1, 20, "WorldEdit Task Executor - %s"));
@@ -761,9 +764,39 @@ public final class WorldEdit {
 
     /**
      * Get a factory for {@link EditSession}s.
+     *
+     * @deprecated Use {@link #newEditSessionBuilder()} instead. See {@link EditSessionFactory} for details.
      */
+    @Deprecated
     public EditSessionFactory getEditSessionFactory() {
         return editSessionFactory;
+    }
+
+    /**
+     * Create a builder for {@link EditSession}s.
+     */
+    public EditSessionBuilder newEditSessionBuilder() {
+        return new EditSessionBuilder(eventBus);
+    }
+
+    /**
+     * Shorthand for {@code newEditSessionBuilder().world(world).build()}.
+     *
+     * @param world the world
+     * @return the new {@link EditSession}
+     */
+    public EditSession newEditSession(@Nullable World world) {
+        return newEditSessionBuilder().world(world).build();
+    }
+
+    /**
+     * Shorthand for {@code newEditSessionBuilder().locatableActor(locatableActor).build()}.
+     *
+     * @param locatableActor the actor
+     * @return the new {@link EditSession}
+     */
+    public <A extends Actor & Locatable> EditSession newEditSession(A locatableActor) {
+        return newEditSessionBuilder().locatableActor(locatableActor).build();
     }
 
     /**

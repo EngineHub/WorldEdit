@@ -19,7 +19,21 @@
 
 package com.sk89q.worldedit.command;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.TextStyle;
+import java.time.zone.ZoneRulesException;
+import java.util.List;
+
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
 import com.google.common.io.Files;
+import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.IncompleteRegionException;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
@@ -32,6 +46,7 @@ import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.Capability;
 import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.extension.platform.PlatformManager;
+import com.sk89q.worldedit.extent.TracingExtent;
 import com.sk89q.worldedit.util.formatting.component.MessageBox;
 import com.sk89q.worldedit.util.formatting.component.TextComponentProducer;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
@@ -46,16 +61,6 @@ import org.enginehub.piston.annotation.CommandContainer;
 import org.enginehub.piston.annotation.param.Arg;
 import org.enginehub.piston.annotation.param.ArgFlag;
 import org.enginehub.piston.annotation.param.Switch;
-
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.TextStyle;
-import java.time.zone.ZoneRulesException;
-import java.util.List;
 
 @CommandContainer(superTypes = CommandPermissionsConditionGenerator.Registration.class)
 public class WorldEditCommands {
@@ -135,6 +140,45 @@ public class WorldEditCommands {
         if (pastebin) {
             actor.checkPermission("worldedit.report.pastebin");
             ActorCallbackPaste.pastebin(we.getSupervisor(), actor, result, TranslatableComponent.builder("worldedit.report.callback"));
+        }
+    }
+
+    @Command(
+        name = "trace",
+        desc = "Trace edit actions to see what's blocking them",
+        descFooter = "This will run the given action at your placement position, then provide a single" +
+            " extent which was the first to return a failure for that action"
+    )
+    void trace(Actor actor, LocalSession localSession,
+               @Arg(desc = "The action to trace")
+                   TracingExtent.Action action,
+               @Switch(name = 'a', desc = "Print all active extents") boolean all) throws IncompleteRegionException {
+        EditSession session = localSession.createEditSession(actor, true);
+        try (EditSession ignored = session) {
+            if (action.test.test(session, localSession.getPlacementPosition(actor))) {
+                actor.printInfo(TranslatableComponent.builder("worldedit.trace.success")
+                    .args(TextComponent.of(action.toString()))
+                    .build());
+                return;
+            }
+        }
+        List<TracingExtent> tracingExtents = session.getTracingExtents();
+        assert tracingExtents != null;
+        if (tracingExtents.isEmpty()) {
+            actor.printError(TranslatableComponent.of("worldedit.trace.no-tracing-extents"));
+            return;
+        }
+        if (!all) {
+            // make it only print the last one (which is the failure)
+            tracingExtents = ImmutableList.of(Iterables.getLast(tracingExtents));
+        }
+        for (TracingExtent tracingExtent : tracingExtents) {
+            actor.printInfo(TranslatableComponent.builder("worldedit.trace.extent")
+                .args(
+                    TextComponent.of(tracingExtent.getFailedActions().contains(action)),
+                    TextComponent.of(tracingExtent.getExtent().getClass().getName())
+                )
+                .build());
         }
     }
 

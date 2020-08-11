@@ -29,6 +29,7 @@ import com.sk89q.worldedit.extent.ChangeSetExtent;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.extent.MaskingExtent;
 import com.sk89q.worldedit.extent.NullExtent;
+import com.sk89q.worldedit.extent.TracingExtent;
 import com.sk89q.worldedit.extent.buffer.ForgetfulExtentBuffer;
 import com.sk89q.worldedit.extent.cache.LastAccessExtentCache;
 import com.sk89q.worldedit.extent.inventory.BlockBag;
@@ -128,6 +129,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -201,6 +203,8 @@ public class EditSession implements Extent, AutoCloseable {
     private final Extent bypassHistory;
     private final Extent bypassNone;
 
+    private final @Nullable List<TracingExtent> tracingExtents;
+
     private ReorderMode reorderMode = ReorderMode.MULTI_STAGE;
 
     private Mask oldMask;
@@ -214,10 +218,17 @@ public class EditSession implements Extent, AutoCloseable {
      * @param blockBag an optional {@link BlockBag} to use, otherwise null
      * @param event the event to call with the extent
      */
-    EditSession(EventBus eventBus, World world, int maxBlocks, @Nullable BlockBag blockBag, EditSessionEvent event) {
+    EditSession(EventBus eventBus, World world, int maxBlocks, @Nullable BlockBag blockBag, EditSessionEvent event,
+                boolean tracing) {
         checkNotNull(eventBus);
         checkArgument(maxBlocks >= -1, "maxBlocks >= -1 required");
         checkNotNull(event);
+
+        if (tracing) {
+            this.tracingExtents = new ArrayList<>();
+        } else {
+            this.tracingExtents = null;
+        }
 
         this.world = world;
 
@@ -227,48 +238,48 @@ public class EditSession implements Extent, AutoCloseable {
             Extent extent;
 
             // These extents are ALWAYS used
-            extent = sideEffectExtent = new SideEffectExtent(world);
+            extent = traceIfNeeded(sideEffectExtent = new SideEffectExtent(world));
             if (watchdog != null) {
                 // Reset watchdog before world placement
                 WatchdogTickingExtent watchdogExtent = new WatchdogTickingExtent(extent, watchdog);
-                extent = watchdogExtent;
+                extent = traceIfNeeded(watchdogExtent);
                 watchdogExtents.add(watchdogExtent);
             }
-            extent = survivalExtent = new SurvivalModeExtent(extent, world);
-            extent = new BlockQuirkExtent(extent, world);
-            extent = new BiomeQuirkExtent(extent);
-            extent = new ChunkLoadingExtent(extent, world);
-            extent = new LastAccessExtentCache(extent);
-            extent = blockBagExtent = new BlockBagExtent(extent, blockBag);
+            extent = traceIfNeeded(survivalExtent = new SurvivalModeExtent(extent, world));
+            extent = traceIfNeeded(new BlockQuirkExtent(extent, world));
+            extent = traceIfNeeded(new BiomeQuirkExtent(extent));
+            extent = traceIfNeeded(new ChunkLoadingExtent(extent, world));
+            extent = traceIfNeeded(new LastAccessExtentCache(extent));
+            extent = traceIfNeeded(blockBagExtent = new BlockBagExtent(extent, blockBag));
             extent = wrapExtent(extent, eventBus, event, Stage.BEFORE_CHANGE);
-            this.bypassReorderHistory = new DataValidatorExtent(extent, world);
+            this.bypassReorderHistory = traceIfNeeded(new DataValidatorExtent(extent, world));
 
             // This extent can be skipped by calling rawSetBlock()
-            extent = reorderExtent = new MultiStageReorder(extent, false);
-            extent = chunkBatchingExtent = new ChunkBatchingExtent(extent);
+            extent = traceIfNeeded(reorderExtent = new MultiStageReorder(extent, false));
+            extent = traceIfNeeded(chunkBatchingExtent = new ChunkBatchingExtent(extent));
             extent = wrapExtent(extent, eventBus, event, Stage.BEFORE_REORDER);
             if (watchdog != null) {
                 // reset before buffering extents, since they may buffer all changes
                 // before the world-placement reset can happen, and still cause halts
                 WatchdogTickingExtent watchdogExtent = new WatchdogTickingExtent(extent, watchdog);
-                extent = watchdogExtent;
+                extent = traceIfNeeded(watchdogExtent);
                 watchdogExtents.add(watchdogExtent);
             }
-            this.bypassHistory = new DataValidatorExtent(extent, world);
+            this.bypassHistory = traceIfNeeded(new DataValidatorExtent(extent, world));
 
             // These extents can be skipped by calling smartSetBlock()
-            extent = new ChangeSetExtent(extent, changeSet);
-            extent = maskingExtent = new MaskingExtent(extent, Masks.alwaysTrue());
-            extent = changeLimiter = new BlockChangeLimiter(extent, maxBlocks);
+            extent = traceIfNeeded(new ChangeSetExtent(extent, changeSet));
+            extent = traceIfNeeded(maskingExtent = new MaskingExtent(extent, Masks.alwaysTrue()));
+            extent = traceIfNeeded(changeLimiter = new BlockChangeLimiter(extent, maxBlocks));
             extent = wrapExtent(extent, eventBus, event, Stage.BEFORE_HISTORY);
-            this.bypassNone = new DataValidatorExtent(extent, world);
+            this.bypassNone = traceIfNeeded(new DataValidatorExtent(extent, world));
         } else {
             Extent extent = new NullExtent();
-            extent = survivalExtent = new SurvivalModeExtent(extent, NullWorld.getInstance());
-            extent = blockBagExtent = new BlockBagExtent(extent, blockBag);
-            extent = reorderExtent = new MultiStageReorder(extent, false);
-            extent = maskingExtent = new MaskingExtent(extent, Masks.alwaysTrue());
-            extent = changeLimiter = new BlockChangeLimiter(extent, maxBlocks);
+            extent = traceIfNeeded(survivalExtent = new SurvivalModeExtent(extent, NullWorld.getInstance()));
+            extent = traceIfNeeded(blockBagExtent = new BlockBagExtent(extent, blockBag));
+            extent = traceIfNeeded(reorderExtent = new MultiStageReorder(extent, false));
+            extent = traceIfNeeded(maskingExtent = new MaskingExtent(extent, Masks.alwaysTrue()));
+            extent = traceIfNeeded(changeLimiter = new BlockChangeLimiter(extent, maxBlocks));
             this.bypassReorderHistory = extent;
             this.bypassHistory = extent;
             this.bypassNone = extent;
@@ -277,10 +288,26 @@ public class EditSession implements Extent, AutoCloseable {
         setReorderMode(this.reorderMode);
     }
 
+    private Extent traceIfNeeded(Extent input) {
+        Extent output = input;
+        if (tracingExtents != null) {
+            TracingExtent newExtent = new TracingExtent(input);
+            output = newExtent;
+            tracingExtents.add(newExtent);
+        }
+        return output;
+    }
+
     private Extent wrapExtent(Extent extent, EventBus eventBus, EditSessionEvent event, Stage stage) {
+        // NB: the event does its own tracing
         event = event.clone(stage);
         event.setExtent(extent);
+        boolean tracing = tracingExtents != null;
+        event.setTracing(tracing);
         eventBus.post(event);
+        if (tracing) {
+            tracingExtents.addAll(event.getTracingExtents());
+        }
         return event.getExtent();
     }
 
@@ -296,6 +323,21 @@ public class EditSession implements Extent, AutoCloseable {
             return true;
         }
         return false;
+    }
+
+    /**
+     * Get the current list of active tracing extents.
+     *
+     * <em>Internal use only.</em>
+     */
+    @Nullable
+    public List<TracingExtent> getTracingExtents() {
+        if (tracingExtents == null) {
+            return null;
+        }
+        return tracingExtents.stream()
+            .filter(TracingExtent::isActive)
+            .collect(Collectors.toList());
     }
 
     /**

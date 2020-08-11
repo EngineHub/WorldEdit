@@ -24,10 +24,14 @@ import com.sk89q.worldedit.extent.inventory.BlockBag;
 import com.sk89q.worldedit.util.eventbus.EventBus;
 import com.sk89q.worldedit.world.World;
 
-public class TracedEditSession extends EditSession {
+/**
+ * Internal use only.
+ */
+class TracedEditSession extends EditSession {
 
-    TracedEditSession(EventBus eventBus, World world, int maxBlocks, BlockBag blockBag, EditSessionEvent event) {
-        super(eventBus, world, maxBlocks, blockBag, event);
+    TracedEditSession(EventBus eventBus, World world, int maxBlocks, BlockBag blockBag, EditSessionEvent event,
+                      boolean tracing) {
+        super(eventBus, world, maxBlocks, blockBag, event, tracing);
     }
 
     private final Throwable stacktrace = new Throwable("Creation trace.");

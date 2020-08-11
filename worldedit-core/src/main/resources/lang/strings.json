@@ -234,6 +234,10 @@
     "worldedit.version.version": "WorldEdit version {0}",
     "worldedit.version.bukkit.unsupported-adapter": "This WorldEdit version does not fully support your version of Bukkit. Block entities (e.g. chests) will be empty, block properties (e.g. rotation) will be missing, and other things may not work. Update WorldEdit to restore this functionality:\n{0}",
 
+    "worldedit.trace.success":  "The action {0} was successful.",
+    "worldedit.trace.no-tracing-extents":  "No extent was activated.",
+    "worldedit.trace.extent":  "Action failed: {0} - Extent: {1}",
+
     "worldedit.command.time-elapsed": "{0}s elapsed (history: {1} changed; {2} blocks/sec).",
     "worldedit.command.permissions": "You are not permitted to do that. Are you in the right mode?",
     "worldedit.command.player-only": "This command must be used with a player.",
