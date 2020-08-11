@@ -23,10 +23,13 @@ import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.event.Event;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extent.Extent;
+import com.sk89q.worldedit.extent.TracingExtent;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 
+import java.util.ArrayList;
+import java.util.List;
 import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -65,7 +68,9 @@ public class EditSessionEvent extends Event {
     private final Actor actor;
     private final int maxBlocks;
     private final Stage stage;
+    private final List<TracingExtent> tracingExtents = new ArrayList<>();
     private Extent extent;
+    private boolean tracing;
 
     /**
      * Create a new event.
@@ -135,7 +140,31 @@ public class EditSessionEvent extends Event {
      */
     public void setExtent(Extent extent) {
         checkNotNull(extent);
+        if (tracing && extent != this.extent) {
+            TracingExtent tracingExtent = new TracingExtent(extent);
+            extent = tracingExtent;
+            tracingExtents.add(tracingExtent);
+        }
         this.extent = extent;
+    }
+
+    /**
+     * Set tracing enabled, with the current extent as the "base".
+     *
+     * <em>Internal use only.</em>
+     * @param tracing if tracing is enabled
+     */
+    public void setTracing(boolean tracing) {
+        this.tracing = tracing;
+    }
+
+    /**
+     * Get the current list of tracing extents.
+     *
+     * <em>Internal use only.</em>
+     */
+    public List<TracingExtent> getTracingExtents() {
+        return tracingExtents;
     }
 
     /**

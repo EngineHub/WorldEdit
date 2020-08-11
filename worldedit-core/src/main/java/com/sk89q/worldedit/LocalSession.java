@@ -109,6 +109,7 @@ public class LocalSession {
     private transient World worldOverride;
     private transient boolean tickingWatchdog = true;
     private transient boolean hasBeenToldVersion;
+    private transient boolean tracingActions;
 
     // Saved properties
     private String lastScript;
@@ -245,8 +246,10 @@ public class LocalSession {
         --historyPointer;
         if (historyPointer >= 0) {
             EditSession editSession = history.get(historyPointer);
-            try (EditSession newEditSession = WorldEdit.getInstance().getEditSessionFactory()
-                    .getEditSession(editSession.getWorld(), -1, newBlockBag, actor)) {
+            try (EditSession newEditSession =
+                     WorldEdit.getInstance().newEditSessionBuilder()
+                         .world(editSession.getWorld()).blockBag(newBlockBag).actor(actor)
+                         .build()) {
                 prepareEditingExtents(editSession, actor);
                 editSession.undo(newEditSession);
             }
@@ -268,8 +271,10 @@ public class LocalSession {
         checkNotNull(actor);
         if (historyPointer < history.size()) {
             EditSession editSession = history.get(historyPointer);
-            try (EditSession newEditSession = WorldEdit.getInstance().getEditSessionFactory()
-                    .getEditSession(editSession.getWorld(), -1, newBlockBag, actor)) {
+            try (EditSession newEditSession =
+                     WorldEdit.getInstance().newEditSessionBuilder()
+                         .world(editSession.getWorld()).blockBag(newBlockBag).actor(actor)
+                         .build()) {
                 prepareEditingExtents(editSession, actor);
                 editSession.redo(newEditSession);
             }
@@ -299,6 +304,14 @@ public class LocalSession {
 
     public void setTickingWatchdog(boolean tickingWatchdog) {
         this.tickingWatchdog = tickingWatchdog;
+    }
+
+    public boolean isTracingActions() {
+        return tracingActions;
+    }
+
+    public void setTracingActions(boolean tracingActions) {
+        this.tracingActions = tracingActions;
     }
 
     /**
@@ -985,17 +998,15 @@ public class LocalSession {
         }
 
         // Create an edit session
-        EditSession editSession;
+        EditSessionBuilder builder = WorldEdit.getInstance().newEditSessionBuilder()
+            .world(world)
+            .actor(actor)
+            .maxBlocks(getBlockChangeLimit())
+            .tracing(isTracingActions());
         if (actor.isPlayer() && actor instanceof Player) {
-            BlockBag blockBag = getBlockBag((Player) actor);
-            editSession = WorldEdit.getInstance().getEditSessionFactory().getEditSession(
-                    world,
-                    getBlockChangeLimit(), blockBag, actor
-            );
-        } else {
-            editSession = WorldEdit.getInstance().getEditSessionFactory()
-                    .getEditSession(world, getBlockChangeLimit());
+            builder.blockBag(getBlockBag((Player) actor));
         }
+        EditSession editSession = builder.build();
         Request.request().setEditSession(editSession);
 
         editSession.setMask(mask);

@@ -25,6 +25,7 @@ import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.command.util.CommandPermissions;
 import com.sk89q.worldedit.command.util.CommandPermissionsConditionGenerator;
+import com.sk89q.worldedit.command.util.HookMode;
 import com.sk89q.worldedit.command.util.PrintCommandHelp;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.event.platform.ConfigurationLoadEvent;
@@ -136,6 +137,28 @@ public class WorldEditCommands {
             actor.checkPermission("worldedit.report.pastebin");
             ActorCallbackPaste.pastebin(we.getSupervisor(), actor, result, TranslatableComponent.builder("worldedit.report.callback"));
         }
+    }
+
+    @Command(
+        name = "trace",
+        desc = "Toggles trace hook"
+    )
+    void trace(Actor actor, LocalSession session,
+               @Arg(desc = "The mode to set the trace hook to", def = "")
+                   HookMode hookMode) {
+        boolean previousMode = session.isTracingActions();
+        boolean newMode;
+        if (hookMode != null) {
+            newMode = hookMode == HookMode.ACTIVE;
+            if (newMode == previousMode) {
+                actor.printError(TranslatableComponent.of(previousMode ? "worldedit.trace.active.already" : "worldedit.trace.inactive.already"));
+                return;
+            }
+        } else {
+            newMode = !previousMode;
+        }
+        session.setTracingActions(newMode);
+        actor.printInfo(TranslatableComponent.of(newMode ? "worldedit.trace.active" : "worldedit.trace.inactive"));
     }
 
     @Command(
