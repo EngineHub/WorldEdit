@@ -339,10 +339,9 @@ public class EditSession implements Extent, AutoCloseable {
     /**
      * Get the current list of active tracing extents.
      */
-    @Nullable
     private List<TracingExtent> getActiveTracingExtents() {
         if (tracingExtents == null) {
-            return null;
+            return ImmutableList.of();
         }
         return tracingExtents.stream()
             .filter(TracingExtent::isActive)
@@ -885,10 +884,10 @@ public class EditSession implements Extent, AutoCloseable {
     }
 
     private void dumpTracingInformation() {
-        List<TracingExtent> tracingExtents = getActiveTracingExtents();
-        if (tracingExtents == null) {
+        if (this.tracingExtents == null) {
             return;
         }
+        List<TracingExtent> tracingExtents = getActiveTracingExtents();
         assert actor != null;
         if (tracingExtents.isEmpty()) {
             actor.printError(TranslatableComponent.of("worldedit.trace.no-tracing-extents"));
