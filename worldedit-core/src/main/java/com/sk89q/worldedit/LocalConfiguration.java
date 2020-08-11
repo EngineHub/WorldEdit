@@ -34,6 +34,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.List;
@@ -169,9 +170,20 @@ public abstract class LocalConfiguration {
      * Get the working directory to work from.
      *
      * @return a working directory
+     * @deprecated Use {@link LocalConfiguration#getWorkingDirectoryPath()}
      */
+    @Deprecated
     public File getWorkingDirectory() {
-        return new File(".");
+        return getWorkingDirectoryPath().toFile();
+    }
+
+    /**
+     * Get the working directory to work from.
+     *
+     * @return a working directory
+     */
+    public Path getWorkingDirectoryPath() {
+        return Paths.get(".");
     }
 
     public void initializeSnapshotConfiguration(String directory, boolean experimental) {

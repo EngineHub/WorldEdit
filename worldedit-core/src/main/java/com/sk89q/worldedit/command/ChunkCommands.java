@@ -49,7 +49,6 @@ import org.enginehub.piston.annotation.CommandContainer;
 import org.enginehub.piston.annotation.param.ArgFlag;
 import org.enginehub.piston.exception.StopExecutionException;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -122,12 +121,11 @@ public class ChunkCommands {
             throw new StopExecutionException(TextComponent.of("Couldn't find world folder for this world."));
         }
 
-        File chunkFile = worldEdit.getWorkingDirectoryFile(DELCHUNKS_FILE_NAME);
-        Path chunkPath = chunkFile.toPath();
+        Path chunkPath = worldEdit.getWorkingDirectoryPath(DELCHUNKS_FILE_NAME);
         ChunkDeletionInfo currentInfo = null;
         if (Files.exists(chunkPath)) {
             try {
-                currentInfo = ChunkDeleter.readInfo(chunkFile.toPath());
+                currentInfo = ChunkDeleter.readInfo(chunkPath);
             } catch (IOException e) {
                 throw new StopExecutionException(TextComponent.of("Error reading existing chunk file."));
             }

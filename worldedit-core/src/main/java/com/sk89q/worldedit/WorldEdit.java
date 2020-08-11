@@ -427,13 +427,25 @@ public final class WorldEdit {
      * @param path the subpath under the working directory
      * @return a working directory
      */
+    @Deprecated
     public File getWorkingDirectoryFile(String path) {
-        File f = new File(path);
-        if (f.isAbsolute()) {
-            return f;
+        return getWorkingDirectoryPath(path).toFile();
+    }
+
+    /**
+     * Get a file relative to the defined working directory. If the specified
+     * path is absolute, then the working directory is not used.
+     *
+     * @param path the subpath under the working directory
+     * @return a working directory
+     */
+    public Path getWorkingDirectoryPath(String path) {
+        Path p = Paths.get(path);
+        if (p.isAbsolute()) {
+            return p;
         }
 
-        return new File(getConfiguration().getWorkingDirectory(), path);
+        return getConfiguration().getWorkingDirectoryPath().resolve(path);
     }
 
     /**

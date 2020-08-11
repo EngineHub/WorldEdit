@@ -26,8 +26,8 @@ import ninja.leaping.configurate.loader.ConfigurationLoader;
 import org.slf4j.Logger;
 import org.spongepowered.api.config.DefaultConfig;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 
 public class SpongeConfiguration extends ConfigurateConfiguration {
 
@@ -54,7 +54,7 @@ public class SpongeConfiguration extends ConfigurateConfiguration {
     }
 
     @Override
-    public File getWorkingDirectory() {
+    public Path getWorkingDirectoryPath() {
         return SpongeWorldEdit.inst().getWorkingDir();
     }
 }

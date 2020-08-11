@@ -248,7 +248,7 @@ public class CraftScriptContext extends CraftScriptEnvironment {
      * @throws FilenameException if there is a problem with the name of the file
      */
     public File getSafeOpenFile(String folder, String filename, String defaultExt, String... exts) throws FilenameException {
-        File dir = controller.getWorkingDirectoryFile(folder);
+        File dir = controller.getWorkingDirectoryPath(folder).toFile();
         return controller.getSafeOpenFile(player, dir, filename, defaultExt, exts);
     }
 
@@ -269,7 +269,7 @@ public class CraftScriptContext extends CraftScriptEnvironment {
      * @throws FilenameException if there is a problem with the name of the file
      */
     public File getSafeSaveFile(String folder, String filename, String defaultExt, String... exts) throws FilenameException {
-        File dir = controller.getWorkingDirectoryFile(folder);
+        File dir = controller.getWorkingDirectoryPath(folder).toFile();
         return controller.getSafeSaveFile(player, dir, filename, defaultExt, exts);
     }
 
