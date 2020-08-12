@@ -31,7 +31,6 @@ import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.session.SessionKey;
 import com.sk89q.worldedit.util.HandSide;
 import com.sk89q.worldedit.util.Location;
-import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.gamemode.GameMode;
 import com.sk89q.worldedit.world.gamemode.GameModes;
@@ -42,9 +41,6 @@ import org.spongepowered.api.data.type.HandTypes;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.item.inventory.ItemStack;
-import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.format.TextColor;
-import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.serializer.TextSerializers;
 import org.spongepowered.api.world.World;
 
@@ -59,6 +55,8 @@ public class SpongePlayer extends AbstractPlayerActor {
     private final Player player;
 
     protected SpongePlayer(SpongePlatform platform, Player player) {
+        // TODO this will be native in sponge 8
+        super(null);
         this.player = player;
         ThreadSafeCache.getInstance().getOnlineIds().add(getUniqueId());
     }
@@ -127,40 +125,6 @@ public class SpongePlayer extends AbstractPlayerActor {
 
         String finalData = send;
         CUIChannelHandler.getActiveChannel().sendTo(player, buffer -> buffer.writeBytes(finalData.getBytes(StandardCharsets.UTF_8)));
-    }
-
-    @Override
-    public void printRaw(String msg) {
-        for (String part : msg.split("\n")) {
-            this.player.sendMessage(TextSerializers.FORMATTING_CODE.deserialize(part));
-        }
-    }
-
-    @Override
-    public void printDebug(String msg) {
-        sendColorized(msg, TextColors.GRAY);
-    }
-
-    @Override
-    public void print(String msg) {
-        sendColorized(msg, TextColors.LIGHT_PURPLE);
-    }
-
-    @Override
-    public void printError(String msg) {
-        sendColorized(msg, TextColors.RED);
-    }
-
-    @Override
-    public void print(Component component) {
-        // TODO sponge 8 this is native
-        // TextAdapter.sendMessage(player, WorldEditText.format(component, getLocale()));
-    }
-
-    private void sendColorized(String msg, TextColor formatting) {
-        for (String part : msg.split("\n")) {
-            this.player.sendMessage(Text.of(formatting, TextSerializers.FORMATTING_CODE.deserialize(part)));
-        }
     }
 
     @Override

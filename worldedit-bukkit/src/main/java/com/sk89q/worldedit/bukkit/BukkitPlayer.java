@@ -31,9 +31,7 @@ import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.session.SessionKey;
 import com.sk89q.worldedit.util.HandSide;
-import com.sk89q.worldedit.util.formatting.WorldEditText;
 import com.sk89q.worldedit.util.formatting.component.TextUtils;
-import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.util.formatting.text.event.ClickEvent;
@@ -44,8 +42,6 @@ import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.block.BlockTypes;
 import com.sk89q.worldedit.world.gamemode.GameMode;
 import com.sk89q.worldedit.world.gamemode.GameModes;
-import net.kyori.adventure.audience.Audience;
-import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -59,16 +55,15 @@ public class BukkitPlayer extends AbstractPlayerActor {
 
     private final Player player;
     private final WorldEditPlugin plugin;
-    private final Audience audience;
 
     public BukkitPlayer(Player player) {
         this(WorldEditPlugin.getInstance(), player);
     }
 
     public BukkitPlayer(WorldEditPlugin plugin, Player player) {
+        super(plugin.getAudiences().player(player)::sendMessage);
         this.plugin = plugin;
         this.player = player;
-        this.audience = BukkitAudiences.create(plugin).player(player);
     }
 
     @Override
@@ -105,43 +100,6 @@ public class BukkitPlayer extends AbstractPlayerActor {
     @Override
     public void giveItem(BaseItemStack itemStack) {
         player.getInventory().addItem(BukkitAdapter.adapt(itemStack));
-    }
-
-    @Override
-    @Deprecated
-    public void printRaw(String msg) {
-        for (String part : msg.split("\n")) {
-            player.sendMessage(part);
-        }
-    }
-
-    @Override
-    @Deprecated
-    public void print(String msg) {
-        for (String part : msg.split("\n")) {
-            player.sendMessage("§d" + part);
-        }
-    }
-
-    @Override
-    @Deprecated
-    public void printDebug(String msg) {
-        for (String part : msg.split("\n")) {
-            player.sendMessage("§7" + part);
-        }
-    }
-
-    @Override
-    @Deprecated
-    public void printError(String msg) {
-        for (String part : msg.split("\n")) {
-            player.sendMessage("§c" + part);
-        }
-    }
-
-    @Override
-    public void print(Component component) {
-        audience.sendMessage(WorldEditText.format(component, getLocale()));
     }
 
     @Override

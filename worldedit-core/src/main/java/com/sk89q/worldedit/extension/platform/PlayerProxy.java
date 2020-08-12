@@ -29,8 +29,6 @@ import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.session.SessionKey;
 import com.sk89q.worldedit.util.HandSide;
 import com.sk89q.worldedit.util.Location;
-import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.gamemode.GameMode;
@@ -49,7 +47,7 @@ class PlayerProxy extends AbstractPlayerActor {
     private final World world;
 
     PlayerProxy(Player basePlayer, Actor permActor, Actor cuiActor, World world) {
-        checkNotNull(basePlayer);
+        super(basePlayer::print);
         checkNotNull(permActor);
         checkNotNull(cuiActor);
         checkNotNull(world);
@@ -112,35 +110,6 @@ class PlayerProxy extends AbstractPlayerActor {
     @Override
     public World getWorld() {
         return world;
-    }
-
-    @Override
-    @Deprecated
-    public void printRaw(String msg) {
-        basePlayer.print(TextComponent.of(msg));
-    }
-
-    @Override
-    @Deprecated
-    public void printDebug(String msg) {
-        basePlayer.printDebug(TextComponent.of(msg));
-    }
-
-    @Override
-    @Deprecated
-    public void print(String msg) {
-        basePlayer.printInfo(TextComponent.of(msg));
-    }
-
-    @Override
-    @Deprecated
-    public void printError(String msg) {
-        basePlayer.printError(TextComponent.of(msg));
-    }
-
-    @Override
-    public void print(Component component) {
-        basePlayer.print(component);
     }
 
     @Override

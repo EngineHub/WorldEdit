@@ -26,12 +26,6 @@ import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.session.SessionKey;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.auth.AuthorizationException;
-import com.sk89q.worldedit.util.formatting.WorldEditText;
-import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
-import com.sk89q.worldedit.util.formatting.text.format.NamedTextColor;
-import net.kyori.adventure.audience.Audience;
-import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -41,23 +35,18 @@ import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 import java.util.UUID;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 public class BukkitBlockCommandSender extends AbstractNonPlayerActor implements Locatable {
 
     private static final String UUID_PREFIX = "CMD";
 
-    private final Audience audience;
     private final BlockCommandSender sender;
     private final WorldEditPlugin plugin;
     private final Location location;
     private final UUID uuid;
 
     public BukkitBlockCommandSender(WorldEditPlugin plugin, BlockCommandSender sender) {
-        checkNotNull(plugin);
-        checkNotNull(sender);
+        super(plugin.getAudiences().audience(sender)::sendMessage);
 
-        this.audience = BukkitAudiences.create(plugin).audience(sender);
         this.plugin = plugin;
         this.sender = sender;
         this.location = BukkitAdapter.adapt(sender.getBlock().getLocation());
@@ -67,43 +56,6 @@ public class BukkitBlockCommandSender extends AbstractNonPlayerActor implements 
     @Override
     public String getName() {
         return sender.getName();
-    }
-
-    @Override
-    @Deprecated
-    public void printRaw(String msg) {
-        for (String part : msg.split("\n")) {
-            sender.sendMessage(part);
-        }
-    }
-
-    @Override
-    @Deprecated
-    public void print(String msg) {
-        for (String part : msg.split("\n")) {
-            print(TextComponent.of(part, NamedTextColor.LIGHT_PURPLE));
-        }
-    }
-
-    @Override
-    @Deprecated
-    public void printDebug(String msg) {
-        for (String part : msg.split("\n")) {
-            print(TextComponent.of(part, NamedTextColor.GRAY));
-        }
-    }
-
-    @Override
-    @Deprecated
-    public void printError(String msg) {
-        for (String part : msg.split("\n")) {
-            print(TextComponent.of(part, NamedTextColor.RED));
-        }
-    }
-
-    @Override
-    public void print(Component component) {
-        audience.sendMessage(WorldEditText.format(component, getLocale()));
     }
 
     @Override

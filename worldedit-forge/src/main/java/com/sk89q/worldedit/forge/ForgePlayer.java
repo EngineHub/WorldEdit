@@ -33,7 +33,6 @@ import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.session.SessionKey;
 import com.sk89q.worldedit.util.HandSide;
 import com.sk89q.worldedit.util.Location;
-import com.sk89q.worldedit.util.formatting.WorldEditText;
 import com.sk89q.worldedit.util.formatting.component.TextUtils;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.serializer.gson.GsonComponentSerializer;
@@ -53,23 +52,32 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.ChatType;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
 
 import java.io.IOException;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.UUID;
+import java.util.function.Consumer;
 import javax.annotation.Nullable;
 
 public class ForgePlayer extends AbstractPlayerActor {
+
+    private static Consumer<Component> sendMessage(ServerPlayerEntity player) {
+        Objects.requireNonNull(player, "player");
+        return message -> {
+            ITextComponent nativeMessage = ITextComponent.Serializer.func_240643_a_(GsonComponentSerializer.gson().serialize(message));
+            Objects.requireNonNull(nativeMessage, "Unable to encode native message");
+            player.sendMessage(nativeMessage, Util.field_240973_b_);
+        };
+    }
 
     // see ClientPlayNetHandler: search for "invalid update packet", lots of hardcoded consts
     private static final int STRUCTURE_BLOCK_PACKET_ID = 7;
     private final ServerPlayerEntity player;
 
     protected ForgePlayer(ServerPlayerEntity player) {
+        super(sendMessage(player));
         this.player = player;
         ThreadSafeCache.getInstance().getOnlineIds().add(getUniqueId());
     }
@@ -131,49 +139,6 @@ public class ForgePlayer extends AbstractPlayerActor {
         PacketBuffer buffer = new PacketBuffer(Unpooled.copiedBuffer(send.getBytes(WECUIPacketHandler.UTF_8_CHARSET)));
         SCustomPayloadPlayPacket packet = new SCustomPayloadPlayPacket(new ResourceLocation(ForgeWorldEdit.MOD_ID, ForgeWorldEdit.CUI_PLUGIN_CHANNEL), buffer);
         this.player.connection.sendPacket(packet);
-    }
-
-    private void sendMessage(ITextComponent textComponent) {
-        this.player.func_241151_a_(textComponent, ChatType.CHAT, Util.field_240973_b_);
-    }
-
-    @Override
-    @Deprecated
-    public void printRaw(String msg) {
-        for (String part : msg.split("\n")) {
-            sendMessage(new StringTextComponent(part));
-        }
-    }
-
-    @Override
-    @Deprecated
-    public void printDebug(String msg) {
-        sendColorized(msg, TextFormatting.GRAY);
-    }
-
-    @Override
-    @Deprecated
-    public void print(String msg) {
-        sendColorized(msg, TextFormatting.LIGHT_PURPLE);
-    }
-
-    @Override
-    @Deprecated
-    public void printError(String msg) {
-        sendColorized(msg, TextFormatting.RED);
-    }
-
-    @Override
-    public void print(Component component) {
-        sendMessage(ITextComponent.Serializer.func_240643_a_(GsonComponentSerializer.gson().serialize(WorldEditText.format(component, getLocale()))));
-    }
-
-    private void sendColorized(String msg, TextFormatting formatting) {
-        for (String part : msg.split("\n")) {
-            StringTextComponent component = new StringTextComponent(part);
-            component.func_240699_a_(formatting);
-            sendMessage(component);
-        }
     }
 
     @Override

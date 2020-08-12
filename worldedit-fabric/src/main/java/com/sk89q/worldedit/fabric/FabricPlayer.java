@@ -34,7 +34,6 @@ import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.session.SessionKey;
 import com.sk89q.worldedit.util.HandSide;
 import com.sk89q.worldedit.util.Location;
-import com.sk89q.worldedit.util.formatting.WorldEditText;
 import com.sk89q.worldedit.util.formatting.component.TextUtils;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.serializer.gson.GsonComponentSerializer;
@@ -50,26 +49,36 @@ import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.CustomPayloadS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 
 import java.io.IOException;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.UUID;
+import java.util.function.Consumer;
 import javax.annotation.Nullable;
 
 public class FabricPlayer extends AbstractPlayerActor {
+
+    private static Consumer<Component> sendMessage(ServerPlayerEntity player) {
+        Objects.requireNonNull(player, "player");
+        return message -> {
+            Text nativeMessage = Text.Serializer.fromJson(GsonComponentSerializer.gson().serialize(message));
+            Objects.requireNonNull(nativeMessage, "Unable to encode native message");
+            player.sendSystemMessage(nativeMessage, Util.NIL_UUID);
+        };
+    }
 
     // see ClientPlayNetHandler: search for "invalid update packet", lots of hardcoded consts
     private static final int STRUCTURE_BLOCK_PACKET_ID = 7;
     private final ServerPlayerEntity player;
 
     protected FabricPlayer(ServerPlayerEntity player) {
+        super(sendMessage(player));
         this.player = player;
         ThreadSafeCache.getInstance().getOnlineIds().add(getUniqueId());
     }
@@ -136,45 +145,6 @@ public class FabricPlayer extends AbstractPlayerActor {
     @Override
     public Locale getLocale() {
         return TextUtils.getLocaleByMinecraftTag(((ExtendedPlayerEntity) this.player).getLanguage());
-    }
-
-    @Override
-    @Deprecated
-    public void printRaw(String msg) {
-        for (String part : msg.split("\n")) {
-            this.player.sendMessage(new LiteralText(part), false);
-        }
-    }
-
-    @Override
-    @Deprecated
-    public void printDebug(String msg) {
-        sendColorized(msg, Formatting.GRAY);
-    }
-
-    @Override
-    @Deprecated
-    public void print(String msg) {
-        sendColorized(msg, Formatting.LIGHT_PURPLE);
-    }
-
-    @Override
-    @Deprecated
-    public void printError(String msg) {
-        sendColorized(msg, Formatting.RED);
-    }
-
-    @Override
-    public void print(Component component) {
-        this.player.sendMessage(Text.Serializer.fromJson(GsonComponentSerializer.gson().serialize(WorldEditText.format(component, getLocale()))), false);
-    }
-
-    private void sendColorized(String msg, Formatting formatting) {
-        for (String part : msg.split("\n")) {
-            MutableText component = new LiteralText(part)
-                .styled(style -> style.withColor(formatting));
-            this.player.sendMessage(component, false);
-        }
     }
 
     @Override

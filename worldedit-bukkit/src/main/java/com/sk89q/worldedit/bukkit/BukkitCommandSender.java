@@ -22,10 +22,6 @@ package com.sk89q.worldedit.bukkit;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.extension.platform.AbstractNonPlayerActor;
 import com.sk89q.worldedit.session.SessionKey;
-import com.sk89q.worldedit.util.formatting.WorldEditText;
-import com.sk89q.worldedit.util.formatting.text.Component;
-import net.kyori.adventure.audience.Audience;
-import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -33,7 +29,6 @@ import java.util.Locale;
 import java.util.UUID;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
 
 public class BukkitCommandSender extends AbstractNonPlayerActor {
 
@@ -42,15 +37,12 @@ public class BukkitCommandSender extends AbstractNonPlayerActor {
      */
     private static final UUID DEFAULT_ID = UUID.fromString("a233eb4b-4cab-42cd-9fd9-7e7b9a3f74be");
 
-    private final Audience audience;
     private final CommandSender sender;
 
     public BukkitCommandSender(WorldEditPlugin plugin, CommandSender sender) {
-        checkNotNull(plugin);
-        checkNotNull(sender);
+        super(plugin.getAudiences().audience(sender)::sendMessage);
         checkArgument(!(sender instanceof Player), "Cannot wrap a player");
 
-        this.audience = BukkitAudiences.create(plugin).audience(sender);
         this.sender = sender;
     }
 
@@ -62,43 +54,6 @@ public class BukkitCommandSender extends AbstractNonPlayerActor {
     @Override
     public String getName() {
         return sender.getName();
-    }
-
-    @Override
-    @Deprecated
-    public void printRaw(String msg) {
-        for (String part : msg.split("\n")) {
-            sender.sendMessage(part);
-        }
-    }
-
-    @Override
-    @Deprecated
-    public void print(String msg) {
-        for (String part : msg.split("\n")) {
-            sender.sendMessage("§d" + part);
-        }
-    }
-
-    @Override
-    @Deprecated
-    public void printDebug(String msg) {
-        for (String part : msg.split("\n")) {
-            sender.sendMessage("§7" + part);
-        }
-    }
-
-    @Override
-    @Deprecated
-    public void printError(String msg) {
-        for (String part : msg.split("\n")) {
-            sender.sendMessage("§c" + part);
-        }
-    }
-
-    @Override
-    public void print(Component component) {
-        audience.sendMessage(WorldEditText.format(component, getLocale()));
     }
 
     @Override
