@@ -447,8 +447,10 @@ public class RegionCommands {
                           List<String> expression,
                       @Switch(name = 'r', desc = "Use the game's coordinate origin")
                           boolean useRawCoords,
-                      @Switch(name = 'o', desc = "Use the selection's center as origin")
-                          boolean offset) throws WorldEditException {
+                      @Switch(name = 'o', desc = "Use the placement's coordinate origin")
+                          boolean offset,
+                      @Switch(name = 'c', desc = "Use the selection's center as origin")
+                          boolean offsetCenter) throws WorldEditException {
         final Vector3 zero;
         Vector3 unit;
 
@@ -457,6 +459,12 @@ public class RegionCommands {
             unit = Vector3.ONE;
         } else if (offset) {
             zero = session.getPlacementPosition(actor).toVector3();
+            unit = Vector3.ONE;
+        } else if (offsetCenter) {
+            final Vector3 min = region.getMinimumPoint().toVector3();
+            final Vector3 max = region.getMaximumPoint().toVector3();
+
+            zero = max.add(min).multiply(0.5);
             unit = Vector3.ONE;
         } else {
             final Vector3 min = region.getMinimumPoint().toVector3();
