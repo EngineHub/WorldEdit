@@ -29,7 +29,7 @@ public class FabricConfiguration extends PropertiesConfiguration {
     public boolean cheatMode = false;
 
     public FabricConfiguration(FabricWorldEdit mod) {
-        super(mod.getWorkingDir().resolve("worldedit.properties").toFile());
+        super(mod.getWorkingDir().resolve("worldedit.properties"));
     }
 
     @Override

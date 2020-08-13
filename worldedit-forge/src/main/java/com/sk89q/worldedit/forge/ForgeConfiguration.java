@@ -30,7 +30,7 @@ public class ForgeConfiguration extends PropertiesConfiguration {
     public boolean cheatMode = false;
 
     public ForgeConfiguration(ForgeWorldEdit mod) {
-        super(mod.getWorkingDir().resolve("worldedit.properties").toFile());
+        super(mod.getWorkingDir().resolve("worldedit.properties"));
     }
 
     @Override

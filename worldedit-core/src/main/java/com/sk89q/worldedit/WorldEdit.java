@@ -426,6 +426,7 @@ public final class WorldEdit {
      *
      * @param path the subpath under the working directory
      * @return a working directory
+     * @deprecated Use {@link WorldEdit#getWorkingDirectoryPath(String)} instead
      */
     @Deprecated
     public File getWorkingDirectoryFile(String path) {

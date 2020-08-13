@@ -36,6 +36,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Properties;
@@ -57,10 +58,21 @@ public class PropertiesConfiguration extends LocalConfiguration {
      *
      * @param path the path tot he configuration
      */
-    public PropertiesConfiguration(File path) {
-        this.path = path;
+    public PropertiesConfiguration(Path path) {
+        this.path = path.toFile();
 
         properties = new Properties();
+    }
+
+    /**
+     * Construct the object. The configuration isn't loaded yet.
+     *
+     * @param path the path tot he configuration
+     * @deprecated Use {@link PropertiesConfiguration#PropertiesConfiguration(Path)}
+     */
+    @Deprecated
+    public PropertiesConfiguration(File path) {
+        this(path.toPath());
     }
 
     @Override
