@@ -337,8 +337,8 @@ public class ForgeWorldEdit {
      *
      * @return the working directory
      */
-    public File getWorkingDir() {
-        return this.workingDir.toFile();
+    public Path getWorkingDir() {
+        return this.workingDir;
     }
 
     /**

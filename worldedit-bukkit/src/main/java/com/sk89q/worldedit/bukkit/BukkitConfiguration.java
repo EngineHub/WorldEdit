@@ -25,6 +25,7 @@ import com.sk89q.worldedit.util.report.Unreported;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.nio.file.Path;
 
 /**
  * YAMLConfiguration but with setting for no op permissions and plugin root data folder.
@@ -68,7 +69,7 @@ public class BukkitConfiguration extends YAMLConfiguration {
     }
 
     @Override
-    public File getWorkingDirectory() {
-        return plugin.getDataFolder();
+    public Path getWorkingDirectoryPath() {
+        return plugin.getDataFolder().toPath();
     }
 }

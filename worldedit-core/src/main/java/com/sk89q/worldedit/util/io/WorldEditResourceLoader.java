@@ -33,6 +33,6 @@ public class WorldEditResourceLoader implements ResourceLoader {
 
     @Override
     public Path getLocalResource(String pathName) {
-        return this.worldEdit.getWorkingDirectoryFile(pathName).toPath();
+        return this.worldEdit.getWorkingDirectoryPath(pathName);
     }
 }

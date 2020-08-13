@@ -21,7 +21,7 @@ package com.sk89q.worldedit.fabric;
 
 import com.sk89q.worldedit.util.PropertiesConfiguration;
 
-import java.io.File;
+import java.nio.file.Path;
 
 public class FabricConfiguration extends PropertiesConfiguration {
 
@@ -29,7 +29,7 @@ public class FabricConfiguration extends PropertiesConfiguration {
     public boolean cheatMode = false;
 
     public FabricConfiguration(FabricWorldEdit mod) {
-        super(new File(mod.getWorkingDir(), "worldedit.properties"));
+        super(mod.getWorkingDir().resolve("worldedit.properties"));
     }
 
     @Override
@@ -39,7 +39,7 @@ public class FabricConfiguration extends PropertiesConfiguration {
     }
 
     @Override
-    public File getWorkingDirectory() {
+    public Path getWorkingDirectoryPath() {
         return FabricWorldEdit.inst.getWorkingDir();
     }
 }

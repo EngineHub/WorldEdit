@@ -362,8 +362,8 @@ public class SpongeWorldEdit {
      *
      * @return the working directory
      */
-    public File getWorkingDir() {
-        return this.workingDir;
+    public Path getWorkingDir() {
+        return this.workingDir.toPath();
     }
 
     /**

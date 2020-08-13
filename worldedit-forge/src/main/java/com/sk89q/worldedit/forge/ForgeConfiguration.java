@@ -22,6 +22,7 @@ package com.sk89q.worldedit.forge;
 import com.sk89q.worldedit.util.PropertiesConfiguration;
 
 import java.io.File;
+import java.nio.file.Path;
 
 public class ForgeConfiguration extends PropertiesConfiguration {
 
@@ -29,7 +30,7 @@ public class ForgeConfiguration extends PropertiesConfiguration {
     public boolean cheatMode = false;
 
     public ForgeConfiguration(ForgeWorldEdit mod) {
-        super(new File(mod.getWorkingDir() + File.separator + "worldedit.properties"));
+        super(mod.getWorkingDir().resolve("worldedit.properties"));
     }
 
     @Override
@@ -39,7 +40,7 @@ public class ForgeConfiguration extends PropertiesConfiguration {
     }
 
     @Override
-    public File getWorkingDirectory() {
+    public Path getWorkingDirectoryPath() {
         return ForgeWorldEdit.inst.getWorkingDir();
     }
 }

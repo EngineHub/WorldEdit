@@ -21,12 +21,12 @@ package com.sk89q.worldedit.cli;
 
 import com.sk89q.worldedit.util.PropertiesConfiguration;
 
-import java.io.File;
+import java.nio.file.Path;
 
 public class CLIConfiguration extends PropertiesConfiguration {
 
     public CLIConfiguration(CLIWorldEdit app) {
-        super(app.getWorkingDir().resolve("worldedit.properties").toFile());
+        super(app.getWorkingDir().resolve("worldedit.properties"));
     }
 
     @Override
@@ -34,7 +34,7 @@ public class CLIConfiguration extends PropertiesConfiguration {
     }
 
     @Override
-    public File getWorkingDirectory() {
-        return CLIWorldEdit.inst.getWorkingDir().toFile();
+    public Path getWorkingDirectoryPath() {
+        return CLIWorldEdit.inst.getWorkingDir();
     }
 }

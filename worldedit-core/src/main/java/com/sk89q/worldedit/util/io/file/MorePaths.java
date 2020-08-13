@@ -22,15 +22,34 @@ package com.sk89q.worldedit.util.io.file;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Streams;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.attribute.FileTime;
+import java.time.Instant;
 import java.util.ArrayDeque;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Deque;
 import java.util.Spliterator;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class MorePaths {
+
+    public static Comparator<Path> oldestFirst() {
+        return Comparator.comparing(x -> {
+            try {
+                return Files.getLastModifiedTime(x);
+            } catch (IOException e) {
+                return FileTime.from(Instant.EPOCH);
+            }
+        });
+    }
+
+    public static Comparator<Path> newestFirst() {
+        return oldestFirst().reversed();
+    }
 
     /**
      * Starting with the first path element, add elements until reaching this path.

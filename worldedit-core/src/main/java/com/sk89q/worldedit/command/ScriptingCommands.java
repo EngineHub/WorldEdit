@@ -103,7 +103,7 @@ public class ScriptingCommands {
             return;
         }
 
-        File dir = worldEdit.getWorkingDirectoryFile(worldEdit.getConfiguration().scriptsDir);
+        File dir = worldEdit.getWorkingDirectoryPath(worldEdit.getConfiguration().scriptsDir).toFile();
         File f = worldEdit.getSafeOpenFile(player, dir, lastScript, "js", "js");
 
         worldEdit.runScript(player, f, Stream.concat(Stream.of(lastScript), args.stream())

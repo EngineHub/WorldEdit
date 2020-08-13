@@ -329,8 +329,8 @@ public class FabricWorldEdit implements ModInitializer {
      *
      * @return the working directory
      */
-    public File getWorkingDir() {
-        return this.workingDir.toFile();
+    public Path getWorkingDir() {
+        return this.workingDir;
     }
 
     /**
