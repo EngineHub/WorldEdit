@@ -52,6 +52,7 @@ import com.sk89q.worldedit.util.formatting.text.event.HoverEvent;
 import com.sk89q.worldedit.util.formatting.text.format.TextColor;
 import com.sk89q.worldedit.util.io.Closer;
 import com.sk89q.worldedit.util.io.file.FilenameException;
+import com.sk89q.worldedit.util.io.file.MorePaths;
 import org.enginehub.piston.annotation.Command;
 import org.enginehub.piston.annotation.CommandContainer;
 import org.enginehub.piston.annotation.param.Arg;
@@ -272,12 +273,24 @@ public class SchematicCommands {
             throw new StopExecutionException(TextComponent.of("Cannot sort by oldest and newest."));
         }
         final String saveDir = worldEdit.getConfiguration().saveDir;
+        Comparator<Path> pathComparator;
+        String flag;
+        if (oldFirst) {
+            pathComparator = MorePaths.oldestFirst();
+            flag = " -d";
+        } else if (newFirst) {
+            pathComparator = MorePaths.newestFirst();
+            flag = " -n";
+        } else {
+            pathComparator = Comparator.naturalOrder();
+            flag = "";
+        }
         final int sortType = oldFirst ? -1 : newFirst ? 1 : 0;
         final String pageCommand = actor.isPlayer()
-                ? "//schem list -p %page%" + (sortType == -1 ? " -d" : sortType == 1 ? " -n" : "") : null;
+                ? "//schem list -p %page%" + flag : null;
 
         WorldEditAsyncCommandBuilder.createAndSendMessage(actor,
-                new SchematicListTask(saveDir, sortType, page, pageCommand),
+                new SchematicListTask(saveDir, pathComparator, page, pageCommand),
                 SubtleFormat.wrap("(Please wait... gathering schematic list.)"));
     }
 
@@ -353,13 +366,13 @@ public class SchematicCommands {
     }
 
     private static class SchematicListTask implements Callable<Component> {
-        private final int sortType;
+        private final Comparator<Path> pathComparator;
         private final int page;
         private final Path rootDir;
         private final String pageCommand;
 
-        SchematicListTask(String prefix, int sortType, int page, String pageCommand) {
-            this.sortType = sortType;
+        SchematicListTask(String prefix, Comparator<Path> pathComparator, int page, String pageCommand) {
+            this.pathComparator = pathComparator;
             this.page = page;
             this.rootDir = WorldEdit.getInstance().getWorkingDirectoryPath(prefix);
             this.pageCommand = pageCommand;
@@ -374,23 +387,7 @@ public class SchematicCommands {
                 return ErrorFormat.wrap("No schematics found.");
             }
 
-            if (sortType == 0) {
-                fileList.sort(Comparator.naturalOrder());
-            } else {
-                fileList.sort((f1, f2) -> {
-                    int res;
-                    try {
-                        res = Files.getLastModifiedTime(f1).compareTo(Files.getLastModifiedTime(f2)); // use date if there is a flag
-                        if (sortType == 1) {
-                            res = -res; // flip date for newest first instead of oldest first
-                        }
-                    } catch (IOException e) {
-                        // Can't compare.
-                        res = 0;
-                    }
-                    return res;
-                });
-            }
+            fileList.sort(pathComparator);
 
             PaginationBox paginationBox = new SchematicPaginationBox(resolvedRoot, fileList, pageCommand);
             return paginationBox.create(page);
