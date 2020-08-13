@@ -56,7 +56,7 @@ public class PropertiesConfiguration extends LocalConfiguration {
     /**
      * Construct the object. The configuration isn't loaded yet.
      *
-     * @param path the path tot he configuration
+     * @param path the path to the configuration
      */
     public PropertiesConfiguration(Path path) {
         this.path = path.toFile();
@@ -67,7 +67,7 @@ public class PropertiesConfiguration extends LocalConfiguration {
     /**
      * Construct the object. The configuration isn't loaded yet.
      *
-     * @param path the path tot he configuration
+     * @param path the path to the configuration
      * @deprecated Use {@link PropertiesConfiguration#PropertiesConfiguration(Path)}
      */
     @Deprecated

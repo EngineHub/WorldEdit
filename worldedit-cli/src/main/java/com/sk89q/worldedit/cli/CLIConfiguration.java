@@ -26,7 +26,7 @@ import java.nio.file.Path;
 public class CLIConfiguration extends PropertiesConfiguration {
 
     public CLIConfiguration(CLIWorldEdit app) {
-        super(app.getWorkingDir().resolve("worldedit.properties").toFile());
+        super(app.getWorkingDir().resolve("worldedit.properties"));
     }
 
     @Override
