@@ -72,6 +72,7 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.Callable;
 
@@ -373,17 +374,11 @@ public class SchematicCommands {
                 return ErrorFormat.wrap("No schematics found.");
             }
 
-            fileList.sort((f1, f2) -> {
-                // http://stackoverflow.com/questions/203030/best-way-to-list-files-in-java-sorted-by-date-modified
-                int res;
-                if (sortType == 0) { // use name by default
-                    int p = f1.getParent().compareTo(f2.getParent());
-                    if (p == 0) { // same parent, compare names
-                        res = f1.getFileName().toString().compareTo(f2.getFileName().toString());
-                    } else { // different parent, sort by that
-                        res = p;
-                    }
-                } else {
+            if (sortType == 0) {
+                fileList.sort(Comparator.naturalOrder());
+            } else {
+                fileList.sort((f1, f2) -> {
+                    int res;
                     try {
                         res = Files.getLastModifiedTime(f1).compareTo(Files.getLastModifiedTime(f2)); // use date if there is a flag
                         if (sortType == 1) {
@@ -393,9 +388,9 @@ public class SchematicCommands {
                         // Can't compare.
                         res = 0;
                     }
-                }
-                return res;
-            });
+                    return res;
+                });
+            }
 
             PaginationBox paginationBox = new SchematicPaginationBox(resolvedRoot, fileList, pageCommand);
             return paginationBox.create(page);
