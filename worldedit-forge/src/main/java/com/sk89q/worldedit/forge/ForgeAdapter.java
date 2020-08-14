@@ -51,11 +51,14 @@ import net.minecraft.util.IStringSerializable;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
+import net.minecraftforge.fml.server.ServerLifecycleHooks;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.Comparator;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
@@ -72,11 +75,19 @@ public final class ForgeAdapter {
     }
 
     public static Biome adapt(BiomeType biomeType) {
-        return ForgeRegistries.BIOMES.getValue(new ResourceLocation(biomeType.getId()));
+        return ServerLifecycleHooks.getCurrentServer()
+            .func_244267_aX()
+            .func_243612_b(Registry.field_239720_u_)
+            .getOrDefault(new ResourceLocation(biomeType.getId()));
     }
 
     public static BiomeType adapt(Biome biome) {
-        return BiomeTypes.get(biome.getRegistryName().toString());
+        ResourceLocation id = ServerLifecycleHooks.getCurrentServer()
+            .func_244267_aX()
+            .func_243612_b(Registry.field_239720_u_)
+            .getKey(biome);
+        Objects.requireNonNull(id, "biome is not registered");
+        return BiomeTypes.get(id.toString());
     }
 
     public static Vector3 adapt(Vector3d vector) {
@@ -162,7 +173,7 @@ public final class ForgeAdapter {
         return props;
     }
 
-    @SuppressWarnings({"rawtypes", "unchecked"})
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     private static net.minecraft.block.BlockState applyProperties(StateContainer<Block, net.minecraft.block.BlockState> stateContainer, net.minecraft.block.BlockState newState, Map<Property<?>, Object> states) {
         for (Map.Entry<Property<?>, Object> state : states.entrySet()) {
             net.minecraft.state.Property property = stateContainer.getProperty(state.getKey().getName());

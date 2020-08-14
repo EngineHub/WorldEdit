@@ -12,12 +12,12 @@ plugins {
 applyPlatformAndCoreConfiguration()
 applyShadowConfiguration()
 
-val minecraftVersion = "1.16.1"
+val minecraftVersion = "1.16.2"
 val nextMajorMinecraftVersion: String = minecraftVersion.split('.').let { (useless, major) ->
     "$useless.${major.toInt() + 1}"
 }
 val mappingsMinecraftVersion = "1.16"
-val forgeVersion = "32.0.92"
+val forgeVersion = "33.0.3"
 
 configurations.all {
     resolutionStrategy {

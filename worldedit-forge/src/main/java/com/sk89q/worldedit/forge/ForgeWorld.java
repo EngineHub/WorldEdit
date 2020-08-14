@@ -23,6 +23,8 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.Futures;
 import com.mojang.serialization.Codec;
@@ -73,24 +75,25 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.RegistryKey;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Util;
 import net.minecraft.util.concurrent.ThreadTaskExecutor;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.registry.DynamicRegistries;
+import net.minecraft.util.registry.WorldSettingsImport;
 import net.minecraft.world.Dimension;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeContainer;
 import net.minecraft.world.biome.ColumnFuzzedBiomeMagnifier;
-import net.minecraft.world.biome.DefaultBiomeFeatures;
 import net.minecraft.world.biome.IBiomeMagnifier;
 import net.minecraft.world.chunk.AbstractChunkProvider;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.IChunk;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
-import net.minecraft.world.gen.feature.Feature;
-import net.minecraft.world.gen.feature.HugeFungusConfig;
-import net.minecraft.world.gen.feature.NoFeatureConfig;
+import net.minecraft.world.gen.feature.Features;
 import net.minecraft.world.gen.settings.DimensionGeneratorSettings;
 import net.minecraft.world.server.ServerChunkProvider;
 import net.minecraft.world.server.ServerWorld;
@@ -108,13 +111,13 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -126,6 +129,13 @@ import static com.google.common.base.Preconditions.checkState;
 public class ForgeWorld extends AbstractWorld {
 
     private static final Random random = new Random();
+
+    private static ResourceLocation getDimensionRegistryKey(World world) {
+        return Objects.requireNonNull(world.getServer(), "server cannot be null")
+            .func_244267_aX()
+            .func_230520_a_()
+            .getKey(world.func_230315_m_());
+    }
 
     private final WeakReference<World> worldRef;
     private final ForgeWorldNativeAccess nativeAccess;
@@ -163,7 +173,7 @@ public class ForgeWorld extends AbstractWorld {
 
     @Override
     public String getId() {
-        return getName() + "_" + getWorld().func_234922_V_().func_240901_a_();
+        return getName() + "_" + getDimensionRegistryKey(getWorld());
     }
 
     @Override
@@ -320,16 +330,25 @@ public class ForgeWorld extends AbstractWorld {
                 (ServerWorldInfo) originalWorld.getServer().func_240793_aU_();
             DimensionGeneratorSettings originalOpts = levelProperties.field_237343_c_;
 
+            WorldSettingsImport<INBT> nbtRegOps = WorldSettingsImport.func_244335_a(
+                NBTDynamicOps.INSTANCE,
+                originalWorld.getServer().getDataPackRegistries().func_240970_h_(),
+                (DynamicRegistries.Impl) originalWorld.getServer().func_244267_aX()
+            );
             Codec<DimensionGeneratorSettings> dimCodec = DimensionGeneratorSettings.field_236201_a_;
             DimensionGeneratorSettings newOpts = dimCodec
-                .encodeStart(NBTDynamicOps.INSTANCE, originalOpts)
+                .encodeStart(nbtRegOps, originalOpts)
                 .flatMap(tag ->
                     dimCodec.parse(
-                        recursivelySetSeed(new Dynamic<>(NBTDynamicOps.INSTANCE, tag), seed, new HashSet<>())
+                        recursivelySetSeed(new Dynamic<>(nbtRegOps, tag), seed, new HashSet<>())
                     )
                 )
-                .result()
-                .orElseThrow(() -> new IllegalStateException("Unable to map GeneratorOptions"));
+                .get().map(
+                    l -> l,
+                    error -> {
+                        throw new IllegalStateException("Unable to map GeneratorOptions: " + error.message());
+                    }
+                );
 
             levelProperties.field_237343_c_ = newOpts;
             RegistryKey<World> worldRegKey = originalWorld.func_234923_W_();
@@ -340,7 +359,6 @@ public class ForgeWorld extends AbstractWorld {
                 originalWorld.getServer(), Util.getServerExecutor(), session,
                 ((IServerWorldInfo) originalWorld.getWorldInfo()),
                 worldRegKey,
-                originalWorld.func_234922_V_(),
                 originalWorld.func_230315_m_(),
                 new WorldEditGenListener(),
                 dimGenOpts.func_236064_c_(),
@@ -439,25 +457,25 @@ public class ForgeWorld extends AbstractWorld {
     @Nullable
     private static ConfiguredFeature<?, ?> createTreeFeatureGenerator(TreeType type) {
         switch (type) {
-            case TREE: return Feature.field_236291_c_.withConfiguration(DefaultBiomeFeatures.OAK_TREE_CONFIG);
-            case BIG_TREE: return Feature.field_236291_c_.withConfiguration(DefaultBiomeFeatures.FANCY_TREE_CONFIG);
-            case REDWOOD: return Feature.field_236291_c_.withConfiguration(DefaultBiomeFeatures.SPRUCE_TREE_CONFIG);
-            case TALL_REDWOOD: return Feature.field_236291_c_.withConfiguration(DefaultBiomeFeatures.MEGA_SPRUCE_TREE_CONFIG);
-            case MEGA_REDWOOD: return Feature.field_236291_c_.withConfiguration(DefaultBiomeFeatures.MEGA_PINE_TREE_CONFIG);
-            case BIRCH: return Feature.field_236291_c_.withConfiguration(DefaultBiomeFeatures.BIRCH_TREE_CONFIG);
-            case JUNGLE: return Feature.field_236291_c_.withConfiguration(DefaultBiomeFeatures.MEGA_JUNGLE_TREE_CONFIG);
-            case SMALL_JUNGLE: return Feature.field_236291_c_.withConfiguration(DefaultBiomeFeatures.JUNGLE_TREE_CONFIG);
-            case SHORT_JUNGLE: return Feature.field_236291_c_.withConfiguration(DefaultBiomeFeatures.JUNGLE_SAPLING_TREE_CONFIG);
-            case JUNGLE_BUSH: return Feature.field_236291_c_.withConfiguration(DefaultBiomeFeatures.JUNGLE_GROUND_BUSH_CONFIG);
-            case SWAMP: return Feature.field_236291_c_.withConfiguration(DefaultBiomeFeatures.SWAMP_TREE_CONFIG);
-            case ACACIA: return Feature.field_236291_c_.withConfiguration(DefaultBiomeFeatures.ACACIA_TREE_CONFIG);
-            case DARK_OAK: return Feature.field_236291_c_.withConfiguration(DefaultBiomeFeatures.DARK_OAK_TREE_CONFIG);
-            case TALL_BIRCH: return Feature.field_236291_c_.withConfiguration(DefaultBiomeFeatures.field_230130_i_);
-            case RED_MUSHROOM: return Feature.HUGE_RED_MUSHROOM.withConfiguration(DefaultBiomeFeatures.BIG_RED_MUSHROOM);
-            case BROWN_MUSHROOM: return Feature.HUGE_BROWN_MUSHROOM.withConfiguration(DefaultBiomeFeatures.BIG_BROWN_MUSHROOM);
-            case WARPED_FUNGUS: return Feature.field_236281_L_.withConfiguration(HugeFungusConfig.field_236299_b_);
-            case CRIMSON_FUNGUS: return Feature.field_236281_L_.withConfiguration(HugeFungusConfig.field_236301_d_);
-            case CHORUS_PLANT: return Feature.CHORUS_PLANT.withConfiguration(NoFeatureConfig.field_236559_b_);
+            case TREE: return Features.field_243862_bH;
+            case BIG_TREE: return Features.field_243869_bO;
+            case REDWOOD: return Features.field_243866_bL;
+            case TALL_REDWOOD: return Features.field_243872_bR;
+            case MEGA_REDWOOD: return Features.field_243873_bS;
+            case BIRCH: return Features.field_243864_bJ;
+            case JUNGLE: return Features.field_243871_bQ;
+            case SMALL_JUNGLE: return Features.field_243868_bN;
+            case SHORT_JUNGLE: return Features.field_243870_bP;
+            case JUNGLE_BUSH: return Features.field_243876_bV;
+            case SWAMP: return Features.field_243875_bU;
+            case ACACIA: return Features.field_243865_bK;
+            case DARK_OAK: return Features.field_243863_bI;
+            case TALL_BIRCH: return Features.field_243940_cw;
+            case RED_MUSHROOM: return Features.field_243860_bF;
+            case BROWN_MUSHROOM: return Features.field_243861_bG;
+            case WARPED_FUNGUS: return Features.field_243858_bD;
+            case CRIMSON_FUNGUS: return Features.field_243856_bB;
+            case CHORUS_PLANT: return Features.field_243944_d;
             case RANDOM: return createTreeFeatureGenerator(TreeType.values()[ThreadLocalRandom.current().nextInt(TreeType.values().length)]);
             default:
                 return null;
@@ -469,9 +487,8 @@ public class ForgeWorld extends AbstractWorld {
         ConfiguredFeature<?, ?> generator = createTreeFeatureGenerator(type);
         ServerWorld world = (ServerWorld) getWorld();
         ServerChunkProvider chunkManager = world.getChunkProvider();
-        return generator != null && generator.func_236265_a_(
-            world, world.func_241112_a_(), chunkManager.getChunkGenerator(), random,
-            ForgeAdapter.toBlockPos(position)
+        return generator != null && generator.func_242765_a(
+            world, chunkManager.getChunkGenerator(), random, ForgeAdapter.toBlockPos(position)
         );
     }
 
@@ -617,11 +634,19 @@ public class ForgeWorld extends AbstractWorld {
     @Override
     public List<? extends Entity> getEntities(Region region) {
         final World world = getWorld();
-        if (!(world instanceof ServerWorld)) {
-            return Collections.emptyList();
-        }
-        return ((ServerWorld) world).getEntities().filter(e -> region.contains(ForgeAdapter.adapt(e.func_233580_cy_())))
-                .map(ForgeEntity::new).collect(Collectors.toList());
+        AxisAlignedBB box = new AxisAlignedBB(
+            ForgeAdapter.toBlockPos(region.getMinimumPoint()),
+            ForgeAdapter.toBlockPos(region.getMaximumPoint())
+        );
+        List<net.minecraft.entity.Entity> nmsEntities = world.getEntitiesWithinAABB(
+            (EntityType<net.minecraft.entity.Entity>) null,
+            box,
+            e -> region.contains(ForgeAdapter.adapt(e.func_233580_cy_()))
+        );
+        return ImmutableList.copyOf(Lists.transform(
+            nmsEntities,
+            ForgeEntity::new
+        ));
     }
 
     @Override
@@ -630,7 +655,10 @@ public class ForgeWorld extends AbstractWorld {
         if (!(world instanceof ServerWorld)) {
             return Collections.emptyList();
         }
-        return ((ServerWorld) world).getEntities().map(ForgeEntity::new).collect(Collectors.toList());
+        return ImmutableList.copyOf(Iterables.transform(
+            ((ServerWorld) world).func_241136_z_(),
+            ForgeEntity::new
+        ));
     }
 
     @Nullable

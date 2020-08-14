@@ -39,10 +39,12 @@ import com.sk89q.worldedit.world.item.ItemCategory;
 import com.sk89q.worldedit.world.item.ItemType;
 import net.minecraft.command.CommandSource;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.CommandEvent;
@@ -67,7 +69,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
@@ -147,7 +148,7 @@ public class ForgeWorldEdit {
         //        }
     }
 
-    private void setupRegistries() {
+    private void setupRegistries(MinecraftServer server) {
         // Blocks
         for (ResourceLocation name : ForgeRegistries.BLOCKS.getKeys()) {
             if (BlockType.REGISTRY.get(name.toString()) == null) {
@@ -168,7 +169,7 @@ public class ForgeWorldEdit {
             }
         }
         // Biomes
-        for (ResourceLocation name : ForgeRegistries.BIOMES.getKeys()) {
+        for (ResourceLocation name : server.func_244267_aX().func_243612_b(Registry.field_239720_u_).keySet()) {
             if (BiomeType.REGISTRY.get(name.toString()) == null) {
                 BiomeType.REGISTRY.register(name.toString(), new BiomeType(name.toString()));
             }
@@ -204,7 +205,7 @@ public class ForgeWorldEdit {
     @SubscribeEvent
     public void serverStarted(FMLServerStartedEvent event) {
         setupPlatform();
-        setupRegistries();
+        setupRegistries(event.getServer());
 
         config = new ForgeConfiguration(this);
         config.load();

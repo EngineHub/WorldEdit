@@ -24,7 +24,8 @@ import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.world.biome.BiomeData;
 import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.registry.BiomeRegistry;
-import net.minecraft.world.biome.Biome;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Util;
 
 /**
  * Provides access to biome data in Forge.
@@ -33,13 +34,13 @@ class ForgeBiomeRegistry implements BiomeRegistry {
 
     @Override
     public Component getRichName(BiomeType biomeType) {
-        return TranslatableComponent.of(ForgeAdapter.adapt(biomeType).getTranslationKey());
+        return TranslatableComponent.of(Util.makeTranslationKey("biome", new ResourceLocation(biomeType.getId())));
     }
 
     @Deprecated
     @Override
     public BiomeData getData(BiomeType biome) {
-        return new ForgeBiomeData(ForgeAdapter.adapt(biome));
+        return new ForgeBiomeData(biome);
     }
 
     /**
@@ -47,21 +48,21 @@ class ForgeBiomeRegistry implements BiomeRegistry {
      */
     @Deprecated
     private static class ForgeBiomeData implements BiomeData {
-        private final Biome biome;
+        private final BiomeType biome;
 
         /**
          * Create a new instance.
          *
          * @param biome the base biome
          */
-        private ForgeBiomeData(Biome biome) {
+        private ForgeBiomeData(BiomeType biome) {
             this.biome = biome;
         }
 
         @SuppressWarnings("deprecation")
         @Override
         public String getName() {
-            return biome.getDisplayName().getString();
+            return biome.getId();
         }
     }
 
