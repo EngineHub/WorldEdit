@@ -44,6 +44,7 @@ import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.function.Contextual;
 import com.sk89q.worldedit.function.factory.ApplyLayer;
 import com.sk89q.worldedit.function.factory.ApplyRegion;
+import com.sk89q.worldedit.function.factory.Biome;
 import com.sk89q.worldedit.function.factory.Deform;
 import com.sk89q.worldedit.function.factory.Paint;
 import com.sk89q.worldedit.function.factory.Snow;
@@ -62,6 +63,7 @@ import com.sk89q.worldedit.util.HandSide;
 import com.sk89q.worldedit.util.TreeGenerator;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
+import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.block.BlockTypes;
 import org.enginehub.piston.annotation.Command;
 import org.enginehub.piston.annotation.CommandContainer;
@@ -431,6 +433,24 @@ public class BrushCommands {
 
         setOperationBasedBrush(player, localSession, radius,
             new ApplyLayer(new Snow(stack)), shape, "worldedit.brush.snow");
+    }
+
+    @Command(
+        name = "biome",
+        desc = "Biome brush, sets biomes in the area"
+    )
+    @CommandPermissions("worldedit.brush.biome")
+    public void biome(Player player, LocalSession localSession,
+                      @Arg(desc = "The shape of the region")
+                         RegionFactory shape,
+                      @Arg(desc = "The size of the brush", def = "5")
+                         double radius,
+                      @Arg(desc = "The biome type")
+                          BiomeType biomeType) throws WorldEditException {
+
+        setOperationBasedBrush(player, localSession, radius,
+            new ApplyRegion(new Biome(biomeType)), shape, "worldedit.brush.biome");
+        player.printInfo(TranslatableComponent.of("worldedit.brush.biome.warning"));
     }
 
     static void setOperationBasedBrush(Player player, LocalSession session, double radius,

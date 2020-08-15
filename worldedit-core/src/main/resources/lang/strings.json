@@ -28,6 +28,7 @@
     "worldedit.brush.butcher.equip": "Butcher brush equipped ({0}).",
     "worldedit.brush.operation.equip": "Set brush to {0}.",
     "worldedit.brush.none.equip": "Brush unbound from your current item.",
+    "worldedit.brush.biome.warning": "You may have to rejoin your game (or close and reopen your world) to see changes.",
 
     "worldedit.setbiome.changed": "Biomes were changed for approximately {0} blocks. You may have to rejoin your game (or close and reopen your world) to see a change.",
 
