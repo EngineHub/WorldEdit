@@ -23,7 +23,7 @@ import com.google.common.base.Throwables;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Lists;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.SetMultimap;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
@@ -53,16 +53,18 @@ import com.sk89q.worldedit.scripting.RhinoCraftScriptEngine;
 import com.sk89q.worldedit.session.SessionManager;
 import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.util.Location;
+import com.sk89q.worldedit.util.collection.MoreSets;
 import com.sk89q.worldedit.util.concurrency.EvenMoreExecutors;
 import com.sk89q.worldedit.util.concurrency.LazyReference;
 import com.sk89q.worldedit.util.eventbus.EventBus;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.util.formatting.text.format.TextColor;
-import com.sk89q.worldedit.util.io.file.FileSelectionAbortedException;
+import com.sk89q.worldedit.util.io.file.FileType;
 import com.sk89q.worldedit.util.io.file.FilenameException;
-import com.sk89q.worldedit.util.io.file.FilenameResolutionException;
 import com.sk89q.worldedit.util.io.file.InvalidFilenameException;
+import com.sk89q.worldedit.util.io.file.PathRequestType;
+import com.sk89q.worldedit.util.io.file.SafeFiles;
 import com.sk89q.worldedit.util.task.SimpleSupervisor;
 import com.sk89q.worldedit.util.task.Supervisor;
 import com.sk89q.worldedit.util.translation.TranslationManager;
@@ -83,11 +85,13 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import javax.annotation.Nullable;
 import javax.script.ScriptException;
 
@@ -264,9 +268,12 @@ public final class WorldEdit {
      * @param extensions list of extensions, null for any
      * @return a file
      * @throws FilenameException thrown if the filename is invalid
+     * @deprecated use {@link #resolveSafePath(Actor, Path, String, FileType, Set, PathRequestType)}
+     *      instead with {@link PathRequestType#SAVE}
      */
+    @Deprecated
     public File getSafeSaveFile(Actor actor, File dir, String filename, String defaultExt, String... extensions) throws FilenameException {
-        return getSafeFile(actor, dir, filename, defaultExt, extensions, true);
+        return legacyAdapter(actor, dir, filename, defaultExt, extensions, PathRequestType.SAVE);
     }
 
     /**
@@ -282,111 +289,89 @@ public final class WorldEdit {
      * @param extensions list of extensions, null for any
      * @return a file
      * @throws FilenameException thrown if the filename is invalid
+     * @deprecated use {@link #resolveSafePath(Actor, Path, String, FileType, Set, PathRequestType)}
+     *      instead with {@link PathRequestType#LOAD}
      */
+    @Deprecated
     public File getSafeOpenFile(Actor actor, File dir, String filename, String defaultExt, String... extensions) throws FilenameException {
-        return getSafeFile(actor, dir, filename, defaultExt, extensions, false);
+        return legacyAdapter(actor, dir, filename, defaultExt, extensions, PathRequestType.LOAD);
     }
 
     /**
-     * Get a safe path to a file.
+     * Gets the path to a file. This method will check to see if the filename
+     * has valid characters and has an extension. It also prevents directory
+     * traversal exploits by checking the root directory and the file directory.
+     * On success, a {@link Path} object will be returned.
      *
      * @param actor the actor
      * @param dir sub-directory to look in
      * @param filename filename (user-submitted)
      * @param defaultExt append an extension if missing one, null to not use
      * @param extensions list of extensions, null for any
-     * @param isSave true if the purpose is for saving
      * @return a file
      * @throws FilenameException thrown if the filename is invalid
+     * @deprecated use {@link #resolveSafePath(Actor, Path, String, FileType, Set, PathRequestType)}
+     *      instead with {@link PathRequestType#LOAD}
      */
-    private File getSafeFile(@Nullable Actor actor, File dir, String filename, String defaultExt, String[] extensions, boolean isSave) throws FilenameException {
-        if (extensions != null && (extensions.length == 1 && extensions[0] == null)) {
-            extensions = null;
-        }
+    @Deprecated
+    public File get(Actor actor, File dir, String filename, String defaultExt, String... extensions) throws FilenameException {
+        return legacyAdapter(actor, dir, filename, defaultExt, extensions, PathRequestType.LOAD);
+    }
 
-        File f;
-
-        if (filename.equals("#") && actor != null) {
-            if (isSave) {
-                f = actor.openFileSaveDialog(extensions);
-            } else {
-                f = actor.openFileOpenDialog(extensions);
-            }
-
-            if (f == null) {
-                throw new FileSelectionAbortedException(TranslatableComponent.of("worldedit.error.no-file-selected"));
-            }
-        } else {
-            List<String> exts = extensions == null ? ImmutableList.of(defaultExt) : Lists.asList(defaultExt, extensions);
-            f = getSafeFileWithExtensions(dir, filename, exts, isSave);
-        }
-
+    @Deprecated
+    private File legacyAdapter(Actor actor, File dir, String filename, String defaultExt,
+                               String[] extensions, PathRequestType type) throws FilenameException {
+        Set<String> extensionsSet = MoreSets.ensureFirst(defaultExt, Arrays.asList(extensions));
+        FileType defaultFileType = FileType.adaptLegacyExtensions(extensionsSet.toArray(new String[0]))
+            .stream().findAny().orElse(null);
         try {
-            Path filePath = Paths.get(f.toURI()).normalize();
-            Path dirPath = Paths.get(dir.toURI()).normalize();
-
-            boolean inDir = filePath.startsWith(dirPath);
-            Path existingParent = filePath;
-            do {
-                existingParent = existingParent.getParent();
-            } while (existingParent != null && !existingParent.toFile().exists());
-
-            boolean isSym = existingParent != null && !existingParent.toRealPath().equals(existingParent);
-            if (!inDir || (!getConfiguration().allowSymlinks && isSym)) {
-                throw new FilenameResolutionException(filename, TranslatableComponent.of("worldedit.error.file-resolution.outside-root"));
-            }
-
-            return filePath.toFile();
-        } catch (IOException e) {
-            throw new FilenameResolutionException(filename, TranslatableComponent.of("worldedit.error.file-resolution.resolve-failed"));
+            return resolveSafePath(
+                actor, dir.toPath(), filename, defaultFileType, ImmutableSet.of(),
+                type
+            ).join().toFile();
+        } catch (CompletionException e) {
+            Throwable cause = e.getCause();
+            Throwables.propagateIfPossible(cause, FilenameException.class);
+            throw e;
         }
     }
 
-    private File getSafeFileWithExtensions(File dir, String filename, List<String> exts, boolean isSave) throws InvalidFilenameException {
-        if (isSave) {
-            // First is default, only use that.
-            if (exts.size() != 1) {
-                exts = exts.subList(0, 1);
-            }
+    /**
+     * Resolve a path to a file.
+     *
+     * <p>Details on how this is <em>safe</em> can be found at
+     * {@link SafeFiles#resolveSafePathWithFileType(Path, String, FileType, Set)}.</p>
+     *
+     * @param actor the actor
+     * @param dir directory to resolve against
+     * @param path user-submitted path
+     * @param defaultFileType default file type, {@code null} to use first of {@code fileTypes}
+     * @param fileTypes file types to accept, empty for any
+     * @return a future that completes with the path if successful, otherwise an error
+     */
+    public CompletableFuture<Path> resolveSafePath(@Nullable Actor actor,
+                                                   Path dir,
+                                                   String path,
+                                                   @Nullable FileType defaultFileType,
+                                                   Set<FileType> fileTypes,
+                                                   PathRequestType type) {
+        fileTypes = MoreSets.ensureFirst(defaultFileType, fileTypes);
+
+        CompletableFuture<Path> ftr;
+        if (path.equals("#") && actor != null) {
+            ftr = actor.requestPath(type, fileTypes);
         } else {
-            int dot = filename.lastIndexOf('.');
-            if (dot < 0 || dot == filename.length() - 1) {
-                String currentExt = filename.substring(dot + 1);
-                if (exts.contains(currentExt) && checkFilename(filename)) {
-                    File f = new File(dir, filename);
-                    if (f.exists()) {
-                        return f;
-                    }
-                }
-            }
-        }
-        File result = null;
-        for (Iterator<String> iter = exts.iterator(); iter.hasNext() && (result == null || (!isSave && !result.exists()));) {
-            result = getSafeFileWithExtension(dir, filename, iter.next());
-        }
-        if (result == null) {
-            throw new InvalidFilenameException(filename, TranslatableComponent.of("worldedit.error.invalid-filename.invalid-characters"));
-        }
-        return result;
-    }
-
-    private File getSafeFileWithExtension(File dir, String filename, String extension) {
-        if (extension != null) {
-            int dot = filename.lastIndexOf('.');
-            if (dot < 0 || dot == filename.length() - 1 || !filename.substring(dot + 1).equalsIgnoreCase(extension)) {
-                filename += "." + extension;
+            ftr = new CompletableFuture<>();
+            try {
+                ftr.complete(SafeFiles.resolveSafePathWithFileType(
+                    dir, path, defaultFileType, fileTypes
+                ));
+            } catch (InvalidFilenameException e) {
+                ftr.completeExceptionally(e);
             }
         }
 
-        if (!checkFilename(filename)) {
-            return null;
-        }
-
-        return new File(dir, filename);
-    }
-
-    private boolean checkFilename(String filename) {
-        return filename.matches("^[A-Za-z0-9_\\- \\./\\\\'\\$@~!%\\^\\*\\(\\)\\[\\]\\+\\{\\},\\?]+\\.[A-Za-z0-9]+$");
+        return ftr;
     }
 
     /**

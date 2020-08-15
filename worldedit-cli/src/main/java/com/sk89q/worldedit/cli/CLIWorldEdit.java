@@ -19,7 +19,9 @@
 
 package com.sk89q.worldedit.cli;
 
+import com.google.common.base.Throwables;
 import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.cli.data.FileRegistries;
 import com.sk89q.worldedit.cli.schematic.ClipboardWorld;
 import com.sk89q.worldedit.event.platform.CommandEvent;
@@ -32,7 +34,10 @@ import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormat;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormats;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardReader;
 import com.sk89q.worldedit.registry.state.Property;
+import com.sk89q.worldedit.util.formatting.WorldEditText;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
+import com.sk89q.worldedit.util.io.file.FileType;
+import com.sk89q.worldedit.util.io.file.PathRequestType;
 import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.block.BlockCategory;
 import com.sk89q.worldedit.world.block.BlockState;
@@ -58,9 +63,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
-import java.util.Arrays;
+import java.util.LinkedHashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.Set;
+import java.util.concurrent.CompletionException;
 
 /**
  * The CLI implementation of WorldEdit.
@@ -269,34 +277,33 @@ public class CLIWorldEdit {
             CommandLine cmd = new DefaultParser().parse(options, args);
 
             String fileArg = cmd.getOptionValue('f');
-            File file;
+            Path file;
             if (fileArg == null) {
-                String[] formats = Arrays.copyOf(ClipboardFormats.getFileExtensionArray(), ClipboardFormats.getFileExtensionArray().length + 1);
-                formats[formats.length - 1] = "dat";
-                file = app.commandSender.openFileOpenDialog(formats);
+                Set<FileType> fileTypes = new LinkedHashSet<>(ClipboardFormats.getFileTypes());
+                fileTypes.add(FileType.of("MC data files", "dat"));
+                try {
+                    file = app.commandSender.requestPath(PathRequestType.LOAD, fileTypes).join();
+                } catch (CompletionException e) {
+                    Throwable cause = e.getCause();
+                    Throwables.propagateIfPossible(cause, WorldEditException.class);
+                    throw e;
+                }
             } else {
-                file = new File(fileArg);
+                file = Paths.get(fileArg);
             }
-            if (file == null) {
-                throw new IllegalArgumentException("A file must be provided!");
-            }
-            if (file.getName().endsWith("level.dat")) {
+            if (file.getFileName().toString().endsWith("level.dat")) {
                 throw new IllegalArgumentException("level.dat file support is unfinished.");
             } else {
-                ClipboardFormat format = ClipboardFormats.findByFile(file);
+                ClipboardFormat format = ClipboardFormats.findByPath(file);
                 if (format != null) {
-                    ClipboardReader dataVersionReader = format
-                            .getReader(Files.newInputStream(file.toPath(), StandardOpenOption.READ));
-                    int dataVersion = dataVersionReader.getDataVersion()
-                            .orElseThrow(() -> new IllegalArgumentException("Failed to obtain data version from schematic."));
-                    dataVersionReader.close();
+                    int dataVersion = getDataVersion(file, format);
                     app.platform.setDataVersion(dataVersion);
                     app.onStarted();
-                    try (ClipboardReader clipboardReader = format.getReader(Files.newInputStream(file.toPath(), StandardOpenOption.READ))) {
+                    try (ClipboardReader clipboardReader = format.getReader(Files.newInputStream(file))) {
                         ClipboardWorld world = new ClipboardWorld(
-                                file,
-                                clipboardReader.read(),
-                                file.getName()
+                            file,
+                            clipboardReader.read(),
+                            file.getFileName().toString()
                         );
                         app.platform.addWorld(world);
                         WorldEdit.getInstance().getSessionManager().get(app.commandSender).setWorldOverride(world);
@@ -319,6 +326,11 @@ public class CLIWorldEdit {
             }
 
             app.run(inputStream);
+        } catch (WorldEditException e) {
+            System.err.println(WorldEditText.reduceToText(
+                e.getRichMessage(), Locale.getDefault()
+            ));
+            exitCode = 1;
         } catch (Exception e) {
             e.printStackTrace();
             exitCode = 1;
@@ -332,5 +344,15 @@ public class CLIWorldEdit {
         }
 
         System.exit(exitCode);
+    }
+
+    private static int getDataVersion(Path file, ClipboardFormat format) throws IOException {
+        int dataVersion;
+        try (ClipboardReader dataVersionReader = format.getReader(
+            Files.newInputStream(file, StandardOpenOption.READ))) {
+            dataVersion = dataVersionReader.getDataVersion()
+                .orElseThrow(() -> new IllegalArgumentException("Failed to obtain data version from schematic."));
+        }
+        return dataVersion;
     }
 }

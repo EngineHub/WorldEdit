@@ -19,10 +19,15 @@
 
 package com.sk89q.worldedit.extent.clipboard.io;
 
+import com.sk89q.worldedit.internal.util.DeprecationUtil;
+import com.sk89q.worldedit.internal.util.NonAbstractForCompatibility;
+import com.sk89q.worldedit.util.io.file.FileType;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Path;
 import java.util.Set;
 
 /**
@@ -67,8 +72,29 @@ public interface ClipboardFormat {
      *
      * @param file the file
      * @return true if the given file is of this format
+     * @deprecated Use {@link #isFormat(Path)} instead
      */
-    boolean isFormat(File file);
+    @Deprecated
+    default boolean isFormat(File file) {
+        return isFormat(file.toPath());
+    }
+
+    /**
+     * Return whether the given path is of this format.
+     *
+     * @param path the path
+     * @return true if the given path is of this format
+     * @apiNote This must be overridden by new subclasses. See {@link NonAbstractForCompatibility}
+     *          for details
+     */
+    @NonAbstractForCompatibility(
+        delegateName = "isFormat",
+        delegateParams = { File.class }
+    )
+    default boolean isFormat(Path path) {
+        DeprecationUtil.checkDelegatingOverride(getClass());
+        return isFormat(path.toFile());
+    }
 
     /**
      * Get the file extension this format primarily uses.
@@ -84,4 +110,14 @@ public interface ClipboardFormat {
      * @return The file extensions this format might be known by
      */
     Set<String> getFileExtensions();
+
+    /**
+     * Get the file type of this {@link ClipboardFormat}.
+     *
+     * @return the file type
+     */
+    default FileType getFileType() {
+        return FileType.of(getName(), getPrimaryFileExtension(), getFileExtensions());
+    }
+
 }

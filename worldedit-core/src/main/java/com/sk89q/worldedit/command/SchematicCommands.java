@@ -20,6 +20,7 @@
 package com.sk89q.worldedit.command;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.io.MoreFiles;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
@@ -50,9 +51,8 @@ import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.util.formatting.text.event.ClickEvent;
 import com.sk89q.worldedit.util.formatting.text.event.HoverEvent;
 import com.sk89q.worldedit.util.formatting.text.format.TextColor;
-import com.sk89q.worldedit.util.io.Closer;
-import com.sk89q.worldedit.util.io.file.FilenameException;
 import com.sk89q.worldedit.util.io.file.MorePaths;
+import com.sk89q.worldedit.util.io.file.PathRequestType;
 import org.enginehub.piston.annotation.Command;
 import org.enginehub.piston.annotation.CommandContainer;
 import org.enginehub.piston.annotation.param.Arg;
@@ -63,11 +63,6 @@ import org.enginehub.piston.exception.StopExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
@@ -75,6 +70,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.Callable;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -108,20 +104,25 @@ public class SchematicCommands {
                      @Arg(desc = "File name.")
                          String filename,
                      @Arg(desc = "Format name.", def = "sponge")
-                         String formatName) throws FilenameException {
+                         String formatName) {
         LocalConfiguration config = worldEdit.getConfiguration();
 
-        File dir = worldEdit.getWorkingDirectoryPath(config.saveDir).toFile();
-        File f = worldEdit.getSafeOpenFile(actor, dir, filename,
-                BuiltInClipboardFormat.SPONGE_SCHEMATIC.getPrimaryFileExtension(),
-                ClipboardFormats.getFileExtensionArray());
+        // For now, no async
+        Path path = worldEdit.resolveSafePath(
+            actor,
+            worldEdit.getWorkingDirectoryPath(config.saveDir),
+            filename,
+            BuiltInClipboardFormat.SPONGE_SCHEMATIC.getFileType(),
+            ClipboardFormats.getFileTypes(),
+            PathRequestType.LOAD
+        ).join();
 
-        if (!f.exists()) {
+        if (!Files.exists(path)) {
             actor.printError(TranslatableComponent.of("worldedit.schematic.load.does-not-exist", TextComponent.of(filename)));
             return;
         }
 
-        ClipboardFormat format = ClipboardFormats.findByFile(f);
+        ClipboardFormat format = ClipboardFormats.findByPath(path);
         if (format == null) {
             format = ClipboardFormats.findByAlias(formatName);
         }
@@ -130,7 +131,7 @@ public class SchematicCommands {
             return;
         }
 
-        SchematicLoadTask task = new SchematicLoadTask(actor, f, format);
+        SchematicLoadTask task = new SchematicLoadTask(actor, path, format);
         AsyncCommandBuilder.wrap(task, actor)
                 .registerWithSupervisor(worldEdit.getSupervisor(), "Loading schematic " + filename)
                 .sendMessageAfterDelay(TranslatableComponent.of("worldedit.schematic.load.loading"))
@@ -156,17 +157,22 @@ public class SchematicCommands {
                          boolean allowOverwrite) throws WorldEditException {
         LocalConfiguration config = worldEdit.getConfiguration();
 
-        File dir = worldEdit.getWorkingDirectoryPath(config.saveDir).toFile();
-
         ClipboardFormat format = ClipboardFormats.findByAlias(formatName);
         if (format == null) {
             actor.printError(TranslatableComponent.of("worldedit.schematic.unknown-format", TextComponent.of(formatName)));
             return;
         }
 
-        File f = worldEdit.getSafeSaveFile(actor, dir, filename, format.getPrimaryFileExtension());
+        Path path = worldEdit.resolveSafePath(
+            actor,
+            worldEdit.getWorkingDirectoryPath(config.saveDir),
+            filename,
+            format.getFileType(),
+            ImmutableSet.of(),
+            PathRequestType.SAVE
+        ).join();
 
-        boolean overwrite = f.exists();
+        boolean overwrite = Files.exists(path);
         if (overwrite) {
             if (!actor.hasPermission("worldedit.schematic.delete")) {
                 throw new StopExecutionException(TextComponent.of("That schematic already exists!"));
@@ -178,17 +184,19 @@ public class SchematicCommands {
         }
 
         // Create parent directories
-        File parent = f.getParentFile();
-        if (parent != null && !parent.exists()) {
-            if (!parent.mkdirs()) {
+        Path parent = path.getParent();
+        if (parent != null) {
+            try {
+                Files.createDirectories(parent);
+            } catch (IOException e) {
                 throw new StopExecutionException(TranslatableComponent.of(
-                        "worldedit.schematic.save.failed-directory"));
+                    "worldedit.schematic.save.failed-directory"));
             }
         }
 
         ClipboardHolder holder = session.getClipboard();
 
-        SchematicSaveTask task = new SchematicSaveTask(actor, f, format, holder, overwrite);
+        SchematicSaveTask task = new SchematicSaveTask(actor, path, format, holder, overwrite);
         AsyncCommandBuilder.wrap(task, actor)
                 .registerWithSupervisor(worldEdit.getSupervisor(), "Saving schematic " + filename)
                 .sendMessageAfterDelay(TranslatableComponent.of("worldedit.schematic.save.saving"))
@@ -205,28 +213,34 @@ public class SchematicCommands {
     @CommandPermissions("worldedit.schematic.delete")
     public void delete(Actor actor,
                        @Arg(desc = "File name.")
-                           String filename) throws WorldEditException {
+                           String filename) {
         LocalConfiguration config = worldEdit.getConfiguration();
-        File dir = worldEdit.getWorkingDirectoryPath(config.saveDir).toFile();
 
-        File f = worldEdit.getSafeOpenFile(actor,
-                dir, filename, "schematic", ClipboardFormats.getFileExtensionArray());
+        Path path = worldEdit.resolveSafePath(
+            actor,
+            worldEdit.getWorkingDirectoryPath(config.saveDir),
+            filename,
+            BuiltInClipboardFormat.SPONGE_SCHEMATIC.getFileType(),
+            ClipboardFormats.getFileTypes(),
+            PathRequestType.LOAD
+        ).join();
 
-        if (!f.exists()) {
+        if (!Files.exists(path)) {
             actor.printError(TranslatableComponent.of("worldedit.schematic.delete.does-not-exist", TextComponent.of(filename)));
             return;
         }
 
-        if (!f.delete()) {
+        try {
+            Files.delete(path);
+        } catch (IOException e) {
             actor.printError(TranslatableComponent.of("worldedit.schematic.delete.failed", TextComponent.of(filename)));
-            return;
         }
 
         actor.printInfo(TranslatableComponent.of("worldedit.schematic.delete.deleted", TextComponent.of(filename)));
         try {
-            log.info(actor.getName() + " deleted " + f.getCanonicalPath());
+            log.info(actor.getName() + " deleted " + path.toRealPath());
         } catch (IOException e) {
-            log.info(actor.getName() + " deleted " + f.getAbsolutePath());
+            log.info(actor.getName() + " deleted " + path.toAbsolutePath());
         }
     }
 
@@ -285,7 +299,6 @@ public class SchematicCommands {
             pathComparator = Comparator.naturalOrder();
             flag = "";
         }
-        final int sortType = oldFirst ? -1 : newFirst ? 1 : 0;
         final String pageCommand = actor.isPlayer()
                 ? "//schem list -p %page%" + flag : null;
 
@@ -296,24 +309,20 @@ public class SchematicCommands {
 
     private static class SchematicLoadTask implements Callable<ClipboardHolder> {
         private final Actor actor;
-        private final File file;
+        private final Path path;
         private final ClipboardFormat format;
 
-        SchematicLoadTask(Actor actor, File file, ClipboardFormat format) {
+        SchematicLoadTask(Actor actor, Path path, ClipboardFormat format) {
             this.actor = actor;
-            this.file = file;
+            this.path = path;
             this.format = format;
         }
 
         @Override
         public ClipboardHolder call() throws Exception {
-            try (Closer closer = Closer.create()) {
-                FileInputStream fis = closer.register(new FileInputStream(file));
-                BufferedInputStream bis = closer.register(new BufferedInputStream(fis));
-                ClipboardReader reader = closer.register(format.getReader(bis));
-
+            try (ClipboardReader reader = format.getReader(Files.newInputStream(path))) {
                 Clipboard clipboard = reader.read();
-                log.info(actor.getName() + " loaded " + file.getCanonicalPath());
+                log.info(actor.getName() + " loaded " + path.toRealPath());
                 return new ClipboardHolder(clipboard);
             }
         }
@@ -321,14 +330,14 @@ public class SchematicCommands {
 
     private static class SchematicSaveTask implements Callable<Void> {
         private final Actor actor;
-        private final File file;
+        private final Path path;
         private final ClipboardFormat format;
         private final ClipboardHolder holder;
         private final boolean overwrite;
 
-        SchematicSaveTask(Actor actor, File file, ClipboardFormat format, ClipboardHolder holder, boolean overwrite) {
+        SchematicSaveTask(Actor actor, Path path, ClipboardFormat format, ClipboardHolder holder, boolean overwrite) {
             this.actor = actor;
-            this.file = file;
+            this.path = path;
             this.format = format;
             this.holder = holder;
             this.overwrite = overwrite;
@@ -350,15 +359,15 @@ public class SchematicCommands {
                 Operations.completeLegacy(result.copyTo(target));
             }
 
-            try (Closer closer = Closer.create()) {
-                FileOutputStream fos = closer.register(new FileOutputStream(file));
-                BufferedOutputStream bos = closer.register(new BufferedOutputStream(fos));
-                ClipboardWriter writer = closer.register(format.getWriter(bos));
+            try (ClipboardWriter writer = format.getWriter(Files.newOutputStream(path))) {
                 writer.write(target);
 
-                log.info(actor.getName() + " saved " + file.getCanonicalPath() + (overwrite ? " (overwriting previous file)" : ""));
+                log.info(actor.getName() + " saved " + path.toRealPath() + (overwrite ? " (overwriting previous file)" : ""));
             } catch (IOException e) {
-                file.delete();
+                try {
+                    Files.deleteIfExists(path);
+                } catch (IOException ignored) {
+                }
                 throw new CommandException(TextComponent.of(e.getMessage()), e, ImmutableList.of());
             }
             return null;
@@ -423,10 +432,8 @@ public class SchematicCommands {
             checkArgument(number < files.size() && number >= 0);
             Path file = files.get(number);
 
-            String format = ClipboardFormats.getFileExtensionMap()
-                .get(MoreFiles.getFileExtension(file))
-                .stream()
-                .findFirst()
+            String format = Optional.ofNullable(ClipboardFormats.getFileExtensions()
+                .get(MoreFiles.getFileExtension(file)))
                 .map(ClipboardFormat::getName)
                 .orElse("Unknown");
 

@@ -19,11 +19,18 @@
 
 package com.sk89q.worldedit.util.io.file;
 
+import com.google.common.collect.Streams;
+import com.sk89q.worldedit.util.collection.MoreSets;
+import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
+
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
@@ -64,6 +71,95 @@ public class SafeFiles {
             return name;
         }
         return name.substring(0, name.length() - 1);
+    }
+
+    /**
+     * Resolve {@code path} against {@code dir}.
+     *
+     * <p>
+     * If file types are provided and the path has an extension (content after {@code '.'},
+     * {@code "file."} has no extension), then the extension must match one of the file type's
+     * extensions.
+     * </p>
+     *
+     * <p>
+     * If file types are provided and the path has no extension, then the default or first file
+     * type's primary extension will be added.
+     * </p>
+     *
+     * <p>
+     * If no file types are provided, any path will be used without modification.
+     * </p>
+     *
+     * <p>
+     * If the result of {@code dir.resolve(path)} lies outside of {@code dir}
+     * <strong>WITHOUT</strong> resolving symlinks, then it is rejected. Symlinks that cause the
+     * resulting filename to reside outside of {@code dir} are <strong>NOT</strong> considered.
+     * </p>
+     *
+     * <p>
+     * Note: this method actually resolves {@code "./" + path} against dir, meaning it is safe to
+     * pass it absolute paths. This should always result in a relative path, but in rare cases may
+     * result in an exception rejecting an absolute path.
+     * </p>
+     *
+     * @param dir the directory to resolve against
+     * @param path the path to use
+     * @param defaultFileType the default file type to use if no extension is provided
+     * @param fileTypes the other file types to accept (may contain default)
+     * @return the resolved path
+     * @throws InvalidFilenameException if there is a problem with the filename
+     */
+    public static Path resolveSafePathWithFileType(Path dir,
+                                                   String path,
+                                                   @Nullable FileType defaultFileType,
+                                                   Set<FileType> fileTypes) throws InvalidFilenameException {
+        if (path.isEmpty()) {
+            throw new InvalidFilenameException(path, TranslatableComponent.of("worldedit.error.invalid-filename.empty"));
+        }
+
+        // Canonicalize
+        fileTypes = MoreSets.ensureFirst(defaultFileType, fileTypes);
+
+        String extension = getFileExtension(path);
+        if (extension == null) {
+            return resolveSafePath(
+                dir, path + "." + fileTypes.iterator().next().getPrimaryExtension()
+            );
+        }
+        // if not accepting all (empty) AND extension rejected, fail
+        if (!fileTypes.isEmpty() && fileTypes.stream()
+            .noneMatch(ft -> ft.getExtensions().contains(extension))) {
+            throw new InvalidFilenameException(path, TranslatableComponent.of("worldedit.error.invalid-filename.bad.extension"));
+        }
+        return resolveSafePath(dir, path);
+    }
+
+    private static Path resolveSafePath(Path dir, String path) throws InvalidFilenameException {
+        Path relative;
+        try {
+            // Force a relative path via string concat
+            relative = Paths.get("./" + path);
+        } catch (InvalidPathException e) {
+            throw new InvalidFilenameException(path, TranslatableComponent.of("worldedit.error.invalid-filename.invalid-characters"));
+        }
+        // paranoid
+        if (relative.isAbsolute()) {
+            throw new InvalidFilenameException(path, TranslatableComponent.of("worldedit.error.invalid-filename.absolute"));
+        }
+        // Protect against '..'
+        if (Streams.stream(relative).anyMatch(it -> it.toString().equals(".."))) {
+            throw new InvalidFilenameException(path, TranslatableComponent.of("worldedit.error.invalid-filename.invalid-characters"));
+        }
+        // Everything else should be legal, any directory escapes were introduced by the server
+        // administrator (WorldEdit does not create symlinks), so they are intended
+        return dir.resolve(relative);
+    }
+
+    @Nullable
+    private static String getFileExtension(String filename) {
+        int dot = filename.lastIndexOf('.');
+        return (dot > 0 && dot != filename.length() - 1) ? filename.substring(dot + 1) : null;
     }
 
     /**

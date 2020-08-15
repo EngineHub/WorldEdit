@@ -20,14 +20,22 @@
 package com.sk89q.worldedit.extension.platform;
 
 import com.sk89q.worldedit.internal.cui.CUIEvent;
+import com.sk89q.worldedit.internal.util.DeprecationUtil;
+import com.sk89q.worldedit.internal.util.NonAbstractForCompatibility;
 import com.sk89q.worldedit.session.SessionOwner;
 import com.sk89q.worldedit.util.Identifiable;
 import com.sk89q.worldedit.util.auth.Subject;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.format.TextColor;
+import com.sk89q.worldedit.util.io.file.FileSelectionAbortedException;
+import com.sk89q.worldedit.util.io.file.FileType;
+import com.sk89q.worldedit.util.io.file.PathRequestType;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.Locale;
+import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * An object that can perform actions in WorldEdit.
@@ -139,16 +147,63 @@ public interface Actor extends Identifiable, SessionOwner, Subject {
      *
      * @param extensions null to allow all
      * @return the selected file or null if something went wrong
+     * @deprecated Use {@link #requestPath(PathRequestType, Set)} instead
      */
-    File openFileOpenDialog(String[] extensions);
+    @Deprecated
+    default File openFileOpenDialog(String[] extensions) {
+        return requestPath(PathRequestType.LOAD, FileType.adaptLegacyExtensions(extensions))
+            .handle((p, err) -> err != null ? null : p.toFile())
+            .join();
+    }
 
     /**
      * Open a file save dialog.
      *
      * @param extensions null to allow all
      * @return the selected file or null if something went wrong
+     * @deprecated Use {@link #requestPath(PathRequestType, Set)} instead
      */
-    File openFileSaveDialog(String[] extensions);
+    @Deprecated
+    default File openFileSaveDialog(String[] extensions) {
+        return requestPath(PathRequestType.SAVE, FileType.adaptLegacyExtensions(extensions))
+            .handle((p, err) -> err != null ? null : p.toFile())
+            .join();
+    }
+
+    /**
+     * Request a path.
+     *
+     * @param type the type of request to make
+     * @param fileTypes file types to request
+     * @return a future resulting in the selected path, or a {@link FileSelectionAbortedException}
+     * @apiNote This must be overridden by new subclasses. See {@link NonAbstractForCompatibility}
+     *          for details
+     */
+    @NonAbstractForCompatibility(
+        delegateName = "openFileOpenDialog",
+        delegateParams = {String[].class}
+    )
+    default CompletableFuture<Path> requestPath(PathRequestType type, Set<FileType> fileTypes) {
+        // technically we should check openFileSaveDialog too, but it's assumed they were paired
+        // only some one doing a malicious override would trip it
+        DeprecationUtil.checkDelegatingOverride(getClass());
+        String[] extensions = fileTypes.isEmpty() ? null : fileTypes.stream()
+            .flatMap(ft -> ft.getExtensions().stream())
+            .sorted()
+            .toArray(String[]::new);
+        File file;
+        switch (type) {
+            case LOAD:
+                file = openFileOpenDialog(extensions);
+                break;
+            case SAVE:
+                file = openFileSaveDialog(extensions);
+                break;
+            default:
+                throw new IllegalStateException("Unknown type: " + type);
+        }
+        return CompletableFuture.completedFuture(file.toPath());
+    }
 
     /**
      * Send a CUI event.
