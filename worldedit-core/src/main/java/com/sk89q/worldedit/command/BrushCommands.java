@@ -442,9 +442,9 @@ public class BrushCommands {
     @CommandPermissions("worldedit.brush.biome")
     public void biome(Player player, LocalSession localSession,
                       @Arg(desc = "The shape of the region")
-                         RegionFactory shape,
+                          RegionFactory shape,
                       @Arg(desc = "The size of the brush", def = "5")
-                         double radius,
+                          double radius,
                       @Arg(desc = "The biome type")
                           BiomeType biomeType) throws WorldEditException {
 
