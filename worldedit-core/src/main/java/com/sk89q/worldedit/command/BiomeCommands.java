@@ -181,9 +181,11 @@ public class BiomeCommands {
         Operations.completeLegacy(visitor);
 
         player.printInfo(TranslatableComponent.of(
-                "worldedit.setbiome.changed",
-                TextComponent.of(visitor.getAffected())
-        ));
+            "worldedit.setbiome.changed",
+            TextComponent.of(visitor.getAffected())
+        )
+            .append(TextComponent.newline())
+            .append(TranslatableComponent.of("worldedit.setbiome.warning")));
     }
 
 }

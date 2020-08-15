@@ -450,7 +450,7 @@ public class BrushCommands {
 
         setOperationBasedBrush(player, localSession, radius,
             new ApplyRegion(new Biome(biomeType)), shape, "worldedit.brush.biome");
-        player.printInfo(TranslatableComponent.of("worldedit.brush.biome.warning"));
+        player.printInfo(TranslatableComponent.of("worldedit.setbiome.warning"));
     }
 
     static void setOperationBasedBrush(Player player, LocalSession session, double radius,
