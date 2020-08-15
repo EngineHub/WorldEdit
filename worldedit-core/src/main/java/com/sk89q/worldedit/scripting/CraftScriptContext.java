@@ -35,10 +35,13 @@ import com.sk89q.worldedit.internal.expression.invoke.ReturnException;
 import com.sk89q.worldedit.session.request.Request;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
+import com.sk89q.worldedit.util.io.file.FileType;
 import com.sk89q.worldedit.util.io.file.FilenameException;
+import com.sk89q.worldedit.util.io.file.SafeFiles;
 import com.sk89q.worldedit.world.block.BaseBlock;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -246,7 +249,10 @@ public class CraftScriptContext extends CraftScriptEnvironment {
      * @param exts list of extensions for file open dialog, null for no filter
      * @return a file
      * @throws FilenameException if there is a problem with the name of the file
+     * @deprecated Use {@link SafeFiles#resolveSafePathWithFileType(Path, String, FileType, Set)}
+     *      instead
      */
+    @Deprecated
     public File getSafeOpenFile(String folder, String filename, String defaultExt, String... exts) throws FilenameException {
         File dir = controller.getWorkingDirectoryPath(folder).toFile();
         return controller.getSafeOpenFile(player, dir, filename, defaultExt, exts);
@@ -267,7 +273,10 @@ public class CraftScriptContext extends CraftScriptEnvironment {
      * @param exts list of extensions for file save dialog, null for no filter
      * @return a file
      * @throws FilenameException if there is a problem with the name of the file
+     * @deprecated Use {@link SafeFiles#resolveSafePathWithFileType(Path, String, FileType, Set)}
+     *      instead
      */
+    @Deprecated
     public File getSafeSaveFile(String folder, String filename, String defaultExt, String... exts) throws FilenameException {
         File dir = controller.getWorkingDirectoryPath(folder).toFile();
         return controller.getSafeSaveFile(player, dir, filename, defaultExt, exts);

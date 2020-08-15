@@ -24,6 +24,7 @@ import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.internal.cui.CUIEvent;
 import com.sk89q.worldedit.session.SessionKey;
 import com.sk89q.worldedit.util.auth.AuthorizationException;
+import com.sk89q.worldedit.util.collection.SetWithDefault;
 import com.sk89q.worldedit.util.formatting.WorldEditText;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.serializer.plain.PlainComponentSerializer;
@@ -35,7 +36,6 @@ import org.slf4j.Logger;
 
 import java.nio.file.Path;
 import java.util.Locale;
-import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import javax.swing.SwingUtilities;
@@ -137,7 +137,8 @@ public class CLICommandSender implements Actor {
     }
 
     @Override
-    public CompletableFuture<Path> requestPath(PathRequestType type, Set<FileType> fileTypes) {
+    public CompletableFuture<Path> requestPath(PathRequestType type,
+                                               SetWithDefault<FileType> fileTypes) {
         return CompletableFuture.supplyAsync(
             () -> {
                 try {

@@ -20,7 +20,7 @@
 package com.sk89q.worldedit.util.io.file;
 
 import com.google.common.collect.Streams;
-import com.sk89q.worldedit.util.collection.MoreSets;
+import com.sk89q.worldedit.util.collection.SetWithDefault;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 
 import java.io.IOException;
@@ -30,7 +30,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
@@ -105,31 +104,30 @@ public class SafeFiles {
      *
      * @param dir the directory to resolve against
      * @param path the path to use
-     * @param defaultFileType the default file type to use if no extension is provided
-     * @param fileTypes the other file types to accept (may contain default)
+     * @param fileTypes the file types to accept
      * @return the resolved path
      * @throws InvalidFilenameException if there is a problem with the filename
      */
     public static Path resolveSafePathWithFileType(Path dir,
                                                    String path,
-                                                   @Nullable FileType defaultFileType,
-                                                   Set<FileType> fileTypes) throws InvalidFilenameException {
+                                                   SetWithDefault<FileType> fileTypes) throws InvalidFilenameException {
         if (path.isEmpty()) {
             throw new InvalidFilenameException(path, TranslatableComponent.of("worldedit.error.invalid-filename.empty"));
         }
 
-        // Canonicalize
-        fileTypes = MoreSets.ensureFirst(defaultFileType, fileTypes);
+        FileType defaultFileType = fileTypes.defaultValue();
+        if (defaultFileType == null) {
+            return resolveSafePath(dir, path);
+        }
 
         String extension = getFileExtension(path);
         if (extension == null) {
             return resolveSafePath(
-                dir, path + "." + fileTypes.iterator().next().getPrimaryExtension()
+                dir, path + "." + defaultFileType.getExtensions().defaultValue()
             );
         }
-        // if not accepting all (empty) AND extension rejected, fail
-        if (!fileTypes.isEmpty() && fileTypes.stream()
-            .noneMatch(ft -> ft.getExtensions().contains(extension))) {
+
+        if (fileTypes.values().stream().noneMatch(ft -> ft.getExtensions().values().contains(extension))) {
             throw new InvalidFilenameException(path, TranslatableComponent.of("worldedit.error.invalid-filename.bad.extension"));
         }
         return resolveSafePath(dir, path);

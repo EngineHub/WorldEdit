@@ -20,7 +20,6 @@
 package com.sk89q.worldedit.command;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
 import com.google.common.io.MoreFiles;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalSession;
@@ -41,6 +40,7 @@ import com.sk89q.worldedit.extent.clipboard.io.ClipboardWriter;
 import com.sk89q.worldedit.function.operation.Operations;
 import com.sk89q.worldedit.math.transform.Transform;
 import com.sk89q.worldedit.session.ClipboardHolder;
+import com.sk89q.worldedit.util.collection.SetWithDefault;
 import com.sk89q.worldedit.util.formatting.component.CodeFormat;
 import com.sk89q.worldedit.util.formatting.component.ErrorFormat;
 import com.sk89q.worldedit.util.formatting.component.PaginationBox;
@@ -112,8 +112,10 @@ public class SchematicCommands {
             actor,
             worldEdit.getWorkingDirectoryPath(config.saveDir),
             filename,
-            BuiltInClipboardFormat.SPONGE_SCHEMATIC.getFileType(),
-            ClipboardFormats.getFileTypes(),
+            SetWithDefault.of(
+                BuiltInClipboardFormat.SPONGE_SCHEMATIC.getFileType(),
+                ClipboardFormats.getFileTypes()
+            ),
             PathRequestType.LOAD
         ).join();
 
@@ -167,8 +169,7 @@ public class SchematicCommands {
             actor,
             worldEdit.getWorkingDirectoryPath(config.saveDir),
             filename,
-            format.getFileType(),
-            ImmutableSet.of(),
+            SetWithDefault.of(format.getFileType()),
             PathRequestType.SAVE
         ).join();
 
@@ -220,8 +221,10 @@ public class SchematicCommands {
             actor,
             worldEdit.getWorkingDirectoryPath(config.saveDir),
             filename,
-            BuiltInClipboardFormat.SPONGE_SCHEMATIC.getFileType(),
-            ClipboardFormats.getFileTypes(),
+            SetWithDefault.of(
+                BuiltInClipboardFormat.SPONGE_SCHEMATIC.getFileType(),
+                ClipboardFormats.getFileTypes()
+            ),
             PathRequestType.LOAD
         ).join();
 

@@ -21,6 +21,7 @@ package com.sk89q.worldedit.extent.clipboard.io;
 
 import com.sk89q.worldedit.internal.util.DeprecationUtil;
 import com.sk89q.worldedit.internal.util.NonAbstractForCompatibility;
+import com.sk89q.worldedit.util.collection.SetWithDefault;
 import com.sk89q.worldedit.util.io.file.FileType;
 
 import java.io.File;
@@ -117,7 +118,10 @@ public interface ClipboardFormat {
      * @return the file type
      */
     default FileType getFileType() {
-        return FileType.of(getName(), getPrimaryFileExtension(), getFileExtensions());
+        return FileType.of(
+            getName(),
+            SetWithDefault.of(getPrimaryFileExtension(), getFileExtensions())
+        );
     }
 
 }

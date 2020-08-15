@@ -25,6 +25,7 @@ import com.sk89q.worldedit.internal.util.NonAbstractForCompatibility;
 import com.sk89q.worldedit.session.SessionOwner;
 import com.sk89q.worldedit.util.Identifiable;
 import com.sk89q.worldedit.util.auth.Subject;
+import com.sk89q.worldedit.util.collection.SetWithDefault;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.format.TextColor;
 import com.sk89q.worldedit.util.io.file.FileSelectionAbortedException;
@@ -34,7 +35,6 @@ import com.sk89q.worldedit.util.io.file.PathRequestType;
 import java.io.File;
 import java.nio.file.Path;
 import java.util.Locale;
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -147,11 +147,11 @@ public interface Actor extends Identifiable, SessionOwner, Subject {
      *
      * @param extensions null to allow all
      * @return the selected file or null if something went wrong
-     * @deprecated Use {@link #requestPath(PathRequestType, Set)} instead
+     * @deprecated Use {@link #requestPath(PathRequestType, SetWithDefault)} instead
      */
     @Deprecated
     default File openFileOpenDialog(String[] extensions) {
-        return requestPath(PathRequestType.LOAD, FileType.adaptLegacyExtensions(extensions))
+        return requestPath(PathRequestType.LOAD, FileType.adaptLegacyExtensions(null, extensions))
             .handle((p, err) -> err != null ? null : p.toFile())
             .join();
     }
@@ -161,11 +161,11 @@ public interface Actor extends Identifiable, SessionOwner, Subject {
      *
      * @param extensions null to allow all
      * @return the selected file or null if something went wrong
-     * @deprecated Use {@link #requestPath(PathRequestType, Set)} instead
+     * @deprecated Use {@link #requestPath(PathRequestType, SetWithDefault)} instead
      */
     @Deprecated
     default File openFileSaveDialog(String[] extensions) {
-        return requestPath(PathRequestType.SAVE, FileType.adaptLegacyExtensions(extensions))
+        return requestPath(PathRequestType.SAVE, FileType.adaptLegacyExtensions(null, extensions))
             .handle((p, err) -> err != null ? null : p.toFile())
             .join();
     }
@@ -183,12 +183,13 @@ public interface Actor extends Identifiable, SessionOwner, Subject {
         delegateName = "openFileOpenDialog",
         delegateParams = {String[].class}
     )
-    default CompletableFuture<Path> requestPath(PathRequestType type, Set<FileType> fileTypes) {
+    default CompletableFuture<Path> requestPath(PathRequestType type,
+                                                SetWithDefault<FileType> fileTypes) {
         // technically we should check openFileSaveDialog too, but it's assumed they were paired
         // only some one doing a malicious override would trip it
         DeprecationUtil.checkDelegatingOverride(getClass());
-        String[] extensions = fileTypes.isEmpty() ? null : fileTypes.stream()
-            .flatMap(ft -> ft.getExtensions().stream())
+        String[] extensions = fileTypes.defaultValue() == null ? null : fileTypes.values().stream()
+            .flatMap(ft -> ft.getExtensions().values().stream())
             .sorted()
             .toArray(String[]::new);
         File file;

@@ -24,8 +24,10 @@ import com.sk89q.worldedit.util.YAMLConfiguration;
 import com.sk89q.worldedit.util.report.Unreported;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
  * YAMLConfiguration but with setting for no op permissions and plugin root data folder.
@@ -56,14 +58,15 @@ public class BukkitConfiguration extends YAMLConfiguration {
     }
 
     private void migrate(String file, String name) {
-        File fromDir = new File(".", file);
-        File toDir = new File(getWorkingDirectory(), file);
-        if (fromDir.exists() & !toDir.exists()) {
-            if (fromDir.renameTo(toDir)) {
-                plugin.getLogger().info("Migrated " + name + " folder '" + file
+        Path fromDir = Paths.get(".", file);
+        Path toDir = getWorkingDirectoryPath().resolve(file);
+        if (!Files.exists(toDir) && Files.exists(fromDir)) {
+            try {
+                Files.move(fromDir, toDir);
+                WorldEditPlugin.log.info("Migrated " + name + " folder '" + file
                     + "' from server root to plugin data folder.");
-            } else {
-                plugin.getLogger().warning("Error while migrating " + name + " folder!");
+            } catch (IOException e) {
+                WorldEditPlugin.log.warn("Error while migrating " + name + " folder!", e);
             }
         }
     }

@@ -24,7 +24,6 @@ import com.sk89q.worldedit.util.io.file.FileType;
 import com.sk89q.worldedit.util.io.file.PathRequestType;
 
 import java.io.File;
-import java.util.Collections;
 
 /**
  * File dialog utility.
@@ -40,7 +39,7 @@ public final class FileDialogUtil {
         try {
             return com.sk89q.worldedit.util.io.file.FileDialogUtil.requestPath(
                 PathRequestType.SAVE,
-                FileType.adaptLegacyExtensions(exts)
+                FileType.adaptLegacyExtensions(null, exts)
             ).toFile();
         } catch (FileSelectionAbortedException e) {
             return null;
@@ -51,7 +50,7 @@ public final class FileDialogUtil {
         try {
             return com.sk89q.worldedit.util.io.file.FileDialogUtil.requestPath(
                 PathRequestType.LOAD,
-                FileType.adaptLegacyExtensions(exts)
+                FileType.adaptLegacyExtensions(null, exts)
             ).toFile();
         } catch (FileSelectionAbortedException e) {
             return null;

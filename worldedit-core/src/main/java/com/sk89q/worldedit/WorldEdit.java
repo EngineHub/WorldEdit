@@ -23,7 +23,6 @@ import com.google.common.base.Throwables;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.SetMultimap;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
@@ -53,7 +52,7 @@ import com.sk89q.worldedit.scripting.RhinoCraftScriptEngine;
 import com.sk89q.worldedit.session.SessionManager;
 import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.util.Location;
-import com.sk89q.worldedit.util.collection.MoreSets;
+import com.sk89q.worldedit.util.collection.SetWithDefault;
 import com.sk89q.worldedit.util.concurrency.EvenMoreExecutors;
 import com.sk89q.worldedit.util.concurrency.LazyReference;
 import com.sk89q.worldedit.util.eventbus.EventBus;
@@ -85,11 +84,9 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import javax.annotation.Nullable;
@@ -268,7 +265,7 @@ public final class WorldEdit {
      * @param extensions list of extensions, null for any
      * @return a file
      * @throws FilenameException thrown if the filename is invalid
-     * @deprecated use {@link #resolveSafePath(Actor, Path, String, FileType, Set, PathRequestType)}
+     * @deprecated use {@link #resolveSafePath(Actor, Path, String, SetWithDefault, PathRequestType)}
      *      instead with {@link PathRequestType#SAVE}
      */
     @Deprecated
@@ -289,7 +286,7 @@ public final class WorldEdit {
      * @param extensions list of extensions, null for any
      * @return a file
      * @throws FilenameException thrown if the filename is invalid
-     * @deprecated use {@link #resolveSafePath(Actor, Path, String, FileType, Set, PathRequestType)}
+     * @deprecated use {@link #resolveSafePath(Actor, Path, String, SetWithDefault, PathRequestType)}
      *      instead with {@link PathRequestType#LOAD}
      */
     @Deprecated
@@ -310,7 +307,7 @@ public final class WorldEdit {
      * @param extensions list of extensions, null for any
      * @return a file
      * @throws FilenameException thrown if the filename is invalid
-     * @deprecated use {@link #resolveSafePath(Actor, Path, String, FileType, Set, PathRequestType)}
+     * @deprecated use {@link #resolveSafePath(Actor, Path, String, SetWithDefault, PathRequestType)}
      *      instead with {@link PathRequestType#LOAD}
      */
     @Deprecated
@@ -321,13 +318,10 @@ public final class WorldEdit {
     @Deprecated
     private File legacyAdapter(Actor actor, File dir, String filename, String defaultExt,
                                String[] extensions, PathRequestType type) throws FilenameException {
-        Set<String> extensionsSet = MoreSets.ensureFirst(defaultExt, Arrays.asList(extensions));
-        FileType defaultFileType = FileType.adaptLegacyExtensions(extensionsSet.toArray(new String[0]))
-            .stream().findAny().orElse(null);
+        SetWithDefault<FileType> fileTypes = FileType.adaptLegacyExtensions(defaultExt, extensions);
         try {
             return resolveSafePath(
-                actor, dir.toPath(), filename, defaultFileType, ImmutableSet.of(),
-                type
+                actor, dir.toPath(), filename, fileTypes, type
             ).join().toFile();
         } catch (CompletionException e) {
             Throwable cause = e.getCause();
@@ -340,23 +334,19 @@ public final class WorldEdit {
      * Resolve a path to a file.
      *
      * <p>Details on how this is <em>safe</em> can be found at
-     * {@link SafeFiles#resolveSafePathWithFileType(Path, String, FileType, Set)}.</p>
+     * {@link SafeFiles#resolveSafePathWithFileType(Path, String, SetWithDefault)}.</p>
      *
      * @param actor the actor
      * @param dir directory to resolve against
      * @param path user-submitted path
-     * @param defaultFileType default file type, {@code null} to use first of {@code fileTypes}
      * @param fileTypes file types to accept, empty for any
      * @return a future that completes with the path if successful, otherwise an error
      */
     public CompletableFuture<Path> resolveSafePath(@Nullable Actor actor,
                                                    Path dir,
                                                    String path,
-                                                   @Nullable FileType defaultFileType,
-                                                   Set<FileType> fileTypes,
+                                                   SetWithDefault<FileType> fileTypes,
                                                    PathRequestType type) {
-        fileTypes = MoreSets.ensureFirst(defaultFileType, fileTypes);
-
         CompletableFuture<Path> ftr;
         if (path.equals("#") && actor != null) {
             ftr = actor.requestPath(type, fileTypes);
@@ -364,7 +354,7 @@ public final class WorldEdit {
             ftr = new CompletableFuture<>();
             try {
                 ftr.complete(SafeFiles.resolveSafePathWithFileType(
-                    dir, path, defaultFileType, fileTypes
+                    dir, path, fileTypes
                 ));
             } catch (InvalidFilenameException e) {
                 ftr.completeExceptionally(e);

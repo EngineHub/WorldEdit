@@ -20,6 +20,8 @@
 package com.sk89q.worldedit.cli;
 
 import com.google.common.base.Throwables;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Iterables;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.cli.data.FileRegistries;
@@ -34,6 +36,7 @@ import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormat;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormats;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardReader;
 import com.sk89q.worldedit.registry.state.Property;
+import com.sk89q.worldedit.util.collection.SetWithDefault;
 import com.sk89q.worldedit.util.formatting.WorldEditText;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.util.io.file.FileType;
@@ -63,11 +66,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
-import java.util.LinkedHashSet;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Scanner;
-import java.util.Set;
 import java.util.concurrent.CompletionException;
 
 /**
@@ -279,8 +280,13 @@ public class CLIWorldEdit {
             String fileArg = cmd.getOptionValue('f');
             Path file;
             if (fileArg == null) {
-                Set<FileType> fileTypes = new LinkedHashSet<>(ClipboardFormats.getFileTypes());
-                fileTypes.add(FileType.of("MC data files", "dat"));
+                SetWithDefault<FileType> fileTypes = SetWithDefault.of(
+                    null,
+                    Iterables.concat(
+                        ClipboardFormats.getFileTypes(),
+                        ImmutableSet.of(FileType.of("MC data files", "dat"))
+                    )
+                );
                 try {
                     file = app.commandSender.requestPath(PathRequestType.LOAD, fileTypes).join();
                 } catch (CompletionException e) {

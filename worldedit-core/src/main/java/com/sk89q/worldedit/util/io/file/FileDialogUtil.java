@@ -1,9 +1,9 @@
 package com.sk89q.worldedit.util.io.file;
 
+import com.sk89q.worldedit.util.collection.SetWithDefault;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 
 import java.nio.file.Path;
-import java.util.Set;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -11,10 +11,10 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 public final class FileDialogUtil {
 
     public static Path requestPath(PathRequestType type,
-                                   Set<FileType> fileTypes) throws FileSelectionAbortedException {
+                                   SetWithDefault<FileType> fileTypes) throws FileSelectionAbortedException {
         JFileChooser dialog = new JFileChooser();
 
-        for (FileType fileType : fileTypes) {
+        for (FileType fileType : fileTypes.values()) {
             dialog.addChoosableFileFilter(asFileFilter(fileType));
         }
 
@@ -43,7 +43,7 @@ public final class FileDialogUtil {
 
     private static FileFilter asFileFilter(FileType fileType) {
         return new FileNameExtensionFilter(
-            fileType.getDescription(), fileType.getExtensions().toArray(new String[0])
+            fileType.getDescription(), fileType.getExtensions().values().toArray(new String[0])
         );
     }
 

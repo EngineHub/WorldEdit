@@ -2,11 +2,12 @@ package com.sk89q.worldedit.util.io.file;
 
 import com.google.auto.value.AutoValue;
 import com.google.common.collect.ImmutableSet;
-import com.sk89q.worldedit.util.collection.MoreSets;
+import com.sk89q.worldedit.util.collection.SetWithDefault;
 
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Set;
+import javax.annotation.Nullable;
+
+import static com.google.common.base.Preconditions.checkArgument;
 
 /**
  * Represents a logical file type, made of multiple extensions.
@@ -30,23 +31,27 @@ public abstract class FileType {
      * @return a set of the extracted file types, may be empty
      */
     @Deprecated
-    public static Set<FileType> adaptLegacyExtensions(String... extensions) {
-        if (extensions == null || extensions.length == 0) {
-            return Collections.emptySet();
+    public static SetWithDefault<FileType> adaptLegacyExtensions(@Nullable String defaultExt,
+                                                                 @Nullable String... extensions) {
+        SetWithDefault<String> extensionsSet = SetWithDefault.of(
+            defaultExt,
+            extensions == null ? ImmutableSet.of() : Arrays.asList(extensions)
+        );
+        if (extensionsSet.defaultValue() == null) {
+            return SetWithDefault.empty();
         }
-        return Collections.singleton(FileType.of(
-            String.join(", ", extensions), extensions[0], extensions
+        return SetWithDefault.of(FileType.of(
+            String.join(", ", extensionsSet.values()), extensionsSet
         ));
     }
 
     public static FileType of(String description, String primaryExt, String... otherExt) {
-        return of(description, primaryExt, Arrays.asList(otherExt));
+        return of(description, SetWithDefault.of(primaryExt, Arrays.asList(otherExt)));
     }
 
-    public static FileType of(String description, String primaryExt, Iterable<String> otherExt) {
-        return new AutoValue_FileType(description, primaryExt, ImmutableSet.copyOf(
-            MoreSets.ensureFirst(primaryExt, otherExt)
-        ));
+    public static FileType of(String description, SetWithDefault<String> extensions) {
+        checkArgument(extensions.defaultValue() != null, "Cannot provide an empty extension set");
+        return new AutoValue_FileType(description, extensions);
     }
 
     FileType() {
@@ -54,18 +59,11 @@ public abstract class FileType {
 
     public abstract String getDescription();
 
-    public abstract String getPrimaryExtension();
-
     /**
-     * Get the extensions associated with this file type.
+     * Get the extensions for this file type. Guaranteed to be non-empty.
      *
-     * <p>
-     * It is guaranteed that the {@linkplain #getPrimaryExtension() primary extension} is
-     * first in the set's iteration order.
-     * </p>
-     *
-     * @return the extensions associated with this file type
+     * @return the extensions
      */
-    public abstract ImmutableSet<String> getExtensions();
+    public abstract SetWithDefault<String> getExtensions();
 
 }
