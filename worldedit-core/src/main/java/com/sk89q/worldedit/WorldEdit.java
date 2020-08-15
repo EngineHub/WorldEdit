@@ -24,6 +24,7 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.SetMultimap;
+import com.google.common.io.CharStreams;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.sk89q.worldedit.blocks.BaseItem;
@@ -76,15 +77,18 @@ import com.sk89q.worldedit.world.registry.LegacyMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.DataInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -664,9 +668,23 @@ public final class WorldEdit {
      * @param f the script file to execute
      * @param args arguments for the script
      * @throws WorldEditException if something goes wrong
+     * @deprecated Use {@link #runScript(Player, Path, List)} instead
      */
+    @Deprecated
     public void runScript(Player player, File f, String[] args) throws WorldEditException {
-        String filename = f.getPath();
+        runScript(player, f.toPath(), Arrays.asList(args));
+    }
+
+    /**
+     * Executes a WorldEdit script.
+     *
+     * @param player the player
+     * @param path the script file to execute
+     * @param args arguments for the script
+     * @throws WorldEditException if something goes wrong
+     */
+    public void runScript(Player player, Path path, List<String> args) throws WorldEditException {
+        String filename = path.toString();
         int index = filename.lastIndexOf('.');
         String ext = filename.substring(index + 1);
 
@@ -678,24 +696,18 @@ public final class WorldEdit {
         String script;
 
         try {
-            InputStream file;
-
-            if (!f.exists()) {
-                file = WorldEdit.class.getResourceAsStream("craftscripts/" + filename);
-
-                if (file == null) {
-                    player.printError(TranslatableComponent.of("worldedit.script.file-not-found", TextComponent.of(filename)));
-                    return;
-                }
+            if (Files.exists(path)) {
+                script = StandardCharsets.UTF_8.decode(ByteBuffer.wrap(Files.readAllBytes(path)))
+                    .toString();
             } else {
-                file = new FileInputStream(f);
+                try (InputStream stream = WorldEdit.class.getResourceAsStream("craftscripts/" + filename)) {
+                    if (stream == null) {
+                        player.printError(TranslatableComponent.of("worldedit.script.file-not-found", TextComponent.of(filename)));
+                        return;
+                    }
+                    script = CharStreams.toString(new InputStreamReader(stream));
+                }
             }
-
-            DataInputStream in = new DataInputStream(file);
-            byte[] data = new byte[in.available()];
-            in.readFully(data);
-            in.close();
-            script = new String(data, 0, data.length, StandardCharsets.UTF_8);
         } catch (IOException e) {
             player.printError(TranslatableComponent.of("worldedit.script.read-error", TextComponent.of(e.getMessage())));
             return;

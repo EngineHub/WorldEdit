@@ -34,7 +34,7 @@ public class SchematicsEventListener {
 
     @Subscribe
     public void onConfigLoad(ConfigurationLoadEvent event) {
-        Path config = event.getConfiguration().getWorkingDirectory().toPath();
+        Path config = event.getConfiguration().getWorkingDirectoryPath();
         try {
             Files.createDirectories(config.resolve(event.getConfiguration().saveDir));
         } catch (IOException e) {

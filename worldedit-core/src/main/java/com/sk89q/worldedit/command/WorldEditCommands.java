@@ -19,7 +19,6 @@
 
 package com.sk89q.worldedit.command;
 
-import com.google.common.io.Files;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
@@ -48,9 +47,10 @@ import org.enginehub.piston.annotation.param.Arg;
 import org.enginehub.piston.annotation.param.ArgFlag;
 import org.enginehub.piston.annotation.param.Switch;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -126,9 +126,9 @@ public class WorldEditCommands {
         String result = report.toString();
 
         try {
-            File dest = new File(we.getConfiguration().getWorkingDirectory(), "report.txt");
-            Files.write(result, dest, StandardCharsets.UTF_8);
-            actor.printInfo(TranslatableComponent.of("worldedit.report.written", TextComponent.of(dest.getAbsolutePath())));
+            Path dest = we.getConfiguration().getWorkingDirectoryPath().resolve("report.txt");
+            Files.write(dest, result.getBytes(StandardCharsets.UTF_8));
+            actor.printInfo(TranslatableComponent.of("worldedit.report.written", TextComponent.of(dest.toAbsolutePath().toString())));
         } catch (IOException e) {
             actor.printError(TranslatableComponent.of("worldedit.report.error", TextComponent.of(e.getMessage())));
         }

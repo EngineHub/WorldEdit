@@ -33,9 +33,9 @@ import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.internal.expression.invoke.ReturnException;
 import com.sk89q.worldedit.session.request.Request;
+import com.sk89q.worldedit.util.collection.SetWithDefault;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
-import com.sk89q.worldedit.util.io.file.FileType;
 import com.sk89q.worldedit.util.io.file.FilenameException;
 import com.sk89q.worldedit.util.io.file.SafeFiles;
 import com.sk89q.worldedit.world.block.BaseBlock;
@@ -53,11 +53,11 @@ import java.util.Set;
 public class CraftScriptContext extends CraftScriptEnvironment {
 
     private final List<EditSession> editSessions = new ArrayList<>();
-    private final String[] args;
+    private final List<String> args;
 
     public CraftScriptContext(WorldEdit controller,
             Platform server, LocalConfiguration config,
-            LocalSession session, Player player, String[] args) {
+            LocalSession session, Player player, List<String> args) {
         super(controller, server, config, session, player);
         this.args = args;
     }
@@ -153,7 +153,7 @@ public class CraftScriptContext extends CraftScriptEnvironment {
      */
     public void checkArgs(int min, int max, String usage)
             throws InsufficientArgumentsException {
-        if (args.length <= min || (max != -1 && args.length - 1 > max)) {
+        if (args.size() <= min || (max != -1 && args.size() - 1 > max)) {
             throw new InsufficientArgumentsException(TranslatableComponent.of("worldedit.error.incorrect-usage", TextComponent.of(usage)));
         }
     }
@@ -249,7 +249,7 @@ public class CraftScriptContext extends CraftScriptEnvironment {
      * @param exts list of extensions for file open dialog, null for no filter
      * @return a file
      * @throws FilenameException if there is a problem with the name of the file
-     * @deprecated Use {@link SafeFiles#resolveSafePathWithFileType(Path, String, FileType, Set)}
+     * @deprecated Use {@link SafeFiles#resolveSafePathWithFileType(Path, String, SetWithDefault)}
      *      instead
      */
     @Deprecated
@@ -273,7 +273,7 @@ public class CraftScriptContext extends CraftScriptEnvironment {
      * @param exts list of extensions for file save dialog, null for no filter
      * @return a file
      * @throws FilenameException if there is a problem with the name of the file
-     * @deprecated Use {@link SafeFiles#resolveSafePathWithFileType(Path, String, FileType, Set)}
+     * @deprecated Use {@link SafeFiles#resolveSafePathWithFileType(Path, String, SetWithDefault)}
      *      instead
      */
     @Deprecated

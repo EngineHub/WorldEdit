@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.command;
 
+import com.google.common.collect.ImmutableList;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
@@ -26,14 +27,16 @@ import com.sk89q.worldedit.command.util.CommandPermissions;
 import com.sk89q.worldedit.command.util.CommandPermissionsConditionGenerator;
 import com.sk89q.worldedit.command.util.Logging;
 import com.sk89q.worldedit.entity.Player;
+import com.sk89q.worldedit.util.collection.SetWithDefault;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
+import com.sk89q.worldedit.util.io.file.FileType;
+import com.sk89q.worldedit.util.io.file.PathRequestType;
 import org.enginehub.piston.annotation.Command;
 import org.enginehub.piston.annotation.CommandContainer;
 import org.enginehub.piston.annotation.param.Arg;
 
-import java.io.File;
+import java.nio.file.Path;
 import java.util.List;
-import java.util.stream.Stream;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.sk89q.worldedit.command.util.Logging.LogMode.ALL;
@@ -74,11 +77,7 @@ public class ScriptingCommands {
 
         session.setLastScript(filename);
 
-        File dir = worldEdit.getWorkingDirectoryFile(worldEdit.getConfiguration().scriptsDir);
-        File f = worldEdit.getSafeOpenFile(player, dir, filename, "js", "js");
-
-        worldEdit.runScript(player, f, Stream.concat(Stream.of(filename), args.stream())
-            .toArray(String[]::new));
+        runScript(player, filename, args);
     }
 
     @Command(
@@ -103,10 +102,19 @@ public class ScriptingCommands {
             return;
         }
 
-        File dir = worldEdit.getWorkingDirectoryPath(worldEdit.getConfiguration().scriptsDir).toFile();
-        File f = worldEdit.getSafeOpenFile(player, dir, lastScript, "js", "js");
+        runScript(player, lastScript, args);
+    }
 
-        worldEdit.runScript(player, f, Stream.concat(Stream.of(lastScript), args.stream())
-            .toArray(String[]::new));
+    private void runScript(Player player, String filename, List<String> args) throws WorldEditException {
+        Path path = worldEdit.resolveSafePath(
+            player,
+            worldEdit.getWorkingDirectoryPath(worldEdit.getConfiguration().scriptsDir),
+            filename,
+            SetWithDefault.of(FileType.of("JavaScript", "js")),
+            PathRequestType.LOAD
+        ).join();
+
+        worldEdit.runScript(player, path, new ImmutableList.Builder<String>()
+            .add(filename).addAll(args).build());
     }
 }
