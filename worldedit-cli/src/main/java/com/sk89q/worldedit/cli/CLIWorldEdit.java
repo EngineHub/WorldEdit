@@ -85,10 +85,10 @@ public class CLIWorldEdit {
     }
 
     private void setupPlatform() {
+        WorldEdit.getInstance().getPlatformManager().register(platform);
+
         this.fileRegistries = new FileRegistries(this);
         this.fileRegistries.loadDataFiles();
-
-        WorldEdit.getInstance().getPlatformManager().register(platform);
     }
 
     public void setupRegistries() {
