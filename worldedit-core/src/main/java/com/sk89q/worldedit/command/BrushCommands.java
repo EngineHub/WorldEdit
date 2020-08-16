@@ -44,7 +44,7 @@ import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.function.Contextual;
 import com.sk89q.worldedit.function.factory.ApplyLayer;
 import com.sk89q.worldedit.function.factory.ApplyRegion;
-import com.sk89q.worldedit.function.factory.Biome;
+import com.sk89q.worldedit.function.factory.BiomeFactory;
 import com.sk89q.worldedit.function.factory.Deform;
 import com.sk89q.worldedit.function.factory.Paint;
 import com.sk89q.worldedit.function.factory.Snow;
@@ -449,7 +449,7 @@ public class BrushCommands {
                           BiomeType biomeType) throws WorldEditException {
 
         setOperationBasedBrush(player, localSession, radius,
-            new ApplyRegion(new Biome(biomeType)), shape, "worldedit.brush.biome");
+            new ApplyRegion(new BiomeFactory(biomeType)), shape, "worldedit.brush.biome");
         player.printInfo(TranslatableComponent.of("worldedit.setbiome.warning"));
     }
 

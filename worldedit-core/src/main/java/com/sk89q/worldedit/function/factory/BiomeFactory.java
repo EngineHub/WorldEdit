@@ -25,11 +25,11 @@ import com.sk89q.worldedit.function.RegionFunction;
 import com.sk89q.worldedit.function.biome.BiomeReplace;
 import com.sk89q.worldedit.function.pattern.BiomePattern;
 
-public class Biome implements Contextual<RegionFunction> {
+public class BiomeFactory implements Contextual<RegionFunction> {
 
     private final BiomePattern biomeType;
 
-    public Biome(BiomePattern biomeType) {
+    public BiomeFactory(BiomePattern biomeType) {
         this.biomeType = biomeType;
     }
 
