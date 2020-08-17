@@ -674,6 +674,7 @@ public final class ItemTypes {
     @Nullable public static final ItemType PHANTOM_SPAWN_EGG = get("minecraft:phantom_spawn_egg");
     @Nullable public static final ItemType PIG_SPAWN_EGG = get("minecraft:pig_spawn_egg");
     @Nullable public static final ItemType PIGLIN_BANNER_PATTERN = get("minecraft:piglin_banner_pattern");
+    @Nullable public static final ItemType PIGLIN_BRUTE_SPAWN_EGG = get("minecraft:piglin_brute_spawn_egg");
     @Nullable public static final ItemType PIGLIN_SPAWN_EGG = get("minecraft:piglin_spawn_egg");
     @Nullable public static final ItemType PILLAGER_SPAWN_EGG = get("minecraft:pillager_spawn_egg");
     @Nullable public static final ItemType PINK_BANNER = get("minecraft:pink_banner");

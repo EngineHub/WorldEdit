@@ -75,7 +75,7 @@ public final class BiomeTypes {
     @Nullable public static final BiomeType MOUNTAINS = get("minecraft:mountains");
     @Nullable public static final BiomeType MUSHROOM_FIELD_SHORE = get("minecraft:mushroom_field_shore");
     @Nullable public static final BiomeType MUSHROOM_FIELDS = get("minecraft:mushroom_fields");
-    @Nullable @Deprecated public static final BiomeType NETHER = get("minecraft:nether");
+    @Deprecated @Nullable public static final BiomeType NETHER = get("minecraft:nether");
     @Nullable public static final BiomeType NETHER_WASTES = get("minecraft:nether_wastes");
     @Nullable public static final BiomeType OCEAN = get("minecraft:ocean");
     @Nullable public static final BiomeType PLAINS = get("minecraft:plains");

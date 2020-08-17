@@ -91,6 +91,7 @@ public final class EntityTypes {
     @Nullable public static final EntityType PHANTOM = get("minecraft:phantom");
     @Nullable public static final EntityType PIG = get("minecraft:pig");
     @Nullable public static final EntityType PIGLIN = get("minecraft:piglin");
+    @Nullable public static final EntityType PIGLIN_BRUTE = get("minecraft:piglin_brute");
     @Nullable public static final EntityType PILLAGER = get("minecraft:pillager");
     @Nullable public static final EntityType PLAYER = get("minecraft:player");
     @Nullable public static final EntityType POLAR_BEAR = get("minecraft:polar_bear");
