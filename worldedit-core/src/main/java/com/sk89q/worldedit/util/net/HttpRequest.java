@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.util.net;
 
+import com.sk89q.worldedit.util.concurrency.LazyReference;
 import com.sk89q.worldedit.util.io.Closer;
 
 import java.io.BufferedInputStream;
@@ -38,10 +39,10 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class HttpRequest implements Closeable {
 
@@ -87,9 +88,21 @@ public class HttpRequest implements Closeable {
      * @param form the form
      * @return this object
      */
-    public HttpRequest bodyForm(Form form) {
+    public HttpRequest bodyUrlEncodedForm(Form form) {
         contentType = "application/x-www-form-urlencoded";
-        body = form.toString().getBytes();
+        body = form.toUrlEncodedString().getBytes();
+        return this;
+    }
+
+    /**
+     * Submit form data.
+     *
+     * @param form the form
+     * @return this object
+     */
+    public HttpRequest bodyMultipartForm(Form form) {
+        contentType = "multipart/form-data;boundary=" + form.getFormDataSeparator();
+        body = form.toFormDataString().getBytes();
         return this;
     }
 
@@ -363,18 +376,20 @@ public class HttpRequest implements Closeable {
                     url.getPath(), url.getQuery(), url.getRef());
             url = uri.toURL();
             return url;
-        } catch (MalformedURLException e) {
-            return existing;
-        } catch (URISyntaxException e) {
+        } catch (MalformedURLException | URISyntaxException e) {
             return existing;
         }
     }
 
     /**
-     * Used with {@link #bodyForm(Form)}.
+     * Used with {@link #bodyUrlEncodedForm(Form)}.
      */
     public static final class Form {
-        public final List<String> elements = new ArrayList<>();
+        public final Map<String, String> elements = new LinkedHashMap<>();
+
+        private LazyReference<String> formDataSeparator = LazyReference.from(
+            () -> "-----EngineHubFormData" + ThreadLocalRandom.current().nextInt(10000, 99999)
+        );
 
         private Form() {
         }
@@ -387,26 +402,51 @@ public class HttpRequest implements Closeable {
          * @return this object
          */
         public Form add(String key, String value) {
-            try {
-                elements.add(URLEncoder.encode(key, "UTF-8")
-                    + "=" + URLEncoder.encode(value, "UTF-8"));
-                return this;
-            } catch (UnsupportedEncodingException e) {
-                throw new RuntimeException(e);
-            }
+            elements.put(key, value);
+            return this;
         }
 
-        @Override
-        public String toString() {
+        public String getFormDataSeparator() {
+            return formDataSeparator.getValue();
+        }
+
+        public String toFormDataString() {
+            String formSeparator = "--" + formDataSeparator.getValue();
+            StringBuilder builder = new StringBuilder();
+
+            for (Map.Entry<String, String> element : elements.entrySet()) {
+                builder
+                    .append(formSeparator)
+                    .append("\r\n")
+                    .append("Content-Disposition: form-data; name=\"")
+                    .append(element.getKey())
+                    .append("\"\r\n\r\n")
+                    .append(element.getValue())
+                    .append("\r\n");
+            }
+
+            builder.append(formSeparator).append("--");
+
+            return builder.toString();
+        }
+
+        public String toUrlEncodedString() {
             StringBuilder builder = new StringBuilder();
             boolean first = true;
-            for (String element : elements) {
+            for (Map.Entry<String, String> element : elements.entrySet()) {
                 if (first) {
                     first = false;
                 } else {
                     builder.append("&");
                 }
-                builder.append(element);
+                try {
+                    builder
+                        .append(URLEncoder.encode(element.getKey(), "UTF-8"))
+                        .append("=")
+                        .append(URLEncoder.encode(element.getValue(), "UTF-8"));
+                } catch (UnsupportedEncodingException e) {
+                    throw new RuntimeException(e);
+                }
             }
             return builder.toString();
         }
