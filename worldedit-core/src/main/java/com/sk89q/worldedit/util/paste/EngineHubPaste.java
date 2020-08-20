@@ -71,7 +71,6 @@ public class EngineHubPaste implements Paster {
         }
     }
 
-    @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
     private static final class SignedPasteResponse {
         String viewUrl;
         String uploadUrl;

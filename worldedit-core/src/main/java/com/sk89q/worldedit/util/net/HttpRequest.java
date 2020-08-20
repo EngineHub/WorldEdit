@@ -19,7 +19,6 @@
 
 package com.sk89q.worldedit.util.net;
 
-import com.sk89q.worldedit.util.concurrency.LazyReference;
 import com.sk89q.worldedit.util.io.Closer;
 
 import java.io.BufferedInputStream;
@@ -39,6 +38,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -90,7 +90,7 @@ public class HttpRequest implements Closeable {
      */
     public HttpRequest bodyUrlEncodedForm(Form form) {
         contentType = "application/x-www-form-urlencoded";
-        body = form.toUrlEncodedString().getBytes();
+        body = form.toUrlEncodedString().getBytes(StandardCharsets.UTF_8);
         return this;
     }
 
@@ -102,7 +102,7 @@ public class HttpRequest implements Closeable {
      */
     public HttpRequest bodyMultipartForm(Form form) {
         contentType = "multipart/form-data;boundary=" + form.getFormDataSeparator();
-        body = form.toFormDataString().getBytes();
+        body = form.toFormDataString().getBytes(StandardCharsets.UTF_8);
         return this;
     }
 
@@ -387,11 +387,10 @@ public class HttpRequest implements Closeable {
     public static final class Form {
         public final Map<String, String> elements = new LinkedHashMap<>();
 
-        private LazyReference<String> formDataSeparator = LazyReference.from(
-            () -> "-----EngineHubFormData" + ThreadLocalRandom.current().nextInt(10000, 99999)
-        );
+        private final String formDataSeparator;
 
         private Form() {
+            this.formDataSeparator = "-----EngineHubFormData" + ThreadLocalRandom.current().nextInt(10000, 99999);
         }
 
         /**
@@ -407,11 +406,11 @@ public class HttpRequest implements Closeable {
         }
 
         public String getFormDataSeparator() {
-            return formDataSeparator.getValue();
+            return formDataSeparator;
         }
 
         public String toFormDataString() {
-            String formSeparator = "--" + formDataSeparator.getValue();
+            String formSeparator = "--" + formDataSeparator;
             StringBuilder builder = new StringBuilder();
 
             for (Map.Entry<String, String> element : elements.entrySet()) {
