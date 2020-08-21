@@ -21,6 +21,9 @@ package com.sk89q.worldedit.internal.util;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Throwables;
+import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.extension.platform.Capability;
+import com.sk89q.worldedit.internal.Constants;
 import com.sk89q.worldedit.world.block.BlockCategories;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.block.BlockTypes;
@@ -104,6 +107,12 @@ public class DeprecationUtil {
         BlockType wallSign = BlockTypes.WALL_SIGN;
         return blockType == sign || blockType == wallSign
             || BlockCategories.SIGNS.contains(blockType);
+    }
+
+    public static String getHeadOwnerKey() {
+        int dataVersion = WorldEdit.getInstance().getPlatformManager()
+            .queryCapability(Capability.GAME_HOOKS).getDataVersion();
+        return dataVersion >= Constants.DATA_VERSION_MC_1_16 ? "SkullOwner" : "Owner";
     }
 
 }
