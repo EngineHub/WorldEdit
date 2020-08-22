@@ -22,6 +22,7 @@ package com.sk89q.worldedit.blocks;
 import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.jnbt.StringTag;
 import com.sk89q.jnbt.Tag;
+import com.sk89q.worldedit.internal.util.DeprecationUtil;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;
 
@@ -94,7 +95,7 @@ public class SkullBlock extends BaseBlock {
         Map<String, Tag> values = new HashMap<>();
         Map<String, Tag> inner = new HashMap<>();
         inner.put("Name", new StringTag(owner));
-        values.put("Owner", new CompoundTag(inner));
+        values.put(DeprecationUtil.getHeadOwnerKey(), new CompoundTag(inner));
         return new CompoundTag(values);
     }
 
@@ -113,7 +114,7 @@ public class SkullBlock extends BaseBlock {
             throw new RuntimeException(String.format("'%s' tile entity expected", getNbtId()));
         }
 
-        t = values.get("Owner");
+        t = values.get(DeprecationUtil.getHeadOwnerKey());
         if (t instanceof CompoundTag) {
             setOwner(((CompoundTag) t).getValue().get("Name").getValue().toString());
         }
