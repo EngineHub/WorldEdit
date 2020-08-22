@@ -14,9 +14,11 @@
 - Optimize polygon regions
 - Improved performance of the deform brush
 - Update to a newer Rhino release for craftscripts
-- Added support for 1.16.1
+- Added support for 1.16.1 and 1.16.2
 - Added support for regenerating biomes with //regen
 - Added support for full offsets to //stack and //move
+- Added -c mode to //deform, and fixed -o mode
+- Added a Biome brush
 - Improved ES6 support for craftscripts
 - Fixed an issue with edges of polygonal regions
 - Fixed multiple of the same flag being applied to commands not providing a friendly error
@@ -49,6 +51,12 @@
 - Fixed some Sponge schematics not loading due to overly-strict format requirements
 - Fixed wands not binding to players if they joined before having permissions to use them
 - Fixed edits still occurring even if some masks failed to parse
+- Added a tracing mode to EditSessions to help debug API issues where blocks aren't changed
+- Fixed issues with snapshots under symlinks on Windows
+- Made the schematics folder get generated on startup
+- Made WorldEdit print a warning when other plugins include parts of WorldEdit
+- Fixed Skull owner tag being incorrect in 1.16+.
+- Fixed pastebin services for large files
 
 7.1.0
 - Improve the expression parser by compiling expressions for performance
