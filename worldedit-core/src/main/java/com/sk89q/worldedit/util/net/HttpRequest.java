@@ -19,6 +19,9 @@
 
 package com.sk89q.worldedit.util.net;
 
+import com.google.common.base.Joiner;
+import com.google.common.collect.Maps;
+import com.google.common.net.UrlEscapers;
 import com.sk89q.worldedit.util.io.Closer;
 
 import java.io.BufferedInputStream;
@@ -31,13 +34,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -385,12 +386,17 @@ public class HttpRequest implements Closeable {
      * Used with {@link #bodyUrlEncodedForm(Form)}.
      */
     public static final class Form {
+
+        private static final Joiner.MapJoiner URL_ENCODER = Joiner.on('&')
+            .withKeyValueSeparator('=');
+        private static final Joiner CRLF_JOINER = Joiner.on("\r\n");
+
         public final Map<String, String> elements = new LinkedHashMap<>();
 
-        private final String formDataSeparator;
+        private final String formDataSeparator = "EngineHubFormData"
+            + ThreadLocalRandom.current().nextInt(10000, 99999);
 
         private Form() {
-            this.formDataSeparator = "-----EngineHubFormData" + ThreadLocalRandom.current().nextInt(10000, 99999);
         }
 
         /**
@@ -410,44 +416,34 @@ public class HttpRequest implements Closeable {
         }
 
         public String toFormDataString() {
-            String formSeparator = "--" + formDataSeparator;
+            String separatorWithDashes = "--" + formDataSeparator;
             StringBuilder builder = new StringBuilder();
 
             for (Map.Entry<String, String> element : elements.entrySet()) {
-                builder
-                    .append(formSeparator)
-                    .append("\r\n")
-                    .append("Content-Disposition: form-data; name=\"")
-                    .append(element.getKey())
-                    .append("\"\r\n\r\n")
-                    .append(element.getValue())
-                    .append("\r\n");
+                CRLF_JOINER.appendTo(
+                    builder,
+                    separatorWithDashes,
+                    "Content-Disposition: form-data; name=\"" + element.getKey() + "\"",
+                    "",
+                    element.getValue(),
+                    ""
+                );
             }
 
-            builder.append(formSeparator).append("--");
+            builder.append(separatorWithDashes).append("--");
 
             return builder.toString();
         }
 
         public String toUrlEncodedString() {
-            StringBuilder builder = new StringBuilder();
-            boolean first = true;
-            for (Map.Entry<String, String> element : elements.entrySet()) {
-                if (first) {
-                    first = false;
-                } else {
-                    builder.append("&");
-                }
-                try {
-                    builder
-                        .append(URLEncoder.encode(element.getKey(), "UTF-8"))
-                        .append("=")
-                        .append(URLEncoder.encode(element.getValue(), "UTF-8"));
-                } catch (UnsupportedEncodingException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-            return builder.toString();
+            return URL_ENCODER.join(
+                elements.entrySet().stream()
+                    .map(e -> Maps.immutableEntry(
+                        UrlEscapers.urlFormParameterEscaper().escape(e.getKey()),
+                        UrlEscapers.urlFormParameterEscaper().escape(e.getValue())
+                    ))
+                    .iterator()
+            );
         }
 
         /**
