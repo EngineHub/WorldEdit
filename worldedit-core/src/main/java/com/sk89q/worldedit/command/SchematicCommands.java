@@ -134,6 +134,7 @@ public class SchematicCommands {
         AsyncCommandBuilder.wrap(task, actor)
                 .registerWithSupervisor(worldEdit.getSupervisor(), "Loading schematic " + filename)
                 .sendMessageAfterDelay(TranslatableComponent.of("worldedit.schematic.load.loading"))
+                .sendDelayedRepeatingMessage(TranslatableComponent.of("worldedit.schematic.load.still-loading"))
                 .onSuccess(TextComponent.of(filename, TextColor.GOLD)
                                 .append(TextComponent.of(" loaded. Paste it with ", TextColor.LIGHT_PURPLE))
                                 .append(CodeFormat.wrap("//paste").clickEvent(ClickEvent.of(ClickEvent.Action.SUGGEST_COMMAND, "//paste"))),
@@ -192,6 +193,7 @@ public class SchematicCommands {
         AsyncCommandBuilder.wrap(task, actor)
                 .registerWithSupervisor(worldEdit.getSupervisor(), "Saving schematic " + filename)
                 .sendMessageAfterDelay(TranslatableComponent.of("worldedit.schematic.save.saving"))
+                .sendDelayedRepeatingMessage(TranslatableComponent.of("worldedit.schematic.save.still-saving"))
                 .onSuccess(filename + " saved" + (overwrite ? " (overwriting previous file)." : "."), null)
                 .onFailure("Failed to save schematic", worldEdit.getPlatformManager().getPlatformCommandManager().getExceptionConverter())
                 .buildAndExec(worldEdit.getExecutorService());

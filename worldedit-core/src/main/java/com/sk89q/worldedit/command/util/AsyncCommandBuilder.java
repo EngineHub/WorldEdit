@@ -57,6 +57,8 @@ public final class AsyncCommandBuilder<T> {
     private String description;
     @Nullable
     private Component delayMessage;
+    @Nullable
+    private Component repeatedMessage;
 
     @Nullable
     private Component successMessage;
@@ -95,6 +97,11 @@ public final class AsyncCommandBuilder<T> {
         return this;
     }
 
+    public AsyncCommandBuilder<T> sendDelayedRepeatingMessage(Component message) {
+        this.repeatedMessage = checkNotNull(message);
+        return this;
+    }
+
     public AsyncCommandBuilder<T> onSuccess(@Nullable Component message, @Nullable Consumer<T> consumer) {
         checkArgument(message != null || consumer != null, "Can't have null message AND consumer");
         this.successMessage = message;
@@ -130,7 +137,7 @@ public final class AsyncCommandBuilder<T> {
                 future,
                 sender,
                 delayMessage,
-                TranslatableComponent.of("worldedit.commands.still-running", delayMessage)
+                repeatedMessage
             );
         }
         if (supervisor != null && description != null) {
