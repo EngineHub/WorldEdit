@@ -59,8 +59,8 @@ public interface WorldNativeAccess<NC, NBS, NP> {
         if (sideEffects.shouldApply(SideEffect.VALIDATION)) {
             newState = getValidBlockForPosition(newState, pos);
         }
-        NBS successState = setBlockState(chunk, pos, newState);
-        boolean successful = successState != null;
+        NBS lastValue = setBlockState(chunk, pos, newState);
+        boolean successful = lastValue != null;
 
         // Create the TileEntity
         if (successful || old == newState) {
@@ -84,7 +84,7 @@ public interface WorldNativeAccess<NC, NBS, NP> {
             if (sideEffects.getState(SideEffect.LIGHTING) == SideEffect.State.ON) {
                 updateLightingForBlock(pos);
             }
-            markAndNotifyBlock(pos, chunk, old, newState, sideEffects);
+            markAndNotifyBlock(pos, chunk, lastValue, newState, sideEffects);
         }
 
         return successful;
@@ -183,7 +183,7 @@ public interface WorldNativeAccess<NC, NBS, NP> {
         }
 
         // Seems used only for PoI updates
-        onBlockStateChange(pos, oldState, newState);
+        onBlockStateChange(pos, oldState, blockState1);
     }
 
 }
