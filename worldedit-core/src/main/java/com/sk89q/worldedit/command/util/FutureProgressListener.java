@@ -26,7 +26,6 @@ import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 
 import java.util.Timer;
-
 import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
