@@ -425,6 +425,8 @@
     "worldedit.help.no-subcommands": "'{0}' has no sub-commands. (Maybe '{1}' is for a parameter?)",
     "worldedit.help.subcommand-not-found": "The sub-command '{0}' under '{1}' could not be found.",
 
+    "worldedit.commands.still-running": "Still {0}",
+
     "worldedit.cli.stopping": "Stopping!",
     "worldedit.cli.unknown-command": "Unknown command!"
 }

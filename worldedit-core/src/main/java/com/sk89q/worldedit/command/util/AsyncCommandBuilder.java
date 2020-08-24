@@ -28,6 +28,7 @@ import com.sk89q.worldedit.internal.command.exception.ExceptionConverter;
 import com.sk89q.worldedit.util.formatting.component.ErrorFormat;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
+import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.util.formatting.text.format.TextColor;
 import com.sk89q.worldedit.util.task.FutureForwardingTask;
 import com.sk89q.worldedit.util.task.Supervisor;
@@ -125,7 +126,12 @@ public final class AsyncCommandBuilder<T> {
     public ListenableFuture<T> buildAndExec(ListeningExecutorService executor) {
         final ListenableFuture<T> future = checkNotNull(executor).submit(this::runTask);
         if (delayMessage != null) {
-            FutureProgressListener.addProgressListener(future, sender, delayMessage);
+            FutureProgressListener.addProgressListener(
+                future,
+                sender,
+                delayMessage,
+                TranslatableComponent.of("worldedit.commands.still-running", delayMessage)
+            );
         }
         if (supervisor != null && description != null) {
             supervisor.monitor(FutureForwardingTask.create(future, description, sender));
@@ -144,7 +150,7 @@ public final class AsyncCommandBuilder<T> {
             if (successMessage != null) {
                 sender.print(successMessage);
             }
-        } catch (Exception orig) {
+        } catch (Throwable orig) {
             Component failure = failureMessage != null ? failureMessage : TextComponent.of("An error occurred");
             try {
                 if (exceptionConverter != null) {
