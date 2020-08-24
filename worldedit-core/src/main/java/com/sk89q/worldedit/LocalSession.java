@@ -250,7 +250,7 @@ public class LocalSession {
                      WorldEdit.getInstance().newEditSessionBuilder()
                          .world(editSession.getWorld()).blockBag(newBlockBag).actor(actor)
                          .build()) {
-                prepareEditingExtents(editSession, actor);
+                prepareEditingExtents(newEditSession, actor);
                 editSession.undo(newEditSession);
             }
             return editSession;
@@ -275,7 +275,7 @@ public class LocalSession {
                      WorldEdit.getInstance().newEditSessionBuilder()
                          .world(editSession.getWorld()).blockBag(newBlockBag).actor(actor)
                          .build()) {
-                prepareEditingExtents(editSession, actor);
+                prepareEditingExtents(newEditSession, actor);
                 editSession.redo(newEditSession);
             }
             ++historyPointer;
