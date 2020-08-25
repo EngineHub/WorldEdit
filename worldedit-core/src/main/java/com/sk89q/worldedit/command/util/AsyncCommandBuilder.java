@@ -28,7 +28,6 @@ import com.sk89q.worldedit.internal.command.exception.ExceptionConverter;
 import com.sk89q.worldedit.util.formatting.component.ErrorFormat;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
-import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.util.formatting.text.format.TextColor;
 import com.sk89q.worldedit.util.task.FutureForwardingTask;
 import com.sk89q.worldedit.util.task.Supervisor;
@@ -98,6 +97,7 @@ public final class AsyncCommandBuilder<T> {
     }
 
     public AsyncCommandBuilder<T> sendDelayedRepeatingMessage(Component message) {
+        checkNotNull(this.delayMessage, "Must have a delay message if using a repeating message");
         this.repeatedMessage = checkNotNull(message);
         return this;
     }
