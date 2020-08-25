@@ -26,10 +26,14 @@ import com.sk89q.worldedit.extension.platform.Watchdog;
 import com.sk89q.worldedit.extent.AbstractDelegateExtent;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.biome.BiomeType;
+import com.sk89q.worldedit.world.block.BaseBlock;
+import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 
+import java.util.List;
 import javax.annotation.Nullable;
 
 /**
@@ -90,5 +94,35 @@ public class WatchdogTickingExtent extends AbstractDelegateExtent {
     public boolean setBiome(BlockVector3 position, BiomeType biome) {
         onOperation();
         return super.setBiome(position, biome);
+    }
+
+    @Override
+    public BlockState getBlock(BlockVector3 position) {
+        onOperation();
+        return super.getBlock(position);
+    }
+
+    @Override
+    public BaseBlock getFullBlock(BlockVector3 position) {
+        onOperation();
+        return super.getFullBlock(position);
+    }
+
+    @Override
+    public BiomeType getBiome(BlockVector3 position) {
+        onOperation();
+        return super.getBiome(position);
+    }
+
+    @Override
+    public List<? extends Entity> getEntities() {
+        onOperation();
+        return super.getEntities();
+    }
+
+    @Override
+    public List<? extends Entity> getEntities(Region region) {
+        onOperation();
+        return super.getEntities(region);
     }
 }
