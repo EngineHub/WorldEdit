@@ -96,7 +96,7 @@ public final class AsyncCommandBuilder<T> {
         return this;
     }
 
-    public AsyncCommandBuilder<T> sendDelayedRepeatingMessage(Component message) {
+    public AsyncCommandBuilder<T> sendRepeatedMessage(Component message) {
         checkNotNull(this.delayMessage, "Must have a delay message if using a repeating message");
         this.repeatedMessage = checkNotNull(message);
         return this;

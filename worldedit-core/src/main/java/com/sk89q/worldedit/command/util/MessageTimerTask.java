@@ -58,6 +58,8 @@ public class MessageTimerTask extends TimerTask {
             hasRunBefore = true;
         } else if (repeatedMessage != null) {
             sender.printDebug(repeatedMessage);
+        } else {
+            cancel();
         }
     }
 
