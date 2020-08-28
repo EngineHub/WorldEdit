@@ -91,12 +91,17 @@ public final class AsyncCommandBuilder<T> {
         return sendMessageAfterDelay(TextComponent.of(checkNotNull(message)));
     }
 
+    @Deprecated
     public AsyncCommandBuilder<T> sendMessageAfterDelay(Component message) {
+        return setDelayMessage(message);
+    }
+
+    public AsyncCommandBuilder<T> setDelayMessage(Component message) {
         this.delayMessage = checkNotNull(message);
         return this;
     }
 
-    public AsyncCommandBuilder<T> sendRepeatedMessage(Component message) {
+    public AsyncCommandBuilder<T> setWorkingMessage(Component message) {
         checkNotNull(this.delayMessage, "Must have a delay message if using a repeating message");
         this.repeatedMessage = checkNotNull(message);
         return this;
