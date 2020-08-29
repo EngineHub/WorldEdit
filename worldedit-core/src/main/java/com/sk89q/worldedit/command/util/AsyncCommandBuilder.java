@@ -57,7 +57,7 @@ public final class AsyncCommandBuilder<T> {
     @Nullable
     private Component delayMessage;
     @Nullable
-    private Component repeatedMessage;
+    private Component workingMessage;
 
     @Nullable
     private Component successMessage;
@@ -102,8 +102,8 @@ public final class AsyncCommandBuilder<T> {
     }
 
     public AsyncCommandBuilder<T> setWorkingMessage(Component message) {
-        checkNotNull(this.delayMessage, "Must have a delay message if using a repeating message");
-        this.repeatedMessage = checkNotNull(message);
+        checkNotNull(this.delayMessage, "Must have a delay message if using a working message");
+        this.workingMessage = checkNotNull(message);
         return this;
     }
 
@@ -142,7 +142,7 @@ public final class AsyncCommandBuilder<T> {
                 future,
                 sender,
                 delayMessage,
-                repeatedMessage
+                workingMessage
             );
         }
         if (supervisor != null && description != null) {
