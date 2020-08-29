@@ -33,7 +33,7 @@ public class MessageTimerTask extends TimerTask {
     private final Actor sender;
     private final Component message;
     @Nullable
-    private final Component repeatedMessage;
+    private final Component workingMessage;
 
     private boolean hasRunBefore = false;
 
@@ -42,13 +42,13 @@ public class MessageTimerTask extends TimerTask {
         this(sender, TextComponent.of(message), null);
     }
 
-    MessageTimerTask(Actor sender, Component message, @Nullable Component repeatedMessage) {
+    MessageTimerTask(Actor sender, Component message, @Nullable Component workingMessage) {
         checkNotNull(sender);
         checkNotNull(message);
 
         this.sender = sender;
         this.message = message;
-        this.repeatedMessage = repeatedMessage;
+        this.workingMessage = workingMessage;
     }
 
     @Override
@@ -56,8 +56,8 @@ public class MessageTimerTask extends TimerTask {
         if (!hasRunBefore) {
             sender.printDebug(message);
             hasRunBefore = true;
-        } else if (repeatedMessage != null) {
-            sender.printDebug(repeatedMessage);
+        } else if (workingMessage != null) {
+            sender.printDebug(workingMessage);
         } else {
             cancel();
         }

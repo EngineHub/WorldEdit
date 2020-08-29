@@ -47,11 +47,11 @@ public class FutureProgressListener implements Runnable {
         this(sender, message, null);
     }
 
-    public FutureProgressListener(Actor sender, Component message, @Nullable Component repeatedMessage) {
+    public FutureProgressListener(Actor sender, Component message, @Nullable Component workingMessage) {
         checkNotNull(sender);
         checkNotNull(message);
 
-        task = new MessageTimerTask(sender, message, repeatedMessage);
+        task = new MessageTimerTask(sender, message, workingMessage);
         timer.scheduleAtFixedRate(task, MESSAGE_DELAY, MESSAGE_PERIOD);
     }
 
