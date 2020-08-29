@@ -56,6 +56,8 @@ public final class AsyncCommandBuilder<T> {
     private String description;
     @Nullable
     private Component delayMessage;
+    @Nullable
+    private Component workingMessage;
 
     @Nullable
     private Component successMessage;
@@ -89,8 +91,19 @@ public final class AsyncCommandBuilder<T> {
         return sendMessageAfterDelay(TextComponent.of(checkNotNull(message)));
     }
 
+    @Deprecated
     public AsyncCommandBuilder<T> sendMessageAfterDelay(Component message) {
+        return setDelayMessage(message);
+    }
+
+    public AsyncCommandBuilder<T> setDelayMessage(Component message) {
         this.delayMessage = checkNotNull(message);
+        return this;
+    }
+
+    public AsyncCommandBuilder<T> setWorkingMessage(Component message) {
+        checkNotNull(this.delayMessage, "Must have a delay message if using a working message");
+        this.workingMessage = checkNotNull(message);
         return this;
     }
 
@@ -125,7 +138,12 @@ public final class AsyncCommandBuilder<T> {
     public ListenableFuture<T> buildAndExec(ListeningExecutorService executor) {
         final ListenableFuture<T> future = checkNotNull(executor).submit(this::runTask);
         if (delayMessage != null) {
-            FutureProgressListener.addProgressListener(future, sender, delayMessage);
+            FutureProgressListener.addProgressListener(
+                future,
+                sender,
+                delayMessage,
+                workingMessage
+            );
         }
         if (supervisor != null && description != null) {
             supervisor.monitor(FutureForwardingTask.create(future, description, sender));
@@ -144,7 +162,7 @@ public final class AsyncCommandBuilder<T> {
             if (successMessage != null) {
                 sender.print(successMessage);
             }
-        } catch (Exception orig) {
+        } catch (Throwable orig) {
             Component failure = failureMessage != null ? failureMessage : TextComponent.of("An error occurred");
             try {
                 if (exceptionConverter != null) {

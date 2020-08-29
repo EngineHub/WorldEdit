@@ -42,7 +42,7 @@ public final class WorldEditAsyncCommandBuilder {
     public static void createAndSendMessage(Actor actor, Callable<Component> task, @Nullable Component desc) {
         final AsyncCommandBuilder<Component> builder = AsyncCommandBuilder.wrap(task, actor);
         if (desc != null) {
-            builder.sendMessageAfterDelay(desc);
+            builder.setDelayMessage(desc);
         }
         builder
                 .onSuccess((String) null, actor::printInfo)

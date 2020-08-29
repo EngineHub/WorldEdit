@@ -24,6 +24,7 @@ import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 
 import java.util.TimerTask;
+import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -31,23 +32,35 @@ public class MessageTimerTask extends TimerTask {
 
     private final Actor sender;
     private final Component message;
+    @Nullable
+    private final Component workingMessage;
+
+    private boolean hasRunBefore = false;
 
     @Deprecated
     MessageTimerTask(Actor sender, String message) {
-        this(sender, TextComponent.of(message));
+        this(sender, TextComponent.of(message), null);
     }
 
-    MessageTimerTask(Actor sender, Component message) {
+    MessageTimerTask(Actor sender, Component message, @Nullable Component workingMessage) {
         checkNotNull(sender);
         checkNotNull(message);
 
         this.sender = sender;
         this.message = message;
+        this.workingMessage = workingMessage;
     }
 
     @Override
     public void run() {
-        sender.printDebug(message);
+        if (!hasRunBefore) {
+            sender.printDebug(message);
+            hasRunBefore = true;
+        } else if (workingMessage != null) {
+            sender.printDebug(workingMessage);
+        } else {
+            cancel();
+        }
     }
 
 }

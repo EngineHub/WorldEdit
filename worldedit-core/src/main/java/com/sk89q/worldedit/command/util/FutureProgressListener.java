@@ -26,13 +26,15 @@ import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 
 import java.util.Timer;
+import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public class FutureProgressListener implements Runnable {
 
     private static final Timer timer = new Timer();
-    private static final int MESSAGE_DELAY = 1000;
+    private static final int MESSAGE_DELAY = 1000; // 1 second
+    private static final int MESSAGE_PERIOD = 10000; // 10 seconds
 
     private final MessageTimerTask task;
 
@@ -42,11 +44,15 @@ public class FutureProgressListener implements Runnable {
     }
 
     public FutureProgressListener(Actor sender, Component message) {
+        this(sender, message, null);
+    }
+
+    public FutureProgressListener(Actor sender, Component message, @Nullable Component workingMessage) {
         checkNotNull(sender);
         checkNotNull(message);
 
-        task = new MessageTimerTask(sender, message);
-        timer.schedule(task, MESSAGE_DELAY);
+        task = new MessageTimerTask(sender, message, workingMessage);
+        timer.scheduleAtFixedRate(task, MESSAGE_DELAY, MESSAGE_PERIOD);
     }
 
     @Override
@@ -56,11 +62,15 @@ public class FutureProgressListener implements Runnable {
 
     @Deprecated
     public static void addProgressListener(ListenableFuture<?> future, Actor sender, String message) {
-        future.addListener(new FutureProgressListener(sender, message), MoreExecutors.directExecutor());
+        addProgressListener(future, sender, TextComponent.of(message));
     }
 
     public static void addProgressListener(ListenableFuture<?> future, Actor sender, Component message) {
         future.addListener(new FutureProgressListener(sender, message), MoreExecutors.directExecutor());
+    }
+
+    public static void addProgressListener(ListenableFuture<?> future, Actor sender, Component message, Component workingMessage) {
+        future.addListener(new FutureProgressListener(sender, message, workingMessage), MoreExecutors.directExecutor());
     }
 
 }
