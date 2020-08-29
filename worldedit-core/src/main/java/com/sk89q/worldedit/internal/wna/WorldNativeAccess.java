@@ -84,7 +84,7 @@ public interface WorldNativeAccess<NC, NBS, NP> {
             if (sideEffects.getState(SideEffect.LIGHTING) == SideEffect.State.ON) {
                 updateLightingForBlock(pos);
             }
-            markAndNotifyBlock(pos, chunk, lastValue, newState, sideEffects);
+            markAndNotifyBlock(pos, chunk, old, newState, sideEffects);
         }
 
         return successful;
