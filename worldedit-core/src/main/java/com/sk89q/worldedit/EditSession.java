@@ -40,7 +40,6 @@ import com.sk89q.worldedit.extent.reorder.MultiStageReorder;
 import com.sk89q.worldedit.extent.validation.BlockChangeLimiter;
 import com.sk89q.worldedit.extent.validation.DataValidatorExtent;
 import com.sk89q.worldedit.extent.world.BiomeQuirkExtent;
-import com.sk89q.worldedit.extent.world.BlockQuirkExtent;
 import com.sk89q.worldedit.extent.world.ChunkLoadingExtent;
 import com.sk89q.worldedit.extent.world.SideEffectExtent;
 import com.sk89q.worldedit.extent.world.SurvivalModeExtent;
@@ -257,7 +256,6 @@ public class EditSession implements Extent, AutoCloseable {
                 watchdogExtents.add(watchdogExtent);
             }
             extent = traceIfNeeded(survivalExtent = new SurvivalModeExtent(extent, world));
-            extent = traceIfNeeded(new BlockQuirkExtent(extent, world));
             extent = traceIfNeeded(new BiomeQuirkExtent(extent));
             extent = traceIfNeeded(new ChunkLoadingExtent(extent, world));
             extent = traceIfNeeded(new LastAccessExtentCache(extent));

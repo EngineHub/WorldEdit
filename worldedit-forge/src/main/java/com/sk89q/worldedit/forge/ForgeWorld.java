@@ -189,6 +189,7 @@ public class ForgeWorld extends AbstractWorld {
 
     @Override
     public <B extends BlockStateHolder<B>> boolean setBlock(BlockVector3 position, B block, SideEffectSet sideEffects) throws WorldEditException {
+        clearContainerBlockContents(position);
         return nativeAccess.setBlock(position, block, sideEffects);
     }
 
