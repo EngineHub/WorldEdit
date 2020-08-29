@@ -186,6 +186,7 @@ public class FabricWorld extends AbstractWorld {
 
     @Override
     public <B extends BlockStateHolder<B>> boolean setBlock(BlockVector3 position, B block, SideEffectSet sideEffects) throws WorldEditException {
+        clearContainerBlockContents(position);
         return worldNativeAccess.setBlock(position, block, sideEffects);
     }
 

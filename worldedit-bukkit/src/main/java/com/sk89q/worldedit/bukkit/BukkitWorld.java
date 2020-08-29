@@ -442,6 +442,7 @@ public class BukkitWorld extends AbstractWorld {
 
     @Override
     public <B extends BlockStateHolder<B>> boolean setBlock(BlockVector3 position, B block, SideEffectSet sideEffects) {
+        clearContainerBlockContents(position);
         if (worldNativeAccess != null) {
             try {
                 return worldNativeAccess.setBlock(position, block, sideEffects);

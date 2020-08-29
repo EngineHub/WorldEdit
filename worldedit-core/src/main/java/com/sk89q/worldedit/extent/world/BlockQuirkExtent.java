@@ -33,7 +33,10 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * Handles various quirks when setting blocks, such as ice turning
  * into water or containers dropping their contents.
+ *
+ * @deprecated Handled by the world entirely now
  */
+@Deprecated
 public class BlockQuirkExtent extends AbstractDelegateExtent {
 
     private final World world;
