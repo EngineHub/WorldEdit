@@ -97,10 +97,15 @@ public class TrueZipMcRegionChunkStore extends McRegionChunkStore {
             for (Enumeration<? extends ZipEntry> e = zip.entries(); e.hasMoreElements(); ) {
                 ZipEntry testEntry = e.nextElement();
                 // Check for world
-                if (worldPattern.matcher(testEntry.getName()).matches()) {
+                String entryName = testEntry.getName();
+                if (worldPattern.matcher(entryName).matches()) {
                     // Check for file
-                    if (pattern.matcher(testEntry.getName()).matches()) {
-                        folder = testEntry.getName().substring(0, testEntry.getName().lastIndexOf('/'));
+                    if (pattern.matcher(entryName).matches()) {
+                        int endIndex = entryName.lastIndexOf('/');
+                        if (endIndex < 0) {
+                            endIndex = entryName.lastIndexOf('\\');
+                        }
+                        folder = entryName.substring(0, endIndex);
                         if (folder.endsWith("poi")) {
                             continue;
                         }
