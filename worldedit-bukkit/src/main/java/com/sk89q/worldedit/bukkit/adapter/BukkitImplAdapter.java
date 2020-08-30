@@ -20,7 +20,6 @@
 package com.sk89q.worldedit.bukkit.adapter;
 
 import com.sk89q.jnbt.CompoundTag;
-import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.blocks.BaseItemStack;
 import com.sk89q.worldedit.entity.BaseEntity;
@@ -54,13 +53,6 @@ import javax.annotation.Nullable;
  * An interface for adapters of various Bukkit implementations.
  */
 public interface BukkitImplAdapter {
-
-    /**
-     * Get the Minecraft data version for the current world data.
-     *
-     * @return the data version
-     */
-    int getDataVersion();
 
     /**
      * Get a data fixer, or null if not supported.
