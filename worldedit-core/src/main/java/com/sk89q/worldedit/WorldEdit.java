@@ -53,6 +53,7 @@ import com.sk89q.worldedit.scripting.RhinoCraftScriptEngine;
 import com.sk89q.worldedit.session.SessionManager;
 import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.util.Location;
+import com.sk89q.worldedit.util.assets.ImageManager;
 import com.sk89q.worldedit.util.concurrency.EvenMoreExecutors;
 import com.sk89q.worldedit.util.concurrency.LazyReference;
 import com.sk89q.worldedit.util.eventbus.EventBus;
@@ -126,6 +127,7 @@ public final class WorldEdit {
             LazyReference.from(() -> new TranslationManager(
                     WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.CONFIGURATION).getResourceLoader()
             ));
+    private final ImageManager imageManager = new ImageManager(this);
 
     private final BlockFactory blockFactory = new BlockFactory(this);
     private final ItemFactory itemFactory = new ItemFactory(this);
@@ -249,6 +251,15 @@ public final class WorldEdit {
      */
     public TranslationManager getTranslationManager() {
         return translationManager.getValue();
+    }
+
+    /**
+     * Return the image manager.
+     *
+     * @return the image manager
+     */
+    public ImageManager getImageManager() {
+        return imageManager;
     }
 
     /**

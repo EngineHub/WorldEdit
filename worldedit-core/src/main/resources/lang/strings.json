@@ -27,6 +27,8 @@
     "worldedit.brush.gravity.equip": "Gravity brush equipped ({0}).",
     "worldedit.brush.butcher.equip": "Butcher brush equipped ({0}).",
     "worldedit.brush.operation.equip": "Set brush to {0}.",
+    "worldedit.brush.image.equip": "Image brush equipped ({0}).",
+    "worldedit.brush.image.unknown": "Unknown image brush: {0}.\nList of available brushes: {1}",
     "worldedit.brush.none.equip": "Brush unbound from your current item.",
 
     "worldedit.setbiome.changed": "Biomes were changed for approximately {0} blocks.",
