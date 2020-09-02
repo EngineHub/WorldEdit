@@ -207,11 +207,11 @@ public abstract class AbstractRegion implements Region {
     // Sub-class utilities
 
     protected final int getWorldMinY() {
-        return world == null ? 0 : world.getMinY();
+        return world == null ? Integer.MIN_VALUE : world.getMinY();
     }
 
     protected final int getWorldMaxY() {
-        return world == null ? 255 : world.getMaxY();
+        return world == null ? Integer.MAX_VALUE : world.getMaxY();
     }
 
 }
