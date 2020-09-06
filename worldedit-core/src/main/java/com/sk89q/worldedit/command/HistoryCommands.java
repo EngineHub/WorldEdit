@@ -27,6 +27,7 @@ import com.sk89q.worldedit.command.util.CommandPermissions;
 import com.sk89q.worldedit.command.util.CommandPermissionsConditionGenerator;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.extension.platform.Actor;
+import com.sk89q.worldedit.extent.inventory.BlockBag;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import org.enginehub.piston.annotation.Command;
@@ -59,7 +60,7 @@ public class HistoryCommands {
         desc = "Undoes the last action (from history)"
     )
     @CommandPermissions({"worldedit.history.undo", "worldedit.history.undo.self"})
-    public void undo(Player player, LocalSession session,
+    public void undo(Actor actor, LocalSession session,
                      @Arg(desc = "Number of undoes to perform", def = "1")
                          int times,
                      @Arg(name = "player", desc = "Undo this player's operations", def = "")
@@ -67,27 +68,28 @@ public class HistoryCommands {
         times = Math.max(1, times);
         LocalSession undoSession = session;
         if (playerName != null) {
-            player.checkPermission("worldedit.history.undo.other");
+            actor.checkPermission("worldedit.history.undo.other");
             undoSession = worldEdit.getSessionManager().findByName(playerName);
             if (undoSession == null) {
-                player.printError(TranslatableComponent.of("worldedit.session.cant-find-session", TextComponent.of(playerName)));
+                actor.printError(TranslatableComponent.of("worldedit.session.cant-find-session", TextComponent.of(playerName)));
                 return;
             }
         }
         int timesUndone = 0;
         for (int i = 0; i < times; ++i) {
-            EditSession undone = undoSession.undo(undoSession.getBlockBag(player), player);
+            BlockBag blockBag = actor instanceof Player ? undoSession.getBlockBag((Player) actor) : null;
+            EditSession undone = undoSession.undo(blockBag, actor);
             if (undone != null) {
                 timesUndone++;
-                worldEdit.flushBlockBag(player, undone);
+                worldEdit.flushBlockBag(actor, undone);
             } else {
                 break;
             }
         }
         if (timesUndone > 0) {
-            player.printInfo(TranslatableComponent.of("worldedit.undo.undone", TextComponent.of(timesUndone)));
+            actor.printInfo(TranslatableComponent.of("worldedit.undo.undone", TextComponent.of(timesUndone)));
         } else {
-            player.printError(TranslatableComponent.of("worldedit.undo.none"));
+            actor.printError(TranslatableComponent.of("worldedit.undo.none"));
         }
     }
 
@@ -97,7 +99,7 @@ public class HistoryCommands {
         desc = "Redoes the last action (from history)"
     )
     @CommandPermissions({"worldedit.history.redo", "worldedit.history.redo.self"})
-    public void redo(Player player, LocalSession session,
+    public void redo(Actor actor, LocalSession session,
                      @Arg(desc = "Number of redoes to perform", def = "1")
                          int times,
                      @Arg(name = "player", desc = "Redo this player's operations", def = "")
@@ -105,27 +107,28 @@ public class HistoryCommands {
         times = Math.max(1, times);
         LocalSession redoSession = session;
         if (playerName != null) {
-            player.checkPermission("worldedit.history.redo.other");
+            actor.checkPermission("worldedit.history.redo.other");
             redoSession = worldEdit.getSessionManager().findByName(playerName);
             if (redoSession == null) {
-                player.printError(TranslatableComponent.of("worldedit.session.cant-find-session", TextComponent.of(playerName)));
+                actor.printError(TranslatableComponent.of("worldedit.session.cant-find-session", TextComponent.of(playerName)));
                 return;
             }
         }
         int timesRedone = 0;
         for (int i = 0; i < times; ++i) {
-            EditSession redone = redoSession.redo(redoSession.getBlockBag(player), player);
+            BlockBag blockBag = actor instanceof Player ? redoSession.getBlockBag((Player) actor) : null;
+            EditSession redone = redoSession.redo(blockBag, actor);
             if (redone != null) {
                 timesRedone++;
-                worldEdit.flushBlockBag(player, redone);
+                worldEdit.flushBlockBag(actor, redone);
             } else {
                 break;
             }
         }
         if (timesRedone > 0) {
-            player.printInfo(TranslatableComponent.of("worldedit.redo.redone", TextComponent.of(timesRedone)));
+            actor.printInfo(TranslatableComponent.of("worldedit.redo.redone", TextComponent.of(timesRedone)));
         } else {
-            player.printError(TranslatableComponent.of("worldedit.redo.none"));
+            actor.printError(TranslatableComponent.of("worldedit.redo.none"));
         }
     }
 
