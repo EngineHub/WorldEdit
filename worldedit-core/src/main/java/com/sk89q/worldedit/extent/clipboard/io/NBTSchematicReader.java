@@ -32,12 +32,14 @@ public abstract class NBTSchematicReader implements ClipboardReader {
 
     protected static <T extends Tag> T requireTag(Map<String, Tag> items, String key, Class<T> expected) throws IOException {
         if (!items.containsKey(key)) {
-            throw new IOException("Schematic file is missing a \"" + key + "\" tag");
+            throw new IOException("Schematic file is missing a \"" + key + "\" tag of type "
+                + expected.getName());
         }
 
         Tag tag = items.get(key);
         if (!expected.isInstance(tag)) {
-            throw new IOException(key + " tag is not of tag type " + expected.getName());
+            throw new IOException(key + " tag is not of tag type " + expected.getName() + ", got "
+                + tag.getClass().getName() + " instead");
         }
 
         return expected.cast(tag);
