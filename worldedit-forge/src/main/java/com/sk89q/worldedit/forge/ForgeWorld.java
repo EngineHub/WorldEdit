@@ -637,7 +637,7 @@ public class ForgeWorld extends AbstractWorld {
         final World world = getWorld();
         AxisAlignedBB box = new AxisAlignedBB(
             ForgeAdapter.toBlockPos(region.getMinimumPoint()),
-            ForgeAdapter.toBlockPos(region.getMaximumPoint())
+            ForgeAdapter.toBlockPos(region.getMaximumPoint().add(BlockVector3.ONE))
         );
         List<net.minecraft.entity.Entity> nmsEntities = world.getEntitiesWithinAABB(
             (EntityType<net.minecraft.entity.Entity>) null,
