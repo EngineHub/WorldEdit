@@ -245,6 +245,9 @@ public class DefaultBlockParser extends InputParser<BaseBlock> {
         BlockType blockType = null;
         Map<Property<?>, Object> blockStates = new HashMap<>();
         String[] blockAndExtraData = input.trim().split("\\|");
+        if (blockAndExtraData.length == 0) {
+            throw new NoMatchException(TranslatableComponent.of("worldedit.error.unknown-block", TextComponent.of(input)));
+        }
         blockAndExtraData[0] = woolMapper(blockAndExtraData[0]);
 
         BlockState state = null;
