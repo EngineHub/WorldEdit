@@ -53,7 +53,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.Biomes;
 
 import java.util.Comparator;
 import java.util.Map;
