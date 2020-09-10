@@ -24,6 +24,8 @@ import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.function.LayerFunction;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.registry.state.Property;
+import com.sk89q.worldedit.world.block.BlockCategories;
+import com.sk89q.worldedit.world.block.BlockCategory;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockTypes;
 
@@ -35,6 +37,7 @@ public class SnowSimulator implements LayerFunction {
 
     private final Property<Integer> snowLayersProperty = BlockTypes.SNOW.getProperty("layers");
     private final Property<Integer> waterLevelProperty = BlockTypes.WATER.getProperty("level");
+    private final Property<String> slabTypeProperty = BlockTypes.OAK_SLAB.getProperty("type");
 
     private final Extent extent;
     private final boolean stack;
@@ -66,6 +69,13 @@ public class SnowSimulator implements LayerFunction {
             return true;
         }
 
+        // Slabs are also valid but not "FullCube"
+        BlockCategory blockCategorySlabs = new BlockCategory(BlockCategories.SLABS.getId());
+
+        if (blockCategorySlabs.contains(block.getBlockType())) {
+            return true;
+        }
+
         // Can only place on full solid blocks
         return block.getBlockType().getMaterial().isFullCube()
                 && block.getBlockType().getMaterial().isSolid();
@@ -86,6 +96,13 @@ public class SnowSimulator implements LayerFunction {
                     affected++;
                 }
             }
+            return false;
+        }
+
+        // Prevent placing snow on slabs if on bottom
+        BlockCategory blockCategorySlabs = new BlockCategory(BlockCategories.SLABS.getId());
+        if (blockCategorySlabs.contains(block.getBlockType())
+                && block.getState(slabTypeProperty).equals("bottom")) {
             return false;
         }
 
