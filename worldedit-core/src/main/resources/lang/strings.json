@@ -114,7 +114,7 @@
     "worldedit.hpos.no-block": "No block in sight!",
     "worldedit.hpos.already-set": "Position already set.",
     "worldedit.chunk.selected-multiple": "Chunks selected: ({0}, {1}, {2}) - ({3}, {4}, {5})",
-    "worldedit.chunk.selected": "Chunk selected: {0}, {1}, {3}",
+    "worldedit.chunk.selected": "Chunk selected: {0}, {1}, {2}",
     "worldedit.wand.invalid": "Wand item is mis-configured or disabled.",
     "worldedit.wand.selwand.info": "Left click: select pos #1; Right click: select pos #2",
     "worldedit.wand.navwand.info": "Left click: jump to location; Right click: pass through walls",

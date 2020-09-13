@@ -206,7 +206,8 @@ public class SelectionCommands {
 
     @Command(
         name = "/chunk",
-        desc = "Set the selection to your current chunk."
+        desc = "Set the selection to your current chunk.",
+        descFooter = "This command selects 256-block-tall areas,\nwhich can be specified by the y-coordinate.\nE.g. -c x,1,z will select from y=256 to y=511."
     )
     @Logging(POSITION)
     @CommandPermissions("worldedit.selection.chunk")
