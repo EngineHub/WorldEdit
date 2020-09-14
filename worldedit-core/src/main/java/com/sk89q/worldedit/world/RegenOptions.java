@@ -20,14 +20,14 @@
 package com.sk89q.worldedit.world;
 
 import com.google.auto.value.AutoValue;
-import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.regions.Region;
 
 import java.util.OptionalLong;
 import javax.annotation.Nullable;
 
 /**
- * Regeneration options for {@link World#regenerate(Region, EditSession, RegenOptions)}.
+ * Regeneration options for {@link World#regenerate(Region, Extent, RegenOptions)}.
  */
 @AutoValue
 public abstract class RegenOptions {
