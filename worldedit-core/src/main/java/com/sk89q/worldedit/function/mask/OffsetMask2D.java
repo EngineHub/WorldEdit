@@ -26,7 +26,10 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * Checks whether another mask tests true for a position that is offset
  * a given vector.
+ *
+ * @deprecated Use {@link OffsetsMask2D#single}
  */
+@Deprecated
 public class OffsetMask2D extends AbstractMask2D {
 
     private Mask2D mask;
