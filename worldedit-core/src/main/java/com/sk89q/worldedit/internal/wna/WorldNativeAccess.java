@@ -178,7 +178,7 @@ public interface WorldNativeAccess<NC, NBS, NP> {
         }
 
         // Make connection updates optional
-        if (sideEffectSet.shouldApply(SideEffect.VALIDATION)) {
+        if (sideEffectSet.shouldApply(SideEffect.NEIGHBORS)) {
             updateNeighbors(pos, oldState, newState, 512);
         }
 
