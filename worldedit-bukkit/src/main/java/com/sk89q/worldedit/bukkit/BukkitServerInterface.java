@@ -92,7 +92,10 @@ public class BukkitServerInterface extends AbstractPlatform implements MultiUser
     @SuppressWarnings("deprecation")
     @Override
     public int getDataVersion() {
-        return Bukkit.getUnsafe().getDataVersion();
+        if (plugin.getBukkitImplAdapter() != null) {
+            return Bukkit.getUnsafe().getDataVersion();
+        }
+        return -1;
     }
 
     @Override
