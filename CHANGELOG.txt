@@ -14,12 +14,15 @@
 - Optimize polygon regions
 - Improved performance of the deform brush
 - Update to a newer Rhino release for craftscripts
-- Added support for 1.16.1 and 1.16.2
+- Added support for 1.16.1, 1.16.2, and 1.16.3
 - Added support for regenerating biomes with //regen
 - Added support for full offsets to //stack and //move
 - Added -c mode to //deform, and fixed -o mode
 - Added a Biome brush
+- Added an #air mask, that matches all types of air blocks
 - Improved ES6 support for craftscripts
+- Improved //watchdog to also tick get* calls to fix issues with slow chunk loads
+- Improved error messages for invalid schematics
 - Fixed an issue with edges of polygonal regions
 - Fixed multiple of the same flag being applied to commands not providing a friendly error
 - Fixed potential issues with direction name parsing in commands
@@ -57,6 +60,13 @@
 - Made WorldEdit print a warning when other plugins include parts of WorldEdit
 - Fixed Skull owner tag being incorrect in 1.16+.
 - Fixed pastebin services for large files
+- Fixed an issue where some messages (such as an out of memory error) would not be displayed when loading schematics
+- Deprecate BlockQuirkExtent due to being handled outside of the extent stack now
+- Fixed undo/redo not working from console or commandblocks
+- Fixed an issue where specific invalid input would cause an error in the block parser
+- Fixed entity detection being slightly incorrect around the maximum point of regions on Forge and Fabric
+- Fixed loading snapshot files with odd slashes
+- Fixed an issue where the output text of //chunk was broken
 
 7.1.0
 - Improve the expression parser by compiling expressions for performance
