@@ -20,10 +20,10 @@
 package com.sk89q.worldedit.function.mask;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.util.Direction;
 
-import java.util.List;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
@@ -42,78 +42,115 @@ public class OffsetsMask extends AbstractMask {
             .collect(Collectors.toList())
     );
 
+    /**
+     * Create an offsets mask for a single offset.
+     *
+     * @param mask the mask to use
+     * @param offset the offset
+     * @return the new offsets mask
+     */
+    public static OffsetsMask single(Mask mask, BlockVector3 offset) {
+        return builder(mask).maxMatches(1).offsets(ImmutableList.of(offset)).build();
+    }
+
+    /**
+     * Create a new builder, using the given mask.
+     * @param mask the mask to use
+     * @return the builder
+     */
+    public static Builder builder(Mask mask) {
+        return new Builder().mask(mask);
+    }
+
+    /**
+     * A builder for an {@link OffsetsMask}.
+     */
+    public static final class Builder {
+        private Mask mask;
+        private boolean excludeSelf;
+        private int minMatches = 1;
+        private int maxMatches = Integer.MAX_VALUE;
+        private ImmutableList<BlockVector3> offsets = OFFSET_LIST;
+
+        private Builder() {
+        }
+
+        /**
+         * Set the mask to test.
+         * @param mask the mask to test
+         * @return this builder, for chaining
+         */
+        public Builder mask(Mask mask) {
+            this.mask = mask;
+            return this;
+        }
+
+        /**
+         * Set whether the mask should fail if the original position matches. Defaults to
+         * {@code false}.
+         *
+         * @param excludeSelf {@code true} to exclude the original position if it matches
+         * @return this builder, for chaining
+         */
+        public Builder excludeSelf(boolean excludeSelf) {
+            this.excludeSelf = excludeSelf;
+            return this;
+        }
+
+        /**
+         * Set the minimum amount of matches required. Defaults to {@code 1}. Must be smaller than
+         * or equal to the {@linkplain #maxMatches(int) max matches} and the {@link #offsets} size,
+         * and greater than or equal to {@code 0}.
+         *
+         * @param minMatches the minimum amount of matches required
+         * @return this builder, for chaining
+         */
+        public Builder minMatches(int minMatches) {
+            this.minMatches = minMatches;
+            return this;
+        }
+
+        /**
+         * Set the maximum amount of matches allowed. Defaults to {@link Integer#MAX_VALUE}. Must
+         * be greater than or equal to {@linkplain #minMatches(int)}.
+         *
+         * @param maxMatches the maximum amount of matches allowed
+         * @return this builder, for chaining
+         */
+        public Builder maxMatches(int maxMatches) {
+            this.maxMatches = maxMatches;
+            return this;
+        }
+
+        /**
+         * Set the offsets to test. Defaults to all {@linkplain Direction.Flag#CARDINAL cardinal}
+         * and {@linkplain Direction.Flag#UPRIGHT upright} directions.
+         *
+         * @param offsets the offsets to test
+         * @return this builder, for chaining
+         */
+        public Builder offsets(Iterable<BlockVector3> offsets) {
+            this.offsets = ImmutableList.copyOf(offsets);
+            return this;
+        }
+
+        /**
+         * Build an offsets mask.
+         *
+         * @return the new mask
+         */
+        public OffsetsMask build() {
+            return new OffsetsMask(mask, excludeSelf, minMatches, maxMatches, offsets);
+        }
+    }
+
     private final Mask mask;
     private final boolean excludeSelf;
     private final int minMatches;
     private final int maxMatches;
     private final ImmutableList<BlockVector3> offsets;
 
-    /**
-     * Create an OffsetsMask for a single offset.
-     *
-     * @param mask The mask to use
-     * @param offset The offset
-     * @return The offsets mask
-     */
-    public static OffsetsMask single(Mask mask, BlockVector3 offset) {
-        return new OffsetsMask(mask, false, 1, 1, ImmutableList.of(offset));
-    }
-
-    /**
-     * Create a new instance using all adjacent faces excluding diagonals.
-     *
-     * <p>
-     *     Note: This passes as long as there is at least one match, and does not
-     *     exclude cases where the block being checked matches the mask.
-     * </p>
-     *
-     * @param mask the mask to test against
-     */
-    public OffsetsMask(Mask mask) {
-        this(mask, false);
-    }
-
-    /**
-     * Create a new instance using all adjacent faces excluding diagonals.
-     *
-     * <p>
-     *     Note: This passes as long as there is at least one match.
-     * </p>
-     *
-     * @param mask the mask to test against
-     * @param excludeSelf excludes blocks where the mask matches itself
-     */
-    public OffsetsMask(Mask mask, boolean excludeSelf) {
-        this(mask, excludeSelf, 1, Integer.MAX_VALUE);
-    }
-
-    /**
-     * Create a new instance using all adjacent faces excluding diagonals.
-     *
-     * @param mask the mask to test against
-     * @param excludeSelf excludes blocks where the mask matches itself
-     * @param minMatches the minimum number of matches (inclusive)
-     * @param maxMatches the maximum number of matches (inclusive)
-     */
-    public OffsetsMask(Mask mask, boolean excludeSelf, int minMatches, int maxMatches) {
-        this(mask, excludeSelf, minMatches, maxMatches, OFFSET_LIST);
-    }
-
-    /**
-     * Create a new instance.
-     *
-     * <p>
-     *     Note: the minimum number of matches must be 0 or greater, and
-     *     the maximum number of matches cannot be below the minimum.
-     * </p>
-     *
-     * @param mask the mask to test against
-     * @param excludeSelf excludes blocks where the mask matches itself
-     * @param minMatches the minimum number of matches (inclusive)
-     * @param maxMatches the maximum number of matches (inclusive)
-     * @param offsets the block offsets to test with
-     */
-    public OffsetsMask(Mask mask, boolean excludeSelf, int minMatches, int maxMatches, List<BlockVector3> offsets) {
+    private OffsetsMask(Mask mask, boolean excludeSelf, int minMatches, int maxMatches, ImmutableList<BlockVector3> offsets) {
         checkNotNull(mask);
         checkNotNull(offsets);
         // Validate match args. No need to test maxMatches as it must be >=0 based on the conditions here.
@@ -126,7 +163,7 @@ public class OffsetsMask extends AbstractMask {
         this.excludeSelf = excludeSelf;
         this.minMatches = minMatches;
         this.maxMatches = maxMatches;
-        this.offsets = ImmutableList.copyOf(offsets);
+        this.offsets = offsets;
     }
 
     /**
@@ -136,15 +173,6 @@ public class OffsetsMask extends AbstractMask {
      */
     public Mask getMask() {
         return mask;
-    }
-
-    /**
-     * Get the offsets.
-     *
-     * @return the offsets
-     */
-    public ImmutableList<BlockVector3> getOffsets() {
-        return this.offsets;
     }
 
     /**
@@ -174,6 +202,15 @@ public class OffsetsMask extends AbstractMask {
         return this.maxMatches;
     }
 
+    /**
+     * Get the offsets.
+     *
+     * @return the offsets
+     */
+    public ImmutableList<BlockVector3> getOffsets() {
+        return this.offsets;
+    }
+
     @Override
     public boolean test(BlockVector3 vector) {
         if (excludeSelf && mask.test(vector)) {
@@ -199,13 +236,12 @@ public class OffsetsMask extends AbstractMask {
     public Mask2D toMask2D() {
         Mask2D childMask = getMask().toMask2D();
         if (childMask != null) {
-            return new OffsetsMask2D(
-                childMask,
-                excludeSelf,
-                minMatches,
-                maxMatches,
-                getOffsets().stream().map(BlockVector3::toBlockVector2).collect(Collectors.toList())
-            );
+            return OffsetsMask2D.builder(childMask)
+                .excludeSelf(excludeSelf)
+                .minMatches(minMatches)
+                .maxMatches(maxMatches)
+                .offsets(Lists.transform(offsets, BlockVector3::toBlockVector2))
+                .build();
         } else {
             return null;
         }
