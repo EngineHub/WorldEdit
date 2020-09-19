@@ -108,7 +108,7 @@
     "worldedit.schematic.delete.failed": "Deletion of {0} failed! Is it read-only?",
     "worldedit.schematic.delete.deleted": "{0} has been deleted.",
     "worldedit.schematic.formats.title": "Available clipboard formats (Name: Lookup names)",
-    "worldedit.schematic.unsupported-minecraft-version": "This version of WorldEdit does not support your Minecraft version. Schematics will not work until this is resolved. Update WorldEdit to restore this functionality.",
+    "worldedit.schematic.unsupported-minecraft-version": "This version of WorldEdit does not support your Minecraft version. Schematics will not work until this is resolved.",
 
     "worldedit.pos.already-set": "Position already set.",
     "worldedit.pos.console-require-coords": "You must provide coordinates as console.",
