@@ -293,7 +293,6 @@ public class SchematicCommands {
             pathComparator = Comparator.naturalOrder();
             flag = "";
         }
-        final int sortType = oldFirst ? -1 : newFirst ? 1 : 0;
         final String pageCommand = actor.isPlayer()
                 ? "//schem list -p %page%" + flag : null;
 
