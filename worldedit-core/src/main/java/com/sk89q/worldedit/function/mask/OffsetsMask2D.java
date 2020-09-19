@@ -20,12 +20,10 @@
 package com.sk89q.worldedit.function.mask;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.util.Direction;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -35,13 +33,12 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class OffsetsMask2D extends AbstractMask2D {
 
-    private static final ImmutableList<BlockVector2> OFFSET_LIST = ImmutableList.copyOf(
+    private static final ImmutableSet<BlockVector2> OFFSET_LIST =
         Direction.valuesOf(Direction.Flag.CARDINAL)
             .stream()
             .map(Direction::toBlockVector)
             .map(BlockVector3::toBlockVector2)
-            .collect(Collectors.toList())
-    );
+            .collect(ImmutableSet.toImmutableSet());
 
     /**
      * Create an offsets mask for a single offset.
@@ -71,7 +68,7 @@ public class OffsetsMask2D extends AbstractMask2D {
         private boolean excludeSelf;
         private int minMatches = 1;
         private int maxMatches = Integer.MAX_VALUE;
-        private ImmutableList<BlockVector2> offsets = OFFSET_LIST;
+        private ImmutableSet<BlockVector2> offsets = OFFSET_LIST;
 
         private Builder() {
         }
@@ -131,7 +128,7 @@ public class OffsetsMask2D extends AbstractMask2D {
          * @return this builder, for chaining
          */
         public Builder offsets(Iterable<BlockVector2> offsets) {
-            this.offsets = ImmutableList.copyOf(offsets);
+            this.offsets = ImmutableSet.copyOf(offsets);
             return this;
         }
 
@@ -149,9 +146,9 @@ public class OffsetsMask2D extends AbstractMask2D {
     private final boolean excludeSelf;
     private final int minMatches;
     private final int maxMatches;
-    private final ImmutableList<BlockVector2> offsets;
+    private final ImmutableSet<BlockVector2> offsets;
 
-    private OffsetsMask2D(Mask2D mask, boolean excludeSelf, int minMatches, int maxMatches, ImmutableList<BlockVector2> offsets) {
+    private OffsetsMask2D(Mask2D mask, boolean excludeSelf, int minMatches, int maxMatches, ImmutableSet<BlockVector2> offsets) {
         checkNotNull(mask);
         checkNotNull(offsets);
         // Validate match args. No need to test maxMatches as it must be >=0 based on the conditions here.
@@ -208,7 +205,7 @@ public class OffsetsMask2D extends AbstractMask2D {
      *
      * @return the offsets
      */
-    public ImmutableList<BlockVector2> getOffsets() {
+    public ImmutableSet<BlockVector2> getOffsets() {
         return this.offsets;
     }
 

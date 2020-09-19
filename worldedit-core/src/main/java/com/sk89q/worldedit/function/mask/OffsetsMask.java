@@ -20,11 +20,11 @@
 package com.sk89q.worldedit.function.mask;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Iterables;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.util.Direction;
 
-import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -35,12 +35,11 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class OffsetsMask extends AbstractMask {
 
-    private static final ImmutableList<BlockVector3> OFFSET_LIST = ImmutableList.copyOf(
+    private static final ImmutableSet<BlockVector3> OFFSET_LIST =
         Direction.valuesOf(Direction.Flag.CARDINAL | Direction.Flag.UPRIGHT)
             .stream()
             .map(Direction::toBlockVector)
-            .collect(Collectors.toList())
-    );
+            .collect(ImmutableSet.toImmutableSet());
 
     /**
      * Create an offsets mask for a single offset.
@@ -70,7 +69,7 @@ public class OffsetsMask extends AbstractMask {
         private boolean excludeSelf;
         private int minMatches = 1;
         private int maxMatches = Integer.MAX_VALUE;
-        private ImmutableList<BlockVector3> offsets = OFFSET_LIST;
+        private ImmutableSet<BlockVector3> offsets = OFFSET_LIST;
 
         private Builder() {
         }
@@ -130,7 +129,7 @@ public class OffsetsMask extends AbstractMask {
          * @return this builder, for chaining
          */
         public Builder offsets(Iterable<BlockVector3> offsets) {
-            this.offsets = ImmutableList.copyOf(offsets);
+            this.offsets = ImmutableSet.copyOf(offsets);
             return this;
         }
 
@@ -148,9 +147,9 @@ public class OffsetsMask extends AbstractMask {
     private final boolean excludeSelf;
     private final int minMatches;
     private final int maxMatches;
-    private final ImmutableList<BlockVector3> offsets;
+    private final ImmutableSet<BlockVector3> offsets;
 
-    private OffsetsMask(Mask mask, boolean excludeSelf, int minMatches, int maxMatches, ImmutableList<BlockVector3> offsets) {
+    private OffsetsMask(Mask mask, boolean excludeSelf, int minMatches, int maxMatches, ImmutableSet<BlockVector3> offsets) {
         checkNotNull(mask);
         checkNotNull(offsets);
         // Validate match args. No need to test maxMatches as it must be >=0 based on the conditions here.
@@ -207,7 +206,7 @@ public class OffsetsMask extends AbstractMask {
      *
      * @return the offsets
      */
-    public ImmutableList<BlockVector3> getOffsets() {
+    public ImmutableSet<BlockVector3> getOffsets() {
         return this.offsets;
     }
 
@@ -240,7 +239,7 @@ public class OffsetsMask extends AbstractMask {
                 .excludeSelf(excludeSelf)
                 .minMatches(minMatches)
                 .maxMatches(maxMatches)
-                .offsets(Lists.transform(offsets, BlockVector3::toBlockVector2))
+                .offsets(Iterables.transform(offsets, BlockVector3::toBlockVector2))
                 .build();
         } else {
             return null;
