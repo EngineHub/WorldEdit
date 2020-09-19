@@ -46,6 +46,8 @@ public class ExposedMaskParser extends SimpleInputParser<Mask> {
 
     @Override
     public Mask parseFromSimpleInput(String input, ParserContext context) throws InputParseException {
-        return new OffsetsMask(Masks.negate(new ExistingBlockMask(context.requireExtent())), true);
+        return OffsetsMask.builder(Masks.negate(new ExistingBlockMask(context.requireExtent())))
+            .excludeSelf(true)
+            .build();
     }
 }
