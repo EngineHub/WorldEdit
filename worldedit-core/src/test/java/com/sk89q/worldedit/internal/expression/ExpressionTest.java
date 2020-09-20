@@ -51,6 +51,9 @@ class ExpressionTest extends BaseExpressionTest {
             // check functions
             testCase("sin(5)", sin(5)),
             testCase("atan2(3, 4)", atan2(3, 4)),
+            testCase("min(1, 2)", 1),
+            testCase("max(1, 2)", 2),
+            testCase("max(1, 2, 3, 4, 5)", 5),
             // check conditionals
             testCase("0 || 5", 5),
             testCase("2 || 5", 2),
