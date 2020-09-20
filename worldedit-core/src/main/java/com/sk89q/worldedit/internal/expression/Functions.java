@@ -63,6 +63,7 @@ public final class Functions {
     }
 
     private static MethodHandle clean(MethodHandle handle) {
+        boolean wasVarargs = handle.isVarargsCollector();
         // box it all first
         handle = handle.asType(handle.type().wrap());
         if (handle.type().returnType() != Double.class) {
@@ -71,6 +72,12 @@ public final class Functions {
                 "Function does not return a number");
             handle = handle.asType(handle.type().changeReturnType(Number.class));
             handle = filterReturnValue(handle, DOUBLE_VALUE);
+        }
+        // return vararg-ity
+        if (wasVarargs) {
+            handle = handle.asVarargsCollector(
+                handle.type().parameterType(handle.type().parameterCount() - 1)
+            );
         }
         return handle;
     }

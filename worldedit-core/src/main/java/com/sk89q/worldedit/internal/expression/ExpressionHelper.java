@@ -65,9 +65,21 @@ public class ExpressionHelper {
         Set<MethodHandle> matchingFns = functions.getMap().get(fnName);
         check(!matchingFns.isEmpty(), ctx, "Unknown function '" + fnName + "'");
         for (MethodHandle function : matchingFns) {
+            if (function.isVarargsCollector()) {
+                int nParams = function.type().parameterCount();
+                // last param is the array, turn that varargs
+                int keptParams = nParams - 1;
+                function = function.asCollector(
+                    // collect into the last array
+                    function.type().parameterType(nParams - 1),
+                    // collect the variable args (args over kept)
+                    ctx.args.size() - keptParams
+                );
+                // re-wrap it for the inner arguments
+                function = function.asType(function.type().wrap());
+            }
             MethodType type = function.type();
-            // Validate argc if not varargs
-            if (!function.isVarargsCollector() && type.parameterCount() != ctx.args.size()) {
+            if (type.parameterCount() != ctx.args.size()) {
                 // skip non-matching function
                 continue;
             }

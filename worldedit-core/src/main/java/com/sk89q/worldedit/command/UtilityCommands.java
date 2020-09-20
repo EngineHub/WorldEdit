@@ -527,7 +527,11 @@ public class UtilityCommands {
         try {
             expression = Expression.compile(String.join(" ", input));
         } catch (ExpressionException e) {
-            actor.printError(TranslatableComponent.of("worldedit.calc.invalid", TextComponent.of(String.join(" ", input))));
+            actor.printError(TranslatableComponent.of(
+                "worldedit.calc.invalid.with-error",
+                TextComponent.of(String.join(" ", input)),
+                TextComponent.of(e.getMessage())
+            ));
             return;
         }
         WorldEditAsyncCommandBuilder.createAndSendMessage(actor, () -> {

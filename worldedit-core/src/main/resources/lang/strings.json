@@ -174,6 +174,7 @@
     "worldedit.remove.removed": "{0} entities have been marked for removal.",
     "worldedit.remove.explain-all": "Use -1 to remove all entities in loaded chunks",
     "worldedit.calc.invalid": "'{0}' could not be parsed as a valid expression",
+    "worldedit.calc.invalid.with-error": "'{0}' could not be parsed as a valid expression: '{1}'",
 
     "worldedit.paste.pasted": "The clipboard has been pasted at {0}",
     "worldedit.paste.selected": "Selected clipboard paste region.",
