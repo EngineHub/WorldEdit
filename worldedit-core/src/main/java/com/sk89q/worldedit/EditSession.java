@@ -1203,9 +1203,11 @@ public class EditSession implements Extent, AutoCloseable {
      * @param block the block to place
      * @return number of blocks affected
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
+     * @deprecated Use {@link EditSession#makeCuboidFaces(Region, Pattern)}.
      */
+    @Deprecated
     public <B extends BlockStateHolder<B>> int makeCuboidFaces(Region region, B block) throws MaxChangedBlocksException {
-        return makeCuboidFaces(region, block);
+        return makeCuboidFaces(region, (Pattern) block);
     }
 
     /**
@@ -1320,7 +1322,9 @@ public class EditSession implements Extent, AutoCloseable {
      * @param block the placed block
      * @return number of blocks affected
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
+     * @deprecated Use {@link EditSession#overlayCuboidBlocks(Region, Pattern)}.
      */
+    @Deprecated
     public <B extends BlockStateHolder<B>> int overlayCuboidBlocks(Region region, B block) throws MaxChangedBlocksException {
         checkNotNull(block);
 
