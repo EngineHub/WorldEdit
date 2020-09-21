@@ -22,6 +22,7 @@ package com.sk89q.worldedit.command;
 import com.google.common.collect.Lists;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalSession;
+import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.command.util.CommandPermissions;
 import com.sk89q.worldedit.command.util.CommandPermissionsConditionGenerator;
@@ -79,6 +80,9 @@ public class ClipboardCommands {
                          boolean copyBiomes,
                      @ArgFlag(name = 'm', desc = "Set the include mask, non-matching blocks become air")
                          Mask mask) throws WorldEditException {
+        if (region.getVolume() > session.getBlockChangeLimit()) {
+            throw new MaxChangedBlocksException(session.getBlockChangeLimit());
+        }
         BlockArrayClipboard clipboard = new BlockArrayClipboard(region);
         clipboard.setOrigin(session.getPlacementPosition(actor));
         ForwardExtentCopy copy = new ForwardExtentCopy(editSession, region, clipboard, region.getMinimumPoint());
@@ -109,7 +113,9 @@ public class ClipboardCommands {
                         boolean copyBiomes,
                     @ArgFlag(name = 'm', desc = "Set the exclude mask, non-matching blocks become air")
                         Mask mask) throws WorldEditException {
-
+        if (region.getVolume() > session.getBlockChangeLimit()) {
+            throw new MaxChangedBlocksException(session.getBlockChangeLimit());
+        }
         BlockArrayClipboard clipboard = new BlockArrayClipboard(region);
         clipboard.setOrigin(session.getPlacementPosition(actor));
         ForwardExtentCopy copy = new ForwardExtentCopy(editSession, region, clipboard, region.getMinimumPoint());
