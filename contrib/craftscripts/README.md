@@ -5,10 +5,9 @@ Example usage:
 /cs maze.js glowstone 10 10
 
 You may or may not install these scripts -- it is optional. If you are, however,
-place the entire craftscripts/ folder into the respective directory for the platform
+place the entire `craftscripts/` folder into the respective directory for the platform
 that you have installed WorldEdit.
 
 In order to be able to use CraftScripts, you must install the Rhino JavaScript library.
 The installation page linked above has information about that. More information
-about scripts in general can be found at
-https://worldedit.enginehub.org/en/latest/usage/other/craftscripts/
+about scripts in general can be found [on our docs](https://worldedit.enginehub.org/en/latest/usage/other/craftscripts/)
