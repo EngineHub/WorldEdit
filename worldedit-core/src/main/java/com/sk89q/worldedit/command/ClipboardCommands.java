@@ -42,6 +42,7 @@ import com.sk89q.worldedit.internal.annotation.Selection;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.math.transform.AffineTransform;
+import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.RegionSelector;
 import com.sk89q.worldedit.regions.selector.CuboidRegionSelector;
@@ -67,6 +68,22 @@ import static com.sk89q.worldedit.command.util.Logging.LogMode.REGION;
 @CommandContainer(superTypes = CommandPermissionsConditionGenerator.Registration.class)
 public class ClipboardCommands {
 
+    /**
+     * Throws if the region would allocate a clipboard larger than the block change limit.
+     *
+     * @param region The region to check
+     * @param session The session
+     * @throws MaxChangedBlocksException if the volume exceeds the limit
+     */
+    private void checkRegionBounds(Region region, LocalSession session) throws MaxChangedBlocksException {
+        Region clipboardBounds = region instanceof CuboidRegion
+            ? region
+            : new CuboidRegion(region.getMinimumPoint(), region.getMaximumPoint());
+        if (clipboardBounds.getVolume() > session.getBlockChangeLimit()) {
+            throw new MaxChangedBlocksException(session.getBlockChangeLimit());
+        }
+    }
+
     @Command(
         name = "/copy",
         desc = "Copy the selection to the clipboard"
@@ -80,9 +97,7 @@ public class ClipboardCommands {
                          boolean copyBiomes,
                      @ArgFlag(name = 'm', desc = "Set the include mask, non-matching blocks become air")
                          Mask mask) throws WorldEditException {
-        if (region.getVolume() > session.getBlockChangeLimit()) {
-            throw new MaxChangedBlocksException(session.getBlockChangeLimit());
-        }
+        checkRegionBounds(region, session);
         BlockArrayClipboard clipboard = new BlockArrayClipboard(region);
         clipboard.setOrigin(session.getPlacementPosition(actor));
         ForwardExtentCopy copy = new ForwardExtentCopy(editSession, region, clipboard, region.getMinimumPoint());
@@ -113,9 +128,7 @@ public class ClipboardCommands {
                         boolean copyBiomes,
                     @ArgFlag(name = 'm', desc = "Set the exclude mask, non-matching blocks become air")
                         Mask mask) throws WorldEditException {
-        if (region.getVolume() > session.getBlockChangeLimit()) {
-            throw new MaxChangedBlocksException(session.getBlockChangeLimit());
-        }
+        checkRegionBounds(region, session);
         BlockArrayClipboard clipboard = new BlockArrayClipboard(region);
         clipboard.setOrigin(session.getPlacementPosition(actor));
         ForwardExtentCopy copy = new ForwardExtentCopy(editSession, region, clipboard, region.getMinimumPoint());
