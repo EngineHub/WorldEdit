@@ -192,6 +192,7 @@
     "worldedit.replace.replaced": "{0} blocks have been replaced.",
     "worldedit.stack.changed": "{0} blocks changed. Undo with //undo",
     "worldedit.stack.intersecting-region": "Stack offset must not collide with the region when using block units",
+    "worldedit.stack.invalid-type": "//stack only works with cuboid selections",
     "worldedit.regen.regenerated": "Region regenerated.",
     "worldedit.regen.failed": "Unable to regenerate chunks. Check console for details.",
     "worldedit.walls.changed": "{0} blocks have been changed.",
