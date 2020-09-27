@@ -50,7 +50,7 @@ public interface Region extends Iterable<BlockVector3>, Cloneable {
     BlockVector3 getMaximumPoint();
 
     /**
-     * Get the bounding box of this region as a CuboidRegion.
+     * Get the bounding box of this region as a {@link CuboidRegion}.
      *
      * @return the bounding box
      */
