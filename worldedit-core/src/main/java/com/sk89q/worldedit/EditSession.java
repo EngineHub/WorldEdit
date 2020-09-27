@@ -1434,8 +1434,7 @@ public class EditSession implements Extent, AutoCloseable {
      * @throws RegionOperationException thrown if the region operation is invalid
      */
     public int stackCuboidRegionBlockUnits(CuboidRegion region, BlockVector3 offset, int count,
-                                           boolean copyEntities, boolean copyBiomes, Mask mask
-    ) throws MaxChangedBlocksException, RegionOperationException {
+                                           boolean copyEntities, boolean copyBiomes, Mask mask) throws MaxChangedBlocksException, RegionOperationException {
         checkNotNull(region);
         checkNotNull(offset);
         checkArgument(count >= 1, "count >= 1 required");
