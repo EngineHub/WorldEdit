@@ -371,8 +371,6 @@ public class RegionCommands {
                         boolean blockUnits,
                      @ArgFlag(name = 'm', desc = "Set the include mask, non-matching blocks become air")
                          Mask mask) throws WorldEditException {
-        checkCommandArgument(region instanceof CuboidRegion, TranslatableComponent.of("worldedit.stack.invalid-type"));
-
         Mask combinedMask;
         if (ignoreAirBlocks) {
             if (mask == null) {
@@ -386,7 +384,7 @@ public class RegionCommands {
 
         int affected = 0;
         if (blockUnits) {
-            editSession.stackCuboidRegionBlockUnits((CuboidRegion) region, offset, count, copyEntities, copyBiomes, combinedMask);
+            editSession.stackCuboidRegionBlockUnits(region.getBoundingBox(), offset, count, copyEntities, copyBiomes, combinedMask);
         } else {
             editSession.stackCuboidRegion(region, offset, count, copyEntities, copyBiomes, combinedMask);
         }

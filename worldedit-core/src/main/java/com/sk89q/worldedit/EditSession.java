@@ -1421,7 +1421,9 @@ public class EditSession implements Extent, AutoCloseable {
     /**
      * Stack a cuboid region using block units.
      *
-     * <p>Use {@link Region#getBoundingBox()} to stack a non-cuboid region.</p>
+     * <p>
+     * Use {@link Region#getBoundingBox()} to stack a non-cuboid region.
+     * </p>
      *
      * @param region the region to stack
      * @param offset how far to move the contents each stack in block units
