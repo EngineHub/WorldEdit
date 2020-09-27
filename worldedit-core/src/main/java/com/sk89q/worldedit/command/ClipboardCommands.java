@@ -76,7 +76,7 @@ public class ClipboardCommands {
      */
     private void checkRegionBounds(Region region, LocalSession session) throws MaxChangedBlocksException {
         int limit = session.getBlockChangeLimit();
-        if (region.getBoundingBox().getVolume() > limit) {
+        if (limit >= 0 && region.getBoundingBox().getVolume() >= limit) {
             throw new MaxChangedBlocksException(limit);
         }
     }
