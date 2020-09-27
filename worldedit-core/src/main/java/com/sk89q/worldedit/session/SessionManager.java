@@ -45,7 +45,6 @@ import com.sk89q.worldedit.world.item.ItemTypes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
@@ -350,8 +349,7 @@ public class SessionManager {
     @Subscribe
     public void onConfigurationLoad(ConfigurationLoadEvent event) {
         LocalConfiguration config = event.getConfiguration();
-        File dir = new File(config.getWorkingDirectory(), "sessions");
-        store = new JsonFileSessionStore(dir);
+        store = new JsonFileSessionStore(config.getWorkingDirectoryPath().resolve("sessions"));
     }
 
     /**

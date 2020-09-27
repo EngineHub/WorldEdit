@@ -110,7 +110,7 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
         }
     }
 
-    private static final Logger log = LoggerFactory.getLogger(WorldEditPlugin.class);
+    protected static final Logger log = LoggerFactory.getLogger(WorldEditPlugin.class);
     public static final String CUI_PLUGIN_CHANNEL = "worldedit:cui";
     private static WorldEditPlugin INSTANCE;
     private static final int BSTATS_PLUGIN_ID = 3328;

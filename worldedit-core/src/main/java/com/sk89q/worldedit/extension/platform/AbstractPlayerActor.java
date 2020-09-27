@@ -35,7 +35,11 @@ import com.sk89q.worldedit.util.HandSide;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.TargetBlock;
 import com.sk89q.worldedit.util.auth.AuthorizationException;
+import com.sk89q.worldedit.util.collection.SetWithDefault;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
+import com.sk89q.worldedit.util.io.file.FileSelectionAbortedException;
+import com.sk89q.worldedit.util.io.file.FileType;
+import com.sk89q.worldedit.util.io.file.PathRequestType;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockCategories;
@@ -48,7 +52,8 @@ import com.sk89q.worldedit.world.gamemode.GameModes;
 import com.sk89q.worldedit.world.item.ItemType;
 import com.sk89q.worldedit.world.item.ItemTypes;
 
-import java.io.File;
+import java.nio.file.Path;
+import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nullable;
 
 /**
@@ -497,15 +502,12 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
     }
 
     @Override
-    public File openFileOpenDialog(String[] extensions) {
-        printError(TranslatableComponent.of("worldedit.platform.no-file-dialog"));
-        return null;
-    }
-
-    @Override
-    public File openFileSaveDialog(String[] extensions) {
-        printError(TranslatableComponent.of("worldedit.platform.no-file-dialog"));
-        return null;
+    public CompletableFuture<Path> requestPath(PathRequestType type, SetWithDefault<FileType> fileTypes) {
+        CompletableFuture<Path> cf = new CompletableFuture<>();
+        cf.completeExceptionally(new FileSelectionAbortedException(TranslatableComponent.of(
+            "worldedit.platform.no-file-dialog"
+        )));
+        return cf;
     }
 
     @Override

@@ -20,8 +20,14 @@
 package com.sk89q.worldedit.extension.platform;
 
 import com.sk89q.worldedit.internal.cui.CUIEvent;
+import com.sk89q.worldedit.util.collection.SetWithDefault;
+import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
+import com.sk89q.worldedit.util.io.file.FileSelectionAbortedException;
+import com.sk89q.worldedit.util.io.file.FileType;
+import com.sk89q.worldedit.util.io.file.PathRequestType;
 
-import java.io.File;
+import java.nio.file.Path;
+import java.util.concurrent.CompletableFuture;
 
 public abstract class AbstractNonPlayerActor implements Actor {
 
@@ -36,13 +42,12 @@ public abstract class AbstractNonPlayerActor implements Actor {
     }
 
     @Override
-    public File openFileOpenDialog(String[] extensions) {
-        return null;
-    }
-
-    @Override
-    public File openFileSaveDialog(String[] extensions) {
-        return null;
+    public CompletableFuture<Path> requestPath(PathRequestType type, SetWithDefault<FileType> fileTypes) {
+        CompletableFuture<Path> cf = new CompletableFuture<>();
+        cf.completeExceptionally(new FileSelectionAbortedException(TranslatableComponent.of(
+            "worldedit.platform.no-file-dialog"
+        )));
+        return cf;
     }
 
     @Override

@@ -26,11 +26,11 @@ import com.sk89q.jnbt.NBTOutputStream;
 import com.sk89q.jnbt.NamedTag;
 import com.sk89q.jnbt.Tag;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Map;
 import java.util.Set;
 import java.util.zip.GZIPInputStream;
@@ -63,8 +63,8 @@ public enum BuiltInClipboardFormat implements ClipboardFormat {
         }
 
         @Override
-        public boolean isFormat(File file) {
-            try (NBTInputStream str = new NBTInputStream(new GZIPInputStream(new FileInputStream(file)))) {
+        public boolean isFormat(Path path) {
+            try (NBTInputStream str = new NBTInputStream(new GZIPInputStream(Files.newInputStream(path)))) {
                 NamedTag rootTag = str.readNamedTag();
                 if (!rootTag.getName().equals("Schematic")) {
                     return false;
@@ -102,8 +102,8 @@ public enum BuiltInClipboardFormat implements ClipboardFormat {
         }
 
         @Override
-        public boolean isFormat(File file) {
-            try (NBTInputStream str = new NBTInputStream(new GZIPInputStream(new FileInputStream(file)))) {
+        public boolean isFormat(Path path) {
+            try (NBTInputStream str = new NBTInputStream(new GZIPInputStream(Files.newInputStream(path)))) {
                 NamedTag rootTag = str.readNamedTag();
                 if (!rootTag.getName().equals("Schematic")) {
                     return false;

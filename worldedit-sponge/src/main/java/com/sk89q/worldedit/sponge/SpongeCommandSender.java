@@ -34,7 +34,6 @@ import org.spongepowered.api.text.format.TextColor;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.serializer.TextSerializers;
 
-import java.io.File;
 import java.util.Locale;
 import java.util.UUID;
 import javax.annotation.Nullable;
@@ -128,16 +127,6 @@ public class SpongeCommandSender implements Actor {
     @Override
     public boolean isPlayer() {
         return false;
-    }
-
-    @Override
-    public File openFileOpenDialog(String[] extensions) {
-        return null;
-    }
-
-    @Override
-    public File openFileSaveDialog(String[] extensions) {
-        return null;
     }
 
     @Override

@@ -23,16 +23,22 @@ import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.internal.cui.CUIEvent;
 import com.sk89q.worldedit.session.SessionKey;
-import com.sk89q.worldedit.util.FileDialogUtil;
 import com.sk89q.worldedit.util.auth.AuthorizationException;
+import com.sk89q.worldedit.util.collection.SetWithDefault;
 import com.sk89q.worldedit.util.formatting.WorldEditText;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.serializer.plain.PlainComponentSerializer;
+import com.sk89q.worldedit.util.io.file.FileDialogUtil;
+import com.sk89q.worldedit.util.io.file.FileSelectionAbortedException;
+import com.sk89q.worldedit.util.io.file.FileType;
+import com.sk89q.worldedit.util.io.file.PathRequestType;
 import org.slf4j.Logger;
 
-import java.io.File;
+import java.nio.file.Path;
 import java.util.Locale;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import javax.swing.SwingUtilities;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -131,13 +137,18 @@ public class CLICommandSender implements Actor {
     }
 
     @Override
-    public File openFileOpenDialog(String[] extensions) {
-        return FileDialogUtil.showOpenDialog(extensions);
-    }
-
-    @Override
-    public File openFileSaveDialog(String[] extensions) {
-        return FileDialogUtil.showSaveDialog(extensions);
+    public CompletableFuture<Path> requestPath(PathRequestType type,
+                                               SetWithDefault<FileType> fileTypes) {
+        return CompletableFuture.supplyAsync(
+            () -> {
+                try {
+                    return FileDialogUtil.requestPath(type, fileTypes);
+                } catch (FileSelectionAbortedException e) {
+                    throw new RuntimeException(e);
+                }
+            },
+            SwingUtilities::invokeLater
+        );
     }
 
     @Override

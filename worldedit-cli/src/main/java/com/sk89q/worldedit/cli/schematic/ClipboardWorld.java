@@ -45,9 +45,9 @@ import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -55,14 +55,14 @@ import javax.annotation.Nullable;
 
 public class ClipboardWorld extends AbstractWorld implements Clipboard, CLIWorld {
 
-    private final File file;
+    private final Path path;
     private final Clipboard clipboard;
     private final String name;
 
     private boolean dirty = false;
 
-    public ClipboardWorld(File file, Clipboard clipboard, String name) {
-        this.file = file;
+    public ClipboardWorld(Path path, Clipboard clipboard, String name) {
+        this.path = path;
         this.clipboard = clipboard;
         this.name = name;
     }
@@ -199,7 +199,8 @@ public class ClipboardWorld extends AbstractWorld implements Clipboard, CLIWorld
     @Override
     public void save(boolean force) {
         if (dirty || force) {
-            try (ClipboardWriter writer = ClipboardFormats.findByFile(file).getWriter(new FileOutputStream(file))) {
+            try (ClipboardWriter writer = ClipboardFormats.findByPath(path)
+                .getWriter(Files.newOutputStream(path))) {
                 writer.write(this);
                 dirty = false;
             } catch (IOException e) {
