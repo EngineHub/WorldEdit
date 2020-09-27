@@ -42,7 +42,6 @@ import com.sk89q.worldedit.internal.annotation.Selection;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.math.transform.AffineTransform;
-import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.RegionSelector;
 import com.sk89q.worldedit.regions.selector.CuboidRegionSelector;
@@ -76,11 +75,9 @@ public class ClipboardCommands {
      * @throws MaxChangedBlocksException if the volume exceeds the limit
      */
     private void checkRegionBounds(Region region, LocalSession session) throws MaxChangedBlocksException {
-        Region clipboardBounds = region instanceof CuboidRegion
-            ? region
-            : new CuboidRegion(region.getMinimumPoint(), region.getMaximumPoint());
-        if (clipboardBounds.getVolume() > session.getBlockChangeLimit()) {
-            throw new MaxChangedBlocksException(session.getBlockChangeLimit());
+        int limit = session.getBlockChangeLimit();
+        if (region.getBoundingBox().getVolume() > limit) {
+            throw new MaxChangedBlocksException(limit);
         }
     }
 

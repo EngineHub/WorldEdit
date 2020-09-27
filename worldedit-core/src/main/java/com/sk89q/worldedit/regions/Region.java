@@ -50,6 +50,15 @@ public interface Region extends Iterable<BlockVector3>, Cloneable {
     BlockVector3 getMaximumPoint();
 
     /**
+     * Get the bounding box of this region as a CuboidRegion.
+     *
+     * @return the bounding box
+     */
+    default CuboidRegion getBoundingBox() {
+        return new CuboidRegion(getMinimumPoint(), getMaximumPoint());
+    }
+
+    /**
      * Get the center point of a region.
      * Note: Coordinates will not be integers
      * if the corresponding lengths are even.
