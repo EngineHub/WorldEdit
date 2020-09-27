@@ -1432,13 +1432,15 @@ public class EditSession implements Extent, AutoCloseable {
      * @throws RegionOperationException thrown if the region operation is invalid
      */
     public int stackCuboidRegionBlockUnits(CuboidRegion region, BlockVector3 offset, int count,
-                                 boolean copyEntities, boolean copyBiomes, Mask mask) throws MaxChangedBlocksException, RegionOperationException {
+                                           boolean copyEntities, boolean copyBiomes, Mask mask
+    ) throws MaxChangedBlocksException, RegionOperationException {
         checkNotNull(region);
         checkNotNull(offset);
         checkArgument(count >= 1, "count >= 1 required");
 
         BlockVector3 size = region.getMaximumPoint().subtract(region.getMinimumPoint()).add(1, 1, 1);
-        if (offset.getX() < size.getX() && offset.getY() < size.getY() && offset.getZ() < size.getZ()) {
+        BlockVector3 offsetAbs = offset.abs();
+        if (offsetAbs.getX() < size.getX() && offsetAbs.getY() < size.getY() && offsetAbs.getZ() < size.getZ()) {
             throw new RegionOperationException(TranslatableComponent.of("worldedit.stack.intersecting-region"));
         }
         BlockVector3 to = region.getMinimumPoint();
