@@ -1402,20 +1402,14 @@ public class EditSession implements Extent, AutoCloseable {
                                  boolean copyEntities, boolean copyBiomes, Mask mask) throws MaxChangedBlocksException {
         checkNotNull(region);
         checkNotNull(offset);
-        checkArgument(count >= 1, "count >= 1 required");
 
         BlockVector3 size = region.getMaximumPoint().subtract(region.getMinimumPoint()).add(1, 1, 1);
-        BlockVector3 to = region.getMinimumPoint();
-        ForwardExtentCopy copy = new ForwardExtentCopy(this, region, this, to);
-        copy.setRepetitions(count);
-        copy.setTransform(new AffineTransform().translate(offset.multiply(size)));
-        copy.setCopyingEntities(copyEntities);
-        copy.setCopyingBiomes(copyBiomes);
-        if (mask != null) {
-            copy.setSourceMask(mask);
+        try {
+            return stackRegionBlockUnits(region, offset.multiply(size), count, copyEntities, copyBiomes, mask);
+        } catch (RegionOperationException ignored) {
+            // Should never be able to happen
+            return 0;
         }
-        Operations.completeLegacy(copy);
-        return copy.getAffected();
     }
 
     /**
