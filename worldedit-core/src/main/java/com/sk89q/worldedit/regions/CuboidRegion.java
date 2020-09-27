@@ -164,6 +164,11 @@ public class CuboidRegion extends AbstractRegion implements FlatRegion {
     }
 
     @Override
+    public CuboidRegion getBoundingBox() {
+        return this;
+    }
+
+    @Override
     public int getMinimumY() {
         return Math.min(pos1.getBlockY(), pos2.getBlockY());
     }
