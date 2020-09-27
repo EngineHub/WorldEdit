@@ -1419,11 +1419,7 @@ public class EditSession implements Extent, AutoCloseable {
     }
 
     /**
-     * Stack a cuboid region using block units.
-     *
-     * <p>
-     * Use {@link Region#getBoundingBox()} to stack a non-cuboid region.
-     * </p>
+     * Stack a region using block units.
      *
      * @param region the region to stack
      * @param offset how far to move the contents each stack in block units
@@ -1435,8 +1431,8 @@ public class EditSession implements Extent, AutoCloseable {
      * @throws MaxChangedBlocksException thrown if too many blocks are changed
      * @throws RegionOperationException thrown if the region operation is invalid
      */
-    public int stackCuboidRegionBlockUnits(CuboidRegion region, BlockVector3 offset, int count,
-                                           boolean copyEntities, boolean copyBiomes, Mask mask) throws MaxChangedBlocksException, RegionOperationException {
+    public int stackRegionBlockUnits(Region region, BlockVector3 offset, int count,
+                                     boolean copyEntities, boolean copyBiomes, Mask mask) throws MaxChangedBlocksException, RegionOperationException {
         checkNotNull(region);
         checkNotNull(offset);
         checkArgument(count >= 1, "count >= 1 required");

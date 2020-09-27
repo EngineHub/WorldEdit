@@ -384,7 +384,7 @@ public class RegionCommands {
 
         int affected = 0;
         if (blockUnits) {
-            editSession.stackCuboidRegionBlockUnits(region.getBoundingBox(), offset, count, copyEntities, copyBiomes, combinedMask);
+            editSession.stackRegionBlockUnits(region, offset, count, copyEntities, copyBiomes, combinedMask);
         } else {
             editSession.stackCuboidRegion(region, offset, count, copyEntities, copyBiomes, combinedMask);
         }
