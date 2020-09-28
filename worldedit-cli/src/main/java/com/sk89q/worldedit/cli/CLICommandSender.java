@@ -103,7 +103,7 @@ public class CLICommandSender implements Actor {
 
     @Override
     public void print(Component component) {
-        print(PlainComponentSerializer.INSTANCE.serialize(WorldEditText.format(component, getLocale())));
+        print(PlainComponentSerializer.plain().serialize(WorldEditText.format(component, getLocale())));
     }
 
     @Override

@@ -31,8 +31,6 @@ import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.RegionSelector;
 import com.sk89q.worldedit.regions.selector.limit.SelectorLimits;
 import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
-import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.world.World;
 
 import java.util.ArrayList;
@@ -40,6 +38,8 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.sk89q.worldedit.util.formatting.text.Component.text;
+import static com.sk89q.worldedit.util.formatting.text.Component.translatable;
 
 /**
  * Creates a {@code CuboidRegion} from a user's selections.
@@ -156,13 +156,10 @@ public class CuboidRegionSelector implements RegionSelector, CUIRegion {
         checkNotNull(pos);
 
         if (position1 != null && position2 != null) {
-            player.printInfo(TranslatableComponent.of(
-                    "worldedit.selection.cuboid.explain.primary-area",
-                    TextComponent.of(position1.toString()),
-                    TextComponent.of(region.getVolume())
-            ));
+            player.printInfo(translatable("worldedit.selection.cuboid.explain.primary-area", text(position1.toString()),
+                    text(region.getVolume())));
         } else if (position1 != null) {
-            player.printInfo(TranslatableComponent.of("worldedit.selection.cuboid.explain.primary", TextComponent.of(position1.toString())));
+            player.printInfo(translatable("worldedit.selection.cuboid.explain.primary", text(position1.toString())));
         }
 
         session.dispatchCUIEvent(player, new SelectionPointEvent(0, pos, getVolume()));
@@ -175,13 +172,10 @@ public class CuboidRegionSelector implements RegionSelector, CUIRegion {
         checkNotNull(pos);
 
         if (position1 != null && position2 != null) {
-            player.printInfo(TranslatableComponent.of(
-                    "worldedit.selection.cuboid.explain.secondary-area",
-                    TextComponent.of(position2.toString()),
-                    TextComponent.of(region.getVolume())
-            ));
+            player.printInfo(translatable("worldedit.selection.cuboid.explain.secondary-area", text(position2.toString()),
+                    text(region.getVolume())));
         } else if (position2 != null) {
-            player.printInfo(TranslatableComponent.of("worldedit.selection.cuboid.explain.secondary", TextComponent.of(position2.toString())));
+            player.printInfo(translatable("worldedit.selection.cuboid.explain.secondary", text(position2.toString())));
         }
 
         session.dispatchCUIEvent(player, new SelectionPointEvent(1, pos, getVolume()));
@@ -255,11 +249,11 @@ public class CuboidRegionSelector implements RegionSelector, CUIRegion {
         final List<Component> lines = new ArrayList<>();
 
         if (position1 != null) {
-            lines.add(TranslatableComponent.of("worldedit.selection.cuboid.info.pos1", TextComponent.of(position1.toString())));
+            lines.add(translatable("worldedit.selection.cuboid.info.pos1", text(position1.toString())));
         }
 
         if (position2 != null) {
-            lines.add(TranslatableComponent.of("worldedit.selection.cuboid.info.pos2", TextComponent.of(position2.toString())));
+            lines.add(translatable("worldedit.selection.cuboid.info.pos2", text(position2.toString())));
         }
 
         return lines;

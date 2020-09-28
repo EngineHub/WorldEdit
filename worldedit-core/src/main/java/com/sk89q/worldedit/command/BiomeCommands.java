@@ -41,11 +41,7 @@ import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.formatting.component.PaginationBox;
-import com.sk89q.worldedit.util.formatting.component.TextUtils;
 import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
-import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
-import com.sk89q.worldedit.util.formatting.text.event.HoverEvent;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.registry.BiomeRegistry;
@@ -61,6 +57,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.sk89q.worldedit.command.util.Logging.LogMode.REGION;
+import static com.sk89q.worldedit.util.formatting.text.Component.newline;
+import static com.sk89q.worldedit.util.formatting.text.Component.text;
+import static com.sk89q.worldedit.util.formatting.text.Component.translatable;
 
 /**
  * Implements biome-related commands such as "/biomelist".
@@ -89,11 +88,10 @@ public class BiomeCommands {
 
             PaginationBox paginationBox = PaginationBox.fromComponents("Available Biomes", "/biomelist -p %page%",
                 BiomeType.REGISTRY.values().stream()
-                    .map(biomeType -> TextComponent.builder()
-                        .append(biomeType.getId())
-                        .append(" (")
+                    .map(biomeType -> text()
+                        .append(text(biomeType.getId() + "("))
                         .append(biomeRegistry.getRichName(biomeType))
-                        .append(")")
+                        .append(text(")"))
                         .build())
                     .collect(Collectors.toList()));
             return paginationBox.create(page);
@@ -119,7 +117,7 @@ public class BiomeCommands {
         if (useLineOfSight) {
             Location blockPosition = player.getBlockTrace(300);
             if (blockPosition == null) {
-                player.printError(TranslatableComponent.of("worldedit.raytrace.noblock"));
+                player.printError(translatable("worldedit.raytrace.noblock"));
                 return;
             }
 
@@ -144,11 +142,9 @@ public class BiomeCommands {
         }
 
         List<Component> components = biomes.stream().map(biome ->
-            biomeRegistry.getRichName(biome).hoverEvent(
-                HoverEvent.showText(TextComponent.of(biome.getId()))
-            )
+            biomeRegistry.getRichName(biome).hoverEvent(text(biome.getId()))
         ).collect(Collectors.toList());
-        player.printInfo(TranslatableComponent.of(messageKey, TextUtils.join(components, TextComponent.of(", "))));
+        player.printInfo(translatable(messageKey, Component.join(text(", "), components)));
     }
 
     @Command(
@@ -180,12 +176,12 @@ public class BiomeCommands {
         RegionVisitor visitor = new RegionVisitor(region, replace);
         Operations.completeLegacy(visitor);
 
-        player.printInfo(TranslatableComponent.of(
-            "worldedit.setbiome.changed",
-            TextComponent.of(visitor.getAffected())
-        )
-            .append(TextComponent.newline())
-            .append(TranslatableComponent.of("worldedit.setbiome.warning")));
+        player.printInfo(translatable()
+            .key("worldedit.setbiome.changed")
+            .args(text(visitor.getAffected()))
+            .append(newline())
+            .append(translatable("worldedit.setbiome.warning"))
+            .build());
     }
 
 }

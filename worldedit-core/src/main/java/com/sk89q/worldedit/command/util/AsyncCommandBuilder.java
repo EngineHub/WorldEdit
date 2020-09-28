@@ -27,8 +27,7 @@ import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.internal.command.exception.ExceptionConverter;
 import com.sk89q.worldedit.util.formatting.component.ErrorFormat;
 import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
-import com.sk89q.worldedit.util.formatting.text.format.TextColor;
+import com.sk89q.worldedit.util.formatting.text.format.NamedTextColor;
 import com.sk89q.worldedit.util.task.FutureForwardingTask;
 import com.sk89q.worldedit.util.task.Supervisor;
 import org.enginehub.piston.exception.CommandException;
@@ -42,6 +41,7 @@ import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.sk89q.worldedit.util.formatting.text.Component.text;
 
 public final class AsyncCommandBuilder<T> {
 
@@ -88,7 +88,7 @@ public final class AsyncCommandBuilder<T> {
 
     @Deprecated
     public AsyncCommandBuilder<T> sendMessageAfterDelay(String message) {
-        return sendMessageAfterDelay(TextComponent.of(checkNotNull(message)));
+        return sendMessageAfterDelay(text(checkNotNull(message)));
     }
 
     @Deprecated
@@ -116,7 +116,7 @@ public final class AsyncCommandBuilder<T> {
 
     public AsyncCommandBuilder<T> onSuccess(@Nullable String message, @Nullable Consumer<T> consumer) {
         checkArgument(message != null || consumer != null, "Can't have null message AND consumer");
-        this.successMessage = message == null ? null : TextComponent.of(message, TextColor.LIGHT_PURPLE);
+        this.successMessage = message == null ? null : text(message, NamedTextColor.LIGHT_PURPLE);
         this.consumer = consumer;
         return this;
     }
@@ -151,7 +151,6 @@ public final class AsyncCommandBuilder<T> {
         return future;
     }
 
-    @SuppressWarnings("deprecation")
     private T runTask() {
         T result = null;
         try {
@@ -163,13 +162,11 @@ public final class AsyncCommandBuilder<T> {
                 sender.print(successMessage);
             }
         } catch (Throwable orig) {
-            Component failure = failureMessage != null ? failureMessage : TextComponent.of("An error occurred");
+            Component failure = failureMessage != null ? failureMessage : text("An error occurred");
             try {
                 if (exceptionConverter != null) {
                     try {
-                        if (orig instanceof com.sk89q.minecraft.util.commands.CommandException) {
-                            throw new CommandExecutionException(orig, ImmutableList.of());
-                        }
+                        rethrowOldException(orig);
                         exceptionConverter.convert(orig);
                         throw orig;
                     } catch (CommandException converted) {
@@ -180,22 +177,29 @@ public final class AsyncCommandBuilder<T> {
 
                         if (message == null) {
                             if (Strings.isNullOrEmpty(converted.getMessage())) {
-                                message = TextComponent.of("Unknown error.");
+                                message = text("Unknown error.");
                             } else {
                                 message = converted.getRichMessage();
                             }
                         }
-                        sender.printError(failure.append(TextComponent.of(": ")).append(message));
+                        sender.printError(failure.append(text(": ")).append(message));
                     }
                 } else {
                     throw orig;
                 }
             } catch (Throwable unknown) {
-                sender.printError(failure.append(TextComponent.of(": Unknown error. Please see console.")));
+                sender.printError(failure.append(text(": Unknown error. Please see console.")));
                 logger.error("Uncaught exception occurred in task: " + description, orig);
             }
         }
         return result;
+    }
+
+    @SuppressWarnings("deprecation")
+    private void rethrowOldException(Throwable orig) {
+        if (orig instanceof com.sk89q.minecraft.util.commands.CommandException) {
+            throw new CommandExecutionException(orig, ImmutableList.of());
+        }
     }
 
     // this is needed right now since worldguard is still on the 2011 command framework which throws and converts
@@ -211,7 +215,7 @@ public final class AsyncCommandBuilder<T> {
                 if (parentCause instanceof com.sk89q.minecraft.util.commands.CommandException) {
                     final String msg = parentCause.getMessage();
                     if (!Strings.isNullOrEmpty(msg)) {
-                        message = TextComponent.of(msg);
+                        message = text(msg);
                     }
                     break;
                 }

@@ -30,14 +30,15 @@ import com.sk89q.worldedit.extension.input.ParserContext;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.internal.registry.InputParser;
 import com.sk89q.worldedit.util.HandSide;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
-import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.world.item.ItemType;
 import com.sk89q.worldedit.world.item.ItemTypes;
 import com.sk89q.worldedit.world.registry.LegacyMapper;
 
 import java.util.Locale;
 import java.util.stream.Stream;
+
+import static com.sk89q.worldedit.util.formatting.text.Component.text;
+import static com.sk89q.worldedit.util.formatting.text.Component.translatable;
 
 public class DefaultItemParser extends InputParser<BaseItem> {
 
@@ -59,7 +60,7 @@ public class DefaultItemParser extends InputParser<BaseItem> {
                 String[] split = input.split(":");
                 ItemType type;
                 if (split.length == 0) {
-                    throw new InputParseException(TranslatableComponent.of("worldedit.error.parser.invalid-colon"));
+                    throw new InputParseException(translatable("worldedit.error.parser.invalid-colon"));
                 } else if (split.length == 1) {
                     type = LegacyMapper.getInstance().getItemFromLegacy(Integer.parseInt(split[0]));
                 } else {
@@ -86,7 +87,7 @@ public class DefaultItemParser extends InputParser<BaseItem> {
         }
 
         if (item == null) {
-            throw new NoMatchException(TranslatableComponent.of("worldedit.error.no-match", TextComponent.of(input)));
+            throw new NoMatchException(translatable("worldedit.error.no-match", text(input)));
         } else {
             return item;
         }
@@ -96,10 +97,7 @@ public class DefaultItemParser extends InputParser<BaseItem> {
         if (actor instanceof Player) {
             return ((Player) actor).getItemInHand(handSide);
         } else {
-            throw new InputParseException(TranslatableComponent.of(
-                    "worldedit.error.parser.player-only",
-                    TextComponent.of(handSide == HandSide.MAIN_HAND ? "hand" : "offhand")
-            ));
+            throw new InputParseException(translatable("worldedit.error.parser.player-only", text(handSide == HandSide.MAIN_HAND ? "hand" : "offhand")));
         }
     }
 

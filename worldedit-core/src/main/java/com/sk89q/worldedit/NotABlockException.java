@@ -19,9 +19,10 @@
 
 package com.sk89q.worldedit;
 
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
-import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.world.item.ItemType;
+
+import static com.sk89q.worldedit.util.formatting.text.Component.text;
+import static com.sk89q.worldedit.util.formatting.text.Component.translatable;
 
 /**
  * Raised when an item is used when a block was expected.
@@ -32,7 +33,7 @@ public class NotABlockException extends WorldEditException {
      * Create a new instance.
      */
     public NotABlockException() {
-        super(TranslatableComponent.of("worldedit.error.not-a-block"));
+        super(translatable("worldedit.error.not-a-block"));
     }
 
     /**
@@ -42,7 +43,7 @@ public class NotABlockException extends WorldEditException {
      */
     @Deprecated
     public NotABlockException(String input) {
-        super(TranslatableComponent.of("worldedit.error.not-a-block.item", TextComponent.of(input)));
+        super(translatable("worldedit.error.not-a-block.item", text(input)));
     }
 
     /**
@@ -52,7 +53,7 @@ public class NotABlockException extends WorldEditException {
      */
     @Deprecated
     public NotABlockException(int input) {
-        super(TranslatableComponent.of("worldedit.error.not-a-block.item", TextComponent.of(input)));
+        super(translatable("worldedit.error.not-a-block.item", text(input)));
     }
 
     /**
@@ -61,6 +62,6 @@ public class NotABlockException extends WorldEditException {
      * @param input the input that was used
      */
     public NotABlockException(ItemType input) {
-        super(TranslatableComponent.of("worldedit.error.not-a-block.item", input.getRichName()));
+        super(translatable("worldedit.error.not-a-block.item", input.getRichName()));
     }
 }

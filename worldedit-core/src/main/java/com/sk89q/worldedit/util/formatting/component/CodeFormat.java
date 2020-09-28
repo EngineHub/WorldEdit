@@ -20,7 +20,7 @@
 package com.sk89q.worldedit.util.formatting.component;
 
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
-import com.sk89q.worldedit.util.formatting.text.format.TextColor;
+import com.sk89q.worldedit.util.formatting.text.format.NamedTextColor;
 
 /**
  * Represents a fragment representing a command that is to be typed.
@@ -28,7 +28,7 @@ import com.sk89q.worldedit.util.formatting.text.format.TextColor;
 public class CodeFormat extends TextComponentProducer {
 
     private CodeFormat() {
-        getBuilder().content("").color(TextColor.AQUA);
+        getBuilder().content("").color(NamedTextColor.AQUA);
     }
 
     /**

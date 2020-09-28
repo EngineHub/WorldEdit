@@ -31,20 +31,16 @@ import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.session.SessionKey;
 import com.sk89q.worldedit.util.HandSide;
-import com.sk89q.worldedit.util.formatting.WorldEditText;
 import com.sk89q.worldedit.util.formatting.component.TextUtils;
-import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
-import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
-import com.sk89q.worldedit.util.formatting.text.adapter.bukkit.TextAdapter;
 import com.sk89q.worldedit.util.formatting.text.event.ClickEvent;
-import com.sk89q.worldedit.util.formatting.text.format.TextColor;
+import com.sk89q.worldedit.util.formatting.text.format.NamedTextColor;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.block.BlockTypes;
 import com.sk89q.worldedit.world.gamemode.GameMode;
 import com.sk89q.worldedit.world.gamemode.GameModes;
+import net.kyori.adventure.audience.Audience;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -54,8 +50,13 @@ import java.util.Locale;
 import java.util.UUID;
 import javax.annotation.Nullable;
 
+import static com.sk89q.worldedit.util.formatting.text.Component.text;
+import static com.sk89q.worldedit.util.formatting.text.Component.translatable;
+import static com.sk89q.worldedit.util.formatting.text.event.ClickEvent.openUrl;
+
 public class BukkitPlayer extends AbstractPlayerActor {
 
+    private final Audience audience;
     private final Player player;
     private final WorldEditPlugin plugin;
 
@@ -64,6 +65,8 @@ public class BukkitPlayer extends AbstractPlayerActor {
     }
 
     public BukkitPlayer(WorldEditPlugin plugin, Player player) {
+        super(plugin.getAudiences().player(player)::sendMessage);
+        this.audience = plugin.getAudiences().player(player);
         this.plugin = plugin;
         this.player = player;
     }
@@ -102,43 +105,6 @@ public class BukkitPlayer extends AbstractPlayerActor {
     @Override
     public void giveItem(BaseItemStack itemStack) {
         player.getInventory().addItem(BukkitAdapter.adapt(itemStack));
-    }
-
-    @Override
-    @Deprecated
-    public void printRaw(String msg) {
-        for (String part : msg.split("\n")) {
-            player.sendMessage(part);
-        }
-    }
-
-    @Override
-    @Deprecated
-    public void print(String msg) {
-        for (String part : msg.split("\n")) {
-            player.sendMessage("§d" + part);
-        }
-    }
-
-    @Override
-    @Deprecated
-    public void printDebug(String msg) {
-        for (String part : msg.split("\n")) {
-            player.sendMessage("§7" + part);
-        }
-    }
-
-    @Override
-    @Deprecated
-    public void printError(String msg) {
-        for (String part : msg.split("\n")) {
-            player.sendMessage("§c" + part);
-        }
-    }
-
-    @Override
-    public void print(Component component) {
-        TextAdapter.sendMessage(player, WorldEditText.format(component, getLocale()));
     }
 
     @Override
@@ -232,9 +198,12 @@ public class BukkitPlayer extends AbstractPlayerActor {
     @Override
     public void sendAnnouncements() {
         if (WorldEditPlugin.getInstance().getBukkitImplAdapter() == null) {
-            printError(TranslatableComponent.of("worldedit.version.bukkit.unsupported-adapter",
-                    TextComponent.of("https://enginehub.org/worldedit/#downloads", TextColor.AQUA)
-                        .clickEvent(ClickEvent.openUrl("https://enginehub.org/worldedit/#downloads"))));
+            printError(translatable(
+                "worldedit.version.bukkit.unsupported-adapter",
+                text()
+                    .content("https://enginehub.org/worldedit/#downloads")
+                    .color(NamedTextColor.AQUA)
+                    .clickEvent(openUrl("https://enginehub.org/worldedit/#downloads"))));
         }
     }
 

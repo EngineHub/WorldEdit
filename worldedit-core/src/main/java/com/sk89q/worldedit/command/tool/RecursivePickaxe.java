@@ -29,7 +29,6 @@ import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.util.Location;
-import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.block.BlockTypes;
@@ -37,6 +36,8 @@ import com.sk89q.worldedit.world.block.BlockTypes;
 import java.util.HashSet;
 import java.util.Set;
 import javax.annotation.Nullable;
+
+import static com.sk89q.worldedit.util.formatting.text.Component.translatable;
 
 /**
  * A pickaxe mode that recursively finds adjacent blocks within range of
@@ -77,7 +78,7 @@ public class RecursivePickaxe implements BlockTool {
                 recurse(server, editSession, world, clicked.toVector().toBlockPoint(),
                         clicked.toVector().toBlockPoint(), range, initialType, new HashSet<>());
             } catch (MaxChangedBlocksException e) {
-                player.printError(TranslatableComponent.of("worldedit.tool.max-block-changes"));
+                player.printError(translatable("worldedit.tool.max-block-changes"));
             } finally {
                 session.remember(editSession);
             }

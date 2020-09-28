@@ -37,7 +37,6 @@ import com.sk89q.worldedit.math.transform.Transform;
 import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.session.request.RequestExtent;
 import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.world.World;
 import org.enginehub.piston.CommandManager;
 import org.enginehub.piston.converter.ArgumentConverter;
@@ -51,6 +50,8 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import javax.annotation.Nullable;
+
+import static com.sk89q.worldedit.util.formatting.text.Component.text;
 
 public class FactoryConverter<T> implements ArgumentConverter<T> {
 
@@ -137,6 +138,6 @@ public class FactoryConverter<T> implements ArgumentConverter<T> {
 
     @Override
     public Component describeAcceptableArguments() {
-        return TextComponent.of("any " + description);
+        return text("any " + description);
     }
 }

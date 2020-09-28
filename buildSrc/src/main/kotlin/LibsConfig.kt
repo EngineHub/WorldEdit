@@ -27,7 +27,7 @@ fun Project.applyLibrariesConfiguration() {
     group = "${rootProject.group}.worldedit-libs"
 
     val relocations = mapOf(
-        "net.kyori.text" to "com.sk89q.worldedit.util.formatting.text",
+        "net.kyori.adventure.text" to "com.sk89q.worldedit.util.formatting.text",
         "net.kyori.minecraft" to "com.sk89q.worldedit.util.kyori"
     )
 

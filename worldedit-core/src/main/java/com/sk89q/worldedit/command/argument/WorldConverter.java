@@ -36,6 +36,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static com.sk89q.worldedit.util.formatting.text.Component.text;
+
 public class WorldConverter implements ArgumentConverter<World> {
 
     public static void register(CommandManager commandManager) {
@@ -47,7 +49,7 @@ public class WorldConverter implements ArgumentConverter<World> {
     private final TextComponent choices;
 
     private WorldConverter() {
-        this.choices = TextComponent.of("any world");
+        this.choices = text("any world");
     }
 
     @Override

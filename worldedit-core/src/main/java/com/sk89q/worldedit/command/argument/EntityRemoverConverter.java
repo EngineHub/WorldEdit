@@ -22,7 +22,6 @@ package com.sk89q.worldedit.command.argument;
 import com.google.common.collect.ImmutableList;
 import com.sk89q.worldedit.command.util.EntityRemover;
 import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import org.enginehub.piston.CommandManager;
 import org.enginehub.piston.converter.ArgumentConverter;
 import org.enginehub.piston.converter.ConversionResult;
@@ -33,6 +32,7 @@ import org.enginehub.piston.inject.Key;
 
 import java.util.List;
 
+import static com.sk89q.worldedit.util.formatting.text.Component.text;
 import static org.enginehub.piston.converter.SuggestionHelper.limitByPrefix;
 
 public class EntityRemoverConverter implements ArgumentConverter<EntityRemover> {
@@ -49,9 +49,7 @@ public class EntityRemoverConverter implements ArgumentConverter<EntityRemover> 
 
     @Override
     public Component describeAcceptableArguments() {
-        return TextComponent.of(
-            "projectiles, items, paintings, itemframes, boats, minecarts, tnt, xp, or all"
-        );
+        return text("projectiles, items, paintings, itemframes, boats, minecarts, tnt, xp, or all");
     }
 
     @Override

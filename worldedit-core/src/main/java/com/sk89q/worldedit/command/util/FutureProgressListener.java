@@ -23,12 +23,12 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
 
 import java.util.Timer;
 import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.sk89q.worldedit.util.formatting.text.Component.text;
 
 public class FutureProgressListener implements Runnable {
 
@@ -40,7 +40,7 @@ public class FutureProgressListener implements Runnable {
 
     @Deprecated
     public FutureProgressListener(Actor sender, String message) {
-        this(sender, TextComponent.of(message));
+        this(sender, text(message));
     }
 
     public FutureProgressListener(Actor sender, Component message) {
@@ -62,7 +62,7 @@ public class FutureProgressListener implements Runnable {
 
     @Deprecated
     public static void addProgressListener(ListenableFuture<?> future, Actor sender, String message) {
-        addProgressListener(future, sender, TextComponent.of(message));
+        addProgressListener(future, sender, text(message));
     }
 
     public static void addProgressListener(ListenableFuture<?> future, Actor sender, Component message) {

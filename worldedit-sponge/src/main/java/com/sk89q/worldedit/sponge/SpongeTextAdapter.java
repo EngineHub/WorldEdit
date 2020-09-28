@@ -29,9 +29,10 @@ import java.util.Locale;
 
 public class SpongeTextAdapter {
 
+    // TODO this should become native in sponge 8?
     public static Text convert(Component component, Locale locale) {
         component = WorldEditText.format(component, locale);
-        return TextSerializers.JSON.deserialize(GsonComponentSerializer.INSTANCE.serialize(component));
+        return TextSerializers.JSON.deserialize(GsonComponentSerializer.gson().serialize(component));
     }
 
     private SpongeTextAdapter() {

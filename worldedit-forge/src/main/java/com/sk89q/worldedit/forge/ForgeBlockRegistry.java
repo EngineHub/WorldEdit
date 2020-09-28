@@ -34,13 +34,15 @@ import java.util.Map;
 import java.util.OptionalInt;
 import java.util.TreeMap;
 
+import static com.sk89q.worldedit.util.formatting.text.Component.translatable;
+
 public class ForgeBlockRegistry extends BundledBlockRegistry {
 
     private final Map<net.minecraft.block.BlockState, ForgeBlockMaterial> materialMap = new HashMap<>();
 
     @Override
     public Component getRichName(BlockType blockType) {
-        return TranslatableComponent.of(ForgeAdapter.adapt(blockType).getTranslationKey());
+        return translatable(ForgeAdapter.adapt(blockType).getTranslationKey());
     }
 
     @Override

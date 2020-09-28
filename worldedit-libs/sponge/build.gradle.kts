@@ -8,5 +8,4 @@ repositories {
     }
 }
 dependencies {
-    "shade"("net.kyori:text-adapter-spongeapi:${Versions.TEXT_EXTRAS}")
 }

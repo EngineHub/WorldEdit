@@ -23,7 +23,6 @@ import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.iterator.FlatRegion3DIterator;
 import com.sk89q.worldedit.regions.iterator.FlatRegionIterator;
-import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.world.World;
 
 import java.math.BigDecimal;
@@ -32,6 +31,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+
+import static com.sk89q.worldedit.util.formatting.text.Component.translatable;
 
 /**
  * Represents a 2D polygonal region.
@@ -246,7 +247,7 @@ public class Polygonal2DRegion extends AbstractRegion implements FlatRegion {
     public void expand(BlockVector3... changes) throws RegionOperationException {
         for (BlockVector3 change : changes) {
             if (change.getBlockX() != 0 || change.getBlockZ() != 0) {
-                throw new RegionOperationException(TranslatableComponent.of("worldedit.selection.polygon2d.error.expand-only-vertical"));
+                throw new RegionOperationException(translatable("worldedit.selection.polygon2d.error.expand-only-vertical"));
             }
             int changeY = change.getBlockY();
             if (changeY > 0) {
@@ -262,7 +263,7 @@ public class Polygonal2DRegion extends AbstractRegion implements FlatRegion {
     public void contract(BlockVector3... changes) throws RegionOperationException {
         for (BlockVector3 change : changes) {
             if (change.getBlockX() != 0 || change.getBlockZ() != 0) {
-                throw new RegionOperationException(TranslatableComponent.of("worldedit.selection.polygon2d.error.contract-only-vertical"));
+                throw new RegionOperationException(translatable("worldedit.selection.polygon2d.error.contract-only-vertical"));
             }
             int changeY = change.getBlockY();
             if (changeY > 0) {

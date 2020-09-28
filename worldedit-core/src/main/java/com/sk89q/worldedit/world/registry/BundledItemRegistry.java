@@ -20,12 +20,13 @@
 package com.sk89q.worldedit.world.registry;
 
 import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
-import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.util.translation.TranslationManager;
 import com.sk89q.worldedit.world.item.ItemType;
 
 import javax.annotation.Nullable;
+
+import static com.sk89q.worldedit.util.formatting.text.Component.text;
+import static com.sk89q.worldedit.util.formatting.text.Component.translatable;
 
 /**
  * A item registry that uses {@link BundledItemRegistry} to serve information
@@ -45,11 +46,9 @@ public class BundledItemRegistry implements ItemRegistry {
             // Some vanilla MC items have overrides so we need this name here
             // Most platforms should be overriding this anyways, so it likely doesn't matter
             // too much!
-            return TextComponent.of(itemEntry.localizedName);
+            return text(itemEntry.localizedName);
         }
-        return TranslatableComponent.of(
-            TranslationManager.makeTranslationKey("item", itemType.getId())
-        );
+        return translatable(TranslationManager.makeTranslationKey("item", itemType.getId()));
     }
 
     @Nullable

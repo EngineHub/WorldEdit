@@ -26,13 +26,13 @@ import com.sk89q.worldedit.function.EntityFunction;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.RunContext;
 import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
-import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
-import com.sk89q.worldedit.util.formatting.text.format.TextColor;
+import com.sk89q.worldedit.util.formatting.text.format.NamedTextColor;
 
 import java.util.Iterator;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.sk89q.worldedit.util.formatting.text.Component.text;
+import static com.sk89q.worldedit.util.formatting.text.Component.translatable;
 
 /**
  * Visits entities as provided by an {@code Iterator}.
@@ -82,10 +82,7 @@ public class EntityVisitor implements Operation {
 
     @Override
     public Iterable<Component> getStatusMessages() {
-        return ImmutableList.of(TranslatableComponent.of(
-                "worldedit.operation.affected.entity",
-                TextComponent.of(getAffected())
-        ).color(TextColor.LIGHT_PURPLE));
+        return ImmutableList.of(translatable("worldedit.operation.affected.entity", text(getAffected())).color(NamedTextColor.LIGHT_PURPLE));
     }
 
 }

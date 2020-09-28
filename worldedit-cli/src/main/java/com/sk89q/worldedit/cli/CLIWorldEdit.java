@@ -32,7 +32,6 @@ import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormat;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormats;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardReader;
 import com.sk89q.worldedit.registry.state.Property;
-import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.block.BlockCategory;
 import com.sk89q.worldedit.world.block.BlockState;
@@ -61,6 +60,8 @@ import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Scanner;
+
+import static com.sk89q.worldedit.util.formatting.text.Component.translatable;
 
 /**
  * The CLI implementation of WorldEdit.
@@ -238,13 +239,13 @@ public class CLIWorldEdit {
             while (scanner.hasNextLine()) {
                 String line = scanner.nextLine();
                 if (line.equals("stop")) {
-                    commandSender.printInfo(TranslatableComponent.of("worldedit.cli.stopping"));
+                    commandSender.printInfo(translatable("worldedit.cli.stopping"));
                     break;
                 }
                 CommandEvent event = new CommandEvent(commandSender, line);
                 WorldEdit.getInstance().getEventBus().post(event);
                 if (!event.isCancelled()) {
-                    commandSender.printError(TranslatableComponent.of("worldedit.cli.unknown-command"));
+                    commandSender.printError(translatable("worldedit.cli.unknown-command"));
                 } else {
                     saveAllWorlds(false);
                 }

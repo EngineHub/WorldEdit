@@ -35,6 +35,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 
+import static com.sk89q.worldedit.util.formatting.text.Component.text;
 import static org.enginehub.piston.converter.SuggestionHelper.limitByPrefix;
 
 public class SideEffectConverter implements ArgumentConverter<SideEffect> {
@@ -43,7 +44,7 @@ public class SideEffectConverter implements ArgumentConverter<SideEffect> {
         commandManager.registerConverter(Key.of(SideEffect.class), new SideEffectConverter());
     }
 
-    private final TextComponent choices = TextComponent.of("any side effect");
+    private final TextComponent choices = text("any side effect");
 
     private SideEffectConverter() {
     }

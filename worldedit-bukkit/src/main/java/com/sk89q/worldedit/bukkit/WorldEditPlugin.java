@@ -54,6 +54,7 @@ import com.sk89q.worldedit.world.item.ItemCategory;
 import com.sk89q.worldedit.world.item.ItemType;
 import com.sk89q.worldedit.world.weather.WeatherTypes;
 import io.papermc.lib.PaperLib;
+import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -118,10 +119,12 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
     private BukkitImplAdapter bukkitAdapter;
     private BukkitServerInterface server;
     private BukkitConfiguration config;
+    private BukkitAudiences audiences;
 
     @Override
     public void onLoad() {
         INSTANCE = this;
+        audiences = BukkitAudiences.create(this);
 
         //noinspection ResultOfMethodCallIgnored
         getDataFolder().mkdirs();
@@ -439,6 +442,15 @@ public class WorldEditPlugin extends JavaPlugin implements TabCompleter {
      */
     public BukkitConfiguration getLocalConfiguration() {
         return config;
+    }
+
+    /**
+     * Get the audience provider for this plugin.
+     *
+     * @return the audience provider
+     */
+    public BukkitAudiences getAudiences() {
+        return audiences;
     }
 
     /**

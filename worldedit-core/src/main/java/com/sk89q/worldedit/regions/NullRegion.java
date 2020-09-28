@@ -22,7 +22,6 @@ package com.sk89q.worldedit.regions;
 import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.Vector3;
-import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.world.World;
 
 import java.util.Collections;
@@ -30,6 +29,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
+
+import static com.sk89q.worldedit.util.formatting.text.Component.translatable;
 
 /**
  * A region that contains no points.
@@ -75,17 +76,17 @@ public class NullRegion implements Region {
 
     @Override
     public void expand(BlockVector3... changes) throws RegionOperationException {
-        throw new RegionOperationException(TranslatableComponent.of("worldedit.selection.null.error.immutable"));
+        throw new RegionOperationException(translatable("worldedit.selection.null.error.immutable"));
     }
 
     @Override
     public void contract(BlockVector3... changes) throws RegionOperationException {
-        throw new RegionOperationException(TranslatableComponent.of("worldedit.selection.null.error.immutable"));
+        throw new RegionOperationException(translatable("worldedit.selection.null.error.immutable"));
     }
 
     @Override
     public void shift(BlockVector3 change) throws RegionOperationException {
-        throw new RegionOperationException(TranslatableComponent.of("worldedit.selection.null.error.immutable"));
+        throw new RegionOperationException(translatable("worldedit.selection.null.error.immutable"));
     }
 
     @Override

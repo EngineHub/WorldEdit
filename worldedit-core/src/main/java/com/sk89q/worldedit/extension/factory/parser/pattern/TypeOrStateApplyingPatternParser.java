@@ -30,12 +30,13 @@ import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.function.pattern.StateApplyingPattern;
 import com.sk89q.worldedit.function.pattern.TypeApplyingPattern;
 import com.sk89q.worldedit.internal.registry.InputParser;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
-import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
+
+import static com.sk89q.worldedit.util.formatting.text.Component.text;
+import static com.sk89q.worldedit.util.formatting.text.Component.translatable;
 
 
 public class TypeOrStateApplyingPatternParser extends InputParser<Pattern> {
@@ -85,28 +86,28 @@ public class TypeOrStateApplyingPatternParser extends InputParser<Pattern> {
         } else {
             // states given
             if (!parts[1].endsWith("]")) {
-                throw new InputParseException(TranslatableComponent.of("worldedit.error.parser.missing-rbracket"));
+                throw new InputParseException(translatable("worldedit.error.parser.missing-rbracket"));
             }
             final String[] states = parts[1].substring(0, parts[1].length() - 1).split(",");
             Map<String, String> statesToSet = new HashMap<>();
             for (String state : states) {
                 if (state.isEmpty()) {
-                    throw new InputParseException(TranslatableComponent.of("worldedit.error.parser.empty-state"));
+                    throw new InputParseException(translatable("worldedit.error.parser.empty-state"));
                 }
                 String[] propVal = state.split("=", 2);
                 if (propVal.length != 2) {
-                    throw new InputParseException(TranslatableComponent.of("worldedit.error.parser.missing-equals-separator"));
+                    throw new InputParseException(translatable("worldedit.error.parser.missing-equals-separator"));
                 }
                 final String prop = propVal[0];
                 if (prop.isEmpty()) {
-                    throw new InputParseException(TranslatableComponent.of("worldedit.error.parser.empty-property"));
+                    throw new InputParseException(translatable("worldedit.error.parser.empty-property"));
                 }
                 final String value = propVal[1];
                 if (value.isEmpty()) {
-                    throw new InputParseException(TranslatableComponent.of("worldedit.error.parser.empty-value"));
+                    throw new InputParseException(translatable("worldedit.error.parser.empty-value"));
                 }
                 if (statesToSet.put(prop, value) != null) {
-                    throw new InputParseException(TranslatableComponent.of("worldedit.error.parser.duplicate-property", TextComponent.of(prop)));
+                    throw new InputParseException(translatable("worldedit.error.parser.duplicate-property", text(prop)));
                 }
             }
             if (type.isEmpty()) {

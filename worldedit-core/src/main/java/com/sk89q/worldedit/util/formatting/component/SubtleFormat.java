@@ -20,7 +20,7 @@
 package com.sk89q.worldedit.util.formatting.component;
 
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
-import com.sk89q.worldedit.util.formatting.text.format.TextColor;
+import com.sk89q.worldedit.util.formatting.text.format.NamedTextColor;
 
 /**
  * Represents a subtle part of the message.
@@ -31,7 +31,7 @@ public class SubtleFormat extends TextComponentProducer {
      * Create a new instance.
      */
     private SubtleFormat() {
-        getBuilder().content("").color(TextColor.GRAY);
+        getBuilder().content("").color(NamedTextColor.GRAY);
     }
 
     /**

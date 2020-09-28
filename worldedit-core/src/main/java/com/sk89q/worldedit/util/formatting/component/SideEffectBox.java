@@ -25,16 +25,17 @@ import com.sk89q.worldedit.util.SideEffectSet;
 import com.sk89q.worldedit.util.concurrency.LazyReference;
 import com.sk89q.worldedit.util.formatting.WorldEditText;
 import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
-import com.sk89q.worldedit.util.formatting.text.event.ClickEvent;
-import com.sk89q.worldedit.util.formatting.text.event.HoverEvent;
-import com.sk89q.worldedit.util.formatting.text.format.TextColor;
+import com.sk89q.worldedit.util.formatting.text.format.NamedTextColor;
 
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
+
+import static com.sk89q.worldedit.util.formatting.text.Component.space;
+import static com.sk89q.worldedit.util.formatting.text.Component.translatable;
+import static com.sk89q.worldedit.util.formatting.text.event.ClickEvent.runCommand;
 
 public class SideEffectBox extends PaginationBox {
 
@@ -43,7 +44,7 @@ public class SideEffectBox extends PaginationBox {
             .stream()
             .sorted(Comparator.comparing(effect ->
                 WorldEditText.reduceToText(
-                    TranslatableComponent.of(effect.getDisplayName()),
+                    translatable(effect.getDisplayName()),
                     Locale.US
                 )
             ))
@@ -69,17 +70,18 @@ public class SideEffectBox extends PaginationBox {
         SideEffect effect = getSideEffects().get(number);
         SideEffect.State state = this.sideEffectSet.getState(effect);
 
-        TextComponent.Builder builder = TextComponent.builder();
-        builder = builder.append(TranslatableComponent.of(effect.getDisplayName(), TextColor.YELLOW)
-                .hoverEvent(HoverEvent.of(HoverEvent.Action.SHOW_TEXT, TranslatableComponent.of(effect.getDescription()))));
+        TranslatableComponent.Builder builder = translatable()
+            .key(effect.getDisplayName())
+            .color(NamedTextColor.YELLOW)
+            .hoverEvent(translatable(effect.getDescription()));
         for (SideEffect.State uiState : SHOWN_VALUES) {
-            builder = builder.append(TextComponent.space());
-            builder = builder.append(TranslatableComponent.of(uiState.getDisplayName(), uiState == state ? TextColor.WHITE : TextColor.GRAY)
-                    .clickEvent(ClickEvent.runCommand("//perf -h " + effect.name().toLowerCase(Locale.US) + " " + uiState.name().toLowerCase(Locale.US)))
-                    .hoverEvent(HoverEvent.showText(uiState == state
-                            ? TranslatableComponent.of("worldedit.sideeffect.box.current")
-                            : TranslatableComponent.of("worldedit.sideeffect.box.change-to", TranslatableComponent.of(uiState.getDisplayName()))
-                    ))
+            builder = builder.append(space());
+            builder = builder.append(translatable(uiState.getDisplayName(), uiState == state ? NamedTextColor.WHITE : NamedTextColor.GRAY)
+                .clickEvent(runCommand("//perf -h " + effect.name().toLowerCase(Locale.US) + " " + uiState.name().toLowerCase(Locale.US)))
+                .hoverEvent(uiState == state
+                    ? translatable("worldedit.sideeffect.box.current")
+                    : translatable("worldedit.sideeffect.box.change-to", translatable(uiState.getDisplayName()))
+                )
             );
         }
 

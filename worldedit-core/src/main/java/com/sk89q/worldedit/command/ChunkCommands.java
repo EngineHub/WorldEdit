@@ -37,10 +37,7 @@ import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.formatting.component.PaginationBox;
 import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
-import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
-import com.sk89q.worldedit.util.formatting.text.event.ClickEvent;
-import com.sk89q.worldedit.util.formatting.text.format.TextColor;
+import com.sk89q.worldedit.util.formatting.text.format.NamedTextColor;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.storage.LegacyChunkStore;
 import com.sk89q.worldedit.world.storage.McRegionChunkStore;
@@ -60,6 +57,9 @@ import java.util.Set;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.sk89q.worldedit.command.util.Logging.LogMode.REGION;
 import static com.sk89q.worldedit.internal.anvil.ChunkDeleter.DELCHUNKS_FILE_NAME;
+import static com.sk89q.worldedit.util.formatting.text.Component.text;
+import static com.sk89q.worldedit.util.formatting.text.Component.translatable;
+import static com.sk89q.worldedit.util.formatting.text.event.ClickEvent.suggestCommand;
 
 /**
  * Commands for working with chunks.
@@ -85,9 +85,9 @@ public class ChunkCommands {
         int chunkZ = (int) Math.floor(pos.getBlockZ() / 16.0);
 
         final BlockVector2 chunkPos = BlockVector2.at(chunkX, chunkZ);
-        player.printInfo(TranslatableComponent.of("worldedit.chunkinfo.chunk", TextComponent.of(chunkX), TextComponent.of(chunkZ)));
-        player.printInfo(TranslatableComponent.of("worldedit.chunkinfo.old-filename", TextComponent.of(LegacyChunkStore.getFilename(chunkPos))));
-        player.printInfo(TranslatableComponent.of("worldedit.chunkinfo.mcregion-filename", TextComponent.of(McRegionChunkStore.getFilename(chunkPos))));
+        player.printInfo(translatable("worldedit.chunkinfo.chunk", text(chunkX), text(chunkZ)));
+        player.printInfo(translatable("worldedit.chunkinfo.old-filename", text(LegacyChunkStore.getFilename(chunkPos))));
+        player.printInfo(translatable("worldedit.chunkinfo.mcregion-filename", text(McRegionChunkStore.getFilename(chunkPos))));
     }
 
     @Command(
@@ -101,9 +101,9 @@ public class ChunkCommands {
 
         WorldEditAsyncCommandBuilder.createAndSendMessage(actor,
             () -> new ChunkListPaginationBox(region).create(page),
-            TranslatableComponent.of(
+            translatable(
                 "worldedit.listchunks.listfor",
-                TextComponent.of(actor.getName())
+                text(actor.getName())
             ));
     }
 
@@ -118,7 +118,7 @@ public class ChunkCommands {
                                     ZonedDateTime beforeTime) throws WorldEditException {
         Path worldDir = world.getStoragePath();
         if (worldDir == null) {
-            throw new StopExecutionException(TextComponent.of("Couldn't find world folder for this world."));
+            throw new StopExecutionException(text("Couldn't find world folder for this world."));
         }
 
         Path chunkPath = worldEdit.getWorkingDirectoryPath(DELCHUNKS_FILE_NAME);
@@ -127,7 +127,7 @@ public class ChunkCommands {
             try {
                 currentInfo = ChunkDeleter.readInfo(chunkPath);
             } catch (IOException e) {
-                throw new StopExecutionException(TextComponent.of("Error reading existing chunk file."));
+                throw new StopExecutionException(text("Error reading existing chunk file."));
             }
         }
         if (currentInfo == null) {
@@ -160,22 +160,27 @@ public class ChunkCommands {
         try {
             ChunkDeleter.writeInfo(currentInfo, chunkPath);
         } catch (IOException | JsonIOException e) {
-            throw new StopExecutionException(TextComponent.of("Failed to write chunk list: " + e.getMessage()));
+            throw new StopExecutionException(text("Failed to write chunk list: " + e.getMessage()));
         }
 
-        actor.print(TextComponent.of(
+        actor.print(text(
             String.format("%d chunk(s) have been marked for deletion the next time the server starts.",
                 newBatch.getChunkCount())
         ));
         if (currentInfo.batches.size() > 1) {
-            actor.printDebug(TextComponent.of(
+            actor.printDebug(text(
                 String.format("%d chunks total marked for deletion. (May have overlaps).",
                     currentInfo.batches.stream().mapToInt(ChunkDeletionInfo.ChunkBatch::getChunkCount).sum())
             ));
         }
-        actor.print(TextComponent.of("You can mark more chunks for deletion, or to stop now, run: ", TextColor.LIGHT_PURPLE)
-                .append(TextComponent.of("/stop", TextColor.AQUA)
-                        .clickEvent(ClickEvent.of(ClickEvent.Action.SUGGEST_COMMAND, "/stop"))));
+        actor.print(text()
+            .content("You can mark more chunks for deletion, or to stop now, run: ")
+            .color(NamedTextColor.LIGHT_PURPLE)
+            .append(text()
+                .content("/stop")
+                .color(NamedTextColor.AQUA)
+                .clickEvent(suggestCommand("/stop")))
+            .build());
     }
 
     private static class ChunkListPaginationBox extends PaginationBox {
@@ -193,7 +198,7 @@ public class ChunkCommands {
 
         @Override
         public Component getComponent(int number) {
-            return TextComponent.of(chunks.get(number).toString());
+            return text(chunks.get(number).toString());
         }
 
         @Override

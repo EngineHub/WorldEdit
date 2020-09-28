@@ -33,11 +33,11 @@ import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.function.mask.MaskIntersection;
 import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.util.Location;
-import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 
 import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.sk89q.worldedit.util.formatting.text.Component.translatable;
 
 /**
  * Builds a shape at the place being looked at.
@@ -184,7 +184,7 @@ public class BrushTool implements TraceTool {
         Location target = player.getBlockTrace(getRange(), true, traceMask);
 
         if (target == null) {
-            player.printError(TranslatableComponent.of("worldedit.tool.no-block"));
+            player.printError(translatable("worldedit.tool.no-block"));
             return true;
         }
 
@@ -208,7 +208,7 @@ public class BrushTool implements TraceTool {
             try {
                 brush.build(editSession, target.toVector().toBlockPoint(), material, size);
             } catch (MaxChangedBlocksException e) {
-                player.printError(TranslatableComponent.of("worldedit.tool.max-block-changes"));
+                player.printError(translatable("worldedit.tool.max-block-changes"));
             } finally {
                 session.remember(editSession);
             }

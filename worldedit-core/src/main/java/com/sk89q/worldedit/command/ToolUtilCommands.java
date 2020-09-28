@@ -28,10 +28,11 @@ import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.util.HandSide;
-import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import org.enginehub.piston.annotation.Command;
 import org.enginehub.piston.annotation.CommandContainer;
 import org.enginehub.piston.annotation.param.Arg;
+
+import static com.sk89q.worldedit.util.formatting.text.Component.translatable;
 
 /**
  * Tool commands.
@@ -55,15 +56,15 @@ public class ToolUtilCommands {
                                   Boolean superPickaxe) {
         boolean hasSuperPickAxe = session.hasSuperPickAxe();
         if (superPickaxe != null && superPickaxe == hasSuperPickAxe) {
-            player.printError(TranslatableComponent.of(superPickaxe ? "worldedit.tool.superpickaxe.enabled.already" : "worldedit.tool.superpickaxe.disabled.already"));
+            player.printError(translatable(superPickaxe ? "worldedit.tool.superpickaxe.enabled.already" : "worldedit.tool.superpickaxe.disabled.already"));
             return;
         }
         if (hasSuperPickAxe) {
             session.disableSuperPickAxe();
-            player.printInfo(TranslatableComponent.of("worldedit.tool.superpickaxe.disabled"));
+            player.printInfo(translatable("worldedit.tool.superpickaxe.disabled"));
         } else {
             session.enableSuperPickAxe();
-            player.printInfo(TranslatableComponent.of("worldedit.tool.superpickaxe.enabled"));
+            player.printInfo(translatable("worldedit.tool.superpickaxe.enabled"));
         }
 
     }
@@ -78,9 +79,9 @@ public class ToolUtilCommands {
                          Mask mask) throws WorldEditException {
         session.getBrushTool(player.getItemInHand(HandSide.MAIN_HAND).getType()).setMask(mask);
         if (mask == null) {
-            player.printInfo(TranslatableComponent.of("worldedit.tool.mask.disabled"));
+            player.printInfo(translatable("worldedit.tool.mask.disabled"));
         } else {
-            player.printInfo(TranslatableComponent.of("worldedit.tool.mask.set"));
+            player.printInfo(translatable("worldedit.tool.mask.set"));
         }
     }
 
@@ -94,7 +95,7 @@ public class ToolUtilCommands {
                          @Arg(desc = "The pattern of blocks to use")
                              Pattern pattern) throws WorldEditException {
         session.getBrushTool(player.getItemInHand(HandSide.MAIN_HAND).getType()).setFill(pattern);
-        player.printInfo(TranslatableComponent.of("worldedit.tool.material.set"));
+        player.printInfo(translatable("worldedit.tool.material.set"));
     }
 
     @Command(
@@ -106,7 +107,7 @@ public class ToolUtilCommands {
                       @Arg(desc = "The range of the brush")
                           int range) throws WorldEditException {
         session.getBrushTool(player.getItemInHand(HandSide.MAIN_HAND).getType()).setRange(range);
-        player.printInfo(TranslatableComponent.of("worldedit.tool.range.set"));
+        player.printInfo(translatable("worldedit.tool.range.set"));
     }
 
     @Command(
@@ -120,7 +121,7 @@ public class ToolUtilCommands {
         we.checkMaxBrushRadius(size);
 
         session.getBrushTool(player.getItemInHand(HandSide.MAIN_HAND).getType()).setSize(size);
-        player.printInfo(TranslatableComponent.of("worldedit.tool.size.set"));
+        player.printInfo(translatable("worldedit.tool.size.set"));
     }
 
     @Command(
@@ -133,9 +134,9 @@ public class ToolUtilCommands {
                              Mask mask) throws WorldEditException {
         session.getBrushTool(player.getItemInHand(HandSide.MAIN_HAND).getType()).setTraceMask(mask);
         if (mask == null) {
-            player.printInfo(TranslatableComponent.of("worldedit.tool.tracemask.disabled"));
+            player.printInfo(translatable("worldedit.tool.tracemask.disabled"));
         } else {
-            player.printInfo(TranslatableComponent.of("worldedit.tool.tracemask.set"));
+            player.printInfo(translatable("worldedit.tool.tracemask.set"));
         }
     }
 }

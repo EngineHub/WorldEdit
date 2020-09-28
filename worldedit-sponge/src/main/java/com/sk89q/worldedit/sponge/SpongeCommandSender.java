@@ -24,9 +24,7 @@ import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.internal.cui.CUIEvent;
 import com.sk89q.worldedit.session.SessionKey;
 import com.sk89q.worldedit.util.auth.AuthorizationException;
-import com.sk89q.worldedit.util.formatting.WorldEditText;
 import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.adapter.spongeapi.TextAdapter;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
@@ -96,7 +94,8 @@ public class SpongeCommandSender implements Actor {
 
     @Override
     public void print(Component component) {
-        TextAdapter.sendMessage(sender, WorldEditText.format(component, getLocale()));
+        /// TODO sponge 8 this is native
+        // TextAdapter.sendMessage(sender, WorldEditText.format(component, getLocale()));
     }
 
     @SuppressWarnings("deprecation")

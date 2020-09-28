@@ -24,9 +24,12 @@ import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.event.ClickEvent;
 import com.sk89q.worldedit.util.formatting.text.event.HoverEvent;
-import com.sk89q.worldedit.util.formatting.text.format.TextColor;
+import com.sk89q.worldedit.util.formatting.text.format.NamedTextColor;
 
 import java.util.List;
+
+import static com.sk89q.worldedit.util.formatting.text.Component.text;
+import static com.sk89q.worldedit.util.formatting.text.event.ClickEvent.runCommand;
 
 public class CommandListBox extends PaginationBox {
 
@@ -60,7 +63,7 @@ public class CommandListBox extends PaginationBox {
 
     @Deprecated
     public void appendCommand(String alias, String description, String insertion) {
-        appendCommand(alias, TextComponent.of(description), insertion);
+        appendCommand(alias, text(description), insertion);
     }
 
     public void appendCommand(String alias, Component description, String insertion) {
@@ -90,18 +93,18 @@ public class CommandListBox extends PaginationBox {
             TextComponentProducer line = new TextComponentProducer();
             if (!hideHelp) {
                 line.append(SubtleFormat.wrap("? ")
-                        .clickEvent(ClickEvent.of(ClickEvent.Action.RUN_COMMAND, CommandListBox.this.helpCommand + " " + insertion))
-                        .hoverEvent(HoverEvent.of(HoverEvent.Action.SHOW_TEXT, TextComponent.of("Additional Help"))));
+                        .clickEvent(runCommand(CommandListBox.this.helpCommand + " " + insertion))
+                        .hoverEvent(text("Additional Help")));
             }
-            TextComponent command = TextComponent.of(alias, TextColor.GOLD);
+            TextComponent command = text(alias, NamedTextColor.GOLD);
             if (insertion == null) {
                 line.append(command);
             } else {
                 line.append(command
-                        .clickEvent(ClickEvent.of(ClickEvent.Action.SUGGEST_COMMAND, insertion))
-                        .hoverEvent(HoverEvent.of(HoverEvent.Action.SHOW_TEXT, TextComponent.of("Click to select"))));
+                        .clickEvent(runCommand(insertion))
+                        .hoverEvent(text("Click to select")));
             }
-            return line.append(TextComponent.of(": ")).append(description).create();
+            return line.append(text(": ")).append(description).create();
         }
     }
 }

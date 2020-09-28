@@ -26,11 +26,6 @@ import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.session.SessionKey;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.util.auth.AuthorizationException;
-import com.sk89q.worldedit.util.formatting.WorldEditText;
-import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
-import com.sk89q.worldedit.util.formatting.text.adapter.bukkit.TextAdapter;
-import com.sk89q.worldedit.util.formatting.text.format.TextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -39,8 +34,6 @@ import org.bukkit.command.BlockCommandSender;
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 import java.util.UUID;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 public class BukkitBlockCommandSender extends AbstractNonPlayerActor implements Locatable {
 
@@ -52,8 +45,7 @@ public class BukkitBlockCommandSender extends AbstractNonPlayerActor implements 
     private final UUID uuid;
 
     public BukkitBlockCommandSender(WorldEditPlugin plugin, BlockCommandSender sender) {
-        checkNotNull(plugin);
-        checkNotNull(sender);
+        super(plugin.getAudiences().audience(sender)::sendMessage);
 
         this.plugin = plugin;
         this.sender = sender;
@@ -64,43 +56,6 @@ public class BukkitBlockCommandSender extends AbstractNonPlayerActor implements 
     @Override
     public String getName() {
         return sender.getName();
-    }
-
-    @Override
-    @Deprecated
-    public void printRaw(String msg) {
-        for (String part : msg.split("\n")) {
-            sender.sendMessage(part);
-        }
-    }
-
-    @Override
-    @Deprecated
-    public void print(String msg) {
-        for (String part : msg.split("\n")) {
-            print(TextComponent.of(part, TextColor.LIGHT_PURPLE));
-        }
-    }
-
-    @Override
-    @Deprecated
-    public void printDebug(String msg) {
-        for (String part : msg.split("\n")) {
-            print(TextComponent.of(part, TextColor.GRAY));
-        }
-    }
-
-    @Override
-    @Deprecated
-    public void printError(String msg) {
-        for (String part : msg.split("\n")) {
-            print(TextComponent.of(part, TextColor.RED));
-        }
-    }
-
-    @Override
-    public void print(Component component) {
-        TextAdapter.sendMessage(sender, WorldEditText.format(component, getLocale()));
     }
 
     @Override

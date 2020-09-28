@@ -25,20 +25,18 @@ import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.world.item.ItemType;
 import com.sk89q.worldedit.world.registry.BundledItemRegistry;
 
+import static com.sk89q.worldedit.util.formatting.text.Component.translatable;
+
 public class FabricItemRegistry extends BundledItemRegistry {
 
     @Override
     public Component getRichName(ItemType itemType) {
-        return TranslatableComponent.of(
-            FabricAdapter.adapt(itemType).getTranslationKey()
-        );
+        return translatable(FabricAdapter.adapt(itemType).getTranslationKey());
     }
 
     @Override
     public Component getRichName(BaseItemStack itemStack) {
-        return TranslatableComponent.of(
-            FabricAdapter.adapt(itemStack).getTranslationKey()
-        );
+        return translatable(FabricAdapter.adapt(itemStack).getTranslationKey());
     }
 
 }

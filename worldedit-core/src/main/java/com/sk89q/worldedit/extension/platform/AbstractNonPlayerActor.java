@@ -20,10 +20,16 @@
 package com.sk89q.worldedit.extension.platform;
 
 import com.sk89q.worldedit.internal.cui.CUIEvent;
+import com.sk89q.worldedit.util.formatting.text.Component;
 
 import java.io.File;
+import java.util.function.Consumer;
 
-public abstract class AbstractNonPlayerActor implements Actor {
+public abstract class AbstractNonPlayerActor extends AbstractActor implements Actor {
+
+    protected AbstractNonPlayerActor(Consumer<Component> sendMessage) {
+        super(sendMessage);
+    }
 
     @Override
     public boolean canDestroyBedrock() {

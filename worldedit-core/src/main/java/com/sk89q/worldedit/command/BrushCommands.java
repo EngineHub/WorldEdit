@@ -61,8 +61,6 @@ import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.session.request.RequestExtent;
 import com.sk89q.worldedit.util.HandSide;
 import com.sk89q.worldedit.util.TreeGenerator;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
-import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.block.BlockTypes;
 import org.enginehub.piston.annotation.Command;
@@ -72,6 +70,8 @@ import org.enginehub.piston.annotation.param.ArgFlag;
 import org.enginehub.piston.annotation.param.Switch;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.sk89q.worldedit.util.formatting.text.Component.text;
+import static com.sk89q.worldedit.util.formatting.text.Component.translatable;
 
 /**
  * Commands to set brush shape.
@@ -125,7 +125,7 @@ public class BrushCommands {
             tool.setBrush(new SphereBrush(), "worldedit.brush.sphere");
         }
 
-        player.printInfo(TranslatableComponent.of("worldedit.brush.sphere.equip", TextComponent.of(String.format("%.0f", radius))));
+        player.printInfo(translatable("worldedit.brush.sphere.equip", text(String.format("%.0f", radius))));
     }
 
     @Command(
@@ -156,7 +156,7 @@ public class BrushCommands {
             tool.setBrush(new CylinderBrush(height), "worldedit.brush.cylinder");
         }
 
-        player.printInfo(TranslatableComponent.of("worldedit.brush.cylinder.equip", TextComponent.of((int) radius), TextComponent.of(height)));
+        player.printInfo(translatable("worldedit.brush.cylinder.equip", text((int) radius), text(height)));
     }
 
     @Command(
@@ -192,7 +192,7 @@ public class BrushCommands {
         BrushTool tool = session.getBrushTool(player.getItemInHand(HandSide.MAIN_HAND).getType());
         tool.setBrush(new ClipboardBrush(newHolder, ignoreAir, usingOrigin, pasteEntities, pasteBiomes, sourceMask), "worldedit.brush.clipboard");
 
-        player.printInfo(TranslatableComponent.of("worldedit.brush.clipboard.equip"));
+        player.printInfo(translatable("worldedit.brush.clipboard.equip"));
     }
 
     @Command(
@@ -214,11 +214,11 @@ public class BrushCommands {
         tool.setSize(radius);
         tool.setBrush(new SmoothBrush(iterations, mask), "worldedit.brush.smooth");
 
-        player.printInfo(TranslatableComponent.of(
+        player.printInfo(translatable(
                 "worldedit.brush.smooth.equip",
-                TextComponent.of((int) radius),
-                TextComponent.of(iterations),
-                TextComponent.of(mask == null ? "any block" : "filter")
+                text((int) radius),
+                text(iterations),
+                text(mask == null ? "any block" : "filter")
         ));
     }
 
@@ -239,7 +239,7 @@ public class BrushCommands {
         tool.setMask(new BlockTypeMask(new RequestExtent(), BlockTypes.FIRE));
         tool.setBrush(new SphereBrush(), "worldedit.brush.ex");
 
-        player.printInfo(TranslatableComponent.of("worldedit.brush.extinguish.equip", TextComponent.of((int) radius)));
+        player.printInfo(translatable("worldedit.brush.extinguish.equip", text((int) radius)));
     }
 
     @Command(
@@ -266,7 +266,7 @@ public class BrushCommands {
         tool.setSize(radius);
         tool.setBrush(new GravityBrush(height), "worldedit.brush.gravity");
 
-        player.printInfo(TranslatableComponent.of("worldedit.brush.gravity.equip", TextComponent.of((int) radius)));
+        player.printInfo(translatable("worldedit.brush.gravity.equip", text((int) radius)));
     }
 
     @Command(
@@ -304,7 +304,7 @@ public class BrushCommands {
             maxRadius = Math.max(config.maxBrushRadius, config.butcherMaxRadius);
         }
         if (radius > maxRadius) {
-            player.printError(TranslatableComponent.of("worldedit.brush.radius-too-large", TextComponent.of(maxRadius)));
+            player.printError(translatable("worldedit.brush.radius-too-large", text(maxRadius)));
             return;
         }
 
@@ -322,7 +322,7 @@ public class BrushCommands {
         tool.setSize(radius);
         tool.setBrush(new ButcherBrush(flags), "worldedit.brush.butcher");
 
-        player.printInfo(TranslatableComponent.of("worldedit.brush.butcher.equip", TextComponent.of((int) radius)));
+        player.printInfo(translatable("worldedit.brush.butcher.equip", text((int) radius)));
     }
 
     @Command(
@@ -450,7 +450,7 @@ public class BrushCommands {
 
         setOperationBasedBrush(player, localSession, radius,
             new ApplyRegion(new BiomeFactory(biomeType)), shape, "worldedit.brush.biome");
-        player.printInfo(TranslatableComponent.of("worldedit.setbiome.warning"));
+        player.printInfo(translatable("worldedit.setbiome.warning"));
     }
 
     static void setOperationBasedBrush(Player player, LocalSession session, double radius,
@@ -463,6 +463,6 @@ public class BrushCommands {
         tool.setFill(null);
         tool.setBrush(new OperationFactoryBrush(factory, shape, session), permission);
 
-        player.printInfo(TranslatableComponent.of("worldedit.brush.operation.equip", TextComponent.of(factory.toString())));
+        player.printInfo(translatable("worldedit.brush.operation.equip", text(factory.toString())));
     }
 }

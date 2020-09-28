@@ -20,9 +20,7 @@
 package com.sk89q.worldedit.util.formatting.component;
 
 import com.google.common.collect.Iterables;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
-import com.sk89q.worldedit.util.formatting.text.event.ClickEvent;
-import com.sk89q.worldedit.util.formatting.text.event.HoverEvent;
+import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.format.TextDecoration;
 import org.enginehub.piston.Command;
 import org.enginehub.piston.CommandParameters;
@@ -34,6 +32,8 @@ import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.sk89q.worldedit.internal.command.CommandUtil.getSubCommands;
+import static com.sk89q.worldedit.util.formatting.text.Component.text;
+import static com.sk89q.worldedit.util.formatting.text.event.ClickEvent.runCommand;
 
 /**
  * A box to describe usage of a command.
@@ -71,14 +71,19 @@ public class CommandUsageBox extends TextComponentProducer {
         TextComponentProducer boxContent = new TextComponentProducer()
             .append(HelpGenerator.create(commands).getFullHelp());
         if (getSubCommands(Iterables.getLast(commands)).size() > 0) {
-            boxContent.append(TextComponent.newline())
-                .append(ColorConfig.helpText().wrap(TextComponent.builder("> ")
-                    .append(ColorConfig.mainText().wrap(TextComponent.builder("List Subcommands")
-                        .decoration(TextDecoration.ITALIC, true)
-                        .clickEvent(ClickEvent.runCommand(helpRootCommand + " -s " + commandString))
-                        .hoverEvent(HoverEvent.showText(TextComponent.of("List all subcommands of this command")))
-                        .build()))
-                    .build()));
+            boxContent.append(Component.newline())
+                .append(ColorConfig.helpText().wrap(
+                    text()
+                        .content("> ")
+                        .append(ColorConfig.mainText().wrap(
+                            text()
+                                .content("List Subcommands")
+                                .decorate(TextDecoration.ITALIC)
+                                .clickEvent(runCommand(helpRootCommand + " -s " + commandString))
+                                .hoverEvent(text("List all subcommands of this command"))
+                                .build()))
+                        .build()
+                ));
         }
         MessageBox box = new MessageBox("Help for " + commandString,
             boxContent);

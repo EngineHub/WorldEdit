@@ -27,6 +27,8 @@ import com.sk89q.worldedit.world.registry.BiomeRegistry;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 
+import static com.sk89q.worldedit.util.formatting.text.Component.translatable;
+
 /**
  * Provides access to biome data in Fabric.
  */
@@ -34,7 +36,7 @@ class FabricBiomeRegistry implements BiomeRegistry {
 
     @Override
     public Component getRichName(BiomeType biomeType) {
-        return TranslatableComponent.of(Util.createTranslationKey("biome", new Identifier(biomeType.getId())));
+        return translatable(Util.createTranslationKey("biome", new Identifier(biomeType.getId())));
     }
 
     @Deprecated

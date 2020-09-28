@@ -25,7 +25,6 @@ import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.internal.annotation.Offset;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import org.enginehub.piston.CommandManager;
 import org.enginehub.piston.converter.ArgumentConverter;
 import org.enginehub.piston.converter.ConversionResult;
@@ -33,6 +32,8 @@ import org.enginehub.piston.inject.InjectedValueAccess;
 import org.enginehub.piston.inject.Key;
 
 import java.util.List;
+
+import static com.sk89q.worldedit.util.formatting.text.Component.text;
 
 public class OffsetConverter implements ArgumentConverter<BlockVector3> {
 
@@ -53,9 +54,9 @@ public class OffsetConverter implements ArgumentConverter<BlockVector3> {
 
     @Override
     public Component describeAcceptableArguments() {
-        return TextComponent.builder()
+        return text()
             .append(directionVectorConverter.describeAcceptableArguments())
-            .append(", or ")
+            .append(text(", or "))
             .append(vectorConverter.describeAcceptableArguments())
             .build();
     }

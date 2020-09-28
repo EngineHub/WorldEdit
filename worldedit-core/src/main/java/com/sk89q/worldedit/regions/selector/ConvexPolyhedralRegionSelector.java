@@ -33,8 +33,6 @@ import com.sk89q.worldedit.regions.RegionSelector;
 import com.sk89q.worldedit.regions.polyhedron.Triangle;
 import com.sk89q.worldedit.regions.selector.limit.SelectorLimits;
 import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
-import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.world.World;
 
 import java.util.ArrayList;
@@ -46,6 +44,8 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.sk89q.worldedit.util.formatting.text.Component.text;
+import static com.sk89q.worldedit.util.formatting.text.Component.translatable;
 
 /**
  * Creates a {@code ConvexPolyhedralRegion} from a user's selections.
@@ -187,8 +187,8 @@ public class ConvexPolyhedralRegionSelector implements RegionSelector, CUIRegion
     public List<Component> getSelectionInfoLines() {
         List<Component> ret = new ArrayList<>();
 
-        ret.add(TranslatableComponent.of("worldedit.selection.convex.info.vertices", TextComponent.of(region.getVertices().size())));
-        ret.add(TranslatableComponent.of("worldedit.selection.convex.info.triangles", TextComponent.of(region.getTriangles().size())));
+        ret.add(translatable("worldedit.selection.convex.info.vertices", text(region.getVertices().size())));
+        ret.add(translatable("worldedit.selection.convex.info.triangles", text(region.getTriangles().size())));
 
         return ret;
     }
@@ -201,7 +201,7 @@ public class ConvexPolyhedralRegionSelector implements RegionSelector, CUIRegion
 
         session.describeCUI(player);
 
-        player.printInfo(TranslatableComponent.of("worldedit.selection.convex.explain.primary", TextComponent.of(pos.toString())));
+        player.printInfo(translatable("worldedit.selection.convex.explain.primary", text(pos.toString())));
     }
 
     @Override
@@ -212,7 +212,7 @@ public class ConvexPolyhedralRegionSelector implements RegionSelector, CUIRegion
 
         session.describeCUI(player);
 
-        player.printInfo(TranslatableComponent.of("worldedit.selection.convex.explain.secondary", TextComponent.of(pos.toString())));
+        player.printInfo(translatable("worldedit.selection.convex.explain.secondary", text(pos.toString())));
     }
 
     @Override

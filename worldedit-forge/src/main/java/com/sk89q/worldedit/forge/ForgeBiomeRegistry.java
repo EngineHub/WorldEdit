@@ -27,6 +27,8 @@ import com.sk89q.worldedit.world.registry.BiomeRegistry;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Util;
 
+import static com.sk89q.worldedit.util.formatting.text.Component.translatable;
+
 /**
  * Provides access to biome data in Forge.
  */
@@ -34,7 +36,7 @@ class ForgeBiomeRegistry implements BiomeRegistry {
 
     @Override
     public Component getRichName(BiomeType biomeType) {
-        return TranslatableComponent.of(Util.makeTranslationKey("biome", new ResourceLocation(biomeType.getId())));
+        return translatable(Util.makeTranslationKey("biome", new ResourceLocation(biomeType.getId())));
     }
 
     @Deprecated

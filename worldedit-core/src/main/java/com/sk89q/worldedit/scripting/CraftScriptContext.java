@@ -33,8 +33,6 @@ import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.internal.expression.invoke.ReturnException;
 import com.sk89q.worldedit.session.request.Request;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
-import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.util.io.file.FilenameException;
 import com.sk89q.worldedit.world.block.BaseBlock;
 
@@ -43,6 +41,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+
+import static com.sk89q.worldedit.util.formatting.text.Component.text;
+import static com.sk89q.worldedit.util.formatting.text.Component.translatable;
 
 /**
  * The context given to scripts.
@@ -119,7 +120,7 @@ public class CraftScriptContext extends CraftScriptEnvironment {
      * @param message a message
      */
     public void print(String message) {
-        player.printInfo(TextComponent.of(message));
+        player.printInfo(text(message));
     }
 
     /**
@@ -128,7 +129,7 @@ public class CraftScriptContext extends CraftScriptEnvironment {
      * @param message a message
      */
     public void error(String message) {
-        player.printError(TextComponent.of(message));
+        player.printError(text(message));
     }
 
     /**
@@ -137,7 +138,7 @@ public class CraftScriptContext extends CraftScriptEnvironment {
      * @param message a message
      */
     public void printRaw(String message) {
-        player.print(TextComponent.of(message));
+        player.print(text(message));
     }
 
     /**
@@ -151,7 +152,7 @@ public class CraftScriptContext extends CraftScriptEnvironment {
     public void checkArgs(int min, int max, String usage)
             throws InsufficientArgumentsException {
         if (args.length <= min || (max != -1 && args.length - 1 > max)) {
-            throw new InsufficientArgumentsException(TranslatableComponent.of("worldedit.error.incorrect-usage", TextComponent.of(usage)));
+            throw new InsufficientArgumentsException(translatable("worldedit.error.incorrect-usage", text(usage)));
         }
     }
 

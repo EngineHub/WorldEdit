@@ -35,8 +35,6 @@ import com.sk89q.worldedit.internal.command.CommandRegistrationHandler;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.RegionOperationException;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
-import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.world.World;
 import org.enginehub.piston.Command;
 import org.enginehub.piston.CommandManager;
@@ -51,6 +49,8 @@ import java.util.List;
 
 import static com.sk89q.worldedit.command.util.Logging.LogMode.REGION;
 import static com.sk89q.worldedit.internal.command.CommandUtil.requireIV;
+import static com.sk89q.worldedit.util.formatting.text.Component.text;
+import static com.sk89q.worldedit.util.formatting.text.Component.translatable;
 import static java.util.Objects.requireNonNull;
 import static org.enginehub.piston.part.CommandParts.arg;
 
@@ -79,8 +79,8 @@ public class ExpandCommands {
             command.condition(new PermissionCondition(ImmutableSet.of("worldedit.selection.expand")));
 
             command.addPart(SubCommandPart.builder(
-                TranslatableComponent.of("vert"),
-                TextComponent.of("Vertical expansion sub-command")
+                translatable("vert"),
+                text("Vertical expansion sub-command")
             )
                 .withCommands(ImmutableSet.of(createVertCommand(commandManager)))
                 .optional()
@@ -94,14 +94,14 @@ public class ExpandCommands {
 
     private static Command createVertCommand(CommandManager commandManager) {
         CommandArgument heightPart = arg(
-            TranslatableComponent.of("height"),
-            TextComponent.of("The height to expand both upwards and downwards")
+            translatable("height"),
+            text("The height to expand both upwards and downwards")
         )
             .defaultsTo(ImmutableList.of(HeightConverter.DEFAULT_VALUE))
             .build();
         return commandManager.newCommand("vert")
             .addPart(heightPart)
-            .description(TranslatableComponent.of("worldedit.expand.description.vert"))
+            .description(translatable("worldedit.expand.description.vert"))
             .action(parameters -> {
                 int height = requireNonNull(parameters.valueOf(heightPart)
                     .asSingle(Key.of(int.class, VertHeight.class)));
@@ -129,10 +129,10 @@ public class ExpandCommands {
             session.getRegionSelector(world).explainRegionAdjust(actor, session);
             long changeSize = newSize - oldSize;
             actor.printInfo(
-                TranslatableComponent.of("worldedit.expand.expanded.vert", TextComponent.of(changeSize))
+                translatable("worldedit.expand.expanded.vert", text(changeSize))
             );
         } catch (RegionOperationException e) {
-            actor.printError(TextComponent.of(e.getMessage()));
+            actor.printError(text(e.getMessage()));
         }
     }
 
@@ -168,7 +168,7 @@ public class ExpandCommands {
         session.getRegionSelector(world).explainRegionAdjust(actor, session);
 
         long changeSize = newSize - oldSize;
-        actor.printInfo(TranslatableComponent.of("worldedit.expand.expanded", TextComponent.of(changeSize)));
+        actor.printInfo(translatable("worldedit.expand.expanded", text(changeSize)));
     }
 
 }

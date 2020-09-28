@@ -30,11 +30,7 @@ import com.sk89q.worldedit.command.util.CommandPermissionsConditionGenerator;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.util.formatting.component.PaginationBox;
 import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
-import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
-import com.sk89q.worldedit.util.formatting.text.event.ClickEvent;
-import com.sk89q.worldedit.util.formatting.text.event.HoverEvent;
-import com.sk89q.worldedit.util.formatting.text.format.TextColor;
+import com.sk89q.worldedit.util.formatting.text.format.NamedTextColor;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.snapshot.experimental.Snapshot;
 import com.sk89q.worldedit.world.snapshot.experimental.fs.FileSystemSnapshotDatabase;
@@ -54,6 +50,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import static com.sk89q.worldedit.util.formatting.text.Component.text;
+import static com.sk89q.worldedit.util.formatting.text.Component.translatable;
+import static com.sk89q.worldedit.util.formatting.text.event.ClickEvent.runCommand;
 import static java.util.stream.Collectors.toList;
 
 /**
@@ -74,9 +73,7 @@ public class SnapshotCommands {
 
     static void checkSnapshotsConfigured(LocalConfiguration localConfiguration) {
         if (!localConfiguration.snapshotsConfigured) {
-            throw new StopExecutionException(TranslatableComponent.of(
-                "worldedit.restore.not-configured"
-            ));
+            throw new StopExecutionException(translatable("worldedit.restore.not-configured"));
         }
     }
 
@@ -120,10 +117,7 @@ public class SnapshotCommands {
         if (!snapshots.isEmpty()) {
             actor.print(new SnapshotListBox(world.getName(), snapshots).create(page));
         } else {
-            actor.printError(TranslatableComponent.of(
-                "worldedit.restore.none-for-specific-world",
-                TextComponent.of(world.getName())
-            ));
+            actor.printError(translatable("worldedit.restore.none-for-specific-world", text(world.getName())));
 
             if (config.snapshotDatabase instanceof FileSystemSnapshotDatabase) {
                 FileSystemSnapshotDatabase db = (FileSystemSnapshotDatabase) config.snapshotDatabase;
@@ -169,9 +163,9 @@ public class SnapshotCommands {
                     session.getSnapshotExperimental().close();
                 }
                 session.setSnapshot(null);
-                actor.printInfo(TranslatableComponent.of("worldedit.snapshot.use.newest"));
+                actor.printInfo(translatable("worldedit.snapshot.use.newest"));
             } else {
-                actor.printError(TranslatableComponent.of("worldedit.restore.none-for-world"));
+                actor.printError(translatable("worldedit.restore.none-for-world"));
             }
         } else {
             URI uri = resolveSnapshotName(config, name);
@@ -181,11 +175,9 @@ public class SnapshotCommands {
                     session.getSnapshotExperimental().close();
                 }
                 session.setSnapshotExperimental(snapshot.get());
-                actor.printInfo(TranslatableComponent.of(
-                    "worldedit.snapshot.use", TextComponent.of(name)
-                ));
+                actor.printInfo(translatable("worldedit.snapshot.use", text(name)));
             } else {
-                actor.printError(TranslatableComponent.of("worldedit.restore.not-available"));
+                actor.printError(translatable("worldedit.restore.not-available"));
             }
         }
     }
@@ -207,7 +199,7 @@ public class SnapshotCommands {
         }
 
         if (index < 1) {
-            actor.printError(TranslatableComponent.of("worldedit.snapshot.index-above-0"));
+            actor.printError(translatable("worldedit.snapshot.index-above-0"));
             return;
         }
 
@@ -218,25 +210,19 @@ public class SnapshotCommands {
                 .collect(toList());
         }
         if (snapshots.size() < index) {
-            actor.printError(TranslatableComponent.of(
-                "worldedit.snapshot.index-oob",
-                TextComponent.of(snapshots.size())
-            ));
+            actor.printError(translatable("worldedit.snapshot.index-oob", text(snapshots.size())));
             return;
         }
         Snapshot snapshot = snapshots.get(index - 1);
         if (snapshot == null) {
-            actor.printError(TranslatableComponent.of("worldedit.restore.not-available"));
+            actor.printError(translatable("worldedit.restore.not-available"));
             return;
         }
         if (session.getSnapshotExperimental() != null) {
             session.getSnapshotExperimental().close();
         }
         session.setSnapshotExperimental(snapshot);
-        actor.printInfo(TranslatableComponent.of(
-            "worldedit.snapshot.use",
-            TextComponent.of(snapshot.getInfo().getDisplayName())
-        ));
+        actor.printInfo(translatable("worldedit.snapshot.use", text(snapshot.getInfo().getDisplayName())));
     }
 
     @Command(
@@ -263,19 +249,14 @@ public class SnapshotCommands {
         }
 
         if (snapshot == null) {
-            actor.printError(TranslatableComponent.of(
-                "worldedit.snapshot.none-before",
-                TextComponent.of(dateFormat.withZone(session.getTimeZone()).format(date)))
+            actor.printError(translatable("worldedit.snapshot.none-before", text(dateFormat.withZone(session.getTimeZone()).format(date)))
             );
         } else {
             if (session.getSnapshotExperimental() != null) {
                 session.getSnapshotExperimental().close();
             }
             session.setSnapshotExperimental(snapshot);
-            actor.printInfo(TranslatableComponent.of(
-                "worldedit.snapshot.use",
-                TextComponent.of(snapshot.getInfo().getDisplayName())
-            ));
+            actor.printInfo(translatable("worldedit.snapshot.use", text(snapshot.getInfo().getDisplayName())));
         }
     }
 
@@ -302,19 +283,14 @@ public class SnapshotCommands {
                 .findFirst().orElse(null);
         }
         if (snapshot == null) {
-            actor.printError(TranslatableComponent.of(
-                "worldedit.snapshot.none-after",
-                TextComponent.of(dateFormat.withZone(session.getTimeZone()).format(date)))
+            actor.printError(translatable("worldedit.snapshot.none-after", text(dateFormat.withZone(session.getTimeZone()).format(date)))
             );
         } else {
             if (session.getSnapshotExperimental() != null) {
                 session.getSnapshotExperimental().close();
             }
             session.setSnapshotExperimental(snapshot);
-            actor.printInfo(TranslatableComponent.of(
-                "worldedit.snapshot.use",
-                TextComponent.of(snapshot.getInfo().getDisplayName())
-            ));
+            actor.printInfo(translatable("worldedit.snapshot.use", text(snapshot.getInfo().getDisplayName())));
         }
     }
 
@@ -330,10 +306,12 @@ public class SnapshotCommands {
         public Component getComponent(int number) {
             final Snapshot snapshot = snapshots.get(number);
             String displayName = snapshot.getInfo().getDisplayName();
-            return TextComponent.of(number + 1 + ". ", TextColor.GOLD)
-                .append(TextComponent.builder(displayName, TextColor.LIGHT_PURPLE)
-                    .hoverEvent(HoverEvent.showText(TextComponent.of("Click to use")))
-                    .clickEvent(ClickEvent.runCommand("/snap use " + displayName)));
+            return text(number + 1 + ". ", NamedTextColor.GOLD)
+                .append(text()
+                    .content(displayName)
+                    .color(NamedTextColor.LIGHT_PURPLE)
+                    .hoverEvent(text("Click to use"))
+                    .clickEvent(runCommand("/snap use " + displayName)));
         }
 
         @Override
