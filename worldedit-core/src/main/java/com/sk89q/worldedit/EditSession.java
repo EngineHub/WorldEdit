@@ -39,9 +39,9 @@ import com.sk89q.worldedit.extent.reorder.ChunkBatchingExtent;
 import com.sk89q.worldedit.extent.reorder.MultiStageReorder;
 import com.sk89q.worldedit.extent.validation.BlockChangeLimiter;
 import com.sk89q.worldedit.extent.validation.DataValidatorExtent;
+import com.sk89q.worldedit.extent.world.ArrangerBufferExtent;
 import com.sk89q.worldedit.extent.world.BiomeQuirkExtent;
 import com.sk89q.worldedit.extent.world.ChunkLoadingExtent;
-import com.sk89q.worldedit.extent.world.SideEffectExtent;
 import com.sk89q.worldedit.extent.world.SurvivalModeExtent;
 import com.sk89q.worldedit.extent.world.WatchdogTickingExtent;
 import com.sk89q.worldedit.function.GroundFunction;
@@ -196,7 +196,7 @@ public class EditSession implements Extent, AutoCloseable {
     private final @Nullable Actor actor;
     private final ChangeSet changeSet = new BlockOptimizedHistory();
 
-    private @Nullable SideEffectExtent sideEffectExtent;
+    private @Nullable ArrangerBufferExtent arrangerBufferExtent;
     private final SurvivalModeExtent survivalExtent;
     private @Nullable ChunkBatchingExtent chunkBatchingExtent;
     private final BlockBagExtent blockBagExtent;
@@ -248,7 +248,7 @@ public class EditSession implements Extent, AutoCloseable {
             Extent extent;
 
             // These extents are ALWAYS used
-            extent = traceIfNeeded(sideEffectExtent = new SideEffectExtent(world));
+            extent = traceIfNeeded(arrangerBufferExtent = new ArrangerBufferExtent(world));
             if (watchdog != null) {
                 // Reset watchdog before world placement
                 WatchdogTickingExtent watchdogExtent = new WatchdogTickingExtent(extent, watchdog);
@@ -328,9 +328,6 @@ public class EditSession implements Extent, AutoCloseable {
         if (chunkBatchingExtent != null && chunkBatchingExtent.commitRequired()) {
             return true;
         }
-        if (sideEffectExtent != null && sideEffectExtent.commitRequired()) {
-            return true;
-        }
         return false;
     }
 
@@ -363,7 +360,7 @@ public class EditSession implements Extent, AutoCloseable {
      * @param reorderMode The reorder mode
      */
     public void setReorderMode(ReorderMode reorderMode) {
-        if (reorderMode == ReorderMode.FAST && sideEffectExtent == null) {
+        if (reorderMode == ReorderMode.FAST && arrangerBufferExtent == null) {
             throw new IllegalArgumentException("An EditSession without a fast mode tried to use it for reordering!");
         }
         if (reorderMode == ReorderMode.MULTI_STAGE && reorderExtent == null) {
@@ -376,20 +373,20 @@ public class EditSession implements Extent, AutoCloseable {
         this.reorderMode = reorderMode;
         switch (reorderMode) {
             case MULTI_STAGE:
-                if (sideEffectExtent != null) {
-                    sideEffectExtent.setPostEditSimulationEnabled(false);
+                if (arrangerBufferExtent != null) {
+                    arrangerBufferExtent.setPostEditSimulationEnabled(false);
                 }
                 reorderExtent.setEnabled(true);
                 break;
             case FAST:
-                sideEffectExtent.setPostEditSimulationEnabled(true);
+                arrangerBufferExtent.setPostEditSimulationEnabled(true);
                 if (reorderExtent != null) {
                     reorderExtent.setEnabled(false);
                 }
                 break;
             case NONE:
-                if (sideEffectExtent != null) {
-                    sideEffectExtent.setPostEditSimulationEnabled(false);
+                if (arrangerBufferExtent != null) {
+                    arrangerBufferExtent.setPostEditSimulationEnabled(false);
                 }
                 if (reorderExtent != null) {
                     reorderExtent.setEnabled(false);
@@ -522,8 +519,8 @@ public class EditSession implements Extent, AutoCloseable {
      */
     @Deprecated
     public void setFastMode(boolean enabled) {
-        if (sideEffectExtent != null) {
-            sideEffectExtent.setSideEffectSet(enabled ? SideEffectSet.defaults() : SideEffectSet.none());
+        if (arrangerBufferExtent != null) {
+            arrangerBufferExtent.setSideEffectSet(enabled ? SideEffectSet.defaults() : SideEffectSet.none());
         }
     }
 
@@ -533,8 +530,8 @@ public class EditSession implements Extent, AutoCloseable {
      * @param sideEffectSet side effects to enable
      */
     public void setSideEffectApplier(SideEffectSet sideEffectSet) {
-        if (sideEffectExtent != null) {
-            sideEffectExtent.setSideEffectSet(sideEffectSet);
+        if (arrangerBufferExtent != null) {
+            arrangerBufferExtent.setSideEffectSet(sideEffectSet);
         }
     }
 
@@ -548,14 +545,14 @@ public class EditSession implements Extent, AutoCloseable {
      */
     @Deprecated
     public boolean hasFastMode() {
-        return sideEffectExtent != null && this.sideEffectExtent.getSideEffectSet().doesApplyAny();
+        return arrangerBufferExtent != null && this.arrangerBufferExtent.getSideEffectSet().doesApplyAny();
     }
 
     public SideEffectSet getSideEffectApplier() {
-        if (sideEffectExtent == null) {
+        if (arrangerBufferExtent == null) {
             return SideEffectSet.defaults();
         }
-        return sideEffectExtent.getSideEffectSet();
+        return arrangerBufferExtent.getSideEffectSet();
     }
 
     /**

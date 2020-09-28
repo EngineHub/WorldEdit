@@ -21,6 +21,9 @@ package com.sk89q.worldedit.util;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
+import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.util.formatting.text.TextComponent;
+import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 
 import java.util.Arrays;
 import java.util.EnumMap;
@@ -84,6 +87,20 @@ public class SideEffectSet {
 
     public Set<SideEffect> getSideEffectsToApply() {
         return this.appliedSideEffects;
+    }
+
+    public Component describe() {
+        // Format like UPDATE=ON, NEIGHBORS=DELAYED
+        // Only describe the applied effects
+        return TextComponent.join(
+            TextComponent.of(", "),
+            appliedSideEffects.stream()
+                .map(effect -> TranslatableComponent.builder(effect.getDisplayName())
+                    .append("=")
+                    .append(TranslatableComponent.of(getState(effect).getDisplayName()))
+                    .build())
+                .collect(Collectors.toList())
+        );
     }
 
     public static SideEffectSet defaults() {
