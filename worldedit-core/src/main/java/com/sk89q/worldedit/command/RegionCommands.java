@@ -393,7 +393,8 @@ public class RegionCommands {
             try {
                 final BlockVector3 size = region.getMaximumPoint().subtract(region.getMinimumPoint()).add(1, 1, 1);
 
-                final BlockVector3 shiftVector = offset.multiply(size).multiply(count);
+                final BlockVector3 shiftSize = blockUnits ? offset : offset.multiply(size);
+                final BlockVector3 shiftVector = shiftSize.multiply(count);
                 region.shift(shiftVector);
 
                 session.getRegionSelector(world).learnChanges();
