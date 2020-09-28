@@ -27,12 +27,13 @@ import com.sk89q.worldedit.extension.input.ParserContext;
 import com.sk89q.worldedit.function.mask.BlockCategoryMask;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.internal.registry.InputParser;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
-import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.world.block.BlockCategory;
 
 import java.util.Locale;
 import java.util.stream.Stream;
+
+import static com.sk89q.worldedit.util.formatting.text.Component.text;
+import static com.sk89q.worldedit.util.formatting.text.Component.translatable;
 
 public class BlockCategoryMaskParser extends InputParser<Mask> {
 
@@ -54,7 +55,7 @@ public class BlockCategoryMaskParser extends InputParser<Mask> {
         // This means it's a tag mask.
         BlockCategory category = BlockCategory.REGISTRY.get(input.substring(2).toLowerCase(Locale.ROOT));
         if (category == null) {
-            throw new NoMatchException(TranslatableComponent.of("worldedit.error.unknown-tag", TextComponent.of(input.substring(2))));
+            throw new NoMatchException(translatable("worldedit.error.unknown-tag", text(input.substring(2))));
         } else {
             return new BlockCategoryMask(context.requireExtent(), category);
         }

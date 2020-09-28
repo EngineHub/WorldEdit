@@ -27,8 +27,6 @@ import com.sk89q.worldedit.function.operation.RunContext;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
-import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.util.formatting.text.format.NamedTextColor;
 
 import java.util.ArrayDeque;
@@ -40,6 +38,8 @@ import java.util.Queue;
 import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.sk89q.worldedit.util.formatting.text.Component.text;
+import static com.sk89q.worldedit.util.formatting.text.Component.translatable;
 
 /**
  * Performs a breadth-first search starting from points added with
@@ -187,10 +187,7 @@ public abstract class BreadthFirstSearch implements Operation {
 
     @Override
     public Iterable<Component> getStatusMessages() {
-        return ImmutableList.of(TranslatableComponent.of(
-                "worldedit.operation.affected.block",
-                TextComponent.of(getAffected())
-        ).color(NamedTextColor.LIGHT_PURPLE));
+        return ImmutableList.of(translatable("worldedit.operation.affected.block", text(getAffected())).color(NamedTextColor.LIGHT_PURPLE));
     }
 
 }

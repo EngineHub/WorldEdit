@@ -19,8 +19,8 @@
 
 package com.sk89q.worldedit;
 
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
-import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
+import static com.sk89q.worldedit.util.formatting.text.Component.text;
+import static com.sk89q.worldedit.util.formatting.text.Component.translatable;
 
 /**
  * Thrown when an unknown direction is specified or detected.
@@ -35,7 +35,7 @@ public class UnknownDirectionException extends WorldEditException {
      * @param dir the input that was tried
      */
     public UnknownDirectionException(String dir) {
-        super(TranslatableComponent.of("worldedit.error.unknown-direction", TextComponent.of(dir)));
+        super(translatable("worldedit.error.unknown-direction", text(dir)));
         this.dir = dir;
     }
 

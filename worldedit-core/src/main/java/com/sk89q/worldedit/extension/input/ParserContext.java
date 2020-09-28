@@ -23,10 +23,11 @@ import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.extension.factory.MaskFactory;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extent.Extent;
-import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.world.World;
 
 import javax.annotation.Nullable;
+
+import static com.sk89q.worldedit.util.formatting.text.Component.translatable;
 
 /**
  * Contains contextual information that may be useful when constructing
@@ -147,7 +148,7 @@ public class ParserContext {
     public Extent requireExtent() throws InputParseException {
         Extent extent = getExtent();
         if (extent == null) {
-            throw new InputParseException(TranslatableComponent.of("worldedit.error.missing-extent"));
+            throw new InputParseException(translatable("worldedit.error.missing-extent"));
         }
         return extent;
     }
@@ -161,7 +162,7 @@ public class ParserContext {
     public LocalSession requireSession() throws InputParseException {
         LocalSession session = getSession();
         if (session == null) {
-            throw new InputParseException(TranslatableComponent.of("worldedit.error.missing-session"));
+            throw new InputParseException(translatable("worldedit.error.missing-session"));
         }
         return session;
     }
@@ -175,7 +176,7 @@ public class ParserContext {
     public World requireWorld() throws InputParseException {
         World world = getWorld();
         if (world == null) {
-            throw new InputParseException(TranslatableComponent.of("worldedit.error.missing-world"));
+            throw new InputParseException(translatable("worldedit.error.missing-world"));
         }
         return world;
     }
@@ -189,7 +190,7 @@ public class ParserContext {
     public Actor requireActor() throws InputParseException {
         Actor actor = getActor();
         if (actor == null) {
-            throw new InputParseException(TranslatableComponent.of("worldedit.error.missing-actor"));
+            throw new InputParseException(translatable("worldedit.error.missing-actor"));
         }
         return actor;
     }

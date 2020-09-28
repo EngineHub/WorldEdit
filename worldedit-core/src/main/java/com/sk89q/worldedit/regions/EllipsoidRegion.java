@@ -22,7 +22,6 @@ package com.sk89q.worldedit.regions;
 import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.math.Vector3;
-import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.storage.ChunkStore;
 
@@ -30,6 +29,8 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.HashSet;
 import java.util.Set;
+
+import static com.sk89q.worldedit.util.formatting.text.Component.translatable;
 
 /**
  * Represents an ellipsoid region.
@@ -114,7 +115,7 @@ public class EllipsoidRegion extends AbstractRegion {
         BlockVector3 diff = BlockVector3.ZERO.add(changes);
 
         if ((diff.getBlockX() & 1) + (diff.getBlockY() & 1) + (diff.getBlockZ() & 1) != 0) {
-            throw new RegionOperationException(TranslatableComponent.of("worldedit.selection.ellipsoid.error.even-horizontal"));
+            throw new RegionOperationException(translatable("worldedit.selection.ellipsoid.error.even-horizontal"));
         }
 
         return diff.divide(2).floor();

@@ -29,7 +29,6 @@ import com.sk89q.worldedit.internal.annotation.Direction;
 import com.sk89q.worldedit.internal.annotation.MultiDirection;
 import com.sk89q.worldedit.internal.annotation.OptionalArg;
 import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import org.enginehub.piston.CommandManager;
 import org.enginehub.piston.converter.ArgumentConverter;
 import org.enginehub.piston.converter.ConversionResult;
@@ -41,6 +40,7 @@ import org.enginehub.piston.inject.Key;
 import java.util.List;
 import javax.annotation.Nullable;
 
+import static com.sk89q.worldedit.util.formatting.text.Component.text;
 import static org.enginehub.piston.converter.SuggestionHelper.limitByPrefix;
 
 public abstract class AbstractDirectionConverter<D> implements ArgumentConverter<D> {
@@ -106,7 +106,7 @@ public abstract class AbstractDirectionConverter<D> implements ArgumentConverter
 
     @Override
     public Component describeAcceptableArguments() {
-        return TextComponent.of("`me` to use facing direction, or any "
+        return text("`me` to use facing direction, or any "
             + (includeDiagonals ? "direction" : "non-diagonal direction"));
     }
 

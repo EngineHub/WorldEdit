@@ -28,6 +28,8 @@ import com.sk89q.worldedit.util.formatting.text.format.TextColor;
 import com.sk89q.worldedit.util.formatting.text.format.TextDecoration;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.sk89q.worldedit.util.formatting.text.Component.space;
+import static com.sk89q.worldedit.util.formatting.text.Component.text;
 
 /**
  * Makes for a box with a border above and below.
@@ -53,7 +55,7 @@ public class MessageBox extends TextComponentProducer {
         checkNotNull(title);
 
         this.borderColor = borderColor;
-        append(centerAndBorder(TextComponent.of(title))).newline();
+        append(centerAndBorder(text(title))).newline();
         this.contents = contents;
     }
 
@@ -65,11 +67,11 @@ public class MessageBox extends TextComponentProducer {
             if (side > 1) {
                 line.append(createBorder(side - 1));
             }
-            line.append(TextComponent.space());
+            line.append(space());
         }
         line.append(text);
         if (side > 0) {
-            line.append(TextComponent.space());
+            line.append(space());
             if (side > 1) {
                 line.append(createBorder(side - 1));
             }
@@ -83,7 +85,7 @@ public class MessageBox extends TextComponentProducer {
     }
 
     private TextComponent createBorder(int count) {
-        return TextComponent.of(Strings.repeat("-", count),
+        return text(Strings.repeat("-", count),
                 borderColor, Sets.newHashSet(TextDecoration.STRIKETHROUGH));
     }
 

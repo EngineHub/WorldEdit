@@ -41,8 +41,6 @@ import com.sk89q.worldedit.util.auth.AuthorizationException;
 import com.sk89q.worldedit.util.formatting.component.PaginationBox;
 import com.sk89q.worldedit.util.formatting.component.SideEffectBox;
 import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
-import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.util.formatting.text.format.NamedTextColor;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.item.ItemType;
@@ -65,6 +63,9 @@ import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.sk89q.worldedit.util.formatting.text.Component.space;
+import static com.sk89q.worldedit.util.formatting.text.Component.text;
+import static com.sk89q.worldedit.util.formatting.text.Component.translatable;
 
 /**
  * General WorldEdit commands.
@@ -110,7 +111,7 @@ public class GeneralCommands {
         }
         ImmutableList<String> args = oldParams.getMetadata().getArguments();
         if (args.isEmpty()) {
-            return TextComponent.of("There is not yet a replacement for //fast"
+            return text("There is not yet a replacement for //fast"
                 + " with no arguments");
         }
         String arg0 = args.get(0).toLowerCase(Locale.ENGLISH);
@@ -123,7 +124,7 @@ public class GeneralCommands {
                 flipped = "on";
                 break;
             default:
-                return TextComponent.of("There is no replacement for //fast " + arg0);
+                return text("There is no replacement for //fast " + arg0);
         }
         return CommandUtil.createNewCommandReplacementText("//perf " + flipped);
     }
@@ -155,15 +156,15 @@ public class GeneralCommands {
         limit = limit == null ? config.defaultChangeLimit : Math.max(-1, limit);
         if (!mayDisable && config.maxChangeLimit > -1) {
             if (limit > config.maxChangeLimit) {
-                actor.printError(TranslatableComponent.of("worldedit.limit.too-high", TextComponent.of(config.maxChangeLimit)));
+                actor.printError(translatable("worldedit.limit.too-high", text(config.maxChangeLimit)));
                 return;
             }
         }
 
         session.setBlockChangeLimit(limit);
-        Component component = TextComponent.empty().append(TranslatableComponent.of("worldedit.limit.set", TextComponent.of(limit)));
+        Component component = translatable("worldedit.limit.set", text(limit));
         if (limit != config.defaultChangeLimit) {
-            component.append(TextComponent.space()).append(TranslatableComponent.of("worldedit.limit.return-to-default", NamedTextColor.GRAY));
+            component.append(space()).append(translatable("worldedit.limit.return-to-default", NamedTextColor.GRAY));
         }
         actor.printInfo(component);
     }
@@ -182,15 +183,15 @@ public class GeneralCommands {
         limit = limit == null ? config.calculationTimeout : Math.max(-1, limit);
         if (!mayDisable && config.maxCalculationTimeout > -1) {
             if (limit > config.maxCalculationTimeout) {
-                actor.printError(TranslatableComponent.of("worldedit.timeout.too-high", TextComponent.of(config.maxCalculationTimeout)));
+                actor.printError(translatable("worldedit.timeout.too-high", text(config.maxCalculationTimeout)));
                 return;
             }
         }
 
         session.setTimeout(limit);
-        Component component = TextComponent.empty().append(TranslatableComponent.of("worldedit.timeout.set", TextComponent.of(limit)));
+        Component component = translatable("worldedit.timeout.set", text(limit));
         if (limit != config.calculationTimeout) {
-            component.append(TranslatableComponent.of("worldedit.timeout.return-to-default", NamedTextColor.GRAY));
+            component.append(translatable("worldedit.timeout.return-to-default", NamedTextColor.GRAY));
         }
         actor.printInfo(component);
     }
@@ -206,16 +207,16 @@ public class GeneralCommands {
                   Boolean fastMode) {
         boolean hasFastMode = session.hasFastMode();
         if (fastMode != null && fastMode == hasFastMode) {
-            actor.printError(TranslatableComponent.of(fastMode ? "worldedit.fast.enabled.already" : "worldedit.fast.disabled.already"));
+            actor.printError(translatable(fastMode ? "worldedit.fast.enabled.already" : "worldedit.fast.disabled.already"));
             return;
         }
 
         if (hasFastMode) {
             session.setFastMode(false);
-            actor.printInfo(TranslatableComponent.of("worldedit.fast.disabled"));
+            actor.printInfo(translatable("worldedit.fast.disabled"));
         } else {
             session.setFastMode(true);
-            actor.printInfo(TranslatableComponent.of("worldedit.fast.enabled"));
+            actor.printInfo(translatable("worldedit.fast.enabled"));
         }
     }
 
@@ -237,11 +238,8 @@ public class GeneralCommands {
             SideEffect.State currentState = session.getSideEffectSet().getState(sideEffect);
             if (newState != null && newState == currentState) {
                 if (!showInfoBox) {
-                    actor.printError(TranslatableComponent.of(
-                            "worldedit.perf.sideeffect.already-set",
-                            TranslatableComponent.of(sideEffect.getDisplayName()),
-                            TranslatableComponent.of(newState.getDisplayName())
-                    ));
+                    actor.printError(translatable("worldedit.perf.sideeffect.already-set", translatable(sideEffect.getDisplayName()),
+                            translatable(newState.getDisplayName())));
                 }
                 return;
             }
@@ -249,18 +247,12 @@ public class GeneralCommands {
             if (newState != null) {
                 session.setSideEffectSet(session.getSideEffectSet().with(sideEffect, newState));
                 if (!showInfoBox) {
-                    actor.printInfo(TranslatableComponent.of(
-                            "worldedit.perf.sideeffect.set",
-                            TranslatableComponent.of(sideEffect.getDisplayName()),
-                            TranslatableComponent.of(newState.getDisplayName())
-                    ));
+                    actor.printInfo(translatable("worldedit.perf.sideeffect.set", translatable(sideEffect.getDisplayName()),
+                            translatable(newState.getDisplayName())));
                 }
             } else {
-                actor.printInfo(TranslatableComponent.of(
-                        "worldedit.perf.sideeffect.get",
-                        TranslatableComponent.of(sideEffect.getDisplayName()),
-                        TranslatableComponent.of(currentState.getDisplayName())
-                ));
+                actor.printInfo(translatable("worldedit.perf.sideeffect.get", translatable(sideEffect.getDisplayName()),
+                        translatable(currentState.getDisplayName())));
             }
         } else if (newState != null) {
             SideEffectSet applier = session.getSideEffectSet();
@@ -269,10 +261,7 @@ public class GeneralCommands {
             }
             session.setSideEffectSet(applier);
             if (!showInfoBox) {
-                actor.printInfo(TranslatableComponent.of(
-                        "worldedit.perf.sideeffect.set-all",
-                        TranslatableComponent.of(newState.getDisplayName())
-                ));
+                actor.printInfo(translatable("worldedit.perf.sideeffect.set-all", translatable(newState.getDisplayName())));
             }
         }
 
@@ -291,10 +280,10 @@ public class GeneralCommands {
                             @Arg(desc = "The reorder mode", def = "")
                                 EditSession.ReorderMode reorderMode) {
         if (reorderMode == null) {
-            actor.printInfo(TranslatableComponent.of("worldedit.reorder.current", TextComponent.of(session.getReorderMode().getDisplayName())));
+            actor.printInfo(translatable("worldedit.reorder.current", text(session.getReorderMode().getDisplayName())));
         } else {
             session.setReorderMode(reorderMode);
-            actor.printInfo(TranslatableComponent.of("worldedit.reorder.set", TextComponent.of(session.getReorderMode().getDisplayName())));
+            actor.printInfo(translatable("worldedit.reorder.set", text(session.getReorderMode().getDisplayName())));
         }
     }
 
@@ -307,22 +296,22 @@ public class GeneralCommands {
                               @Arg(desc = "The new draw selection state", def = "")
                                   Boolean drawSelection) throws WorldEditException {
         if (!WorldEdit.getInstance().getConfiguration().serverSideCUI) {
-            throw new AuthorizationException(TranslatableComponent.of("worldedit.error.disabled"));
+            throw new AuthorizationException(translatable("worldedit.error.disabled"));
         }
         boolean useServerCui = session.shouldUseServerCUI();
         if (drawSelection != null && drawSelection == useServerCui) {
-            player.printError(TranslatableComponent.of("worldedit.drawsel." + (useServerCui ? "enabled" : "disabled") + ".already"));
+            player.printError(translatable("worldedit.drawsel." + (useServerCui ? "enabled" : "disabled") + ".already"));
 
             return;
         }
         if (useServerCui) {
             session.setUseServerCUI(false);
             session.updateServerCUI(player);
-            player.printInfo(TranslatableComponent.of("worldedit.drawsel.disabled"));
+            player.printInfo(translatable("worldedit.drawsel.disabled"));
         } else {
             session.setUseServerCUI(true);
             session.updateServerCUI(player);
-            player.printInfo(TranslatableComponent.of("worldedit.drawsel.enabled"));
+            player.printInfo(translatable("worldedit.drawsel.enabled"));
         }
     }
 
@@ -335,9 +324,9 @@ public class GeneralCommands {
             @Arg(desc = "The world override", def = "") World world) {
         session.setWorldOverride(world);
         if (world == null) {
-            actor.printInfo(TranslatableComponent.of("worldedit.world.remove"));
+            actor.printInfo(translatable("worldedit.world.remove"));
         } else {
-            actor.printInfo(TranslatableComponent.of("worldedit.world.set", TextComponent.of(world.getId())));
+            actor.printInfo(translatable("worldedit.world.set", text(world.getId())));
         }
     }
 
@@ -352,16 +341,16 @@ public class GeneralCommands {
                          @Arg(desc = "The mode to set the watchdog hook to", def = "")
                              HookMode hookMode) {
         if (WorldEdit.getInstance().getPlatformManager().queryCapability(Capability.GAME_HOOKS).getWatchdog() == null) {
-            actor.printError(TranslatableComponent.of("worldedit.watchdog.no-hook"));
+            actor.printError(translatable("worldedit.watchdog.no-hook"));
             return;
         }
         boolean previousMode = session.isTickingWatchdog();
         if (hookMode != null && (hookMode == HookMode.ACTIVE) == previousMode) {
-            actor.printError(TranslatableComponent.of(previousMode ? "worldedit.watchdog.active.already" : "worldedit.watchdog.inactive.already"));
+            actor.printError(translatable(previousMode ? "worldedit.watchdog.active.already" : "worldedit.watchdog.inactive.already"));
             return;
         }
         session.setTickingWatchdog(!previousMode);
-        actor.printInfo(TranslatableComponent.of(previousMode ? "worldedit.watchdog.inactive" : "worldedit.watchdog.active"));
+        actor.printInfo(translatable(previousMode ? "worldedit.watchdog.inactive" : "worldedit.watchdog.active"));
     }
 
     @Command(
@@ -375,10 +364,10 @@ public class GeneralCommands {
                           Mask mask) {
         if (mask == null) {
             session.setMask(null);
-            actor.printInfo(TranslatableComponent.of("worldedit.gmask.disabled"));
+            actor.printInfo(translatable("worldedit.gmask.disabled"));
         } else {
             session.setMask(mask);
-            actor.printInfo(TranslatableComponent.of("worldedit.gmask.set"));
+            actor.printInfo(translatable("worldedit.gmask.set"));
         }
     }
 
@@ -389,9 +378,9 @@ public class GeneralCommands {
     )
     public void togglePlace(Player player, LocalSession session) {
         if (session.togglePlacementPosition()) {
-            player.printInfo(TranslatableComponent.of("worldedit.toggleplace.pos1"));
+            player.printInfo(translatable("worldedit.toggleplace.pos1"));
         } else {
-            player.printInfo(TranslatableComponent.of("worldedit.toggleplace.player"));
+            player.printInfo(translatable("worldedit.toggleplace.player"));
         }
     }
 
@@ -412,16 +401,16 @@ public class GeneralCommands {
                                List<String> query) {
         String search = String.join(" ", query);
         if (search.length() <= 2) {
-            actor.printError(TranslatableComponent.of("worldedit.searchitem.too-short"));
+            actor.printError(translatable("worldedit.searchitem.too-short"));
             return;
         }
         if (blocksOnly && itemsOnly) {
-            actor.printError(TranslatableComponent.of("worldedit.searchitem.either-b-or-i"));
+            actor.printError(translatable("worldedit.searchitem.either-b-or-i"));
             return;
         }
 
         WorldEditAsyncCommandBuilder.createAndSendMessage(actor, new ItemSearcher(search, blocksOnly, itemsOnly, page),
-                TranslatableComponent.of("worldedit.searchitem.searching"));
+                translatable("worldedit.searchitem.searching"));
     }
 
     private static class ItemSearcher implements Callable<Component> {
@@ -442,7 +431,6 @@ public class GeneralCommands {
             String command = "/searchitem " + (blocksOnly ? "-b " : "") + (itemsOnly ? "-i " : "") + "-p %page% " + search;
             Map<String, Component> results = new TreeMap<>();
             String idMatch = search.replace(' ', '_');
-            String nameMatch = search.toLowerCase(Locale.ROOT);
             for (ItemType searchType : ItemType.REGISTRY) {
                 if (blocksOnly && !searchType.hasBlockType()) {
                     continue;
@@ -454,9 +442,9 @@ public class GeneralCommands {
                 final String id = searchType.getId();
                 if (id.contains(idMatch)) {
                     Component name = searchType.getRichName();
-                    results.put(id, TextComponent.builder()
+                    results.put(id, text()
                         .append(name)
-                        .append(" (" + id + ")")
+                        .append(text(" (" + id + ")"))
                         .build());
                 }
             }

@@ -29,7 +29,6 @@ import com.sk89q.worldedit.extension.platform.Platform;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.util.Location;
-import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BlockCategories;
 import com.sk89q.worldedit.world.block.BlockState;
@@ -40,6 +39,8 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
 import javax.annotation.Nullable;
+
+import static com.sk89q.worldedit.util.formatting.text.Component.translatable;
 
 /**
  * A pickaxe mode that removes floating treetops (logs and leaves not connected
@@ -75,7 +76,7 @@ public class FloatingTreeRemover implements BlockTool {
         final BlockState state = world.getBlock(clicked.toVector().toBlockPoint());
 
         if (!isTreeBlock(state.getBlockType())) {
-            player.printError(TranslatableComponent.of("worldedit.tool.deltree.not-tree"));
+            player.printError(translatable("worldedit.tool.deltree.not-tree"));
             return true;
         }
 
@@ -83,7 +84,7 @@ public class FloatingTreeRemover implements BlockTool {
             try {
                 final Set<BlockVector3> blockSet = bfs(world, clicked.toVector().toBlockPoint());
                 if (blockSet == null) {
-                    player.printError(TranslatableComponent.of("worldedit.tool.deltree.not-floating"));
+                    player.printError(translatable("worldedit.tool.deltree.not-floating"));
                     return true;
                 }
 
@@ -94,7 +95,7 @@ public class FloatingTreeRemover implements BlockTool {
                     }
                 }
             } catch (MaxChangedBlocksException e) {
-                player.printError(TranslatableComponent.of("worldedit.tool.max-block-changes"));
+                player.printError(translatable("worldedit.tool.max-block-changes"));
             } finally {
                 session.remember(editSession);
             }

@@ -21,7 +21,6 @@ package com.sk89q.worldedit.command.argument;
 
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import org.enginehub.piston.CommandManager;
 import org.enginehub.piston.converter.ArgumentConverter;
 import org.enginehub.piston.converter.ConversionResult;
@@ -34,6 +33,8 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Calendar;
 
+import static com.sk89q.worldedit.util.formatting.text.Component.text;
+
 public class ZonedDateTimeConverter implements ArgumentConverter<ZonedDateTime> {
 
     public static void register(CommandManager commandManager) {
@@ -45,7 +46,7 @@ public class ZonedDateTimeConverter implements ArgumentConverter<ZonedDateTime> 
 
     @Override
     public Component describeAcceptableArguments() {
-        return TextComponent.of("any date");
+        return text("any date");
     }
 
     @Override

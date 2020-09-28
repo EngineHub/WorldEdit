@@ -32,7 +32,8 @@ import org.enginehub.piston.inject.InjectedValueAccess;
 import java.util.List;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.sk89q.worldedit.util.formatting.text.TextComponent.space;
+import static com.sk89q.worldedit.util.formatting.text.Component.space;
+import static com.sk89q.worldedit.util.formatting.text.Component.text;
 
 public class CommaSeparatedValuesConverter<T> implements ArgumentConverter<T> {
 
@@ -58,13 +59,13 @@ public class CommaSeparatedValuesConverter<T> implements ArgumentConverter<T> {
 
     @Override
     public Component describeAcceptableArguments() {
-        TextComponent.Builder result = TextComponent.builder("");
+        TextComponent.Builder result = text();
         if (maximum > -1) {
-            result.append(TextComponent.of("up to "))
-                .append(TextComponent.of(maximum))
+            result.append(text("up to "))
+                .append(text(maximum))
                 .append(space());
         }
-        result.append(TextComponent.of("comma separated values of: "))
+        result.append(text("comma separated values of: "))
             .append(delegate.describeAcceptableArguments());
         return result.build();
     }

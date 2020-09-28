@@ -47,6 +47,8 @@ import java.lang.reflect.Field;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.sk89q.worldedit.util.formatting.text.Component.text;
+
 public final class RegistryConverter<V extends Keyed> implements ArgumentConverter<V> {
 
     @SuppressWarnings("unchecked")
@@ -88,7 +90,7 @@ public final class RegistryConverter<V extends Keyed> implements ArgumentConvert
 
     private RegistryConverter(Registry<V> registry) {
         this.registry = registry;
-        this.choices = TextComponent.of("any " + registry.getName());
+        this.choices = text("any " + registry.getName());
     }
 
     @Override

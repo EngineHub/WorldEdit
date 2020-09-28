@@ -24,7 +24,6 @@ import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.internal.annotation.VertHeight;
 import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import org.enginehub.piston.CommandManager;
 import org.enginehub.piston.converter.ArgumentConverter;
 import org.enginehub.piston.converter.ArgumentConverters;
@@ -32,6 +31,8 @@ import org.enginehub.piston.converter.ConversionResult;
 import org.enginehub.piston.converter.SuccessfulConversion;
 import org.enginehub.piston.inject.InjectedValueAccess;
 import org.enginehub.piston.inject.Key;
+
+import static com.sk89q.worldedit.util.formatting.text.Component.text;
 
 /**
  * Converter for handling default heights as the
@@ -59,7 +60,7 @@ public class HeightConverter implements ArgumentConverter<Integer> {
 
     @Override
     public Component describeAcceptableArguments() {
-        return TextComponent.of("Any integer");
+        return text("Any integer");
     }
 
     @Override

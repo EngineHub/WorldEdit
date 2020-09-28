@@ -41,12 +41,13 @@ import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.function.mask.MaskIntersection;
 import com.sk89q.worldedit.internal.registry.AbstractFactory;
 import com.sk89q.worldedit.internal.registry.InputParser;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
-import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static com.sk89q.worldedit.util.formatting.text.Component.text;
+import static com.sk89q.worldedit.util.formatting.text.Component.translatable;
 
 /**
  * A registry of known {@link Mask}s. Provides methods to instantiate
@@ -111,14 +112,14 @@ public final class MaskFactory extends AbstractFactory<Mask> {
                 }
             }
             if (match == null) {
-                throw new NoMatchException(TranslatableComponent.of("worldedit.error.no-match", TextComponent.of(component)));
+                throw new NoMatchException(translatable("worldedit.error.no-match", text(component)));
             }
             masks.add(match);
         }
 
         switch (masks.size()) {
             case 0:
-                throw new NoMatchException(TranslatableComponent.of("worldedit.error.no-match", TextComponent.of(input)));
+                throw new NoMatchException(translatable("worldedit.error.no-match", text(input)));
             case 1:
                 return masks.get(0);
             default:

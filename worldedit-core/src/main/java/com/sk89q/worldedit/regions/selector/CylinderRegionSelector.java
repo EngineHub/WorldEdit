@@ -35,8 +35,6 @@ import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.RegionSelector;
 import com.sk89q.worldedit.regions.selector.limit.SelectorLimits;
 import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
-import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.world.World;
 
 import java.text.NumberFormat;
@@ -45,6 +43,8 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.sk89q.worldedit.util.formatting.text.Component.text;
+import static com.sk89q.worldedit.util.formatting.text.Component.translatable;
 
 /**
  * Creates a {@code CylinderRegionSelector} from a user's selections.
@@ -168,7 +168,7 @@ public class CylinderRegionSelector implements RegionSelector, CUIRegion {
 
     @Override
     public void explainPrimarySelection(Actor player, LocalSession session, BlockVector3 pos) {
-        player.printInfo(TranslatableComponent.of("worldedit.selection.cylinder.explain.primary", TextComponent.of(pos.toString())));
+        player.printInfo(translatable("worldedit.selection.cylinder.explain.primary", text(pos.toString())));
 
         session.describeCUI(player);
     }
@@ -178,14 +178,11 @@ public class CylinderRegionSelector implements RegionSelector, CUIRegion {
         Vector3 center = region.getCenter();
 
         if (!center.equals(Vector3.ZERO)) {
-            player.printInfo(TranslatableComponent.of(
-                    "worldedit.selection.cylinder.explain.secondary",
-                    TextComponent.of(NUMBER_FORMAT.format(region.getRadius().getX())),
-                    TextComponent.of(NUMBER_FORMAT.format(region.getRadius().getZ())),
-                    TextComponent.of(region.getVolume())
-            ));
+            player.printInfo(translatable("worldedit.selection.cylinder.explain.secondary", text(NUMBER_FORMAT.format(region.getRadius().getX())),
+                    text(NUMBER_FORMAT.format(region.getRadius().getZ())),
+                    text(region.getVolume())));
         } else {
-            player.printError(TranslatableComponent.of("worldedit.selection.cylinder.explain.secondary-missing"));
+            player.printError(translatable("worldedit.selection.cylinder.explain.secondary-missing"));
             return;
         }
 
@@ -244,10 +241,10 @@ public class CylinderRegionSelector implements RegionSelector, CUIRegion {
         final List<Component> lines = new ArrayList<>();
 
         if (!region.getCenter().equals(Vector3.ZERO)) {
-            lines.add(TranslatableComponent.of("worldedit.selection.cylinder.info.center", TextComponent.of(region.getCenter().toString())));
+            lines.add(translatable("worldedit.selection.cylinder.info.center", text(region.getCenter().toString())));
         }
         if (!region.getRadius().equals(Vector2.ZERO)) {
-            lines.add(TranslatableComponent.of("worldedit.selection.cylinder.info.radius", TextComponent.of(region.getRadius().toString())));
+            lines.add(translatable("worldedit.selection.cylinder.info.radius", text(region.getRadius().toString())));
         }
 
         return lines;

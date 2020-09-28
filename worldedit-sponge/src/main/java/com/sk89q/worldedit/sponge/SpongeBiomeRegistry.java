@@ -28,6 +28,8 @@ import org.spongepowered.api.world.biome.BiomeType;
 
 import javax.annotation.Nullable;
 
+import static com.sk89q.worldedit.util.formatting.text.Component.translatable;
+
 /**
  * Provides access to biome data in Sponge.
  */
@@ -35,9 +37,7 @@ class SpongeBiomeRegistry implements BiomeRegistry {
 
     @Override
     public Component getRichName(com.sk89q.worldedit.world.biome.BiomeType biomeType) {
-        return TranslatableComponent.of(
-            TranslationManager.makeTranslationKey("biome", biomeType.getId())
-        );
+        return translatable(TranslationManager.makeTranslationKey("biome", biomeType.getId()));
     }
 
     @Deprecated

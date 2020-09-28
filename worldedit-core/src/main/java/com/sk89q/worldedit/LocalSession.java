@@ -50,7 +50,6 @@ import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.session.request.Request;
 import com.sk89q.worldedit.util.Countable;
 import com.sk89q.worldedit.util.SideEffectSet;
-import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;
@@ -71,6 +70,7 @@ import java.util.function.Consumer;
 import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.sk89q.worldedit.util.formatting.text.Component.translatable;
 
 /**
  * Stores session information.
@@ -674,7 +674,7 @@ public class LocalSession {
      */
     public void setTool(ItemType item, @Nullable Tool tool) throws InvalidToolBindException {
         if (item.hasBlockType()) {
-            throw new InvalidToolBindException(item, TranslatableComponent.of("worldedit.tool.error.item-only"));
+            throw new InvalidToolBindException(item, translatable("worldedit.tool.error.item-only"));
         }
         if (tool instanceof SelectionWand) {
             setSingleItemTool(id -> this.wandItem = id, this.wandItem, item);

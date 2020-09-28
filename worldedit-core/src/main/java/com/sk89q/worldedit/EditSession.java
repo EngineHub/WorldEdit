@@ -111,8 +111,6 @@ import com.sk89q.worldedit.util.TreeGenerator;
 import com.sk89q.worldedit.util.collection.BlockMap;
 import com.sk89q.worldedit.util.collection.DoubleArrayList;
 import com.sk89q.worldedit.util.eventbus.EventBus;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
-import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.world.NullWorld;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.biome.BiomeType;
@@ -142,6 +140,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static com.sk89q.worldedit.regions.Regions.asFlatRegion;
 import static com.sk89q.worldedit.regions.Regions.maximumBlockY;
 import static com.sk89q.worldedit.regions.Regions.minimumBlockY;
+import static com.sk89q.worldedit.util.formatting.text.Component.text;
+import static com.sk89q.worldedit.util.formatting.text.Component.translatable;
 
 /**
  * An {@link Extent} that handles history, {@link BlockBag}s, change limits,
@@ -888,7 +888,7 @@ public class EditSession implements Extent, AutoCloseable {
         List<TracingExtent> tracingExtents = getActiveTracingExtents();
         assert actor != null;
         if (tracingExtents.isEmpty()) {
-            actor.printError(TranslatableComponent.of("worldedit.trace.no-tracing-extents"));
+            actor.printError(translatable("worldedit.trace.no-tracing-extents"));
             return;
         }
         // find the common stacks
@@ -911,13 +911,12 @@ public class EditSession implements Extent, AutoCloseable {
         stackToPosition.forEach((stack, position) -> {
             // stack can never be empty, something has to have touched the position
             TracingExtent failure = stack.get(0);
-            actor.printDebug(TranslatableComponent.builder("worldedit.trace.action-failed")
-                .args(
-                    TextComponent.of(failure.getFailedActions().get(position).toString()),
-                    TextComponent.of(position.toString()),
-                    TextComponent.of(failure.getExtent().getClass().getName())
-                )
-                .build());
+            actor.printDebug(translatable(
+                "worldedit.trace.action-failed",
+                text(failure.getFailedActions().get(position).toString()),
+                text(position.toString()),
+                text(failure.getExtent().getClass().getName())
+            ));
         });
     }
 

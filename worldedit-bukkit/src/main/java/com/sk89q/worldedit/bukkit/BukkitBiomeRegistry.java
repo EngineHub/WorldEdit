@@ -29,6 +29,8 @@ import org.bukkit.block.Biome;
 
 import javax.annotation.Nullable;
 
+import static com.sk89q.worldedit.util.formatting.text.Component.translatable;
+
 /**
  * A biome registry for Bukkit.
  */
@@ -39,7 +41,7 @@ class BukkitBiomeRegistry implements BiomeRegistry {
 
     @Override
     public Component getRichName(BiomeType biomeType) {
-        return TranslatableComponent.of(
+        return translatable(
             TranslationManager.makeTranslationKey("biome", biomeType.getId())
         );
     }

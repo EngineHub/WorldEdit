@@ -27,14 +27,15 @@ import com.sk89q.worldedit.extension.input.ParserContext;
 import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.function.pattern.RandomPattern;
 import com.sk89q.worldedit.internal.registry.InputParser;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
-import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.world.block.BlockCategory;
 import com.sk89q.worldedit.world.block.BlockType;
 
 import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Stream;
+
+import static com.sk89q.worldedit.util.formatting.text.Component.text;
+import static com.sk89q.worldedit.util.formatting.text.Component.translatable;
 
 public class BlockCategoryPatternParser extends InputParser<Pattern> {
 
@@ -61,13 +62,13 @@ public class BlockCategoryPatternParser extends InputParser<Pattern> {
 
         BlockCategory category = BlockCategory.REGISTRY.get(tag);
         if (category == null) {
-            throw new NoMatchException(TranslatableComponent.of("worldedit.error.unknown-tag", TextComponent.of(tag)));
+            throw new NoMatchException(translatable("worldedit.error.unknown-tag", text(tag)));
         }
         RandomPattern randomPattern = new RandomPattern();
 
         Set<BlockType> blocks = category.getAll();
         if (blocks.isEmpty()) {
-            throw new InputParseException(TranslatableComponent.of("worldedit.error.empty-tag", TextComponent.of(category.getId())));
+            throw new InputParseException(translatable("worldedit.error.empty-tag", text(category.getId())));
         }
 
         if (anyState) {

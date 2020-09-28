@@ -22,10 +22,11 @@ package com.sk89q.worldedit.command.util;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
 
 import java.util.concurrent.Callable;
 import javax.annotation.Nullable;
+
+import static com.sk89q.worldedit.util.formatting.text.Component.text;
 
 /**
  * For internal WorldEdit use only.
@@ -36,7 +37,7 @@ public final class WorldEditAsyncCommandBuilder {
 
     @Deprecated
     public static void createAndSendMessage(Actor actor, Callable<Component> task, @Nullable String desc) {
-        createAndSendMessage(actor, task, desc != null ? TextComponent.of(desc) : null);
+        createAndSendMessage(actor, task, desc != null ? text(desc) : null);
     }
 
     public static void createAndSendMessage(Actor actor, Callable<Component> task, @Nullable Component desc) {

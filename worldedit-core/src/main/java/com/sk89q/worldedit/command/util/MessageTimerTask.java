@@ -21,12 +21,12 @@ package com.sk89q.worldedit.command.util;
 
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
 
 import java.util.TimerTask;
 import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.sk89q.worldedit.util.formatting.text.Component.text;
 
 public class MessageTimerTask extends TimerTask {
 
@@ -39,7 +39,7 @@ public class MessageTimerTask extends TimerTask {
 
     @Deprecated
     MessageTimerTask(Actor sender, String message) {
-        this(sender, TextComponent.of(message), null);
+        this(sender, text(message), null);
     }
 
     MessageTimerTask(Actor sender, Component message, @Nullable Component workingMessage) {

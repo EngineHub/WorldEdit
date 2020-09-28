@@ -22,9 +22,11 @@ package com.sk89q.worldedit.util.formatting.component;
 import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 
+import static com.sk89q.worldedit.util.formatting.text.Component.text;
+
 public class TextComponentProducer {
 
-    private TextComponent.Builder builder = TextComponent.builder().content("");
+    private TextComponent.Builder builder = text();
 
     public TextComponent.Builder getBuilder() {
         return builder;
@@ -48,7 +50,7 @@ public class TextComponentProducer {
      * @return The producer, for chaining
      */
     public TextComponentProducer append(String string) {
-        getBuilder().append(TextComponent.of(string));
+        getBuilder().append(text(string));
         return this;
     }
 
@@ -58,7 +60,7 @@ public class TextComponentProducer {
      * @return The producer, for chaining
      */
     public TextComponentProducer newline() {
-        getBuilder().append(TextComponent.newline());
+        getBuilder().append(Component.newline());
         return this;
     }
 
@@ -77,7 +79,7 @@ public class TextComponentProducer {
      * @return The producer, for chaining
      */
     public TextComponentProducer reset() {
-        builder = TextComponent.builder().content("");
+        builder = text();
         return this;
     }
 }

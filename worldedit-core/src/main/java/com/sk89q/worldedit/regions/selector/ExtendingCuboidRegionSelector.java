@@ -24,11 +24,12 @@ import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.RegionSelector;
 import com.sk89q.worldedit.regions.selector.limit.SelectorLimits;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
-import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.world.World;
 
 import javax.annotation.Nullable;
+
+import static com.sk89q.worldedit.util.formatting.text.Component.text;
+import static com.sk89q.worldedit.util.formatting.text.Component.translatable;
 
 /**
  * Creates a {@code CuboidRegion} from a user's selections by expanding
@@ -131,22 +132,16 @@ public class ExtendingCuboidRegionSelector extends CuboidRegionSelector {
 
     @Override
     public void explainPrimarySelection(Actor player, LocalSession session, BlockVector3 pos) {
-        player.printInfo(TranslatableComponent.of(
-                "worldedit.selection.extend.explain.primary",
-                TextComponent.of(pos.toString()),
-                TextComponent.of(region.getVolume())
-        ));
+        player.printInfo(translatable("worldedit.selection.extend.explain.primary", text(pos.toString()),
+                text(region.getVolume())));
 
         explainRegionAdjust(player, session);
     }
 
     @Override
     public void explainSecondarySelection(Actor player, LocalSession session, BlockVector3 pos) {
-        player.printInfo(TranslatableComponent.of(
-                "worldedit.selection.extend.explain.secondary",
-                TextComponent.of(pos.toString()),
-                TextComponent.of(region.getVolume())
-        ));
+        player.printInfo(translatable("worldedit.selection.extend.explain.secondary", text(pos.toString()),
+                text(region.getVolume())));
 
         explainRegionAdjust(player, session);
     }

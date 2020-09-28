@@ -32,8 +32,6 @@ import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.RegionSelector;
 import com.sk89q.worldedit.regions.selector.limit.SelectorLimits;
 import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
-import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.world.World;
 
 import java.util.ArrayList;
@@ -41,6 +39,8 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.sk89q.worldedit.util.formatting.text.Component.text;
+import static com.sk89q.worldedit.util.formatting.text.Component.translatable;
 
 /**
  * Creates a {@code EllipsoidRegionSelector} from a user's selections.
@@ -147,16 +147,10 @@ public class EllipsoidRegionSelector implements RegionSelector, CUIRegion {
     @Override
     public void explainPrimarySelection(Actor player, LocalSession session, BlockVector3 pos) {
         if (isDefined()) {
-            player.printInfo(TranslatableComponent.of(
-                    "worldedit.selection.ellipsoid.explain.primary-area",
-                    TextComponent.of(region.getCenter().toString()),
-                    TextComponent.of(region.getVolume())
-            ));
+            player.printInfo(translatable("worldedit.selection.ellipsoid.explain.primary-area", text(region.getCenter().toString()),
+                    text(region.getVolume())));
         } else {
-            player.printInfo(TranslatableComponent.of(
-                    "worldedit.selection.ellipsoid.explain.primary",
-                    TextComponent.of(region.getCenter().toString())
-            ));
+            player.printInfo(translatable("worldedit.selection.ellipsoid.explain.primary", text(region.getCenter().toString())));
         }
 
         session.describeCUI(player);
@@ -165,16 +159,10 @@ public class EllipsoidRegionSelector implements RegionSelector, CUIRegion {
     @Override
     public void explainSecondarySelection(Actor player, LocalSession session, BlockVector3 pos) {
         if (isDefined()) {
-            player.printInfo(TranslatableComponent.of(
-                    "worldedit.selection.ellipsoid.explain.secondary-area",
-                    TextComponent.of(region.getRadius().toString()),
-                    TextComponent.of(region.getVolume())
-            ));
+            player.printInfo(translatable("worldedit.selection.ellipsoid.explain.secondary-area", text(region.getRadius().toString()),
+                    text(region.getVolume())));
         } else {
-            player.printInfo(TranslatableComponent.of(
-                    "worldedit.selection.ellipsoid.explain.secondary",
-                    TextComponent.of(region.getRadius().toString())
-            ));
+            player.printInfo(translatable("worldedit.selection.ellipsoid.explain.secondary", text(region.getRadius().toString())));
         }
 
         session.describeCUI(player);
@@ -225,12 +213,12 @@ public class EllipsoidRegionSelector implements RegionSelector, CUIRegion {
 
         final Vector3 center = region.getCenter();
         if (center.lengthSq() > 0) {
-            lines.add(TranslatableComponent.of("worldedit.selection.ellipsoid.info.center", TextComponent.of(center.toString())));
+            lines.add(translatable("worldedit.selection.ellipsoid.info.center", text(center.toString())));
         }
 
         final Vector3 radius = region.getRadius();
         if (radius.lengthSq() > 0) {
-            lines.add(TranslatableComponent.of("worldedit.selection.ellipsoid.info.radius", TextComponent.of(radius.toString())));
+            lines.add(translatable("worldedit.selection.ellipsoid.info.radius", text(radius.toString())));
         }
 
         return lines;

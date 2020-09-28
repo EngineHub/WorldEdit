@@ -57,7 +57,6 @@ import com.sk89q.worldedit.util.concurrency.EvenMoreExecutors;
 import com.sk89q.worldedit.util.concurrency.LazyReference;
 import com.sk89q.worldedit.util.eventbus.EventBus;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
-import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.util.formatting.text.format.NamedTextColor;
 import com.sk89q.worldedit.util.io.file.FileSelectionAbortedException;
 import com.sk89q.worldedit.util.io.file.FilenameException;
@@ -93,6 +92,8 @@ import javax.script.ScriptException;
 
 import static com.sk89q.worldedit.event.platform.Interaction.HIT;
 import static com.sk89q.worldedit.event.platform.Interaction.OPEN;
+import static com.sk89q.worldedit.util.formatting.text.Component.text;
+import static com.sk89q.worldedit.util.formatting.text.Component.translatable;
 
 /**
  * The entry point and container for a working implementation of WorldEdit.
@@ -314,7 +315,7 @@ public final class WorldEdit {
             }
 
             if (f == null) {
-                throw new FileSelectionAbortedException(TranslatableComponent.of("worldedit.error.no-file-selected"));
+                throw new FileSelectionAbortedException(translatable("worldedit.error.no-file-selected"));
             }
         } else {
             List<String> exts = extensions == null ? ImmutableList.of(defaultExt) : Lists.asList(defaultExt, extensions);
@@ -333,12 +334,12 @@ public final class WorldEdit {
 
             boolean isSym = existingParent != null && !existingParent.toRealPath().equals(existingParent);
             if (!inDir || (!getConfiguration().allowSymlinks && isSym)) {
-                throw new FilenameResolutionException(filename, TranslatableComponent.of("worldedit.error.file-resolution.outside-root"));
+                throw new FilenameResolutionException(filename, translatable("worldedit.error.file-resolution.outside-root"));
             }
 
             return filePath.toFile();
         } catch (IOException e) {
-            throw new FilenameResolutionException(filename, TranslatableComponent.of("worldedit.error.file-resolution.resolve-failed"));
+            throw new FilenameResolutionException(filename, translatable("worldedit.error.file-resolution.resolve-failed"));
         }
     }
 
@@ -365,7 +366,7 @@ public final class WorldEdit {
             result = getSafeFileWithExtension(dir, filename, iter.next());
         }
         if (result == null) {
-            throw new InvalidFilenameException(filename, TranslatableComponent.of("worldedit.error.invalid-filename.invalid-characters"));
+            throw new InvalidFilenameException(filename, translatable("worldedit.error.invalid-filename.invalid-characters"));
         }
         return result;
     }
@@ -583,22 +584,20 @@ public final class WorldEdit {
         Map<BlockType, Integer> missingBlocks = editSession.popMissingBlocks();
 
         if (!missingBlocks.isEmpty()) {
-            TextComponent.Builder str = TextComponent.builder();
-            str.append("Missing these blocks: ");
+            TextComponent.Builder str = text()
+                .content("Missing these blocks: ");
             int size = missingBlocks.size();
             int i = 0;
 
             for (Map.Entry<BlockType, Integer> blockTypeIntegerEntry : missingBlocks.entrySet()) {
                 str.append((blockTypeIntegerEntry.getKey()).getRichName());
 
-                str.append(" [Amt: ")
-                    .append(String.valueOf(blockTypeIntegerEntry.getValue()))
-                    .append("]");
+                str.append(text(" [Amt: " + blockTypeIntegerEntry.getValue() + "]"));
 
                 ++i;
 
                 if (i != size) {
-                    str.append(", ");
+                    str.append(text(", "));
                 }
             }
 
@@ -696,7 +695,7 @@ public final class WorldEdit {
         String ext = filename.substring(index + 1);
 
         if (!ext.equalsIgnoreCase("js")) {
-            player.printError(TranslatableComponent.of("worldedit.script.unsupported"));
+            player.printError(translatable("worldedit.script.unsupported"));
             return;
         }
 
@@ -709,7 +708,7 @@ public final class WorldEdit {
                 file = WorldEdit.class.getResourceAsStream("craftscripts/" + filename);
 
                 if (file == null) {
-                    player.printError(TranslatableComponent.of("worldedit.script.file-not-found", TextComponent.of(filename)));
+                    player.printError(translatable("worldedit.script.file-not-found", text(filename)));
                     return;
                 }
             } else {
@@ -722,7 +721,7 @@ public final class WorldEdit {
             in.close();
             script = new String(data, 0, data.length, StandardCharsets.UTF_8);
         } catch (IOException e) {
-            player.printError(TranslatableComponent.of("worldedit.script.read-error", TextComponent.of(e.getMessage())));
+            player.printError(translatable("worldedit.script.read-error", text(e.getMessage())));
             return;
         }
 
@@ -735,7 +734,7 @@ public final class WorldEdit {
         try {
             engine = new RhinoCraftScriptEngine();
         } catch (NoClassDefFoundError ignored) {
-            player.printError(TranslatableComponent.of("worldedit.script.no-script-engine"));
+            player.printError(translatable("worldedit.script.no-script-engine"));
             return;
         }
 
@@ -751,13 +750,13 @@ public final class WorldEdit {
         } catch (ScriptException e) {
             // non-exceptional return check
             if (!(Throwables.getRootCause(e) instanceof ReturnException)) {
-                player.printError(TranslatableComponent.of("worldedit.script.failed", TextComponent.of(e.getMessage(), NamedTextColor.WHITE)));
+                player.printError(translatable("worldedit.script.failed", text(e.getMessage(), NamedTextColor.WHITE)));
                 logger.warn("Failed to execute script", e);
             }
         } catch (NumberFormatException | WorldEditException e) {
             throw e;
         } catch (Throwable e) {
-            player.printError(TranslatableComponent.of("worldedit.script.failed-console", TextComponent.of(e.getClass().getCanonicalName(),
+            player.printError(translatable("worldedit.script.failed-console", text(e.getClass().getCanonicalName(),
                 NamedTextColor.WHITE)));
             logger.warn("Failed to execute script", e);
         } finally {

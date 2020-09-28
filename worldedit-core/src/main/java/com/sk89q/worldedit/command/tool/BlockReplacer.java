@@ -31,10 +31,11 @@ import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.util.Location;
-import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.world.block.BaseBlock;
 
 import javax.annotation.Nullable;
+
+import static com.sk89q.worldedit.util.formatting.text.Component.translatable;
 
 /**
  * A mode that replaces one block.
@@ -81,7 +82,7 @@ public class BlockReplacer implements DoubleActionBlockTool {
 
         if (targetBlock != null) {
             pattern = targetBlock;
-            player.printInfo(TranslatableComponent.of("worldedit.tool.repl.switched", targetBlock.getBlockType().getRichName()));
+            player.printInfo(translatable("worldedit.tool.repl.switched", targetBlock.getBlockType().getRichName()));
         }
 
         return true;

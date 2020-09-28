@@ -49,8 +49,6 @@ import com.sk89q.worldedit.internal.command.CommandUtil;
 import com.sk89q.worldedit.util.HandSide;
 import com.sk89q.worldedit.util.TreeGenerator;
 import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
-import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.item.ItemType;
 import org.enginehub.piston.CommandManager;
@@ -65,6 +63,9 @@ import org.enginehub.piston.part.SubCommandPart;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import static com.sk89q.worldedit.util.formatting.text.Component.text;
+import static com.sk89q.worldedit.util.formatting.text.Component.translatable;
 
 @CommandContainer(superTypes = CommandPermissionsConditionGenerator.Registration.class)
 public class ToolCommands {
@@ -113,13 +114,13 @@ public class ToolCommands {
             .collect(Collectors.toSet());
         commandManager.register("tool", command -> {
             command.addPart(SubCommandPart.builder(
-                TranslatableComponent.of("tool"),
-                TextComponent.of("The tool to bind")
+                translatable("tool"),
+                text("The tool to bind")
             )
                 .withCommands(nonGlobalCommands)
                 .required()
                 .build());
-            command.description(TextComponent.of("Binds a tool to the item in your hand"));
+            command.description(text("Binds a tool to the item in your hand"));
 
             command.condition(new SubCommandPermissionCondition.Generator(nonGlobalCommands).build());
         });
@@ -142,9 +143,9 @@ public class ToolCommands {
             || type.getId().equals(session.getNavWandItem());
         if (set) {
             session.setTool(type, null);
-            player.printInfo(TranslatableComponent.of(isBrush ? "worldedit.brush.none.equip" : "worldedit.tool.none.equip"));
+            player.printInfo(translatable(isBrush ? "worldedit.brush.none.equip" : "worldedit.tool.none.equip"));
         } else {
-            player.printInfo(TranslatableComponent.of("worldedit.tool.none.to.unequip"));
+            player.printInfo(translatable("worldedit.tool.none.to.unequip"));
         }
     }
 
@@ -152,7 +153,7 @@ public class ToolCommands {
                                 String translationKey) throws InvalidToolBindException {
         BaseItemStack itemStack = player.getItemInHand(HandSide.MAIN_HAND);
         session.setTool(itemStack.getType(), tool);
-        player.printInfo(TranslatableComponent.of(translationKey, itemStack.getRichName()));
+        player.printInfo(translatable(translationKey, itemStack.getRichName()));
     }
 
     private final WorldEdit we;
@@ -258,7 +259,7 @@ public class ToolCommands {
         LocalConfiguration config = we.getConfiguration();
 
         if (range > config.maxSuperPickaxeSize) {
-            player.printError(TranslatableComponent.of("worldedit.tool.superpickaxe.max-range", TextComponent.of(config.maxSuperPickaxeSize)));
+            player.printError(translatable("worldedit.tool.superpickaxe.max-range", text(config.maxSuperPickaxeSize)));
             return;
         }
         setTool(player, session, new FloodFillTool(range, pattern), "worldedit.tool.floodfill.equip");
@@ -299,13 +300,13 @@ public class ToolCommands {
         if (primary instanceof BlockStateHolder) {
             primaryName = ((BlockStateHolder<?>) primary).getBlockType().getRichName();
         } else {
-            primaryName = TextComponent.of("pattern");
+            primaryName = text("pattern");
         }
         if (secondary instanceof BlockStateHolder) {
             secondaryName = ((BlockStateHolder<?>) secondary).getBlockType().getRichName();
         } else {
-            secondaryName = TextComponent.of("pattern");
+            secondaryName = text("pattern");
         }
-        player.printInfo(TranslatableComponent.of("worldedit.tool.lrbuild.set", primaryName, secondaryName));
+        player.printInfo(translatable("worldedit.tool.lrbuild.set", primaryName, secondaryName));
     }
 }

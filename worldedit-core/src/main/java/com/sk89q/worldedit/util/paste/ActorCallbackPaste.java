@@ -21,12 +21,14 @@ package com.sk89q.worldedit.util.paste;
 
 import com.sk89q.worldedit.command.util.AsyncCommandBuilder;
 import com.sk89q.worldedit.extension.platform.Actor;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.util.task.Supervisor;
 
 import java.net.URL;
 import java.util.concurrent.Callable;
+
+import static com.sk89q.worldedit.util.formatting.text.Component.text;
+import static com.sk89q.worldedit.util.formatting.text.Component.translatable;
 
 public final class ActorCallbackPaste {
 
@@ -71,8 +73,8 @@ public final class ActorCallbackPaste {
 
         AsyncCommandBuilder.wrap(task, sender)
                 .registerWithSupervisor(supervisor, "Submitting content to a pastebin service.")
-                .setDelayMessage(TranslatableComponent.of("worldedit.pastebin.uploading"))
-                .onSuccess((String) null, url -> sender.printInfo(successMessage.args(TextComponent.of(url.toString())).build()))
+                .setDelayMessage(translatable("worldedit.pastebin.uploading"))
+                .onSuccess((String) null, url -> sender.printInfo(successMessage.args(text(url.toString())).build()))
                 .onFailure("Failed to submit paste", null)
                 .buildAndExec(Pasters.getExecutor());
     }

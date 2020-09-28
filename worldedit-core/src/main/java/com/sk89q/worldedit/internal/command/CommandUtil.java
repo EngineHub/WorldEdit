@@ -25,8 +25,6 @@ import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extension.platform.PlatformCommandManager;
 import com.sk89q.worldedit.internal.util.Substring;
 import com.sk89q.worldedit.util.formatting.text.Component;
-import com.sk89q.worldedit.util.formatting.text.TextComponent;
-import com.sk89q.worldedit.util.formatting.text.event.ClickEvent;
 import com.sk89q.worldedit.util.formatting.text.format.NamedTextColor;
 import com.sk89q.worldedit.util.formatting.text.format.TextDecoration;
 import org.enginehub.piston.Command;
@@ -46,18 +44,22 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static com.google.common.base.Preconditions.checkState;
+import static com.sk89q.worldedit.util.formatting.text.Component.empty;
+import static com.sk89q.worldedit.util.formatting.text.Component.newline;
+import static com.sk89q.worldedit.util.formatting.text.Component.text;
+import static com.sk89q.worldedit.util.formatting.text.event.ClickEvent.suggestCommand;
 import static java.util.stream.Collectors.toList;
 
 public class CommandUtil {
 
-    private static final Component DEPRECATION_MARKER = TextComponent.of("This command is deprecated.");
+    private static final Component DEPRECATION_MARKER = text("This command is deprecated.");
 
     private static Component makeDeprecatedFooter(String reason, Component replacement) {
-        return TextComponent.builder()
+        return text()
             .append(DEPRECATION_MARKER)
-            .append(" " + reason + ".")
-            .append(TextComponent.newline())
-            .append(replacement.color(NamedTextColor.GOLD).decoration(TextDecoration.ITALIC, true))
+            .append(text(" " + reason + "."))
+            .append(newline())
+            .append(replacement.color(NamedTextColor.GOLD).decorate(TextDecoration.ITALIC))
             .build();
     }
 
@@ -85,11 +87,13 @@ public class CommandUtil {
     }
 
     public static Component createNewCommandReplacementText(String suggestedCommand) {
-        return TextComponent.builder("Please use ", NamedTextColor.GOLD)
-            .append(TextComponent.of(suggestedCommand)
-                .decoration(TextDecoration.UNDERLINED, true)
-                .clickEvent(ClickEvent.suggestCommand(suggestedCommand)))
-            .append(" instead.")
+        return text()
+            .content("Please use ")
+            .color(NamedTextColor.GOLD)
+            .append(text(suggestedCommand)
+                .decorate(TextDecoration.UNDERLINED)
+                .clickEvent(suggestCommand(suggestedCommand)))
+            .append(text(" instead."))
             .build();
     }
 
@@ -107,7 +111,7 @@ public class CommandUtil {
                 deprecatedCommandWarning(parameters, command, reason, replacementMessageGenerator))
             .footer(command.getFooter()
                 .map(existingFooter -> existingFooter
-                    .append(TextComponent.newline())
+                    .append(newline())
                     .append(deprecatedWarning))
                 .orElse(deprecatedWarning))
             .build();
@@ -141,7 +145,7 @@ public class CommandUtil {
 
     private static Component replaceDeprecation(Component component) {
         if (component.children().stream().anyMatch(Predicate.isEqual(DEPRECATION_MARKER))) {
-            return TextComponent.empty();
+            return empty();
         }
         return component.children(
             component.children().stream()
@@ -183,7 +187,9 @@ public class CommandUtil {
     ) {
         Component replacement = generator.getReplacement(command, parameters);
         actor.print(
-            TextComponent.builder(reason + ". ", NamedTextColor.GOLD)
+            text()
+                .content(reason + ". ")
+                .color(NamedTextColor.GOLD)
                 .append(replacement)
                 .build()
         );
@@ -269,7 +275,7 @@ public class CommandUtil {
      * @param message the message for failure
      */
     public static void checkCommandArgument(boolean condition, String message) {
-        checkCommandArgument(condition, TextComponent.of(message));
+        checkCommandArgument(condition, text(message));
     }
 
     /**
