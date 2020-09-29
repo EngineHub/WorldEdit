@@ -114,6 +114,11 @@ public class NullWorld extends AbstractWorld {
     }
 
     @Override
+    public boolean canPlaceAt(BlockVector3 position, BlockState blockState) {
+        return false;
+    }
+
+    @Override
     public boolean regenerate(Region region, Extent extent, RegenOptions options) {
         return false;
     }

@@ -244,6 +244,12 @@ public abstract class SpongeWorld extends AbstractWorld {
     }
 
     @Override
+    public boolean canPlaceAt(BlockVector3 position, com.sk89q.worldedit.world.block.BlockState blockState) {
+        // TODO
+        return true;
+    }
+
+    @Override
     public int hashCode() {
         return getWorld().hashCode();
     }

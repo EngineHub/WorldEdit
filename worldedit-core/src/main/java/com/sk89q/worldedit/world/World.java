@@ -206,6 +206,15 @@ public interface World extends Extent, Keyed {
     void simulateBlockMine(BlockVector3 position);
 
     /**
+     * Gets whether the given {@link BlockState} can be placed here.
+     *
+     * @param position The position
+     * @param blockState The blockstate
+     * @return If it can be placed
+     */
+    boolean canPlaceAt(BlockVector3 position, BlockState blockState);
+
+    /**
      * Regenerate an area.
      *
      * @param region the region

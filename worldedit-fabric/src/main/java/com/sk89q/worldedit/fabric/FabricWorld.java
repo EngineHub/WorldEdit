@@ -295,6 +295,11 @@ public class FabricWorld extends AbstractWorld {
     }
 
     @Override
+    public boolean canPlaceAt(BlockVector3 position, BlockState blockState) {
+        return FabricAdapter.adapt(blockState).canPlaceAt(getWorld(), FabricAdapter.toBlockPos(position));
+    }
+
+    @Override
     public boolean regenerate(Region region, Extent extent, RegenOptions options) {
         // Don't even try to regen if it's going to fail.
         ChunkManager provider = getWorld().getChunkManager();

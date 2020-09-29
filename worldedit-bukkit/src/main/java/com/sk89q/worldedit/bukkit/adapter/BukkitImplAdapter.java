@@ -175,6 +175,16 @@ public interface BukkitImplAdapter {
     }
 
     /**
+     * Gets whether the given {@link BlockState} can be placed here.
+     *
+     * @param world The world
+     * @param position The position
+     * @param blockState The blockstate
+     * @return If it can be placed
+     */
+    boolean canPlaceAt(World world, BlockVector3 position, BlockState blockState);
+
+    /**
      * Create a Bukkit ItemStack with NBT, if available.
      *
      * @param item the WorldEdit BaseItemStack to adapt
