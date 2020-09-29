@@ -107,11 +107,6 @@ public class ClipboardWorld extends AbstractWorld implements Clipboard, CLIWorld
     }
 
     @Override
-    public boolean canPlaceAt(BlockVector3 position, BlockState blockState) {
-        return true;
-    }
-
-    @Override
     public boolean regenerate(Region region, Extent extent, RegenOptions options) {
         return false;
     }

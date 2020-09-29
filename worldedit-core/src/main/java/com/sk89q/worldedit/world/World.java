@@ -212,7 +212,9 @@ public interface World extends Extent, Keyed {
      * @param blockState The blockstate
      * @return If it can be placed
      */
-    boolean canPlaceAt(BlockVector3 position, BlockState blockState);
+    default boolean canPlaceAt(BlockVector3 position, BlockState blockState) {
+        return true;
+    }
 
     /**
      * Regenerate an area.
