@@ -1406,9 +1406,9 @@ public class EditSession implements Extent, AutoCloseable {
         BlockVector3 size = region.getMaximumPoint().subtract(region.getMinimumPoint()).add(1, 1, 1);
         try {
             return stackRegionBlockUnits(region, offset.multiply(size), count, copyEntities, copyBiomes, mask);
-        } catch (RegionOperationException ignored) {
+        } catch (RegionOperationException e) {
             // Should never be able to happen
-            return 0;
+            throw new AssertionError(e);
         }
     }
 
