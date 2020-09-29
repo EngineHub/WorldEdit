@@ -24,6 +24,7 @@ import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.function.LayerFunction;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.registry.state.Property;
+import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockTypes;
 
@@ -67,8 +68,7 @@ public class SnowSimulator implements LayerFunction {
         }
 
         // Can only place on full solid blocks
-        return block.getBlockType().getMaterial().isFullCube()
-                && block.getBlockType().getMaterial().isSolid();
+        return block.getBlockType().getMaterial().isMovementBlocker();
     }
 
     @Override
@@ -114,6 +114,9 @@ public class SnowSimulator implements LayerFunction {
                     this.affected++;
                 }
             }
+            return false;
+        }
+        if (this.extent instanceof World && !((World) this.extent).canPlaceAt(abovePosition, snow)) {
             return false;
         }
         if (this.extent.setBlock(abovePosition, snow)) {
