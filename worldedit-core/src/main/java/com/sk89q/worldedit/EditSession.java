@@ -99,6 +99,7 @@ import com.sk89q.worldedit.regions.CylinderRegion;
 import com.sk89q.worldedit.regions.EllipsoidRegion;
 import com.sk89q.worldedit.regions.FlatRegion;
 import com.sk89q.worldedit.regions.Region;
+import com.sk89q.worldedit.regions.RegionOperationException;
 import com.sk89q.worldedit.regions.Regions;
 import com.sk89q.worldedit.regions.shape.ArbitraryBiomeShape;
 import com.sk89q.worldedit.regions.shape.ArbitraryShape;
@@ -1401,13 +1402,44 @@ public class EditSession implements Extent, AutoCloseable {
                                  boolean copyEntities, boolean copyBiomes, Mask mask) throws MaxChangedBlocksException {
         checkNotNull(region);
         checkNotNull(offset);
+
+        BlockVector3 size = region.getMaximumPoint().subtract(region.getMinimumPoint()).add(1, 1, 1);
+        try {
+            return stackRegionBlockUnits(region, offset.multiply(size), count, copyEntities, copyBiomes, mask);
+        } catch (RegionOperationException e) {
+            // Should never be able to happen
+            throw new AssertionError(e);
+        }
+    }
+
+    /**
+     * Stack a region using block units.
+     *
+     * @param region the region to stack
+     * @param offset how far to move the contents each stack in block units
+     * @param count the number of times to stack
+     * @param copyEntities true to copy entities
+     * @param copyBiomes true to copy biomes
+     * @param mask source mask for the operation (only matching blocks are copied)
+     * @return number of blocks affected
+     * @throws MaxChangedBlocksException thrown if too many blocks are changed
+     * @throws RegionOperationException thrown if the region operation is invalid
+     */
+    public int stackRegionBlockUnits(Region region, BlockVector3 offset, int count,
+                                     boolean copyEntities, boolean copyBiomes, Mask mask) throws MaxChangedBlocksException, RegionOperationException {
+        checkNotNull(region);
+        checkNotNull(offset);
         checkArgument(count >= 1, "count >= 1 required");
 
         BlockVector3 size = region.getMaximumPoint().subtract(region.getMinimumPoint()).add(1, 1, 1);
+        BlockVector3 offsetAbs = offset.abs();
+        if (offsetAbs.getX() < size.getX() && offsetAbs.getY() < size.getY() && offsetAbs.getZ() < size.getZ()) {
+            throw new RegionOperationException(TranslatableComponent.of("worldedit.stack.intersecting-region"));
+        }
         BlockVector3 to = region.getMinimumPoint();
         ForwardExtentCopy copy = new ForwardExtentCopy(this, region, this, to);
         copy.setRepetitions(count);
-        copy.setTransform(new AffineTransform().translate(offset.multiply(size)));
+        copy.setTransform(new AffineTransform().translate(offset));
         copy.setCopyingEntities(copyEntities);
         copy.setCopyingBiomes(copyBiomes);
         if (mask != null) {
