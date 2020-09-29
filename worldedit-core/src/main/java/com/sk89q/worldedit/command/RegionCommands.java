@@ -382,11 +382,11 @@ public class RegionCommands {
             combinedMask = mask;
         }
 
-        int affected = 0;
+        int affected;
         if (blockUnits) {
-            editSession.stackRegionBlockUnits(region, offset, count, copyEntities, copyBiomes, combinedMask);
+            affected = editSession.stackRegionBlockUnits(region, offset, count, copyEntities, copyBiomes, combinedMask);
         } else {
-            editSession.stackCuboidRegion(region, offset, count, copyEntities, copyBiomes, combinedMask);
+            affected = editSession.stackCuboidRegion(region, offset, count, copyEntities, copyBiomes, combinedMask);
         }
 
         if (moveSelection) {
