@@ -33,7 +33,7 @@ import com.sk89q.worldedit.command.tool.brush.CylinderBrush;
 import com.sk89q.worldedit.command.tool.brush.GravityBrush;
 import com.sk89q.worldedit.command.tool.brush.HollowCylinderBrush;
 import com.sk89q.worldedit.command.tool.brush.HollowSphereBrush;
-import com.sk89q.worldedit.command.tool.brush.ImageBrush;
+import com.sk89q.worldedit.command.tool.brush.ImageHeightmapBrush;
 import com.sk89q.worldedit.command.tool.brush.OperationFactoryBrush;
 import com.sk89q.worldedit.command.tool.brush.SmoothBrush;
 import com.sk89q.worldedit.command.tool.brush.SphereBrush;
@@ -63,10 +63,11 @@ import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.session.request.RequestExtent;
 import com.sk89q.worldedit.util.HandSide;
 import com.sk89q.worldedit.util.TreeGenerator;
-import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.util.asset.AssetLoadTask;
+import com.sk89q.worldedit.util.asset.AssetLoader;
+import com.sk89q.worldedit.util.asset.holder.ImageHeightmap;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
-import com.sk89q.worldedit.util.formatting.text.format.TextColor;
 import com.sk89q.worldedit.world.biome.BiomeType;
 import com.sk89q.worldedit.world.block.BlockTypes;
 import org.enginehub.piston.annotation.Command;
@@ -75,9 +76,7 @@ import org.enginehub.piston.annotation.param.Arg;
 import org.enginehub.piston.annotation.param.ArgFlag;
 import org.enginehub.piston.annotation.param.Switch;
 
-import java.awt.image.BufferedImage;
-import java.util.Set;
-import java.util.concurrent.Callable;
+import java.util.Optional;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -334,52 +333,43 @@ public class BrushCommands {
     }
 
     @Command(
-        name = "image",
-        desc = "Image brush, uses images as input"
+        name = "heightmap",
+        desc = "Heightmap brush, raises or lowers terrain using an image heightmap"
     )
-    @CommandPermissions("worldedit.brush.image")
-    void imageBrush(Player player, LocalSession session,
-                           @Arg(desc = "The name of the image")
-                               String imageName,
-                           @Arg(desc = "The size of the brush", def = "5")
-                               double radius,
-                           @Arg(desc = "The intensity of the brush", def = "5")
-                               double intensity,
-                           @Switch(name = 'e', desc = "Erase blocks instead of filling them")
-                               boolean erase,
-                           @Switch(name = 'f', desc = "Don't change blocks above the selected height")
-                               boolean flatten,
-                           @Switch(name = 'r', desc = "Randomizes the brushe's height slightly.")
-                               boolean randomize) throws WorldEditException {
-        BufferedImage image = worldEdit.getImageManager().getAsset(imageName);
-        if (image == null) {
-            AsyncCommandBuilder.wrap((Callable<Component>) () -> {
-                Set<String> imageNames = worldEdit.getImageManager().getCachedAssetKeys();
-                TextComponent.Builder builder = TextComponent.builder();
-                int i = 0;
-                for (String name : imageNames) {
-                    builder.append(TextComponent.of(name, i % 2 == 0 ? TextColor.GRAY : TextColor.WHITE));
-                    if (i <= imageNames.size()) {
-                        builder.append(TextComponent.of(", "));
-                    }
-                    i++;
-                }
-                return TranslatableComponent.of("worldedit.brush.image.unknown", TextComponent.of(imageName), builder.build());
-            }, player)
-                    .registerWithSupervisor(worldEdit.getSupervisor(), "Image brush list.")
-                    .onSuccess((Component) null, player::print)
-                    .onFailure((Component) null, worldEdit.getPlatformManager().getPlatformCommandManager().getExceptionConverter())
-                    .buildAndExec(worldEdit.getExecutorService());
-            return;
+    @CommandPermissions("worldedit.brush.heightmap")
+    void heightmapBrush(Player player, LocalSession session,
+                    @Arg(desc = "The name of the image")
+                        String imageName,
+                    @Arg(desc = "The size of the brush", def = "5")
+                        double radius,
+                    @Arg(desc = "The intensity of the brush", def = "5")
+                        double intensity,
+                    @Switch(name = 'e', desc = "Erase blocks instead of filling them")
+                        boolean erase,
+                    @Switch(name = 'f', desc = "Don't change blocks above the selected height")
+                        boolean flatten,
+                    @Switch(name = 'r', desc = "Randomizes the brush's height slightly.")
+                        boolean randomize) throws WorldEditException {
+        Optional<AssetLoader<ImageHeightmap>> loader = worldEdit.getAssetLoaders().getAssetLoader(ImageHeightmap.class, imageName);
+
+        if (loader.isPresent()) {
+            worldEdit.checkMaxBrushRadius(radius);
+            BrushTool tool = session.getBrushTool(player.getItemInHand(HandSide.MAIN_HAND).getType());
+
+            AssetLoadTask<ImageHeightmap> task = new AssetLoadTask<>(loader.get(), imageName);
+            AsyncCommandBuilder.wrap(task, player)
+                .registerWithSupervisor(worldEdit.getSupervisor(), "Loading asset " + imageName)
+                .setDelayMessage(TranslatableComponent.of("worldedit.asset.load.loading"))
+                .setWorkingMessage(TranslatableComponent.of("worldedit.asset.load.still-loading"))
+                .onSuccess(TranslatableComponent.of("worldedit.brush.heightmap.equip", TextComponent.of((int) radius)), heightmap -> {
+                    tool.setSize(radius);
+                    tool.setBrush(new ImageHeightmapBrush(heightmap, intensity, erase, flatten, randomize), "worldedit.brush.heightmap");
+                })
+                .onFailure(TranslatableComponent.of("worldedit.asset.load.failed"), worldEdit.getPlatformManager().getPlatformCommandManager().getExceptionConverter())
+                .buildAndExec(worldEdit.getExecutorService());
+        } else {
+            player.printError(TranslatableComponent.of("worldedit.brush.heightmap.unknown", TextComponent.of(imageName)));
         }
-
-        worldEdit.checkMaxBrushRadius(radius);
-
-        BrushTool tool = session.getBrushTool(player.getItemInHand(HandSide.MAIN_HAND).getType());
-        tool.setSize(radius);
-        tool.setBrush(new ImageBrush(image, intensity, erase, flatten, randomize), "worldedit.brush.image");
-
-        player.printInfo(TranslatableComponent.of("worldedit.brush.image.equip", TextComponent.of((int) radius)));
     }
 
     @Command(

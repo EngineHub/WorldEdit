@@ -17,29 +17,39 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.sk89q.worldedit.util.assets;
+package com.sk89q.worldedit.util.asset;
 
+import com.google.common.annotations.Beta;
+import com.google.common.collect.ImmutableSet;
 import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.util.asset.holder.ImageHeightmap;
 
-import java.awt.image.BufferedImage;
-import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Set;
 import javax.annotation.Nullable;
 import javax.imageio.ImageIO;
 
 /**
  * Loads and caches image files from WorldEdit's assets directory.
  */
-public class ImageManager extends AssetManager<BufferedImage> {
+@Beta
+public class ImageHeightmapLoader extends AssetLoader<ImageHeightmap> {
 
-    public ImageManager(WorldEdit worldEdit) {
-        super(worldEdit, "assets", "png", "png", "jpg", "jpeg");
+    public ImageHeightmapLoader(WorldEdit worldEdit, Path assetDir) {
+        super(worldEdit, assetDir);
     }
 
     @Nullable
-    public BufferedImage loadAssetFromFile(File file) throws Exception {
-        if (!file.exists()) {
+    public ImageHeightmap loadAssetFromPath(Path path) throws Exception {
+        if (!Files.exists(path)) {
             return null;
         }
-        return ImageIO.read(file);
+        return new ImageHeightmap(ImageIO.read(path.toFile()));
+    }
+
+    @Override
+    public Set<String> getAllowedExtensions() {
+        return ImmutableSet.copyOf(ImageIO.getReaderFileSuffixes());
     }
 }

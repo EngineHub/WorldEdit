@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.extension.platform;
 
+import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.internal.block.BlockStateIdAccess;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockType;
@@ -47,7 +48,12 @@ public enum Capability {
     /**
      * The capability of providing configuration.
      */
-    CONFIGURATION,
+    CONFIGURATION {
+        @Override
+        void initialize(PlatformManager platformManager, Platform platform) {
+            WorldEdit.getInstance().getAssetLoaders().init();
+        }
+    },
 
     /**
      * The capability of handling user commands entered in chat or console.
