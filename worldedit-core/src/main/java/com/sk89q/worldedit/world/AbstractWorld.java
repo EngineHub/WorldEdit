@@ -19,6 +19,7 @@
 
 package com.sk89q.worldedit.world;
 
+import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.blocks.BaseItemStack;
@@ -34,6 +35,7 @@ import com.sk89q.worldedit.util.SideEffectSet;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.block.BlockTypes;
+import com.sk89q.worldedit.world.registry.BlockMaterial;
 import com.sk89q.worldedit.world.weather.WeatherType;
 import com.sk89q.worldedit.world.weather.WeatherTypes;
 
@@ -158,6 +160,33 @@ public abstract class AbstractWorld implements World {
 
     @Override
     public void setWeather(WeatherType weatherType, long duration) {
+    }
+
+    @Override
+    public Vector3 getSafeTeleportLocation(BlockVector3 searchPos, int yMin, int yMax) {
+        int x = searchPos.getBlockX();
+        int y = Math.max(yMin, searchPos.getBlockY());
+        int origY = y;
+        int z = searchPos.getBlockZ();
+        int yPlusSearchHeight = y + WorldEdit.getInstance().getConfiguration().defaultVerticalHeight;
+        int maxY = Math.min(yMax, yPlusSearchHeight) + 2;
+
+        byte free = 0;
+
+            while (y <= maxY) {
+            BlockMaterial material = getBlock(BlockVector3.at(x, y, z)).getBlockType().getMaterial();
+            if (!material.isMovementBlocker() && free >= 0) {
+                ++free;
+            } else {
+                free = 0;
+            }
+
+            if (free == 2 && (y - 1 != origY)) {
+                return Vector3.at(x + 0.5, y - 2 + 1, z + 0.5);
+            }
+            ++y;
+        }
+        return null;
     }
 
     private class QueuedEffect implements Comparable<QueuedEffect> {

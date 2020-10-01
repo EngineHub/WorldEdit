@@ -21,7 +21,6 @@ package com.sk89q.worldedit.world;
 
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
-import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseItem;
 import com.sk89q.worldedit.blocks.BaseItemStack;
@@ -42,12 +41,11 @@ import com.sk89q.worldedit.util.TreeGenerator;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.block.BlockType;
-import com.sk89q.worldedit.world.registry.BlockMaterial;
 import com.sk89q.worldedit.world.weather.WeatherType;
 
+import javax.annotation.Nullable;
 import java.nio.file.Path;
 import java.util.Set;
-import javax.annotation.Nullable;
 
 /**
  * Represents a world (dimension).
@@ -357,31 +355,7 @@ public interface World extends Extent, Keyed {
      * @param yMax the highest y component
      * @return the safe location, null if no one is found
      */
-    default Vector3 getSafeTeleportLocation(BlockVector3 searchPos, int yMin, int yMax) {
-        int x = searchPos.getBlockX();
-        int y = Math.max(yMin, searchPos.getBlockY());
-        int origY = y;
-        int z = searchPos.getBlockZ();
-        int yPlusSearchHeight = y + WorldEdit.getInstance().getConfiguration().defaultVerticalHeight;
-        int maxY = Math.min(yMax, yPlusSearchHeight) + 2;
-
-        byte free = 0;
-
-        while (y <= maxY) {
-            BlockMaterial material = getBlock(BlockVector3.at(x, y, z)).getBlockType().getMaterial();
-            if (!material.isMovementBlocker() && free >= 0) {
-                ++free;
-            } else {
-                free = 0;
-            }
-
-            if (free == 2 && (y - 1 != origY)) {
-                return Vector3.at(x + 0.5, y - 2 + 1, z + 0.5);
-            }
-            ++y;
-        }
-        return null;
-    }
+    Vector3 getSafeTeleportLocation(BlockVector3 searchPos, int yMin, int yMax);
 
     @Override
     boolean equals(Object other);
