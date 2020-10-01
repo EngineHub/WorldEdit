@@ -108,39 +108,14 @@ public abstract class AbstractPlayerActor implements Actor, Player, Cloneable {
     public void findFreePosition(Location searchPos) {
         Extent world = searchPos.getExtent();
 
+        if (!(world instanceof World)) {
+            throw new IllegalArgumentException("Unable to teleport a player to a non world type.");
+        }
+
         int worldMinY = world.getMinimumPoint().getY();
         int worldMaxY = world.getMaximumPoint().getY();
-
-        int x = searchPos.getBlockX();
-        int y = Math.max(worldMinY, searchPos.getBlockY());
-        int origY = y;
-        int z = searchPos.getBlockZ();
-        int yPlusSearchHeight = y + WorldEdit.getInstance().getConfiguration().defaultVerticalHeight;
-        int maxY = Math.min(worldMaxY, yPlusSearchHeight) + 2;
-
-        byte free = 0;
-
-        while (y <= maxY) {
-            if (!world.getBlock(BlockVector3.at(x, y, z)).getBlockType().getMaterial().isMovementBlocker()) {
-                ++free;
-            } else {
-                free = 0;
-            }
-
-            if (free == 2) {
-                boolean worked = true;
-
-                if (y - 1 != origY) {
-                    worked = trySetPosition(Vector3.at(x + 0.5, y - 2 + 1, z + 0.5));
-                }
-
-                if (worked) {
-                    return;
-                }
-            }
-
-            ++y;
-        }
+        Vector3 tp =  ((World) world).getSafeTeleportLocation(searchPos.toVector().toBlockPoint(), worldMinY, worldMaxY);
+        trySetPosition(tp);
     }
 
     @Override
