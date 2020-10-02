@@ -52,9 +52,8 @@ public class SnowSimulator implements LayerFunction {
         } else if (extent instanceof EditSession) {
             this.world = ((EditSession) extent).getWorld();
         } else {
-            this.world = null;
+            throw new NullPointerException("extent must be a world or EditSession with a world");
         }
-        checkNotNull(this.world, "extent must be a world or EditSession with a world");
 
         this.extent = extent;
         this.stack = stack;
