@@ -173,7 +173,7 @@ public abstract class AbstractWorld implements World {
 
         byte free = 0;
 
-            while (y <= maxY) {
+        while (y <= maxY) {
             BlockMaterial material = getBlock(BlockVector3.at(x, y, z)).getBlockType().getMaterial();
             if (!material.isMovementBlocker() && free >= 0) {
                 ++free;
