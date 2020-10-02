@@ -13,6 +13,7 @@ curl "$url" >./build/cdist.zip
 (cd build && unzip -o cdist.zip)
 
 # CROWDIN_DISTRIBUTOR_TOKEN is set by CI
+export CROWDIN_DISTRIBUTOR_ON_CHANGE="true"
 export CROWDIN_DISTRIBUTOR_PROJECT_ID="360697"
 export CROWDIN_DISTRIBUTOR_MODULE="worldedit-lang"
 # Artifactory & Build Number is set by CI
