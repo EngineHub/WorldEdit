@@ -27,6 +27,8 @@
     "worldedit.brush.gravity.equip": "Gravity brush equipped ({0}).",
     "worldedit.brush.butcher.equip": "Butcher brush equipped ({0}).",
     "worldedit.brush.operation.equip": "Set brush to {0}.",
+    "worldedit.brush.heightmap.equip": "Heightmap brush equipped ({0}).",
+    "worldedit.brush.heightmap.unknown": "Unknown heightmap brush: {0}.",
     "worldedit.brush.none.equip": "Brush unbound from your current item.",
 
     "worldedit.setbiome.changed": "Biomes were changed for approximately {0} blocks.",
@@ -254,6 +256,10 @@
     "worldedit.pastebin.uploading": "(Please wait... sending output to pastebin...)",
     "worldedit.session.cant-find-session": "Unable to find session for {0}",
     "worldedit.platform.no-file-dialog": "File dialogs are not supported in your environment.",
+
+    "worldedit.asset.load.loading": "(Please wait... loading asset.)",
+    "worldedit.asset.load.still-loading": "(Please wait... still loading asset.)",
+    "worldedit.asset.load.failed": "Failed to load asset",
 
     "worldedit.tool.max-block-changes": "Max blocks change limit reached.",
     "worldedit.tool.no-block": "No block in sight!",

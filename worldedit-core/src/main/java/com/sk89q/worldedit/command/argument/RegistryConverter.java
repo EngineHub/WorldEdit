@@ -45,6 +45,7 @@ import org.enginehub.piston.inject.Key;
 
 import java.lang.reflect.Field;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 public final class RegistryConverter<V extends Keyed> implements ArgumentConverter<V> {
@@ -98,7 +99,7 @@ public final class RegistryConverter<V extends Keyed> implements ArgumentConvert
 
     @Override
     public ConversionResult<V> convert(String argument, InjectedValueAccess injectedValueAccess) {
-        V result = registry.get(argument);
+        V result = registry.get(argument.toLowerCase(Locale.ROOT));
         return result == null
                 ? FailedConversion.from(new IllegalArgumentException(
                     "Not a valid " + registry.getName() + ": " + argument))
