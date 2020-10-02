@@ -29,7 +29,7 @@ import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockTypes;
 
-import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public class SnowSimulator implements LayerFunction {
 
@@ -41,15 +41,21 @@ public class SnowSimulator implements LayerFunction {
     private final Property<Integer> waterLevelProperty = BlockTypes.WATER.getProperty("level");
 
     private final Extent extent;
+    private final World world;
     private final boolean stack;
 
     private int affected;
 
     public SnowSimulator(Extent extent, boolean stack) {
-        checkArgument(extent instanceof World
-                || (extent instanceof EditSession && ((EditSession) extent).getWorld() != null),
-            "extent must be a world or EditSession with a world"
-        );
+        if (extent instanceof World) {
+            this.world = (World) extent;
+        } else if (extent instanceof EditSession) {
+            this.world = ((EditSession) extent).getWorld();
+        } else {
+            this.world = null;
+        }
+        checkNotNull(this.world, "extent must be a world or EditSession with a world");
+
         this.extent = extent;
         this.stack = stack;
 
@@ -123,14 +129,8 @@ public class SnowSimulator implements LayerFunction {
             }
             return false;
         }
-        World world = null;
-        if (this.extent instanceof World) {
-            world = (World) this.extent;
-        } else if (this.extent instanceof EditSession) {
-            world = ((EditSession) this.extent).getWorld();
-        }
 
-        if (world != null && !world.canPlaceAt(abovePosition, snow)) {
+        if (!this.world.canPlaceAt(abovePosition, snow)) {
             return false;
         }
         if (this.extent.setBlock(abovePosition, snow)) {
