@@ -302,6 +302,11 @@ public class ForgeWorld extends AbstractWorld {
         getWorld().destroyBlock(pos, true);
     }
 
+    @Override
+    public boolean canPlaceAt(BlockVector3 position, BlockState blockState) {
+        return ForgeAdapter.adapt(blockState).isValidPosition(getWorld(), ForgeAdapter.toBlockPos(position));
+    }
+
     // For unmapped regen names, see Fabric!
 
     @Override

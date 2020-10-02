@@ -421,6 +421,16 @@ public class BukkitWorld extends AbstractWorld {
         getWorld().getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ()).breakNaturally();
     }
 
+    @Override
+    public boolean canPlaceAt(BlockVector3 position, com.sk89q.worldedit.world.block.BlockState blockState) {
+        BukkitImplAdapter adapter = WorldEditPlugin.getInstance().getBukkitImplAdapter();
+        if (adapter != null) {
+            return adapter.canPlaceAt(getWorld(), position, blockState);
+        }
+        // We can't check, so assume yes.
+        return true;
+    }
+
     private static volatile boolean hasWarnedImplError = false;
 
     @Override

@@ -19,11 +19,13 @@
 
 package com.sk89q.worldedit.function.block;
 
+import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.function.LayerFunction;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.registry.state.Property;
+import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockTypes;
 
@@ -37,11 +39,20 @@ public class SnowSimulator implements LayerFunction {
     private final Property<Integer> waterLevelProperty = BlockTypes.WATER.getProperty("level");
 
     private final Extent extent;
+    private final World world;
     private final boolean stack;
 
     private int affected;
 
     public SnowSimulator(Extent extent, boolean stack) {
+        if (extent instanceof World) {
+            this.world = (World) extent;
+        } else if (extent instanceof EditSession && ((EditSession) extent).getWorld() != null) {
+            this.world = ((EditSession) extent).getWorld();
+        } else {
+            throw new IllegalArgumentException("extent must be a world or EditSession with a world");
+        }
+
         this.extent = extent;
         this.stack = stack;
 
@@ -66,9 +77,8 @@ public class SnowSimulator implements LayerFunction {
             return true;
         }
 
-        // Can only place on full solid blocks
-        return block.getBlockType().getMaterial().isFullCube()
-                && block.getBlockType().getMaterial().isSolid();
+        // Stop searching when we hit a movement blocker
+        return block.getBlockType().getMaterial().isMovementBlocker();
     }
 
     @Override
@@ -114,6 +124,10 @@ public class SnowSimulator implements LayerFunction {
                     this.affected++;
                 }
             }
+            return false;
+        }
+
+        if (!this.world.canPlaceAt(abovePosition, snow)) {
             return false;
         }
         if (this.extent.setBlock(abovePosition, snow)) {
