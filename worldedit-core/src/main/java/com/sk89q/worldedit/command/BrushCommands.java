@@ -33,9 +33,11 @@ import com.sk89q.worldedit.command.tool.brush.CylinderBrush;
 import com.sk89q.worldedit.command.tool.brush.GravityBrush;
 import com.sk89q.worldedit.command.tool.brush.HollowCylinderBrush;
 import com.sk89q.worldedit.command.tool.brush.HollowSphereBrush;
+import com.sk89q.worldedit.command.tool.brush.ImageHeightmapBrush;
 import com.sk89q.worldedit.command.tool.brush.OperationFactoryBrush;
 import com.sk89q.worldedit.command.tool.brush.SmoothBrush;
 import com.sk89q.worldedit.command.tool.brush.SphereBrush;
+import com.sk89q.worldedit.command.util.AsyncCommandBuilder;
 import com.sk89q.worldedit.command.util.CommandPermissions;
 import com.sk89q.worldedit.command.util.CommandPermissionsConditionGenerator;
 import com.sk89q.worldedit.command.util.CreatureButcher;
@@ -61,6 +63,9 @@ import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.session.request.RequestExtent;
 import com.sk89q.worldedit.util.HandSide;
 import com.sk89q.worldedit.util.TreeGenerator;
+import com.sk89q.worldedit.util.asset.AssetLoadTask;
+import com.sk89q.worldedit.util.asset.AssetLoader;
+import com.sk89q.worldedit.util.asset.holder.ImageHeightmap;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.TranslatableComponent;
 import com.sk89q.worldedit.world.biome.BiomeType;
@@ -70,6 +75,8 @@ import org.enginehub.piston.annotation.CommandContainer;
 import org.enginehub.piston.annotation.param.Arg;
 import org.enginehub.piston.annotation.param.ArgFlag;
 import org.enginehub.piston.annotation.param.Switch;
+
+import java.util.Optional;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -323,6 +330,46 @@ public class BrushCommands {
         tool.setBrush(new ButcherBrush(flags), "worldedit.brush.butcher");
 
         player.printInfo(TranslatableComponent.of("worldedit.brush.butcher.equip", TextComponent.of((int) radius)));
+    }
+
+    @Command(
+        name = "heightmap",
+        desc = "Heightmap brush, raises or lowers terrain using an image heightmap"
+    )
+    @CommandPermissions("worldedit.brush.heightmap")
+    void heightmapBrush(Player player, LocalSession session,
+                    @Arg(desc = "The name of the image")
+                        String imageName,
+                    @Arg(desc = "The size of the brush", def = "5")
+                        double radius,
+                    @Arg(desc = "The intensity of the brush", def = "5")
+                        double intensity,
+                    @Switch(name = 'e', desc = "Erase blocks instead of filling them")
+                        boolean erase,
+                    @Switch(name = 'f', desc = "Don't change blocks above the selected height")
+                        boolean flatten,
+                    @Switch(name = 'r', desc = "Randomizes the brush's height slightly.")
+                        boolean randomize) throws WorldEditException {
+        Optional<AssetLoader<ImageHeightmap>> loader = worldEdit.getAssetLoaders().getAssetLoader(ImageHeightmap.class, imageName);
+
+        if (loader.isPresent()) {
+            worldEdit.checkMaxBrushRadius(radius);
+            BrushTool tool = session.getBrushTool(player.getItemInHand(HandSide.MAIN_HAND).getType());
+
+            AssetLoadTask<ImageHeightmap> task = new AssetLoadTask<>(loader.get(), imageName);
+            AsyncCommandBuilder.wrap(task, player)
+                .registerWithSupervisor(worldEdit.getSupervisor(), "Loading asset " + imageName)
+                .setDelayMessage(TranslatableComponent.of("worldedit.asset.load.loading"))
+                .setWorkingMessage(TranslatableComponent.of("worldedit.asset.load.still-loading"))
+                .onSuccess(TranslatableComponent.of("worldedit.brush.heightmap.equip", TextComponent.of((int) radius)), heightmap -> {
+                    tool.setSize(radius);
+                    tool.setBrush(new ImageHeightmapBrush(heightmap, intensity, erase, flatten, randomize), "worldedit.brush.heightmap");
+                })
+                .onFailure(TranslatableComponent.of("worldedit.asset.load.failed"), worldEdit.getPlatformManager().getPlatformCommandManager().getExceptionConverter())
+                .buildAndExec(worldEdit.getExecutorService());
+        } else {
+            player.printError(TranslatableComponent.of("worldedit.brush.heightmap.unknown", TextComponent.of(imageName)));
+        }
     }
 
     @Command(
