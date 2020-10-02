@@ -9,7 +9,7 @@ if [ -n "${cdist_version#*-}" ]; then
   cdist_path_version="${cdist_version%%-*}-SNAPSHOT"
 fi
 url="https://maven.enginehub.org/repo/org/enginehub/crowdin/crowdin-distributor/$cdist_path_version/crowdin-distributor-$cdist_version-bundle.zip"
-mkdir ./build
+[ -d ./build ] || mkdir ./build
 curl "$url" >./build/cdist.zip
 (cd ./build && unzip -o cdist.zip)
 
