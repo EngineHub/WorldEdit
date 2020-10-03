@@ -134,6 +134,7 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -216,6 +217,8 @@ public class EditSession implements Extent, AutoCloseable {
     private ReorderMode reorderMode = ReorderMode.FAST;
 
     private Mask oldMask;
+
+    private final Random random = new Random();
 
     /**
      * Construct the object with a maximum number of blocks and a block bag.
@@ -1724,6 +1727,85 @@ public class EditSession implements Extent, AutoCloseable {
                         ++affected;
                     }
                     if (setBlock(pos.add(-x, y, -z), block)) {
+                        ++affected;
+                    }
+                }
+            }
+        }
+
+        return affected;
+    }
+
+    /**
+     * Makes a splatter.
+     *
+     * @param pos Center of the splatter
+     * @param block The block pattern to use
+     * @param radius The sphere's radius
+     * @param decay The higher the number the more decay, between 0 and 10
+     * @return number of blocks changed
+     * @throws MaxChangedBlocksException thrown if too many blocks are changed
+     */
+    public int makeSplatter(BlockVector3 pos, Pattern block, double radius, int decay) throws MaxChangedBlocksException {
+        //  decay is 0 - 10, 0 should be a circle.
+        checkArgument(decay >= 0, "decay must be >= 0");
+        checkArgument(decay <= 10, "decay must be <= 10");
+        radius += 0.5;
+
+        int affected = 0;
+
+        final float normDecay = (float) decay / 10;
+
+        // Inner radius will be a normal circle, outer radius will have specks
+        double outerRadius = radius + (radius * 0.5 * normDecay);
+        double innerRadius = radius - radius * normDecay;
+
+        pos = pos.clampY(world.getMinY(), world.getMaxY());
+
+        final int ceilRadius = (int) Math.ceil(outerRadius);
+
+        forX: for (int x = 0; x <= ceilRadius; ++x) {
+            forY: for (int y = 0; y <= ceilRadius; ++y) {
+                forZ: for (int z = 0; z <= ceilRadius; ++z) {
+                    double distanceFromCenter = Math.sqrt(lengthSq(x, y, z));
+
+                    if (distanceFromCenter > radius) {
+                        if (z == 0) {
+                            if (y == 0) {
+                                break forX;
+                            }
+                            break forY;
+                        }
+                        break forZ;
+                    }
+
+                    double chanceOfKeeping = 0;
+                    if (distanceFromCenter > innerRadius) {
+                        chanceOfKeeping = Math.min(distanceFromCenter / radius, 0.95);
+                    }
+
+                    if (this.random.nextFloat() > chanceOfKeeping && setBlock(pos.add(x, y, z), block)) {
+                        ++affected;
+                    }
+                    if (this.random.nextFloat() > chanceOfKeeping && setBlock(pos.add(-x, y, z), block)) {
+                        ++affected;
+                    }
+                    if (this.random.nextFloat() > chanceOfKeeping && setBlock(pos.add(x, -y, z), block)) {
+                        ++affected;
+                    }
+                    if (this.random.nextFloat() > chanceOfKeeping && setBlock(pos.add(x, y, -z), block)) {
+                        ++affected;
+                    }
+                    if (this.random.nextFloat() > chanceOfKeeping && setBlock(pos.add(-x, -y, z), block)) {
+                        ++affected;
+                    }
+                    if (this.random.nextFloat() > chanceOfKeeping && setBlock(pos.add(x, -y, -z), block)) {
+                        ++affected;
+                    }
+                    if (this.random.nextFloat() > chanceOfKeeping && setBlock(pos.add(-x, y, -z), block)) {
+                        ++affected;
+                    }
+                    if (this.random.nextFloat() > chanceOfKeeping && setBlock(pos.add(-x, -y, -z), block)) {
                         ++affected;
                     }
                 }
