@@ -19,26 +19,48 @@ This place contains the Java code for WorldEdit, but if you want to just use Wor
 Edit the Code
 ---------
 
-Want to add new features to WorldEdit yourself? Follow these somewhat-easy steps:
+Want to add new features to WorldEdit or fix bugs yourself? You can get the game running, with WorldEdit, from the code here, without any additional outside steps, by doing the following *four* things:
 
-1. Download WorldEdit's source code and put it somewhere. We recommend you use something called Git, but [you can also just download a .zip file](https://github.com/EngineHub/WorldEdit/archive/master.zip).
-2. Install the [Java Development Kit (JDK) v8](https://www.oracle.com/java/technologies/javase/javase-jdk8-downloads.html) and restart your computer for safe measure.
-3. Open terminal / command prompt / bash and navigate to the directory where you put the source code:
-4. Run one of the following commands:
+1. Download WorldEdit's source code and put it somewhere. We recommend you use something called Git if you already know how to use it, but [you can also just download a .zip file](https://github.com/EngineHub/WorldEdit/archive/master.zip). (If you plan on contributing the changes, you will need to figure out Git.)
+2. Install the [Java Development Kit (JDK) v8](https://www.oracle.com/java/technologies/javase/javase-jdk8-downloads.html) and restart your computer for safe measure. You absolutely need version 8 of the JDK, even if you have other versions installed. 
+3. Open terminal / command prompt / bash and navigate to the directory where you put the source code.
+4. Run **one** of these following commands:
    * Mac OS X / Linux: `./gradlew :worldedit-fabric:runClient`
    * Windows - Command Prompt: `gradlew :worldedit-fabric:runClient`
    * Windows - PowerShell: `.\gradlew :worldedit-fabric:runClient`
 
-That's it. 🎉 It takes a long time to compile all the code for WorldEdit. If it succeeds, **the Minecraft game will open and you can create a single player world with WorldEdit**.
+🎉 That's it. 🎉 It takes a long time to actually transform WorldEdit into a mod. If it succeeds, **the Minecraft game will open and you can create a single player world with WorldEdit**.
 
-⚠ However, if you get a `Type javax.tools.JavaCompiler not present` error, you need to edit your environmental variables and add a new `JAVA_HOME` variable. The value of the variable needs to be the path to where JDK 8 was installed.
+When you make changes to the code, you have to restart the game by re-running the command for your changes to take effect. If there are errors in your Java syntax, the command will fail.
+
+| Got an error?                                                |
+| :----------------------------------------------------------- |
+| if you get a `Type javax.tools.JavaCompiler not present` error, you need to edit your environmental variables and add a new `JAVA_HOME` variable. The value of the variable needs to be the path to where JDK 8 was installed. |
 
 For additional information about compiling WorldEdit, see [COMPILING.md](COMPILING.md).
+
+### Using a Java IDE
+
+To edit WorldEdit in a Java IDE, follow these steps:
+
+1. Download and install [IntelliJ IDEA Community Edition](https://www.jetbrains.com/idea/download/).
+2. In the IDE, open the folder that you saved WorldEdit's code in. This creates a new project in IDEA.
+
+That's pretty much it.
+
+If you want to be able to run the game also, follow these instructions:
+
+1. Go to Run -> Edit Configurations.
+2. Add a Gradle task:
+   1. Choose `worldedit-fabric` for the project.
+   2. For the tasks, type in `runClient`
+3. Click OK
+4. Under the Run menu again, go to "Debug [your new task]".
 
 Submitting Your Changes
 ------------
 
-We happily accept contributions, especially through pull requests on GitHub. Submissions must be licensed under the GNU General Public License v3.
+WorldEdit is open source (specifically licensed under GPL v3), so note that your contributions will also be open source. The best way to submit a change is to create a fork on GitHub, put your changes there, and then create a "pull request" on our WorldEdit repository.
 
 Please read [CONTRIBUTING.md](CONTRIBUTING.md) for important guidelines to follow.
 
