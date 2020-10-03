@@ -161,4 +161,11 @@ public interface EntityProperties {
      * @return true if pasteable
      */
     boolean isPasteable();
+
+    /**
+     * Test whether the entity is a water creature.
+     *
+     * @return true if water creature
+     */
+    boolean isWaterCreature();
 }

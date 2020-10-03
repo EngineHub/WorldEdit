@@ -149,4 +149,9 @@ public class SpongeEntityProperties implements EntityProperties {
     public boolean isPasteable() {
         return !(entity instanceof Player || entity instanceof ComplexLivingPart);
     }
+
+    @Override
+    public boolean isWaterCreature() {
+        return false;  // Sponge doesn't support this
+    }
 }
