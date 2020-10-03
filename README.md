@@ -35,7 +35,7 @@ When you make changes to the code, you have to restart the game by re-running th
 
 | Got an error?                                                |
 | :----------------------------------------------------------- |
-| if you get a `Type javax.tools.JavaCompiler not present` error, you need to edit your environmental variables and add a new `JAVA_HOME` variable. The value of the variable needs to be the path to where JDK 8 was installed. |
+| If you get a `Type javax.tools.JavaCompiler not present` error, you need to edit your environmental variables and add a new `JAVA_HOME` variable. The value of the variable needs to be the path to where JDK 8 was installed. |
 
 For additional information about compiling WorldEdit, see [COMPILING.md](COMPILING.md).
 
@@ -56,6 +56,10 @@ If you want to be able to run the game also, follow these instructions:
    2. For the tasks, type in `runClient`
 3. Click OK
 4. Under the Run menu again, go to "Debug [your new task]".
+
+### Speeding up the Edit-Test-Edit-Test Cycle
+
+It's a little annoying have to restart the game to test your changes. The best way to reduce the time is to run the server instead (using `runServer` instead of `runClient`) and then reconnect to the server after restarting it.
 
 Submitting Your Changes
 ------------
