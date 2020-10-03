@@ -705,4 +705,11 @@ public final class BlockVector3 {
         return "(" + x + ", " + y + ", " + z + ")";
     }
 
+    /**
+     * Returns a string representation specifically for copying.
+     * @return string
+     */
+    public String toCopyableString() {
+        return x + "," + y + "," + z;
+    }
 }
