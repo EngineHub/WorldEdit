@@ -134,6 +134,7 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
@@ -1725,6 +1726,87 @@ public class EditSession implements Extent, AutoCloseable {
                     if (setBlock(pos.add(-x, y, -z), block)) {
                         ++affected;
                     }
+                }
+            }
+        }
+
+        return affected;
+    }
+
+    /**
+     * Makes a splatter.
+     *
+     * @param pos Center of the splatter
+     * @param block The block pattern to use
+     * @param radius The cylinder's radius
+     * @param decay The higher the number the more decay
+     * @return number of blocks changed
+     * @throws MaxChangedBlocksException thrown if too many blocks are changed
+     */
+    public int makeSplatter(BlockVector3 pos, Pattern block, double radius, int decay) throws MaxChangedBlocksException {
+        //  decay is 0 - 10, 0 should be a circle.
+        final Random random = new Random();
+
+        radius += 0.5;
+
+        int affected = 0;
+
+        if (decay <= 0) {
+            decay = 0;
+        } else if (decay > 10) {
+            decay = 10;
+        }
+
+        final float normDecay = (float) decay / 10;
+
+        // Inner radius will be a normal circle, outer radius will have specks
+        double outerRadius = radius + (radius * 0.5 * normDecay);
+        double innerRadius = radius - radius * normDecay;
+
+        if (pos.getBlockY() < world.getMinY()) {
+            pos = pos.withY(world.getMinY());
+        } else if (pos.getBlockY() > world.getMaxY()) {
+            pos = pos.withY(world.getMaxY());
+        }
+
+        final double invRadius = 1 / outerRadius;
+
+        final int ceilRadius = (int) Math.ceil(outerRadius);
+
+        double nextXn = 0;
+        forX: for (int x = 0; x <= ceilRadius; ++x) {
+            final double xn = nextXn;
+            nextXn = (x + 1) * invRadius;
+            double nextZn = 0;
+            forZ: for (int z = 0; z <= ceilRadius; ++z) {
+                final double zn = nextZn;
+                nextZn = (z + 1) * invRadius;
+
+                double distanceSq = lengthSq(xn, zn);
+                if (distanceSq > 1) {
+                    if (z == 0) {
+                        break forX;
+                    }
+                    break forZ;
+                }
+
+                double distanceFromCenter = Math.sqrt(lengthSq(x, z));
+                double chanceOfKeeping = 0;
+                if (distanceFromCenter > innerRadius) {
+                    chanceOfKeeping = Math.min(distanceFromCenter / radius, 0.95);
+                }
+
+                if (random.nextFloat() > chanceOfKeeping && setBlock(pos.add(x, 0, z), block)) {
+                    ++affected;
+                }
+                if (random.nextFloat() > chanceOfKeeping && setBlock(pos.add(-x, 0, z), block)) {
+                    ++affected;
+                }
+                if (random.nextFloat() > chanceOfKeeping && setBlock(pos.add(x, 0, -z), block)) {
+                    ++affected;
+                }
+                if (random.nextFloat() > chanceOfKeeping && setBlock(pos.add(-x, 0, -z), block)) {
+                    ++affected;
                 }
             }
         }

@@ -21,6 +21,7 @@
     "worldedit.brush.paint.item.warning": "This brush simulates item usages. Its effects may not work on all platforms, may not be undo-able, and may cause strange interactions with other mods/plugins. Use at your own risk.",
     "worldedit.brush.sphere.equip": "Sphere brush shape equipped ({0}).",
     "worldedit.brush.cylinder.equip": "Cylinder brush shape equipped ({0} by {1}).",
+    "worldedit.brush.splatter.equip": "Splatter brush shape equipped ({0} with {1} decay).",
     "worldedit.brush.clipboard.equip": "Clipboard brush shape equipped.",
     "worldedit.brush.smooth.equip": "Smooth brush equipped ({0} x {1}x using {2}).",
     "worldedit.brush.extinguish.equip": "Extinguisher equipped ({0}).",
