@@ -178,9 +178,11 @@ public class BrushCommands {
                                   Pattern pattern,
                               @Arg(desc = "The radius of the splatter", def = "2")
                                   double radius,
-                              @Arg(desc = "The decay of the splatter", def = "1")
+                              @Arg(desc = "The decay of the splatter between 0 and 10", def = "1")
                                   int decay) throws WorldEditException {
         worldEdit.checkMaxBrushRadius(radius);
+
+        decay = Math.max(Math.min(decay, 10), 0);
 
         BrushTool tool = session.getBrushTool(player.getItemInHand(HandSide.MAIN_HAND).getType());
         tool.setFill(pattern);
