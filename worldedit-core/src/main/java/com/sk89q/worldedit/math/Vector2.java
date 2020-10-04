@@ -481,4 +481,11 @@ public final class Vector2 {
         return "(" + x + ", " + z + ")";
     }
 
+    /**
+     * Returns a string representation that is supported by the parser.
+     * @return string
+     */
+    public String toParserString() {
+        return x + "," + z;
+    }
 }

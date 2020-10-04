@@ -556,4 +556,12 @@ public final class BlockVector2 {
     public String toString() {
         return "(" + x + ", " + z + ")";
     }
+
+    /**
+     * Returns a string representation that is supported by the parser.
+     * @return string
+     */
+    public String toParserString() {
+        return x + "," + z;
+    }
 }
